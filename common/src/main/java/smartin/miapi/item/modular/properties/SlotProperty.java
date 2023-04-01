@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.reflect.TypeToken;
 import org.jetbrains.annotations.Nullable;
+import smartin.miapi.client.gui.crafting.moduleCrafter.ModuleCrafter;
 import smartin.miapi.item.modular.ItemModule;
 import smartin.miapi.item.modular.Transform;
 
@@ -95,7 +96,11 @@ public class SlotProperty implements ModuleProperty {
         return true;
     }
 
-    public class ModuleSlot{
+    public static class ModuleSlot{
+        public ModuleSlot(List<String> allowedList){
+            this.allowed = allowedList;
+            id = 0;
+        }
         public List<String> allowed = new ArrayList<>();
         public Transform transform = Transform.IDENTITY;
         @Nullable

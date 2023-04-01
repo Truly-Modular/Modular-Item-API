@@ -19,20 +19,20 @@ public class ReplaceView extends InteractAbleWidget {
         BoxList list = new BoxList(x, y, width, height - 11, Text.empty(), new ArrayList<>());
         addChild(list);
         list.children().clear();
-        SimpleButton backButton = new SimpleButton(this.x + 2, this.y + this.height - 10, 20, 10, Text.literal("Edit"), slot.parent, (instance2) -> {
+        SimpleButton backButton = new SimpleButton<>(this.x + 2, this.y + this.height - 10, 20, 10, Text.literal("Edit"), slot.parent, (instance2) -> {
             Miapi.LOGGER.error("clickedBack2");
             back.accept(slot.parent);
         });
         addChild(backButton);
-        SimpleButton noModule = new SimpleButton(this.x + this.width - 80, this.y + this.height - 10, 20, 10, Text.literal("no Module"), null, (module) -> {
+        SimpleButton noModule = new SimpleButton<>(this.x + this.width - 80, this.y + this.height - 10, 20, 10, Text.literal("no Module"), null, (module) -> {
             craft.accept((ItemModule) module);
         });
         ArrayList<ClickableWidget> toList = new ArrayList<>();
         toList.add(noModule);
         AllowedSlots.allowedIn(slot).forEach(module -> {
-            toList.add(new SimpleButton(0, 0, this.width - 10, 10, Text.literal(module.getName()), module, (replaceModule) -> {
+            toList.add(new SimpleButton<>(0, 0, this.width - 10, 10, Text.literal(module.getName()), module, (replaceModule) -> {
                 Miapi.LOGGER.error("clicked Craft");
-                craft.accept((ItemModule) replaceModule);
+                craft.accept( replaceModule);
             }));
         });
         list.setWidgets(toList,1);

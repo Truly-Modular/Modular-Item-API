@@ -61,6 +61,12 @@ public class ModuleCrafter extends InteractAbleWidget {
                     Miapi.LOGGER.error("toEdit");
                     setMode(Mode.EDIT);
                 }, (test) -> {
+                    if(test==null){
+                        List<String> allowed = new ArrayList<>();
+                        allowed.add("");
+                        allowed.add("melee");
+                        test = new SlotProperty.ModuleSlot(allowed);
+                    }
                     slot = test;
                     Miapi.LOGGER.error(test.toString());
                     Miapi.LOGGER.error("toReplace");
@@ -112,9 +118,9 @@ public class ModuleCrafter extends InteractAbleWidget {
 
     private void renderBackground(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         //RENDER Selected Module Top
-        String moduleName = "No Module Selected";
+        Text moduleName = Text.literal("No Module selected");
         if (selected != null) {
-            moduleName = selected.module.getName();
+            moduleName = Text.translatable(Miapi.MOD_ID+".module."+selected.module.getName());
         }
         //drawSquareBorder(matrices,this.x,this.y,this.width,16,2,9145227);
         drawSquareBorder(matrices, this.x, this.y, this.width, 15, 2, ColorHelper.Argb.getArgb(255, 139, 139, 139));

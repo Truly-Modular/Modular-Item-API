@@ -26,6 +26,10 @@ public class Crafter {
             ItemModule.ModuleInstance oldBaseModule = ModularItem.getModules(old);
             ItemModule.ModuleInstance instance = slot.parent;
             ItemModule.ModuleInstance newBaseModule = ItemModule.ModuleInstance.fromString(oldBaseModule.toString());
+            if(slot.parent==null){
+                replaceStack.getNbt().putString("modules", generateNew(toAdd).toString());
+                return replaceStack;
+            }
             List<Integer> location = new ArrayList<>();
             while (instance.parent != null) {
                 int slotNumber = SlotProperty.getSlotNumberIn(instance);
@@ -42,15 +46,20 @@ public class Crafter {
             if (toAdd == null) {
                 parsingInstance.subModules.remove(slot.id);
             } else {
-                parsingInstance.subModules.put(slot.id, new ItemModule.ModuleInstance(toAdd));
-                toAdd.getProperties().forEach((propertyId,propertyData)->{
-                    if(Miapi.modulePropertyRegistry.get(propertyId) instanceof CraftingProperty craftingProperty){
-                        //Crafting Logic
-                    }
-                });
+                parsingInstance.subModules.put(slot.id, generateNew(toAdd));
             }
             replaceStack.getNbt().putString("modules", newBaseModule.toString());
         }
         return replaceStack;
+    }
+
+    private static ItemModule.ModuleInstance generateNew(ItemModule module){
+        ItemModule.ModuleInstance generated = new ItemModule.ModuleInstance(module);
+        module.getProperties().forEach((propertyId,propertyData)->{
+            if(Miapi.modulePropertyRegistry.get(propertyId) instanceof CraftingProperty craftingProperty){
+                //Crafting Logic
+            }
+        });
+        return generated;
     }
 }

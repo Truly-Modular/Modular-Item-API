@@ -48,29 +48,23 @@ public class DetailView extends InteractAbleWidget {
     private void update() {
         list.children().clear();
         List<ClickableWidget> boxList = new ArrayList<>();
-        SimpleButton editButton = new SimpleButton(this.x + this.width - 80, this.y + this.height - 10, 20, 10, Text.literal("Edit"), selected, (instance) -> {
+        this.addChild(new SimpleButton<>(this.x + this.width - 80, this.y + this.height - 10, 20, 10, Text.literal("Edit"), selected, (instance) -> {
             Miapi.LOGGER.error("clickedEdit2");
-            edit.accept((ItemModule.ModuleInstance) instance);
-        });
-        SimpleButton replaceButton = new SimpleButton(this.x + this.width - 55, this.y + this.height - 10, 50, 10, Text.literal("Replace"), selected, (instance) -> {
-            replace.accept(SlotProperty.getSlotIn((ItemModule.ModuleInstance) instance));
-        });
-        this.addChild(editButton);
-        this.addChild(replaceButton);
+            edit.accept(instance);
+        }));
+        this.addChild(
+                new SimpleButton<>(this.x + this.width - 55, this.y + this.height - 10, 50, 10, Text.literal("Replace"), selected, (instance) -> {
+                    replace.accept(SlotProperty.getSlotIn((ItemModule.ModuleInstance) instance));
+                }));
         if (selected.parent != null) {
-            boxList.add(new SimpleButton(0, 0, this.width - 10, 10,Text.literal(selected.parent.toString()),selected.parent, (newInstance)->{
-                setSelected((ItemModule.ModuleInstance) newInstance);
-            }));
+            boxList.add(new SimpleButton<>(0, 0, this.width - 10, 10, Text.translatable(Miapi.MOD_ID+".module."+selected.parent.module.getName()), selected.parent, this::setSelected));
         }
         SlotProperty.getSlots(selected).forEach((integer, moduleSlot) -> {
-            if(moduleSlot.inSlot!=null){
-                boxList.add(new SimpleButton(0, 0, this.width - 10, 10,Text.literal(moduleSlot.inSlot.toString()),moduleSlot.inSlot, (newInstance)->{
-                    setSelected((ItemModule.ModuleInstance) newInstance);
-                }));
-            }
-            else{
-                boxList.add(new SimpleButton(0, 0, this.width - 10, 10,Text.literal("Empty Slot"),moduleSlot, (slot)->{
-                    replace.accept((SlotProperty.ModuleSlot) slot);
+            if (moduleSlot.inSlot != null) {
+                boxList.add(new SimpleButton<>(0, 0, this.width - 10, 10, Text.translatable(Miapi.MOD_ID+".module."+moduleSlot.inSlot.module.getName()), moduleSlot.inSlot, this::setSelected));
+            } else {
+                boxList.add(new SimpleButton<>(0, 0, this.width - 10, 10, Text.literal("Empty Slot"), moduleSlot, (slot) -> {
+                    replace.accept(slot);
                 }));
             }
         });

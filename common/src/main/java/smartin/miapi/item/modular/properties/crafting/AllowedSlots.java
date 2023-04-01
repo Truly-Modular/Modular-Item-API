@@ -3,6 +3,7 @@ package smartin.miapi.item.modular.properties.crafting;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.reflect.TypeToken;
+import smartin.miapi.Miapi;
 import smartin.miapi.datapack.ReloadEvent;
 import smartin.miapi.item.modular.ItemModule;
 import smartin.miapi.item.modular.ModularItem;
@@ -35,7 +36,6 @@ public class AllowedSlots implements ModuleProperty {
     }
 
     public static List<String> getAllowedSlots(ItemModule module){
-        List<String> slots = new ArrayList<>();
         JsonElement data = module.getProperties().get(key);
         Gson gson = new Gson();
         Type type = new TypeToken<List<String>>(){}.getType();
@@ -50,6 +50,7 @@ public class AllowedSlots implements ModuleProperty {
                 allowedModules.addAll(allowedInMap.get(allowedKey));
             }
         });
+        Miapi.LOGGER.error(String.valueOf(allowedModules.size()));
         return allowedModules;
     }
 

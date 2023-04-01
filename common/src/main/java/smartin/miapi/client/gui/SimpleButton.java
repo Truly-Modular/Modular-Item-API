@@ -11,9 +11,9 @@ import smartin.miapi.Miapi;
 
 import java.util.function.Consumer;
 
-public class SimpleButton extends InteractAbleWidget {
-    private Object toCallback;
-    private Consumer<Object> callback;
+public class SimpleButton<T> extends InteractAbleWidget {
+    private T toCallback;
+    private Consumer<T> callback;
 
     /**
      * This is a Widget build to support Children and parse the events down to them.
@@ -29,7 +29,7 @@ public class SimpleButton extends InteractAbleWidget {
      *               These for Params above are used to create feedback on isMouseOver() by default
      * @param title
      */
-    public SimpleButton(int x, int y, int width, int height, Text title, Object toCallBack, Consumer<Object> callback) {
+    public SimpleButton(int x, int y, int width, int height, Text title, T toCallBack, Consumer<T> callback) {
         super(x, y, width, height, title);
         this.toCallback = toCallBack;
         this.callback = callback;
