@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "miapi",
+  "version": "${version}",
+  "name": "Truly Modular",
+  "description": "Modular Item Api",
+  "authors": [
+    "Smartin"
+  ],
+  "contact": {},
+  "license": "All-Rights-Reserved",
+  "icon": "icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "smartin.miapi.fabric.TrulyModularFabric"
+    ]
+  },
+  "mixins": [
+    "miapi.mixins.json",
+    "miapi-common.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.14.17",
+    "minecraft": ">=1.19.2"
+  }
+}
