@@ -1,5 +1,6 @@
 package smartin.miapi.client.gui;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
@@ -197,11 +198,13 @@ public abstract class ParentHandledScreen<T extends ScreenHandler> extends Handl
      *              This is needed for animations and co
      */
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta){
+        super.render(matrices,mouseX,mouseY,delta);
+        RenderSystem.applyModelViewMatrix();
+        RenderSystem.disableDepthTest();
         children().forEach(element -> {
             if(element instanceof Drawable drawable){
                 drawable.render(matrices,mouseX,mouseY,delta);
             }
         });
-        //super.render(matrices,mouseX,mouseY,delta);
     }
 }

@@ -41,8 +41,10 @@ public class CraftingGUI extends ParentHandledScreen<CraftingScreenHandler> impl
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         this.drawBackground(matrices,delta, mouseX, mouseY);
-        this.drawMouseoverTooltip(matrices, mouseX, mouseY);
         super.render(matrices, mouseX, mouseY, delta);
+        RenderSystem.disableDepthTest();
+        this.drawMouseoverTooltip(matrices, mouseX, mouseY);
+        RenderSystem.enableDepthTest();
     }
 
     @Override

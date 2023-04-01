@@ -38,6 +38,8 @@ public class SlotProperty implements ModuleProperty {
             //need to set Inslot as well here
             slots.forEach((number,slot)->{
                 slot.inSlot = instance.subModules.get(number);
+                slot.parent = instance;
+                slot.id = number;
             });
             return slots;
         }
@@ -98,5 +100,7 @@ public class SlotProperty implements ModuleProperty {
         public Transform transform = Transform.IDENTITY;
         @Nullable
         public ItemModule.ModuleInstance inSlot;
+        public ItemModule.ModuleInstance parent;
+        public int id;
     }
 }

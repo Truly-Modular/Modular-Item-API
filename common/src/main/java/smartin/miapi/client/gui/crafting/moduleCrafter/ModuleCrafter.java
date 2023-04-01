@@ -13,6 +13,7 @@ import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.BoxList;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.item.modular.ItemModule;
+import smartin.miapi.item.modular.properties.SlotProperty;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +25,7 @@ public class ModuleCrafter extends InteractAbleWidget {
     private ItemModule module;
     private Mode mode = Mode.DETAIL;
     private ItemModule.ModuleInstance selected;
+    private SlotProperty.ModuleSlot slot;
     private List<Consumer<ItemModule.ModuleInstance>> callbacks = new ArrayList<>();
 
     public ModuleCrafter(int x, int y, int width, int height) {
@@ -59,6 +61,8 @@ public class ModuleCrafter extends InteractAbleWidget {
                     Miapi.LOGGER.error("toEdit");
                     setMode(Mode.EDIT);
                 }, (test) -> {
+                    slot = test;
+                    Miapi.LOGGER.error(test.toString());
                     Miapi.LOGGER.error("toReplace");
                     setMode(Mode.REPLACE);
                 });
@@ -68,7 +72,7 @@ public class ModuleCrafter extends InteractAbleWidget {
             }
             case CRAFT -> {
                 Miapi.LOGGER.error("craft");
-                CraftView craftView = new CraftView(this.x, this.y + 18, this.width, this.height - 38, module, stack, selected, (replaceItem) -> {
+                CraftView craftView = new CraftView(this.x, this.y + 18, this.width, this.height - 38, module, stack, slot, (replaceItem) -> {
                     Miapi.server.getPlayerManager().getPlayerList().forEach(player -> {
                         player.getInventory().setStack(2, replaceItem);
                     });
@@ -84,7 +88,7 @@ public class ModuleCrafter extends InteractAbleWidget {
             case REPLACE -> {
                 Miapi.LOGGER.error("replace");
                 this.children.clear();
-                ReplaceView view = new ReplaceView(this.x, this.y + 18, this.width, this.height - 38, this.selected, (instance) -> {
+                ReplaceView view = new ReplaceView(this.x, this.y + 18, this.width, this.height - 38, slot, (instance) -> {
                     Miapi.LOGGER.error("back");
                     setMode(Mode.DETAIL);
                 }, (module -> {

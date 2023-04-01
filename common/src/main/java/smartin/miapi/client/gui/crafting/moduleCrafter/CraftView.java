@@ -6,6 +6,7 @@ import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.BoxList;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.SimpleButton;
+import smartin.miapi.craft.Crafter;
 import smartin.miapi.item.modular.ItemModule;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.cache.ModularItemCache;
@@ -29,14 +30,13 @@ public class CraftView extends InteractAbleWidget {
      * @param height the height
      *               These for Params above are used to create feedback on isMouseOver() by default
      */
-    public CraftView(int x, int y, int width, int height, ItemModule module, ItemStack stack, ItemModule.ModuleInstance instance, Consumer<ItemStack> newStack) {
+    public CraftView(int x, int y, int width, int height, ItemModule module, ItemStack stack, SlotProperty.ModuleSlot slot, Consumer<ItemStack> newStack) {
         super(x, y, width, height, Text.empty());
-        SlotProperty.ModuleSlot slot = SlotProperty.getSlotIn(instance);
         BoxList list = new BoxList(x, y, width, height - 11, Text.empty(), new ArrayList<>());
         addChild(list);
         list.children().clear();
         SimpleButton craftButton = new SimpleButton(this.x + this.width - 80, this.y + this.height - 10, 20, 10, Text.literal("Craft"), null, (instance2) -> {
-            newStack.accept(craft(stack, slot, module, instance));
+            newStack.accept(Crafter.craft(stack,slot,module));
         });
         addChild(craftButton);
     }

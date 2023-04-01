@@ -293,11 +293,9 @@ public class SlotDisplay extends InteractAbleWidget {
         public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
             RenderSystem.depthFunc(GL11.GL_ALWAYS);
             RenderSystem.depthMask(false);
-            RenderSystem.clearDepth(1);
             this.renderButton(matrices, mouseX, mouseY, delta);
             RenderSystem.depthFunc(GL11.GL_ALWAYS);
             RenderSystem.depthMask(true);
-            RenderSystem.clearDepth(1);
         }
 
         public boolean mouseClicked(double mouseX, double mouseY, int button) {

@@ -14,20 +14,19 @@ import java.util.ArrayList;
 import java.util.function.Consumer;
 
 public class ReplaceView extends InteractAbleWidget {
-    public ReplaceView(int x, int y, int width, int height, ItemModule.ModuleInstance instance, Consumer<ItemModule.ModuleInstance> back, Consumer<ItemModule> craft) {
+    public ReplaceView(int x, int y, int width, int height, SlotProperty.ModuleSlot slot, Consumer<ItemModule.ModuleInstance> back, Consumer<ItemModule> craft) {
         super(x, y, width, height, Text.empty());
         BoxList list = new BoxList(x, y, width, height - 11, Text.empty(), new ArrayList<>());
         addChild(list);
         list.children().clear();
-        SimpleButton backButton = new SimpleButton(this.x + 2, this.y + this.height - 10, 20, 10, Text.literal("Edit"), instance, (instance2) -> {
+        SimpleButton backButton = new SimpleButton(this.x + 2, this.y + this.height - 10, 20, 10, Text.literal("Edit"), slot.parent, (instance2) -> {
             Miapi.LOGGER.error("clickedBack2");
-            back.accept(instance);
+            back.accept(slot.parent);
         });
         addChild(backButton);
         SimpleButton noModule = new SimpleButton(this.x + this.width - 80, this.y + this.height - 10, 20, 10, Text.literal("no Module"), null, (module) -> {
             craft.accept((ItemModule) module);
         });
-        SlotProperty.ModuleSlot slot = SlotProperty.getSlotIn(instance);
         ArrayList<ClickableWidget> toList = new ArrayList<>();
         toList.add(noModule);
         AllowedSlots.allowedIn(slot).forEach(module -> {
