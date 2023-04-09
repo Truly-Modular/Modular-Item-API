@@ -20,6 +20,7 @@ import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
 import smartin.miapi.datapack.ReloadEvent;
 import smartin.miapi.datapack.ReloadListener;
 import smartin.miapi.datapack.SpriteLoader;
+import smartin.miapi.item.modular.ItemModule;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.properties.ModuleProperty;
 import smartin.miapi.item.modular.properties.NameProperty;
@@ -34,6 +35,7 @@ public class Miapi {
     public static final String MOD_ID = "miapi";
     public static final Logger LOGGER = LoggerFactory.getLogger("ModularItem API");
     public static final MiapiRegistry<ModuleProperty> modulePropertyRegistry = MiapiRegistry.getInstance(ModuleProperty.class);
+    public static final MiapiRegistry<ItemModule> moduleRegistry = MiapiRegistry.getInstance(ItemModule.class);
     public static final MiapiRegistry<Item> itemRegistry = MiapiRegistry.getInstance(Item.class);
     public static final Item modularItem = new ModularItem();
     public static final Identifier modularItemIdentifier = new Identifier(MOD_ID, "modular_item");

@@ -1,4 +1,4 @@
-package smartin.miapi.client.gui.crafting.moduleCrafter;
+package smartin.miapi.client.gui.crafting.moduleCrafterv1;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;

@@ -1,4 +1,4 @@
-package smartin.miapi.client.gui.crafting.moduleCrafter;
+package smartin.miapi.client.gui.crafting.moduleCrafterv1;
 
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.text.Text;

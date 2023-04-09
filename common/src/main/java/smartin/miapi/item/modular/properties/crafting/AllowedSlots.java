@@ -18,7 +18,7 @@ public class AllowedSlots implements ModuleProperty {
     static HashMap<String, Set<ItemModule>> allowedInMap = new HashMap<>();
 
     public AllowedSlots(){
-        ModularItem.moduleRegistry.addCallback(itemModule -> {
+        Miapi.moduleRegistry.addCallback(itemModule -> {
             getAllowedSlots(itemModule).forEach(slot -> {
                 if(allowedInMap.containsKey(slot)){
                     allowedInMap.get(slot).add(itemModule);

@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 public class ItemModule {
-    public static final MiapiRegistry<ItemModule> moduleRegistry = MiapiRegistry.getInstance(ItemModule.class);
+    private static final MiapiRegistry<ItemModule> moduleRegistry = MiapiRegistry.getInstance(ItemModule.class);
     private final String name;
     private final Map<String, JsonElement> properties;
 

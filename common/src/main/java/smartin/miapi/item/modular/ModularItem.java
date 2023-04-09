@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 public class ModularItem extends Item {
-    public static final MiapiRegistry<ItemModule> moduleRegistry = MiapiRegistry.getInstance(ItemModule.class);
+    private static final MiapiRegistry<ItemModule> moduleRegistry = MiapiRegistry.getInstance(ItemModule.class);
     protected static final String moduleKey = "modules";
     protected static final String propertyKey = "rawProperties";
 

@@ -26,7 +26,6 @@ public class ClientInit {
     }
 
     public static NamedScreenHandlerFactory test(){
-        //return Miapi.CRAFTING_SCREEN_HANDLER.create(213213,MinecraftClient.getInstance().player.getInventory());
         Miapi.LOGGER.warn("opening 2");
         Text text = Text.literal("test");
         return new SimpleNamedScreenHandlerFactory( (syncId, inventory, player) -> {

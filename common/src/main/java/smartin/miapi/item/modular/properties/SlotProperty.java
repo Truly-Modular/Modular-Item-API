@@ -4,15 +4,11 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.reflect.TypeToken;
 import org.jetbrains.annotations.Nullable;
-import smartin.miapi.client.gui.crafting.moduleCrafter.ModuleCrafter;
 import smartin.miapi.item.modular.ItemModule;
 import smartin.miapi.item.modular.Transform;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class SlotProperty implements ModuleProperty {
@@ -27,6 +23,17 @@ public class SlotProperty implements ModuleProperty {
             current = current.parent;
             mergedTransform = Transform.merge(getLocalTransform(current),mergedTransform);
         }
+        return mergedTransform;
+    }
+
+    public static Transform getTransform(ModuleSlot moduleSlot){
+        ItemModule.ModuleInstance current = moduleSlot.parent;
+        Transform mergedTransform = Transform.IDENTITY;
+        while(current!=null){
+            mergedTransform = Transform.merge(getLocalTransform(current),mergedTransform);
+            current = current.parent;
+        }
+        mergedTransform = Transform.merge(mergedTransform,moduleSlot.transform);
         return mergedTransform;
     }
 
@@ -60,6 +67,7 @@ public class SlotProperty implements ModuleProperty {
         }
         return 0;
     }
+
     public static Transform getLocalTransform(ItemModule.ModuleInstance instance){
         JsonElement test = instance.module.getProperties().get(key);
         if(test!=null){
@@ -107,5 +115,37 @@ public class SlotProperty implements ModuleProperty {
         public ItemModule.ModuleInstance inSlot;
         public ItemModule.ModuleInstance parent;
         public int id;
+
+        @Override
+        public boolean equals(Object object) {
+            if (object instanceof ModuleSlot slot) {
+                if (this.parent == null && slot.parent != null) {
+                    return false;
+                }
+                if (this.parent != null && !this.parent.equals(slot.parent)) {
+                    return false;
+                }
+                if (this.inSlot == null && slot.inSlot != null) {
+                    return false;
+                }
+                if (this.inSlot != null && !this.inSlot.equals(slot.inSlot)) {
+                    return false;
+                }
+                if (this.allowed == null && slot.allowed != null) {
+                    return false;
+                }
+                if (this.allowed != null) {
+                    List<String> sortedAllowed = new ArrayList<>(this.allowed);
+                    Collections.sort(sortedAllowed);
+                    List<String> sortedOtherAllowed = new ArrayList<>(slot.allowed);
+                    Collections.sort(sortedOtherAllowed);
+                    if (!sortedAllowed.equals(sortedOtherAllowed)) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+            return false;
+        }
     }
 }

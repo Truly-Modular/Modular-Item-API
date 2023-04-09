@@ -1,4 +1,4 @@
-package smartin.miapi.client.gui.crafting.moduleCrafter;
+package smartin.miapi.client.gui.crafting.moduleCrafterv1;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
@@ -23,73 +23,72 @@ public class ModuleCrafter extends InteractAbleWidget {
     public BoxList list;
     private ItemStack stack;
     private ItemModule module;
-    private Mode mode = Mode.DETAIL;
-    private ItemModule.ModuleInstance selected;
     private SlotProperty.ModuleSlot slot;
-    private List<Consumer<ItemModule.ModuleInstance>> callbacks = new ArrayList<>();
+    private final Consumer<ItemStack> craftedItem;
+    private final Consumer<SlotProperty.ModuleSlot> selectedSlot;
+    private static final Identifier BACKGROUND_TEXTURE = new Identifier(Miapi.MOD_ID, "textures/crafting_gui_background_black.png");
 
-    public ModuleCrafter(int x, int y, int width, int height) {
-
+    public ModuleCrafter(int x, int y, int width, int height, Consumer<SlotProperty.ModuleSlot> selected, Consumer<ItemStack> craftedItem) {
         super(x, y, width, height, Text.empty());
         //set Header, current Module Selected
         List<ClickableWidget> widgets = new ArrayList<>();
+        this.craftedItem = craftedItem;
+        this.selectedSlot = selected;
 
         list = new BoxList(this.x, this.y + 18, this.width, this.height - 38, Text.empty(), widgets);
         list.setSpace(1);
         this.addChild(list);
     }
 
-    public void registerCallBack(Consumer<ItemModule.ModuleInstance> callback) {
-        callbacks.add(callback);
-    }
-
     public void setItem(ItemStack stack) {
         this.stack = stack;
     }
 
-    public void select(ItemModule.ModuleInstance instance) {
-        this.selected = instance;
+    public void setSelectedSlot(SlotProperty.ModuleSlot instance) {
+        slot = instance;
         setMode(Mode.DETAIL);
     }
 
+    private void selectSlot(SlotProperty.ModuleSlot slot) {
+        selectedSlot.accept(slot);
+        setSelectedSlot(slot);
+    }
+
     public void setMode(Mode mode) {
-        this.mode = mode;
         switch (mode) {
             case DETAIL -> {
                 this.children().clear();
-                DetailView detailView = new DetailView(this.x, this.y + 18, this.width, this.height - 38, this.selected, (test) -> {
-                    Miapi.LOGGER.error("toEdit");
-                    setMode(Mode.EDIT);
-                }, (test) -> {
-                    if(test==null){
+                DetailView detailView = new DetailView(this.x, this.y + 18, this.width, this.height - 38, this.slot,
+                        this::selectSlot,
+                        toEdit -> {
+                            setMode(Mode.EDIT);
+                        },
+                        toReplace -> {
+                    if (toReplace == null) {
                         List<String> allowed = new ArrayList<>();
                         allowed.add("");
                         allowed.add("melee");
-                        test = new SlotProperty.ModuleSlot(allowed);
+                        toReplace = new SlotProperty.ModuleSlot(allowed);
                     }
-                    slot = test;
-                    Miapi.LOGGER.error(test.toString());
+                    slot = toReplace;
+                    Miapi.LOGGER.error(toReplace.toString());
                     Miapi.LOGGER.error("toReplace");
                     setMode(Mode.REPLACE);
                 });
-                detailView.registerCallBack(this::setSelected);
-                this.registerCallBack(detailView::select);
                 this.children.add(detailView);
             }
             case CRAFT -> {
                 Miapi.LOGGER.error("craft");
                 CraftView craftView = new CraftView(this.x, this.y + 18, this.width, this.height - 38, module, stack, slot, (replaceItem) -> {
                     Miapi.server.getPlayerManager().getPlayerList().forEach(player -> {
-                        player.getInventory().setStack(2, replaceItem);
+                        craftedItem.accept(replaceItem);
                     });
                 });
                 this.children().clear();
                 this.addChild(craftView);
-                break;
             }
             case EDIT -> {
                 Miapi.LOGGER.error("edit");
-                break;
             }
             case REPLACE -> {
                 Miapi.LOGGER.error("replace");
@@ -103,28 +102,25 @@ public class ModuleCrafter extends InteractAbleWidget {
                     setMode(Mode.CRAFT);
                 }));
                 addChild(view);
-                break;
             }
         }
-    }
-
-    private void setSelected(ItemModule.ModuleInstance instance) {
-        this.selected = instance;
-        callbacks.forEach(callback -> {
-            callback.accept(instance);
-        });
-        setMode(Mode.DETAIL);
     }
 
     private void renderBackground(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         //RENDER Selected Module Top
         Text moduleName = Text.literal("No Module selected");
-        if (selected != null) {
-            moduleName = Text.translatable(Miapi.MOD_ID+".module."+selected.module.getName());
+        try{
+            moduleName = Text.translatable(Miapi.MOD_ID + ".module." + slot.inSlot.module.getName());
+        } catch (Exception e){
+
         }
         //drawSquareBorder(matrices,this.x,this.y,this.width,16,2,9145227);
         drawSquareBorder(matrices, this.x, this.y, this.width, 15, 2, ColorHelper.Argb.getArgb(255, 139, 139, 139));
         MinecraftClient.getInstance().textRenderer.draw(matrices, moduleName, this.x + 4, this.y + 4, ColorHelper.Argb.getArgb(255, 59, 59, 59));
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+        RenderSystem.setShaderTexture(0, BACKGROUND_TEXTURE);
+        //this.drawTexture(matrices, this.x, this.y, 0, 0, this.width, this.height);
         //drawText
     }
 
