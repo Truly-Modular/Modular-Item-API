@@ -1,12 +1,10 @@
 package smartin.miapi.client.gui;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
-import smartin.miapi.Miapi;
 
 public class ScrollingTextWidget extends InteractAbleWidget implements Drawable, Element {
 
@@ -25,6 +23,10 @@ public class ScrollingTextWidget extends InteractAbleWidget implements Drawable,
      * The delay in seconds when reached the end of the message
      */
     public float scrollHoldTime = 2.0f;
+    /**
+     * Extra time for the first Letter to increase readability
+     */
+    public float firstLetterExtraTime = 1.0f;
 
     /**
      * This is a Text that fits within its bounds and slowly scrolls through the Text
@@ -47,6 +49,7 @@ public class ScrollingTextWidget extends InteractAbleWidget implements Drawable,
     public void setText(Text text) {
         this.text = text;
         scrollPosition = 0;
+        timer = -firstLetterExtraTime;
     }
 
     /**
@@ -61,19 +64,18 @@ public class ScrollingTextWidget extends InteractAbleWidget implements Drawable,
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         super.render(matrices, mouseX, mouseY, delta);
 
-        String displayText = this.text.getString().trim(); // trim any excess whitespace
+        String displayText = this.text.getString().trim();
 
         int textWidth = MinecraftClient.getInstance().textRenderer.getWidth(displayText);
-        Miapi.LOGGER.error(" textWidth " + textWidth + " width " + width + " timer " + timer + " pos " + scrollPosition);
 
         if (textWidth <= this.width) {
             // text fits within available space, no scrolling needed
-            this.drawTextWithShadow(matrices, MinecraftClient.getInstance().textRenderer, this.text, this.x, this.y, this.textColor);
+            drawTextWithShadow(matrices, MinecraftClient.getInstance().textRenderer, this.text, this.x, this.y, this.textColor);
             return;
         }
 
         // enable scissor box
-        enableScissor(this.x, this.y, this.x + this.width, this.y + this.height);
+        //enableScissor(this.x, this.y, this.x + this.width, this.y + this.height);
 
         displayText = displayText.substring(scrollPosition);
 
@@ -81,7 +83,7 @@ public class ScrollingTextWidget extends InteractAbleWidget implements Drawable,
 
         if(textWidth <= this.width){
             if(timer > scrollHoldTime){
-                timer = 0;
+                timer = -firstLetterExtraTime;
                 scrollPosition = 0;
 
             }
@@ -94,11 +96,8 @@ public class ScrollingTextWidget extends InteractAbleWidget implements Drawable,
         }
 
         timer += delta / 20;
+        displayText = MinecraftClient.getInstance().textRenderer.trimToWidth(displayText,this.width);
 
-        this.drawTextWithShadow(matrices, MinecraftClient.getInstance().textRenderer, Text.of(displayText), this.x, this.y, this.textColor);
-
-        // disable scissor box
-        disableScissor();
-        RenderSystem.disableScissor();
+        drawTextWithShadow(matrices, MinecraftClient.getInstance().textRenderer, Text.of(displayText), this.x, this.y, this.textColor);
     }
 }

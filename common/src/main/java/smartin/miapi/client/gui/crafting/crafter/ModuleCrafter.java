@@ -1,4 +1,4 @@
-package smartin.miapi.client.gui.crafting.moduleCrafterv1;
+package smartin.miapi.client.gui.crafting.crafter;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
@@ -13,7 +13,9 @@ import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.BoxList;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.item.modular.ItemModule;
+import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.properties.SlotProperty;
+import smartin.miapi.item.modular.properties.crafting.AllowedSlots;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +28,7 @@ public class ModuleCrafter extends InteractAbleWidget {
     private SlotProperty.ModuleSlot slot;
     private final Consumer<ItemStack> craftedItem;
     private final Consumer<SlotProperty.ModuleSlot> selectedSlot;
+    private SlotProperty.ModuleSlot baseSlot = new SlotProperty.ModuleSlot(new ArrayList<>());
     private static final Identifier BACKGROUND_TEXTURE = new Identifier(Miapi.MOD_ID, "textures/crafting_gui_background_black.png");
 
     public ModuleCrafter(int x, int y, int width, int height, Consumer<SlotProperty.ModuleSlot> selected, Consumer<ItemStack> craftedItem) {
@@ -58,31 +61,29 @@ public class ModuleCrafter extends InteractAbleWidget {
         switch (mode) {
             case DETAIL -> {
                 this.children().clear();
-                DetailView detailView = new DetailView(this.x, this.y + 18, this.width, this.height - 38, this.slot,
-                        this::selectSlot,
+                baseSlot.inSlot = ModularItem.getModules(stack);
+                DetailView detailView = new DetailView(this.x, this.y + 18, this.width, this.height - 38, this.baseSlot, this.slot,
                         toEdit -> {
                             setMode(Mode.EDIT);
                         },
                         toReplace -> {
-                    if (toReplace == null) {
-                        List<String> allowed = new ArrayList<>();
-                        allowed.add("");
-                        allowed.add("melee");
-                        toReplace = new SlotProperty.ModuleSlot(allowed);
-                    }
-                    slot = toReplace;
-                    Miapi.LOGGER.error(toReplace.toString());
-                    Miapi.LOGGER.error("toReplace");
-                    setMode(Mode.REPLACE);
-                });
+                            if (toReplace == null) {
+                                List<String> allowed = new ArrayList<>();
+                                allowed.add("");
+                                allowed.add("melee");
+                                toReplace = new SlotProperty.ModuleSlot(allowed);
+                            }
+                            slot = toReplace;
+                            setMode(Mode.REPLACE);
+                        });
                 this.children.add(detailView);
             }
             case CRAFT -> {
                 Miapi.LOGGER.error("craft");
-                CraftView craftView = new CraftView(this.x, this.y + 18, this.width, this.height - 38, module, stack, slot, (replaceItem) -> {
-                    Miapi.server.getPlayerManager().getPlayerList().forEach(player -> {
-                        craftedItem.accept(replaceItem);
-                    });
+                CraftView craftView = new CraftView(this.x, this.y + 18, this.width, this.height - 38, module, stack, slot, (backSlot) -> {
+                    setSelectedSlot(backSlot);
+                }, (replaceItem) -> {
+                    craftedItem.accept(replaceItem);
                 });
                 this.children().clear();
                 this.addChild(craftView);
@@ -95,7 +96,7 @@ public class ModuleCrafter extends InteractAbleWidget {
                 this.children.clear();
                 ReplaceView view = new ReplaceView(this.x, this.y + 18, this.width, this.height - 38, slot, (instance) -> {
                     Miapi.LOGGER.error("back");
-                    setMode(Mode.DETAIL);
+                    setSelectedSlot(instance);
                 }, (module -> {
                     Miapi.LOGGER.error("CraftModule");
                     this.module = module;
@@ -108,10 +109,10 @@ public class ModuleCrafter extends InteractAbleWidget {
 
     private void renderBackground(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         //RENDER Selected Module Top
-        Text moduleName = Text.literal("No Module selected");
-        try{
+        Text moduleName = Text.translatable(Miapi.MOD_ID + ".module.empty");
+        try {
             moduleName = Text.translatable(Miapi.MOD_ID + ".module." + slot.inSlot.module.getName());
-        } catch (Exception e){
+        } catch (Exception e) {
 
         }
         //drawSquareBorder(matrices,this.x,this.y,this.width,16,2,9145227);

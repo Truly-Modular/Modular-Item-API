@@ -155,7 +155,13 @@ public class ItemModule {
                     subModule.parent = moduleInstance;
                 });
             }
+            else{
+                moduleInstance.subModules = new HashMap<>();
+            }
             moduleInstance.moduleData = new Gson().fromJson(jsonObject.get("moduleData"), new TypeToken<Map<String, String>>(){}.getType());
+            if(moduleInstance.moduleData==null){
+                moduleInstance.moduleData = new HashMap<>();
+            }
             return moduleInstance;
         }
     }

@@ -227,7 +227,6 @@ public class SlotDisplay extends InteractAbleWidget {
         public ModuleButton(int x, int y, int width, int height, SlotProperty.ModuleSlot instance) {
             super(x, y, width, height, Text.literal(" "));
             this.instance = instance;
-            Miapi.LOGGER.warn("new button");
         }
 
         private void setSelected(SlotProperty.ModuleSlot instance) {

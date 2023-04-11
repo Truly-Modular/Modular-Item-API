@@ -3,7 +3,7 @@ package smartin.miapi.client.gui;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
-import smartin.miapi.Miapi;
+import net.minecraft.util.math.ColorHelper;
 
 import java.util.List;
 
@@ -11,37 +11,39 @@ public class ScrollList extends InteractAbleWidget {
     private List<InteractAbleWidget> widgets;
     private int scrollAmount;
     private int maxScrollAmount;
+    /**
+     * Save mode is for Elements that might resize themselves on render() calls,
+     * it just calls render() twice to get its height first
+     */
+    public boolean saveMode = true;
 
-    public ScrollList(int x, int y, int width, int height, Text title) {
-        super(x, y, width, height, title);
+    public ScrollList(int x, int y, int width, int height, List<InteractAbleWidget> widgets) {
+        super(x, y, width, height, Text.empty());
         this.widgets = null;
         this.scrollAmount = 0;
         this.maxScrollAmount = 0;
+        setList(widgets);
     }
 
     public void setList(List<InteractAbleWidget> widgets) {
         this.widgets = widgets;
         this.children().clear();
-        //this.children().addAll(widgets);
-        updateMaxScrollAmount();
     }
 
-    private void updateMaxScrollAmount() {
+    @Override
+    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         int totalHeight = 0;
         for (ClickableWidget widget : this.widgets) {
             totalHeight += widget.getHeight();
         }
         this.maxScrollAmount = Math.max(0, totalHeight - this.height);
-    }
-
-    @Override
-    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        Miapi.LOGGER.error("renderingList"+widgets.size());
         if (this.widgets == null) {
             return;
         }
 
         this.scrollAmount = Math.max(0, Math.min(this.scrollAmount, this.maxScrollAmount));
+
+        boolean needsScrollbar = totalHeight>height;
 
         int startY = this.y + 1 - this.scrollAmount;
 
@@ -49,17 +51,59 @@ public class ScrollList extends InteractAbleWidget {
             if (startY + widget.getHeight() >= this.y && startY <= this.y + this.height - 1) {
                 widget.y = startY;
                 widget.x = this.x;
+                if(needsScrollbar){
+                    widget.setWidth(this.width-5);
+                }
+                else{
+                    widget.setWidth(this.width);
+                }
+                enableScissor(this.x,this.y,this.x+this.width,this.y+height);
                 widget.render(matrices,mouseX, mouseY, delta);
-                Miapi.LOGGER.warn("rendering widget"+widget.getMessage());
+                disableScissor();
             }
             startY += widget.getHeight();
         }
 
-        if (this.maxScrollAmount > 0) {
+        if (needsScrollbar) {
             int barHeight = Math.max(10, this.height * this.height / (this.maxScrollAmount + this.height));
             int barY = this.y + 1 + (int) ((this.height - barHeight - 2) * (float) this.scrollAmount / this.maxScrollAmount);
-            int barX = this.x + this.width - 6;
-            fill(matrices,barX, barY, barX + 5, barY + barHeight, 0xFFCCCCCC);
+            int barX = this.x + this.width - 5;
+            fill(matrices,barX , y, barX + 5, this.y+this.height, 0xFFCCCCCC);
+            fill(matrices,barX, barY, barX + 5, barY + barHeight, ColorHelper.Argb.getArgb(255,50,50,50));
+        }
+
+        if(saveMode){
+            totalHeight = 0;
+            for (ClickableWidget widget : this.widgets) {
+                totalHeight += widget.getHeight();
+            }
+            this.maxScrollAmount = Math.max(0, totalHeight - this.height);
+            if (this.widgets == null) {
+                return;
+            }
+
+            this.scrollAmount = Math.max(0, Math.min(this.scrollAmount, this.maxScrollAmount));
+
+            needsScrollbar = totalHeight>height;
+
+            startY = this.y + 1 - this.scrollAmount;
+
+            for (ClickableWidget widget : this.widgets) {
+                if (startY + widget.getHeight() >= this.y && startY <= this.y + this.height - 1) {
+                    widget.y = startY;
+                    widget.x = this.x;
+                    if(needsScrollbar){
+                        widget.setWidth(this.width-5);
+                    }
+                    else{
+                        widget.setWidth(this.width);
+                    }
+                    enableScissor(this.x,this.y,this.x+this.width,this.y+height);
+                    widget.render(matrices,mouseX, mouseY, delta);
+                    disableScissor();
+                }
+                startY += widget.getHeight();
+            }
         }
     }
 
@@ -119,9 +163,6 @@ public class ScrollList extends InteractAbleWidget {
             double y = this.y;
             double width = this.width;
             double height = this.height;
-            //if (this.hasScrollbar()) {
-            //    width -= 6;
-            //}
             return mouseX >= x && mouseY >= y && mouseX < x + width && mouseY < y + height;
         }
     }

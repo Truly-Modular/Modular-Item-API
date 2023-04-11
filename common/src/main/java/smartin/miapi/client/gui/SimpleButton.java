@@ -1,13 +1,11 @@
 package smartin.miapi.client.gui;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.ColorHelper;
 import org.lwjgl.opengl.GL11;
-import smartin.miapi.Miapi;
 
 import java.util.function.Consumer;
 
@@ -33,6 +31,7 @@ public class SimpleButton<T> extends InteractAbleWidget {
         super(x, y, width, height, title);
         this.toCallback = toCallBack;
         this.callback = callback;
+        this.addChild(new ScrollingTextWidget(x, y, width, title, ColorHelper.Argb.getArgb(255, 59, 59, 59)));
     }
 
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
@@ -41,13 +40,22 @@ public class SimpleButton<T> extends InteractAbleWidget {
         this.renderButton(matrices, mouseX, mouseY, delta);
         RenderSystem.depthFunc(GL11.GL_ALWAYS);
         RenderSystem.depthMask(true);
+        this.children().forEach(children->{
+            if(children instanceof InteractAbleWidget widget){
+                widget.x = this.x+2;
+                widget.y = Math.max(this.y,this.y+(this.height-9)/2);
+                widget.setWidth(this.width-4);
+            }
+        });
         super.render(matrices, mouseX, mouseY, delta);
     }
 
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        Miapi.LOGGER.warn("clickedBottomButton");
-        callback.accept(toCallback);
-        return true;
+        if(isMouseOver(mouseX,mouseY)){
+            callback.accept(toCallback);
+            return true;
+        }
+        return false;
     }
 
     public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
@@ -63,6 +71,5 @@ public class SimpleButton<T> extends InteractAbleWidget {
             color = ColorHelper.Argb.getArgb(255, 100, 100, 100);
         }
         drawSquareBorder(matrices, this.x, this.y, this.width, this.height, 1, color);
-        MinecraftClient.getInstance().textRenderer.draw(matrices, this.getMessage(), this.x + 2, this.y + 2, ColorHelper.Argb.getArgb(255, 59, 59, 59));
     }
 }

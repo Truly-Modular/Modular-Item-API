@@ -7,6 +7,7 @@ import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
+import smartin.miapi.Miapi;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -39,13 +40,14 @@ public class InteractAbleWidget extends ClickableWidget implements Drawable, Ele
 
     /**
      * This functions Renders a Square Border
+     *
      * @param matrices
-     * @param x top left Corner x
-     * @param y top Left Corner <
-     * @param width width of the square
-     * @param height height of the square
+     * @param x           top left Corner x
+     * @param y           top Left Corner <
+     * @param width       width of the square
+     * @param height      height of the square
      * @param borderWidth with of the border, border is drawn inwards
-     * @param color color of the border
+     * @param color       color of the border
      */
     public static void drawSquareBorder(MatrixStack matrices, int x, int y, int width, int height, int borderWidth, int color) {
         //Top
@@ -57,6 +59,66 @@ public class InteractAbleWidget extends ClickableWidget implements Drawable, Ele
         //Right
         fill(matrices, x + width, y, x + width - borderWidth, y + height, color);
     }
+
+
+    /**
+     * Draws a texture with an edge around its border. The texture can be limited to a portion of itself by specifying the
+     * coordinates (u, v) and (u2, regionHeigth).
+     * This is useful if a texture might be resized in the UI to still align its Edges
+     *
+     * @param matrices      The matrix stack to apply the transformation to.
+     * @param x             The x-coordinate to draw the texture at.
+     * @param y             The y-coordinate to draw the texture at.
+     * @param u             The x-coordinate of the top-left corner of the texture region to draw.
+     * @param v             The y-coordinate of the top-left corner of the texture region to draw.
+     * @param regionWidth   The x-coordinate of the bottom-right corner of the texture region to draw.
+     * @param regionHeight  The y-coordinate of the bottom-right corner of the texture region to draw.
+     * @param width         The width of the texture.
+     * @param height        The height of the texture.
+     * @param textureWidth  The width of the texture sheet.
+     * @param textureHeight The height of the texture sheet.
+     * @param borderWidth   The width of the border to draw around the texture.
+     */
+    public static void drawTextureWithEdge(MatrixStack matrices, int x, int y, int u, int v, int regionWidth, int regionHeight, int width, int height, int textureWidth, int textureHeight, int borderWidth) {
+        //Top Left Corner
+        drawTexture(matrices, x, y, borderWidth, borderWidth, u, v, borderWidth, borderWidth, textureWidth, textureHeight);
+        //Top Right Corner
+        drawTexture(matrices, x + width - borderWidth, y, borderWidth, borderWidth, u + regionWidth - borderWidth, v, borderWidth, borderWidth, textureWidth, textureHeight);
+        //Bottom Left Corner
+        drawTexture(matrices, x, y + height - borderWidth, borderWidth, borderWidth, u, v + regionHeight - borderWidth, borderWidth, borderWidth, textureWidth, textureHeight);
+        //Bottom Right Corner
+        drawTexture(matrices, x + width - borderWidth, y + height - borderWidth, borderWidth, borderWidth, u + regionWidth - borderWidth, v + regionHeight - borderWidth, borderWidth, borderWidth, textureWidth, textureHeight);
+        //Bottom Bar
+        drawTexture(matrices, x + borderWidth, y + height - borderWidth, width - 2 * borderWidth, borderWidth, u + borderWidth, v + regionHeight - borderWidth, regionWidth - borderWidth * 2, borderWidth, textureWidth, textureHeight);
+        //Right Bar
+        drawTexture(matrices, x + width - borderWidth, y + borderWidth, borderWidth, height - 2 * borderWidth, u + regionWidth - borderWidth, v + borderWidth, borderWidth, regionHeight - borderWidth * 2, textureWidth, textureHeight);
+        //Left Bar
+        drawTexture(matrices, x, y + borderWidth, borderWidth, height - 2 * borderWidth, u, v + borderWidth, u + borderWidth, regionHeight - borderWidth * 2, textureWidth, textureHeight);
+        //Top Bar
+        drawTexture(matrices, x + borderWidth, y, width - 2 * borderWidth, borderWidth, u + borderWidth, v, regionWidth - borderWidth * 2, borderWidth, textureWidth, textureHeight);
+        //Center
+        drawTexture(matrices, x + borderWidth, y + borderWidth, width - 2 * borderWidth, height - 2 * borderWidth, u + borderWidth, v + borderWidth, regionWidth - borderWidth * 2, regionHeight - borderWidth * 2, textureWidth, textureHeight);
+    }
+
+
+    /**
+     * Draws a texture with an edge around its border. The texture can be limited to a portion of itself by specifying the
+     * coordinates (u, v) and (u2, v2).
+     * This is useful if a texture might be resized in the UI to still align its Edges
+     *
+     * @param matrices      The matrix stack to apply the transformation to.
+     * @param x             The x-coordinate to draw the texture at.
+     * @param y             The y-coordinate to draw the texture at.
+     * @param width         The width of the texture.
+     * @param height        The height of the texture.
+     * @param textureWidth  The width of the texture sheet.
+     * @param textureHeight The height of the texture sheet.
+     * @param borderWidth   The width of the border to draw around the texture.
+     */
+    public static void drawTextureWithEdge(MatrixStack matrices, int x, int y, int width, int height, int textureWidth, int textureHeight, int borderWidth) {
+        drawTextureWithEdge(matrices, x, y, 0, 0, textureWidth, textureHeight, width, height, textureWidth, textureHeight, borderWidth);
+    }
+
 
     /**
      * This Method adds a Child to this Widget

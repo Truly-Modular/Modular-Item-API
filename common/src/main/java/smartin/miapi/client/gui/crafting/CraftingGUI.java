@@ -10,7 +10,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.ParentHandledScreen;
-import smartin.miapi.client.gui.crafting.moduleCrafterv1.ModuleCrafter;
+import smartin.miapi.client.gui.crafting.crafter.ModuleCrafter;
 import smartin.miapi.client.gui.crafting.slotdisplay.SlotDisplay;
 
 public class CraftingGUI extends ParentHandledScreen<CraftingScreenHandler> implements ScreenHandlerProvider<CraftingScreenHandler> {
