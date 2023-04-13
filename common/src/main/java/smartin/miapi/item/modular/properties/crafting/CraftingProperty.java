@@ -2,10 +2,16 @@ package smartin.miapi.item.modular.properties.crafting;
 
 import com.google.gson.JsonElement;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.math.Vec2f;
+import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.item.modular.ItemModule;
 import smartin.miapi.item.modular.properties.ModuleProperty;
-import smartin.miapi.item.modular.properties.SlotProperty;
+
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class CraftingProperty implements ModuleProperty {
 
@@ -14,15 +20,25 @@ public abstract class CraftingProperty implements ModuleProperty {
         return false;
     }
 
-    public boolean canPerform(ItemStack old, ItemStack crafting, PlayerEntity player, SlotProperty.ModuleSlot slot, ItemModule module){
+    @Nullable
+    public InteractAbleWidget getGui(){
+        return null;
+    }
+
+    public List<Vec2f> getSlotPositions(){
+        return new ArrayList<>();
+    }
+
+    public boolean canPerform(ItemStack old, ItemStack crafting, PlayerEntity player, ItemModule.ModuleInstance newModule, ItemModule module, List<ItemStack> inventory) {
         return true;
     }
 
-    public ItemStack preview(ItemStack old, ItemStack crafting, PlayerEntity player, SlotProperty.ModuleSlot slot, ItemModule module){
-        return crafting;
-    }
+    public abstract ItemStack preview(ItemStack old, ItemStack crafting, PlayerEntity player, ItemModule.ModuleInstance newModule, ItemModule module, List<ItemStack> inventory);
 
-    public ItemStack performCraftAction(ItemStack old, ItemStack crafting, PlayerEntity player, SlotProperty.ModuleSlot slot, ItemModule module){
-        return this.preview(old,crafting,player,slot,module);
+    public List<ItemStack> performCraftAction(ItemStack old, ItemStack crafting, PlayerEntity player, ItemModule.ModuleInstance newModule, ItemModule module, List<ItemStack> inventory) {
+        List<ItemStack> stacks = new ArrayList<>();
+        stacks.add(this.preview(old, crafting, player, newModule, module, inventory));
+        stacks.addAll(inventory);
+        return stacks;
     }
 }

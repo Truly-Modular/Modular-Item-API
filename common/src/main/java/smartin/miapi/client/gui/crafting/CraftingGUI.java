@@ -33,11 +33,12 @@ public class CraftingGUI extends ParentHandledScreen<CraftingScreenHandler> impl
 
     public void init(){
         moduleCrafter = new ModuleCrafter((this.width - this.backgroundWidth) / 2+109,(this.height - this.backgroundHeight) / 2+5,163,130,(selectedSlot)->{
-            Miapi.LOGGER.error("selectedSlot" +selectedSlot);
             slotDisplay.select(selectedSlot);
         },(item)->{
-            setItem(item);
+            //setItem(item);
+            slotDisplay.setItem(item);
         });
+        moduleCrafter.setPacketIdentifier(handler.packetID);
         slotDisplay = new SlotDisplay(stack,(this.width - this.backgroundWidth) / 2+8,(this.height - this.backgroundHeight) / 2+8,206-20,98,(selected)->{
             moduleCrafter.setSelectedSlot(selected);
         });

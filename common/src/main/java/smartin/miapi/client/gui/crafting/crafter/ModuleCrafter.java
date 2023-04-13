@@ -30,6 +30,7 @@ public class ModuleCrafter extends InteractAbleWidget {
     private final Consumer<SlotProperty.ModuleSlot> selectedSlot;
     private SlotProperty.ModuleSlot baseSlot = new SlotProperty.ModuleSlot(new ArrayList<>());
     private static final Identifier BACKGROUND_TEXTURE = new Identifier(Miapi.MOD_ID, "textures/crafting_gui_background_black.png");
+    private String paketIdentifier;
 
     public ModuleCrafter(int x, int y, int width, int height, Consumer<SlotProperty.ModuleSlot> selected, Consumer<ItemStack> craftedItem) {
         super(x, y, width, height, Text.empty());
@@ -50,6 +51,10 @@ public class ModuleCrafter extends InteractAbleWidget {
     public void setSelectedSlot(SlotProperty.ModuleSlot instance) {
         slot = instance;
         setMode(Mode.DETAIL);
+    }
+
+    public void setPacketIdentifier(String identifier) {
+        paketIdentifier = identifier;
     }
 
     private void selectSlot(SlotProperty.ModuleSlot slot) {
@@ -79,8 +84,7 @@ public class ModuleCrafter extends InteractAbleWidget {
                 this.children.add(detailView);
             }
             case CRAFT -> {
-                Miapi.LOGGER.error("craft");
-                CraftView craftView = new CraftView(this.x, this.y + 18, this.width, this.height - 38, module, stack, slot, (backSlot) -> {
+                CraftView craftView = new CraftView(this.x, this.y + 18, this.width, this.height - 38, paketIdentifier, module, stack, slot, (backSlot) -> {
                     setSelectedSlot(backSlot);
                 }, (replaceItem) -> {
                     craftedItem.accept(replaceItem);

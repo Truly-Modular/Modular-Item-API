@@ -5,7 +5,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.server.network.ServerPlayerEntity;
 import smartin.miapi.Environment;
 import smartin.miapi.Miapi;
-import smartin.miapi.datapack.ReloadEvent;
+import smartin.miapi.datapack.ReloadEvents;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,7 +21,7 @@ public class ClientSync {
     }
 
     protected static void serverInit(){
-        ReloadEvent.Data.subscribe((path, data)->{
+        ReloadEvents.Data.subscribe((path, data)->{
             dataPacks.put(path,data);
         });
         Miapi.LOGGER.info("Server innit Networking");
@@ -41,6 +41,6 @@ public class ClientSync {
                 return;
             }
         }
-        ReloadEvent.triggerReloadOnClient(entity);
+        ReloadEvents.triggerReloadOnClient(entity);
     }
 }

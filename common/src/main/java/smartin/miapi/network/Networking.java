@@ -50,9 +50,17 @@ public abstract class Networking {
 
     public static void registerC2SPacket(String identifier, BiConsumer<PacketByteBuf,ServerPlayerEntity> callback){
         if(C2SPackets.get(identifier)!=null){
-            Miapi.LOGGER.error("packet already exists with identifier"+identifier);
+            Miapi.LOGGER.error("packet already exists with identifier "+identifier);
         }
         C2SPackets.put(identifier,callback);
+    }
+
+    public static void unRegisterC2SPacket(String identifier){
+        C2SPackets.remove(identifier);
+    }
+
+    public static void unRegisterC2CPacket(String identifier){
+        S2CPackets.remove(identifier);
     }
 
     public static void registerS2CPacket(String identifier, Consumer<PacketByteBuf> callbacks){
@@ -60,7 +68,7 @@ public abstract class Networking {
         Should also include a player reference to know who send it, maybe not use consumers?
          */
         if(S2CPackets.get(identifier)!=null){
-            Miapi.LOGGER.error("packet already exists with identifier"+identifier);
+            Miapi.LOGGER.error("packet already exists with identifier "+identifier);
         }
         S2CPackets.put(identifier,callbacks);
     }

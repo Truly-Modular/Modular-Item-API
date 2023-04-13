@@ -27,13 +27,15 @@ public class ScrollingTextWidget extends InteractAbleWidget implements Drawable,
      * Extra time for the first Letter to increase readability
      */
     public float firstLetterExtraTime = 1.0f;
+    public boolean hasTextShadow = true;
 
     /**
      * This is a Text that fits within its bounds and slowly scrolls through the Text
-     * @param x the X pos of the Text
-     * @param y the Y pos of the Text
-     * @param maxWidth the max Width of the Text
-     * @param text the text in question
+     *
+     * @param x         the X pos of the Text
+     * @param y         the Y pos of the Text
+     * @param maxWidth  the max Width of the Text
+     * @param text      the text in question
      * @param textColor the TextColor of the Text
      */
     public ScrollingTextWidget(int x, int y, int maxWidth, Text text, int textColor) {
@@ -44,6 +46,7 @@ public class ScrollingTextWidget extends InteractAbleWidget implements Drawable,
 
     /**
      * Calling this resets the position to 0
+     *
      * @param text the Text of the scroller
      */
     public void setText(Text text) {
@@ -54,6 +57,7 @@ public class ScrollingTextWidget extends InteractAbleWidget implements Drawable,
 
     /**
      * either add this as a Child or manually call this method to render the text
+     *
      * @param matrices the current MatrixStack / PoseStack
      * @param mouseX   current mouseX Position
      * @param mouseY   current mouseY Position
@@ -81,23 +85,26 @@ public class ScrollingTextWidget extends InteractAbleWidget implements Drawable,
 
         textWidth = MinecraftClient.getInstance().textRenderer.getWidth(displayText);
 
-        if(textWidth <= this.width){
-            if(timer > scrollHoldTime){
+        if (textWidth <= this.width) {
+            if (timer > scrollHoldTime) {
                 timer = -firstLetterExtraTime;
                 scrollPosition = 0;
 
             }
-        }
-        else{
-            if(timer > scrollDelay){
+        } else {
+            if (timer > scrollDelay) {
                 scrollPosition++;
                 timer = 0;
             }
         }
 
         timer += delta / 20;
-        displayText = MinecraftClient.getInstance().textRenderer.trimToWidth(displayText,this.width);
+        displayText = MinecraftClient.getInstance().textRenderer.trimToWidth(displayText, this.width);
 
-        drawTextWithShadow(matrices, MinecraftClient.getInstance().textRenderer, Text.of(displayText), this.x, this.y, this.textColor);
+        if (hasTextShadow) {
+            drawTextWithShadow(matrices, MinecraftClient.getInstance().textRenderer, Text.of(displayText), this.x, this.y, this.textColor);
+        } else {
+            MinecraftClient.getInstance().textRenderer.draw(matrices, Text.of(displayText), x, y, textColor);
+        }
     }
 }

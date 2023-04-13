@@ -43,21 +43,19 @@ public class TextureProperty implements ModuleProperty {
     public static Function<SpriteIdentifier, Sprite> textureGetter;
     static BakedModel model;
     private static Function<SpriteIdentifier, Sprite> mirroredGetter;
-    private static String cacheKey = Miapi.MOD_ID + ":model";
-    private static Map<String, Json> modelMap = new HashMap<>();
-    private static Map<JsonUnbakedModel, String> modelPathMap = new HashMap<>();
+    private static final String cacheKey = Miapi.MOD_ID + ":model";
+    private static final Map<String, Json> modelMap = new HashMap<>();
+    private static final Map<JsonUnbakedModel, String> modelPathMap = new HashMap<>();
     private static ItemModelGenerator generator;
 
     public TextureProperty() {
-        generator = new ItemModelGenerator();
-        ModularItemCache.setSupplier(cacheKey, (stack) -> {
-            //Miapi.LOGGER.info("loading new Model");
-            return generateModel(stack);
-        });
         mirroredGetter = (identifier) -> {
-            //Miapi.LOGGER.info("getting Texture "+identifier.toString());
             return textureGetter.apply(identifier);
         };
+        generator = new ItemModelGenerator();
+        ModularItemCache.setSupplier(cacheKey, (stack) -> {
+            return generateModel(stack);
+        });
     }
 
     public static BakedModel generateModel(ItemStack stack) {
@@ -81,7 +79,6 @@ public class TextureProperty implements ModuleProperty {
                 }
             }
         });
-
         return new DynamicBakedModel(quads);
     }
 
@@ -198,10 +195,8 @@ public class TextureProperty implements ModuleProperty {
     protected static void loadTextureDependencies(JsonUnbakedModel model) {
 
         List<Identifier> spritesToLoad = new ArrayList<>();
-        BakedModel BakedModel = bakeModel(model, (identifier) -> {
-            //Miapi.LOGGER.warn(identifier.toString());
+        bakeModel(model, (identifier) -> {
             spritesToLoad.add(identifier.getTextureId());
-            //return MinecraftClient.getInstance().getTextureManager().getTexture(MissingSprite.getMissingSpriteId());
             return mirroredGetter.apply(identifier);
         }, Transform.IDENTITY, 0, ModelRotation.X0_Y0);
         SpriteLoader.spritesToAdd.addAll(spritesToLoad);

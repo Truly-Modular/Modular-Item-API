@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.reflect.TypeToken;
 import org.jetbrains.annotations.Nullable;
+import smartin.miapi.Miapi;
 import smartin.miapi.item.modular.ItemModule;
 import smartin.miapi.item.modular.Transform;
 
@@ -14,7 +15,10 @@ import java.util.concurrent.atomic.AtomicReference;
 public class SlotProperty implements ModuleProperty {
 
     public static final String key = "slots";
-    //TODO:figure out a consistent way for Slots to work
+
+    public static SlotProperty getInstance(){
+        return (SlotProperty) Miapi.modulePropertyRegistry.get(key);
+    }
 
     public static Transform getTransform(ItemModule.ModuleInstance instance){
         ItemModule.ModuleInstance current = instance;
@@ -38,7 +42,8 @@ public class SlotProperty implements ModuleProperty {
     }
 
     public static Map<Integer,ModuleSlot> getSlots(ItemModule.ModuleInstance instance){
-        JsonElement data = instance.module.getProperties().get(key);
+        ModuleProperty property = Miapi.modulePropertyRegistry.get(key);
+        JsonElement data = instance.getProperties().get(property);
         if(data!=null){
             Gson gson = new Gson();
             Type type = new TypeToken<Map<Integer, ModuleSlot>>(){}.getType();
@@ -69,7 +74,8 @@ public class SlotProperty implements ModuleProperty {
     }
 
     public static Transform getLocalTransform(ItemModule.ModuleInstance instance){
-        JsonElement test = instance.module.getProperties().get(key);
+        ModuleProperty property = Miapi.modulePropertyRegistry.get(key);
+        JsonElement test = instance.getProperties().get(property);
         if(test!=null){
             Gson gson = new Gson();
             //TODO:

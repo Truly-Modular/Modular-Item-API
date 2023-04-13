@@ -1,15 +1,15 @@
 package smartin.miapi;
 
+import com.google.gson.JsonElement;
+import dev.architectury.event.events.client.ClientLifecycleEvent;
+import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.registry.ReloadListenerRegistry;
 import dev.architectury.registry.menu.MenuRegistry;
 import net.minecraft.item.Item;
 import net.minecraft.resource.ResourceType;
-import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerType;
-import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import org.slf4j.Logger;
@@ -17,19 +17,17 @@ import org.slf4j.LoggerFactory;
 import smartin.miapi.client.ClientInit;
 import smartin.miapi.client.gui.crafting.CraftingGUI;
 import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
-import smartin.miapi.datapack.ReloadEvent;
+import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.datapack.ReloadListener;
 import smartin.miapi.datapack.SpriteLoader;
 import smartin.miapi.item.modular.ItemModule;
 import smartin.miapi.item.modular.ModularItem;
-import smartin.miapi.item.modular.properties.ModuleProperty;
-import smartin.miapi.item.modular.properties.NameProperty;
-import smartin.miapi.item.modular.properties.SlotProperty;
+import smartin.miapi.item.modular.properties.*;
 import smartin.miapi.item.modular.properties.crafting.AllowedSlots;
 import smartin.miapi.item.modular.properties.render.TextureProperty;
 import smartin.miapi.registries.MiapiRegistry;
-import dev.architectury.event.events.common.LifecycleEvent;
-import dev.architectury.event.events.client.ClientLifecycleEvent;
+
+import java.util.HashMap;
 
 public class Miapi {
     public static final String MOD_ID = "miapi";
@@ -40,17 +38,11 @@ public class Miapi {
     public static final Item modularItem = new ModularItem();
     public static final Identifier modularItemIdentifier = new Identifier(MOD_ID, "modular_item");
     public static MinecraftServer server;
-
     public static final ScreenHandlerType<CraftingScreenHandler> CRAFTING_SCREEN_HANDLER = register(new Identifier(Miapi.MOD_ID,"default_crafting"), CraftingScreenHandler::new);
-
-
-    public static void staticSetup(){
-
-    }
 
     public static void init() {
         setupRegistries();
-        ReloadEvent.setup();
+        ReloadEvents.setup();
         LifecycleEvent.SERVER_BEFORE_START.register(minecraftServer->{
             server = minecraftServer;
             LOGGER.info("Server before started");
@@ -67,9 +59,20 @@ public class Miapi {
             new ClientInit();
         });
         MenuRegistry.registerScreenFactory(CRAFTING_SCREEN_HANDLER,CraftingGUI::new);
+        PropertyResolver.propertyProviderRegistry.register("module", (moduleInstance) -> {
+            HashMap<ModuleProperty, JsonElement> map = new HashMap<>();
+            moduleInstance.module.getProperties().forEach((key, jsonData) -> {
+                map.put(Miapi.modulePropertyRegistry.get(key),jsonData);
+            });
+            return map;
+        });
     }
 
     protected static void setupRegistries(){
+        //DataPackPaths
+        ReloadEvents.registerDataPackPathToSync(Miapi.MOD_ID,"modules");
+        ReloadEvents.registerDataPackPathToSync(Miapi.MOD_ID,"materials");
+
         //ITEM
         Miapi.itemRegistry.register("modular_item",Miapi.modularItem);
 
@@ -81,17 +84,7 @@ public class Miapi {
         Miapi.modulePropertyRegistry.register(TextureProperty.key, new TextureProperty());
         Miapi.modulePropertyRegistry.register(SlotProperty.key, new SlotProperty());
         Miapi.modulePropertyRegistry.register(AllowedSlots.key,new AllowedSlots());
-    }
-
-    public static NamedScreenHandlerFactory test(){
-        //return Miapi.CRAFTING_SCREEN_HANDLER.create(213213,MinecraftClient.getInstance().player.getInventory());
-        Miapi.LOGGER.warn("opening 2");
-        Text text = Text.literal("test");
-        return new SimpleNamedScreenHandlerFactory( (syncId, inventory, player) -> {
-            Miapi.LOGGER.warn("opening 3");
-            return new CraftingScreenHandler(syncId, inventory);
-        }
-                , text);
+        Miapi.modulePropertyRegistry.register(MaterialProperty.key,new MaterialProperty());
     }
 
     private static <T extends ScreenHandler> ScreenHandlerType<T> register(Identifier id, ScreenHandlerType.Factory<T> factory) {

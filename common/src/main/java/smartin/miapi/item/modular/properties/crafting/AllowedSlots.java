@@ -4,9 +4,8 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.reflect.TypeToken;
 import smartin.miapi.Miapi;
-import smartin.miapi.datapack.ReloadEvent;
+import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.item.modular.ItemModule;
-import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.properties.ModuleProperty;
 import smartin.miapi.item.modular.properties.SlotProperty;
 
@@ -30,7 +29,7 @@ public class AllowedSlots implements ModuleProperty {
                 }
             });
         });
-        ReloadEvent.subscribeStart(isClient ->{
+        ReloadEvents.START.subscribe(isClient ->{
             allowedInMap.clear();
         });
     }
@@ -50,7 +49,6 @@ public class AllowedSlots implements ModuleProperty {
                 allowedModules.addAll(allowedInMap.get(allowedKey));
             }
         });
-        Miapi.LOGGER.error(String.valueOf(allowedModules.size()));
         return allowedModules;
     }
 

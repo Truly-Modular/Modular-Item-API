@@ -1,9 +1,7 @@
 package smartin.miapi.registries;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import javax.annotation.Nullable;
+import java.util.*;
 import java.util.function.Consumer;
 
 public class MiapiRegistry<T> {
@@ -22,6 +20,15 @@ public class MiapiRegistry<T> {
             return instance;
         }
         return (MiapiRegistry<T>) REGISTRY_MAP.get(clazz);
+    }
+
+    @Nullable
+    public <T> String findKey(T value){
+        Optional<String> matchingId = entries.entrySet().stream()
+                .filter(entry -> entry.getValue().equals(value))
+                .map(Map.Entry::getKey)
+                .findFirst();
+        return matchingId.orElse(null);
     }
 
     public static <T> MiapiRegistry<T> getInstance(Class<T> clazz, List<Consumer<T>> callbacks) {

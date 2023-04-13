@@ -8,7 +8,6 @@ import smartin.miapi.Miapi;
 import smartin.miapi.item.modular.cache.ModularItemCache;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Consumer;
 
@@ -20,10 +19,8 @@ public class SpriteLoader {
             ModularItemCache.discardCache();
             spritesToAdd.clear();
         });
-        /*
-         */
 
-        ReloadEvent.subscribeEnd(isClient -> {
+        ReloadEvents.END.subscribe(isClient -> {
             if(isClient){
                 reloadSprites();
             }
@@ -49,7 +46,7 @@ public class SpriteLoader {
         });
          */
         sprites.forEach(identifier -> {
-            Miapi.LOGGER.error("Loading Texture TextureStitch "+identifier.toString());
+            //Miapi.LOGGER.error("Loading Texture TextureStitch "+identifier.toString());
             spriteAdder.accept(identifier);
         });
     }

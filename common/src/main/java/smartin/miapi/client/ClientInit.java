@@ -16,7 +16,6 @@ public class ClientInit {
     public ClientInit(){
         ((ItemRendererAccessor) MinecraftClient.getInstance().getItemRenderer()).color().register(new CustomColorProvider(), Miapi.modularItem);
         ClientChatEvent.SEND.register((message, component) -> {
-            Miapi.LOGGER.warn("opening 1");
             Miapi.server.getPlayerManager().getPlayerList().forEach(serverPlayer->{
                 serverPlayer.openHandledScreen(test());
             });
@@ -26,10 +25,8 @@ public class ClientInit {
     }
 
     public static NamedScreenHandlerFactory test(){
-        Miapi.LOGGER.warn("opening 2");
         Text text = Text.literal("test");
         return new SimpleNamedScreenHandlerFactory( (syncId, inventory, player) -> {
-            Miapi.LOGGER.warn("opening 3");
             return new CraftingScreenHandler(syncId, inventory);
             }, text);
     }

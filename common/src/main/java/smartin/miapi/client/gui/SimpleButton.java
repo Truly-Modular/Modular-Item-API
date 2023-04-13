@@ -4,14 +4,19 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
 import org.lwjgl.opengl.GL11;
+import smartin.miapi.Miapi;
 
 import java.util.function.Consumer;
 
 public class SimpleButton<T> extends InteractAbleWidget {
+    private final Identifier texture = new Identifier(Miapi.MOD_ID, "textures/gui/crafter/button.png");
     private T toCallback;
     private Consumer<T> callback;
+    public boolean isEnabled = true;
+
 
     /**
      * This is a Widget build to support Children and parse the events down to them.
@@ -31,7 +36,9 @@ public class SimpleButton<T> extends InteractAbleWidget {
         super(x, y, width, height, title);
         this.toCallback = toCallBack;
         this.callback = callback;
-        this.addChild(new ScrollingTextWidget(x, y, width, title, ColorHelper.Argb.getArgb(255, 59, 59, 59)));
+        ScrollingTextWidget textWidget = new ScrollingTextWidget(x, y, width, title, ColorHelper.Argb.getArgb(255, 200, 200, 200));
+        textWidget.hasTextShadow = false;
+        this.addChild(textWidget);
     }
 
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
@@ -40,20 +47,22 @@ public class SimpleButton<T> extends InteractAbleWidget {
         this.renderButton(matrices, mouseX, mouseY, delta);
         RenderSystem.depthFunc(GL11.GL_ALWAYS);
         RenderSystem.depthMask(true);
-        this.children().forEach(children->{
-            if(children instanceof InteractAbleWidget widget){
-                widget.x = this.x+2;
-                widget.y = Math.max(this.y,this.y+(this.height-9)/2);
-                widget.setWidth(this.width-4);
+        this.children().forEach(children -> {
+            if (children instanceof InteractAbleWidget widget) {
+                widget.x = this.x + 2;
+                widget.y = Math.max(this.y + 1, this.y + 1 + (this.height - 9) / 2);
+                widget.setWidth(this.width - 4);
             }
         });
         super.render(matrices, mouseX, mouseY, delta);
     }
 
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if(isMouseOver(mouseX,mouseY)){
-            callback.accept(toCallback);
-            return true;
+        if (isMouseOver(mouseX, mouseY)) {
+            if(isEnabled){
+                callback.accept(toCallback);
+                return true;
+            }
         }
         return false;
     }
@@ -64,12 +73,14 @@ public class SimpleButton<T> extends InteractAbleWidget {
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.enableDepthTest();
-
-        int color = ColorHelper.Argb.getArgb(255, 50, 50, 50);
-
+        RenderSystem.setShaderTexture(0, texture);
+        int offset = 0;
         if (this.isMouseOver(mouseX, mouseY)) {
-            color = ColorHelper.Argb.getArgb(255, 100, 100, 100);
+            offset = 10;
         }
-        drawSquareBorder(matrices, this.x, this.y, this.width, this.height, 1, color);
+        if (!isEnabled) {
+            offset = 20;
+        }
+        drawTextureWithEdge(matrices, x, y, offset, 0, 10, 10, this.width, height, 30, 10, 3);
     }
 }

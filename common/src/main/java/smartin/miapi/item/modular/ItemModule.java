@@ -7,8 +7,8 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
-import smartin.miapi.datapack.ReloadEvent;
 import smartin.miapi.item.modular.properties.ModuleProperty;
+import smartin.miapi.item.modular.properties.PropertyResolver;
 import smartin.miapi.registries.MiapiRegistry;
 
 import java.io.IOException;
@@ -30,6 +30,9 @@ public class ItemModule {
     public static void loadFromData(String path, String moduleJsonString) {
         Gson gson = new Gson();
         JsonObject moduleJson = gson.fromJson(moduleJsonString, JsonObject.class);
+        if(!path.contains("modules")){
+            return;
+        }
 
         String name = moduleJson.get("name").getAsString();
         Map<String, JsonElement> moduleProperties = new HashMap<>();
@@ -104,6 +107,10 @@ public class ItemModule {
                 });
             }
             return moduleInstances;
+        }
+
+        public Map<ModuleProperty, JsonElement> getProperties() {
+            return PropertyResolver.resolve(this);
         }
 
         public ModuleInstance(ItemModule module){

@@ -63,7 +63,7 @@ public class InteractAbleWidget extends ClickableWidget implements Drawable, Ele
 
     /**
      * Draws a texture with an edge around its border. The texture can be limited to a portion of itself by specifying the
-     * coordinates (u, v) and (u2, regionHeigth).
+     * coordinates (u, v) and (u2, regionHeight).
      * This is useful if a texture might be resized in the UI to still align its Edges
      *
      * @param matrices      The matrix stack to apply the transformation to.
@@ -290,6 +290,10 @@ public class InteractAbleWidget extends ClickableWidget implements Drawable, Ele
      */
     public boolean isMouseOver(double mouseX, double mouseY) {
         return super.isMouseOver(mouseX, mouseY);
+    }
+
+    public void setHeight(int height){
+        this.height = height;
     }
 
     /**

@@ -8,38 +8,57 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.screen.slot.Slot;
+import net.minecraft.server.network.ServerPlayerEntity;
 import smartin.miapi.Miapi;
+import smartin.miapi.craft.CraftAction;
+import smartin.miapi.network.Networking;
 
 public class CraftingScreenHandler extends ScreenHandler {
     private ScreenHandlerContext context;
     public Inventory inventory;
+    public final int syncId;
+    public final String packetID;
 
-    public CraftingScreenHandler(int syncId, PlayerInventory playerInventory){
+    public CraftingScreenHandler(int syncId, PlayerInventory playerInventory) {
         this(syncId, playerInventory, ScreenHandlerContext.EMPTY);
     }
 
-    public CraftingScreenHandler(int syncId, PlayerInventory playerInventory,ScreenHandlerContext context){
-        super(Miapi.CRAFTING_SCREEN_HANDLER,syncId);
+    public CraftingScreenHandler(int syncId, PlayerInventory playerInventory, ScreenHandlerContext context) {
+        super(Miapi.CRAFTING_SCREEN_HANDLER, syncId);
+        packetID = Miapi.MOD_ID+":crafting_packet_"+syncId;
+        if(playerInventory.player instanceof ServerPlayerEntity){
+            Networking.registerC2SPacket(packetID,(buffer, player) -> {
+                CraftAction action = new CraftAction(buffer);
+                action.setItem(inventory.getStack(0));
+                action.linkInventory(inventory,1);
+                if(action.canPerform()){
+                    inventory.setStack(0,action.perform());
+                    this.onContentChanged(inventory);
+                }
+            });
+        }
+
+        this.syncId = syncId;
         this.context = context;
-        this.inventory = new SimpleInventory(2) {
+        this.inventory = new SimpleInventory(54) {
             public void markDirty() {
                 super.markDirty();
                 CraftingScreenHandler.this.onContentChanged(this);
             }
         };
-        int i = 18*2+1;
-        int offset = 30 +4*18;
-        for(int j = 0; j < 3; ++j) {
-            for(int k = 0; k < 9; ++k) {
+        int i = 18 * 2 + 1;
+        int offset = 30 + 4 * 18;
+        for (int j = 0; j < 3; ++j) {
+            for (int k = 0; k < 9; ++k) {
                 this.addSlot(new Slot(playerInventory, k + j * 9 + 9, 8 + k * 18 + offset, 103 + j * 18 + i));
             }
         }
 
-        for(int j = 0; j < 9; ++j) {
+        for (int j = 0; j < 9; ++j) {
             this.addSlot(new Slot(playerInventory, j, 8 + j * 18 + offset, 161 + i));
         }
 
-        this.addSlot( new Slot(inventory,0,8 + 3 * 18+25, 103 + 18+ 48+26) {
+        this.addSlot(new Slot(inventory, 0, 8 + 3 * 18 + 25, 103 + 18 + 48 + 26) {
             public boolean canInsert(ItemStack stack) {
                 return true;
             }
@@ -52,6 +71,7 @@ public class CraftingScreenHandler extends ScreenHandler {
 
     /**
      * This is copied from EnchantingTable, adjust later
+     *
      * @param player
      * @param index
      * @return
@@ -67,7 +87,7 @@ public class CraftingScreenHandler extends ScreenHandler {
                     return ItemStack.EMPTY;
                 }
                 //slot.onStackChanged(slotStack, itemStack);
-                slot.onQuickTransfer(slotStack,itemStack);
+                slot.onQuickTransfer(slotStack, itemStack);
             } else { // Transfer from player inventory to custom slot
                 if (this.insertItem(slotStack, 0, 1, false)) {
                     return ItemStack.EMPTY;
@@ -110,11 +130,13 @@ public class CraftingScreenHandler extends ScreenHandler {
                 this.inventory.setStack(i, ItemStack.EMPTY);
             }
         }
+        Networking.unRegisterC2CPacket(packetID);
     }
 
 
     /**
      * use to update children
+     *
      * @param inventory
      */
     public void onContentChanged(Inventory inventory) {
