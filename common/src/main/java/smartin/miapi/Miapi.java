@@ -1,6 +1,8 @@
 package smartin.miapi;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import dev.architectury.event.events.client.ClientLifecycleEvent;
 import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.registry.ReloadListenerRegistry;
@@ -38,6 +40,7 @@ public class Miapi {
     public static final Item modularItem = new ModularItem();
     public static final Identifier modularItemIdentifier = new Identifier(MOD_ID, "modular_item");
     public static MinecraftServer server;
+    public static Gson gson = new Gson();
     public static final ScreenHandlerType<CraftingScreenHandler> CRAFTING_SCREEN_HANDLER = register(new Identifier(Miapi.MOD_ID,"default_crafting"), CraftingScreenHandler::new);
 
     public static void init() {
@@ -59,11 +62,27 @@ public class Miapi {
             new ClientInit();
         });
         MenuRegistry.registerScreenFactory(CRAFTING_SCREEN_HANDLER,CraftingGUI::new);
-        PropertyResolver.propertyProviderRegistry.register("module", (moduleInstance) -> {
+        PropertyResolver.propertyProviderRegistry.register("module", (moduleInstance,oldMap) -> {
             HashMap<ModuleProperty, JsonElement> map = new HashMap<>();
             moduleInstance.module.getProperties().forEach((key, jsonData) -> {
                 map.put(Miapi.modulePropertyRegistry.get(key),jsonData);
             });
+            return map;
+        });
+        PropertyResolver.propertyProviderRegistry.register("moduleData", (moduleInstance,oldMap) -> {
+            HashMap<ModuleProperty, JsonElement> map = new HashMap<>();
+            String properties = moduleInstance.moduleData.get("properties");
+            if(properties!=null){
+                JsonObject moduleJson = gson.fromJson(properties, JsonObject.class);
+                if(moduleJson!=null){
+                    moduleJson.entrySet().forEach(stringJsonElementEntry -> {
+                        ModuleProperty property = modulePropertyRegistry.get(stringJsonElementEntry.getKey());
+                        if(property!=null){
+                            map.put(property,stringJsonElementEntry.getValue());
+                        }
+                    });
+                }
+            }
             return map;
         });
     }

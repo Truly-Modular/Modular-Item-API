@@ -13,8 +13,8 @@ import java.util.List;
 import java.util.Map;
 
 public class ReloadEvents {
-    protected static final String reloadPacketId = Miapi.MOD_ID + ":events_reload_s2c";
-    protected static final String reloadDataPacketId = Miapi.MOD_ID + ":events_reload_s2c_data";
+    protected static final String RELOAD_PACKET_ID = Miapi.MOD_ID + ":events_reload_s2c";
+    protected static final String RELOAD_DATA_PACKET_ID = Miapi.MOD_ID + ":events_reload_s2c_data";
     public static final Map<String, String> DATA_PACKS = new HashMap<>();
     private static Map<String, String> SERVER_DATA_PACKS = new HashMap<>();
     private static int dataPackSize = Integer.MAX_VALUE;
@@ -43,15 +43,15 @@ public class ReloadEvents {
         if (Environment.isClient()) {
             clientSetup();
         }
-        Networking.registerC2SPacket(reloadPacketId, ((buf, serverPlayerEntity) -> {
+        Networking.registerC2SPacket(RELOAD_PACKET_ID, ((buf, serverPlayerEntity) -> {
             SERVER_DATA_PACKS.forEach((key, data) -> {
                 PacketByteBuf buffer = Networking.createBuffer();
                 buffer.writeString(key);
                 buffer.writeString(data);
-                Networking.sendS2C(reloadDataPacketId, serverPlayerEntity, buffer);
+                Networking.sendS2C(RELOAD_DATA_PACKET_ID, serverPlayerEntity, buffer);
             });
         }));
-        ReloadEvents.Data.subscribe((path, data) -> {
+        DataPackLoader.subscribe((path, data) -> {
             DATA_PACKS.put(path, data);
         });
     }
@@ -60,23 +60,29 @@ public class ReloadEvents {
         SERVER_DATA_PACKS = new HashMap<>(DATA_PACKS);
         PacketByteBuf buf = Networking.createBuffer();
         buf.writeInt(DATA_PACKS.size());
-        Networking.sendS2C(reloadPacketId, entity, buf);
+        Networking.sendS2C(RELOAD_PACKET_ID, entity, buf);
     }
 
     private static void clientSetup() {
-        Networking.registerS2CPacket(reloadDataPacketId, (buffer) -> {
+        Map<String,String> dataTemp = new HashMap<>();
+        Networking.registerS2CPacket(RELOAD_DATA_PACKET_ID, (buffer) -> {
             //make this execute on main thread maybe
             String key = buffer.readString();
             String data = buffer.readString();
-            ReloadEvents.Data.trigger(key, data);
-            if (DATA_PACKS.size() == dataPackSize) {
+            dataTemp.put(key,data);
+            if (dataTemp.size() == dataPackSize) {
+                DATA_PACKS.clear();
+                dataTemp.forEach((path, stringData) -> {
+                    DATA_PACKS.put(path,stringData);
+                    DataPackLoader.trigger(path,stringData);
+                });
                 ReloadEvents.MAIN.fireEvent(true);
                 ReloadEvents.END.fireEvent(true);
                 dataPackSize = Integer.MAX_VALUE;
                 inReload = false;
             }
         });
-        Networking.registerS2CPacket(reloadPacketId, (buffer) -> {
+        Networking.registerS2CPacket(RELOAD_PACKET_ID, (buffer) -> {
             if (inReload) {
                 Miapi.LOGGER.error("Cannot trigger a Reload during another reload");
                 return;
@@ -87,7 +93,7 @@ public class ReloadEvents {
             buf.writeBoolean(true);
             DATA_PACKS.clear();
             ReloadEvents.START.fireEvent(true);
-            Networking.sendC2S(reloadPacketId, buf);
+            Networking.sendC2S(RELOAD_PACKET_ID, buf);
         });
     }
 
@@ -120,7 +126,7 @@ public class ReloadEvents {
     }
 
 
-    public static class Data {
+    public static class DataPackLoader {
         protected static final List<EventListener> listeners = new ArrayList<>();
 
         /*

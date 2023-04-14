@@ -2,13 +2,13 @@
   "key": "testing",
   "groups": "metal",
   "hardness": 0,
-  "density": 0,
+  "density": 1,
   "flexibility": 0,
   "durability": 800,
   "color": 512,
   "properties": {
     "default": {
-      "testproperty2": "",
+      "testproperty2": 23,
       "attributes": {
         "attack.damage": 5,
         "tool_level": 3

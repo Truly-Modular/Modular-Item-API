@@ -1,5 +1,6 @@
 package smartin.miapi.client.gui.crafting.crafter;
 
+import com.google.gson.JsonElement;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.GameRenderer;
@@ -12,7 +13,10 @@ import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.ScrollList;
 import smartin.miapi.client.gui.ScrollingTextWidget;
 import smartin.miapi.client.gui.SimpleButton;
+import smartin.miapi.item.modular.properties.MaterialProperty;
+import smartin.miapi.item.modular.properties.ModuleProperty;
 import smartin.miapi.item.modular.properties.SlotProperty;
+import smartin.miapi.item.modular.properties.StatResolver;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -70,6 +74,10 @@ public class DetailView extends InteractAbleWidget {
             Text displayText = Text.translatable(Miapi.MOD_ID + ".module.empty");
             if (slot.inSlot != null) {
                 displayText = Text.translatable(Miapi.MOD_ID + ".module." + slot.inSlot.module.getName());
+                JsonElement property = slot.inSlot.getKeyedProperties().get("moduleproperty1");
+                if(property!=null){
+                    displayText  = Text.literal(String.valueOf(StatResolver.resolveDouble(property.getAsString(),slot.inSlot)));
+                }
             }
             textWidget = new ScrollingTextWidget(this.x + 10, this.y, this.width - 20, displayText, ColorHelper.Argb.getArgb(255, 255, 255, 255));
             detail = new ModuleDetail(x, y, width, slot);

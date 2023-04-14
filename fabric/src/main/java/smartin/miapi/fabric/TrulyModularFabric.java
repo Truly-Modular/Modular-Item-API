@@ -17,11 +17,11 @@ public class TrulyModularFabric implements ModInitializer {
     public void onInitialize() {
         Miapi.init();
 
-        ReloadEvents.Data.subscribe(((path, data) -> {
+        ReloadEvents.DataPackLoader.subscribe(((path, data) -> {
             //Miapi.LOGGER.info(path);
             //Miapi.LOGGER.warn(data);
         }));
-        ReloadEvents.Data.subscribe(ItemModule::loadFromData);
+        ReloadEvents.DataPackLoader.subscribe(ItemModule::loadFromData);
         ClientSync.init();
         Miapi.itemRegistry.addCallback(item ->   {
             Registry.register(Registry.ITEM, Miapi.modularItemIdentifier, item);

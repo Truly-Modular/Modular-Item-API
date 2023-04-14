@@ -21,7 +21,7 @@ public class ClientSync {
     }
 
     protected static void serverInit(){
-        ReloadEvents.Data.subscribe((path, data)->{
+        ReloadEvents.DataPackLoader.subscribe((path, data)->{
             dataPacks.put(path,data);
         });
         Miapi.LOGGER.info("Server innit Networking");

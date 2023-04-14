@@ -48,7 +48,7 @@ public class ReloadListener implements ResourceReloader {
     public CompletableFuture<Void> apply(Object data, ResourceManager manager, Profiler profiler, Executor executor) {
         return CompletableFuture.runAsync(() -> {
             Map<String,String> dataMap = (Map) data;
-            dataMap.forEach(ReloadEvents.Data::trigger);
+            dataMap.forEach(ReloadEvents.DataPackLoader::trigger);
             ReloadEvents.MAIN.fireEvent(false);
             ReloadEvents.END.fireEvent(false);
             if(Miapi.server!=null){

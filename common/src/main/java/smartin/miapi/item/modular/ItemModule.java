@@ -113,6 +113,14 @@ public class ItemModule {
             return PropertyResolver.resolve(this);
         }
 
+        public Map<String,JsonElement> getKeyedProperties(){
+            Map<String,JsonElement> map = new HashMap<>();
+            getProperties().forEach((property, jsonElement) -> {
+                map.put(Miapi.modulePropertyRegistry.findKey(property),jsonElement);
+            });
+            return map;
+        }
+
         public ModuleInstance(ItemModule module){
             this.module = module;
         }

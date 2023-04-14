@@ -1,7 +1,6 @@
 package smartin.miapi.item.modular.properties;
 
 import com.google.gson.JsonElement;
-import smartin.miapi.Miapi;
 import smartin.miapi.item.modular.ItemModule;
 import smartin.miapi.registries.MiapiRegistry;
 
@@ -17,12 +16,12 @@ public class PropertyResolver {
     public static  Map<ModuleProperty, JsonElement> resolve(ItemModule.ModuleInstance moduleInstance){
         Map<ModuleProperty, JsonElement> properties = new HashMap<>();
         propertyProviderRegistry.getFlatMap().forEach((name,propertyProvider)->{
-            properties.putAll(propertyProvider.resolve(moduleInstance));
+            properties.putAll(propertyProvider.resolve(moduleInstance,properties));
         });
         return properties;
     }
 
     public interface PropertyProvider{
-        Map<ModuleProperty, JsonElement> resolve(ItemModule.ModuleInstance moduleInstance);
+        Map<ModuleProperty, JsonElement> resolve(ItemModule.ModuleInstance moduleInstance, Map<ModuleProperty,JsonElement> oldMap);
     }
 }
