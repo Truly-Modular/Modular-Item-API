@@ -24,6 +24,7 @@ import smartin.miapi.datapack.ReloadListener;
 import smartin.miapi.datapack.SpriteLoader;
 import smartin.miapi.item.modular.ItemModule;
 import smartin.miapi.item.modular.ModularItem;
+import smartin.miapi.item.modular.PropertyResolver;
 import smartin.miapi.item.modular.properties.*;
 import smartin.miapi.item.modular.properties.crafting.AllowedSlots;
 import smartin.miapi.item.modular.properties.render.TextureProperty;
@@ -69,7 +70,7 @@ public class Miapi {
             });
             return map;
         });
-        PropertyResolver.propertyProviderRegistry.register("moduleData", (moduleInstance,oldMap) -> {
+        PropertyResolver.propertyProviderRegistry.register("moduleData", (moduleInstance, oldMap) -> {
             HashMap<ModuleProperty, JsonElement> map = new HashMap<>();
             String properties = moduleInstance.moduleData.get("properties");
             if(properties!=null){

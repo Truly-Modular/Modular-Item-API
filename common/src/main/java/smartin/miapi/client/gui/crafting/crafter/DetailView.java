@@ -13,10 +13,8 @@ import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.ScrollList;
 import smartin.miapi.client.gui.ScrollingTextWidget;
 import smartin.miapi.client.gui.SimpleButton;
-import smartin.miapi.item.modular.properties.MaterialProperty;
-import smartin.miapi.item.modular.properties.ModuleProperty;
 import smartin.miapi.item.modular.properties.SlotProperty;
-import smartin.miapi.item.modular.properties.StatResolver;
+import smartin.miapi.item.modular.StatResolver;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;

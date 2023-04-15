@@ -1,7 +1,8 @@
-package smartin.miapi.item.modular.properties;
+package smartin.miapi.item.modular;
 
 import com.google.gson.JsonElement;
 import smartin.miapi.item.modular.ItemModule;
+import smartin.miapi.item.modular.properties.ModuleProperty;
 import smartin.miapi.registries.MiapiRegistry;
 
 import java.util.HashMap;

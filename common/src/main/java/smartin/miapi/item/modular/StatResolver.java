@@ -1,4 +1,4 @@
-package smartin.miapi.item.modular.properties;
+package smartin.miapi.item.modular;
 
 import net.minecraft.text.Text;
 import org.mariuszgromada.math.mxparser.Expression;

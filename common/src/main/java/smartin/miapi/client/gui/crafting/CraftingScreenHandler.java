@@ -5,36 +5,68 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.server.network.ServerPlayerEntity;
 import smartin.miapi.Miapi;
+import smartin.miapi.client.gui.MutableSlot;
 import smartin.miapi.craft.CraftAction;
 import smartin.miapi.network.Networking;
 
 public class CraftingScreenHandler extends ScreenHandler {
     private ScreenHandlerContext context;
     public Inventory inventory;
+    public PlayerInventory playerInventory;
     public final int syncId;
     public final String packetID;
+    public final String packetIDSlotAdd;
+    public final String packetIDSlotRemove;
 
     public CraftingScreenHandler(int syncId, PlayerInventory playerInventory) {
         this(syncId, playerInventory, ScreenHandlerContext.EMPTY);
     }
 
+    public void addSlot2(Slot slot) {
+        this.addSlot(slot);
+        PacketByteBuf buf = Networking.createBuffer();
+        buf.writeInt(slot.getIndex());
+        buf.writeInt(slot.id);
+        Networking.sendC2S(packetIDSlotAdd, buf);
+
+        slot.markDirty();
+        Miapi.LOGGER.error("adding Slot handler " + slot.x + "  " + slot.y);
+    }
+
     public CraftingScreenHandler(int syncId, PlayerInventory playerInventory, ScreenHandlerContext context) {
         super(Miapi.CRAFTING_SCREEN_HANDLER, syncId);
-        packetID = Miapi.MOD_ID+":crafting_packet_"+syncId;
-        if(playerInventory.player instanceof ServerPlayerEntity){
-            Networking.registerC2SPacket(packetID,(buffer, player) -> {
+        packetID = Miapi.MOD_ID + ":crafting_packet_" + syncId;
+        packetIDSlotAdd = Miapi.MOD_ID + ":crafting_packet_" + syncId + "slotAdd";
+        packetIDSlotRemove = Miapi.MOD_ID + ":crafting_packet_" + syncId + "slotRemove";
+        this.playerInventory = playerInventory;
+        if (playerInventory.player instanceof ServerPlayerEntity) {
+            Networking.registerC2SPacket(packetID, (buffer, player) -> {
                 CraftAction action = new CraftAction(buffer);
                 action.setItem(inventory.getStack(0));
-                action.linkInventory(inventory,1);
-                if(action.canPerform()){
-                    inventory.setStack(0,action.perform());
+                action.linkInventory(inventory, 1);
+                if (action.canPerform()) {
+                    inventory.setStack(0, action.perform());
                     this.onContentChanged(inventory);
                 }
+            });
+            Networking.registerC2SPacket(packetIDSlotAdd, (buffer, player) -> {
+                int invId = buffer.readInt();
+                int slotId = buffer.readInt();
+                Slot slot = new Slot(inventory, invId, 0, 0);
+                slot.id = slotId;
+                this.addSlot(slot);
+                slot.id = slotId;
+                Miapi.LOGGER.error("adding Slot handler 2" + slot.id + "  " + invId);
+            });
+            Networking.registerC2SPacket(packetIDSlotRemove, (buffer, player) -> {
+                int slotId = buffer.readInt();
+                transferSlot(playerInventory.player,slotId);
             });
         }
 
@@ -67,6 +99,22 @@ public class CraftingScreenHandler extends ScreenHandler {
                 return 64;
             }
         });
+    }
+
+    public void removeSlot2(Slot slot) {
+        Miapi.LOGGER.error("closing Slot 3");
+        transferSlot(playerInventory.player,slot.id);
+        //TODO:empty this slot into the playerInv
+        slot.markDirty();
+        if (slot instanceof MutableSlot mutableSlot) {
+            Miapi.LOGGER.error("closing Slot 4");
+            mutableSlot.setEnabled(false);
+        }
+        playerInventory.markDirty();
+        inventory.markDirty();
+        PacketByteBuf buf = Networking.createBuffer();
+        buf.writeInt(slot.id);
+        Networking.sendC2S(packetIDSlotRemove, buf);
     }
 
     /**
@@ -131,6 +179,8 @@ public class CraftingScreenHandler extends ScreenHandler {
             }
         }
         Networking.unRegisterC2CPacket(packetID);
+        Networking.unRegisterC2CPacket(packetIDSlotAdd);
+        Networking.unRegisterC2CPacket(packetIDSlotRemove);
     }
 
 
@@ -140,15 +190,6 @@ public class CraftingScreenHandler extends ScreenHandler {
      * @param inventory
      */
     public void onContentChanged(Inventory inventory) {
-        //Miapi.LOGGER.error(inventory.getStack(0).toString());
-        //Miapi.LOGGER.error(this.inventory.getStack(0).toString());
-        //this.context.run((world, blockPos) -> {
-        //    this.sendContentUpdates();
-        //});
-        // Update the output slot based on the input slot's contents
-        //ItemStack inputStack = this.inventory.getStack(0);
-        //ItemStack outputStack = CraftingRecipes.getOutput(inputStack);
-        //this.inventory.setStack(1, outputStack);
         this.sendContentUpdates();
     }
 }

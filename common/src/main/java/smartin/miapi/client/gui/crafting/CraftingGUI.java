@@ -31,15 +31,19 @@ public class CraftingGUI extends ParentHandledScreen<CraftingScreenHandler> impl
         this.backgroundHeight = 221;
     }
 
-    public void init(){
-        moduleCrafter = new ModuleCrafter((this.width - this.backgroundWidth) / 2+109,(this.height - this.backgroundHeight) / 2+5,163,130,(selectedSlot)->{
+    public void init() {
+        moduleCrafter = new ModuleCrafter((this.width - this.backgroundWidth) / 2 + 109, (this.height - this.backgroundHeight) / 2 + 5, 163, 130, (selectedSlot) -> {
             slotDisplay.select(selectedSlot);
-        },(item)->{
-            //setItem(item);
+        }, (item) -> {
             slotDisplay.setItem(item);
+        }, handler.inventory,
+                (addSlot) -> {
+                    handler.addSlot2(addSlot);
+                }, (removeSlot) -> {
+            handler.removeSlot2(removeSlot);
         });
         moduleCrafter.setPacketIdentifier(handler.packetID);
-        slotDisplay = new SlotDisplay(stack,(this.width - this.backgroundWidth) / 2+8,(this.height - this.backgroundHeight) / 2+8,206-20,98,(selected)->{
+        slotDisplay = new SlotDisplay(stack, (this.width - this.backgroundWidth) / 2 + 8, (this.height - this.backgroundHeight) / 2 + 8, 206 - 20, 98, (selected) -> {
             moduleCrafter.setSelectedSlot(selected);
         });
         slotDisplay.setItem(getItem());
@@ -52,33 +56,33 @@ public class CraftingGUI extends ParentHandledScreen<CraftingScreenHandler> impl
 
     }
 
-    public ItemStack getItem(){
+    public ItemStack getItem() {
         return handler.inventory.getStack(0);
         //return playerInventory.getStack(0);
     }
 
-    public void setItem(ItemStack stack){
-        if(stack==null){
+    public void setItem(ItemStack stack) {
+        if (stack == null) {
             stack = ItemStack.EMPTY;
         }
-        handler.inventory.setStack(0,stack);
+        handler.inventory.setStack(0, stack);
         //playerInventory.setStack(0,stack);
     }
 
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        this.drawBackground(matrices,delta, mouseX, mouseY);
+        this.drawBackground(matrices, delta, mouseX, mouseY);
         super.render(matrices, mouseX, mouseY, delta);
         RenderSystem.disableDepthTest();
         this.drawMouseoverTooltip(matrices, mouseX, mouseY);
         RenderSystem.enableDepthTest();
-        if(!getItem().equals(stack)){
+        if (!getItem().equals(stack)) {
             stack = getItem();
             setItem(handler.inventory.getStack(0));
-            if(slotDisplay!=null){
+            if (slotDisplay != null) {
                 slotDisplay.setItem(stack);
             }
-            if(moduleCrafter!=null){
+            if (moduleCrafter != null) {
                 moduleCrafter.setItem(stack);
             }
         }

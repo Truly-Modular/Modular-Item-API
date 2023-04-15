@@ -8,7 +8,6 @@ import com.google.gson.stream.JsonWriter;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.item.modular.properties.ModuleProperty;
-import smartin.miapi.item.modular.properties.PropertyResolver;
 import smartin.miapi.registries.MiapiRegistry;
 
 import java.io.IOException;
