@@ -8,6 +8,7 @@ import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.registry.ReloadListenerRegistry;
 import dev.architectury.registry.menu.MenuRegistry;
 import net.minecraft.item.Item;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerType;
@@ -25,6 +26,7 @@ import smartin.miapi.datapack.SpriteLoader;
 import smartin.miapi.item.modular.ItemModule;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.PropertyResolver;
+import smartin.miapi.item.modular.cache.ModularItemCache;
 import smartin.miapi.item.modular.properties.*;
 import smartin.miapi.item.modular.properties.crafting.AllowedSlots;
 import smartin.miapi.item.modular.properties.render.TextureProperty;
@@ -54,14 +56,15 @@ public class Miapi {
         LifecycleEvent.SERVER_STARTING.register(minecraftServer->{
             LOGGER.info("starting server");
         });
-        ClientLifecycleEvent.CLIENT_LEVEL_LOAD.register((listener)->{
-            //SpriteLoader.LoadSprites(null);
-        });
         SpriteLoader.setup();
         ReloadListenerRegistry.register(ResourceType.SERVER_DATA, new ReloadListener());
         ClientLifecycleEvent.CLIENT_STARTED.register(client->{
             new ClientInit();
         });
+        ReloadEvents.MAIN.subscribe((isClient)->{
+            moduleRegistry.clear();
+            ReloadEvents.DATA_PACKS.forEach(ItemModule::loadFromData);
+        },0.0f);
         MenuRegistry.registerScreenFactory(CRAFTING_SCREEN_HANDLER,CraftingGUI::new);
         PropertyResolver.propertyProviderRegistry.register("module", (moduleInstance,oldMap) -> {
             HashMap<ModuleProperty, JsonElement> map = new HashMap<>();
@@ -86,6 +89,21 @@ public class Miapi {
             }
             return map;
         });
+        ModularItemCache.setSupplier(ModularItem.moduleKey, itemStack -> {
+            NbtCompound tag = itemStack.getNbt();
+            try {
+                String modulesString = tag.getString(ModularItem.moduleKey);
+                Gson gson = new Gson();
+                return gson.fromJson(modulesString, ItemModule.ModuleInstance.class);
+            } catch (Exception e) {
+                e.printStackTrace();
+                Miapi.LOGGER.error("couldn't load Modules");
+                return null;
+            }
+        });
+        ModularItemCache.setSupplier(ModularItem.propertyKey, itemStack -> {
+            return ModularItem.getUnmergedProperties((ItemModule.ModuleInstance) ModularItemCache.get(itemStack, ModularItem.moduleKey));
+        });
     }
 
     protected static void setupRegistries(){
@@ -105,6 +123,7 @@ public class Miapi {
         Miapi.modulePropertyRegistry.register(SlotProperty.key, new SlotProperty());
         Miapi.modulePropertyRegistry.register(AllowedSlots.key,new AllowedSlots());
         Miapi.modulePropertyRegistry.register(MaterialProperty.key,new MaterialProperty());
+        Miapi.modulePropertyRegistry.register(AllowedMaterial.key,new AllowedMaterial());
     }
 
     private static <T extends ScreenHandler> ScreenHandlerType<T> register(Identifier id, ScreenHandlerType.Factory<T> factory) {

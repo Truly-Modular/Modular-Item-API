@@ -39,7 +39,7 @@ public class CraftView extends InteractAbleWidget {
     List<CraftingProperty> craftingProperties = new ArrayList<>();
     List<InteractAbleWidget> craftingGuis = new ArrayList<>();
     int inventoryOffset;
-    List<Slot> currentSlots = new ArrayList<>();
+    public static List<Slot> currentSlots = new ArrayList<>();
     private int currentGuiIndex = 0;
     Consumer<Slot> removeSlot;
     Consumer<Slot> addSlot;
@@ -57,7 +57,7 @@ public class CraftView extends InteractAbleWidget {
      * @param height the height
      *               These for Params above are used to create feedback on isMouseOver() by default
      */
-    public CraftView(int x, int y, int width, int height, String packetId, ItemModule module, ItemStack stack, Inventory inventory, int offset, SlotProperty.ModuleSlot slot, Consumer<SlotProperty.ModuleSlot> back, Consumer<ItemStack> newStack, Consumer<Slot> addSlot,Consumer<Slot> removeSlot) {
+    public CraftView(int x, int y, int width, int height, String packetId, ItemModule module, ItemStack stack, Inventory inventory, int offset, SlotProperty.ModuleSlot slot, Consumer<SlotProperty.ModuleSlot> back, Consumer<ItemStack> newStack, Consumer<Slot> addSlot, Consumer<Slot> removeSlot) {
         super(x, y, width, height, Text.empty());
         compareStack = stack;
         linkedInventory = inventory;
@@ -72,12 +72,8 @@ public class CraftView extends InteractAbleWidget {
         action.linkInventory(inventory, offset);
         compareStack = action.getPreview();
         action.forEachCraftingProperty(compareStack, ((craftingProperty, moduleInstance, itemStacks, invStart, invEnd, buf) -> {
-            InteractAbleWidget guiScreen = craftingProperty.createGui();
+            InteractAbleWidget guiScreen = craftingProperty.createGui(this.x, this.y, this.width, this.height - 30);
             if (guiScreen != null) {
-                guiScreen.x = this.x;
-                guiScreen.y = this.y;
-                guiScreen.setWidth(this.width);
-                guiScreen.setHeight(this.height - 30);
                 craftingGuis.add(guiScreen);
                 craftingProperties.add(craftingProperty);
                 //TODO:Figure out sth for the slots so only the ones linked to this ui
@@ -125,7 +121,7 @@ public class CraftView extends InteractAbleWidget {
         addChild(craftButton);
     }
 
-    public void closeSlot(){
+    public void closeSlot() {
         currentSlots.forEach(slot -> {
             removeSlot.accept(slot);
         });

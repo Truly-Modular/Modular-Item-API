@@ -46,6 +46,9 @@ public class ModuleCrafter extends InteractAbleWidget {
         this.selectedSlot = selected;
         this.removeSlot = removeSlot;
         this.addSlot = addSlot;
+        CraftView.currentSlots.forEach(slot1 -> {
+            removeSlot.accept(slot1);
+        });
 
         list = new BoxList(this.x, this.y + 18, this.width, this.height - 38, Text.empty(), widgets);
         list.setSpace(1);

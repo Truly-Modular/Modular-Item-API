@@ -6,5 +6,9 @@
     },
     "allowedInSlots": ["","sword_edge"],
     "slots": {
-    }
+    },
+  "allowedMaterial": {
+    "allowedMaterials": ["metal"],
+    "cost": 1
+  }
   }

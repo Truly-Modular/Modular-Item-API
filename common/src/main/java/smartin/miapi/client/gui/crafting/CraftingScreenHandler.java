@@ -28,17 +28,6 @@ public class CraftingScreenHandler extends ScreenHandler {
         this(syncId, playerInventory, ScreenHandlerContext.EMPTY);
     }
 
-    public void addSlot2(Slot slot) {
-        this.addSlot(slot);
-        PacketByteBuf buf = Networking.createBuffer();
-        buf.writeInt(slot.getIndex());
-        buf.writeInt(slot.id);
-        Networking.sendC2S(packetIDSlotAdd, buf);
-
-        slot.markDirty();
-        Miapi.LOGGER.error("adding Slot handler " + slot.x + "  " + slot.y);
-    }
-
     public CraftingScreenHandler(int syncId, PlayerInventory playerInventory, ScreenHandlerContext context) {
         super(Miapi.CRAFTING_SCREEN_HANDLER, syncId);
         packetID = Miapi.MOD_ID + ":crafting_packet_" + syncId;
@@ -66,7 +55,7 @@ public class CraftingScreenHandler extends ScreenHandler {
             });
             Networking.registerC2SPacket(packetIDSlotRemove, (buffer, player) -> {
                 int slotId = buffer.readInt();
-                transferSlot(playerInventory.player,slotId);
+                transferSlot(playerInventory.player, slotId);
             });
         }
 
@@ -102,12 +91,11 @@ public class CraftingScreenHandler extends ScreenHandler {
     }
 
     public void removeSlot2(Slot slot) {
-        Miapi.LOGGER.error("closing Slot 3");
-        transferSlot(playerInventory.player,slot.id);
-        //TODO:empty this slot into the playerInv
+        if (!slots.contains(slot))
+            return;
+        transferSlot(playerInventory.player, slot.id);
         slot.markDirty();
         if (slot instanceof MutableSlot mutableSlot) {
-            Miapi.LOGGER.error("closing Slot 4");
             mutableSlot.setEnabled(false);
         }
         playerInventory.markDirty();
@@ -115,6 +103,18 @@ public class CraftingScreenHandler extends ScreenHandler {
         PacketByteBuf buf = Networking.createBuffer();
         buf.writeInt(slot.id);
         Networking.sendC2S(packetIDSlotRemove, buf);
+
+    }
+
+    public void addSlot2(Slot slot) {
+        if (slots.contains(slot)) return;
+        this.addSlot(slot);
+        PacketByteBuf buf = Networking.createBuffer();
+        buf.writeInt(slot.getIndex());
+        buf.writeInt(slot.id);
+        Networking.sendC2S(packetIDSlotAdd, buf);
+
+        slot.markDirty();
     }
 
     /**
@@ -183,12 +183,6 @@ public class CraftingScreenHandler extends ScreenHandler {
         Networking.unRegisterC2CPacket(packetIDSlotRemove);
     }
 
-
-    /**
-     * use to update children
-     *
-     * @param inventory
-     */
     public void onContentChanged(Inventory inventory) {
         this.sendContentUpdates();
     }

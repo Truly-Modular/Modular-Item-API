@@ -6,5 +6,9 @@
     },
     "allowedInSlots": ["","sword_pommel"],
     "slots": {
-    }
+    },
+  "allowedMaterial": {
+    "allowedMaterials": ["metal"],
+    "cost": 1
+  }
   }

@@ -1,11 +1,21 @@
 {
-  "key": "testing",
-  "groups": ["metal","iron"],
+  "key": "gold",
+  "groups": ["metal"],
+  "items": [
+    {
+      "tag": "forge:obsidian",
+      "value": 0.5
+    },
+    {
+      "item": "minecraft:gold_ingot",
+      "value": 0.5
+    }
+  ],
   "hardness": 0,
   "density": 1,
   "flexibility": 0,
   "durability": 800,
-  "color": "FF000000",
+  "color": "FFFFE900",
   "properties": {
     "default": {
       "testproperty2": 23,
@@ -19,15 +29,5 @@
     "crude",
     "default",
     "test"
-  ],
-  "items": [
-    {
-      "tag": "forge:obsidian",
-      "value": 0.5
-    },
-    {
-      "item": "minecraft:obsidian",
-      "value": 2.0
-    }
   ]
 }

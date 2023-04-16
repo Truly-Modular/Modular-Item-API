@@ -1,35 +1,30 @@
 package smartin.miapi.item.modular.properties;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.tag.TagKey;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
-import net.minecraft.util.math.Vec2f;
+import net.minecraft.util.registry.Registry;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.item.modular.ItemModule;
 import smartin.miapi.item.modular.StatResolver;
-import smartin.miapi.item.modular.properties.crafting.CraftingProperty;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-public class MaterialProperty extends CraftingProperty {
-
-    public static String key = "material";
-
+public class MaterialProperty implements ModuleProperty {
+    public static final String key = "material";
     public static ModuleProperty materialProperty;
-
-    public static Map<String, JsonElement> materialMap = new HashMap<>();
+    public static Map<String, Material> materials = new HashMap<>();
 
     public MaterialProperty() {
         materialProperty = this;
@@ -39,7 +34,7 @@ public class MaterialProperty extends CraftingProperty {
                 JsonElement jsonData = instance.getKeyedProperties().get(key);
                 try {
                     if (jsonData != null) {
-                        jsonData = materialMap.get(jsonData.getAsString());
+                        jsonData = materials.get(jsonData.getAsString()).rawJson;
                         if (jsonData != null) {
                             String[] keys = data.split("\\.");
                             for (String key : keys) {
@@ -64,7 +59,7 @@ public class MaterialProperty extends CraftingProperty {
                 JsonElement jsonData = instance.getProperties().get(materialProperty);
                 try {
                     if (jsonData != null) {
-                        jsonData = materialMap.get(jsonData.getAsString());
+                        jsonData = materials.get(jsonData.getAsString()).rawJson;
                         if (jsonData != null) {
                             String[] keys = data.split("\\.");
                             for (String key : keys) {
@@ -84,23 +79,33 @@ public class MaterialProperty extends CraftingProperty {
                 return "";
             }
         });
-        ReloadEvents.DataPackLoader.subscribe((path, data) -> {
-            if (path.contains("material")) {
-                JsonParser parser = new JsonParser();
-                JsonObject obj = parser.parse(data).getAsJsonObject();
-                materialMap.put(obj.get("key").getAsString(), obj);
+        ReloadEvents.MAIN.subscribe((isClient -> {
+            materials.clear();
+            ReloadEvents.DATA_PACKS.forEach((path, data) -> {
+                if (path.contains(key)) {
+                    //load Material Logic
+                    JsonParser parser = new JsonParser();
+                    JsonObject obj = parser.parse(data).getAsJsonObject();
+                    String key = obj.get("key").getAsString();
+                    Material material = new Material();
+                    material.key = key;
+                    material.rawJson = obj;
+                    materials.put(key, material);
+                }
+            });
+        }), -1.0f);
+    }
+
+    public static List<String> getTextureKeys() {
+        Set<String> textureKeys = new HashSet<>();
+        textureKeys.add("base");
+        for (Material material : materials.values()) {
+            JsonArray textures = material.rawJson.getAsJsonObject().getAsJsonArray("textures");
+            for (JsonElement texture : textures) {
+                textureKeys.add(texture.getAsString());
             }
-        });
-    }
-
-    public List<Vec2f> getSlotPositions(){
-        List<Vec2f> test = new ArrayList<>();
-        test.add(new Vec2f(5,5));
-        return test;
-    }
-
-    public InteractAbleWidget createGui(){
-        return new test(0,0,10,10);
+        }
+        return new ArrayList<>(textureKeys);
     }
 
     @Override
@@ -109,35 +114,47 @@ public class MaterialProperty extends CraftingProperty {
     }
 
     @Nullable
-    public static String getMaterial(ItemModule.ModuleInstance instance){
-        JsonElement element = instance.getProperties().get(materialProperty);
-        if(element!=null){
-            return element.getAsString();
+    public static Material getMaterial(ItemStack item) {
+        for (Material material : materials.values()) {
+            JsonObject obj = material.rawJson.getAsJsonObject();
+            JsonArray items = obj.getAsJsonArray("items");
+
+            for (JsonElement element : items) {
+                JsonObject itemObj = element.getAsJsonObject();
+
+                if (itemObj.has("item")) {
+                    String itemId = itemObj.get("item").getAsString();
+                    if (Registry.ITEM.getId(item.getItem()).toString().equals(itemId)) {
+                        return material;
+                    }
+                } else if (itemObj.has("tag")) {
+                    String tagId = itemObj.get("tag").getAsString();
+                    TagKey<Item> tag = TagKey.of(Registry.ITEM_KEY, new Identifier(tagId));
+                    if (tag != null && item.isIn(tag)) {
+                        return material;
+                    }
+                }
+            }
         }
         return null;
     }
 
-    public static void setMaterial(ItemModule.ModuleInstance instance,String material){
-        String propertyString = instance.moduleData.computeIfAbsent("properties",(key)->{
+    @Nullable
+    public static Material getMaterial(ItemModule.ModuleInstance instance) {
+        JsonElement element = instance.getProperties().get(materialProperty);
+        if (element != null) {
+            return materials.get(element.getAsString());
+        }
+        return null;
+    }
+
+    public static void setMaterial(ItemModule.ModuleInstance instance, String material) {
+        String propertyString = instance.moduleData.computeIfAbsent("properties", (key) -> {
             return "{material:empty}";
         });
-        JsonObject moduleJson = Miapi.gson.fromJson( propertyString, JsonObject.class);
-        moduleJson.addProperty("material",material);
-        instance.moduleData.put("properties",Miapi.gson.toJson(moduleJson));
-    }
-
-    @Override
-    public ItemStack preview(ItemStack old, ItemStack crafting, PlayerEntity player, ItemModule.ModuleInstance newModule, ItemModule module, List<ItemStack> inventory, PacketByteBuf buf) {
-        return crafting;
-    }
-
-    @Override
-    public List<ItemStack> performCraftAction(ItemStack old, ItemStack crafting, PlayerEntity player, ItemModule.ModuleInstance newModule, ItemModule module, List<ItemStack> inventory,PacketByteBuf buf) {
-        List<ItemStack> stacks = new ArrayList<>();
-        stacks.add(this.preview(old, crafting, player, newModule, module, inventory,buf));
-        stacks.addAll(inventory);
-        stacks.set(1,ItemStack.EMPTY);
-        return stacks;
+        JsonObject moduleJson = Miapi.gson.fromJson(propertyString, JsonObject.class);
+        moduleJson.addProperty("material", material);
+        instance.moduleData.put("properties", Miapi.gson.toJson(moduleJson));
     }
 
     public class test extends InteractAbleWidget {
@@ -158,8 +175,59 @@ public class MaterialProperty extends CraftingProperty {
             super(x, y, width, height, Text.literal("Test"));
         }
 
-        public void render(MatrixStack matrices, int mouseX, int mouseY, float delta){
-            drawSquareBorder(matrices,x,y,width,height,4, ColorHelper.Argb.getArgb(255,255,255,255));
+        public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+            drawSquareBorder(matrices, x, y, width, height, 4, ColorHelper.Argb.getArgb(255, 255, 255, 255));
+        }
+    }
+
+    public class Material {
+        public String key;
+        public JsonElement rawJson;
+
+        public List<String> getGroups() {
+            List<String> groups = new ArrayList<>();
+            groups.add(key);
+            JsonArray groupsJson = rawJson.getAsJsonObject().getAsJsonArray("groups");
+            for (JsonElement groupElement : groupsJson) {
+                String group = groupElement.getAsString();
+                groups.add(group);
+            }
+            return groups;
+        }
+
+        public int getColor() {
+            long longValue = Long.parseLong(rawJson.getAsJsonObject().get("color").getAsString(), 16);
+            return (int) (longValue & 0xffffffffL);
+        }
+
+        public double getValueOfItem(ItemStack item) {
+            JsonArray items = rawJson.getAsJsonObject().getAsJsonArray("items");
+
+            for (JsonElement element : items) {
+                JsonObject itemObj = element.getAsJsonObject();
+
+                if (itemObj.has("item")) {
+                    String itemId = itemObj.get("item").getAsString();
+                    if (Registry.ITEM.getId(item.getItem()).toString().equals(itemId)) {
+                        try {
+                            return itemObj.get("value").getAsDouble();
+                        } catch (Exception surpressed) {
+                            return 1;
+                        }
+                    }
+                } else if (itemObj.has("tag")) {
+                    String tagId = itemObj.get("tag").getAsString();
+                    TagKey<Item> tag = TagKey.of(Registry.ITEM_KEY, new Identifier(tagId));
+                    if (tag != null && item.isIn(tag)) {
+                        try {
+                            return itemObj.get("value").getAsDouble();
+                        } catch (Exception surpressed) {
+                            return 1;
+                        }
+                    }
+                }
+            }
+            return 0;
         }
     }
 }

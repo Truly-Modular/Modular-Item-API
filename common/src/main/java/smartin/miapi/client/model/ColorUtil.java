@@ -7,6 +7,7 @@ import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 import smartin.miapi.item.modular.ItemModule;
+import smartin.miapi.item.modular.properties.MaterialProperty;
 
 public class ColorUtil {
     public static BakedModel recolorModel(BakedModel originalModel, int color) {
@@ -47,6 +48,10 @@ public class ColorUtil {
 
     public static int getModuleColor(ItemModule.ModuleInstance instance){
         ColorHelper.Argb.getArgb(255,0,255,0);
+        MaterialProperty.Material material = MaterialProperty.getMaterial(instance);
+        if(material!=null){
+            return material.getColor();
+        }
         return ColorHelper.Argb.getArgb(255,0,255,0);
     }
 

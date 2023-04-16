@@ -1,11 +1,11 @@
 {
-  "key": "testing",
-  "groups": ["metal","iron"],
+  "key": "iron",
+  "groups": ["metal"],
   "hardness": 0,
   "density": 1,
   "flexibility": 0,
   "durability": 800,
-  "color": "FF000000",
+  "color": "44605F60",
   "properties": {
     "default": {
       "testproperty2": 23,
@@ -26,7 +26,7 @@
       "value": 0.5
     },
     {
-      "item": "minecraft:obsidian",
+      "item": "minecraft:iron_ingot",
       "value": 2.0
     }
   ]

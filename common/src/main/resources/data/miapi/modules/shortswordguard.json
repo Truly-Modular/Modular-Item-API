@@ -15,5 +15,10 @@
       }
     }
   },
-  "moduleproperty1" : "[material.durability]*[material.density] + [material.properties.default.testproperty2]"
+  "moduleproperty1" : "[material.durability]*[material.density] + [material.properties.default.testproperty2]",
+  "material": "testing",
+  "allowedMaterial": {
+    "allowedMaterials": ["metal"],
+    "cost": 1
+  }
 }

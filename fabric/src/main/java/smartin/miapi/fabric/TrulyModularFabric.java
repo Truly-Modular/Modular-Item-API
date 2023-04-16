@@ -21,7 +21,6 @@ public class TrulyModularFabric implements ModInitializer {
             //Miapi.LOGGER.info(path);
             //Miapi.LOGGER.warn(data);
         }));
-        ReloadEvents.DataPackLoader.subscribe(ItemModule::loadFromData);
         ClientSync.init();
         Miapi.itemRegistry.addCallback(item ->   {
             Registry.register(Registry.ITEM, Miapi.modularItemIdentifier, item);

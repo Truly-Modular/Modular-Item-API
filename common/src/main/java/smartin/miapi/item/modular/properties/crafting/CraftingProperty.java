@@ -14,14 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class CraftingProperty implements ModuleProperty {
-
-    @Override
-    public boolean load(String moduleKey, JsonElement data) throws Exception {
-        return false;
-    }
-
     @Nullable
-    public InteractAbleWidget createGui(){
+    public InteractAbleWidget createGui(int x, int y, int width, int height){
         return null;
     }
 

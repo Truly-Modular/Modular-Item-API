@@ -5,12 +5,12 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 import smartin.miapi.Miapi;
 import smartin.miapi.item.modular.ItemModule;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.cache.ModularItemCache;
-import smartin.miapi.item.modular.properties.MaterialProperty;
 import smartin.miapi.item.modular.properties.SlotProperty;
 import smartin.miapi.item.modular.properties.crafting.CraftingProperty;
 import smartin.miapi.network.Networking;
@@ -99,11 +99,23 @@ public class CraftAction {
         ItemStack crafted = getPreview();
         AtomicBoolean test = new AtomicBoolean(true);
         forEachCraftingProperty(crafted, (guiCraftingProperty, module, inventory, start, end, buffer) -> {
-            if (!test.get()) {
+            if (test.get()) {
                 test.set(guiCraftingProperty.canPerform(old, crafted, player, module, toAdd, inventory, buffer));
             }
         });
         return test.get();
+    }
+
+    private void updateItem(ItemStack stack, ItemModule.ModuleInstance instance) {
+        while (instance.parent != null) {
+            instance = instance.parent;
+        }
+        if (!stack.isEmpty()) {
+            if (!stack.hasNbt()) {
+                stack.setNbt(new NbtCompound());
+            }
+            stack.getNbt().putString("modules", instance.toString());
+        }
     }
 
     public void linkInventory(Inventory inventory, int offset) {
@@ -115,11 +127,10 @@ public class CraftAction {
         final ItemStack[] craftingStack = {craft()};
         forEachCraftingProperty(craftingStack[0], (craftingProperty, module, inventory, start, end, buffer) -> {
             List<ItemStack> itemStacks = craftingProperty.performCraftAction(old, craftingStack[0], player, module, toAdd, inventory, buffer);
+            updateItem(craftingStack[0], module);
             craftingStack[0] = itemStacks.remove(0);
-            Miapi.LOGGER.error("size" + itemStacks.size()+ " "+start + " " + end);
             for (int i = start; i < end; i++) {
-                Miapi.LOGGER.error("wait what " + itemStacks.size() + " testing "+ inventory.size());
-                linkedInventory.setStack(i, itemStacks.get(i-start));
+                linkedInventory.setStack(i, itemStacks.get(i - start));
             }
         });
         linkedInventory.markDirty();
@@ -154,7 +165,6 @@ public class CraftAction {
         } else {
             ItemModule.ModuleInstance newModule = new ItemModule.ModuleInstance(toAdd);
             newModule.parent = parsingInstance;
-            MaterialProperty.setMaterial(newModule, "testing");
             parsingInstance.subModules.put(slotId.get(0), newModule);
         }
         craftingStack.getNbt().putString("modules", newBaseModule.toString());
