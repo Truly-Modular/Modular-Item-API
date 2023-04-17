@@ -2,12 +2,14 @@ package smartin.miapi.client.gui;
 
 import net.minecraft.inventory.Inventory;
 import net.minecraft.screen.slot.Slot;
+import smartin.miapi.Miapi;
 
 public class MutableSlot extends Slot {
     private boolean isEnabled = true;
 
     public MutableSlot(Inventory inventory, int index, int x, int y) {
         super(inventory, index, x, y);
+        Miapi.LOGGER.error("adding slot to " + x + " y " + y);
     }
 
     public void setEnabled(boolean isEnabled) {

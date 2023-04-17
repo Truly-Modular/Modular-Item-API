@@ -2,6 +2,7 @@ package smartin.miapi.client.gui.crafting.crafter;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.Element;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.inventory.Inventory;
@@ -43,6 +44,8 @@ public class CraftView extends InteractAbleWidget {
     private int currentGuiIndex = 0;
     Consumer<Slot> removeSlot;
     Consumer<Slot> addSlot;
+    int backgroundWidth = 278;
+    int backgroundHeight = 221;
 
     /**
      * This is a Widget build to support Children and parse the events down to them.
@@ -76,10 +79,9 @@ public class CraftView extends InteractAbleWidget {
             if (guiScreen != null) {
                 craftingGuis.add(guiScreen);
                 craftingProperties.add(craftingProperty);
-                //TODO:Figure out sth for the slots so only the ones linked to this ui
             }
         }));
-        addChild(new SimpleButton<>(this.x + 10, this.y + this.height - 10, 40, 10, Text.translatable(Miapi.MOD_ID + ".ui.craft"), slot, back::accept));
+        addChild(new SimpleButton<>(this.x + 10, this.y + this.height - 10, 40, 10, Text.translatable(Miapi.MOD_ID + ".ui.craft.back"), slot, back::accept));
 
         if (craftingGuis.size() > 1) {
             previousButton = new PageButton<>(this.x + this.width - 10, this.y, 10, 10, true, null, (callback) -> {
@@ -127,19 +129,25 @@ public class CraftView extends InteractAbleWidget {
         });
     }
 
-
     public void addGui(InteractAbleWidget widget) {
         widget.x = this.x;
         widget.y = this.y + 15;
         widget.setWidth(this.width);
         widget.setHeight(this.height - 30);
-        closeSlot();
+        //closeSlot();
+        currentSlots.forEach(slot -> {
+            if (slot instanceof MutableSlot mutableSlot) {
+                mutableSlot.setEnabled(false);
+            }
+        });
         CraftingProperty property = craftingProperties.get(craftingGuis.indexOf(widget));
         action.forEachCraftingProperty(compareStack, (craftingProperty, module, inventory, start, end, buffer) -> {
             if (craftingProperty.equals(property)) {
                 AtomicInteger counter = new AtomicInteger(0);
                 property.getSlotPositions().forEach(vec2f -> {
-                    Slot slot = new MutableSlot(linkedInventory, start + counter.getAndAdd(1), (int) (widget.x + vec2f.x), (int) (widget.y + vec2f.y));
+                    int guiX = (MinecraftClient.getInstance().currentScreen.width - backgroundWidth) / 2; // X-coordinate of the top-left corner
+                    int guiY = (MinecraftClient.getInstance().currentScreen.height - backgroundHeight) / 2;
+                    Slot slot = new MutableSlot(linkedInventory, start + counter.getAndAdd(1), (widget.x + (int) vec2f.x) - guiX, widget.y + (int) vec2f.y - guiY);
                     currentSlots.add(slot);
                     addSlot.accept(slot);
                 });

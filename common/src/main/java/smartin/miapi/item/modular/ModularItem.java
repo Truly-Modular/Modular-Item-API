@@ -1,6 +1,12 @@
 package smartin.miapi.item.modular;
 
+import com.google.common.collect.Multimap;
 import com.google.gson.JsonElement;
+import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.entity.attribute.AttributeContainer;
+import net.minecraft.entity.attribute.EntityAttribute;
+import net.minecraft.entity.attribute.EntityAttributeModifier;
+import net.minecraft.item.ArmorItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import smartin.miapi.Miapi;

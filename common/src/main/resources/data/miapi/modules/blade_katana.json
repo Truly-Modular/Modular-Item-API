@@ -1,10 +1,10 @@
 {
-    "name": "sword_shortSwordBlade",
+    "name": "blade_katana",
     "texture": {
-      "path": "miapi:models/item/sword/blade.json",
-      "transform": {"rotation":{"x":0.0,"y":0.0,"z":0.0},"translation":{"x":-2.0,"y":-3.0,"z":0.0},"scale":{"x":1,"y":1,"z":1}}
+      "path": "miapi:models/item/swords/blade_katana.json",
+      "transform": {"rotation":{"x":0.0,"y":0.0,"z":0.0},"translation":{"x":1.0,"y":0.0,"z":0.0},"scale":{"x":1,"y":1,"z":1}}
     },
-    "allowedInSlots": ["","sword_blade"],
+    "allowedInSlots": ["sword_blade"],
     "slots": {
       "0": {
         "allowed": ["sword_edge"],

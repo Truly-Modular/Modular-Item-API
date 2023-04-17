@@ -9,6 +9,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.text.Text;
+import smartin.miapi.Miapi;
 
 public abstract class ParentHandledScreen<T extends ScreenHandler> extends HandledScreen<T> {
 
@@ -66,10 +67,12 @@ public abstract class ParentHandledScreen<T extends ScreenHandler> extends Handl
         for (Element child : this.children()) {
             if (child.isMouseOver(mouseX, mouseY)) {
                 if (child.mouseClicked(mouseX, mouseY, button)) {
+                    Miapi.LOGGER.error("Handled Click" + child.toString());
                     return true;
                 }
             }
         }
+        Miapi.LOGGER.error("unhandled Click");
         return super.mouseClicked(mouseX, mouseY, button);
     }
 

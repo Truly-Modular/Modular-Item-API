@@ -1,6 +1,16 @@
 {
   "key": "gold",
   "groups": ["metal"],
+  "hardness": 1,
+  "density": 1,
+  "flexibility": 2,
+  "durability": 800,
+  "color": "FFFFE900",
+  "textures": [
+    "crude",
+    "default",
+    "test"
+  ],
   "items": [
     {
       "tag": "forge:obsidian",
@@ -10,24 +20,5 @@
       "item": "minecraft:gold_ingot",
       "value": 0.5
     }
-  ],
-  "hardness": 0,
-  "density": 1,
-  "flexibility": 0,
-  "durability": 800,
-  "color": "FFFFE900",
-  "properties": {
-    "default": {
-      "testproperty2": 23,
-      "attributes": {
-        "attack.damage": 5,
-        "tool_level": 3
-      }
-    }
-  },
-  "textures": [
-    "crude",
-    "default",
-    "test"
   ]
 }

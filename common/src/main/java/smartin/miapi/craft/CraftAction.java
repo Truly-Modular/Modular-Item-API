@@ -18,11 +18,13 @@ import smartin.miapi.network.Networking;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 public class CraftAction {
     private final ItemModule toAdd;
@@ -193,22 +195,27 @@ public class CraftAction {
         if (parsingInstance != null) {
             AtomicInteger integer = new AtomicInteger(inventoryOffset);
             AtomicInteger counter = new AtomicInteger(0);
-            newInstance.getProperties().forEach((property, json) -> {
-                if (property instanceof CraftingProperty craftingProperty) {
-                    List<ItemStack> itemStacks = new ArrayList<>();
-                    int startPos = integer.get();
-                    int endPos = startPos + craftingProperty.getSlotPositions().size();
-                    for (int i = startPos; i < endPos; i++) {
-                        itemStacks.add(linkedInventory.getStack(i));
-                    }
-                    PacketByteBuf buf = Networking.createBuffer();
-                    if (packetByteBuffs != null && packetByteBuffs.length > counter.get()) {
-                        buf = packetByteBuffs[counter.getAndAdd(1)];
-                    }
-                    propertyConsumer.accept(craftingProperty, newInstance, itemStacks, startPos, endPos, buf);
-                    integer.set(endPos);
+
+            List<CraftingProperty> sortedProperties =
+                    newInstance.getProperties().keySet().stream()
+                            .filter(property -> property instanceof CraftingProperty)
+                            .map(property -> (CraftingProperty) property)
+                            .sorted(Comparator.comparingDouble(CraftingProperty::getPriority))
+                            .toList();
+            for (CraftingProperty craftingProperty : sortedProperties) {
+                List<ItemStack> itemStacks = new ArrayList<>();
+                int startPos = integer.get();
+                int endPos = startPos + craftingProperty.getSlotPositions().size();
+                for (int i = startPos; i < endPos; i++) {
+                    itemStacks.add(linkedInventory.getStack(i));
                 }
-            });
+                PacketByteBuf buf = Networking.createBuffer();
+                if (packetByteBuffs != null && packetByteBuffs.length > counter.get()) {
+                    buf = packetByteBuffs[counter.getAndAdd(1)];
+                }
+                propertyConsumer.accept(craftingProperty, newInstance, itemStacks, startPos, endPos, buf);
+                integer.set(endPos);
+            }
         }
     }
 

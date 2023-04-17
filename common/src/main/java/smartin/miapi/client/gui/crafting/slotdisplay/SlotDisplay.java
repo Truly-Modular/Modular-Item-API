@@ -77,9 +77,11 @@ public class SlotDisplay extends InteractAbleWidget {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (button == 0) {
+        if (button == 0 && isMouseOver(mouseX, mouseY)) {
+            Miapi.LOGGER.error("ate Click SLotDisplay");
             mouseDown0 = true;
-        } else if (button == 1) {
+        } else if (button == 1 && isMouseOver(mouseX, mouseY)) {
+            Miapi.LOGGER.error("ate Click SLotDisplay");
             mouseDown1 = true;
         }
         return super.mouseClicked(mouseX, mouseY, button);
@@ -118,7 +120,7 @@ public class SlotDisplay extends InteractAbleWidget {
         return super.mouseScrolled(mouseX, mouseY, amount);
     }
 
-    public void setBaseSlot(SlotProperty.ModuleSlot slot){
+    public void setBaseSlot(SlotProperty.ModuleSlot slot) {
         baseSlot = slot;
     }
 
@@ -129,7 +131,7 @@ public class SlotDisplay extends InteractAbleWidget {
         });
         buttonMap.clear();
         ModularItem.getModules(stack).allSubModules().forEach(moduleInstances -> {
-            SlotProperty.getSlots(moduleInstances).forEach((number,slot)-> {
+            SlotProperty.getSlots(moduleInstances).forEach((number, slot) -> {
                 buttonMap.computeIfAbsent(slot, newSlot -> {
                     ModuleButton newButton = new ModuleButton(0, 0, 10, 10, newSlot);
                     addChild(newButton);
@@ -137,7 +139,7 @@ public class SlotDisplay extends InteractAbleWidget {
                 });
             });
         });
-        if(baseSlot!=null){
+        if (baseSlot != null) {
             baseSlot.inSlot = ModularItem.getModules(stack);
             buttonMap.computeIfAbsent(baseSlot, newSlot -> {
                 ModuleButton newButton = new ModuleButton(0, 0, 10, 10, newSlot);
@@ -155,13 +157,13 @@ public class SlotDisplay extends InteractAbleWidget {
 
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        enableScissor(this.x,this.y,this.x+this.width,this.y+this.height);
+        enableScissor(this.x, this.y, this.x + this.width, this.y + this.height);
         renderSlot(stack, matrices, mouseX, mouseY, delta);
         super.render(matrices, mouseX, mouseY, delta);
         disableScissor();
     }
 
-    public void select(SlotProperty.ModuleSlot selected){
+    public void select(SlotProperty.ModuleSlot selected) {
         this.selected = selected;
     }
 
@@ -193,7 +195,7 @@ public class SlotDisplay extends InteractAbleWidget {
             DiffuseLighting.disableGuiDepthLighting();
         }
         renderer.renderItem(stack, ModelTransformation.Mode.GUI, 15728880, OverlayTexture.DEFAULT_UV, slotProjection, immediate, 0);
-        renderButtons(stack,matrixStack,slotProjection,1);
+        renderButtons(stack, matrixStack, slotProjection, 1);
         immediate.draw();
         RenderSystem.enableDepthTest(); // added
         if (bl) {
@@ -204,14 +206,14 @@ public class SlotDisplay extends InteractAbleWidget {
     }
 
     public void renderButtons(ItemStack stack, MatrixStack matrixStack, MatrixStack otherProjection, float delta) {
-        buttonMap.forEach((currentslot,button)->{
+        buttonMap.forEach((currentslot, button) -> {
             Vec3f position = SlotProperty.getTransform(currentslot).translation;
-            position.add(-4.5f,-4.5f,1);
-            Vector4f pos = new Vector4f(position.getX()/16, position.getY()/16, position.getZ()/16, 1.0f);
+            position.add(-4.5f, -4.5f, 1);
+            Vector4f pos = new Vector4f(position.getX() / 16, position.getY() / 16, position.getZ() / 16, 1.0f);
             pos.transform(otherProjection.peek().getPositionMatrix());
             pos.transform(matrixStack.peek().getPositionMatrix());
-            button.x = (int) pos.getX() - button.getWidth()/2;
-            button.y = (int) pos.getY() - button.getHeight()/2;
+            button.x = (int) pos.getX() - button.getWidth() / 2;
+            button.y = (int) pos.getY() - button.getHeight() / 2;
         });
     }
 
@@ -243,8 +245,12 @@ public class SlotDisplay extends InteractAbleWidget {
         }
 
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
-            setSelected(this.instance);
-            return true;
+            if (this.isMouseOver(mouseX, mouseY)) {
+                setSelected(this.instance);
+                Miapi.LOGGER.error("ATE CLICK SLOTDISPLAY 2");
+                return true;
+            }
+            return super.mouseClicked(mouseX, mouseY, button);
         }
 
         public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {

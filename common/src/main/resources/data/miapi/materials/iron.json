@@ -1,20 +1,11 @@
 {
   "key": "iron",
   "groups": ["metal"],
-  "hardness": 0,
+  "hardness": 4,
   "density": 1,
-  "flexibility": 0,
+  "flexibility": 1,
   "durability": 800,
   "color": "44605F60",
-  "properties": {
-    "default": {
-      "testproperty2": 23,
-      "attributes": {
-        "attack.damage": 5,
-        "tool_level": 3
-      }
-    }
-  },
   "textures": [
     "crude",
     "default",
@@ -23,6 +14,10 @@
   "items": [
     {
       "tag": "forge:obsidian",
+      "value": 0.5
+    },
+    {
+      "tag": "c:obsidian",
       "value": 0.5
     },
     {

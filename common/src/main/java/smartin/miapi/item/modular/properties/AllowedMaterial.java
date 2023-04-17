@@ -13,7 +13,6 @@ import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.item.modular.ItemModule;
 import smartin.miapi.item.modular.properties.crafting.CraftingProperty;
 
-import java.time.chrono.MinguoDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,6 +24,11 @@ public class AllowedMaterial extends CraftingProperty {
         List<Vec2f> test = new ArrayList<>();
         test.add(new Vec2f(5, 5));
         return test;
+    }
+
+    @Override
+    public float getPriority() {
+        return -1;
     }
 
     public InteractAbleWidget createGui(int x, int y, int width, int height) {
@@ -88,7 +92,8 @@ public class AllowedMaterial extends CraftingProperty {
     }
 
     public class test extends InteractAbleWidget {
-
+        private final int startX;
+        private final int startY;
         /**
          * This is a Widget build to support Children and parse the events down to them.
          * Best use in conjunction with the ParentHandledScreen as it also handles Children correct,
@@ -103,10 +108,15 @@ public class AllowedMaterial extends CraftingProperty {
          */
         public test(int x, int y, int width, int height) {
             super(x, y, width, height, Text.literal("Test"));
+            startX = x+5;
+            startY = y+5;
+            Miapi.LOGGER.error("adding SLOT2 to " + startX + " y " + startY);
         }
 
         public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
             drawSquareBorder(matrices, x, y, width, height, 4, ColorHelper.Argb.getArgb(255, 255, 255, 255));
+            drawSquareBorder(matrices, x+5, y+5, 9, 9, 4, ColorHelper.Argb.getArgb(255, 0, 0, 0));
+            drawSquareBorder(matrices, startX, startY, 9, 9, 4, ColorHelper.Argb.getArgb(255, 255, 255, 0));
         }
     }
 

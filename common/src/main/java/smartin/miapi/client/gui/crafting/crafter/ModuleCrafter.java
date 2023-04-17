@@ -2,6 +2,7 @@ package smartin.miapi.client.gui.crafting.crafter;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
@@ -23,7 +24,6 @@ import java.util.List;
 import java.util.function.Consumer;
 
 public class ModuleCrafter extends InteractAbleWidget {
-    public BoxList list;
     private ItemStack stack;
     private ItemModule module;
     private SlotProperty.ModuleSlot slot;
@@ -49,10 +49,6 @@ public class ModuleCrafter extends InteractAbleWidget {
         CraftView.currentSlots.forEach(slot1 -> {
             removeSlot.accept(slot1);
         });
-
-        list = new BoxList(this.x, this.y + 18, this.width, this.height - 38, Text.empty(), widgets);
-        list.setSpace(1);
-        this.addChild(list);
     }
 
     public void setItem(ItemStack stack) {
@@ -182,11 +178,6 @@ public class ModuleCrafter extends InteractAbleWidget {
         public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
             this.renderButton(matrices, mouseX, mouseY, delta);
             super.render(matrices, mouseX, mouseY, delta);
-        }
-
-        public boolean mouseClicked(double mouseX, double mouseY, int button) {
-            Miapi.LOGGER.warn("Clicked BoxButton " + this.getMessage());
-            return true;
         }
 
         public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {

@@ -20,6 +20,7 @@ public class ItemModule {
     private static final MiapiRegistry<ItemModule> moduleRegistry = MiapiRegistry.getInstance(ItemModule.class);
     private final String name;
     private final Map<String, JsonElement> properties;
+    public static final ItemModule empty = new ItemModule("empty", new HashMap<>());
 
     public ItemModule(String name, Map<String, JsonElement> properties) {
         this.name = name;
@@ -89,11 +90,30 @@ public class ItemModule {
         return name;
     }
 
+    public static List<ModuleInstance> createFlatList(ModuleInstance root) {
+        List<ModuleInstance> flatList = new ArrayList<>();
+        List<ModuleInstance> queue = new ArrayList<>();
+        queue.add(root);
+
+        while (!queue.isEmpty()) {
+            ModuleInstance module = queue.remove(0);
+            flatList.add(module);
+
+            List<ModuleInstance> submodules = new ArrayList<>();
+            module.subModules.keySet().stream().sorted((a,b)->b-a).forEach(id-> {
+                submodules.add(module.subModules.get(id));
+            });
+            queue.addAll(0, submodules);
+        }
+
+        return flatList;
+    }
+
     @JsonAdapter(ModuleInstanceJsonAdapter.class)
     public static class ModuleInstance{
+        public ItemModule module;
         @Nullable
         public ModuleInstance parent;
-        public ItemModule module;
         public Map<Integer,ModuleInstance> subModules;
         public Map<String,String> moduleData = new HashMap<>();
 
@@ -118,6 +138,34 @@ public class ItemModule {
                 map.put(Miapi.modulePropertyRegistry.findKey(property),jsonElement);
             });
             return map;
+        }
+
+        public ModuleInstance getRoot(){
+            ModuleInstance root = this;
+            while (root.parent!=null){
+                root = root.parent;
+            }
+            return root;
+        }
+
+        public ModuleInstance getPrevious(){
+            ModuleInstance root = getRoot();
+            List<ModuleInstance> flat = createFlatList(root);
+            int index = flat.indexOf(this);
+            if(index==0){
+                return null;
+            }
+            return flat.get(index-1);
+        }
+
+        public ModuleInstance getNext(){
+            ModuleInstance root = getRoot();
+            List<ModuleInstance> flat = createFlatList(root);
+            int index = flat.indexOf(this);
+            if(index== flat.size()-1){
+                return null;
+            }
+            return flat.get(index+1);
         }
 
         public ModuleInstance(ItemModule module){

@@ -206,28 +206,35 @@ public class DetailView extends InteractAbleWidget {
 
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
             if (button == 0) {
+                //TODO:MAKe sure this is working corretly
                 if (mouseY < this.y + trueHeight && mouseY > this.y) {
                     if (mouseX > this.x + this.width - 14) {
                         if (isOpened) {
                             this.close();
+                            Miapi.LOGGER.error("ATE CLICK DETAIL");
                             return true;
                         } else {
                             this.open();
+                            Miapi.LOGGER.error("ATE CLICK DETAIL");
                             return true;
                         }
                     } else if (mouseX > x + width - 28 && mouseX < x + width - 14) {
                         if (isSelected) {
                             deselect();
+                            Miapi.LOGGER.error("ATE CLICK DETAIL");
                             return true;
                         } else {
                             select();
+                            Miapi.LOGGER.error("ATE CLICK DETAIL");
                             return true;
                         }
                     }
                 } else if (mouseY < this.y + currentHeight && mouseY > this.y + trueHeight) {
                     if (isSelected) {
-                        detail.mouseClicked(mouseX, mouseY, button);
-                        return true;
+                        if(detail.mouseClicked(mouseX, mouseY, button)){
+                            Miapi.LOGGER.error("ATE CLICK DETAIL");
+                            return true;
+                        }
                     }
                 }
             }

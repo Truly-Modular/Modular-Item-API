@@ -16,7 +16,6 @@ import smartin.miapi.client.gui.crafting.slotdisplay.SlotDisplay;
 public class CraftingGUI extends ParentHandledScreen<CraftingScreenHandler> implements ScreenHandlerProvider<CraftingScreenHandler> {
 
     private static final Identifier BACKGROUND_TEXTURE = new Identifier(Miapi.MOD_ID, "textures/crafting_gui_background.png");
-    private static final Identifier TESTBACKGROUND = new Identifier(Miapi.MOD_ID, "textures/test.png");
     private final int rows;
     private PlayerInventory playerInventory;
     private ItemStack stack;

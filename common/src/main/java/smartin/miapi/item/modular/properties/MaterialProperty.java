@@ -49,7 +49,8 @@ public class MaterialProperty implements ModuleProperty {
                         }
                     }
                 } catch (Exception suppressed) {
-
+                    Miapi.LOGGER.error(suppressed.toString());
+                    suppressed.printStackTrace();
                 }
                 return 0;
             }
@@ -158,7 +159,8 @@ public class MaterialProperty implements ModuleProperty {
     }
 
     public class test extends InteractAbleWidget {
-
+        private final int startX;
+        private final int startY;
         /**
          * This is a Widget build to support Children and parse the events down to them.
          * Best use in conjunction with the ParentHandledScreen as it also handles Children correct,
@@ -173,10 +175,14 @@ public class MaterialProperty implements ModuleProperty {
          */
         public test(int x, int y, int width, int height) {
             super(x, y, width, height, Text.literal("Test"));
+            startX = x+5;
+            startY = y+5;
         }
 
         public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
             drawSquareBorder(matrices, x, y, width, height, 4, ColorHelper.Argb.getArgb(255, 255, 255, 255));
+            drawSquareBorder(matrices, x+5, y+5, 9, 9, 4, ColorHelper.Argb.getArgb(255, 0, 0, 0));
+            drawSquareBorder(matrices, startX, startY, 9, 9, 4, ColorHelper.Argb.getArgb(255, 255, 255, 0));
         }
     }
 

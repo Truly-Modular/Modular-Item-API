@@ -4,6 +4,7 @@ import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.ColorHelper;
+import smartin.miapi.Miapi;
 
 import java.util.List;
 
@@ -130,6 +131,7 @@ public class ScrollList extends InteractAbleWidget {
 
         for (ClickableWidget widget : this.widgets) {
             if (widget.mouseClicked(mouseX, mouseY, button)) {
+                Miapi.LOGGER.error("Clicked ScrollList");
                 clicked = true;
             }
         }

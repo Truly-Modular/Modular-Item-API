@@ -124,6 +124,7 @@ public class Miapi {
         Miapi.modulePropertyRegistry.register(AllowedSlots.key,new AllowedSlots());
         Miapi.modulePropertyRegistry.register(MaterialProperty.key,new MaterialProperty());
         Miapi.modulePropertyRegistry.register(AllowedMaterial.key,new AllowedMaterial());
+        Miapi.modulePropertyRegistry.register(AttributeProperty.key,new AttributeProperty());
     }
 
     private static <T extends ScreenHandler> ScreenHandlerType<T> register(Identifier id, ScreenHandlerType.Factory<T> factory) {

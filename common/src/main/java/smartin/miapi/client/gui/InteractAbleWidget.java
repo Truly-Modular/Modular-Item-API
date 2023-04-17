@@ -175,11 +175,12 @@ public class InteractAbleWidget extends ClickableWidget implements Drawable, Ele
         for (Element child : this.children()) {
             if (child.isMouseOver(mouseX, mouseY)) {
                 if (child.mouseClicked(mouseX, mouseY, button)) {
+                    Miapi.LOGGER.error("Consumpted Click" + child.toString());
                     return true;
                 }
             }
         }
-        return super.mouseClicked(mouseX, mouseY, button);
+        return false;
     }
 
     /**
@@ -196,7 +197,7 @@ public class InteractAbleWidget extends ClickableWidget implements Drawable, Ele
                 }
             }
         }
-        return super.mouseReleased(mouseX, mouseY, button);
+        return false;
     }
 
     /**
@@ -215,7 +216,7 @@ public class InteractAbleWidget extends ClickableWidget implements Drawable, Ele
                 }
             }
         }
-        return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
+        return false;
     }
 
     /**
@@ -232,7 +233,7 @@ public class InteractAbleWidget extends ClickableWidget implements Drawable, Ele
                 }
             }
         }
-        return super.mouseScrolled(mouseX, mouseY, amount);
+        return false;
     }
 
     /**
@@ -247,7 +248,7 @@ public class InteractAbleWidget extends ClickableWidget implements Drawable, Ele
                 return true;
             }
         }
-        return super.keyPressed(keyCode, scanCode, modifiers);
+        return false;
     }
 
     /**
@@ -262,7 +263,7 @@ public class InteractAbleWidget extends ClickableWidget implements Drawable, Ele
                 return true;
             }
         }
-        return super.keyReleased(keyCode, scanCode, modifiers);
+        return false;
     }
 
     /**
@@ -276,7 +277,7 @@ public class InteractAbleWidget extends ClickableWidget implements Drawable, Ele
                 return true;
             }
         }
-        return super.charTyped(chr, modifiers);
+        return false;
     }
 
     /**
@@ -307,7 +308,6 @@ public class InteractAbleWidget extends ClickableWidget implements Drawable, Ele
      *                 This is needed for animations and co
      */
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        //super.render(matrices,mouseX,mouseY,delta);
         RenderSystem.applyModelViewMatrix();
         RenderSystem.disableDepthTest();
         children().forEach(element -> {

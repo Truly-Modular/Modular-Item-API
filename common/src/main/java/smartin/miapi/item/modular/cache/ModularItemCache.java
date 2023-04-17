@@ -7,15 +7,14 @@ import smartin.miapi.Miapi;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.function.Function;
 
 public class ModularItemCache {
     protected static Map<UUID, Cache> cacheMap = new HashMap<>();
-
     protected static Map<String, CacheObjectSupplier> supplierMap = new HashMap<>();
-
     protected static Map<ItemStack,UUID> lookUpTable = new HashMap<>();
-
     public static final String cacheKey = Miapi.MOD_ID+"uuid";
 
     public static void setSupplier(String key, CacheObjectSupplier supplier) {
@@ -79,6 +78,32 @@ public class ModularItemCache {
         return cache;
     }
 
+    protected static Cache findopti(ItemStack stack){
+        UUID uuid = null;
+        if (stack.hasNbt()) {
+            String uuidString = stack.getNbt().getString(cacheKey);
+            if (uuidString != null) {
+                try {
+                    uuid = UUID.fromString(uuidString);
+                    Cache itemCache = cacheMap.get(uuid);
+                    if (itemCache != null && itemCache.nbtHash == stack.getNbt().hashCode()) {
+                        return itemCache;
+                    }
+                } catch (IllegalArgumentException e) {
+                    // Invalid UUID string, ignore it
+                }
+            }
+        }
+        if (uuid == null) {
+            uuid = getMissingUUID();
+            NbtCompound nbt = stack.getOrCreateNbt();
+            nbt.putString(cacheKey, uuid.toString());
+            Cache cache = new Cache(uuid, stack);
+            cacheMap.put(uuid, cache);
+        }
+        return cacheMap.get(uuid);
+    }
+
     protected static UUID getMissingUUID(){
         UUID uuid;
         do{
@@ -93,7 +118,7 @@ public class ModularItemCache {
     }
 
     protected static class Cache {
-        protected Map<String, Object> map = new HashMap<>();
+        protected Map<String, Object> map = new ConcurrentHashMap<>();
         public UUID uuid;
         public ItemStack stack;
         public int counter = 0;
@@ -112,14 +137,13 @@ public class ModularItemCache {
         }
 
         public Object get(String key) {
-            Object object = map.get(key);
-            if (object == null) {
-                CacheObjectSupplier supplier = supplierMap.get(key);
+            return map.computeIfAbsent(key,(id)->{
+                CacheObjectSupplier supplier = supplierMap.get(id);
                 if(supplier!=null){
-                    map.put(key, supplier.apply(stack));
+                    return supplier.apply(stack);
                 }
-            }
-            return map.get(key);
+                return null;
+            });
         }
     }
 }

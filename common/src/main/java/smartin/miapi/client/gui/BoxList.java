@@ -140,13 +140,15 @@ public class BoxList extends InteractAbleWidget {
 
         @Override
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
-            if (button == 0) {
+            if (button == 0 && isMouseOver(mouseX,mouseY)) {
+                //TODO:CHECK
                 this.isClicked = true;
                 if (isLeft) {
                     setPage(currentPage - 1);
                 } else {
                     setPage(currentPage + 1);
                 }
+                Miapi.LOGGER.error("ATE CLICK + BoxList");
                 return true;
             }
             return super.mouseClicked(mouseX, mouseY, button);

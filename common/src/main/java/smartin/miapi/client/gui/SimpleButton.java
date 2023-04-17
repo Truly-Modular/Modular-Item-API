@@ -61,6 +61,7 @@ public class SimpleButton<T> extends InteractAbleWidget {
         if (isMouseOver(mouseX, mouseY)) {
             if(isEnabled){
                 callback.accept(toCallback);
+                Miapi.LOGGER.error("Ate Click Simple Button");
                 return true;
             }
         }

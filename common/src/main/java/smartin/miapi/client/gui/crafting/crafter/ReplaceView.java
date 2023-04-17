@@ -74,6 +74,7 @@ public class ReplaceView extends InteractAbleWidget {
             if(isMouseOver(mouseX,mouseY)){
                 if (button == 0) {
                     craft.accept(module);
+                    Miapi.LOGGER.error("ATE CLICK REPLACE");
                     return true;
                 }
             }

@@ -29,30 +29,12 @@ public class ColorUtil {
         return new BakedQuad(originalQuad.getVertexData(), newColor, originalQuad.getFace(), originalQuad.getSprite(), false);
     }
 
-    private static int modifyColor(int color, int newColor) {
-        int alpha = (color >> 24) & 0xFF;
-        int red = (color >> 16) & 0xFF;
-        int green = (color >> 8) & 0xFF;
-        int blue = color & 0xFF;
-        int newRed = (newColor >> 16) & 0xFF;
-        int newGreen = (newColor >> 8) & 0xFF;
-        int newBlue = newColor & 0xFF;
-
-        // Modify the red, green, and blue components of the vertex color
-        red = (red * newRed) / 255;
-        green = (green * newGreen) / 255;
-        blue = (blue * newBlue) / 255;
-
-        return (alpha << 24) | (red << 16) | (green << 8) | blue;
-    }
-
     public static int getModuleColor(ItemModule.ModuleInstance instance){
-        ColorHelper.Argb.getArgb(255,0,255,0);
         MaterialProperty.Material material = MaterialProperty.getMaterial(instance);
         if(material!=null){
             return material.getColor();
         }
-        return ColorHelper.Argb.getArgb(255,0,255,0);
+        return ColorHelper.Argb.getArgb(255,255,255,255);
     }
 
 }

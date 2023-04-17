@@ -27,6 +27,8 @@ public abstract class CraftingProperty implements ModuleProperty {
 
     }
 
+    public abstract float getPriority();
+
     public boolean canPerform(ItemStack old, ItemStack crafting, PlayerEntity player, ItemModule.ModuleInstance newModule, ItemModule module, List<ItemStack> inventory,PacketByteBuf buf) {
         return true;
     }
