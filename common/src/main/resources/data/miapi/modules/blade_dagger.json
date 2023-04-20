@@ -2,28 +2,22 @@
     "name": "blade_dagger",
     "texture": {
       "path": "miapi:models/item/swords/blade_dagger.json",
-      "transform": {"rotation":{"x":0.0,"y":0.0,"z":0.0},"translation":{"x":-2.0,"y":-2.0,"z":0.0},"scale":{"x":1,"y":1,"z":1}}
+      "transform": {"rotation":{"x":0.0,"y":0.0,"z":0.0},"translation":{"x":-3.0,"y":-3.0,"z":0.0},"scale":{"x":1,"y":1,"z":1}}
     },
-    "allowedInSlots": ["sword_blade"],
-    "slots": {
-      "0": {
-        "allowed": ["sword_edge"],
-        "transform": {"rotation":{"x":0.0,"y":0.0,"z":0.0},"translation":{"x":2.0,"y":2.0,"z":0.0},"scale":{"x":1.0,"y":1.0,"z":1.0}}
-      }
-    },
+    "allowedInSlots": ["sword_blade_small"],
   "allowedMaterial": {
     "allowedMaterials": ["metal"],
     "cost": 1
   },
   "attributes": {
     "generic.attack_damage": {
-      "value": "[material.hardness]*2 + 1",
+      "value": "[material.hardness]*0.5 + [material.flexibility]*1",
       "operation": "+",
       "slot": "mainhand",
       "uuid": "CB3F55D3-645C-4F38-A497-9C13A33DB5CF"
     },
     "generic.attack_speed": {
-      "value": "sin( [material.flexibility])*5 +0.2",
+      "value": "[material.flexibility]*2",
       "operation": "+",
       "slot": "mainhand",
       "uuid": "FA233E1C-4180-4865-B01B-BCCE9785ACA3"

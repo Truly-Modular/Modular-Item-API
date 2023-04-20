@@ -8,6 +8,7 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.SwordItem;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import smartin.miapi.Miapi;
@@ -42,14 +43,18 @@ public class AttributeProperty implements ModuleProperty {
             if (attributeJson.has("uuid")) {
                 uuid = UUID.fromString(attributeJson.get("uuid").getAsString());
             }
+            String modifierName = attributeName;
+            if (attributeJson.has("name")) {
+                modifierName =  attributeJson.get("name").getAsString();
+            }
 
             if (attribute != null) {
                 if (uuid != null) {
                     // Use constructor with UUID
-                    attributeModifiers.put(attribute, new EntityAttributeModifierHolder(new EntityAttributeModifier(uuid, attributeName, value, operation), slot));
+                    attributeModifiers.put(attribute, new EntityAttributeModifierHolder(new EntityAttributeModifier(uuid, modifierName, value, operation), slot));
                 } else {
                     // Use constructor without UUID
-                    attributeModifiers.put(attribute, new EntityAttributeModifierHolder(new EntityAttributeModifier(attributeName, value, operation), slot));
+                    attributeModifiers.put(attribute, new EntityAttributeModifierHolder(new EntityAttributeModifier(modifierName, value, operation), slot));
                 }
             }
         }

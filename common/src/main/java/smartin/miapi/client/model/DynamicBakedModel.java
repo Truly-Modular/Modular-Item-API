@@ -15,6 +15,7 @@ import java.util.List;
 
 public class DynamicBakedModel implements BakedModel {
     public List<BakedQuad> quads = new ArrayList<>();
+    public ModelTransformation modelTransformation = ModelTransformation.NONE;
 
     public DynamicBakedModel(List<BakedQuad> quads){
         this.quads=quads;
@@ -51,7 +52,7 @@ public class DynamicBakedModel implements BakedModel {
 
     @Override
     public ModelTransformation getTransformation() {
-        return ModelTransformation.NONE;
+        return modelTransformation;
     }
 
     @Override

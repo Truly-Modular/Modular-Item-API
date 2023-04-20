@@ -1,0 +1,21 @@
+{
+  "key": "iron",
+  "translation_key": "miapi.material.iron",
+  "groups": ["metal"],
+  "hardness": 4,
+  "density": 3.8,
+  "flexibility": 1,
+  "durability": 800,
+  "color": "FCFCFC",
+  "textures": [
+    "crude",
+    "default",
+    "test"
+  ],
+  "items": [
+    {
+      "item": "minecraft:iron_ingot",
+      "value": 1.0
+    }
+  ]
+}

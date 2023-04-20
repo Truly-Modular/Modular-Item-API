@@ -5,8 +5,10 @@ import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import net.minecraft.entity.attribute.EntityAttribute;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
+import smartin.miapi.item.modular.properties.AttributeProperty;
 import smartin.miapi.item.modular.properties.ModuleProperty;
 import smartin.miapi.registries.MiapiRegistry;
 
@@ -97,13 +99,15 @@ public class ItemModule {
 
         while (!queue.isEmpty()) {
             ModuleInstance module = queue.remove(0);
-            flatList.add(module);
+            if(module!=null){
+                flatList.add(module);
 
-            List<ModuleInstance> submodules = new ArrayList<>();
-            module.subModules.keySet().stream().sorted((a,b)->b-a).forEach(id-> {
-                submodules.add(module.subModules.get(id));
-            });
-            queue.addAll(0, submodules);
+                List<ModuleInstance> submodules = new ArrayList<>();
+                module.subModules.keySet().stream().sorted((a,b)->b-a).forEach(id-> {
+                    submodules.add(module.subModules.get(id));
+                });
+                queue.addAll(0, submodules);
+            }
         }
 
         return flatList;
@@ -114,18 +118,11 @@ public class ItemModule {
         public ItemModule module;
         @Nullable
         public ModuleInstance parent;
-        public Map<Integer,ModuleInstance> subModules;
+        public Map<Integer,ModuleInstance> subModules = new HashMap<>();
         public Map<String,String> moduleData = new HashMap<>();
 
         public List<ModuleInstance> allSubModules() {
-            List<ModuleInstance> moduleInstances = new ArrayList<>();
-            moduleInstances.add(this);
-            if(subModules!=null){
-                this.subModules.forEach((id,subModule)->{
-                    moduleInstances.addAll(subModule.allSubModules());
-                });
-            }
-            return moduleInstances;
+            return ItemModule.createFlatList(this);
         }
 
         public Map<ModuleProperty, JsonElement> getProperties() {
@@ -148,26 +145,6 @@ public class ItemModule {
             return root;
         }
 
-        public ModuleInstance getPrevious(){
-            ModuleInstance root = getRoot();
-            List<ModuleInstance> flat = createFlatList(root);
-            int index = flat.indexOf(this);
-            if(index==0){
-                return null;
-            }
-            return flat.get(index-1);
-        }
-
-        public ModuleInstance getNext(){
-            ModuleInstance root = getRoot();
-            List<ModuleInstance> flat = createFlatList(root);
-            int index = flat.indexOf(this);
-            if(index== flat.size()-1){
-                return null;
-            }
-            return flat.get(index+1);
-        }
-
         public ModuleInstance(ItemModule module){
             this.module = module;
         }
@@ -179,7 +156,11 @@ public class ItemModule {
 
         public static ModuleInstance fromString(String string){
             Gson gson = new Gson();
-            return gson.fromJson(string,ModuleInstance.class);
+            ModuleInstance moduleInstance = gson.fromJson(string,ModuleInstance.class);
+            if(moduleInstance.module==null){
+                moduleInstance.module = ItemModule.empty;
+            }
+            return moduleInstance;
         }
     }
 
@@ -210,6 +191,9 @@ public class ItemModule {
             JsonObject jsonObject = JsonParser.parseReader(in).getAsJsonObject();
             String moduleKey = jsonObject.get("module").getAsString();
             ItemModule module = moduleRegistry.get(moduleKey);
+            if(module==null) {
+                module = ItemModule.empty;
+            }
             ModuleInstance moduleInstance = new ModuleInstance(module);
             moduleInstance.subModules = new Gson().fromJson(jsonObject.get("subModules"), new TypeToken<Map<Integer,ModuleInstance>>(){}.getType());
             if(moduleInstance.subModules!=null){

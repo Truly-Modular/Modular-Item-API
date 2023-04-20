@@ -30,7 +30,7 @@ public class StatResolver {
                     String resolvedData = resolver.resolveString(resolverData, instance);
                     resolved = resolved.replace("[" + match + "]", resolvedData);
                 } else {
-                    resolved = resolved.replace("[" + match + "]", "");
+                    //resolved = resolved.replace("[" + match + "]", "");
                 }
             }
         }
@@ -61,11 +61,11 @@ public class StatResolver {
     }
 
     public static Text translateAndResolve(String raw, ItemModule.ModuleInstance instance) {
-        String old = new String(raw);
-        String newString = "";
-        for(int i = 0;i<100 ||!old.equals(newString);i++ ){
-            old = new String(newString);
-            newString = new String(resolveString(old, instance));
+        String old = "";
+        String newString = raw;
+        for(int i = 0;i<100 && !old.equals(newString);i++ ){
+            old = newString;
+            newString = resolveString(old, instance);
             newString = Text.translatable(newString).getString();
         }
         return Text.literal(newString);

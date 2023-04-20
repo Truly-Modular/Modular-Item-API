@@ -12,7 +12,7 @@ import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
 import org.jetbrains.annotations.Nullable;
-import smartin.miapi.item.modular.properties.render.TextureProperty;
+import smartin.miapi.item.modular.properties.render.ModelProperty;
 
 import java.util.*;
 import java.util.function.Function;
@@ -79,7 +79,7 @@ public class CustomModel implements UnbakedModel, BakedModel {
     @Nullable
     @Override
     public BakedModel bake(ModelLoader loader, Function<SpriteIdentifier, Sprite> textureGetter, ModelBakeSettings rotationContainer, Identifier modelId) {
-        TextureProperty.textureGetter = textureGetter;
+        ModelProperty.textureGetter = textureGetter;
         return this;
     }
 }

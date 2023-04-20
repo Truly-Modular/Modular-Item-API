@@ -201,6 +201,16 @@ public class MaterialProperty implements ModuleProperty {
             return groups;
         }
 
+        public List<String> getTextureKeys() {
+            Set<String> textureKeys = new HashSet<>();
+            JsonArray textures = rawJson.getAsJsonObject().getAsJsonArray("textures");
+            for (JsonElement texture : textures) {
+                textureKeys.add(texture.getAsString());
+            }
+            textureKeys.add("default");
+            return new ArrayList<>(textureKeys);
+        }
+
         public int getColor() {
             long longValue = Long.parseLong(rawJson.getAsJsonObject().get("color").getAsString(), 16);
             return (int) (longValue & 0xffffffffL);

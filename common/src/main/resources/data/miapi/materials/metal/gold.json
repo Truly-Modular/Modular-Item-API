@@ -1,11 +1,12 @@
 {
-  "key": "iron",
+  "key": "gold",
+  "translation_key": "miapi.material.gold",
   "groups": ["metal"],
-  "hardness": 4,
-  "density": 1,
+  "hardness": 3,
+  "density": 4.6,
   "flexibility": 1,
   "durability": 800,
-  "color": "44605F60",
+  "color": "FFD700",
   "textures": [
     "crude",
     "default",
@@ -17,12 +18,8 @@
       "value": 0.5
     },
     {
-      "tag": "c:obsidian",
+      "item": "minecraft:gold_ingot",
       "value": 0.5
-    },
-    {
-      "item": "minecraft:iron_ingot",
-      "value": 2.0
     }
   ]
 }

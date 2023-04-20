@@ -1,23 +1,165 @@
 {
     "name": "sword_shortSwordHandle",
     "texture": {
-      "path": "miapi:models/item/sword/handle.json",
-      "transform": {"rotation":{"x":0.0,"y":0.0,"z":0.0},"translation":{"x":-4.0,"y":-5.0,"z":0.0},"scale":{"x":1.0,"y":1.0,"z":1.0}}
+        "path": "miapi:models/item/sword/handle.json",
+        "transform": {
+            "rotation": {"x": 0.0, "y": 0.0, "z": 0.0},
+            "translation": {"x": -4.0, "y": -5.0, "z": 0.0},
+            "scale": {"x": 1.0, "y": 1.0, "z": 1.0}
+        }
     },
-    "allowedInSlots": ["","sword_handle"],
+    "allowedInSlots": [
+        "melee"
+    ],
     "slots": {
-      "0": {
-        "allowed": ["sword_pommel"],
-        "transform": {"rotation":{"x":0.0,"y":0.0,"z":0.0},"translation":{"x":-2.0,"y":-2.0,"z":0.0},"scale":{"x":1.0,"y":1.0,"z":1.0}}
-      },
-      "1": {
-        "allowed": ["sword_guard"],
-        "transform": {"rotation":{"x":0.0,"y":0.0,"z":0.0},"translation":{"x":2.0,"y":2.0,"z":0.0},"scale":{"x":1.0,"y":1.0,"z":1.0}}
-      }
+        "0": {
+            "allowed": [
+                "sword_guard",
+                "sword_blade_small"
+            ],
+            "transform": {
+                "rotation": {"x": 0.0, "y": 0.0, "z": 0.0},
+                "translation": {"x": 2.0, "y": 2.0, "z": 0.0},
+                "scale": {"x": 1.0, "y": 1.0, "z": 1.0}
+            }
+        },
+        "1": {
+            "allowed": [
+                "sword_pommel"
+            ],
+            "transform": {
+                "rotation": {"x": 0.0, "y": 0.0, "z": 0.0},
+                "translation": {"x": -2.0, "y": -2.0, "z": 0.0},
+                "scale": {"x": 1.0, "y": 1.0, "z": 1.0}
+            }
+        }
     },
-  "moduleproperty1" : "[material.durability]*[material.density] + [material.properties.default.testproperty2]",
-  "allowedMaterial": {
-    "allowedMaterials": ["metal"],
-    "cost": 1
-  }
-  }
+    "modelTransform": {
+        "replace": {
+            "thirdperson_righthand": {
+                "rotation": {
+                    "x": 0,
+                    "y": -90,
+                    "z": 55
+                },
+                "translation": {
+                    "x": 0,
+                    "y": 4.0,
+                    "z": 0.5
+                },
+                "scale": {
+                    "x": 0.85,
+                    "y": 0.85,
+                    "z": 0.85
+                }
+            },
+            "thirdperson_lefthand": {
+                "rotation": {
+                    "x": 0,
+                    "y": 90,
+                    "z": -55
+                },
+                "translation": {
+                    "x": 0,
+                    "y": 4.0,
+                    "z": 0.5
+                },
+                "scale": {
+                    "x": 0.85,
+                    "y": 0.85,
+                    "z": 0.85
+                }
+            },
+            "firstperson_righthand": {
+                "rotation": {
+                    "x": 0,
+                    "y": -90,
+                    "z": 25
+                },
+                "translation": {
+                    "x": 1.13,
+                    "y": 3.2,
+                    "z": 1.13
+                },
+                "scale": {
+                    "x": 0.68,
+                    "y": 0.68,
+                    "z": 0.68
+                }
+            },
+            "firstperson_lefthand": {
+                "rotation": {
+                    "x": 0,
+                    "y": 90,
+                    "z": -25
+                },
+                "translation": {
+                    "x": 1.13,
+                    "y": 3.2,
+                    "z": 1.13
+                },
+                "scale": {
+                    "x": 0.68,
+                    "y": 0.68,
+                    "z": 0.68
+                }
+            },
+            "ground": {
+                "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0
+                },
+                "translation": {
+                    "x": 0,
+                    "y": 2,
+                    "z": 0
+                },
+                "scale": {
+                    "x": 0.5,
+                    "y": 0.5,
+                    "z": 0.5
+                }
+            },
+            "head": {
+                "rotation": {
+                    "x": 0,
+                    "y": 180,
+                    "z": 0
+                },
+                "translation": {
+                    "x": 0,
+                    "y": 13,
+                    "z": 7
+                },
+                "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                }
+            },
+            "fixed": {
+                "rotation": {
+                    "x": 0,
+                    "y": 180,
+                    "z": 0
+                },
+                "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                }
+            }
+        }
+    },
+    "moduleproperty1": "[material.durability]*[material.density] + [material.properties.default.testproperty2]",
+    "allowedMaterial": {
+        "allowedMaterials": [
+            "wood",
+            "stone",
+            "metal"
+        ],
+        "cost": 1
+    },
+    "displayName": "Empty Handle [material.key] [translation.item.minecraft.iron_sword]"
+}

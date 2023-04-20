@@ -7,11 +7,14 @@ import net.minecraft.client.render.model.*;
 import net.minecraft.client.render.model.json.ItemModelGenerator;
 import net.minecraft.client.render.model.json.JsonUnbakedModel;
 import net.minecraft.client.render.model.json.ModelElement;
+import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
@@ -25,6 +28,7 @@ import smartin.miapi.item.modular.ItemModule;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.Transform;
 import smartin.miapi.item.modular.cache.ModularItemCache;
+import smartin.miapi.item.modular.properties.MaterialProperty;
 import smartin.miapi.item.modular.properties.ModuleProperty;
 import smartin.miapi.item.modular.properties.SlotProperty;
 
@@ -36,19 +40,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
-public class TextureProperty implements ModuleProperty {
+public class ModelProperty implements ModuleProperty {
     public static final String key = "texture";
     public static Function<SpriteIdentifier, Sprite> textureGetter;
-    static BakedModel model;
     private static Function<SpriteIdentifier, Sprite> mirroredGetter;
     private static final String cacheKey = Miapi.MOD_ID + ":model";
-    private static final Map<String, Json> modelMap = new HashMap<>();
-    private static final Map<JsonUnbakedModel, String> modelPathMap = new HashMap<>();
+    private static final Map<String, ModelJson> modelMap = new HashMap<>();
     private static ItemModelGenerator generator;
+    public static final List<ModelTransformer> modelTransformers = new ArrayList<>();
 
-    public TextureProperty() {
+    public ModelProperty() {
         mirroredGetter = (identifier) -> {
             return textureGetter.apply(identifier);
         };
@@ -58,15 +62,28 @@ public class TextureProperty implements ModuleProperty {
         });
     }
 
-    public static BakedModel generateModel(ItemStack stack) {
+
+    private static BakedModel generateModel(ItemStack stack) {
         ItemModule.ModuleInstance modules = ModularItem.getModules(stack);
-        List<ItemModule.ModuleInstance> moduleInstances = modules.allSubModules();
+        List<ItemModule.ModuleInstance> moduleInstances = ItemModule.createFlatList(modules);
         List<BakedQuad> quads = new ArrayList<>();
         AtomicReference<Float> scaleAdder = new AtomicReference<>(1.0f);
         moduleInstances.forEach(moduleI -> {
-            Json json = modelMap.get(moduleI.module.getName());
+            ModelJson json = modelMap.get(moduleI.module.getName());
             if (json != null) {
-                JsonUnbakedModel unbakedModel = json.jsonUnbakedModel;
+                MaterialProperty.Material material = MaterialProperty.getMaterial(moduleI);
+                List<String> list = new ArrayList<>();
+                list.add("default");
+                if(material!=null){
+                    list = material.getTextureKeys();
+                }
+                JsonUnbakedModel unbakedModel = null;
+                for (String str : list) {
+                    if (json.jsonUnbakedModelMap.containsKey(str)) {
+                        unbakedModel = json.jsonUnbakedModelMap.get(str);
+                        break;
+                    }
+                }
                 scaleAdder.updateAndGet(v -> (v + 0.001f));
                 Transform transform = json.transform.copy();
                 transform = Transform.merge(SlotProperty.getTransform(moduleI), transform);
@@ -79,7 +96,12 @@ public class TextureProperty implements ModuleProperty {
                 }
             }
         });
-        return new DynamicBakedModel(quads);
+        DynamicBakedModel model = new DynamicBakedModel(quads);
+        for(ModelTransformer transformer : modelTransformers){
+            model = transformer.transform(model,stack);
+        }
+        Miapi.LOGGER.error(model.getTransformation().getTransformation(ModelTransformation.Mode.GUI).scale.toString());
+        return model;
     }
 
 
@@ -118,53 +140,6 @@ public class TextureProperty implements ModuleProperty {
         return element;
     }
 
-    /*
-    private static ModelElement transformModel(ModelElement element, Transform transform) {
-        // Copy the original element and its values
-        Vec3f from = element.from.copy();
-        Vec3f to = element.to.copy();
-        Map<Direction, ModelElementFace> faces = new HashMap<>(element.faces);
-        net.minecraft.client.render.model.json.ModelRotation rotation = element.rotation;
-        boolean shade = element.shade;
-
-        // Apply translation to the 'from' and 'to' vectors
-        from.add(transform.translation);
-        to.add(transform.translation);
-
-        // Apply rotation to the 'from' and 'to' vectors
-        if (rotation != null) {
-            // Get the origin of the rotation and subtract it from the 'from' and 'to' vectors
-            Vec3f origin = rotation.origin;
-            from.subtract(origin);
-            to.subtract(origin);
-
-            // Apply the rotation angle around the rotation axis
-            Vec3i axisVector = Direction.from(rotation.axis, Direction.AxisDirection.POSITIVE).getVector();
-            float angle = (float) Math.toRadians(rotation.angle) * (false ? -1 : 1);
-            Quaternion quat = new Quaternion(new Vec3f(axisVector.getX(),axisVector.getY(),axisVector.getZ()), angle,false);
-            from.rotate(quat);
-            to.rotate(quat);
-
-            // If rescaling is enabled, multiply the 'from' and 'to' vectors by the scaling factor
-            if (rotation.rescale) {
-                from.multiplyComponentwise(transform.scale.getX(),transform.scale.getY(),transform.scale.getZ());
-                to.multiplyComponentwise(transform.scale.getX(),transform.scale.getY(),transform.scale.getZ());
-            }
-
-            // Add the origin vector back to the 'from' and 'to' vectors
-            from.add(origin);
-            to.add(origin);
-        }
-
-        // Apply scaling to the 'from' and 'to' vectors
-        from.multiply(transform.scale);
-        to.multiply(transform.scale);
-
-        // Create a new ModelElement object with the transformed values
-        return new ModelElement(from, to, faces, rotation, shade);
-    }
-     */
-
     public static BakedModel getModel(ItemStack stack) {
         return (BakedModel) ModularItemCache.get(stack, cacheKey);
     }
@@ -192,6 +167,28 @@ public class TextureProperty implements ModuleProperty {
         return null;
     }
 
+    public static Map<String,JsonUnbakedModel> loadModelsbyPath(String filePath) {
+        String materialKey = "[material.texture]";
+        Map<String,JsonUnbakedModel> models = new HashMap<>();
+        if(filePath.contains("[material.texture]")){
+            String currentPath = filePath;
+            models.put("default",loadModelFromFilePath(currentPath.replace(materialKey,"default")));
+            try{
+                MaterialProperty.getTextureKeys().forEach((path)->{
+                    models.put("default",loadModelFromFilePath(currentPath.replace(materialKey,path)));
+                });
+            }
+            catch (RuntimeException surpressed){
+
+            }
+        }
+        else{
+            models.put("default",loadModelFromFilePath(filePath));
+        }
+        MaterialProperty.getTextureKeys();
+        return models;
+    }
+
     protected static void loadTextureDependencies(JsonUnbakedModel model) {
 
         List<Identifier> spritesToLoad = new ArrayList<>();
@@ -205,19 +202,23 @@ public class TextureProperty implements ModuleProperty {
     @Override
     public boolean load(String moduleKey, JsonElement data) throws Exception {
         Gson gson = new Gson();
-        Json propertyJson = gson.fromJson(data.toString(), Json.class);
+        ModelJson propertyJson = gson.fromJson(data.toString(), ModelJson.class);
         propertyJson.repair();
-        propertyJson.jsonUnbakedModel = loadModelFromFilePath(propertyJson.path);
-        if (propertyJson.jsonUnbakedModel == null) {
+        propertyJson.jsonUnbakedModelMap = loadModelsbyPath(propertyJson.path);
+        if (propertyJson.jsonUnbakedModelMap == null) {
             throw new Exception("could not find model path");
         }
         modelMap.put(moduleKey, propertyJson);
         return true;
     }
 
-    public class Json {
+    public interface ModelTransformer {
+        DynamicBakedModel transform(DynamicBakedModel dynamicBakedModel, ItemStack stack);
+    }
+
+    public class ModelJson {
         @Nullable
-        public JsonUnbakedModel jsonUnbakedModel;
+        public Map<String,JsonUnbakedModel> jsonUnbakedModelMap;
         public String path;
         public Transform transform = Transform.IDENTITY;
 

@@ -21,13 +21,22 @@ public class SlotProperty implements ModuleProperty {
     }
 
     public static Transform getTransform(ItemModule.ModuleInstance instance){
+        ModuleSlot slot = getSlotIn(instance);
+        if(slot==null) return Transform.IDENTITY;
         ItemModule.ModuleInstance current = instance;
+        /*
         Transform mergedTransform = getLocalTransform(current);
         while(current.parent!=null){
             current = current.parent;
             mergedTransform = Transform.merge(getLocalTransform(current),mergedTransform);
         }
-        return mergedTransform;
+         */
+        Transform merged = Transform.IDENTITY;
+        while(current!=null){
+            merged = Transform.merge(getLocalTransform(current),merged);
+            current = current.parent;
+        }
+        return getTransform(slot);
     }
 
     public static Transform getTransform(ModuleSlot moduleSlot){
@@ -77,7 +86,6 @@ public class SlotProperty implements ModuleProperty {
         ModuleProperty property = Miapi.modulePropertyRegistry.get(key);
         JsonElement test = instance.getProperties().get(property);
         if(test!=null){
-            Gson gson = new Gson();
             //TODO:
             ModuleSlot slot = getSlotIn(instance);
             if(slot!=null){

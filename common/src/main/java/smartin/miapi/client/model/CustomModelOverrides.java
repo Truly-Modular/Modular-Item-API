@@ -6,13 +6,14 @@ import net.minecraft.client.render.model.UnbakedModel;
 import net.minecraft.client.render.model.json.JsonUnbakedModel;
 import net.minecraft.client.render.model.json.ModelOverride;
 import net.minecraft.client.render.model.json.ModelOverrideList;
+import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
-import smartin.miapi.item.modular.properties.render.TextureProperty;
+import smartin.miapi.item.modular.properties.render.ModelProperty;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,8 +30,13 @@ public class CustomModelOverrides extends ModelOverrideList {
 
     @Override
     public BakedModel apply(BakedModel oldmodel, ItemStack stack, @Nullable ClientWorld world, @Nullable LivingEntity entity, int seed) {
-        BakedModel model = TextureProperty.getModel(stack);
+        BakedModel model = ModelProperty.getModel(stack);
         if(model!=null){
+            ModelOverrideList modelOverride = model.getOverrides();
+            if(modelOverride!=null){
+                BakedModel bakedModel = modelOverride.apply(model,stack,world,entity,seed);
+                return bakedModel;
+            }
             return model;
         }
         return oldmodel;

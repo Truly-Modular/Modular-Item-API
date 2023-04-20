@@ -1,6 +1,7 @@
 package smartin.miapi.item.modular;
 
 import com.google.gson.Gson;
+import net.fabricmc.loader.impl.lib.sat4j.core.Vec;
 import net.minecraft.client.render.model.json.Transformation;
 import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3f;
@@ -11,7 +12,7 @@ public class Transform extends Transformation{
         super(rotation, translation, scale);
     }
 
-    public static Transform merge(Transform parent, Transform child) {
+    public static Transform merge(Transformation parent, Transformation child) {
         Vec3f parentRotation = parent.rotation.copy();
         Vec3f parentTranslation = parent.translation.copy();
         Vec3f parentScale = parent.scale.copy();
@@ -33,6 +34,31 @@ public class Transform extends Transformation{
 
     public Transform copy(){
         return new Transform(this.rotation.copy(),this.translation.copy(),this.scale.copy());
+    }
+
+    public static Transform repair(Transformation transformation){
+        Vec3f parentRotation = transformation.rotation;
+        if(parentRotation==null){
+            parentRotation = new Vec3f(0,0,0);
+        }
+        Vec3f parentTranslation = transformation.translation;
+        if(parentTranslation==null){
+            parentTranslation = new Vec3f(0,0,0);
+        }
+        Vec3f parentScale = transformation.scale;
+        if(parentScale==null){
+            parentScale = new Vec3f(1,1,1);
+        }
+        return new Transform(parentRotation.copy(),parentTranslation.copy(),parentScale.copy());
+    }
+
+    public static Transform toModelTransformation(Transformation transformation){
+        Transform transform = repair(transformation);
+        transform.translation.scale(1.0f/16.0f);
+        //Vec3f scale = transform.scale;
+        //scale.scale(1.0f/16.0f);
+        //transform = new Transform(transform.rotation,transform.translation,scale);
+        return transform;
     }
 
     @Override

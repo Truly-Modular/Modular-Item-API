@@ -110,7 +110,6 @@ public class AllowedMaterial extends CraftingProperty {
             super(x, y, width, height, Text.literal("Test"));
             startX = x+5;
             startY = y+5;
-            Miapi.LOGGER.error("adding SLOT2 to " + startX + " y " + startY);
         }
 
         public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {

@@ -1,0 +1,21 @@
+{
+  "key": "netherite",
+  "translation_key": "miapi.material.netherite",
+  "groups": ["metal"],
+  "hardness": 5,
+  "density": 3.8,
+  "flexibility": 3,
+  "durability": 800,
+  "color": "695e5f",
+  "textures": [
+    "crude",
+    "default",
+    "test"
+  ],
+  "items": [
+    {
+      "item": "minecraft:netherite_ingot",
+      "value": 1.0
+    }
+  ]
+}

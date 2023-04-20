@@ -17,10 +17,14 @@ public class CustomModelRegistry implements ModelResourceProvider{
 
     @Override
     public UnbakedModel loadModelResource(Identifier identifier, ModelProviderContext modelProviderContext) throws ModelProviderException {
-        if(identifier.equals(MODULAR_ITEM)) {
+        if(identifier.equals(MODULAR_ITEM) || isModularItem(identifier)) {
             return new CustomModel();
         } else {
             return null;
         }
+    }
+
+    private static boolean isModularItem(Identifier identifier){
+        return Miapi.itemRegistry.get(identifier.toString().replace("item/",""))!=null;
     }
 }

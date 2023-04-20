@@ -9,8 +9,10 @@ import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.text.Text;
 import smartin.miapi.Miapi;
 import smartin.miapi.item.modular.cache.ModularItemCache;
+import smartin.miapi.item.modular.properties.DisplayNameProperty;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -43,5 +45,9 @@ public class ModularItem extends Item {
             });
         }
         return unmergedProperties;
+    }
+
+    public Text getName(ItemStack stack) {
+        return DisplayNameProperty.getDisplayText(stack);
     }
 }

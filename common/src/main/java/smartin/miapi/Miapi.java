@@ -13,6 +13,7 @@ import net.minecraft.resource.ResourceType;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import org.slf4j.Logger;
@@ -26,10 +27,11 @@ import smartin.miapi.datapack.SpriteLoader;
 import smartin.miapi.item.modular.ItemModule;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.PropertyResolver;
+import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.item.modular.cache.ModularItemCache;
 import smartin.miapi.item.modular.properties.*;
 import smartin.miapi.item.modular.properties.crafting.AllowedSlots;
-import smartin.miapi.item.modular.properties.render.TextureProperty;
+import smartin.miapi.item.modular.properties.render.ModelProperty;
 import smartin.miapi.registries.MiapiRegistry;
 
 import java.util.HashMap;
@@ -104,6 +106,17 @@ public class Miapi {
         ModularItemCache.setSupplier(ModularItem.propertyKey, itemStack -> {
             return ModularItem.getUnmergedProperties((ItemModule.ModuleInstance) ModularItemCache.get(itemStack, ModularItem.moduleKey));
         });
+        StatResolver.registerResolver("translation", new StatResolver.Resolver() {
+            @Override
+            public double resolveDouble(String data, ItemModule.ModuleInstance instance) {
+                return Double.parseDouble(Text.translatable(data).getString());
+            }
+
+            @Override
+            public String resolveString(String data, ItemModule.ModuleInstance instance) {
+                return Text.translatable(data).getString();
+            }
+        });
     }
 
     protected static void setupRegistries(){
@@ -112,19 +125,24 @@ public class Miapi {
         ReloadEvents.registerDataPackPathToSync(Miapi.MOD_ID,"materials");
 
         //ITEM
-        Miapi.itemRegistry.register("modular_item",Miapi.modularItem);
+        Miapi.itemRegistry.register(MOD_ID+":modular_item",Miapi.modularItem);
+        Miapi.itemRegistry.register(MOD_ID+":modular_sword",new ModularItem());
 
 
         Miapi.modulePropertyRegistry.register("moduleproperty1", (key,data) -> true);
         Miapi.modulePropertyRegistry.register("moduleproperty3", (key,data) -> true);
         //MODULEPROPERTIES
         Miapi.modulePropertyRegistry.register(NameProperty.key, new NameProperty());
-        Miapi.modulePropertyRegistry.register(TextureProperty.key, new TextureProperty());
+        Miapi.modulePropertyRegistry.register(ModelProperty.key, new ModelProperty());
         Miapi.modulePropertyRegistry.register(SlotProperty.key, new SlotProperty());
         Miapi.modulePropertyRegistry.register(AllowedSlots.key,new AllowedSlots());
         Miapi.modulePropertyRegistry.register(MaterialProperty.key,new MaterialProperty());
         Miapi.modulePropertyRegistry.register(AllowedMaterial.key,new AllowedMaterial());
         Miapi.modulePropertyRegistry.register(AttributeProperty.key,new AttributeProperty());
+        Miapi.modulePropertyRegistry.register(ModelTransformationProperty.key,new ModelTransformationProperty());
+        Miapi.modulePropertyRegistry.register(DisplayNameProperty.key,new DisplayNameProperty());
+        Miapi.modulePropertyRegistry.register(ItemIdProperty.key,new ItemIdProperty());
+        Miapi.modulePropertyRegistry.register(GuiOffsetProperty.key,new GuiOffsetProperty());
     }
 
     private static <T extends ScreenHandler> ScreenHandlerType<T> register(Identifier id, ScreenHandlerType.Factory<T> factory) {

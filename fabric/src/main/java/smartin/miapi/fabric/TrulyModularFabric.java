@@ -4,6 +4,7 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.minecraft.client.render.model.ModelLoader;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import smartin.miapi.Environment;
 import smartin.miapi.Miapi;
@@ -23,7 +24,9 @@ public class TrulyModularFabric implements ModInitializer {
         }));
         ClientSync.init();
         Miapi.itemRegistry.addCallback(item ->   {
-            Registry.register(Registry.ITEM, Miapi.modularItemIdentifier, item);
+            //Registry.register(Registry.ITEM, Miapi.modularItemIdentifier, item);
+            Miapi.LOGGER.warn(Miapi.itemRegistry.findKey(item));
+            Registry.register(Registry.ITEM, new Identifier(Miapi.itemRegistry.findKey(item)), item);
             Miapi.LOGGER.info("registered Item successfully");
         });
         //NETWORKING
