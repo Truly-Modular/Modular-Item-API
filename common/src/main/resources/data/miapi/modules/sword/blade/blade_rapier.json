@@ -1,7 +1,7 @@
 {
     "name": "rapier_sword",
     "texture": {
-        "path": "miapi:models/item/swords/blade_rapier.json",
+        "path": "miapi:models/item/sword/blade/blade_rapier.json",
         "transform": {
             "rotation": {
                 "x": 0.0,

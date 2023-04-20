@@ -1,7 +1,7 @@
 {
     "name": "blade_greatsword",
     "texture": {
-        "path": "miapi:models/item/swords/blade_greatsword.json",
+        "path": "miapi:models/item/sword/blade/blade_greatsword.json",
         "transform": {
             "rotation": {
                 "x": 0.0,

@@ -3,6 +3,7 @@ package smartin.miapi.item.modular;
 import com.google.gson.Gson;
 import net.fabricmc.loader.impl.lib.sat4j.core.Vec;
 import net.minecraft.client.render.model.json.Transformation;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3f;
 
@@ -30,6 +31,36 @@ public class Transform extends Transformation{
         parentScale.multiplyComponentwise(childScale.getX(),childScale.getY(),childScale.getZ());
 
         return new Transform(parentRotation,parentTranslation, parentScale);
+    }
+
+    public Vec3f transformVector(Vec3f vector) {
+        // Apply scaling
+        float x = vector.getX() * scale.getX();
+        float y = vector.getY() * scale.getY();
+        float z = vector.getZ() * scale.getZ();
+
+        // Apply rotation
+        float cosX = MathHelper.cos(rotation.getX());
+        float sinX = MathHelper.sin(rotation.getX());
+        float cosY = MathHelper.cos(rotation.getY());
+        float sinY = MathHelper.sin(rotation.getY());
+        float cosZ = MathHelper.cos(rotation.getZ());
+        float sinZ = MathHelper.sin(rotation.getZ());
+
+        float x2 = cosY * (sinZ * y + cosZ * x) - sinY * z;
+        float y2 = sinX * (cosY * z + sinY * (sinZ * y + cosZ * x)) + cosX * (cosZ * y - sinZ * x);
+        float z2 = cosX * (cosY * z + sinY * (sinZ * y + cosZ * x)) - sinX * (cosZ * y - sinZ * x);
+
+        x = x2;
+        y = y2;
+        z = z2;
+
+        // Apply translation
+        x += translation.getX();
+        y += translation.getY();
+        z += translation.getZ();
+
+        return new Vec3f(x, y, z);
     }
 
     public Transform copy(){

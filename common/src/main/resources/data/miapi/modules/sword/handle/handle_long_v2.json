@@ -162,8 +162,8 @@
     },
     "displayName": "Empty Handle [material.key] [translation.item.minecraft.iron_sword]",
     "guiOffset": {
-        "x": 1,
-        "y": 1,
+        "x": 2,
+        "y": 2,
         "sizeX": 2,
         "sizeY": 2
     }

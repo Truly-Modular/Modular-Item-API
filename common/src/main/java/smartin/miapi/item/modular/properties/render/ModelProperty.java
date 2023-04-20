@@ -11,12 +11,11 @@ import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3f;
 import net.minecraft.util.math.random.Random;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
@@ -40,7 +39,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class ModelProperty implements ModuleProperty {
@@ -74,7 +72,7 @@ public class ModelProperty implements ModuleProperty {
                 MaterialProperty.Material material = MaterialProperty.getMaterial(moduleI);
                 List<String> list = new ArrayList<>();
                 list.add("default");
-                if(material!=null){
+                if (material != null) {
                     list = material.getTextureKeys();
                 }
                 JsonUnbakedModel unbakedModel = null;
@@ -97,13 +95,12 @@ public class ModelProperty implements ModuleProperty {
             }
         });
         DynamicBakedModel model = new DynamicBakedModel(quads);
-        for(ModelTransformer transformer : modelTransformers){
-            model = transformer.transform(model,stack);
+        for (ModelTransformer transformer : modelTransformers) {
+            model = transformer.transform(model, stack);
         }
         Miapi.LOGGER.error(model.getTransformation().getTransformation(ModelTransformation.Mode.GUI).scale.toString());
         return model;
     }
-
 
     public static BakedModel bakeModel(JsonUnbakedModel unbakedModel, Function<SpriteIdentifier, Sprite> textureGetter, Transform transform, int color, ModelBakeSettings settings) {
         ModelLoader modelLoader = ModelLoadAccessor.getLoader();
@@ -119,25 +116,25 @@ public class ModelProperty implements ModuleProperty {
     public static JsonUnbakedModel transformModel(JsonUnbakedModel model, Transform transform) {
         // Create a new model with the same properties as the original
         // Apply the transformations to each element in the model
-        for (ModelElement element : model.getElements()) {
-            transformModel(element, transform);
+        for (int i = 0; i < model.getElements().size(); i++) {
+            model.getElements().set(i, transformModel(model.getElements().get(i), transform));
         }
 
         return model;
     }
 
     private static ModelElement transformModel(ModelElement element, Transform transform) {
-        // apply translation
-        element.from.add(transform.translation);
-        element.to.add(transform.translation);
+        net.minecraft.client.render.model.json.ModelRotation newRotation;
+        if (element.rotation != null) {
+            newRotation = new net.minecraft.client.render.model.json.ModelRotation(element.rotation.origin, element.rotation.axis, element.rotation.angle, true);
+        } else {
+            newRotation = new net.minecraft.client.render.model.json.ModelRotation(new Vec3f(0, 0, 0), Direction.Axis.X, 0, false);
+        }
 
-        // apply rotation
 
-        // apply scale
-        element.from.multiplyComponentwise(1 / transform.scale.getX(), 1 / transform.scale.getY(), 1 / transform.scale.getZ());
-        element.to.multiplyComponentwise(transform.scale.getX(), transform.scale.getY(), transform.scale.getZ());
+        ModelElement newElement = new ModelElement(transform.transformVector(element.from), transform.transformVector(element.to), element.faces, newRotation, element.shade);
 
-        return element;
+        return newElement;
     }
 
     public static BakedModel getModel(ItemStack stack) {
@@ -167,23 +164,21 @@ public class ModelProperty implements ModuleProperty {
         return null;
     }
 
-    public static Map<String,JsonUnbakedModel> loadModelsbyPath(String filePath) {
+    public static Map<String, JsonUnbakedModel> loadModelsbyPath(String filePath) {
         String materialKey = "[material.texture]";
-        Map<String,JsonUnbakedModel> models = new HashMap<>();
-        if(filePath.contains("[material.texture]")){
+        Map<String, JsonUnbakedModel> models = new HashMap<>();
+        if (filePath.contains("[material.texture]")) {
             String currentPath = filePath;
-            models.put("default",loadModelFromFilePath(currentPath.replace(materialKey,"default")));
-            try{
-                MaterialProperty.getTextureKeys().forEach((path)->{
-                    models.put("default",loadModelFromFilePath(currentPath.replace(materialKey,path)));
+            models.put("default", loadModelFromFilePath(currentPath.replace(materialKey, "default")));
+            try {
+                MaterialProperty.getTextureKeys().forEach((path) -> {
+                    models.put("default", loadModelFromFilePath(currentPath.replace(materialKey, path)));
                 });
-            }
-            catch (RuntimeException surpressed){
+            } catch (RuntimeException surpressed) {
 
             }
-        }
-        else{
-            models.put("default",loadModelFromFilePath(filePath));
+        } else {
+            models.put("default", loadModelFromFilePath(filePath));
         }
         MaterialProperty.getTextureKeys();
         return models;
@@ -218,7 +213,7 @@ public class ModelProperty implements ModuleProperty {
 
     public class ModelJson {
         @Nullable
-        public Map<String,JsonUnbakedModel> jsonUnbakedModelMap;
+        public Map<String, JsonUnbakedModel> jsonUnbakedModelMap;
         public String path;
         public Transform transform = Transform.IDENTITY;
 
