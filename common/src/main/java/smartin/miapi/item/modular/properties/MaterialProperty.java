@@ -144,7 +144,12 @@ public class MaterialProperty implements ModuleProperty {
     public static Material getMaterial(ItemModule.ModuleInstance instance) {
         JsonElement element = instance.getProperties().get(materialProperty);
         if (element != null) {
+            Miapi.LOGGER.error("resolving material "+element.getAsString());
             return materials.get(element.getAsString());
+        }
+        else{
+            Miapi.LOGGER.error("could not get material for "+instance.module.getName());
+            Miapi.LOGGER.error("could not get material for "+instance.moduleData.get("properties"));
         }
         return null;
     }

@@ -1,6 +1,7 @@
 package smartin.miapi.client.gui.crafting.crafter;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import it.unimi.dsi.fastutil.objects.ObjectLists;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.widget.ClickableWidget;
@@ -42,6 +43,9 @@ public class ModuleCrafter extends InteractAbleWidget {
         this.linkedInventory = linkedInventory;
         //set Header, current Module Selected
         List<ClickableWidget> widgets = new ArrayList<>();
+        List<String> allowedModules = new ArrayList<>();
+        allowedModules.add("melee");
+        baseSlot.allowed = allowedModules;
         this.craftedItem = craftedItem;
         this.selectedSlot = selected;
         this.removeSlot = removeSlot;

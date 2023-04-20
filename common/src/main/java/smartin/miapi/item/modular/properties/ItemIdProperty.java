@@ -46,6 +46,7 @@ public class ItemIdProperty extends CraftingProperty {
         if(item!=null){
             ItemStack newStack = new ItemStack(item);
             newStack.setNbt(crafting.getNbt());
+            crafting.getNbt().putString("modules",newModule.getRoot().toString());
             return newStack;
         }
         return crafting;

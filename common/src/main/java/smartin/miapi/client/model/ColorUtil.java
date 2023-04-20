@@ -6,6 +6,7 @@ import net.minecraft.client.render.model.BakedQuad;
 import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
+import smartin.miapi.Miapi;
 import smartin.miapi.item.modular.ItemModule;
 import smartin.miapi.item.modular.properties.MaterialProperty;
 
@@ -34,6 +35,7 @@ public class ColorUtil {
         if(material!=null){
             return material.getColor();
         }
+        Miapi.LOGGER.error("material NOT FOUND");
         return ColorHelper.Argb.getArgb(255,255,255,255);
     }
 

@@ -4,6 +4,7 @@ import io.netty.buffer.Unpooled;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
+import net.minecraft.item.AxeItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
@@ -39,8 +40,8 @@ public class CraftAction {
         this.old = old;
         this.toAdd = toAdd;
         ItemModule.ModuleInstance instance = slot.parent;
-        slotId.add(slot.id);
-        if (slot.parent != null) {
+        if (instance != null) {
+            slotId.add(slot.id);
             while (instance.parent != null) {
                 int slotNumber = SlotProperty.getSlotNumberIn(instance);
                 slotId.add(slotNumber);
@@ -151,10 +152,10 @@ public class CraftAction {
         ItemModule.ModuleInstance newBaseModule = ItemModule.ModuleInstance.fromString(oldBaseModule.toString());
         if (slotId.size() == 0) {
             //a module already exists, replacing module 0
-            craftingStack.getNbt().putString("modules", new ItemModule.ModuleInstance(toAdd).toString());
             if (toAdd == null) {
                 return ItemStack.EMPTY;
             }
+            craftingStack.getNbt().putString("modules", new ItemModule.ModuleInstance(toAdd).toString());
             return craftingStack;
         }
         ItemModule.ModuleInstance parsingInstance = newBaseModule;

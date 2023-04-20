@@ -9,8 +9,8 @@
                 "z": 0.0
             },
             "translation": {
-                "x": -3.0,
-                "y": -3.0,
+                "x": -2.0,
+                "y": -2.0,
                 "z": 0.0
             },
             "scale": {
@@ -42,6 +42,5 @@
             "slot": "mainhand",
             "uuid": "FA233E1C-4180-4865-B01B-BCCE9785ACA3"
         }
-    },
-    "itemId": "miapi:modular_sword"
+    }
 }
