@@ -148,7 +148,6 @@ public class BoxList extends InteractAbleWidget {
                 } else {
                     setPage(currentPage + 1);
                 }
-                Miapi.LOGGER.error("ATE CLICK + BoxList");
                 return true;
             }
             return super.mouseClicked(mouseX, mouseY, button);

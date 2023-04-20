@@ -13,15 +13,13 @@ import smartin.miapi.item.modular.ItemModule;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.cache.ModularItemCache;
 import smartin.miapi.item.modular.properties.SlotProperty;
+import smartin.miapi.item.modular.properties.crafting.AllowedSlots;
 import smartin.miapi.item.modular.properties.crafting.CraftingProperty;
 import smartin.miapi.network.Networking;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
@@ -142,6 +140,7 @@ public class CraftAction {
 
     private ItemStack craft() {
         ItemStack craftingStack = old.copy();
+
         if (!old.hasNbt() || !old.getNbt().contains("modules")) {
             Miapi.LOGGER.error("old Item has no Modules - something went very wrong");
             return old;
@@ -150,12 +149,23 @@ public class CraftAction {
         craftingStack.getNbt().remove(ModularItemCache.cacheKey);
         ItemModule.ModuleInstance oldBaseModule = ModularItem.getModules(old);
         ItemModule.ModuleInstance newBaseModule = ItemModule.ModuleInstance.fromString(oldBaseModule.toString());
+        Map<Integer, ItemModule.ModuleInstance> subModuleMap = new HashMap<>();
         if (slotId.size() == 0) {
             //a module already exists, replacing module 0
             if (toAdd == null) {
                 return ItemStack.EMPTY;
             }
-            craftingStack.getNbt().putString("modules", new ItemModule.ModuleInstance(toAdd).toString());
+            if (oldBaseModule != null) {
+                subModuleMap = oldBaseModule.subModules;
+            }
+            ItemModule.ModuleInstance newModule = new ItemModule.ModuleInstance(toAdd);
+            subModuleMap.forEach((id, module) -> {
+                SlotProperty.ModuleSlot slot = SlotProperty.getSlots(newModule).get(id);
+                if (slot != null && slot.allowedIn(module)) {
+                    newModule.subModules.put(id, module);
+                }
+            });
+            craftingStack.getNbt().putString("modules", newModule.toString());
             return craftingStack;
         }
         ItemModule.ModuleInstance parsingInstance = newBaseModule;
@@ -167,6 +177,22 @@ public class CraftAction {
             parsingInstance.subModules.remove(slotId.get(0));
         } else {
             ItemModule.ModuleInstance newModule = new ItemModule.ModuleInstance(toAdd);
+            if (parsingInstance.subModules.get(slotId.get(0)) != null) {
+                subModuleMap = parsingInstance.subModules.get(slotId.get(0)).subModules;
+            }
+            subModuleMap.forEach((id, module) -> {
+                SlotProperty.ModuleSlot slot = SlotProperty.getSlots(newModule).get(id);
+                if (slot != null) {
+                    Miapi.LOGGER.warn("slot is not null");
+                    slot.allowed.forEach(s -> {
+                        Miapi.LOGGER.warn("allowed" + s);
+                    });
+                    if (slot.allowedIn(module)) {
+                        module.parent = newModule;
+                        newModule.subModules.put(id, module);
+                    }
+                }
+            });
             newModule.parent = parsingInstance;
             parsingInstance.subModules.put(slotId.get(0), newModule);
         }

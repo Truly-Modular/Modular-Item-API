@@ -7,6 +7,7 @@ import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.item.modular.ItemModule;
 import smartin.miapi.item.modular.Transform;
+import smartin.miapi.item.modular.properties.crafting.AllowedSlots;
 
 import java.lang.reflect.Type;
 import java.util.*;
@@ -16,13 +17,13 @@ public class SlotProperty implements ModuleProperty {
 
     public static final String key = "slots";
 
-    public static SlotProperty getInstance(){
+    public static SlotProperty getInstance() {
         return (SlotProperty) Miapi.modulePropertyRegistry.get(key);
     }
 
-    public static Transform getTransform(ItemModule.ModuleInstance instance){
+    public static Transform getTransform(ItemModule.ModuleInstance instance) {
         ModuleSlot slot = getSlotIn(instance);
-        if(slot==null) return Transform.IDENTITY;
+        if (slot == null) return Transform.IDENTITY;
         ItemModule.ModuleInstance current = instance;
         /*
         Transform mergedTransform = getLocalTransform(current);
@@ -32,33 +33,34 @@ public class SlotProperty implements ModuleProperty {
         }
          */
         Transform merged = Transform.IDENTITY;
-        while(current!=null){
-            merged = Transform.merge(getLocalTransform(current),merged);
+        while (current != null) {
+            merged = Transform.merge(getLocalTransform(current), merged);
             current = current.parent;
         }
         return getTransform(slot);
     }
 
-    public static Transform getTransform(ModuleSlot moduleSlot){
+    public static Transform getTransform(ModuleSlot moduleSlot) {
         ItemModule.ModuleInstance current = moduleSlot.parent;
         Transform mergedTransform = Transform.IDENTITY;
-        while(current!=null){
-            mergedTransform = Transform.merge(getLocalTransform(current),mergedTransform);
+        while (current != null) {
+            mergedTransform = Transform.merge(getLocalTransform(current), mergedTransform);
             current = current.parent;
         }
-        mergedTransform = Transform.merge(mergedTransform,moduleSlot.transform);
+        mergedTransform = Transform.merge(mergedTransform, moduleSlot.transform);
         return mergedTransform;
     }
 
-    public static Map<Integer,ModuleSlot> getSlots(ItemModule.ModuleInstance instance){
+    public static Map<Integer, ModuleSlot> getSlots(ItemModule.ModuleInstance instance) {
         ModuleProperty property = Miapi.modulePropertyRegistry.get(key);
         JsonElement data = instance.getProperties().get(property);
-        if(data!=null){
+        if (data != null) {
             Gson gson = new Gson();
-            Type type = new TypeToken<Map<Integer, ModuleSlot>>(){}.getType();
-            Map<Integer, ModuleSlot> slots = gson.fromJson(data,type);
+            Type type = new TypeToken<Map<Integer, ModuleSlot>>() {
+            }.getType();
+            Map<Integer, ModuleSlot> slots = gson.fromJson(data, type);
             //need to set Inslot as well here
-            slots.forEach((number,slot)->{
+            slots.forEach((number, slot) -> {
                 slot.inSlot = instance.subModules.get(number);
                 slot.parent = instance;
                 slot.id = number;
@@ -68,12 +70,12 @@ public class SlotProperty implements ModuleProperty {
         return new HashMap<>();
     }
 
-    public static Integer getSlotNumberIn(ItemModule.ModuleInstance instance){
-        if(instance.parent!=null){
-            Map<Integer,ModuleSlot> slots = getSlots(instance.parent);
+    public static Integer getSlotNumberIn(ItemModule.ModuleInstance instance) {
+        if (instance.parent != null) {
+            Map<Integer, ModuleSlot> slots = getSlots(instance.parent);
             AtomicReference<Integer> id = new AtomicReference<>(0);
-            slots.forEach((number,moduleSlot)->{
-                if(moduleSlot.inSlot==instance){
+            slots.forEach((number, moduleSlot) -> {
+                if (moduleSlot.inSlot == instance) {
                     id.set(number);
                 }
             });
@@ -82,16 +84,15 @@ public class SlotProperty implements ModuleProperty {
         return 0;
     }
 
-    public static Transform getLocalTransform(ItemModule.ModuleInstance instance){
+    public static Transform getLocalTransform(ItemModule.ModuleInstance instance) {
         ModuleProperty property = Miapi.modulePropertyRegistry.get(key);
         JsonElement test = instance.getProperties().get(property);
-        if(test!=null){
+        if (test != null) {
             //TODO:
             ModuleSlot slot = getSlotIn(instance);
-            if(slot!=null){
+            if (slot != null) {
                 return slot.transform;
-            }
-            else{
+            } else {
                 //Miapi.LOGGER.warn("No Slot Found for ModuleInstance");
             }
         }
@@ -99,11 +100,11 @@ public class SlotProperty implements ModuleProperty {
     }
 
     @Nullable
-    public static ModuleSlot getSlotIn(ItemModule.ModuleInstance instance){
-        if(instance.parent!=null){
-            Map<Integer,ModuleSlot> slots = getSlots(instance.parent);
+    public static ModuleSlot getSlotIn(ItemModule.ModuleInstance instance) {
+        if (instance.parent != null) {
+            Map<Integer, ModuleSlot> slots = getSlots(instance.parent);
             return slots.values().stream().filter(moduleSlot -> {
-                if(moduleSlot.inSlot==null) return false;
+                if (moduleSlot.inSlot == null) return false;
                 return moduleSlot.inSlot.equals(instance);
             }).findFirst().orElse(null);
         }
@@ -113,22 +114,34 @@ public class SlotProperty implements ModuleProperty {
     @Override
     public boolean load(String moduleKey, JsonElement data) throws Exception {
         Gson gson = new Gson();
-        Type type = new TypeToken<Map<Integer, ModuleSlot>>(){}.getType();
-        Map<Integer, ModuleSlot> map = gson.fromJson(data,type);
+        Type type = new TypeToken<Map<Integer, ModuleSlot>>() {
+        }.getType();
+        Map<Integer, ModuleSlot> map = gson.fromJson(data, type);
         return true;
     }
 
-    public static class ModuleSlot{
-        public ModuleSlot(List<String> allowedList){
+    public static class ModuleSlot {
+        public ModuleSlot(List<String> allowedList) {
             this.allowed = allowedList;
             id = 0;
         }
+
         public List<String> allowed = new ArrayList<>();
         public Transform transform = Transform.IDENTITY;
         @Nullable
         public ItemModule.ModuleInstance inSlot;
         public ItemModule.ModuleInstance parent;
         public int id;
+
+        public boolean allowedIn(ItemModule.ModuleInstance instance) {
+            List<String> allowedSlots = AllowedSlots.getAllowedSlots(instance.module);
+            for(String key:allowed){
+                if(allowedSlots.contains(key)){
+                    return true;
+                }
+            }
+            return false;
+        }
 
         @Override
         public boolean equals(Object object) {

@@ -98,7 +98,6 @@ public class ModelProperty implements ModuleProperty {
         for (ModelTransformer transformer : modelTransformers) {
             model = transformer.transform(model, stack);
         }
-        Miapi.LOGGER.error(model.getTransformation().getTransformation(ModelTransformation.Mode.GUI).scale.toString());
         return model;
     }
 

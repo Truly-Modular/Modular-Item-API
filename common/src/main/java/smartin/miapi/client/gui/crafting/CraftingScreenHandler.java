@@ -51,7 +51,6 @@ public class CraftingScreenHandler extends ScreenHandler {
                 slot.id = slotId;
                 this.addSlot(slot);
                 slot.id = slotId;
-                Miapi.LOGGER.error("adding Slot handler 2" + slot.id + "  " + invId);
             });
             Networking.registerC2SPacket(packetIDSlotRemove, (buffer, player) -> {
                 int slotId = buffer.readInt();

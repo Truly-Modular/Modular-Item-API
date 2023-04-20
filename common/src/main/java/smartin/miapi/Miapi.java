@@ -67,6 +67,9 @@ public class Miapi {
             moduleRegistry.clear();
             ReloadEvents.DATA_PACKS.forEach(ItemModule::loadFromData);
         },0.0f);
+        Miapi.itemRegistry.addCallback(item ->   {
+            Registry.register(Registry.ITEM, new Identifier(Miapi.itemRegistry.findKey(item)), item);
+        });
         MenuRegistry.registerScreenFactory(CRAFTING_SCREEN_HANDLER,CraftingGUI::new);
         PropertyResolver.propertyProviderRegistry.register("module", (moduleInstance,oldMap) -> {
             HashMap<ModuleProperty, JsonElement> map = new HashMap<>();

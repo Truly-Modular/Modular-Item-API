@@ -175,7 +175,6 @@ public class InteractAbleWidget extends ClickableWidget implements Drawable, Ele
         for (Element child : this.children()) {
             if (child.isMouseOver(mouseX, mouseY)) {
                 if (child.mouseClicked(mouseX, mouseY, button)) {
-                    Miapi.LOGGER.error("Consumpted Click" + child.toString());
                     return true;
                 }
             }

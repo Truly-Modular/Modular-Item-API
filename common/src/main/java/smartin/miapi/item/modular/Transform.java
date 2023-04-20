@@ -23,7 +23,7 @@ public class Transform extends Transformation{
         Vec3f childScale = child.scale.copy();
 
         // apply parent rotation to child translation
-        childTranslation.rotate(Quaternion.fromEulerXyzDegrees(parentRotation));
+        childRotation.add(parentRotation);
 
         // combine translation, rotation, and scale
         parentTranslation.add(childTranslation);

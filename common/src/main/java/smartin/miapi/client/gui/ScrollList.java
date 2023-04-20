@@ -131,7 +131,6 @@ public class ScrollList extends InteractAbleWidget {
 
         for (ClickableWidget widget : this.widgets) {
             if (widget.mouseClicked(mouseX, mouseY, button)) {
-                Miapi.LOGGER.error("Clicked ScrollList");
                 clicked = true;
             }
         }

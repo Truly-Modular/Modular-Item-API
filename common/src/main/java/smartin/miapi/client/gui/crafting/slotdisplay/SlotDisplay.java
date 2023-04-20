@@ -78,10 +78,8 @@ public class SlotDisplay extends InteractAbleWidget {
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (button == 0 && isMouseOver(mouseX, mouseY)) {
-            Miapi.LOGGER.error("ate Click SLotDisplay");
             mouseDown0 = true;
         } else if (button == 1 && isMouseOver(mouseX, mouseY)) {
-            Miapi.LOGGER.error("ate Click SLotDisplay");
             mouseDown1 = true;
         }
         return super.mouseClicked(mouseX, mouseY, button);
@@ -247,7 +245,6 @@ public class SlotDisplay extends InteractAbleWidget {
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
             if (this.isMouseOver(mouseX, mouseY)) {
                 setSelected(this.instance);
-                Miapi.LOGGER.error("ATE CLICK SLOTDISPLAY 2");
                 return true;
             }
             return super.mouseClicked(mouseX, mouseY, button);

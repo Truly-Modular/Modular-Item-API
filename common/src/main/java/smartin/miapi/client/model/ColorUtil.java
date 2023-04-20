@@ -35,7 +35,7 @@ public class ColorUtil {
         if(material!=null){
             return material.getColor();
         }
-        Miapi.LOGGER.error("material NOT FOUND");
+        Miapi.LOGGER.error("Could not find Material to retrieve Color");
         return ColorHelper.Argb.getArgb(255,255,255,255);
     }
 

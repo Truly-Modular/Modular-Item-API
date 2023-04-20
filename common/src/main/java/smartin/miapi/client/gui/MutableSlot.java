@@ -9,7 +9,6 @@ public class MutableSlot extends Slot {
 
     public MutableSlot(Inventory inventory, int index, int x, int y) {
         super(inventory, index, x, y);
-        Miapi.LOGGER.error("adding slot to " + x + " y " + y);
     }
 
     public void setEnabled(boolean isEnabled) {
