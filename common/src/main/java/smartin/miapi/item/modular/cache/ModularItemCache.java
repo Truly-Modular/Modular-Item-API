@@ -7,6 +7,7 @@ import smartin.miapi.Miapi;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.function.Function;
@@ -14,7 +15,7 @@ import java.util.function.Function;
 public class ModularItemCache {
     protected static Map<UUID, Cache> cacheMap = new HashMap<>();
     protected static Map<String, CacheObjectSupplier> supplierMap = new HashMap<>();
-    protected static Map<ItemStack,UUID> lookUpTable = new HashMap<>();
+    protected static Map<ItemStack,UUID> lookUpTable = new WeakHashMap<>();
     public static final String cacheKey = Miapi.MOD_ID+"uuid";
 
     public static void setSupplier(String key, CacheObjectSupplier supplier) {

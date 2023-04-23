@@ -1,39 +1,28 @@
 {
-    "name": "handle_long_v2",
+    "name": "bow_item",
     "texture": {
-        "path": "miapi:models/item/sword/handle/handle_long_v2.json",
+        "path": "miapi:models/item/bow.json",
         "transform": {
-            "rotation": {"x": 0.0, "y": 0.0, "z": 0.0},
-            "translation": {"x": -4.0, "y": -5.0, "z": 0.0},
-            "scale": {"x": 1.0, "y": 1.0, "z": 1.0}
+            "rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "translation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+            }
         }
     },
     "allowedInSlots": [
         "melee"
     ],
-    "slots": {
-        "0": {
-            "allowed": [
-                "sword_guard",
-                "sword_blade_small"
-            ],
-            "transform": {
-                "rotation": {"x": 0.0, "y": 0.0, "z": 0.0},
-                "translation": {"x": 3.0, "y": 3.0, "z": 0.0},
-                "scale": {"x": 1.0, "y": 1.0, "z": 1.0}
-            }
-        },
-        "1": {
-            "allowed": [
-                "sword_pommel"
-            ],
-            "transform": {
-                "rotation": {"x": 0.0, "y": 0.0, "z": 0.0},
-                "translation": {"x": -3.0, "y": -3.0, "z": 0.0},
-                "scale": {"x": 1.0, "y": 1.0, "z": 1.0}
-            }
-        }
-    },
     "modelTransform": {
         "replace": {
             "thirdperson_righthand": {
@@ -160,12 +149,6 @@
         ],
         "cost": 1
     },
-    "guiOffset": {
-        "x": 1,
-        "y": 1,
-        "sizeX": 2,
-        "sizeY": 2
-    },
-    "displayName": "[material.key] Extra Long Handle",
-    "itemId": "miapi:modular_handle"
+    "displayName": "[material.key] bow",
+    "itemId": "miapi:modular_bow"
 }

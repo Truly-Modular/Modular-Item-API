@@ -4,7 +4,6 @@ import io.netty.buffer.Unpooled;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
-import net.minecraft.item.AxeItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
@@ -13,8 +12,7 @@ import smartin.miapi.item.modular.ItemModule;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.cache.ModularItemCache;
 import smartin.miapi.item.modular.properties.SlotProperty;
-import smartin.miapi.item.modular.properties.crafting.AllowedSlots;
-import smartin.miapi.item.modular.properties.crafting.CraftingProperty;
+import smartin.miapi.item.modular.properties.CraftingProperty;
 import smartin.miapi.network.Networking;
 
 import javax.annotation.Nonnull;
@@ -23,7 +21,6 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
 
 public class CraftAction {
     private final ItemModule toAdd;
@@ -147,7 +144,7 @@ public class CraftAction {
         }
         //remove CacheKey so new cache gets Generated
         craftingStack.getNbt().remove(ModularItemCache.cacheKey);
-        ItemModule.ModuleInstance oldBaseModule = ModularItem.getModules(old);
+        ItemModule.ModuleInstance oldBaseModule = ItemModule.getModules(old);
         ItemModule.ModuleInstance newBaseModule = ItemModule.ModuleInstance.fromString(oldBaseModule.toString());
         Map<Integer, ItemModule.ModuleInstance> subModuleMap = new HashMap<>();
         if (slotId.size() == 0) {
@@ -183,10 +180,6 @@ public class CraftAction {
             subModuleMap.forEach((id, module) -> {
                 SlotProperty.ModuleSlot slot = SlotProperty.getSlots(newModule).get(id);
                 if (slot != null) {
-                    Miapi.LOGGER.warn("slot is not null");
-                    slot.allowed.forEach(s -> {
-                        Miapi.LOGGER.warn("allowed" + s);
-                    });
                     if (slot.allowedIn(module)) {
                         module.parent = newModule;
                         newModule.subModules.put(id, module);
@@ -213,7 +206,7 @@ public class CraftAction {
     }
 
     public void forEachCraftingProperty(ItemStack crafted, PropertyConsumer propertyConsumer) {
-        ItemModule.ModuleInstance parsingInstance = ModularItem.getModules(crafted);
+        ItemModule.ModuleInstance parsingInstance = ItemModule.getModules(crafted);
         for (int i = slotId.size() - 1; i >= 0; i--) {
             parsingInstance = parsingInstance.subModules.get(slotId.get(i));
         }

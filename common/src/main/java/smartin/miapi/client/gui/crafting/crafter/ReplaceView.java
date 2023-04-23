@@ -13,27 +13,34 @@ import smartin.miapi.client.gui.ScrollingTextWidget;
 import smartin.miapi.client.gui.SimpleButton;
 import smartin.miapi.item.modular.ItemModule;
 import smartin.miapi.item.modular.properties.SlotProperty;
-import smartin.miapi.item.modular.properties.crafting.AllowedSlots;
+import smartin.miapi.item.modular.properties.AllowedSlots;
 
 import java.util.ArrayList;
 import java.util.function.Consumer;
 
 public class ReplaceView extends InteractAbleWidget {
     Consumer<ItemModule> craft;
+    Consumer<ItemModule> preview;
+    SlotButton lastPreview;
 
-    public ReplaceView(int x, int y, int width, int height, SlotProperty.ModuleSlot slot, Consumer<SlotProperty.ModuleSlot> back, Consumer<ItemModule> craft) {
+    public ReplaceView(int x, int y, int width, int height, SlotProperty.ModuleSlot slot, Consumer<SlotProperty.ModuleSlot> back, Consumer<ItemModule> craft, Consumer<ItemModule> preview) {
         super(x, y, width, height, Text.empty());
         this.craft = craft;
-        ScrollList list = new ScrollList(x, y, width, height, new ArrayList<>());
+        this.preview = preview;
+        ScrollList list = new ScrollList(x, y, width, height-14, new ArrayList<>());
         addChild(list);
         list.children().clear();
-        addChild(new SimpleButton<>(this.x + 2, this.y + this.height - 10, 40, 10, Text.literal("Back"), slot, back::accept));
+        addChild(new SimpleButton<>(this.x + 2, this.y + this.height - 10, 40, 12, Text.literal("Back"), slot, back::accept));
         ArrayList<InteractAbleWidget> toList = new ArrayList<>();
         toList.add(new SlotButton(0, 0, this.width, 15, null));
         AllowedSlots.allowedIn(slot).forEach(module -> {
             toList.add(new SlotButton(0, 0, this.width, 15, module));
         });
         list.setList(toList);
+    }
+
+    public void setPreview(ItemModule module){
+        preview.accept(module);
     }
 
     class SlotButton extends InteractAbleWidget {
@@ -69,12 +76,20 @@ public class ReplaceView extends InteractAbleWidget {
             textWidget.render(matrices, mouseX, mouseY, delta);
         }
 
+        public boolean isMouseOver(double mouseX, double mouseY){
+            boolean isOver = super.isMouseOver(mouseX,mouseY);
+            if(!this.equals(lastPreview) && isOver){
+                lastPreview = this;
+                setPreview(module);
+            }
+            return isOver;
+        }
+
         @Override
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
             if(isMouseOver(mouseX,mouseY)){
                 if (button == 0) {
                     craft.accept(module);
-                    Miapi.LOGGER.error("ATE CLICK REPLACE");
                     return true;
                 }
             }

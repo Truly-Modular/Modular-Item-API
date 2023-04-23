@@ -42,11 +42,7 @@ public class SimpleButton<T> extends InteractAbleWidget {
     }
 
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        RenderSystem.depthFunc(GL11.GL_ALWAYS);
-        RenderSystem.depthMask(false);
         this.renderButton(matrices, mouseX, mouseY, delta);
-        RenderSystem.depthFunc(GL11.GL_ALWAYS);
-        RenderSystem.depthMask(true);
         this.children().forEach(children -> {
             if (children instanceof InteractAbleWidget widget) {
                 widget.x = this.x + 2;
@@ -70,9 +66,6 @@ public class SimpleButton<T> extends InteractAbleWidget {
     public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.enableDepthTest();
         RenderSystem.setShaderTexture(0, texture);
         int offset = 0;
         if (this.isMouseOver(mouseX, mouseY)) {

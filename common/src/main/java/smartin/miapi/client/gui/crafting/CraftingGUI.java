@@ -12,6 +12,11 @@ import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.ParentHandledScreen;
 import smartin.miapi.client.gui.crafting.crafter.ModuleCrafter;
 import smartin.miapi.client.gui.crafting.slotdisplay.SlotDisplay;
+import smartin.miapi.item.modular.ItemModule;
+import smartin.miapi.item.modular.properties.SlotProperty;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class CraftingGUI extends ParentHandledScreen<CraftingScreenHandler> implements ScreenHandlerProvider<CraftingScreenHandler> {
 
@@ -21,6 +26,7 @@ public class CraftingGUI extends ParentHandledScreen<CraftingScreenHandler> impl
     private ItemStack stack;
     SlotDisplay slotDisplay;
     ModuleCrafter moduleCrafter;
+    SlotProperty.ModuleSlot baseSlot;
 
     public CraftingGUI(CraftingScreenHandler handler, PlayerInventory playerInventory, Text title) {
         super(handler, playerInventory, Text.empty());
@@ -31,7 +37,10 @@ public class CraftingGUI extends ParentHandledScreen<CraftingScreenHandler> impl
     }
 
     public void init() {
-        moduleCrafter = new ModuleCrafter((this.width - this.backgroundWidth) / 2 + 109, (this.height - this.backgroundHeight) / 2 + 5, 163, 130, (selectedSlot) -> {
+        List<String> allowedModules = new ArrayList<>();
+        allowedModules.add("melee");
+        baseSlot = new SlotProperty.ModuleSlot(allowedModules);
+        moduleCrafter = new ModuleCrafter((this.width - this.backgroundWidth) / 2 + 109, (this.height - this.backgroundHeight) / 2 + 8, 163, 150, (selectedSlot) -> {
             slotDisplay.select(selectedSlot);
         }, (item) -> {
             slotDisplay.setItem(item);
@@ -50,8 +59,8 @@ public class CraftingGUI extends ParentHandledScreen<CraftingScreenHandler> impl
         moduleCrafter.setItem(getItem());
         this.addSelectableChild(moduleCrafter);
         super.init();
-        playerInventoryTitleX = -10;
-        playerInventoryTitleY = -10;
+        playerInventoryTitleX = -1000;
+        playerInventoryTitleY = -1000;
 
     }
 
@@ -72,17 +81,24 @@ public class CraftingGUI extends ParentHandledScreen<CraftingScreenHandler> impl
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         this.drawBackground(matrices, delta, mouseX, mouseY);
         super.render(matrices, mouseX, mouseY, delta);
-        RenderSystem.disableDepthTest();
         this.drawMouseoverTooltip(matrices, mouseX, mouseY);
-        RenderSystem.enableDepthTest();
         if (!getItem().equals(stack)) {
             stack = getItem();
             setItem(handler.inventory.getStack(0));
+            ItemModule.ModuleInstance root = ItemModule.getModules(stack);
+            baseSlot.inSlot = root;
+            SlotProperty.ModuleSlot current = baseSlot;
+            if(baseSlot.inSlot.module.equals(ItemModule.empty)){
+                current = null;
+            }
             if (slotDisplay != null) {
+                slotDisplay.setBaseSlot(current);
                 slotDisplay.setItem(stack);
             }
             if (moduleCrafter != null) {
+                moduleCrafter.setBaseSlot(current);
                 moduleCrafter.setItem(stack);
+                moduleCrafter.setSelectedSlot(null);
             }
         }
     }

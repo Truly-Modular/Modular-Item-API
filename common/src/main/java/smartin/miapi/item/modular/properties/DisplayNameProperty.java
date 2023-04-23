@@ -23,7 +23,7 @@ public class DisplayNameProperty implements ModuleProperty{
     }
 
     private static Text resolveDisplayText(ItemStack itemStack){
-        ItemModule.ModuleInstance root = ModularItem.getModules(itemStack);
+        ItemModule.ModuleInstance root = ItemModule.getModules(itemStack);
         root.allSubModules();
         String translationKey = "";
         ItemModule.ModuleInstance primaryModule = root;

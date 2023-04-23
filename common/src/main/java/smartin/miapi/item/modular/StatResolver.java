@@ -5,9 +5,7 @@ import org.mariuszgromada.math.mxparser.Expression;
 import smartin.miapi.Miapi;
 import smartin.miapi.item.modular.ItemModule;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -66,7 +64,11 @@ public class StatResolver {
         for(int i = 0;i<100 && !old.equals(newString);i++ ){
             old = newString;
             newString = resolveString(old, instance);
-            newString = Text.translatable(newString).getString();
+            List<String> translatedStrings = new ArrayList<>();
+            Arrays.stream(newString.split(" ")).forEach(s->{
+                translatedStrings.add(Text.translatable(s).getString());
+            });
+            newString = String.join(" ",translatedStrings);
         }
         return Text.literal(newString);
     }

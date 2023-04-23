@@ -45,9 +45,10 @@
             "uuid": "FA233E1C-4180-4865-B01B-BCCE9785ACA3"
         }
     },
-    "displayName": "testing [material.key] [translation.item.minecraft.iron_sword]",
     "guiOffset": {
-        "sizeX": 5,
-        "sizeY": 5
-    }
+        "sizeX": 2,
+        "sizeY": 2
+    },
+    "displayName": "[material.key] Great Sword",
+    "itemId": "miapi:modular_greatsword"
 }

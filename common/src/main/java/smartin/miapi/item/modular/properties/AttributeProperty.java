@@ -66,7 +66,7 @@ public class AttributeProperty implements ModuleProperty {
     }
 
     private static Multimap<EntityAttribute, EntityAttributeModifierHolder> createAttributeCache(ItemStack itemStack) {
-        ItemModule.ModuleInstance rootInstance = ModularItem.getModules(itemStack);
+        ItemModule.ModuleInstance rootInstance = ItemModule.getModules(itemStack);
         Multimap<EntityAttribute, EntityAttributeModifierHolder> attributeModifiers = ArrayListMultimap.create();
         ItemModule.createFlatList(rootInstance).forEach(instance -> {
             getAttributeModifiers(instance, attributeModifiers);

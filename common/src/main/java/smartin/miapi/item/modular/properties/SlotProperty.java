@@ -7,7 +7,6 @@ import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.item.modular.ItemModule;
 import smartin.miapi.item.modular.Transform;
-import smartin.miapi.item.modular.properties.crafting.AllowedSlots;
 
 import java.lang.reflect.Type;
 import java.util.*;

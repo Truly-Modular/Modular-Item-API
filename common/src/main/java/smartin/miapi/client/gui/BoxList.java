@@ -169,8 +169,6 @@ public class BoxList extends InteractAbleWidget {
             RenderSystem.setShaderTexture(0, texture);
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
             RenderSystem.enableBlend();
-            RenderSystem.defaultBlendFunc();
-            RenderSystem.enableDepthTest();
 
             int textureOffset = 0;
 

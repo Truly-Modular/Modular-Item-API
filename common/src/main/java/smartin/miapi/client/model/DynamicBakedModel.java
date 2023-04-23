@@ -6,9 +6,13 @@ import net.minecraft.client.render.model.BakedQuad;
 import net.minecraft.client.render.model.json.ModelOverrideList;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.texture.Sprite;
+import net.minecraft.client.world.ClientWorld;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 import org.jetbrains.annotations.Nullable;
+import smartin.miapi.Miapi;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,13 +20,31 @@ import java.util.List;
 public class DynamicBakedModel implements BakedModel {
     public List<BakedQuad> quads = new ArrayList<>();
     public ModelTransformation modelTransformation = ModelTransformation.NONE;
+    public List<BakedModel> childModels = new ArrayList<>();
+    private DynamicBakedModel overrideModel;
+    public ModelOverrideList overrideList;
 
-    public DynamicBakedModel(List<BakedQuad> quads){
-        this.quads=quads;
+    public DynamicBakedModel(List<BakedQuad> quads) {
+        this.quads = quads;
+        overrideList = new DynamicOverrides();
     }
+
     @Override
     public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction face, Random random) {
-        return quads;
+        List<BakedQuad> list = new ArrayList<>();
+        childModels.forEach(model -> {
+            list.addAll(model.getQuads(state, face, random));
+        });
+        list.addAll(quads);
+        //Miapi.LOGGER.error(String.valueOf(quads.size()));
+        return list;
+    }
+
+    public void addModel(BakedModel child) {
+        if (overrideModel == null) {
+            overrideModel = new DynamicBakedModel(new ArrayList<>());
+        }
+        this.childModels.add(child);
     }
 
     @Override
@@ -57,6 +79,33 @@ public class DynamicBakedModel implements BakedModel {
 
     @Override
     public ModelOverrideList getOverrides() {
-        return null;
+        if (childModels.isEmpty()) return null;
+        return overrideList;
+    }
+
+    class DynamicOverrides extends ModelOverrideList {
+
+        public DynamicOverrides() {
+            super(null, null, null, new ArrayList<>());
+        }
+
+        @Override
+        public BakedModel apply(BakedModel oldmodel, ItemStack stack, @Nullable ClientWorld world, @Nullable LivingEntity entity, int seed) {
+            overrideModel.childModels.clear();
+            overrideModel.quads.clear();
+            overrideModel.quads.addAll(quads);
+            childModels.forEach(model -> {
+                if (model.getOverrides() != null) {
+                    BakedModel override = model.getOverrides().apply(model, stack, world, entity, seed);
+                    if(!override.equals(model)){
+                        Miapi.LOGGER.error("override is different");
+                    }
+                    overrideModel.addModel(override);
+                } else {
+                    overrideModel.addModel(model);
+                }
+            });
+            return overrideModel;
+        }
     }
 }

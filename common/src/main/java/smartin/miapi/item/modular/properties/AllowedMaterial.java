@@ -11,7 +11,6 @@ import net.minecraft.util.math.Vec2f;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.item.modular.ItemModule;
-import smartin.miapi.item.modular.properties.crafting.CraftingProperty;
 
 import java.util.ArrayList;
 import java.util.List;

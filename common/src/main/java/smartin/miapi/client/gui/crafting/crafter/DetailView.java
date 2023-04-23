@@ -3,6 +3,7 @@ package smartin.miapi.client.gui.crafting.crafter;
 import com.google.gson.JsonElement;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.Element;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
@@ -25,14 +26,24 @@ public class DetailView extends InteractAbleWidget {
     final Consumer<SlotProperty.ModuleSlot> replace;
     final Map<SlotProperty.ModuleSlot, DetailView.SlotButton> buttonMap = new HashMap<>();
     SlotProperty.ModuleSlot selectedSlot;
+    ScrollList scrollList;
 
 
     public DetailView(int x, int y, int width, int height, SlotProperty.ModuleSlot baseSlot, SlotProperty.ModuleSlot selected, Consumer<SlotProperty.ModuleSlot> edit, Consumer<SlotProperty.ModuleSlot> replace) {
         super(x, y, width, height, Text.empty());
         selectedSlot = selected;
-        this.addChild(new ScrollList(x, y, width, height, Collections.singletonList(new SlotButton(this.x, this.y, this.width, 16, baseSlot))));
+        if (baseSlot!=null) {
+            scrollList = new ScrollList(x, y, width, height, Collections.singletonList(new SlotButton(this.x, this.y, this.width, 16, baseSlot)));
+            this.addChild(scrollList);
+        }
         this.edit = edit;
         this.replace = replace;
+    }
+
+    public void scrollTo(int y) {
+        if (scrollList != null) {
+            scrollList.setScrollAmount(this.y - y);
+        }
     }
 
     class SlotButton extends InteractAbleWidget {
@@ -73,8 +84,8 @@ public class DetailView extends InteractAbleWidget {
             if (slot.inSlot != null) {
                 displayText = Text.translatable(Miapi.MOD_ID + ".module." + slot.inSlot.module.getName());
                 JsonElement property = slot.inSlot.getKeyedProperties().get("moduleproperty1");
-                if(property!=null){
-                    displayText  = Text.literal(String.valueOf(StatResolver.resolveDouble(property.getAsString(),slot.inSlot)));
+                if (property != null) {
+                    displayText = Text.literal(String.valueOf(StatResolver.resolveDouble(property.getAsString(), slot.inSlot)));
                 }
             }
             textWidget = new ScrollingTextWidget(this.x + 10, this.y, this.width - 20, displayText, ColorHelper.Argb.getArgb(255, 255, 255, 255));
@@ -96,22 +107,24 @@ public class DetailView extends InteractAbleWidget {
             updateChildren();
             this.children.addAll(subSlots);
             this.isOpened = true;
+            scrollTo(this.y);
         }
 
-        private void updateChildren() {
+        public void updateChildren() {
             AtomicInteger yOffset = new AtomicInteger();
-            yOffset.addAndGet(currentHeight);
+            yOffset.addAndGet(trueHeight);
+            if (isSelected) {
+                detail.x = this.x + 1;
+                detail.y = this.y + trueHeight - 2;
+                detail.setWidth(this.width - 2);
+                yOffset.addAndGet(detail.getHeight());
+            }
             subSlots.forEach(slotButton -> {
                 slotButton.x = this.x;
                 slotButton.y = this.y + yOffset.get();
                 yOffset.addAndGet(slotButton.currentHeight);
                 slotButton.width = this.width;
             });
-            if (isSelected) {
-                detail.x = this.x + 1;
-                detail.y = this.y + trueHeight - 2;
-                detail.setWidth(this.width - 2);
-            }
         }
 
         public void close() {
@@ -129,23 +142,25 @@ public class DetailView extends InteractAbleWidget {
 
         public void select() {
             isSelected = true;
-            currentHeight = trueHeight + detail.getHeight();
+            scrollTo(this.y);
         }
 
         public void deselect() {
             isSelected = false;
-            currentHeight = trueHeight;
         }
 
         public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+            currentHeight = trueHeight;
             if (this.isOpened) {
                 updateChildren();
-                subSlots.forEach(slotButton -> {
-                    slotButton.render(matrices, mouseX, mouseY, delta);
-                });
+                for (SlotButton detail1 : subSlots) {
+                    currentHeight += detail1.currentHeight;
+                    detail1.render(matrices, mouseX, mouseY, delta);
+                }
             }
             if (this.isSelected) {
                 detail.render(matrices, mouseX, mouseY, delta);
+                currentHeight += detail.getHeight();
             }
             drawButton(matrices, mouseX, mouseY, delta);
         }
@@ -227,7 +242,7 @@ public class DetailView extends InteractAbleWidget {
                     }
                 } else if (mouseY < this.y + currentHeight && mouseY > this.y + trueHeight) {
                     if (isSelected) {
-                        if(detail.mouseClicked(mouseX, mouseY, button)){
+                        if (detail.mouseClicked(mouseX, mouseY, button)) {
                             return true;
                         }
                     }
@@ -290,7 +305,7 @@ public class DetailView extends InteractAbleWidget {
             RenderSystem.defaultBlendFunc();
             //drawTexture(matrices, x, y, 0, 0, 0, width, height - 5, 156, 100);
             //drawTexture(matrices, x, y + height - 5, 0, 0, 95, width, 5, 156, 100);
-            drawTextureWithEdge(matrices,x,y,this.width,height,156,100,5);
+            drawTextureWithEdge(matrices, x, y, this.width, height, 156, 100, 5);
 
             headerText.x = this.x + buttonSpacing;
             headerText.y = this.y + buttonSpacing;

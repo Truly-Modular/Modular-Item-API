@@ -307,8 +307,6 @@ public class InteractAbleWidget extends ClickableWidget implements Drawable, Ele
      *                 This is needed for animations and co
      */
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        RenderSystem.applyModelViewMatrix();
-        RenderSystem.disableDepthTest();
         children().forEach(element -> {
             if (element instanceof Drawable drawable) {
                 drawable.render(matrices, mouseX, mouseY, delta);

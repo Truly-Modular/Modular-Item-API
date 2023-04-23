@@ -7,7 +7,8 @@
   ],
   "client": [
     "ItemRendererAccessor",
-    "ItemStackMixin"
+    "ItemStackMixin",
+    "ModelLoaderAccessor"
   ],
   "injectors": {
     "defaultRequire": 1

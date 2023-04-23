@@ -17,6 +17,7 @@ public class ScrollList extends InteractAbleWidget {
      * it just calls render() twice to get its height first
      */
     public boolean saveMode = true;
+    boolean needsScrollbar = false;
 
     public ScrollList(int x, int y, int width, int height, List<InteractAbleWidget> widgets) {
         super(x, y, width, height, Text.empty());
@@ -44,7 +45,7 @@ public class ScrollList extends InteractAbleWidget {
 
         this.scrollAmount = Math.max(0, Math.min(this.scrollAmount, this.maxScrollAmount));
 
-        boolean needsScrollbar = totalHeight>height;
+        needsScrollbar = totalHeight>height;
 
         int startY = this.y + 1 - this.scrollAmount;
 
@@ -121,21 +122,36 @@ public class ScrollList extends InteractAbleWidget {
         return true;
     }
 
+    public void setScrollAmount(int amount){
+        scrollAmount = amount;
+    }
+
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (this.widgets == null) {
-            return false;
-        }
+        if(isMouseOver(mouseX,mouseY)){
+            if (this.widgets == null) {
+                return false;
+            }
 
-        boolean clicked = false;
+            boolean clicked = false;
+            if(needsScrollbar){
+                if(isMouseOver(mouseX,mouseY)){
+                    if(mouseY>this.x+this.width-5 && mouseY<this.x+this.width){
+                        //drag motion
+                    }
+                }
+            }
 
-        for (ClickableWidget widget : this.widgets) {
-            if (widget.mouseClicked(mouseX, mouseY, button)) {
-                clicked = true;
+            for (ClickableWidget widget : this.widgets) {
+                if(widget.isMouseOver(mouseX,mouseY)){
+                    if (widget.mouseClicked(mouseX, mouseY, button)) {
+                        return true;
+                    }
+                }
             }
         }
 
-        return clicked;
+        return false;
     }
 
     @Override

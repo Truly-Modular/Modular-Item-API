@@ -14,4 +14,8 @@ public class ModelLoadAccessor {
         }
         return loader;
     }
+
+    public static void setLoader(ModelLoader loader){
+        ModelLoadAccessor.loader = loader;
+    }
 }

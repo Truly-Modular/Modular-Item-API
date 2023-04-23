@@ -1,26 +1,48 @@
 {
     "name": "blade_dagger",
     "texture": {
-      "path": "miapi:models/item/sword/blade/blade_dagger.json",
-      "transform": {"rotation":{"x":0.0,"y":0.0,"z":0.0},"translation":{"x":-3.0,"y":-3.0,"z":0.0},"scale":{"x":1,"y":1,"z":1}}
+        "path": "miapi:models/item/sword/blade/blade_dagger.json",
+        "transform": {
+            "rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "translation": {
+                "x": -3.0,
+                "y": -3.0,
+                "z": 0.0
+            },
+            "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+            }
+        }
     },
-    "allowedInSlots": ["sword_blade_small"],
-  "allowedMaterial": {
-    "allowedMaterials": ["metal"],
-    "cost": 1
-  },
-  "attributes": {
-    "generic.attack_damage": {
-      "value": "[material.hardness]*0.5 + [material.flexibility]*1",
-      "operation": "+",
-      "slot": "mainhand",
-      "uuid": "CB3F55D3-645C-4F38-A497-9C13A33DB5CF"
+    "allowedInSlots": [
+        "sword_blade_small"
+    ],
+    "allowedMaterial": {
+        "allowedMaterials": [
+            "metal"
+        ],
+        "cost": 1
     },
-    "generic.attack_speed": {
-      "value": "[material.flexibility]*2",
-      "operation": "+",
-      "slot": "mainhand",
-      "uuid": "FA233E1C-4180-4865-B01B-BCCE9785ACA3"
-    }
-  }
+    "attributes": {
+        "generic.attack_damage": {
+            "value": "[material.hardness]*0.5 + [material.flexibility]*1",
+            "operation": "+",
+            "slot": "mainhand",
+            "uuid": "CB3F55D3-645C-4F38-A497-9C13A33DB5CF"
+        },
+        "generic.attack_speed": {
+            "value": "[material.flexibility]*2",
+            "operation": "+",
+            "slot": "mainhand",
+            "uuid": "FA233E1C-4180-4865-B01B-BCCE9785ACA3"
+        }
+    },
+    "displayName": "[material.key] dagger",
+    "itemId": "miapi:modular_dagger"
 }

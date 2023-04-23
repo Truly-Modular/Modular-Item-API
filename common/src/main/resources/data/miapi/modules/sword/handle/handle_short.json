@@ -160,5 +160,6 @@
         ],
         "cost": 1
     },
-    "displayName": "Empty Handle [material.key] [translation.item.minecraft.iron_sword]"
+    "displayName": "[material.key] short Handle",
+    "itemId": "miapi:modular_handle"
 }

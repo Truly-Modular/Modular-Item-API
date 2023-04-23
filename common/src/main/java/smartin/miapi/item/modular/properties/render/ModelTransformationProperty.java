@@ -1,4 +1,4 @@
-package smartin.miapi.item.modular.properties;
+package smartin.miapi.item.modular.properties.render;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -11,6 +11,7 @@ import smartin.miapi.client.model.DynamicBakedModel;
 import smartin.miapi.item.modular.ItemModule;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.Transform;
+import smartin.miapi.item.modular.properties.ModuleProperty;
 import smartin.miapi.item.modular.properties.render.ModelProperty;
 
 import java.util.*;
@@ -26,7 +27,7 @@ public class ModelTransformationProperty implements ModuleProperty {
             @Override
             public DynamicBakedModel transform(DynamicBakedModel dynamicBakedModel, ItemStack stack) {
                 ModelTransformation transformation = ModelTransformation.NONE;
-                for (ItemModule.ModuleInstance instance : ItemModule.createFlatList(ModularItem.getModules(stack))) {
+                for (ItemModule.ModuleInstance instance : ItemModule.createFlatList(ItemModule.getModules(stack))) {
                     JsonElement element = instance.getProperties().get(modelTransformationProperty);
                     if (element != null) {
                         Map<ModelTransformation.Mode, Transformation> map = new HashMap<>();

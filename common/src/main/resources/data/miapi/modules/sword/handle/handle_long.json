@@ -160,11 +160,12 @@
         ],
         "cost": 1
     },
-    "displayName": "Empty Handle [material.key] [translation.item.minecraft.iron_sword]",
     "guiOffset": {
         "x": 1,
         "y": 1,
         "sizeX": 1,
         "sizeY": 1
-    }
+    },
+    "displayName": "[material.key] Long Handle",
+    "itemId": "miapi:modular_handle"
 }

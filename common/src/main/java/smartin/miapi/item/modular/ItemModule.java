@@ -6,8 +6,10 @@ import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import net.minecraft.entity.attribute.EntityAttribute;
+import net.minecraft.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
+import smartin.miapi.item.modular.cache.ModularItemCache;
 import smartin.miapi.item.modular.properties.AttributeProperty;
 import smartin.miapi.item.modular.properties.ModuleProperty;
 import smartin.miapi.registries.MiapiRegistry;
@@ -20,6 +22,8 @@ import java.util.Map;
 
 public class ItemModule {
     private static final MiapiRegistry<ItemModule> moduleRegistry = MiapiRegistry.getInstance(ItemModule.class);
+    public static final String moduleKey = "modules";
+    public static final String propertyKey = "rawProperties";
     private final String name;
     private final Map<String, JsonElement> properties;
     public static final ItemModule empty = new ItemModule("empty", new HashMap<>());
@@ -84,6 +88,26 @@ public class ItemModule {
         return false;
     }
 
+    public static ItemModule.ModuleInstance getModules(ItemStack stack) {
+        ItemModule.ModuleInstance moduleInstance = (ItemModule.ModuleInstance) ModularItemCache.get(stack, moduleKey);
+        if (moduleInstance == null || moduleInstance.module == null) {
+            Miapi.LOGGER.warn("Item has Invalid Module setup - treating it like it has no modules");
+            return new ItemModule.ModuleInstance(new ItemModule("empty", new HashMap<>()));
+        }
+        return moduleInstance;
+    }
+
+    public static Map<String, List<JsonElement>> getUnmergedProperties(ItemModule.ModuleInstance modules) {
+        Map<String, List<JsonElement>> unmergedProperties = new HashMap<>();
+        for (ItemModule.ModuleInstance module : modules.subModules.values()) {
+            module.getProperties().forEach((property, data) -> {
+                String key = Miapi.moduleRegistry.findKey(property);
+                unmergedProperties.getOrDefault(key, new ArrayList<>()).add(data);
+            });
+        }
+        return unmergedProperties;
+    }
+
     public Map<String, JsonElement> getProperties() {
         return properties;
     }
@@ -111,6 +135,18 @@ public class ItemModule {
         }
 
         return flatList;
+    }
+
+    public boolean isEmpty(){
+        return this.equals(empty);
+    }
+
+    @Override
+    public boolean equals(Object other){
+        if(other instanceof ItemModule otherModule){
+            return this.name.equals(otherModule.name);
+        }
+        return false;
     }
 
     @JsonAdapter(ModuleInstanceJsonAdapter.class)

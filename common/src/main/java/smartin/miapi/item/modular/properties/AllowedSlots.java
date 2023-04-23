@@ -1,4 +1,4 @@
-package smartin.miapi.item.modular.properties.crafting;
+package smartin.miapi.item.modular.properties;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;

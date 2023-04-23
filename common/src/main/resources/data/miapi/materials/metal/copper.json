@@ -12,6 +12,8 @@
     "default",
     "test"
   ],
+  "propertyList": [],
+
   "items": [
     {
       "item": "minecraft:copper_ingot",

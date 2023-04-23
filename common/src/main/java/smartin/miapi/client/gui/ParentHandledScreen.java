@@ -200,8 +200,6 @@ public abstract class ParentHandledScreen<T extends ScreenHandler> extends Handl
      */
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta){
         super.render(matrices,mouseX,mouseY,delta);
-        RenderSystem.applyModelViewMatrix();
-        RenderSystem.disableDepthTest();
         children().forEach(element -> {
             if(element instanceof Drawable drawable){
                 drawable.render(matrices,mouseX,mouseY,delta);

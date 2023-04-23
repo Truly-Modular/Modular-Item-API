@@ -1,8 +1,8 @@
 package smartin.miapi.client.gui.crafting.crafter;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import dev.architectury.event.events.client.ClientTooltipEvent;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.Element;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.inventory.Inventory;
@@ -18,7 +18,7 @@ import smartin.miapi.client.gui.SimpleButton;
 import smartin.miapi.craft.CraftAction;
 import smartin.miapi.item.modular.ItemModule;
 import smartin.miapi.item.modular.properties.SlotProperty;
-import smartin.miapi.item.modular.properties.crafting.CraftingProperty;
+import smartin.miapi.item.modular.properties.CraftingProperty;
 import smartin.miapi.network.Networking;
 
 import java.util.ArrayList;
@@ -44,6 +44,7 @@ public class CraftView extends InteractAbleWidget {
     private int currentGuiIndex = 0;
     Consumer<Slot> removeSlot;
     Consumer<Slot> addSlot;
+    Consumer<ItemStack> preview;
     int backgroundWidth = 278;
     int backgroundHeight = 221;
 
@@ -63,6 +64,7 @@ public class CraftView extends InteractAbleWidget {
     public CraftView(int x, int y, int width, int height, String packetId, ItemModule module, ItemStack stack, Inventory inventory, int offset, SlotProperty.ModuleSlot slot, Consumer<SlotProperty.ModuleSlot> back, Consumer<ItemStack> newStack, Consumer<Slot> addSlot, Consumer<Slot> removeSlot) {
         super(x, y, width, height, Text.empty());
         compareStack = stack;
+        this.preview = newStack;
         linkedInventory = inventory;
         inventoryOffset = offset;
         originalStack = stack;
@@ -158,6 +160,8 @@ public class CraftView extends InteractAbleWidget {
     }
 
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+        //only preview on inventory change?
+        preview.accept(action.getPreview());
         setBuffers();
         craftButton.isEnabled = action.canPerform();
         super.render(matrices, mouseX, mouseY, delta);

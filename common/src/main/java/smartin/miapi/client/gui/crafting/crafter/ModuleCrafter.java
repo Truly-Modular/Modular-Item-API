@@ -1,23 +1,21 @@
 package smartin.miapi.client.gui.crafting.crafter;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import it.unimi.dsi.fastutil.objects.ObjectLists;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
 import smartin.miapi.Miapi;
-import smartin.miapi.client.gui.BoxList;
 import smartin.miapi.client.gui.InteractAbleWidget;
+import smartin.miapi.craft.CraftAction;
 import smartin.miapi.item.modular.ItemModule;
-import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.properties.SlotProperty;
 
 import java.util.ArrayList;
@@ -28,7 +26,7 @@ public class ModuleCrafter extends InteractAbleWidget {
     private ItemStack stack;
     private ItemModule module;
     private SlotProperty.ModuleSlot slot;
-    private final Consumer<ItemStack> craftedItem;
+    private final Consumer<ItemStack> preview;
     private final Consumer<SlotProperty.ModuleSlot> selectedSlot;
     private SlotProperty.ModuleSlot baseSlot = new SlotProperty.ModuleSlot(new ArrayList<>());
     private static final Identifier BACKGROUND_TEXTURE = new Identifier(Miapi.MOD_ID, "textures/crafting_gui_background_black.png");
@@ -43,10 +41,7 @@ public class ModuleCrafter extends InteractAbleWidget {
         this.linkedInventory = linkedInventory;
         //set Header, current Module Selected
         List<ClickableWidget> widgets = new ArrayList<>();
-        List<String> allowedModules = new ArrayList<>();
-        allowedModules.add("melee");
-        baseSlot.allowed = allowedModules;
-        this.craftedItem = craftedItem;
+        this.preview = craftedItem;
         this.selectedSlot = selected;
         this.removeSlot = removeSlot;
         this.addSlot = addSlot;
@@ -64,6 +59,10 @@ public class ModuleCrafter extends InteractAbleWidget {
         setMode(Mode.DETAIL);
     }
 
+    public void setBaseSlot(SlotProperty.ModuleSlot instance) {
+        baseSlot = instance;
+    }
+
     public void setPacketIdentifier(String identifier) {
         paketIdentifier = identifier;
     }
@@ -74,6 +73,9 @@ public class ModuleCrafter extends InteractAbleWidget {
     }
 
     public void setMode(Mode mode) {
+        if(! mode.equals(Mode.CRAFT)){
+            preview.accept(stack);
+        }
         if(craftView!=null){
             craftView.closeSlot();
             craftView=null;
@@ -81,8 +83,7 @@ public class ModuleCrafter extends InteractAbleWidget {
         switch (mode) {
             case DETAIL -> {
                 this.children().clear();
-                baseSlot.inSlot = ModularItem.getModules(stack);
-                DetailView detailView = new DetailView(this.x, this.y + 18, this.width, this.height - 38, this.baseSlot, this.slot,
+                DetailView detailView = new DetailView(this.x, this.y, this.width, this.height - 38, this.baseSlot, this.slot,
                         toEdit -> {
                             setMode(Mode.EDIT);
                         },
@@ -99,10 +100,10 @@ public class ModuleCrafter extends InteractAbleWidget {
                 this.children.add(detailView);
             }
             case CRAFT -> {
-                craftView = new CraftView(this.x, this.y + 18, this.width, this.height - 38, paketIdentifier, module, stack, linkedInventory, 1, slot, (backSlot) -> {
+                craftView = new CraftView(this.x, this.y, this.width, this.height - 38, paketIdentifier, module, stack, linkedInventory, 1, slot, (backSlot) -> {
                     setSelectedSlot(backSlot);
                 }, (replaceItem) -> {
-                    craftedItem.accept(replaceItem);
+                    preview.accept(replaceItem);
                 }, addSlot, removeSlot);
                 this.children().clear();
                 this.addChild(craftView);
@@ -111,15 +112,16 @@ public class ModuleCrafter extends InteractAbleWidget {
                 Miapi.LOGGER.error("edit");
             }
             case REPLACE -> {
-                Miapi.LOGGER.error("replace");
                 this.children.clear();
-                ReplaceView view = new ReplaceView(this.x, this.y + 18, this.width, this.height - 38, slot, (instance) -> {
-                    Miapi.LOGGER.error("back");
+                ReplaceView view = new ReplaceView(this.x, this.y, this.width, this.height - 38, slot, (instance) -> {
                     setSelectedSlot(instance);
                 }, (module -> {
-                    Miapi.LOGGER.error("CraftModule");
                     this.module = module;
                     setMode(Mode.CRAFT);
+                }), (module -> {
+                    CraftAction action = new CraftAction(stack,slot,module,null,new PacketByteBuf[0]);
+                    action.linkInventory(linkedInventory,1);
+                    preview.accept(action.getPreview());
                 }));
                 addChild(view);
             }
@@ -146,7 +148,7 @@ public class ModuleCrafter extends InteractAbleWidget {
 
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        renderBackground(matrices, mouseX, mouseY, delta);
+        //renderBackground(matrices, mouseX, mouseY, delta);
         super.render(matrices, mouseX, mouseY, delta);
     }
 

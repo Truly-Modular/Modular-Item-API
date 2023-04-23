@@ -25,13 +25,17 @@ import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.datapack.ReloadListener;
 import smartin.miapi.datapack.SpriteLoader;
 import smartin.miapi.item.modular.ItemModule;
-import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.PropertyResolver;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.item.modular.cache.ModularItemCache;
+import smartin.miapi.item.modular.items.ExampleModularBowItem;
+import smartin.miapi.item.modular.items.ExampleModularItem;
+import smartin.miapi.item.modular.items.ModularWeapon;
 import smartin.miapi.item.modular.properties.*;
-import smartin.miapi.item.modular.properties.crafting.AllowedSlots;
+import smartin.miapi.item.modular.properties.AllowedSlots;
+import smartin.miapi.item.modular.properties.render.GuiOffsetProperty;
 import smartin.miapi.item.modular.properties.render.ModelProperty;
+import smartin.miapi.item.modular.properties.render.ModelTransformationProperty;
 import smartin.miapi.registries.MiapiRegistry;
 
 import java.util.HashMap;
@@ -42,8 +46,6 @@ public class Miapi {
     public static final MiapiRegistry<ModuleProperty> modulePropertyRegistry = MiapiRegistry.getInstance(ModuleProperty.class);
     public static final MiapiRegistry<ItemModule> moduleRegistry = MiapiRegistry.getInstance(ItemModule.class);
     public static final MiapiRegistry<Item> itemRegistry = MiapiRegistry.getInstance(Item.class);
-    public static final Item modularItem = new ModularItem();
-    public static final Identifier modularItemIdentifier = new Identifier(MOD_ID, "modular_item");
     public static MinecraftServer server;
     public static Gson gson = new Gson();
     public static final ScreenHandlerType<CraftingScreenHandler> CRAFTING_SCREEN_HANDLER = register(new Identifier(Miapi.MOD_ID,"default_crafting"), CraftingScreenHandler::new);
@@ -94,20 +96,19 @@ public class Miapi {
             }
             return map;
         });
-        ModularItemCache.setSupplier(ModularItem.moduleKey, itemStack -> {
+        ModularItemCache.setSupplier(ItemModule.moduleKey, itemStack -> {
             NbtCompound tag = itemStack.getNbt();
             try {
-                String modulesString = tag.getString(ModularItem.moduleKey);
+                String modulesString = tag.getString(ItemModule.moduleKey);
                 Gson gson = new Gson();
                 return gson.fromJson(modulesString, ItemModule.ModuleInstance.class);
             } catch (Exception e) {
                 e.printStackTrace();
-                Miapi.LOGGER.error("couldn't load Modules");
                 return null;
             }
         });
-        ModularItemCache.setSupplier(ModularItem.propertyKey, itemStack -> {
-            return ModularItem.getUnmergedProperties((ItemModule.ModuleInstance) ModularItemCache.get(itemStack, ModularItem.moduleKey));
+        ModularItemCache.setSupplier(ItemModule.propertyKey, itemStack -> {
+            return ItemModule.getUnmergedProperties((ItemModule.ModuleInstance) ModularItemCache.get(itemStack, ItemModule.moduleKey));
         });
         StatResolver.registerResolver("translation", new StatResolver.Resolver() {
             @Override
@@ -128,8 +129,17 @@ public class Miapi {
         ReloadEvents.registerDataPackPathToSync(Miapi.MOD_ID,"materials");
 
         //ITEM
-        Miapi.itemRegistry.register(MOD_ID+":modular_item",Miapi.modularItem);
-        Miapi.itemRegistry.register(MOD_ID+":modular_sword",new ModularItem());
+        Miapi.itemRegistry.register(MOD_ID+":modular_item",new ExampleModularItem());
+        Miapi.itemRegistry.register(MOD_ID+":modular_handle",new ModularWeapon());
+        Miapi.itemRegistry.register(MOD_ID+":modular_sword",new ModularWeapon());
+        Miapi.itemRegistry.register(MOD_ID+":modular_katana",new ModularWeapon());
+        Miapi.itemRegistry.register(MOD_ID+":modular_greatsword",new ModularWeapon());
+        Miapi.itemRegistry.register(MOD_ID+":modular_dagger",new ModularWeapon());
+        Miapi.itemRegistry.register(MOD_ID+":modular_throwing_knife",new ModularWeapon());
+        Miapi.itemRegistry.register(MOD_ID+":modular_rapier",new ModularWeapon());
+        Miapi.itemRegistry.register(MOD_ID+":modular_longsword",new ModularWeapon());
+
+        Miapi.itemRegistry.register(MOD_ID+":modular_bow",new ExampleModularBowItem());
 
 
         Miapi.modulePropertyRegistry.register("moduleproperty1", (key,data) -> true);

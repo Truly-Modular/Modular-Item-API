@@ -7,8 +7,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import smartin.miapi.Miapi;
 import smartin.miapi.item.modular.ItemModule;
-import smartin.miapi.item.modular.ModularItem;
-import smartin.miapi.item.modular.properties.crafting.CraftingProperty;
 
 import java.util.List;
 
@@ -34,7 +32,7 @@ public class ItemIdProperty extends CraftingProperty {
 
     @Override
     public ItemStack preview(ItemStack old, ItemStack crafting, PlayerEntity player, ItemModule.ModuleInstance newModule, ItemModule module, List<ItemStack> inventory, PacketByteBuf buf) {
-        ItemModule.ModuleInstance root = ModularItem.getModules(crafting);
+        ItemModule.ModuleInstance root = ItemModule.getModules(crafting);
         String translationKey = "";
         for(ItemModule.ModuleInstance moduleInstance: root.allSubModules()){
             JsonElement data = moduleInstance.getProperties().get(itemIdProperty);

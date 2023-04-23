@@ -1,4 +1,4 @@
-package smartin.miapi.item.modular.properties.crafting;
+package smartin.miapi.item.modular.properties;
 
 import com.google.gson.JsonElement;
 import net.minecraft.entity.player.PlayerEntity;

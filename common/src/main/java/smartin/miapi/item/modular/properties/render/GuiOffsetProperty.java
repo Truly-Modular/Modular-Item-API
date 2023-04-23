@@ -1,4 +1,4 @@
-package smartin.miapi.item.modular.properties;
+package smartin.miapi.item.modular.properties.render;
 
 import com.google.gson.JsonElement;
 import net.minecraft.client.render.model.json.ModelTransformation;
@@ -9,6 +9,7 @@ import smartin.miapi.client.model.DynamicBakedModel;
 import smartin.miapi.item.modular.ItemModule;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.Transform;
+import smartin.miapi.item.modular.properties.ModuleProperty;
 import smartin.miapi.item.modular.properties.render.ModelProperty;
 
 public class GuiOffsetProperty implements ModuleProperty {
@@ -22,7 +23,7 @@ public class GuiOffsetProperty implements ModuleProperty {
             @Override
             public DynamicBakedModel transform(DynamicBakedModel dynamicBakedModel, ItemStack stack) {
                 GuiOffsetJson guiOffsetJson = new GuiOffsetJson();
-                for (ItemModule.ModuleInstance instance : ItemModule.createFlatList(ModularItem.getModules(stack))) {
+                for (ItemModule.ModuleInstance instance : ItemModule.createFlatList(ItemModule.getModules(stack))) {
                     JsonElement element = instance.getProperties().get(guiOffsetProperty);
                     if (element != null) {
                         GuiOffsetJson add = Miapi.gson.fromJson(element, GuiOffsetJson.class);

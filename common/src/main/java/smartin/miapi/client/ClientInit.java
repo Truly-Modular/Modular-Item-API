@@ -13,10 +13,12 @@ import smartin.miapi.mixin.ItemRendererAccessor;
 
 public class ClientInit {
 
-    public ClientInit(){
-        ((ItemRendererAccessor) MinecraftClient.getInstance().getItemRenderer()).color().register(new CustomColorProvider(), Miapi.modularItem);
+    public ClientInit() {
+        Miapi.itemRegistry.addCallback(item -> {
+            ((ItemRendererAccessor) MinecraftClient.getInstance().getItemRenderer()).color().register(new CustomColorProvider(), item);
+        });
         ClientChatEvent.SEND.register((message, component) -> {
-            Miapi.server.getPlayerManager().getPlayerList().forEach(serverPlayer->{
+            Miapi.server.getPlayerManager().getPlayerList().forEach(serverPlayer -> {
                 serverPlayer.openHandledScreen(test());
             });
             return EventResult.interrupt(false);
@@ -24,10 +26,10 @@ public class ClientInit {
 
     }
 
-    public static NamedScreenHandlerFactory test(){
+    public static NamedScreenHandlerFactory test() {
         Text text = Text.literal("test");
-        return new SimpleNamedScreenHandlerFactory( (syncId, inventory, player) -> {
+        return new SimpleNamedScreenHandlerFactory((syncId, inventory, player) -> {
             return new CraftingScreenHandler(syncId, inventory);
-            }, text);
+        }, text);
     }
 }

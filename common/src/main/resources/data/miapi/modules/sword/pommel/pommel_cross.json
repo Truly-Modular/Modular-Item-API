@@ -12,5 +12,11 @@
     "allowedMaterial": {
         "allowedMaterials": ["metal"],
         "cost": 1
+    },
+    "guiOffset": {
+        "x": 1,
+        "y": 1,
+        "sizeX": 1,
+        "sizeY": 1
     }
 }
