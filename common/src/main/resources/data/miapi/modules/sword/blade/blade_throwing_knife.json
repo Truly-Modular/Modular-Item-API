@@ -1,7 +1,7 @@
 {
     "name": "blade_throwing_knife",
     "texture": {
-        "path": "miapi:models/item/sword/blade/blade_throwing_knife.json",
+        "path": "miapi:models/item/sword/blade/throwing_knife/[material.texture].json",
         "transform": {
             "rotation": {
                 "x": 0.0,

@@ -8,7 +8,7 @@
   "durability": 800,
   "color": "FFD700",
   "textures": [
-    "crude",
+    "shiny",
     "default",
     "test"
   ],

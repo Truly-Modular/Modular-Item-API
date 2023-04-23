@@ -202,7 +202,7 @@ public class MaterialProperty implements ModuleProperty {
         }
 
         public List<String> getTextureKeys() {
-            Set<String> textureKeys = new HashSet<>();
+            ArrayList textureKeys = new ArrayList();
             JsonArray textures = rawJson.getAsJsonObject().getAsJsonArray("textures");
             for (JsonElement texture : textures) {
                 textureKeys.add(texture.getAsString());

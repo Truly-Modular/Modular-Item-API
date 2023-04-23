@@ -1,7 +1,7 @@
 {
     "name": "blade_dagger",
     "texture": {
-        "path": "miapi:models/item/sword/blade/blade_dagger.json",
+        "path": "miapi:models/item/sword/blade/dagger/[material.texture].json",
         "transform": {
             "rotation": {
                 "x": 0.0,

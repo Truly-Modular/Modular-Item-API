@@ -1,7 +1,7 @@
 {
     "name": "blade_katana",
     "texture": {
-        "path": "miapi:models/item/sword/blade/blade_katana.json",
+        "path": "miapi:models/item/sword/blade/katana/[material.texture].json",
         "transform": {
             "rotation": {
                 "x": 0.0,

@@ -49,7 +49,7 @@ public class ModelProperty implements ModuleProperty {
     private static final String cacheKey = Miapi.MOD_ID + ":model";
     private static final Map<String, ModelJson> modelMap = new HashMap<>();
     private static ItemModelGenerator generator;
-    private static Map<String,JsonUnbakedModel> loadedMap = new HashMap<>();
+    private static Map<String, JsonUnbakedModel> loadedMap = new HashMap<>();
     public static final List<ModelTransformer> modelTransformers = new ArrayList<>();
 
     public ModelProperty() {
@@ -67,18 +67,20 @@ public class ModelProperty implements ModuleProperty {
         DynamicBakedModel dynamicBakedModel = new DynamicBakedModel(new ArrayList<>());
         ItemModule.ModuleInstance root = ItemModule.getModules(stack);
         AtomicReference<Float> scaleAdder = new AtomicReference<>(1.0f);
-        for(ItemModule.ModuleInstance moduleI : root.allSubModules()){
+        for (ItemModule.ModuleInstance moduleI : root.allSubModules()) {
             ModelJson json = modelMap.get(moduleI.module.getName());
             if (json != null) {
                 MaterialProperty.Material material = MaterialProperty.getMaterial(moduleI);
                 List<String> list = new ArrayList<>();
-                list.add("default");
                 if (material != null) {
                     list = material.getTextureKeys();
                 }
                 JsonUnbakedModel unbakedModel = null;
-                for (String str : list) {
+                for (int i = 0; i < list.size(); i++) {
+                    String str = list.get(i);
+                    Miapi.LOGGER.error("checking for key " + str);
                     if (json.jsonUnbakedModelMap.containsKey(str)) {
+                        Miapi.LOGGER.error("found key " + str);
                         unbakedModel = json.jsonUnbakedModelMap.get(str);
                         break;
                     }
@@ -89,13 +91,12 @@ public class ModelProperty implements ModuleProperty {
                 transform.scale.multiplyComponentwise(scaleAdder.get(), scaleAdder.get(), scaleAdder.get());
                 ModelBakeSettings settings = ModelRotation.X0_Y0;
                 BakedModel model = bakeModel(unbakedModel, mirroredGetter, transform, ColorUtil.getModuleColor(moduleI), settings);
-                if(model.getOverrides()==null){
+                if (model.getOverrides() == null) {
                     dynamicBakedModel.quads.addAll(model.getQuads(null, null, Random.create()));
                     for (Direction dir : Direction.values()) {
                         dynamicBakedModel.quads.addAll(model.getQuads(null, dir, Random.create()));
                     }
-                }
-                else{
+                } else {
                     dynamicBakedModel.addModel(model);
                 }
             }
@@ -107,9 +108,9 @@ public class ModelProperty implements ModuleProperty {
     }
 
     public static BakedModel bakeModel(JsonUnbakedModel unbakedModel, Function<SpriteIdentifier, Sprite> textureGetter, Transform transform, int color, ModelBakeSettings settings) {
-        try{
+        try {
             ModelLoader modelLoader = ModelLoadAccessor.getLoader();
-            if(true){
+            if (true) {
                 //return modelLoader.bake(new Identifier("minecraft","item/bow"),settings);
             }
             AtomicReference<JsonUnbakedModel> actualModel = new AtomicReference<>(unbakedModel);
@@ -120,7 +121,7 @@ public class ModelProperty implements ModuleProperty {
             actualModel.set(transformModel(actualModel.get(), transform));
             BakedModel model = actualModel.get().bake(modelLoader, unbakedModel.getRootModel(), textureGetter, settings, new Identifier(unbakedModel.id), true);
             return ColorUtil.recolorModel(model, color);
-        }catch (Exception e){
+        } catch (Exception e) {
             return null;
         }
     }
@@ -154,17 +155,17 @@ public class ModelProperty implements ModuleProperty {
     }
 
     public static JsonUnbakedModel loadModelFromFilePath(String filePath2) {
-        if(loadedMap.get(filePath2)!=null){
+        if (loadedMap.get(filePath2) != null) {
             return loadedMap.get(filePath2);
         }
         //try to fix path
-        if(!filePath2.endsWith(".json")){
-            filePath2+=".json";
+        if (!filePath2.endsWith(".json")) {
+            filePath2 += ".json";
         }
-        if(filePath2.contains("item/") && !filePath2.contains("models/")){
-            filePath2 = filePath2.replace("item/","models/item/");
+        if (filePath2.contains("item/") && !filePath2.contains("models/")) {
+            filePath2 = filePath2.replace("item/", "models/item/");
         }
-        if(loadedMap.get(filePath2)!=null){
+        if (loadedMap.get(filePath2) != null) {
             return loadedMap.get(filePath2);
         }
         Identifier modelId = new Identifier(filePath2);
@@ -182,13 +183,13 @@ public class ModelProperty implements ModuleProperty {
                 });
             });
             model.id = modelId.toString();
-            loadedMap.put(modelId.toString(),model);
-            model.getModelDependencies().forEach(dependendyId->{
-                if(!dependendyId.toString().contains("generated") && !dependendyId.toString().contains("item/handheld")){
-                    try{
+            loadedMap.put(modelId.toString(), model);
+            model.getModelDependencies().forEach(dependendyId -> {
+                if (!dependendyId.toString().contains("generated") && !dependendyId.toString().contains("item/handheld")) {
+                    try {
                         loadModelsbyPath(dependendyId.toString());
-                    }catch (Exception surpressed){
-                        Miapi.LOGGER.error("could not find Model "+dependendyId.toString());
+                    } catch (Exception surpressed) {
+                        Miapi.LOGGER.error("could not find Model " + dependendyId.toString());
                         surpressed.printStackTrace();
                     }
                 }
@@ -208,13 +209,14 @@ public class ModelProperty implements ModuleProperty {
         if (filePath.contains("[material.texture]")) {
             String currentPath = filePath;
             models.put("default", loadModelFromFilePath(currentPath.replace(materialKey, "default")));
-            try {
-                MaterialProperty.getTextureKeys().forEach((path) -> {
-                    models.put("default", loadModelFromFilePath(currentPath.replace(materialKey, path)));
-                });
-            } catch (RuntimeException surpressed) {
+            MaterialProperty.getTextureKeys().forEach((path) -> {
+                try {
+                    models.put(path, loadModelFromFilePath(currentPath.replace(materialKey, path)));
+                    Miapi.LOGGER.warn("found " + path);
+                } catch (RuntimeException surpressed) {
 
-            }
+                }
+            });
         } else {
             models.put("default", loadModelFromFilePath(filePath));
         }
