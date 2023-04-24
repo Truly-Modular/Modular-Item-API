@@ -32,7 +32,7 @@ public class DetailView extends InteractAbleWidget {
     public DetailView(int x, int y, int width, int height, SlotProperty.ModuleSlot baseSlot, SlotProperty.ModuleSlot selected, Consumer<SlotProperty.ModuleSlot> edit, Consumer<SlotProperty.ModuleSlot> replace) {
         super(x, y, width, height, Text.empty());
         selectedSlot = selected;
-        if (baseSlot!=null) {
+        if (baseSlot != null) {
             scrollList = new ScrollList(x, y, width, height, Collections.singletonList(new SlotButton(this.x, this.y, this.width, 16, baseSlot)));
             this.addChild(scrollList);
         }
@@ -41,8 +41,9 @@ public class DetailView extends InteractAbleWidget {
     }
 
     public void scrollTo(int y) {
+        Miapi.LOGGER.warn("trying scrolling to" + (y - this.y));
         if (scrollList != null) {
-            scrollList.setScrollAmount(this.y - y);
+            scrollList.setScrollAmount(y - this.y);
         }
     }
 

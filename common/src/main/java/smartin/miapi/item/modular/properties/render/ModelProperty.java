@@ -75,12 +75,13 @@ public class ModelProperty implements ModuleProperty {
                 if (material != null) {
                     list = material.getTextureKeys();
                 }
+                else{
+                    list.add("default");
+                }
                 JsonUnbakedModel unbakedModel = null;
                 for (int i = 0; i < list.size(); i++) {
                     String str = list.get(i);
-                    Miapi.LOGGER.error("checking for key " + str);
                     if (json.jsonUnbakedModelMap.containsKey(str)) {
-                        Miapi.LOGGER.error("found key " + str);
                         unbakedModel = json.jsonUnbakedModelMap.get(str);
                         break;
                     }
@@ -91,13 +92,15 @@ public class ModelProperty implements ModuleProperty {
                 transform.scale.multiplyComponentwise(scaleAdder.get(), scaleAdder.get(), scaleAdder.get());
                 ModelBakeSettings settings = ModelRotation.X0_Y0;
                 BakedModel model = bakeModel(unbakedModel, mirroredGetter, transform, ColorUtil.getModuleColor(moduleI), settings);
-                if (model.getOverrides() == null) {
-                    dynamicBakedModel.quads.addAll(model.getQuads(null, null, Random.create()));
-                    for (Direction dir : Direction.values()) {
-                        dynamicBakedModel.quads.addAll(model.getQuads(null, dir, Random.create()));
+                if (model != null) {
+                    if (model.getOverrides() == null) {
+                        dynamicBakedModel.quads.addAll(model.getQuads(null, null, Random.create()));
+                        for (Direction dir : Direction.values()) {
+                            dynamicBakedModel.quads.addAll(model.getQuads(null, dir, Random.create()));
+                        }
+                    } else {
+                        dynamicBakedModel.addModel(model);
                     }
-                } else {
-                    dynamicBakedModel.addModel(model);
                 }
             }
         }

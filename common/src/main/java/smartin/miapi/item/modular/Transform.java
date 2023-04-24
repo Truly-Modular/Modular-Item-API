@@ -7,12 +7,34 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3f;
 
-public class Transform extends Transformation{
+/**
+ * A Transform represents a transformation in 3D space, including rotation, translation, and scaling.
+ * It extends the Transformation class with additional utility methods.
+ */
+public class Transform extends Transformation {
+    /**
+     * The identity transform, representing no transformation at all.
+     */
     public static final Transform IDENTITY = new Transform(new Vec3f(), new Vec3f(), new Vec3f(1.0F, 1.0F, 1.0F));
+
+    /**
+     * Creates a new Transform with the given rotation, translation, and scale.
+     *
+     * @param rotation    the rotation vector, as a Vec3f
+     * @param translation the translation vector, as a Vec3f
+     * @param scale       the scale vector, as a Vec3f
+     */
     public Transform(Vec3f rotation, Vec3f translation, Vec3f scale) {
         super(rotation, translation, scale);
     }
 
+    /**
+     * Merges two Transformations into a new Transform. The parent transformation is applied first, followed by the child.
+     *
+     * @param parent the parent transformation, as a Transformation
+     * @param child  the child transformation, as a Transformation
+     * @return the merged transformation, as a new Transform
+     */
     public static Transform merge(Transformation parent, Transformation child) {
         Vec3f parentRotation = parent.rotation.copy();
         Vec3f parentTranslation = parent.translation.copy();
@@ -28,11 +50,17 @@ public class Transform extends Transformation{
         // combine translation, rotation, and scale
         parentTranslation.add(childTranslation);
         parentRotation.add(childRotation);
-        parentScale.multiplyComponentwise(childScale.getX(),childScale.getY(),childScale.getZ());
+        parentScale.multiplyComponentwise(childScale.getX(), childScale.getY(), childScale.getZ());
 
-        return new Transform(parentRotation,parentTranslation, parentScale);
+        return new Transform(parentRotation, parentTranslation, parentScale);
     }
 
+    /**
+     * Applies the transformation to a vector in 3D space.
+     *
+     * @param vector the vector to transform, as a Vec3f
+     * @return the transformed vector, as a new Vec3f
+     */
     public Vec3f transformVector(Vec3f vector) {
         // Apply scaling
         float x = vector.getX() * scale.getX();
@@ -63,29 +91,46 @@ public class Transform extends Transformation{
         return new Vec3f(x, y, z);
     }
 
-    public Transform copy(){
-        return new Transform(this.rotation.copy(),this.translation.copy(),this.scale.copy());
+    /**
+     * Creates a new copy of this Transform.
+     *
+     * @return the new Transform copy
+     */
+    public Transform copy() {
+        return new Transform(this.rotation.copy(), this.translation.copy(), this.scale.copy());
     }
 
-    public static Transform repair(Transformation transformation){
+    /**
+     * Repairs a Transformation by replacing null rotation, translation, or scale vectors with default values.
+     *
+     * @param transformation the Transformation to repair, as a Transformation
+     * @return the repaired transformation, as a new Transform
+     */
+    public static Transform repair(Transformation transformation) {
         Vec3f parentRotation = transformation.rotation;
-        if(parentRotation==null){
-            parentRotation = new Vec3f(0,0,0);
+        if (parentRotation == null) {
+            parentRotation = new Vec3f(0, 0, 0);
         }
         Vec3f parentTranslation = transformation.translation;
-        if(parentTranslation==null){
-            parentTranslation = new Vec3f(0,0,0);
+        if (parentTranslation == null) {
+            parentTranslation = new Vec3f(0, 0, 0);
         }
         Vec3f parentScale = transformation.scale;
-        if(parentScale==null){
-            parentScale = new Vec3f(1,1,1);
+        if (parentScale == null) {
+            parentScale = new Vec3f(1, 1, 1);
         }
-        return new Transform(parentRotation.copy(),parentTranslation.copy(),parentScale.copy());
+        return new Transform(parentRotation.copy(), parentTranslation.copy(), parentScale.copy());
     }
 
-    public static Transform toModelTransformation(Transformation transformation){
+    /**
+     * Converts a Transformation into a model Transformation by scaling the translation vector by 1/16.
+     *
+     * @param transformation the Transformation to convert, as a Transformation
+     * @return the new model Transformation, as a Transform
+     */
+    public static Transform toModelTransformation(Transformation transformation) {
         Transform transform = repair(transformation);
-        transform.translation.scale(1.0f/16.0f);
+        transform.translation.scale(1.0f / 16.0f);
         //Vec3f scale = transform.scale;
         //scale.scale(1.0f/16.0f);
         //transform = new Transform(transform.rotation,transform.translation,scale);
@@ -93,7 +138,7 @@ public class Transform extends Transformation{
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         Gson gson = new Gson();
         return gson.toJson(this);
     }

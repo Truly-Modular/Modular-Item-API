@@ -1,18 +1,22 @@
 package smartin.miapi.client.gui;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
-import smartin.miapi.Miapi;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * An interactive widget that supports children and forwards events to them.
+ * Use this class in conjunction with the ParentHandledScreen to correctly handle children.
+ * If you want to handle some events yourself and still support children, you should call the
+ * corresponding super method or handle the children yourself.
+ */
 public class InteractAbleWidget extends ClickableWidget implements Drawable, Element {
     protected final List<Element> children = new ArrayList<>();
 
@@ -28,7 +32,7 @@ public class InteractAbleWidget extends ClickableWidget implements Drawable, Ele
      * @param width  the width
      * @param height the height
      *               These for Params above are used to create feedback on isMouseOver() by default
-     * @param title
+     * @param title  the Title of the Widget
      */
     public InteractAbleWidget(int x, int y, int width, int height, Text title) {
         super(x, y, width, height, title);
@@ -41,7 +45,7 @@ public class InteractAbleWidget extends ClickableWidget implements Drawable, Ele
     /**
      * This functions Renders a Square Border
      *
-     * @param matrices
+     * @param matrices    the matrices to draw the square
      * @param x           top left Corner x
      * @param y           top Left Corner <
      * @param width       width of the square
@@ -134,7 +138,7 @@ public class InteractAbleWidget extends ClickableWidget implements Drawable, Ele
      * This Method removes a child Element from this Widget
      * native Access to the Array is given in children()
      *
-     * @param element
+     * @param element the Child to be removed
      */
     public void removeChild(Element element) {
         children().remove(element);
@@ -154,6 +158,7 @@ public class InteractAbleWidget extends ClickableWidget implements Drawable, Ele
      * @param mouseX current X Position of the Mouse
      * @param mouseY current Y Position of the Mouse
      */
+    @Override
     public void mouseMoved(double mouseX, double mouseY) {
         for (Element child : this.children()) {
             if (child.isMouseOver(mouseX, mouseY)) {
@@ -171,12 +176,11 @@ public class InteractAbleWidget extends ClickableWidget implements Drawable, Ele
      * @param button the Number of the Button
      * @return if this consumes the Click, if you execute an action return true, if not return false
      */
+    @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         for (Element child : this.children()) {
-            if (child.isMouseOver(mouseX, mouseY)) {
-                if (child.mouseClicked(mouseX, mouseY, button)) {
-                    return true;
-                }
+            if (child.isMouseOver(mouseX, mouseY) && child.mouseClicked(mouseX, mouseY, button)) {
+                return true;
             }
         }
         return false;
@@ -188,12 +192,11 @@ public class InteractAbleWidget extends ClickableWidget implements Drawable, Ele
      * @param button the Number of the Button
      * @return if this consumes the Click, if you execute an action return true, if not return false
      */
+    @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
         for (Element child : this.children()) {
-            if (child.isMouseOver(mouseX, mouseY)) {
-                if (child.mouseReleased(mouseX, mouseY, button)) {
-                    return true;
-                }
+            if (child.isMouseOver(mouseX, mouseY) && child.mouseReleased(mouseX, mouseY, button)) {
+                return true;
             }
         }
         return false;
@@ -207,12 +210,11 @@ public class InteractAbleWidget extends ClickableWidget implements Drawable, Ele
      * @param deltaY the Distance dragged Y
      * @return if this consumes the action, if you execute an action return true, if not return false
      */
+    @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
         for (Element child : this.children()) {
-            if (child.isMouseOver(mouseX, mouseY)) {
-                if (child.mouseDragged(mouseX, mouseY, button, deltaX, deltaY)) {
-                    return true;
-                }
+            if (child.isMouseOver(mouseX, mouseY) && child.mouseDragged(mouseX, mouseY, button, deltaX, deltaY)) {
+                return true;
             }
         }
         return false;
@@ -224,12 +226,11 @@ public class InteractAbleWidget extends ClickableWidget implements Drawable, Ele
      * @param amount the amount scrolled since the last time this was called
      * @return if this consumes the action, if you execute an action return true, if not return false
      */
+    @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
         for (Element child : this.children()) {
-            if (child.isMouseOver(mouseX, mouseY)) {
-                if (child.mouseScrolled(mouseX, mouseY, amount)) {
-                    return true;
-                }
+            if (child.isMouseOver(mouseX, mouseY) && child.mouseScrolled(mouseX, mouseY, amount)) {
+                return true;
             }
         }
         return false;
@@ -241,6 +242,7 @@ public class InteractAbleWidget extends ClickableWidget implements Drawable, Ele
      * @param modifiers if addition buttons like ctrl or alt where held down
      * @return if this consumes the action, if you execute an action return true, if not return false
      */
+    @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         for (Element child : this.children()) {
             if (child.keyPressed(keyCode, scanCode, modifiers)) {
@@ -256,6 +258,7 @@ public class InteractAbleWidget extends ClickableWidget implements Drawable, Ele
      * @param modifiers if addition buttons like ctrl or alt where held down
      * @return if this consumes the action, if you execute an action return true, if not return false
      */
+    @Override
     public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
         for (Element child : this.children()) {
             if (child.keyReleased(keyCode, scanCode, modifiers)) {
@@ -270,6 +273,7 @@ public class InteractAbleWidget extends ClickableWidget implements Drawable, Ele
      * @param modifiers if keys like ctrl or alt where held down
      * @return if this consumes the action, if you execute an action return true, if not return false
      */
+    @Override
     public boolean charTyped(char chr, int modifiers) {
         for (Element child : this.children()) {
             if (child.charTyped(chr, modifiers)) {
@@ -288,11 +292,12 @@ public class InteractAbleWidget extends ClickableWidget implements Drawable, Ele
      * @param mouseY current mouseY coordinate
      * @return if the mouseCords are above the Widget
      */
+    @Override
     public boolean isMouseOver(double mouseX, double mouseY) {
         return super.isMouseOver(mouseX, mouseY);
     }
 
-    public void setHeight(int height){
+    public void setHeight(int height) {
         this.height = height;
     }
 
@@ -306,6 +311,7 @@ public class InteractAbleWidget extends ClickableWidget implements Drawable, Ele
      * @param delta    the deltaTime between frames
      *                 This is needed for animations and co
      */
+    @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         children().forEach(element -> {
             if (element instanceof Drawable drawable) {
@@ -314,6 +320,12 @@ public class InteractAbleWidget extends ClickableWidget implements Drawable, Ele
         });
     }
 
+    /**
+     * just leaving it Empty for convienience
+     * should be overwriten for Narrater support
+     *
+     * @param builder the NaraterBuilder
+     */
     @Override
     public void appendNarrations(NarrationMessageBuilder builder) {
 

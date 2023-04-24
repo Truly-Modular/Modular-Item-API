@@ -2,17 +2,27 @@ package smartin.miapi.item.modular;
 
 import net.minecraft.text.Text;
 import org.mariuszgromada.math.mxparser.Expression;
-import smartin.miapi.Miapi;
-import smartin.miapi.item.modular.ItemModule;
 
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * A utility class for resolving dynamic values in item stats and descriptions in relation to a {@link ItemModule.ModuleInstance}.
+ */
 public class StatResolver {
-
+    /**
+     * A map of resolvers, keyed by resolver keyword.
+     */
     private static final Map<String, Resolver> resolverMap = new HashMap<>();
 
+    /**
+     * Resolves all string values contained in square brackets in the input string.
+     *
+     * @param raw      the input string
+     * @param instance the module instance for which to resolve values
+     * @return the resolved string
+     */
     public static String resolveString(String raw, ItemModule.ModuleInstance instance) {
         String resolved = raw;
         Pattern pattern = Pattern.compile("\\[(.*?)\\]"); // regex pattern to match text inside square brackets
@@ -35,6 +45,13 @@ public class StatResolver {
         return resolved;
     }
 
+    /**
+     * Resolves all double values contained in square brackets in the input string, and evaluates the resulting expression.
+     *
+     * @param raw      the input string
+     * @param instance the module instance for which to resolve values
+     * @return the evaluated result
+     */
     public static double resolveDouble(String raw, ItemModule.ModuleInstance instance) {
         String resolved = raw;
         Pattern pattern = Pattern.compile("\\[(.*?)\\]"); // regex pattern to match text inside square brackets
@@ -58,32 +75,58 @@ public class StatResolver {
         return e.calculate();
     }
 
+    /**
+     * Translates and resolves all string values contained in square brackets in the input string.
+     *
+     * @param raw      the input string
+     * @param instance the module instance for which to resolve values
+     * @return the translated and resolved text
+     */
     public static Text translateAndResolve(String raw, ItemModule.ModuleInstance instance) {
         String old = "";
         String newString = raw;
-        for(int i = 0;i<100 && !old.equals(newString);i++ ){
+        for (int i = 0; i < 100 && !old.equals(newString); i++) {
             old = newString;
             newString = resolveString(old, instance);
             List<String> translatedStrings = new ArrayList<>();
-            Arrays.stream(newString.split(" ")).forEach(s->{
+            Arrays.stream(newString.split(" ")).forEach(s -> {
                 translatedStrings.add(Text.translatable(s).getString());
             });
-            newString = String.join(" ",translatedStrings);
+            newString = String.join(" ", translatedStrings);
         }
         return Text.literal(newString);
     }
 
-    private static String getLastVariableName(String variableName) {
-        return variableName.substring(variableName.indexOf(".") + 1);
-    }
-
-
+    /**
+     * Registers a resolver for the given keyword.
+     *
+     * @param keyWord  the resolver keyword
+     * @param resolver the resolver to register
+     */
     public static void registerResolver(String keyWord, Resolver resolver) {
         resolverMap.put(keyWord, resolver);
     }
 
+    /**
+     * An interface for resolvers, which provide a way to resolve dynamic values contained in square brackets.
+     */
     public interface Resolver {
+        /**
+         * Resolves a double value from the given data string.
+         *
+         * @param data     the data string to resolve
+         * @param instance the module instance for which to resolve the value
+         * @return the resolved double value
+         */
         double resolveDouble(String data, ItemModule.ModuleInstance instance);
+
+        /**
+         * Resolves a string value from the given data string.
+         *
+         * @param data     the data string to resolve
+         * @param instance the module instance for which to resolve the value
+         * @return the resolved string value
+         */
 
         String resolveString(String data, ItemModule.ModuleInstance instance);
     }

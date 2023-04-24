@@ -1,7 +1,6 @@
 package smartin.miapi.client.gui.crafting.crafter;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import dev.architectury.event.events.client.ClientTooltipEvent;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
@@ -17,8 +16,8 @@ import smartin.miapi.client.gui.MutableSlot;
 import smartin.miapi.client.gui.SimpleButton;
 import smartin.miapi.craft.CraftAction;
 import smartin.miapi.item.modular.ItemModule;
-import smartin.miapi.item.modular.properties.SlotProperty;
 import smartin.miapi.item.modular.properties.CraftingProperty;
+import smartin.miapi.item.modular.properties.SlotProperty;
 import smartin.miapi.network.Networking;
 
 import java.util.ArrayList;
@@ -48,19 +47,6 @@ public class CraftView extends InteractAbleWidget {
     int backgroundWidth = 278;
     int backgroundHeight = 221;
 
-    /**
-     * This is a Widget build to support Children and parse the events down to them.
-     * Best use in conjunction with the ParentHandledScreen as it also handles Children correct,
-     * unlike the base vanilla classes.
-     * If you choose to handle some Events yourself and want to support Children yourself, you need to call the correct
-     * super method or handle the children yourself
-     *
-     * @param x      the X Position
-     * @param y      the y Position
-     * @param width  the width
-     * @param height the height
-     *               These for Params above are used to create feedback on isMouseOver() by default
-     */
     public CraftView(int x, int y, int width, int height, String packetId, ItemModule module, ItemStack stack, Inventory inventory, int offset, SlotProperty.ModuleSlot slot, Consumer<SlotProperty.ModuleSlot> back, Consumer<ItemStack> newStack, Consumer<Slot> addSlot, Consumer<Slot> removeSlot) {
         super(x, y, width, height, Text.empty());
         compareStack = stack;
@@ -127,6 +113,9 @@ public class CraftView extends InteractAbleWidget {
 
     public void closeSlot() {
         currentSlots.forEach(slot -> {
+            if (slot instanceof MutableSlot mutableSlot) {
+                mutableSlot.setEnabled(true);
+            }
             removeSlot.accept(slot);
         });
     }
@@ -136,7 +125,6 @@ public class CraftView extends InteractAbleWidget {
         widget.y = this.y + 15;
         widget.setWidth(this.width);
         widget.setHeight(this.height - 30);
-        //closeSlot();
         currentSlots.forEach(slot -> {
             if (slot instanceof MutableSlot mutableSlot) {
                 mutableSlot.setEnabled(false);

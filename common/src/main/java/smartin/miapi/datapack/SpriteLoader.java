@@ -35,16 +35,6 @@ public class SpriteLoader {
 
     protected static void onTextureStitch(SpriteAtlasTexture atlas, Consumer<Identifier> spriteAdder) {
         Set<Identifier> sprites = Set.copyOf(spritesToAdd);
-        /*
-        Set<String> uniqueSprites = new HashSet<>();
-        sprites.forEach(spriteidentifier->{
-            uniqueSprites.add(spriteidentifier.toString());
-        });
-        sprites.clear();
-        uniqueSprites.forEach(spriteString->{
-            sprites.add(new Identifier(spriteString));
-        });
-         */
         sprites.forEach(identifier -> {
             //Miapi.LOGGER.error("Loading Texture TextureStitch "+identifier.toString());
             spriteAdder.accept(identifier);

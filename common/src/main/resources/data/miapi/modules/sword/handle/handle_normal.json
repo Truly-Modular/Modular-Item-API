@@ -1,7 +1,7 @@
 {
     "name": "handle_normal",
     "texture": {
-        "path": "miapi:models/item/sword/handle/handle_normal.json",
+        "path": "miapi:models/item/sword/handle/one_handed_large/[material.texture].json",
         "transform": {
             "rotation": {"x": 0.0, "y": 0.0, "z": 0.0},
             "translation": {"x": -4.0, "y": -5.0, "z": 0.0},

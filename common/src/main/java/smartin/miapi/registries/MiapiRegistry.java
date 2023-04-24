@@ -4,15 +4,39 @@ import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Consumer;
 
+/**
+ * A generic registry class that can be used to store and retrieve entries by name.
+ * Entries can be of any type, and a registry can be accessed globally through its associated class.
+ *
+ * @param <T> the type of the entries to store in the registry
+ */
 public class MiapiRegistry<T> {
+    /**
+     * The map of entries stored in this registry, indexed by name.
+     */
     protected final Map<String, T> entries = new HashMap<>();
+    /**
+     * The map of all MiapiRegistry instances, indexed by class type.
+     */
     protected static final Map<Class<?>, MiapiRegistry<?>> REGISTRY_MAP = new HashMap<>();
+    /**
+     * The list of callbacks to invoke when new entries are added to the registry.
+     */
     protected final List<Consumer<T>> callbacks = new ArrayList<>();
 
+    /**
+     * Protected constructor to prevent direct instantiation of the registry.
+     */
     protected MiapiRegistry() {
-        // Private constructor to prevent direct instantiation
     }
 
+    /**
+     * Returns the instance of the MiapiRegistry associated with the specified class type.
+     *
+     * @param clazz the class type to retrieve the registry instance for
+     * @param <T>   the type of the entries to store in the registry
+     * @return the instance of the MiapiRegistry associated with the specified class type
+     */
     public static <T> MiapiRegistry<T> getInstance(Class<T> clazz) {
         if (!REGISTRY_MAP.containsKey(clazz)) {
             MiapiRegistry<T> instance = new MiapiRegistry<T>();
@@ -22,8 +46,15 @@ public class MiapiRegistry<T> {
         return (MiapiRegistry<T>) REGISTRY_MAP.get(clazz);
     }
 
+    /**
+     * Returns the key associated with the specified value, or null if no key was found.
+     *
+     * @param value the value to search for
+     * @param <T>   the type of the entries to store in the registry
+     * @return the key associated with the specified value, or null if no key was found
+     */
     @Nullable
-    public <T> String findKey(T value){
+    public <T> String findKey(T value) {
         Optional<String> matchingId = entries.entrySet().stream()
                 .filter(entry -> entry.getValue().equals(value))
                 .map(Map.Entry::getKey)
@@ -31,6 +62,15 @@ public class MiapiRegistry<T> {
         return matchingId.orElse(null);
     }
 
+    /**
+     * Returns the instance of the MiapiRegistry associated with the specified class type, and adds the specified
+     * callbacks to be invoked when new entries are added to the registry.
+     *
+     * @param clazz     the class type to retrieve the registry instance for
+     * @param callbacks the list of callbacks to invoke when new entries are added to the registry
+     * @param <T>       the type of the entries to store in the registry
+     * @return the instance of the MiapiRegistry associated with the specified class type
+     */
     public static <T> MiapiRegistry<T> getInstance(Class<T> clazz, List<Consumer<T>> callbacks) {
         MiapiRegistry<T> instance;
         if (!REGISTRY_MAP.containsKey(clazz)) {
@@ -39,10 +79,18 @@ public class MiapiRegistry<T> {
         }
         instance = (MiapiRegistry<T>) REGISTRY_MAP.get(clazz);
         MiapiRegistry<T> finalInstance = instance;
-        callbacks.forEach(callback -> finalInstance.addCallback(callback));
-        return instance;
+        callbacks.forEach(finalInstance::addCallback);
+        return (MiapiRegistry<T>) REGISTRY_MAP.computeIfAbsent(clazz,(T)->new MiapiRegistry<T>());
     }
 
+    /**
+     * Registers a new entry with the given name and value to this registry. If an entry with the same name already exists, an
+     * IllegalArgumentException is thrown. Calls all the callbacks associated with the class type.
+     *
+     * @param name  the name of the entry to be registered
+     * @param value the value of the entry to be registered
+     * @throws IllegalArgumentException if an entry with the same name already exists
+     */
     public void register(String name, T value) {
         if (entries.containsKey(name)) {
             throw new IllegalArgumentException("Entry with name '" + name + "' already exists.");
@@ -53,24 +101,45 @@ public class MiapiRegistry<T> {
         callbacks.forEach(callback -> callback.accept(value));
     }
 
-    public void clear(){
+    /**
+     * Removes all entries from this registry.
+     */
+    public void clear() {
         entries.clear();
     }
 
+    /**
+     * Retrieves the entry associated with the given name from this registry. If no such entry exists, returns null.
+     *
+     * @param name the name of the entry to be retrieved
+     * @return the entry associated with the given name, or null if no such entry exists
+     */
+    @Nullable
     public T get(String name) {
         if (!entries.containsKey(name)) {
             return null;
-            //throw new IllegalArgumentException("No entry found with name '" + name + "'.");
         }
         return entries.get(name);
     }
 
+    /**
+     * Adds a new callback to this registry. The callback will be called for every entry in the registry, and for all
+     * entries that are registered in the future. The callback will be called immediately for all existing entries in the
+     * registry.
+     *
+     * @param callback the callback to be added
+     */
     public void addCallback(Consumer<T> callback) {
         callbacks.add(callback);
-        entries.values().forEach(callback::accept);
+        entries.values().forEach(callback);
     }
 
-    public Map<String, T> getFlatMap(){
+    /**
+     * Returns a flat map of all entries in this registry, with the entry names as keys and the entry values as values.
+     *
+     * @return a map of all entries in this registry
+     */
+    public Map<String, T> getFlatMap() {
         return entries;
     }
 }

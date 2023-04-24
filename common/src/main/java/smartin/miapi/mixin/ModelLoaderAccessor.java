@@ -13,12 +13,13 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import smartin.miapi.client.model.ModelLoadAccessor;
 
+/**
+ * Retrieves ModelLoader instance for {@link ModelLoadAccessor}
+ */
 @Mixin(ModelLoader.class)
 public abstract class ModelLoaderAccessor {
 
-    @Shadow protected abstract void loadModel(Identifier id) throws Exception;
-
-    @Inject(method = "Lnet/minecraft/client/render/model/ModelLoader;<init>(Lnet/minecraft/resource/ResourceManager;Lnet/minecraft/client/color/block/BlockColors;Lnet/minecraft/util/profiler/Profiler;I)V", at = @At("RETURN"), cancellable = false)
+    @Inject(method = "<init>(Lnet/minecraft/resource/ResourceManager;Lnet/minecraft/client/color/block/BlockColors;Lnet/minecraft/util/profiler/Profiler;I)V", at = @At("RETURN"), cancellable = false)
     public void modelLoad(ResourceManager resourceManager, BlockColors blockColors, Profiler profiler, int mipmapLevel, CallbackInfo ci){
         ModelLoader loader = (ModelLoader) (Object) this;
         ModelLoadAccessor.setLoader(loader);

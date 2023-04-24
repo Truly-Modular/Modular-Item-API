@@ -36,7 +36,7 @@ public class ModuleCrafter extends InteractAbleWidget {
     Consumer<Slot> removeSlot;
     Consumer<Slot> addSlot;
 
-    public ModuleCrafter(int x, int y, int width, int height, Consumer<SlotProperty.ModuleSlot> selected, Consumer<ItemStack> craftedItem, Inventory linkedInventory,Consumer<Slot> addSlot,Consumer<Slot> removeSlot) {
+    public ModuleCrafter(int x, int y, int width, int height, Consumer<SlotProperty.ModuleSlot> selected, Consumer<ItemStack> craftedItem, Inventory linkedInventory, Consumer<Slot> addSlot, Consumer<Slot> removeSlot) {
         super(x, y, width, height, Text.empty());
         this.linkedInventory = linkedInventory;
         //set Header, current Module Selected
@@ -73,12 +73,12 @@ public class ModuleCrafter extends InteractAbleWidget {
     }
 
     public void setMode(Mode mode) {
-        if(! mode.equals(Mode.CRAFT)){
+        if (!mode.equals(Mode.CRAFT)) {
             preview.accept(stack);
         }
-        if(craftView!=null){
+        if (craftView != null) {
             craftView.closeSlot();
-            craftView=null;
+            craftView = null;
         }
         switch (mode) {
             case DETAIL -> {
@@ -119,8 +119,8 @@ public class ModuleCrafter extends InteractAbleWidget {
                     this.module = module;
                     setMode(Mode.CRAFT);
                 }), (module -> {
-                    CraftAction action = new CraftAction(stack,slot,module,null,new PacketByteBuf[0]);
-                    action.linkInventory(linkedInventory,1);
+                    CraftAction action = new CraftAction(stack, slot, module, null, new PacketByteBuf[0]);
+                    action.linkInventory(linkedInventory, 1);
                     preview.accept(action.getPreview());
                 }));
                 addChild(view);

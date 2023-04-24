@@ -17,8 +17,11 @@ import smartin.miapi.Miapi;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * A BakedModel made to be semi mutable and allow for more dynamic interactions
+ */
 public class DynamicBakedModel implements BakedModel {
-    public List<BakedQuad> quads = new ArrayList<>();
+    public List<BakedQuad> quads;
     public ModelTransformation modelTransformation = ModelTransformation.NONE;
     public List<BakedModel> childModels = new ArrayList<>();
     private DynamicBakedModel overrideModel;

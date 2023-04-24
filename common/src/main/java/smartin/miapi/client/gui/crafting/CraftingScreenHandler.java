@@ -15,24 +15,43 @@ import smartin.miapi.client.gui.MutableSlot;
 import smartin.miapi.craft.CraftAction;
 import smartin.miapi.network.Networking;
 
+/**
+ * This is the screen handler class for miapis default Crafting Screen.
+ */
 public class CraftingScreenHandler extends ScreenHandler {
-    private ScreenHandlerContext context;
+    private final ScreenHandlerContext context;
+    private static final String PACKET_ID = ":crafting_packet_";
     public Inventory inventory;
     public PlayerInventory playerInventory;
-    public final int syncId;
     public final String packetID;
     public final String packetIDSlotAdd;
     public final String packetIDSlotRemove;
 
+    /**
+     * Constructs a new CraftingScreenHandler instance with the specified sync ID and player inventory.
+     *
+     * @param syncId          the sync ID
+     * @param playerInventory the player inventory
+     */
     public CraftingScreenHandler(int syncId, PlayerInventory playerInventory) {
         this(syncId, playerInventory, ScreenHandlerContext.EMPTY);
     }
 
+    /**
+     * This is a custom container for the CraftingScreen that extends ScreenHandler.
+     * It contains the necessary inventory references and packet IDs for syncing.
+     * This class also provides a ScreenHandlerContext for context-dependent operations
+     * in recipes or the inventory.
+     *
+     * @param syncId          the ID for syncing between client and server
+     * @param playerInventory the player's inventory
+     * @param context         the context of the screen
+     */
     public CraftingScreenHandler(int syncId, PlayerInventory playerInventory, ScreenHandlerContext context) {
         super(Miapi.CRAFTING_SCREEN_HANDLER, syncId);
-        packetID = Miapi.MOD_ID + ":crafting_packet_" + syncId;
-        packetIDSlotAdd = Miapi.MOD_ID + ":crafting_packet_" + syncId + "slotAdd";
-        packetIDSlotRemove = Miapi.MOD_ID + ":crafting_packet_" + syncId + "slotRemove";
+        packetID = Miapi.MOD_ID + PACKET_ID + syncId;
+        packetIDSlotAdd = Miapi.MOD_ID + PACKET_ID + syncId + "slotAdd";
+        packetIDSlotRemove = Miapi.MOD_ID + PACKET_ID + syncId + "slotRemove";
         this.playerInventory = playerInventory;
         if (playerInventory.player instanceof ServerPlayerEntity) {
             Networking.registerC2SPacket(packetID, (buffer, player) -> {
@@ -57,10 +76,9 @@ public class CraftingScreenHandler extends ScreenHandler {
                 transferSlot(playerInventory.player, slotId);
             });
         }
-
-        this.syncId = syncId;
         this.context = context;
         this.inventory = new SimpleInventory(54) {
+            @Override
             public void markDirty() {
                 super.markDirty();
                 CraftingScreenHandler.this.onContentChanged(this);
@@ -79,17 +97,24 @@ public class CraftingScreenHandler extends ScreenHandler {
         }
 
         this.addSlot(new Slot(inventory, 0, 8 + 3 * 18 + 25, 103 + 18 + 48 + 26) {
+            @Override
             public boolean canInsert(ItemStack stack) {
                 return true;
             }
 
+            @Override
             public int getMaxItemCount() {
                 return 64;
             }
         });
     }
 
-    public void removeSlot2(Slot slot) {
+    /**
+     * Removes the given {@link Slot} from the screen and sends a packet to the server to remove it as well.
+     *
+     * @param slot the slot to be removed
+     */
+    public void removeSlotByClient(Slot slot) {
         if (!slots.contains(slot))
             return;
         transferSlot(playerInventory.player, slot.id);
@@ -105,7 +130,12 @@ public class CraftingScreenHandler extends ScreenHandler {
 
     }
 
-    public void addSlot2(Slot slot) {
+    /**
+     * Adds the given {@link Slot} to the screen and sends a packet to the server to add it as well.
+     *
+     * @param slot the slot to be added
+     */
+    public void addSlotByClient(Slot slot) {
         if (slots.contains(slot)) return;
         this.addSlot(slot);
         PacketByteBuf buf = Networking.createBuffer();
@@ -117,23 +147,22 @@ public class CraftingScreenHandler extends ScreenHandler {
     }
 
     /**
-     * This is copied from EnchantingTable, adjust later
+     * Transfers an {@link ItemStack} from the slot with the given index to the player's inventory.
      *
-     * @param player
-     * @param index
-     * @return
+     * @param player the player who is performing the transfer
+     * @param index  the index of the slot to transfer from
+     * @return the ItemStack that was transferred, or {@link ItemStack#EMPTY} if the transfer was unsuccessful
      */
     public ItemStack transferSlot(PlayerEntity player, int index) {
         ItemStack itemStack = ItemStack.EMPTY;
         Slot slot = this.slots.get(index);
-        if (slot != null && slot.hasStack()) {
+        if (slot.hasStack()) {
             ItemStack slotStack = slot.getStack();
             itemStack = slotStack.copy();
             if (index == 0) { // Transfer from custom slot to player inventory
                 if (!this.insertItem(slotStack, 1, 37, true)) {
                     return ItemStack.EMPTY;
                 }
-                //slot.onStackChanged(slotStack, itemStack);
                 slot.onQuickTransfer(slotStack, itemStack);
             } else { // Transfer from player inventory to custom slot
                 if (this.insertItem(slotStack, 0, 1, false)) {
@@ -156,7 +185,6 @@ public class CraftingScreenHandler extends ScreenHandler {
 
     @Override
     public boolean canUse(PlayerEntity player) {
-        //Miapi.LOGGER.warn("can Use True");
         return true;
     }
 
@@ -182,6 +210,7 @@ public class CraftingScreenHandler extends ScreenHandler {
         Networking.unRegisterC2CPacket(packetIDSlotRemove);
     }
 
+    @Override
     public void onContentChanged(Inventory inventory) {
         this.sendContentUpdates();
     }

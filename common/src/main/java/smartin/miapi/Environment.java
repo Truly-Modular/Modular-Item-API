@@ -3,6 +3,9 @@ package smartin.miapi;
 import net.fabricmc.api.EnvType;
 import net.minecraft.client.MinecraftClient;
 
+/**
+ * A Util class to help with client Server detection
+ */
 public class Environment {
 
     public static boolean isClient(){

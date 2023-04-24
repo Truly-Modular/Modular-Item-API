@@ -6,6 +6,12 @@ import net.minecraft.client.gui.Element;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 
+/**
+ * This is a widget that displays a scrolling text. The text slowly scrolls through
+ * the widget from right to left, with a customizable delay between each character.
+ * Once the end of the text is reached, the widget holds for a customizable amount
+ * of time before starting again.
+ */
 public class ScrollingTextWidget extends InteractAbleWidget implements Drawable, Element {
 
     private Text text;

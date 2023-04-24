@@ -22,6 +22,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
+/**
+ * This class represents an action related to crafting an item with modules.
+ * It contains the necessary information to perform the crafting action and to
+ * update the relevant inventories or item stacks as a result of the action.
+ */
 public class CraftAction {
     private final ItemModule toAdd;
     private final PlayerEntity player;
@@ -31,6 +36,16 @@ public class CraftAction {
     private int inventoryOffset;
     public PacketByteBuf[] packetByteBuffs;
 
+    /**
+     * Constructs a new instance of CraftAction, given the old item stack, the slot to modify,
+     * the module to add, the player performing the action, and the packet byte buffers.
+     *
+     * @param old             the old item stack being modified
+     * @param slot            the slot where the new module will be added
+     * @param toAdd           the module to add
+     * @param player          the player performing the action
+     * @param packetByteBuffs the packet byte buffers associated with the action
+     */
     public CraftAction(@Nonnull ItemStack old, @Nonnull SlotProperty.ModuleSlot slot, @Nullable ItemModule toAdd, @Nonnull PlayerEntity player, PacketByteBuf[] packetByteBuffs) {
         this.old = old;
         this.toAdd = toAdd;
@@ -47,6 +62,11 @@ public class CraftAction {
         this.packetByteBuffs = packetByteBuffs;
     }
 
+    /**
+     * Constructs a new instance of CraftAction from the specified packet byte buffer.
+     *
+     * @param buf the packet byte buffer from which to construct the CraftAction
+     */
     public CraftAction(PacketByteBuf buf) {
         int size = buf.readInt();
         for (int i = 0; i < size; i++) {
@@ -68,6 +88,12 @@ public class CraftAction {
         }
     }
 
+    /**
+     * Converts this CraftAction instance to a packet byte buffer.
+     *
+     * @param buf the packet byte buffer to which to write the CraftAction
+     * @return the packet byte buffer
+     */
     public PacketByteBuf toPacket(PacketByteBuf buf) {
         buf.writeInt(slotId.size());
         for (Integer slot : slotId) {
@@ -93,6 +119,11 @@ public class CraftAction {
         old = stack;
     }
 
+    /**
+     * Checks if the current crafting action can be performed.
+     *
+     * @return true if the crafting action can be performed, false otherwise.
+     */
     public boolean canPerform() {
         ItemStack crafted = getPreview();
         AtomicBoolean test = new AtomicBoolean(true);
@@ -104,7 +135,13 @@ public class CraftAction {
         return test.get();
     }
 
-    private void updateItem(ItemStack stack, ItemModule.ModuleInstance instance) {
+    /**
+     * Updates the NBT data of an ItemStack with the given module instance.
+     *
+     * @param stack    the ItemStack to update.
+     * @param instance the module instance to set.
+     */
+    protected void updateItem(ItemStack stack, ItemModule.ModuleInstance instance) {
         while (instance.parent != null) {
             instance = instance.parent;
         }
@@ -116,11 +153,22 @@ public class CraftAction {
         }
     }
 
+    /**
+     * Links the given inventory to this object.
+     *
+     * @param inventory the inventory to link.
+     * @param offset    the offset to apply to the inventory slots.
+     */
     public void linkInventory(Inventory inventory, int offset) {
         this.linkedInventory = inventory;
         this.inventoryOffset = offset;
     }
 
+    /**
+     * Performs the current crafting action and updates the linked inventory.
+     *
+     * @return the result of the crafting action.
+     */
     public ItemStack perform() {
         final ItemStack[] craftingStack = {craft()};
         forEachCraftingProperty(craftingStack[0], (craftingProperty, module, inventory, start, end, buffer) -> {
@@ -135,6 +183,11 @@ public class CraftAction {
         return craftingStack[0];
     }
 
+    /**
+     * Crafts a new ItemStack based on the current state of the object.
+     *
+     * @return the crafted ItemStack.
+     */
     private ItemStack craft() {
         ItemStack craftingStack = old.copy();
 
@@ -193,6 +246,12 @@ public class CraftAction {
         return craftingStack;
     }
 
+    /**
+     * Returns an {@link ItemStack} representing a preview of the item that would be crafted
+     * using the current configuration of the crafting GUI.
+     *
+     * @return An {@link ItemStack} representing a preview of the item that would be crafted.
+     */
     public ItemStack getPreview() {
         AtomicReference<ItemStack> craftingStack = new AtomicReference<>(craft());
         forEachCraftingProperty(craftingStack.get(), (guiCraftingProperty, module, inventory, start, end, buffer) -> {
@@ -201,10 +260,23 @@ public class CraftAction {
         return craftingStack.get();
     }
 
+    /**
+     * Sets the buffer used to send crafting information over the network.
+     *
+     * @param buffers An array of {@link PacketByteBuf}s representing the buffers used to send
+     *                crafting information over the network.
+     */
     public void setBuffer(PacketByteBuf[] buffers) {
         packetByteBuffs = buffers;
     }
 
+    /**
+     * Iterates over each {@link CraftingProperty} for the crafted item and passes it to a
+     * {@link PropertyConsumer} for processing.
+     *
+     * @param crafted The {@link ItemStack} representing the item being crafted.
+     * @param propertyConsumer The {@link PropertyConsumer} to process each {@link CraftingProperty}.
+     */
     public void forEachCraftingProperty(ItemStack crafted, PropertyConsumer propertyConsumer) {
         ItemModule.ModuleInstance parsingInstance = ItemModule.getModules(crafted);
         for (int i = slotId.size() - 1; i >= 0; i--) {
@@ -239,7 +311,15 @@ public class CraftAction {
         }
     }
 
-    private static PlayerEntity getPlayerFromUuid(UUID uuid) {
+    /**
+     * Returns the PlayerEntity object associated with the given UUID, if it exists.
+     * If the server is running, it will use the server's PlayerManager to retrieve the player.
+     * If the client is running, it will use the MinecraftClient's world to retrieve the player.
+     *
+     * @param uuid the UUID of the player to retrieve
+     * @return the PlayerEntity object associated with the given UUID, or null if the player doesn't exist
+     */
+    protected static PlayerEntity getPlayerFromUuid(UUID uuid) {
         if (Miapi.server != null) {
             return Miapi.server.getPlayerManager().getPlayer(uuid);
         } else if (MinecraftClient.getInstance() != null) {
@@ -249,6 +329,17 @@ public class CraftAction {
     }
 
     public interface PropertyConsumer {
+        /**
+         * A functional interface for consuming crafting properties. Used to iterate over the crafting properties
+         * of an item and perform some action on each property.
+         *
+         * @param craftingProperty the crafting property to consume
+         * @param moduleInstance the module instance containing the crafting property
+         * @param inventory the inventory containing the items used for the crafting
+         * @param start the starting index of the crafting slots in the inventory
+         * @param end the ending index of the crafting slots in the inventory
+         * @param buf a PacketByteBuf object used for sending data between the client and server
+         */
         void accept(CraftingProperty craftingProperty, ItemModule.ModuleInstance moduleInstance, List<ItemStack> inventory, int start, int end, PacketByteBuf buf);
     }
 }

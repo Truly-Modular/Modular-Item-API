@@ -4,6 +4,10 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.model.ModelLoader;
 import net.minecraft.resource.ResourceManager;
 
+/**
+ * An Accessor to a ModelLoader instance, if no ModelLoader is found it creates a new one
+ * A Mixin should set this
+ */
 public class ModelLoadAccessor {
     private static ModelLoader loader;
 

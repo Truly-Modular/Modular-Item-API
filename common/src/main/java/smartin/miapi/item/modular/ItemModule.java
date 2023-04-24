@@ -22,32 +22,87 @@ import java.util.Map;
 
 public class ItemModule {
     private static final MiapiRegistry<ItemModule> moduleRegistry = MiapiRegistry.getInstance(ItemModule.class);
-    public static final String moduleKey = "modules";
-    public static final String propertyKey = "rawProperties";
+    /**
+     * The name of the module.
+     */
     private final String name;
+    /**
+     * The map of properties for the module.
+     */
     private final Map<String, JsonElement> properties;
+    /**
+     * The key for the properties in the Cache.
+     */
+    public static final String moduleKey = "modules";
+    /**
+     * The key for the raw properties in the Cache.
+     */
+    public static final String propertyKey = "rawProperties";
+    /**
+     * An empty ItemModule instance.
+     */
     public static final ItemModule empty = new ItemModule("empty", new HashMap<>());
 
+
+    /**
+     * Creates an instance of ItemModule with a given name and map of properties.
+     *
+     * @param name       the name of the module
+     * @param properties the map of properties for the module
+     */
     public ItemModule(String name, Map<String, JsonElement> properties) {
         this.name = name;
         this.properties = properties;
     }
 
+    /**
+     * Returns the map of properties for this module.
+     *
+     * @return the map of properties for this module
+     */
+    public Map<String, JsonElement> getProperties() {
+        return properties;
+    }
+
+    /**
+     * Returns the name of this module.
+     *
+     * @return the name of this module
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * Loads an ItemModule from a JSON string.
+     *
+     * @param path             the path of the JSON file
+     * @param moduleJsonString the JSON string to load from
+     */
     public static void loadFromData(String path, String moduleJsonString) {
         Gson gson = new Gson();
         JsonObject moduleJson = gson.fromJson(moduleJsonString, JsonObject.class);
-        if(!path.contains("modules")){
+        if (!path.contains("modules")) {
             return;
         }
 
         String name = moduleJson.get("name").getAsString();
         Map<String, JsonElement> moduleProperties = new HashMap<>();
 
-        processModuleJsonElement(moduleJson, moduleProperties, name,path,moduleJsonString);
+        processModuleJsonElement(moduleJson, moduleProperties, name, path, moduleJsonString);
 
-        moduleRegistry.register(name,new ItemModule(name, moduleProperties));
+        moduleRegistry.register(name, new ItemModule(name, moduleProperties));
     }
 
+    /**
+     * Processes a JSON element and adds valid properties to the module properties map.
+     *
+     * @param element          the JSON element to process
+     * @param moduleProperties the map of properties for the module
+     * @param name             the name of the module
+     * @param path             the path of the JSON file
+     * @param rawString        the raw JSON string
+     */
     protected static void processModuleJsonElement(JsonElement element, Map<String, JsonElement> moduleProperties, String name, String path, String rawString) {
         if (element.isJsonObject()) {
             JsonObject jsonObject = element.getAsJsonObject();
@@ -55,8 +110,8 @@ public class ItemModule {
                 String key = entry.getKey();
                 JsonElement value = entry.getValue();
                 ModuleProperty property = Miapi.modulePropertyRegistry.get(key);
-                if (property!=null) {
-                    if(isValidProperty(key,name,value)){
+                if (property != null) {
+                    if (isValidProperty(key, name, value)) {
                         moduleProperties.put(key, value);
                     }
                 } else if (value.isJsonObject()) {
@@ -66,28 +121,42 @@ public class ItemModule {
                     for (JsonElement jsonElement : jsonArray) {
                         processModuleJsonElement(jsonElement, moduleProperties, name, path, rawString);
                     }
-                }
-                else{
-                    Miapi.LOGGER.error("Error while reading ModuleJson, module "+name+" key/property "+key+" in file "+path+ " Please make sure there are no Typos in the Property Names");
+                } else {
+                    Miapi.LOGGER.error("Error while reading ModuleJson, module " + name + " key/property " + key + " in file " + path + " Please make sure there are no Typos in the Property Names");
                 }
             }
         }
     }
 
-    protected static boolean isValidProperty(String key,String moduleKey,JsonElement data) {
+    /**
+     * Checks if the given module property is valid and can be loaded.
+     *
+     * @param key       the key of the module property
+     * @param moduleKey the key of the module
+     * @param data      the data to load the module property
+     * @return true if the module property is valid and can be loaded, false otherwise
+     * @throws RuntimeException if an error occurs during loading
+     */
+    protected static boolean isValidProperty(String key, String moduleKey, JsonElement data) {
         ModuleProperty property = Miapi.modulePropertyRegistry.get(key);
-        if(property!=null){
-            try{
-                return property.load(moduleKey,data);
-            }catch (Exception e){
+        if (property != null) {
+            try {
+                return property.load(moduleKey, data);
+            } catch (Exception e) {
                 e.printStackTrace();
-                RuntimeException exception = new RuntimeException("Failure during moduleLoad, Error in Module "+moduleKey+" with property "+key+" with data "+data+ " with error "+e.getLocalizedMessage());
+                RuntimeException exception = new RuntimeException("Failure during moduleLoad, Error in Module " + moduleKey + " with property " + key + " with data " + data + " with error " + e.getLocalizedMessage());
                 throw exception;
             }
         }
         return false;
     }
 
+    /**
+     * Gets the root module instance associated with the given ItemStack.
+     *
+     * @param stack the ItemStack to get the module instance from
+     * @return the module instance associated with the given ItemStack
+     */
     public static ItemModule.ModuleInstance getModules(ItemStack stack) {
         ItemModule.ModuleInstance moduleInstance = (ItemModule.ModuleInstance) ModularItemCache.get(stack, moduleKey);
         if (moduleInstance == null || moduleInstance.module == null) {
@@ -97,6 +166,12 @@ public class ItemModule {
         return moduleInstance;
     }
 
+    /**
+     * Gets a map of unmerged module properties for the given module instance.
+     *
+     * @param modules the module instance to get the unmerged module properties from
+     * @return a map of unmerged module properties
+     */
     public static Map<String, List<JsonElement>> getUnmergedProperties(ItemModule.ModuleInstance modules) {
         Map<String, List<JsonElement>> unmergedProperties = new HashMap<>();
         for (ItemModule.ModuleInstance module : modules.subModules.values()) {
@@ -108,14 +183,12 @@ public class ItemModule {
         return unmergedProperties;
     }
 
-    public Map<String, JsonElement> getProperties() {
-        return properties;
-    }
-
-    public String getName() {
-        return name;
-    }
-
+    /**
+     * Creates a flat list of all modules starting from the specified root module.
+     *
+     * @param root the root module
+     * @return the flat list of all modules
+     */
     public static List<ModuleInstance> createFlatList(ModuleInstance root) {
         List<ModuleInstance> flatList = new ArrayList<>();
         List<ModuleInstance> queue = new ArrayList<>();
@@ -123,11 +196,11 @@ public class ItemModule {
 
         while (!queue.isEmpty()) {
             ModuleInstance module = queue.remove(0);
-            if(module!=null){
+            if (module != null) {
                 flatList.add(module);
 
                 List<ModuleInstance> submodules = new ArrayList<>();
-                module.subModules.keySet().stream().sorted((a,b)->b-a).forEach(id-> {
+                module.subModules.keySet().stream().sorted((a, b) -> b - a).forEach(id -> {
                     submodules.add(module.subModules.get(id));
                 });
                 queue.addAll(0, submodules);
@@ -137,63 +210,121 @@ public class ItemModule {
         return flatList;
     }
 
-    public boolean isEmpty(){
+
+    /**
+     * Returns whether this module is empty (i.e. equals the empty module).
+     *
+     * @return true if this module is empty, false otherwise
+     */
+    public boolean isEmpty() {
         return this.equals(empty);
     }
 
     @Override
-    public boolean equals(Object other){
-        if(other instanceof ItemModule otherModule){
+    public boolean equals(Object other) {
+        if (other instanceof ItemModule otherModule) {
             return this.name.equals(otherModule.name);
         }
         return false;
     }
 
+    /**
+     * A class representing a single module instance that belongs to an item.
+     */
     @JsonAdapter(ModuleInstanceJsonAdapter.class)
-    public static class ModuleInstance{
+    public static class ModuleInstance {
+        /**
+         * The item module represented by this module instance.
+         */
         public ItemModule module;
+        /**
+         * The parent module instance of this module instance, if any.
+         */
         @Nullable
         public ModuleInstance parent;
-        public Map<Integer,ModuleInstance> subModules = new HashMap<>();
-        public Map<String,String> moduleData = new HashMap<>();
+        /**
+         * A map of child module instances to their respective module IDs.
+         */
+        public Map<Integer, ModuleInstance> subModules = new HashMap<>();
+        /**
+         * A map of module data keys to their respective values.
+         */
+        public Map<String, String> moduleData = new HashMap<>();
 
+        /**
+         * Constructs a new module instance with the given item module.
+         *
+         * @param module the item module for the module instance
+         */
+        public ModuleInstance(ItemModule module) {
+            this.module = module;
+        }
+
+        /**
+         * Returns a flat list of all sub-modules, including the current module instance.
+         *
+         * @return a list of all sub-modules
+         */
         public List<ModuleInstance> allSubModules() {
             return ItemModule.createFlatList(this);
         }
 
+        /**
+         * Returns a map of all properties and their associated JSON elements for this module instance and its sub-modules.
+         *
+         * @return a map of module properties and their associated JSON elements
+         */
         public Map<ModuleProperty, JsonElement> getProperties() {
             return PropertyResolver.resolve(this);
         }
 
-        public Map<String,JsonElement> getKeyedProperties(){
-            Map<String,JsonElement> map = new HashMap<>();
+        /**
+         * Returns a map of all properties and their associated JSON elements for this module instance and its sub-modules,
+         * keyed by the property names.
+         *
+         * @return a map of module properties and their associated JSON elements, keyed by property name
+         */
+        public Map<String, JsonElement> getKeyedProperties() {
+            Map<String, JsonElement> map = new HashMap<>();
             getProperties().forEach((property, jsonElement) -> {
-                map.put(Miapi.modulePropertyRegistry.findKey(property),jsonElement);
+                map.put(Miapi.modulePropertyRegistry.findKey(property), jsonElement);
             });
             return map;
         }
 
-        public ModuleInstance getRoot(){
+        /**
+         * Returns the root module instance, i.e., the module instance that has no parent.
+         *
+         * @return the root module instance
+         */
+        public ModuleInstance getRoot() {
             ModuleInstance root = this;
-            while (root.parent!=null){
+            while (root.parent != null) {
                 root = root.parent;
             }
             return root;
         }
 
-        public ModuleInstance(ItemModule module){
-            this.module = module;
-        }
-
-        public String toString(){
+        /**
+         * Returns a JSON string representation of this module instance.
+         *
+         * @return a JSON string representation of this module instance
+         */
+        public String toString() {
             Gson gson = new Gson();
             return gson.toJson(this);
         }
 
-        public static ModuleInstance fromString(String string){
+        /**
+         * Returns a module instance constructed from the given JSON string representation.
+         *
+         * @param string the JSON string representation of a module instance
+         * @return a module instance constructed from the given JSON string representation
+         */
+        public static ModuleInstance fromString(String string) {
             Gson gson = new Gson();
-            ModuleInstance moduleInstance = gson.fromJson(string,ModuleInstance.class);
-            if(moduleInstance.module==null){
+            ModuleInstance moduleInstance = gson.fromJson(string, ModuleInstance.class);
+            if (moduleInstance.module == null) {
                 moduleInstance.module = ItemModule.empty;
             }
             return moduleInstance;
@@ -205,18 +336,16 @@ public class ItemModule {
         public void write(JsonWriter out, ModuleInstance value) throws IOException {
             out.beginObject();
             out.name("module").value(value.module.name);
-            if(value.moduleData!=null){
+            if (value.moduleData != null) {
                 out.name("moduleData").jsonValue(new Gson().toJson(value.moduleData));
-            }
-            else{
-                Map<String,String> moduleData = new HashMap<>();
+            } else {
+                Map<String, String> moduleData = new HashMap<>();
                 out.name("moduleData").jsonValue(new Gson().toJson(moduleData));
             }
-            if(value.subModules!=null){
+            if (value.subModules != null) {
                 out.name("subModules").jsonValue(new Gson().toJson(value.subModules));
-            }
-            else{
-                Map<String,String> subModules = new HashMap<>();
+            } else {
+                Map<String, String> subModules = new HashMap<>();
                 out.name("subModules").jsonValue(new Gson().toJson(subModules));
             }
             out.endObject();
@@ -227,21 +356,22 @@ public class ItemModule {
             JsonObject jsonObject = JsonParser.parseReader(in).getAsJsonObject();
             String moduleKey = jsonObject.get("module").getAsString();
             ItemModule module = moduleRegistry.get(moduleKey);
-            if(module==null) {
+            if (module == null) {
                 module = ItemModule.empty;
             }
             ModuleInstance moduleInstance = new ModuleInstance(module);
-            moduleInstance.subModules = new Gson().fromJson(jsonObject.get("subModules"), new TypeToken<Map<Integer,ModuleInstance>>(){}.getType());
-            if(moduleInstance.subModules!=null){
-                moduleInstance.subModules.forEach((key,subModule)->{
+            moduleInstance.subModules = new Gson().fromJson(jsonObject.get("subModules"), new TypeToken<Map<Integer, ModuleInstance>>() {
+            }.getType());
+            if (moduleInstance.subModules != null) {
+                moduleInstance.subModules.forEach((key, subModule) -> {
                     subModule.parent = moduleInstance;
                 });
-            }
-            else{
+            } else {
                 moduleInstance.subModules = new HashMap<>();
             }
-            moduleInstance.moduleData = new Gson().fromJson(jsonObject.get("moduleData"), new TypeToken<Map<String, String>>(){}.getType());
-            if(moduleInstance.moduleData==null){
+            moduleInstance.moduleData = new Gson().fromJson(jsonObject.get("moduleData"), new TypeToken<Map<String, String>>() {
+            }.getType());
+            if (moduleInstance.moduleData == null) {
                 moduleInstance.moduleData = new HashMap<>();
             }
             return moduleInstance;

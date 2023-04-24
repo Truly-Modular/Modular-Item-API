@@ -10,16 +10,27 @@ import smartin.miapi.Miapi;
 import smartin.miapi.item.modular.ItemModule;
 import smartin.miapi.item.modular.properties.MaterialProperty;
 
+/**
+ * This class is a colection of ColorUtilities
+ */
 public class ColorUtil {
+
+    /**
+     * This mehtod recolors a BakedModel, relies on the CustomColorProvider to work
+     *
+     * @param originalModel the model to be recolored
+     * @param color         the desired Color (Hex representation in the int
+     * @return the Recolored Model
+     */
     public static BakedModel recolorModel(BakedModel originalModel, int color) {
         ImmutableList.Builder<BakedQuad> builder = ImmutableList.builder();
 
         for (BakedQuad quad : originalModel.getQuads(null, null, Random.create())) {
-            builder.add(recolorBakedQuad(quad,color));
+            builder.add(recolorBakedQuad(quad, color));
         }
         for (Direction dir : Direction.values()) {
             for (BakedQuad quad : originalModel.getQuads(null, dir, Random.create())) {
-                builder.add(recolorBakedQuad(quad,color));
+                builder.add(recolorBakedQuad(quad, color));
             }
         }
         return new DynamicBakedModel(builder.build());
@@ -30,12 +41,11 @@ public class ColorUtil {
         return new BakedQuad(originalQuad.getVertexData(), newColor, originalQuad.getFace(), originalQuad.getSprite(), false);
     }
 
-    public static int getModuleColor(ItemModule.ModuleInstance instance){
+    public static int getModuleColor(ItemModule.ModuleInstance instance) {
         MaterialProperty.Material material = MaterialProperty.getMaterial(instance);
-        if(material!=null){
+        if (material != null) {
             return material.getColor();
         }
-        return ColorHelper.Argb.getArgb(255,255,255,255);
+        return ColorHelper.Argb.getArgb(255, 255, 255, 255);
     }
-
 }

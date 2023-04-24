@@ -37,6 +37,7 @@ public class BoxList extends InteractAbleWidget {
      */
     public BoxList(int x, int y, int width, int height, Text message, @Nullable List<ClickableWidget> widgets) {
         super(x, y, width, height, message);
+        //TODO:decide what to do with this
         setButtons(new Identifier(Miapi.MOD_ID, "textures/button_left.png"), 10, 10, true);
         setButtons(new Identifier(Miapi.MOD_ID, "textures/button_right.png"), 10, 10, false);
         setWidgets(widgets, space);
@@ -118,7 +119,6 @@ public class BoxList extends InteractAbleWidget {
 
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        //TODO:render current page
         super.render(matrices, mouseX, mouseY, delta);
     }
 
