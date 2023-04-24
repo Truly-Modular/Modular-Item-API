@@ -10,20 +10,38 @@ import smartin.miapi.item.modular.ItemModule;
 
 import java.util.List;
 
+/**
+ * This Property changes the ItemIdentifier of an ModularItem on Craft
+ * it only supports preregisterd ids in {@link Miapi#itemRegistry}
+ */
 public class ItemIdProperty extends CraftingProperty {
-    public static final String key = "itemId";
-    public static ModuleProperty itemIdProperty;
+    public static final String KEY = "itemId";
+    public static ModuleProperty property;
 
-    public ItemIdProperty(){
-        itemIdProperty = this;
+    public ItemIdProperty() {
+        property = this;
     }
 
     @Override
     public boolean load(String moduleKey, JsonElement data) throws Exception {
         data.getAsString();
-        assert  Miapi.itemRegistry.get(data.getAsString()) != null;
+        assert Miapi.itemRegistry.get(data.getAsString()) != null;
         return true;
     }
+
+    @Override
+    public JsonElement merge(JsonElement old, JsonElement toMerge, MergeType type) {
+        switch (type) {
+            case EXTEND -> {
+                return old;
+            }
+            case SMART, OVERWRITE -> {
+                return toMerge;
+            }
+        }
+        return old;
+    }
+
 
     @Override
     public float getPriority() {
@@ -33,18 +51,16 @@ public class ItemIdProperty extends CraftingProperty {
     @Override
     public ItemStack preview(ItemStack old, ItemStack crafting, PlayerEntity player, ItemModule.ModuleInstance newModule, ItemModule module, List<ItemStack> inventory, PacketByteBuf buf) {
         ItemModule.ModuleInstance root = ItemModule.getModules(crafting);
+        JsonElement data =  ItemModule.getMergedProperty(root, property);
         String translationKey = "";
-        for(ItemModule.ModuleInstance moduleInstance: root.allSubModules()){
-            JsonElement data = moduleInstance.getProperties().get(itemIdProperty);
-            if(data!=null){
-                translationKey = data.getAsString();
-            }
+        if (data != null) {
+            translationKey = data.getAsString();
         }
         Item item = Miapi.itemRegistry.get(translationKey);
-        if(item!=null){
+        if (item != null) {
             ItemStack newStack = new ItemStack(item);
             newStack.setNbt(crafting.getNbt());
-            crafting.getNbt().putString("modules",newModule.getRoot().toString());
+            crafting.getNbt().putString("modules", newModule.getRoot().toString());
             return newStack;
         }
         return crafting;

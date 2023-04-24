@@ -9,7 +9,6 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 import smartin.miapi.Miapi;
 import smartin.miapi.item.modular.ItemModule;
-import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.cache.ModularItemCache;
 import smartin.miapi.item.modular.properties.SlotProperty;
 import smartin.miapi.item.modular.properties.CraftingProperty;
@@ -196,7 +195,7 @@ public class CraftAction {
             return old;
         }
         //remove CacheKey so new cache gets Generated
-        craftingStack.getNbt().remove(ModularItemCache.cacheKey);
+        craftingStack.getNbt().remove(ModularItemCache.CACHE_KEY);
         ItemModule.ModuleInstance oldBaseModule = ItemModule.getModules(old);
         ItemModule.ModuleInstance newBaseModule = ItemModule.ModuleInstance.fromString(oldBaseModule.toString());
         Map<Integer, ItemModule.ModuleInstance> subModuleMap = new HashMap<>();

@@ -9,14 +9,13 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 import java.util.function.Function;
 
 public class ModularItemCache {
     protected static Map<UUID, Cache> cacheMap = new HashMap<>();
     protected static Map<String, CacheObjectSupplier> supplierMap = new HashMap<>();
     protected static Map<ItemStack,UUID> lookUpTable = new WeakHashMap<>();
-    public static final String cacheKey = Miapi.MOD_ID+"uuid";
+    public static final String CACHE_KEY = Miapi.MOD_ID+"uuid";
 
     public static void setSupplier(String key, CacheObjectSupplier supplier) {
         supplierMap.put(key, supplier);
@@ -33,7 +32,7 @@ public class ModularItemCache {
 
     public static void updateNBT(ItemStack stack){
         if(stack.hasNbt()){
-            String uuidString = stack.getNbt().getString(cacheKey);
+            String uuidString = stack.getNbt().getString(CACHE_KEY);
             if(uuidString!=null){
                 UUID uuid = UUID.fromString(uuidString);
                 Cache itemCache = cacheMap.get(uuid);
@@ -53,7 +52,7 @@ public class ModularItemCache {
             }
         }
         if(stack.hasNbt()){
-            String uuidString = stack.getNbt().getString(cacheKey);
+            String uuidString = stack.getNbt().getString(CACHE_KEY);
             if(uuidString!=null){
                 try{
                     UUID uuid = UUID.fromString(uuidString);
@@ -64,45 +63,20 @@ public class ModularItemCache {
                         }
                     }
                 }
-                catch (Exception e){
+                catch (Exception ignored){
+                    Miapi.LOGGER.warn("Cache has an issue");
                 }
             }
         }
         UUID newUUID = getMissingUUID();
         NbtCompound nbt = stack.getNbt();
         if(nbt==null) nbt = new NbtCompound();
-        nbt.putString(cacheKey,newUUID.toString());
+        nbt.putString(CACHE_KEY,newUUID.toString());
         stack.setNbt(nbt);
         Cache cache = new Cache(newUUID,stack);
         cacheMap.put(newUUID,cache);
         lookUpTable.put(stack,newUUID);
         return cache;
-    }
-
-    protected static Cache findopti(ItemStack stack){
-        UUID uuid = null;
-        if (stack.hasNbt()) {
-            String uuidString = stack.getNbt().getString(cacheKey);
-            if (uuidString != null) {
-                try {
-                    uuid = UUID.fromString(uuidString);
-                    Cache itemCache = cacheMap.get(uuid);
-                    if (itemCache != null && itemCache.nbtHash == stack.getNbt().hashCode()) {
-                        return itemCache;
-                    }
-                } catch (IllegalArgumentException e) {
-                    // Invalid UUID string, ignore it
-                }
-            }
-        }
-        if (uuid == null) {
-            uuid = getMissingUUID();
-            NbtCompound nbt = stack.getOrCreateNbt();
-            nbt.putString(cacheKey, uuid.toString());
-            Cache cache = new Cache(uuid, stack);
-            cacheMap.put(uuid, cache);
-        }
-        return cacheMap.get(uuid);
     }
 
     protected static UUID getMissingUUID(){

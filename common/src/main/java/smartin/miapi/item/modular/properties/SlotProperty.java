@@ -14,23 +14,16 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class SlotProperty implements ModuleProperty {
 
-    public static final String key = "slots";
+    public static final String KEY = "slots";
 
     public static SlotProperty getInstance() {
-        return (SlotProperty) Miapi.modulePropertyRegistry.get(key);
+        return (SlotProperty) Miapi.modulePropertyRegistry.get(KEY);
     }
 
     public static Transform getTransform(ItemModule.ModuleInstance instance) {
         ModuleSlot slot = getSlotIn(instance);
         if (slot == null) return Transform.IDENTITY;
         ItemModule.ModuleInstance current = instance;
-        /*
-        Transform mergedTransform = getLocalTransform(current);
-        while(current.parent!=null){
-            current = current.parent;
-            mergedTransform = Transform.merge(getLocalTransform(current),mergedTransform);
-        }
-         */
         Transform merged = Transform.IDENTITY;
         while (current != null) {
             merged = Transform.merge(getLocalTransform(current), merged);
@@ -51,7 +44,7 @@ public class SlotProperty implements ModuleProperty {
     }
 
     public static Map<Integer, ModuleSlot> getSlots(ItemModule.ModuleInstance instance) {
-        ModuleProperty property = Miapi.modulePropertyRegistry.get(key);
+        ModuleProperty property = Miapi.modulePropertyRegistry.get(KEY);
         JsonElement data = instance.getProperties().get(property);
         if (data != null) {
             Gson gson = new Gson();
@@ -84,15 +77,12 @@ public class SlotProperty implements ModuleProperty {
     }
 
     public static Transform getLocalTransform(ItemModule.ModuleInstance instance) {
-        ModuleProperty property = Miapi.modulePropertyRegistry.get(key);
+        ModuleProperty property = Miapi.modulePropertyRegistry.get(KEY);
         JsonElement test = instance.getProperties().get(property);
         if (test != null) {
-            //TODO:
             ModuleSlot slot = getSlotIn(instance);
             if (slot != null) {
                 return slot.transform;
-            } else {
-                //Miapi.LOGGER.warn("No Slot Found for ModuleInstance");
             }
         }
         return Transform.IDENTITY;
@@ -115,7 +105,7 @@ public class SlotProperty implements ModuleProperty {
         Gson gson = new Gson();
         Type type = new TypeToken<Map<Integer, ModuleSlot>>() {
         }.getType();
-        Map<Integer, ModuleSlot> map = gson.fromJson(data, type);
+        gson.fromJson(data, type);
         return true;
     }
 

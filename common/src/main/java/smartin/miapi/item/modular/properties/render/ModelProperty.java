@@ -43,23 +43,19 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 
 public class ModelProperty implements ModuleProperty {
-    public static final String key = "texture";
+    private static final String CACHE_KEY = Miapi.MOD_ID + ":model";
+    private static final Map<String, ModelJson> modelMap = new HashMap<>();
+    private static final Map<String, JsonUnbakedModel> loadedMap = new HashMap<>();
+    public static final String KEY = "texture";
+    public static final List<ModelTransformer> modelTransformers = new ArrayList<>();
     public static Function<SpriteIdentifier, Sprite> textureGetter;
     private static Function<SpriteIdentifier, Sprite> mirroredGetter;
-    private static final String cacheKey = Miapi.MOD_ID + ":model";
-    private static final Map<String, ModelJson> modelMap = new HashMap<>();
     private static ItemModelGenerator generator;
-    private static Map<String, JsonUnbakedModel> loadedMap = new HashMap<>();
-    public static final List<ModelTransformer> modelTransformers = new ArrayList<>();
 
     public ModelProperty() {
-        mirroredGetter = (identifier) -> {
-            return textureGetter.apply(identifier);
-        };
+        mirroredGetter = (identifier) -> textureGetter.apply(identifier);
         generator = new ItemModelGenerator();
-        ModularItemCache.setSupplier(cacheKey, (stack) -> {
-            return generateModel(stack);
-        });
+        ModularItemCache.setSupplier(CACHE_KEY, ModelProperty::generateModel);
     }
 
 
@@ -79,13 +75,14 @@ public class ModelProperty implements ModuleProperty {
                     list.add("default");
                 }
                 JsonUnbakedModel unbakedModel = null;
-                for (int i = 0; i < list.size(); i++) {
-                    String str = list.get(i);
+                for (String str : list) {
+                    assert json.jsonUnbakedModelMap != null;
                     if (json.jsonUnbakedModelMap.containsKey(str)) {
                         unbakedModel = json.jsonUnbakedModelMap.get(str);
                         break;
                     }
                 }
+                assert unbakedModel != null;
                 scaleAdder.updateAndGet(v -> (v + 0.001f));
                 Transform transform = json.transform.copy();
                 transform = Transform.merge(SlotProperty.getTransform(moduleI), transform);
@@ -113,9 +110,6 @@ public class ModelProperty implements ModuleProperty {
     public static BakedModel bakeModel(JsonUnbakedModel unbakedModel, Function<SpriteIdentifier, Sprite> textureGetter, Transform transform, int color, ModelBakeSettings settings) {
         try {
             ModelLoader modelLoader = ModelLoadAccessor.getLoader();
-            if (true) {
-                //return modelLoader.bake(new Identifier("minecraft","item/bow"),settings);
-            }
             AtomicReference<JsonUnbakedModel> actualModel = new AtomicReference<>(unbakedModel);
             unbakedModel.getModelDependencies().stream().filter(identifier -> identifier.toString().equals("minecraft:item/generated") || identifier.toString().contains("handheld")).findFirst().ifPresent(identifier -> {
                 actualModel.set(generator.create(mirroredGetter, unbakedModel));
@@ -132,9 +126,7 @@ public class ModelProperty implements ModuleProperty {
     public static JsonUnbakedModel transformModel(JsonUnbakedModel model, Transform transform) {
         // Create a new model with the same properties as the original
         // Apply the transformations to each element in the model
-        for (int i = 0; i < model.getElements().size(); i++) {
-            model.getElements().set(i, transformModel(model.getElements().get(i), transform));
-        }
+        model.getElements().replaceAll(element -> transformModel(element, transform));
 
         return model;
     }
@@ -148,13 +140,11 @@ public class ModelProperty implements ModuleProperty {
         }
 
 
-        ModelElement newElement = new ModelElement(transform.transformVector(element.from), transform.transformVector(element.to), element.faces, newRotation, element.shade);
-
-        return newElement;
+        return new ModelElement(transform.transformVector(element.from), transform.transformVector(element.to), element.faces, newRotation, element.shade);
     }
 
     public static BakedModel getModel(ItemStack stack) {
-        return (BakedModel) ModularItemCache.get(stack, cacheKey);
+        return (BakedModel) ModularItemCache.get(stack, CACHE_KEY);
     }
 
     public static JsonUnbakedModel loadModelFromFilePath(String filePath2) {
@@ -190,7 +180,7 @@ public class ModelProperty implements ModuleProperty {
             model.getModelDependencies().forEach(dependendyId -> {
                 if (!dependendyId.toString().contains("generated") && !dependendyId.toString().contains("item/handheld")) {
                     try {
-                        loadModelsbyPath(dependendyId.toString());
+                        loadModelsByPath(dependendyId.toString());
                     } catch (Exception surpressed) {
                         Miapi.LOGGER.error("could not find Model " + dependendyId.toString());
                         surpressed.printStackTrace();
@@ -201,23 +191,21 @@ public class ModelProperty implements ModuleProperty {
             return model;
         } catch (IOException exception) {
             exception.printStackTrace();
-            new RuntimeException("failure to load model from path " + modelId.toString());
+            throw new RuntimeException("failure to load model from path " + modelId.toString());
         }
-        return null;
     }
 
-    public static Map<String, JsonUnbakedModel> loadModelsbyPath(String filePath) {
+    public static Map<String, JsonUnbakedModel> loadModelsByPath(String filePath) {
         String materialKey = "[material.texture]";
         Map<String, JsonUnbakedModel> models = new HashMap<>();
         if (filePath.contains("[material.texture]")) {
-            String currentPath = filePath;
-            models.put("default", loadModelFromFilePath(currentPath.replace(materialKey, "default")));
+            models.put("default", loadModelFromFilePath(filePath.replace(materialKey, "default")));
             MaterialProperty.getTextureKeys().forEach((path) -> {
                 try {
-                    models.put(path, loadModelFromFilePath(currentPath.replace(materialKey, path)));
+                    models.put(path, loadModelFromFilePath(filePath.replace(materialKey, path)));
                     Miapi.LOGGER.warn("found " + path);
-                } catch (RuntimeException surpressed) {
-
+                } catch (RuntimeException exception) {
+                    exception.printStackTrace();
                 }
             });
         } else {
@@ -242,10 +230,7 @@ public class ModelProperty implements ModuleProperty {
         Gson gson = new Gson();
         ModelJson propertyJson = gson.fromJson(data.toString(), ModelJson.class);
         propertyJson.repair();
-        propertyJson.jsonUnbakedModelMap = loadModelsbyPath(propertyJson.path);
-        if (propertyJson.jsonUnbakedModelMap == null) {
-            throw new Exception("could not find model path");
-        }
+        propertyJson.jsonUnbakedModelMap = loadModelsByPath(propertyJson.path);
         modelMap.put(moduleKey, propertyJson);
         return true;
     }
@@ -254,7 +239,7 @@ public class ModelProperty implements ModuleProperty {
         DynamicBakedModel transform(DynamicBakedModel dynamicBakedModel, ItemStack stack);
     }
 
-    class ModelJson {
+    static class ModelJson {
         @Nullable
         public Map<String, JsonUnbakedModel> jsonUnbakedModelMap;
         public String path;

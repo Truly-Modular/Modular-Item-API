@@ -4,28 +4,29 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.SwordItem;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import smartin.miapi.Miapi;
 import smartin.miapi.item.modular.ItemModule;
-import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.item.modular.cache.ModularItemCache;
 
+import java.lang.reflect.Type;
+import java.util.List;
 import java.util.UUID;
 
 public class AttributeProperty implements ModuleProperty {
-    public static final String key = "attributes";
-    public static ModuleProperty attributesProperty;
+    public static final String KEY = "attributes";
+    public static ModuleProperty property;
 
     public AttributeProperty() {
-        this.attributesProperty = this;
-        ModularItemCache.setSupplier(key, (stack -> createAttributeCache(stack)));
+        property = this;
+        ModularItemCache.setSupplier(KEY, (AttributeProperty::createAttributeCache));
     }
 
     @Override
@@ -61,8 +62,25 @@ public class AttributeProperty implements ModuleProperty {
         return true;
     }
 
+    @Override
+    public JsonElement merge(JsonElement old, JsonElement toMerge, MergeType type) {
+        Type typeToken = new TypeToken<List<JsonElement>>(){}.getType();
+        List<JsonElement> oldList  = Miapi.gson.fromJson(old,typeToken);
+        List<JsonElement> newList  = Miapi.gson.fromJson(toMerge,typeToken);
+        switch (type){
+            case SMART,EXTEND -> {
+                oldList.addAll(newList);
+                return Miapi.gson.toJsonTree(oldList,typeToken);
+            }
+            case OVERWRITE -> {
+                return toMerge;
+            }
+        }
+        return old;
+    }
+
     public static Multimap<EntityAttribute, EntityAttributeModifierHolder> getAttributeModifiers(ItemStack itemStack) {
-        return (Multimap<EntityAttribute, EntityAttributeModifierHolder>) ModularItemCache.get(itemStack, key);
+        return (Multimap<EntityAttribute, EntityAttributeModifierHolder>) ModularItemCache.get(itemStack, KEY);
     }
 
     private static Multimap<EntityAttribute, EntityAttributeModifierHolder> createAttributeCache(ItemStack itemStack) {
@@ -75,8 +93,8 @@ public class AttributeProperty implements ModuleProperty {
     }
 
     public static void getAttributeModifiers(ItemModule.ModuleInstance instance, Multimap<EntityAttribute, EntityAttributeModifierHolder> attributeModifiers) {
-        instance.getProperties().get(attributesProperty);
-        JsonElement element = instance.getProperties().get(attributesProperty);
+        instance.getProperties().get(property);
+        JsonElement element = instance.getProperties().get(property);
         if (element == null) {
             return;
         }
@@ -108,8 +126,6 @@ public class AttributeProperty implements ModuleProperty {
 
     private static EntityAttributeModifier.Operation getOperation(String operationString) {
         switch (operationString) {
-            case "+":
-                return EntityAttributeModifier.Operation.ADDITION;
             case "*":
                 return EntityAttributeModifier.Operation.MULTIPLY_BASE;
             case "**":

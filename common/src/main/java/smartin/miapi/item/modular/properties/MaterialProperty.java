@@ -4,16 +4,12 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tag.TagKey;
-import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.registry.Registry;
 import smartin.miapi.Miapi;
-import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.item.modular.ItemModule;
 import smartin.miapi.item.modular.StatResolver;
@@ -21,17 +17,20 @@ import smartin.miapi.item.modular.StatResolver;
 import javax.annotation.Nullable;
 import java.util.*;
 
+/**
+ * This is the Property relating to materials of a Module
+ */
 public class MaterialProperty implements ModuleProperty {
-    public static final String key = "material";
-    public static ModuleProperty materialProperty;
+    public static final String KEY = "material";
+    public static ModuleProperty property;
     public static Map<String, Material> materials = new HashMap<>();
 
     public MaterialProperty() {
-        materialProperty = this;
-        StatResolver.registerResolver(key, new StatResolver.Resolver() {
+        property = this;
+        StatResolver.registerResolver(KEY, new StatResolver.Resolver() {
             @Override
             public double resolveDouble(String data, ItemModule.ModuleInstance instance) {
-                JsonElement jsonData = instance.getKeyedProperties().get(key);
+                JsonElement jsonData = instance.getKeyedProperties().get(KEY);
                 try {
                     if (jsonData != null) {
                         jsonData = materials.get(jsonData.getAsString()).rawJson;
@@ -48,16 +47,16 @@ public class MaterialProperty implements ModuleProperty {
                             }
                         }
                     }
-                } catch (Exception suppressed) {
-                    //Miapi.LOGGER.error(suppressed.toString());
-                    //suppressed.printStackTrace();
+                } catch (Exception exception){
+                    Miapi.LOGGER.warn("Error during Material Resolve");
+                    exception.printStackTrace();
                 }
                 return 0;
             }
 
             @Override
             public String resolveString(String data, ItemModule.ModuleInstance instance) {
-                JsonElement jsonData = instance.getProperties().get(materialProperty);
+                JsonElement jsonData = instance.getProperties().get(property);
                 try {
                     if (jsonData != null) {
                         jsonData = materials.get(jsonData.getAsString()).rawJson;
@@ -74,8 +73,9 @@ public class MaterialProperty implements ModuleProperty {
                             }
                         }
                     }
-                } catch (Exception suppressed) {
-
+                } catch (Exception exception){
+                    Miapi.LOGGER.warn("Error during Material Resolve");
+                    exception.printStackTrace();
                 }
                 return "";
             }
@@ -83,7 +83,7 @@ public class MaterialProperty implements ModuleProperty {
         ReloadEvents.MAIN.subscribe((isClient -> {
             materials.clear();
             ReloadEvents.DATA_PACKS.forEach((path, data) -> {
-                if (path.contains(key)) {
+                if (path.contains(KEY)) {
                     //load Material Logic
                     JsonParser parser = new JsonParser();
                     JsonObject obj = parser.parse(data).getAsJsonObject();
@@ -114,6 +114,19 @@ public class MaterialProperty implements ModuleProperty {
         return true;
     }
 
+    @Override
+    public JsonElement merge(JsonElement old, JsonElement toMerge, MergeType type) {
+        switch (type) {
+            case EXTEND -> {
+                return old;
+            }
+            case SMART, OVERWRITE -> {
+                return toMerge;
+            }
+        }
+        return old;
+    }
+
     @Nullable
     public static Material getMaterial(ItemStack item) {
         for (Material material : materials.values()) {
@@ -142,7 +155,7 @@ public class MaterialProperty implements ModuleProperty {
 
     @Nullable
     public static Material getMaterial(ItemModule.ModuleInstance instance) {
-        JsonElement element = instance.getProperties().get(materialProperty);
+        JsonElement element = instance.getProperties().get(property);
         if (element != null) {
             return materials.get(element.getAsString());
         }
@@ -156,34 +169,6 @@ public class MaterialProperty implements ModuleProperty {
         JsonObject moduleJson = Miapi.gson.fromJson(propertyString, JsonObject.class);
         moduleJson.addProperty("material", material);
         instance.moduleData.put("properties", Miapi.gson.toJson(moduleJson));
-    }
-
-    public class test extends InteractAbleWidget {
-        private final int startX;
-        private final int startY;
-        /**
-         * This is a Widget build to support Children and parse the events down to them.
-         * Best use in conjunction with the ParentHandledScreen as it also handles Children correct,
-         * unlike the base vanilla classes.
-         * If you choose to handle some Events yourself and want to support Children yourself, you need to call the correct
-         * super method or handle the children yourself
-         *
-         * @param x      the X Position
-         * @param y      the y Position
-         * @param width  the width
-         * @param height the height
-         */
-        public test(int x, int y, int width, int height) {
-            super(x, y, width, height, Text.literal("Test"));
-            startX = x+5;
-            startY = y+5;
-        }
-
-        public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-            drawSquareBorder(matrices, x, y, width, height, 4, ColorHelper.Argb.getArgb(255, 255, 255, 255));
-            drawSquareBorder(matrices, x+5, y+5, 9, 9, 4, ColorHelper.Argb.getArgb(255, 0, 0, 0));
-            drawSquareBorder(matrices, startX, startY, 9, 9, 4, ColorHelper.Argb.getArgb(255, 255, 255, 0));
-        }
     }
 
     public class Material {
@@ -202,7 +187,7 @@ public class MaterialProperty implements ModuleProperty {
         }
 
         public List<String> getTextureKeys() {
-            ArrayList textureKeys = new ArrayList();
+            List<String> textureKeys = new ArrayList<>();
             JsonArray textures = rawJson.getAsJsonObject().getAsJsonArray("textures");
             for (JsonElement texture : textures) {
                 textureKeys.add(texture.getAsString());
@@ -237,7 +222,7 @@ public class MaterialProperty implements ModuleProperty {
                     if (tag != null && item.isIn(tag)) {
                         try {
                             return itemObj.get("value").getAsDouble();
-                        } catch (Exception surpressed) {
+                        } catch (Exception suppressed) {
                             return 1;
                         }
                     }

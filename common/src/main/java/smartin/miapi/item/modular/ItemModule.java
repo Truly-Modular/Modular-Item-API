@@ -11,6 +11,7 @@ import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.item.modular.cache.ModularItemCache;
 import smartin.miapi.item.modular.properties.AttributeProperty;
+import smartin.miapi.item.modular.properties.MergeType;
 import smartin.miapi.item.modular.properties.ModuleProperty;
 import smartin.miapi.registries.MiapiRegistry;
 
@@ -20,6 +21,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * An ItemModule represents a Module loaded from a JSON
+ */
 public class ItemModule {
     private static final MiapiRegistry<ItemModule> moduleRegistry = MiapiRegistry.getInstance(ItemModule.class);
     /**
@@ -172,15 +176,48 @@ public class ItemModule {
      * @param modules the module instance to get the unmerged module properties from
      * @return a map of unmerged module properties
      */
-    public static Map<String, List<JsonElement>> getUnmergedProperties(ItemModule.ModuleInstance modules) {
-        Map<String, List<JsonElement>> unmergedProperties = new HashMap<>();
+    public static Map<ItemModule, List<JsonElement>> getUnmergedProperties(ItemModule.ModuleInstance modules) {
+        Map<ItemModule, List<JsonElement>> unmergedProperties = new HashMap<>();
         for (ItemModule.ModuleInstance module : modules.subModules.values()) {
             module.getProperties().forEach((property, data) -> {
-                String key = Miapi.moduleRegistry.findKey(property);
-                unmergedProperties.getOrDefault(key, new ArrayList<>()).add(data);
+                unmergedProperties.getOrDefault(property, new ArrayList<>()).add(data);
             });
         }
         return unmergedProperties;
+    }
+
+    /**
+     * this method works through all submodules and merges the Properties using the Smart MergeType
+     *
+     * @param moduleInstance the root instance
+     * @param property       the property to be merged
+     * @return the merged PropertyJson
+     */
+    public static JsonElement getMergedProperty(ModuleInstance moduleInstance, ModuleProperty property) {
+        return getMergedProperty(moduleInstance, property, MergeType.SMART);
+    }
+
+    /**
+     * this method works through all submodules and merges the Properties depending on the supplied MergeType
+     *
+     * @param moduleInstance the root instance
+     * @param property       the property to be merged
+     * @param type           the mergeType for the merge Logic
+     * @return the merged PropertyJson
+     */
+    public static JsonElement getMergedProperty(ModuleInstance moduleInstance, ModuleProperty property, MergeType type) {
+        JsonElement mergedProperty = null;
+        for (ItemModule.ModuleInstance module : moduleInstance.allSubModules()) {
+            JsonElement currentProperty = module.getProperties().get(property);
+            if (currentProperty != null) {
+                if (mergedProperty == null) {
+                    mergedProperty = currentProperty;
+                } else {
+                    mergedProperty = property.merge(mergedProperty, currentProperty, type);
+                }
+            }
+        }
+        return mergedProperty;
     }
 
     /**

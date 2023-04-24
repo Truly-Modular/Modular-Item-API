@@ -1,6 +1,5 @@
 package smartin.miapi.item.modular.properties.render;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.minecraft.client.render.model.json.ModelTransformation;
@@ -9,26 +8,24 @@ import net.minecraft.item.ItemStack;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.model.DynamicBakedModel;
 import smartin.miapi.item.modular.ItemModule;
-import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.Transform;
 import smartin.miapi.item.modular.properties.ModuleProperty;
-import smartin.miapi.item.modular.properties.render.ModelProperty;
 
 import java.util.*;
 
 public class ModelTransformationProperty implements ModuleProperty {
 
-    public static final String key = "modelTransform";
-    public static ModuleProperty modelTransformationProperty;
+    public static final String KEY = "modelTransform";
+    public static ModuleProperty property;
 
     public ModelTransformationProperty() {
-        modelTransformationProperty = this;
+        property = this;
         ModelProperty.modelTransformers.add(new ModelProperty.ModelTransformer() {
             @Override
             public DynamicBakedModel transform(DynamicBakedModel dynamicBakedModel, ItemStack stack) {
                 ModelTransformation transformation = ModelTransformation.NONE;
                 for (ItemModule.ModuleInstance instance : ItemModule.createFlatList(ItemModule.getModules(stack))) {
-                    JsonElement element = instance.getProperties().get(modelTransformationProperty);
+                    JsonElement element = instance.getProperties().get(property);
                     if (element != null) {
                         Map<ModelTransformation.Mode, Transformation> map = new HashMap<>();
                         if (element.getAsJsonObject().has("replace")) {

@@ -6,46 +6,59 @@ import com.google.gson.reflect.TypeToken;
 import smartin.miapi.Miapi;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.item.modular.ItemModule;
-import smartin.miapi.item.modular.properties.ModuleProperty;
-import smartin.miapi.item.modular.properties.SlotProperty;
 
 import java.lang.reflect.Type;
 import java.util.*;
 
+/**
+ * This Property is meant to control what is allowed in the moduleSlots of an module
+ */
 public class AllowedSlots implements ModuleProperty {
-    public static String key = "allowedInSlots";
+    public static final String KEY = "allowedInSlots";
     static HashMap<String, Set<ItemModule>> allowedInMap = new HashMap<>();
 
-    public AllowedSlots(){
+    public AllowedSlots() {
         Miapi.moduleRegistry.addCallback(itemModule -> {
             getAllowedSlots(itemModule).forEach(slot -> {
-                if(allowedInMap.containsKey(slot)){
+                if (allowedInMap.containsKey(slot)) {
                     allowedInMap.get(slot).add(itemModule);
-                }
-                else{
+                } else {
                     Set<ItemModule> list = new HashSet<>();
                     list.add(itemModule);
-                    allowedInMap.put(slot,list);
+                    allowedInMap.put(slot, list);
                 }
             });
         });
-        ReloadEvents.START.subscribe(isClient ->{
+        ReloadEvents.START.subscribe(isClient -> {
             allowedInMap.clear();
         });
     }
 
-    public static List<String> getAllowedSlots(ItemModule module){
-        JsonElement data = module.getProperties().get(key);
+    /**
+     * Retrieves the allowed Submodules of a module
+     *
+     * @param module the module in question
+     * @return List of slotIds
+     */
+    public static List<String> getAllowedSlots(ItemModule module) {
+        JsonElement data = module.getProperties().get(KEY);
         Gson gson = new Gson();
-        Type type = new TypeToken<List<String>>(){}.getType();
-        return gson.fromJson(data,type);
+        Type type = new TypeToken<List<String>>() {
+        }.getType();
+        return gson.fromJson(data, type);
     }
 
-    public static List<ItemModule> allowedIn(SlotProperty.ModuleSlot slot){
-        if(slot==null) return new ArrayList<>();
+    /**
+     * retrieves all {@link ItemModule} that are allowed in a slot
+     *
+     * @param slot the slot in question
+     * @return list of allowed {@link ItemModule}
+     */
+    public static List<ItemModule> allowedIn(SlotProperty.ModuleSlot slot) {
+        if (slot == null) return new ArrayList<>();
         List<ItemModule> allowedModules = new ArrayList<>();
-        slot.allowed.forEach(allowedKey->{
-            if(allowedInMap.containsKey(allowedKey)){
+        slot.allowed.forEach(allowedKey -> {
+            if (allowedInMap.containsKey(allowedKey)) {
                 allowedModules.addAll(allowedInMap.get(allowedKey));
             }
         });
@@ -56,8 +69,9 @@ public class AllowedSlots implements ModuleProperty {
     @Override
     public boolean load(String moduleKey, JsonElement data) throws Exception {
         Gson gson = new Gson();
-        Type type = new TypeToken<List<String>>(){}.getType();
-        gson.fromJson(data,type);
+        Type type = new TypeToken<List<String>>() {
+        }.getType();
+        gson.fromJson(data, type);
         return true;
     }
 }

@@ -7,24 +7,22 @@ import net.minecraft.util.math.Vec3f;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.model.DynamicBakedModel;
 import smartin.miapi.item.modular.ItemModule;
-import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.Transform;
 import smartin.miapi.item.modular.properties.ModuleProperty;
-import smartin.miapi.item.modular.properties.render.ModelProperty;
 
 public class GuiOffsetProperty implements ModuleProperty {
-    public static final String key = "guiOffset";
-    public static ModuleProperty guiOffsetProperty;
+    public static final String KEY = "guiOffset";
+    public static ModuleProperty property;
 
     public GuiOffsetProperty() {
-        guiOffsetProperty = this;
+        property = this;
         ModelProperty.modelTransformers.add(new ModelProperty.ModelTransformer() {
 
             @Override
             public DynamicBakedModel transform(DynamicBakedModel dynamicBakedModel, ItemStack stack) {
                 GuiOffsetJson guiOffsetJson = new GuiOffsetJson();
                 for (ItemModule.ModuleInstance instance : ItemModule.createFlatList(ItemModule.getModules(stack))) {
-                    JsonElement element = instance.getProperties().get(guiOffsetProperty);
+                    JsonElement element = instance.getProperties().get(property);
                     if (element != null) {
                         GuiOffsetJson add = Miapi.gson.fromJson(element, GuiOffsetJson.class);
                         guiOffsetJson.x += add.x;
@@ -39,7 +37,7 @@ public class GuiOffsetProperty implements ModuleProperty {
                 guiOffsetJson.sizeX = guiTransform.scale.getX() - guiOffsetJson.sizeX / 16.0f;
                 guiOffsetJson.sizeY = guiTransform.scale.getY() - guiOffsetJson.sizeY / 16.0f;
                 guiTransform = new Transform(guiTransform.rotation,new Vec3f(guiOffsetJson.x / 16.0f, guiOffsetJson.y / 16.0f, 0),new Vec3f(guiOffsetJson.sizeX, guiOffsetJson.sizeY, 1.0f));
-                ModelTransformation transformation = new ModelTransformation(
+                dynamicBakedModel.modelTransformation = new ModelTransformation(
                         dynamicBakedModel.getTransformation().getTransformation(ModelTransformation.Mode.THIRD_PERSON_LEFT_HAND),
                         dynamicBakedModel.getTransformation().getTransformation(ModelTransformation.Mode.THIRD_PERSON_RIGHT_HAND),
                         dynamicBakedModel.getTransformation().getTransformation(ModelTransformation.Mode.FIRST_PERSON_LEFT_HAND),
@@ -49,7 +47,6 @@ public class GuiOffsetProperty implements ModuleProperty {
                         dynamicBakedModel.getTransformation().getTransformation(ModelTransformation.Mode.GROUND),
                         dynamicBakedModel.getTransformation().getTransformation(ModelTransformation.Mode.FIXED)
                 );
-                dynamicBakedModel.modelTransformation = transformation;
                 return dynamicBakedModel;
             }
         });
@@ -60,7 +57,7 @@ public class GuiOffsetProperty implements ModuleProperty {
         return true;
     }
 
-    private class GuiOffsetJson {
+    private static class GuiOffsetJson {
         public float x = 0;
         public float y = 0;
         public float sizeX = 0;

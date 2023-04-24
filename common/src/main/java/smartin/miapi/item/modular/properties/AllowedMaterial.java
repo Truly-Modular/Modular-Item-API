@@ -17,7 +17,7 @@ import java.util.List;
 
 public class AllowedMaterial extends CraftingProperty {
 
-    public static final String key = "allowedMaterial";
+    public static final String KEY = "allowedMaterial";
 
     public List<Vec2f> getSlotPositions() {
         List<Vec2f> test = new ArrayList<>();
@@ -31,25 +31,22 @@ public class AllowedMaterial extends CraftingProperty {
     }
 
     public InteractAbleWidget createGui(int x, int y, int width, int height) {
-        return new test(x, y, width, height);
+        return new MaterialCraftingWidget(x, y, width, height);
     }
 
     @Override
     public boolean canPerform(ItemStack old, ItemStack crafting, PlayerEntity player, ItemModule.ModuleInstance newModule, ItemModule module, List<ItemStack> inventory, PacketByteBuf buf) {
         //AllowedMaterialJson json = Miapi.gson.fromJson()
-        JsonElement element = module.getProperties().get(key);
+        JsonElement element = module.getProperties().get(KEY);
         ItemStack input = inventory.get(0);
         if (element != null) {
             AllowedMaterialJson json = Miapi.gson.fromJson(element, AllowedMaterialJson.class);
             MaterialProperty.Material material = MaterialProperty.getMaterial(input);
             if (material != null) {
-                boolean isAllowed = (json.allowedMaterials.stream().filter(allowedMaterial ->
-                        material.getGroups().contains(allowedMaterial)
-                ).count() > 0);
-                if (isAllowed || true) {
-                    if (input.getCount() * material.getValueOfItem(input) >= json.cost) {
-                        return true;
-                    }
+                boolean isAllowed = (json.allowedMaterials.stream().anyMatch(allowedMaterial ->
+                        material.getGroups().contains(allowedMaterial)));
+                if (isAllowed) {
+                    return input.getCount() * material.getValueOfItem(input) >= json.cost;
                 }
             }
         }
@@ -58,7 +55,7 @@ public class AllowedMaterial extends CraftingProperty {
 
     @Override
     public ItemStack preview(ItemStack old, ItemStack crafting, PlayerEntity player, ItemModule.ModuleInstance newModule, ItemModule module, List<ItemStack> inventory, PacketByteBuf buf) {
-        JsonElement element = module.getProperties().get(key);
+        JsonElement element = module.getProperties().get(KEY);
         ItemStack input = inventory.get(0);
         if (element != null) {
             MaterialProperty.Material material = MaterialProperty.getMaterial(input);
@@ -73,10 +70,11 @@ public class AllowedMaterial extends CraftingProperty {
     public List<ItemStack> performCraftAction(ItemStack old, ItemStack crafting, PlayerEntity player, ItemModule.ModuleInstance newModule, ItemModule module, List<ItemStack> inventory, PacketByteBuf buf) {
         //AllowedMaterialJson json = Miapi.gson.fromJson()
         List<ItemStack> results = new ArrayList<>();
-        JsonElement element = module.getProperties().get(key);
+        JsonElement element = module.getProperties().get(KEY);
         ItemStack input = inventory.get(0);
         AllowedMaterialJson json = Miapi.gson.fromJson(element, AllowedMaterialJson.class);
         MaterialProperty.Material material = MaterialProperty.getMaterial(input);
+        assert material != null;
         int newCount = (int) (input.getCount() - Math.ceil(json.cost / material.getValueOfItem(input)));
         input.setCount(newCount);
         MaterialProperty.setMaterial(newModule, material.key);
@@ -90,7 +88,7 @@ public class AllowedMaterial extends CraftingProperty {
         return true;
     }
 
-    public class test extends InteractAbleWidget {
+    static class MaterialCraftingWidget extends InteractAbleWidget {
         private final int startX;
         private final int startY;
         /**
@@ -105,7 +103,7 @@ public class AllowedMaterial extends CraftingProperty {
          * @param width  the width
          * @param height the height
          */
-        public test(int x, int y, int width, int height) {
+        public MaterialCraftingWidget(int x, int y, int width, int height) {
             super(x, y, width, height, Text.literal("Test"));
             startX = x+5;
             startY = y+5;
@@ -118,7 +116,7 @@ public class AllowedMaterial extends CraftingProperty {
         }
     }
 
-    private class AllowedMaterialJson {
+    static class AllowedMaterialJson {
         public List<String> allowedMaterials;
         public float cost;
     }
