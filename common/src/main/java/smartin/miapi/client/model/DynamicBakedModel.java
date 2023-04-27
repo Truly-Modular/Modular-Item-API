@@ -98,9 +98,9 @@ public class DynamicBakedModel implements BakedModel {
             overrideModel.quads.clear();
             overrideModel.quads.addAll(quads);
             childModels.forEach(model -> {
-                if (model.getOverrides() != null) {
+                if (model != null && model.getOverrides() != null) {
                     BakedModel override = model.getOverrides().apply(model, stack, world, entity, seed);
-                    if(!override.equals(model)){
+                    if (!override.equals(model)) {
                         Miapi.LOGGER.error("override is different");
                     }
                     overrideModel.addModel(override);

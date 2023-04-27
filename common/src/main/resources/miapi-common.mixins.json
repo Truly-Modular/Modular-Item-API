@@ -8,7 +8,9 @@
   "client": [
     "ItemRendererAccessor",
     "ItemStackMixin",
-    "ModelLoaderAccessor"
+    "ModelLoaderAccessor",
+    "LivingEntityMixin",
+    "ArmorFeatureRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

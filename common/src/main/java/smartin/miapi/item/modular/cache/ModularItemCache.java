@@ -64,7 +64,7 @@ public class ModularItemCache {
                     }
                 }
                 catch (Exception ignored){
-                    Miapi.LOGGER.warn("Cache has an issue");
+                    //Miapi.LOGGER.warn("Cache has an issue");
                 }
             }
         }

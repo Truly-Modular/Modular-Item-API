@@ -1,6 +1,5 @@
 package smartin.miapi.client.gui.crafting.slotdisplay;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.DiffuseLighting;
@@ -20,8 +19,6 @@ import net.minecraft.util.math.Vector4f;
 import org.lwjgl.opengl.GL11;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.InteractAbleWidget;
-import smartin.miapi.item.modular.ItemModule;
-import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.properties.SlotProperty;
 
 import java.util.ArrayList;
@@ -29,6 +26,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
+/**
+ * Provides a 3d Interactive view of the Item, implements Button based on provided baseSlot
+ * is this class a mess? yes. yes it is.
+ * does it work? more or less
+ */
 public class SlotDisplay extends InteractAbleWidget {
     private final Map<SlotProperty.ModuleSlot, ModuleButton> buttonMap = new HashMap<>();
     private ItemStack stack;
@@ -56,9 +58,9 @@ public class SlotDisplay extends InteractAbleWidget {
     @Override
     public void mouseMoved(double mouseX, double mouseY) {
         if (mouseDown0) {
-            handleLeftClickDrag(lastMouseX - mouseX, lastMouseY - mouseY);
+            handleLeftClickDrag(mouseX, mouseY, lastMouseX - mouseX, lastMouseY - mouseY);
         } else if (mouseDown1) {
-            handleRightClickDrag(lastMouseX - mouseX, lastMouseY - mouseY);
+            handleRightClickDrag(mouseX, mouseY, lastMouseX - mouseX, lastMouseY - mouseY);
         }
         lastMouseX = mouseX;
         lastMouseY = mouseY;
@@ -96,17 +98,20 @@ public class SlotDisplay extends InteractAbleWidget {
         return super.mouseReleased(mouseX, mouseY, button);
     }
 
-    private void handleLeftClickDrag(double deltaX, double deltaY) {
+    private void handleLeftClickDrag(double mouseX, double mouseY, double deltaX, double deltaY) {
         MatrixStack newStack = new MatrixStack();
         newStack.translate((float) -deltaX / 100, -(float) deltaY / 100, 0);
         newStack.multiplyPositionMatrix(slotProjection.peek().getPositionMatrix());
         slotProjection = newStack;
     }
 
-    private void handleRightClickDrag(double deltaX, double deltaY) {
+    private void handleRightClickDrag(double mouseX, double mouseY, double deltaX, double deltaY) {
         float angleX = (float) -(deltaY * 0.02f);
         float angleY = (float) -(deltaX * 0.02f);
-        slotProjection.multiply(Quaternion.fromEulerXyz(new Vec3f(angleX, angleY, 0)));
+        MatrixStack newStack = new MatrixStack();
+        newStack.multiply(Quaternion.fromEulerXyz(new Vec3f(-angleX, angleY, 0)));
+        newStack.multiplyPositionMatrix(slotProjection.peek().getPositionMatrix());
+        slotProjection = newStack;
     }
 
     @Override
@@ -125,7 +130,7 @@ public class SlotDisplay extends InteractAbleWidget {
             children().remove(moduleButton);
         });
         buttonMap.clear();
-        if(baseSlot!=null && baseSlot.inSlot!=null){
+        if (baseSlot != null && baseSlot.inSlot != null) {
             baseSlot.inSlot.allSubModules().forEach(moduleInstances -> {
                 SlotProperty.getSlots(moduleInstances).forEach((number, slot) -> {
                     buttonMap.computeIfAbsent(slot, newSlot -> {
@@ -171,18 +176,16 @@ public class SlotDisplay extends InteractAbleWidget {
     }
 
     public void renderSlot(ItemStack stack, MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        //GL11.GL_SCISSOR_TEST
         ItemRenderer renderer = MinecraftClient.getInstance().getItemRenderer();
         MinecraftClient.getInstance().getTextureManager().getTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE).setFilter(false, false);
         RenderSystem.setShaderTexture(0, SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE);
         RenderSystem.enableBlend();
-        //RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         MatrixStack matrixStack = RenderSystem.getModelViewStack();
         matrixStack.push();
         Vec3f pos = position();
         matrixStack.translate(pos.getX(), pos.getY(), pos.getZ());
-        matrixStack.scale(getSize(), getSize(), -16.0F);
+        matrixStack.scale(getSize(), getSize(), 1.0F);
         RenderSystem.applyModelViewMatrix();
         VertexConsumerProvider.Immediate immediate = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
         boolean bl = true;
@@ -191,8 +194,8 @@ public class SlotDisplay extends InteractAbleWidget {
         }
         RenderSystem.enableDepthTest();
         renderer.renderItem(stack, ModelTransformation.Mode.GUI, 15728880, OverlayTexture.DEFAULT_UV, slotProjection, immediate, 0);
-        renderButtons(stack, matrixStack, slotProjection, 1);
         immediate.draw();
+        renderButtons(matrixStack, slotProjection);
         RenderSystem.enableDepthTest();
         if (bl) {
             DiffuseLighting.enableGuiDepthLighting();
@@ -201,7 +204,7 @@ public class SlotDisplay extends InteractAbleWidget {
         RenderSystem.applyModelViewMatrix();
     }
 
-    public void renderButtons(ItemStack stack, MatrixStack matrixStack, MatrixStack otherProjection, float delta) {
+    public void renderButtons(MatrixStack matrixStack, MatrixStack otherProjection) {
         buttonMap.forEach((currentslot, button) -> {
             Vec3f position = SlotProperty.getTransform(currentslot).translation;
             position.add(-4.5f, -4.5f, 1);

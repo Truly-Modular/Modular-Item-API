@@ -1,0 +1,173 @@
+{
+    "name": "helmet_base",
+    "texture": {
+        "path": "miapi:models/item/armor/helmet/base/[material.texture].json",
+        "transform": {
+            "rotation": {"x": 0.0, "y": 0.0, "z": 0.0},
+            "translation": {"x": 0.0, "y": 0.0, "z": 0.0},
+            "scale": {"x": 1.0, "y": 1.0, "z": 1.0},
+            "origin": "hat"
+        }
+    },
+    "allowedInSlots": [
+        "melee"
+    ],
+    "slots": {
+    },
+    "modelTransform": {
+        "replace": {
+            "thirdperson_righthand": {
+                "rotation": {
+                    "x": 0,
+                    "y": -90,
+                    "z": 55
+                },
+                "translation": {
+                    "x": 0,
+                    "y": 4.0,
+                    "z": 0.5
+                },
+                "scale": {
+                    "x": 0.85,
+                    "y": 0.85,
+                    "z": 0.85
+                }
+            },
+            "thirdperson_lefthand": {
+                "rotation": {
+                    "x": 0,
+                    "y": 90,
+                    "z": -55
+                },
+                "translation": {
+                    "x": 0,
+                    "y": 4.0,
+                    "z": 0.5
+                },
+                "scale": {
+                    "x": 0.85,
+                    "y": 0.85,
+                    "z": 0.85
+                }
+            },
+            "firstperson_righthand": {
+                "rotation": {
+                    "x": 0,
+                    "y": -90,
+                    "z": 25
+                },
+                "translation": {
+                    "x": 1.13,
+                    "y": 3.2,
+                    "z": 1.13
+                },
+                "scale": {
+                    "x": 0.68,
+                    "y": 0.68,
+                    "z": 0.68
+                }
+            },
+            "firstperson_lefthand": {
+                "rotation": {
+                    "x": 0,
+                    "y": 90,
+                    "z": -25
+                },
+                "translation": {
+                    "x": 1.13,
+                    "y": 3.2,
+                    "z": 1.13
+                },
+                "scale": {
+                    "x": 0.68,
+                    "y": 0.68,
+                    "z": 0.68
+                }
+            },
+            "ground": {
+                "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0
+                },
+                "translation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0
+                },
+                "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                }
+            },
+            "gui": {
+                "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0
+                },
+                "translation": {
+                    "x": 7,
+                    "y": 7,
+                    "z": 0
+                },
+                "scale": {
+                    "x": 1.5,
+                    "y": 1.5,
+                    "z": 1.5
+                }
+            },
+            "head": {
+                "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0
+                },
+                "translation": {
+                    "x": -0.1,
+                    "y": 0,
+                    "z": 0
+                },
+                "scale": {
+                    "x": 0.8,
+                    "y": 1.3,
+                    "z": 1.3
+                }
+            },
+            "fixed": {
+                "rotation": {
+                    "x": 0,
+                    "y": 180,
+                    "z": 0
+                },
+                "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                }
+            }
+        }
+    },
+    "allowedMaterial": {
+        "allowedMaterials": [
+            "leather",
+            "metal",
+            "crystal"
+        ],
+        "cost": 5
+    },
+    "displayName": "[material.key] Helmet",
+    "itemId": "miapi:modular_helmet",
+    "equipmentSlot": "chest",
+    "modelMerge": [
+        {
+            "from": "body",
+            "to": "item"
+        },
+        {
+            "from": "head",
+            "to": "item"
+        }
+    ]
+}

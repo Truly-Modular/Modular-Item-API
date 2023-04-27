@@ -27,6 +27,7 @@ import smartin.miapi.client.model.ModelLoadAccessor;
 import smartin.miapi.datapack.SpriteLoader;
 import smartin.miapi.item.modular.ItemModule;
 import smartin.miapi.item.modular.Transform;
+import smartin.miapi.item.modular.TransformStack;
 import smartin.miapi.item.modular.cache.ModularItemCache;
 import smartin.miapi.item.modular.properties.MaterialProperty;
 import smartin.miapi.item.modular.properties.ModuleProperty;
@@ -43,7 +44,8 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 
 public class ModelProperty implements ModuleProperty {
-    private static final String CACHE_KEY = Miapi.MOD_ID + ":model";
+    private static final String CACHE_KEY_MAP = Miapi.MOD_ID + ":modelMap";
+    private static final String CACHE_KEY_ITEM = Miapi.MOD_ID + ":itemModelodel";
     private static final Map<String, ModelJson> modelMap = new HashMap<>();
     private static final Map<String, JsonUnbakedModel> loadedMap = new HashMap<>();
     public static final String KEY = "texture";
@@ -55,12 +57,16 @@ public class ModelProperty implements ModuleProperty {
     public ModelProperty() {
         mirroredGetter = (identifier) -> textureGetter.apply(identifier);
         generator = new ItemModelGenerator();
-        ModularItemCache.setSupplier(CACHE_KEY, ModelProperty::generateModel);
+        ModularItemCache.setSupplier(CACHE_KEY_ITEM, (stack) -> getModelMap(stack).get("item"));
+        ModularItemCache.setSupplier(CACHE_KEY_MAP, ModelProperty::generateModels);
     }
 
+    public static Map<String, DynamicBakedModel> getModelMap(ItemStack stack) {
+        return (Map<String, DynamicBakedModel>) ModularItemCache.get(stack, CACHE_KEY_MAP);
+    }
 
-    private static BakedModel generateModel(ItemStack stack) {
-        DynamicBakedModel dynamicBakedModel = new DynamicBakedModel(new ArrayList<>());
+    private static Map<String, DynamicBakedModel> generateModels(ItemStack stack) {
+        Map<String, DynamicBakedModel> bakedModelMap = new HashMap<>();
         ItemModule.ModuleInstance root = ItemModule.getModules(stack);
         AtomicReference<Float> scaleAdder = new AtomicReference<>(1.0f);
         for (ItemModule.ModuleInstance moduleI : root.allSubModules()) {
@@ -70,8 +76,7 @@ public class ModelProperty implements ModuleProperty {
                 List<String> list = new ArrayList<>();
                 if (material != null) {
                     list = material.getTextureKeys();
-                }
-                else{
+                } else {
                     list.add("default");
                 }
                 JsonUnbakedModel unbakedModel = null;
@@ -85,10 +90,20 @@ public class ModelProperty implements ModuleProperty {
                 assert unbakedModel != null;
                 scaleAdder.updateAndGet(v -> (v + 0.001f));
                 Transform transform = json.transform.copy();
+                TransformStack stack1 = SlotProperty.getLocalTransformStack(moduleI);
+                stack1.add(transform);
+                Miapi.LOGGER.warn(stack1.primary);
+                String modelId = stack1.primary;
+                if (modelId == null) {
+                    modelId = "item";
+                }
                 transform = Transform.merge(SlotProperty.getTransform(moduleI), transform);
                 transform.scale.multiplyComponentwise(scaleAdder.get(), scaleAdder.get(), scaleAdder.get());
                 ModelBakeSettings settings = ModelRotation.X0_Y0;
                 BakedModel model = bakeModel(unbakedModel, mirroredGetter, transform, ColorUtil.getModuleColor(moduleI), settings);
+                DynamicBakedModel dynamicBakedModel = bakedModelMap.computeIfAbsent(modelId, (key) ->
+                        new DynamicBakedModel(new ArrayList<>())
+                );
                 if (model != null) {
                     if (model.getOverrides() == null) {
                         dynamicBakedModel.quads.addAll(model.getQuads(null, null, Random.create()));
@@ -102,9 +117,9 @@ public class ModelProperty implements ModuleProperty {
             }
         }
         for (ModelTransformer transformer : modelTransformers) {
-            dynamicBakedModel = transformer.transform(dynamicBakedModel, stack);
+            bakedModelMap = transformer.transform(bakedModelMap,stack);
         }
-        return dynamicBakedModel;
+        return bakedModelMap;
     }
 
     public static BakedModel bakeModel(JsonUnbakedModel unbakedModel, Function<SpriteIdentifier, Sprite> textureGetter, Transform transform, int color, ModelBakeSettings settings) {
@@ -143,8 +158,8 @@ public class ModelProperty implements ModuleProperty {
         return new ModelElement(transform.transformVector(element.from), transform.transformVector(element.to), element.faces, newRotation, element.shade);
     }
 
-    public static BakedModel getModel(ItemStack stack) {
-        return (BakedModel) ModularItemCache.get(stack, CACHE_KEY);
+    public static BakedModel getItemModel(ItemStack stack) {
+        return (BakedModel) ModularItemCache.get(stack, CACHE_KEY_ITEM);
     }
 
     public static JsonUnbakedModel loadModelFromFilePath(String filePath2) {
@@ -204,8 +219,7 @@ public class ModelProperty implements ModuleProperty {
                 try {
                     models.put(path, loadModelFromFilePath(filePath.replace(materialKey, path)));
                     Miapi.LOGGER.warn("found " + path);
-                } catch (RuntimeException exception) {
-                    exception.printStackTrace();
+                } catch (RuntimeException ignored) {
                 }
             });
         } else {
@@ -236,7 +250,7 @@ public class ModelProperty implements ModuleProperty {
     }
 
     public interface ModelTransformer {
-        DynamicBakedModel transform(DynamicBakedModel dynamicBakedModel, ItemStack stack);
+        Map<String,DynamicBakedModel> transform(Map<String,DynamicBakedModel> dynamicBakedModelMap, ItemStack stack);
     }
 
     static class ModelJson {

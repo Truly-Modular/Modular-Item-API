@@ -22,50 +22,53 @@ public class ModelTransformationProperty implements ModuleProperty {
         property = this;
         ModelProperty.modelTransformers.add(new ModelProperty.ModelTransformer() {
             @Override
-            public DynamicBakedModel transform(DynamicBakedModel dynamicBakedModel, ItemStack stack) {
-                ModelTransformation transformation = ModelTransformation.NONE;
-                for (ItemModule.ModuleInstance instance : ItemModule.createFlatList(ItemModule.getModules(stack))) {
-                    JsonElement element = instance.getProperties().get(property);
-                    if (element != null) {
-                        Map<ModelTransformation.Mode, Transformation> map = new HashMap<>();
-                        if (element.getAsJsonObject().has("replace")) {
-                            JsonObject replace = element.getAsJsonObject().getAsJsonObject("replace");
-                            for (ModelTransformation.Mode mode : ModelTransformation.Mode.values()) {
-                                map.put(mode, transformation.getTransformation(mode));
-                                for (String modeString : getStringOfMode(mode)) {
-                                    if (replace.has(modeString)) {
-                                        Transform transform = Transform.toModelTransformation(Miapi.gson.fromJson(replace.getAsJsonObject(modeString), Transform.class));
-                                        map.put(mode, transform);
+            public Map<String,DynamicBakedModel> transform(Map<String,DynamicBakedModel> dynamicBakedModelmap, ItemStack stack) {
+                dynamicBakedModelmap.forEach((id,dynamicBakedModel)->{
+                    ModelTransformation transformation = ModelTransformation.NONE;
+                    for (ItemModule.ModuleInstance instance : ItemModule.createFlatList(ItemModule.getModules(stack))) {
+                        JsonElement element = instance.getProperties().get(property);
+                        if (element != null) {
+                            Map<ModelTransformation.Mode, Transformation> map = new HashMap<>();
+                            if (element.getAsJsonObject().has("replace")) {
+                                JsonObject replace = element.getAsJsonObject().getAsJsonObject("replace");
+                                for (ModelTransformation.Mode mode : ModelTransformation.Mode.values()) {
+                                    map.put(mode, transformation.getTransformation(mode));
+                                    for (String modeString : getStringOfMode(mode)) {
+                                        if (replace.has(modeString)) {
+                                            Transform transform = Transform.toModelTransformation(Miapi.gson.fromJson(replace.getAsJsonObject(modeString), Transform.class));
+                                            map.put(mode, transform);
+                                        }
                                     }
                                 }
                             }
-                        }
-                        if (element.getAsJsonObject().has("merge")) {
-                            JsonObject replace = element.getAsJsonObject().getAsJsonObject("merge");
-                            for (ModelTransformation.Mode mode : ModelTransformation.Mode.values()) {
-                                map.put(mode, transformation.getTransformation(mode));
-                                for (String modeString : getStringOfMode(mode)) {
-                                    if (replace.has(modeString)) {
-                                        Transform merged = Transform.merge(transformation.getTransformation(mode), Miapi.gson.fromJson(replace.getAsJsonObject(modeString), Transform.class));
-                                        map.put(mode, merged);
+                            if (element.getAsJsonObject().has("merge")) {
+                                JsonObject replace = element.getAsJsonObject().getAsJsonObject("merge");
+                                for (ModelTransformation.Mode mode : ModelTransformation.Mode.values()) {
+                                    map.put(mode, transformation.getTransformation(mode));
+                                    for (String modeString : getStringOfMode(mode)) {
+                                        if (replace.has(modeString)) {
+                                            Transform merged = Transform.merge(transformation.getTransformation(mode), Miapi.gson.fromJson(replace.getAsJsonObject(modeString), Transform.class));
+                                            map.put(mode, merged);
+                                        }
                                     }
                                 }
                             }
+                            transformation = new ModelTransformation(
+                                    map.get(ModelTransformation.Mode.THIRD_PERSON_LEFT_HAND),
+                                    map.get(ModelTransformation.Mode.THIRD_PERSON_RIGHT_HAND),
+                                    map.get(ModelTransformation.Mode.FIRST_PERSON_LEFT_HAND),
+                                    map.get(ModelTransformation.Mode.FIRST_PERSON_RIGHT_HAND),
+                                    map.get(ModelTransformation.Mode.HEAD),
+                                    map.get(ModelTransformation.Mode.GUI),
+                                    map.get(ModelTransformation.Mode.GROUND),
+                                    map.get(ModelTransformation.Mode.FIXED)
+                            );
                         }
-                        transformation = new ModelTransformation(
-                                map.get(ModelTransformation.Mode.THIRD_PERSON_LEFT_HAND),
-                                map.get(ModelTransformation.Mode.THIRD_PERSON_RIGHT_HAND),
-                                map.get(ModelTransformation.Mode.FIRST_PERSON_LEFT_HAND),
-                                map.get(ModelTransformation.Mode.FIRST_PERSON_RIGHT_HAND),
-                                map.get(ModelTransformation.Mode.HEAD),
-                                map.get(ModelTransformation.Mode.GUI),
-                                map.get(ModelTransformation.Mode.GROUND),
-                                map.get(ModelTransformation.Mode.FIXED)
-                        );
                     }
-                }
-                dynamicBakedModel.modelTransformation = transformation;
-                return dynamicBakedModel;
+                    dynamicBakedModel.modelTransformation = transformation;
+                    dynamicBakedModelmap.put(id,dynamicBakedModel);
+                });
+                return dynamicBakedModelmap;
             }
         });
     }

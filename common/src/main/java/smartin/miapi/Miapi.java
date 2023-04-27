@@ -5,6 +5,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.architectury.event.events.client.ClientLifecycleEvent;
 import dev.architectury.event.events.common.LifecycleEvent;
+import dev.architectury.platform.Platform;
 import dev.architectury.registry.ReloadListenerRegistry;
 import dev.architectury.registry.menu.MenuRegistry;
 import net.minecraft.item.Item;
@@ -30,10 +31,12 @@ import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.item.modular.cache.ModularItemCache;
 import smartin.miapi.item.modular.items.ExampleModularBowItem;
 import smartin.miapi.item.modular.items.ExampleModularItem;
+import smartin.miapi.item.modular.items.ModularHelmet;
 import smartin.miapi.item.modular.items.ModularWeapon;
 import smartin.miapi.item.modular.properties.*;
 import smartin.miapi.item.modular.properties.AllowedSlots;
 import smartin.miapi.item.modular.properties.render.GuiOffsetProperty;
+import smartin.miapi.item.modular.properties.render.ModelMergeProperty;
 import smartin.miapi.item.modular.properties.render.ModelProperty;
 import smartin.miapi.item.modular.properties.render.ModelTransformationProperty;
 import smartin.miapi.registries.MiapiRegistry;
@@ -141,6 +144,8 @@ public class Miapi {
 
         Miapi.itemRegistry.register(MOD_ID+":modular_bow",new ExampleModularBowItem());
 
+        Miapi.itemRegistry.register(MOD_ID+":modular_helmet",new ModularHelmet());
+
 
         Miapi.modulePropertyRegistry.register("moduleproperty1", (key,data) -> true);
         Miapi.modulePropertyRegistry.register("moduleproperty3", (key,data) -> true);
@@ -156,6 +161,8 @@ public class Miapi {
         Miapi.modulePropertyRegistry.register(DisplayNameProperty.KEY,new DisplayNameProperty());
         Miapi.modulePropertyRegistry.register(ItemIdProperty.KEY,new ItemIdProperty());
         Miapi.modulePropertyRegistry.register(GuiOffsetProperty.KEY,new GuiOffsetProperty());
+        Miapi.modulePropertyRegistry.register(EquipmentSlotProperty.KEY,new EquipmentSlotProperty());
+        Miapi.modulePropertyRegistry.register(ModelMergeProperty.KEY,new ModelMergeProperty());
     }
 
     private static <T extends ScreenHandler> ScreenHandlerType<T> register(Identifier id, ScreenHandlerType.Factory<T> factory) {

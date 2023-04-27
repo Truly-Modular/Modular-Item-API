@@ -12,6 +12,7 @@ import net.minecraft.util.math.Vec3f;
  * It extends the Transformation class with additional utility methods.
  */
 public class Transform extends Transformation {
+    public String origin;
     /**
      * The identity transform, representing no transformation at all.
      */
@@ -26,6 +27,16 @@ public class Transform extends Transformation {
      */
     public Transform(Vec3f rotation, Vec3f translation, Vec3f scale) {
         super(rotation, translation, scale);
+    }
+
+    /**
+     * Merges two Transformations into a new Transform. This Transform is applied first, followed by the child.
+     *
+     * @param child  the child transformation, as a Transformation
+     * @return the merged transformation, as a new Transform
+     */
+    public Transform merge(Transform child){
+        return Transform.merge(this,child);
     }
 
     /**
@@ -97,7 +108,9 @@ public class Transform extends Transformation {
      * @return the new Transform copy
      */
     public Transform copy() {
-        return new Transform(this.rotation.copy(), this.translation.copy(), this.scale.copy());
+        Transform copy = new Transform(this.rotation.copy(), this.translation.copy(), this.scale.copy());
+        copy.origin = this.origin;
+        return copy;
     }
 
     /**
