@@ -25,6 +25,8 @@ import java.util.concurrent.atomic.AtomicReference;
  * This class represents an action related to crafting an item with modules.
  * It contains the necessary information to perform the crafting action and to
  * update the relevant inventories or item stacks as a result of the action.
+ * It also is capable of writing and reading from and to a buffer to sync itself
+ * from server to client
  */
 public class CraftAction {
     private final ItemModule toAdd;
@@ -34,6 +36,7 @@ public class CraftAction {
     private Inventory linkedInventory;
     private int inventoryOffset;
     public PacketByteBuf[] packetByteBuffs;
+    public static final List<CraftingEvent> events = new ArrayList<>();
 
     /**
      * Constructs a new instance of CraftAction, given the old item stack, the slot to modify,
@@ -178,6 +181,12 @@ public class CraftAction {
                 linkedInventory.setStack(i, itemStacks.get(i - start));
             }
         });
+        ItemModule.ModuleInstance parsingInstance = ItemModule.getModules(craftingStack[0]);
+        for (int i = slotId.size() - 1; i >= 0; i--) {
+            parsingInstance = parsingInstance.subModules.get(slotId.get(i));
+        }
+        for(CraftingEvent eventHandler : events)
+            craftingStack[0] = eventHandler.onCraft(old,craftingStack[0],parsingInstance);
         linkedInventory.markDirty();
         return craftingStack[0];
     }
@@ -256,6 +265,14 @@ public class CraftAction {
         forEachCraftingProperty(craftingStack.get(), (guiCraftingProperty, module, inventory, start, end, buffer) -> {
             craftingStack.set(guiCraftingProperty.preview(old, craftingStack.get(), player, module, toAdd, inventory, buffer));
         });
+        ItemModule.ModuleInstance parsingInstance = ItemModule.getModules(craftingStack.get());
+        for (int i = slotId.size() - 1; i >= 0; i--) {
+            parsingInstance = parsingInstance.subModules.get(slotId.get(i));
+        }
+        for(CraftingEvent eventHandler : events){
+            craftingStack.set(eventHandler.onPreview(old,craftingStack.get(),parsingInstance));
+        }
+        linkedInventory.markDirty();
         return craftingStack.get();
     }
 
@@ -340,5 +357,10 @@ public class CraftAction {
          * @param buf a PacketByteBuf object used for sending data between the client and server
          */
         void accept(CraftingProperty craftingProperty, ItemModule.ModuleInstance moduleInstance, List<ItemStack> inventory, int start, int end, PacketByteBuf buf);
+    }
+
+    public interface CraftingEvent{
+        ItemStack onCraft(ItemStack old, ItemStack crafted,@Nullable ItemModule.ModuleInstance crafting);
+        ItemStack onPreview(ItemStack old, ItemStack crafted,@Nullable ItemModule.ModuleInstance crafting);
     }
 }

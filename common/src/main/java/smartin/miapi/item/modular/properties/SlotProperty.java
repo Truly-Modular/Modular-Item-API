@@ -48,6 +48,12 @@ public class SlotProperty implements ModuleProperty {
         return getTransformStack(moduleSlot).get(id);
     }
 
+    public static TransformStack getTransformStack(ItemModule.ModuleInstance instance){
+        ModuleSlot slot = getSlotIn(instance);
+        if (slot == null) return new TransformStack();
+        return getTransformStack(slot);
+    }
+
     public static TransformStack getTransformStack(ModuleSlot moduleSlot){
         if(moduleSlot==null){
             return new TransformStack();

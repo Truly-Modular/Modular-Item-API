@@ -22,7 +22,7 @@ public class ModelTransformationProperty implements ModuleProperty {
         property = this;
         ModelProperty.modelTransformers.add(new ModelProperty.ModelTransformer() {
             @Override
-            public Map<String,DynamicBakedModel> transform(Map<String,DynamicBakedModel> dynamicBakedModelmap, ItemStack stack) {
+            public Map<String,DynamicBakedModel> bakedTransform(Map<String,DynamicBakedModel> dynamicBakedModelmap, ItemStack stack) {
                 dynamicBakedModelmap.forEach((id,dynamicBakedModel)->{
                     ModelTransformation transformation = ModelTransformation.NONE;
                     for (ItemModule.ModuleInstance instance : ItemModule.createFlatList(ItemModule.getModules(stack))) {
@@ -47,7 +47,7 @@ public class ModelTransformationProperty implements ModuleProperty {
                                     map.put(mode, transformation.getTransformation(mode));
                                     for (String modeString : getStringOfMode(mode)) {
                                         if (replace.has(modeString)) {
-                                            Transform merged = Transform.merge(transformation.getTransformation(mode), Miapi.gson.fromJson(replace.getAsJsonObject(modeString), Transform.class));
+                                            Transform merged = Transform.merge(new Transform(transformation.getTransformation(mode)), Miapi.gson.fromJson(replace.getAsJsonObject(modeString), Transform.class));
                                             map.put(mode, merged);
                                         }
                                     }

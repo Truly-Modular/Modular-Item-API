@@ -1,18 +1,76 @@
 {
-    "name": "helmet_base",
+    "name": "belt_base",
     "texture": {
-        "path": "miapi:models/item/armor/helmet/base/[material.texture].json",
+        "path": "miapi:models/item/armor/belt/base/[material.texture].json",
         "transform": {
-            "rotation": {"x": 0.0, "y": 0.0, "z": 0.0},
-            "translation": {"x": 0.0, "y": 0.0, "z": 0.0},
-            "scale": {"x": 1.0, "y": 1.0, "z": 1.0},
-            "origin": "head"
+            "rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 180.0
+            },
+            "translation": {
+                "x": -10.0,
+                "y": -7.5,
+                "z": 12.0
+            },
+            "scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+            },
+            "origin": "body"
         }
     },
     "allowedInSlots": [
         "melee"
     ],
     "slots": {
+        "0": {
+            "allowed": [
+                "leg_left"
+            ],
+            "transform": {
+                "rotation": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 180.0
+                },
+                "translation": {
+                    "x": 6.0,
+                    "y": 0.0,
+                    "z": 6.0
+                },
+                "scale": {
+                    "x": 1.25,
+                    "y": 1.0,
+                    "z": 1.25
+                },
+                "origin": "left_leg"
+            }
+        },
+        "1": {
+            "allowed": [
+                "leg_right"
+            ],
+            "transform": {
+                "rotation": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 180.0
+                },
+                "translation": {
+                    "x": 7.0,
+                    "y": 0.0,
+                    "z": 7.0
+                },
+                "scale": {
+                    "x": 1.25,
+                    "y": 1.0,
+                    "z": 1.25
+                },
+                "origin": "right_leg"
+            }
+        }
     },
     "modelTransform": {
         "replace": {
@@ -108,9 +166,9 @@
                     "z": 0
                 },
                 "translation": {
-                    "x": 0,
-                    "y": 0,
-                    "z": 0
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
                 },
                 "scale": {
                     "x": 1.3,
@@ -126,13 +184,13 @@
                 },
                 "translation": {
                     "x": 0,
-                    "y": -0.5,
-                    "z": 0.7
+                    "y": 0.0,
+                    "z": 0.0
                 },
                 "scale": {
-                    "x": 1.25,
-                    "y": 1.25,
-                    "z": 0.88833
+                    "x": 1.0,
+                    "y": 1.0,
+                    "z": 1.0
                 }
             },
             "fixed": {
@@ -155,19 +213,73 @@
             "metal",
             "crystal"
         ],
-        "cost": 5
+        "cost": 3
     },
-    "displayName": "[material.key] Helmet",
-    "itemId": "miapi:modular_helmet",
-    "equipmentSlot": "helmet",
+    "displayName": "[material.key] ChestPlate",
+    "itemId": "miapi:modular_chestplate",
+    "equipmentSlot": "body",
     "modelMerge": [
         {
-            "from": "head",
+            "from": "left_leg",
             "to": "item",
             "transform": {
-                "rotation": {"x": 0.0, "y": 0.0, "z": 0.0},
-                "translation": {"x": 0.0, "y": 1.4, "z": 0.0},
-                "scale": {"x": 1.0, "y": 1.0, "z": 1.0}
+                "rotation": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "translation": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "scale": {
+                    "x": 1.0,
+                    "y": 1.0,
+                    "z": 1.0
+                }
+            }
+        },
+        {
+            "from": "right_leg",
+            "to": "item",
+            "transform": {
+                "rotation": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "translation": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "scale": {
+                    "x": 1.0,
+                    "y": 1.0,
+                    "z": 1.0
+                }
+            }
+        },
+        {
+            "from": "body",
+            "to": "item",
+            "transform": {
+                "rotation": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "translation": {
+                    "x": 10.0,
+                    "y": -3.5,
+                    "z": -10.0
+                },
+                "scale": {
+                    "x": 1.0,
+                    "y": 1.0,
+                    "z": 1.0
+                }
             }
         }
     ]

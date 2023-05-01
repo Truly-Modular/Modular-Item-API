@@ -1,8 +1,9 @@
 package smartin.miapi.item.modular;
 
 import com.google.gson.Gson;
-import net.fabricmc.loader.impl.lib.sat4j.core.Vec;
+import net.minecraft.client.render.model.ModelBakeSettings;
 import net.minecraft.client.render.model.json.Transformation;
+import net.minecraft.util.math.AffineTransformation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3f;
@@ -14,7 +15,7 @@ import net.minecraft.util.math.Vec3f;
 public class Transform extends Transformation {
     public String origin;
     /**
-     * The identity transform, representing no transformation at all.
+     * The identity bakedTransform, representing no transformation at all.
      */
     public static final Transform IDENTITY = new Transform(new Vec3f(), new Vec3f(), new Vec3f(1.0F, 1.0F, 1.0F));
 
@@ -29,14 +30,18 @@ public class Transform extends Transformation {
         super(rotation, translation, scale);
     }
 
+    public Transform(Transformation transformation) {
+        super(transformation.rotation.copy(), transformation.translation.copy(), transformation.scale.copy());
+    }
+
     /**
      * Merges two Transformations into a new Transform. This Transform is applied first, followed by the child.
      *
-     * @param child  the child transformation, as a Transformation
+     * @param child the child transformation, as a Transformation
      * @return the merged transformation, as a new Transform
      */
-    public Transform merge(Transform child){
-        return Transform.merge(this,child);
+    public Transform merge(Transform child) {
+        return Transform.merge(this, child);
     }
 
     /**
@@ -46,30 +51,23 @@ public class Transform extends Transformation {
      * @param child  the child transformation, as a Transformation
      * @return the merged transformation, as a new Transform
      */
-    public static Transform merge(Transformation parent, Transformation child) {
-        Vec3f parentRotation = parent.rotation.copy();
-        Vec3f parentTranslation = parent.translation.copy();
-        Vec3f parentScale = parent.scale.copy();
-
-        Vec3f childRotation = child.rotation.copy();
-        Vec3f childTranslation = child.translation.copy();
-        Vec3f childScale = child.scale.copy();
-
-        // apply parent rotation to child translation
-        childRotation.add(parentRotation);
-
-        // combine translation, rotation, and scale
-        parentTranslation.add(childTranslation);
-        parentRotation.add(childRotation);
-        parentScale.multiplyComponentwise(childScale.getX(), childScale.getY(), childScale.getZ());
-
-        return new Transform(parentRotation, parentTranslation, parentScale);
+    public static Transform merge(Transform parent, Transform child) {
+        AffineTransformation parentTransformation = parent.toAffineTransformation();
+        parentTransformation = parentTransformation.multiply(child.toAffineTransformation());
+        Vec3f translation = parentTransformation.getTranslation();
+        translation.scale(16);
+        Transform transform = new Transform(parentTransformation.getRotation2().toEulerXyzDegrees(), translation, parentTransformation.getScale());
+        transform.origin = parent.origin;
+        if(child.origin!=null){
+            transform.origin= child.origin;
+        }
+        return transform;
     }
 
     /**
      * Applies the transformation to a vector in 3D space.
      *
-     * @param vector the vector to transform, as a Vec3f
+     * @param vector the vector to bakedTransform, as a Vec3f
      * @return the transformed vector, as a new Vec3f
      */
     public Vec3f transformVector(Vec3f vector) {
@@ -144,10 +142,42 @@ public class Transform extends Transformation {
     public static Transform toModelTransformation(Transformation transformation) {
         Transform transform = repair(transformation);
         transform.translation.scale(1.0f / 16.0f);
-        //Vec3f scale = transform.scale;
+        //Vec3f scale = bakedTransform.scale;
         //scale.scale(1.0f/16.0f);
-        //transform = new Transform(transform.rotation,transform.translation,scale);
+        //bakedTransform = new Transform(bakedTransform.rotation,bakedTransform.translation,scale);
         return transform;
+    }
+
+    /**
+     * Creates an AffineTransformation from this Transform.
+     *
+     * @return an AffineTransformation with the rotation, translation, and scale from this Transform.
+     */
+    public AffineTransformation toAffineTransformation() {
+        Quaternion rotation = Quaternion.fromEulerXyzDegrees(this.rotation.copy());
+        Vec3f scaled = translation.copy();
+        scaled.scale(1 / 16f);
+        AffineTransformation affineTransformation = new AffineTransformation(scaled, null, scale.copy(), rotation);
+        return affineTransformation;
+    }
+
+    /**
+     * Creates an ModelBakeSettings from this Transform
+     *
+     * @return a ModelBakeSettings
+     */
+    public ModelBakeSettings toModelBakeSettings() {
+        AffineTransformation affineTransformation = toAffineTransformation();
+        return new ModelBakeSettings() {
+            @Override
+            public AffineTransformation getRotation() {
+                return affineTransformation;
+            }
+            @Override
+            public boolean isUvLocked() {
+                return false;
+            }
+        };
     }
 
     @Override

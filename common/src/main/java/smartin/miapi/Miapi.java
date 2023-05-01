@@ -145,6 +145,7 @@ public class Miapi {
         Miapi.itemRegistry.register(MOD_ID+":modular_bow",new ExampleModularBowItem());
 
         Miapi.itemRegistry.register(MOD_ID+":modular_helmet",new ModularHelmet());
+        Miapi.itemRegistry.register(MOD_ID+":modular_chestplate",new ModularHelmet());
 
 
         Miapi.modulePropertyRegistry.register("moduleproperty1", (key,data) -> true);

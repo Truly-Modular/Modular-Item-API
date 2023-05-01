@@ -21,7 +21,7 @@ public class GuiOffsetProperty implements ModuleProperty {
         ModelProperty.modelTransformers.add(new ModelProperty.ModelTransformer() {
 
             @Override
-            public Map<String,DynamicBakedModel> transform(Map<String,DynamicBakedModel> dynamicBakedModelmap, ItemStack stack) {
+            public Map<String,DynamicBakedModel> bakedTransform(Map<String,DynamicBakedModel> dynamicBakedModelmap, ItemStack stack) {
                 dynamicBakedModelmap.forEach((id,dynamicBakedModel)->{
                     GuiOffsetJson guiOffsetJson = new GuiOffsetJson();
                     for (ItemModule.ModuleInstance instance : ItemModule.createFlatList(ItemModule.getModules(stack))) {

@@ -1,6 +1,7 @@
 package smartin.miapi.item.modular.properties.render;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.model.BakedModel;
@@ -9,7 +10,6 @@ import net.minecraft.client.render.model.ModelLoader;
 import net.minecraft.client.render.model.ModelRotation;
 import net.minecraft.client.render.model.json.ItemModelGenerator;
 import net.minecraft.client.render.model.json.JsonUnbakedModel;
-import net.minecraft.client.render.model.json.ModelElement;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.item.ItemStack;
@@ -46,7 +46,7 @@ import java.util.function.Function;
 public class ModelProperty implements ModuleProperty {
     private static final String CACHE_KEY_MAP = Miapi.MOD_ID + ":modelMap";
     private static final String CACHE_KEY_ITEM = Miapi.MOD_ID + ":itemModelodel";
-    private static final Map<String, ModelJson> modelMap = new HashMap<>();
+    private static final Map<String, List<ModelJson>> modelMap = new HashMap<>();
     private static final Map<String, JsonUnbakedModel> loadedMap = new HashMap<>();
     public static final String KEY = "texture";
     public static final List<ModelTransformer> modelTransformers = new ArrayList<>();
@@ -65,97 +65,87 @@ public class ModelProperty implements ModuleProperty {
         return (Map<String, DynamicBakedModel>) ModularItemCache.get(stack, CACHE_KEY_MAP);
     }
 
-    private static Map<String, DynamicBakedModel> generateModels(ItemStack stack) {
-        Map<String, DynamicBakedModel> bakedModelMap = new HashMap<>();
-        ItemModule.ModuleInstance root = ItemModule.getModules(stack);
+    private static Map<String, DynamicBakedModel> generateModels(ItemStack itemStack) {
+        ItemModule.ModuleInstance root = ItemModule.getModules(itemStack);
         AtomicReference<Float> scaleAdder = new AtomicReference<>(1.0f);
+        List<TransformedUnbakedModel> unbakedModels = new ArrayList<>();
         for (ItemModule.ModuleInstance moduleI : root.allSubModules()) {
-            ModelJson json = modelMap.get(moduleI.module.getName());
-            if (json != null) {
-                MaterialProperty.Material material = MaterialProperty.getMaterial(moduleI);
-                List<String> list = new ArrayList<>();
-                if (material != null) {
-                    list = material.getTextureKeys();
-                } else {
-                    list.add("default");
-                }
-                JsonUnbakedModel unbakedModel = null;
-                for (String str : list) {
-                    assert json.jsonUnbakedModelMap != null;
-                    if (json.jsonUnbakedModelMap.containsKey(str)) {
-                        unbakedModel = json.jsonUnbakedModelMap.get(str);
-                        break;
-                    }
-                }
-                assert unbakedModel != null;
-                scaleAdder.updateAndGet(v -> (v + 0.001f));
-                Transform transform = json.transform.copy();
-                TransformStack stack1 = SlotProperty.getLocalTransformStack(moduleI);
-                stack1.add(transform);
-                Miapi.LOGGER.warn(stack1.primary);
-                String modelId = stack1.primary;
-                if (modelId == null) {
-                    modelId = "item";
-                }
-                transform = Transform.merge(SlotProperty.getTransform(moduleI), transform);
-                transform.scale.multiplyComponentwise(scaleAdder.get(), scaleAdder.get(), scaleAdder.get());
-                ModelBakeSettings settings = ModelRotation.X0_Y0;
-                BakedModel model = bakeModel(unbakedModel, mirroredGetter, transform, ColorUtil.getModuleColor(moduleI), settings);
-                DynamicBakedModel dynamicBakedModel = bakedModelMap.computeIfAbsent(modelId, (key) ->
-                        new DynamicBakedModel(new ArrayList<>())
-                );
-                if (model != null) {
-                    if (model.getOverrides() == null) {
-                        dynamicBakedModel.quads.addAll(model.getQuads(null, null, Random.create()));
-                        for (Direction dir : Direction.values()) {
-                            dynamicBakedModel.quads.addAll(model.getQuads(null, dir, Random.create()));
-                        }
+            List<ModelJson> modelJsonList = modelMap.get(moduleI.module.getName());
+            for (ModelJson json : modelJsonList) {
+                if (json != null) {
+                    MaterialProperty.Material material = MaterialProperty.getMaterial(moduleI);
+                    List<String> list = new ArrayList<>();
+                    if (material != null) {
+                        list = material.getTextureKeys();
                     } else {
-                        dynamicBakedModel.addModel(model);
+                        list.add("default");
                     }
+                    JsonUnbakedModel unbakedModel = null;
+                    for (String str : list) {
+                        assert json.jsonUnbakedModelMap != null;
+                        if (json.jsonUnbakedModelMap.containsKey(str)) {
+                            unbakedModel = json.jsonUnbakedModelMap.get(str);
+                            break;
+                        }
+                    }
+                    assert unbakedModel != null;
+                    scaleAdder.updateAndGet(v -> (v + 0.005f));
+                    TransformStack transformStack = SlotProperty.getTransformStack(moduleI);
+                    transformStack.add(json.transform.copy());
+                    String modelId = transformStack.primary;
+                    Transform transform1 = transformStack.get(transformStack.primary);
+                    if (modelId == null) {
+                        modelId = "item";
+                    }
+                    transformStack.primary = modelId;
+                    transform1.scale.add(new Vec3f(scaleAdder.get()-1,scaleAdder.get()-1,scaleAdder.get()-1));
+                    transform1.translation.add(new Vec3f(-scaleAdder.get()/3+1,-scaleAdder.get()/3+1,-scaleAdder.get()/3+1));
+                    transformStack.set(transformStack.primary, transform1);
+                    unbakedModels.add(new TransformedUnbakedModel(transformStack, unbakedModel, moduleI));
                 }
             }
         }
         for (ModelTransformer transformer : modelTransformers) {
-            bakedModelMap = transformer.transform(bakedModelMap,stack);
+            unbakedModels = transformer.unBakedTransform(unbakedModels, itemStack);
+        }
+        Map<String, DynamicBakedModel> bakedModelMap = new HashMap<>();
+
+        for (TransformedUnbakedModel unbakedModel : unbakedModels) {
+            ModelBakeSettings settings = unbakedModel.transform.get().toModelBakeSettings();
+            BakedModel model = bakeModel(unbakedModel.unbakedModel, mirroredGetter, ColorUtil.getModuleColor(unbakedModel.instance), settings);
+            DynamicBakedModel dynamicBakedModel = bakedModelMap.computeIfAbsent(unbakedModel.transform.primary, (key) ->
+                    new DynamicBakedModel(new ArrayList<>())
+            );
+            if (model != null) {
+                if (model.getOverrides() == null) {
+                    dynamicBakedModel.quads.addAll(model.getQuads(null, null, Random.create()));
+                    for (Direction dir : Direction.values()) {
+                        dynamicBakedModel.quads.addAll(model.getQuads(null, dir, Random.create()));
+                    }
+                } else {
+                    dynamicBakedModel.addModel(model);
+                }
+            }
+        }
+
+        for (ModelTransformer transformer : modelTransformers) {
+            bakedModelMap = transformer.bakedTransform(bakedModelMap, itemStack);
         }
         return bakedModelMap;
     }
 
-    public static BakedModel bakeModel(JsonUnbakedModel unbakedModel, Function<SpriteIdentifier, Sprite> textureGetter, Transform transform, int color, ModelBakeSettings settings) {
+    public static BakedModel bakeModel(JsonUnbakedModel unbakedModel, Function<SpriteIdentifier, Sprite> textureGetter, int color, ModelBakeSettings settings) {
         try {
             ModelLoader modelLoader = ModelLoadAccessor.getLoader();
             AtomicReference<JsonUnbakedModel> actualModel = new AtomicReference<>(unbakedModel);
             unbakedModel.getModelDependencies().stream().filter(identifier -> identifier.toString().equals("minecraft:item/generated") || identifier.toString().contains("handheld")).findFirst().ifPresent(identifier -> {
                 actualModel.set(generator.create(mirroredGetter, unbakedModel));
             });
-            //actualModel.get().getModelDependencies()
-            actualModel.set(transformModel(actualModel.get(), transform));
             BakedModel model = actualModel.get().bake(modelLoader, unbakedModel.getRootModel(), textureGetter, settings, new Identifier(unbakedModel.id), true);
             return ColorUtil.recolorModel(model, color);
         } catch (Exception e) {
             return null;
         }
-    }
-
-    public static JsonUnbakedModel transformModel(JsonUnbakedModel model, Transform transform) {
-        // Create a new model with the same properties as the original
-        // Apply the transformations to each element in the model
-        model.getElements().replaceAll(element -> transformModel(element, transform));
-
-        return model;
-    }
-
-    private static ModelElement transformModel(ModelElement element, Transform transform) {
-        net.minecraft.client.render.model.json.ModelRotation newRotation;
-        if (element.rotation != null) {
-            newRotation = new net.minecraft.client.render.model.json.ModelRotation(element.rotation.origin, element.rotation.axis, element.rotation.angle, true);
-        } else {
-            newRotation = new net.minecraft.client.render.model.json.ModelRotation(new Vec3f(0, 0, 0), Direction.Axis.X, 0, false);
-        }
-
-
-        return new ModelElement(transform.transformVector(element.from), transform.transformVector(element.to), element.faces, newRotation, element.shade);
     }
 
     public static BakedModel getItemModel(ItemStack stack) {
@@ -218,7 +208,6 @@ public class ModelProperty implements ModuleProperty {
             MaterialProperty.getTextureKeys().forEach((path) -> {
                 try {
                     models.put(path, loadModelFromFilePath(filePath.replace(materialKey, path)));
-                    Miapi.LOGGER.warn("found " + path);
                 } catch (RuntimeException ignored) {
                 }
             });
@@ -235,22 +224,45 @@ public class ModelProperty implements ModuleProperty {
         bakeModel(model, (identifier) -> {
             spritesToLoad.add(identifier.getTextureId());
             return mirroredGetter.apply(identifier);
-        }, Transform.IDENTITY, 0, ModelRotation.X0_Y0);
+        }, 0, ModelRotation.X0_Y0);
         SpriteLoader.spritesToAdd.addAll(spritesToLoad);
     }
 
     @Override
     public boolean load(String moduleKey, JsonElement data) throws Exception {
-        Gson gson = new Gson();
-        ModelJson propertyJson = gson.fromJson(data.toString(), ModelJson.class);
-        propertyJson.repair();
-        propertyJson.jsonUnbakedModelMap = loadModelsByPath(propertyJson.path);
-        modelMap.put(moduleKey, propertyJson);
+        Gson gson = Miapi.gson;
+        List<ModelJson> jsonList = new ArrayList<>();
+        if (data.isJsonArray()) {
+            JsonArray dataArray = data.getAsJsonArray();
+            for (JsonElement element : dataArray) {
+                ModelJson propertyJson = gson.fromJson(element.toString(), ModelJson.class);
+                propertyJson.repair();
+                propertyJson.jsonUnbakedModelMap = loadModelsByPath(propertyJson.path);
+                jsonList.add(propertyJson);
+            }
+            modelMap.put(moduleKey, jsonList);
+        } else {
+            ModelJson propertyJson = gson.fromJson(data.toString(), ModelJson.class);
+            propertyJson.repair();
+            propertyJson.jsonUnbakedModelMap = loadModelsByPath(propertyJson.path);
+            jsonList.add(propertyJson);
+        }
+        modelMap.put(moduleKey, jsonList);
         return true;
     }
 
     public interface ModelTransformer {
-        Map<String,DynamicBakedModel> transform(Map<String,DynamicBakedModel> dynamicBakedModelMap, ItemStack stack);
+        default Map<String, DynamicBakedModel> bakedTransform(Map<String, DynamicBakedModel> dynamicBakedModelMap, ItemStack stack) {
+            return dynamicBakedModelMap;
+        }
+
+        default List<TransformedUnbakedModel> unBakedTransform(List<TransformedUnbakedModel> list, ItemStack itemStack) {
+            return list;
+        }
+    }
+
+    public record TransformedUnbakedModel(TransformStack transform, JsonUnbakedModel unbakedModel,
+                                          ItemModule.ModuleInstance instance) {
     }
 
     static class ModelJson {
@@ -258,6 +270,8 @@ public class ModelProperty implements ModuleProperty {
         public Map<String, JsonUnbakedModel> jsonUnbakedModelMap;
         public String path;
         public Transform transform = Transform.IDENTITY;
+        public String condition = "1";
+        public String color = "0";
 
         public void repair() {
             //this shouldn't be necessary as the values should be loaded from the class but anyways

@@ -1,16 +1,19 @@
 package smartin.miapi.item.modular.items;
 
 import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.item.*;
+import net.minecraft.item.ArmorItem;
+import net.minecraft.item.ArmorMaterial;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Wearable;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.text.Text;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.properties.DisplayNameProperty;
 
-public class ModularHelmet extends ArmorItem implements ModularItem, Wearable {
-    public ModularHelmet() {
-        super(new ModularArmorMaterial(),EquipmentSlot.HEAD,new Settings());
+public class ModularChestPlate extends ArmorItem implements ModularItem, Wearable {
+    public ModularChestPlate() {
+        super(new ModularArmorMaterial(),EquipmentSlot.CHEST,new Settings());
     }
 
     public Text getName(ItemStack stack) {

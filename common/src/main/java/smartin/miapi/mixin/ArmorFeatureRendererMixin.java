@@ -10,12 +10,9 @@ import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.Quaternion;
-import net.minecraft.util.math.Vec3f;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -23,7 +20,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import smartin.miapi.Miapi;
 import smartin.miapi.client.model.ItemRenderUtil;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.properties.render.ModelProperty;
@@ -82,13 +78,6 @@ public abstract class ArmorFeatureRendererMixin<T extends LivingEntity, M extend
                 matrixStack.multiplyPositionMatrix(matrices.peek().getPositionMatrix());
                 matrixStack.push();
                 getModelPart(armorModel, partId).rotate(matrixStack);
-                matrixStack.translate(0.25/16f,(4+1/3f)/16,(1+3/3f)/16);
-                matrixStack.scale(1.25f, 1f, 0.5f);
-                matrixStack.scale(1.25f, 1f, 1.f+1.1f/3f);
-                matrixStack.multiply(Quaternion.fromEulerXyzDegrees(new Vec3f(0,0,180)));
-                //matrixStack.scale(1/16f, 1/16f, 1/16f);
-                //matrixStack.scale(2f,3f,3f);
-                //matrixStack.translate(0,8,0);
                 if(model.getOverrides()!=null){
                     //model = model.getOverrides().apply(model,itemStack, (ClientWorld) entity.getWorld(),entity,0);
                 }

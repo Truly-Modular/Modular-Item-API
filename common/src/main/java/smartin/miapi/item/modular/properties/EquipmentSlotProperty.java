@@ -1,7 +1,6 @@
 package smartin.miapi.item.modular.properties;
 
 import com.google.gson.JsonElement;
-import net.minecraft.client.render.entity.feature.ArmorFeatureRenderer;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.ItemStack;
 import smartin.miapi.Miapi;
