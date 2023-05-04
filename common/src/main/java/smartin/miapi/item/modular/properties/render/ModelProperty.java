@@ -27,6 +27,7 @@ import smartin.miapi.client.model.DynamicBakery;
 import smartin.miapi.client.model.ModelLoadAccessor;
 import smartin.miapi.datapack.SpriteLoader;
 import smartin.miapi.item.modular.ItemModule;
+import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.item.modular.Transform;
 import smartin.miapi.item.modular.TransformStack;
 import smartin.miapi.item.modular.cache.ModularItemCache;
@@ -94,7 +95,7 @@ public class ModelProperty implements ModuleProperty {
         Map<String, DynamicBakedModel> bakedModelMap = new HashMap<>();
         for (TransformedUnbakedModel unbakedModel : unbakedModels) {
             ModelBakeSettings settings = unbakedModel.transform.get().toModelBakeSettings();
-            BakedModel model = bakeModel(unbakedModel.unbakedModel, mirroredGetter, ColorUtil.getModuleColor(unbakedModel.instance), settings);
+            BakedModel model = bakeModel(unbakedModel.unbakedModel, mirroredGetter, unbakedModel.color, settings);
             DynamicBakedModel dynamicBakedModel = bakedModelMap.computeIfAbsent(unbakedModel.transform.primary, (key) ->
                     new DynamicBakedModel(new ArrayList<>())
             );
@@ -124,7 +125,9 @@ public class ModelProperty implements ModuleProperty {
                 return new ArrayList<>();
             }
             for (ModelJson json : modelJsonList) {
-                if (json != null) {
+                int color = MaterialProperty.Material.getColor(StatResolver.resolveString(json.color, moduleI));
+                int condition = MaterialProperty.Material.getColor(StatResolver.resolveString(json.condition, moduleI));
+                if (json != null && condition != 0) {
                     MaterialProperty.Material material = MaterialProperty.getMaterial(moduleI);
                     List<String> list = new ArrayList<>();
                     if (material != null) {
@@ -154,7 +157,7 @@ public class ModelProperty implements ModuleProperty {
                     transform1.translation.scale(scaleAdder.get());
                     //transform1.translation.add(new Vec3f(-scaleAdder.get()/3+1,-scaleAdder.get()/3+1,-scaleAdder.get()/3+1));
                     transformStack.set(transformStack.primary, transform1);
-                    unbakedModels.add(new TransformedUnbakedModel(transformStack, unbakedModel, moduleI));
+                    unbakedModels.add(new TransformedUnbakedModel(transformStack, unbakedModel, moduleI, color));
                 }
             }
         }
@@ -302,7 +305,7 @@ public class ModelProperty implements ModuleProperty {
     }
 
     public record TransformedUnbakedModel(TransformStack transform, JsonUnbakedModel unbakedModel,
-                                          ItemModule.ModuleInstance instance) {
+                                          ItemModule.ModuleInstance instance, int color) {
     }
 
     static class ModelJson {
@@ -311,7 +314,7 @@ public class ModelProperty implements ModuleProperty {
         public String path;
         public Transform transform = Transform.IDENTITY;
         public String condition = "1";
-        public String color = "0";
+        public String color = "[material.color]";
 
         public void repair() {
             //this shouldn't be necessary as the values should be loaded from the class but anyways

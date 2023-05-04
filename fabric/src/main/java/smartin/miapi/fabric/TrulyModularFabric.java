@@ -2,17 +2,14 @@ package smartin.miapi.fabric;
 
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
-import net.minecraft.client.render.model.ModelLoader;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 import smartin.miapi.Environment;
 import smartin.miapi.Miapi;
-import smartin.miapi.datapack.ReloadEvents;
-import smartin.miapi.item.modular.ItemModule;
 import smartin.miapi.network.Networking;
 
 public class TrulyModularFabric implements ModInitializer {
+
+    NetworkingImplFabric networkingImplFabric;
 
     @Override
     public void onInitialize() {
@@ -20,6 +17,8 @@ public class TrulyModularFabric implements ModInitializer {
 
         ClientSync.init();
         //NETWORKING
+        networkingImplFabric = new NetworkingImplFabric();
+        Networking.setImplementation(networkingImplFabric);
         ServerLifecycleEvents.SERVER_STARTING.register(this::onServerStart);
 
         //DATA
@@ -28,11 +27,7 @@ public class TrulyModularFabric implements ModInitializer {
         }
     }
 
-    public static ModelLoader getModelLoader() {
-        return null;
-    }
-
     private void onServerStart(MinecraftServer minecraftServer) {
-        Networking.setImplementation(new NetworkingImplFabric());
+        networkingImplFabric.setupServer();
     }
 }

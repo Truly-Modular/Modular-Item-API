@@ -11,33 +11,33 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ClientSync {
-    protected static Map<String,String> dataPacks = new HashMap<>();
+    protected static Map<String, String> dataPacks = new HashMap<>();
 
-    public static void init(){
-        if(Environment.isClient()){
+    public static void init() {
+        if (Environment.isClient()) {
             clientInit();
         }
         serverInit();
     }
 
-    protected static void serverInit(){
-        ReloadEvents.DataPackLoader.subscribe((path, data)->{
-            dataPacks.put(path,data);
+    protected static void serverInit() {
+        ReloadEvents.DataPackLoader.subscribe((path, data) -> {
+            dataPacks.put(path, data);
         });
         Miapi.LOGGER.info("Server innit Networking");
-        ServerPlayConnectionEvents.JOIN.register((serverPlayNetworkHandler, packetSender , minecraftServer)->{
+        ServerPlayConnectionEvents.JOIN.register((serverPlayNetworkHandler, packetSender, minecraftServer) -> {
             onPlayerConnect(serverPlayNetworkHandler.player);
         });
     }
 
-    protected static void clientInit(){
+    protected static void clientInit() {
         Miapi.LOGGER.info("Client innit Networking");
     }
 
-   protected static void onPlayerConnect(ServerPlayerEntity entity){
-        if(Environment.isClient()){
-            if((MinecraftClient.getInstance().player)==null) {
-                //this is a bad way to ensure this doesnt send to itself....
+    protected static void onPlayerConnect(ServerPlayerEntity entity) {
+        if (Environment.isClient()) {
+            if ((MinecraftClient.getInstance().player) == null) {
+                //this is a bad way to ensure this doesn't send to itself....
                 return;
             }
         }

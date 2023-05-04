@@ -26,8 +26,6 @@ public class DynamicBakedModel implements BakedModel {
     public List<BakedModel> childModels = new ArrayList<>();
     private DynamicBakedModel overrideModel;
     public ModelOverrideList overrideList;
-    public boolean useCustomColor = false;
-    public int color = 0;
 
     public DynamicBakedModel(List<BakedQuad> quads) {
         this.quads = quads;
@@ -41,7 +39,6 @@ public class DynamicBakedModel implements BakedModel {
             list.addAll(model.getQuads(state, face, random));
         });
         list.addAll(quads);
-        //Miapi.LOGGER.error(String.valueOf(quads.size()));
         return list;
     }
 

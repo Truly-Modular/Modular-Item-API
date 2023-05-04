@@ -9,14 +9,14 @@
                 "z": 180.0
             },
             "translation": {
-                "x": -10.0,
-                "y": -7.5,
-                "z": 12.0
+                "x": -9.0,
+                "y": 1.0,
+                "z": 10.0
             },
             "scale": {
-                "x": 1.0,
+                "x": 1.125,
                 "y": 1.0,
-                "z": 1.0
+                "z": 1.25
             },
             "origin": "body"
         }
@@ -36,14 +36,14 @@
                     "z": 180.0
                 },
                 "translation": {
-                    "x": 6.0,
-                    "y": 0.0,
-                    "z": 6.0
+                    "x": -9.6,
+                    "y": -3.5,
+                    "z": 9.6
                 },
                 "scale": {
-                    "x": 1.25,
+                    "x": 1.20,
                     "y": 1.0,
-                    "z": 1.25
+                    "z": 1.20
                 },
                 "origin": "left_leg"
             }
@@ -59,14 +59,14 @@
                     "z": 180.0
                 },
                 "translation": {
-                    "x": 7.0,
-                    "y": 0.0,
-                    "z": 7.0
+                    "x": -9.6,
+                    "y": -3.5,
+                    "z": 9.6
                 },
                 "scale": {
-                    "x": 1.25,
+                    "x": 1.20,
                     "y": 1.0,
-                    "z": 1.25
+                    "z": 1.20
                 },
                 "origin": "right_leg"
             }
@@ -215,9 +215,9 @@
         ],
         "cost": 3
     },
-    "displayName": "[material.key] ChestPlate",
-    "itemId": "miapi:modular_chestplate",
-    "equipmentSlot": "body",
+    "displayName": "[material.key] Leggings",
+    "itemId": "miapi:modular_leggings",
+    "equipmentSlot": "legs",
     "modelMerge": [
         {
             "from": "left_leg",

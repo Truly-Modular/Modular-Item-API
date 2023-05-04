@@ -202,6 +202,12 @@ public class MaterialProperty implements ModuleProperty {
             return (int) (longValue & 0xffffffffL);
         }
 
+        public static int getColor(String color){
+            if(color.equals("")) return ColorHelper.Argb.getArgb(255,255,255,255);
+            long longValue = Long.parseLong(color, 16);
+            return (int) (longValue & 0xffffffffL);
+        }
+
         public double getValueOfItem(ItemStack item) {
             JsonArray items = rawJson.getAsJsonObject().getAsJsonArray("items");
 

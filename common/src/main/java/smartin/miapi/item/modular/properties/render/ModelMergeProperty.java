@@ -24,7 +24,6 @@ public class ModelMergeProperty implements ModuleProperty {
         property = this;
         ModelProperty.modelTransformers.add(
                 new ModelProperty.ModelTransformer() {
-
                     @Override
                     public List<ModelProperty.TransformedUnbakedModel> unBakedTransform(List<ModelProperty.TransformedUnbakedModel> list, ItemStack stack) {
                         ItemModule.ModuleInstance root = ItemModule.getModules(stack);
@@ -58,7 +57,7 @@ public class ModelMergeProperty implements ModuleProperty {
                                     stack1.add(json.to, json.transform);
                                     stack1.primary = json.to;
                                     stack1.add(json.to, json.transform);
-                                    ModelProperty.TransformedUnbakedModel transformedUnbakedModel1 = new ModelProperty.TransformedUnbakedModel(stack1, unbakedModel.unbakedModel(), unbakedModel.instance());
+                                    ModelProperty.TransformedUnbakedModel transformedUnbakedModel1 = new ModelProperty.TransformedUnbakedModel(stack1, unbakedModel.unbakedModel(), unbakedModel.instance(),unbakedModel.color());
                                     newList.add(transformedUnbakedModel1);
                                 }
                             });

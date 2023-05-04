@@ -21,6 +21,9 @@ public class NetworkingImplFabric extends NetworkingImpl {
                 this.trigger(packetID, buf,null);
             });
         }
+    }
+
+    public void setupServer(){
         ServerPlayNetworking.registerGlobalReceiver(channelIdentifier, (server,player, handler, buf, responseSender) -> {
             String packetID = buf.readString();
             this.trigger(packetID, buf, player);

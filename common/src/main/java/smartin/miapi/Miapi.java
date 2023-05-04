@@ -31,10 +31,7 @@ import smartin.miapi.item.modular.ItemModule;
 import smartin.miapi.item.modular.PropertyResolver;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.item.modular.cache.ModularItemCache;
-import smartin.miapi.item.modular.items.ExampleModularBowItem;
-import smartin.miapi.item.modular.items.ExampleModularItem;
-import smartin.miapi.item.modular.items.ModularHelmet;
-import smartin.miapi.item.modular.items.ModularWeapon;
+import smartin.miapi.item.modular.items.*;
 import smartin.miapi.item.modular.properties.*;
 import smartin.miapi.item.modular.properties.AllowedSlots;
 import smartin.miapi.item.modular.properties.render.GuiOffsetProperty;
@@ -143,21 +140,13 @@ public class Miapi {
         Miapi.itemRegistry.register(MOD_ID+":modular_throwing_knife",new ModularWeapon());
         Miapi.itemRegistry.register(MOD_ID+":modular_rapier",new ModularWeapon());
         Miapi.itemRegistry.register(MOD_ID+":modular_longsword",new ModularWeapon());
-        Item bow = new ExampleModularBowItem();
-        Miapi.itemRegistry.register(MOD_ID+":modular_bow",bow);
-        ModularModelPredicateProvider.registerModelOverride(bow, new Identifier("pull"), (stack, world, entity, seed) -> {
-            if (entity == null) {
-                return 0.0F;
-            } else {
-                return entity.getActiveItem() != stack ? 0.0F : (float)(stack.getMaxUseTime() - entity.getItemUseTimeLeft()) / 20.0F;
-            }
-        });
-        ModularModelPredicateProvider.registerModelOverride(bow, new Identifier("pulling"), (stack, world, entity, seed) -> {
-            return entity != null && entity.isUsingItem() && entity.getActiveItem() == stack ? 1.0F : 0.0F;
-        });
+
+        Miapi.itemRegistry.register(MOD_ID+":modular_bow",new ExampleModularBowItem());
 
         Miapi.itemRegistry.register(MOD_ID+":modular_helmet",new ModularHelmet());
         Miapi.itemRegistry.register(MOD_ID+":modular_chestplate",new ModularHelmet());
+        Miapi.itemRegistry.register(MOD_ID+":modular_leggings",new ModularLeggings());
+        Miapi.itemRegistry.register(MOD_ID+":modular_boots",new ModularBoots());
 
 
         Miapi.modulePropertyRegistry.register("moduleproperty1", (key,data) -> true);

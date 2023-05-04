@@ -18,9 +18,11 @@ public class ClientInit {
             ((ItemRendererAccessor) MinecraftClient.getInstance().getItemRenderer()).color().register(new CustomColorProvider(), item);
         });
         ClientChatEvent.SEND.register((message, component) -> {
-            Miapi.server.getPlayerManager().getPlayerList().forEach(serverPlayer -> {
-                serverPlayer.openHandledScreen(test());
-            });
+            if(Miapi.server!=null){
+                Miapi.server.getPlayerManager().getPlayerList().forEach(serverPlayer -> {
+                    serverPlayer.openHandledScreen(test());
+                });
+            }
             return EventResult.interrupt(false);
         });
 

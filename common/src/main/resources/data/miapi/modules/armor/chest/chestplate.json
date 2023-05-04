@@ -217,7 +217,7 @@
     },
     "displayName": "[material.key] ChestPlate",
     "itemId": "miapi:modular_chestplate",
-    "equipmentSlot": "body",
+    "equipmentSlot": "chest",
     "modelMerge": [
         {
             "from": "left_arm",
