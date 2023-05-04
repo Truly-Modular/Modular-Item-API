@@ -4,13 +4,16 @@
   "package": "smartin.miapi.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "ItemStackMixin",
+    "LivingEntityMixin"
   ],
   "client": [
     "ItemRendererAccessor",
-    "ItemStackMixin",
+    "ItemRendererMixin",
+    "ModelLoaderInterfaceAccessor",
     "ModelLoaderAccessor",
-    "LivingEntityMixin",
-    "ArmorFeatureRendererMixin"
+    "ArmorFeatureRendererMixin",
+    "ModelPredicateProviderRegistryAccessor"
   ],
   "injectors": {
     "defaultRequire": 1

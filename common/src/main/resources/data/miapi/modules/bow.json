@@ -1,7 +1,7 @@
 {
     "name": "bow_item",
     "texture": {
-        "path": "miapi:models/item/bow.json",
+        "path": "minecraft:models/item/bow.json",
         "transform": {
             "rotation": {
                 "x": 0.0,

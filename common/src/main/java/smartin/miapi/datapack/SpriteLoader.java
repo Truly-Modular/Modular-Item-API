@@ -12,24 +12,26 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 public class SpriteLoader {
+    public static final ArrayList<Identifier> spritesToAdd = new ArrayList<>();
+    public static void setup() {
 
-    public static void setup(){
         ClientTextureStitchEvent.PRE.register(SpriteLoader::onTextureStitch);
-        ClientTextureStitchEvent.POST.register(atlas -> {
-            ModularItemCache.discardCache();
-            spritesToAdd.clear();
+        ReloadEvents.START.subscribe(isClient -> {
+            if (isClient) {
+                ModularItemCache.discardCache();
+                spritesToAdd.clear();
+            }
         });
 
         ReloadEvents.END.subscribe(isClient -> {
-            if(isClient){
+            if (isClient) {
+                ModularItemCache.discardCache();
                 reloadSprites();
             }
         });
     }
 
-    public static final ArrayList<Identifier> spritesToAdd = new ArrayList<>();
-
-    public static void reloadSprites(){
+    public static void reloadSprites() {
         MinecraftClient.getInstance().reloadResources();
     }
 

@@ -9,6 +9,7 @@ import dev.architectury.platform.Platform;
 import dev.architectury.registry.ReloadListenerRegistry;
 import dev.architectury.registry.menu.MenuRegistry;
 import net.minecraft.item.Item;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.screen.ScreenHandler;
@@ -22,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import smartin.miapi.client.ClientInit;
 import smartin.miapi.client.gui.crafting.CraftingGUI;
 import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
+import smartin.miapi.client.model.ModularModelPredicateProvider;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.datapack.ReloadListener;
 import smartin.miapi.datapack.SpriteLoader;
@@ -141,8 +143,18 @@ public class Miapi {
         Miapi.itemRegistry.register(MOD_ID+":modular_throwing_knife",new ModularWeapon());
         Miapi.itemRegistry.register(MOD_ID+":modular_rapier",new ModularWeapon());
         Miapi.itemRegistry.register(MOD_ID+":modular_longsword",new ModularWeapon());
-
-        Miapi.itemRegistry.register(MOD_ID+":modular_bow",new ExampleModularBowItem());
+        Item bow = new ExampleModularBowItem();
+        Miapi.itemRegistry.register(MOD_ID+":modular_bow",bow);
+        ModularModelPredicateProvider.registerModelOverride(bow, new Identifier("pull"), (stack, world, entity, seed) -> {
+            if (entity == null) {
+                return 0.0F;
+            } else {
+                return entity.getActiveItem() != stack ? 0.0F : (float)(stack.getMaxUseTime() - entity.getItemUseTimeLeft()) / 20.0F;
+            }
+        });
+        ModularModelPredicateProvider.registerModelOverride(bow, new Identifier("pulling"), (stack, world, entity, seed) -> {
+            return entity != null && entity.isUsingItem() && entity.getActiveItem() == stack ? 1.0F : 0.0F;
+        });
 
         Miapi.itemRegistry.register(MOD_ID+":modular_helmet",new ModularHelmet());
         Miapi.itemRegistry.register(MOD_ID+":modular_chestplate",new ModularHelmet());

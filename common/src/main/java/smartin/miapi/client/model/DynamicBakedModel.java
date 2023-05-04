@@ -26,6 +26,8 @@ public class DynamicBakedModel implements BakedModel {
     public List<BakedModel> childModels = new ArrayList<>();
     private DynamicBakedModel overrideModel;
     public ModelOverrideList overrideList;
+    public boolean useCustomColor = false;
+    public int color = 0;
 
     public DynamicBakedModel(List<BakedQuad> quads) {
         this.quads = quads;
@@ -82,7 +84,7 @@ public class DynamicBakedModel implements BakedModel {
 
     @Override
     public ModelOverrideList getOverrides() {
-        if (childModels.isEmpty()) return null;
+        if(overrideList instanceof DynamicOverrides && childModels.isEmpty()) return ModelOverrideList.EMPTY;
         return overrideList;
     }
 
@@ -100,9 +102,6 @@ public class DynamicBakedModel implements BakedModel {
             childModels.forEach(model -> {
                 if (model != null && model.getOverrides() != null) {
                     BakedModel override = model.getOverrides().apply(model, stack, world, entity, seed);
-                    if (!override.equals(model)) {
-                        Miapi.LOGGER.error("override is different");
-                    }
                     overrideModel.addModel(override);
                 } else {
                     overrideModel.addModel(model);

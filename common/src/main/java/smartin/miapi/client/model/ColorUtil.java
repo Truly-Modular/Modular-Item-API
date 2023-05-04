@@ -33,10 +33,14 @@ public class ColorUtil {
                 builder.add(recolorBakedQuad(quad, color));
             }
         }
-        return new DynamicBakedModel(builder.build());
+        DynamicBakedModel model = new DynamicBakedModel(builder.build());
+        model.color = color;
+        model.overrideList = originalModel.getOverrides();
+        //TODO:Get OverrideModels and Recolor them
+        return model;
     }
 
-    private static BakedQuad recolorBakedQuad(BakedQuad originalQuad, int newColor) {
+    public static BakedQuad recolorBakedQuad(BakedQuad originalQuad, int newColor) {
         //hacky way but setting the ColorIndex to the desired Color and then Using a CustomColorProvider to set this color seems to work perfectly
         return new BakedQuad(originalQuad.getVertexData(), newColor, originalQuad.getFace(), originalQuad.getSprite(), false);
     }
