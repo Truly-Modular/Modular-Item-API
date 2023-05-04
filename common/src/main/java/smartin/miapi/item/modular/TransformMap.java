@@ -5,10 +5,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * A stack of transformations, represented as a mapping of strings to {@link Transform}.
+ * A map of Transforms, represented as a mapping of strings to {@link Transform}.
  * The `primary` field specifies the ID of the primary transformation in the stack.
  */
-public class TransformStack {
+public class TransformMap {
     /**
      * The stack of {@link Transform}, represented as a mapping of strings to {@link Transform}s.
      */
@@ -30,13 +30,19 @@ public class TransformStack {
         return stack.computeIfAbsent(id,(key)->Transform.IDENTITY);
     }
 
+    /**
+     * Returns the primary {@link Transform} .
+     * If the ID is not present in the stack, a new {@link Transform#IDENTITY} is added to the stack with that ID.
+     *
+     * @return the primary {@link Transform}
+     */
     @Nonnull
     public Transform get(){
         return stack.computeIfAbsent(primary,(key)->Transform.IDENTITY);
     }
 
-    public static TransformStack merge(TransformStack parent, TransformStack toMerge){
-        TransformStack merged = parent.copy();
+    public static TransformMap merge(TransformMap parent, TransformMap toMerge){
+        TransformMap merged = parent.copy();
         toMerge.stack.forEach((id,transform)->{
             merged.add(id,transform);
         });
@@ -74,6 +80,11 @@ public class TransformStack {
         set(id,Transform.merge(old,transform));
     }
 
+    /**
+     * Adds the specified {@link Transform} to the {@link Transform} associated with the Transforms origin.
+     *
+     * @param transform the `{@link Transform} to add
+     */
     public void add(Transform transform){
         add(transform.origin,transform);
         if(transform.origin!=null){
@@ -81,9 +92,12 @@ public class TransformStack {
         }
     }
 
-
-    public TransformStack copy(){
-        TransformStack newStack = new TransformStack();
+    /**
+     *
+     * @return a deep copy of the TransformMap
+     */
+    public TransformMap copy(){
+        TransformMap newStack = new TransformMap();
         stack.forEach((id,transform)->{
             newStack.add(id,transform.copy());
         });

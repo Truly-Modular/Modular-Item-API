@@ -2,6 +2,9 @@ package smartin.miapi.item.modular.properties;
 
 import com.google.gson.JsonElement;
 
+/**
+ * This property is needed to identify Modules
+ */
 public class NameProperty implements ModuleProperty {
     public static final String KEY = "name";
 
@@ -12,11 +15,11 @@ public class NameProperty implements ModuleProperty {
 
     @Override
     public JsonElement merge(JsonElement old, JsonElement toMerge, MergeType type) {
-        switch (type){
+        switch (type) {
             case EXTEND -> {
                 return old;
             }
-            case SMART,OVERWRITE -> {
+            case SMART, OVERWRITE -> {
                 return toMerge;
             }
         }

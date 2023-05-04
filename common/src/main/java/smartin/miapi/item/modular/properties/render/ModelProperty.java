@@ -21,7 +21,6 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
-import smartin.miapi.client.model.ColorUtil;
 import smartin.miapi.client.model.DynamicBakedModel;
 import smartin.miapi.client.model.DynamicBakery;
 import smartin.miapi.client.model.ModelLoadAccessor;
@@ -29,7 +28,7 @@ import smartin.miapi.datapack.SpriteLoader;
 import smartin.miapi.item.modular.ItemModule;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.item.modular.Transform;
-import smartin.miapi.item.modular.TransformStack;
+import smartin.miapi.item.modular.TransformMap;
 import smartin.miapi.item.modular.cache.ModularItemCache;
 import smartin.miapi.item.modular.properties.MaterialProperty;
 import smartin.miapi.item.modular.properties.ModuleProperty;
@@ -145,19 +144,19 @@ public class ModelProperty implements ModuleProperty {
                     }
                     assert unbakedModel != null;
                     scaleAdder.updateAndGet(v -> (v + 0.03f));
-                    TransformStack transformStack = SlotProperty.getTransformStack(moduleI);
-                    transformStack.add(json.transform.copy());
-                    String modelId = transformStack.primary;
-                    Transform transform1 = transformStack.get(transformStack.primary);
+                    TransformMap transformMap = SlotProperty.getTransformStack(moduleI);
+                    transformMap.add(json.transform.copy());
+                    String modelId = transformMap.primary;
+                    Transform transform1 = transformMap.get(transformMap.primary);
                     if (modelId == null) {
                         modelId = "item";
                     }
-                    transformStack.primary = modelId;
+                    transformMap.primary = modelId;
                     transform1.scale.scale(scaleAdder.get());
                     transform1.translation.scale(scaleAdder.get());
                     //transform1.translation.add(new Vec3f(-scaleAdder.get()/3+1,-scaleAdder.get()/3+1,-scaleAdder.get()/3+1));
-                    transformStack.set(transformStack.primary, transform1);
-                    unbakedModels.add(new TransformedUnbakedModel(transformStack, unbakedModel, moduleI, color));
+                    transformMap.set(transformMap.primary, transform1);
+                    unbakedModels.add(new TransformedUnbakedModel(transformMap, unbakedModel, moduleI, color));
                 }
             }
         }
@@ -304,7 +303,7 @@ public class ModelProperty implements ModuleProperty {
         }
     }
 
-    public record TransformedUnbakedModel(TransformStack transform, JsonUnbakedModel unbakedModel,
+    public record TransformedUnbakedModel(TransformMap transform, JsonUnbakedModel unbakedModel,
                                           ItemModule.ModuleInstance instance, int color) {
     }
 

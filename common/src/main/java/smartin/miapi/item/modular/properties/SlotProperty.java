@@ -7,12 +7,15 @@ import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.item.modular.ItemModule;
 import smartin.miapi.item.modular.Transform;
-import smartin.miapi.item.modular.TransformStack;
+import smartin.miapi.item.modular.TransformMap;
 
 import java.lang.reflect.Type;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
+/**
+ * The SlotProperty, this allows Modules to define submodule Slots
+ */
 public class SlotProperty implements ModuleProperty {
 
     public static final String KEY = "slots";
@@ -44,32 +47,32 @@ public class SlotProperty implements ModuleProperty {
         return mergedTransform;
     }
 
-    public static Transform getTransform(ModuleSlot moduleSlot,String id) {
+    public static Transform getTransform(ModuleSlot moduleSlot, String id) {
         return getTransformStack(moduleSlot).get(id);
     }
 
-    public static TransformStack getTransformStack(ItemModule.ModuleInstance instance){
+    public static TransformMap getTransformStack(ItemModule.ModuleInstance instance) {
         ModuleSlot slot = getSlotIn(instance);
-        if (slot == null) return new TransformStack();
+        if (slot == null) return new TransformMap();
         return getTransformStack(slot);
     }
 
-    public static TransformStack getTransformStack(ModuleSlot moduleSlot){
-        if(moduleSlot==null){
-            return new TransformStack();
+    public static TransformMap getTransformStack(ModuleSlot moduleSlot) {
+        if (moduleSlot == null) {
+            return new TransformMap();
         }
         ItemModule.ModuleInstance current = moduleSlot.parent;
-        TransformStack mergedTransform = new TransformStack();
+        TransformMap mergedTransform = new TransformMap();
         while (current != null) {
-            TransformStack stack = getLocalTransformStack(current);
-            if(mergedTransform.primary==null && stack.primary!=null){
-                mergedTransform.set(stack.primary,mergedTransform.get(null));
-                mergedTransform.set(null,Transform.IDENTITY);
+            TransformMap stack = getLocalTransformStack(current);
+            if (mergedTransform.primary == null && stack.primary != null) {
+                mergedTransform.set(stack.primary, mergedTransform.get(null));
+                mergedTransform.set(null, Transform.IDENTITY);
             }
-            mergedTransform = TransformStack.merge(getLocalTransformStack(current), mergedTransform);
+            mergedTransform = TransformMap.merge(getLocalTransformStack(current), mergedTransform);
             current = current.parent;
         }
-        mergedTransform = TransformStack.merge(mergedTransform, moduleSlot.getTransformStack());
+        mergedTransform = TransformMap.merge(mergedTransform, moduleSlot.getTransformStack());
         return mergedTransform;
     }
 
@@ -118,20 +121,20 @@ public class SlotProperty implements ModuleProperty {
         return Transform.IDENTITY;
     }
 
-    public static TransformStack getLocalTransformStack(ItemModule.ModuleInstance instance) {
+    public static TransformMap getLocalTransformStack(ItemModule.ModuleInstance instance) {
         ModuleProperty property = Miapi.modulePropertyRegistry.get(KEY);
         JsonElement test = instance.getProperties().get(property);
         if (test != null) {
             ModuleSlot slot = getSlotIn(instance);
             if (slot != null) {
                 Transform transform = slot.transform;
-                TransformStack stack = new TransformStack();
+                TransformMap stack = new TransformMap();
                 stack.add(transform);
                 stack.primary = transform.origin;
                 return stack;
             }
         }
-        return new TransformStack();
+        return new TransformMap();
     }
 
     @Nullable
@@ -142,7 +145,7 @@ public class SlotProperty implements ModuleProperty {
                 if (moduleSlot.inSlot == null) return false;
                 return moduleSlot.inSlot.equals(instance);
             }).findFirst().orElse(null);
-            if(slot != null && slot.transform.origin != null && slot.transform.origin.equals("")){
+            if (slot != null && slot.transform.origin != null && slot.transform.origin.equals("")) {
                 slot.transform.origin = null;
             }
             return slot;
@@ -174,16 +177,16 @@ public class SlotProperty implements ModuleProperty {
 
         public boolean allowedIn(ItemModule.ModuleInstance instance) {
             List<String> allowedSlots = AllowedSlots.getAllowedSlots(instance.module);
-            for(String key:allowed){
-                if(allowedSlots.contains(key)){
+            for (String key : allowed) {
+                if (allowedSlots.contains(key)) {
                     return true;
                 }
             }
             return false;
         }
 
-        public TransformStack getTransformStack(){
-            TransformStack stack = new TransformStack();
+        public TransformMap getTransformStack() {
+            TransformMap stack = new TransformMap();
             stack.add(transform);
             return stack;
         }

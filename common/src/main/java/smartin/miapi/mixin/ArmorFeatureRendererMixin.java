@@ -15,16 +15,13 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import smartin.miapi.client.model.ItemRenderUtil;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.properties.render.ModelProperty;
 
-import javax.annotation.Nullable;
 import java.util.Arrays;
 
 @Mixin(value = ArmorFeatureRenderer.class, priority = 700)
@@ -36,36 +33,15 @@ public abstract class ArmorFeatureRendererMixin<T extends LivingEntity, M extend
     @Shadow
     protected abstract A getArmor(EquipmentSlot slot);
 
-    @Unique
-    float immersiveArmors$tickDelta;
-
-    @Unique
-    @Nullable
-    ItemStack immersiveArmors$equippedStack;
-
-    @Unique
-    @Nullable
-    T immersiveArmors$entity;
-
-    @ModifyVariable(method = "renderArmor", at = @At("STORE"), ordinal = 0)
-    ItemStack immersiveArmors$immersiveArmors$fetchItemStack(ItemStack itemStack) {
-        this.immersiveArmors$equippedStack = itemStack;
-        return itemStack;
-    }
-
     @Inject(method = "renderArmor", at = @At("HEAD"), cancellable = true)
-    void immersiveArmors$injectRenderArmor(MatrixStack matrices, VertexConsumerProvider vertexConsumers, T entity, EquipmentSlot armorSlot, int light, A model, CallbackInfo ci) {
+    void renderArmorInject(MatrixStack matrices, VertexConsumerProvider vertexConsumers, T entity, EquipmentSlot armorSlot, int light, A model, CallbackInfo ci) {
         ItemStack itemStack = entity.getEquippedStack(armorSlot);
         if (itemStack.getItem() instanceof ModularItem) {
-            renderPieces(matrices, vertexConsumers, light, armorSlot, itemStack, entity);
+            // Invert the light direction doesnt work
+            int invertedLight = light;
+            renderPieces(matrices, vertexConsumers, invertedLight, armorSlot, itemStack, entity);
             ci.cancel();
         }
-    }
-
-    @Inject(method = "render(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;ILnet/minecraft/entity/LivingEntity;FFFFFF)V", at = @At("HEAD"))
-    public void immersiveArmors$render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T entity, float f, float g, float tickDelta, float j, float k, float l, CallbackInfo ci) {
-        this.immersiveArmors$tickDelta = tickDelta;
-        this.immersiveArmors$entity = entity;
     }
 
     private void renderPieces(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, EquipmentSlot armorSlot, ItemStack itemStack, T entity) {

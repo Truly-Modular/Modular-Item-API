@@ -13,6 +13,12 @@ import java.util.Map;
 public class PropertyResolver {
     public static MiapiRegistry<PropertyProvider> propertyProviderRegistry = MiapiRegistry.getInstance(PropertyProvider.class);
 
+    /**
+     * Resolves {@link ModuleProperty} maps for an {@link ItemModule.ModuleInstance}
+     *
+     * @param moduleInstance the {@link ItemModule.ModuleInstance} to resolve for
+     * @return a map of {@link ModuleProperty} and their related Data
+     */
     public static  Map<ModuleProperty, JsonElement> resolve(ItemModule.ModuleInstance moduleInstance){
         Map<ModuleProperty, JsonElement> properties = new HashMap<>();
         propertyProviderRegistry.getFlatMap().forEach((name,propertyProvider)->{
@@ -21,6 +27,9 @@ public class PropertyResolver {
         return properties;
     }
 
+    /**
+     * This interface allows other classes to add Properties to items
+     */
     public interface PropertyProvider{
         Map<ModuleProperty, JsonElement> resolve(ItemModule.ModuleInstance moduleInstance, Map<ModuleProperty,JsonElement> oldMap);
     }

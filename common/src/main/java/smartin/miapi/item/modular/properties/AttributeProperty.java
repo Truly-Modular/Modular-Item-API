@@ -20,6 +20,9 @@ import java.lang.reflect.Type;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * This property allows Modules to set Attributes
+ */
 public class AttributeProperty implements ModuleProperty {
     public static final String KEY = "attributes";
     public static ModuleProperty property;

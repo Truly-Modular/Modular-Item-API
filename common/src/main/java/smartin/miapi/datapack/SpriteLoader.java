@@ -16,6 +16,9 @@ public class SpriteLoader {
     public static void setup() {
 
         ClientTextureStitchEvent.PRE.register(SpriteLoader::onTextureStitch);
+        ClientTextureStitchEvent.POST.register((atlas)->{
+            ModularItemCache.discardCache();
+        });
         ReloadEvents.START.subscribe(isClient -> {
             if (isClient) {
                 ModularItemCache.discardCache();
@@ -26,7 +29,6 @@ public class SpriteLoader {
         ReloadEvents.END.subscribe(isClient -> {
             if (isClient) {
                 reloadSprites();
-                ModularItemCache.discardCache();
             }
         });
     }

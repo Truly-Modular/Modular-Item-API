@@ -4,8 +4,8 @@
         "path": "miapi:models/item/armor/helmet/base/[material.texture].json",
         "transform": {
             "rotation": {"x": 0.0, "y": 0.0, "z": 0.0},
-            "translation": {"x": 0.0, "y": 0.0, "z": 0.0},
-            "scale": {"x": 1.0, "y": 1.0, "z": 1.0},
+            "translation": {"x": 10.0, "y": 4.5, "z": 10.0},
+            "scale": {"x": 1.25, "y": 1.1125, "z": 1.25},
             "origin": "head"
         }
     },
@@ -108,9 +108,9 @@
                     "z": 0
                 },
                 "translation": {
-                    "x": 0,
-                    "y": 0,
-                    "z": 0
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
                 },
                 "scale": {
                     "x": 1.3,
@@ -126,13 +126,13 @@
                 },
                 "translation": {
                     "x": 0,
-                    "y": -0.5,
-                    "z": 0.7
+                    "y": 0.0,
+                    "z": 0.0
                 },
                 "scale": {
-                    "x": 1.25,
-                    "y": 1.25,
-                    "z": 0.88833
+                    "x": 1.0,
+                    "y": 1.0,
+                    "z": 1.0
                 }
             },
             "fixed": {

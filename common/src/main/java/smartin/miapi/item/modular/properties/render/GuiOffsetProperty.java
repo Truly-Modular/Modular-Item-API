@@ -12,6 +12,9 @@ import smartin.miapi.item.modular.properties.ModuleProperty;
 
 import java.util.Map;
 
+/**
+ * This Property allows to have a simple way to change the gui position and size of an item
+ */
 public class GuiOffsetProperty implements ModuleProperty {
     public static final String KEY = "guiOffset";
     public static ModuleProperty property;

@@ -7,6 +7,9 @@ import smartin.miapi.item.modular.ItemModule;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.item.modular.cache.ModularItemCache;
 
+/**
+ * This property allows modules to change the DisplayName of the item in question
+ */
 public class DisplayNameProperty implements ModuleProperty {
     public static final String KEY = "displayName";
     public static ModuleProperty property;

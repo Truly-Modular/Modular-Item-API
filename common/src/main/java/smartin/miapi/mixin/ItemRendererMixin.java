@@ -19,7 +19,6 @@ import java.util.List;
 
 @Mixin(ItemRenderer.class)
 public class ItemRendererMixin {
-    @Shadow @Final private ItemColors colors;
 
     /**
      * 10 bit Color Support, should be refactored to be less intrusive if possible
