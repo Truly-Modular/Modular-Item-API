@@ -1,5 +1,7 @@
 package smartin.miapi.client.model;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.BakedQuad;
@@ -20,6 +22,7 @@ import java.util.List;
 /**
  * A BakedModel made to be semi mutable and allow for more dynamic interactions
  */
+@Environment(EnvType.CLIENT)
 public class DynamicBakedModel implements BakedModel {
     public List<BakedQuad> quads;
     public ModelTransformation modelTransformation = ModelTransformation.NONE;

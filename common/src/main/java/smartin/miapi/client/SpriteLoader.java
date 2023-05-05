@@ -1,22 +1,20 @@
-package smartin.miapi.datapack;
+package smartin.miapi.client;
 
 import dev.architectury.event.events.client.ClientTextureStitchEvent;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.resource.Resource;
 import net.minecraft.util.Identifier;
 import smartin.miapi.Miapi;
+import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.item.modular.cache.ModularItemCache;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Consumer;
 
 public class SpriteLoader {
-    public static final List<Identifier> spritesToAdd = new ArrayList<>();
     public static void setup() {
 
         ClientTextureStitchEvent.PRE.register(SpriteLoader::onTextureStitch);
@@ -26,7 +24,6 @@ public class SpriteLoader {
         ReloadEvents.START.subscribe(isClient -> {
             if (isClient) {
                 ModularItemCache.discardCache();
-                spritesToAdd.clear();
             }
         });
 

@@ -1,5 +1,7 @@
 package smartin.miapi.client.model;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.RenderLayers;
@@ -17,7 +19,11 @@ import java.util.List;
 
 import static net.minecraft.client.render.item.ItemRenderer.getDirectItemGlintConsumer;
 
+@Environment(EnvType.CLIENT)
 public class ItemRenderUtil {
+    private ItemRenderUtil(){
+
+    }
 
     public static void renderModel(MatrixStack matrices, ItemStack stack, BakedModel model, ModelTransformation.Mode renderMode, VertexConsumerProvider vertexConsumers, int light, int overlay) {
         RenderLayer renderLayer = RenderLayers.getItemLayer(stack, true);

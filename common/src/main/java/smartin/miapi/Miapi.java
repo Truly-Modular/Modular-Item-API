@@ -18,12 +18,11 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import smartin.miapi.client.ClientInit;
+import smartin.miapi.client.MiapiClient;
 import smartin.miapi.client.gui.crafting.CraftingGUI;
 import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.datapack.ReloadListener;
-import smartin.miapi.datapack.SpriteLoader;
 import smartin.miapi.item.modular.ItemModule;
 import smartin.miapi.item.modular.PropertyResolver;
 import smartin.miapi.item.modular.StatResolver;
@@ -58,11 +57,10 @@ public class Miapi {
         LifecycleEvent.SERVER_STARTING.register(minecraftServer->{
             LOGGER.info("starting server");
         });
-        SpriteLoader.setup();
         ReloadListenerRegistry.register(ResourceType.SERVER_DATA, new ReloadListener());
-        ClientLifecycleEvent.CLIENT_STARTED.register(client->{
-            new ClientInit();
-        });
+        if(Environment.isClient()){
+            MiapiClient.init();
+        }
         ReloadEvents.MAIN.subscribe((isClient)->{
             moduleRegistry.clear();
             ReloadEvents.DATA_PACKS.forEach(ItemModule::loadFromData);

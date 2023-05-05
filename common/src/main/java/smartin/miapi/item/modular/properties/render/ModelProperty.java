@@ -24,7 +24,7 @@ import smartin.miapi.Miapi;
 import smartin.miapi.client.model.DynamicBakedModel;
 import smartin.miapi.client.model.DynamicBakery;
 import smartin.miapi.client.model.ModelLoadAccessor;
-import smartin.miapi.datapack.SpriteLoader;
+import smartin.miapi.client.SpriteLoader;
 import smartin.miapi.item.modular.ItemModule;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.item.modular.Transform;
@@ -57,10 +57,7 @@ public class ModelProperty implements ModuleProperty {
     private static ItemModelGenerator generator;
 
     public ModelProperty() {
-        mirroredGetter = (identifier) -> {
-            SpriteLoader.spritesToAdd.add(identifier.getTextureId());
-            return textureGetter.apply(identifier);
-        };
+        mirroredGetter = (identifier) -> textureGetter.apply(identifier);
         generator = new ItemModelGenerator();
         ModularItemCache.setSupplier(CACHE_KEY_ITEM, (stack) -> getModelMap(stack).get("item"));
         ModularItemCache.setSupplier(CACHE_KEY_MAP, ModelProperty::generateModels);
@@ -261,13 +258,7 @@ public class ModelProperty implements ModuleProperty {
     }
 
     protected static void loadTextureDependencies(JsonUnbakedModel model) {
-
-        List<Identifier> spritesToLoad = new ArrayList<>();
-        bakeModel(model, (identifier) -> {
-            spritesToLoad.add(identifier.getTextureId());
-            return mirroredGetter.apply(identifier);
-        }, 0, ModelRotation.X0_Y0);
-        SpriteLoader.spritesToAdd.addAll(spritesToLoad);
+        bakeModel(model, (identifier) -> mirroredGetter.apply(identifier), 0, ModelRotation.X0_Y0);
     }
 
     @Override

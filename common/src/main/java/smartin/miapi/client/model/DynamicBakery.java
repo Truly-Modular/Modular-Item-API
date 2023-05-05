@@ -24,7 +24,11 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 
+@Environment(EnvType.CLIENT)
 public class DynamicBakery {
+    private DynamicBakery(){
+
+    }
     private static final BakedQuadFactory QUAD_FACTORY = new BakedQuadFactory();
 
     public static BakedModel bake(JsonUnbakedModel model, ModelLoader loader, JsonUnbakedModel parent, Function<SpriteIdentifier, Sprite> textureGetter, ModelBakeSettings settings, Identifier id, boolean hasDepth, int color) {

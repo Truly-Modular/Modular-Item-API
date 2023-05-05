@@ -10,7 +10,6 @@ import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import org.lwjgl.glfw.GLFW;
 import smartin.miapi.Miapi;
-import smartin.miapi.client.ClientInit;
 
 @Environment(EnvType.CLIENT)
 public class MiapiClient implements ClientModInitializer {
@@ -30,7 +29,7 @@ public class MiapiClient implements ClientModInitializer {
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             while (OPEN_GUI_KEY_BINDING.wasPressed()) {
                 Miapi.server.getPlayerManager().getPlayerList().forEach(serverPlayer->{
-                    serverPlayer.openHandledScreen(ClientInit.test());
+                    serverPlayer.openHandledScreen(smartin.miapi.client.MiapiClient.test());
                 });
             }
         });
