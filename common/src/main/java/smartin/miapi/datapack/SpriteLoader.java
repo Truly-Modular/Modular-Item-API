@@ -2,17 +2,21 @@ package smartin.miapi.datapack;
 
 import dev.architectury.event.events.client.ClientTextureStitchEvent;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
+import net.minecraft.resource.Resource;
 import net.minecraft.util.Identifier;
 import smartin.miapi.Miapi;
 import smartin.miapi.item.modular.cache.ModularItemCache;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 
 public class SpriteLoader {
-    public static final ArrayList<Identifier> spritesToAdd = new ArrayList<>();
+    public static final List<Identifier> spritesToAdd = new ArrayList<>();
     public static void setup() {
 
         ClientTextureStitchEvent.PRE.register(SpriteLoader::onTextureStitch);
@@ -38,10 +42,16 @@ public class SpriteLoader {
     }
 
     protected static void onTextureStitch(SpriteAtlasTexture atlas, Consumer<Identifier> spriteAdder) {
-        Set<Identifier> sprites = Set.copyOf(spritesToAdd);
-        sprites.forEach(identifier -> {
-            //Miapi.LOGGER.error("Loading Texture TextureStitch "+identifier.toString());
-            spriteAdder.accept(identifier);
-        });
+        if (SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE.equals(atlas.getId())) {
+            Map<Identifier, Resource> map = MinecraftClient.getInstance().getResourceManager().findResources("textures/item", s->{
+                return s.getNamespace().equals(Miapi.MOD_ID);
+            });
+            map.forEach((identifier, resource) -> {
+                Miapi.LOGGER.error("reloading");
+                Miapi.LOGGER.error(identifier.toString());
+                String string = identifier.toString().replace("textures/","").replace(".png","");
+                spriteAdder.accept(new Identifier(string));
+            });
+        }
     }
 }

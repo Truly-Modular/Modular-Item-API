@@ -7,8 +7,8 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.item.ModelPredicateProvider;
 import net.minecraft.client.item.ModelPredicateProviderRegistry;
-import net.minecraft.client.render.model.*;
 import net.minecraft.client.render.model.ModelRotation;
+import net.minecraft.client.render.model.*;
 import net.minecraft.client.render.model.json.*;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.SpriteIdentifier;
@@ -19,9 +19,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
 import org.jetbrains.annotations.Nullable;
-import smartin.miapi.Miapi;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
@@ -30,23 +28,17 @@ public class DynamicBakery {
     private static final BakedQuadFactory QUAD_FACTORY = new BakedQuadFactory();
 
     public static BakedModel bake(JsonUnbakedModel model, ModelLoader loader, JsonUnbakedModel parent, Function<SpriteIdentifier, Sprite> textureGetter, ModelBakeSettings settings, Identifier id, boolean hasDepth, int color) {
-        Sprite sprite = (Sprite) textureGetter.apply(model.resolveSprite("particle"));
+        Sprite sprite = textureGetter.apply(model.resolveSprite("particle"));
         if (model.getRootModel() == ModelLoader.BLOCK_ENTITY_MARKER) {
-            Miapi.LOGGER.warn("BlockEntity");
             return new BuiltinBakedModel(model.getTransformations(), compileOverrides(model, loader, parent, color), sprite, model.getGuiLight().isSide());
         } else {
-            Miapi.LOGGER.warn("Normal");
             BasicBakedModel.Builder builder = (new BasicBakedModel.Builder(model, compileOverrides(model, loader, parent, color), hasDepth)).setParticle(sprite);
-            Iterator var9 = model.getElements().iterator();
 
-            while (var9.hasNext()) {
-                ModelElement modelElement = (ModelElement) var9.next();
-                Iterator var11 = modelElement.faces.keySet().iterator();
+            for (ModelElement modelElement : model.getElements()) {
 
-                while (var11.hasNext()) {
-                    Direction direction = (Direction) var11.next();
-                    ModelElementFace modelElementFace = (ModelElementFace) modelElement.faces.get(direction);
-                    Sprite sprite2 = (Sprite) textureGetter.apply(model.resolveSprite(modelElementFace.textureId));
+                for (Direction direction : modelElement.faces.keySet()) {
+                    ModelElementFace modelElementFace = modelElement.faces.get(direction);
+                    Sprite sprite2 = textureGetter.apply(model.resolveSprite(modelElementFace.textureId));
                     if (modelElementFace.cullFace == null) {
                         builder.addQuad(createQuad(modelElement, modelElementFace, sprite2, direction, settings, id, color));
                     } else {
@@ -80,9 +72,7 @@ public class DynamicBakery {
 
         public OverrideList(ModelLoader modelLoader, JsonUnbakedModel parent, Function<Identifier, UnbakedModel> unbakedModelGetter, List<ModelOverride> overrides, int color) {
             super(modelLoader, parent, unbakedModelGetter, overrides);
-            this.dynamicConditionTypes = (Identifier[]) overrides.stream().flatMap(ModelOverride::streamConditions).map(ModelOverride.Condition::getType).distinct().toArray((ix) -> {
-                return new Identifier[ix];
-            });
+            this.dynamicConditionTypes = overrides.stream().flatMap(ModelOverride::streamConditions).map(ModelOverride.Condition::getType).distinct().toArray(Identifier[]::new);
             Object2IntMap<Identifier> object2IntMap = new Object2IntOpenHashMap();
 
             for (int i = 0; i < this.dynamicConditionTypes.length; ++i) {
@@ -92,19 +82,18 @@ public class DynamicBakery {
             List<DynamicBakedOverride> list = Lists.newArrayList();
 
             for (int j = overrides.size() - 1; j >= 0; --j) {
-                ModelOverride modelOverride = (ModelOverride) overrides.get(j);
+                ModelOverride modelOverride = overrides.get(j);
                 BakedModel bakedModel = this.bakeOverridingModel(modelLoader, parent, unbakedModelGetter, modelOverride);
+                assert bakedModel != null;
                 bakedModel = ColorUtil.recolorModel(bakedModel, color);
-                InlinedCondition[] inlinedConditions = (InlinedCondition[]) modelOverride.streamConditions().map((condition) -> {
+                InlinedCondition[] inlinedConditions = modelOverride.streamConditions().map((condition) -> {
                     int i = object2IntMap.getInt(condition.getType());
                     return new InlinedCondition(i, condition.getThreshold());
-                }).toArray((ix) -> {
-                    return new InlinedCondition[ix];
-                });
+                }).toArray(InlinedCondition[]::new);
                 list.add(new DynamicBakedOverride(inlinedConditions, bakedModel));
             }
 
-            this.dynamicOverrides = (DynamicBakedOverride[]) list.toArray(new DynamicBakedOverride[0]);
+            this.dynamicOverrides = list.toArray(new DynamicBakedOverride[0]);
         }
 
         @Environment(EnvType.CLIENT)
@@ -119,11 +108,8 @@ public class DynamicBakery {
             }
 
             boolean test(float[] values) {
-                InlinedCondition[] var2 = this.conditions;
-                int var3 = var2.length;
 
-                for (int var4 = 0; var4 < var3; ++var4) {
-                    InlinedCondition inlinedCondition = var2[var4];
+                for (InlinedCondition inlinedCondition : this.conditions) {
                     float f = values[inlinedCondition.index];
                     if (f < inlinedCondition.threshold) {
                         return false;
@@ -136,7 +122,7 @@ public class DynamicBakery {
 
         @Nullable
         private BakedModel bakeOverridingModel(ModelLoader loader, JsonUnbakedModel parent, Function<Identifier, UnbakedModel> unbakedModelGetter, ModelOverride override) {
-            UnbakedModel unbakedModel = (UnbakedModel) unbakedModelGetter.apply(override.getModelId());
+            UnbakedModel unbakedModel = unbakedModelGetter.apply(override.getModelId());
             return Objects.equals(unbakedModel, parent) ? null : loader.bake(override.getModelId(), ModelRotation.X0_Y0);
         }
 
