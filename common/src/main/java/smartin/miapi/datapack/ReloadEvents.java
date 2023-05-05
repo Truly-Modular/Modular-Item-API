@@ -1,5 +1,6 @@
 package smartin.miapi.datapack;
 
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
 import smartin.miapi.Environment;
@@ -119,14 +120,7 @@ public class ReloadEvents {
             dataTemp.put(key, data);
             if (dataTemp.size() == dataPackSize) {
                 DATA_PACKS.clear();
-                dataTemp.forEach((path, stringData) -> {
-                    DATA_PACKS.put(path, stringData);
-                    DataPackLoader.trigger(path, stringData);
-                });
-                ReloadEvents.MAIN.fireEvent(true);
-                ReloadEvents.END.fireEvent(true);
-                dataPackSize = Integer.MAX_VALUE;
-                inReload = false;
+                DATA_PACKS.putAll(dataTemp);
             }
         });
         Networking.registerS2CPacket(RELOAD_PACKET_ID, (buffer) -> {
@@ -139,7 +133,36 @@ public class ReloadEvents {
             PacketByteBuf buf = Networking.createBuffer();
             buf.writeBoolean(true);
             DATA_PACKS.clear();
-            ReloadEvents.START.fireEvent(true);
+            MinecraftClient.getInstance().execute(()->{
+                ReloadEvents.START.fireEvent(true);
+                while (DATA_PACKS.size() != dataPackSize){
+                    try {
+                        Thread.sleep(10);
+                    } catch (InterruptedException e) {
+                    }
+                }
+                try {
+                    int counter = 0;
+                    while (DATA_PACKS.size() != dataPackSize || counter==-1){
+                        counter++;
+                        Thread.sleep(10);
+                        /**
+                         * If reload takes more than 2 min, force disconnect(maybe rewrite for last package less than 30s?)
+                         */
+                        if(counter>10*100*60*2){
+                            counter=-1;
+                            MinecraftClient.getInstance().disconnect();
+                        }
+                    }
+                } catch (InterruptedException e) {
+                    MinecraftClient.getInstance().disconnect();
+                }
+                DATA_PACKS.forEach(DataPackLoader::trigger);
+                ReloadEvents.MAIN.fireEvent(true);
+                ReloadEvents.END.fireEvent(true);
+                dataPackSize = Integer.MAX_VALUE;
+                inReload = false;
+            });
             Networking.sendC2S(RELOAD_PACKET_ID, buf);
         });
     }
