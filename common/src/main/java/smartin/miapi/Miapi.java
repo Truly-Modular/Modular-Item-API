@@ -6,7 +6,10 @@ import com.google.gson.JsonObject;
 import dev.architectury.event.events.client.ClientLifecycleEvent;
 import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.registry.ReloadListenerRegistry;
+import dev.architectury.registry.level.entity.EntityAttributeRegistry;
 import dev.architectury.registry.menu.MenuRegistry;
+import net.minecraft.entity.attribute.DefaultAttributeRegistry;
+import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.item.Item;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.resource.ResourceType;
@@ -23,6 +26,7 @@ import smartin.miapi.client.gui.crafting.CraftingGUI;
 import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.datapack.ReloadListener;
+import smartin.miapi.item.attributes.AttributeRegistry;
 import smartin.miapi.item.modular.ItemModule;
 import smartin.miapi.item.modular.PropertyResolver;
 import smartin.miapi.item.modular.StatResolver;
@@ -138,7 +142,7 @@ public class Miapi {
         Miapi.itemRegistry.register(MOD_ID+":modular_bow",new ExampleModularBowItem());
 
         Miapi.itemRegistry.register(MOD_ID+":modular_helmet",new ModularHelmet());
-        Miapi.itemRegistry.register(MOD_ID+":modular_chestplate",new ModularHelmet());
+        Miapi.itemRegistry.register(MOD_ID+":modular_chestplate",new ModularChestPlate());
         Miapi.itemRegistry.register(MOD_ID+":modular_leggings",new ModularLeggings());
         Miapi.itemRegistry.register(MOD_ID+":modular_boots",new ModularBoots());
 
@@ -159,6 +163,8 @@ public class Miapi {
         Miapi.modulePropertyRegistry.register(GuiOffsetProperty.KEY,new GuiOffsetProperty());
         Miapi.modulePropertyRegistry.register(EquipmentSlotProperty.KEY,new EquipmentSlotProperty());
         Miapi.modulePropertyRegistry.register(ModelMergeProperty.KEY,new ModelMergeProperty());
+
+        new AttributeRegistry();
     }
 
     private static <T extends ScreenHandler> ScreenHandlerType<T> register(Identifier id, ScreenHandlerType.Factory<T> factory) {

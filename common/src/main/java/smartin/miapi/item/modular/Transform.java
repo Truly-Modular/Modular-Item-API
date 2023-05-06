@@ -142,9 +142,8 @@ public class Transform extends Transformation {
     public static Transform toModelTransformation(Transformation transformation) {
         Transform transform = repair(transformation);
         transform.translation.scale(1.0f / 16.0f);
-        //Vec3f scale = bakedTransform.scale;
-        //scale.scale(1.0f/16.0f);
-        //bakedTransform = new Transform(bakedTransform.rotation,bakedTransform.translation,scale);
+        //TODO:enable this and change all jsons
+        //transform.translation.multiplyComponentwise(transform.scale.getX(),transform.scale.getY(),transform.scale.getZ());
         return transform;
     }
 
