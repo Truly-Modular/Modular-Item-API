@@ -1,0 +1,36 @@
+{
+	"credit": "Made with Blockbench",
+	"parent": "block/block",
+	"textures": {
+		"particle": "block/oak_planks",
+		"side": "block/oak_planks",
+		"top": "block/anvil_top",
+		"anvil": "block/anvil"
+	},
+	"elements": [
+		{
+			"from": [0, 0, 0],
+			"to": [16, 12, 16],
+			"faces": {
+				"north": {"uv": [0, 0, 16, 12], "texture": "#side", "cullface": "south"},
+				"east": {"uv": [0, 0, 12, 12], "texture": "#side", "cullface": "west"},
+				"south": {"uv": [0, 0, 16, 12], "texture": "#side", "cullface": "north"},
+				"west": {"uv": [0, 0, 12, 12], "texture": "#side", "cullface": "east"},
+				"up": {"uv": [3, 0, 13, 16], "texture": "#top", "cullface": "down"},
+				"down": {"uv": [0, 0, 16, 16], "texture": "#side", "cullface": "up"}
+			}
+		},
+		{
+			"from": [1, 12, 1],
+			"to": [15, 14, 15],
+			"faces": {
+				"north": {"uv": [0, 0, 14, 2], "texture": "#anvil", "cullface": "south"},
+				"east": {"uv": [0, 0, 2, 2], "texture": "#anvil", "cullface": "west"},
+				"south": {"uv": [0, 0, 14, 2], "texture": "#anvil", "cullface": "north"},
+				"west": {"uv": [0, 0, 2, 2], "texture": "#anvil", "cullface": "east"},
+				"up": {"uv": [2, 2, 14, 14], "texture": "#anvil", "cullface": "down"},
+				"down": {"uv": [0, 0, 14, 2], "texture": "#anvil", "cullface": "up"}
+			}
+		}
+	]
+}

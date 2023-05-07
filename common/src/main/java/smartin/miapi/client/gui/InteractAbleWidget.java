@@ -1,5 +1,7 @@
 package smartin.miapi.client.gui;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
@@ -17,6 +19,7 @@ import java.util.List;
  * If you want to handle some events yourself and still support children, you should call the
  * corresponding super method or handle the children yourself.
  */
+@Environment(EnvType.CLIENT)
 public class InteractAbleWidget extends ClickableWidget implements Drawable, Element {
     protected final List<Element> children = new ArrayList<>();
 

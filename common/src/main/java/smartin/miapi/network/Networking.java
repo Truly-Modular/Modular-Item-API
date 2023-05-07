@@ -105,11 +105,13 @@ public class Networking {
     }
 
     /**
+     * unRegisterC2SPacket
+     * unRegisterC2CPacket
      * Removes the C2C packet with the specified identifier from the S2CPackets map.
      *
      * @param identifier the identifier of the C2C packet to unregister.
      */
-    public static void unRegisterC2CPacket(String identifier) {
+    public static void unRegisterS2CPacket(String identifier) {
         S2CPackets.remove(identifier);
     }
 

@@ -1,6 +1,8 @@
 package smartin.miapi.client;
 
 import dev.architectury.event.events.client.ClientTextureStitchEvent;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.resource.Resource;
@@ -14,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
+@Environment(EnvType.CLIENT)
 public class SpriteLoader {
     public static void setup() {
 
@@ -44,8 +47,6 @@ public class SpriteLoader {
                 return s.getNamespace().equals(Miapi.MOD_ID);
             });
             map.forEach((identifier, resource) -> {
-                Miapi.LOGGER.error("reloading");
-                Miapi.LOGGER.error(identifier.toString());
                 String string = identifier.toString().replace("textures/","").replace(".png","");
                 spriteAdder.accept(new Identifier(string));
             });

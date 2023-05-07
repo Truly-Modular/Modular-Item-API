@@ -2,6 +2,8 @@ package smartin.miapi.client.gui.crafting.crafter;
 
 import com.google.gson.JsonElement;
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.render.GameRenderer;
@@ -21,6 +23,7 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
+@Environment(EnvType.CLIENT)
 public class DetailView extends InteractAbleWidget {
     final Consumer<SlotProperty.ModuleSlot> edit;
     final Consumer<SlotProperty.ModuleSlot> replace;
@@ -41,7 +44,8 @@ public class DetailView extends InteractAbleWidget {
     }
 
     public void scrollTo(int y) {
-        Miapi.LOGGER.warn("trying scrolling to" + (y - this.y));
+        //TODO:fix this scrolling
+        //Miapi.LOGGER.warn("trying scrolling to" + (y - this.y));
         if (scrollList != null) {
             scrollList.setScrollAmount(y - this.y);
         }

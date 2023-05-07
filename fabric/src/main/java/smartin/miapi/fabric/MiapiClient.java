@@ -12,35 +12,9 @@ import org.lwjgl.glfw.GLFW;
 import smartin.miapi.Miapi;
 
 @Environment(EnvType.CLIENT)
-public class MiapiClient implements ClientModInitializer {
-
-    public static final KeyBinding OPEN_GUI_KEY_BINDING = KeyBindingHelper.registerKeyBinding(new KeyBinding(
-            "key.example.open_gui",
-            InputUtil.Type.KEYSYM,
-            GLFW.GLFW_KEY_G,
-            "key.categories.example"
-    ));
-
-    @Override
-    public void onInitializeClient() {
-        //Networking.setImplementation(new NetworkingImplFabric());
-        ModelLoadingRegistry.INSTANCE.registerResourceProvider(rm -> new CustomModelRegistry());
-
-        ClientTickEvents.END_CLIENT_TICK.register(client -> {
-            while (OPEN_GUI_KEY_BINDING.wasPressed()) {
-                Miapi.server.getPlayerManager().getPlayerList().forEach(serverPlayer->{
-                    serverPlayer.openHandledScreen(smartin.miapi.client.MiapiClient.test());
-                });
-            }
-        });
-    }
+public class MiapiClient{
 
     public static void setupClient(){
         ModelLoadingRegistry.INSTANCE.registerResourceProvider(rm -> new CustomModelRegistry());
-
-        ClientTickEvents.END_CLIENT_TICK.register(client -> {
-            while (OPEN_GUI_KEY_BINDING.wasPressed()) {
-            }
-        });
     }
 }

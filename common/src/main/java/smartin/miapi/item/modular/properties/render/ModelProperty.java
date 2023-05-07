@@ -14,6 +14,7 @@ import net.minecraft.client.render.model.json.ModelOverrideList;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.SwordItem;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
@@ -36,6 +37,7 @@ import smartin.miapi.item.modular.properties.SlotProperty;
 import smartin.miapi.mixin.ModelLoaderInterfaceAccessor;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -174,7 +176,7 @@ public class ModelProperty implements ModuleProperty {
         }
     }
 
-    protected static JsonUnbakedModel loadModelFromFilePath(String filePath2) {
+    protected static JsonUnbakedModel loadModelFromFilePath(String filePath2) throws FileNotFoundException {
         if (loadedMap.get(filePath2) != null) {
             return loadedMap.get(filePath2);
         }
@@ -187,71 +189,40 @@ public class ModelProperty implements ModuleProperty {
         if (loadedMap.get(filePath2) != null) {
             return loadedMap.get(filePath2);
         }
-        Identifier modelId = new Identifier(filePath2);
         ModelLoader loader = ModelLoadAccessor.getLoader();
-        if (false) {
-            return loadModelFromFilePath(modelId);
-        }
         filePath2 = filePath2.replace(".json", "");
         filePath2 = filePath2.replace("models/", "");
-        modelId = new Identifier(filePath2);
-        try {
-            JsonUnbakedModel model = ((ModelLoaderInterfaceAccessor) loader).loadModelFromPath(modelId);
-            loadTextureDependencies(model);
-            return model;
-        } catch (Exception suppressed) {
-
-        }
-        return null;
-        //return loadModelFromFilePath(modelId);
-    }
-
-    protected static JsonUnbakedModel loadModelFromFilePath(Identifier modelId) {
-        try {
-            ResourceManager resourceManager = MinecraftClient.getInstance().getResourceManager();
-            Resource resource = resourceManager.getResource(modelId).orElseThrow(() -> new RuntimeException("could not find model from path " + modelId.toString()));
-            BufferedReader reader = new BufferedReader(new InputStreamReader(resource.getInputStream()));
-            JsonUnbakedModel model = JsonUnbakedModel.deserialize(reader);
-            model.getElements().forEach(modelElement -> {
-                modelElement.faces.forEach((direction, modelElementFace) -> {
-                });
-            });
-            model.id = modelId.toString();
-            loadedMap.put(modelId.toString(), model);
-            model.getModelDependencies().forEach(dependendyId -> {
-                if (!dependendyId.toString().contains("generated") && !dependendyId.toString().contains("item/handheld")) {
-                    try {
-                        loadModelsByPath(dependendyId.toString());
-                    } catch (Exception surpressed) {
-                        Miapi.LOGGER.error("could not find Model " + dependendyId.toString());
-                        surpressed.printStackTrace();
-                    }
-                }
-            });
-            loadTextureDependencies(model);
-            return model;
-        } catch (IOException exception) {
-            exception.printStackTrace();
-            throw new RuntimeException("failure to load model from path " + modelId.toString());
-        }
+        Identifier modelId= new Identifier(filePath2);
+        JsonUnbakedModel model = ((ModelLoaderInterfaceAccessor) loader).loadModelFromPath(modelId);
+        loadTextureDependencies(model);
+        return model;
     }
 
     protected static Map<String, JsonUnbakedModel> loadModelsByPath(String filePath) {
         String materialKey = "[material.texture]";
         Map<String, JsonUnbakedModel> models = new HashMap<>();
-        if (filePath.contains("[material.texture]")) {
-            models.put("default", loadModelFromFilePath(filePath.replace(materialKey, "default")));
+        if (filePath.contains(materialKey)) {
+            try {
+                String path = filePath.replace(materialKey, "default");
+                models.put("default", loadModelFromFilePath(path));
+            } catch (FileNotFoundException fileNotFoundException) {
+                throw new RuntimeException(fileNotFoundException);
+            }
             MaterialProperty.getTextureKeys().forEach((path) -> {
                 try {
                     JsonUnbakedModel model = loadModelFromFilePath(filePath.replace(materialKey, path));
                     if (model != null) {
                         models.put(path, model);
                     }
-                } catch (RuntimeException ignored) {
+                } catch (FileNotFoundException ignored) {
                 }
             });
         } else {
-            models.put("default", loadModelFromFilePath(filePath));
+            try {
+                models.put("default", loadModelFromFilePath(filePath));
+            } catch (FileNotFoundException fileNotFoundException) {
+                throw new RuntimeException(fileNotFoundException);
+            }
         }
         MaterialProperty.getTextureKeys();
         return models;

@@ -16,6 +16,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import smartin.miapi.Miapi;
 import smartin.miapi.item.attributes.AttributeRegistry;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.properties.AttributeProperty;
@@ -23,6 +24,7 @@ import smartin.miapi.item.modular.properties.AttributeProperty;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 @Mixin(ItemStack.class)
 public abstract class ItemStackMixin {

@@ -1,5 +1,7 @@
 package smartin.miapi.client.gui;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
@@ -14,6 +16,7 @@ import java.util.List;
  * setting the list of widgets, rendering the list, scrolling the list,
  * and handling mouse events.
  */
+@Environment(EnvType.CLIENT)
 public class ScrollList extends InteractAbleWidget {
     private List<InteractAbleWidget> widgets;
     private int scrollAmount;

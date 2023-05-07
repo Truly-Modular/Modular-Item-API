@@ -8,8 +8,12 @@ import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.registry.ReloadListenerRegistry;
 import dev.architectury.registry.level.entity.EntityAttributeRegistry;
 import dev.architectury.registry.menu.MenuRegistry;
+import net.minecraft.block.AbstractBlock;
+import net.minecraft.block.Block;
+import net.minecraft.block.Material;
 import net.minecraft.entity.attribute.DefaultAttributeRegistry;
 import net.minecraft.entity.attribute.EntityAttribute;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.resource.ResourceType;
@@ -21,6 +25,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import smartin.miapi.blocks.ModularWorkBench;
 import smartin.miapi.client.MiapiClient;
 import smartin.miapi.client.gui.crafting.CraftingGUI;
 import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
@@ -47,49 +52,52 @@ public class Miapi {
     public static final MiapiRegistry<ModuleProperty> modulePropertyRegistry = MiapiRegistry.getInstance(ModuleProperty.class);
     public static final MiapiRegistry<ItemModule> moduleRegistry = MiapiRegistry.getInstance(ItemModule.class);
     public static final MiapiRegistry<Item> itemRegistry = MiapiRegistry.getInstance(Item.class);
+    public static final ModularWorkBench WORK_BENCH = new ModularWorkBench(AbstractBlock.Settings.of(Material.METAL).dynamicBounds().nonOpaque());
+    public static final Identifier WORK_BENCH_IDENTIFIER = new Identifier(Miapi.MOD_ID, "modular_work_bench");
+
     public static MinecraftServer server;
     public static Gson gson = new Gson();
-    public static final ScreenHandlerType<CraftingScreenHandler> CRAFTING_SCREEN_HANDLER = register(new Identifier(Miapi.MOD_ID,"default_crafting"), CraftingScreenHandler::new);
+    public static final ScreenHandlerType<CraftingScreenHandler> CRAFTING_SCREEN_HANDLER = register(new Identifier(Miapi.MOD_ID, "default_crafting"), CraftingScreenHandler::new);
 
     public static void init() {
         setupRegistries();
         ReloadEvents.setup();
-        LifecycleEvent.SERVER_BEFORE_START.register(minecraftServer->{
+        LifecycleEvent.SERVER_BEFORE_START.register(minecraftServer -> {
             server = minecraftServer;
             LOGGER.info("Server before started");
         });
-        LifecycleEvent.SERVER_STARTING.register(minecraftServer->{
+        LifecycleEvent.SERVER_STARTING.register(minecraftServer -> {
             LOGGER.info("starting server");
         });
         ReloadListenerRegistry.register(ResourceType.SERVER_DATA, new ReloadListener());
-        if(Environment.isClient()){
+        if (Environment.isClient()) {
             MiapiClient.init();
         }
-        ReloadEvents.MAIN.subscribe((isClient)->{
+        ReloadEvents.MAIN.subscribe((isClient) -> {
             moduleRegistry.clear();
             ReloadEvents.DATA_PACKS.forEach(ItemModule::loadFromData);
-        },0.0f);
-        Miapi.itemRegistry.addCallback(item ->   {
+        }, 0.0f);
+        Miapi.itemRegistry.addCallback(item -> {
             Registry.register(Registry.ITEM, new Identifier(Miapi.itemRegistry.findKey(item)), item);
         });
-        MenuRegistry.registerScreenFactory(CRAFTING_SCREEN_HANDLER,CraftingGUI::new);
-        PropertyResolver.propertyProviderRegistry.register("module", (moduleInstance,oldMap) -> {
+        MenuRegistry.registerScreenFactory(CRAFTING_SCREEN_HANDLER, CraftingGUI::new);
+        PropertyResolver.propertyProviderRegistry.register("module", (moduleInstance, oldMap) -> {
             HashMap<ModuleProperty, JsonElement> map = new HashMap<>();
             moduleInstance.module.getProperties().forEach((key, jsonData) -> {
-                map.put(Miapi.modulePropertyRegistry.get(key),jsonData);
+                map.put(Miapi.modulePropertyRegistry.get(key), jsonData);
             });
             return map;
         });
         PropertyResolver.propertyProviderRegistry.register("moduleData", (moduleInstance, oldMap) -> {
             HashMap<ModuleProperty, JsonElement> map = new HashMap<>();
             String properties = moduleInstance.moduleData.get("properties");
-            if(properties!=null){
+            if (properties != null) {
                 JsonObject moduleJson = gson.fromJson(properties, JsonObject.class);
-                if(moduleJson!=null){
+                if (moduleJson != null) {
                     moduleJson.entrySet().forEach(stringJsonElementEntry -> {
                         ModuleProperty property = modulePropertyRegistry.get(stringJsonElementEntry.getKey());
-                        if(property!=null){
-                            map.put(property,stringJsonElementEntry.getValue());
+                        if (property != null) {
+                            map.put(property, stringJsonElementEntry.getValue());
                         }
                     });
                 }
@@ -123,48 +131,51 @@ public class Miapi {
         });
     }
 
-    protected static void setupRegistries(){
+    protected static void setupRegistries() {
         //DataPackPaths
-        ReloadEvents.registerDataPackPathToSync(Miapi.MOD_ID,"modules");
-        ReloadEvents.registerDataPackPathToSync(Miapi.MOD_ID,"materials");
+        ReloadEvents.registerDataPackPathToSync(Miapi.MOD_ID, "modules");
+        ReloadEvents.registerDataPackPathToSync(Miapi.MOD_ID, "materials");
 
         //ITEM
-        Miapi.itemRegistry.register(MOD_ID+":modular_item",new ExampleModularItem());
-        Miapi.itemRegistry.register(MOD_ID+":modular_handle",new ModularWeapon());
-        Miapi.itemRegistry.register(MOD_ID+":modular_sword",new ModularWeapon());
-        Miapi.itemRegistry.register(MOD_ID+":modular_katana",new ModularWeapon());
-        Miapi.itemRegistry.register(MOD_ID+":modular_greatsword",new ModularWeapon());
-        Miapi.itemRegistry.register(MOD_ID+":modular_dagger",new ModularWeapon());
-        Miapi.itemRegistry.register(MOD_ID+":modular_throwing_knife",new ModularWeapon());
-        Miapi.itemRegistry.register(MOD_ID+":modular_rapier",new ModularWeapon());
-        Miapi.itemRegistry.register(MOD_ID+":modular_longsword",new ModularWeapon());
+        Miapi.itemRegistry.register(MOD_ID + ":modular_item", new ExampleModularItem());
+        Miapi.itemRegistry.register(MOD_ID + ":modular_handle", new ModularWeapon());
+        Miapi.itemRegistry.register(MOD_ID + ":modular_sword", new ModularWeapon());
+        Miapi.itemRegistry.register(MOD_ID + ":modular_katana", new ModularWeapon());
+        Miapi.itemRegistry.register(MOD_ID + ":modular_greatsword", new ModularWeapon());
+        Miapi.itemRegistry.register(MOD_ID + ":modular_dagger", new ModularWeapon());
+        Miapi.itemRegistry.register(MOD_ID + ":modular_throwing_knife", new ModularWeapon());
+        Miapi.itemRegistry.register(MOD_ID + ":modular_rapier", new ModularWeapon());
+        Miapi.itemRegistry.register(MOD_ID + ":modular_longsword", new ModularWeapon());
 
-        Miapi.itemRegistry.register(MOD_ID+":modular_bow",new ExampleModularBowItem());
+        Miapi.itemRegistry.register(MOD_ID + ":modular_bow", new ExampleModularBowItem());
 
-        Miapi.itemRegistry.register(MOD_ID+":modular_helmet",new ModularHelmet());
-        Miapi.itemRegistry.register(MOD_ID+":modular_chestplate",new ModularChestPlate());
-        Miapi.itemRegistry.register(MOD_ID+":modular_leggings",new ModularLeggings());
-        Miapi.itemRegistry.register(MOD_ID+":modular_boots",new ModularBoots());
+        Miapi.itemRegistry.register(MOD_ID + ":modular_helmet", new ModularHelmet());
+        Miapi.itemRegistry.register(MOD_ID + ":modular_chestplate", new ModularChestPlate());
+        Miapi.itemRegistry.register(MOD_ID + ":modular_leggings", new ModularLeggings());
+        Miapi.itemRegistry.register(MOD_ID + ":modular_boots", new ModularBoots());
 
 
-        Miapi.modulePropertyRegistry.register("moduleproperty1", (key,data) -> true);
-        Miapi.modulePropertyRegistry.register("moduleproperty3", (key,data) -> true);
+        Miapi.modulePropertyRegistry.register("moduleproperty1", (key, data) -> true);
+        Miapi.modulePropertyRegistry.register("moduleproperty3", (key, data) -> true);
         //MODULEPROPERTIES
         Miapi.modulePropertyRegistry.register(NameProperty.KEY, new NameProperty());
         Miapi.modulePropertyRegistry.register(ModelProperty.KEY, new ModelProperty());
         Miapi.modulePropertyRegistry.register(SlotProperty.KEY, new SlotProperty());
-        Miapi.modulePropertyRegistry.register(AllowedSlots.KEY,new AllowedSlots());
-        Miapi.modulePropertyRegistry.register(MaterialProperty.KEY,new MaterialProperty());
-        Miapi.modulePropertyRegistry.register(AllowedMaterial.KEY,new AllowedMaterial());
-        Miapi.modulePropertyRegistry.register(AttributeProperty.KEY,new AttributeProperty());
-        Miapi.modulePropertyRegistry.register(ModelTransformationProperty.KEY,new ModelTransformationProperty());
-        Miapi.modulePropertyRegistry.register(DisplayNameProperty.KEY,new DisplayNameProperty());
-        Miapi.modulePropertyRegistry.register(ItemIdProperty.KEY,new ItemIdProperty());
-        Miapi.modulePropertyRegistry.register(GuiOffsetProperty.KEY,new GuiOffsetProperty());
-        Miapi.modulePropertyRegistry.register(EquipmentSlotProperty.KEY,new EquipmentSlotProperty());
-        Miapi.modulePropertyRegistry.register(ModelMergeProperty.KEY,new ModelMergeProperty());
+        Miapi.modulePropertyRegistry.register(AllowedSlots.KEY, new AllowedSlots());
+        Miapi.modulePropertyRegistry.register(MaterialProperty.KEY, new MaterialProperty());
+        Miapi.modulePropertyRegistry.register(AllowedMaterial.KEY, new AllowedMaterial());
+        Miapi.modulePropertyRegistry.register(AttributeProperty.KEY, new AttributeProperty());
+        Miapi.modulePropertyRegistry.register(ModelTransformationProperty.KEY, new ModelTransformationProperty());
+        Miapi.modulePropertyRegistry.register(DisplayNameProperty.KEY, new DisplayNameProperty());
+        Miapi.modulePropertyRegistry.register(ItemIdProperty.KEY, new ItemIdProperty());
+        Miapi.modulePropertyRegistry.register(GuiOffsetProperty.KEY, new GuiOffsetProperty());
+        Miapi.modulePropertyRegistry.register(EquipmentSlotProperty.KEY, new EquipmentSlotProperty());
+        Miapi.modulePropertyRegistry.register(ModelMergeProperty.KEY, new ModelMergeProperty());
 
         new AttributeRegistry();
+
+        Registry.register(Registry.BLOCK, WORK_BENCH_IDENTIFIER, WORK_BENCH);
+        Registry.register(Registry.ITEM, WORK_BENCH_IDENTIFIER, new BlockItem(WORK_BENCH, new Item.Settings()));
     }
 
     private static <T extends ScreenHandler> ScreenHandlerType<T> register(Identifier id, ScreenHandlerType.Factory<T> factory) {

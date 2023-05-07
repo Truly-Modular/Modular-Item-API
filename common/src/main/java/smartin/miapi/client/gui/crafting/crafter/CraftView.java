@@ -1,6 +1,8 @@
 package smartin.miapi.client.gui.crafting.crafter;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
@@ -25,6 +27,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
+@Environment(EnvType.CLIENT)
 public class CraftView extends InteractAbleWidget {
     ItemStack compareStack;
     ItemStack originalStack;

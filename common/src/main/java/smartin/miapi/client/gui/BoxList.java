@@ -1,6 +1,8 @@
 package smartin.miapi.client.gui;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.render.GameRenderer;
@@ -14,6 +16,7 @@ import javax.annotation.Nullable;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Environment(EnvType.CLIENT)
 public class BoxList extends InteractAbleWidget {
     private Map<Integer, List<ClickableWidget>> widgetPages;
     private int currentPage = 0;

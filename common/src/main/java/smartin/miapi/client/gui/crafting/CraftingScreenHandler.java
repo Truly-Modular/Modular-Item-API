@@ -49,9 +49,9 @@ public class CraftingScreenHandler extends ScreenHandler {
      */
     public CraftingScreenHandler(int syncId, PlayerInventory playerInventory, ScreenHandlerContext context) {
         super(Miapi.CRAFTING_SCREEN_HANDLER, syncId);
-        packetID = Miapi.MOD_ID + PACKET_ID + syncId;
-        packetIDSlotAdd = Miapi.MOD_ID + PACKET_ID + syncId + "slotAdd";
-        packetIDSlotRemove = Miapi.MOD_ID + PACKET_ID + syncId + "slotRemove";
+        packetID = Miapi.MOD_ID + PACKET_ID + playerInventory.player.getUuidAsString() + "_" + syncId;
+        packetIDSlotAdd = Miapi.MOD_ID + PACKET_ID + "_" + playerInventory.player.getUuidAsString() + "_" + syncId + "_slotAdd";
+        packetIDSlotRemove = Miapi.MOD_ID + PACKET_ID + "_" + playerInventory.player.getUuidAsString() + "_" + syncId + "_slotRemove";
         this.playerInventory = playerInventory;
         if (playerInventory.player instanceof ServerPlayerEntity) {
             Networking.registerC2SPacket(packetID, (buffer, player) -> {
@@ -205,9 +205,9 @@ public class CraftingScreenHandler extends ScreenHandler {
                 this.inventory.setStack(i, ItemStack.EMPTY);
             }
         }
-        Networking.unRegisterC2CPacket(packetID);
-        Networking.unRegisterC2CPacket(packetIDSlotAdd);
-        Networking.unRegisterC2CPacket(packetIDSlotRemove);
+        Networking.unRegisterC2SPacket(packetID);
+        Networking.unRegisterC2SPacket(packetIDSlotAdd);
+        Networking.unRegisterC2SPacket(packetIDSlotRemove);
     }
 
     @Override

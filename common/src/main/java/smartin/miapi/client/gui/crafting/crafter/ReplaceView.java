@@ -1,6 +1,8 @@
 package smartin.miapi.client.gui.crafting.crafter;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
@@ -18,6 +20,7 @@ import smartin.miapi.item.modular.properties.AllowedSlots;
 import java.util.ArrayList;
 import java.util.function.Consumer;
 
+@Environment(EnvType.CLIENT)
 public class ReplaceView extends InteractAbleWidget {
     Consumer<ItemModule> craft;
     Consumer<ItemModule> preview;

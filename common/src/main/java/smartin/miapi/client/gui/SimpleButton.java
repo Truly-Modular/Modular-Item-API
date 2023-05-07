@@ -1,6 +1,8 @@
 package smartin.miapi.client.gui;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
@@ -16,7 +18,7 @@ import java.util.function.Consumer;
  *
  * @param <T> The type of the argument accepted by the callback.
  */
-
+@Environment(EnvType.CLIENT)
 public class SimpleButton<T> extends InteractAbleWidget {
     private final Identifier texture = new Identifier(Miapi.MOD_ID, "textures/gui/crafter/button.png");
     private T toCallback;

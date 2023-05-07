@@ -1,6 +1,8 @@
 package smartin.miapi.client.gui.crafting.slotdisplay;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.DiffuseLighting;
 import net.minecraft.client.render.GameRenderer;
@@ -31,6 +33,7 @@ import java.util.function.Consumer;
  * is this class a mess? yes. yes it is.
  * does it work? more or less
  */
+@Environment(EnvType.CLIENT)
 public class SlotDisplay extends InteractAbleWidget {
     private final Map<SlotProperty.ModuleSlot, ModuleButton> buttonMap = new HashMap<>();
     private ItemStack stack;

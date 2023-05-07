@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import net.minecraft.block.Material;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tag.TagKey;
@@ -34,22 +35,27 @@ public class MaterialProperty implements ModuleProperty {
                 JsonElement jsonData = instance.getKeyedProperties().get(KEY);
                 try {
                     if (jsonData != null) {
-                        jsonData = materials.get(jsonData.getAsString()).rawJson;
-                        if (jsonData != null) {
-                            String[] keys = data.split("\\.");
-                            for (String key : keys) {
-                                jsonData = jsonData.getAsJsonObject().get(key);
-                                if (jsonData == null) {
-                                    break;
-                                }
-                            }
+                        String materialKey = jsonData.getAsString();
+                        Material material = materials.get(materialKey);
+                        if(material!=null){
+                            jsonData = materials.get(jsonData.getAsString()).rawJson;
                             if (jsonData != null) {
-                                return jsonData.getAsDouble();
+                                String[] keys = data.split("\\.");
+                                for (String key : keys) {
+                                    jsonData = jsonData.getAsJsonObject().get(key);
+                                    if (jsonData == null) {
+                                        break;
+                                    }
+                                }
+                                if (jsonData != null) {
+                                    return jsonData.getAsDouble();
+                                }
                             }
                         }
                     }
                 } catch (Exception exception){
                     Miapi.LOGGER.warn("Error during Material Resolve");
+                    Miapi.LOGGER.error(exception.getMessage());
                     exception.printStackTrace();
                 }
                 return 0;
@@ -60,18 +66,25 @@ public class MaterialProperty implements ModuleProperty {
                 JsonElement jsonData = instance.getProperties().get(property);
                 try {
                     if (jsonData != null) {
-                        jsonData = materials.get(jsonData.getAsString()).rawJson;
-                        if (jsonData != null) {
-                            String[] keys = data.split("\\.");
-                            for (String key : keys) {
-                                jsonData = jsonData.getAsJsonObject().get(key);
-                                if (jsonData == null) {
-                                    break;
+                        String materialKey = jsonData.getAsString();
+                        Material material = materials.get(materialKey);
+                        if(material!=null){
+                            jsonData = materials.get(jsonData.getAsString()).rawJson;
+                            if (jsonData != null) {
+                                String[] keys = data.split("\\.");
+                                for (String key : keys) {
+                                    jsonData = jsonData.getAsJsonObject().get(key);
+                                    if (jsonData == null) {
+                                        break;
+                                    }
+                                }
+                                if (jsonData != null) {
+                                    return jsonData.getAsString();
                                 }
                             }
-                            if (jsonData != null) {
-                                return jsonData.getAsString();
-                            }
+                        }
+                        else{
+                            Miapi.LOGGER.warn("Material "+ materialKey + " not found");
                         }
                     }
                 } catch (Exception exception){

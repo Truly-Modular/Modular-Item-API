@@ -1,5 +1,7 @@
 package smartin.miapi.client.gui;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.Element;
@@ -12,6 +14,7 @@ import net.minecraft.text.Text;
  * Once the end of the text is reached, the widget holds for a customizable amount
  * of time before starting again.
  */
+@Environment(EnvType.CLIENT)
 public class ScrollingTextWidget extends InteractAbleWidget implements Drawable, Element {
 
     private Text text;

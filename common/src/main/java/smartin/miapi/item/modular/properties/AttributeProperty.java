@@ -15,6 +15,7 @@ import smartin.miapi.Miapi;
 import smartin.miapi.item.modular.ItemModule;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.item.modular.cache.ModularItemCache;
+import smartin.miapi.item.modular.items.ExampleModularItem;
 
 import java.lang.reflect.Type;
 import java.util.List;
@@ -117,7 +118,13 @@ public class AttributeProperty implements ModuleProperty {
 
             if (attribute != null) {
                 if (uuid != null) {
-                    // Use constructor with UUID
+                    // Thanks Mojang for using == and not .equals so i have to do this abomination
+                    if(uuid.equals(ExampleModularItem.attackDamageUUID())){
+                        uuid = ExampleModularItem.attackDamageUUID();
+                    }
+                    if(uuid.equals(ExampleModularItem.attackSpeedUUID())){
+                        uuid = ExampleModularItem.attackSpeedUUID();
+                    }
                     attributeModifiers.put(attribute, new EntityAttributeModifierHolder(new EntityAttributeModifier(uuid, attributeName, value, operation), slot));
                 } else {
                     // Use constructor without UUID
