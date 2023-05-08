@@ -14,8 +14,6 @@ public class TrulyModularFabric implements ModInitializer {
     @Override
     public void onInitialize() {
         Miapi.init();
-
-        ClientSync.init();
         //NETWORKING
         networkingImplFabric = new NetworkingImplFabric();
         Networking.setImplementation(networkingImplFabric);

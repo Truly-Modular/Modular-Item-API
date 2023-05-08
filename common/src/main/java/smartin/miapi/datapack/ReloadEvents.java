@@ -1,5 +1,6 @@
 package smartin.miapi.datapack;
 
+import dev.architectury.event.events.common.PlayerEvent;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -94,9 +95,16 @@ public class ReloadEvents {
             });
         }));
 
+        PlayerEvent.PLAYER_JOIN.register((player -> {
+            //scedule join?
+            Miapi.LOGGER.warn(player.networkHandler.toString());
+            triggerReloadOnClient(player);
+        }));
+
         DataPackLoader.subscribe((path, data) -> {
             DATA_PACKS.put(path, data);
         });
+
     }
 
     /**
@@ -127,6 +135,17 @@ public class ReloadEvents {
             if (inReload) {
                 Miapi.LOGGER.error("Cannot trigger a Reload during another reload");
                 return;
+            }
+            int counterinit = 0;
+            while (MinecraftClient.getInstance().getNetworkHandler()==null){
+                counterinit++;
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                }
+                if(counterinit>20){
+                    throw new RuntimeException("Miapi waited 2 Minutes and still could not establish a Connection with the server and is unable to force disconnect");
+                }
             }
             inReload = true;
             dataPackSize = buffer.readInt();

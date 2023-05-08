@@ -3,10 +3,7 @@ package smartin.miapi.item.modular;
 import com.google.gson.Gson;
 import net.minecraft.client.render.model.ModelBakeSettings;
 import net.minecraft.client.render.model.json.Transformation;
-import net.minecraft.util.math.AffineTransformation;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Quaternion;
-import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.*;
 
 /**
  * A Transform represents a transformation in 3D space, including rotation, translation, and scaling.
@@ -47,21 +44,18 @@ public class Transform extends Transformation {
     /**
      * Merges two Transformations into a new Transform. The parent transformation is applied first, followed by the child.
      *
-     * @param parent the parent transformation, as a Transformation
-     * @param child  the child transformation, as a Transformation
+     * @param parent        the parent transformation, as a Transformation
+     * @param originalChild the child transformation, as a Transformation
      * @return the merged transformation, as a new Transform
      */
-    public static Transform merge(Transform parent, Transform child) {
-        AffineTransformation parentTransformation = parent.toAffineTransformation();
-        parentTransformation = parentTransformation.multiply(child.toAffineTransformation());
-        Vec3f translation = parentTransformation.getTranslation();
-        translation.scale(16);
-        Transform transform = new Transform(parentTransformation.getRotation2().toEulerXyzDegrees(), translation, parentTransformation.getScale());
-        transform.origin = parent.origin;
-        if(child.origin!=null){
-            transform.origin= child.origin;
-        }
-        return transform;
+    public static Transform merge(Transform parent, Transform originalChild) {
+        Transform child = originalChild.copy();
+        parent = parent.copy();
+        Matrix4f parentMatrix = parent.toMatrix();
+
+        Matrix4f childMatrix = child.toMatrix();
+        childMatrix.multiply(parentMatrix);
+        return fromMatrix(childMatrix);
     }
 
     /**
@@ -98,6 +92,13 @@ public class Transform extends Transformation {
         z += translation.getZ();
 
         return new Vec3f(x, y, z);
+    }
+
+    public Matrix4f toMatrix(){
+        Matrix4f matrix4f = Matrix4f.translate(translation.getX(),translation.getY(),translation.getZ());
+        matrix4f.multiply(new Matrix4f(Quaternion.fromEulerXyzDegrees(rotation.copy())));
+        matrix4f.multiply(Matrix4f.scale(scale.getX(),scale.getY(),scale.getZ()));
+        return matrix4f;
     }
 
     /**
@@ -141,9 +142,9 @@ public class Transform extends Transformation {
      */
     public static Transform toModelTransformation(Transformation transformation) {
         Transform transform = repair(transformation);
-        transform.translation.scale(1.0f / 16.0f);
         //TODO:enable this and change all jsons
-        //transform.translation.multiplyComponentwise(transform.scale.getX(),transform.scale.getY(),transform.scale.getZ());
+        transform.translation.scale(1.0f / 16.0f);
+        //transform.translation.multiplyComponentwise(transform.scale.getX(), transform.scale.getY(), transform.scale.getZ());
         return transform;
     }
 
@@ -153,10 +154,12 @@ public class Transform extends Transformation {
      * @return an AffineTransformation with the rotation, translation, and scale from this Transform.
      */
     public AffineTransformation toAffineTransformation() {
-        Quaternion rotation = Quaternion.fromEulerXyzDegrees(this.rotation.copy());
-        Vec3f scaled = translation.copy();
-        scaled.scale(1 / 16f);
-        AffineTransformation affineTransformation = new AffineTransformation(scaled, null, scale.copy(), rotation);
+        Transform transform = this.copy();
+        Quaternion rotation = Quaternion.fromEulerXyzDegrees(transform.rotation.copy());
+        Vec3f translationVector = transform.translation.copy();
+        //translationVector.multiplyComponentwise(1 / scale.getX(), 1 / scale.getY(), 1 / scale.getZ());
+        AffineTransformation affineTransformation = new AffineTransformation(translationVector, null, transform.scale.copy(), rotation);
+        affineTransformation = new AffineTransformation(this.toMatrix());
         return affineTransformation;
     }
 
@@ -166,17 +169,25 @@ public class Transform extends Transformation {
      * @return a ModelBakeSettings
      */
     public ModelBakeSettings toModelBakeSettings() {
-        AffineTransformation affineTransformation = toAffineTransformation();
+        Transform transform = toModelTransformation(this);
+        AffineTransformation affineTransformation = transform.toAffineTransformation();
         return new ModelBakeSettings() {
             @Override
             public AffineTransformation getRotation() {
                 return affineTransformation;
             }
+
             @Override
             public boolean isUvLocked() {
                 return false;
             }
         };
+    }
+
+    public static Transform fromMatrix(Matrix4f matrix4f){
+        AffineTransformation affineTransformation = new AffineTransformation(matrix4f);
+        Vec3f translation = affineTransformation.getTranslation();
+        return new Transform(affineTransformation.getRotation2().toEulerXyzDegrees(), translation, affineTransformation.getScale());
     }
 
     @Override

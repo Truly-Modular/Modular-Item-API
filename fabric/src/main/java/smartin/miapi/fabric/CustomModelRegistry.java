@@ -12,12 +12,9 @@ import smartin.miapi.client.model.CustomModel;
 
 @Environment(EnvType.CLIENT)
 public class CustomModelRegistry implements ModelResourceProvider{
-
-    public static final Identifier MODULAR_ITEM = new Identifier(Miapi.MOD_ID+":item/modular_item");
-
     @Override
     public UnbakedModel loadModelResource(Identifier identifier, ModelProviderContext modelProviderContext) throws ModelProviderException {
-        if(identifier.equals(MODULAR_ITEM) || isModularItem(identifier)) {
+        if(isModularItem(identifier)) {
             return new CustomModel();
         } else {
             return null;

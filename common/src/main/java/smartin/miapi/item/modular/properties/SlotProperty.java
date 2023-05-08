@@ -69,7 +69,7 @@ public class SlotProperty implements ModuleProperty {
                 mergedTransform.set(stack.primary, mergedTransform.get(null));
                 mergedTransform.set(null, Transform.IDENTITY);
             }
-            mergedTransform = TransformMap.merge(getLocalTransformStack(current), mergedTransform);
+            mergedTransform = TransformMap.merge(mergedTransform,getLocalTransformStack(current));
             current = current.parent;
         }
         mergedTransform = TransformMap.merge(mergedTransform, moduleSlot.getTransformStack());

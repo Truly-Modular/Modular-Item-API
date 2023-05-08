@@ -32,7 +32,7 @@ public class SpriteLoader {
 
         ReloadEvents.END.subscribe(isClient -> {
             if (isClient) {
-                reloadSprites();
+                //reloadSprites();
             }
         });
     }
