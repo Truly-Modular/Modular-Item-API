@@ -12,6 +12,7 @@ import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.ParentHandledScreen;
 import smartin.miapi.client.gui.crafting.crafter.ModuleCrafter;
 import smartin.miapi.client.gui.crafting.slotdisplay.SlotDisplay;
+import smartin.miapi.client.gui.crafting.statdisplay.StatDisplay;
 import smartin.miapi.item.modular.ItemModule;
 import smartin.miapi.item.modular.properties.SlotProperty;
 
@@ -24,6 +25,7 @@ public class CraftingGUI extends ParentHandledScreen<CraftingScreenHandler> impl
     private ItemStack stack;
     SlotDisplay slotDisplay;
     ModuleCrafter moduleCrafter;
+    StatDisplay statDisplay;
     SlotProperty.ModuleSlot baseSlot;
 
     public CraftingGUI(CraftingScreenHandler handler, PlayerInventory playerInventory, Text title) {
@@ -40,6 +42,7 @@ public class CraftingGUI extends ParentHandledScreen<CraftingScreenHandler> impl
             slotDisplay.select(selectedSlot);
         }, (item) -> {
             slotDisplay.setItem(item);
+            statDisplay.setCompareTo(item);
         }, handler.inventory,
                 handler::addSlotByClient, handler::removeSlotByClient);
         moduleCrafter.setPacketIdentifier(handler.packetID);
@@ -47,6 +50,8 @@ public class CraftingGUI extends ParentHandledScreen<CraftingScreenHandler> impl
             moduleCrafter.setSelectedSlot(selected);
         });
         slotDisplay.setItem(getItem());
+        statDisplay = new StatDisplay((this.width - this.backgroundWidth) / 2 + 8-108+15, (this.height - this.backgroundHeight) / 2 + 8, 86, 206 - 20);
+        this.addChild(statDisplay);
         this.addSelectableChild(slotDisplay);
         moduleCrafter.setItem(getItem());
         this.addSelectableChild(moduleCrafter);
@@ -88,6 +93,9 @@ public class CraftingGUI extends ParentHandledScreen<CraftingScreenHandler> impl
                 moduleCrafter.setBaseSlot(current);
                 moduleCrafter.setItem(stack);
                 moduleCrafter.setSelectedSlot(null);
+            }
+            if(statDisplay!=null){
+                statDisplay.setOriginal(stack);
             }
         }
     }

@@ -24,12 +24,12 @@
 			"from": [1, 12, 1],
 			"to": [15, 14, 15],
 			"faces": {
-				"north": {"uv": [0, 0, 14, 2], "texture": "#anvil", "cullface": "south"},
-				"east": {"uv": [0, 0, 2, 2], "texture": "#anvil", "cullface": "west"},
-				"south": {"uv": [0, 0, 14, 2], "texture": "#anvil", "cullface": "north"},
-				"west": {"uv": [0, 0, 2, 2], "texture": "#anvil", "cullface": "east"},
+				"north": {"uv": [2, 14, 0, 2], "rotation": 90, "texture": "#anvil", "cullface": "south"},
+				"east": {"uv": [2, 0, 14, 2], "texture": "#anvil", "cullface": "west"},
+				"south": {"uv": [14, 2, 16, 14], "rotation": 90, "texture": "#anvil", "cullface": "north"},
+				"west": {"uv": [2, 14, 14, 16], "texture": "#anvil", "cullface": "east"},
 				"up": {"uv": [2, 2, 14, 14], "texture": "#anvil", "cullface": "down"},
-				"down": {"uv": [0, 0, 14, 2], "texture": "#anvil", "cullface": "up"}
+				"down": {"uv": [2, 2, 14, 14], "texture": "#anvil", "cullface": "up"}
 			}
 		}
 	]

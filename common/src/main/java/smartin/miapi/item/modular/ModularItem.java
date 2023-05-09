@@ -8,7 +8,7 @@ import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.item.ItemStack;
-import smartin.miapi.item.attributes.AttributeRegistry;
+import smartin.miapi.attributes.AttributeRegistry;
 
 import java.util.Collection;
 

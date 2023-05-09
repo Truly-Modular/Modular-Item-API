@@ -95,15 +95,10 @@ public class ReloadEvents {
             });
         }));
 
-        PlayerEvent.PLAYER_JOIN.register((player -> {
-            //scedule join?
-            Miapi.LOGGER.warn(player.networkHandler.toString());
-            triggerReloadOnClient(player);
-        }));
+        //scedule join?
+        PlayerEvent.PLAYER_JOIN.register((ReloadEvents::triggerReloadOnClient));
 
-        DataPackLoader.subscribe((path, data) -> {
-            DATA_PACKS.put(path, data);
-        });
+        DataPackLoader.subscribe(DATA_PACKS::put);
 
     }
 

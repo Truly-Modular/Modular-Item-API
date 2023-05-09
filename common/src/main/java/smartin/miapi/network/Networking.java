@@ -41,7 +41,6 @@ public class Networking {
         if (entity == null) {
             var consumer = S2CPackets.get(key);
             if (consumer != null) {
-                Miapi.LOGGER.error(key);
                 consumer.accept(data);
             }
         } else {
