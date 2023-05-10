@@ -160,6 +160,15 @@
         ],
         "cost": 1
     },
+    "attributes": [
+        {
+            "attribute": "generic.attack_speed",
+            "value": "-3",
+            "operation": "+",
+            "slot": "mainhand",
+            "uuid": "FA233E1C-4180-4865-B01B-BCCE9785ACA3"
+        }
+    ],
     "displayName": "[material.key] short Handle",
     "itemId": "miapi:modular_handle"
 }

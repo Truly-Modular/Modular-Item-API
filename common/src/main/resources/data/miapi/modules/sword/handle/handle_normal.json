@@ -3,9 +3,21 @@
     "texture": {
         "path": "miapi:models/item/sword/handle/one_handed_large/[material.texture].json",
         "transform": {
-            "rotation": {"x": 0.0, "y": 0.0, "z": 0.0},
-            "translation": {"x": -4.0, "y": -5.0, "z": 0.0},
-            "scale": {"x": 1.0, "y": 1.0, "z": 1.0}
+            "rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "translation": {
+                "x": -4.0,
+                "y": -5.0,
+                "z": 0.0
+            },
+            "scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+            }
         }
     },
     "allowedInSlots": [
@@ -18,9 +30,21 @@
                 "sword_blade_small"
             ],
             "transform": {
-                "rotation": {"x": 0.0, "y": 0.0, "z": 0.0},
-                "translation": {"x": 2.0, "y": 2.0, "z": 0.0},
-                "scale": {"x": 1.0, "y": 1.0, "z": 1.0}
+                "rotation": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "translation": {
+                    "x": 2.0,
+                    "y": 2.0,
+                    "z": 0.0
+                },
+                "scale": {
+                    "x": 1.0,
+                    "y": 1.0,
+                    "z": 1.0
+                }
             }
         },
         "1": {
@@ -28,9 +52,21 @@
                 "sword_pommel"
             ],
             "transform": {
-                "rotation": {"x": 0.0, "y": 0.0, "z": 0.0},
-                "translation": {"x": -2.0, "y": -2.0, "z": 0.0},
-                "scale": {"x": 1.0, "y": 1.0, "z": 1.0}
+                "rotation": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "translation": {
+                    "x": -2.0,
+                    "y": -2.0,
+                    "z": 0.0
+                },
+                "scale": {
+                    "x": 1.0,
+                    "y": 1.0,
+                    "z": 1.0
+                }
             }
         }
     },
@@ -160,6 +196,15 @@
         ],
         "cost": 1
     },
+    "attributes": [
+        {
+            "attribute": "generic.attack_speed",
+            "value": "-3",
+            "operation": "+",
+            "slot": "mainhand",
+            "uuid": "FA233E1C-4180-4865-B01B-BCCE9785ACA3"
+        }
+    ],
     "displayName": "[material.key] Handle",
     "itemId": "miapi:modular_handle"
 }

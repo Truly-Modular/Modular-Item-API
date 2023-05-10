@@ -142,7 +142,7 @@ public class ModelProperty implements ModuleProperty {
                         }
                     }
                     assert unbakedModel != null;
-                    scaleAdder.updateAndGet(v -> (v + 0.03f));
+                    scaleAdder.updateAndGet(v -> (v + 0.0003f));
                     TransformMap transformMap = SlotProperty.getTransformStack(moduleI);
                     transformMap.add(json.transform.copy());
                     String modelId = transformMap.primary;
@@ -152,7 +152,7 @@ public class ModelProperty implements ModuleProperty {
                     }
                     transformMap.primary = modelId;
                     transform1.scale.scale(scaleAdder.get());
-                    transform1.translation.scale(scaleAdder.get());
+                    //transform1.translation.scale(scaleAdder.get());
                     //transform1.translation.add(new Vec3f(-scaleAdder.get()/3+1,-scaleAdder.get()/3+1,-scaleAdder.get()/3+1));
                     transformMap.set(transformMap.primary, transform1);
                     unbakedModels.add(new TransformedUnbakedModel(transformMap, unbakedModel, moduleI, color));

@@ -36,9 +36,9 @@ public class AttributeProperty implements ModuleProperty {
     @Override
     public boolean load(String moduleKey, JsonElement element) throws Exception {
         Multimap<EntityAttribute, EntityAttributeModifierHolder> attributeModifiers = ArrayListMultimap.create();
-        JsonObject attributesJson = element.getAsJsonObject();
-        for (String attributeName : attributesJson.keySet()) {
-            JsonObject attributeJson = attributesJson.getAsJsonObject(attributeName);
+        for (JsonElement attributeElement : element.getAsJsonArray()) {
+            JsonObject attributeJson = attributeElement.getAsJsonObject();
+            String attributeName = attributeJson.get("attribute").getAsString();
             double value = StatResolver.resolveDouble(attributeJson.get("value").getAsString(), new ItemModule.ModuleInstance(ItemModule.empty));
             EntityAttributeModifier.Operation operation = getOperation(attributeJson.get("operation").getAsString());
             EquipmentSlot slot = getSlot(attributeJson.get("slot").getAsString());
@@ -50,7 +50,7 @@ public class AttributeProperty implements ModuleProperty {
             }
             String modifierName = attributeName;
             if (attributeJson.has("name")) {
-                modifierName =  attributeJson.get("name").getAsString();
+                modifierName = attributeJson.get("name").getAsString();
             }
 
             if (attribute != null) {
@@ -68,13 +68,14 @@ public class AttributeProperty implements ModuleProperty {
 
     @Override
     public JsonElement merge(JsonElement old, JsonElement toMerge, MergeType type) {
-        Type typeToken = new TypeToken<List<JsonElement>>(){}.getType();
-        List<JsonElement> oldList  = Miapi.gson.fromJson(old,typeToken);
-        List<JsonElement> newList  = Miapi.gson.fromJson(toMerge,typeToken);
-        switch (type){
-            case SMART,EXTEND -> {
+        Type typeToken = new TypeToken<List<JsonElement>>() {
+        }.getType();
+        List<JsonElement> oldList = Miapi.gson.fromJson(old, typeToken);
+        List<JsonElement> newList = Miapi.gson.fromJson(toMerge, typeToken);
+        switch (type) {
+            case SMART, EXTEND -> {
                 oldList.addAll(newList);
-                return Miapi.gson.toJsonTree(oldList,typeToken);
+                return Miapi.gson.toJsonTree(oldList, typeToken);
             }
             case OVERWRITE -> {
                 return toMerge;
@@ -102,9 +103,9 @@ public class AttributeProperty implements ModuleProperty {
         if (element == null) {
             return;
         }
-        JsonObject attributesJson = element.getAsJsonObject();
-        for (String attributeName : attributesJson.keySet()) {
-            JsonObject attributeJson = attributesJson.getAsJsonObject(attributeName);
+        for (JsonElement attributeElement : element.getAsJsonArray()) {
+            JsonObject attributeJson = attributeElement.getAsJsonObject();
+            String attributeName = attributeJson.get("attribute").getAsString();
             double value = StatResolver.resolveDouble(attributeJson.get("value").getAsString(), instance);
             EntityAttributeModifier.Operation operation = getOperation(attributeJson.get("operation").getAsString());
             EquipmentSlot slot = getSlot(attributeJson.get("slot").getAsString());
@@ -119,10 +120,10 @@ public class AttributeProperty implements ModuleProperty {
             if (attribute != null) {
                 if (uuid != null) {
                     // Thanks Mojang for using == and not .equals so i have to do this abomination
-                    if(uuid.equals(ExampleModularItem.attackDamageUUID())){
+                    if (uuid.equals(ExampleModularItem.attackDamageUUID())) {
                         uuid = ExampleModularItem.attackDamageUUID();
                     }
-                    if(uuid.equals(ExampleModularItem.attackSpeedUUID())){
+                    if (uuid.equals(ExampleModularItem.attackSpeedUUID())) {
                         uuid = ExampleModularItem.attackSpeedUUID();
                     }
                     attributeModifiers.put(attribute, new EntityAttributeModifierHolder(new EntityAttributeModifier(uuid, attributeName, value, operation), slot));
@@ -159,5 +160,8 @@ public class AttributeProperty implements ModuleProperty {
     }
 
     public record EntityAttributeModifierHolder(EntityAttributeModifier attributeModifier, EquipmentSlot slot) {
+    }
+
+    public record AttributeJson(String attribute, String value, String operation, String slot, String uuid) {
     }
 }

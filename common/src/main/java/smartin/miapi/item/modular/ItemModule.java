@@ -221,6 +221,30 @@ public class ItemModule {
     }
 
     /**
+     * this method works through all submodules and merges the Properties depending on the supplied MergeType
+     *
+     * @param itemStack the ModularItemStack
+     * @param property  the property to be merged
+     * @param type      the mergeType for the merge Logic
+     * @return the merged PropertyJson
+     */
+    public static JsonElement getMergedProperty(ItemStack itemStack, ModuleProperty property, MergeType type) {
+        ModuleInstance moduleInstance = getModules(itemStack);
+        JsonElement mergedProperty = null;
+        for (ItemModule.ModuleInstance module : moduleInstance.allSubModules()) {
+            JsonElement currentProperty = module.getProperties().get(property);
+            if (currentProperty != null) {
+                if (mergedProperty == null) {
+                    mergedProperty = currentProperty;
+                } else {
+                    mergedProperty = property.merge(mergedProperty, currentProperty, type);
+                }
+            }
+        }
+        return mergedProperty;
+    }
+
+    /**
      * Creates a flat list of all modules starting from the specified root module.
      *
      * @param root the root module

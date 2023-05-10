@@ -50,7 +50,7 @@ public class CraftingGUI extends ParentHandledScreen<CraftingScreenHandler> impl
             moduleCrafter.setSelectedSlot(selected);
         });
         slotDisplay.setItem(getItem());
-        statDisplay = new StatDisplay((this.width - this.backgroundWidth) / 2 + 8-108+15, (this.height - this.backgroundHeight) / 2 + 8, 86, 206 - 20);
+        statDisplay = new StatDisplay((this.width - this.backgroundWidth) / 2 + 8 - 108 + 18, (this.height - this.backgroundHeight) / 2 - 1, 86, 206 - 20);
         this.addChild(statDisplay);
         this.addSelectableChild(slotDisplay);
         moduleCrafter.setItem(getItem());
@@ -82,7 +82,7 @@ public class CraftingGUI extends ParentHandledScreen<CraftingScreenHandler> impl
             setItem(handler.inventory.getStack(0));
             baseSlot.inSlot = ItemModule.getModules(stack);
             SlotProperty.ModuleSlot current = baseSlot;
-            if(baseSlot.inSlot.module.equals(ItemModule.empty)){
+            if (baseSlot.inSlot.module.equals(ItemModule.empty)) {
                 current = null;
             }
             if (slotDisplay != null) {
@@ -94,7 +94,7 @@ public class CraftingGUI extends ParentHandledScreen<CraftingScreenHandler> impl
                 moduleCrafter.setItem(stack);
                 moduleCrafter.setSelectedSlot(null);
             }
-            if(statDisplay!=null){
+            if (statDisplay != null) {
                 statDisplay.setOriginal(stack);
             }
         }

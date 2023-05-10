@@ -1,14 +1,8 @@
 package smartin.miapi.client;
 
-import dev.architectury.event.EventResult;
-import dev.architectury.event.events.client.ClientChatEvent;
 import dev.architectury.event.events.client.ClientLifecycleEvent;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.screen.NamedScreenHandlerFactory;
-import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
-import net.minecraft.text.Text;
 import smartin.miapi.Miapi;
-import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
 import smartin.miapi.client.model.CustomColorProvider;
 import smartin.miapi.mixin.ItemRendererAccessor;
 

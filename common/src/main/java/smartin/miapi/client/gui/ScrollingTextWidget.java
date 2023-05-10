@@ -7,6 +7,7 @@ import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
+import smartin.miapi.Miapi;
 
 /**
  * This is a widget that displays a scrolling text. The text slowly scrolls through
@@ -37,6 +38,7 @@ public class ScrollingTextWidget extends InteractAbleWidget implements Drawable,
      */
     public float firstLetterExtraTime = 1.0f;
     public boolean hasTextShadow = true;
+    private ORIENTATION orientation;
 
     /**
      * This is a Text that fits within its bounds and slowly scrolls through the Text
@@ -51,6 +53,7 @@ public class ScrollingTextWidget extends InteractAbleWidget implements Drawable,
         super(x, y, maxWidth, 9, Text.empty());
         this.textColor = textColor;
         setText(text);
+        orientation = ORIENTATION.LEFT;
     }
 
     /**
@@ -64,6 +67,10 @@ public class ScrollingTextWidget extends InteractAbleWidget implements Drawable,
         timer = -firstLetterExtraTime;
     }
 
+    public void setOrientation(ORIENTATION orientation) {
+        this.orientation = orientation;
+    }
+
     /**
      * either add this as a Child or manually call this method to render the text
      *
@@ -75,45 +82,47 @@ public class ScrollingTextWidget extends InteractAbleWidget implements Drawable,
      */
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        super.render(matrices, mouseX, mouseY, delta);
-
-        String displayText = this.text.getString().trim();
+        String displayText = this.text.getString();
 
         int textWidth = MinecraftClient.getInstance().textRenderer.getWidth(displayText);
 
-        if (textWidth <= this.width) {
-            // text fits within available space, no scrolling needed
-            drawTextWithShadow(matrices, MinecraftClient.getInstance().textRenderer, this.text, this.x, this.y, this.textColor);
-            return;
-        }
+        if (textWidth > this.width) {
+            displayText = displayText.substring(scrollPosition);
 
-        // enable scissor box
-        //enableScissor(this.x, this.y, this.x + this.width, this.y + this.height);
+            textWidth = MinecraftClient.getInstance().textRenderer.getWidth(displayText);
 
-        displayText = displayText.substring(scrollPosition);
+            if (textWidth <= this.width) {
+                if (timer > scrollHoldTime) {
+                    timer = -firstLetterExtraTime;
+                    scrollPosition = 0;
 
-        textWidth = MinecraftClient.getInstance().textRenderer.getWidth(displayText);
-
-        if (textWidth <= this.width) {
-            if (timer > scrollHoldTime) {
-                timer = -firstLetterExtraTime;
-                scrollPosition = 0;
-
+                }
+            } else {
+                if (timer > scrollDelay) {
+                    scrollPosition++;
+                    timer = 0;
+                }
             }
-        } else {
-            if (timer > scrollDelay) {
-                scrollPosition++;
-                timer = 0;
-            }
+
+            timer += delta / 20;
+
+            displayText = MinecraftClient.getInstance().textRenderer.trimToWidth(displayText, this.width);
         }
-
-        timer += delta / 20;
-        displayText = MinecraftClient.getInstance().textRenderer.trimToWidth(displayText, this.width);
-
+        int textStart = x;
+        switch (orientation) {
+            case CENTERED -> textStart += (this.width - textWidth) / 2;
+            case RIGHT -> textStart += (this.width - textWidth);
+        }
         if (hasTextShadow) {
-            drawTextWithShadow(matrices, MinecraftClient.getInstance().textRenderer, Text.of(displayText), this.x, this.y, this.textColor);
+            drawTextWithShadow(matrices, MinecraftClient.getInstance().textRenderer, Text.literal(displayText), textStart, y, this.textColor);
         } else {
-            MinecraftClient.getInstance().textRenderer.draw(matrices, Text.of(displayText), x, y, textColor);
+            MinecraftClient.getInstance().textRenderer.draw(matrices, Text.literal(displayText), textStart, y, textColor);
         }
+    }
+
+    public enum ORIENTATION {
+        LEFT,
+        CENTERED,
+        RIGHT
     }
 }

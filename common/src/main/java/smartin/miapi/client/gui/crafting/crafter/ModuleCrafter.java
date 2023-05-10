@@ -88,6 +88,7 @@ public class ModuleCrafter extends InteractAbleWidget {
                 this.children().clear();
                 DetailView detailView = new DetailView(this.x, this.y, this.width, this.height - 38, this.baseSlot, this.slot,
                         toEdit -> {
+                            this.slot = toEdit;
                             setMode(Mode.EDIT);
                         },
                         toReplace -> {
@@ -112,7 +113,17 @@ public class ModuleCrafter extends InteractAbleWidget {
                 this.addChild(craftView);
             }
             case EDIT -> {
-                Miapi.LOGGER.error("edit");
+                if (this.slot != null) {
+                    ItemModule.ModuleInstance instance = slot.inSlot;
+                    if (instance != null) {
+                        EditDevView editDevView = new EditDevView(this.x, this.y, this.width, this.height - 38, slot, slot.inSlot, stack, (crafted) -> {
+                            //linkedInventory.setStack(0, crafted);
+                        });
+                        this.children().clear();
+                        this.addChild(editDevView);
+                        Miapi.LOGGER.error("edit");
+                    }
+                }
             }
             case REPLACE -> {
                 this.children.clear();

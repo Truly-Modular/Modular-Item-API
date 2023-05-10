@@ -210,6 +210,11 @@ public class CraftingScreenHandler extends ScreenHandler {
         Networking.unRegisterC2SPacket(packetIDSlotRemove);
     }
 
+    public void setItem(ItemStack stack){
+        inventory.setStack(0,stack);
+        inventory.markDirty();
+    }
+
     @Override
     public void onContentChanged(Inventory inventory) {
         this.sendContentUpdates();

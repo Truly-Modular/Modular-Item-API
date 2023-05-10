@@ -7,7 +7,7 @@
         }
     },
     "group-lol": {
-        "allowedInSlots": ["sword_guard"],
+        "allowedInSlots": ["sword_guard","polearm_blade"],
         "slots": {
             "0": {
                 "allowed": ["sword_blade","sword_blade_small","sword_blade_large"],

@@ -24,9 +24,9 @@ public class StatDisplay extends InteractAbleWidget {
     private ItemStack compareTo = ItemStack.EMPTY;
 
     static {
-        addStatDisplay(new AttributeSingleDisplay(AttributeRegistry.ITEM_DURABILITY, EquipmentSlot.MAINHAND));
-        addStatDisplay(new AttributeSingleDisplay(EntityAttributes.GENERIC_ATTACK_DAMAGE, EquipmentSlot.MAINHAND));
-        addStatDisplay(new AttributeSingleDisplay(EntityAttributes.GENERIC_ATTACK_SPEED, EquipmentSlot.MAINHAND));
+        addStatDisplay(new AttributeSingleDisplay(AttributeRegistry.ITEM_DURABILITY, EquipmentSlot.MAINHAND, Text.literal("Durability")));
+        addStatDisplay(new AttributeSingleDisplay(EntityAttributes.GENERIC_ATTACK_DAMAGE, EquipmentSlot.MAINHAND, Text.literal("Attack Damage")));
+        addStatDisplay(new AttributeSingleDisplay(EntityAttributes.GENERIC_ATTACK_SPEED, EquipmentSlot.MAINHAND, Text.literal("Attack Speed")));
     }
 
     public StatDisplay(int x, int y, int width, int height) {
@@ -37,7 +37,7 @@ public class StatDisplay extends InteractAbleWidget {
 
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        drawSquareBorder(matrices, x, y, width, height, 10, ColorHelper.Argb.getArgb(255, 255, 255, 255));
+        //drawSquareBorder(matrices, x, y, width, height, 10, ColorHelper.Argb.getArgb(255, 255, 255, 255));
         boxList.render(matrices, mouseX, mouseY, delta);
     }
 
@@ -52,7 +52,7 @@ public class StatDisplay extends InteractAbleWidget {
                 }
             }
         }
-        boxList.setWidgets(widgets, 2);
+        boxList.setWidgets(widgets, 1);
     }
 
     public static <T extends InteractAbleWidget & SingleStatDisplay> void addStatDisplay(T statDisplay) {
