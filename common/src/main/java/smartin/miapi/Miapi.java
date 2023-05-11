@@ -61,13 +61,7 @@ public class Miapi {
             server = minecraftServer;
             LOGGER.info("Server before started");
         });
-        LifecycleEvent.SERVER_STARTING.register(minecraftServer -> {
-            LOGGER.info("starting server");
-        });
         ReloadListenerRegistry.register(ResourceType.SERVER_DATA, new ReloadListener());
-        if (Environment.isClient()) {
-            MiapiClient.init();
-        }
         ReloadEvents.MAIN.subscribe((isClient) -> {
             moduleRegistry.clear();
             ReloadEvents.DATA_PACKS.forEach(ItemModule::loadFromData);
@@ -124,6 +118,9 @@ public class Miapi {
                 return Text.translatable(data).getString();
             }
         });
+        if (Environment.isClient()) {
+            MiapiClient.init();
+        }
     }
 
     protected static void setupRegistries() {
@@ -149,9 +146,6 @@ public class Miapi {
         Miapi.itemRegistry.register(MOD_ID + ":modular_leggings", new ModularLeggings());
         Miapi.itemRegistry.register(MOD_ID + ":modular_boots", new ModularBoots());
 
-
-        Miapi.modulePropertyRegistry.register("moduleproperty1", (key, data) -> true);
-        Miapi.modulePropertyRegistry.register("moduleproperty3", (key, data) -> true);
         //MODULEPROPERTIES
         Miapi.modulePropertyRegistry.register(NameProperty.KEY, new NameProperty());
         Miapi.modulePropertyRegistry.register(ModelProperty.KEY, new ModelProperty());
