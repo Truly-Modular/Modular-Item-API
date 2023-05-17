@@ -3,6 +3,7 @@ package smartin.miapi.attributes;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.*;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.registry.Registry;
@@ -23,14 +24,14 @@ public class AttributeRegistry {
         return (EntityAttribute) Registry.register(Registry.ATTRIBUTE, id, attribute);
     }
 
-    public static double getAttribute(ItemStack stack, EntityAttribute attribute,EquipmentSlot slot) {
+    public static double getAttribute(ItemStack stack, EntityAttribute attribute, EquipmentSlot slot, double defaultValue) {
         Collection<EntityAttributeModifier> attributes = stack.getAttributeModifiers(slot).get(attribute);
         Multimap<EntityAttribute, EntityAttributeModifier> map = HashMultimap.create();
         attributes.forEach(attributeModifier -> {
             map.put(attribute, attributeModifier);
         });
 
-        DefaultAttributeContainer container = DefaultAttributeContainer.builder().add(attribute).build();
+        DefaultAttributeContainer container = DefaultAttributeContainer.builder().add(attribute, defaultValue).build();
 
         AttributeContainer container1 = new AttributeContainer(container);
 

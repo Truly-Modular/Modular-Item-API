@@ -24,9 +24,9 @@ public class StatDisplay extends InteractAbleWidget {
     private ItemStack compareTo = ItemStack.EMPTY;
 
     static {
-        addStatDisplay(new AttributeSingleDisplay(AttributeRegistry.ITEM_DURABILITY, EquipmentSlot.MAINHAND, Text.literal("Durability")));
-        addStatDisplay(new AttributeSingleDisplay(EntityAttributes.GENERIC_ATTACK_DAMAGE, EquipmentSlot.MAINHAND, Text.literal("Attack Damage")));
-        addStatDisplay(new AttributeSingleDisplay(EntityAttributes.GENERIC_ATTACK_SPEED, EquipmentSlot.MAINHAND, Text.literal("Attack Speed")));
+        addStatDisplay(AttributeSingleDisplay.Builder(AttributeRegistry.ITEM_DURABILITY).setName(Text.literal("Durability")).setDefault(0).build());
+        addStatDisplay(AttributeSingleDisplay.Builder(EntityAttributes.GENERIC_ATTACK_DAMAGE).setName(Text.literal("Attack Damage")).setDefault(1).build());
+        addStatDisplay(AttributeSingleDisplay.Builder(EntityAttributes.GENERIC_ATTACK_SPEED).setName(Text.literal("Attack Speed")).setDefault(4).build());
     }
 
     public StatDisplay(int x, int y, int width, int height) {

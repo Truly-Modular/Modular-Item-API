@@ -8,12 +8,17 @@ import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.ColorHelper;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.ScrollingTextWidget;
 import smartin.miapi.client.gui.StatBar;
 import smartin.miapi.client.gui.crafting.statdisplay.SingleStatDisplay;
+
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.Locale;
 
 public class AttributeSingleDisplay extends InteractAbleWidget implements SingleStatDisplay {
     final EntityAttribute attribute;
@@ -26,18 +31,24 @@ public class AttributeSingleDisplay extends InteractAbleWidget implements Single
     final ScrollingTextWidget compareValue;
     final ScrollingTextWidget centerValue;
     final ScrollingTextWidget textWidget;
+    public final DecimalFormat modifierFormat;
     Text text;
+    double defaultValue;
 
-    public AttributeSingleDisplay(EntityAttribute attribute, EquipmentSlot slot, Text text) {
+    private AttributeSingleDisplay(EntityAttribute attribute, EquipmentSlot slot, Text text, Text hover, double defaultValue, String format) {
         super(0, 0, 80, 32, Text.empty());
         this.slot = slot;
         this.attribute = attribute;
+        this.defaultValue = defaultValue;
         this.text = text;
+        modifierFormat = Util.make(new DecimalFormat(format), (decimalFormat) -> {
+            decimalFormat.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ROOT));
+        });
         textWidget = new ScrollingTextWidget(x, y, 80, text, ColorHelper.Argb.getArgb(255, 255, 255, 255));
         currentValue = new ScrollingTextWidget(x, y, 50, text, ColorHelper.Argb.getArgb(255, 255, 255, 255));
-        centerValue = new ScrollingTextWidget(x, y, (int) ((80-10) * (1.0 / 1.2)), text, ColorHelper.Argb.getArgb(255, 255, 255, 255));
+        centerValue = new ScrollingTextWidget(x, y, (int) ((80 - 10) * (1.0 / 1.2)), text, ColorHelper.Argb.getArgb(255, 255, 255, 255));
         centerValue.setOrientation(ScrollingTextWidget.ORIENTATION.CENTERED);
-        compareValue = new ScrollingTextWidget(x, y, (int) ((80-10) * (1.0 / 1.2)), text, ColorHelper.Argb.getArgb(255, 255, 255, 255));
+        compareValue = new ScrollingTextWidget(x, y, (int) ((80 - 10) * (1.0 / 1.2)), text, ColorHelper.Argb.getArgb(255, 255, 255, 255));
         compareValue.setOrientation(ScrollingTextWidget.ORIENTATION.RIGHT);
         statBar = new StatBar(0, 0, width, 10, ColorHelper.Argb.getArgb(255, 0, 0, 0));
     }
@@ -57,8 +68,8 @@ public class AttributeSingleDisplay extends InteractAbleWidget implements Single
 
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        double oldValue = AttributeRegistry.getAttribute(original, attribute, slot);
-        double compareToValue = AttributeRegistry.getAttribute(compareTo, attribute, slot);
+        double oldValue = AttributeRegistry.getAttribute(original, attribute, slot, defaultValue);
+        double compareToValue = AttributeRegistry.getAttribute(compareTo, attribute, slot, defaultValue);
         double higher = Math.max(oldValue, compareToValue) * 1.2;
 
 
@@ -92,13 +103,13 @@ public class AttributeSingleDisplay extends InteractAbleWidget implements Single
         } else {
             compareValue.x = this.x + 5;
             compareValue.y = this.y + 15;
-            compareValue.setText(Text.of(String.valueOf(compareToValue)));
+            compareValue.setText(Text.of(modifierFormat.format(compareToValue)));
             compareValue.render(matrices, mouseX, mouseY, delta);
             centerText = "→";
         }
         currentValue.x = this.x + 5;
         currentValue.y = this.y + 15;
-        currentValue.setText(Text.literal(currentValueString));
+        currentValue.setText(Text.literal(modifierFormat.format(oldValue)));
         currentValue.render(matrices, mouseX, mouseY, delta);
         centerValue.x = this.x + 5;
         centerValue.y = this.y + 15;
@@ -106,5 +117,60 @@ public class AttributeSingleDisplay extends InteractAbleWidget implements Single
         centerValue.render(matrices, mouseX, mouseY, delta);
         statBar.render(matrices, mouseX, mouseY, delta);
         textWidget.render(matrices, mouseX, mouseY, delta);
+    }
+
+    public static Builder Builder(EntityAttribute attribute){
+        return new Builder(attribute);
+    }
+
+    public static class Builder {
+        EntityAttribute attribute;
+        public double defaultValue = 1;
+        public Text name;
+        public Text hoverDescription;
+        public EquipmentSlot slot = EquipmentSlot.MAINHAND;
+        public String format = "##.##";
+
+        private Builder(EntityAttribute attribute) {
+            this.attribute = attribute;
+        }
+
+        public Builder setDefault(double defaultValue) {
+            this.defaultValue = defaultValue;
+            return this;
+        }
+
+        public Builder setName(Text name) {
+            this.name = name;
+            return this;
+        }
+
+        public Builder setSlot(EquipmentSlot slot) {
+            this.slot = slot;
+            return this;
+        }
+
+        public Builder setHoverDescription(Text hoverDescription) {
+            this.hoverDescription = hoverDescription;
+            return this;
+        }
+
+        public Builder setFormat(String format) {
+            this.format = format;
+            return this;
+        }
+
+        public AttributeSingleDisplay build() {
+            // Validate the required fields
+            if (name == null) {
+                throw new IllegalStateException("Name is required");
+            }
+            if (attribute == null) {
+                throw new IllegalStateException("Attribute is required");
+            }
+
+            // Create an instance of AttributeProperty with the builder values
+            return new AttributeSingleDisplay(attribute, slot, name, hoverDescription, defaultValue, format);
+        }
     }
 }
