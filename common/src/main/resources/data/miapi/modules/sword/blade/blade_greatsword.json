@@ -32,18 +32,18 @@
     },
     "attributes": [
         {
-            "attribute": "generic.attack_damage",
-            "value": "[material.hardness]*0.5 + [material.flexibility]*1",
-            "operation": "+",
-            "slot": "mainhand",
-            "uuid": "CB3F55D3-645C-4F38-A497-9C13A33DB5CF"
-        },
-        {
             "attribute": "generic.attack_speed",
-            "value": "[material.flexibility]*2",
+            "value": "-0.75",
             "operation": "+",
             "slot": "mainhand",
             "uuid": "FA233E1C-4180-4865-B01B-BCCE9785ACA3"
+        },
+        {
+            "attribute": "generic.attack_damage",
+            "value": "[material.hardness]*1.15",
+            "operation": "+",
+            "slot": "mainhand",
+            "uuid": "CB3F55D3-645C-4F38-A497-9C13A33DB5CF"
         }
     ],
     "guiOffset": {

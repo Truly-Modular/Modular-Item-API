@@ -2,7 +2,7 @@
   "key": "iron",
   "translation_key": "miapi.material.iron",
   "groups": ["metal"],
-  "hardness": 4,
+  "hardness": 5,
   "density": 3.8,
   "flexibility": 1,
   "durability": 800,

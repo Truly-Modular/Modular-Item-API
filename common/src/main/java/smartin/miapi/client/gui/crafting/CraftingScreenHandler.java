@@ -1,5 +1,6 @@
 package smartin.miapi.client.gui.crafting;
 
+import dev.architectury.event.events.client.ClientTooltipEvent;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
@@ -154,33 +155,9 @@ public class CraftingScreenHandler extends ScreenHandler {
      * @return the ItemStack that was transferred, or {@link ItemStack#EMPTY} if the transfer was unsuccessful
      */
     public ItemStack transferSlot(PlayerEntity player, int index) {
-        ItemStack itemStack = ItemStack.EMPTY;
         Slot slot = this.slots.get(index);
-        if (slot.hasStack()) {
-            ItemStack slotStack = slot.getStack();
-            itemStack = slotStack.copy();
-            if (index == 0) { // Transfer from custom slot to player inventory
-                if (!this.insertItem(slotStack, 1, 37, true)) {
-                    return ItemStack.EMPTY;
-                }
-                slot.onQuickTransfer(slotStack, itemStack);
-            } else { // Transfer from player inventory to custom slot
-                if (this.insertItem(slotStack, 0, 1, false)) {
-                    return ItemStack.EMPTY;
-                }
-            }
-            if (slotStack.isEmpty()) {
-                slot.setStack(ItemStack.EMPTY);
-            } else {
-                slot.markDirty();
-            }
-            if (slotStack.getCount() == itemStack.getCount()) {
-                return ItemStack.EMPTY;
-            }
-            slot.onTakeItem(player, slotStack);
-            this.sendContentUpdates();
-        }
-        return itemStack;
+        player.getInventory().offerOrDrop(slot.getStack());
+        return ItemStack.EMPTY;
     }
 
     @Override

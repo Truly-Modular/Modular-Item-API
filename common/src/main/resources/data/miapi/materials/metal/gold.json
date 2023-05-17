@@ -1,23 +1,25 @@
 {
-  "key": "gold",
-  "translation_key": "miapi.material.gold",
-  "groups": ["metal"],
-  "hardness": 3,
-  "density": 4.6,
-  "flexibility": 1,
-  "durability": 800,
-  "color": "FFD700",
-  "textures": [
-    "shiny"
-  ],
-  "items": [
-    {
-      "tag": "forge:obsidian",
-      "value": 0.5
-    },
-    {
-      "item": "minecraft:gold_ingot",
-      "value": 0.5
-    }
-  ]
+    "key": "gold",
+    "translation_key": "miapi.material.gold",
+    "groups": [
+        "metal"
+    ],
+    "hardness": 4,
+    "density": 4.6,
+    "flexibility": 1,
+    "durability": 800,
+    "color": "FFD700",
+    "textures": [
+        "shiny"
+    ],
+    "items": [
+        {
+            "tag": "forge:obsidian",
+            "value": 0.5
+        },
+        {
+            "item": "minecraft:gold_ingot",
+            "value": 0.5
+        }
+    ]
 }

@@ -5,21 +5,27 @@ import com.google.common.collect.Multimap;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import smartin.miapi.Miapi;
 import smartin.miapi.item.modular.ItemModule;
+import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.item.modular.cache.ModularItemCache;
 import smartin.miapi.item.modular.items.ExampleModularItem;
 
+import javax.annotation.Nullable;
 import java.lang.reflect.Type;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * This property allows Modules to set Attributes
@@ -56,10 +62,10 @@ public class AttributeProperty implements ModuleProperty {
             if (attribute != null) {
                 if (uuid != null) {
                     // Use constructor with UUID
-                    attributeModifiers.put(attribute, new EntityAttributeModifierHolder(new EntityAttributeModifier(uuid, modifierName, value, operation), slot));
+                    attributeModifiers.put(attribute, new EntityAttributeModifierHolder(new EntityAttributeModifier(uuid, modifierName, value, operation), slot, true));
                 } else {
                     // Use constructor without UUID
-                    attributeModifiers.put(attribute, new EntityAttributeModifierHolder(new EntityAttributeModifier(modifierName, value, operation), slot));
+                    attributeModifiers.put(attribute, new EntityAttributeModifierHolder(new EntityAttributeModifier(modifierName, value, operation), slot, true));
                 }
             }
         }
@@ -68,14 +74,11 @@ public class AttributeProperty implements ModuleProperty {
 
     @Override
     public JsonElement merge(JsonElement old, JsonElement toMerge, MergeType type) {
-        Type typeToken = new TypeToken<List<JsonElement>>() {
-        }.getType();
-        List<JsonElement> oldList = Miapi.gson.fromJson(old, typeToken);
-        List<JsonElement> newList = Miapi.gson.fromJson(toMerge, typeToken);
         switch (type) {
             case SMART, EXTEND -> {
-                oldList.addAll(newList);
-                return Miapi.gson.toJsonTree(oldList, typeToken);
+                JsonElement element = old.deepCopy();
+                element.getAsJsonArray().addAll(toMerge.getAsJsonArray());
+                return element;
             }
             case OVERWRITE -> {
                 return toMerge;
@@ -88,12 +91,70 @@ public class AttributeProperty implements ModuleProperty {
         return (Multimap<EntityAttribute, EntityAttributeModifierHolder>) ModularItemCache.get(itemStack, KEY);
     }
 
+    public static Multimap<EntityAttribute, EntityAttributeModifier> getAttributeModifiersForSlot(ItemStack itemStack, EquipmentSlot slot, Multimap<EntityAttribute, EntityAttributeModifier> toAdding) {
+        if (itemStack.getItem() instanceof ModularItem) {
+            Multimap<EntityAttribute, AttributeProperty.EntityAttributeModifierHolder> toMerge = AttributeProperty.getAttributeModifiers(itemStack);
+            Multimap<EntityAttribute, EntityAttributeModifier> merged = ArrayListMultimap.create();
+            Multimap<EntityAttribute, EntityAttributeModifier> mergedOnItem = ArrayListMultimap.create();
+
+            // Add existing modifiers from original to merged
+            toAdding.entries().forEach(entry -> merged.put(entry.getKey(), entry.getValue()));
+
+            toMerge.forEach((entityAttribute, entityAttributeModifier) -> {
+                if (entityAttributeModifier.slot().equals(slot)) {
+                    if (entityAttributeModifier.seperateOnItem) {
+                        Miapi.LOGGER.error("nonItem");
+                        merged.put(entityAttribute, entityAttributeModifier.attributeModifier());
+                    } else {
+                        mergedOnItem.put(entityAttribute, entityAttributeModifier.attributeModifier());
+                    }
+                }
+            });
+
+            // Assign merged back to original
+            toAdding.clear();
+            toAdding.putAll(merged);
+            Map<UUID, Multimap<EntityAttribute, EntityAttributeModifier>> uuidMultimapMap = new HashMap<>();
+
+            mergedOnItem.forEach((attribute, attributeModifier) -> {
+                Multimap<EntityAttribute, EntityAttributeModifier> multimap = uuidMultimapMap.computeIfAbsent(attributeModifier.getId(), (id) -> ArrayListMultimap.create());
+                multimap.put(attribute, attributeModifier);
+            });
+
+            uuidMultimapMap.forEach((uuid, entityAttributeEntityAttributeModifierMultimap) -> {
+                entityAttributeEntityAttributeModifierMultimap.asMap().forEach((key, collection) -> {
+                    double startValue = key.getDefaultValue();
+                    double multiply = 1;
+                    for (EntityAttributeModifier entityAttributeModifier : collection) {
+                        if (entityAttributeModifier.getOperation().equals(EntityAttributeModifier.Operation.ADDITION)) {
+                            startValue += entityAttributeModifier.getValue();
+                        }
+                        if (entityAttributeModifier.getOperation().equals(EntityAttributeModifier.Operation.MULTIPLY_BASE)) {
+                            multiply += entityAttributeModifier.getValue();
+                        }
+                    }
+                    startValue = startValue * multiply;
+                    for (EntityAttributeModifier entityAttributeModifier : collection) {
+                        if (entityAttributeModifier.getOperation().equals(EntityAttributeModifier.Operation.MULTIPLY_TOTAL)) {
+                            startValue = startValue * entityAttributeModifier.getValue();
+                        }
+                    }
+                    startValue = startValue - key.getDefaultValue();
+                    EntityAttributeModifier entityAttributeModifier = new EntityAttributeModifier(uuid, "generic.miapi."+key.getTranslationKey(), startValue, EntityAttributeModifier.Operation.ADDITION);
+                    toAdding.put(key, entityAttributeModifier);
+                });
+            });
+            return toAdding;
+        }
+        return toAdding;
+    }
+
     private static Multimap<EntityAttribute, EntityAttributeModifierHolder> createAttributeCache(ItemStack itemStack) {
         ItemModule.ModuleInstance rootInstance = ItemModule.getModules(itemStack);
         Multimap<EntityAttribute, EntityAttributeModifierHolder> attributeModifiers = ArrayListMultimap.create();
-        ItemModule.createFlatList(rootInstance).forEach(instance -> {
+        for (ItemModule.ModuleInstance instance : rootInstance.allSubModules()) {
             getAttributeModifiers(instance, attributeModifiers);
-        });
+        }
         return attributeModifiers;
     }
 
@@ -104,33 +165,29 @@ public class AttributeProperty implements ModuleProperty {
             return;
         }
         for (JsonElement attributeElement : element.getAsJsonArray()) {
-            JsonObject attributeJson = attributeElement.getAsJsonObject();
-            String attributeName = attributeJson.get("attribute").getAsString();
-            double value = StatResolver.resolveDouble(attributeJson.get("value").getAsString(), instance);
-            EntityAttributeModifier.Operation operation = getOperation(attributeJson.get("operation").getAsString());
-            EquipmentSlot slot = getSlot(attributeJson.get("slot").getAsString());
-            EntityAttribute attribute = Registry.ATTRIBUTE.get(new Identifier(attributeName));
-
-            UUID uuid = null;
-
-            if (attributeJson.has("uuid")) {
-                uuid = UUID.fromString(attributeJson.get("uuid").getAsString());
-            }
-
-            if (attribute != null) {
-                if (uuid != null) {
-                    // Thanks Mojang for using == and not .equals so i have to do this abomination
-                    if (uuid.equals(ExampleModularItem.attackDamageUUID())) {
-                        uuid = ExampleModularItem.attackDamageUUID();
-                    }
-                    if (uuid.equals(ExampleModularItem.attackSpeedUUID())) {
-                        uuid = ExampleModularItem.attackSpeedUUID();
-                    }
-                    attributeModifiers.put(attribute, new EntityAttributeModifierHolder(new EntityAttributeModifier(uuid, attributeName, value, operation), slot));
-                } else {
-                    // Use constructor without UUID
-                    attributeModifiers.put(attribute, new EntityAttributeModifierHolder(new EntityAttributeModifier(attributeName, value, operation), slot));
+            AttributeJson attributeJson = Miapi.gson.fromJson(attributeElement, AttributeJson.class);
+            assert attributeJson.attribute != null;
+            assert attributeJson.value != null;
+            assert attributeJson.operation != null;
+            EquipmentSlot slot = (attributeJson.slot != null) ? getSlot(attributeJson.slot) : EquipmentSlot.MAINHAND;
+            String attributeName = attributeJson.attribute;
+            double value = StatResolver.resolveDouble(attributeJson.value, instance);
+            EntityAttributeModifier.Operation operation = getOperation(attributeJson.operation);
+            EntityAttribute attribute = Registry.ATTRIBUTE.get(new Identifier(attributeJson.attribute));
+            assert attribute != null;
+            if (attributeJson.uuid != null) {
+                UUID uuid = UUID.fromString(attributeJson.uuid);
+                // Thanks Mojang for using == and not .equals so i have to do this abomination
+                if (uuid.equals(ExampleModularItem.attackDamageUUID())) {
+                    uuid = ExampleModularItem.attackDamageUUID();
                 }
+                if (uuid.equals(ExampleModularItem.attackSpeedUUID())) {
+                    uuid = ExampleModularItem.attackSpeedUUID();
+                }
+                attributeModifiers.put(attribute, new EntityAttributeModifierHolder(new EntityAttributeModifier(uuid, attributeName, value, operation), slot, attributeJson.seperateOnItem));
+            } else {
+                // Use constructor without UUID
+                attributeModifiers.put(attribute, new EntityAttributeModifierHolder(new EntityAttributeModifier(attributeName, value, operation), slot, attributeJson.seperateOnItem));
             }
         }
     }
@@ -159,9 +216,16 @@ public class AttributeProperty implements ModuleProperty {
         return EquipmentSlot.MAINHAND; // default to main hand if slot is not specified
     }
 
-    public record EntityAttributeModifierHolder(EntityAttributeModifier attributeModifier, EquipmentSlot slot) {
+    public record EntityAttributeModifierHolder(EntityAttributeModifier attributeModifier, EquipmentSlot slot,
+                                                boolean seperateOnItem) {
     }
 
-    public record AttributeJson(String attribute, String value, String operation, String slot, String uuid) {
+    public class AttributeJson {
+        public String attribute;
+        public String value;
+        public String operation;
+        public String slot;
+        public String uuid;
+        public boolean seperateOnItem;
     }
 }
