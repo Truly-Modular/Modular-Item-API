@@ -22,6 +22,8 @@ dependencies {
     modApi "dev.architectury:architectury-fabric:${rootProject.architectury_version}"
 
     modImplementation files('libs/nbteditor.jar')
+    modImplementation files('libs/dummy.jar')
+    modImplementation files('libs/moonlight.jar')
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }
