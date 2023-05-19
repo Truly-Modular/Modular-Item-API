@@ -2,11 +2,9 @@ package smartin.miapi.client.gui.crafting.statdisplay;
 
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
-import net.minecraft.util.math.ColorHelper;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.client.gui.BoxList;
 import smartin.miapi.client.gui.InteractAbleWidget;
@@ -24,9 +22,11 @@ public class StatDisplay extends InteractAbleWidget {
     private ItemStack compareTo = ItemStack.EMPTY;
 
     static {
-        addStatDisplay(AttributeSingleDisplay.Builder(AttributeRegistry.ITEM_DURABILITY).setName(Text.literal("Durability")).setDefault(0).build());
         addStatDisplay(AttributeSingleDisplay.Builder(EntityAttributes.GENERIC_ATTACK_DAMAGE).setName(Text.literal("Attack Damage")).setDefault(1).build());
         addStatDisplay(AttributeSingleDisplay.Builder(EntityAttributes.GENERIC_ATTACK_SPEED).setName(Text.literal("Attack Speed")).setDefault(4).build());
+        addStatDisplay(new DpsStatDisplay());
+        addStatDisplay(AttributeSingleDisplay.Builder(AttributeRegistry.ITEM_DURABILITY).setName(Text.literal("Durability")).setDefault(0).build());
+        addStatDisplay(new FlexibilityStatDisplay());
     }
 
     public StatDisplay(int x, int y, int width, int height) {
@@ -37,7 +37,6 @@ public class StatDisplay extends InteractAbleWidget {
 
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        //drawSquareBorder(matrices, x, y, width, height, 10, ColorHelper.Argb.getArgb(255, 255, 255, 255));
         boxList.render(matrices, mouseX, mouseY, delta);
     }
 

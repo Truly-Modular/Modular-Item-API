@@ -1,4 +1,4 @@
-package smartin.miapi.item.modular.properties;
+package smartin.miapi.modules.properties;
 
 import com.google.gson.JsonElement;
 import net.minecraft.client.util.math.MatrixStack;
@@ -10,13 +10,14 @@ import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.Vec2f;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.InteractAbleWidget;
-import smartin.miapi.item.modular.ItemModule;
+import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.properties.util.CraftingProperty;
+import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class AllowedMaterial extends CraftingProperty {
-
+public class AllowedMaterial implements CraftingProperty, ModuleProperty {
     public static final String KEY = "allowedMaterial";
 
     public List<Vec2f> getSlotPositions() {

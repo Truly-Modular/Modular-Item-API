@@ -1,4 +1,4 @@
-package smartin.miapi.item.modular.properties.render;
+package smartin.miapi.modules.properties.render;
 
 import com.google.gson.JsonElement;
 import net.minecraft.client.render.model.json.ModelTransformation;
@@ -6,9 +6,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.Vec3f;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.model.DynamicBakedModel;
-import smartin.miapi.item.modular.ItemModule;
+import smartin.miapi.modules.ItemModule;
 import smartin.miapi.item.modular.Transform;
-import smartin.miapi.item.modular.properties.ModuleProperty;
+import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.Map;
 

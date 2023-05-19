@@ -17,8 +17,8 @@ import net.minecraft.util.math.ColorHelper;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.craft.CraftAction;
-import smartin.miapi.item.modular.ItemModule;
-import smartin.miapi.item.modular.properties.SlotProperty;
+import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.properties.SlotProperty;
 
 import java.util.ArrayList;
 import java.util.List;

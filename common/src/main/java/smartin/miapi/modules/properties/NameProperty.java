@@ -1,6 +1,8 @@
-package smartin.miapi.item.modular.properties;
+package smartin.miapi.modules.properties;
 
 import com.google.gson.JsonElement;
+import smartin.miapi.modules.properties.util.MergeType;
+import smartin.miapi.modules.properties.util.ModuleProperty;
 
 /**
  * This property is needed to identify Modules

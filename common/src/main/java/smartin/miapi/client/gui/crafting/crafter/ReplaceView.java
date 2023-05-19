@@ -13,9 +13,9 @@ import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.ScrollList;
 import smartin.miapi.client.gui.ScrollingTextWidget;
 import smartin.miapi.client.gui.SimpleButton;
-import smartin.miapi.item.modular.ItemModule;
-import smartin.miapi.item.modular.properties.SlotProperty;
-import smartin.miapi.item.modular.properties.AllowedSlots;
+import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.properties.SlotProperty;
+import smartin.miapi.modules.properties.AllowedSlots;
 
 import java.util.ArrayList;
 import java.util.function.Consumer;

@@ -1,11 +1,13 @@
-package smartin.miapi.item.modular.properties;
+package smartin.miapi.modules.properties;
 
 import com.google.gson.JsonElement;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
-import smartin.miapi.item.modular.ItemModule;
+import smartin.miapi.modules.ItemModule;
 import smartin.miapi.item.modular.StatResolver;
-import smartin.miapi.item.modular.cache.ModularItemCache;
+import smartin.miapi.modules.cache.ModularItemCache;
+import smartin.miapi.modules.properties.util.MergeType;
+import smartin.miapi.modules.properties.util.ModuleProperty;
 
 /**
  * This property allows modules to change the DisplayName of the item in question

@@ -1,6 +1,6 @@
 {
   "key": "netherite",
-  "translation_key": "miapi.material.netherite",
+  "translation": "miapi.material.netherite",
   "groups": ["metal"],
   "hardness": 7,
   "density": 3.8,
@@ -8,9 +8,7 @@
   "durability": 800,
   "color": "695e5f",
   "textures": [
-    "crude",
-    "default",
-    "test"
+    "metal"
   ],
   "items": [
     {

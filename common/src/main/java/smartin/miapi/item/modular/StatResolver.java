@@ -2,6 +2,7 @@ package smartin.miapi.item.modular;
 
 import net.minecraft.text.Text;
 import org.mariuszgromada.math.mxparser.Expression;
+import smartin.miapi.modules.ItemModule;
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -53,6 +54,12 @@ public class StatResolver {
      * @return the evaluated result
      */
     public static double resolveDouble(String raw, ItemModule.ModuleInstance instance) {
+        try{
+            return Double.parseDouble(raw);
+        }
+        catch (Exception exception){
+
+        }
         String resolved = raw;
         Pattern pattern = Pattern.compile("\\[(.*?)\\]"); // regex pattern to match text inside square brackets
         Matcher matcher = pattern.matcher(raw);

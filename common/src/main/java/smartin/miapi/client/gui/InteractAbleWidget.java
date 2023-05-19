@@ -20,7 +20,7 @@ import java.util.List;
  * corresponding super method or handle the children yourself.
  */
 @Environment(EnvType.CLIENT)
-public class InteractAbleWidget extends ClickableWidget implements Drawable, Element {
+public abstract class InteractAbleWidget extends ClickableWidget implements Drawable, Element {
     protected final List<Element> children = new ArrayList<>();
 
     /**

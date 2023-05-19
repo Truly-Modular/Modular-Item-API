@@ -1,31 +1,25 @@
-package smartin.miapi.item.modular.properties;
+package smartin.miapi.modules.properties;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.reflect.TypeToken;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
-import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import smartin.miapi.Miapi;
-import smartin.miapi.item.modular.ItemModule;
+import smartin.miapi.modules.ItemModule;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.StatResolver;
-import smartin.miapi.item.modular.cache.ModularItemCache;
+import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.item.modular.items.ExampleModularItem;
+import smartin.miapi.modules.properties.util.MergeType;
+import smartin.miapi.modules.properties.util.ModuleProperty;
 
-import javax.annotation.Nullable;
-import java.lang.reflect.Type;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * This property allows Modules to set Attributes

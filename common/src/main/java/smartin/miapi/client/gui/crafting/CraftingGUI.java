@@ -13,8 +13,8 @@ import smartin.miapi.client.gui.ParentHandledScreen;
 import smartin.miapi.client.gui.crafting.crafter.ModuleCrafter;
 import smartin.miapi.client.gui.crafting.slotdisplay.SlotDisplay;
 import smartin.miapi.client.gui.crafting.statdisplay.StatDisplay;
-import smartin.miapi.item.modular.ItemModule;
-import smartin.miapi.item.modular.properties.SlotProperty;
+import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.properties.SlotProperty;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,10 +23,10 @@ public class CraftingGUI extends ParentHandledScreen<CraftingScreenHandler> impl
 
     private static final Identifier BACKGROUND_TEXTURE = new Identifier(Miapi.MOD_ID, "textures/crafting_gui_background.png");
     private ItemStack stack;
-    SlotDisplay slotDisplay;
-    ModuleCrafter moduleCrafter;
-    StatDisplay statDisplay;
-    SlotProperty.ModuleSlot baseSlot;
+    private ModuleCrafter moduleCrafter;
+    private StatDisplay statDisplay;
+    private SlotDisplay slotDisplay;
+    private SlotProperty.ModuleSlot baseSlot;
 
     public CraftingGUI(CraftingScreenHandler handler, PlayerInventory playerInventory, Text title) {
         super(handler, playerInventory, Text.empty());

@@ -1,18 +1,17 @@
-package smartin.miapi.item.modular;
+package smartin.miapi.modules;
 
 import com.google.gson.*;
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
-import smartin.miapi.item.modular.cache.ModularItemCache;
-import smartin.miapi.item.modular.properties.AttributeProperty;
-import smartin.miapi.item.modular.properties.MergeType;
-import smartin.miapi.item.modular.properties.ModuleProperty;
+import smartin.miapi.item.modular.PropertyResolver;
+import smartin.miapi.modules.cache.ModularItemCache;
+import smartin.miapi.modules.properties.util.MergeType;
+import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.registries.MiapiRegistry;
 
 import java.io.IOException;
@@ -195,6 +194,10 @@ public class ItemModule {
      */
     public static JsonElement getMergedProperty(ModuleInstance moduleInstance, ModuleProperty property) {
         return getMergedProperty(moduleInstance, property, MergeType.SMART);
+    }
+
+    public static JsonElement getMergedProperty(ItemStack itemStack, ModuleProperty property){
+        return getMergedProperty(getModules(itemStack), property, MergeType.SMART);
     }
 
     /**

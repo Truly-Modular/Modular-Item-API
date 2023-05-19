@@ -4,7 +4,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import smartin.miapi.item.modular.ModularItem;
-import smartin.miapi.item.modular.properties.DisplayNameProperty;
+import smartin.miapi.modules.properties.DisplayNameProperty;
 
 import java.util.UUID;
 

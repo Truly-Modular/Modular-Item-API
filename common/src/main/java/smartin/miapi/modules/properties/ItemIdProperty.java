@@ -1,4 +1,4 @@
-package smartin.miapi.item.modular.properties;
+package smartin.miapi.modules.properties;
 
 import com.google.gson.JsonElement;
 import net.minecraft.entity.player.PlayerEntity;
@@ -6,7 +6,10 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import smartin.miapi.Miapi;
-import smartin.miapi.item.modular.ItemModule;
+import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.properties.util.CraftingProperty;
+import smartin.miapi.modules.properties.util.MergeType;
+import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.List;
 
@@ -14,7 +17,7 @@ import java.util.List;
  * This Property changes the ItemIdentifier of an ModularItem on Craft
  * it only supports preregisterd ids in {@link Miapi#itemRegistry}
  */
-public class ItemIdProperty extends CraftingProperty {
+public class ItemIdProperty implements CraftingProperty,ModuleProperty {
     public static final String KEY = "itemId";
     public static ModuleProperty property;
 
@@ -40,12 +43,6 @@ public class ItemIdProperty extends CraftingProperty {
             }
         }
         return old;
-    }
-
-
-    @Override
-    public float getPriority() {
-        return 0;
     }
 
     @Override

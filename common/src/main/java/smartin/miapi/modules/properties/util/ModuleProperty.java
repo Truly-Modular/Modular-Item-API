@@ -1,4 +1,4 @@
-package smartin.miapi.item.modular.properties;
+package smartin.miapi.modules.properties.util;
 
 import com.google.gson.JsonElement;
 import com.google.gson.reflect.TypeToken;

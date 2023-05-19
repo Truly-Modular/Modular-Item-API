@@ -17,9 +17,9 @@ import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.MutableSlot;
 import smartin.miapi.client.gui.SimpleButton;
 import smartin.miapi.craft.CraftAction;
-import smartin.miapi.item.modular.ItemModule;
-import smartin.miapi.item.modular.properties.CraftingProperty;
-import smartin.miapi.item.modular.properties.SlotProperty;
+import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.properties.util.CraftingProperty;
+import smartin.miapi.modules.properties.SlotProperty;
 import smartin.miapi.network.Networking;
 
 import java.util.ArrayList;

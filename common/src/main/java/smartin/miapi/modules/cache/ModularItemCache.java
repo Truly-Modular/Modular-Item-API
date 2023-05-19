@@ -1,4 +1,4 @@
-package smartin.miapi.item.modular.cache;
+package smartin.miapi.modules.cache;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;

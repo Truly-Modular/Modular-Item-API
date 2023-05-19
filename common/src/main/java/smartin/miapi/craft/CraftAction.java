@@ -8,10 +8,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 import smartin.miapi.Miapi;
-import smartin.miapi.item.modular.ItemModule;
-import smartin.miapi.item.modular.cache.ModularItemCache;
-import smartin.miapi.item.modular.properties.SlotProperty;
-import smartin.miapi.item.modular.properties.CraftingProperty;
+import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.cache.ModularItemCache;
+import smartin.miapi.modules.properties.SlotProperty;
+import smartin.miapi.modules.properties.util.CraftingProperty;
 import smartin.miapi.network.Networking;
 
 import javax.annotation.Nonnull;

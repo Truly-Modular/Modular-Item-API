@@ -14,10 +14,10 @@ import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.ScrollingTextWidget;
 import smartin.miapi.client.gui.SimpleButton;
 import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
-import smartin.miapi.item.modular.ItemModule;
-import smartin.miapi.item.modular.cache.ModularItemCache;
-import smartin.miapi.item.modular.properties.ModuleProperty;
-import smartin.miapi.item.modular.properties.SlotProperty;
+import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.cache.ModularItemCache;
+import smartin.miapi.modules.properties.util.ModuleProperty;
+import smartin.miapi.modules.properties.SlotProperty;
 
 import java.util.Map;
 import java.util.function.Consumer;

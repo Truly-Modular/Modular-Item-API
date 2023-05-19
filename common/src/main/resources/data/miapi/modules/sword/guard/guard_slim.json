@@ -16,7 +16,8 @@
         }
     },
     "allowedMaterial": {
-        "allowedMaterials": ["metal"],
+        "allowedMaterials": ["wood","stone","metal","crystal"],
         "cost": 1
-    }
+    },
+    "flexibility": "-0.5"
 }

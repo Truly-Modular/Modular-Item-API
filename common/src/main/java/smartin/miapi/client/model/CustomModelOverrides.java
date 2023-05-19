@@ -13,7 +13,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
-import smartin.miapi.item.modular.properties.render.ModelProperty;
+import smartin.miapi.modules.properties.render.ModelProperty;
 
 import java.util.ArrayList;
 import java.util.List;

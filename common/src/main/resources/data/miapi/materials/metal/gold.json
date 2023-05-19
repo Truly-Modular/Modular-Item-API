@@ -1,6 +1,6 @@
 {
     "key": "gold",
-    "translation_key": "miapi.material.gold",
+    "translation": "miapi.material.gold",
     "groups": [
         "metal"
     ],
@@ -10,7 +10,7 @@
     "durability": 800,
     "color": "FFD700",
     "textures": [
-        "shiny"
+        "contrast"
     ],
     "items": [
         {

@@ -1,6 +1,6 @@
 {
   "key": "iron",
-  "translation_key": "miapi.material.iron",
+  "translation": "miapi.material.iron",
   "groups": ["metal"],
   "hardness": 5,
   "density": 3.8,
@@ -8,9 +8,7 @@
   "durability": 800,
   "color": "FCFCFC",
   "textures": [
-    "crude",
-    "default",
-    "test"
+    "metal"
   ],
   "items": [
     {

@@ -9,7 +9,7 @@ import net.minecraft.recipe.Ingredient;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.text.Text;
 import smartin.miapi.item.modular.ModularItem;
-import smartin.miapi.item.modular.properties.DisplayNameProperty;
+import smartin.miapi.modules.properties.DisplayNameProperty;
 
 public class ModularChestPlate extends ArmorItem implements ModularItem, Wearable {
     public ModularChestPlate() {

@@ -1,11 +1,12 @@
-package smartin.miapi.item.modular.properties;
+package smartin.miapi.modules.properties.util;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.math.Vec2f;
 import smartin.miapi.client.gui.InteractAbleWidget;
-import smartin.miapi.item.modular.ItemModule;
+import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -15,7 +16,7 @@ import java.util.List;
  * This is an abstract Class for Crafting properties.
  * They get called during craft actions.
  */
-public abstract class CraftingProperty implements ModuleProperty {
+public interface CraftingProperty {
     /**
      * This class should return a {@link InteractAbleWidget} for the gui
      * this gui is rendered
@@ -27,7 +28,7 @@ public abstract class CraftingProperty implements ModuleProperty {
      * @return return null if this property has no gui
      */
     @Nullable
-    public InteractAbleWidget createGui(int x, int y, int width, int height) {
+    default InteractAbleWidget createGui(int x, int y, int width, int height) {
         return null;
     }
 
@@ -37,7 +38,7 @@ public abstract class CraftingProperty implements ModuleProperty {
      *
      * @return a List of positions, return empty List of no guis
      */
-    public List<Vec2f> getSlotPositions() {
+    default List<Vec2f> getSlotPositions() {
         return new ArrayList<>();
     }
 
@@ -47,7 +48,7 @@ public abstract class CraftingProperty implements ModuleProperty {
      * @param buf        the buffer to write to
      * @param createdGui the gui created on the client, return value of {@link #createGui}
      */
-    public void writeCraftingBuffer(PacketByteBuf buf, InteractAbleWidget createdGui) {
+    default void writeCraftingBuffer(PacketByteBuf buf, InteractAbleWidget createdGui) {
 
     }
 
@@ -56,7 +57,9 @@ public abstract class CraftingProperty implements ModuleProperty {
      *
      * @return the priority
      */
-    public abstract float getPriority();
+    default float getPriority(){
+        return 0;
+    }
 
     /**
      * a check if the Crafting can happen
@@ -70,7 +73,23 @@ public abstract class CraftingProperty implements ModuleProperty {
      * @param buf       the writen buffer from {@link #writeCraftingBuffer(PacketByteBuf, InteractAbleWidget)}
      * @return if the crafting can happen
      */
-    public boolean canPerform(ItemStack old, ItemStack crafting, PlayerEntity player, ItemModule.ModuleInstance newModule, ItemModule module, List<ItemStack> inventory, PacketByteBuf buf) {
+    default boolean canPerform(ItemStack old, ItemStack crafting, PlayerEntity player, ItemModule.ModuleInstance newModule, ItemModule module, List<ItemStack> inventory, PacketByteBuf buf) {
+        return true;
+    }
+
+    /**
+     * a check if the Crafting can happen
+     *
+     * @param old       the old Itemstack
+     * @param crafting  the newly Crafted Itemstack
+     * @param player    the player crafting
+     * @param newModule the new ModuleInstance
+     * @param module    the new Module
+     * @param inventory Linked Inventory, length of {@link #getSlotPositions()}
+     * @param buf       the writen buffer from {@link #writeCraftingBuffer(PacketByteBuf, InteractAbleWidget)}
+     * @return if the crafting can happen
+     */
+    default boolean canPerformOnRemove(ItemStack old, ItemStack crafting, PlayerEntity player, ItemModule.ModuleInstance newModule, ItemModule module, List<ItemStack> inventory, PacketByteBuf buf) {
         return true;
     }
 
@@ -86,7 +105,7 @@ public abstract class CraftingProperty implements ModuleProperty {
      * @param buf       the writen buffer from {@link #writeCraftingBuffer(PacketByteBuf, InteractAbleWidget)}
      * @return the preview Itemstack
      */
-    public abstract ItemStack preview(ItemStack old, ItemStack crafting, PlayerEntity player, ItemModule.ModuleInstance newModule, ItemModule module, List<ItemStack> inventory, PacketByteBuf buf);
+    ItemStack preview(ItemStack old, ItemStack crafting, PlayerEntity player, ItemModule.ModuleInstance newModule, ItemModule module, List<ItemStack> inventory, PacketByteBuf buf);
 
     /**
      * the actual CraftAction
@@ -100,7 +119,7 @@ public abstract class CraftingProperty implements ModuleProperty {
      * @param buf       the writen buffer from {@link #writeCraftingBuffer(PacketByteBuf, InteractAbleWidget)}
      * @return a List of Itemstacks, first is the CraftedItem, followed by a List of Itemstacks to replace Inventory slots registered by {@link #getSlotPositions()}
      */
-    public List<ItemStack> performCraftAction(ItemStack old, ItemStack crafting, PlayerEntity player, ItemModule.ModuleInstance newModule, ItemModule module, List<ItemStack> inventory, PacketByteBuf buf) {
+    default List<ItemStack> performCraftAction(ItemStack old, ItemStack crafting, PlayerEntity player, ItemModule.ModuleInstance newModule, ItemModule module, List<ItemStack> inventory, PacketByteBuf buf) {
         List<ItemStack> stacks = new ArrayList<>();
         stacks.add(this.preview(old, crafting, player, newModule, module, inventory, buf));
         stacks.addAll(inventory);

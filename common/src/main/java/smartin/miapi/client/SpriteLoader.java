@@ -9,36 +9,17 @@ import net.minecraft.resource.Resource;
 import net.minecraft.util.Identifier;
 import smartin.miapi.Miapi;
 import smartin.miapi.datapack.ReloadEvents;
-import smartin.miapi.item.modular.cache.ModularItemCache;
+import smartin.miapi.modules.cache.ModularItemCache;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
 @Environment(EnvType.CLIENT)
 public class SpriteLoader {
     public static void setup() {
-
         ClientTextureStitchEvent.PRE.register(SpriteLoader::onTextureStitch);
-        ClientTextureStitchEvent.POST.register((atlas)->{
-            ModularItemCache.discardCache();
-        });
-        ReloadEvents.START.subscribe(isClient -> {
-            if (isClient) {
-                ModularItemCache.discardCache();
-            }
-        });
-
-        ReloadEvents.END.subscribe(isClient -> {
-            if (isClient) {
-                //reloadSprites();
-            }
-        });
-    }
-
-    public static void reloadSprites() {
-        MinecraftClient.getInstance().reloadResources();
+        ClientTextureStitchEvent.POST.register((atlas)-> ModularItemCache.discardCache());
+        ReloadEvents.START.subscribe(isClient -> ModularItemCache.discardCache());
     }
 
     protected static void onTextureStitch(SpriteAtlasTexture atlas, Consumer<Identifier> spriteAdder) {

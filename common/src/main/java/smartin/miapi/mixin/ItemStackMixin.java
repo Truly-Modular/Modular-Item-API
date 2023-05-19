@@ -2,7 +2,6 @@ package smartin.miapi.mixin;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
-import com.ibm.icu.impl.coll.Collation;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
@@ -14,13 +13,9 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import smartin.miapi.Miapi;
 import smartin.miapi.item.modular.ModularItem;
-import smartin.miapi.item.modular.properties.AttributeProperty;
 
-import java.util.Collection;
-
-import static smartin.miapi.item.modular.properties.AttributeProperty.getAttributeModifiersForSlot;
+import static smartin.miapi.modules.properties.AttributeProperty.getAttributeModifiersForSlot;
 
 @Mixin(ItemStack.class)
 public abstract class ItemStackMixin {

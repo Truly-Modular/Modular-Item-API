@@ -1,11 +1,12 @@
-package smartin.miapi.item.modular.properties;
+package smartin.miapi.modules.properties;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.reflect.TypeToken;
 import smartin.miapi.Miapi;
 import smartin.miapi.datapack.ReloadEvents;
-import smartin.miapi.item.modular.ItemModule;
+import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.lang.reflect.Type;
 import java.util.*;

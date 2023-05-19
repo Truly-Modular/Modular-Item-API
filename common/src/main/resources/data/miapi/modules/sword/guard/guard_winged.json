@@ -15,8 +15,11 @@
             }
         }
     },
+    "abilities": [
+        "block"
+    ],
     "allowedMaterial": {
-        "allowedMaterials": ["metal"],
+        "allowedMaterials": ["wood","stone","metal","crystal"],
         "cost": 1
     },
     "guiOffset": {

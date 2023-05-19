@@ -9,7 +9,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
 import smartin.miapi.client.model.ModularModelPredicateProvider;
 import smartin.miapi.item.modular.ModularItem;
-import smartin.miapi.item.modular.properties.DisplayNameProperty;
+import smartin.miapi.modules.properties.DisplayNameProperty;
 
 public class ExampleModularBowItem extends BowItem implements ModularItem {
     public ExampleModularBowItem() {

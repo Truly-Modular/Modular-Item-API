@@ -8,10 +8,8 @@ import net.minecraft.client.render.model.BakedQuad;
 import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
-import org.checkerframework.checker.units.qual.C;
-import smartin.miapi.Miapi;
-import smartin.miapi.item.modular.ItemModule;
-import smartin.miapi.item.modular.properties.MaterialProperty;
+import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.properties.MaterialProperty;
 
 /**
  * This class is a colection of ColorUtilities

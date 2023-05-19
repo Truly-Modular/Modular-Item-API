@@ -196,6 +196,7 @@
         ],
         "cost": 1
     },
+    "flexibility": 1,
     "attributes": [
         {
             "attribute": "generic.attack_damage",
@@ -206,7 +207,7 @@
         },
         {
             "attribute": "generic.attack_speed",
-            "value": "-2.3",
+            "value": "-2.4",
             "operation": "+",
             "slot": "mainhand",
             "uuid": "FA233E1C-4180-4865-B01B-BCCE9785ACA3"

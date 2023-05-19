@@ -4,13 +4,10 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.architectury.event.events.common.LifecycleEvent;
-import dev.architectury.event.events.common.TickEvent;
 import dev.architectury.registry.ReloadListenerRegistry;
 import dev.architectury.registry.menu.MenuRegistry;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Material;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.nbt.NbtCompound;
@@ -20,7 +17,6 @@ import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.profiling.jfr.event.ServerTickTimeEvent;
 import net.minecraft.util.registry.Registry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,16 +27,18 @@ import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.datapack.ReloadListener;
 import smartin.miapi.attributes.AttributeRegistry;
-import smartin.miapi.item.modular.ItemModule;
+import smartin.miapi.item.modular.ItemAbilityManager;
+import smartin.miapi.modules.ItemModule;
 import smartin.miapi.item.modular.PropertyResolver;
 import smartin.miapi.item.modular.StatResolver;
-import smartin.miapi.item.modular.cache.ModularItemCache;
+import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.item.modular.items.*;
-import smartin.miapi.item.modular.properties.*;
-import smartin.miapi.item.modular.properties.render.GuiOffsetProperty;
-import smartin.miapi.item.modular.properties.render.ModelMergeProperty;
-import smartin.miapi.item.modular.properties.render.ModelProperty;
-import smartin.miapi.item.modular.properties.render.ModelTransformationProperty;
+import smartin.miapi.modules.properties.*;
+import smartin.miapi.modules.properties.util.ModuleProperty;
+import smartin.miapi.modules.properties.render.GuiOffsetProperty;
+import smartin.miapi.modules.properties.render.ModelMergeProperty;
+import smartin.miapi.modules.properties.render.ModelProperty;
+import smartin.miapi.modules.properties.render.ModelTransformationProperty;
 import smartin.miapi.registries.MiapiRegistry;
 
 import java.util.HashMap;
@@ -61,6 +59,7 @@ public class Miapi {
     public static void init() {
         setupRegistries();
         ReloadEvents.setup();
+        ItemAbilityManager.setup();
         LifecycleEvent.SERVER_BEFORE_START.register(minecraftServer -> {
             server = minecraftServer;
             LOGGER.info("Server before started");
@@ -164,6 +163,9 @@ public class Miapi {
         Miapi.modulePropertyRegistry.register(GuiOffsetProperty.KEY, new GuiOffsetProperty());
         Miapi.modulePropertyRegistry.register(EquipmentSlotProperty.KEY, new EquipmentSlotProperty());
         Miapi.modulePropertyRegistry.register(ModelMergeProperty.KEY, new ModelMergeProperty());
+        Miapi.modulePropertyRegistry.register(FlexibilityProperty.KEY, new FlexibilityProperty());
+        Miapi.modulePropertyRegistry.register(BlockProperty.KEY, new BlockProperty());
+        Miapi.modulePropertyRegistry.register(AbilityProperty.KEY,new AbilityProperty());
 
         new AttributeRegistry();
 

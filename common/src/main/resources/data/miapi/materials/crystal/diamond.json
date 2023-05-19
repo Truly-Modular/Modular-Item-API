@@ -1,6 +1,6 @@
 {
   "key": "diamond",
-  "translation_key": "miapi.material.diamond",
+  "translation": "miapi.material.diamond",
   "groups": ["crystal","gem"],
   "hardness": 6,
   "density": 2.9,
@@ -8,9 +8,7 @@
   "durability": 800,
   "color": "49EAD6",
   "textures": [
-    "crude",
-    "default",
-    "test"
+    "contrast"
   ],
   "items": [
     {

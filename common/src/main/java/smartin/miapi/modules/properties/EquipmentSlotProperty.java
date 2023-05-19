@@ -1,10 +1,12 @@
-package smartin.miapi.item.modular.properties;
+package smartin.miapi.modules.properties;
 
 import com.google.gson.JsonElement;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.ItemStack;
 import smartin.miapi.Miapi;
-import smartin.miapi.item.modular.ItemModule;
+import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.properties.util.MergeType;
+import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import javax.annotation.Nullable;
 

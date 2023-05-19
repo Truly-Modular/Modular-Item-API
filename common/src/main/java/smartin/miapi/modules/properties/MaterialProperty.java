@@ -1,10 +1,9 @@
-package smartin.miapi.item.modular.properties;
+package smartin.miapi.modules.properties;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import net.minecraft.block.Material;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tag.TagKey;
@@ -13,8 +12,10 @@ import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.registry.Registry;
 import smartin.miapi.Miapi;
 import smartin.miapi.datapack.ReloadEvents;
-import smartin.miapi.item.modular.ItemModule;
+import smartin.miapi.modules.ItemModule;
 import smartin.miapi.item.modular.StatResolver;
+import smartin.miapi.modules.properties.util.MergeType;
+import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import javax.annotation.Nullable;
 import java.util.*;

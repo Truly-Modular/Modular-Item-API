@@ -2,22 +2,30 @@ package smartin.miapi.attributes;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import dev.architectury.event.EventResult;
+import dev.architectury.event.events.common.EntityEvent;
 import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.*;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.registry.Registry;
+import smartin.miapi.Events.Event;
 import smartin.miapi.Miapi;
-import smartin.miapi.item.modular.ModularItem;
 
 import java.util.Collection;
 
 public class AttributeRegistry {
     public static final String ITEM_DURABILITY_ID = Miapi.MOD_ID + "durability";
+    public static final String DAMAGE_RESISTANCE_ID = Miapi.MOD_ID + "resistance";
     public static final EntityAttribute ITEM_DURABILITY = register(ITEM_DURABILITY_ID, (new ClampedEntityAttribute("attribute.name.miapi.durability", 300.0, 1.0, 16777216)).setTracked(true));
+    public static final EntityAttribute DAMAGE_RESISTANCE = register(DAMAGE_RESISTANCE_ID, (new ClampedEntityAttribute("attribute.name.miapi.resistance", 0.0, 0.0, 100)).setTracked(true));
 
     public AttributeRegistry() {
-
+        Event.LIVING_HURT.register((livingHurtEvent -> {
+            if(livingHurtEvent.damageSource.equals(DamageSource.GENERIC) && livingHurtEvent.livingEntity.getAttributes().hasAttribute(DAMAGE_RESISTANCE)){
+                livingHurtEvent.amount = (float) (livingHurtEvent.amount * (100/(100-livingHurtEvent.livingEntity.getAttributeValue(DAMAGE_RESISTANCE))));
+            }
+        }));
     }
 
     private static EntityAttribute register(String id, EntityAttribute attribute) {

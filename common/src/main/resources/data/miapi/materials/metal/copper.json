@@ -1,6 +1,6 @@
 {
   "key": "copper",
-  "translation_key": "miapi.material.copper",
+  "translation": "miapi.material.copper",
   "groups": ["metal"],
   "hardness": 3.8,
   "density": 3.6,
@@ -8,9 +8,7 @@
   "durability": 800,
   "color": "E47B55",
   "textures": [
-    "crude",
-    "default",
-    "test"
+    "metal"
   ],
   "propertyList": [],
 

@@ -160,6 +160,7 @@
         ],
         "cost": 1
     },
+    "flexibility": 1,
     "attributes": [
         {
             "attribute": "generic.attack_damage",
@@ -170,24 +171,24 @@
         },
         {
             "attribute": "generic.attack_speed",
-            "value": "-2",
+            "value": "-2.2",
             "operation": "+",
             "slot": "mainhand",
             "uuid": "FA233E1C-4180-4865-B01B-BCCE9785ACA3"
         },
         {
-            "attribute": "generic.attack_damage",
-            "value": "-0.2",
-            "operation": "*",
-            "slot": "mainhand",
-            "uuid": "CB3F55D3-645C-4F38-A497-9C13A33DB5CF"
-        },
-        {
             "attribute": "generic.attack_speed",
-            "value": "0.25",
+            "value": "0.2",
             "operation": "*",
             "slot": "mainhand",
             "uuid": "FA233E1C-4180-4865-B01B-BCCE9785ACA3"
+        },
+        {
+            "attribute": "generic.attack_damage",
+            "value": "-0.1",
+            "operation": "*",
+            "slot": "mainhand",
+            "uuid": "CB3F55D3-645C-4F38-A497-9C13A33DB5CF"
         }
     ],
     "displayName": "[material.key] short Handle",

@@ -12,7 +12,7 @@ import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
 import org.jetbrains.annotations.Nullable;
-import smartin.miapi.item.modular.properties.render.ModelProperty;
+import smartin.miapi.modules.properties.render.ModelProperty;
 
 import java.util.*;
 import java.util.function.Function;

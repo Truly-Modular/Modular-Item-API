@@ -20,7 +20,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import smartin.miapi.client.model.ItemRenderUtil;
 import smartin.miapi.item.modular.ModularItem;
-import smartin.miapi.item.modular.properties.render.ModelProperty;
+import smartin.miapi.modules.properties.render.ModelProperty;
 
 import java.util.Arrays;
 
