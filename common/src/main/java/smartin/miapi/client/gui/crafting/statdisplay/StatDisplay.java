@@ -8,7 +8,9 @@ import net.minecraft.text.Text;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.client.gui.BoxList;
 import smartin.miapi.client.gui.InteractAbleWidget;
-import smartin.miapi.client.gui.crafting.statdisplay.attributes.AttributeSingleDisplay;
+import smartin.miapi.modules.properties.BlockProperty;
+import smartin.miapi.modules.properties.FlexibilityProperty;
+import smartin.miapi.modules.properties.HealthPercentDamage;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -26,7 +28,9 @@ public class StatDisplay extends InteractAbleWidget {
         addStatDisplay(AttributeSingleDisplay.Builder(EntityAttributes.GENERIC_ATTACK_SPEED).setName(Text.literal("Attack Speed")).setDefault(4).build());
         addStatDisplay(new DpsStatDisplay());
         addStatDisplay(AttributeSingleDisplay.Builder(AttributeRegistry.ITEM_DURABILITY).setName(Text.literal("Durability")).setDefault(0).build());
-        addStatDisplay(new FlexibilityStatDisplay());
+        addStatDisplay(SinglePropertyStatDisplay.Builder(FlexibilityProperty.property).setName(Text.of("Flexibility")).build());
+        addStatDisplay(SinglePropertyStatDisplay.Builder(HealthPercentDamage.property).setName(Text.of("Vitality Drain")).build());
+        addStatDisplay(SinglePropertyStatDisplay.Builder(BlockProperty.property).setName(Text.of("Block")).build());
     }
 
     public StatDisplay(int x, int y, int width, int height) {

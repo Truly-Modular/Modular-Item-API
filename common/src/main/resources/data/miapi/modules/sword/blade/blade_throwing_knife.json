@@ -45,6 +45,10 @@
             "uuid": "FA233E1C-4180-4865-B01B-BCCE9785ACA3"
         }
     ],
+    "abilities": [
+        "throw"
+    ],
+    "healthPercent": 10000,
     "displayName": "[material.key] Throwing Knife",
     "itemId": "miapi:modular_throwing_knife"
 }

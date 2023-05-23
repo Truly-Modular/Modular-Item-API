@@ -5,10 +5,11 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
+import net.minecraft.item.TridentItem;
 import net.minecraft.text.Text;
 import net.minecraft.util.*;
 import net.minecraft.world.World;
-import smartin.miapi.item.modular.ItemAbilityManager;
+import smartin.miapi.modules.abilities.util.ItemAbilityManager;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.modules.properties.DisplayNameProperty;
 

@@ -18,5 +18,9 @@
     "allowedMaterial": {
         "allowedMaterials": ["wood","stone","metal","crystal"],
         "cost": 1
-    }
+    },
+    "blocking": 20,
+    "abilities": [
+        "block"
+    ]
 }

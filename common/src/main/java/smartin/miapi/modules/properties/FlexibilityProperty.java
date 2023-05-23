@@ -8,6 +8,7 @@ import smartin.miapi.Miapi;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.util.CraftingProperty;
 import smartin.miapi.modules.properties.util.MergeType;
+import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.modules.properties.util.SimpleDoubleProperty;
 
 import java.util.List;
@@ -15,9 +16,11 @@ import java.util.Objects;
 
 public class FlexibilityProperty extends SimpleDoubleProperty implements CraftingProperty {
     public static final String KEY = "flexibility";
+    public static SimpleDoubleProperty property;
 
     public FlexibilityProperty() {
         super(KEY);
+        property = this;
     }
 
     @Override

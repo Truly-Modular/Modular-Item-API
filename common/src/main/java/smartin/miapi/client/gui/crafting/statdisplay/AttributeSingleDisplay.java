@@ -1,4 +1,4 @@
-package smartin.miapi.client.gui.crafting.statdisplay.attributes;
+package smartin.miapi.client.gui.crafting.statdisplay;
 
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.attribute.EntityAttribute;
@@ -6,7 +6,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Util;
 import smartin.miapi.attributes.AttributeRegistry;
-import smartin.miapi.client.gui.crafting.statdisplay.SingleStatDisplayDouble;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;

@@ -101,7 +101,7 @@ public class ModularItemCache {
         public int nbtHash;
 
         public Cache(UUID uuid, ItemStack stack) {
-            Miapi.LOGGER.warn("new Cache ");
+            //Miapi.LOGGER.warn("new Cache ");
             this.uuid = uuid;
             stack.getOrCreateNbt().putString(CACHE_KEY,uuid.toString());
             this.stack = stack;

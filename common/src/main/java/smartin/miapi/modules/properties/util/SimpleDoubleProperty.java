@@ -11,13 +11,15 @@ import javax.annotation.Nullable;
 import java.util.Objects;
 
 public abstract class SimpleDoubleProperty implements ModuleProperty {
-    public static ModuleProperty property;
-    protected static String privateKey;
+    public ModuleProperty property;
+    protected String privateKey;
 
     protected SimpleDoubleProperty(String key) {
         property = this;
         privateKey = key;
-        ModularItemCache.setSupplier(key, (SimpleDoubleProperty::createValue));
+        ModularItemCache.setSupplier(key, (itemstack) -> {
+            return createValue(itemstack, property);
+        });
     }
 
     @Override
@@ -30,12 +32,15 @@ public abstract class SimpleDoubleProperty implements ModuleProperty {
         return old;
     }
 
-    private static Double createValue(ItemStack itemStack) {
+    private static Double createValue(ItemStack itemStack, ModuleProperty property) {
         double flexibility = 0;
         boolean hasFlexibility = false;
         for (ItemModule.ModuleInstance moduleInstance : ItemModule.getModules(itemStack).allSubModules()) {
-            flexibility += getValue(moduleInstance);
-            hasFlexibility = true;
+            Double value = getValue(moduleInstance, property);
+            if(value!=null){
+                flexibility += value;
+                hasFlexibility = true;
+            }
         }
         if (!hasFlexibility) {
             return null;
@@ -43,14 +48,14 @@ public abstract class SimpleDoubleProperty implements ModuleProperty {
         return flexibility;
     }
 
-    public static boolean hasValue(ItemStack itemStack) {
-        return getValue(itemStack) == null;
+    public boolean hasValue(ItemStack itemStack) {
+        return getValue(itemStack) != null;
     }
 
-    public static double getValue(ItemModule.ModuleInstance instance) {
+    private static Double getValue(ItemModule.ModuleInstance instance, ModuleProperty property) {
         JsonElement element = instance.getProperties().get(property);
         if (element == null)
-            return 0;
+            return null;
         try {
             return element.getAsDouble();
         } catch (Exception e) {
@@ -59,8 +64,13 @@ public abstract class SimpleDoubleProperty implements ModuleProperty {
     }
 
     @Nullable
-    public static Double getValue(ItemStack itemStack) {
+    public Double getValue(ItemStack itemStack) {
         return (Double) ModularItemCache.get(itemStack, privateKey);
+    }
+
+    public double getValueSafe(ItemStack itemStack) {
+        Double value = getValue(itemStack);
+        return value == null ? 0 : value;
     }
 
     @Override

@@ -3,8 +3,9 @@ package smartin.miapi.modules.properties;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import net.minecraft.item.ItemStack;
-import smartin.miapi.item.modular.ItemAbilityManager;
-import smartin.miapi.item.modular.ItemUseAbility;
+import smartin.miapi.Miapi;
+import smartin.miapi.modules.abilities.util.ItemAbilityManager;
+import smartin.miapi.modules.abilities.util.ItemUseAbility;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
@@ -23,9 +24,14 @@ public class AbilityProperty implements ModuleProperty {
     public static List<ItemUseAbility> get(ItemStack itemStack) {
         List<ItemUseAbility> abilities = new ArrayList<>();
         JsonElement element = ItemModule.getMergedProperty(itemStack, property);
-        if(element != null){
+        if (element != null) {
             element.getAsJsonArray().forEach(jsonElement -> {
-                abilities.add(ItemAbilityManager.useAbilityRegistry.get(jsonElement.getAsString()));
+                ItemUseAbility ability = ItemAbilityManager.useAbilityRegistry.get(jsonElement.getAsString());
+                if (ability != null) {
+                    abilities.add(0, ability);
+                } else {
+                    Miapi.LOGGER.error("could not resolve ability " + jsonElement.getAsString());
+                }
             });
         }
         return abilities;
@@ -43,12 +49,12 @@ public class AbilityProperty implements ModuleProperty {
     public JsonElement merge(JsonElement old, JsonElement toMerge, MergeType type) {
         switch (type) {
             case OVERWRITE -> {
-                return toMerge;
+                return toMerge.deepCopy();
             }
             case SMART, EXTEND -> {
-                JsonArray array = old.getAsJsonArray();
-                array.addAll(toMerge.getAsJsonArray());
-                return array.getAsJsonObject();
+                JsonArray array = old.deepCopy().getAsJsonArray();
+                array.addAll(toMerge.deepCopy().getAsJsonArray());
+                return Miapi.gson.toJsonTree(array);
             }
         }
         return old;

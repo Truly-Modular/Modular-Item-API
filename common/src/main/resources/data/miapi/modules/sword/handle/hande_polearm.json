@@ -210,6 +210,16 @@
         "sizeX": 7,
         "sizeY": 7
     },
+    "abilities": [
+        "block",
+        "riptide"
+    ],
+    "riptide": {
+        "needsWater": true,
+        "needRiptideEnchant": false,
+        "RiptideStrength": 6,
+        "allowLava": true
+    },
     "displayName": "[material.key] Polearm",
     "itemId": "miapi:modular_handle"
 }

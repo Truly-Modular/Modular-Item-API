@@ -1,4 +1,4 @@
-package smartin.miapi.item.modular;
+package smartin.miapi.modules.abilities.util;
 
 import dev.architectury.event.events.common.TickEvent;
 import net.minecraft.entity.LivingEntity;
@@ -16,37 +16,45 @@ import smartin.miapi.modules.properties.AbilityProperty;
 import smartin.miapi.registries.MiapiRegistry;
 
 import java.util.HashMap;
+import java.util.Map;
+import java.util.WeakHashMap;
 
+/**
+ * The ItemAbilityManager is the brain and control behind what Ability is executed on what Item.
+ * Abilities need to be added in the Module Json so the {@link AbilityProperty} can pick them up properly
+ * This class then checks all provided abilites and delegates the calls from the {@link net.minecraft.item.Item} to the {@link ItemUseAbility}
+ */
 public class ItemAbilityManager {
-    private static final HashMap<PlayerEntity, ItemStack> playerActiveItems = new HashMap<>();
-    private static final HashMap<PlayerEntity, ItemStack> playerActiveItemsClient = new HashMap<>();
+    private static final Map<PlayerEntity, ItemStack> playerActiveItems = new HashMap<>();
+    private static final Map<PlayerEntity, ItemStack> playerActiveItemsClient = new HashMap<>();
     public static final MiapiRegistry<ItemUseAbility> useAbilityRegistry = MiapiRegistry.getInstance(ItemUseAbility.class);
-    private static EmptyAbility emptyAbility;
+    private static final EmptyAbility emptyAbility = new EmptyAbility();
+    private static final Map<ItemStack, ItemUseAbility> abilityMap = new WeakHashMap<>();
 
     public static void setup() {
         TickEvent.PLAYER_PRE.register((playerEntity) -> {
-            if(playerEntity instanceof ServerPlayerEntity){
+            if (playerEntity instanceof ServerPlayerEntity) {
                 ItemStack oldItem = playerActiveItems.get(playerEntity);
                 ItemStack playerItem = playerEntity.getActiveItem();
                 if (playerItem != null && !playerItem.equals(oldItem)) {
                     playerActiveItems.put(playerEntity, playerEntity.getActiveItem());
-                    if(oldItem!=null){
+                    if (oldItem != null) {
                         getAbility(oldItem).onStoppedHolding(oldItem, playerEntity.world, playerEntity);
+                        abilityMap.remove(oldItem);
                     }
                 }
-            }
-            else{
+            } else {
                 ItemStack oldItem = playerActiveItemsClient.get(playerEntity);
                 ItemStack playerItem = playerEntity.getActiveItem();
                 if (playerItem != null && !playerItem.equals(oldItem)) {
                     playerActiveItemsClient.put(playerEntity, playerEntity.getActiveItem());
-                    if(oldItem!=null){
+                    if (oldItem != null) {
                         getAbility(oldItem).onStoppedHolding(oldItem, playerEntity.world, playerEntity);
+                        abilityMap.remove(oldItem);
                     }
                 }
             }
         });
-        emptyAbility = new EmptyAbility();
         useAbilityRegistry.register("empty", emptyAbility);
     }
 
@@ -55,8 +63,14 @@ public class ItemAbilityManager {
     }
 
     private static ItemUseAbility getAbility(ItemStack itemStack) {
+        ItemUseAbility useAbility = abilityMap.get(itemStack);
+        return useAbility == null ? emptyAbility : useAbility;
+    }
+
+    private static ItemUseAbility getAbility(ItemStack itemStack, World world, PlayerEntity player, Hand hand) {
         for (ItemUseAbility ability : AbilityProperty.get(itemStack)) {
-            if (ability.allowedOnItem(itemStack)) {
+            Miapi.LOGGER.info(String.valueOf(ability));
+            if (ability.allowedOnItem(itemStack, world, player, hand)) {
                 return ability;
             }
         }
@@ -72,23 +86,21 @@ public class ItemAbilityManager {
     }
 
     public static TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-        return getAbility(user.getStackInHand(hand)).use(world, user, hand);
-    }
-
-    public static UseAction onUse(World world, PlayerEntity user, Hand hand) {
-        return getAbility(user.getStackInHand(hand)).onUse(world, user, hand);
+        ItemStack itemStack = user.getStackInHand(hand);
+        ItemUseAbility ability = getAbility(itemStack, world, user, hand);
+        abilityMap.put(itemStack, ability);
+        return ability.use(world, user, hand);
     }
 
     public static ItemStack finishUsing(ItemStack stack, World world, LivingEntity user) {
-        return getAbility(stack).finishUsing(stack, world, user);
+        ItemStack itemStack = getAbility(stack).finishUsing(stack, world, user);
+        abilityMap.remove(stack);
+        return itemStack;
     }
 
     public static void onStoppedUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
         getAbility(stack).onStoppedUsing(stack, world, user, remainingUseTicks);
-    }
-
-    public static void onStoppedHolding(ItemStack stack, World world, LivingEntity user) {
-        getAbility(stack).onStoppedHolding(stack, world, user);
+        abilityMap.remove(stack);
     }
 
     public static ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
@@ -102,7 +114,7 @@ public class ItemAbilityManager {
     static class EmptyAbility implements ItemUseAbility {
 
         @Override
-        public boolean allowedOnItem(ItemStack itemStack) {
+        public boolean allowedOnItem(ItemStack itemStack, World world, PlayerEntity player, Hand hand) {
             return true;
         }
 
@@ -118,36 +130,6 @@ public class ItemAbilityManager {
 
         public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
             return TypedActionResult.pass(user.getStackInHand(hand));
-        }
-
-        @Override
-        public UseAction onUse(World world, PlayerEntity user, Hand hand) {
-            return UseAction.NONE;
-        }
-
-        @Override
-        public ItemStack finishUsing(ItemStack stack, World world, LivingEntity user) {
-            return stack;
-        }
-
-        @Override
-        public void onStoppedUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
-
-        }
-
-        @Override
-        public void onStoppedHolding(ItemStack stack, World world, LivingEntity user) {
-
-        }
-
-        @Override
-        public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
-            return ActionResult.PASS;
-        }
-
-        @Override
-        public ActionResult useOnBlock(ItemUsageContext context) {
-            return ActionResult.PASS;
         }
     }
 }

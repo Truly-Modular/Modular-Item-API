@@ -4,10 +4,12 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.architectury.event.events.common.LifecycleEvent;
+import dev.architectury.event.events.common.PlayerEvent;
 import dev.architectury.registry.ReloadListenerRegistry;
 import dev.architectury.registry.menu.MenuRegistry;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Material;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.nbt.NbtCompound;
@@ -27,10 +29,13 @@ import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.datapack.ReloadListener;
 import smartin.miapi.attributes.AttributeRegistry;
-import smartin.miapi.item.modular.ItemAbilityManager;
+import smartin.miapi.modules.abilities.BlockAbility;
+import smartin.miapi.modules.abilities.RiptideAbility;
+import smartin.miapi.modules.abilities.util.ItemAbilityManager;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.item.modular.PropertyResolver;
 import smartin.miapi.item.modular.StatResolver;
+import smartin.miapi.modules.abilities.ThrowingAbility;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.item.modular.items.*;
 import smartin.miapi.modules.properties.*;
@@ -60,6 +65,7 @@ public class Miapi {
         setupRegistries();
         ReloadEvents.setup();
         ItemAbilityManager.setup();
+        AttributeRegistry.setup();
         LifecycleEvent.SERVER_BEFORE_START.register(minecraftServer -> {
             server = minecraftServer;
             LOGGER.info("Server before started");
@@ -164,10 +170,14 @@ public class Miapi {
         Miapi.modulePropertyRegistry.register(EquipmentSlotProperty.KEY, new EquipmentSlotProperty());
         Miapi.modulePropertyRegistry.register(ModelMergeProperty.KEY, new ModelMergeProperty());
         Miapi.modulePropertyRegistry.register(FlexibilityProperty.KEY, new FlexibilityProperty());
+        Miapi.modulePropertyRegistry.register(AbilityProperty.KEY, new AbilityProperty());
         Miapi.modulePropertyRegistry.register(BlockProperty.KEY, new BlockProperty());
-        Miapi.modulePropertyRegistry.register(AbilityProperty.KEY,new AbilityProperty());
+        Miapi.modulePropertyRegistry.register(RiptideProperty.KEY, new RiptideProperty());
+        Miapi.modulePropertyRegistry.register(HealthPercentDamage.KEY,new HealthPercentDamage());
 
-        new AttributeRegistry();
+        ItemAbilityManager.useAbilityRegistry.register("throw", new ThrowingAbility());
+        ItemAbilityManager.useAbilityRegistry.register("block", new BlockAbility());
+        ItemAbilityManager.useAbilityRegistry.register("riptide", new RiptideAbility());
 
         Registry.register(Registry.BLOCK, WORK_BENCH_IDENTIFIER, WORK_BENCH);
         Registry.register(Registry.ITEM, WORK_BENCH_IDENTIFIER, new BlockItem(WORK_BENCH, new Item.Settings()));
