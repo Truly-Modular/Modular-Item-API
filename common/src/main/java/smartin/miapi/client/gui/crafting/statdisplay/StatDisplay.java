@@ -8,6 +8,7 @@ import net.minecraft.text.Text;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.client.gui.BoxList;
 import smartin.miapi.client.gui.InteractAbleWidget;
+import smartin.miapi.modules.properties.ArmorPenProperty;
 import smartin.miapi.modules.properties.BlockProperty;
 import smartin.miapi.modules.properties.FlexibilityProperty;
 import smartin.miapi.modules.properties.HealthPercentDamage;
@@ -30,6 +31,7 @@ public class StatDisplay extends InteractAbleWidget {
         addStatDisplay(AttributeSingleDisplay.Builder(AttributeRegistry.ITEM_DURABILITY).setName(Text.literal("Durability")).setDefault(0).build());
         addStatDisplay(SinglePropertyStatDisplay.Builder(FlexibilityProperty.property).setName(Text.of("Flexibility")).build());
         addStatDisplay(SinglePropertyStatDisplay.Builder(HealthPercentDamage.property).setName(Text.of("Vitality Drain")).build());
+        addStatDisplay(SinglePropertyStatDisplay.Builder(ArmorPenProperty.property).setName(Text.of("Armor Piercing")).build());
         addStatDisplay(SinglePropertyStatDisplay.Builder(BlockProperty.property).setName(Text.of("Block")).build());
     }
 

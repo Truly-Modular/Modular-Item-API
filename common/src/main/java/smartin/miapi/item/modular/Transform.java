@@ -24,7 +24,7 @@ public class Transform extends Transformation {
      * @param scale       the scale vector, as a Vec3f
      */
     public Transform(Vec3f rotation, Vec3f translation, Vec3f scale) {
-        super(rotation, translation, scale);
+        super(rotation.copy(), translation.copy(), scale.copy());
     }
 
     public Transform(Transformation transformation) {
@@ -94,10 +94,10 @@ public class Transform extends Transformation {
         return new Vec3f(x, y, z);
     }
 
-    public Matrix4f toMatrix(){
-        Matrix4f matrix4f = Matrix4f.translate(translation.getX(),translation.getY(),translation.getZ());
+    public Matrix4f toMatrix() {
+        Matrix4f matrix4f = Matrix4f.translate(translation.getX(), translation.getY(), translation.getZ());
         matrix4f.multiply(new Matrix4f(Quaternion.fromEulerXyzDegrees(rotation.copy())));
-        matrix4f.multiply(Matrix4f.scale(scale.getX(),scale.getY(),scale.getZ()));
+        matrix4f.multiply(Matrix4f.scale(scale.getX(), scale.getY(), scale.getZ()));
         return matrix4f;
     }
 
@@ -159,7 +159,7 @@ public class Transform extends Transformation {
         Vec3f translationVector = transform.translation.copy();
         //translationVector.multiplyComponentwise(1 / scale.getX(), 1 / scale.getY(), 1 / scale.getZ());
         AffineTransformation affineTransformation = new AffineTransformation(translationVector, null, transform.scale.copy(), rotation);
-        affineTransformation = new AffineTransformation(this.toMatrix());
+        //affineTransformation = new AffineTransformation(this.toMatrix());
         return affineTransformation;
     }
 
@@ -184,7 +184,7 @@ public class Transform extends Transformation {
         };
     }
 
-    public static Transform fromMatrix(Matrix4f matrix4f){
+    public static Transform fromMatrix(Matrix4f matrix4f) {
         AffineTransformation affineTransformation = new AffineTransformation(matrix4f);
         Vec3f translation = affineTransformation.getTranslation();
         return new Transform(affineTransformation.getRotation2().toEulerXyzDegrees(), translation, affineTransformation.getScale());

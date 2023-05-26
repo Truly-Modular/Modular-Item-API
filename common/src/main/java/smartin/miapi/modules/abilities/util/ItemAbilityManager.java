@@ -69,7 +69,6 @@ public class ItemAbilityManager {
 
     private static ItemUseAbility getAbility(ItemStack itemStack, World world, PlayerEntity player, Hand hand) {
         for (ItemUseAbility ability : AbilityProperty.get(itemStack)) {
-            Miapi.LOGGER.info(String.valueOf(ability));
             if (ability.allowedOnItem(itemStack, world, player, hand)) {
                 return ability;
             }

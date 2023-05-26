@@ -13,6 +13,7 @@ import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
+import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import smartin.miapi.Events.Event;
@@ -22,12 +23,6 @@ import smartin.miapi.modules.properties.EquipmentSlotProperty;
 
 @Mixin(LivingEntity.class)
 abstract class LivingEntityMixin {
-
-    @Shadow public abstract boolean removeStatusEffect(StatusEffect type);
-
-    @Shadow @Nullable public abstract StatusEffectInstance removeStatusEffectInternal(@Nullable StatusEffect type);
-
-    @Shadow protected abstract int getNextAirUnderwater(int air);
 
     @Inject(method = "getPreferredEquipmentSlot", at = @At("HEAD"), cancellable = true)
     private static void onGetPreferredEquipmentSlot(ItemStack stack, CallbackInfoReturnable<EquipmentSlot> cir) {
@@ -60,6 +55,12 @@ abstract class LivingEntityMixin {
         storedValue = livingHurtEvent.amount;
         storedDamageSource = livingHurtEvent.damageSource;
 
+    }
+
+    @Inject(method = "damage", at = @At(value = "TAIL"))
+    private void damageEventAfter(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
+        Event.LivingHurtEvent livingHurtEvent = new Event.LivingHurtEvent((LivingEntity) (Object) this, source, amount);
+        Event.LIVING_HURT_AFTER.invoker().hurt(livingHurtEvent);
     }
 
     @ModifyVariable(method = "damage", at = @At(value = "HEAD"), ordinal = 0)

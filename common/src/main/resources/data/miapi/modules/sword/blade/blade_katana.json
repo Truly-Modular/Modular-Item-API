@@ -49,6 +49,27 @@
         "sizeX": 2,
         "sizeY": 2
     },
+    "abilities": [
+        "circleAttack"
+    ],
+    "circleAttack": {
+        "damage": 1.5,
+        "range": 8,
+        "minHold": 40,
+        "cooldown": 60,
+        "particles": [
+            {
+                "particle": "minecraft:sweep_attack",
+                "count": 0,
+                "rangePercent": 0.75
+            },
+            {
+                "particle": "minecraft:bubble",
+                "count": 0,
+                "rangePercent": 0.3
+            }
+        ]
+    },
     "displayName": "[material.key] Katana",
     "itemId": "miapi:modular_katana"
 }

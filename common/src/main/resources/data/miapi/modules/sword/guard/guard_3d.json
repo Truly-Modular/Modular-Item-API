@@ -1,0 +1,83 @@
+{
+    "name": "guard_3d",
+    "texture": [
+        {
+            "path": "miapi:models/item/sword/guard/normal/[material.texture].json",
+            "transform": {
+                "rotation": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "translation": {
+                    "x": -4.0,
+                    "y": -4.0,
+                    "z": 0.0
+                },
+                "scale": {
+                    "x": 1.0,
+                    "y": 1.0,
+                    "z": 1.0
+                }
+            }
+        },
+        {
+            "path": "miapi:models/item/armor/arm_left/base/[material.texture].json",
+            "transform": {
+                "rotation": {
+                    "x": 0.0,
+                    "y": 90.0,
+                    "z": 45.0
+                },
+                "translation": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "scale": {
+                    "x": 1.0,
+                    "y": 1.0,
+                    "z": 1.0
+                }
+            }
+        }
+    ],
+    "allowedInSlots": [
+        "sword_guard"
+    ],
+    "slots": {
+        "0": {
+            "allowed": [
+                "sword_blade",
+                "sword_blade_small",
+                "sword_blade_large"
+            ],
+            "transform": {
+                "rotation": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "translation": {
+                    "x": 3.0,
+                    "y": 3.0,
+                    "z": 0.0
+                },
+                "scale": {
+                    "x": 1.0,
+                    "y": 1.0,
+                    "z": 1.0
+                }
+            }
+        }
+    },
+    "allowedMaterial": {
+        "allowedMaterials": [
+            "wood",
+            "stone",
+            "metal",
+            "crystal"
+        ],
+        "cost": 1
+    }
+}

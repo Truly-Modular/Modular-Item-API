@@ -29,13 +29,11 @@ import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.datapack.ReloadListener;
 import smartin.miapi.attributes.AttributeRegistry;
-import smartin.miapi.modules.abilities.BlockAbility;
-import smartin.miapi.modules.abilities.RiptideAbility;
+import smartin.miapi.modules.abilities.*;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.item.modular.PropertyResolver;
 import smartin.miapi.item.modular.StatResolver;
-import smartin.miapi.modules.abilities.ThrowingAbility;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.item.modular.items.*;
 import smartin.miapi.modules.properties.*;
@@ -174,10 +172,15 @@ public class Miapi {
         Miapi.modulePropertyRegistry.register(BlockProperty.KEY, new BlockProperty());
         Miapi.modulePropertyRegistry.register(RiptideProperty.KEY, new RiptideProperty());
         Miapi.modulePropertyRegistry.register(HealthPercentDamage.KEY,new HealthPercentDamage());
+        Miapi.modulePropertyRegistry.register(ArmorPenProperty.KEY,new ArmorPenProperty());
+        Miapi.modulePropertyRegistry.register(HeavyAttackProperty.KEY,new HeavyAttackProperty());
+        Miapi.modulePropertyRegistry.register(CircleAttackProperty.KEY,new CircleAttackProperty());
 
         ItemAbilityManager.useAbilityRegistry.register("throw", new ThrowingAbility());
         ItemAbilityManager.useAbilityRegistry.register("block", new BlockAbility());
-        ItemAbilityManager.useAbilityRegistry.register("riptide", new RiptideAbility());
+        ItemAbilityManager.useAbilityRegistry.register(RiptideProperty.KEY, new RiptideAbility());
+        ItemAbilityManager.useAbilityRegistry.register(HeavyAttackProperty.KEY, new HeavyAttackAbility());
+        ItemAbilityManager.useAbilityRegistry.register(CircleAttackProperty.KEY, new CircleAttackAbility());
 
         Registry.register(Registry.BLOCK, WORK_BENCH_IDENTIFIER, WORK_BENCH);
         Registry.register(Registry.ITEM, WORK_BENCH_IDENTIFIER, new BlockItem(WORK_BENCH, new Item.Settings()));

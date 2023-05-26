@@ -25,7 +25,10 @@
     ],
     "allowedMaterial": {
         "allowedMaterials": [
-            "wood","stone","metal","crystal"
+            "wood",
+            "stone",
+            "metal",
+            "crystal"
         ],
         "cost": 1
     },
@@ -50,5 +53,15 @@
         "sizeY": 2
     },
     "displayName": "[material.key] Great Sword",
+    "abilities": [
+        "heavyAttack"
+    ],
+    "heavyAttack": {
+        "damage": 1.5,
+        "sweeping": 10,
+        "range": 8,
+        "minHold": 40,
+        "cooldown": 60
+    },
     "itemId": "miapi:modular_greatsword"
 }

@@ -8,6 +8,8 @@ import net.minecraft.entity.damage.DamageSource;
 public class Event {
     public static dev.architectury.event.Event<LivingHurt> LIVING_HURT = EventFactory.createEventResult();
 
+    public static dev.architectury.event.Event<LivingHurt> LIVING_HURT_AFTER = EventFactory.createEventResult();
+
     public static class LivingHurtEvent {
         public final LivingEntity livingEntity;
         public DamageSource damageSource;
