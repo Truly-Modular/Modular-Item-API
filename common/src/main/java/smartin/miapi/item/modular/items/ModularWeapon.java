@@ -45,6 +45,10 @@ public class ModularWeapon extends Item implements ModularItem {
         return ItemAbilityManager.finishUsing(stack, world, user);
     }
 
+    public void usageTick(World world, LivingEntity user, ItemStack stack, int remainingUseTicks) {
+        ItemAbilityManager.usageTick(world, user, stack, remainingUseTicks);
+    }
+
     public boolean isUsedOnRelease(ItemStack stack) {
         //TODO;
         return true;

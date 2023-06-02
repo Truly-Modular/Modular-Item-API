@@ -102,6 +102,10 @@ public class ItemAbilityManager {
         abilityMap.remove(stack);
     }
 
+    public static void usageTick(World world, LivingEntity user, ItemStack stack, int remainingUseTicks) {
+        getAbility(stack).usageTick(world, user, stack, remainingUseTicks);
+    }
+
     public static ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
         return getAbility(stack).useOnEntity(stack, user, entity, hand);
     }

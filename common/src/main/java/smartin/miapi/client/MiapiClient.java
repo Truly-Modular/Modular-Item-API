@@ -1,10 +1,12 @@
 package smartin.miapi.client;
 
 import dev.architectury.event.events.client.ClientLifecycleEvent;
+import dev.architectury.registry.client.level.entity.EntityRendererRegistry;
 import net.minecraft.client.MinecraftClient;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.model.CustomColorProvider;
 import smartin.miapi.mixin.ItemRendererAccessor;
+import smartin.miapi.modules.abilities.util.ItemProjectile.ItemProjectileRenderer;
 
 public class MiapiClient {
 
@@ -23,6 +25,11 @@ public class MiapiClient {
     protected static void clientStart(MinecraftClient client){
         Miapi.itemRegistry.addCallback(item -> {
             ((ItemRendererAccessor) client.getItemRenderer()).color().register(new CustomColorProvider(), item);
+        });
+        EntityRendererRegistry.register(() -> {
+            return Miapi.ItemProjectile;
+        }, (context) -> {
+            return new ItemProjectileRenderer(context);
         });
     }
 }

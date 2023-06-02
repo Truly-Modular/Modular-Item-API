@@ -3,13 +3,20 @@ package smartin.miapi;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.mojang.datafixers.DataFixerBuilder;
 import dev.architectury.event.events.common.LifecycleEvent;
-import dev.architectury.event.events.common.PlayerEvent;
 import dev.architectury.registry.ReloadListenerRegistry;
+import dev.architectury.registry.client.level.entity.EntityRendererRegistry;
+import dev.architectury.registry.client.rendering.RenderTypeRegistry;
 import dev.architectury.registry.menu.MenuRegistry;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Material;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.client.render.entity.AllayEntityRenderer;
+import net.minecraft.client.render.entity.EntityRendererFactory;
+import net.minecraft.client.render.entity.TridentEntityRenderer;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnGroup;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.nbt.NbtCompound;
@@ -22,26 +29,28 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.blocks.ModularWorkBench;
 import smartin.miapi.client.MiapiClient;
 import smartin.miapi.client.gui.crafting.CraftingGUI;
 import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.datapack.ReloadListener;
-import smartin.miapi.attributes.AttributeRegistry;
-import smartin.miapi.modules.abilities.*;
-import smartin.miapi.modules.abilities.util.ItemAbilityManager;
-import smartin.miapi.modules.ItemModule;
 import smartin.miapi.item.modular.PropertyResolver;
 import smartin.miapi.item.modular.StatResolver;
-import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.item.modular.items.*;
+import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.abilities.*;
+import smartin.miapi.modules.abilities.util.ItemAbilityManager;
+import smartin.miapi.modules.abilities.util.ItemProjectile.ItemProjectile;
+import smartin.miapi.modules.abilities.util.ItemProjectile.ItemProjectileRenderer;
+import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.*;
-import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.modules.properties.render.GuiOffsetProperty;
 import smartin.miapi.modules.properties.render.ModelMergeProperty;
 import smartin.miapi.modules.properties.render.ModelProperty;
 import smartin.miapi.modules.properties.render.ModelTransformationProperty;
+import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.registries.MiapiRegistry;
 
 import java.util.HashMap;
@@ -54,6 +63,8 @@ public class Miapi {
     public static final MiapiRegistry<Item> itemRegistry = MiapiRegistry.getInstance(Item.class);
     public static final ModularWorkBench WORK_BENCH = new ModularWorkBench(AbstractBlock.Settings.of(Material.METAL).dynamicBounds().nonOpaque());
     public static final Identifier WORK_BENCH_IDENTIFIER = new Identifier(Miapi.MOD_ID, "modular_work_bench");
+    public static final EntityType ItemProjectile = registerEntity("miapi:thrown_item", EntityType.Builder.create(smartin.miapi.modules.abilities.util.ItemProjectile.ItemProjectile::new, SpawnGroup.MISC).setDimensions(0.5F, 0.5F).maxTrackingRange(4).trackingTickInterval(20));
+
 
     public static MinecraftServer server;
     public static Gson gson = new Gson();
@@ -171,16 +182,18 @@ public class Miapi {
         Miapi.modulePropertyRegistry.register(AbilityProperty.KEY, new AbilityProperty());
         Miapi.modulePropertyRegistry.register(BlockProperty.KEY, new BlockProperty());
         Miapi.modulePropertyRegistry.register(RiptideProperty.KEY, new RiptideProperty());
-        Miapi.modulePropertyRegistry.register(HealthPercentDamage.KEY,new HealthPercentDamage());
-        Miapi.modulePropertyRegistry.register(ArmorPenProperty.KEY,new ArmorPenProperty());
-        Miapi.modulePropertyRegistry.register(HeavyAttackProperty.KEY,new HeavyAttackProperty());
-        Miapi.modulePropertyRegistry.register(CircleAttackProperty.KEY,new CircleAttackProperty());
+        Miapi.modulePropertyRegistry.register(HealthPercentDamage.KEY, new HealthPercentDamage());
+        Miapi.modulePropertyRegistry.register(ArmorPenProperty.KEY, new ArmorPenProperty());
+        Miapi.modulePropertyRegistry.register(HeavyAttackProperty.KEY, new HeavyAttackProperty());
+        Miapi.modulePropertyRegistry.register(CircleAttackProperty.KEY, new CircleAttackProperty());
+        Miapi.modulePropertyRegistry.register(CrossbowProperty.KEY, new CrossbowProperty());
 
         ItemAbilityManager.useAbilityRegistry.register("throw", new ThrowingAbility());
         ItemAbilityManager.useAbilityRegistry.register("block", new BlockAbility());
         ItemAbilityManager.useAbilityRegistry.register(RiptideProperty.KEY, new RiptideAbility());
         ItemAbilityManager.useAbilityRegistry.register(HeavyAttackProperty.KEY, new HeavyAttackAbility());
         ItemAbilityManager.useAbilityRegistry.register(CircleAttackProperty.KEY, new CircleAttackAbility());
+        ItemAbilityManager.useAbilityRegistry.register(CrossbowProperty.KEY, new CrossbowAbility());
 
         Registry.register(Registry.BLOCK, WORK_BENCH_IDENTIFIER, WORK_BENCH);
         Registry.register(Registry.ITEM, WORK_BENCH_IDENTIFIER, new BlockItem(WORK_BENCH, new Item.Settings()));
@@ -189,4 +202,9 @@ public class Miapi {
     private static <T extends ScreenHandler> ScreenHandlerType<T> register(Identifier id, ScreenHandlerType.Factory<T> factory) {
         return (ScreenHandlerType) net.minecraft.util.registry.Registry.register(Registry.SCREEN_HANDLER, id, new ScreenHandlerType(factory));
     }
+
+    private static <T extends Entity> EntityType<T> registerEntity(String id, EntityType.Builder<T> type) {
+        return (EntityType) Registry.register(Registry.ENTITY_TYPE, id, type.build(id));
+    }
+
 }

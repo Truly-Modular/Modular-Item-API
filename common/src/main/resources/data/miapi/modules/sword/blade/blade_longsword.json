@@ -45,6 +45,9 @@
             "uuid": "CB3F55D3-645C-4F38-A497-9C13A33DB5CF"
         }
     ],
+    "abilities": [
+        "Crossbow"
+    ],
     "displayName": "[material.key] Longsword",
     "itemId": "miapi:modular_longsword"
 }

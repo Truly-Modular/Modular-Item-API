@@ -5,11 +5,14 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.entity.projectile.TridentEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
 import net.minecraft.world.World;
+import smartin.miapi.Miapi;
+import smartin.miapi.modules.abilities.util.ItemProjectile.ItemProjectile;
 import smartin.miapi.modules.abilities.util.ItemUseAbility;
 
 /**
@@ -51,7 +54,7 @@ public class ThrowingAbility implements ItemUseAbility {
                     stack.damage(1, playerEntity, (p) -> {
                         p.sendToolBreakStatus(user.getActiveHand());
                     });
-                    TridentEntity tridentEntity = new TridentEntity(world, playerEntity, stack);
+                    ItemProjectile tridentEntity = new ItemProjectile(world, playerEntity, stack);
                     world.spawnEntity(tridentEntity);
                     tridentEntity.setVelocity(playerEntity, playerEntity.getPitch(), playerEntity.getYaw(), 0.0F, 2.5F + (float) 2 * 0.5F, 1.0F);
                     if (playerEntity.getAbilities().creativeMode) {

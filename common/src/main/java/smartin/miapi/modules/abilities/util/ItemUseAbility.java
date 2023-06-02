@@ -110,4 +110,8 @@ public interface ItemUseAbility {
     default ActionResult useOnBlock(ItemUsageContext context){
         return ActionResult.PASS;
     }
+
+    default void usageTick(World world, LivingEntity user, ItemStack stack, int remainingUseTicks){
+
+    }
 }
