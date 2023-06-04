@@ -1,5 +1,7 @@
 package smartin.miapi.item.modular;
 
+import com.mojang.datafixers.util.Either;
+import com.mojang.serialization.Codec;
 import net.minecraft.text.Text;
 import org.mariuszgromada.math.mxparser.Expression;
 import smartin.miapi.modules.ItemModule;
@@ -12,6 +14,24 @@ import java.util.regex.Pattern;
  * A utility class for resolving dynamic values in item stats and descriptions in relation to a {@link ItemModule.ModuleInstance}.
  */
 public class StatResolver {
+    public static final class Codecs {
+        public static Codec<String> STRING(ItemModule.ModuleInstance instance) {
+            return Codec.STRING.xmap(s -> resolveString(s, instance), s -> s);
+        }
+        public static Codec<Double> DOUBLE(ItemModule.ModuleInstance instance) {
+            return Codec.either(Codec.DOUBLE, Codec.STRING.xmap(s -> resolveDouble(s, instance), String::valueOf)).xmap(e -> {
+                if (e.left().isPresent()) return e.left().get();
+                else return e.right().get();
+            }, Either::left);
+        }
+        public static Codec<Integer> INTEGER(ItemModule.ModuleInstance instance) {
+            return Codec.either(Codec.INT, DOUBLE(instance).xmap(Double::intValue, Integer::doubleValue)).xmap(e -> {
+                if (e.left().isPresent()) return e.left().get();
+                else return e.right().get();
+            }, Either::left);
+        }
+    }
+
     /**
      * A map of resolvers, keyed by resolver keyword.
      */
@@ -134,7 +154,6 @@ public class StatResolver {
          * @param instance the module instance for which to resolve the value
          * @return the resolved string value
          */
-
         String resolveString(String data, ItemModule.ModuleInstance instance);
     }
 }
