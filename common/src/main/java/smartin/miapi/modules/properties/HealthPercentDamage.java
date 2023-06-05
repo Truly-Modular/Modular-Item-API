@@ -4,9 +4,7 @@ import dev.architectury.event.EventResult;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.ShieldItem;
-import smartin.miapi.Events.Event;
-import smartin.miapi.Miapi;
+import smartin.miapi.events.Event;
 import smartin.miapi.modules.properties.util.SimpleDoubleProperty;
 
 public class HealthPercentDamage extends SimpleDoubleProperty {

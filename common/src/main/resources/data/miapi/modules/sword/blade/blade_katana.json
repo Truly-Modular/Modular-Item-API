@@ -70,6 +70,22 @@
             }
         ]
     },
+    "applyPotionEffects": [
+        {
+            "event": "attack",
+            "target": "target",
+            "duration": 20,
+            "amplifier": 0,
+            "effect": "minecraft:glowing"
+        },
+        {
+            "event": "ability_try",
+            "target": "self",
+            "duration": 60,
+            "amplifier": 0,
+            "effect": "minecraft:glowing"
+        }
+    ],
     "displayName": "[material.key] Katana",
     "itemId": "miapi:modular_katana"
 }
