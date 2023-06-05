@@ -1,11 +1,16 @@
 package smartin.miapi.client.gui;
 
+import net.minecraft.client.gui.Drawable;
+import net.minecraft.client.gui.Element;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
+import net.minecraft.util.math.Matrix3f;
 import net.minecraft.util.math.Matrix4f;
+import net.minecraft.util.math.Vec3f;
 
-public class TransformableWidget extends InteractAbleWidget{
+public class TransformableWidget extends InteractAbleWidget {
 
-    protected Matrix4f projection;
+    public Matrix4f rawProjection = new Matrix4f();
 
     /**
      * This is a Widget build to support Children and parse the events down to them.
@@ -23,5 +28,150 @@ public class TransformableWidget extends InteractAbleWidget{
      */
     public TransformableWidget(int x, int y, int width, int height, Text title) {
         super(x, y, width, height, title);
+    }
+
+
+    /**
+     * This function triggers whenever the mouse is Moved above the Widget
+     *
+     * @param mouseX current X Position of the Mouse
+     * @param mouseY current Y Position of the Mouse
+     */
+    @Override
+    public void mouseMoved(double mouseX, double mouseY) {
+        Vec3f position = new Vec3f((float) mouseX, (float) mouseY, 0);
+        Matrix3f matrix3f = new Matrix3f(rawProjection);
+        position.transform(matrix3f);
+        for (Element child : this.children()) {
+            if (child.isMouseOver(position.getX(), position.getY())) {
+                child.mouseMoved(position.getX(), position.getY());
+            }
+        }
+        super.mouseMoved(mouseX, mouseY);
+    }
+
+    /**
+     * This function fires whenever the Mouse is clicked above the Widget
+     *
+     * @param mouseX current X Position of the Mouse
+     * @param mouseY current Y Position of the Mouse
+     * @param button the Number of the Button
+     * @return if this consumes the Click, if you execute an action return true, if not return false
+     */
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        Vec3f position = new Vec3f((float) mouseX, (float) mouseY, 0);
+        Matrix3f matrix3f = new Matrix3f(rawProjection);
+        position.transform(matrix3f);
+        for (Element child : this.children()) {
+            if (child.isMouseOver(position.getX(), position.getY()) && child.mouseClicked(position.getX(), position.getY(), button)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * @param mouseX current X Position of the Mouse
+     * @param mouseY current Y Position of the Mouse
+     * @param button the Number of the Button
+     * @return if this consumes the Click, if you execute an action return true, if not return false
+     */
+    @Override
+    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+        Vec3f position = new Vec3f((float) mouseX, (float) mouseY, 0);
+        Matrix3f matrix3f = new Matrix3f(rawProjection);
+        position.transform(matrix3f);
+
+        for (Element child : this.children()) {
+            if (child.isMouseOver(position.getX(), position.getY()) && child.mouseReleased(position.getX(), position.getY(), button)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * @param mouseX current X Position of the Mouse
+     * @param mouseY current Y Position of the Mouse
+     * @param button the Number of the Button
+     * @param deltaX the Distance dragged X
+     * @param deltaY the Distance dragged Y
+     * @return if this consumes the action, if you execute an action return true, if not return false
+     */
+    @Override
+    public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
+        Vec3f position = new Vec3f((float) mouseX, (float) mouseY, 0);
+        Matrix3f matrix3f = new Matrix3f(rawProjection);
+        position.transform(matrix3f);
+        for (Element child : this.children()) {
+            if (child.isMouseOver(position.getX(), position.getY()) && child.mouseDragged(position.getX(), position.getY(), button, deltaX, deltaY)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * @param mouseX current X Position of the Mouse
+     * @param mouseY current Y Position of the Mouse
+     * @param amount the amount scrolled since the last time this was called
+     * @return if this consumes the action, if you execute an action return true, if not return false
+     */
+
+    @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
+        Vec3f position = new Vec3f((float) mouseX, (float) mouseY, 0);
+        Matrix3f matrix3f = new Matrix3f(rawProjection);
+        position.transform(matrix3f);
+        for (Element child : this.children()) {
+            if (child.isMouseOver(position.getX(), position.getY()) && child.mouseScrolled(position.getX(), position.getY(), amount)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * This Function handles if the Mouse is above the current Widget
+     * Its not recommended to adjust this if your widget is a Rectangle,
+     * if it is not make sure this function returns true whenever the mouse is above the widget
+     *
+     * @param mouseX current mouseX coordinate
+     * @param mouseY current mouseY coordinate
+     * @return if the mouseCords are above the Widget
+     */
+    @Override
+    public boolean isMouseOver(double mouseX, double mouseY) {
+        Vec3f position = new Vec3f((float) mouseX, (float) mouseY, 0);
+        Matrix3f matrix3f = new Matrix3f(rawProjection);
+        position.transform(matrix3f);
+        return super.isMouseOver(position.getX(), position.getY());
+    }
+
+    /**
+     * This functions handles the Rendering
+     * If you have children you should call super.render(matrices ,mouseX ,mouseY ,delta) at the end to render your children
+     *
+     * @param matrices the current MatrixStack / PoseStack
+     * @param mouseX   current mouseX Position
+     * @param mouseY   current mouseY Position
+     * @param delta    the deltaTime between frames
+     *                 This is needed for animations and co
+     */
+    @Override
+    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+        MatrixStack matrixStack = new MatrixStack();
+        matrixStack.multiplyPositionMatrix(rawProjection);
+        matrixStack.push();
+        Vec3f position = new Vec3f(mouseX, mouseY, 0);
+        Matrix3f matrix3f = new Matrix3f(rawProjection);
+        position.transform(matrix3f);
+        children().forEach(element -> {
+            if (element instanceof Drawable drawable) {
+                drawable.render(matrices, (int) position.getX(), (int) position.getY(), delta);
+            }
+        });
+        matrixStack.pop();
     }
 }
