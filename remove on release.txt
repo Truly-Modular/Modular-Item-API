@@ -1,0 +1,2 @@
+- test.json predicate
+- katana blade potion effects

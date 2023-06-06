@@ -76,10 +76,11 @@
             "target": "target",
             "duration": 20,
             "amplifier": 0,
-            "effect": "minecraft:glowing"
+            "effect": "minecraft:glowing",
+            "predicate": "miapi:test"
         },
         {
-            "event": "ability_try",
+            "event": "ability_stop",
             "target": "self",
             "duration": 60,
             "amplifier": 0,

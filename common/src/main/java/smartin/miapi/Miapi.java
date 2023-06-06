@@ -51,6 +51,7 @@ import smartin.miapi.modules.properties.render.ModelMergeProperty;
 import smartin.miapi.modules.properties.render.ModelProperty;
 import smartin.miapi.modules.properties.render.ModelTransformationProperty;
 import smartin.miapi.modules.properties.util.ModuleProperty;
+import smartin.miapi.modules.properties.util.PropertyApplication;
 import smartin.miapi.registries.MiapiRegistry;
 
 import java.util.HashMap;
@@ -72,6 +73,7 @@ public class Miapi {
 
     public static void init() {
         setupRegistries();
+        PropertyApplication.init();
         ReloadEvents.setup();
         ItemAbilityManager.setup();
         AttributeRegistry.setup();
