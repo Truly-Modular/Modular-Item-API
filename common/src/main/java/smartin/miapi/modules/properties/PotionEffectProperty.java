@@ -1,6 +1,8 @@
 package smartin.miapi.modules.properties;
 
 import com.google.gson.JsonElement;
+import com.mojang.datafixers.util.Either;
+import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -21,6 +23,8 @@ import smartin.miapi.events.Event;
 import smartin.miapi.Miapi;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.abilities.util.ItemAbilityManager;
+import smartin.miapi.modules.abilities.util.ItemUseAbility;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.PropertyApplication;
@@ -32,7 +36,6 @@ import java.util.function.Supplier;
 import static smartin.miapi.modules.properties.util.PropertyApplication.ApplicationEvent.*;
 
 public class PotionEffectProperty extends SimpleEventProperty {
-
     public static String KEY = "applyPotionEffects";
     public static PotionEffectProperty property;
 
@@ -53,7 +56,7 @@ public class PotionEffectProperty extends SimpleEventProperty {
 
         List<StatusEffectData> effects = ofEntity(victim); // setting up and merging effect data
         effects.addAll(ofEntity(attacker).stream()
-                .map(d -> new StatusEffectData(d.event, d.targetInverse(), d.creator, d.effect, d.duration, d.amplifier, d.ambient, d.visible, d.showIcon, d.predicate, !d.shouldReverse)) // inverting
+                .map(d -> new StatusEffectData(d.event, d.targetInverse(), d.creator, d.effect, d.duration, d.amplifier, d.ambient, d.visible, d.showIcon, d.predicate, !d.shouldReverse, d.ability, d.time)) // inverting
                 .toList()
         );
 
@@ -84,13 +87,33 @@ public class PotionEffectProperty extends SimpleEventProperty {
             }
         }
     }
+
     public static void onAbility(PropertyApplication.ApplicationEvent<PropertyApplication.Holders.Ability> event, PropertyApplication.Holders.Ability ability) {
+        if (ability.world().isClient) return;
+
         List<PotionEffectProperty.StatusEffectData> potionEffects = property.get(ability.stack());
+        LootConditionManager predicateManager = ability.user().getServer() == null ? null : ability.user().getServer().getPredicateManager();
         if (potionEffects != null) {
             for (StatusEffectData effect : potionEffects) {
                 if (!effect.event.equals(event)) continue;
 
-                ability.user().addStatusEffect(effect.creator.get());
+                if (effect.ability.isPresent() && !effect.ability.get().equals(ability.ability())) continue;
+                if (ability.remainingUseTicks() != null && effect.time.isPresent() && !effect.time.get().test(ability.useTime())) continue;
+
+                if (predicateManager == null || effect.predicate.isEmpty() || !(ability.world() instanceof ServerWorld world))
+                    ability.user().addStatusEffect(effect.creator.get());
+                else {
+                    LootCondition condition = predicateManager.get(effect.predicate.get());
+                    if (condition != null) {
+                        LootContext.Builder builder = new LootContext.Builder(world)
+                                .parameter(LootContextParameters.THIS_ENTITY, ability.user()) // THIS_ENTITY is whomever the effect is applied to
+                                .parameter(LootContextParameters.ORIGIN, ability.user().getPos())
+                                .parameter(LootContextParameters.TOOL, ability.stack());
+                        if (condition.test(builder.build(PropertyApplication.Holders.Ability.LOOT_CONTEXT)))
+                            ability.user().addStatusEffect(effect.creator.get());
+                    } else
+                        Miapi.LOGGER.warn("Found null predicate during PotionEffectProperty application.");
+                }
             }
         }
     }
@@ -145,7 +168,7 @@ public class PotionEffectProperty extends SimpleEventProperty {
         list.addAll(StatusEffectData.CODEC(module).listOf().parse(JsonOps.INSTANCE, element).getOrThrow(false, s -> {}));
     }
 
-    public static final class StatusEffectData {
+    public record StatusEffectData(PropertyApplication.ApplicationEvent<?> event, String target, Supplier<StatusEffectInstance> creator, StatusEffect effect, int duration, int amplifier, boolean ambient, boolean visible, boolean showIcon, Optional<Identifier> predicate, boolean shouldReverse, Optional<ItemUseAbility> ability, Optional<IntegerRange> time) {
         public static Codec<StatusEffectData> CODEC(ItemModule.ModuleInstance instance) {
             return RecordCodecBuilder.create(inst -> inst.group(
                     Codec.STRING.fieldOf("event").forGetter(i -> i.event.name),
@@ -156,41 +179,21 @@ public class PotionEffectProperty extends SimpleEventProperty {
                     Codec.BOOL.optionalFieldOf("ambient", false).forGetter(i -> i.ambient),
                     Codec.BOOL.optionalFieldOf("visible", true).forGetter(i -> i.visible),
                     Codec.BOOL.optionalFieldOf("showIcon", true).forGetter(i -> i.showIcon),
-                    Identifier.CODEC.optionalFieldOf("predicate").forGetter(i -> i.predicate) // allow loot table predicates. ENTITY context is provided for living hurt event (see LootContextTypes.ENTITY)
-            ).apply(inst, StatusEffectData::create));
+                    Identifier.CODEC.optionalFieldOf("predicate").forGetter(i -> i.predicate), // allow loot table predicates. ENTITY context is provided (see LootContextTypes.ENTITY)
+                    Codec.pair(Codec.STRING.optionalFieldOf("name").codec(), IntegerRange.CODEC.optionalFieldOf("useTime").codec()).optionalFieldOf("ability").forGetter(i -> Optional.of(new Pair<>(i.ability.map(ItemAbilityManager.useAbilityRegistry::findKey), i.time)))
+            ).apply(inst, (event, target, dur, amp, eff, am, vis, icon, predicate, ability) -> {
+                Optional<String> name = Optional.empty();
+                Optional<IntegerRange> time = Optional.empty();
+                if (ability.isPresent()) {
+                    name = ability.get().getFirst();
+                    time = ability.get().getSecond();
+                }
+                return StatusEffectData.create(event, target, dur, amp, eff, am, vis, icon, predicate, name, time);
+            }));
         }
 
-        private final PropertyApplication.ApplicationEvent<?> event;
-        private String target;
-        private final Supplier<StatusEffectInstance> creator;
-        private final StatusEffect effect;
-        private final int duration;
-        private final int amplifier;
-        private final boolean ambient;
-        private final boolean visible;
-        private final boolean showIcon;
-        private final Optional<Identifier> predicate;
-        private boolean shouldReverse;
-
-        public StatusEffectData(PropertyApplication.ApplicationEvent<?> event, String target, Supplier<StatusEffectInstance> creator, StatusEffect effect, int duration, int amplifier, boolean ambient, boolean visible, boolean showIcon, Optional<Identifier> predicate) {
-            this(event, target, creator, effect, duration, amplifier, ambient, visible, showIcon, predicate, false);
-        }
-        public StatusEffectData(PropertyApplication.ApplicationEvent<?> event, String target, Supplier<StatusEffectInstance> creator, StatusEffect effect, int duration, int amplifier, boolean ambient, boolean visible, boolean showIcon, Optional<Identifier> predicate, boolean shouldReverse) {
-            this.event = event;
-            this.target = target;
-            this.creator = creator;
-            this.effect = effect;
-            this.duration = duration;
-            this.amplifier = amplifier;
-            this.ambient = ambient;
-            this.visible = visible;
-            this.showIcon = showIcon;
-            this.predicate = predicate;
-            this.shouldReverse = shouldReverse;
-        }
-
-        public static StatusEffectData create(String applyEvent, String applyTarget, int duration, int amplifier, StatusEffect effect, boolean ambient, boolean visible, boolean showIcon, Optional<Identifier> predicateLocation) {
-            StatusEffectData data = new StatusEffectData(
+        public static StatusEffectData create(String applyEvent, String applyTarget, int duration, int amplifier, StatusEffect effect, boolean ambient, boolean visible, boolean showIcon, Optional<Identifier> predicateLocation, Optional<String> abilityName, Optional<IntegerRange> time) {
+            return new StatusEffectData(
                     PropertyApplication.ApplicationEvent.get(applyEvent),
                     applyTarget,
                     () -> new StatusEffectInstance(effect, duration, amplifier, ambient, visible, showIcon),
@@ -200,12 +203,11 @@ public class PotionEffectProperty extends SimpleEventProperty {
                     ambient,
                     visible,
                     showIcon,
-                    predicateLocation
+                    predicateLocation,
+                    applyEvent.equalsIgnoreCase("attack"),
+                    abilityName.map(ItemAbilityManager.useAbilityRegistry::get),
+                    time
             );
-
-            if (applyEvent.equalsIgnoreCase("attack"))
-                data.shouldReverse = true;
-            return data;
         }
 
         public String targetInverse() {
@@ -215,48 +217,20 @@ public class PotionEffectProperty extends SimpleEventProperty {
             }
             return "this";
         }
+    }
 
-        public PropertyApplication.ApplicationEvent<?> event() {
-            return event;
-        }
+    public record IntegerRange(int min, Optional<Integer> max) {
+        public static Codec<IntegerRange> CODEC = Codec.either(Codec.pair(Codec.INT.fieldOf("min").codec(), Codec.INT.optionalFieldOf("max").codec()), Codec.INT)
+                .xmap(either -> {
+                    if (either.left().isPresent()) {
+                        Pair<Integer, Optional<Integer>> ints = either.left().get();
+                        return new IntegerRange(ints.getFirst(), ints.getSecond());
+                    } else
+                        return new IntegerRange(either.right().get(), Optional.empty());
+                }, range -> Either.left(new Pair<>(range.min, range.max)));
 
-        @Override
-        public boolean equals(Object obj) {
-            if (obj == this) return true;
-            if (obj == null || obj.getClass() != this.getClass()) return false;
-            var that = (StatusEffectData) obj;
-            return Objects.equals(this.event, that.event) &&
-                    Objects.equals(this.target, that.target) &&
-                    Objects.equals(this.creator, that.creator) &&
-                    Objects.equals(this.effect, that.effect) &&
-                    this.duration == that.duration &&
-                    this.amplifier == that.amplifier &&
-                    this.ambient == that.ambient &&
-                    this.visible == that.visible &&
-                    this.showIcon == that.showIcon &&
-                    Objects.equals(this.predicate, that.predicate) &&
-                    this.shouldReverse == that.shouldReverse;
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(event, target, creator, effect, duration, amplifier, ambient, visible, showIcon, predicate, shouldReverse);
-        }
-
-        @Override
-        public String toString() {
-            return "StatusEffectData[" +
-                    "event=" + event + ", " +
-                    "target=" + target + ", " +
-                    "creator=" + creator + ", " +
-                    "effect=" + effect + ", " +
-                    "duration=" + duration + ", " +
-                    "amplifier=" + amplifier + ", " +
-                    "ambient=" + ambient + ", " +
-                    "visible=" + visible + ", " +
-                    "showIcon=" + showIcon + ", " +
-                    "predicate=" + predicate + ", " +
-                    "shouldReverse=" + shouldReverse + ']';
+        public boolean test(int number) {
+            return number > min && (max.isEmpty() || number < max.get());
         }
     }
 }

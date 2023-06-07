@@ -3,10 +3,14 @@ package smartin.miapi.modules.properties.util;
 import dev.architectury.event.EventResult;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.loot.context.LootContextParameters;
+import net.minecraft.loot.context.LootContextType;
+import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.events.Event;
+import smartin.miapi.mixin.LootContextTypesAccessor;
 import smartin.miapi.modules.abilities.util.ItemUseAbility;
 import smartin.miapi.modules.properties.PotionEffectProperty;
 
@@ -92,6 +96,13 @@ public class PropertyApplication {
     }
 
     public static final class Holders {
-        public record Ability(ItemStack stack, World world, LivingEntity user, @Nullable Integer remainingUseTicks, ItemUseAbility ability) {}
+        public record Ability(ItemStack stack, World world, LivingEntity user, @Nullable Integer remainingUseTicks, ItemUseAbility ability) {
+            public static LootContextType LOOT_CONTEXT = LootContextTypesAccessor.register("miapi:ability", builder -> builder.require(LootContextParameters.ORIGIN).require(LootContextParameters.THIS_ENTITY).allow(LootContextParameters.TOOL));
+
+            public int useTime() {
+                if (remainingUseTicks == null) return ability.getMaxUseTime(stack);
+                return ability.getMaxUseTime(stack) - remainingUseTicks;
+            }
+        }
     }
 }

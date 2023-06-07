@@ -80,11 +80,15 @@
             "predicate": "miapi:test"
         },
         {
-            "event": "ability_stop",
+            "event": "ABILITY_STOP_USING",
             "target": "self",
             "duration": 60,
             "amplifier": 0,
-            "effect": "minecraft:glowing"
+            "effect": "minecraft:glowing",
+            "predicate": "miapi:test",
+            "time": {
+                "min": 40
+            }
         }
     ],
     "displayName": "[material.key] Katana",
