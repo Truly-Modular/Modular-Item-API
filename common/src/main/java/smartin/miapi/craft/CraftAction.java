@@ -8,6 +8,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 import smartin.miapi.Miapi;
+import smartin.miapi.item.ModularItemStackConverter;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.SlotProperty;
@@ -49,7 +50,7 @@ public class CraftAction {
      * @param packetByteBuffs the packet byte buffers associated with the action
      */
     public CraftAction(@Nonnull ItemStack old, @Nonnull SlotProperty.ModuleSlot slot, @Nullable ItemModule toAdd, @Nonnull PlayerEntity player, PacketByteBuf[] packetByteBuffs) {
-        this.old = old;
+        this.old = ModularItemStackConverter.getModularVersion(old);
         this.toAdd = toAdd;
         ItemModule.ModuleInstance instance = slot.parent;
         if (instance != null) {
@@ -118,7 +119,7 @@ public class CraftAction {
     }
 
     public void setItem(ItemStack stack) {
-        old = stack;
+        old = ModularItemStackConverter.getModularVersion(stack);
     }
 
     /**
@@ -185,8 +186,8 @@ public class CraftAction {
         for (int i = slotId.size() - 1; i >= 0; i--) {
             parsingInstance = parsingInstance.subModules.get(slotId.get(i));
         }
-        for(CraftingEvent eventHandler : events)
-            craftingStack[0] = eventHandler.onCraft(old,craftingStack[0],parsingInstance);
+        for (CraftingEvent eventHandler : events)
+            craftingStack[0] = eventHandler.onCraft(old, craftingStack[0], parsingInstance);
         linkedInventory.markDirty();
         return craftingStack[0];
     }
@@ -269,8 +270,8 @@ public class CraftAction {
         for (int i = slotId.size() - 1; i >= 0; i--) {
             parsingInstance = parsingInstance.subModules.get(slotId.get(i));
         }
-        for(CraftingEvent eventHandler : events){
-            craftingStack.set(eventHandler.onPreview(old,craftingStack.get(),parsingInstance));
+        for (CraftingEvent eventHandler : events) {
+            craftingStack.set(eventHandler.onPreview(old, craftingStack.get(), parsingInstance));
         }
         linkedInventory.markDirty();
         return craftingStack.get();
@@ -290,7 +291,7 @@ public class CraftAction {
      * Iterates over each {@link CraftingProperty} for the crafted item and passes it to a
      * {@link PropertyConsumer} for processing.
      *
-     * @param crafted The {@link ItemStack} representing the item being crafted.
+     * @param crafted          The {@link ItemStack} representing the item being crafted.
      * @param propertyConsumer The {@link PropertyConsumer} to process each {@link CraftingProperty}.
      */
     public void forEachCraftingProperty(ItemStack crafted, PropertyConsumer propertyConsumer) {
@@ -350,17 +351,18 @@ public class CraftAction {
          * of an item and perform some action on each property.
          *
          * @param craftingProperty the crafting property to consume
-         * @param moduleInstance the module instance containing the crafting property
-         * @param inventory the inventory containing the items used for the crafting
-         * @param start the starting index of the crafting slots in the inventory
-         * @param end the ending index of the crafting slots in the inventory
-         * @param buf a PacketByteBuf object used for sending data between the client and server
+         * @param moduleInstance   the module instance containing the crafting property
+         * @param inventory        the inventory containing the items used for the crafting
+         * @param start            the starting index of the crafting slots in the inventory
+         * @param end              the ending index of the crafting slots in the inventory
+         * @param buf              a PacketByteBuf object used for sending data between the client and server
          */
         void accept(CraftingProperty craftingProperty, ItemModule.ModuleInstance moduleInstance, List<ItemStack> inventory, int start, int end, PacketByteBuf buf);
     }
 
-    public interface CraftingEvent{
-        ItemStack onCraft(ItemStack old, ItemStack crafted,@Nullable ItemModule.ModuleInstance crafting);
-        ItemStack onPreview(ItemStack old, ItemStack crafted,@Nullable ItemModule.ModuleInstance crafting);
+    public interface CraftingEvent {
+        ItemStack onCraft(ItemStack old, ItemStack crafted, @Nullable ItemModule.ModuleInstance crafting);
+
+        ItemStack onPreview(ItemStack old, ItemStack crafted, @Nullable ItemModule.ModuleInstance crafting);
     }
 }

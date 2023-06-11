@@ -1,0 +1,182 @@
+{
+    "minecraft:gold_sword": {
+        "module": "handle_normal",
+        "moduleData": {
+            "properties": "{\"material\":\"wood\"}"
+        },
+        "subModules": {
+            "0": {
+                "module": "guard_normal",
+                "moduleData": {
+                    "properties": "{\"material\":\"gold\"}"
+                },
+                "subModules": {
+                    "0": {
+                        "module": "blade_sword",
+                        "moduleData": {
+                            "properties": "{\"material\":\"gold\"}"
+                        },
+                        "subModules": {}
+                    }
+                }
+            },
+            "1": {
+                "module": "pommel_round",
+                "moduleData": {
+                    "properties": "{\"material\":\"gold\"}"
+                },
+                "subModules": {}
+            }
+        }
+    },
+    "minecraft:diamond_sword": {
+        "module": "handle_normal",
+        "moduleData": {
+            "properties": "{\"material\":\"wood\"}"
+        },
+        "subModules": {
+            "0": {
+                "module": "guard_normal",
+                "moduleData": {
+                    "properties": "{\"material\":\"diamond\"}"
+                },
+                "subModules": {
+                    "0": {
+                        "module": "blade_sword",
+                        "moduleData": {
+                            "properties": "{\"material\":\"diamond\"}"
+                        },
+                        "subModules": {}
+                    }
+                }
+            },
+            "1": {
+                "module": "pommel_round",
+                "moduleData": {
+                    "properties": "{\"material\":\"diamond\"}"
+                },
+                "subModules": {}
+            }
+        }
+    },
+    "minecraft:iron_sword": {
+        "module": "handle_normal",
+        "moduleData": {
+            "properties": "{\"material\":\"wood\"}"
+        },
+        "subModules": {
+            "0": {
+                "module": "guard_normal",
+                "moduleData": {
+                    "properties": "{\"material\":\"iron\"}"
+                },
+                "subModules": {
+                    "0": {
+                        "module": "blade_sword",
+                        "moduleData": {
+                            "properties": "{\"material\":\"iron\"}"
+                        },
+                        "subModules": {}
+                    }
+                }
+            },
+            "1": {
+                "module": "pommel_round",
+                "moduleData": {
+                    "properties": "{\"material\":\"iron\"}"
+                },
+                "subModules": {}
+            }
+        }
+    },
+    "minecraft:wooden_sword": {
+        "module": "handle_normal",
+        "moduleData": {
+            "properties": "{\"material\":\"wood\"}"
+        },
+        "subModules": {
+            "0": {
+                "module": "guard_normal",
+                "moduleData": {
+                    "properties": "{\"material\":\"wood\"}"
+                },
+                "subModules": {
+                    "0": {
+                        "module": "blade_sword",
+                        "moduleData": {
+                            "properties": "{\"material\":\"wood\"}"
+                        },
+                        "subModules": {}
+                    }
+                }
+            },
+            "1": {
+                "module": "pommel_round",
+                "moduleData": {
+                    "properties": "{\"material\":\"wood\"}"
+                },
+                "subModules": {}
+            }
+        }
+    },
+    "minecraft:stone_sword": {
+        "module": "handle_normal",
+        "moduleData": {
+            "properties": "{\"material\":\"wood\"}"
+        },
+        "subModules": {
+            "0": {
+                "module": "guard_normal",
+                "moduleData": {
+                    "properties": "{\"material\":\"stone\"}"
+                },
+                "subModules": {
+                    "0": {
+                        "module": "blade_sword",
+                        "moduleData": {
+                            "properties": "{\"material\":\"stone\"}"
+                        },
+                        "subModules": {}
+                    }
+                }
+            },
+            "1": {
+                "module": "pommel_round",
+                "moduleData": {
+                    "properties": "{\"material\":\"stone\"}"
+                },
+                "subModules": {}
+            }
+        }
+    },
+    "minecraft:netherite_sword": {
+        "module": "handle_normal",
+        "moduleData": {
+            "properties": "{\"material\":\"wood\"}"
+        },
+        "subModules": {
+            "0": {
+                "module": "guard_normal",
+                "moduleData": {
+                    "properties": "{\"material\":\"netherite\"}"
+                },
+                "subModules": {
+                    "0": {
+                        "module": "blade_sword",
+                        "moduleData": {
+                            "properties": "{\"material\":\"netherite\"}"
+                        },
+                        "subModules": {}
+                    }
+                }
+            },
+            "1": {
+                "module": "pommel_round",
+                "moduleData": {
+                    "properties": "{\"material\":\"netherite\"}"
+                },
+                "subModules": {}
+            }
+        }
+    }
+}

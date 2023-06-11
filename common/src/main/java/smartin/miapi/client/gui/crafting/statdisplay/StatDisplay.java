@@ -5,9 +5,11 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
+import net.minecraft.util.math.Matrix4f;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.client.gui.BoxList;
 import smartin.miapi.client.gui.InteractAbleWidget;
+import smartin.miapi.client.gui.TransformableWidget;
 import smartin.miapi.modules.properties.ArmorPenProperty;
 import smartin.miapi.modules.properties.BlockProperty;
 import smartin.miapi.modules.properties.FlexibilityProperty;
@@ -20,6 +22,7 @@ import java.util.List;
 public class StatDisplay extends InteractAbleWidget {
     private static final List<InteractAbleWidget> statDisplays = new ArrayList<>();
     private final BoxList boxList;
+    private TransformableWidget transformableWidget;
 
     private ItemStack original = ItemStack.EMPTY;
     private ItemStack compareTo = ItemStack.EMPTY;
@@ -37,13 +40,15 @@ public class StatDisplay extends InteractAbleWidget {
 
     public StatDisplay(int x, int y, int width, int height) {
         super(x, y, width, height, Text.empty());
+        transformableWidget = new TransformableWidget(x, y, width, height, Text.empty());
         boxList = new BoxList(x, y, width, height, Text.empty(), new ArrayList<>());
-        addChild(boxList);
-    }
-
-    @Override
-    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        boxList.render(matrices, mouseX, mouseY, delta);
+        transformableWidget.addChild(boxList);
+        transformableWidget.rawProjection.loadIdentity();
+        transformableWidget.rawProjection.multiply(Matrix4f.scale(0.5f, 0.5f, 0.5f));
+        //transformableWidget.rawProjection.multiply(Matrix4f.translate(100, 0, 0));
+        //transformableWidget.rawProjection.add(Matrix4f.translate(100, 0, 0));
+        addChild(transformableWidget);
+        //addChild(boxList);
     }
 
     private void update() {

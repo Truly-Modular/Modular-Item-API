@@ -32,6 +32,7 @@ public class ReloadListener implements ResourceReloader {
                                 BufferedReader reader = resource.getReader();
                                 String dataString = reader.lines().collect(Collectors.joining());
                                 String fullPath = identifier.getPath();
+                                Miapi.LOGGER.error("Found DATA"+identifier.getPath());
                                 data.put(fullPath,dataString);
                             }
                             catch (Exception e){

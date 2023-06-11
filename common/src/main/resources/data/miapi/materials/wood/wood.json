@@ -1,0 +1,21 @@
+{
+  "key": "wood",
+  "translation": "miapi.material.wood",
+  "groups": ["wood"],
+  "hardness": 3,
+  "density": 1.7,
+  "flexibility": 6,
+  "durability": 59,
+  "color": "8B6B45",
+  "textures": [
+    "wood"
+  ],
+  "propertyList": [],
+
+  "items": [
+    {
+      "item": "minecraft:planks",
+      "value": 1.0
+    }
+  ]
+}

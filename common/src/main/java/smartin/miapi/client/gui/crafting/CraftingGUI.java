@@ -13,6 +13,7 @@ import smartin.miapi.client.gui.ParentHandledScreen;
 import smartin.miapi.client.gui.crafting.crafter.ModuleCrafter;
 import smartin.miapi.client.gui.crafting.slotdisplay.SlotDisplay;
 import smartin.miapi.client.gui.crafting.statdisplay.StatDisplay;
+import smartin.miapi.item.ModularItemStackConverter;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.SlotProperty;
 
@@ -79,23 +80,24 @@ public class CraftingGUI extends ParentHandledScreen<CraftingScreenHandler> impl
         this.drawMouseoverTooltip(matrices, mouseX, mouseY);
         if (!getItem().equals(stack)) {
             stack = getItem();
+            ItemStack converted = ModularItemStackConverter.getModularVersion(stack);
             setItem(handler.inventory.getStack(0));
-            baseSlot.inSlot = ItemModule.getModules(stack);
+            baseSlot.inSlot = ItemModule.getModules(converted);
             SlotProperty.ModuleSlot current = baseSlot;
             if (baseSlot.inSlot.module.equals(ItemModule.empty)) {
                 current = null;
             }
             if (slotDisplay != null) {
                 slotDisplay.setBaseSlot(current);
-                slotDisplay.setItem(stack);
+                slotDisplay.setItem(converted);
             }
             if (moduleCrafter != null) {
                 moduleCrafter.setBaseSlot(current);
-                moduleCrafter.setItem(stack);
+                moduleCrafter.setItem(converted);
                 moduleCrafter.setSelectedSlot(null);
             }
             if (statDisplay != null) {
-                statDisplay.setOriginal(stack);
+                statDisplay.setOriginal(converted);
             }
         }
     }

@@ -1,0 +1,21 @@
+{
+  "key": "stone",
+  "translation": "miapi.material.stone",
+  "groups": ["stone"],
+  "hardness": 4,
+  "density": 3,
+  "flexibility": 0,
+  "durability": 800,
+  "color": "757575",
+  "textures": [
+    "stone"
+  ],
+  "propertyList": [],
+
+  "items": [
+    {
+      "item": "minecraft:cobblestone",
+      "value": 1.0
+    }
+  ]
+}

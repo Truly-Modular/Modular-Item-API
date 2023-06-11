@@ -401,16 +401,16 @@ public class ItemModule {
             out.beginObject();
             out.name("module").value(value.module.name);
             if (value.moduleData != null) {
-                out.name("moduleData").jsonValue(new Gson().toJson(value.moduleData));
+                out.name("moduleData").jsonValue(Miapi.gson.toJson(value.moduleData));
             } else {
                 Map<String, String> moduleData = new HashMap<>();
-                out.name("moduleData").jsonValue(new Gson().toJson(moduleData));
+                out.name("moduleData").jsonValue(Miapi.gson.toJson(moduleData));
             }
             if (value.subModules != null) {
-                out.name("subModules").jsonValue(new Gson().toJson(value.subModules));
+                out.name("subModules").jsonValue(Miapi.gson.toJson(value.subModules));
             } else {
                 Map<String, String> subModules = new HashMap<>();
-                out.name("subModules").jsonValue(new Gson().toJson(subModules));
+                out.name("subModules").jsonValue(Miapi.gson.toJson(subModules));
             }
             out.endObject();
         }
@@ -424,7 +424,7 @@ public class ItemModule {
                 module = ItemModule.empty;
             }
             ModuleInstance moduleInstance = new ModuleInstance(module);
-            moduleInstance.subModules = new Gson().fromJson(jsonObject.get("subModules"), new TypeToken<Map<Integer, ModuleInstance>>() {
+            moduleInstance.subModules = Miapi.gson.fromJson(jsonObject.get("subModules"), new TypeToken<Map<Integer, ModuleInstance>>() {
             }.getType());
             if (moduleInstance.subModules != null) {
                 moduleInstance.subModules.forEach((key, subModule) -> {
@@ -433,7 +433,7 @@ public class ItemModule {
             } else {
                 moduleInstance.subModules = new HashMap<>();
             }
-            moduleInstance.moduleData = new Gson().fromJson(jsonObject.get("moduleData"), new TypeToken<Map<String, String>>() {
+            moduleInstance.moduleData = Miapi.gson.fromJson(jsonObject.get("moduleData"), new TypeToken<Map<String, String>>() {
             }.getType());
             if (moduleInstance.moduleData == null) {
                 moduleInstance.moduleData = new HashMap<>();

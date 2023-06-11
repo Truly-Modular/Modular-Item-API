@@ -136,6 +136,9 @@ public class ModelProperty implements ModuleProperty {
                     assert unbakedModel != null;
                     scaleAdder.updateAndGet(v -> (v + 0.0003f));
                     TransformMap transformMap = SlotProperty.getTransformStack(moduleI);
+                    if(json.transform==null){
+                        json.transform = Transform.IDENTITY;
+                    }
                     transformMap.add(json.transform.copy());
                     String modelId = transformMap.primary;
                     Transform transform1 = transformMap.get(transformMap.primary);
@@ -192,6 +195,7 @@ public class ModelProperty implements ModuleProperty {
 
     protected static Map<String, JsonUnbakedModel> loadModelsByPath(String filePath) {
         String materialKey = "[material.texture]";
+        Miapi.LOGGER.error("searching Path "+filePath);
         Map<String, JsonUnbakedModel> models = new HashMap<>();
         if (filePath.contains(materialKey)) {
             try {

@@ -7,6 +7,8 @@ import net.minecraft.text.Text;
 import net.minecraft.util.math.Matrix3f;
 import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.Vector4f;
+import smartin.miapi.Miapi;
 
 public class TransformableWidget extends InteractAbleWidget {
 
@@ -41,6 +43,7 @@ public class TransformableWidget extends InteractAbleWidget {
     public void mouseMoved(double mouseX, double mouseY) {
         Vec3f position = new Vec3f((float) mouseX, (float) mouseY, 0);
         Matrix3f matrix3f = new Matrix3f(rawProjection);
+        matrix3f.multiply(-1);
         position.transform(matrix3f);
         for (Element child : this.children()) {
             if (child.isMouseOver(position.getX(), position.getY())) {
@@ -62,6 +65,7 @@ public class TransformableWidget extends InteractAbleWidget {
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         Vec3f position = new Vec3f((float) mouseX, (float) mouseY, 0);
         Matrix3f matrix3f = new Matrix3f(rawProjection);
+        matrix3f.multiply(-1);
         position.transform(matrix3f);
         for (Element child : this.children()) {
             if (child.isMouseOver(position.getX(), position.getY()) && child.mouseClicked(position.getX(), position.getY(), button)) {
@@ -81,6 +85,7 @@ public class TransformableWidget extends InteractAbleWidget {
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
         Vec3f position = new Vec3f((float) mouseX, (float) mouseY, 0);
         Matrix3f matrix3f = new Matrix3f(rawProjection);
+        matrix3f.multiply(-1);
         position.transform(matrix3f);
 
         for (Element child : this.children()) {
@@ -103,6 +108,7 @@ public class TransformableWidget extends InteractAbleWidget {
     public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
         Vec3f position = new Vec3f((float) mouseX, (float) mouseY, 0);
         Matrix3f matrix3f = new Matrix3f(rawProjection);
+        matrix3f.multiply(-1);
         position.transform(matrix3f);
         for (Element child : this.children()) {
             if (child.isMouseOver(position.getX(), position.getY()) && child.mouseDragged(position.getX(), position.getY(), button, deltaX, deltaY)) {
@@ -123,6 +129,7 @@ public class TransformableWidget extends InteractAbleWidget {
     public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
         Vec3f position = new Vec3f((float) mouseX, (float) mouseY, 0);
         Matrix3f matrix3f = new Matrix3f(rawProjection);
+        matrix3f.multiply(-1);
         position.transform(matrix3f);
         for (Element child : this.children()) {
             if (child.isMouseOver(position.getX(), position.getY()) && child.mouseScrolled(position.getX(), position.getY(), amount)) {
@@ -145,6 +152,7 @@ public class TransformableWidget extends InteractAbleWidget {
     public boolean isMouseOver(double mouseX, double mouseY) {
         Vec3f position = new Vec3f((float) mouseX, (float) mouseY, 0);
         Matrix3f matrix3f = new Matrix3f(rawProjection);
+        matrix3f.multiply(-1);
         position.transform(matrix3f);
         return super.isMouseOver(position.getX(), position.getY());
     }
@@ -161,17 +169,28 @@ public class TransformableWidget extends InteractAbleWidget {
      */
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+        //rawProjection.
+        Matrix4f matrix4f = new Matrix4f();
+        matrix4f.loadIdentity();
+        matrix4f.multiply(rawProjection);
+        Matrix4f matrix4f2 = new Matrix4f();
+        matrix4f2.loadIdentity();
+        matrix4f2.multiply(matrix4f);
+        //Miapi.LOGGER.error(String.valueOf(matrix4f2.invert()));
+
         MatrixStack matrixStack = new MatrixStack();
-        matrixStack.multiplyPositionMatrix(rawProjection);
-        matrixStack.push();
-        Vec3f position = new Vec3f(mouseX, mouseY, 0);
-        Matrix3f matrix3f = new Matrix3f(rawProjection);
-        position.transform(matrix3f);
+        matrixStack.multiplyPositionMatrix(matrices.peek().getPositionMatrix());
+
+        matrixStack.multiplyPositionMatrix(matrix4f);
+        Vector4f position = new Vector4f(mouseX, mouseY, 0, 0);
+
+        position.transform(matrix4f2);
+        //Miapi.LOGGER.error(mouseX + "  " + position.getX());
         children().forEach(element -> {
             if (element instanceof Drawable drawable) {
-                drawable.render(matrices, (int) position.getX(), (int) position.getY(), delta);
+                drawable.render(matrixStack, (int) position.getX(), (int) position.getY(), delta);
             }
         });
-        matrixStack.pop();
+        //matrixStack.pop();
     }
 }

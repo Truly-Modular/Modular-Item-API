@@ -3,17 +3,11 @@ package smartin.miapi;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.mojang.datafixers.DataFixerBuilder;
 import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.registry.ReloadListenerRegistry;
-import dev.architectury.registry.client.level.entity.EntityRendererRegistry;
-import dev.architectury.registry.client.rendering.RenderTypeRegistry;
 import dev.architectury.registry.menu.MenuRegistry;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Material;
-import net.minecraft.client.render.entity.AllayEntityRenderer;
-import net.minecraft.client.render.entity.EntityRendererFactory;
-import net.minecraft.client.render.entity.TridentEntityRenderer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
@@ -36,14 +30,14 @@ import smartin.miapi.client.gui.crafting.CraftingGUI;
 import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.datapack.ReloadListener;
+import smartin.miapi.item.ItemToModularConverter;
+import smartin.miapi.item.ModularItemStackConverter;
 import smartin.miapi.item.modular.PropertyResolver;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.item.modular.items.*;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.abilities.*;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
-import smartin.miapi.modules.abilities.util.ItemProjectile.ItemProjectile;
-import smartin.miapi.modules.abilities.util.ItemProjectile.ItemProjectileRenderer;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.*;
 import smartin.miapi.modules.properties.render.GuiOffsetProperty;
@@ -136,6 +130,7 @@ public class Miapi {
                 return Text.translatable(data).getString();
             }
         });
+        ModularItemStackConverter.converters.add(new ItemToModularConverter());
         if (Environment.isClient()) {
             MiapiClient.init();
         }
@@ -145,6 +140,7 @@ public class Miapi {
         //DataPackPaths
         ReloadEvents.registerDataPackPathToSync(Miapi.MOD_ID, "modules");
         ReloadEvents.registerDataPackPathToSync(Miapi.MOD_ID, "materials");
+        ReloadEvents.registerDataPackPathToSync(Miapi.MOD_ID, "modular_converter");
 
         //ITEM
         Miapi.itemRegistry.register(MOD_ID + ":modular_item", new ExampleModularItem());
