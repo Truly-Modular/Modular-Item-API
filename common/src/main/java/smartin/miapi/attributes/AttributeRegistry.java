@@ -7,7 +7,7 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.attribute.*;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.registry.Registry;
-import smartin.miapi.Events.Event;
+import smartin.miapi.events.Event;
 import smartin.miapi.Miapi;
 
 import java.util.Collection;

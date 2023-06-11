@@ -13,9 +13,11 @@ import net.minecraft.util.UseAction;
 import net.minecraft.world.World;
 import smartin.miapi.Miapi;
 import smartin.miapi.modules.properties.AbilityProperty;
+import smartin.miapi.modules.properties.PotionEffectProperty;
 import smartin.miapi.registries.MiapiRegistry;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 
@@ -88,21 +90,43 @@ public class ItemAbilityManager {
         ItemStack itemStack = user.getStackInHand(hand);
         ItemUseAbility ability = getAbility(itemStack, world, user, hand);
         abilityMap.put(itemStack, ability);
+
+        List<PotionEffectProperty.StatusEffectData> potionEffects = PotionEffectProperty.property.get(itemStack);
+        if (potionEffects != null) applyPotionEffects(user, potionEffects, PotionEffectProperty.ApplicationEvent.ABILITY_START);
+
         return ability.use(world, user, hand);
+    }
+
+    public static void applyPotionEffects(LivingEntity user, List<PotionEffectProperty.StatusEffectData> list, PotionEffectProperty.ApplicationEvent event) {
+        for (PotionEffectProperty.StatusEffectData effect : list) {
+            if (effect.event().equals(event))
+                user.addStatusEffect(effect.creator().get());
+        }
     }
 
     public static ItemStack finishUsing(ItemStack stack, World world, LivingEntity user) {
         ItemStack itemStack = getAbility(stack).finishUsing(stack, world, user);
         abilityMap.remove(stack);
+
+        List<PotionEffectProperty.StatusEffectData> potionEffects = PotionEffectProperty.property.get(itemStack);
+        if (potionEffects != null) applyPotionEffects(user, potionEffects, PotionEffectProperty.ApplicationEvent.ABILITY_FINISH);
+
         return itemStack;
     }
 
     public static void onStoppedUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
         getAbility(stack).onStoppedUsing(stack, world, user, remainingUseTicks);
+
+        List<PotionEffectProperty.StatusEffectData> potionEffects = PotionEffectProperty.property.get(stack);
+        if (potionEffects != null) applyPotionEffects(user, potionEffects, PotionEffectProperty.ApplicationEvent.ABILITY_STOP);
+
         abilityMap.remove(stack);
     }
 
     public static void usageTick(World world, LivingEntity user, ItemStack stack, int remainingUseTicks) {
+        List<PotionEffectProperty.StatusEffectData> potionEffects = PotionEffectProperty.property.get(stack);
+        if (potionEffects != null) applyPotionEffects(user, potionEffects, PotionEffectProperty.ApplicationEvent.ABILITY_TICK);
+
         getAbility(stack).usageTick(world, user, stack, remainingUseTicks);
     }
 

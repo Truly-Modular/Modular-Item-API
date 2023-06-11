@@ -1,4 +1,4 @@
-package smartin.miapi.Events;
+package smartin.miapi.events;
 
 import dev.architectury.event.EventFactory;
 import dev.architectury.event.EventResult;

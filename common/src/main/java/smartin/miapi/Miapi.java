@@ -168,6 +168,7 @@ public class Miapi {
         Miapi.modulePropertyRegistry.register(MaterialProperty.KEY, new MaterialProperty());
         Miapi.modulePropertyRegistry.register(AllowedMaterial.KEY, new AllowedMaterial());
         Miapi.modulePropertyRegistry.register(AttributeProperty.KEY, new AttributeProperty());
+        Miapi.modulePropertyRegistry.register(PotionEffectProperty.KEY, new PotionEffectProperty());
         Miapi.modulePropertyRegistry.register(ModelTransformationProperty.KEY, new ModelTransformationProperty());
         Miapi.modulePropertyRegistry.register(DisplayNameProperty.KEY, new DisplayNameProperty());
         Miapi.modulePropertyRegistry.register(ItemIdProperty.KEY, new ItemIdProperty());
