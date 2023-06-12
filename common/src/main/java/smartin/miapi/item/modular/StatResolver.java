@@ -18,12 +18,14 @@ public class StatResolver {
         public static Codec<String> STRING(ItemModule.ModuleInstance instance) {
             return Codec.STRING.xmap(s -> resolveString(s, instance), s -> s);
         }
+
         public static Codec<Double> DOUBLE(ItemModule.ModuleInstance instance) {
             return Codec.either(Codec.DOUBLE, Codec.STRING.xmap(s -> resolveDouble(s, instance), String::valueOf)).xmap(e -> {
                 if (e.left().isPresent()) return e.left().get();
                 else return e.right().get();
             }, Either::left);
         }
+
         public static Codec<Integer> INTEGER(ItemModule.ModuleInstance instance) {
             return Codec.either(Codec.INT, DOUBLE(instance).xmap(Double::intValue, Integer::doubleValue)).xmap(e -> {
                 if (e.left().isPresent()) return e.left().get();
@@ -46,9 +48,11 @@ public class StatResolver {
      */
     public static String resolveString(String raw, ItemModule.ModuleInstance instance) {
         String resolved = raw;
-        Pattern pattern = Pattern.compile("\\[(.*?)\\]"); // regex pattern to match text inside square brackets
+        Pattern pattern = Pattern.compile("\\[([^\\[]*?)\\]"); // regex pattern to match text inside square brackets
         Matcher matcher = pattern.matcher(raw);
-        while (matcher.find()) {
+        int counter = 10;
+        while (matcher.find() && counter > 0) {
+            counter--;
             String match = matcher.group(1);
             String[] parts = match.split("\\."); // split by dot
             if (parts.length >= 2) {
@@ -59,9 +63,13 @@ public class StatResolver {
                     String resolvedData = resolver.resolveString(resolverData, instance);
                     resolved = resolved.replace("[" + match + "]", resolvedData);
                 } else {
-                    //resolved = resolved.replace("[" + match + "]", "");
+                    resolved = resolved.replace("[" + match + "]", "");
                 }
             }
+            else{
+                resolved = resolved.replace("[" + match + "]", "");
+            }
+            matcher = pattern.matcher(resolved);
         }
         return resolved;
     }
@@ -74,10 +82,9 @@ public class StatResolver {
      * @return the evaluated result
      */
     public static double resolveDouble(String raw, ItemModule.ModuleInstance instance) {
-        try{
+        try {
             return Double.parseDouble(raw);
-        }
-        catch (Exception exception){
+        } catch (Exception exception) {
 
         }
         String resolved = raw;

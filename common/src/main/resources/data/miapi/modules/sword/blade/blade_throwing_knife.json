@@ -49,6 +49,6 @@
         "throw"
     ],
     "healthPercent": 10000,
-    "displayName": "[material.key] Throwing Knife",
+    "displayName": "miapi.module.blade_throwing_knife.name",
     "itemId": "miapi:modular_throwing_knife"
 }

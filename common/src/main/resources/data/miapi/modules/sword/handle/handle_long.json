@@ -195,6 +195,6 @@
             "uuid": "CB3F55D3-645C-4F38-A497-9C13A33DB5CF"
         }
     ],
-    "displayName": "[material.key] Long Handle",
+    "displayName": "miapi.module.handle_long.name",
     "itemId": "miapi:modular_handle"
 }

@@ -218,6 +218,6 @@
         "RiptideStrength": 6,
         "allowLava": true
     },
-    "displayName": "[material.key] Polearm",
+    "displayName": "miapi.module.handle_polearm.name",
     "itemId": "miapi:modular_handle"
 }

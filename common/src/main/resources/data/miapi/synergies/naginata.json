@@ -7,7 +7,7 @@
             }
         ],
         "properties": {
-            "displayName": "[material.key] Naginata",
+            "displayName": "miapi.module.blade_naginata.name",
             "itemId": "miapi:modular_naginata"
         }
     }

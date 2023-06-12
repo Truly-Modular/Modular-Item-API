@@ -202,6 +202,6 @@
         }
     ],
     "flexibility": 1,
-    "displayName": "[material.key] ToolHandle",
+    "displayName": "miapi.module.handle_tool.name",
     "itemId": "miapi:modular_handle"
 }

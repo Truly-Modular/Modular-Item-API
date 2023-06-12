@@ -13,6 +13,7 @@ import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.ScrollList;
 import smartin.miapi.client.gui.ScrollingTextWidget;
 import smartin.miapi.client.gui.SimpleButton;
+import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.SlotProperty;
 import smartin.miapi.modules.properties.AllowedSlots;
@@ -30,10 +31,10 @@ public class ReplaceView extends InteractAbleWidget {
         super(x, y, width, height, Text.empty());
         this.craft = craft;
         this.preview = preview;
-        ScrollList list = new ScrollList(x, y, width, height-14, new ArrayList<>());
+        ScrollList list = new ScrollList(x, y, width, height - 14, new ArrayList<>());
         addChild(list);
         list.children().clear();
-        addChild(new SimpleButton<>(this.x + 2, this.y + this.height - 10, 40, 12, Text.literal("Back"), slot, back::accept));
+        addChild(new SimpleButton<>(this.x + 2, this.y + this.height - 10, 40, 12, Text.translatable(Miapi.MOD_ID + ".ui.back"), slot, back::accept));
         ArrayList<InteractAbleWidget> toList = new ArrayList<>();
         toList.add(new SlotButton(0, 0, this.width, 15, null));
         AllowedSlots.allowedIn(slot).forEach(module -> {
@@ -42,7 +43,7 @@ public class ReplaceView extends InteractAbleWidget {
         list.setList(toList);
     }
 
-    public void setPreview(ItemModule module){
+    public void setPreview(ItemModule module) {
         preview.accept(module);
     }
 
@@ -54,11 +55,14 @@ public class ReplaceView extends InteractAbleWidget {
 
         public SlotButton(int x, int y, int width, int height, ItemModule module) {
             super(x, y, width, height, Text.empty());
-            String moduleName = "emtpy";
+            String moduleName = "empty";
+            ItemModule.ModuleInstance instance = new ItemModule.ModuleInstance(module);
             if (module != null) {
                 moduleName = module.getName();
+                instance = new ItemModule.ModuleInstance(ItemModule.empty);
             }
-            textWidget = new ScrollingTextWidget(0, 0, this.width, Text.translatable(Miapi.MOD_ID + ".module.name." + moduleName), ColorHelper.Argb.getArgb(255, 255, 255, 255));
+            Text translated = StatResolver.translateAndResolve(Miapi.MOD_ID + ".module." + moduleName,instance);
+            textWidget = new ScrollingTextWidget(0, 0, this.width, translated, ColorHelper.Argb.getArgb(255, 255, 255, 255));
             this.module = module;
         }
 
@@ -79,9 +83,9 @@ public class ReplaceView extends InteractAbleWidget {
             textWidget.render(matrices, mouseX, mouseY, delta);
         }
 
-        public boolean isMouseOver(double mouseX, double mouseY){
-            boolean isOver = super.isMouseOver(mouseX,mouseY);
-            if(!this.equals(lastPreview) && isOver){
+        public boolean isMouseOver(double mouseX, double mouseY) {
+            boolean isOver = super.isMouseOver(mouseX, mouseY);
+            if (!this.equals(lastPreview) && isOver) {
                 lastPreview = this;
                 setPreview(module);
             }
@@ -90,7 +94,7 @@ public class ReplaceView extends InteractAbleWidget {
 
         @Override
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
-            if(isMouseOver(mouseX,mouseY)){
+            if (isMouseOver(mouseX, mouseY)) {
                 if (button == 0) {
                     craft.accept(module);
                     return true;

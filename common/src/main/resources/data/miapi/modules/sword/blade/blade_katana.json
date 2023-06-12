@@ -86,6 +86,6 @@
             "effect": "minecraft:glowing"
         }
     ],
-    "displayName": "[material.key] Katana",
+    "displayName": "miapi.module.blade_katana.name",
     "itemId": "miapi:modular_katana"
 }

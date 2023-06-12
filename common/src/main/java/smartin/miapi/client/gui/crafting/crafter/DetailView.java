@@ -15,6 +15,7 @@ import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.ScrollList;
 import smartin.miapi.client.gui.ScrollingTextWidget;
 import smartin.miapi.client.gui.SimpleButton;
+import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.SlotProperty;
 import smartin.miapi.item.modular.StatResolver;
 
@@ -84,14 +85,12 @@ public class DetailView extends InteractAbleWidget {
                     subSlots.add(new SlotButton(this.x, this.y + yOffset.get(), this.width, this.height, childSlot, level + 1, this));
                 });
             }
-            Text displayText = Text.translatable(Miapi.MOD_ID + ".module.empty");
-            if (slot.inSlot != null) {
-                displayText = Text.translatable(Miapi.MOD_ID + ".module." + slot.inSlot.module.getName());
-                JsonElement property = slot.inSlot.getKeyedProperties().get("moduleproperty1");
-                if (property != null) {
-                    displayText = Text.literal(String.valueOf(StatResolver.resolveDouble(property.getAsString(), slot.inSlot)));
-                }
+            ItemModule.ModuleInstance moduleInstance = slot.inSlot;
+            if(moduleInstance==null){
+                moduleInstance = new ItemModule.ModuleInstance(ItemModule.empty);
             }
+
+            Text displayText = StatResolver.translateAndResolve(Miapi.MOD_ID + ".module."+moduleInstance.module.getName(),moduleInstance);
             textWidget = new ScrollingTextWidget(this.x + 10, this.y, this.width - 20, displayText, ColorHelper.Argb.getArgb(255, 255, 255, 255));
             detail = new ModuleDetail(x, y, width, slot);
             open();
@@ -272,24 +271,23 @@ public class DetailView extends InteractAbleWidget {
             super(x, y, width, 10, Text.empty());
             int fontSize = MinecraftClient.getInstance().textRenderer.fontHeight;
 
-            Text header = Text.translatable(Miapi.MOD_ID + ".module.empty");
-            if (slot.inSlot != null) {
-                header = Text.translatable(Miapi.MOD_ID + ".module." + slot.inSlot.module.getName());
+            ItemModule.ModuleInstance moduleInstance = slot.inSlot;
+            if(moduleInstance==null){
+                moduleInstance = new ItemModule.ModuleInstance(ItemModule.empty);
             }
+
+            Text header = StatResolver.translateAndResolve(Miapi.MOD_ID + ".module."+moduleInstance.module.getName(),moduleInstance);
             headerText = new ScrollingTextWidget(this.x, this.y, this.width, header, textColor);
 
-            Text displayText = Text.translatable(Miapi.MOD_ID + ".module.empty.short_description");
-            if (slot.inSlot != null) {
-                displayText = Text.translatable(Miapi.MOD_ID + ".module." + slot.inSlot.module.getName() + ".short_description");
-            }
+            Text displayText = StatResolver.translateAndResolve(Miapi.MOD_ID + ".module."+moduleInstance.module.getName()+".short_description",moduleInstance);
             String[] rawLines = displayText.getString().split("\n");
             for (String line : rawLines) {
                 lines.add(new ScrollingTextWidget(this.x, this.y, this.width, Text.of(line), textColor));
             }
-            editButton = new SimpleButton<>(this.x, this.y, 30, 11, Text.literal("Edit"), slot, (editSlot) -> {
+            editButton = new SimpleButton<>(this.x, this.y, 30, 11, Text.translatable(Miapi.MOD_ID +".ui.edit"), slot, (editSlot) -> {
                 edit.accept(editSlot);
             });
-            replaceButton = new SimpleButton<>(this.x, this.y, 60, 11, Text.literal("Replace"), slot, (replaceSlot) -> {
+            replaceButton = new SimpleButton<>(this.x, this.y, 60, 11, Text.translatable(Miapi.MOD_ID +".ui.replace"), slot, (replaceSlot) -> {
                 replace.accept(replaceSlot);
             });
             this.height = Math.max(minSize, lines.size() * (fontSize + lineSpacing) + buttonSpacing * 2 + Math.max(replaceButton.getHeight(), editButton.getHeight()) + buttonSpacing * 2 + HeaderSize);

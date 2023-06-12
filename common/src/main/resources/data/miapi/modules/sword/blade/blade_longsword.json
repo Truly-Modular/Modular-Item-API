@@ -48,6 +48,6 @@
     "abilities": [
         "Crossbow"
     ],
-    "displayName": "[material.key] Longsword",
+    "displayName": "miapi.module.blade_longsword.name",
     "itemId": "miapi:modular_longsword"
 }

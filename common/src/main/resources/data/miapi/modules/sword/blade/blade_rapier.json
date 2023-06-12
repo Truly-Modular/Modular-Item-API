@@ -1,5 +1,5 @@
 {
-    "name": "rapier_sword",
+    "name": "blade_rapier",
     "texture": {
         "path": "miapi:models/item/sword/blade/rapier/[material.texture].json",
         "transform": {

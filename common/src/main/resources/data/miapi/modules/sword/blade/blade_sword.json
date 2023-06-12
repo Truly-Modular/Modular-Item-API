@@ -45,6 +45,6 @@
             "uuid": "CB3F55D3-645C-4F38-A497-9C13A33DB5CF"
         }
     ],
-    "displayName": "[material.key] Sword",
+    "displayName": "miapi.module.blade_sword.name",
     "itemId": "miapi:modular_sword"
 }

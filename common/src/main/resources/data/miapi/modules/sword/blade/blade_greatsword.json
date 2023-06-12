@@ -52,7 +52,7 @@
         "sizeX": 2,
         "sizeY": 2
     },
-    "displayName": "[material.key] Great Sword",
+    "displayName": "miapi.module.blade_greatsword.name",
     "abilities": [
         "heavyAttack"
     ],

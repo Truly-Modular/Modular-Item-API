@@ -72,7 +72,7 @@ public class CraftView extends InteractAbleWidget {
                 craftingProperties.add(craftingProperty);
             }
         }));
-        addChild(new SimpleButton<>(this.x + 10, this.y + this.height - 10, 40, 10, Text.translatable(Miapi.MOD_ID + ".ui.craft.back"), slot, back::accept));
+        addChild(new SimpleButton<>(this.x + 10, this.y + this.height - 10, 40, 10, Text.translatable(Miapi.MOD_ID + ".ui.back"), slot, back::accept));
 
         if (craftingGuis.size() > 1) {
             previousButton = new PageButton<>(this.x + this.width - 10, this.y, 10, 10, true, null, (callback) -> {
