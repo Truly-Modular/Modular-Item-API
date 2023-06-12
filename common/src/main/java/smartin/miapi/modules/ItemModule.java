@@ -83,8 +83,7 @@ public class ItemModule {
      * @param moduleJsonString the JSON string to load from
      */
     public static void loadFromData(String path, String moduleJsonString) {
-        Gson gson = new Gson();
-        JsonObject moduleJson = gson.fromJson(moduleJsonString, JsonObject.class);
+        JsonObject moduleJson = Miapi.gson.fromJson(moduleJsonString, JsonObject.class);
         if (!path.contains("modules")) {
             return;
         }

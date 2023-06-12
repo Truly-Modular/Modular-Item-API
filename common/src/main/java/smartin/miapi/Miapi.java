@@ -45,6 +45,9 @@ import smartin.miapi.modules.properties.render.ModelMergeProperty;
 import smartin.miapi.modules.properties.render.ModelProperty;
 import smartin.miapi.modules.properties.render.ModelTransformationProperty;
 import smartin.miapi.modules.properties.util.ModuleProperty;
+import smartin.miapi.modules.synergies.MaterialSynergyCondition;
+import smartin.miapi.modules.synergies.OtherModuleSynergyCondition;
+import smartin.miapi.modules.synergies.SynergyManager;
 import smartin.miapi.registries.MiapiRegistry;
 
 import java.util.HashMap;
@@ -134,12 +137,16 @@ public class Miapi {
         if (Environment.isClient()) {
             MiapiClient.init();
         }
+        SynergyManager.setup();
+        SynergyManager.synergyConditionMiapiRegistry.register("material",new MaterialSynergyCondition());
+        SynergyManager.synergyConditionMiapiRegistry.register("otherModule",new OtherModuleSynergyCondition());
     }
 
     protected static void setupRegistries() {
         //DataPackPaths
         ReloadEvents.registerDataPackPathToSync(Miapi.MOD_ID, "modules");
         ReloadEvents.registerDataPackPathToSync(Miapi.MOD_ID, "materials");
+        ReloadEvents.registerDataPackPathToSync(Miapi.MOD_ID, "synergies");
         ReloadEvents.registerDataPackPathToSync(Miapi.MOD_ID, "modular_converter");
 
         //ITEM
@@ -147,6 +154,7 @@ public class Miapi {
         Miapi.itemRegistry.register(MOD_ID + ":modular_handle", new ModularWeapon());
         Miapi.itemRegistry.register(MOD_ID + ":modular_sword", new ModularWeapon());
         Miapi.itemRegistry.register(MOD_ID + ":modular_katana", new ModularWeapon());
+        Miapi.itemRegistry.register(MOD_ID + ":modular_naginata", new ModularWeapon());
         Miapi.itemRegistry.register(MOD_ID + ":modular_greatsword", new ModularWeapon());
         Miapi.itemRegistry.register(MOD_ID + ":modular_dagger", new ModularWeapon());
         Miapi.itemRegistry.register(MOD_ID + ":modular_throwing_knife", new ModularWeapon());

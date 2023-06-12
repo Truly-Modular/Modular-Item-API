@@ -1,0 +1,14 @@
+{
+    "blade_katana": {
+        "conditions": [
+            {
+                "type": "otherModule",
+                "module": "handle_polearm"
+            }
+        ],
+        "properties": {
+            "displayName": "[material.key] Naginata",
+            "itemId": "miapi:modular_naginata"
+        }
+    }
+}

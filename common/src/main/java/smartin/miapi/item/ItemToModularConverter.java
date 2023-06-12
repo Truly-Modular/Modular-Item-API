@@ -1,6 +1,5 @@
 package smartin.miapi.item;
 
-import com.google.gson.JsonElement;
 import com.google.gson.reflect.TypeToken;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.registry.Registry;
@@ -26,7 +25,6 @@ public class ItemToModularConverter implements ModularItemStackConverter.Modular
             ReloadEvents.DATA_PACKS.forEach((path, data) -> {
                 for (String regex : pathRegexes) {
                     if (path.matches(regex) || path.contains("modular_converter")) {
-                        Miapi.LOGGER.error("found Path for Modular Converters");
                         Map<String, ItemModule.ModuleInstance> dataMap;
                         TypeToken<Map<String, ItemModule.ModuleInstance>> token = new TypeToken<>() {
                         };
@@ -38,10 +36,6 @@ public class ItemToModularConverter implements ModularItemStackConverter.Modular
                             stack.getOrCreateNbt().putString("modules", moduleString.toString());
                             regexes.put(itemId, stack);
                         });
-                    } else {
-                        if (path.contains("modular_converter")) {
-                            Miapi.LOGGER.error("rejected " + path);
-                        }
                     }
                 }
             });
@@ -52,11 +46,6 @@ public class ItemToModularConverter implements ModularItemStackConverter.Modular
     public ItemStack convert(ItemStack stack) {
         for (Map.Entry<String, ItemStack> entry : regexes.entrySet()) {
             if (Registry.ITEM.getId(stack.getItem()).toString().matches(entry.getKey())) {
-                Miapi.LOGGER.error("converting");
-                return entry.getValue().copy();
-            }
-            if (Registry.ITEM.getId(stack.getItem()).toString().equals(entry.getKey())) {
-                Miapi.LOGGER.error("converting Same");
                 return entry.getValue().copy();
             }
         }

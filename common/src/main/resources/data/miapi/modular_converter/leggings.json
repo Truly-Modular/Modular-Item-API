@@ -1,0 +1,90 @@
+{
+    "minecraft:iron_leggings": {
+        "module": "belt_base",
+        "moduleData": {
+            "properties": "{\"material\":\"iron\"}"
+        },
+        "subModules": {
+            "0": {
+                "module": "leg_left",
+                "moduleData": {
+                    "properties": "{\"material\":\"iron\"}"
+                },
+                "subModules": {}
+            },
+            "1": {
+                "module": "leg_right",
+                "moduleData": {
+                    "properties": "{\"material\":\"iron\"}"
+                },
+                "subModules": {}
+            }
+        }
+    },
+    "minecraft:golden_leggings": {
+        "module": "belt_base",
+        "moduleData": {
+            "properties": "{\"material\":\"gold\"}"
+        },
+        "subModules": {
+            "0": {
+                "module": "leg_left",
+                "moduleData": {
+                    "properties": "{\"material\":\"gold\"}"
+                },
+                "subModules": {}
+            },
+            "1": {
+                "module": "leg_right",
+                "moduleData": {
+                    "properties": "{\"material\":\"gold\"}"
+                },
+                "subModules": {}
+            }
+        }
+    },
+    "minecraft:diamond_leggings": {
+        "module": "belt_base",
+        "moduleData": {
+            "properties": "{\"material\":\"diamond\"}"
+        },
+        "subModules": {
+            "0": {
+                "module": "leg_left",
+                "moduleData": {
+                    "properties": "{\"material\":\"diamond\"}"
+                },
+                "subModules": {}
+            },
+            "1": {
+                "module": "leg_right",
+                "moduleData": {
+                    "properties": "{\"material\":\"diamond\"}"
+                },
+                "subModules": {}
+            }
+        }
+    },
+    "minecraft:netherite_leggings": {
+        "module": "belt_base",
+        "moduleData": {
+            "properties": "{\"material\":\"netherite\"}"
+        },
+        "subModules": {
+            "0": {
+                "module": "leg_left",
+                "moduleData": {
+                    "properties": "{\"material\":\"netherite\"}"
+                },
+                "subModules": {}
+            },
+            "1": {
+                "module": "leg_right",
+                "moduleData": {
+                    "properties": "{\"material\":\"netherite\"}"
+                },
+                "subModules": {}
+            }
+        }
+    }
+}

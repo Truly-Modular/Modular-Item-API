@@ -169,6 +169,14 @@ public class MaterialProperty implements ModuleProperty {
     }
 
     @Nullable
+    public static Material getMaterial(JsonElement element) {
+        if (element != null) {
+            return materials.get(element.getAsString());
+        }
+        return null;
+    }
+
+    @Nullable
     public static Material getMaterial(ItemModule.ModuleInstance instance) {
         JsonElement element = instance.getProperties().get(property);
         if (element != null) {
