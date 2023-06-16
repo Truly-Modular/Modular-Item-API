@@ -198,7 +198,7 @@ public class SlotDisplay extends InteractAbleWidget {
         RenderSystem.enableDepthTest();
         renderer.renderItem(stack, ModelTransformation.Mode.GUI, 15728880, OverlayTexture.DEFAULT_UV, slotProjection, immediate, 0);
         immediate.draw();
-        renderButtons(matrixStack, slotProjection);
+        //renderButtons(matrixStack, slotProjection);
         RenderSystem.enableDepthTest();
         if (bl) {
             DiffuseLighting.enableGuiDepthLighting();

@@ -1,6 +1,7 @@
 {
   "key": "diamond",
   "translation": "miapi.material.diamond",
+  "icon": "textures/item/diamond.png",
   "groups": ["crystal","gem"],
   "hardness": 6,
   "density": 2.9,

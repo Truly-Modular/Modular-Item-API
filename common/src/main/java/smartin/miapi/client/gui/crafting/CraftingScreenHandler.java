@@ -97,7 +97,7 @@ public class CraftingScreenHandler extends ScreenHandler {
             this.addSlot(new Slot(playerInventory, j, 8 + j * 18 + offset, 161 + i));
         }
 
-        this.addSlot(new Slot(inventory, 0, 8 + 3 * 18 + 25, 103 + 18 + 48 + 26) {
+        this.addSlot(new Slot(inventory, 0, 112, 118) {
             @Override
             public boolean canInsert(ItemStack stack) {
                 return true;
@@ -187,8 +187,8 @@ public class CraftingScreenHandler extends ScreenHandler {
         Networking.unRegisterC2SPacket(packetIDSlotRemove);
     }
 
-    public void setItem(ItemStack stack){
-        inventory.setStack(0,stack);
+    public void setItem(ItemStack stack) {
+        inventory.setStack(0, stack);
         inventory.markDirty();
     }
 

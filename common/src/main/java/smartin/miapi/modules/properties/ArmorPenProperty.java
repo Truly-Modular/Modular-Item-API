@@ -15,7 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ArmorPenProperty extends SimpleDoubleProperty {
-    public static final String KEY = "armorPen";
+    public static final String KEY = "armor_pen";
     public static ArmorPenProperty property;
     private static Map<LivingEntity, Multimap<EntityAttribute, EntityAttributeModifier>> cache = new HashMap<>();
 

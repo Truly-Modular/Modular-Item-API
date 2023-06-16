@@ -1,5 +1,5 @@
 {
-    "minecraft:gold_sword": {
+    "minecraft:golden_sword": {
         "module": "handle_normal",
         "moduleData": {
             "properties": "{\"material\":\"wood\"}"

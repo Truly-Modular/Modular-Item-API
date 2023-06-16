@@ -130,9 +130,7 @@ public class Miapi {
 
             @Override
             public String resolveString(String data, ItemModule.ModuleInstance instance) {
-                String translated = Text.translatable(data).getString();
-                Miapi.LOGGER.error(data +" " +translated);
-                return translated;
+                return Text.translatable(data).getString();
             }
         });
         ModularItemStackConverter.converters.add(new ItemToModularConverter());

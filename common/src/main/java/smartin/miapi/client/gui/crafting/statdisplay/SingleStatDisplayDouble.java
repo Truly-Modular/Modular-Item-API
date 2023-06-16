@@ -1,6 +1,7 @@
 package smartin.miapi.client.gui.crafting.statdisplay;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import dev.architectury.event.events.client.ClientTooltipEvent;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
@@ -9,7 +10,10 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.ColorHelper;
+import net.minecraft.util.math.Matrix4f;
+import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.InteractAbleWidget;
+import smartin.miapi.client.gui.MultiLineTextWidget;
 import smartin.miapi.client.gui.ScrollingTextWidget;
 import smartin.miapi.client.gui.StatBar;
 
@@ -29,6 +33,7 @@ public abstract class SingleStatDisplayDouble extends InteractAbleWidget impleme
     public DecimalFormat modifierFormat;
     public Text text;
     public Text hover;
+    public HoverDescription hoverDescription;
 
     public SingleStatDisplayDouble(int x, int y, int width, int height, Text title, Text hover) {
         super(x, y, width, height, Text.empty());
@@ -44,6 +49,7 @@ public abstract class SingleStatDisplayDouble extends InteractAbleWidget impleme
         modifierFormat = Util.make(new DecimalFormat("##.##"), (decimalFormat) -> {
             decimalFormat.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ROOT));
         });
+        hoverDescription = new HoverDescription(x, y, width, height, hover);
     }
 
     public abstract double getValue(ItemStack stack);
@@ -100,5 +106,40 @@ public abstract class SingleStatDisplayDouble extends InteractAbleWidget impleme
         centerValue.render(matrices, mouseX, mouseY, delta);
         statBar.render(matrices, mouseX, mouseY, delta);
         textWidget.render(matrices, mouseX, mouseY, delta);
+    }
+
+    public InteractAbleWidget getHoverWidget(){
+        return hoverDescription;
+    }
+
+    public class HoverDescription extends InteractAbleWidget {
+        public Identifier texture = new Identifier(Miapi.MOD_ID, "textures/gui/stat_display/hover_background.png");
+        public MultiLineTextWidget textWidget;
+        public Text text;
+
+        public HoverDescription(int x, int y, int width, int height, Text text) {
+            super(x, y, width, height, Text.empty());
+            textWidget = new MultiLineTextWidget(x, y+1, width, height, text);
+            this.addChild(textWidget);
+            this.width = textWidget.getWidth()+5;
+            this.height = textWidget.getHeight()+5;
+            this.text = text;
+        }
+
+        @Override
+        public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+            if(!text.getString().isEmpty()){
+                RenderSystem.setShader(GameRenderer::getPositionTexShader);
+                RenderSystem.setShaderTexture(0, texture);
+                RenderSystem.disableDepthTest();
+                RenderSystem.enableBlend();
+                drawTextureWithEdge(matrices, this.x, this.y, this.width, this.height, 120, 32, 3);
+                textWidget.x = this.x+3;
+                textWidget.y = this.y+3;
+                super.render(matrices, mouseX, mouseY, delta);
+                RenderSystem.enableDepthTest();
+            }
+        }
+
     }
 }

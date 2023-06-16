@@ -9,6 +9,9 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.text.Text;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * An abstract class that extends {@link HandledScreen} and provides default handling for children widgets.
  * This class should be extended by screens that have child widgets, and if the child widgets themselves have children,
@@ -211,6 +214,14 @@ public abstract class ParentHandledScreen<T extends ScreenHandler> extends Handl
         children().forEach(element -> {
             if (element instanceof Drawable drawable) {
                 drawable.render(matrices, mouseX, mouseY, delta);
+            }
+        });
+    }
+
+    public void renderHover(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+        children().forEach(element -> {
+            if (element instanceof InteractAbleWidget drawable) {
+                drawable.renderHover(matrices, mouseX, mouseY, delta);
             }
         });
     }

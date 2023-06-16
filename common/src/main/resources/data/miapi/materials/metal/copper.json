@@ -1,21 +1,23 @@
 {
-  "key": "copper",
-  "translation": "miapi.material.copper",
-  "groups": ["metal"],
-  "hardness": 3.8,
-  "density": 3.6,
-  "flexibility": 1,
-  "durability": 800,
-  "color": "E47B55",
-  "textures": [
-    "metal"
-  ],
-  "propertyList": [],
-
-  "items": [
-    {
-      "item": "minecraft:copper_ingot",
-      "value": 1.0
-    }
-  ]
+    "key": "copper",
+    "translation": "miapi.material.copper",
+    "groups": [
+        "metal"
+    ],
+    "icon": "textures/item/copper_ingot.png",
+    "hardness": 3.8,
+    "density": 3.6,
+    "flexibility": 1,
+    "durability": 800,
+    "color": "E47B55",
+    "textures": [
+        "metal"
+    ],
+    "propertyList": [],
+    "items": [
+        {
+            "item": "minecraft:copper_ingot",
+            "value": 1.0
+        }
+    ]
 }

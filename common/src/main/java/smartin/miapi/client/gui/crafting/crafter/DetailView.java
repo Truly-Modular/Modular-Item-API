@@ -1,6 +1,5 @@
 package smartin.miapi.client.gui.crafting.crafter;
 
-import com.google.gson.JsonElement;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -11,10 +10,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
 import smartin.miapi.Miapi;
-import smartin.miapi.client.gui.InteractAbleWidget;
-import smartin.miapi.client.gui.ScrollList;
-import smartin.miapi.client.gui.ScrollingTextWidget;
-import smartin.miapi.client.gui.SimpleButton;
+import smartin.miapi.client.gui.*;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.SlotProperty;
 import smartin.miapi.item.modular.StatResolver;
@@ -55,10 +51,12 @@ public class DetailView extends InteractAbleWidget {
         private final Identifier texture = new Identifier(Miapi.MOD_ID, "textures/gui/crafter/module_button.png");
         private final Identifier editTexture = new Identifier(Miapi.MOD_ID, "textures/gui/crafter/edit_button.png");
         private final Identifier plusTexture = new Identifier(Miapi.MOD_ID, "textures/gui/crafter/plus_minus_button.png");
+        private final Identifier textureIcon;
         private final List<SlotButton> subSlots = new ArrayList<>();
         private final SlotButton parent;
         private final ModuleDetail detail;
-        private final ScrollingTextWidget textWidget;
+        private final ScrollingTextWidget moduleName;
+        private final ScrollingTextWidget materialName;
         private final SlotProperty.ModuleSlot slot;
         private final int level;
         private final int trueHeight;
@@ -86,12 +84,23 @@ public class DetailView extends InteractAbleWidget {
                 });
             }
             ItemModule.ModuleInstance moduleInstance = slot.inSlot;
-            if(moduleInstance==null){
+            if (moduleInstance == null) {
                 moduleInstance = new ItemModule.ModuleInstance(ItemModule.empty);
             }
+            Text materialNameText = StatResolver.translateAndResolve("[translation.[material.translation]]", moduleInstance);
+            String path = StatResolver.resolveString("[material.icon]", moduleInstance);
+            if (path.isEmpty()) {
+                textureIcon = new Identifier("minecraft", "missing");
+            } else {
+                Miapi.LOGGER.warn(path);
+                //textureIcon = new Identifier("minecraft", "missing");
+                textureIcon = new Identifier(path);
+            }
 
-            Text displayText = StatResolver.translateAndResolve(Miapi.MOD_ID + ".module."+moduleInstance.module.getName(),moduleInstance);
-            textWidget = new ScrollingTextWidget(this.x + 10, this.y, this.width - 20, displayText, ColorHelper.Argb.getArgb(255, 255, 255, 255));
+            Text displayText = StatResolver.translateAndResolve(Miapi.MOD_ID + ".module." + moduleInstance.module.getName(), moduleInstance);
+            moduleName = new ScrollingTextWidget(this.x + 10, this.y, this.width - 20, displayText, ColorHelper.Argb.getArgb(255, 255, 255, 255));
+            materialName = new ScrollingTextWidget(this.x + 10, this.y, this.width - 20, materialNameText, ColorHelper.Argb.getArgb(255, 255, 255, 255));
+            materialName.setOrientation(ScrollingTextWidget.ORIENTATION.RIGHT);
             detail = new ModuleDetail(x, y, width, slot);
             open();
             buttonMap.put(slot, this);
@@ -180,10 +189,15 @@ public class DetailView extends InteractAbleWidget {
             }
             this.height = height.get();
 
+            materialName.y = this.y + 4;
+            materialName.x = this.x + 6 * level + 3;
+            materialName.setWidth(this.width - 50 - level * 6);
+
             //setup TextWidget
-            textWidget.y = this.y + 4;
-            textWidget.x = this.x + 6 * level + 3;
-            textWidget.setWidth(this.width - 28 - level * 6);
+            moduleName.y = this.y + 4;
+            moduleName.x = this.x + 6 * level + 3;
+            int materialNameWidth = materialName.getRequiredWidth();
+            moduleName.setWidth(this.width - 50 - materialNameWidth - level * 6);
 
             RenderSystem.setShader(GameRenderer::getPositionTexShader);
             RenderSystem.setShaderTexture(0, texture);
@@ -218,7 +232,12 @@ public class DetailView extends InteractAbleWidget {
             //edit plus/minus button
             drawTexture(matrices, x + width - 28, y, 0, 0, hoveredOffset * 14, 14, 14, 14, 28);
 
-            textWidget.render(matrices, mouseX, mouseY, delta);
+            moduleName.render(matrices, mouseX, mouseY, delta);
+            materialName.render(matrices, mouseX, mouseY, delta);
+
+            RenderSystem.setShaderTexture(0, textureIcon);
+            drawTexture(matrices, this.x + this.width - 44, this.y - 1, 0, 0, 16, 16, 16, 16);
+
 
         }
 
@@ -257,6 +276,7 @@ public class DetailView extends InteractAbleWidget {
 
     class ModuleDetail extends InteractAbleWidget {
         private final Identifier texture = new Identifier(Miapi.MOD_ID, "textures/gui/crafter/detail_background.png");
+        private final MultiLineTextWidget description;
         private final List<ScrollingTextWidget> lines = new ArrayList<>();
         private final ScrollingTextWidget headerText;
         private final static int lineSpacing = 2;
@@ -272,25 +292,30 @@ public class DetailView extends InteractAbleWidget {
             int fontSize = MinecraftClient.getInstance().textRenderer.fontHeight;
 
             ItemModule.ModuleInstance moduleInstance = slot.inSlot;
-            if(moduleInstance==null){
+            if (moduleInstance == null) {
                 moduleInstance = new ItemModule.ModuleInstance(ItemModule.empty);
             }
 
-            Text header = StatResolver.translateAndResolve(Miapi.MOD_ID + ".module."+moduleInstance.module.getName(),moduleInstance);
+            Text header = StatResolver.translateAndResolve(Miapi.MOD_ID + ".module." + moduleInstance.module.getName(), moduleInstance);
             headerText = new ScrollingTextWidget(this.x, this.y, this.width, header, textColor);
 
-            Text displayText = StatResolver.translateAndResolve(Miapi.MOD_ID + ".module."+moduleInstance.module.getName()+".short_description",moduleInstance);
+            Text displayText = StatResolver.translateAndResolve(Miapi.MOD_ID + ".module." + moduleInstance.module.getName() + ".description", moduleInstance);
+            description = new MultiLineTextWidget(x, y, width - 4, height, displayText);
+            description.maxLineLength = this.width - 4;
+            description.spacer = lineSpacing;
+            description.setText(displayText);
             String[] rawLines = displayText.getString().split("\n");
             for (String line : rawLines) {
                 lines.add(new ScrollingTextWidget(this.x, this.y, this.width, Text.of(line), textColor));
             }
-            editButton = new SimpleButton<>(this.x, this.y, 30, 11, Text.translatable(Miapi.MOD_ID +".ui.edit"), slot, (editSlot) -> {
+            editButton = new SimpleButton<>(this.x, this.y, 30, 11, Text.translatable(Miapi.MOD_ID + ".ui.edit"), slot, (editSlot) -> {
                 edit.accept(editSlot);
             });
-            replaceButton = new SimpleButton<>(this.x, this.y, 60, 11, Text.translatable(Miapi.MOD_ID +".ui.replace"), slot, (replaceSlot) -> {
+            replaceButton = new SimpleButton<>(this.x, this.y, 60, 11, Text.translatable(Miapi.MOD_ID + ".ui.replace"), slot, (replaceSlot) -> {
                 replace.accept(replaceSlot);
             });
             this.height = Math.max(minSize, lines.size() * (fontSize + lineSpacing) + buttonSpacing * 2 + Math.max(replaceButton.getHeight(), editButton.getHeight()) + buttonSpacing * 2 + HeaderSize);
+            this.height = Math.max(minSize, description.getHeight() + buttonSpacing * 2 + Math.max(replaceButton.getHeight(), editButton.getHeight()) + buttonSpacing * 2 + HeaderSize);
             addChild(editButton);
             addChild(replaceButton);
         }
@@ -316,12 +341,15 @@ public class DetailView extends InteractAbleWidget {
             headerText.render(matrices, mouseX, mouseY, delta);
 
             int y = 4 + this.y + lineSpacing * 2 + HeaderSize; // the starting y position for the first line
+            description.x = this.x + 2;
+            description.y = y;
             for (ScrollingTextWidget line : lines) {
                 line.x = this.x + 2;
                 line.setWidth(this.width - 4);
                 line.y = y;
-                line.render(matrices, mouseX, mouseY, delta);
+                //line.render(matrices, mouseX, mouseY, delta);
             }
+            description.render(matrices, mouseX, mouseY, delta);
             super.render(matrices, mouseX, mouseY, delta);
         }
     }

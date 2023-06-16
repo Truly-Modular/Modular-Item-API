@@ -6,6 +6,8 @@ import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.ColorHelper;
+import net.minecraft.util.math.Matrix4f;
+import net.minecraft.util.math.Vector4f;
 import smartin.miapi.Miapi;
 
 import java.util.List;
@@ -87,7 +89,11 @@ public class ScrollList extends InteractAbleWidget {
                 } else {
                     widget.setWidth(this.width);
                 }
-                enableScissor(this.x, this.y, this.x + this.width, this.y + height);
+                Matrix4f matrix4f = new Matrix4f(matrices.peek().getPositionMatrix());
+                Vector4f posX = TransformableWidget.transFormMousePos(x, y, matrix4f);
+                Vector4f posY = TransformableWidget.transFormMousePos(x + width, y + height, matrix4f);
+
+                enableScissor((int) posX.getX(), (int) posX.getY(), (int) posY.getX(), (int) posY.getY());
                 widget.render(matrices, mouseX, mouseY, delta);
                 disableScissor();
             }
@@ -127,7 +133,11 @@ public class ScrollList extends InteractAbleWidget {
                     } else {
                         widget.setWidth(this.width);
                     }
-                    enableScissor(this.x, this.y, this.x + this.width, this.y + height);
+                    Matrix4f matrix4f = new Matrix4f(matrices.peek().getPositionMatrix());
+                    Vector4f posX = TransformableWidget.transFormMousePos(x, y, matrix4f);
+                    Vector4f posY = TransformableWidget.transFormMousePos(x + width, y + height, matrix4f);
+
+                    enableScissor((int) posX.getX(), (int) posX.getY(), (int) posY.getX(), (int) posY.getY());
                     widget.render(matrices, mouseX, mouseY, 0);
                     disableScissor();
                 }

@@ -3,6 +3,7 @@ package smartin.miapi.client.gui;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.util.math.MatrixStack;
@@ -17,7 +18,7 @@ import smartin.miapi.Miapi;
  */
 @Environment(EnvType.CLIENT)
 public class ScrollingTextWidget extends InteractAbleWidget implements Drawable, Element {
-
+    private TextRenderer renderer = MinecraftClient.getInstance().textRenderer;
     private Text text;
     private float timer = 0;
     private int scrollPosition = 0;
@@ -118,6 +119,10 @@ public class ScrollingTextWidget extends InteractAbleWidget implements Drawable,
         } else {
             MinecraftClient.getInstance().textRenderer.draw(matrices, Text.literal(displayText), textStart, y, textColor);
         }
+    }
+
+    public int getRequiredWidth() {
+        return Math.min(this.width, renderer.getWidth(text));
     }
 
     public enum ORIENTATION {

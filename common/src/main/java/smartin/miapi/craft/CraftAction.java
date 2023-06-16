@@ -30,9 +30,9 @@ import java.util.concurrent.atomic.AtomicReference;
  * from server to client
  */
 public class CraftAction {
-    private final ItemModule toAdd;
-    private final PlayerEntity player;
-    private final List<Integer> slotId = new ArrayList<>();
+    public final ItemModule toAdd;
+    public final PlayerEntity player;
+    public final List<Integer> slotId = new ArrayList<>();
     private ItemStack old;
     private Inventory linkedInventory;
     private int inventoryOffset;

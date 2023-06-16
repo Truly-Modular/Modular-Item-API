@@ -1,6 +1,7 @@
 {
   "key": "iron",
   "translation": "miapi.material.iron",
+  "icon": "textures/item/iron_ingot.png",
   "groups": ["metal"],
   "hardness": 5,
   "density": 3.8,

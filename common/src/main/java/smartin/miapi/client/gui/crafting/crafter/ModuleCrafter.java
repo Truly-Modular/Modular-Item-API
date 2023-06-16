@@ -10,12 +10,14 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.InteractAbleWidget;
+import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
 import smartin.miapi.craft.CraftAction;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.SlotProperty;
@@ -38,6 +40,7 @@ public class ModuleCrafter extends InteractAbleWidget {
     CraftView craftView;
     Consumer<Slot> removeSlot;
     Consumer<Slot> addSlot;
+    public ScreenHandler handler;
 
     public ModuleCrafter(int x, int y, int width, int height, Consumer<SlotProperty.ModuleSlot> selected, Consumer<ItemStack> craftedItem, Inventory linkedInventory, Consumer<Slot> addSlot, Consumer<Slot> removeSlot) {
         super(x, y, width, height, Text.empty());
@@ -48,9 +51,7 @@ public class ModuleCrafter extends InteractAbleWidget {
         this.selectedSlot = selected;
         this.removeSlot = removeSlot;
         this.addSlot = addSlot;
-        CraftView.currentSlots.forEach(slot1 -> {
-            removeSlot.accept(slot1);
-        });
+        CraftView.currentSlots.forEach(removeSlot::accept);
     }
 
     public void setItem(ItemStack stack) {
@@ -86,7 +87,7 @@ public class ModuleCrafter extends InteractAbleWidget {
         switch (mode) {
             case DETAIL -> {
                 this.children().clear();
-                DetailView detailView = new DetailView(this.x, this.y, this.width, this.height - 38, this.baseSlot, this.slot,
+                DetailView detailView = new DetailView(this.x, this.y, this.width, this.height, this.baseSlot, this.slot,
                         toEdit -> {
                             this.slot = toEdit;
                             setMode(Mode.EDIT);
@@ -104,11 +105,11 @@ public class ModuleCrafter extends InteractAbleWidget {
                 this.children.add(detailView);
             }
             case CRAFT -> {
-                craftView = new CraftView(this.x, this.y, this.width, this.height - 38, paketIdentifier, module, stack, linkedInventory, 1, slot, (backSlot) -> {
+                craftView = new CraftView(this.x, this.y, this.width, this.height, paketIdentifier, module, stack, linkedInventory, 1, slot, (backSlot) -> {
                     setSelectedSlot(backSlot);
                 }, (replaceItem) -> {
                     preview.accept(replaceItem);
-                }, addSlot, removeSlot);
+                }, addSlot, removeSlot, handler);
                 this.children().clear();
                 this.addChild(craftView);
             }
@@ -116,7 +117,7 @@ public class ModuleCrafter extends InteractAbleWidget {
                 if (this.slot != null) {
                     ItemModule.ModuleInstance instance = slot.inSlot;
                     if (instance != null) {
-                        EditDevView editDevView = new EditDevView(this.x, this.y, this.width, this.height - 38, slot, slot.inSlot, stack, (crafted) -> {
+                        EditDevView editDevView = new EditDevView(this.x, this.y, this.width, this.height, slot, slot.inSlot, stack, (crafted) -> {
                             //linkedInventory.setStack(0, crafted);
                         });
                         this.children().clear();
@@ -162,7 +163,7 @@ public class ModuleCrafter extends InteractAbleWidget {
 
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        //renderBackground(matrices, mouseX, mouseY, delta);
+        //drawSquareBorder(matrices, x, y, width, height, 1, ColorHelper.Argb.getArgb(255, 0, 255, 0));
         super.render(matrices, mouseX, mouseY, delta);
     }
 

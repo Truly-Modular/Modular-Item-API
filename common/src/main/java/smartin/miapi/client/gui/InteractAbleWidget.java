@@ -22,6 +22,7 @@ import java.util.List;
 @Environment(EnvType.CLIENT)
 public abstract class InteractAbleWidget extends ClickableWidget implements Drawable, Element {
     protected final List<Element> children = new ArrayList<>();
+    protected final List<InteractAbleWidget> hoverElements = new ArrayList<>();
 
     /**
      * This is a Widget build to support Children and parse the events down to them.
@@ -124,6 +125,17 @@ public abstract class InteractAbleWidget extends ClickableWidget implements Draw
      */
     public static void drawTextureWithEdge(MatrixStack matrices, int x, int y, int width, int height, int textureWidth, int textureHeight, int borderWidth) {
         drawTextureWithEdge(matrices, x, y, 0, 0, textureWidth, textureHeight, width, height, textureWidth, textureHeight, borderWidth);
+    }
+
+    public List<InteractAbleWidget> getHoverElements() {
+        List<InteractAbleWidget> allHoverElements = new ArrayList<>();
+        allHoverElements.addAll(hoverElements);
+        children().forEach(children -> {
+            if (children instanceof InteractAbleWidget widget) {
+                allHoverElements.addAll(widget.getHoverElements());
+            }
+        });
+        return allHoverElements;
     }
 
 
@@ -319,6 +331,27 @@ public abstract class InteractAbleWidget extends ClickableWidget implements Draw
         children().forEach(element -> {
             if (element instanceof Drawable drawable) {
                 drawable.render(matrices, mouseX, mouseY, delta);
+            }
+        });
+    }
+
+    /**
+     * This functions handles the Rendering
+     * If you have children you should call super.render(matrices ,mouseX ,mouseY ,delta) at the end to render your children
+     *
+     * @param matrices the current MatrixStack / PoseStack
+     * @param mouseX   current mouseX Position
+     * @param mouseY   current mouseY Position
+     * @param delta    the deltaTime between frames
+     *                 This is needed for animations and co
+     */
+    public void renderHover(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+        hoverElements.forEach(hoverElements -> {
+            hoverElements.render(matrices, mouseX, mouseY, delta);
+        });
+        children().forEach(element -> {
+            if (element instanceof InteractAbleWidget widget) {
+                widget.renderHover(matrices, mouseX, mouseY, delta);
             }
         });
     }

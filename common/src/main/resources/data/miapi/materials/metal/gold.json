@@ -4,6 +4,7 @@
     "groups": [
         "metal"
     ],
+    "icon": "textures/item/gold_ingot.png",
     "hardness": 4,
     "density": 4.6,
     "flexibility": 1,

@@ -3,8 +3,10 @@ package smartin.miapi.modules.properties.util;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.Vec2f;
 import smartin.miapi.client.gui.InteractAbleWidget;
+import smartin.miapi.craft.CraftAction;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
@@ -28,7 +30,7 @@ public interface CraftingProperty {
      * @return return null if this property has no gui
      */
     @Nullable
-    default InteractAbleWidget createGui(int x, int y, int width, int height) {
+    default InteractAbleWidget createGui(int x, int y, int width, int height, CraftAction action) {
         return null;
     }
 
@@ -57,7 +59,7 @@ public interface CraftingProperty {
      *
      * @return the priority
      */
-    default float getPriority(){
+    default float getPriority() {
         return 0;
     }
 
@@ -75,6 +77,10 @@ public interface CraftingProperty {
      */
     default boolean canPerform(ItemStack old, ItemStack crafting, PlayerEntity player, ItemModule.ModuleInstance newModule, ItemModule module, List<ItemStack> inventory, PacketByteBuf buf) {
         return true;
+    }
+
+    default Text getWarning() {
+        return Text.empty();
     }
 
     /**

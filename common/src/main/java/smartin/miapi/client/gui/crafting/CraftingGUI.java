@@ -6,15 +6,21 @@ import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.screen.ScreenHandler;
+import net.minecraft.screen.ScreenHandlerListener;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.Matrix4f;
 import smartin.miapi.Miapi;
+import smartin.miapi.client.gui.BoxList;
 import smartin.miapi.client.gui.ParentHandledScreen;
+import smartin.miapi.client.gui.TransformableWidget;
 import smartin.miapi.client.gui.crafting.crafter.ModuleCrafter;
 import smartin.miapi.client.gui.crafting.slotdisplay.SlotDisplay;
 import smartin.miapi.client.gui.crafting.statdisplay.StatDisplay;
 import smartin.miapi.item.ModularItemStackConverter;
 import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.properties.AllowedSlots;
 import smartin.miapi.modules.properties.SlotProperty;
 
 import java.util.ArrayList;
@@ -39,7 +45,9 @@ public class CraftingGUI extends ParentHandledScreen<CraftingScreenHandler> impl
         List<String> allowedModules = new ArrayList<>();
         allowedModules.add("melee");
         baseSlot = new SlotProperty.ModuleSlot(allowedModules);
-        moduleCrafter = new ModuleCrafter((this.width - this.backgroundWidth) / 2 + 109, (this.height - this.backgroundHeight) / 2 + 8, 163, 150, (selectedSlot) -> {
+        float scale = 0.667f;
+
+        moduleCrafter = new ModuleCrafter((int) (((this.width - this.backgroundWidth) / 2 + 109 + 36) * (1 / scale)), (int) (((this.height - this.backgroundHeight) / 2 + 8) * (1 / scale)), (int) ((163 - 36) * (1 / scale)), (int) ((150 - 38 + 15) * (1 / scale)), (selectedSlot) -> {
             slotDisplay.select(selectedSlot);
         }, (item) -> {
             slotDisplay.setItem(item);
@@ -47,18 +55,43 @@ public class CraftingGUI extends ParentHandledScreen<CraftingScreenHandler> impl
         }, handler.inventory,
                 handler::addSlotByClient, handler::removeSlotByClient);
         moduleCrafter.setPacketIdentifier(handler.packetID);
-        slotDisplay = new SlotDisplay(stack, (this.width - this.backgroundWidth) / 2 + 8, (this.height - this.backgroundHeight) / 2 + 8, 206 - 20, 98, (selected) -> {
+
+        TransformableWidget transformableWidget = new TransformableWidget((this.width - this.backgroundWidth) / 2 + 109 + 36, (this.height - this.backgroundHeight) / 2 + 8, 163 - 36, 150, Text.empty());
+        transformableWidget.rawProjection.loadIdentity();
+        transformableWidget.rawProjection.multiply(Matrix4f.scale(scale, scale, scale));
+        this.addChild(transformableWidget);
+        transformableWidget.addChild(moduleCrafter);
+
+        slotDisplay = new SlotDisplay(stack, (this.width - this.backgroundWidth) / 2 + 8, (this.height - this.backgroundHeight) / 2 + 8 + 132 - 24, 74 + 24, 98, (selected) -> {
             moduleCrafter.setSelectedSlot(selected);
         });
         slotDisplay.setItem(getItem());
-        statDisplay = new StatDisplay((this.width - this.backgroundWidth) / 2 + 8 - 108 + 18, (this.height - this.backgroundHeight) / 2 - 1, 86, 206 - 20);
+        this.addChild(slotDisplay);
+
+
+        statDisplay = new StatDisplay((this.width - this.backgroundWidth) / 2 + 8 - 108 + 18 + 89, (this.height - this.backgroundHeight) / 2 - 1 + 8, 86 + 18 * 2 + 5, 206 - 100);
         this.addChild(statDisplay);
-        this.addSelectableChild(slotDisplay);
-        moduleCrafter.setItem(getItem());
-        this.addSelectableChild(moduleCrafter);
+
         super.init();
         playerInventoryTitleX = -1000;
         playerInventoryTitleY = -1000;
+        updateItem(handler.inventory.getStack(0));
+        if (moduleCrafter != null) {
+            moduleCrafter.handler = handler;
+        }
+        this.handler.addListener(new ScreenHandlerListener() {
+            @Override
+            public void onSlotUpdate(ScreenHandler handler, int slotId, ItemStack stack) {
+                if (slotId == 36) {
+                    updateItem(stack);
+                }
+            }
+
+            @Override
+            public void onPropertyUpdate(ScreenHandler handler, int property, int value) {
+
+            }
+        });
 
     }
 
@@ -78,27 +111,31 @@ public class CraftingGUI extends ParentHandledScreen<CraftingScreenHandler> impl
         this.drawBackground(matrices, delta, mouseX, mouseY);
         super.render(matrices, mouseX, mouseY, delta);
         this.drawMouseoverTooltip(matrices, mouseX, mouseY);
-        if (!getItem().equals(stack)) {
-            stack = getItem();
-            ItemStack converted = ModularItemStackConverter.getModularVersion(stack);
-            setItem(handler.inventory.getStack(0));
-            baseSlot.inSlot = ItemModule.getModules(converted);
-            SlotProperty.ModuleSlot current = baseSlot;
-            if (baseSlot.inSlot.module.equals(ItemModule.empty)) {
-                current = null;
-            }
-            if (slotDisplay != null) {
-                slotDisplay.setBaseSlot(current);
-                slotDisplay.setItem(converted);
-            }
-            if (moduleCrafter != null) {
-                moduleCrafter.setBaseSlot(current);
-                moduleCrafter.setItem(converted);
-                moduleCrafter.setSelectedSlot(null);
-            }
-            if (statDisplay != null) {
-                statDisplay.setOriginal(converted);
-            }
+        this.renderHover(matrices, mouseX, mouseY, delta);
+    }
+
+    private void updateItem(ItemStack stack) {
+        ItemStack converted = ModularItemStackConverter.getModularVersion(stack);
+
+        setItem(handler.inventory.getStack(0));
+        baseSlot.inSlot = ItemModule.getModules(converted);
+        //baseSlot.allowed = AllowedSlots.getAllowedSlots(baseSlot.inSlot.module);
+        SlotProperty.ModuleSlot current = baseSlot;
+        if (baseSlot.inSlot.module.equals(ItemModule.empty)) {
+            current = null;
+        }
+        if (slotDisplay != null) {
+            slotDisplay.setBaseSlot(current);
+            slotDisplay.setItem(converted);
+        }
+        if (moduleCrafter != null) {
+            moduleCrafter.setBaseSlot(current);
+            moduleCrafter.setItem(converted);
+            moduleCrafter.setSelectedSlot(null);
+        }
+        if (statDisplay != null) {
+            statDisplay.setOriginal(converted);
+            statDisplay.setCompareTo(converted);
         }
     }
 

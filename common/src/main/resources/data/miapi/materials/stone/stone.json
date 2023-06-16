@@ -1,6 +1,7 @@
 {
   "key": "stone",
   "translation": "miapi.material.stone",
+  "icon": "textures/item/cobblestone.png",
   "groups": ["stone"],
   "hardness": 4,
   "density": 3,

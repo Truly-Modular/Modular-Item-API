@@ -2,6 +2,7 @@ package smartin.miapi.client.gui.crafting.statdisplay;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
+import smartin.miapi.Miapi;
 import smartin.miapi.modules.properties.util.SimpleDoubleProperty;
 
 public class SinglePropertyStatDisplay extends SingleStatDisplayDouble {
@@ -39,7 +40,9 @@ public class SinglePropertyStatDisplay extends SingleStatDisplayDouble {
     public static class Builder {
         SimpleDoubleProperty property;
         public Text name;
-        public Text hoverDescription;
+        public Text hoverDescription = Text.empty();
+        public String translationKey = "";
+        public Object[] descriptionArgs = new Object[]{};
         public String format = "##.##";
 
         private Builder(SimpleDoubleProperty property) {
@@ -48,6 +51,19 @@ public class SinglePropertyStatDisplay extends SingleStatDisplayDouble {
 
         public Builder setName(Text name) {
             this.name = name;
+            return this;
+        }
+
+        public Builder setTranslationKey(String key) {
+            translationKey = key;
+            name = Text.translatable(Miapi.MOD_ID + ".stat." + key);
+            hoverDescription = Text.translatable(Miapi.MOD_ID + ".stat." + key + ".description", descriptionArgs);
+            return this;
+        }
+
+        public Builder setDescriptionArguments(Object... args) {
+            descriptionArgs = args;
+            hoverDescription = Text.translatable(Miapi.MOD_ID + ".stat." + translationKey + ".description", descriptionArgs);
             return this;
         }
 

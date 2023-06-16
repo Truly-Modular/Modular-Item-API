@@ -1,6 +1,7 @@
 {
   "key": "netherite",
   "translation": "miapi.material.netherite",
+  "icon": "textures/item/netherite_ingot.png",
   "groups": ["metal"],
   "hardness": 7,
   "density": 3.8,

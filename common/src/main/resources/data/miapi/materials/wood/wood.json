@@ -1,6 +1,7 @@
 {
   "key": "wood",
   "translation": "miapi.material.wood",
+  "icon": "textures/item/oak_plank.png",
   "groups": ["wood"],
   "hardness": 3,
   "density": 1.7,

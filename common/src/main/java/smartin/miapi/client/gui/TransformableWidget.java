@@ -32,6 +32,11 @@ public class TransformableWidget extends InteractAbleWidget {
         super(x, y, width, height, title);
     }
 
+    public TransformableWidget(int x, int y, int width, int height, float scale) {
+        super(x, y, width, height, Text.empty());
+        rawProjection = Matrix4f.scale(scale, scale, scale);
+    }
+
 
     /**
      * This function triggers whenever the mouse is Moved above the Widget
@@ -41,10 +46,7 @@ public class TransformableWidget extends InteractAbleWidget {
      */
     @Override
     public void mouseMoved(double mouseX, double mouseY) {
-        Vec3f position = new Vec3f((float) mouseX, (float) mouseY, 0);
-        Matrix3f matrix3f = new Matrix3f(rawProjection);
-        matrix3f.multiply(-1);
-        position.transform(matrix3f);
+        Vector4f position = transFormMousePos(mouseX, mouseY);
         for (Element child : this.children()) {
             if (child.isMouseOver(position.getX(), position.getY())) {
                 child.mouseMoved(position.getX(), position.getY());
@@ -63,10 +65,7 @@ public class TransformableWidget extends InteractAbleWidget {
      */
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        Vec3f position = new Vec3f((float) mouseX, (float) mouseY, 0);
-        Matrix3f matrix3f = new Matrix3f(rawProjection);
-        matrix3f.multiply(-1);
-        position.transform(matrix3f);
+        Vector4f position = transFormMousePos(mouseX, mouseY);
         for (Element child : this.children()) {
             if (child.isMouseOver(position.getX(), position.getY()) && child.mouseClicked(position.getX(), position.getY(), button)) {
                 return true;
@@ -83,10 +82,7 @@ public class TransformableWidget extends InteractAbleWidget {
      */
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        Vec3f position = new Vec3f((float) mouseX, (float) mouseY, 0);
-        Matrix3f matrix3f = new Matrix3f(rawProjection);
-        matrix3f.multiply(-1);
-        position.transform(matrix3f);
+        Vector4f position = transFormMousePos(mouseX, mouseY);
 
         for (Element child : this.children()) {
             if (child.isMouseOver(position.getX(), position.getY()) && child.mouseReleased(position.getX(), position.getY(), button)) {
@@ -106,10 +102,7 @@ public class TransformableWidget extends InteractAbleWidget {
      */
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
-        Vec3f position = new Vec3f((float) mouseX, (float) mouseY, 0);
-        Matrix3f matrix3f = new Matrix3f(rawProjection);
-        matrix3f.multiply(-1);
-        position.transform(matrix3f);
+        Vector4f position = transFormMousePos(mouseX, mouseY);
         for (Element child : this.children()) {
             if (child.isMouseOver(position.getX(), position.getY()) && child.mouseDragged(position.getX(), position.getY(), button, deltaX, deltaY)) {
                 return true;
@@ -127,10 +120,7 @@ public class TransformableWidget extends InteractAbleWidget {
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
-        Vec3f position = new Vec3f((float) mouseX, (float) mouseY, 0);
-        Matrix3f matrix3f = new Matrix3f(rawProjection);
-        matrix3f.multiply(-1);
-        position.transform(matrix3f);
+        Vector4f position = transFormMousePos(mouseX, mouseY);
         for (Element child : this.children()) {
             if (child.isMouseOver(position.getX(), position.getY()) && child.mouseScrolled(position.getX(), position.getY(), amount)) {
                 return true;
@@ -150,11 +140,13 @@ public class TransformableWidget extends InteractAbleWidget {
      */
     @Override
     public boolean isMouseOver(double mouseX, double mouseY) {
-        Vec3f position = new Vec3f((float) mouseX, (float) mouseY, 0);
-        Matrix3f matrix3f = new Matrix3f(rawProjection);
-        matrix3f.multiply(-1);
-        position.transform(matrix3f);
-        return super.isMouseOver(position.getX(), position.getY());
+        Vector4f position = transFormMousePos(mouseX, mouseY);
+        for (Element element : children()) {
+            if (element.isMouseOver(position.getX(), position.getY())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -169,28 +161,70 @@ public class TransformableWidget extends InteractAbleWidget {
      */
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        //rawProjection.
-        Matrix4f matrix4f = new Matrix4f();
-        matrix4f.loadIdentity();
-        matrix4f.multiply(rawProjection);
-        Matrix4f matrix4f2 = new Matrix4f();
-        matrix4f2.loadIdentity();
-        matrix4f2.multiply(matrix4f);
-        //Miapi.LOGGER.error(String.valueOf(matrix4f2.invert()));
-
         MatrixStack matrixStack = new MatrixStack();
         matrixStack.multiplyPositionMatrix(matrices.peek().getPositionMatrix());
 
-        matrixStack.multiplyPositionMatrix(matrix4f);
-        Vector4f position = new Vector4f(mouseX, mouseY, 0, 0);
+        matrixStack.multiplyPositionMatrix(rawProjection);
+        Vector4f position = transFormMousePos(mouseX, mouseY);
 
-        position.transform(matrix4f2);
-        //Miapi.LOGGER.error(mouseX + "  " + position.getX());
         children().forEach(element -> {
             if (element instanceof Drawable drawable) {
                 drawable.render(matrixStack, (int) position.getX(), (int) position.getY(), delta);
             }
         });
-        //matrixStack.pop();
+    }
+
+    @Override
+    public void renderHover(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+        MatrixStack matrixStack = new MatrixStack();
+        matrixStack.multiplyPositionMatrix(matrices.peek().getPositionMatrix());
+
+        matrixStack.multiplyPositionMatrix(rawProjection);
+        Vector4f position = transFormMousePos(mouseX, mouseY);
+
+        super.renderHover(matrixStack, (int) position.getX(), (int) position.getY(), delta);
+    }
+
+    public void renderWidget(InteractAbleWidget widget, MatrixStack matrices, int mouseX, int mouseY, float delta) {
+        MatrixStack matrixStack = new MatrixStack();
+        matrixStack.multiplyPositionMatrix(matrices.peek().getPositionMatrix());
+
+        matrixStack.multiplyPositionMatrix(rawProjection);
+        Vector4f position = transFormMousePos(mouseX, mouseY);
+        widget.render(matrixStack, (int) position.getX(), (int) position.getY(), delta);
+    }
+
+    public Vector4f transFormMousePos(int mouseX, int mouseY) {
+        return transFormMousePos((double) mouseX, (double) mouseY);
+    }
+
+    public Vector4f transFormMousePos(double mouseX, double mouseY) {
+        Vector4f position = new Vector4f((float) mouseX, (float) mouseY, 0, 0);
+
+        position.transform(getInverse());
+        return position;
+    }
+
+    public static Vector4f transFormMousePos(double mouseX, double mouseY, Matrix4f matrix4f) {
+        Vector4f position = new Vector4f((float) mouseX, (float) mouseY, 0, 0);
+
+        position.transform(matrix4f);
+        return position;
+    }
+
+    public static boolean inverse(Matrix4f matrix4f) {
+        float f = matrix4f.determinantAndAdjugate();
+        if (Math.abs(f) > 1.0E-6F) {
+            matrix4f.multiply(1 / f);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public Matrix4f getInverse() {
+        Matrix4f inverse = new Matrix4f(rawProjection);
+        inverse(inverse);
+        return inverse;
     }
 }
