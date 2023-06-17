@@ -5,7 +5,7 @@ import dev.architectury.registry.client.level.entity.EntityRendererRegistry;
 import net.minecraft.client.MinecraftClient;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.model.CustomColorProvider;
-import smartin.miapi.mixin.ItemRendererAccessor;
+import smartin.miapi.mixin.client.ItemRendererAccessor;
 import smartin.miapi.modules.abilities.util.ItemProjectile.ItemProjectileRenderer;
 
 public class MiapiClient {

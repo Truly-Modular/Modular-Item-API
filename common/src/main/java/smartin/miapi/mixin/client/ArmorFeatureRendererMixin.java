@@ -1,4 +1,4 @@
-package smartin.miapi.mixin;
+package smartin.miapi.mixin.client;
 
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.OverlayTexture;

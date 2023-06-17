@@ -29,7 +29,7 @@ import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.MaterialProperty;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.modules.properties.SlotProperty;
-import smartin.miapi.mixin.ModelLoaderInterfaceAccessor;
+import smartin.miapi.mixin.client.ModelLoaderInterfaceAccessor;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -195,7 +195,6 @@ public class ModelProperty implements ModuleProperty {
 
     protected static Map<String, JsonUnbakedModel> loadModelsByPath(String filePath) {
         String materialKey = "[material.texture]";
-        Miapi.LOGGER.error("searching Path "+filePath);
         Map<String, JsonUnbakedModel> models = new HashMap<>();
         if (filePath.contains(materialKey)) {
             try {

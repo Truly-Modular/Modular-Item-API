@@ -6,7 +6,7 @@ import net.minecraft.client.item.UnclampedModelPredicateProvider;
 import net.minecraft.item.Item;
 import net.minecraft.util.Identifier;
 import smartin.miapi.Miapi;
-import smartin.miapi.mixin.ModelPredicateProviderRegistryAccessor;
+import smartin.miapi.mixin.client.ModelPredicateProviderRegistryAccessor;
 
 @Environment(EnvType.CLIENT)
 public class ModularModelPredicateProvider {

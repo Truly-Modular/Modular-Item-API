@@ -1,4 +1,4 @@
-package smartin.miapi.mixin;
+package smartin.miapi.mixin.client;
 
 import net.minecraft.client.color.item.ItemColors;
 import net.minecraft.client.render.VertexConsumer;

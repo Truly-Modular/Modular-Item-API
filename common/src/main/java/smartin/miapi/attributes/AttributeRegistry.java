@@ -12,11 +12,14 @@ import smartin.miapi.Miapi;
 
 import java.util.Collection;
 
+
 public class AttributeRegistry {
-    public static final String ITEM_DURABILITY_ID = Miapi.MOD_ID + "durability";
-    public static final String DAMAGE_RESISTANCE_ID = Miapi.MOD_ID + "resistance";
+    public static final String ITEM_DURABILITY_ID = Miapi.MOD_ID + ".durability";
+    public static final String DAMAGE_RESISTANCE_ID = Miapi.MOD_ID + ".resistance";
     public static final EntityAttribute ITEM_DURABILITY = register(ITEM_DURABILITY_ID, (new ClampedEntityAttribute("attribute.name.miapi.durability", 300.0, 1.0, 16777216)).setTracked(true));
     public static final EntityAttribute DAMAGE_RESISTANCE = register(DAMAGE_RESISTANCE_ID, (new ClampedEntityAttribute("attribute.name.miapi.resistance", 0.0, 0.0, 100)).setTracked(true));
+    public static final EntityAttribute REACH = register(Miapi.MOD_ID + ".reach", (new ClampedEntityAttribute("attribute.name.miapi.reach", 0.0, -1024.0, 1024.0)).setTracked(true));
+    public static final EntityAttribute ATTACK_RANGE = register(Miapi.MOD_ID + ".attack_range", (new ClampedEntityAttribute("attribute.name.miapi.attack_range", 0.0, -1024.0, 1024.0)).setTracked(true));
 
 
     public static void setup() {

@@ -6,15 +6,27 @@
     "mixins": [
         "ItemStackMixin",
         "LivingEntityAccessor",
-        "LivingEntityMixin"
+        "LivingEntityMixin",
+        "InventoryValidationMixin",
+        "ItemMixin",
+        "PlayerEntityInteractionHandlerMixin",
+        "PlayerEntityMixin",
+        "ScreenHandlerMixin",
+        "ServerPlayerInteractionManagerMixin",
+        "ServerPlayNetworkHandlerMixin",
+        "VehicleInventoryValidationMixin",
+        "ChestStateManagerMixin",
+        "ForgingScreenHandlerMixin",
     ],
     "client": [
-        "ArmorFeatureRendererMixin",
-        "ItemRendererAccessor",
-        "ItemRendererMixin",
-        "ModelLoaderAccessor",
-        "ModelLoaderInterfaceAccessor",
-        "ModelPredicateProviderRegistryAccessor"
+        "client.ClientPlayerInteractionManagerMixin",
+        "client.GameRendererMixin",
+        "client.ArmorFeatureRendererMixin",
+        "client.ItemRendererAccessor",
+        "client.ItemRendererMixin",
+        "client.ModelLoaderAccessor",
+        "client.ModelLoaderInterfaceAccessor",
+        "client.ModelPredicateProviderRegistryAccessor"
     ],
     "injectors": {
         "defaultRequire": 1
