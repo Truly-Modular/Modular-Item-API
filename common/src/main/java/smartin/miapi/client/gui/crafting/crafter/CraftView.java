@@ -21,6 +21,7 @@ import net.minecraft.util.math.Vector4f;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.*;
 import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
+import smartin.miapi.client.gui.crafting.HoverDescription;
 import smartin.miapi.craft.CraftAction;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.util.CraftingProperty;
@@ -57,6 +58,8 @@ public class CraftView extends InteractAbleWidget {
     int backgroundWidth = 278;
     int backgroundHeight = 221;
     List<Text> warnings = new ArrayList<>();
+    boolean firstRender = true;
+    boolean isClosed = false;
 
     public CraftView(int x, int y, int width, int height, String packetId, ItemModule module, ItemStack stack, Inventory inventory, int offset, SlotProperty.ModuleSlot slot, Consumer<SlotProperty.ModuleSlot> back, Consumer<ItemStack> newStack, Consumer<Slot> addSlot, Consumer<Slot> removeSlot, ScreenHandler handler) {
         super(x, y, width, height, Text.empty());
@@ -80,7 +83,10 @@ public class CraftView extends InteractAbleWidget {
                 craftingProperties.add(craftingProperty);
             }
         }));
-        addChild(new SimpleButton<>(this.x + 10, this.y + this.height - 10, 40, 12, Text.translatable(Miapi.MOD_ID + ".ui.back"), slot, back::accept));
+        addChild(new SimpleButton<>(this.x + 10, this.y + this.height - 10, 40, 12, Text.translatable(Miapi.MOD_ID + ".ui.back"), slot, (moduleSlot)->{
+            isClosed = true;
+            back.accept(moduleSlot);
+        }));
 
         if (craftingGuis.size() > 1) {
             previousButton = new PageButton<>(this.x + this.width - 10, this.y, 10, 12, true, null, (callback) -> {
@@ -119,22 +125,7 @@ public class CraftView extends InteractAbleWidget {
         handler.addListener(new ScreenHandlerListener() {
             @Override
             public void onSlotUpdate(ScreenHandler handler, int slotId, ItemStack stack) {
-                try {
-                    preview.accept(action.getPreview());
-                    setBuffers();
-                    craftButton.isEnabled = action.canPerform();
-
-                    craftingProperties.forEach(craftingProperty -> {
-                        warnings.clear();
-                        Text warning = craftingProperty.getWarning();
-                        if (warning != null && !warning.getString().isEmpty()) {
-                            warnings.add(warning);
-                        }
-                    });
-
-                } catch (Exception e) {
-
-                }
+                update();
             }
 
             @Override
@@ -142,6 +133,26 @@ public class CraftView extends InteractAbleWidget {
 
             }
         });
+    }
+
+    private void update() {
+        try {
+            if(!isClosed){
+                preview.accept(action.getPreview());
+                setBuffers();
+                craftButton.isEnabled = action.canPerform();
+
+                craftingProperties.forEach(craftingProperty -> {
+                    warnings.clear();
+                    Text warning = craftingProperty.getWarning();
+                    if (warning != null && !warning.getString().isEmpty()) {
+                        warnings.add(warning);
+                    }
+                });
+            }
+        } catch (Exception e) {
+
+        }
     }
 
     public void closeSlot() {
@@ -194,6 +205,10 @@ public class CraftView extends InteractAbleWidget {
 
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         currentMatrix = matrices.peek().getPositionMatrix();
+        if (firstRender) {
+            update();
+            firstRender = false;
+        }
         //only preview on inventory change?
         // Add the initial GUI to the screen
         addGui(craftingGuis.get(currentGuiIndex));
@@ -269,11 +284,12 @@ public class CraftView extends InteractAbleWidget {
     }
 
     public class CraftButton<T> extends SimpleButton<T> {
-        public MultiLineTextWidget hover;
+        public HoverDescription hover;
 
         public CraftButton(int x, int y, int width, int height, Text title, T toCallback, Consumer<T> callback) {
             super(x, y, width, height, title, toCallback, callback);
-            hover = new MultiLineTextWidget(x, y, width, height, Text.empty());
+            hover = new HoverDescription(x, y + height, width * 3, height, Text.empty());
+            hover.textWidget.textColor = ColorHelper.Argb.getArgb(255, 255, 0, 0);
         }
 
         @Override
@@ -290,14 +306,13 @@ public class CraftView extends InteractAbleWidget {
             for (Text text : warnings) {
                 message += "\n - " + text.getString();
             }
-
             hover.setText(Text.of(message));
-            if (!this.isEnabled) {
+            if (!this.isEnabled && isMouseOver(mouseX, mouseY)) {
                 RenderSystem.setShader(GameRenderer::getPositionColorShader);
                 RenderSystem.enableDepthTest();
                 RenderSystem.enableBlend();
                 RenderSystem.defaultBlendFunc();
-                hover.render(matrices, mouseX, mouseY, delta);
+                hover.renderHover(matrices, mouseX, mouseY, delta);
                 RenderSystem.disableBlend();
                 RenderSystem.enableTexture();
             }

@@ -5,6 +5,8 @@
     "miapi.ui.edit": "Edit",
     "miapi.ui.replace": "Replace",
     "miapi.ui.craft.warning":"Cant Craft:",
+    "miapi.ui.craft.warning.material":"insufficient Material",
+    "miapi.ui.craft.warning.flexibility":"Flexibility cannot go bellow 0",
 
     "miapi.material.wood": "Wooden ",
     "miapi.material.stone": "Stone ",

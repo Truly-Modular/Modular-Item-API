@@ -169,7 +169,7 @@ public class TransformableWidget extends InteractAbleWidget {
 
         children().forEach(element -> {
             if (element instanceof Drawable drawable) {
-                drawable.render(matrixStack, (int) position.getX(), (int) position.getY(), delta);
+                drawable.render(matrixStack, Math.round(position.getX()), Math.round(position.getY()), delta);
             }
         });
     }
@@ -182,7 +182,7 @@ public class TransformableWidget extends InteractAbleWidget {
         matrixStack.multiplyPositionMatrix(rawProjection);
         Vector4f position = transFormMousePos(mouseX, mouseY);
 
-        super.renderHover(matrixStack, (int) position.getX(), (int) position.getY(), delta);
+        super.renderHover(matrixStack, Math.round(position.getX()), Math.round(position.getY()), delta);
     }
 
     public void renderWidget(InteractAbleWidget widget, MatrixStack matrices, int mouseX, int mouseY, float delta) {
@@ -191,11 +191,11 @@ public class TransformableWidget extends InteractAbleWidget {
 
         matrixStack.multiplyPositionMatrix(rawProjection);
         Vector4f position = transFormMousePos(mouseX, mouseY);
-        widget.render(matrixStack, (int) position.getX(), (int) position.getY(), delta);
+        widget.render(matrixStack, Math.round(position.getX()), Math.round(position.getY()), delta);
     }
 
     public Vector4f transFormMousePos(int mouseX, int mouseY) {
-        return transFormMousePos((double) mouseX, (double) mouseY);
+        return transFormMousePos((double)mouseX, mouseY);
     }
 
     public Vector4f transFormMousePos(double mouseX, double mouseY) {

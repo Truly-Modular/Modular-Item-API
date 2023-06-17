@@ -8,6 +8,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.text.Text;
+import net.minecraft.util.math.Matrix4f;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -219,9 +220,12 @@ public abstract class ParentHandledScreen<T extends ScreenHandler> extends Handl
     }
 
     public void renderHover(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+        MatrixStack matrixStack = new MatrixStack();
+        matrixStack.multiplyPositionMatrix(matrices.peek().getPositionMatrix());
+        matrixStack.peek().getPositionMatrix().multiply(Matrix4f.translate(0, 0, 500));
         children().forEach(element -> {
             if (element instanceof InteractAbleWidget drawable) {
-                drawable.renderHover(matrices, mouseX, mouseY, delta);
+                drawable.renderHover(matrixStack, mouseX, mouseY, delta);
             }
         });
     }

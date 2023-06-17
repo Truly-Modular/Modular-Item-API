@@ -45,7 +45,7 @@ public class AllowedMaterial implements CraftingProperty, ModuleProperty {
     }
 
     public Text getWarning() {
-        return Text.literal("Not enough Material");
+        return Text.translatable(Miapi.MOD_ID + ".ui.craft.warning.material");
     }
 
     @Override

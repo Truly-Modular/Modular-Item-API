@@ -4,6 +4,7 @@ import com.google.gson.JsonElement;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.text.Text;
 import smartin.miapi.Miapi;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.util.CraftingProperty;
@@ -26,6 +27,10 @@ public class FlexibilityProperty extends SimpleDoubleProperty implements Craftin
     @Override
     public float getPriority() {
         return 0;
+    }
+
+    public Text getWarning() {
+        return Text.translatable(Miapi.MOD_ID + ".ui.craft.warning.flexibility");
     }
 
     @Override

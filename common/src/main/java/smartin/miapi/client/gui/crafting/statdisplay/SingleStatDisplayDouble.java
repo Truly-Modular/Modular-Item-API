@@ -140,6 +140,5 @@ public abstract class SingleStatDisplayDouble extends InteractAbleWidget impleme
                 RenderSystem.enableDepthTest();
             }
         }
-
     }
 }

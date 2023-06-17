@@ -88,6 +88,8 @@ public abstract class InteractAbleWidget extends ClickableWidget implements Draw
      * @param borderWidth   The width of the border to draw around the texture.
      */
     public static void drawTextureWithEdge(MatrixStack matrices, int x, int y, int u, int v, int regionWidth, int regionHeight, int width, int height, int textureWidth, int textureHeight, int borderWidth) {
+        //Center
+        drawTexture(matrices, x + borderWidth, y + borderWidth, width - 2 * borderWidth, height - 2 * borderWidth, u + borderWidth, v + borderWidth, regionWidth - borderWidth * 2, regionHeight - borderWidth * 2, textureWidth, textureHeight);
         //Top Left Corner
         drawTexture(matrices, x, y, borderWidth, borderWidth, u, v, borderWidth, borderWidth, textureWidth, textureHeight);
         //Top Right Corner
@@ -101,11 +103,9 @@ public abstract class InteractAbleWidget extends ClickableWidget implements Draw
         //Right Bar
         drawTexture(matrices, x + width - borderWidth, y + borderWidth, borderWidth, height - 2 * borderWidth, u + regionWidth - borderWidth, v + borderWidth, borderWidth, regionHeight - borderWidth * 2, textureWidth, textureHeight);
         //Left Bar
-        drawTexture(matrices, x, y + borderWidth, borderWidth, height - 2 * borderWidth, u, v + borderWidth, u + borderWidth, regionHeight - borderWidth * 2, textureWidth, textureHeight);
+        drawTexture(matrices, x, y + borderWidth, borderWidth, height - 2 * borderWidth, u, v + borderWidth, borderWidth, regionHeight - borderWidth * 2, textureWidth, textureHeight);
         //Top Bar
         drawTexture(matrices, x + borderWidth, y, width - 2 * borderWidth, borderWidth, u + borderWidth, v, regionWidth - borderWidth * 2, borderWidth, textureWidth, textureHeight);
-        //Center
-        drawTexture(matrices, x + borderWidth, y + borderWidth, width - 2 * borderWidth, height - 2 * borderWidth, u + borderWidth, v + borderWidth, regionWidth - borderWidth * 2, regionHeight - borderWidth * 2, textureWidth, textureHeight);
     }
 
 

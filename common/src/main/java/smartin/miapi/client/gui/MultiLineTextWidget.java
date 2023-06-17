@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 
 public class MultiLineTextWidget extends InteractAbleWidget {
 
-    private Text rawText;
+    public Text rawText;
     public List<Text> lines = new ArrayList<>();
     private int longestLine;
     public int maxLineLength = -1;
@@ -30,6 +30,7 @@ public class MultiLineTextWidget extends InteractAbleWidget {
     }
 
     public void setText(Text text) {
+        rawText = text;
         List<String> rawLines = Arrays.stream(text.getString().split("\n")).collect(Collectors.toList());
         lines.clear();
 
