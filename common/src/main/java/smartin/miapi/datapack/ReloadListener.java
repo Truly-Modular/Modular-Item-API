@@ -1,5 +1,6 @@
 package smartin.miapi.datapack;
 
+import net.minecraft.resource.JsonDataLoader;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceReloader;

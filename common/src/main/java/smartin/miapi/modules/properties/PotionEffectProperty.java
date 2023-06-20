@@ -35,9 +35,10 @@ public class PotionEffectProperty implements ModuleProperty {
 
     public EventResult handleEvent(Event.LivingHurtEvent event) {
         LivingEntity victim = event.livingEntity;
-        if (!(event.damageSource.getAttacker() instanceof LivingEntity attacker) || victim.world.isClient) return EventResult.pass();
+        if (!(event.damageSource.getAttacker() instanceof LivingEntity attacker) || victim.world.isClient)
+            return EventResult.pass();
 
-        if (attacker instanceof PlayerEntity) {
+        if (victim instanceof PlayerEntity) {
             System.out.println(victim.getAttacker());
             System.out.println(attacker.getAttacking());
         }
@@ -63,12 +64,13 @@ public class PotionEffectProperty implements ModuleProperty {
 
     public List<StatusEffectData> ofEntity(LivingEntity entity) {
         List<StatusEffectData> list = property.get(entity.getMainHandStack());
-        return list == null ? new ArrayList<>() : list;
+        return list == null ? new ArrayList<>() : new ArrayList<>(list);
     }
 
     @Override
     public boolean load(String moduleKey, JsonElement data) throws Exception {
-        StatusEffectData.CODEC(new ItemModule.ModuleInstance(ItemModule.empty)).listOf().parse(JsonOps.INSTANCE, data).getOrThrow(false, s -> {});
+        StatusEffectData.CODEC(new ItemModule.ModuleInstance(ItemModule.empty)).listOf().parse(JsonOps.INSTANCE, data).getOrThrow(false, s -> {
+        });
         return true;
     }
 
@@ -92,7 +94,8 @@ public class PotionEffectProperty implements ModuleProperty {
         if (element == null) {
             return null;
         }
-        return StatusEffectData.CODEC(ItemModule.getModules(itemStack)).listOf().parse(JsonOps.INSTANCE, element).getOrThrow(false, s -> {});
+        return StatusEffectData.CODEC(ItemModule.getModules(itemStack)).listOf().parse(JsonOps.INSTANCE, element).getOrThrow(false, s -> {
+        });
     }
 
     public static List<StatusEffectData> createCache(ItemStack stack) {
@@ -108,14 +111,17 @@ public class PotionEffectProperty implements ModuleProperty {
         JsonElement element = module.getProperties().get(property);
         if (element == null) return;
 
-        list.addAll(StatusEffectData.CODEC(module).listOf().parse(JsonOps.INSTANCE, element).getOrThrow(false, s -> {}));
+        list.addAll(StatusEffectData.CODEC(module).listOf().parse(JsonOps.INSTANCE, element).getOrThrow(false, s -> {
+        }));
     }
 
     public boolean hasPotionEffectData(ItemStack itemStack) {
         return get(itemStack) != null;
     }
 
-    public record StatusEffectData(ApplicationEvent event, ApplicationTarget target, Supplier<StatusEffectInstance> creator, StatusEffect effect, int duration, int amplifier, boolean ambient, boolean visible, boolean showIcon) {
+    public record StatusEffectData(ApplicationEvent event, ApplicationTarget target,
+                                   Supplier<StatusEffectInstance> creator, StatusEffect effect, int duration,
+                                   int amplifier, boolean ambient, boolean visible, boolean showIcon) {
         public static Codec<StatusEffectData> CODEC(ItemModule.ModuleInstance instance) {
             return RecordCodecBuilder.create(inst -> inst.group(
                     Codec.STRING.fieldOf("event").forGetter(i -> i.event.name()),
@@ -157,8 +163,12 @@ public class PotionEffectProperty implements ModuleProperty {
 
         public ApplicationEvent inverse() {
             switch (this) {
-                case HURT -> { return ATTACK; }
-                case ATTACK -> { return HURT; }
+                case HURT -> {
+                    return ATTACK;
+                }
+                case ATTACK -> {
+                    return HURT;
+                }
             }
             return this;
         }
@@ -173,6 +183,7 @@ public class PotionEffectProperty implements ModuleProperty {
             return ApplicationEvent.HURT;
         }
     }
+
     /**
      * {@link ApplicationTarget} is an enum representing what entity the {@link StatusEffectInstance} will be applied to.
      */
@@ -182,8 +193,12 @@ public class PotionEffectProperty implements ModuleProperty {
 
         public ApplicationTarget inverse() {
             switch (this) {
-                case SELF -> { return TARGET; }
-                case TARGET -> { return SELF; }
+                case SELF -> {
+                    return TARGET;
+                }
+                case TARGET -> {
+                    return SELF;
+                }
             }
             return this;
         }

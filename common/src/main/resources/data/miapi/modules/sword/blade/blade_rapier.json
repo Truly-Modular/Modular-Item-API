@@ -45,7 +45,7 @@
             "uuid": "CB3F55D3-645C-4F38-A497-9C13A33DB5CF"
         }
     ],
-    "armorPen": 50,
+    "armor_pen": 50,
     "displayName": "[material.key] Rapier",
     "itemId": "miapi:modular_rapier"
 }

@@ -11,6 +11,8 @@
   "textures": [
     "metal"
   ],
+  "mining_speed": 9,
+  "mining_level": 4,
   "items": [
     {
       "item": "minecraft:netherite_ingot",

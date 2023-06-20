@@ -8,6 +8,8 @@
   "flexibility": 6,
   "durability": 59,
   "color": "8B6B45",
+  "mining_speed": 2,
+  "mining_level": 0,
   "textures": [
     "wood"
   ],

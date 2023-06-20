@@ -6,6 +6,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.PickaxeItem;
 import net.minecraft.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
@@ -38,7 +39,7 @@ public class MaterialProperty implements ModuleProperty {
                     if (jsonData != null) {
                         String materialKey = jsonData.getAsString();
                         Material material = materials.get(materialKey);
-                        if(material!=null){
+                        if (material != null) {
                             jsonData = materials.get(jsonData.getAsString()).rawJson;
                             if (jsonData != null) {
                                 String[] keys = data.split("\\.");
@@ -54,7 +55,7 @@ public class MaterialProperty implements ModuleProperty {
                             }
                         }
                     }
-                } catch (Exception exception){
+                } catch (Exception exception) {
                     Miapi.LOGGER.warn("Error during Material Resolve");
                     Miapi.LOGGER.error(exception.getMessage());
                     exception.printStackTrace();
@@ -69,7 +70,7 @@ public class MaterialProperty implements ModuleProperty {
                     if (jsonData != null) {
                         String materialKey = jsonData.getAsString();
                         Material material = materials.get(materialKey);
-                        if(material!=null){
+                        if (material != null) {
                             jsonData = materials.get(jsonData.getAsString()).rawJson;
                             if (jsonData != null) {
                                 String[] keys = data.split("\\.");
@@ -83,12 +84,11 @@ public class MaterialProperty implements ModuleProperty {
                                     return jsonData.getAsString();
                                 }
                             }
-                        }
-                        else{
-                            Miapi.LOGGER.warn("Material "+ materialKey + " not found");
+                        } else {
+                            Miapi.LOGGER.warn("Material " + materialKey + " not found");
                         }
                     }
-                } catch (Exception exception){
+                } catch (Exception exception) {
                     Miapi.LOGGER.warn("Error during Material Resolve");
                     exception.printStackTrace();
                 }
@@ -116,6 +116,7 @@ public class MaterialProperty implements ModuleProperty {
         Set<String> textureKeys = new HashSet<>();
         textureKeys.add("base");
         for (Material material : materials.values()) {
+            textureKeys.add(material.key);
             JsonArray textures = material.rawJson.getAsJsonObject().getAsJsonArray("textures");
             for (JsonElement texture : textures) {
                 textureKeys.add(texture.getAsString());
@@ -224,8 +225,8 @@ public class MaterialProperty implements ModuleProperty {
             return (int) (longValue & 0xffffffffL);
         }
 
-        public static int getColor(String color){
-            if(color.equals("")) return ColorHelper.Argb.getArgb(255,255,255,255);
+        public static int getColor(String color) {
+            if (color.equals("")) return ColorHelper.Argb.getArgb(255, 255, 255, 255);
             long longValue = Long.parseLong(color, 16);
             return (int) (longValue & 0xffffffffL);
         }

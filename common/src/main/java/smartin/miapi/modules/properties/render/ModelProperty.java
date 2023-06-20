@@ -40,10 +40,10 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 
 public class ModelProperty implements ModuleProperty {
+    public static ModuleProperty property;
     private static final String CACHE_KEY_MAP = Miapi.MOD_ID + ":modelMap";
     private static final String CACHE_KEY_ITEM = Miapi.MOD_ID + ":itemModelodel";
-    private static final Map<String, List<ModelJson>> modelMap = new HashMap<>();
-    private static final Map<String, JsonUnbakedModel> loadedMap = new HashMap<>();
+    private static final Map<String, JsonUnbakedModel> modelCache = new HashMap<>();
     public static final String KEY = "texture";
     public static final List<ModelTransformer> modelTransformers = new ArrayList<>();
     public static Function<SpriteIdentifier, Sprite> textureGetter;
@@ -51,6 +51,7 @@ public class ModelProperty implements ModuleProperty {
     private static ItemModelGenerator generator;
 
     public ModelProperty() {
+        property = this;
         mirroredGetter = (identifier) -> textureGetter.apply(identifier);
         generator = new ItemModelGenerator();
         ModularItemCache.setSupplier(CACHE_KEY_ITEM, (stack) -> getModelMap(stack).get("item"));
@@ -109,7 +110,24 @@ public class ModelProperty implements ModuleProperty {
         List<TransformedUnbakedModel> unbakedModels = new ArrayList<>();
         AtomicReference<Float> scaleAdder = new AtomicReference<>(1.0f);
         for (ItemModule.ModuleInstance moduleI : root.allSubModules()) {
-            List<ModelJson> modelJsonList = modelMap.get(moduleI.module.getName());
+            Gson gson = Miapi.gson;
+            List<ModelJson> modelJsonList = new ArrayList<>();
+            JsonElement data = moduleI.getProperties().get(property);
+            if(data==null){
+                return unbakedModels;
+            }
+            if (data.isJsonArray()) {
+                JsonArray dataArray = data.getAsJsonArray();
+                for (JsonElement element : dataArray) {
+                    ModelJson propertyJson = gson.fromJson(element.toString(), ModelJson.class);
+                    propertyJson.repair();
+                    modelJsonList.add(propertyJson);
+                }
+            } else {
+                ModelJson propertyJson = gson.fromJson(data.toString(), ModelJson.class);
+                propertyJson.repair();
+                modelJsonList.add(propertyJson);
+            }
             if (modelJsonList == null) {
                 Miapi.LOGGER.warn("Module " + moduleI.module.getName() + " has no Model Attached, is this intentional?");
                 return new ArrayList<>();
@@ -117,26 +135,27 @@ public class ModelProperty implements ModuleProperty {
             for (ModelJson json : modelJsonList) {
                 int color = MaterialProperty.Material.getColor(StatResolver.resolveString(json.color, moduleI));
                 int condition = MaterialProperty.Material.getColor(StatResolver.resolveString(json.condition, moduleI));
-                if (json != null && condition != 0) {
+                if (condition != 0) {
                     MaterialProperty.Material material = MaterialProperty.getMaterial(moduleI);
                     List<String> list = new ArrayList<>();
                     if (material != null) {
+                        list.add(material.key);
                         list = material.getTextureKeys();
                     } else {
                         list.add("default");
                     }
                     JsonUnbakedModel unbakedModel = null;
                     for (String str : list) {
-                        assert json.jsonUnbakedModelMap != null;
-                        if (json.jsonUnbakedModelMap.containsKey(str)) {
-                            unbakedModel = json.jsonUnbakedModelMap.get(str);
-                            break;
+                        String fullPath = json.path.replace("[material.texture]", str);
+                        if (modelCache.containsKey(fullPath)) {
+                            unbakedModel = modelCache.get(fullPath);
                         }
                     }
+                    Miapi.LOGGER.warn(unbakedModel.id);
                     assert unbakedModel != null;
                     scaleAdder.updateAndGet(v -> (v + 0.0003f));
                     TransformMap transformMap = SlotProperty.getTransformStack(moduleI);
-                    if(json.transform==null){
+                    if (json.transform == null) {
                         json.transform = Transform.IDENTITY;
                     }
                     transformMap.add(json.transform.copy());
@@ -147,8 +166,6 @@ public class ModelProperty implements ModuleProperty {
                     }
                     transformMap.primary = modelId;
                     transform1.scale.scale(scaleAdder.get());
-                    //transform1.translation.scale(scaleAdder.get());
-                    //transform1.translation.add(new Vec3f(-scaleAdder.get()/3+1,-scaleAdder.get()/3+1,-scaleAdder.get()/3+1));
                     transformMap.set(transformMap.primary, transform1);
                     unbakedModels.add(new TransformedUnbakedModel(transformMap, unbakedModel, moduleI, color));
                 }
@@ -172,8 +189,8 @@ public class ModelProperty implements ModuleProperty {
     }
 
     protected static JsonUnbakedModel loadModelFromFilePath(String filePath2) throws FileNotFoundException {
-        if (loadedMap.get(filePath2) != null) {
-            return loadedMap.get(filePath2);
+        if (modelCache.containsKey(filePath2)) {
+            return modelCache.get(filePath2);
         }
         if (!filePath2.endsWith(".json")) {
             filePath2 += ".json";
@@ -181,14 +198,18 @@ public class ModelProperty implements ModuleProperty {
         if (filePath2.contains("item/") && !filePath2.contains("models/")) {
             filePath2 = filePath2.replace("item/", "models/item/");
         }
-        if (loadedMap.get(filePath2) != null) {
-            return loadedMap.get(filePath2);
-        }
         ModelLoader loader = ModelLoadAccessor.getLoader();
         filePath2 = filePath2.replace(".json", "");
         filePath2 = filePath2.replace("models/", "");
-        Identifier modelId= new Identifier(filePath2);
+        Identifier modelId = new Identifier(filePath2);
         JsonUnbakedModel model = ((ModelLoaderInterfaceAccessor) loader).loadModelFromPath(modelId);
+        if (!filePath2.endsWith(".json")) {
+            filePath2 += ".json";
+        }
+        if (filePath2.contains("item/") && !filePath2.contains("models/")) {
+            filePath2 = filePath2.replace("item/", "models/item/");
+        }
+        modelCache.put(filePath2, model);
         loadTextureDependencies(model);
         return model;
     }
@@ -199,13 +220,15 @@ public class ModelProperty implements ModuleProperty {
         if (filePath.contains(materialKey)) {
             try {
                 String path = filePath.replace(materialKey, "default");
-                models.put("default", loadModelFromFilePath(path));
+                JsonUnbakedModel model = loadModelFromFilePath(path);
+                models.put("default", model);
             } catch (FileNotFoundException fileNotFoundException) {
                 throw new RuntimeException(fileNotFoundException);
             }
             MaterialProperty.getTextureKeys().forEach((path) -> {
                 try {
-                    JsonUnbakedModel model = loadModelFromFilePath(filePath.replace(materialKey, path));
+                    String fullPath = filePath.replace(materialKey, path);
+                    JsonUnbakedModel model = loadModelFromFilePath(fullPath);
                     if (model != null) {
                         models.put(path, model);
                     }
@@ -214,7 +237,8 @@ public class ModelProperty implements ModuleProperty {
             });
         } else {
             try {
-                models.put("default", loadModelFromFilePath(filePath));
+                JsonUnbakedModel model = loadModelFromFilePath(filePath);
+                models.put("default", model);
             } catch (FileNotFoundException fileNotFoundException) {
                 throw new RuntimeException(fileNotFoundException);
             }
@@ -236,17 +260,15 @@ public class ModelProperty implements ModuleProperty {
             for (JsonElement element : dataArray) {
                 ModelJson propertyJson = gson.fromJson(element.toString(), ModelJson.class);
                 propertyJson.repair();
-                propertyJson.jsonUnbakedModelMap = loadModelsByPath(propertyJson.path);
+                loadModelsByPath(propertyJson.path);
                 jsonList.add(propertyJson);
             }
-            modelMap.put(moduleKey, jsonList);
         } else {
             ModelJson propertyJson = gson.fromJson(data.toString(), ModelJson.class);
             propertyJson.repair();
-            propertyJson.jsonUnbakedModelMap = loadModelsByPath(propertyJson.path);
+            loadModelsByPath(propertyJson.path);
             jsonList.add(propertyJson);
         }
-        modelMap.put(moduleKey, jsonList);
         return true;
     }
 
@@ -265,8 +287,6 @@ public class ModelProperty implements ModuleProperty {
     }
 
     static class ModelJson {
-        @Nullable
-        public Map<String, JsonUnbakedModel> jsonUnbakedModelMap;
         public String path;
         public Transform transform = Transform.IDENTITY;
         public String condition = "1";

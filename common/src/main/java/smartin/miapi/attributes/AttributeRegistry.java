@@ -14,12 +14,17 @@ import java.util.Collection;
 
 
 public class AttributeRegistry {
-    public static final String ITEM_DURABILITY_ID = Miapi.MOD_ID + ".durability";
-    public static final String DAMAGE_RESISTANCE_ID = Miapi.MOD_ID + ".resistance";
-    public static final EntityAttribute ITEM_DURABILITY = register(ITEM_DURABILITY_ID, (new ClampedEntityAttribute("attribute.name.miapi.durability", 300.0, 1.0, 16777216)).setTracked(true));
-    public static final EntityAttribute DAMAGE_RESISTANCE = register(DAMAGE_RESISTANCE_ID, (new ClampedEntityAttribute("attribute.name.miapi.resistance", 0.0, 0.0, 100)).setTracked(true));
-    public static final EntityAttribute REACH = register(Miapi.MOD_ID + ".reach", (new ClampedEntityAttribute("attribute.name.miapi.reach", 0.0, -1024.0, 1024.0)).setTracked(true));
-    public static final EntityAttribute ATTACK_RANGE = register(Miapi.MOD_ID + ".attack_range", (new ClampedEntityAttribute("attribute.name.miapi.attack_range", 0.0, -1024.0, 1024.0)).setTracked(true));
+    public static final EntityAttribute ITEM_DURABILITY = register(Miapi.MOD_ID + ":generic.durability", (new ClampedEntityAttribute("miapi.attribute.name.durability", 300.0, 1.0, 16777216)).setTracked(true));
+    public static final EntityAttribute DAMAGE_RESISTANCE = register(Miapi.MOD_ID + ":generic.resistance", (new ClampedEntityAttribute("miapi.attribute.name.resistance", 0.0, 0.0, 100)).setTracked(true));
+    public static final EntityAttribute REACH = register(Miapi.MOD_ID + ":generic.reach", (new ClampedEntityAttribute("miapi.attribute.name.reach", 0.0, -1024.0, 1024.0)).setTracked(true));
+    public static final EntityAttribute ATTACK_RANGE = register(Miapi.MOD_ID + ":generic.attack_range", (new ClampedEntityAttribute("miapi.attribute.name.attack_range", 0.0, -1024.0, 1024.0)).setTracked(true));
+
+    public static final EntityAttribute MINING_SPEED_PICKAXE = register(Miapi.MOD_ID + ":generic.mining_speed.pickaxe", (new ClampedEntityAttribute("miapi.attribute.name.mining_speed.pickaxe", 1.0, 1.0, 1024.0)).setTracked(true));
+    public static final EntityAttribute MINING_SPEED_AXE = register(Miapi.MOD_ID + ":generic.mining_speed.axe", (new ClampedEntityAttribute("miapi.attribute.name.mining_speed.axe", 1.0, 1.0, 1024.0)).setTracked(true));
+    public static final EntityAttribute MINING_SPEED_SHOVEL = register(Miapi.MOD_ID + ":generic.mining_speed.shovel", (new ClampedEntityAttribute("miapi.attribute.name.mining_speed.shovel", 1.0, 1.0, 1024.0)).setTracked(true));
+    public static final EntityAttribute MINING_SPEED_HOE = register(Miapi.MOD_ID + ":generic.mining_speed.hoe", (new ClampedEntityAttribute("miapi.attribute.name.mining_speed.hoe", 1.0, 1.0, 1024.0)).setTracked(true));
+
+
 
 
     public static void setup() {
@@ -32,7 +37,7 @@ public class AttributeRegistry {
     }
 
     private static EntityAttribute register(String id, EntityAttribute attribute) {
-        return (EntityAttribute) Registry.register(Registry.ATTRIBUTE, id, attribute);
+        return Registry.register(Registry.ATTRIBUTE, id, attribute);
     }
 
     public static double getAttribute(ItemStack stack, EntityAttribute attribute, EquipmentSlot slot, double defaultValue) {

@@ -1,7 +1,7 @@
 {
     "name": "handle_tool",
     "texture": {
-        "path": "miapi:models/item/sword/handle/tool/[material.texture].json",
+        "path": "miapi:models/item/tool/handle/tool/[material.texture].json",
         "transform": {
             "rotation": {
                 "x": 0.0,
@@ -35,8 +35,8 @@
                     "z": 0.0
                 },
                 "translation": {
-                    "x": 8.0,
-                    "y": 7.0,
+                    "x": 0.0,
+                    "y": 0.0,
                     "z": 0.0
                 },
                 "scale": {
@@ -202,6 +202,7 @@
         }
     ],
     "flexibility": 1,
+    "isWeapon": false,
     "displayName": "miapi.module.handle_tool.name",
     "itemId": "miapi:modular_handle"
 }

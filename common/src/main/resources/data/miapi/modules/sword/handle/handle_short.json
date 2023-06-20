@@ -189,6 +189,7 @@
             "uuid": "CB3F55D3-645C-4F38-A497-9C13A33DB5CF"
         }
     ],
+    "isWeapon": true,
     "displayName": "miapi.module.handle_short.name",
     "itemId": "miapi:modular_handle"
 }

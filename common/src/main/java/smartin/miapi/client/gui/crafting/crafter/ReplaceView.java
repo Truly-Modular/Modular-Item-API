@@ -3,16 +3,14 @@ package smartin.miapi.client.gui.crafting.crafter;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
 import smartin.miapi.Miapi;
-import smartin.miapi.client.gui.InteractAbleWidget;
-import smartin.miapi.client.gui.ScrollList;
-import smartin.miapi.client.gui.ScrollingTextWidget;
-import smartin.miapi.client.gui.SimpleButton;
+import smartin.miapi.client.gui.*;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.SlotProperty;
@@ -31,7 +29,14 @@ public class ReplaceView extends InteractAbleWidget {
         super(x, y, width, height, Text.empty());
         this.craft = craft;
         this.preview = preview;
-        ScrollList list = new ScrollList(x, y, width, height - 14, new ArrayList<>());
+        float headerScale = 1.5f;
+        TransformableWidget headerHolder = new TransformableWidget(x, y, width, height, headerScale);
+        addChild(headerHolder);
+
+
+        ScrollingTextWidget header = new ScrollingTextWidget((int) ((this.x + 5) / headerScale), (int) (this.y / headerScale), (int) ((this.width - 10) / headerScale), Text.translatable(Miapi.MOD_ID + ".ui.replace.header"), ColorHelper.Argb.getArgb(255, 255, 255, 255));
+        headerHolder.addChild(header);
+        ScrollList list = new ScrollList(x, y + 16, width, height - 14, new ArrayList<>());
         addChild(list);
         list.children().clear();
         addChild(new SimpleButton<>(this.x + 2, this.y + this.height - 10, 40, 12, Text.translatable(Miapi.MOD_ID + ".ui.back"), slot, back::accept));
@@ -61,7 +66,7 @@ public class ReplaceView extends InteractAbleWidget {
                 moduleName = module.getName();
                 instance = new ItemModule.ModuleInstance(ItemModule.empty);
             }
-            Text translated = StatResolver.translateAndResolve(Miapi.MOD_ID + ".module." + moduleName,instance);
+            Text translated = StatResolver.translateAndResolve(Miapi.MOD_ID + ".module." + moduleName, instance);
             textWidget = new ScrollingTextWidget(0, 0, this.width, translated, ColorHelper.Argb.getArgb(255, 255, 255, 255));
             this.module = module;
         }

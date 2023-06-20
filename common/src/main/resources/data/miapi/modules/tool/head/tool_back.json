@@ -1,0 +1,32 @@
+{
+    "name": "tool_back",
+    "texture": {
+        "path": "miapi:models/item/tool/head/tool_back/[material.texture].json",
+        "transform": {
+            "rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "translation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+            }
+        }
+    },
+    "allowedInSlots": [
+        "tool_head_back"
+    ],
+    "allowedMaterial": {
+        "allowedMaterials": [
+            "wood","stone","metal","crystal"
+        ],
+        "cost": 1
+    }
+}

@@ -13,6 +13,8 @@
     "textures": [
         "metal"
     ],
+    "mining_speed": 5,
+    "mining_level": 2,
     "propertyList": [],
     "items": [
         {

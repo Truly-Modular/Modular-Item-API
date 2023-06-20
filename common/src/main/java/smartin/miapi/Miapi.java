@@ -39,6 +39,8 @@ import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.abilities.*;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
 import smartin.miapi.modules.cache.ModularItemCache;
+import smartin.miapi.modules.edit_options.EditOption;
+import smartin.miapi.modules.edit_options.PropertyInjectionDev;
 import smartin.miapi.modules.properties.*;
 import smartin.miapi.modules.properties.render.GuiOffsetProperty;
 import smartin.miapi.modules.properties.render.ModelMergeProperty;
@@ -58,6 +60,7 @@ public class Miapi {
     public static final MiapiRegistry<ModuleProperty> modulePropertyRegistry = MiapiRegistry.getInstance(ModuleProperty.class);
     public static final MiapiRegistry<ItemModule> moduleRegistry = MiapiRegistry.getInstance(ItemModule.class);
     public static final MiapiRegistry<Item> itemRegistry = MiapiRegistry.getInstance(Item.class);
+    public static final MiapiRegistry<EditOption> editOptions = MiapiRegistry.getInstance(EditOption.class);
     public static final ModularWorkBench WORK_BENCH = new ModularWorkBench(AbstractBlock.Settings.of(Material.METAL).dynamicBounds().nonOpaque());
     public static final Identifier WORK_BENCH_IDENTIFIER = new Identifier(Miapi.MOD_ID, "modular_work_bench");
     public static final EntityType ItemProjectile = registerEntity("miapi:thrown_item", EntityType.Builder.create(smartin.miapi.modules.abilities.util.ItemProjectile.ItemProjectile::new, SpawnGroup.MISC).setDimensions(0.5F, 0.5F).maxTrackingRange(4).trackingTickInterval(20));
@@ -78,13 +81,13 @@ public class Miapi {
         });
         ReloadListenerRegistry.register(ResourceType.SERVER_DATA, new ReloadListener());
         ReloadEvents.START.subscribe((isClient) -> {
-            Miapi.LOGGER.warn("Start "+isClient);
+            Miapi.LOGGER.warn("Start " + isClient);
         });
         ReloadEvents.MAIN.subscribe((isClient) -> {
-            Miapi.LOGGER.warn("Main "+isClient);
+            Miapi.LOGGER.warn("Main " + isClient);
         });
         ReloadEvents.END.subscribe((isClient) -> {
-            Miapi.LOGGER.warn("End "+isClient);
+            Miapi.LOGGER.warn("End " + isClient);
         });
         ReloadEvents.MAIN.subscribe((isClient) -> {
             moduleRegistry.clear();
@@ -147,8 +150,8 @@ public class Miapi {
             MiapiClient.init();
         }
         SynergyManager.setup();
-        SynergyManager.synergyConditionMiapiRegistry.register("material",new MaterialSynergyCondition());
-        SynergyManager.synergyConditionMiapiRegistry.register("otherModule",new OtherModuleSynergyCondition());
+        SynergyManager.synergyConditionMiapiRegistry.register("material", new MaterialSynergyCondition());
+        SynergyManager.synergyConditionMiapiRegistry.register("otherModule", new OtherModuleSynergyCondition());
     }
 
     protected static void setupRegistries() {
@@ -170,12 +173,21 @@ public class Miapi {
         Miapi.itemRegistry.register(MOD_ID + ":modular_rapier", new ModularWeapon());
         Miapi.itemRegistry.register(MOD_ID + ":modular_longsword", new ModularWeapon());
 
+        Miapi.itemRegistry.register(MOD_ID + ":modular_shovel", new ModularWeapon());
+        Miapi.itemRegistry.register(MOD_ID + ":modular_pickaxe", new ModularWeapon());
+        Miapi.itemRegistry.register(MOD_ID + ":modular_axe", new ModularWeapon());
+        Miapi.itemRegistry.register(MOD_ID + ":modular_hoe", new ModularWeapon());
+        Miapi.itemRegistry.register(MOD_ID + ":modular_mattock", new ModularWeapon());
+
         Miapi.itemRegistry.register(MOD_ID + ":modular_bow", new ExampleModularBowItem());
 
         Miapi.itemRegistry.register(MOD_ID + ":modular_helmet", new ModularHelmet());
         Miapi.itemRegistry.register(MOD_ID + ":modular_chestplate", new ModularChestPlate());
         Miapi.itemRegistry.register(MOD_ID + ":modular_leggings", new ModularLeggings());
         Miapi.itemRegistry.register(MOD_ID + ":modular_boots", new ModularBoots());
+
+        //EDITPROPERTIES
+        Miapi.editOptions.register("dev", new PropertyInjectionDev());
 
         //MODULEPROPERTIES
         Miapi.modulePropertyRegistry.register(NameProperty.KEY, new NameProperty());
@@ -201,6 +213,8 @@ public class Miapi {
         Miapi.modulePropertyRegistry.register(HeavyAttackProperty.KEY, new HeavyAttackProperty());
         Miapi.modulePropertyRegistry.register(CircleAttackProperty.KEY, new CircleAttackProperty());
         Miapi.modulePropertyRegistry.register(CrossbowProperty.KEY, new CrossbowProperty());
+        Miapi.modulePropertyRegistry.register(ToolOrWeaponProperty.KEY, new ToolOrWeaponProperty());
+        Miapi.modulePropertyRegistry.register(MiningLevelProperty.KEY, new MiningLevelProperty());
 
         ItemAbilityManager.useAbilityRegistry.register("throw", new ThrowingAbility());
         ItemAbilityManager.useAbilityRegistry.register("block", new BlockAbility());

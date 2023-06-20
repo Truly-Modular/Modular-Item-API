@@ -20,6 +20,7 @@ import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
 import smartin.miapi.craft.CraftAction;
 import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.edit_options.EditOption;
 import smartin.miapi.modules.properties.SlotProperty;
 
 import java.util.ArrayList;
@@ -117,11 +118,14 @@ public class ModuleCrafter extends InteractAbleWidget {
                 if (this.slot != null) {
                     ItemModule.ModuleInstance instance = slot.inSlot;
                     if (instance != null) {
-                        EditDevView editDevView = new EditDevView(this.x, this.y, this.width, this.height, slot, slot.inSlot, stack, (crafted) -> {
-                            //linkedInventory.setStack(0, crafted);
+                        EditView view = new EditView(this.x, this.y, this.width, this.height, stack, instance, (previewItem) -> {
+                            preview.accept(previewItem);
+                        }, (object) -> {
+                            //bacl
+                            setMode(Mode.DETAIL);
                         });
                         this.children().clear();
-                        this.addChild(editDevView);
+                        this.addChild(view);
                         Miapi.LOGGER.error("edit");
                     }
                 }

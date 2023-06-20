@@ -2,6 +2,7 @@ package smartin.miapi.mixin;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
@@ -14,6 +15,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import smartin.miapi.item.modular.ModularItem;
+import smartin.miapi.modules.properties.MiningLevelProperty;
 
 import static smartin.miapi.modules.properties.AttributeProperty.getAttributeModifiersForSlot;
 
@@ -31,7 +33,7 @@ public abstract class ItemStackMixin {
         ItemStack stack = (ItemStack) (Object) this;
 
         if (stack.getItem() instanceof ModularItem) {
-            cir.setReturnValue(getAttributeModifiersForSlot(stack,slot,ArrayListMultimap.create()));
+            cir.setReturnValue(getAttributeModifiersForSlot(stack, slot, ArrayListMultimap.create()));
         }
     }
 
@@ -40,6 +42,14 @@ public abstract class ItemStackMixin {
         ItemStack stack = (ItemStack) (Object) this;
         if (stack.getItem() instanceof ModularItem) {
             cir.setReturnValue(ModularItem.getDurability(stack));
+        }
+    }
+
+    @Inject(method = "isSuitableFor(Lnet/minecraft/block/BlockState;)Z", at = @At("HEAD"), cancellable = true)
+    public void injectIsSuitable(BlockState state, CallbackInfoReturnable<Boolean> cir) {
+        ItemStack stack = (ItemStack) (Object) this;
+        if (stack.getItem() instanceof ModularItem) {
+            cir.setReturnValue(MiningLevelProperty.IsSuitable(stack, state));
         }
     }
 }

@@ -1,16 +1,22 @@
 package smartin.miapi.modules.properties;
 
 import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.entity.attribute.AttributeContainer;
+import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
+import org.checkerframework.checker.units.qual.A;
 import smartin.miapi.Miapi;
+import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.StatResolver;
@@ -134,13 +140,29 @@ public class AttributeProperty implements ModuleProperty {
                         }
                     }
                     startValue = startValue - key.getDefaultValue();
-                    EntityAttributeModifier entityAttributeModifier = new EntityAttributeModifier(uuid, "generic.miapi."+key.getTranslationKey(), startValue, EntityAttributeModifier.Operation.ADDITION);
+                    EntityAttributeModifier entityAttributeModifier = new EntityAttributeModifier(uuid, "generic.miapi." + key.getTranslationKey(), startValue, EntityAttributeModifier.Operation.ADDITION);
                     toAdding.put(key, entityAttributeModifier);
                 });
             });
             return toAdding;
         }
         return toAdding;
+    }
+
+    public static double getActualValue(ItemStack stack, EquipmentSlot slot, EntityAttribute entityAttribute) {
+        Collection<EntityAttributeModifier> attributes = stack.getAttributeModifiers(slot).get(entityAttribute);
+        Multimap<EntityAttribute, EntityAttributeModifier> map = HashMultimap.create();
+        attributes.forEach(attribute -> {
+            map.put(entityAttribute, attribute);
+        });
+
+        DefaultAttributeContainer container = DefaultAttributeContainer.builder().add(entityAttribute).build();
+
+        AttributeContainer container1 = new AttributeContainer(container);
+
+        container1.addTemporaryModifiers(map);
+
+        return container1.getValue(entityAttribute);
     }
 
     private static Multimap<EntityAttribute, EntityAttributeModifierHolder> createAttributeCache(ItemStack itemStack) {

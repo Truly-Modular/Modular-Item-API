@@ -1,22 +1,64 @@
 package smartin.miapi.item.modular.items;
 
+import net.minecraft.block.BlockState;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemUsageContext;
-import net.minecraft.item.TridentItem;
+import net.minecraft.item.*;
 import net.minecraft.text.Text;
 import net.minecraft.util.*;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.modules.properties.DisplayNameProperty;
+import smartin.miapi.modules.properties.MiningLevelProperty;
+import smartin.miapi.modules.properties.ToolOrWeaponProperty;
 
 public class ModularWeapon extends Item implements ModularItem {
     public ModularWeapon() {
         super(new Settings().fireproof().maxCount(1).maxDamage(500).rarity(Rarity.COMMON));
     }
+
+    public boolean canMine(BlockState state, World world, BlockPos pos, PlayerEntity miner) {
+        return MiningLevelProperty.canMine(state, world, pos, miner);
+    }
+
+    public float getMiningSpeedMultiplier(ItemStack stack, BlockState state) {
+        return MiningLevelProperty.getMiningSpeedMultiplier(stack, state);
+    }
+
+    public boolean postHit(ItemStack stack, LivingEntity target, LivingEntity attacker) {
+        if(ToolOrWeaponProperty.isWeapon(stack)){
+            stack.damage(1,attacker, (e) -> {
+                e.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND);
+            });
+        }
+        else {
+            stack.damage(2, attacker, (e) -> {
+                e.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND);
+            });
+        }
+        return true;
+    }
+
+    public boolean postMine(ItemStack stack, World world, BlockState state, BlockPos pos, LivingEntity miner) {
+        if (!world.isClient && state.getHardness(world, pos) != 0.0F) {
+            if(ToolOrWeaponProperty.isWeapon(stack)){
+                stack.damage(2, miner, (e) -> {
+                    e.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND);
+                });
+            }
+            else {
+                stack.damage(1, miner, (e) -> {
+                    e.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND);
+                });
+            }
+        }
+
+        return true;
+    }
+
 
     public Text getName(ItemStack stack) {
         return DisplayNameProperty.getDisplayText(stack);

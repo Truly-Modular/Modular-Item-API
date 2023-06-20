@@ -1,5 +1,6 @@
 package smartin.miapi;
 
+import dev.architectury.utils.Env;
 import net.fabricmc.api.EnvType;
 import net.minecraft.client.MinecraftClient;
 

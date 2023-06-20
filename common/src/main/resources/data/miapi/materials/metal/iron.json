@@ -11,6 +11,8 @@
   "textures": [
     "metal"
   ],
+  "mining_speed": 6,
+  "mining_level": 2,
   "items": [
     {
       "item": "minecraft:iron_ingot",

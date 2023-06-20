@@ -7,6 +7,8 @@
   "density": 2.9,
   "flexibility": 0,
   "durability": 800,
+  "mining_speed": 8,
+  "mining_level": 3,
   "color": "49EAD6",
   "textures": [
     "contrast"

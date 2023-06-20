@@ -2,7 +2,10 @@ package smartin.miapi.modules.properties;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.AxeItem;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ShieldItem;
 import smartin.miapi.Miapi;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
 import smartin.miapi.modules.abilities.util.ItemUseAbility;

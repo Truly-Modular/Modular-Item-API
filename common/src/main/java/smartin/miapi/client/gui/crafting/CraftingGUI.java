@@ -103,6 +103,7 @@ public class CraftingGUI extends ParentHandledScreen<CraftingScreenHandler> impl
         if (stack == null) {
             stack = ItemStack.EMPTY;
         }
+        slotDisplay.setItem(stack);
         handler.inventory.setStack(0, stack);
     }
 
@@ -115,6 +116,7 @@ public class CraftingGUI extends ParentHandledScreen<CraftingScreenHandler> impl
     }
 
     private void updateItem(ItemStack stack) {
+        slotDisplay.setItem(stack);
         ItemStack converted = ModularItemStackConverter.getModularVersion(stack);
 
         setItem(handler.inventory.getStack(0));

@@ -1,0 +1,70 @@
+{
+    "name": "hoe_front",
+    "texture": {
+        "path": "miapi:models/item/tool/head/hoe_front/[material.texture].json",
+        "transform": {
+            "rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "translation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+            }
+        }
+    },
+    "allowedInSlots": [
+        "tool_head"
+    ],
+    "slots": {
+        "0": {
+            "allowed": [
+                "tool_head_back"
+            ],
+            "transform": {
+                "rotation": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "translation": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "scale": {
+                    "x": 1.0,
+                    "y": 1.0,
+                    "z": 1.0
+                }
+            }
+        }
+    },
+    "mining_level": {
+        "hoe": "[material.mining_level]"
+    },
+    "attributes": [
+        {
+            "attribute": "miapi:generic.mining_speed.hoe",
+            "value": "[material.mining_speed]",
+            "operation": "+",
+            "slot": "mainhand",
+            "uuid": "AA233E1C-4180-4865-B01B-BCCE9785ACA4"
+        }
+    ],
+    "allowedMaterial": {
+        "allowedMaterials": [
+            "wood","stone","metal","crystal"
+        ],
+        "cost": 1
+    },
+    "displayName": "miapi.module.hoe_front.name",
+    "itemId": "miapi:modular_hoe"
+}

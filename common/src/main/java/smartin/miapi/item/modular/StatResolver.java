@@ -1,11 +1,13 @@
 package smartin.miapi.item.modular;
 
+import com.google.gson.JsonElement;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import net.minecraft.text.Text;
 import org.mariuszgromada.math.mxparser.Expression;
 import smartin.miapi.modules.ItemModule;
 
+import javax.naming.spi.Resolver;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -65,13 +67,20 @@ public class StatResolver {
                 } else {
                     resolved = resolved.replace("[" + match + "]", "");
                 }
-            }
-            else{
+            } else {
                 resolved = resolved.replace("[" + match + "]", "");
             }
             matcher = pattern.matcher(resolved);
         }
         return resolved;
+    }
+
+    public static double resolveDouble(JsonElement raw, ItemModule.ModuleInstance instance) {
+        try {
+            return raw.getAsDouble();
+        } catch (Exception exception) {
+            return resolveDouble(raw.getAsString(), instance);
+        }
     }
 
     /**
