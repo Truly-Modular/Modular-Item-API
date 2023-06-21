@@ -120,7 +120,7 @@ public class PotionEffectProperty extends SimpleEventProperty {
 
     public static List<StatusEffectData> ofEntity(LivingEntity entity) {
         List<StatusEffectData> list = property.get(entity.getMainHandStack());
-        return list == null ? new ArrayList<>() : list;
+        return list == null ? new ArrayList<>() : new ArrayList<>(list);
     }
 
     @Override

@@ -1,11 +1,6 @@
 package smartin.miapi.modules.properties.util;
 
-import com.google.gson.JsonElement;
 import smartin.miapi.modules.properties.PotionEffectProperty;
-
-import java.util.List;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 /**
  * {@link SimpleEventProperty} is a class used to assist with {@link PropertyApplication.ApplicationEvent} handling.
