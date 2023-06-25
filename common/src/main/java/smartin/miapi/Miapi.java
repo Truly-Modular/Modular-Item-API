@@ -52,6 +52,7 @@ import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.modules.conditions.MaterialModuleCondition;
 import smartin.miapi.modules.conditions.OtherModuleModuleCondition;
 import smartin.miapi.modules.synergies.SynergyManager;
+import smartin.miapi.modules.properties.util.PropertyApplication;
 import smartin.miapi.registries.MiapiRegistry;
 
 import java.util.HashMap;
@@ -74,6 +75,7 @@ public class Miapi {
 
     public static void init() {
         setupRegistries();
+        PropertyApplication.init();
         ReloadEvents.setup();
         ItemAbilityManager.setup();
         AttributeRegistry.setup();

@@ -11,15 +11,15 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
 import net.minecraft.world.World;
-import smartin.miapi.Miapi;
 import smartin.miapi.modules.properties.AbilityProperty;
 import smartin.miapi.modules.properties.PotionEffectProperty;
+import smartin.miapi.modules.properties.util.PropertyApplication;
 import smartin.miapi.registries.MiapiRegistry;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.WeakHashMap;
+import java.util.*;
+
+import static smartin.miapi.modules.properties.util.PropertyApplication.ApplicationEvent.*;
+import static smartin.miapi.modules.properties.util.PropertyApplication.Holders.Ability;
 
 /**
  * The ItemAbilityManager is the brain and control behind what Ability is executed on what Item.
@@ -41,7 +41,9 @@ public class ItemAbilityManager {
                 if (playerItem != null && !playerItem.equals(oldItem)) {
                     playerActiveItems.put(playerEntity, playerEntity.getActiveItem());
                     if (oldItem != null) {
-                        getAbility(oldItem).onStoppedHolding(oldItem, playerEntity.world, playerEntity);
+                        ItemUseAbility ability = getAbility(oldItem);
+                        trigger(new Ability(oldItem, playerEntity.world, playerEntity, null, ability), ABILITY_END, ABILITY_STOP, ABILITY_STOP_HOLDING);
+                        ability.onStoppedHolding(oldItem, playerEntity.world, playerEntity);
                         abilityMap.remove(oldItem);
                     }
                 }
@@ -51,7 +53,9 @@ public class ItemAbilityManager {
                 if (playerItem != null && !playerItem.equals(oldItem)) {
                     playerActiveItemsClient.put(playerEntity, playerEntity.getActiveItem());
                     if (oldItem != null) {
-                        getAbility(oldItem).onStoppedHolding(oldItem, playerEntity.world, playerEntity);
+                        ItemUseAbility ability = getAbility(oldItem);
+                        trigger(new Ability(oldItem, playerEntity.world, playerEntity, null, ability), ABILITY_END, ABILITY_STOP, ABILITY_STOP_HOLDING);
+                        ability.onStoppedHolding(oldItem, playerEntity.world, playerEntity);
                         abilityMap.remove(oldItem);
                     }
                 }
@@ -91,43 +95,34 @@ public class ItemAbilityManager {
         ItemUseAbility ability = getAbility(itemStack, world, user, hand);
         abilityMap.put(itemStack, ability);
 
-        List<PotionEffectProperty.StatusEffectData> potionEffects = PotionEffectProperty.property.get(itemStack);
-        if (potionEffects != null) applyPotionEffects(user, potionEffects, PotionEffectProperty.ApplicationEvent.ABILITY_START);
+        trigger(new Ability(itemStack, world, user, null, ability), ABILITY_START);
 
         return ability.use(world, user, hand);
     }
 
-    public static void applyPotionEffects(LivingEntity user, List<PotionEffectProperty.StatusEffectData> list, PotionEffectProperty.ApplicationEvent event) {
-        for (PotionEffectProperty.StatusEffectData effect : list) {
-            if (effect.event().equals(event))
-                user.addStatusEffect(effect.creator().get());
-        }
-    }
-
     public static ItemStack finishUsing(ItemStack stack, World world, LivingEntity user) {
-        ItemStack itemStack = getAbility(stack).finishUsing(stack, world, user);
+        ItemUseAbility ability = getAbility(stack);
+        ItemStack itemStack = ability.finishUsing(stack, world, user);
         abilityMap.remove(stack);
 
-        List<PotionEffectProperty.StatusEffectData> potionEffects = PotionEffectProperty.property.get(itemStack);
-        if (potionEffects != null) applyPotionEffects(user, potionEffects, PotionEffectProperty.ApplicationEvent.ABILITY_FINISH);
+        trigger(new Ability(itemStack, world, user, null, ability), ABILITY_FINISH, ABILITY_END);
 
         return itemStack;
     }
 
     public static void onStoppedUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
-        getAbility(stack).onStoppedUsing(stack, world, user, remainingUseTicks);
+        ItemUseAbility ability = getAbility(stack);
+        ability.onStoppedUsing(stack, world, user, remainingUseTicks);
 
-        List<PotionEffectProperty.StatusEffectData> potionEffects = PotionEffectProperty.property.get(stack);
-        if (potionEffects != null) applyPotionEffects(user, potionEffects, PotionEffectProperty.ApplicationEvent.ABILITY_STOP);
+        trigger(new Ability(stack, world, user, remainingUseTicks, ability), ABILITY_STOP, ABILITY_STOP_USING, ABILITY_END);
 
         abilityMap.remove(stack);
     }
 
     public static void usageTick(World world, LivingEntity user, ItemStack stack, int remainingUseTicks) {
-        List<PotionEffectProperty.StatusEffectData> potionEffects = PotionEffectProperty.property.get(stack);
-        if (potionEffects != null) applyPotionEffects(user, potionEffects, PotionEffectProperty.ApplicationEvent.ABILITY_TICK);
-
-        getAbility(stack).usageTick(world, user, stack, remainingUseTicks);
+        ItemUseAbility ability = getAbility(stack);
+        trigger(new Ability(stack, world, user, remainingUseTicks, ability), ABILITY_TICK);
+        ability.usageTick(world, user, stack, remainingUseTicks);
     }
 
     public static ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
