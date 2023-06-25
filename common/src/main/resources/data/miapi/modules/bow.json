@@ -149,6 +149,6 @@
         ],
         "cost": 1
     },
-    "displayName": "[material.key] bow",
+    "displayName": "miapi.module.blade_dagger.name",
     "itemId": "miapi:modular_bow"
 }

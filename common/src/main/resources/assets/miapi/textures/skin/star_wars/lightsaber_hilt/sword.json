@@ -1,0 +1,92 @@
+{
+	"credit": "Made with Blockbench",
+	"ambientocclusion": false,
+	"textures": {
+		"2": "skin/star_wars/lightsaber_hilt/sword"
+	},
+	"elements": [
+		{
+			"from": [7.77313, -0.235, 7.6975],
+			"to": [8.22688, 3.395, 8.3025],
+			"rotation": {"angle": 0, "axis": "y", "origin": [8.00454, 5.54975, 8]},
+			"faces": {
+				"north": {"uv": [12.5, 3, 14.5, 16], "texture": "#2"},
+				"east": {"uv": [12.5, 3, 14.5, 16], "texture": "#2"},
+				"south": {"uv": [12.5, 3, 14.5, 16], "texture": "#2"},
+				"west": {"uv": [12.5, 3, 14.5, 16], "texture": "#2"},
+				"up": {"uv": [13, 0, 14, 16], "rotation": 90, "texture": "#2"},
+				"down": {"uv": [12.5, 15, 14.5, 16], "rotation": 270, "texture": "#2"}
+			}
+		},
+		{
+			"from": [7.62188, 3.395, 7.274],
+			"to": [8.37813, 3.6975, 8.726],
+			"rotation": {"angle": 0, "axis": "y", "origin": [8.00454, 5.54975, 8]},
+			"faces": {
+				"north": {"uv": [11.5, 1.5, 14, 2.5], "texture": "#2"},
+				"east": {"uv": [11.5, 1.5, 15.5, 2.5], "texture": "#2"},
+				"south": {"uv": [11.5, 1.5, 14, 2.5], "texture": "#2"},
+				"west": {"uv": [11.5, 1.5, 15.5, 2.5], "texture": "#2"},
+				"up": {"uv": [11.5, 1.5, 15.5, 2], "rotation": 90, "texture": "#2"},
+				"down": {"uv": [11, 2, 16, 2.5], "rotation": 270, "texture": "#2"}
+			}
+		},
+		{
+			"from": [7.69938, 3.6975, 7.637],
+			"to": [8.32563, 4, 8.363],
+			"rotation": {"angle": 0, "axis": "y", "origin": [8.00454, 5.54975, 8]},
+			"faces": {
+				"north": {"uv": [14.5, 0.5, 12.5, 1.5], "texture": "#2"},
+				"east": {"uv": [14.5, 0.5, 12.5, 1.5], "texture": "#2"},
+				"south": {"uv": [12.5, 0.5, 14.5, 1.5], "texture": "#2"},
+				"west": {"uv": [12.5, 0.5, 14.5, 1.5], "texture": "#2"},
+				"up": {"uv": [8.5, 0, 10.5, 2], "texture": "#2"},
+				"down": {"uv": [12.5, 0.5, 14.5, 1.5], "texture": "#2"}
+			}
+		}
+	],
+	"display": {
+		"thirdperson_righthand": {
+			"translation": [0, 11.5, 1.25],
+			"scale": [2.2, 2.2, 2.2]
+		},
+		"thirdperson_lefthand": {
+			"translation": [0, 11.5, 1.25],
+			"scale": [2.2, 2.2, 2.2]
+		},
+		"firstperson_righthand": {
+			"translation": [1, 7.68, 0.56],
+			"scale": [1.5, 1.5, 1.5]
+		},
+		"firstperson_lefthand": {
+			"translation": [1, 7.68, 0.56],
+			"scale": [1.5, 1.5, 1.5]
+		},
+		"ground": {
+			"translation": [0, 7.5, 0],
+			"scale": [1.3, 1.3, 1.3]
+		},
+		"gui": {
+			"rotation": [0, 0, -45],
+			"scale": [1.2, 1.2, 1.2]
+		},
+		"head": {
+			"rotation": [-90, 0, 0],
+			"translation": [0, 0.5, -2.75],
+			"scale": [3, 3, 3]
+		},
+		"fixed": {
+			"rotation": [0, 0, 45],
+			"translation": [0, 0, -0.38],
+			"scale": [2, 2, 2]
+		}
+	},
+	"groups": [
+		{
+			"name": "hilt",
+			"origin": [7.55533, 8, 7.7822],
+			"color": 0,
+			"children": [0, 1, 2]
+		}
+	]
+}

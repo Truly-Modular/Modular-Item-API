@@ -10,6 +10,11 @@
     "miapi.ui.craft.warning.material":"insufficient Material",
     "miapi.ui.craft.warning.flexibility":"Flexibility cannot go bellow 0",
 
+    "miapi.skin.name.star_wars": "",
+    "miapi.skin.name.skyrim": "",
+    "miapi.skin.name.goldbrand": "",
+    
+
     "miapi.attribute.name.durability":"Durability",
     "miapi.attribute.name.resistance":"Damage Ressistance",
     "miapi.attribute.name.reach":"Reach",
@@ -140,35 +145,35 @@
     "miapi.module.handle_short.description": "A shorter handle suitable for one-handed swords, providing improved maneuverability.",
     "miapi.module.handle_short.short_description": "A Short Handle",
 
-    "miapi.module.axe_front": "Axe Front",
-    "miapi.module.axe_front.name": "[translation.[material.translation]]Axe Front",
-    "miapi.module.axe_front.description": "A front part of an axe used for cutting wood.",
-    "miapi.module.axe_front.short_description": "An Axe Front",
+    "miapi.module.axe_front": "Axe Head",
+    "miapi.module.axe_front.name": "[translation.[material.translation]]Axe",
+    "miapi.module.axe_front.description": "A front part of an axe used for cutting and stripping wood. Can also be used for combat.",
+    "miapi.module.axe_front.short_description": "An axe head",
 
-    "miapi.module.pickaxe_front": "Pickaxe Front",
-    "miapi.module.pickaxe_front.name": "[translation.[material.translation]]Pickaxe Front",
+    "miapi.module.pickaxe_front": "Pickaxe Head",
+    "miapi.module.pickaxe_front.name": "[translation.[material.translation]]Pickaxe",
     "miapi.module.pickaxe_front.description": "A front part of a pickaxe used for breaking and mining blocks.",
-    "miapi.module.pickaxe_front.short_description": "A Pickaxe Front",
+    "miapi.module.pickaxe_front.short_description": "A pickaxe head",
 
-    "miapi.module.pickaxe_back": "Pickaxe Back",
-    "miapi.module.pickaxe_back.name": "[translation.[material.translation]]Pickaxe Back",
+    "miapi.module.pickaxe_back": "Pickaxe Butt",
+    "miapi.module.pickaxe_back.name": "[translation.[material.translation]]Pickaxe Butt",
     "miapi.module.pickaxe_back.description": "A back part of a pickaxe used for prying and chipping.",
-    "miapi.module.pickaxe_back.short_description": "A Pickaxe Back",
+    "miapi.module.pickaxe_back.short_description": "A pickaxe butt",
 
-    "miapi.module.shovel": "Shovel",
+    "miapi.module.shovel": "Shovel Head",
     "miapi.module.shovel.name": "[translation.[material.translation]]Shovel",
     "miapi.module.shovel.description": "A tool with a broad scoop used for digging and moving earth.",
     "miapi.module.shovel.short_description": "A Shovel",
 
-    "miapi.module.tool_back": "Tool Back",
-    "miapi.module.tool_back.name": "[translation.[material.translation]]Tool Back",
-    "miapi.module.tool_back.description": "A back part of a tool used for handling and gripping.",
-    "miapi.module.tool_back.short_description": "A Tool Back",
+    "miapi.module.tool_back": "Tool Butt",
+    "miapi.module.tool_back.name": "[translation.[material.translation]]Tool Butt",
+    "miapi.module.tool_back.description": "A back part of a tool used for balancing the weight of the tool head.",
+    "miapi.module.tool_back.short_description": "A tool butt",
 
-    "miapi.module.hoe_front": "Hoe Front",
-    "miapi.module.hoe_front.name": "[translation.[material.translation]]Hoe Front",
+    "miapi.module.hoe_front": "Hoe Head",
+    "miapi.module.hoe_front.name": "[translation.[material.translation]]Hoe",
     "miapi.module.hoe_front.description": "A front part of a hoe used for tilling soil.",
-    "miapi.module.hoe_front.short_description": "A Hoe Front",
+    "miapi.module.hoe_front.short_description": "A hoe head",
 
     "miapi.module.mattock.name": "[translation.[material.translation]]Mattock"
 }

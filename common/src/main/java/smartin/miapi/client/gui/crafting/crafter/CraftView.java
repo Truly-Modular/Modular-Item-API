@@ -4,7 +4,6 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.BufferRenderer;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.inventory.Inventory;
@@ -20,8 +19,7 @@ import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vector4f;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.*;
-import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
-import smartin.miapi.client.gui.crafting.HoverDescription;
+import smartin.miapi.client.gui.HoverDescription;
 import smartin.miapi.craft.CraftAction;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.util.CraftingProperty;
@@ -32,7 +30,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 @Environment(EnvType.CLIENT)
 public class CraftView extends InteractAbleWidget {
@@ -83,7 +80,7 @@ public class CraftView extends InteractAbleWidget {
                 craftingProperties.add(craftingProperty);
             }
         }));
-        addChild(new SimpleButton<>(this.x + 10, this.y + this.height - 10, 40, 12, Text.translatable(Miapi.MOD_ID + ".ui.back"), slot, (moduleSlot)->{
+        addChild(new SimpleButton<>(this.x + 10, this.y + this.height - 10, 40, 12, Text.translatable(Miapi.MOD_ID + ".ui.back"), slot, (moduleSlot) -> {
             isClosed = true;
             back.accept(moduleSlot);
         }));
@@ -116,6 +113,7 @@ public class CraftView extends InteractAbleWidget {
         craftButton = new CraftButton<>(this.x + this.width - 50, this.y + this.height - 10, 40, 12, Text.translatable(Miapi.MOD_ID + ".ui.craft"), null, (callback) -> {
             setBuffers();
             if (action.canPerform()) {
+                isClosed = true;
                 Networking.sendC2S(packetId, action.toPacket(Networking.createBuffer()));
                 newStack.accept(action.getPreview());
             }
@@ -125,7 +123,9 @@ public class CraftView extends InteractAbleWidget {
         handler.addListener(new ScreenHandlerListener() {
             @Override
             public void onSlotUpdate(ScreenHandler handler, int slotId, ItemStack stack) {
-                update();
+                if (currentSlots.stream().anyMatch(slot1 -> slot1.id == slotId)) {
+                    update();
+                }
             }
 
             @Override
@@ -137,7 +137,7 @@ public class CraftView extends InteractAbleWidget {
 
     private void update() {
         try {
-            if(!isClosed){
+            if (!isClosed) {
                 preview.accept(action.getPreview());
                 setBuffers();
                 craftButton.isEnabled = action.canPerform();

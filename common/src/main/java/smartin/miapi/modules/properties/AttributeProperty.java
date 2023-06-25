@@ -103,7 +103,6 @@ public class AttributeProperty implements ModuleProperty {
             toMerge.forEach((entityAttribute, entityAttributeModifier) -> {
                 if (entityAttributeModifier.slot().equals(slot)) {
                     if (entityAttributeModifier.seperateOnItem) {
-                        Miapi.LOGGER.error("nonItem");
                         merged.put(entityAttribute, entityAttributeModifier.attributeModifier());
                     } else {
                         mergedOnItem.put(entityAttribute, entityAttributeModifier.attributeModifier());

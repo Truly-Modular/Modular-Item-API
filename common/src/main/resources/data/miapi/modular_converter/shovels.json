@@ -1,0 +1,92 @@
+{
+    "minecraft:wooden_shovel": {
+        "module": "handle_tool",
+        "moduleData": {
+            "properties": "{\"material\":\"wood\"}"
+        },
+        "subModules": {
+            "0": {
+                "module": "shovel",
+                "moduleData": {
+                    "properties": "{\"material\":\"wood\"}"
+                },
+                "subModules": {}
+            }
+        }
+    },
+    "minecraft:stone_shovel": {
+        "module": "handle_tool",
+        "moduleData": {
+            "properties": "{\"material\":\"wood\"}"
+        },
+        "subModules": {
+            "0": {
+                "module": "shovel",
+                "moduleData": {
+                    "properties": "{\"material\":\"stone\"}"
+                },
+                "subModules": {}
+            }
+        }
+    },
+    "minecraft:iron_shovel": {
+        "module": "handle_tool",
+        "moduleData": {
+            "properties": "{\"material\":\"wood\"}"
+        },
+        "subModules": {
+            "0": {
+                "module": "shovel",
+                "moduleData": {
+                    "properties": "{\"material\":\"iron\"}"
+                },
+                "subModules": {}
+            }
+        }
+    },
+    "minecraft:golden_shovel": {
+        "module": "handle_tool",
+        "moduleData": {
+            "properties": "{\"material\":\"wood\"}"
+        },
+        "subModules": {
+            "0": {
+                "module": "shovel",
+                "moduleData": {
+                    "properties": "{\"material\":\"gold\"}"
+                },
+                "subModules": {}
+            }
+        }
+    },
+    "minecraft:diamond_shovel": {
+        "module": "handle_tool",
+        "moduleData": {
+            "properties": "{\"material\":\"wood\"}"
+        },
+        "subModules": {
+            "0": {
+                "module": "shovel",
+                "moduleData": {
+                    "properties": "{\"material\":\"diamond\"}"
+                },
+                "subModules": {}
+            }
+        }
+    },
+    "minecraft:netherite_shovel": {
+        "module": "handle_tool",
+        "moduleData": {
+            "properties": "{\"material\":\"wood\"}"
+        },
+        "subModules": {
+            "0": {
+                "module": "shovel",
+                "moduleData": {
+                    "properties": "{\"material\":\"netherite\"}"
+                },
+                "subModules": {}
+            }
+        }
+    }
+}

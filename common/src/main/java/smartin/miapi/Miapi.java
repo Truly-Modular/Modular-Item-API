@@ -39,16 +39,18 @@ import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.abilities.*;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
 import smartin.miapi.modules.cache.ModularItemCache;
+import smartin.miapi.modules.conditions.ConditionManager;
 import smartin.miapi.modules.edit_options.EditOption;
 import smartin.miapi.modules.edit_options.PropertyInjectionDev;
+import smartin.miapi.modules.edit_options.skins.SkinOptions;
 import smartin.miapi.modules.properties.*;
 import smartin.miapi.modules.properties.render.GuiOffsetProperty;
 import smartin.miapi.modules.properties.render.ModelMergeProperty;
 import smartin.miapi.modules.properties.render.ModelProperty;
 import smartin.miapi.modules.properties.render.ModelTransformationProperty;
 import smartin.miapi.modules.properties.util.ModuleProperty;
-import smartin.miapi.modules.synergies.MaterialSynergyCondition;
-import smartin.miapi.modules.synergies.OtherModuleSynergyCondition;
+import smartin.miapi.modules.conditions.MaterialModuleCondition;
+import smartin.miapi.modules.conditions.OtherModuleModuleCondition;
 import smartin.miapi.modules.synergies.SynergyManager;
 import smartin.miapi.registries.MiapiRegistry;
 
@@ -75,6 +77,7 @@ public class Miapi {
         ReloadEvents.setup();
         ItemAbilityManager.setup();
         AttributeRegistry.setup();
+        ConditionManager.setup();
         LifecycleEvent.SERVER_BEFORE_START.register(minecraftServer -> {
             server = minecraftServer;
             LOGGER.info("Server before started");
@@ -150,8 +153,8 @@ public class Miapi {
             MiapiClient.init();
         }
         SynergyManager.setup();
-        SynergyManager.synergyConditionMiapiRegistry.register("material", new MaterialSynergyCondition());
-        SynergyManager.synergyConditionMiapiRegistry.register("otherModule", new OtherModuleSynergyCondition());
+        SynergyManager.moduleConditionRegistry.register("material", new MaterialModuleCondition());
+        SynergyManager.moduleConditionRegistry.register("otherModule", new OtherModuleModuleCondition());
     }
 
     protected static void setupRegistries() {
@@ -160,6 +163,7 @@ public class Miapi {
         ReloadEvents.registerDataPackPathToSync(Miapi.MOD_ID, "materials");
         ReloadEvents.registerDataPackPathToSync(Miapi.MOD_ID, "synergies");
         ReloadEvents.registerDataPackPathToSync(Miapi.MOD_ID, "modular_converter");
+        ReloadEvents.registerDataPackPathToSync(Miapi.MOD_ID, "skins");
 
         //ITEM
         Miapi.itemRegistry.register(MOD_ID + ":modular_item", new ExampleModularItem());
@@ -188,6 +192,7 @@ public class Miapi {
 
         //EDITPROPERTIES
         Miapi.editOptions.register("dev", new PropertyInjectionDev());
+        Miapi.editOptions.register("skin", new SkinOptions());
 
         //MODULEPROPERTIES
         Miapi.modulePropertyRegistry.register(NameProperty.KEY, new NameProperty());

@@ -1,0 +1,140 @@
+{
+    "minecraft:wooden_hoe": {
+        "module": "handle_tool",
+        "moduleData": {
+            "properties": "{\"material\":\"wood\"}"
+        },
+        "subModules": {
+            "0": {
+                "module": "hoe_front",
+                "moduleData": {
+                    "properties": "{\"material\":\"wood\"}"
+                },
+                "subModules": {
+                    "0": {
+                        "module": "tool_back",
+                        "moduleData": {
+                            "properties": "{\"material\":\"wood\"}"
+                        },
+                        "subModules": {}
+                    }
+                }
+            }
+        }
+    },
+    "minecraft:stone_hoe": {
+        "module": "handle_tool",
+        "moduleData": {
+            "properties": "{\"material\":\"wood\"}"
+        },
+        "subModules": {
+            "0": {
+                "module": "hoe_front",
+                "moduleData": {
+                    "properties": "{\"material\":\"stone\"}"
+                },
+                "subModules": {
+                    "0": {
+                        "module": "tool_back",
+                        "moduleData": {
+                            "properties": "{\"material\":\"stone\"}"
+                        },
+                        "subModules": {}
+                    }
+                }
+            }
+        }
+    },
+    "minecraft:iron_hoe": {
+        "module": "handle_tool",
+        "moduleData": {
+            "properties": "{\"material\":\"wood\"}"
+        },
+        "subModules": {
+            "0": {
+                "module": "hoe_front",
+                "moduleData": {
+                    "properties": "{\"material\":\"iron\"}"
+                },
+                "subModules": {
+                    "0": {
+                        "module": "tool_back",
+                        "moduleData": {
+                            "properties": "{\"material\":\"iron\"}"
+                        },
+                        "subModules": {}
+                    }
+                }
+            }
+        }
+    },
+    "minecraft:golden_hoe": {
+        "module": "handle_tool",
+        "moduleData": {
+            "properties": "{\"material\":\"wood\"}"
+        },
+        "subModules": {
+            "0": {
+                "module": "hoe_front",
+                "moduleData": {
+                    "properties": "{\"material\":\"gold\"}"
+                },
+                "subModules": {
+                    "0": {
+                        "module": "tool_back",
+                        "moduleData": {
+                            "properties": "{\"material\":\"gold\"}"
+                        },
+                        "subModules": {}
+                    }
+                }
+            }
+        }
+    },
+    "minecraft:diamond_hoe": {
+        "module": "handle_tool",
+        "moduleData": {
+            "properties": "{\"material\":\"wood\"}"
+        },
+        "subModules": {
+            "0": {
+                "module": "hoe_front",
+                "moduleData": {
+                    "properties": "{\"material\":\"diamond\"}"
+                },
+                "subModules": {
+                    "0": {
+                        "module": "tool_back",
+                        "moduleData": {
+                            "properties": "{\"material\":\"diamond\"}"
+                        },
+                        "subModules": {}
+                    }
+                }
+            }
+        }
+    },
+    "minecraft:netherite_hoe": {
+        "module": "handle_tool",
+        "moduleData": {
+            "properties": "{\"material\":\"wood\"}"
+        },
+        "subModules": {
+            "0": {
+                "module": "hoe_front",
+                "moduleData": {
+                    "properties": "{\"material\":\"netherite\"}"
+                },
+                "subModules": {
+                    "0": {
+                        "module": "tool_back",
+                        "moduleData": {
+                            "properties": "{\"material\":\"netherite\"}"
+                        },
+                        "subModules": {}
+                    }
+                }
+            }
+        }
+    }
+}

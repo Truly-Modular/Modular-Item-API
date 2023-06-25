@@ -1,4 +1,4 @@
-package smartin.miapi.modules.synergies;
+package smartin.miapi.modules.conditions;
 
 import com.google.gson.JsonElement;
 import smartin.miapi.Miapi;
@@ -7,13 +7,13 @@ import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.Map;
 
-public class OtherModuleSynergyCondition implements SynergyCondition{
+public class OtherModuleModuleCondition implements ModuleCondition {
     public ItemModule module;
-    public OtherModuleSynergyCondition(){
+    public OtherModuleModuleCondition(){
 
     }
 
-    private OtherModuleSynergyCondition(ItemModule module){
+    private OtherModuleModuleCondition(ItemModule module){
         this.module = module;
     }
 
@@ -28,7 +28,7 @@ public class OtherModuleSynergyCondition implements SynergyCondition{
     }
 
     @Override
-    public SynergyCondition load(JsonElement element) {
-        return new OtherModuleSynergyCondition(Miapi.moduleRegistry.get(element.getAsJsonObject().get("module").getAsString()));
+    public ModuleCondition load(JsonElement element) {
+        return new OtherModuleModuleCondition(Miapi.moduleRegistry.get(element.getAsJsonObject().get("module").getAsString()));
     }
 }

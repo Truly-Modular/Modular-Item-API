@@ -46,6 +46,6 @@
         }
     ],
     "armor_pen": 50,
-    "displayName": "[material.key] Rapier",
+    "displayName": "miapi.module.blade_rapier.name",
     "itemId": "miapi:modular_rapier"
 }

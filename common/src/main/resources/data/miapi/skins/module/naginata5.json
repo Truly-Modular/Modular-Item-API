@@ -1,0 +1,33 @@
+{
+    "path": "katana",
+    "module": "blade_katana",
+    "condition": {
+        "type": "otherModule",
+        "module": "handle_polearm"
+    },
+    "properties": {
+        "texture": [
+            {
+                "path": "miapi:models/item/sword/blade/dagger/[material.texture].json",
+                "color": "[material.color]",
+                "transform": {
+                    "rotation": {
+                        "x": 0.0,
+                        "y": 0.0,
+                        "z": 0.0
+                    },
+                    "translation": {
+                        "x": -3.0,
+                        "y": -3.0,
+                        "z": 0.0
+                    },
+                    "scale": {
+                        "x": 1,
+                        "y": 1,
+                        "z": 1
+                    }
+                }
+            }
+        ]
+    }
+}

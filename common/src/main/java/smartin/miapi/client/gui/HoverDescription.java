@@ -1,4 +1,4 @@
-package smartin.miapi.client.gui.crafting;
+package smartin.miapi.client.gui;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.render.GameRenderer;

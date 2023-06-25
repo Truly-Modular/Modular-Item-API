@@ -1,0 +1,18 @@
+{
+    "path": "skyrim",
+    "header": {
+        "texture": "miapi:textures/skin/skyrim/tab_header.png",
+        "color": "00004489",
+        "xSize": 1900,
+        "ySize": 140,
+        "scale": 10,
+        "borderSize": 0
+    },
+    "background": {
+        "texture": "miapi:textures/skin/skyrim/tab_background.png",
+        "color": "00004489",
+        "xSize": 100,
+        "ySize": 100,
+        "borderSize": 0
+    }
+}

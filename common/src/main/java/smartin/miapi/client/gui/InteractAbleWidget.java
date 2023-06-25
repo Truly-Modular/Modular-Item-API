@@ -68,6 +68,31 @@ public abstract class InteractAbleWidget extends ClickableWidget implements Draw
         fill(matrices, x + width, y, x + width - borderWidth, y + height, color);
     }
 
+    /**
+     * Draws a texture with an edge around its border. The texture can be limited to a portion of itself by specifying the
+     * coordinates (u, v) and (u2, regionHeight).
+     * This is useful if a texture might be resized in the UI to still align its Edges
+     *
+     * @param matrices      The matrix stack to apply the transformation to.
+     * @param x             The x-coordinate to draw the texture at.
+     * @param y             The y-coordinate to draw the texture at.
+     * @param u             The x-coordinate of the top-left corner of the texture region to draw.
+     * @param v             The y-coordinate of the top-left corner of the texture region to draw.
+     * @param regionWidth   The x-coordinate of the bottom-right corner of the texture region to draw.
+     * @param regionHeight  The y-coordinate of the bottom-right corner of the texture region to draw.
+     * @param width         The width of the texture.
+     * @param height        The height of the texture.
+     * @param textureWidth  The width of the texture sheet.
+     * @param textureHeight The height of the texture sheet.
+     * @param borderWidth   The width of the border to draw around the texture.
+     */
+    public static void drawTextureWithEdgeAndScale(MatrixStack matrices, int x, int y, int u, int v, int regionWidth, int regionHeight, int width, int height, int textureWidth, int textureHeight, int borderWidth, float scale) {
+        MatrixStack matrixStack = new MatrixStack();
+        matrixStack.multiplyPositionMatrix(matrices.peek().getPositionMatrix().copy());
+        matrixStack.scale(1 / scale, 1 / scale, 1 / scale);
+        drawTextureWithEdge(matrixStack, (int) (x * scale), (int) (y * scale), u, v, regionWidth, regionHeight, (int)
+                (width * scale), (int) (height * scale), textureWidth, textureHeight, borderWidth);
+    }
 
     /**
      * Draws a texture with an edge around its border. The texture can be limited to a portion of itself by specifying the

@@ -6,6 +6,7 @@ import smartin.miapi.Miapi;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.item.modular.PropertyResolver;
 import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.conditions.ModuleCondition;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.registries.MiapiRegistry;
 
@@ -15,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 public class SynergyManager {
-    public static MiapiRegistry<SynergyCondition> synergyConditionMiapiRegistry = MiapiRegistry.getInstance(SynergyCondition.class);
+    public static MiapiRegistry<ModuleCondition> moduleConditionRegistry = MiapiRegistry.getInstance(ModuleCondition.class);
     public static Map<ItemModule, List<Synergy>> maps = new HashMap<>();
 
     public static void setup() {
@@ -25,8 +26,8 @@ public class SynergyManager {
                     if (moduleInstance.module.equals(itemModule)) {
                         synergies.forEach(synergy -> {
                             boolean isTrue = true;
-                            for (SynergyCondition synergyCondition : synergy.conditions) {
-                                if (!synergyCondition.isAllowed(moduleInstance, oldMap)) {
+                            for (ModuleCondition moduleCondition : synergy.conditions) {
+                                if (!moduleCondition.isAllowed(moduleInstance, oldMap)) {
                                     isTrue = false;
                                 }
                             }
@@ -55,8 +56,8 @@ public class SynergyManager {
             JsonObject entryData = entry.getValue().getAsJsonObject();
             Synergy synergy = new Synergy();
             for (JsonElement conditionJson : entryData.get("conditions").getAsJsonArray()) {
-                SynergyCondition synergyCondition = synergyConditionMiapiRegistry.get(conditionJson.getAsJsonObject().get("type").getAsString());
-                synergy.conditions.add(synergyCondition.load(conditionJson));
+                ModuleCondition moduleCondition = moduleConditionRegistry.get(conditionJson.getAsJsonObject().get("type").getAsString());
+                synergy.conditions.add(moduleCondition.load(conditionJson));
             }
             List<Synergy> synergies = maps.computeIfAbsent(property, (module) -> {
                 return new ArrayList<>();
@@ -66,7 +67,7 @@ public class SynergyManager {
             object.entrySet().forEach(propertyEntry -> {
                 ModuleProperty property1 = Miapi.modulePropertyRegistry.get(propertyEntry.getKey());
                 try {
-                    property1.load("synergy",propertyEntry.getValue());
+                    property1.load("synergy", propertyEntry.getValue());
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
@@ -75,8 +76,22 @@ public class SynergyManager {
         });
     }
 
+    public static Map<ModuleProperty, JsonElement> getProperties(JsonElement element) {
+        Map<ModuleProperty, JsonElement> properties = new HashMap<>();
+        element.getAsJsonObject().entrySet().forEach(propertyEntry -> {
+            ModuleProperty property1 = Miapi.modulePropertyRegistry.get(propertyEntry.getKey());
+            try {
+                property1.load("synergy", propertyEntry.getValue());
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+            properties.put(property1, propertyEntry.getValue());
+        });
+        return properties;
+    }
+
     public static class Synergy {
-        public List<SynergyCondition> conditions = new ArrayList<>();
+        public List<ModuleCondition> conditions = new ArrayList<>();
         public Map<ModuleProperty, JsonElement> properties = new HashMap<>();
     }
 

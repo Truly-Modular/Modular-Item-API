@@ -1,4 +1,4 @@
-package smartin.miapi.modules.synergies;
+package smartin.miapi.modules.conditions;
 
 import com.google.gson.JsonElement;
 import smartin.miapi.modules.ItemModule;
@@ -6,9 +6,9 @@ import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.Map;
 
-public interface SynergyCondition {
+public interface ModuleCondition {
 
     boolean isAllowed(ItemModule.ModuleInstance moduleInstance, Map<ModuleProperty,JsonElement> propertyMap);
 
-    SynergyCondition load(JsonElement element);
+    ModuleCondition load(JsonElement element);
 }

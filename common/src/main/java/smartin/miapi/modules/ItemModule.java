@@ -162,7 +162,8 @@ public class ItemModule {
     public static ItemModule.ModuleInstance getModules(ItemStack stack) {
         ItemModule.ModuleInstance moduleInstance = (ItemModule.ModuleInstance) ModularItemCache.get(stack, moduleKey);
         if (moduleInstance == null || moduleInstance.module == null) {
-            Miapi.LOGGER.warn("Item has Invalid Module setup - treating it like it has no modules");
+            //TODO:figure out why this is triggered
+            //Miapi.LOGGER.warn("Item has Invalid Module setup - treating it like it has no modules");
             return new ItemModule.ModuleInstance(new ItemModule("empty", new HashMap<>()));
         }
         return moduleInstance;
@@ -195,7 +196,7 @@ public class ItemModule {
         return getMergedProperty(moduleInstance, property, MergeType.SMART);
     }
 
-    public static JsonElement getMergedProperty(ItemStack itemStack, ModuleProperty property){
+    public static JsonElement getMergedProperty(ItemStack itemStack, ModuleProperty property) {
         return getMergedProperty(getModules(itemStack), property, MergeType.SMART);
     }
 
@@ -366,6 +367,80 @@ public class ItemModule {
                 root = root.parent;
             }
             return root;
+        }
+
+        /**
+         * Creates a copy of this module instance and all its parents and children.
+         *
+         * @return The copied module instance.
+         */
+        public ModuleInstance copy() {
+            List<Integer> position = new ArrayList<>();
+            calculatePosition(position);
+
+            ModuleInstance root = this.getRoot().deepCopy();
+
+            return root.getPosition(position);
+        }
+
+        /**
+         * Recursively calculates the position of this module instance in its hierarchy.
+         *
+         * @param position The list to store the position.
+         */
+        private void calculatePosition(List<Integer> position) {
+            if (parent != null) {
+                parent.calculatePosition(position);
+                position.add(this.getId());
+            }
+        }
+
+        /**
+         * Retrieves the module instance at the specified position in the hierarchy.
+         *
+         * @param position The position of the module instance.
+         * @return The module instance at the specified position.
+         */
+        public ModuleInstance getPosition(List<Integer> position) {
+            if (position.size() > 0) {
+                int pos = position.remove(0);
+                return subModules.get(pos).getPosition(position);
+            } else {
+                return this;
+            }
+        }
+
+        /**
+         * Retrieves the ID of this module instance.
+         *
+         * @return The ID of the module instance, or null if not found.
+         */
+        @Nullable
+        public Integer getId() {
+            if (parent != null) {
+                for (Map.Entry<Integer, ModuleInstance> entry : parent.subModules.entrySet()) {
+                    if (entry.getValue() == this) {
+                        return entry.getKey();
+                    }
+                }
+            }
+            return null;
+        }
+
+        /**
+         * Creates a deep copy of this module instance and its submodules.
+         *
+         * @return The copied module instance.
+         */
+        private ModuleInstance deepCopy() {
+            ModuleInstance copy = new ModuleInstance(this.module);
+            copy.moduleData = new HashMap<>(this.moduleData);
+            this.subModules.forEach(((id, module) -> {
+                ModuleInstance subModuleCopy = module.deepCopy();
+                subModuleCopy.parent = copy;
+                copy.subModules.put(id, subModuleCopy);
+            }));
+            return copy;
         }
 
         /**

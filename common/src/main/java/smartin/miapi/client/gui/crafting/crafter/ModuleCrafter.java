@@ -79,7 +79,7 @@ public class ModuleCrafter extends InteractAbleWidget {
 
     public void setMode(Mode mode) {
         if (!mode.equals(Mode.CRAFT)) {
-            preview.accept(stack);
+            //preview.accept(stack);
         }
         if (craftView != null) {
             craftView.closeSlot();
@@ -132,7 +132,7 @@ public class ModuleCrafter extends InteractAbleWidget {
             }
             case REPLACE -> {
                 this.children.clear();
-                ReplaceView view = new ReplaceView(this.x, this.y, this.width, this.height - 38, slot, (instance) -> {
+                ReplaceView view = new ReplaceView(this.x, this.y, this.width, this.height, slot, (instance) -> {
                     setSelectedSlot(instance);
                 }, (module -> {
                     this.module = module;

@@ -34,6 +34,28 @@
     },
     "attributes": [
         {
+            "attribute": "miapi:generic.attack_range",
+            "value": "-0.75",
+            "operation": "+",
+            "slot": "mainhand",
+            "uuid": "AAAAAAAA-4180-4865-B01B-BCCE9785ACA3"
+        },
+        {
+            "attribute": "miapi:generic.back_stab",
+            "value": "2",
+            "operation": "*",
+            "slot": "mainhand",
+            "uuid": "AAAAAAAA-4180-4865-B01B-BCCE9785ACA3",
+            "seperateOnItem": true
+        },
+        {
+            "attribute": "miapi:generic.shield_break",
+            "value": "1.5",
+            "operation": "+",
+            "slot": "mainhand",
+            "uuid": "AAAAAAAA-4180-4865-B01B-BCCE9785ACA3"
+        },
+        {
             "attribute": "generic.attack_speed",
             "value": "+0.5",
             "operation": "+",

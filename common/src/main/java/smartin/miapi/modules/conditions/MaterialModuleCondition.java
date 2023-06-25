@@ -1,4 +1,4 @@
-package smartin.miapi.modules.synergies;
+package smartin.miapi.modules.conditions;
 
 import com.google.gson.JsonElement;
 import smartin.miapi.modules.ItemModule;
@@ -7,14 +7,14 @@ import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.Map;
 
-public class MaterialSynergyCondition implements SynergyCondition {
+public class MaterialModuleCondition implements ModuleCondition {
     public String material = "";
 
-    public MaterialSynergyCondition() {
+    public MaterialModuleCondition() {
 
     }
 
-    public MaterialSynergyCondition(String material) {
+    public MaterialModuleCondition(String material) {
         this.material = material;
     }
 
@@ -32,7 +32,7 @@ public class MaterialSynergyCondition implements SynergyCondition {
     }
 
     @Override
-    public SynergyCondition load(JsonElement element) {
-        return new MaterialSynergyCondition(element.getAsJsonObject().get("material").getAsString());
+    public ModuleCondition load(JsonElement element) {
+        return new MaterialModuleCondition(element.getAsJsonObject().get("material").getAsString());
     }
 }

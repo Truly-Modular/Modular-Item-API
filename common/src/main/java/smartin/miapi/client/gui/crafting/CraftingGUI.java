@@ -50,12 +50,12 @@ public class CraftingGUI extends ParentHandledScreen<CraftingScreenHandler> impl
         moduleCrafter = new ModuleCrafter((int) (((this.width - this.backgroundWidth) / 2 + 109 + 36) * (1 / scale)), (int) (((this.height - this.backgroundHeight) / 2 + 8) * (1 / scale)), (int) ((163 - 36) * (1 / scale)), (int) ((150 - 38 + 15) * (1 / scale)), (selectedSlot) -> {
             slotDisplay.select(selectedSlot);
         }, (item) -> {
+            Miapi.LOGGER.error("Module Crafter Callback");
             slotDisplay.setItem(item);
             statDisplay.setCompareTo(item);
         }, handler.inventory,
                 handler::addSlotByClient, handler::removeSlotByClient);
         moduleCrafter.setPacketIdentifier(handler.packetID);
-
         TransformableWidget transformableWidget = new TransformableWidget((this.width - this.backgroundWidth) / 2 + 109 + 36, (this.height - this.backgroundHeight) / 2 + 8, 163 - 36, 150, Text.empty());
         transformableWidget.rawProjection.loadIdentity();
         transformableWidget.rawProjection.multiply(Matrix4f.scale(scale, scale, scale));
@@ -63,12 +63,10 @@ public class CraftingGUI extends ParentHandledScreen<CraftingScreenHandler> impl
         transformableWidget.addChild(moduleCrafter);
 
         slotDisplay = new SlotDisplay(stack, (this.width - this.backgroundWidth) / 2 + 8, (this.height - this.backgroundHeight) / 2 + 8 + 132 - 24, 74 + 24, 98, (selected) -> {
-            moduleCrafter.setSelectedSlot(selected);
+            //moduleCrafter.setSelectedSlot(selected);
         });
         slotDisplay.setItem(getItem());
         this.addChild(slotDisplay);
-
-
         statDisplay = new StatDisplay((this.width - this.backgroundWidth) / 2 + 8 - 108 + 18 + 89, (this.height - this.backgroundHeight) / 2 - 1 + 8, 86 + 18 * 2 + 5, 206 - 100);
         this.addChild(statDisplay);
 
@@ -128,6 +126,7 @@ public class CraftingGUI extends ParentHandledScreen<CraftingScreenHandler> impl
         }
         if (slotDisplay != null) {
             slotDisplay.setBaseSlot(current);
+            slotDisplay.select(current);
             slotDisplay.setItem(converted);
         }
         if (moduleCrafter != null) {

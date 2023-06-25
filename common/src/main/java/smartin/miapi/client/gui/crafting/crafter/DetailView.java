@@ -92,7 +92,6 @@ public class DetailView extends InteractAbleWidget {
             if (path.isEmpty()) {
                 textureIcon = new Identifier("minecraft", "missing");
             } else {
-                Miapi.LOGGER.warn(path);
                 //textureIcon = new Identifier("minecraft", "missing");
                 textureIcon = new Identifier(path);
             }

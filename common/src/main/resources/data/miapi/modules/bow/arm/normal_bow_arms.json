@@ -1,0 +1,59 @@
+{
+    "name": "bow_arms_normal",
+    "texture": {
+        "path": "miapi:models/item/bow/arms/normal/[material.texture].json",
+        "transform": {
+            "rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "translation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+            }
+        }
+    },
+    "allowedInSlots": [
+        "bow_arm"
+    ],
+    "slots": {
+        "0": {
+            "allowed": [
+                "bow_string"
+            ],
+            "transform": {
+                "rotation": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "translation": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "scale": {
+                    "x": 1.0,
+                    "y": 1.0,
+                    "z": 1.0
+                }
+            }
+        }
+    },
+    "allowedMaterial": {
+        "allowedMaterials": [
+            "wood",
+            "metal"
+        ],
+        "cost": 1
+    },
+    "displayName": "miapi.module.bow_arms_normal.name",
+    "itemId": "miapi:modular_bow"
+}

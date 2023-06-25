@@ -17,6 +17,7 @@ import smartin.miapi.client.gui.*;
 import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.edit_options.EditOption;
 import smartin.miapi.modules.properties.AllowedSlots;
 import smartin.miapi.modules.properties.SlotProperty;
@@ -51,8 +52,8 @@ public class EditView extends InteractAbleWidget {
         ArrayList<InteractAbleWidget> toList = new ArrayList<>();
 
         Miapi.editOptions.getFlatMap().forEach((s, editOption) -> {
-            if (editOption.isVisible(stack, instance)) {
-                toList.add(new SlotButton(0, 0, this.width, 15, s, editOption, instance));
+            if (editOption.isVisible(stack, instance.copy())) {
+                toList.add(new SlotButton(0, 0, this.width, 15, s, editOption, instance.copy()));
             }
         });
 
@@ -68,14 +69,16 @@ public class EditView extends InteractAbleWidget {
     public void setEditOption(EditOption option) {
         Consumer<PacketByteBuf> craftBuffer = (packetByteBuf) -> {
             //TODO:Execute this on server
-            ItemStack crafted = option.execute(packetByteBuf, stack, instance);
+            ItemModule.ModuleInstance toCrafter = instance;
+            stack.getOrCreateNbt().remove(ModularItemCache.CACHE_KEY);
+            ItemStack crafted = option.execute(packetByteBuf, stack, toCrafter);
             preview.accept(crafted);
             ScreenHandler screenHandler = Miapi.server.getPlayerManager().getPlayerList().get(0).currentScreenHandler;
             if(screenHandler instanceof CraftingScreenHandler screenHandler1){
                 screenHandler1.setItem(crafted.copy());
             }
         };
-        Consumer<PacketByteBuf> previewBuffer = (packetByteBuf) -> preview.accept(option.execute(packetByteBuf, stack, instance));
+        Consumer<PacketByteBuf> previewBuffer = (packetByteBuf) -> preview.accept(option.execute(packetByteBuf, stack, instance.copy()));
         this.children().clear();
         this.addChild(option.getGui(x, y, width, height, stack, instance, craftBuffer, previewBuffer, (objects) -> {
             setDefaultChildren();

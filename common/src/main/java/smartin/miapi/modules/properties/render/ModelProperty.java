@@ -151,7 +151,6 @@ public class ModelProperty implements ModuleProperty {
                             unbakedModel = modelCache.get(fullPath);
                         }
                     }
-                    Miapi.LOGGER.warn(unbakedModel.id);
                     assert unbakedModel != null;
                     scaleAdder.updateAndGet(v -> (v + 0.0003f));
                     TransformMap transformMap = SlotProperty.getTransformStack(moduleI);

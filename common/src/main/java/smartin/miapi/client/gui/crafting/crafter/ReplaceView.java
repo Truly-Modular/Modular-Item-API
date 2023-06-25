@@ -36,7 +36,7 @@ public class ReplaceView extends InteractAbleWidget {
 
         ScrollingTextWidget header = new ScrollingTextWidget((int) ((this.x + 5) / headerScale), (int) (this.y / headerScale), (int) ((this.width - 10) / headerScale), Text.translatable(Miapi.MOD_ID + ".ui.replace.header"), ColorHelper.Argb.getArgb(255, 255, 255, 255));
         headerHolder.addChild(header);
-        ScrollList list = new ScrollList(x, y + 16, width, height - 14, new ArrayList<>());
+        ScrollList list = new ScrollList(x, y + 16, width, height - 28, new ArrayList<>());
         addChild(list);
         list.children().clear();
         addChild(new SimpleButton<>(this.x + 2, this.y + this.height - 10, 40, 12, Text.translatable(Miapi.MOD_ID + ".ui.back"), slot, back::accept));

@@ -1,0 +1,36 @@
+{
+    "name": "bow_string_normal",
+    "texture": {
+        "path": "miapi:models/item/bow/string/normal/[material.texture].json",
+        "transform": {
+            "rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "translation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+            }
+        }
+    },
+    "allowedInSlots": [
+        "bow_string"
+    ],
+    "allowedMaterial": {
+        "allowedMaterials": [
+            "wood",
+            "stone",
+            "metal"
+        ],
+        "cost": 1
+    },
+    "displayName": "miapi.module.bow_handle.name",
+    "itemId": "miapi:modular_bow"
+}
