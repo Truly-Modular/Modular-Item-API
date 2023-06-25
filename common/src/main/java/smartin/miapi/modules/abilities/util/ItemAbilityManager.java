@@ -12,14 +12,12 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
 import net.minecraft.world.World;
 import smartin.miapi.modules.properties.AbilityProperty;
-import smartin.miapi.modules.properties.PotionEffectProperty;
-import smartin.miapi.modules.properties.util.PropertyApplication;
 import smartin.miapi.registries.MiapiRegistry;
 
 import java.util.*;
 
 import static smartin.miapi.modules.properties.util.PropertyApplication.ApplicationEvent.*;
-import static smartin.miapi.modules.properties.util.PropertyApplication.Holders.Ability;
+import static smartin.miapi.modules.properties.util.PropertyApplication.Ability;
 
 /**
  * The ItemAbilityManager is the brain and control behind what Ability is executed on what Item.

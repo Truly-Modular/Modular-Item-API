@@ -43,13 +43,15 @@ public class PotionEffectProperty extends SimpleEventProperty {
         super(
                 new EventHandlingMap<>()
                         .set(HURT, PotionEffectProperty::onEntityHurt)
-                        .setAll(ABILITIES, PotionEffectProperty::onAbility)
+                        .setAll(ABILITIES, PotionEffectProperty::onAbility),
+                false, () -> property
         );
         property = this;
         ModularItemCache.setSupplier(KEY, PotionEffectProperty::createCache);
     }
 
-    public static void onEntityHurt(Event.LivingHurtEvent event) {
+    public static void onEntityHurt(PropertyApplication.Cancellable<Event.LivingHurtEvent> holder) {
+        Event.LivingHurtEvent event = holder.event();
         LivingEntity victim = event.livingEntity;
         if (!(victim.world instanceof ServerWorld world) || !(event.damageSource.getAttacker() instanceof LivingEntity attacker)) return;
         LootConditionManager predicateManager = victim.getServer() == null ? null : victim.getServer().getPredicateManager();
@@ -88,7 +90,7 @@ public class PotionEffectProperty extends SimpleEventProperty {
         }
     }
 
-    public static void onAbility(PropertyApplication.ApplicationEvent<PropertyApplication.Holders.Ability> event, PropertyApplication.Holders.Ability ability) {
+    public static void onAbility(PropertyApplication.ApplicationEvent<PropertyApplication.Ability> event, PropertyApplication.Ability ability) {
         if (ability.world().isClient) return;
 
         List<PotionEffectProperty.StatusEffectData> potionEffects = property.get(ability.stack());
@@ -109,7 +111,7 @@ public class PotionEffectProperty extends SimpleEventProperty {
                                 .parameter(LootContextParameters.THIS_ENTITY, ability.user()) // THIS_ENTITY is whomever the effect is applied to
                                 .parameter(LootContextParameters.ORIGIN, ability.user().getPos())
                                 .parameter(LootContextParameters.TOOL, ability.stack());
-                        if (condition.test(builder.build(PropertyApplication.Holders.Ability.LOOT_CONTEXT)))
+                        if (condition.test(builder.build(PropertyApplication.Ability.LOOT_CONTEXT)))
                             ability.user().addStatusEffect(effect.creator.get());
                     } else
                         Miapi.LOGGER.warn("Found null predicate during PotionEffectProperty application.");
@@ -120,7 +122,7 @@ public class PotionEffectProperty extends SimpleEventProperty {
 
     public static List<StatusEffectData> ofEntity(LivingEntity entity) {
         List<StatusEffectData> list = property.get(entity.getMainHandStack());
-        return list == null ? new ArrayList<>() : list;
+        return list == null ? new ArrayList<>() : new ArrayList<>(list);
     }
 
     @Override

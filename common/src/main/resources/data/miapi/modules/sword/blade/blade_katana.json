@@ -76,8 +76,7 @@
             "target": "target",
             "duration": 20,
             "amplifier": 0,
-            "effect": "minecraft:glowing",
-            "predicate": "miapi:test"
+            "effect": "minecraft:glowing"
         },
         {
             "event": "ABILITY_STOP_USING",
@@ -86,8 +85,10 @@
             "amplifier": 0,
             "effect": "minecraft:glowing",
             "predicate": "miapi:test",
-            "time": {
-                "min": 40
+            "ability": {
+                "useTime": {
+                    "min": 40
+                }
             }
         }
     ],
