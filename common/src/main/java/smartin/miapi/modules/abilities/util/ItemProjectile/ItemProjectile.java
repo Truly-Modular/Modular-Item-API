@@ -6,11 +6,13 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
+import net.minecraft.entity.projectile.TridentEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
@@ -63,7 +65,7 @@ public class ItemProjectile extends PersistentProjectileEntity {
         int i = (Byte) this.dataTracker.get(LOYALTY);
         if (i > 0 && (this.dealtDamage || this.isNoClip()) && entity != null) {
             if (!this.isOwnerAlive()) {
-                if (!this.world.isClient && this.pickupType == PickupPermission.ALLOWED) {
+                if (!this.getWorld().isClient && this.pickupType == PickupPermission.ALLOWED) {
                     this.dropStack(this.asItemStack(), 0.1F);
                 }
 
@@ -72,7 +74,7 @@ public class ItemProjectile extends PersistentProjectileEntity {
                 this.setNoClip(true);
                 Vec3d vec3d = entity.getEyePos().subtract(this.getPos());
                 this.setPos(this.getX(), this.getY() + vec3d.y * 0.015 * (double) i, this.getZ());
-                if (this.world.isClient) {
+                if (this.getWorld().isClient) {
                     this.lastRenderY = this.getY();
                 }
 
@@ -119,7 +121,7 @@ public class ItemProjectile extends PersistentProjectileEntity {
         }
 
         Entity entity2 = this.getOwner();
-        DamageSource damageSource = DamageSource.trident(this, (Entity) (entity2 == null ? this : entity2));
+        DamageSource damageSource = this.getDamageSources().trident(this, (Entity)(entity2 == null ? this : entity2));
         this.dealtDamage = true;
         SoundEvent soundEvent = SoundEvents.ITEM_TRIDENT_HIT;
         if (entity.damage(damageSource, f)) {
@@ -140,13 +142,13 @@ public class ItemProjectile extends PersistentProjectileEntity {
 
         this.setVelocity(this.getVelocity().multiply(-0.01, -0.1, -0.01));
         float g = 1.0F;
-        if (this.world instanceof ServerWorld && this.world.isThundering() && this.hasChanneling()) {
+        if (this.getWorld() instanceof ServerWorld && this.getWorld().isThundering() && this.hasChanneling()) {
             BlockPos blockPos = entity.getBlockPos();
-            if (this.world.isSkyVisible(blockPos)) {
-                LightningEntity lightningEntity = (LightningEntity) EntityType.LIGHTNING_BOLT.create(this.world);
+            if (this.getWorld().isSkyVisible(blockPos)) {
+                LightningEntity lightningEntity = (LightningEntity) EntityType.LIGHTNING_BOLT.create(this.getWorld());
                 lightningEntity.refreshPositionAfterTeleport(Vec3d.ofBottomCenter(blockPos));
                 lightningEntity.setChanneler(entity2 instanceof ServerPlayerEntity ? (ServerPlayerEntity) entity2 : null);
-                this.world.spawnEntity(lightningEntity);
+                this.getWorld().spawnEntity(lightningEntity);
                 soundEvent = SoundEvents.ITEM_TRIDENT_THUNDER;
                 g = 5.0F;
             }

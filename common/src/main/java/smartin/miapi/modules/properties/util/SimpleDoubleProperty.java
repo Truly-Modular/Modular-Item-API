@@ -2,12 +2,12 @@ package smartin.miapi.modules.properties.util;
 
 import com.google.gson.JsonElement;
 import net.minecraft.item.ItemStack;
+import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.cache.ModularItemCache;
 
-import javax.annotation.Nullable;
 import java.util.Objects;
 
 public abstract class SimpleDoubleProperty implements ModuleProperty {

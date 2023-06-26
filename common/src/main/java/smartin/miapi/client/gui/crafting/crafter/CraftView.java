@@ -4,6 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.inventory.Inventory;
@@ -15,8 +16,8 @@ import net.minecraft.screen.slot.Slot;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
-import net.minecraft.util.math.Matrix4f;
-import net.minecraft.util.math.Vector4f;
+import org.joml.Matrix4f;
+import org.joml.Vector4f;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.*;
 import smartin.miapi.client.gui.HoverDescription;
@@ -74,19 +75,19 @@ public class CraftView extends InteractAbleWidget {
         action.linkInventory(inventory, offset);
         compareStack = action.getPreview();
         action.forEachCraftingProperty(compareStack, ((craftingProperty, moduleInstance, itemStacks, invStart, invEnd, buf) -> {
-            InteractAbleWidget guiScreen = craftingProperty.createGui(this.x, this.y, this.width, this.height - 30, action);
+            InteractAbleWidget guiScreen = craftingProperty.createGui(this.getX(), this.getY(), this.width, this.height - 30, action);
             if (guiScreen != null) {
                 craftingGuis.add(guiScreen);
                 craftingProperties.add(craftingProperty);
             }
         }));
-        addChild(new SimpleButton<>(this.x + 10, this.y + this.height - 10, 40, 12, Text.translatable(Miapi.MOD_ID + ".ui.back"), slot, (moduleSlot) -> {
+        addChild(new SimpleButton<>(this.getX() + 10, this.getY() + this.height - 10, 40, 12, Text.translatable(Miapi.MOD_ID + ".ui.back"), slot, (moduleSlot) -> {
             isClosed = true;
             back.accept(moduleSlot);
         }));
 
         if (craftingGuis.size() > 1) {
-            previousButton = new PageButton<>(this.x + this.width - 10, this.y, 10, 12, true, null, (callback) -> {
+            previousButton = new PageButton<>(this.getX() + this.width - 10, this.getY(), 10, 12, true, null, (callback) -> {
                 if (currentGuiIndex > 0) {
                     removeChild(craftingGuis.get(currentGuiIndex));
                     currentGuiIndex--;
@@ -97,7 +98,7 @@ public class CraftView extends InteractAbleWidget {
                     nextButton.isEnabled = true;
                 }
             });
-            nextButton = new PageButton<>(this.x + 10, this.y, 10, 12, false, null, (callback) -> {
+            nextButton = new PageButton<>(this.getX() + 10, this.getY(), 10, 12, false, null, (callback) -> {
                 if (currentGuiIndex < craftingGuis.size() - 1) {
                     removeChild(craftingGuis.get(currentGuiIndex));
                     currentGuiIndex++;
@@ -110,7 +111,7 @@ public class CraftView extends InteractAbleWidget {
             });
         }
 
-        craftButton = new CraftButton<>(this.x + this.width - 50, this.y + this.height - 10, 40, 12, Text.translatable(Miapi.MOD_ID + ".ui.craft"), null, (callback) -> {
+        craftButton = new CraftButton<>(this.getX() + this.width - 50, this.getY() + this.height - 10, 40, 12, Text.translatable(Miapi.MOD_ID + ".ui.craft"), null, (callback) -> {
             setBuffers();
             if (action.canPerform()) {
                 isClosed = true;
@@ -168,8 +169,8 @@ public class CraftView extends InteractAbleWidget {
         if (children.contains(widget)) {
             return;
         }
-        widget.x = this.x;
-        widget.y = this.y;
+        widget.setX(this.getX());
+        widget.setY(this.getY());
         widget.setWidth(this.width);
         widget.setHeight(this.height - 30);
         currentSlots.forEach(slot -> {
@@ -184,15 +185,12 @@ public class CraftView extends InteractAbleWidget {
                 property.getSlotPositions().forEach(vec2f -> {
                     //int guiX = (MinecraftClient.getInstance().currentScreen.width - backgroundWidth) / 2; // X-coordinate of the top-left corner
                     //int guiY = (MinecraftClient.getInstance().currentScreen.height - backgroundHeight) / 2;
-                    int guiX = widget.x + (int) vec2f.x;
-                    int guiY = widget.y + (int) vec2f.y;
+                    int guiX = widget.getX() + (int) vec2f.x;
+                    int guiY = widget.getY() + (int) vec2f.y;
                     Matrix4f inverse = new Matrix4f(currentMatrix);
                     Vector4f vector4f = TransformableWidget.transFormMousePos(guiX, guiY, inverse);
-                    guiX = (int) (vector4f.getX() - (MinecraftClient.getInstance().currentScreen.width - backgroundWidth) / 2); // X-coordinate of the top-left corner
-                    guiY = (int) (vector4f.getY() - (MinecraftClient.getInstance().currentScreen.height - backgroundHeight) / 2);
-                    //TransformableWidget.inverse(inverse);
-                    Miapi.LOGGER.warn("X " + guiX + " Y " + guiY);
-                    Miapi.LOGGER.warn("X " + vector4f.getX() + " Y " + vector4f.getY());
+                    guiX = (int) (vector4f.x() - (MinecraftClient.getInstance().currentScreen.width - backgroundWidth) / 2); // X-coordinate of the top-left corner
+                    guiY = (int) (vector4f.y() - (MinecraftClient.getInstance().currentScreen.height - backgroundHeight) / 2);
                     Slot slot = new MutableSlot(linkedInventory, start + counter.getAndAdd(1), guiX, guiY);
                     currentSlots.add(slot);
                     addSlot.accept(slot);
@@ -203,8 +201,8 @@ public class CraftView extends InteractAbleWidget {
 
     }
 
-    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        currentMatrix = matrices.peek().getPositionMatrix();
+    public void render(DrawContext drawContext, int mouseX, int mouseY, float delta) {
+        currentMatrix = drawContext.getMatrices().peek().getPositionMatrix();
         if (firstRender) {
             update();
             firstRender = false;
@@ -212,7 +210,7 @@ public class CraftView extends InteractAbleWidget {
         //only preview on inventory change?
         // Add the initial GUI to the screen
         addGui(craftingGuis.get(currentGuiIndex));
-        super.render(matrices, mouseX, mouseY, delta);
+        super.render(drawContext, mouseX, mouseY, delta);
     }
 
     public void linkInventory(Inventory inventory, int offset) {
@@ -255,9 +253,8 @@ public class CraftView extends InteractAbleWidget {
         }
 
         @Override
-        public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-            super.render(matrices, mouseX, mouseY, delta);
-            RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+            super.render(context, mouseX, mouseY, delta);
             RenderSystem.setShaderTexture(0, texture);
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
             RenderSystem.enableBlend();
@@ -279,7 +276,7 @@ public class CraftView extends InteractAbleWidget {
                 textureOffset = 30;
             }
 
-            drawTexture(matrices, x, y, 0, textureOffset, 0, this.width, this.height, 40, this.height);
+            context.drawTexture(texture, getX(), getY(), 0, textureOffset, 0, this.width, this.height, 40, this.height);
         }
     }
 
@@ -293,28 +290,26 @@ public class CraftView extends InteractAbleWidget {
         }
 
         @Override
-        public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-            super.render(matrices, mouseX, mouseY, delta);
+        public void render(DrawContext drawContext, int mouseX, int mouseY, float delta) {
+            super.render(drawContext, mouseX, mouseY, delta);
         }
 
         @Override
-        public void renderHover(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+        public void renderHover(DrawContext drawContext, int mouseX, int mouseY, float delta) {
             String message = Text.translatable(Miapi.MOD_ID + ".ui.craft.warning").getString();
-            hover.x = x;
-            hover.y = y + this.height;
+            hover.setX(this.getX());
+            hover.setY(this.getY() + this.getHeight());
 
             for (Text text : warnings) {
                 message += "\n - " + text.getString();
             }
             hover.setText(Text.of(message));
             if (!this.isEnabled && isMouseOver(mouseX, mouseY)) {
-                RenderSystem.setShader(GameRenderer::getPositionColorShader);
                 RenderSystem.enableDepthTest();
                 RenderSystem.enableBlend();
                 RenderSystem.defaultBlendFunc();
-                hover.renderHover(matrices, mouseX, mouseY, delta);
+                hover.renderHover(drawContext, mouseX, mouseY, delta);
                 RenderSystem.disableBlend();
-                RenderSystem.enableTexture();
             }
         }
     }

@@ -4,6 +4,7 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileUtil;
@@ -35,7 +36,7 @@ public class AttackUtil {
     }
 
     public static void performSweeping(PlayerEntity player, LivingEntity target, float sweepingRange, float sweepingDamage) {
-        World world = player.world;
+        World world = player.getWorld();
         List<LivingEntity> entities = world.getNonSpectatingEntities(LivingEntity.class, target.getBoundingBox().expand(1.0, 0.25, 1.0).expand(sweepingRange * 2,1,sweepingRange * 2));
 
         for (LivingEntity entity : entities) {
@@ -48,8 +49,7 @@ public class AttackUtil {
         world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_PLAYER_ATTACK_SWEEP, player.getSoundCategory(), 1.0F, 1.0F);
         player.spawnSweepAttackParticles();
     }
-
-    @Nullable
+    
     public static EntityHitResult raycastFromPlayer(double maxDistance, PlayerEntity player) {
         Vec3d start = player.getCameraPosVec(0);
         Vec3d vec3d2 = player.getRotationVec(0);

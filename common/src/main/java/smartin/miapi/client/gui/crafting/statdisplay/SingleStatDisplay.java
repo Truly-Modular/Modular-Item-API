@@ -3,7 +3,6 @@ package smartin.miapi.client.gui.crafting.statdisplay;
 import net.minecraft.item.ItemStack;
 import smartin.miapi.client.gui.InteractAbleWidget;
 
-import javax.annotation.Nullable;
 
 public interface SingleStatDisplay {
 
@@ -17,6 +16,5 @@ public interface SingleStatDisplay {
         return 80;
     }
 
-    @Nullable
     InteractAbleWidget getHoverWidget();
 }

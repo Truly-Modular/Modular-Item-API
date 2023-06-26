@@ -5,12 +5,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.Vec2f;
+import org.jetbrains.annotations.Nullable;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.craft.CraftAction;
 import smartin.miapi.modules.ItemModule;
-import smartin.miapi.modules.properties.util.ModuleProperty;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 

@@ -2,13 +2,12 @@ package smartin.miapi.client.gui;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.ClickableWidget;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.ColorHelper;
-import net.minecraft.util.math.Matrix4f;
-import net.minecraft.util.math.Vector4f;
-import smartin.miapi.Miapi;
+import org.joml.Matrix4f;
+import org.joml.Vector4f;
 
 import java.util.List;
 
@@ -64,7 +63,7 @@ public class ScrollList extends InteractAbleWidget {
     }
 
     @Override
-    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+    public void render(DrawContext drawContext, int mouseX, int mouseY, float delta) {
         int totalHeight = 0;
         for (ClickableWidget widget : this.widgets) {
             totalHeight += widget.getHeight();
@@ -78,71 +77,34 @@ public class ScrollList extends InteractAbleWidget {
 
         needsScrollbar = totalHeight > height;
 
-        int startY = this.y + 1 - this.scrollAmount;
+        int startY = this.getY() + 1 - this.scrollAmount;
 
         for (ClickableWidget widget : this.widgets) {
-            if (startY + widget.getHeight() >= this.y && startY <= this.y + this.height - 1) {
-                widget.y = startY;
-                widget.x = this.x;
+            if (startY + widget.getHeight() >= this.getY() && startY <= this.getY() + this.height - 1) {
+                widget.setY(startY);
+                widget.setX(this.getX());
                 if (needsScrollbar) {
                     widget.setWidth(this.width - 5);
                 } else {
                     widget.setWidth(this.width);
                 }
-                Matrix4f matrix4f = new Matrix4f(matrices.peek().getPositionMatrix());
-                Vector4f posX = TransformableWidget.transFormMousePos(x, y, matrix4f);
-                Vector4f posY = TransformableWidget.transFormMousePos(x + width, y + height, matrix4f);
+                Matrix4f matrix4f = new Matrix4f(drawContext.getMatrices().peek().getPositionMatrix());
+                Vector4f posX = TransformableWidget.transFormMousePos(getX(), getY(), matrix4f);
+                Vector4f posY = TransformableWidget.transFormMousePos(getX() + width, getY() + height, matrix4f);
 
-                enableScissor((int) posX.getX(), (int) posX.getY(), (int) posY.getX(), (int) posY.getY());
-                widget.render(matrices, mouseX, mouseY, delta);
-                disableScissor();
+                drawContext.enableScissor((int) posX.x(), (int) posX.y, (int) posY.x(), (int) posY.y());
+                widget.render(drawContext, mouseX, mouseY, delta);
+                drawContext.disableScissor();
             }
             startY += widget.getHeight();
         }
 
         if (needsScrollbar) {
             int barHeight = Math.max(10, this.height * this.height / (this.maxScrollAmount + this.height));
-            int barY = this.y + 1 + (int) ((this.height - barHeight - 2) * (float) this.scrollAmount / this.maxScrollAmount);
-            int barX = this.x + this.width - 5;
-            fill(matrices, barX, y, barX + 5, this.y + this.height, 0xFFCCCCCC);
-            fill(matrices, barX, barY, barX + 5, barY + barHeight, ColorHelper.Argb.getArgb(255, 50, 50, 50));
-        }
-
-        if (saveMode) {
-            totalHeight = 0;
-            for (ClickableWidget widget : this.widgets) {
-                totalHeight += widget.getHeight();
-            }
-            this.maxScrollAmount = Math.max(0, totalHeight - this.height);
-            if (this.widgets == null) {
-                return;
-            }
-
-            this.scrollAmount = Math.max(0, Math.min(this.scrollAmount, this.maxScrollAmount));
-
-            needsScrollbar = totalHeight > height;
-
-            startY = this.y + 1 - this.scrollAmount;
-
-            for (ClickableWidget widget : this.widgets) {
-                if (startY + widget.getHeight() >= this.y && startY <= this.y + this.height - 1) {
-                    widget.y = startY;
-                    widget.x = this.x;
-                    if (needsScrollbar) {
-                        widget.setWidth(this.width - 5);
-                    } else {
-                        widget.setWidth(this.width);
-                    }
-                    Matrix4f matrix4f = new Matrix4f(matrices.peek().getPositionMatrix());
-                    Vector4f posX = TransformableWidget.transFormMousePos(x, y, matrix4f);
-                    Vector4f posY = TransformableWidget.transFormMousePos(x + width, y + height, matrix4f);
-
-                    enableScissor((int) posX.getX(), (int) posX.getY(), (int) posY.getX(), (int) posY.getY());
-                    widget.render(matrices, mouseX, mouseY, 0);
-                    disableScissor();
-                }
-                startY += widget.getHeight();
-            }
+            int barY = this.getY() + 1 + (int) ((this.height - barHeight - 2) * (float) this.scrollAmount / this.maxScrollAmount);
+            int barX = this.getX() + this.width - 5;
+            drawContext.fill(barX, getY(), barX + 5, this.getY() + this.height, 0xFFCCCCCC);
+            drawContext.fill(barX, barY, barX + 5, barY + barHeight, ColorHelper.Argb.getArgb(255, 50, 50, 50));
         }
     }
 
@@ -169,7 +131,7 @@ public class ScrollList extends InteractAbleWidget {
             boolean clicked = false;
             if (needsScrollbar) {
                 if (isMouseOver(mouseX, mouseY)) {
-                    if (mouseY > this.x + this.width - 5 && mouseY < this.x + this.width) {
+                    if (mouseY > this.getX() + this.width - 5 && mouseY < this.getX() + this.width) {
                         //drag motion
                     }
                 }
@@ -209,8 +171,8 @@ public class ScrollList extends InteractAbleWidget {
         if (!this.visible) {
             return false;
         } else {
-            double x = this.x;
-            double y = this.y;
+            double x = this.getX();
+            double y = this.getY();
             double width = this.width;
             double height = this.height;
             return mouseX >= x && mouseY >= y && mouseX < x + width && mouseY < y + height;

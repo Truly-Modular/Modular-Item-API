@@ -3,6 +3,7 @@ package smartin.miapi.client.gui.crafting.crafter;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
@@ -34,12 +35,12 @@ public class ReplaceView extends InteractAbleWidget {
         addChild(headerHolder);
 
 
-        ScrollingTextWidget header = new ScrollingTextWidget((int) ((this.x + 5) / headerScale), (int) (this.y / headerScale), (int) ((this.width - 10) / headerScale), Text.translatable(Miapi.MOD_ID + ".ui.replace.header"), ColorHelper.Argb.getArgb(255, 255, 255, 255));
+        ScrollingTextWidget header = new ScrollingTextWidget((int) ((this.getX() + 5) / headerScale), (int) (this.getY() / headerScale), (int) ((this.width - 10) / headerScale), Text.translatable(Miapi.MOD_ID + ".ui.replace.header"), ColorHelper.Argb.getArgb(255, 255, 255, 255));
         headerHolder.addChild(header);
         ScrollList list = new ScrollList(x, y + 16, width, height - 28, new ArrayList<>());
         addChild(list);
         list.children().clear();
-        addChild(new SimpleButton<>(this.x + 2, this.y + this.height - 10, 40, 12, Text.translatable(Miapi.MOD_ID + ".ui.back"), slot, back::accept));
+        addChild(new SimpleButton<>(this.getX() + 2, this.getY() + this.height - 10, 40, 12, Text.translatable(Miapi.MOD_ID + ".ui.back"), slot, back::accept));
         ArrayList<InteractAbleWidget> toList = new ArrayList<>();
         toList.add(new SlotButton(0, 0, this.width, 15, null));
         AllowedSlots.allowedIn(slot).forEach(module -> {
@@ -71,9 +72,7 @@ public class ReplaceView extends InteractAbleWidget {
             this.module = module;
         }
 
-        public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-            RenderSystem.setShader(GameRenderer::getPositionTexShader);
-            RenderSystem.setShaderTexture(0, texture);
+        public void render(DrawContext drawContext, int mouseX, int mouseY, float delta) {
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
             RenderSystem.enableBlend();
             RenderSystem.defaultBlendFunc();
@@ -81,11 +80,12 @@ public class ReplaceView extends InteractAbleWidget {
             if (isMouseOver(mouseX, mouseY)) {
                 hoverOffset = 14;
             }
-            drawTextureWithEdge(matrices, this.x, this.y, 0, hoverOffset, 140, 14, this.width, this.height, 140, 28, 2);
-            textWidget.x = this.x + 2;
-            textWidget.y = this.y + 3;
+            drawTextureWithEdge(drawContext,texture, this.getX(), this.getY(), 0, hoverOffset, 140, 14, this.getWidth(), this.getHeight(), 140, 28, 2);
+            textWidget.setX(this.getX() + 2);
+            textWidget.setY(this.getY() + 3);
+
             textWidget.setWidth(this.width - 4);
-            textWidget.render(matrices, mouseX, mouseY, delta);
+            textWidget.render(drawContext, mouseX, mouseY, delta);
         }
 
         public boolean isMouseOver(double mouseX, double mouseY) {

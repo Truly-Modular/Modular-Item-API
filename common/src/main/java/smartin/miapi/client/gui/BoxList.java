@@ -3,18 +3,17 @@ package smartin.miapi.client.gui;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Environment(EnvType.CLIENT)
 public class BoxList extends InteractAbleWidget {
@@ -38,7 +37,7 @@ public class BoxList extends InteractAbleWidget {
      *                no further elements are added.
      *                Make sure x,y,width and height are working for the ClickAbleWidgets
      */
-    public BoxList(int x, int y, int width, int height, Text message, @Nullable List<ClickableWidget> widgets) {
+    public BoxList(int x, int y, int width, int height, Text message, List<ClickableWidget> widgets) {
         super(x, y, width, height, message);
         //TODO:decide what to do with this
         setButtons(new Identifier(Miapi.MOD_ID, "textures/button_left.png"), 10, 10, true);
@@ -46,13 +45,13 @@ public class BoxList extends InteractAbleWidget {
         setWidgets(widgets, space);
     }
 
-    public void setSpace(int space){
+    public void setSpace(int space) {
         this.space = space;
         List<ClickableWidget> widgets = new ArrayList<>();
-        widgetPages.values().stream().forEach(subList->{
+        widgetPages.values().stream().forEach(subList -> {
             widgets.addAll(subList);
         });
-        setWidgets(widgets,space);
+        setWidgets(widgets, space);
     }
 
     public void setButtons(Identifier texture, int width, int height, boolean isLeft) {
@@ -98,16 +97,16 @@ public class BoxList extends InteractAbleWidget {
             int page = i / (maxColumns * maxRows);
             int columnIndex = (i % (maxColumns * maxRows)) % maxColumns;
             int rowIndex = (i % (maxColumns * maxRows)) / maxColumns;
-            widgets.get(i).x = (columnIndex * (maxWidth + space)) + space + this.x;
-            widgets.get(i).y = (rowIndex * (maxHeight + space)) + space + this.y;
+            widgets.get(i).setX((columnIndex * (maxWidth + space)) + space + this.getX());
+            widgets.get(i).setY((rowIndex * (maxHeight + space)) + space + this.getY());
             widgetPages.get(page).add(widgets.get(i));
         }
         this.totalPages = totalPages;
         setPage(currentPage);
-        left.x = this.x + space;
-        left.y = this.y + this.height - left.getHeight() - space;
-        right.x = this.x + this.getWidth() - right.getHeight() - space;
-        right.y = this.y + this.height - right.getHeight() - space;
+        left.setX(this.getX() + space);
+        left.setY(this.getY() + this.height - left.getHeight() - space);
+        right.setX(this.getX() + this.getWidth() - right.getHeight() - space);
+        right.setY(this.getY() + this.height - right.getHeight() - space);
     }
 
     public void setPage(int i) {
@@ -115,19 +114,14 @@ public class BoxList extends InteractAbleWidget {
         this.children().clear();
         this.children().add(left);
         this.children().add(right);
-        if(widgetPages.get(currentPage)!=null){
+        if (widgetPages.get(currentPage) != null) {
             this.children().addAll(widgetPages.get(currentPage));
         }
     }
 
     @Override
-    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        super.render(matrices, mouseX, mouseY, delta);
-    }
-
-    @Override
-    public void appendNarrations(NarrationMessageBuilder builder) {
-
+    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+        super.render(context, mouseX, mouseY, delta);
     }
 
     public class PageButton extends InteractAbleWidget {
@@ -135,7 +129,7 @@ public class BoxList extends InteractAbleWidget {
         private Identifier texture;
         private boolean isClicked;
 
-        public PageButton(int x, int y, int width, int height, @Nonnull Identifier texture, boolean isLeft) {
+        public PageButton(int x, int y, int width, int height, Identifier texture, boolean isLeft) {
             super(x, y, width, height, Text.empty());
             this.isLeft = isLeft;
             this.texture = texture;
@@ -143,7 +137,7 @@ public class BoxList extends InteractAbleWidget {
 
         @Override
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
-            if (button == 0 && isMouseOver(mouseX,mouseY)) {
+            if (button == 0 && isMouseOver(mouseX, mouseY)) {
                 //TODO:CHECK
                 this.isClicked = true;
                 if (isLeft) {
@@ -166,10 +160,8 @@ public class BoxList extends InteractAbleWidget {
         }
 
         @Override
-        public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-            super.render(matrices, mouseX, mouseY, delta);
-            RenderSystem.setShader(GameRenderer::getPositionTexShader);
-            RenderSystem.setShaderTexture(0, texture);
+        public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+            super.render(context, mouseX, mouseY, delta);
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
             RenderSystem.enableBlend();
 
@@ -190,7 +182,7 @@ public class BoxList extends InteractAbleWidget {
                 textureOffset = 30;
             }
 
-            drawTexture(matrices, x, y, 0, textureOffset, 0, this.width, this.height, 40, this.height);
+            drawTexture(context, texture, getX(), getY(), 0, textureOffset, 0, this.width, this.height, 40, this.height);
         }
     }
 }

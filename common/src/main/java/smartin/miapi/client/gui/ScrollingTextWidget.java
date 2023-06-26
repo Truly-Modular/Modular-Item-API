@@ -4,6 +4,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.util.math.MatrixStack;
@@ -75,14 +76,14 @@ public class ScrollingTextWidget extends InteractAbleWidget implements Drawable,
     /**
      * either add this as a Child or manually call this method to render the text
      *
-     * @param matrices the current MatrixStack / PoseStack
-     * @param mouseX   current mouseX Position
-     * @param mouseY   current mouseY Position
-     * @param delta    the deltaTime between frames
-     *                 This is needed for animations and co
+     * @param context the current DrawContext
+     * @param mouseX  current mouseX Position
+     * @param mouseY  current mouseY Position
+     * @param delta   the deltaTime between frames
+     *                This is needed for animations and co
      */
     @Override
-    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         String displayText = this.text.getString();
 
         int textWidth = MinecraftClient.getInstance().textRenderer.getWidth(displayText);
@@ -109,16 +110,22 @@ public class ScrollingTextWidget extends InteractAbleWidget implements Drawable,
 
             displayText = MinecraftClient.getInstance().textRenderer.trimToWidth(displayText, this.width);
         }
-        int textStart = x;
+        int textStart = getX();
         switch (orientation) {
             case CENTERED -> textStart += (this.width - textWidth) / 2;
             case RIGHT -> textStart += (this.width - textWidth);
         }
-        if (hasTextShadow) {
-            drawTextWithShadow(matrices, MinecraftClient.getInstance().textRenderer, Text.literal(displayText), textStart, y, this.textColor);
-        } else {
-            MinecraftClient.getInstance().textRenderer.draw(matrices, Text.literal(displayText), textStart, y, textColor);
-        }
+        renderer.draw(
+                displayText,
+                textStart,
+                this.getY(),
+                textColor,
+                hasTextShadow,
+                context.getMatrices().peek().getPositionMatrix(),
+                context.getVertexConsumers(),
+                TextRenderer.TextLayerType.NORMAL,
+                0,
+                0);
     }
 
     public int getRequiredWidth() {

@@ -40,8 +40,8 @@ public class ItemAbilityManager {
                     playerActiveItems.put(playerEntity, playerEntity.getActiveItem());
                     if (oldItem != null) {
                         ItemUseAbility ability = getAbility(oldItem);
-                        trigger(new Ability(oldItem, playerEntity.world, playerEntity, null, ability), ABILITY_END, ABILITY_STOP, ABILITY_STOP_HOLDING);
-                        ability.onStoppedHolding(oldItem, playerEntity.world, playerEntity);
+                        trigger(new Ability(oldItem, playerEntity.getWorld(), playerEntity, null, ability), ABILITY_END, ABILITY_STOP, ABILITY_STOP_HOLDING);
+                        ability.onStoppedHolding(oldItem, playerEntity.getWorld(), playerEntity);
                         abilityMap.remove(oldItem);
                     }
                 }
@@ -52,8 +52,8 @@ public class ItemAbilityManager {
                     playerActiveItemsClient.put(playerEntity, playerEntity.getActiveItem());
                     if (oldItem != null) {
                         ItemUseAbility ability = getAbility(oldItem);
-                        trigger(new Ability(oldItem, playerEntity.world, playerEntity, null, ability), ABILITY_END, ABILITY_STOP, ABILITY_STOP_HOLDING);
-                        ability.onStoppedHolding(oldItem, playerEntity.world, playerEntity);
+                        trigger(new Ability(oldItem, playerEntity.getWorld(), playerEntity, null, ability), ABILITY_END, ABILITY_STOP, ABILITY_STOP_HOLDING);
+                        ability.onStoppedHolding(oldItem, playerEntity.getWorld(), playerEntity);
                         abilityMap.remove(oldItem);
                     }
                 }

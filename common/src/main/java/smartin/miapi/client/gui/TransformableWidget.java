@@ -1,5 +1,7 @@
 package smartin.miapi.client.gui;
 
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.util.math.MatrixStack;
@@ -32,7 +34,8 @@ public class TransformableWidget extends InteractAbleWidget {
 
     public TransformableWidget(int x, int y, int width, int height, float scale) {
         super(x, y, width, height, Text.empty());
-        rawProjection = Matrix4f.scale(scale, scale, scale);
+        rawProjection = new Matrix4f();
+        rawProjection.scale(scale);
     }
 
 
@@ -151,78 +154,69 @@ public class TransformableWidget extends InteractAbleWidget {
      * This functions handles the Rendering
      * If you have children you should call super.render(matrices ,mouseX ,mouseY ,delta) at the end to render your children
      *
-     * @param matrices the current MatrixStack / PoseStack
-     * @param mouseX   current mouseX Position
-     * @param mouseY   current mouseY Position
-     * @param delta    the deltaTime between frames
-     *                 This is needed for animations and co
+     * @param context the current MatrixStack / PoseStack
+     * @param mouseX  current mouseX Position
+     * @param mouseY  current mouseY Position
+     * @param delta   the deltaTime between frames
+     *                This is needed for animations and co
      */
     @Override
-    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        MatrixStack matrixStack = new MatrixStack();
-        matrixStack.multiplyPositionMatrix(matrices.peek().getPositionMatrix());
+    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+        DrawContext drawContext = new DrawContext(MinecraftClient.getInstance(), context.getVertexConsumers());
+        drawContext.getMatrices().multiplyPositionMatrix(context.getMatrices().peek().getPositionMatrix());
 
-        matrixStack.multiplyPositionMatrix(rawProjection);
+        drawContext.getMatrices().multiplyPositionMatrix(rawProjection);
         Vector4f position = transFormMousePos(mouseX, mouseY);
 
         children().forEach(element -> {
             if (element instanceof Drawable drawable) {
-                drawable.render(matrixStack, Math.round(position.x), Math.round(position.y), delta);
+                drawable.render(drawContext, Math.round(position.x), Math.round(position.y), delta);
             }
         });
     }
 
     @Override
-    public void renderHover(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        MatrixStack matrixStack = new MatrixStack();
-        matrixStack.multiplyPositionMatrix(matrices.peek().getPositionMatrix());
+    public void renderHover(DrawContext context, int mouseX, int mouseY, float delta) {
+        DrawContext drawContext = new DrawContext(MinecraftClient.getInstance(), context.getVertexConsumers());
+        drawContext.getMatrices().multiplyPositionMatrix(context.getMatrices().peek().getPositionMatrix());
 
-        matrixStack.multiplyPositionMatrix(rawProjection);
+        drawContext.getMatrices().multiplyPositionMatrix(rawProjection);
         Vector4f position = transFormMousePos(mouseX, mouseY);
 
-        super.renderHover(matrixStack,  Math.round(position.x), Math.round(position.y), delta);
+        super.renderHover(drawContext, Math.round(position.x), Math.round(position.y), delta);
     }
 
-    public void renderWidget(InteractAbleWidget widget, MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        MatrixStack matrixStack = new MatrixStack();
-        matrixStack.multiplyPositionMatrix(matrices.peek().getPositionMatrix());
+    public void renderWidget(InteractAbleWidget widget, DrawContext context, int mouseX, int mouseY, float delta) {
+        DrawContext drawContext = new DrawContext(MinecraftClient.getInstance(), context.getVertexConsumers());
+        drawContext.getMatrices().multiplyPositionMatrix(context.getMatrices().peek().getPositionMatrix());
 
-        matrixStack.multiplyPositionMatrix(rawProjection);
+        drawContext.getMatrices().multiplyPositionMatrix(rawProjection);
         Vector4f position = transFormMousePos(mouseX, mouseY);
-        widget.render(matrixStack,  Math.round(position.x), Math.round(position.y), delta);
+        widget.render(drawContext, Math.round(position.x), Math.round(position.y), delta);
     }
 
     public Vector4f transFormMousePos(int mouseX, int mouseY) {
-        return transFormMousePos((double)mouseX, mouseY);
+        return transFormMousePos((double) mouseX, mouseY);
     }
 
     public Vector4f transFormMousePos(double mouseX, double mouseY) {
         Vector4f position = new Vector4f((float) mouseX, (float) mouseY, 0, 0);
 
-        position.transform(getInverse());
+        position = position.mul(getInverse());
         return position;
     }
 
     public static Vector4f transFormMousePos(double mouseX, double mouseY, Matrix4f matrix4f) {
         Vector4f position = new Vector4f((float) mouseX, (float) mouseY, 0, 0);
 
-        position.transform(matrix4f);
-        return position;
-    }
+        position = position.mul(matrix4f);
 
-    public static boolean inverse(Matrix4f matrix4f) {
-        float f = matrix4f.determinantAndAdjugate();
-        if (Math.abs(f) > 1.0E-6F) {
-            matrix4f.multiply(1 / f);
-            return true;
-        } else {
-            return false;
-        }
+        return position;
     }
 
     public Matrix4f getInverse() {
         Matrix4f inverse = new Matrix4f(rawProjection);
-        inverse(inverse);
+        inverse.invert();
         return inverse;
     }
 }

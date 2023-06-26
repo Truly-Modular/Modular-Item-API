@@ -2,14 +2,15 @@ package smartin.miapi.client.gui;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ClickableWidget;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,7 +50,7 @@ public abstract class InteractAbleWidget extends ClickableWidget implements Draw
     /**
      * This functions Renders a Square Border
      *
-     * @param matrices    the matrices to draw the square
+     * @param drawContext The drawContext used.
      * @param x           top left Corner x
      * @param y           top Left Corner <
      * @param width       width of the square
@@ -57,15 +58,16 @@ public abstract class InteractAbleWidget extends ClickableWidget implements Draw
      * @param borderWidth with of the border, border is drawn inwards
      * @param color       color of the border
      */
-    public static void drawSquareBorder(MatrixStack matrices, int x, int y, int width, int height, int borderWidth, int color) {
+    public static void drawSquareBorder(DrawContext drawContext, int x, int y, int width, int height, int borderWidth, int color) {
+        //TODO:reimplement this
         //Top
-        fill(matrices, x, y, x + width, y + borderWidth, color);
+        drawContext.fill(x, y, x + width, y + borderWidth, color);
         //Bottom
-        fill(matrices, x, y + height, x + width, y + height - borderWidth, color);
+        drawContext.fill(x, y + height, x + width, y + height - borderWidth, color);
         //Left
-        fill(matrices, x, y, x + borderWidth, y + height, color);
+        drawContext.fill(x, y, x + borderWidth, y + height, color);
         //Right
-        fill(matrices, x + width, y, x + width - borderWidth, y + height, color);
+        drawContext.fill(x + width, y, x + width - borderWidth, y + height, color);
     }
 
     /**
@@ -73,7 +75,8 @@ public abstract class InteractAbleWidget extends ClickableWidget implements Draw
      * coordinates (u, v) and (u2, regionHeight).
      * This is useful if a texture might be resized in the UI to still align its Edges
      *
-     * @param matrices      The matrix stack to apply the transformation to.
+     * @param drawContext   The drawContext used.
+     * @param texture       The texture rendered.
      * @param x             The x-coordinate to draw the texture at.
      * @param y             The y-coordinate to draw the texture at.
      * @param u             The x-coordinate of the top-left corner of the texture region to draw.
@@ -86,11 +89,11 @@ public abstract class InteractAbleWidget extends ClickableWidget implements Draw
      * @param textureHeight The height of the texture sheet.
      * @param borderWidth   The width of the border to draw around the texture.
      */
-    public static void drawTextureWithEdgeAndScale(MatrixStack matrices, int x, int y, int u, int v, int regionWidth, int regionHeight, int width, int height, int textureWidth, int textureHeight, int borderWidth, float scale) {
-        MatrixStack matrixStack = new MatrixStack();
-        matrixStack.multiplyPositionMatrix(matrices.peek().getPositionMatrix().copy());
-        matrixStack.scale(1 / scale, 1 / scale, 1 / scale);
-        drawTextureWithEdge(matrixStack, (int) (x * scale), (int) (y * scale), u, v, regionWidth, regionHeight, (int)
+    public static void drawTextureWithEdgeAndScale(DrawContext drawContext, Identifier texture, int x, int y, int u, int v, int regionWidth, int regionHeight, int width, int height, int textureWidth, int textureHeight, int borderWidth, float scale) {
+        DrawContext context = new DrawContext(MinecraftClient.getInstance(), drawContext.getVertexConsumers());
+        context.getMatrices().multiplyPositionMatrix(drawContext.getMatrices().peek().getPositionMatrix());
+        context.getMatrices().peek().getPositionMatrix().scale(1 / scale);
+        drawTextureWithEdge(context, texture, (int) (x * scale), (int) (y * scale), u, v, regionWidth, regionHeight, (int)
                 (width * scale), (int) (height * scale), textureWidth, textureHeight, borderWidth);
     }
 
@@ -99,7 +102,8 @@ public abstract class InteractAbleWidget extends ClickableWidget implements Draw
      * coordinates (u, v) and (u2, regionHeight).
      * This is useful if a texture might be resized in the UI to still align its Edges
      *
-     * @param matrices      The matrix stack to apply the transformation to.
+     * @param drawContext   The drawContext used.
+     * @param texture       The texture rendered.
      * @param x             The x-coordinate to draw the texture at.
      * @param y             The y-coordinate to draw the texture at.
      * @param u             The x-coordinate of the top-left corner of the texture region to draw.
@@ -112,25 +116,25 @@ public abstract class InteractAbleWidget extends ClickableWidget implements Draw
      * @param textureHeight The height of the texture sheet.
      * @param borderWidth   The width of the border to draw around the texture.
      */
-    public static void drawTextureWithEdge(MatrixStack matrices, int x, int y, int u, int v, int regionWidth, int regionHeight, int width, int height, int textureWidth, int textureHeight, int borderWidth) {
+    public static void drawTextureWithEdge(DrawContext drawContext, Identifier texture, int x, int y, int u, int v, int regionWidth, int regionHeight, int width, int height, int textureWidth, int textureHeight, int borderWidth) {
         //Center
-        drawTexture(matrices, x + borderWidth, y + borderWidth, width - 2 * borderWidth, height - 2 * borderWidth, u + borderWidth, v + borderWidth, regionWidth - borderWidth * 2, regionHeight - borderWidth * 2, textureWidth, textureHeight);
+        drawContext.drawTexture(texture, x + borderWidth, y + borderWidth, width - 2 * borderWidth, height - 2 * borderWidth, u + borderWidth, v + borderWidth, regionWidth - borderWidth * 2, regionHeight - borderWidth * 2, textureWidth, textureHeight);
         //Top Left Corner
-        drawTexture(matrices, x, y, borderWidth, borderWidth, u, v, borderWidth, borderWidth, textureWidth, textureHeight);
+        drawContext.drawTexture(texture, x, y, borderWidth, borderWidth, u, v, borderWidth, borderWidth, textureWidth, textureHeight);
         //Top Right Corner
-        drawTexture(matrices, x + width - borderWidth, y, borderWidth, borderWidth, u + regionWidth - borderWidth, v, borderWidth, borderWidth, textureWidth, textureHeight);
+        drawContext.drawTexture(texture, x + width - borderWidth, y, borderWidth, borderWidth, u + regionWidth - borderWidth, v, borderWidth, borderWidth, textureWidth, textureHeight);
         //Bottom Left Corner
-        drawTexture(matrices, x, y + height - borderWidth, borderWidth, borderWidth, u, v + regionHeight - borderWidth, borderWidth, borderWidth, textureWidth, textureHeight);
+        drawContext.drawTexture(texture, x, y + height - borderWidth, borderWidth, borderWidth, u, v + regionHeight - borderWidth, borderWidth, borderWidth, textureWidth, textureHeight);
         //Bottom Right Corner
-        drawTexture(matrices, x + width - borderWidth, y + height - borderWidth, borderWidth, borderWidth, u + regionWidth - borderWidth, v + regionHeight - borderWidth, borderWidth, borderWidth, textureWidth, textureHeight);
+        drawContext.drawTexture(texture, x + width - borderWidth, y + height - borderWidth, borderWidth, borderWidth, u + regionWidth - borderWidth, v + regionHeight - borderWidth, borderWidth, borderWidth, textureWidth, textureHeight);
         //Bottom Bar
-        drawTexture(matrices, x + borderWidth, y + height - borderWidth, width - 2 * borderWidth, borderWidth, u + borderWidth, v + regionHeight - borderWidth, regionWidth - borderWidth * 2, borderWidth, textureWidth, textureHeight);
+        drawContext.drawTexture(texture, x + borderWidth, y + height - borderWidth, width - 2 * borderWidth, borderWidth, u + borderWidth, v + regionHeight - borderWidth, regionWidth - borderWidth * 2, borderWidth, textureWidth, textureHeight);
         //Right Bar
-        drawTexture(matrices, x + width - borderWidth, y + borderWidth, borderWidth, height - 2 * borderWidth, u + regionWidth - borderWidth, v + borderWidth, borderWidth, regionHeight - borderWidth * 2, textureWidth, textureHeight);
+        drawContext.drawTexture(texture, x + width - borderWidth, y + borderWidth, borderWidth, height - 2 * borderWidth, u + regionWidth - borderWidth, v + borderWidth, borderWidth, regionHeight - borderWidth * 2, textureWidth, textureHeight);
         //Left Bar
-        drawTexture(matrices, x, y + borderWidth, borderWidth, height - 2 * borderWidth, u, v + borderWidth, borderWidth, regionHeight - borderWidth * 2, textureWidth, textureHeight);
+        drawContext.drawTexture(texture, x, y + borderWidth, borderWidth, height - 2 * borderWidth, u, v + borderWidth, borderWidth, regionHeight - borderWidth * 2, textureWidth, textureHeight);
         //Top Bar
-        drawTexture(matrices, x + borderWidth, y, width - 2 * borderWidth, borderWidth, u + borderWidth, v, regionWidth - borderWidth * 2, borderWidth, textureWidth, textureHeight);
+        drawContext.drawTexture(texture, x + borderWidth, y, width - 2 * borderWidth, borderWidth, u + borderWidth, v, regionWidth - borderWidth * 2, borderWidth, textureWidth, textureHeight);
     }
 
 
@@ -139,7 +143,8 @@ public abstract class InteractAbleWidget extends ClickableWidget implements Draw
      * coordinates (u, v) and (u2, v2).
      * This is useful if a texture might be resized in the UI to still align its Edges
      *
-     * @param matrices      The matrix stack to apply the transformation to.
+     * @param drawContext   The drawContext used.
+     * @param texture       The texture rendered.
      * @param x             The x-coordinate to draw the texture at.
      * @param y             The y-coordinate to draw the texture at.
      * @param width         The width of the texture.
@@ -148,8 +153,8 @@ public abstract class InteractAbleWidget extends ClickableWidget implements Draw
      * @param textureHeight The height of the texture sheet.
      * @param borderWidth   The width of the border to draw around the texture.
      */
-    public static void drawTextureWithEdge(MatrixStack matrices, int x, int y, int width, int height, int textureWidth, int textureHeight, int borderWidth) {
-        drawTextureWithEdge(matrices, x, y, 0, 0, textureWidth, textureHeight, width, height, textureWidth, textureHeight, borderWidth);
+    public static void drawTextureWithEdge(DrawContext drawContext, Identifier texture, int x, int y, int width, int height, int textureWidth, int textureHeight, int borderWidth) {
+        drawTextureWithEdge(drawContext, texture, x, y, 0, 0, textureWidth, textureHeight, width, height, textureWidth, textureHeight, borderWidth);
     }
 
     public List<InteractAbleWidget> getHoverElements() {
@@ -187,7 +192,6 @@ public abstract class InteractAbleWidget extends ClickableWidget implements Draw
     /**
      * This Method gives direct access to the ArrayList of Children
      */
-    @Nonnull
     public List<Element> children() {
         return children;
     }
@@ -345,17 +349,17 @@ public abstract class InteractAbleWidget extends ClickableWidget implements Draw
      * This functions handles the Rendering
      * If you have children you should call super.render(matrices ,mouseX ,mouseY ,delta) at the end to render your children
      *
-     * @param matrices the current MatrixStack / PoseStack
-     * @param mouseX   current mouseX Position
-     * @param mouseY   current mouseY Position
-     * @param delta    the deltaTime between frames
-     *                 This is needed for animations and co
+     * @param drawContext the current MatrixStack / PoseStack
+     * @param mouseX      current mouseX Position
+     * @param mouseY      current mouseY Position
+     * @param delta       the deltaTime between frames
+     *                    This is needed for animations and co
      */
     @Override
-    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+    public void render(DrawContext drawContext, int mouseX, int mouseY, float delta) {
         children().forEach(element -> {
             if (element instanceof Drawable drawable) {
-                drawable.render(matrices, mouseX, mouseY, delta);
+                drawable.render(drawContext, mouseX, mouseY, delta);
             }
         });
     }
@@ -364,31 +368,30 @@ public abstract class InteractAbleWidget extends ClickableWidget implements Draw
      * This functions handles the Rendering
      * If you have children you should call super.render(matrices ,mouseX ,mouseY ,delta) at the end to render your children
      *
-     * @param matrices the current MatrixStack / PoseStack
-     * @param mouseX   current mouseX Position
-     * @param mouseY   current mouseY Position
-     * @param delta    the deltaTime between frames
-     *                 This is needed for animations and co
+     * @param drawContext the current MatrixStack / PoseStack
+     * @param mouseX      current mouseX Position
+     * @param mouseY      current mouseY Position
+     * @param delta       the deltaTime between frames
+     *                    This is needed for animations and co
      */
-    public void renderHover(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+    public void renderHover(DrawContext drawContext, int mouseX, int mouseY, float delta) {
         hoverElements.forEach(hoverElements -> {
-            hoverElements.render(matrices, mouseX, mouseY, delta);
+            hoverElements.render(drawContext, mouseX, mouseY, delta);
         });
         children().forEach(element -> {
             if (element instanceof InteractAbleWidget widget) {
-                widget.renderHover(matrices, mouseX, mouseY, delta);
+                widget.renderHover(drawContext, mouseX, mouseY, delta);
             }
         });
     }
 
-    /**
-     * just leaving it Empty for convienience
-     * should be overwriten for Narrater support
-     *
-     * @param builder the NaraterBuilder
-     */
     @Override
-    public void appendNarrations(NarrationMessageBuilder builder) {
+    protected void renderButton(DrawContext context, int mouseX, int mouseY, float delta) {
+
+    }
+
+    @Override
+    protected void appendClickableNarrations(NarrationMessageBuilder builder) {
 
     }
 }

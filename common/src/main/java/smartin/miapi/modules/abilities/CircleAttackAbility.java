@@ -5,12 +5,12 @@ import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particle.DefaultParticleType;
+import net.minecraft.registry.Registries;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import smartin.miapi.modules.abilities.util.AttackUtil;
 import smartin.miapi.modules.abilities.util.ItemUseAbility;
@@ -57,7 +57,7 @@ public class CircleAttackAbility implements ItemUseAbility {
                 player.swingHand(player.getActiveHand());
                 player.getItemCooldownManager().set(stack.getItem(), (int) cooldown);
 
-                if (player.world instanceof ServerWorld serverWorld) {
+                if (player.getWorld() instanceof ServerWorld serverWorld) {
 
                     json.particles.forEach(particleJson -> {
                         double radius = range * particleJson.rangePercent; // Set the desired radius for the particle spawn
@@ -70,7 +70,7 @@ public class CircleAttackAbility implements ItemUseAbility {
                             double particleX = player.getX() + offsetX;
                             double particleY = player.getBodyY(0.5);
                             double particleZ = player.getZ() + offsetZ;
-                            particleJson.particleType = Registry.PARTICLE_TYPE.get(new Identifier(particleJson.particle));
+                            particleJson.particleType = Registries.PARTICLE_TYPE.get(new Identifier(particleJson.particle));
                             if (particleJson.particleType instanceof DefaultParticleType particle) {
                                 serverWorld.spawnParticles(particle, particleX, particleY, particleZ, particleJson.count, 0, 0, 0, 1.0);
                             }

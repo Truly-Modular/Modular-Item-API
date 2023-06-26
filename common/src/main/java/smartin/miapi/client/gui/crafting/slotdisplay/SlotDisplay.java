@@ -4,28 +4,33 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.DiffuseLighting;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.json.ModelTransformation;
+import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.Quaternion;
-import net.minecraft.util.math.Vec3f;
-import net.minecraft.util.math.Vector4f;
+import org.joml.Quaterniond;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
+import org.joml.Vector4f;
 import org.lwjgl.opengl.GL11;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.InteractAbleWidget;
+import smartin.miapi.modules.properties.MiningLevelProperty;
 import smartin.miapi.modules.properties.SlotProperty;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Vector;
 import java.util.function.Consumer;
 
 /**
@@ -49,8 +54,6 @@ public class SlotDisplay extends InteractAbleWidget {
     public SlotDisplay(ItemStack stack, int x, int y, int height, int width, Consumer<SlotProperty.ModuleSlot> selected) {
         super(x, y, width, height, Text.literal("Item Display"));
         this.stack = stack;
-        this.x = x;
-        this.y = y;
         this.height = height;
         this.width = width;
         slotProjection.scale(1.0F, -1.0F, 1.0F);
@@ -71,7 +74,7 @@ public class SlotDisplay extends InteractAbleWidget {
 
     @Override
     public boolean isMouseOver(double x, double y) {
-        boolean mouseOver = x >= this.x && y >= this.y && x < this.x + this.width && y < this.y + this.height;
+        boolean mouseOver = x >= this.getX() && y >= this.getY() && x < this.getX() + this.width && y < this.getY() + this.height;
         if (!mouseOver) {
             mouseDown0 = false;
             mouseDown1 = false;
@@ -112,7 +115,8 @@ public class SlotDisplay extends InteractAbleWidget {
         float angleX = (float) -(deltaY * 0.02f);
         float angleY = (float) -(deltaX * 0.02f);
         MatrixStack newStack = new MatrixStack();
-        newStack.multiply(Quaternion.fromEulerXyz(new Vec3f(-angleX, angleY, 0)));
+
+        //newStack.multiply(Quaternion.fromEulerXyz(new Vec3f(-angleX, angleY, 0)));
         newStack.multiplyPositionMatrix(slotProjection.peek().getPositionMatrix());
         slotProjection = newStack;
     }
@@ -162,23 +166,23 @@ public class SlotDisplay extends InteractAbleWidget {
     }
 
     @Override
-    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        enableScissor(this.x, this.y, this.x + this.width, this.y + this.height);
-        renderSlot(stack, matrices, mouseX, mouseY, delta);
-        super.render(matrices, mouseX, mouseY, delta);
-        disableScissor();
+    public void render(DrawContext drawContext, int mouseX, int mouseY, float delta) {
+        drawContext.enableScissor(this.getX(), this.getY(), this.getX() + this.width, this.getY() + this.height);
+        renderSlot(stack, drawContext, mouseX, mouseY, delta);
+        super.render(drawContext, mouseX, mouseY, delta);
+        drawContext.disableScissor();
     }
 
     public void select(SlotProperty.ModuleSlot selected) {
         this.selected = selected;
     }
 
-    private Vec3f position() {
+    private Vector3f position() {
         ItemRenderer renderer = MinecraftClient.getInstance().getItemRenderer();
-        return new Vec3f(x + (float) (width - 16) / 2, y + (float) (height - 16) / 2, (100.0F + renderer.zOffset + 50));
+        return new Vector3f(getX() + (float) (width - 16) / 2, getY() + (float) (height - 16) / 2, (100.0F + 50));
     }
 
-    public void renderSlot(ItemStack stack, MatrixStack matrices, int mouseX, int mouseY, float delta) {
+    public void renderSlot(ItemStack stack, DrawContext context, int mouseX, int mouseY, float delta) {
         ItemRenderer renderer = MinecraftClient.getInstance().getItemRenderer();
         MinecraftClient.getInstance().getTextureManager().getTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE).setFilter(false, false);
         RenderSystem.setShaderTexture(0, SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE);
@@ -186,8 +190,8 @@ public class SlotDisplay extends InteractAbleWidget {
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         MatrixStack matrixStack = RenderSystem.getModelViewStack();
         matrixStack.push();
-        Vec3f pos = position();
-        matrixStack.translate(pos.getX(), pos.getY(), pos.getZ());
+        Vector3f pos = position();
+        matrixStack.translate(pos.x(), pos.y(), pos.z());
         matrixStack.scale(getSize(), getSize(), 1.0F);
         RenderSystem.applyModelViewMatrix();
         VertexConsumerProvider.Immediate immediate = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
@@ -196,7 +200,7 @@ public class SlotDisplay extends InteractAbleWidget {
             DiffuseLighting.disableGuiDepthLighting();
         }
         RenderSystem.enableDepthTest();
-        renderer.renderItem(stack, ModelTransformation.Mode.GUI, 15728880, OverlayTexture.DEFAULT_UV, slotProjection, immediate, 0);
+        renderer.renderItem(stack, ModelTransformationMode.GUI, 15728880, OverlayTexture.DEFAULT_UV, slotProjection, immediate, MinecraftClient.getInstance().world, 0);
         immediate.draw();
         //renderButtons(matrixStack, slotProjection);
         RenderSystem.enableDepthTest();
@@ -205,18 +209,6 @@ public class SlotDisplay extends InteractAbleWidget {
         }
         matrixStack.pop();
         RenderSystem.applyModelViewMatrix();
-    }
-
-    public void renderButtons(MatrixStack matrixStack, MatrixStack otherProjection) {
-        buttonMap.forEach((currentslot, button) -> {
-            Vec3f position = SlotProperty.getTransform(currentslot).translation;
-            position.add(-4.5f, -4.5f, 1);
-            Vector4f pos = new Vector4f(position.getX() / 16, position.getY() / 16, position.getZ() / 16, 1.0f);
-            pos.transform(otherProjection.peek().getPositionMatrix());
-            pos.transform(matrixStack.peek().getPositionMatrix());
-            button.x = (int) pos.getX() - button.getWidth() / 2;
-            button.y = (int) pos.getY() - button.getHeight() / 2;
-        });
     }
 
     @Override
@@ -238,10 +230,10 @@ public class SlotDisplay extends InteractAbleWidget {
             setSelected.accept(instance);
         }
 
-        public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+        public void render(DrawContext drawContext, int mouseX, int mouseY, float delta) {
             RenderSystem.depthFunc(GL11.GL_ALWAYS);
             RenderSystem.disableDepthTest();
-            this.renderButton(matrices, mouseX, mouseY, delta);
+            this.renderButton(drawContext, mouseX, mouseY, delta);
             RenderSystem.enableDepthTest();
             RenderSystem.depthFunc(GL11.GL_LEQUAL);
         }
@@ -254,9 +246,7 @@ public class SlotDisplay extends InteractAbleWidget {
             return super.mouseClicked(mouseX, mouseY, button);
         }
 
-        public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-            RenderSystem.setShader(GameRenderer::getPositionTexShader);
-            RenderSystem.setShaderTexture(0, ButtonTexture);
+        public void renderButton(DrawContext drawContext, int mouseX, int mouseY, float delta) {
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
             RenderSystem.enableBlend();
             RenderSystem.defaultBlendFunc();
@@ -271,7 +261,7 @@ public class SlotDisplay extends InteractAbleWidget {
                 textureOffset = 10;
             }
 
-            drawTexture(matrices, x, y, 0, textureOffset, 0, this.width, this.height, textureSize, 10);
+            drawTexture(drawContext, ButtonTexture, getX(), getY(), 0, textureOffset, 0, this.width, this.height, textureSize, 10);
         }
     }
 }

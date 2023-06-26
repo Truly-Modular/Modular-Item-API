@@ -1,6 +1,7 @@
 package smartin.miapi.client.gui;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
@@ -26,16 +27,14 @@ public class HoverDescription extends InteractAbleWidget {
     }
 
     @Override
-    public void renderHover(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+    public void renderHover(DrawContext context, int mouseX, int mouseY, float delta) {
         if (textWidget.rawText != null && !textWidget.rawText.getString().isEmpty()) {
-            RenderSystem.setShader(GameRenderer::getPositionTexShader);
-            RenderSystem.setShaderTexture(0, texture);
             RenderSystem.disableDepthTest();
             RenderSystem.enableBlend();
-            drawTextureWithEdge(matrices, this.x, this.y, this.width, this.height, 120, 32, 3);
-            textWidget.x = this.x + 3;
-            textWidget.y = this.y + 3;
-            super.render(matrices, mouseX, mouseY, delta);
+            drawTextureWithEdge(context, texture, this.getX(), this.getY(), this.width, this.height, 120, 32, 3);
+            textWidget.setX(this.getX() + 3);
+            textWidget.setY(this.getY() + 3);
+            super.render(context, mouseX, mouseY, delta);
             RenderSystem.enableDepthTest();
         }
     }

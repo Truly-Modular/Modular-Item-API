@@ -2,6 +2,8 @@ package smartin.miapi.client.gui;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.ColorHelper;
@@ -76,15 +78,20 @@ public class MultiLineTextWidget extends InteractAbleWidget {
     }
 
     @Override
-    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        int start = y;
+    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+        int start = getY();
         for (Text line : lines) {
-            textRenderer.draw(matrices, line, x, start, textColor);
-            if (hasTextShadow) {
-                textRenderer.drawWithShadow(matrices, line, x, start, textColor);
-            } else {
-                textRenderer.draw(matrices, line, x, start, textColor);
-            }
+            textRenderer.draw(
+                    line,
+                    getX(),
+                    start,
+                    textColor,
+                    hasTextShadow,
+                    context.getMatrices().peek().getPositionMatrix(),
+                    context.getVertexConsumers(),
+                    TextRenderer.TextLayerType.NORMAL,
+                    0,
+                    0);
             start += textRenderer.fontHeight + spacer;
         }
 

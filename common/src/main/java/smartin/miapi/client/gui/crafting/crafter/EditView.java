@@ -3,6 +3,7 @@ package smartin.miapi.client.gui.crafting.crafter;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
@@ -43,12 +44,12 @@ public class EditView extends InteractAbleWidget {
         defaultChildren.add(headerHolder);
 
 
-        ScrollingTextWidget header = new ScrollingTextWidget((int) ((this.x + 5) / headerScale), (int) (this.y / headerScale), (int) ((this.width - 10) / headerScale), Text.translatable(Miapi.MOD_ID + ".ui.edit.header"), ColorHelper.Argb.getArgb(255, 255, 255, 255));
+        ScrollingTextWidget header = new ScrollingTextWidget((int) ((this.getX() + 5) / headerScale), (int) (this.getY() / headerScale), (int) ((this.width - 10) / headerScale), Text.translatable(Miapi.MOD_ID + ".ui.edit.header"), ColorHelper.Argb.getArgb(255, 255, 255, 255));
         headerHolder.addChild(header);
         ScrollList list = new ScrollList(x, y + 16, width, height - 14, new ArrayList<>());
         defaultChildren.add(list);
         list.children().clear();
-        defaultChildren.add(new SimpleButton<>(this.x + 2, this.y + this.height - 10, 40, 12, Text.translatable(Miapi.MOD_ID + ".ui.back"), stack, back));
+        defaultChildren.add(new SimpleButton<>(this.getX() + 2, this.getY() + this.height - 10, 40, 12, Text.translatable(Miapi.MOD_ID + ".ui.back"), stack, back));
         ArrayList<InteractAbleWidget> toList = new ArrayList<>();
 
         Miapi.editOptions.getFlatMap().forEach((s, editOption) -> {
@@ -74,13 +75,13 @@ public class EditView extends InteractAbleWidget {
             ItemStack crafted = option.execute(packetByteBuf, stack, toCrafter);
             preview.accept(crafted);
             ScreenHandler screenHandler = Miapi.server.getPlayerManager().getPlayerList().get(0).currentScreenHandler;
-            if(screenHandler instanceof CraftingScreenHandler screenHandler1){
+            if (screenHandler instanceof CraftingScreenHandler screenHandler1) {
                 screenHandler1.setItem(crafted.copy());
             }
         };
         Consumer<PacketByteBuf> previewBuffer = (packetByteBuf) -> preview.accept(option.execute(packetByteBuf, stack, instance.copy()));
         this.children().clear();
-        this.addChild(option.getGui(x, y, width, height, stack, instance, craftBuffer, previewBuffer, (objects) -> {
+        this.addChild(option.getGui(getX(), getY(), width, height, stack, instance, craftBuffer, previewBuffer, (objects) -> {
             setDefaultChildren();
         }));
     }
@@ -98,9 +99,7 @@ public class EditView extends InteractAbleWidget {
             this.option = option;
         }
 
-        public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-            RenderSystem.setShader(GameRenderer::getPositionTexShader);
-            RenderSystem.setShaderTexture(0, texture);
+        public void render(DrawContext drawContext, int mouseX, int mouseY, float delta) {
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
             RenderSystem.enableBlend();
             RenderSystem.defaultBlendFunc();
@@ -108,11 +107,12 @@ public class EditView extends InteractAbleWidget {
             if (isMouseOver(mouseX, mouseY)) {
                 hoverOffset = 14;
             }
-            drawTextureWithEdge(matrices, this.x, this.y, 0, hoverOffset, 140, 14, this.width, this.height, 140, 28, 2);
-            textWidget.x = this.x + 2;
-            textWidget.y = this.y + 3;
+            drawTextureWithEdge(drawContext, texture, this.getX(), this.getY(), 0, hoverOffset, 140, 14, this.getWidth(), this.getHeight(), 140, 28, 2);
+            textWidget.setX(this.getX() + 2);
+            textWidget.setY(this.getY() + 3);
+
             textWidget.setWidth(this.width - 4);
-            textWidget.render(matrices, mouseX, mouseY, delta);
+            textWidget.render(drawContext, mouseX, mouseY, delta);
         }
 
         @Override

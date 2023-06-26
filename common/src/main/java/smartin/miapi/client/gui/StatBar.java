@@ -1,5 +1,6 @@
 package smartin.miapi.client.gui;
 
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.ColorHelper;
@@ -29,11 +30,11 @@ public class StatBar extends InteractAbleWidget {
     }
 
     @Override
-    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        fill(matrices, x, y, x + width, y + height, ColorHelper.Argb.getArgb(255, 255, 0, 255));
-        fill(matrices, x, y, (int) (x + width * primaryPercent), height + y, primaryColor);
-        fill(matrices, (int) (x + width * primaryPercent), y, (int) (x + width * secondaryPercent), height + y, secondaryColor);
-        fill(matrices, (int) (x + width * secondaryPercent), y, x + width, height + y, offColor);
+    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+        context.fill(getX(), getY(), getX() + width, getY() + height, ColorHelper.Argb.getArgb(255, 255, 0, 255));
+        context.fill(getX(), getY(), (int) (getX() + width * primaryPercent), height + getY(), primaryColor);
+        context.fill((int) (getX() + width * primaryPercent), getY(), (int) (getX() + width * secondaryPercent), height + getY(), secondaryColor);
+        context.fill((int) (getX() + width * secondaryPercent), getY(), getX() + width, height + getY(), offColor);
 
     }
 }

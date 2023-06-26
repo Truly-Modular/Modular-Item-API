@@ -7,8 +7,8 @@ import net.minecraft.client.particle.Particle;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.particle.ParticleType;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 import smartin.miapi.Miapi;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ItemModule;
@@ -78,7 +78,7 @@ public class CircleAttackProperty implements ModuleProperty {
 
                 particles = Miapi.gson.fromJson(object.get("particles"), listType);
                 particles.forEach(particleJson -> {
-                    particleJson.particleType = Registry.PARTICLE_TYPE.get(new Identifier(particleJson.particle));
+                    particleJson.particleType = Registries.PARTICLE_TYPE.get(new Identifier(particleJson.particle));
                 });
             }
         }

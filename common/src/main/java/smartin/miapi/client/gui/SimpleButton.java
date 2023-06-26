@@ -3,6 +3,7 @@ package smartin.miapi.client.gui;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
@@ -49,21 +50,21 @@ public class SimpleButton<T> extends InteractAbleWidget {
     /**
      * Renders the button on the screen.
      *
-     * @param matrices The matrix stack.
-     * @param mouseX   The x position of the mouse.
-     * @param mouseY   The y position of the mouse.
-     * @param delta    The time since the last tick.
+     * @param drawContext The matrix stack.
+     * @param mouseX      The x position of the mouse.
+     * @param mouseY      The y position of the mouse.
+     * @param delta       The time since the last tick.
      */
-    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        this.renderButton(matrices, mouseX, mouseY, delta);
+    public void render(DrawContext drawContext, int mouseX, int mouseY, float delta) {
+        this.renderButton(drawContext, mouseX, mouseY, delta);
         this.children().forEach(children -> {
             if (children instanceof InteractAbleWidget widget) {
-                widget.x = this.x + 2;
-                widget.y = Math.max(this.y + 1, this.y + 1 + (this.height - 9) / 2);
+                widget.setX(this.getX() + 2);
+                widget.setY(Math.max(this.getY() + 1, this.getY() + 1 + (this.height - 9) / 2));
                 widget.setWidth(this.width - 4);
             }
         });
-        super.render(matrices, mouseX, mouseY, delta);
+        super.render(drawContext, mouseX, mouseY, delta);
     }
 
     /**
@@ -87,15 +88,14 @@ public class SimpleButton<T> extends InteractAbleWidget {
     /**
      * Renders the button texture.
      *
-     * @param matrices The matrix stack.
-     * @param mouseX   The x position of the mouse.
-     * @param mouseY   The y position of the mouse.
-     * @param delta    The time since the last tick.
+     * @param drawContext The matrix stack.
+     * @param mouseX      The x position of the mouse.
+     * @param mouseY      The y position of the mouse.
+     * @param delta       The time since the last tick.
      */
-    public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+    public void renderButton(DrawContext drawContext, int mouseX, int mouseY, float delta) {
+        //RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
-        RenderSystem.setShaderTexture(0, texture);
         int offset = 0;
         if (this.isMouseOver(mouseX, mouseY)) {
             offset = 10;
@@ -103,6 +103,6 @@ public class SimpleButton<T> extends InteractAbleWidget {
         if (!isEnabled) {
             offset = 20;
         }
-        drawTextureWithEdge(matrices, x, y, offset, 0, 10, 10, this.width, height, 30, 10, 3);
+        drawTextureWithEdge(drawContext,texture, getX(), getY(), offset, 0, 10, 10, this.width, height, 30, 10, 3);
     }
 }

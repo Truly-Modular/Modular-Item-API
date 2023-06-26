@@ -12,9 +12,8 @@ import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
-import org.checkerframework.checker.units.qual.A;
 import smartin.miapi.Miapi;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.modules.ItemModule;
@@ -48,7 +47,7 @@ public class AttributeProperty implements ModuleProperty {
             double value = StatResolver.resolveDouble(attributeJson.get("value").getAsString(), new ItemModule.ModuleInstance(ItemModule.empty));
             EntityAttributeModifier.Operation operation = getOperation(attributeJson.get("operation").getAsString());
             EquipmentSlot slot = getSlot(attributeJson.get("slot").getAsString());
-            EntityAttribute attribute = Registry.ATTRIBUTE.get(new Identifier(attributeName));
+            EntityAttribute attribute = Registries.ATTRIBUTE.get(new Identifier(attributeName));
             UUID uuid = null;
 
             if (attributeJson.has("uuid")) {
@@ -187,7 +186,7 @@ public class AttributeProperty implements ModuleProperty {
             String attributeName = attributeJson.attribute;
             double value = StatResolver.resolveDouble(attributeJson.value, instance);
             EntityAttributeModifier.Operation operation = getOperation(attributeJson.operation);
-            EntityAttribute attribute = Registry.ATTRIBUTE.get(new Identifier(attributeJson.attribute));
+            EntityAttribute attribute = Registries.ATTRIBUTE.get(new Identifier(attributeJson.attribute));
             assert attribute != null;
             if (attributeJson.uuid != null) {
                 UUID uuid = UUID.fromString(attributeJson.uuid);

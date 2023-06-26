@@ -165,9 +165,9 @@ public class CraftingScreenHandler extends ScreenHandler {
         return true;
     }
 
-    @Override
     public void close(PlayerEntity player) {
-        super.close(player);
+        //TODO:figure out how to react on close
+        //super.close(player);
         this.context.run((world, pos) -> {
             this.dropInventory(player, this.inventory);
         });
@@ -190,6 +190,11 @@ public class CraftingScreenHandler extends ScreenHandler {
     public void setItem(ItemStack stack) {
         inventory.setStack(0, stack);
         inventory.markDirty();
+    }
+
+    @Override
+    public ItemStack quickMove(PlayerEntity player, int slot) {
+        return null;
     }
 
     @Override

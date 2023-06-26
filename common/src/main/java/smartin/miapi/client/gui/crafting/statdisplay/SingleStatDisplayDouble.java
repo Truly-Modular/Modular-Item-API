@@ -1,7 +1,7 @@
 package smartin.miapi.client.gui.crafting.statdisplay;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import dev.architectury.event.events.client.ClientTooltipEvent;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
@@ -10,7 +10,6 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.ColorHelper;
-import net.minecraft.util.math.Matrix4f;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.MultiLineTextWidget;
@@ -55,7 +54,7 @@ public abstract class SingleStatDisplayDouble extends InteractAbleWidget impleme
     public abstract double getValue(ItemStack stack);
 
     @Override
-    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+    public void render(DrawContext drawContext, int mouseX, int mouseY, float delta) {
         double oldValue = getValue(original);
         double compareToValue = getValue(compareTo);
         double higher = Math.max(oldValue, compareToValue) * 1.2;
@@ -63,18 +62,16 @@ public abstract class SingleStatDisplayDouble extends InteractAbleWidget impleme
             higher = 1;
         }
 
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
-        RenderSystem.setShaderTexture(0, texture);
 
-        drawTextureWithEdge(matrices, x, y, 0, 166, 120, 32, width, height, 256, 256, 2);
+        drawTextureWithEdge(drawContext, texture, getX(), getY(), 0, 166, 120, 32, width, height, 256, 256, 2);
 
-        textWidget.x = this.x + 5;
-        textWidget.y = this.y + 5;
+        textWidget.setX(textWidget.getX() + 5);
+        textWidget.setY(textWidget.getY() + 5);
         textWidget.setWidth(this.width - 8);
 
-        statBar.x = this.x + 5;
-        statBar.y = this.y + 25;
+        statBar.setX(this.getX() + 5);
+        statBar.setY(this.getY() + 25);
         statBar.setWidth(this.width - 10);
         statBar.setHeight(3);
         String centerText = "";
@@ -90,25 +87,25 @@ public abstract class SingleStatDisplayDouble extends InteractAbleWidget impleme
         if (oldValue == compareToValue) {
             compareValue.textColor = ColorHelper.Argb.getArgb(0, 255, 0, 0);
         } else {
-            compareValue.x = this.x + 5;
-            compareValue.y = this.y + 15;
+            compareValue.setX(this.getX() + 5);
+            compareValue.setY(this.getY() + 15);
             compareValue.setText(Text.of(modifierFormat.format(compareToValue)));
-            compareValue.render(matrices, mouseX, mouseY, delta);
+            compareValue.render(drawContext, mouseX, mouseY, delta);
             centerText = "→";
         }
-        currentValue.x = this.x + 5;
-        currentValue.y = this.y + 15;
+        currentValue.setX(this.getX() + 5);
+        currentValue.setY(this.getY() + 15);
         currentValue.setText(Text.literal(modifierFormat.format(oldValue)));
-        currentValue.render(matrices, mouseX, mouseY, delta);
-        centerValue.x = this.x + 5;
-        centerValue.y = this.y + 15;
+        currentValue.render(drawContext, mouseX, mouseY, delta);
+        centerValue.setX(this.getX() + 5);
+        centerValue.setY(this.getY()+15);
         centerValue.setText(Text.literal(centerText));
-        centerValue.render(matrices, mouseX, mouseY, delta);
-        statBar.render(matrices, mouseX, mouseY, delta);
-        textWidget.render(matrices, mouseX, mouseY, delta);
+        centerValue.render(drawContext, mouseX, mouseY, delta);
+        statBar.render(drawContext, mouseX, mouseY, delta);
+        textWidget.render(drawContext, mouseX, mouseY, delta);
     }
 
-    public InteractAbleWidget getHoverWidget(){
+    public InteractAbleWidget getHoverWidget() {
         return hoverDescription;
     }
 
@@ -119,24 +116,22 @@ public abstract class SingleStatDisplayDouble extends InteractAbleWidget impleme
 
         public HoverDescription(int x, int y, int width, int height, Text text) {
             super(x, y, width, height, Text.empty());
-            textWidget = new MultiLineTextWidget(x, y+1, width, height, text);
+            textWidget = new MultiLineTextWidget(x, y + 1, width, height, text);
             this.addChild(textWidget);
-            this.width = textWidget.getWidth()+5;
-            this.height = textWidget.getHeight()+5;
+            this.width = textWidget.getWidth() + 5;
+            this.height = textWidget.getHeight() + 5;
             this.text = text;
         }
 
         @Override
-        public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-            if(!text.getString().isEmpty()){
-                RenderSystem.setShader(GameRenderer::getPositionTexShader);
-                RenderSystem.setShaderTexture(0, texture);
+        public void render(DrawContext drawContext, int mouseX, int mouseY, float delta) {
+            if (!text.getString().isEmpty()) {
                 RenderSystem.disableDepthTest();
                 RenderSystem.enableBlend();
-                drawTextureWithEdge(matrices, this.x, this.y, this.width, this.height, 120, 32, 3);
-                textWidget.x = this.x+3;
-                textWidget.y = this.y+3;
-                super.render(matrices, mouseX, mouseY, delta);
+                drawTextureWithEdge(drawContext,texture, this.getX(), this.getY(), this.width, this.height, 120, 32, 3);
+                textWidget.setX(this.getX()+3);
+                textWidget.setY(this.getY()+3);
+                super.render(drawContext, mouseX, mouseY, delta);
                 RenderSystem.enableDepthTest();
             }
         }

@@ -1,18 +1,16 @@
 package smartin.miapi.client.gui.crafting;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.ScreenHandlerProvider;
-import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerListener;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.Matrix4f;
+import org.joml.Matrix4f;
 import smartin.miapi.Miapi;
-import smartin.miapi.client.gui.BoxList;
 import smartin.miapi.client.gui.ParentHandledScreen;
 import smartin.miapi.client.gui.TransformableWidget;
 import smartin.miapi.client.gui.crafting.crafter.ModuleCrafter;
@@ -20,7 +18,6 @@ import smartin.miapi.client.gui.crafting.slotdisplay.SlotDisplay;
 import smartin.miapi.client.gui.crafting.statdisplay.StatDisplay;
 import smartin.miapi.item.ModularItemStackConverter;
 import smartin.miapi.modules.ItemModule;
-import smartin.miapi.modules.properties.AllowedSlots;
 import smartin.miapi.modules.properties.SlotProperty;
 
 import java.util.ArrayList;
@@ -57,8 +54,8 @@ public class CraftingGUI extends ParentHandledScreen<CraftingScreenHandler> impl
                 handler::addSlotByClient, handler::removeSlotByClient);
         moduleCrafter.setPacketIdentifier(handler.packetID);
         TransformableWidget transformableWidget = new TransformableWidget((this.width - this.backgroundWidth) / 2 + 109 + 36, (this.height - this.backgroundHeight) / 2 + 8, 163 - 36, 150, Text.empty());
-        transformableWidget.rawProjection.loadIdentity();
-        transformableWidget.rawProjection.multiply(Matrix4f.scale(scale, scale, scale));
+        transformableWidget.rawProjection = new Matrix4f();
+        transformableWidget.rawProjection.scale(scale);
         this.addChild(transformableWidget);
         transformableWidget.addChild(moduleCrafter);
 
@@ -106,11 +103,11 @@ public class CraftingGUI extends ParentHandledScreen<CraftingScreenHandler> impl
     }
 
     @Override
-    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        this.drawBackground(matrices, delta, mouseX, mouseY);
-        super.render(matrices, mouseX, mouseY, delta);
-        this.drawMouseoverTooltip(matrices, mouseX, mouseY);
-        this.renderHover(matrices, mouseX, mouseY, delta);
+    public void render(DrawContext drawContext, int mouseX, int mouseY, float delta) {
+        this.drawBackground(drawContext, delta, mouseX, mouseY);
+        super.render(drawContext, mouseX, mouseY, delta);
+        this.drawMouseoverTooltip(drawContext, mouseX, mouseY);
+        this.renderHover(drawContext, mouseX, mouseY, delta);
     }
 
     private void updateItem(ItemStack stack) {
@@ -141,12 +138,10 @@ public class CraftingGUI extends ParentHandledScreen<CraftingScreenHandler> impl
     }
 
     @Override
-    protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+    protected void drawBackground(DrawContext context, float delta, int mouseX, int mouseY) {
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        RenderSystem.setShaderTexture(0, BACKGROUND_TEXTURE);
         int i = (this.width - this.backgroundWidth) / 2;
         int j = (this.height - this.backgroundHeight) / 2;
-        drawTexture(matrices, i, j, 0, 0, 0, this.backgroundWidth, this.backgroundHeight, this.backgroundWidth, this.backgroundHeight);
+        context.drawTexture(BACKGROUND_TEXTURE, i, j, 0, 0, 0, this.backgroundWidth, this.backgroundHeight, this.backgroundWidth, this.backgroundHeight);
     }
 }

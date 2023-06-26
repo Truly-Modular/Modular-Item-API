@@ -4,6 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
@@ -32,7 +33,7 @@ public class DetailView extends InteractAbleWidget {
         super(x, y, width, height, Text.empty());
         selectedSlot = selected;
         if (baseSlot != null) {
-            scrollList = new ScrollList(x, y, width, height, Collections.singletonList(new SlotButton(this.x, this.y, this.width, 16, baseSlot)));
+            scrollList = new ScrollList(x, y, width, height, Collections.singletonList(new SlotButton(this.getX(), this.getY(), this.width, 16, baseSlot)));
             this.addChild(scrollList);
         }
         this.edit = edit;
@@ -43,7 +44,7 @@ public class DetailView extends InteractAbleWidget {
         //TODO:fix this scrolling
         //Miapi.LOGGER.warn("trying scrolling to" + (y - this.y));
         if (scrollList != null) {
-            scrollList.setScrollAmount(y - this.y);
+            scrollList.setScrollAmount(y - this.getY());
         }
     }
 
@@ -80,7 +81,7 @@ public class DetailView extends InteractAbleWidget {
                 AtomicInteger yOffset = new AtomicInteger();
                 SlotProperty.getSlots(slot.inSlot).forEach((id, childSlot) -> {
                     yOffset.addAndGet(this.height);
-                    subSlots.add(new SlotButton(this.x, this.y + yOffset.get(), this.width, this.height, childSlot, level + 1, this));
+                    subSlots.add(new SlotButton(this.getX(), this.getY() + yOffset.get(), this.width, this.height, childSlot, level + 1, this));
                 });
             }
             ItemModule.ModuleInstance moduleInstance = slot.inSlot;
@@ -97,8 +98,8 @@ public class DetailView extends InteractAbleWidget {
             }
 
             Text displayText = StatResolver.translateAndResolve(Miapi.MOD_ID + ".module." + moduleInstance.module.getName(), moduleInstance);
-            moduleName = new ScrollingTextWidget(this.x + 10, this.y, this.width - 20, displayText, ColorHelper.Argb.getArgb(255, 255, 255, 255));
-            materialName = new ScrollingTextWidget(this.x + 10, this.y, this.width - 20, materialNameText, ColorHelper.Argb.getArgb(255, 255, 255, 255));
+            moduleName = new ScrollingTextWidget(this.getX() + 10, this.getY(), this.width - 20, displayText, ColorHelper.Argb.getArgb(255, 255, 255, 255));
+            materialName = new ScrollingTextWidget(this.getX() + 10, this.getY(), this.width - 20, materialNameText, ColorHelper.Argb.getArgb(255, 255, 255, 255));
             materialName.setOrientation(ScrollingTextWidget.ORIENTATION.RIGHT);
             detail = new ModuleDetail(x, y, width, slot);
             open();
@@ -118,21 +119,21 @@ public class DetailView extends InteractAbleWidget {
             updateChildren();
             this.children.addAll(subSlots);
             this.isOpened = true;
-            scrollTo(this.y);
+            scrollTo(this.getY());
         }
 
         public void updateChildren() {
             AtomicInteger yOffset = new AtomicInteger();
             yOffset.addAndGet(trueHeight);
             if (isSelected) {
-                detail.x = this.x + 1;
-                detail.y = this.y + trueHeight - 2;
+                detail.setX(this.getY() + 1);
+                detail.setY(this.getX() + trueHeight - 2);
                 detail.setWidth(this.width - 2);
                 yOffset.addAndGet(detail.getHeight());
             }
             subSlots.forEach(slotButton -> {
-                slotButton.x = this.x;
-                slotButton.y = this.y + yOffset.get();
+                slotButton.setX(this.getX());
+                slotButton.setY(this.getY() + yOffset.get());
                 yOffset.addAndGet(slotButton.currentHeight);
                 slotButton.width = this.width;
             });
@@ -145,38 +146,38 @@ public class DetailView extends InteractAbleWidget {
             this.height = trueHeight;
             this.children().clear();
             subSlots.forEach(slotButton -> {
-                slotButton.x = this.x;
-                slotButton.y = this.y;
+                slotButton.setX((this.getX()));
+                slotButton.setY(this.getY());
             });
             this.isOpened = false;
         }
 
         public void select() {
             isSelected = true;
-            scrollTo(this.y);
+            scrollTo(this.getY());
         }
 
         public void deselect() {
             isSelected = false;
         }
 
-        public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+        public void render(DrawContext drawContext, int mouseX, int mouseY, float delta) {
             currentHeight = trueHeight;
             if (this.isOpened) {
                 updateChildren();
                 for (SlotButton detail1 : subSlots) {
                     currentHeight += detail1.currentHeight;
-                    detail1.render(matrices, mouseX, mouseY, delta);
+                    detail1.render(drawContext, mouseX, mouseY, delta);
                 }
             }
             if (this.isSelected) {
-                detail.render(matrices, mouseX, mouseY, delta);
+                detail.render(drawContext, mouseX, mouseY, delta);
                 currentHeight += detail.getHeight();
             }
-            drawButton(matrices, mouseX, mouseY, delta);
+            drawButton(drawContext, mouseX, mouseY, delta);
         }
 
-        public void drawButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+        public void drawButton(DrawContext drawContext, int mouseX, int mouseY, float delta) {
             AtomicInteger height = new AtomicInteger(trueHeight);
             if (isOpened) {
                 this.subSlots.forEach(child -> {
@@ -188,18 +189,16 @@ public class DetailView extends InteractAbleWidget {
             }
             this.height = height.get();
 
-            materialName.y = this.y + 4;
-            materialName.x = this.x + 6 * level + 3;
+            materialName.setY(this.getY() + 4);
+            materialName.setX(this.getX() + 6 * level + 3);
             materialName.setWidth(this.width - 50 - level * 6);
 
             //setup TextWidget
-            moduleName.y = this.y + 4;
-            moduleName.x = this.x + 6 * level + 3;
+            moduleName.setY(this.getY() + 4);
+            moduleName.setX(this.getX() + 6 * level + 3);
             int materialNameWidth = materialName.getRequiredWidth();
             moduleName.setWidth(this.width - 50 - materialNameWidth - level * 6);
-
-            RenderSystem.setShader(GameRenderer::getPositionTexShader);
-            RenderSystem.setShaderTexture(0, texture);
+            ;
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
             RenderSystem.enableBlend();
             RenderSystem.defaultBlendFunc();
@@ -208,34 +207,32 @@ public class DetailView extends InteractAbleWidget {
                 textureOffset = 1;
             }
             int hoveredOffset = 0;
-            if (mouseX > x && mouseX < x + width && mouseY > y && mouseY < y + trueHeight) {
+            if (mouseX > getX() && mouseX < getX() + width && mouseY > getY() && mouseY < getY() + trueHeight) {
                 hoveredOffset = 1;
             }
 
             //render button left side
-            drawTexture(matrices, -6 + 6 * level + x, y, 0, 0, hoveredOffset * 14, 140, 14, 140, 28);
+            drawContext.drawTexture(texture, -6 + 6 * level + getX(), getY(), 0, 0, hoveredOffset * 14, 140, 14, 140, 28);
             //render button right side
-            drawTexture(matrices, x + this.width - 60, y, 0, 140 - 60, hoveredOffset * 14, 60, 14, 140, 28);
-            RenderSystem.setShaderTexture(0, plusTexture);
+            drawContext.drawTexture(texture, getX() + this.width - 60, getY(), 0, 140 - 60, hoveredOffset * 14, 60, 14, 140, 28);
             hoveredOffset = 0;
-            if (mouseX > x + width - 14 && mouseX < x + width && mouseY > y && mouseY < y + trueHeight) {
+            if (mouseX > getX() + width - 14 && mouseX < getY() + width && mouseY > getY() && mouseY < getY() + trueHeight) {
                 hoveredOffset = 1;
             }
             //render edit button
-            drawTexture(matrices, x + width - 14, y, 0, hoveredOffset * 14, textureOffset * 14, 14, 14, 28, 28);
+            drawContext.drawTexture(plusTexture, getX() + width - 14, getY(), 0, hoveredOffset * 14, textureOffset * 14, 14, 14, 28, 28);
             RenderSystem.setShaderTexture(0, editTexture);
             hoveredOffset = 0;
-            if (mouseX > x + width - 28 && mouseX < x + width - 14 && mouseY > y && mouseY < y + trueHeight) {
+            if (mouseX > getX() + width - 28 && mouseX < getX() + width - 14 && mouseY > getY() && mouseY < getY() + trueHeight) {
                 hoveredOffset = 1;
             }
             //edit plus/minus button
-            drawTexture(matrices, x + width - 28, y, 0, 0, hoveredOffset * 14, 14, 14, 14, 28);
+            drawContext.drawTexture(editTexture, getX() + width - 28, getY(), 0, 0, hoveredOffset * 14, 14, 14, 14, 28);
 
-            moduleName.render(matrices, mouseX, mouseY, delta);
-            materialName.render(matrices, mouseX, mouseY, delta);
+            moduleName.render(drawContext, mouseX, mouseY, delta);
+            materialName.render(drawContext, mouseX, mouseY, delta);
 
-            RenderSystem.setShaderTexture(0, textureIcon);
-            drawTexture(matrices, this.x + this.width - 44, this.y - 1, 0, 0, 16, 16, 16, 16);
+            drawContext.drawTexture(textureIcon, this.getX() + this.width - 44, this.getY() - 1, 0, 0, 16, 16, 16, 16);
 
 
         }
@@ -243,8 +240,8 @@ public class DetailView extends InteractAbleWidget {
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
             if (button == 0) {
                 //TODO:MAKe sure this is working corretly
-                if (mouseY < this.y + trueHeight && mouseY > this.y) {
-                    if (mouseX > this.x + this.width - 14) {
+                if (mouseY < this.getY() + trueHeight && mouseY > this.getY()) {
+                    if (mouseX > this.getX() + this.width - 14) {
                         if (isOpened) {
                             this.close();
                             return true;
@@ -252,7 +249,7 @@ public class DetailView extends InteractAbleWidget {
                             this.open();
                             return true;
                         }
-                    } else if (mouseX > x + width - 28 && mouseX < x + width - 14) {
+                    } else if (mouseX > getX() + width - 28 && mouseX < getX() + width - 14) {
                         if (isSelected) {
                             deselect();
                             return true;
@@ -261,7 +258,7 @@ public class DetailView extends InteractAbleWidget {
                             return true;
                         }
                     }
-                } else if (mouseY < this.y + currentHeight && mouseY > this.y + trueHeight) {
+                } else if (mouseY < this.getY() + currentHeight && mouseY > this.getY() + trueHeight) {
                     if (isSelected) {
                         if (detail.mouseClicked(mouseX, mouseY, button)) {
                             return true;
@@ -296,7 +293,7 @@ public class DetailView extends InteractAbleWidget {
             }
 
             Text header = StatResolver.translateAndResolve(Miapi.MOD_ID + ".module." + moduleInstance.module.getName(), moduleInstance);
-            headerText = new ScrollingTextWidget(this.x, this.y, this.width, header, textColor);
+            headerText = new ScrollingTextWidget(this.getX(), this.getY(), this.width, header, textColor);
 
             Text displayText = StatResolver.translateAndResolve(Miapi.MOD_ID + ".module." + moduleInstance.module.getName() + ".description", moduleInstance);
             description = new MultiLineTextWidget(x, y, width - 4, height, displayText);
@@ -305,12 +302,12 @@ public class DetailView extends InteractAbleWidget {
             description.setText(displayText);
             String[] rawLines = displayText.getString().split("\n");
             for (String line : rawLines) {
-                lines.add(new ScrollingTextWidget(this.x, this.y, this.width, Text.of(line), textColor));
+                lines.add(new ScrollingTextWidget(this.getX(), this.getY(), this.width, Text.of(line), textColor));
             }
-            editButton = new SimpleButton<>(this.x, this.y, 30, 11, Text.translatable(Miapi.MOD_ID + ".ui.edit"), slot, (editSlot) -> {
+            editButton = new SimpleButton<>(this.getX(), this.getY(), 30, 11, Text.translatable(Miapi.MOD_ID + ".ui.edit"), slot, (editSlot) -> {
                 edit.accept(editSlot);
             });
-            replaceButton = new SimpleButton<>(this.x, this.y, 60, 11, Text.translatable(Miapi.MOD_ID + ".ui.replace"), slot, (replaceSlot) -> {
+            replaceButton = new SimpleButton<>(this.getX(), this.getY(), 60, 11, Text.translatable(Miapi.MOD_ID + ".ui.replace"), slot, (replaceSlot) -> {
                 replace.accept(replaceSlot);
             });
             this.height = Math.max(minSize, lines.size() * (fontSize + lineSpacing) + buttonSpacing * 2 + Math.max(replaceButton.getHeight(), editButton.getHeight()) + buttonSpacing * 2 + HeaderSize);
@@ -319,37 +316,38 @@ public class DetailView extends InteractAbleWidget {
             addChild(replaceButton);
         }
 
-        public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-            editButton.x = this.x + buttonSpacing;
-            editButton.y = this.y + this.height - editButton.getHeight() - buttonSpacing;
-            replaceButton.x = this.x + this.width - replaceButton.getWidth() - buttonSpacing;
-            replaceButton.y = this.y + this.height - replaceButton.getHeight() - buttonSpacing;
-            RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        public void render(DrawContext drawContext, int mouseX, int mouseY, float delta) {
+            editButton.setX(this.getX() + buttonSpacing);
+            editButton.setY(this.getY() + this.getHeight() - editButton.getHeight() - buttonSpacing);
+            replaceButton.setX(this.getX() + this.getWidth() - replaceButton.getWidth() - buttonSpacing);
+            replaceButton.setY(this.getY() + this.getHeight() - replaceButton.getHeight() - buttonSpacing);
+
             RenderSystem.setShaderTexture(0, texture);
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
             RenderSystem.enableBlend();
             RenderSystem.defaultBlendFunc();
             //drawTexture(matrices, x, y, 0, 0, 0, width, height - 5, 156, 100);
             //drawTexture(matrices, x, y + height - 5, 0, 0, 95, width, 5, 156, 100);
-            drawTextureWithEdge(matrices, x, y, this.width, height, 156, 100, 5);
+            drawTextureWithEdge(drawContext,texture, getX(), getY(), this.width, height, 156, 100, 5);
 
-            headerText.x = this.x + buttonSpacing;
-            headerText.y = this.y + buttonSpacing;
+            headerText.setX(this.getX() + buttonSpacing);
+            headerText.setY(this.getY() + buttonSpacing);
             headerText.setWidth(this.width - 2 * buttonSpacing);
 
-            headerText.render(matrices, mouseX, mouseY, delta);
+            headerText.render(drawContext, mouseX, mouseY, delta);
 
-            int y = 4 + this.y + lineSpacing * 2 + HeaderSize; // the starting y position for the first line
-            description.x = this.x + 2;
-            description.y = y;
+            int y = 4 + this.getY() + lineSpacing * 2 + HeaderSize; // the starting y position for the first line
+            description.setX(this.getX() + 2);
+            description.setY(y);
             for (ScrollingTextWidget line : lines) {
-                line.x = this.x + 2;
-                line.setWidth(this.width - 4);
-                line.y = y;
+                line.setX(this.getX() + 2);
+                line.setWidth(this.getWidth() - 4);
+                line.setY(y);
                 //line.render(matrices, mouseX, mouseY, delta);
             }
-            description.render(matrices, mouseX, mouseY, delta);
-            super.render(matrices, mouseX, mouseY, delta);
+
+            description.render(drawContext, mouseX, mouseY, delta);
+            super.render(drawContext, mouseX, mouseY, delta);
         }
     }
 }
