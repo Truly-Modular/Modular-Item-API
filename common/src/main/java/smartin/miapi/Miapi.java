@@ -85,15 +85,6 @@ public class Miapi {
             LOGGER.info("Server before started");
         });
         ReloadListenerRegistry.register(ResourceType.SERVER_DATA, new ReloadListener());
-        ReloadEvents.START.subscribe((isClient) -> {
-            Miapi.LOGGER.warn("Start " + isClient);
-        });
-        ReloadEvents.MAIN.subscribe((isClient) -> {
-            Miapi.LOGGER.warn("Main " + isClient);
-        });
-        ReloadEvents.END.subscribe((isClient) -> {
-            Miapi.LOGGER.warn("End " + isClient);
-        });
         ReloadEvents.MAIN.subscribe((isClient) -> {
             moduleRegistry.clear();
             ReloadEvents.DATA_PACKS.forEach(ItemModule::loadFromData);

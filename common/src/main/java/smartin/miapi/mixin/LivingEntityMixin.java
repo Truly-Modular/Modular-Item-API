@@ -55,13 +55,6 @@ abstract class LivingEntityMixin {
                 builder
                         .add(attribute);
             });
-            builder
-                    .add(AttributeRegistry.ARMOR_CRUSHING)
-                    .add(AttributeRegistry.BACK_STAB)
-                    .add(AttributeRegistry.SHIELD_BREAK)
-                    .add(AttributeRegistry.DAMAGE_RESISTANCE)
-                    .add(AttributeRegistry.REACH)
-                    .add(AttributeRegistry.ATTACK_RANGE);
         }
     }
 

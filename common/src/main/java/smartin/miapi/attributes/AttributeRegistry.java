@@ -39,9 +39,6 @@ public class AttributeRegistry {
 
 
     public static void setup() {
-        entityAttributeRegistry.addCallback((attribute) -> {
-            register(entityAttributeRegistry.findKey(attribute), attribute);
-        });
         Event.LIVING_HURT.register((livingHurtEvent -> {
             if (livingHurtEvent.livingEntity.getAttributes().hasAttribute(DAMAGE_RESISTANCE)) {
                 livingHurtEvent.amount = (float) (livingHurtEvent.amount * (100 - livingHurtEvent.livingEntity.getAttributeValue(DAMAGE_RESISTANCE)) / 100);
@@ -90,6 +87,7 @@ public class AttributeRegistry {
     }
 
     private static EntityAttribute registerOnEntity(String id, EntityAttribute attribute) {
+        entityAttributeRegistry.register(id,attribute);
         return Registry.register(Registry.ATTRIBUTE, id, attribute);
     }
 
