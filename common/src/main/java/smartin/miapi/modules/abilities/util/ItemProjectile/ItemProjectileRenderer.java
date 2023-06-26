@@ -9,6 +9,7 @@ import net.minecraft.client.render.entity.TridentEntityRenderer;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.json.ModelTransformation;
+import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.projectile.TridentEntity;
 import net.minecraft.item.ItemStack;
@@ -40,8 +41,8 @@ public class ItemProjectileRenderer extends EntityRenderer<ItemProjectile> {
                 matrixStack.push();
                 matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(MathHelper.lerp(tickDelta, entity.prevYaw, entity.getYaw()) - 90.0F));
                 matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(MathHelper.lerp(tickDelta, entity.prevPitch, entity.getPitch()) + 90.0F));
-                VertexConsumer vertexConsumer = ItemRenderer.getDirectItemGlintConsumer(vertexConsumerProvider, this.model.getLayer(this.getTexture(tridentEntity)), false, tridentEntity.isEnchanted());
-                ItemRenderUtil.renderModel(matrixStack, itemStack, model, ModelTransformation.NONE, vertexConsumers, light, 0);
+                //VertexConsumer vertexConsumer = ItemRenderer.getDirectItemGlintConsumer(vertexConsumerProvider, this.model.getLayer(this.getTexture(tridentEntity)), false, tridentEntity.isEnchanted());
+                ItemRenderUtil.renderModel(matrixStack, itemStack, model, ModelTransformationMode.GUI, vertexConsumers, light, 0);
                 matrixStack.pop();
             }
         }

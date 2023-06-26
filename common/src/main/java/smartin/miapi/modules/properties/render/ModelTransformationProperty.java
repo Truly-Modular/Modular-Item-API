@@ -3,6 +3,7 @@ package smartin.miapi.modules.properties.render;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.minecraft.client.render.model.json.ModelTransformation;
+import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.render.model.json.Transformation;
 import net.minecraft.item.ItemStack;
 import smartin.miapi.Miapi;
@@ -28,10 +29,10 @@ public class ModelTransformationProperty implements ModuleProperty {
                     for (ItemModule.ModuleInstance instance : ItemModule.createFlatList(ItemModule.getModules(stack))) {
                         JsonElement element = instance.getProperties().get(property);
                         if (element != null) {
-                            Map<ModelTransformation.Mode, Transformation> map = new HashMap<>();
+                            Map<ModelTransformationMode, Transformation> map = new HashMap<>();
                             if (element.getAsJsonObject().has("replace")) {
                                 JsonObject replace = element.getAsJsonObject().getAsJsonObject("replace");
-                                for (ModelTransformation.Mode mode : ModelTransformation.Mode.values()) {
+                                for (ModelTransformationMode mode : ModelTransformationMode.values()) {
                                     map.put(mode, transformation.getTransformation(mode));
                                     for (String modeString : getStringOfMode(mode)) {
                                         if (replace.has(modeString)) {
@@ -43,7 +44,7 @@ public class ModelTransformationProperty implements ModuleProperty {
                             }
                             if (element.getAsJsonObject().has("merge")) {
                                 JsonObject replace = element.getAsJsonObject().getAsJsonObject("merge");
-                                for (ModelTransformation.Mode mode : ModelTransformation.Mode.values()) {
+                                for (ModelTransformationMode mode : ModelTransformationMode.values()) {
                                     map.put(mode, transformation.getTransformation(mode));
                                     for (String modeString : getStringOfMode(mode)) {
                                         if (replace.has(modeString)) {
@@ -54,14 +55,14 @@ public class ModelTransformationProperty implements ModuleProperty {
                                 }
                             }
                             transformation = new ModelTransformation(
-                                    map.get(ModelTransformation.Mode.THIRD_PERSON_LEFT_HAND),
-                                    map.get(ModelTransformation.Mode.THIRD_PERSON_RIGHT_HAND),
-                                    map.get(ModelTransformation.Mode.FIRST_PERSON_LEFT_HAND),
-                                    map.get(ModelTransformation.Mode.FIRST_PERSON_RIGHT_HAND),
-                                    map.get(ModelTransformation.Mode.HEAD),
-                                    map.get(ModelTransformation.Mode.GUI),
-                                    map.get(ModelTransformation.Mode.GROUND),
-                                    map.get(ModelTransformation.Mode.FIXED)
+                                    map.get(ModelTransformationMode.THIRD_PERSON_LEFT_HAND),
+                                    map.get(ModelTransformationMode.THIRD_PERSON_RIGHT_HAND),
+                                    map.get(ModelTransformationMode.FIRST_PERSON_LEFT_HAND),
+                                    map.get(ModelTransformationMode.FIRST_PERSON_RIGHT_HAND),
+                                    map.get(ModelTransformationMode.HEAD),
+                                    map.get(ModelTransformationMode.GUI),
+                                    map.get(ModelTransformationMode.GROUND),
+                                    map.get(ModelTransformationMode.FIXED)
                             );
                         }
                     }
@@ -73,7 +74,7 @@ public class ModelTransformationProperty implements ModuleProperty {
         });
     }
 
-    private Set<String> getStringOfMode(ModelTransformation.Mode mode) {
+    private Set<String> getStringOfMode(ModelTransformationMode mode) {
         List<String> modes = new ArrayList<>();
         modes.add(mode.toString());
         modes.add(mode.toString().replace("_", ""));

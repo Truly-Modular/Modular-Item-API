@@ -20,7 +20,7 @@ public class ModelLoadAccessor {
     public static ModelLoader getLoader(){
         if(loader==null){
             ResourceManager resourceManager = MinecraftClient.getInstance().getResourceManager();
-            loader = new ModelLoader(resourceManager,MinecraftClient.getInstance().getBlockColors(),MinecraftClient.getInstance().getProfiler(),4);
+            //loader = new ModelLoader(resourceManager,MinecraftClient.getInstance().getBlockColors(),MinecraftClient.getInstance().getProfiler(),4);
         }
         return loader;
     }

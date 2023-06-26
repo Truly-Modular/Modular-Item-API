@@ -164,7 +164,7 @@ public class ModelProperty implements ModuleProperty {
                         modelId = "item";
                     }
                     transformMap.primary = modelId;
-                    transform1.scale.scale(scaleAdder.get());
+                    transform1.scale.mul(scaleAdder.get());
                     transformMap.set(transformMap.primary, transform1);
                     unbakedModels.add(new TransformedUnbakedModel(transformMap, unbakedModel, moduleI, color));
                 }

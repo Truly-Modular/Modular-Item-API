@@ -6,11 +6,11 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.PickaxeItem;
-import net.minecraft.tag.TagKey;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
-import net.minecraft.util.registry.Registry;
+import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.modules.ItemModule;
@@ -18,7 +18,6 @@ import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
-import javax.annotation.Nullable;
 import java.util.*;
 
 /**
@@ -154,12 +153,12 @@ public class MaterialProperty implements ModuleProperty {
 
                 if (itemObj.has("item")) {
                     String itemId = itemObj.get("item").getAsString();
-                    if (Registry.ITEM.getId(item.getItem()).toString().equals(itemId)) {
+                    if (Registries.ITEM.getId(item.getItem()).toString().equals(itemId)) {
                         return material;
                     }
                 } else if (itemObj.has("tag")) {
                     String tagId = itemObj.get("tag").getAsString();
-                    TagKey<Item> tag = TagKey.of(Registry.ITEM_KEY, new Identifier(tagId));
+                    TagKey<Item> tag = TagKey.of(Registries.ITEM.getKey(), new Identifier(tagId));
                     if (tag != null && item.isIn(tag)) {
                         return material;
                     }
@@ -239,7 +238,7 @@ public class MaterialProperty implements ModuleProperty {
 
                 if (itemObj.has("item")) {
                     String itemId = itemObj.get("item").getAsString();
-                    if (Registry.ITEM.getId(item.getItem()).toString().equals(itemId)) {
+                    if (Registries.ITEM.getId(item.getItem()).toString().equals(itemId)) {
                         try {
                             return itemObj.get("value").getAsDouble();
                         } catch (Exception surpressed) {
@@ -248,7 +247,7 @@ public class MaterialProperty implements ModuleProperty {
                     }
                 } else if (itemObj.has("tag")) {
                     String tagId = itemObj.get("tag").getAsString();
-                    TagKey<Item> tag = TagKey.of(Registry.ITEM_KEY, new Identifier(tagId));
+                    TagKey<Item> tag = TagKey.of(Registries.ITEM.getKey(), new Identifier(tagId));
                     if (tag != null && item.isIn(tag)) {
                         try {
                             return itemObj.get("value").getAsDouble();

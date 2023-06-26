@@ -2,9 +2,6 @@ package smartin.miapi.modules.abilities.util;
 
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.EntityAttributes;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileUtil;
@@ -15,14 +12,13 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-import javax.annotation.Nullable;
 import java.util.List;
 
 public class AttackUtil {
     public static void performAttack(PlayerEntity player, LivingEntity target, float damage, boolean useEnchants) {
         int fireAspect = EnchantmentHelper.getFireAspect(player);
         int knockback = EnchantmentHelper.getKnockback(player);
-        if (target.damage(DamageSource.player(player), damage)) {
+        if (target.damage(player.getDamageSources().playerAttack(player), damage)) {
             if (fireAspect > 0 && !target.isOnFire() && useEnchants) {
                 target.setOnFireFor(1);
             }
@@ -42,14 +38,14 @@ public class AttackUtil {
         for (LivingEntity entity : entities) {
             if (entity != player && entity != target && !player.isTeammate(entity) && !(entity instanceof ArmorStandEntity && ((ArmorStandEntity) entity).isMarker()) && player.squaredDistanceTo(entity) < sweepingRange * sweepingRange) {
                 entity.takeKnockback(0.4, MathHelper.sin(player.getYaw() * 0.017453292F), -MathHelper.cos(player.getYaw() * 0.017453292F));
-                entity.damage(DamageSource.player(player), sweepingDamage);
+                entity.damage(player.getDamageSources().playerAttack(player), sweepingDamage);
             }
         }
 
         world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_PLAYER_ATTACK_SWEEP, player.getSoundCategory(), 1.0F, 1.0F);
         player.spawnSweepAttackParticles();
     }
-    
+
     public static EntityHitResult raycastFromPlayer(double maxDistance, PlayerEntity player) {
         Vec3d start = player.getCameraPosVec(0);
         Vec3d vec3d2 = player.getRotationVec(0);

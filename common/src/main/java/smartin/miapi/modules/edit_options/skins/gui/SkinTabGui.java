@@ -1,6 +1,7 @@
 package smartin.miapi.modules.edit_options.skins.gui;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
@@ -87,7 +88,7 @@ class SkinTabGui extends InteractAbleWidget implements SkinGui.SortAble {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (mouseY < this.y + realHeight) {
+        if (mouseY < this.getY() + realHeight) {
             if (isOpen) {
                 //close
                 currentList.clear();
@@ -104,8 +105,8 @@ class SkinTabGui extends InteractAbleWidget implements SkinGui.SortAble {
     }
 
     private boolean isMouseOverReal(double mouseX, double mouseY) {
-        if (mouseY > this.y && mouseY < this.y + realHeight) {
-            if (mouseX > this.x && mouseX < this.x + width) {
+        if (mouseY > this.getY() && mouseY < this.getY() + realHeight) {
+            if (mouseX > this.getX() && mouseX < this.getX() + width) {
                 return true;
             }
         }
@@ -113,9 +114,8 @@ class SkinTabGui extends InteractAbleWidget implements SkinGui.SortAble {
     }
 
     @Override
-    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+    public void render(DrawContext drawContext, int mouseX, int mouseY, float delta) {
         if (!isRoot) {
-            RenderSystem.setShader(GameRenderer::getPositionTexShader);
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
             RenderSystem.enableBlend();
             RenderSystem.defaultBlendFunc();
@@ -124,18 +124,18 @@ class SkinTabGui extends InteractAbleWidget implements SkinGui.SortAble {
             int offset = isOpen ? 10 : 0;
             int hover = isOpen ? tabInfo.header.ySize() * 2 : 0;
             hover = this.isMouseOverReal(mouseX, mouseY) ? tabInfo.header.ySize() : hover;
-            drawTextureWithEdge(matrices, x, y + 2, offset, 0, 10, 10, 10, 10, 20, 10, 3);
+            drawTextureWithEdge(drawContext, arrow_texture, getX(), getY() + 2, offset, 0, 10, 10, 10, 10, 20, 10, 3);
             //Header
             RenderSystem.setShaderTexture(0, tabInfo.header.texture());
-            drawTextureWithEdgeAndScale(matrices, x, y, 0, hover, tabInfo.header.xSize(), tabInfo.header.ySize(), this.width, realHeight, tabInfo.header.xSize(), tabInfo.header.ySize() * 3, tabInfo.header.borderSize(), tabInfo.header.scale());
+            drawTextureWithEdgeAndScale(drawContext, tabInfo.header.texture(), getX(), getY(), 0, hover, tabInfo.header.xSize(), tabInfo.header.ySize(), this.width, realHeight, tabInfo.header.xSize(), tabInfo.header.ySize() * 3, tabInfo.header.borderSize(), tabInfo.header.scale());
             Miapi.LOGGER.warn(String.valueOf(this.width));
             if (isOpen) {
                 //Background
                 RenderSystem.setShaderTexture(0, tabInfo.background.texture());
-                drawTextureWithEdgeAndScale(matrices, x, y + realHeight, 0, 0, tabInfo.background.xSize(), tabInfo.background.ySize(), this.width, height - realHeight, tabInfo.background.xSize(), tabInfo.background.ySize(), tabInfo.background.borderSize(), tabInfo.background.scale());
+                drawTextureWithEdgeAndScale(drawContext, tabInfo.background.texture(), getX(), getY() + realHeight, 0, 0, tabInfo.background.xSize(), tabInfo.background.ySize(), this.width, height - realHeight, tabInfo.background.xSize(), tabInfo.background.ySize(), tabInfo.background.borderSize(), tabInfo.background.scale());
             }
-            textWidget.y = y + 2;
-            textWidget.render(matrices, mouseX, mouseY, delta);
+            textWidget.setY(this.getY() + 2);
+            textWidget.render(drawContext, mouseX, mouseY, delta);
         }
         children().forEach(element -> {
             if (element instanceof Drawable drawable) {
@@ -145,7 +145,7 @@ class SkinTabGui extends InteractAbleWidget implements SkinGui.SortAble {
                 if (drawable instanceof SkinButton skinTabGui) {
                     //render 16 bottom pixels + increment by 16
                 }
-                drawable.render(matrices, mouseX, mouseY, delta);
+                drawable.render(drawContext, mouseX, mouseY, delta);
             }
         });
     }
@@ -155,10 +155,10 @@ class SkinTabGui extends InteractAbleWidget implements SkinGui.SortAble {
             updateChildren = true;
         }
         this.children().clear();
-        int yHeight = y + realHeight;
+        int yHeight = getY() + realHeight;
         for (SkinGui.SortAble sortAble : currentList) {
             if (sortAble instanceof InteractAbleWidget widget) {
-                widget.y = yHeight;
+                widget.setY(yHeight);
                 yHeight += widget.getHeight();
                 this.addChild(widget);
                 if (widget instanceof SkinTabGui tab) {
@@ -168,7 +168,7 @@ class SkinTabGui extends InteractAbleWidget implements SkinGui.SortAble {
                 }
             }
         }
-        this.height = yHeight - y;
+        this.height = yHeight - getY();
         if (!updateChildren) {
             parent.setChildren(false);
         }

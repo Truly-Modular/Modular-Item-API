@@ -2,7 +2,7 @@ package smartin.miapi.client.model;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.item.UnclampedModelPredicateProvider;
+import net.minecraft.client.item.ClampedModelPredicateProvider;
 import net.minecraft.item.Item;
 import net.minecraft.util.Identifier;
 import smartin.miapi.Miapi;
@@ -14,17 +14,17 @@ public class ModularModelPredicateProvider {
 
     }
 
-    public static void registerModularModelOverride(Identifier id, UnclampedModelPredicateProvider provider){
+    public static void registerModularModelOverride(Identifier id, ClampedModelPredicateProvider provider){
         Miapi.itemRegistry.addCallback((item)->{
             ModelPredicateProviderRegistryAccessor.register(item,id,provider);
         });
     }
 
-    public static void registerModelOverride(Item item, Identifier id, UnclampedModelPredicateProvider provider){
+    public static void registerModelOverride(Item item, Identifier id, ClampedModelPredicateProvider provider){
         ModelPredicateProviderRegistryAccessor.register(item,id,provider);
     }
 
-    public static void registerModularItemModelOverride(Identifier identifier, Identifier id, UnclampedModelPredicateProvider provider){
+    public static void registerModularItemModelOverride(Identifier identifier, Identifier id, ClampedModelPredicateProvider provider){
         Item item = Miapi.itemRegistry.get(identifier.toString());
         ModelPredicateProviderRegistryAccessor.register(item,id,provider);
     }

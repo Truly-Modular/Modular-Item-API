@@ -22,6 +22,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 @Environment(EnvType.CLIENT)
@@ -75,7 +76,7 @@ public class DynamicBakery {
         private final Identifier[] dynamicConditionTypes;
 
         public OverrideList(ModelLoader modelLoader, JsonUnbakedModel parent, Function<Identifier, UnbakedModel> unbakedModelGetter, List<ModelOverride> overrides, int color) {
-            super(modelLoader, parent, unbakedModelGetter, overrides);
+            super(null,parent,overrides);
             this.dynamicConditionTypes = overrides.stream().flatMap(ModelOverride::streamConditions).map(ModelOverride.Condition::getType).distinct().toArray(Identifier[]::new);
             Object2IntMap<Identifier> object2IntMap = new Object2IntOpenHashMap();
 
@@ -127,7 +128,7 @@ public class DynamicBakery {
         @Nullable
         private BakedModel bakeOverridingModel(ModelLoader loader, JsonUnbakedModel parent, Function<Identifier, UnbakedModel> unbakedModelGetter, ModelOverride override) {
             UnbakedModel unbakedModel = unbakedModelGetter.apply(override.getModelId());
-            return Objects.equals(unbakedModel, parent) ? null : loader.bake(override.getModelId(), ModelRotation.X0_Y0);
+            return Objects.equals(unbakedModel, parent) ? null : null;
         }
 
         @Nullable

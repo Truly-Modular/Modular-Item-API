@@ -3,6 +3,7 @@ package smartin.miapi.client.model;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.model.BakedModel;
+import net.minecraft.client.render.model.Baker;
 import net.minecraft.client.render.model.ModelLoader;
 import net.minecraft.client.render.model.UnbakedModel;
 import net.minecraft.client.render.model.json.JsonUnbakedModel;
@@ -22,11 +23,11 @@ import java.util.function.Function;
 @Environment(EnvType.CLIENT)
 public class CustomModelOverrides extends ModelOverrideList {
 
-    public CustomModelOverrides(ModelLoader modelLoader, JsonUnbakedModel parent, Function<Identifier, UnbakedModel> unbakedModelGetter, List<ModelOverride> overrides) {
-        super(modelLoader,parent,unbakedModelGetter,overrides);
+    public CustomModelOverrides(Baker baker, JsonUnbakedModel parent, List<ModelOverride> overrides) {
+        super(baker,parent,overrides);
     }
     public CustomModelOverrides(){
-        super(null,null,null,new ArrayList<>());
+        super(null,null,new ArrayList<>());
     }
 
     @Override

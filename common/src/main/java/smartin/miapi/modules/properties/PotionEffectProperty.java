@@ -11,14 +11,14 @@ import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.loot.LootManager;
 import net.minecraft.loot.condition.LootCondition;
-import net.minecraft.loot.condition.LootConditionManager;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
+import net.minecraft.registry.Registries;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 import smartin.miapi.events.Event;
 import smartin.miapi.Miapi;
 import smartin.miapi.item.modular.StatResolver;
@@ -53,8 +53,9 @@ public class PotionEffectProperty extends SimpleEventProperty {
     public static void onEntityHurt(PropertyApplication.Cancellable<Event.LivingHurtEvent> holder) {
         Event.LivingHurtEvent event = holder.event();
         LivingEntity victim = event.livingEntity;
-        if (!(victim.world instanceof ServerWorld world) || !(event.damageSource.getAttacker() instanceof LivingEntity attacker)) return;
-        LootConditionManager predicateManager = victim.getServer() == null ? null : victim.getServer().getPredicateManager();
+        if (!(victim.getWorld() instanceof ServerWorld world) || !(event.damageSource.getAttacker() instanceof LivingEntity attacker))
+            return;
+        LootManager predicateManager = victim.getServer() == null ? null : victim.getServer().getLootManager();
 
         List<StatusEffectData> effects = ofEntity(victim); // setting up and merging effect data
         effects.addAll(ofEntity(attacker).stream()
@@ -71,21 +72,24 @@ public class PotionEffectProperty extends SimpleEventProperty {
             if (predicateManager == null || effect.predicate.isEmpty())
                 toApply.addStatusEffect(effect.creator.get());
             else {
-                LootCondition condition = predicateManager.get(effect.predicate.get());
-                if (condition != null) {
-                    LootContext.Builder builder = new LootContext.Builder(world)
-                            .parameter(LootContextParameters.THIS_ENTITY, toApply) // THIS_ENTITY is whomever the effect is applied to
-                            .parameter(LootContextParameters.ORIGIN, toApply.getPos())
-                            .parameter(LootContextParameters.DAMAGE_SOURCE, event.damageSource)
-                            .parameter(LootContextParameters.KILLER_ENTITY, event.damageSource.getAttacker())
-                            .parameter(LootContextParameters.DIRECT_KILLER_ENTITY, event.damageSource.getSource());
-                    if (toApply.getAttacker() instanceof PlayerEntity player)
-                        builder.parameter(LootContextParameters.LAST_DAMAGE_PLAYER, player);
+                /**
+                 LootCondition condition = predicateManager.getElement(effect.predicate.get());
+                 if (condition != null) {
+                 LootContext.Builder builder = new LootContext.Builder(world)
+                 .parameter(LootContextParameters.THIS_ENTITY, toApply) // THIS_ENTITY is whomever the effect is applied to
+                 .parameter(LootContextParameters.ORIGIN, toApply.getPos())
+                 .parameter(LootContextParameters.DAMAGE_SOURCE, event.damageSource)
+                 .parameter(LootContextParameters.KILLER_ENTITY, event.damageSource.getAttacker())
+                 .parameter(LootContextParameters.DIRECT_KILLER_ENTITY, event.damageSource.getSource());
+                 if (toApply.getAttacker() instanceof PlayerEntity player) {
+                 builder.parameter(LootContextParameters.LAST_DAMAGE_PLAYER, player);
+                 }
 
-                    if (condition.test(builder.build(LootContextTypes.ENTITY)))
-                        toApply.addStatusEffect(effect.creator.get());
-                } else
-                    Miapi.LOGGER.warn("Found null predicate during PotionEffectProperty application.");
+                 if (condition.test(builder.build(LootContextTypes.ENTITY)))
+                 toApply.addStatusEffect(effect.creator.get());
+                 } else
+                 Miapi.LOGGER.warn("Found null predicate during PotionEffectProperty application.");
+                 */
             }
         }
     }
@@ -94,27 +98,30 @@ public class PotionEffectProperty extends SimpleEventProperty {
         if (ability.world().isClient) return;
 
         List<PotionEffectProperty.StatusEffectData> potionEffects = property.get(ability.stack());
-        LootConditionManager predicateManager = ability.user().getServer() == null ? null : ability.user().getServer().getPredicateManager();
+        LootManager predicateManager = ability.user().getServer() == null ? null : ability.user().getServer().getLootManager();
         if (potionEffects != null) {
             for (StatusEffectData effect : potionEffects) {
                 if (!effect.event.equals(event)) continue;
 
                 if (effect.ability.isPresent() && !effect.ability.get().equals(ability.ability())) continue;
-                if (ability.remainingUseTicks() != null && effect.time.isPresent() && !effect.time.get().test(ability.useTime())) continue;
+                if (ability.remainingUseTicks() != null && effect.time.isPresent() && !effect.time.get().test(ability.useTime()))
+                    continue;
 
                 if (predicateManager == null || effect.predicate.isEmpty() || !(ability.world() instanceof ServerWorld world))
                     ability.user().addStatusEffect(effect.creator.get());
                 else {
-                    LootCondition condition = predicateManager.get(effect.predicate.get());
-                    if (condition != null) {
-                        LootContext.Builder builder = new LootContext.Builder(world)
-                                .parameter(LootContextParameters.THIS_ENTITY, ability.user()) // THIS_ENTITY is whomever the effect is applied to
-                                .parameter(LootContextParameters.ORIGIN, ability.user().getPos())
-                                .parameter(LootContextParameters.TOOL, ability.stack());
-                        if (condition.test(builder.build(PropertyApplication.Ability.LOOT_CONTEXT)))
-                            ability.user().addStatusEffect(effect.creator.get());
-                    } else
-                        Miapi.LOGGER.warn("Found null predicate during PotionEffectProperty application.");
+                    /**
+                     LootCondition condition = predicateManager.get(effect.predicate.get());
+                     if (condition != null) {
+                     LootContext.Builder builder = new LootContext.Builder(world)
+                     .parameter(LootContextParameters.THIS_ENTITY, ability.user()) // THIS_ENTITY is whomever the effect is applied to
+                     .parameter(LootContextParameters.ORIGIN, ability.user().getPos())
+                     .parameter(LootContextParameters.TOOL, ability.stack());
+                     if (condition.test(builder.build(PropertyApplication.Ability.LOOT_CONTEXT)))
+                     ability.user().addStatusEffect(effect.creator.get());
+                     } else
+                     Miapi.LOGGER.warn("Found null predicate during PotionEffectProperty application.");
+                     */
                 }
             }
         }
@@ -127,7 +134,8 @@ public class PotionEffectProperty extends SimpleEventProperty {
 
     @Override
     public boolean load(String moduleKey, JsonElement data) throws Exception {
-        StatusEffectData.CODEC(new ItemModule.ModuleInstance(ItemModule.empty)).listOf().parse(JsonOps.INSTANCE, data).getOrThrow(false, s -> {});
+        StatusEffectData.CODEC(new ItemModule.ModuleInstance(ItemModule.empty)).listOf().parse(JsonOps.INSTANCE, data).getOrThrow(false, s -> {
+        });
         return true;
     }
 
@@ -151,7 +159,8 @@ public class PotionEffectProperty extends SimpleEventProperty {
         if (element == null) {
             return null;
         }
-        return StatusEffectData.CODEC(ItemModule.getModules(itemStack)).listOf().parse(JsonOps.INSTANCE, element).getOrThrow(false, s -> {});
+        return StatusEffectData.CODEC(ItemModule.getModules(itemStack)).listOf().parse(JsonOps.INSTANCE, element).getOrThrow(false, s -> {
+        });
     }
 
     public static List<StatusEffectData> createCache(ItemStack stack) {
@@ -167,17 +176,22 @@ public class PotionEffectProperty extends SimpleEventProperty {
         JsonElement element = module.getProperties().get(property);
         if (element == null) return;
 
-        list.addAll(StatusEffectData.CODEC(module).listOf().parse(JsonOps.INSTANCE, element).getOrThrow(false, s -> {}));
+        list.addAll(StatusEffectData.CODEC(module).listOf().parse(JsonOps.INSTANCE, element).getOrThrow(false, s -> {
+        }));
     }
 
-    public record StatusEffectData(PropertyApplication.ApplicationEvent<?> event, String target, Supplier<StatusEffectInstance> creator, StatusEffect effect, int duration, int amplifier, boolean ambient, boolean visible, boolean showIcon, Optional<Identifier> predicate, boolean shouldReverse, Optional<ItemUseAbility> ability, Optional<IntegerRange> time) {
+    public record StatusEffectData(PropertyApplication.ApplicationEvent<?> event, String target,
+                                   Supplier<StatusEffectInstance> creator, StatusEffect effect, int duration,
+                                   int amplifier, boolean ambient, boolean visible, boolean showIcon,
+                                   Optional<Identifier> predicate, boolean shouldReverse,
+                                   Optional<ItemUseAbility> ability, Optional<IntegerRange> time) {
         public static Codec<StatusEffectData> CODEC(ItemModule.ModuleInstance instance) {
             return RecordCodecBuilder.create(inst -> inst.group(
                     Codec.STRING.fieldOf("event").forGetter(i -> i.event.name),
                     Codec.STRING.fieldOf("target").forGetter(i -> i.target),
                     StatResolver.Codecs.INTEGER(instance).fieldOf("duration").forGetter(i -> i.duration),
                     StatResolver.Codecs.INTEGER(instance).fieldOf("amplifier").forGetter(i -> i.amplifier),
-                    Registry.STATUS_EFFECT.getCodec().fieldOf("effect").forGetter(i -> i.effect), // 1.19.3+ this turns into BuiltinRegistries.STATUS_EFFECT...
+                    Registries.STATUS_EFFECT.getCodec().fieldOf("effect").forGetter(i -> i.effect), // 1.19.3+ this turns into BuiltinRegistries.STATUS_EFFECT...
                     Codec.BOOL.optionalFieldOf("ambient", false).forGetter(i -> i.ambient),
                     Codec.BOOL.optionalFieldOf("visible", true).forGetter(i -> i.visible),
                     Codec.BOOL.optionalFieldOf("showIcon", true).forGetter(i -> i.showIcon),
@@ -214,8 +228,12 @@ public class PotionEffectProperty extends SimpleEventProperty {
 
         public String targetInverse() {
             switch (target) {
-                case "this" -> { return "target"; }
-                case "target" -> { return "this"; }
+                case "this" -> {
+                    return "target";
+                }
+                case "target" -> {
+                    return "this";
+                }
             }
             return "this";
         }

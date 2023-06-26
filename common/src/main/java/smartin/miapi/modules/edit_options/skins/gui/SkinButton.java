@@ -1,6 +1,7 @@
 package smartin.miapi.modules.edit_options.skins.gui;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
@@ -33,8 +34,7 @@ class SkinButton extends InteractAbleWidget implements SkinGui.SortAble {
     }
 
     @Override
-    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+    public void render(DrawContext drawContext, int mouseX, int mouseY, float delta) {
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
@@ -42,12 +42,12 @@ class SkinButton extends InteractAbleWidget implements SkinGui.SortAble {
         RenderSystem.setShaderTexture(0, skin.textureOptions.texture());
         int hover = this.isMouseOver(mouseX, mouseY) ? skin.textureOptions.ySize() : 0;
         hover = skinGui.currentSkin().equals(skinPath) ? skin.textureOptions.ySize() * 2 : hover;
-        drawTextureWithEdge(matrices, x, y, 0, hover, 100, sizeY, this.width, height, skin.textureOptions.xSize(), skin.textureOptions.ySize() * 3, skin.textureOptions.borderSize());
-        textWidget.y = y + 3;
-        textWidget.render(matrices, mouseX, mouseY, delta);
+        drawTextureWithEdge(drawContext, skin.textureOptions.texture(), getX(), getY(), 0, hover, 100, sizeY, this.width, height, skin.textureOptions.xSize(), skin.textureOptions.ySize() * 3, skin.textureOptions.borderSize());
+        textWidget.setY(this.getY() + 3);
+        textWidget.render(drawContext, mouseX, mouseY, delta);
         children().forEach(element -> {
             if (element instanceof Drawable drawable) {
-                drawable.render(matrices, mouseX, mouseY, delta);
+                drawable.render(drawContext, mouseX, mouseY, delta);
             }
         });
         if (isMouseOver(mouseX, mouseY)) {

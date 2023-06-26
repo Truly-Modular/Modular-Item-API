@@ -13,11 +13,7 @@ import smartin.miapi.modules.properties.DisplayNameProperty;
 
 public class ExampleModularBowItem extends BowItem implements ModularItem {
     public ExampleModularBowItem() {
-        super(new Item.Settings()
-                .group(ItemGroup.COMBAT) // sets the creative tab for the item
-                .maxCount(1) // sets the maximum stack size for the item
-                .maxDamage(384) // sets the maximum durability of the item (bows have 384 uses)
-                .rarity(Rarity.COMMON));
+        super(new Item.Settings());
         ModularModelPredicateProvider.registerModelOverride(this, new Identifier("pull"), (stack, world, entity, seed) -> {
             if (entity == null) {
                 return 0.0F;

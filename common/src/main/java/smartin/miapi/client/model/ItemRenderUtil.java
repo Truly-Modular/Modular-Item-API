@@ -10,6 +10,7 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.BakedQuad;
 import net.minecraft.client.render.model.json.ModelTransformation;
+import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import smartin.miapi.mixin.client.ItemRendererAccessor;
@@ -25,12 +26,12 @@ public class ItemRenderUtil {
 
     }
 
-    public static void renderModel(MatrixStack matrices, ItemStack stack, BakedModel model, ModelTransformation.Mode renderMode, VertexConsumerProvider vertexConsumers, int light, int overlay) {
+    public static void renderModel(MatrixStack matrices, ItemStack stack, BakedModel model, ModelTransformationMode renderMode, VertexConsumerProvider vertexConsumers, int light, int overlay) {
         RenderLayer renderLayer = RenderLayers.getItemLayer(stack, true);
         renderModel(matrices, stack, model, renderMode, vertexConsumers, renderLayer, light, overlay);
     }
 
-    public static void renderModel(MatrixStack matrices, ItemStack stack, BakedModel model, ModelTransformation.Mode renderMode, VertexConsumerProvider vertexConsumers, RenderLayer renderLayer, int light, int overlay) {
+    public static void renderModel(MatrixStack matrices, ItemStack stack, BakedModel model, ModelTransformationMode renderMode, VertexConsumerProvider vertexConsumers, RenderLayer renderLayer, int light, int overlay) {
         VertexConsumer vertexConsumer = getDirectItemGlintConsumer(vertexConsumers, renderLayer, true, stack.hasGlint());
         model.getTransformation().getTransformation(renderMode).apply(true, matrices);
         matrices.translate(-0.5, -0.5, -0.5);

@@ -2,8 +2,9 @@ package smartin.miapi.modules.properties.render;
 
 import com.google.gson.JsonElement;
 import net.minecraft.client.render.model.json.ModelTransformation;
+import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.Vec3f;
+import org.joml.Vector3f;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.model.DynamicBakedModel;
 import smartin.miapi.modules.ItemModule;
@@ -37,21 +38,21 @@ public class GuiOffsetProperty implements ModuleProperty {
                             guiOffsetJson.sizeY += add.sizeY;
                         }
                     }
-                    Transform guiTransform = Transform.repair(dynamicBakedModel.getTransformation().getTransformation(ModelTransformation.Mode.GUI));
+                    Transform guiTransform = Transform.repair(dynamicBakedModel.getTransformation().getTransformation(ModelTransformationMode.GUI));
                     guiOffsetJson.x -=guiOffsetJson.sizeX/2;
                     guiOffsetJson.y -= guiOffsetJson.sizeY/2;
-                    guiOffsetJson.sizeX = guiTransform.scale.getX() - guiOffsetJson.sizeX / 16.0f;
-                    guiOffsetJson.sizeY = guiTransform.scale.getY() - guiOffsetJson.sizeY / 16.0f;
-                    guiTransform = new Transform(guiTransform.rotation,new Vec3f(guiOffsetJson.x / 16.0f, guiOffsetJson.y / 16.0f, 0),new Vec3f(guiOffsetJson.sizeX, guiOffsetJson.sizeY, 1.0f));
+                    guiOffsetJson.sizeX = guiTransform.scale.x() - guiOffsetJson.sizeX / 16.0f;
+                    guiOffsetJson.sizeY = guiTransform.scale.y() - guiOffsetJson.sizeY / 16.0f;
+                    guiTransform = new Transform(guiTransform.rotation,new Vector3f(guiOffsetJson.x / 16.0f, guiOffsetJson.y / 16.0f, 0),new Vector3f(guiOffsetJson.sizeX, guiOffsetJson.sizeY, 1.0f));
                     dynamicBakedModel.modelTransformation = new ModelTransformation(
-                            dynamicBakedModel.getTransformation().getTransformation(ModelTransformation.Mode.THIRD_PERSON_LEFT_HAND),
-                            dynamicBakedModel.getTransformation().getTransformation(ModelTransformation.Mode.THIRD_PERSON_RIGHT_HAND),
-                            dynamicBakedModel.getTransformation().getTransformation(ModelTransformation.Mode.FIRST_PERSON_LEFT_HAND),
-                            dynamicBakedModel.getTransformation().getTransformation(ModelTransformation.Mode.FIRST_PERSON_RIGHT_HAND),
-                            dynamicBakedModel.getTransformation().getTransformation(ModelTransformation.Mode.HEAD),
+                            dynamicBakedModel.getTransformation().getTransformation(ModelTransformationMode.THIRD_PERSON_LEFT_HAND),
+                            dynamicBakedModel.getTransformation().getTransformation(ModelTransformationMode.THIRD_PERSON_RIGHT_HAND),
+                            dynamicBakedModel.getTransformation().getTransformation(ModelTransformationMode.FIRST_PERSON_LEFT_HAND),
+                            dynamicBakedModel.getTransformation().getTransformation(ModelTransformationMode.FIRST_PERSON_RIGHT_HAND),
+                            dynamicBakedModel.getTransformation().getTransformation(ModelTransformationMode.HEAD),
                             guiTransform,
-                            dynamicBakedModel.getTransformation().getTransformation(ModelTransformation.Mode.GROUND),
-                            dynamicBakedModel.getTransformation().getTransformation(ModelTransformation.Mode.FIXED)
+                            dynamicBakedModel.getTransformation().getTransformation(ModelTransformationMode.GROUND),
+                            dynamicBakedModel.getTransformation().getTransformation(ModelTransformationMode.FIXED)
                     );
                     dynamicBakedModelmap.put(id,dynamicBakedModel);
                 });

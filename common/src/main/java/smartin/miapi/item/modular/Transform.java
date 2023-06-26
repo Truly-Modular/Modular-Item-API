@@ -5,7 +5,9 @@ import net.minecraft.client.render.model.ModelBakeSettings;
 import net.minecraft.client.render.model.json.Transformation;
 import net.minecraft.util.math.*;
 import org.joml.Matrix4f;
+import org.joml.Quaternionf;
 import org.joml.Vector3f;
+import org.joml.Vector4f;
 
 /**
  * A Transform represents a transformation in 3D space, including rotation, translation, and scaling.
@@ -26,11 +28,11 @@ public class Transform extends Transformation {
      * @param scale       the scale vector, as a Vec3f
      */
     public Transform(Vector3f rotation, Vector3f translation, Vector3f scale) {
-        super(rotation.copy(), translation.copy(), scale.copy());
+        super(new Vector3f(rotation), new Vector3f(translation), new Vector3f(scale));
     }
 
     public Transform(Transformation transformation) {
-        super(transformation.rotation.copy(), transformation.translation.copy(), transformation.scale.copy());
+        super(new Vector3f(transformation.rotation), new Vector3f(transformation.translation), new Vector3f(transformation.scale));
     }
 
     /**
@@ -56,7 +58,7 @@ public class Transform extends Transformation {
         Matrix4f parentMatrix = parent.toMatrix();
 
         Matrix4f childMatrix = child.toMatrix();
-        childMatrix.multiply(parentMatrix);
+        childMatrix.mul(parentMatrix);
         return fromMatrix(childMatrix);
     }
 
@@ -68,17 +70,17 @@ public class Transform extends Transformation {
      */
     public Vector3f transformVector(Vector3f vector) {
         // Apply scaling
-        float x = vector.getX() * scale.getX();
-        float y = vector.getY() * scale.getY();
-        float z = vector.getZ() * scale.getZ();
+        float x = vector.x() * scale.x();
+        float y = vector.y() * scale.y();
+        float z = vector.z() * scale.z();
 
         // Apply rotation
-        float cosX = MathHelper.cos(rotation.getX());
-        float sinX = MathHelper.sin(rotation.getX());
-        float cosY = MathHelper.cos(rotation.getY());
-        float sinY = MathHelper.sin(rotation.getY());
-        float cosZ = MathHelper.cos(rotation.getZ());
-        float sinZ = MathHelper.sin(rotation.getZ());
+        float cosX = MathHelper.cos(rotation.x());
+        float sinX = MathHelper.sin(rotation.x());
+        float cosY = MathHelper.cos(rotation.y());
+        float sinY = MathHelper.sin(rotation.y());
+        float cosZ = MathHelper.cos(rotation.z());
+        float sinZ = MathHelper.sin(rotation.z());
 
         float x2 = cosY * (sinZ * y + cosZ * x) - sinY * z;
         float y2 = sinX * (cosY * z + sinY * (sinZ * y + cosZ * x)) + cosX * (cosZ * y - sinZ * x);
@@ -89,18 +91,19 @@ public class Transform extends Transformation {
         z = z2;
 
         // Apply translation
-        x += translation.getX();
-        y += translation.getY();
-        z += translation.getZ();
+        x += translation.x();
+        y += translation.y();
+        z += translation.z();
 
-        return new Vec3f(x, y, z);
+        return new Vector3f(x, y, z);
     }
 
     public Matrix4f toMatrix() {
-        Matrix4f matrix4f = Matrix4f.translate(translation.getX(), translation.getY(), translation.getZ());
-        matrix4f.multiply(new Matrix4f(Quaternion.fromEulerXyzDegrees(rotation.copy())));
-        matrix4f.multiply(Matrix4f.scale(scale.getX(), scale.getY(), scale.getZ()));
-        return matrix4f;
+        Matrix4f matrix = new Matrix4f()
+                .translate(translation)                            // Set the translation (position)
+                .rotateXYZ(rotation.x, rotation.y, rotation.z)  // Set the rotation (in Euler angles)
+                .scale(scale);
+        return matrix;
     }
 
     /**
@@ -109,7 +112,7 @@ public class Transform extends Transformation {
      * @return the new Transform copy
      */
     public Transform copy() {
-        Transform copy = new Transform(this.rotation.copy(), this.translation.copy(), this.scale.copy());
+        Transform copy = new Transform(new Vector3f(this.rotation), new Vector3f(this.translation), new Vector3f(this.scale));
         copy.origin = this.origin;
         return copy;
     }
@@ -145,7 +148,7 @@ public class Transform extends Transformation {
     public static Transform toModelTransformation(Transformation transformation) {
         Transform transform = repair(transformation);
         //TODO:enable this and change all jsons
-        transform.translation.scale(1.0f / 16.0f);
+        transform.translation.mul(1.0f / 16.0f);
         //transform.translation.multiplyComponentwise(transform.scale.getX(), transform.scale.getY(), transform.scale.getZ());
         return transform;
     }
@@ -157,10 +160,10 @@ public class Transform extends Transformation {
      */
     public AffineTransformation toAffineTransformation() {
         Transform transform = this.copy();
-        Quaternion rotation = Quaternion.fromEulerXyzDegrees(transform.rotation.copy());
-        Vec3f translationVector = transform.translation.copy();
+        Quaternionf rotation = new Quaternionf().rotationXYZ(this.rotation.x, this.rotation.y, this.rotation.z);
+        Vector3f translationVector = new Vector3f(transform.translation);
         //translationVector.multiplyComponentwise(1 / scale.getX(), 1 / scale.getY(), 1 / scale.getZ());
-        AffineTransformation affineTransformation = new AffineTransformation(translationVector, null, transform.scale.copy(), rotation);
+        AffineTransformation affineTransformation = new AffineTransformation(translationVector, null, new Vector3f(transform.scale), rotation);
         //affineTransformation = new AffineTransformation(this.toMatrix());
         return affineTransformation;
     }
@@ -188,8 +191,8 @@ public class Transform extends Transformation {
 
     public static Transform fromMatrix(Matrix4f matrix4f) {
         AffineTransformation affineTransformation = new AffineTransformation(matrix4f);
-        Vec3f translation = affineTransformation.getTranslation();
-        return new Transform(affineTransformation.getRotation2().toEulerXyzDegrees(), translation, affineTransformation.getScale());
+        Vector3f translation = affineTransformation.getTranslation();
+        return new Transform(affineTransformation.getLeftRotation().getEulerAnglesXYZ(new Vector3f(0, 0, 0)), translation, affineTransformation.getScale());
     }
 
     @Override

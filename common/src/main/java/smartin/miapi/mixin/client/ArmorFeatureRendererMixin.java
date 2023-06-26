@@ -8,13 +8,12 @@ import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.render.model.BakedModel;
-import net.minecraft.client.render.model.json.ModelTransformation;
+import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -30,7 +29,6 @@ public abstract class ArmorFeatureRendererMixin<T extends LivingEntity, M extend
         super(context);
     }
 
-    @Shadow
     protected abstract A getArmor(EquipmentSlot slot);
 
     @Inject(method = "renderArmor", at = @At("HEAD"), cancellable = true)
@@ -47,7 +45,8 @@ public abstract class ArmorFeatureRendererMixin<T extends LivingEntity, M extend
     private void renderPieces(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, EquipmentSlot armorSlot, ItemStack itemStack, T entity) {
         Arrays.stream(modelParts).forEach(partId -> {
             A armorModel = getArmor(armorSlot);
-            (this.getContextModel()).setAttributes(armorModel);
+            //TODO:make sure this works
+            //(this.getContextModel()).setAttributes(armorModel);
             BakedModel model = ModelProperty.getModelMap(itemStack).get(partId);
             if (model != null) {
                 MatrixStack matrixStack = new MatrixStack();
@@ -57,7 +56,7 @@ public abstract class ArmorFeatureRendererMixin<T extends LivingEntity, M extend
                 if(model.getOverrides()!=null){
                     //model = model.getOverrides().apply(model,itemStack, (ClientWorld) entity.getWorld(),entity,0);
                 }
-                ItemRenderUtil.renderModel(matrixStack, itemStack, model, ModelTransformation.Mode.HEAD, vertexConsumers, light, OverlayTexture.DEFAULT_UV);
+                ItemRenderUtil.renderModel(matrixStack, itemStack, model, ModelTransformationMode.HEAD, vertexConsumers, light, OverlayTexture.DEFAULT_UV);
                 matrixStack.pop();
             }
         });

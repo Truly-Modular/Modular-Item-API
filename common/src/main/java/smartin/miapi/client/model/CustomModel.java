@@ -83,11 +83,6 @@ public class CustomModel implements UnbakedModel, BakedModel {
         return null;
     }
 
-    @Override
-    public Collection<SpriteIdentifier> getTextureDependencies(Function<Identifier, UnbakedModel> unbakedModelGetter, Set<Pair<String, String>> unresolvedTextureReferences) {
-        return Collections.EMPTY_LIST;
-    }
-
     @Nullable
     public BakedModel bake(ModelLoader loader, Function<SpriteIdentifier, Sprite> textureGetter, ModelBakeSettings rotationContainer, Identifier modelId) {
         ModelProperty.textureGetter = textureGetter;

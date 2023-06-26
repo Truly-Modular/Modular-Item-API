@@ -2,15 +2,13 @@ package smartin.miapi.modules.properties;
 
 import com.google.gson.JsonElement;
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
-import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec2f;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.InteractAbleWidget;
@@ -141,25 +139,23 @@ public class AllowedMaterial implements CraftingProperty, ModuleProperty {
             addChild(headerHolder);
 
 
-            header = new ScrollingTextWidget((int) ((this.x + 5) / headerScale), (int) (this.y / headerScale), (int) ((this.width - 10) / headerScale), displayText, ColorHelper.Argb.getArgb(255, 255, 255, 255));
+            header = new ScrollingTextWidget((int) ((this.getX() + 5) / headerScale), (int) (this.getY() / headerScale), (int) ((this.width - 10) / headerScale), displayText, ColorHelper.Argb.getArgb(255, 255, 255, 255));
             headerHolder.addChild(header);
             description = new MultiLineTextWidget(x + 5, y + 30, width - 10, height - 40, descriptionText);
             addChild(description);
         }
 
-        public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-            RenderSystem.setShader(GameRenderer::getPositionTexShader);
-            RenderSystem.setShaderTexture(0, texture);
+        public void render(DrawContext drawContext, int mouseX, int mouseY, float delta) {
             //RenderSystem.enableBlend();
             RenderSystem.enableDepthTest();
 
             int textureSize = 30;
             int textureOffset = 0;
 
-            drawTexture(matrices, x, y, 0, textureOffset, 0, this.width, this.height, this.width, this.height);
+            drawContext.drawTexture(texture, getX(), getY(), 0, textureOffset, 0, this.width, this.height, this.width, this.height);
 
             //drawSquareBorder(matrices, x, y - 30, width, height, 4, ColorHelper.Argb.getArgb(255, 255, 255, 255));
-            super.render(matrices, mouseX, mouseY, delta);
+            super.render(drawContext, mouseX, mouseY, delta);
         }
     }
 

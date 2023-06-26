@@ -53,7 +53,7 @@ public class PropertyInjectionDev implements EditOption {
 
         public EditDevView(int x, int y, int width, int height, ItemStack stack, ItemModule.ModuleInstance moduleInstance, Consumer<PacketByteBuf> craft, Consumer<Objects> back) {
             super(x, y, width, height, Text.empty());
-            SimpleButton<Objects> backButton = new SimpleButton(this.x + 10, this.y + this.height - 10, 40, 10, Text.literal("Back"), null, back);
+            SimpleButton<Objects> backButton = new SimpleButton(this.getX() + 10, this.getY() + this.height - 10, 40, 10, Text.literal("Back"), null, back);
             MutableText text = Text.literal(moduleInstance.moduleData.get("properties")).copy();
             TextFieldWidget textFieldWidget = new TextFieldWidget(MinecraftClient.getInstance().textRenderer, x + 5, y + 10, this.width - 10, 20, text);
             textFieldWidget.setMaxLength(Integer.MAX_VALUE);
@@ -62,7 +62,7 @@ public class PropertyInjectionDev implements EditOption {
             ScrollingTextWidget error = new ScrollingTextWidget(x + 5, y + 40, this.width - 10, Text.empty(), ColorHelper.Argb.getArgb(255, 255, 0, 0));
             addChild(error);
 
-            SimpleButton<Objects> craftButton = new SimpleButton<>(this.x + this.width - 50, this.y + this.height - 10, 40, 10, Text.literal("Apply"), null, (a) -> {
+            SimpleButton<Objects> craftButton = new SimpleButton<>(this.getX() + this.width - 50, this.getY() + this.height - 10, 40, 10, Text.literal("Apply"), null, (a) -> {
                 String raw = textFieldWidget.getText();
                 Miapi.LOGGER.info("attempting writing runtime Properties");
                 Miapi.LOGGER.info(raw);
