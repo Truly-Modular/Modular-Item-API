@@ -3,6 +3,7 @@ package smartin.miapi.mixin;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import dev.architectury.event.EventResult;
+import dev.architectury.registry.level.entity.EntityAttributeRegistry;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
@@ -50,6 +51,10 @@ abstract class LivingEntityMixin {
     private static void addAttributes(CallbackInfoReturnable<DefaultAttributeContainer.Builder> cir) {
         DefaultAttributeContainer.Builder builder = cir.getReturnValue();
         if (builder != null) {
+            AttributeRegistry.entityAttributeRegistry.getFlatMap().forEach((id, attribute)->{
+                builder
+                        .add(attribute);
+            });
             builder
                     .add(AttributeRegistry.ARMOR_CRUSHING)
                     .add(AttributeRegistry.BACK_STAB)

@@ -2,7 +2,9 @@ package smartin.miapi.modules.properties;
 
 import com.google.gson.JsonElement;
 import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.world.ServerWorld;
 import smartin.miapi.Miapi;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.util.MergeType;
@@ -24,7 +26,6 @@ public class EquipmentSlotProperty implements ModuleProperty {
     @Override
     public boolean load(String moduleKey, JsonElement data) throws Exception {
         String name = data.getAsString();
-        //EquipmentSlot.byName(name);
         return true;
     }
 
