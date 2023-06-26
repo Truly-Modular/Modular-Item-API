@@ -2,23 +2,17 @@ package smartin.miapi.attributes;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.ClampedEntityAttribute;
-import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.world.World;
-import smartin.miapi.Miapi;
 
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
-@ParametersAreNonnullByDefault
 public final class ReachEntityAttributes {
 
     public static double getReachDistance(final LivingEntity entity, final double baseReachDistance) {
-        @Nullable final var reachDistance = entity.getAttributeInstance(AttributeRegistry.REACH);
+        final var reachDistance = entity.getAttributeInstance(AttributeRegistry.REACH);
         return (reachDistance != null) ? (baseReachDistance + reachDistance.getValue()) : baseReachDistance;
     }
 
@@ -28,7 +22,7 @@ public final class ReachEntityAttributes {
     }
 
     public static double getAttackRange(final LivingEntity entity, final double baseAttackRange) {
-        @Nullable final var attackRange = entity.getAttributeInstance(AttributeRegistry.ATTACK_RANGE);
+        final var attackRange = entity.getAttributeInstance(AttributeRegistry.ATTACK_RANGE);
         return (attackRange != null) ? (baseAttackRange + attackRange.getValue()) : baseAttackRange;
     }
 

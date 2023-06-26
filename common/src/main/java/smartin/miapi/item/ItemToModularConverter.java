@@ -2,7 +2,7 @@ package smartin.miapi.item;
 
 import com.google.gson.reflect.TypeToken;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registries;
 import smartin.miapi.Miapi;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.modules.ItemModule;
@@ -45,7 +45,7 @@ public class ItemToModularConverter implements ModularItemStackConverter.Modular
     @Override
     public ItemStack convert(ItemStack stack) {
         for (Map.Entry<String, ItemStack> entry : regexes.entrySet()) {
-            if (Registry.ITEM.getId(stack.getItem()).toString().matches(entry.getKey())) {
+            if (Registries.ITEM.getId(stack.getItem()).toString().matches(entry.getKey())) {
                 return entry.getValue().copy();
             }
         }

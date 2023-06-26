@@ -4,6 +4,8 @@ import com.google.gson.Gson;
 import net.minecraft.client.render.model.ModelBakeSettings;
 import net.minecraft.client.render.model.json.Transformation;
 import net.minecraft.util.math.*;
+import org.joml.Matrix4f;
+import org.joml.Vector3f;
 
 /**
  * A Transform represents a transformation in 3D space, including rotation, translation, and scaling.
@@ -14,7 +16,7 @@ public class Transform extends Transformation {
     /**
      * The identity bakedTransform, representing no transformation at all.
      */
-    public static final Transform IDENTITY = new Transform(new Vec3f(), new Vec3f(), new Vec3f(1.0F, 1.0F, 1.0F));
+    public static final Transform IDENTITY = new Transform(new Vector3f(), new Vector3f(), new Vector3f(1.0F, 1.0F, 1.0F));
 
     /**
      * Creates a new Transform with the given rotation, translation, and scale.
@@ -23,7 +25,7 @@ public class Transform extends Transformation {
      * @param translation the translation vector, as a Vec3f
      * @param scale       the scale vector, as a Vec3f
      */
-    public Transform(Vec3f rotation, Vec3f translation, Vec3f scale) {
+    public Transform(Vector3f rotation, Vector3f translation, Vector3f scale) {
         super(rotation.copy(), translation.copy(), scale.copy());
     }
 
@@ -64,7 +66,7 @@ public class Transform extends Transformation {
      * @param vector the vector to bakedTransform, as a Vec3f
      * @return the transformed vector, as a new Vec3f
      */
-    public Vec3f transformVector(Vec3f vector) {
+    public Vector3f transformVector(Vector3f vector) {
         // Apply scaling
         float x = vector.getX() * scale.getX();
         float y = vector.getY() * scale.getY();
@@ -119,19 +121,19 @@ public class Transform extends Transformation {
      * @return the repaired transformation, as a new Transform
      */
     public static Transform repair(Transformation transformation) {
-        Vec3f parentRotation = transformation.rotation;
+        Vector3f parentRotation = transformation.rotation;
         if (parentRotation == null) {
-            parentRotation = new Vec3f(0, 0, 0);
+            parentRotation = new Vector3f(0, 0, 0);
         }
-        Vec3f parentTranslation = transformation.translation;
+        Vector3f parentTranslation = transformation.translation;
         if (parentTranslation == null) {
-            parentTranslation = new Vec3f(0, 0, 0);
+            parentTranslation = new Vector3f(0, 0, 0);
         }
-        Vec3f parentScale = transformation.scale;
+        Vector3f parentScale = transformation.scale;
         if (parentScale == null) {
-            parentScale = new Vec3f(1, 1, 1);
+            parentScale = new Vector3f(1, 1, 1);
         }
-        return new Transform(parentRotation.copy(), parentTranslation.copy(), parentScale.copy());
+        return new Transform(new Vector3f(parentRotation), new Vector3f(parentTranslation), new Vector3f(parentScale));
     }
 
     /**

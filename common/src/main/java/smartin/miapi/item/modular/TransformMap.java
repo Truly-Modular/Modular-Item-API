@@ -1,6 +1,5 @@
 package smartin.miapi.item.modular;
 
-import javax.annotation.Nonnull;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,7 +24,6 @@ public class TransformMap {
      * @param id the ID of the {@link Transform} to retrieve
      * @return the {@link Transform} associated with the specified ID
      */
-    @Nonnull
     public Transform get(String id){
         return stack.computeIfAbsent(id,(key)->Transform.IDENTITY);
     }
@@ -36,7 +34,6 @@ public class TransformMap {
      *
      * @return the primary {@link Transform}
      */
-    @Nonnull
     public Transform get(){
         return stack.computeIfAbsent(primary,(key)->Transform.IDENTITY);
     }

@@ -1,6 +1,5 @@
 package smartin.miapi.client;
 
-import dev.architectury.event.events.client.ClientTextureStitchEvent;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -17,8 +16,8 @@ import java.util.function.Consumer;
 @Environment(EnvType.CLIENT)
 public class SpriteLoader {
     public static void setup() {
-        ClientTextureStitchEvent.PRE.register(SpriteLoader::onTextureStitch);
-        ClientTextureStitchEvent.POST.register((atlas)-> ModularItemCache.discardCache());
+        //ClientTextureStitchEvent.PRE.register(SpriteLoader::onTextureStitch);
+        //ClientTextureStitchEvent.POST.register((atlas)-> ModularItemCache.discardCache());
         ReloadEvents.START.subscribe(isClient -> ModularItemCache.discardCache());
     }
 

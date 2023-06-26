@@ -7,6 +7,7 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
+import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.item.ModularItemStackConverter;
 import smartin.miapi.modules.ItemModule;
@@ -15,8 +16,6 @@ import smartin.miapi.modules.properties.SlotProperty;
 import smartin.miapi.modules.properties.util.CraftingProperty;
 import smartin.miapi.network.Networking;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -49,7 +48,7 @@ public class CraftAction {
      * @param player          the player performing the action
      * @param packetByteBuffs the packet byte buffers associated with the action
      */
-    public CraftAction(@Nonnull ItemStack old, @Nonnull SlotProperty.ModuleSlot slot, @Nullable ItemModule toAdd, @Nonnull PlayerEntity player, PacketByteBuf[] packetByteBuffs) {
+    public CraftAction(ItemStack old,  SlotProperty.ModuleSlot slot, @Nullable ItemModule toAdd,  PlayerEntity player, PacketByteBuf[] packetByteBuffs) {
         this.old = ModularItemStackConverter.getModularVersion(old);
         this.toAdd = toAdd;
         ItemModule.ModuleInstance instance = slot.parent;

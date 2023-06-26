@@ -8,7 +8,6 @@ import smartin.miapi.Environment;
 import smartin.miapi.Miapi;
 import smartin.miapi.network.Networking;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -59,7 +58,7 @@ public class ReloadEvents {
      * @param modId The ID of the mod.
      * @param path  The path of the data pack to be synced.
      */
-    public static void registerDataPackPathToSync(@Nonnull String modId, @Nonnull String path) {
+    public static void registerDataPackPathToSync(String modId,  String path) {
         syncedPaths.computeIfAbsent(modId, k -> new ArrayList<>()).add(path);
     }
 

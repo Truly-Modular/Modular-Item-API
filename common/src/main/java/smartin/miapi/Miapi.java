@@ -7,20 +7,24 @@ import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.registry.ReloadListenerRegistry;
 import dev.architectury.registry.menu.MenuRegistry;
 import net.minecraft.block.AbstractBlock;
-import net.minecraft.block.Material;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.MapColor;
+import net.minecraft.block.enums.Instrument;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import smartin.miapi.attributes.AttributeRegistry;
@@ -64,7 +68,7 @@ public class Miapi {
     public static final MiapiRegistry<ItemModule> moduleRegistry = MiapiRegistry.getInstance(ItemModule.class);
     public static final MiapiRegistry<Item> itemRegistry = MiapiRegistry.getInstance(Item.class);
     public static final MiapiRegistry<EditOption> editOptions = MiapiRegistry.getInstance(EditOption.class);
-    public static final ModularWorkBench WORK_BENCH = new ModularWorkBench(AbstractBlock.Settings.of(Material.METAL).dynamicBounds().nonOpaque());
+    public static final ModularWorkBench WORK_BENCH = new ModularWorkBench(AbstractBlock.Settings.create().mapColor(MapColor.IRON_GRAY).instrument(Instrument.IRON_XYLOPHONE).requiresTool().strength(5.0F, 6.0F).sounds(BlockSoundGroup.METAL));
     public static final Identifier WORK_BENCH_IDENTIFIER = new Identifier(Miapi.MOD_ID, "modular_work_bench");
     public static final EntityType ItemProjectile = registerEntity("miapi:thrown_item", EntityType.Builder.create(smartin.miapi.modules.abilities.util.ItemProjectile.ItemProjectile::new, SpawnGroup.MISC).setDimensions(0.5F, 0.5F).maxTrackingRange(4).trackingTickInterval(20));
 
@@ -90,7 +94,7 @@ public class Miapi {
             ReloadEvents.DATA_PACKS.forEach(ItemModule::loadFromData);
         }, 0.0f);
         Miapi.itemRegistry.addCallback(item -> {
-            Registry.register(Registry.ITEM, new Identifier(Miapi.itemRegistry.findKey(item)), item);
+            Registry.register(Registries.ITEM, new Identifier(Miapi.itemRegistry.findKey(item)), item);
         });
         MenuRegistry.registerScreenFactory(CRAFTING_SCREEN_HANDLER, CraftingGUI::new);
         PropertyResolver.propertyProviderRegistry.register("module", (moduleInstance, oldMap) -> {
@@ -221,16 +225,17 @@ public class Miapi {
         ItemAbilityManager.useAbilityRegistry.register(CircleAttackProperty.KEY, new CircleAttackAbility());
         ItemAbilityManager.useAbilityRegistry.register(CrossbowProperty.KEY, new CrossbowAbility());
 
-        Registry.register(Registry.BLOCK, WORK_BENCH_IDENTIFIER, WORK_BENCH);
-        Registry.register(Registry.ITEM, WORK_BENCH_IDENTIFIER, new BlockItem(WORK_BENCH, new Item.Settings()));
+        Registry.register(Registries.BLOCK, WORK_BENCH_IDENTIFIER, WORK_BENCH);
+        Registry.register(Registries.ITEM, WORK_BENCH_IDENTIFIER, new BlockItem(WORK_BENCH, new Item.Settings()));
     }
 
     private static <T extends ScreenHandler> ScreenHandlerType<T> register(Identifier id, ScreenHandlerType.Factory<T> factory) {
-        return (ScreenHandlerType) net.minecraft.util.registry.Registry.register(Registry.SCREEN_HANDLER, id, new ScreenHandlerType(factory));
+        //TODO:check this again
+        return (ScreenHandlerType) Registry.register(Registries.SCREEN_HANDLER, id, new ScreenHandlerType(factory, null));
     }
 
     private static <T extends Entity> EntityType<T> registerEntity(String id, EntityType.Builder<T> type) {
-        return (EntityType) Registry.register(Registry.ENTITY_TYPE, id, type.build(id));
+        return (EntityType) Registry.register(Registries.ENTITY_TYPE, id, type.build(id));
     }
 
 }

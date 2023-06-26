@@ -3,17 +3,16 @@ package smartin.miapi.attributes;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import dev.architectury.event.EventResult;
-import dev.architectury.registry.level.entity.EntityAttributeRegistry;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import smartin.miapi.events.Event;
 import smartin.miapi.Miapi;
-import smartin.miapi.mixin.LivingEntityAccessor;
 import smartin.miapi.registries.MiapiRegistry;
 
 import java.util.Collection;
@@ -64,7 +63,7 @@ public class AttributeRegistry {
                         if (value > 0) {
                             player.getItemCooldownManager().set(Items.SHIELD, (int) (value * 20));
                             player.clearActiveItem();
-                            player.world.sendEntityStatus(player, (byte) 30);
+                            player.getWorld().sendEntityStatus(player, (byte) 30);
                         }
                     }
                 }
@@ -83,12 +82,12 @@ public class AttributeRegistry {
     }
 
     private static EntityAttribute register(String id, EntityAttribute attribute) {
-        return Registry.register(Registry.ATTRIBUTE, id, attribute);
+        return Registry.register(Registries.ATTRIBUTE, id, attribute);
     }
 
     private static EntityAttribute registerOnEntity(String id, EntityAttribute attribute) {
         entityAttributeRegistry.register(id,attribute);
-        return Registry.register(Registry.ATTRIBUTE, id, attribute);
+        return Registry.register(Registries.ATTRIBUTE, id, attribute);
     }
 
     public static double getAttribute(ItemStack stack, EntityAttribute attribute, EquipmentSlot slot, double defaultValue) {

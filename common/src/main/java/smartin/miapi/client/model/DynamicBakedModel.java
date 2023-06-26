@@ -5,6 +5,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.BakedQuad;
+import net.minecraft.client.render.model.json.ModelOverride;
 import net.minecraft.client.render.model.json.ModelOverrideList;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.texture.Sprite;
@@ -91,7 +92,7 @@ public class DynamicBakedModel implements BakedModel {
     class DynamicOverrides extends ModelOverrideList {
 
         public DynamicOverrides() {
-            super(null, null, null, new ArrayList<>());
+            super(null, null,  new ArrayList<ModelOverride>());
         }
 
         @Override
