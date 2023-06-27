@@ -22,6 +22,6 @@ public class CustomModelRegistry implements ModelResourceProvider{
     }
 
     private static boolean isModularItem(Identifier identifier){
-        return Miapi.itemRegistry.get(identifier.toString().replace("item/",""))!=null;
+        return Miapi.modularItemRegistry.get(identifier.toString().replace("item/",""))!=null;
     }
 }

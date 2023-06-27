@@ -32,7 +32,7 @@ public class ItemToModularConverter implements ModularItemStackConverter.Modular
                         dataMap = Miapi.gson.fromJson(data, token.getType());
 
                         dataMap.forEach((itemId, moduleString) -> {
-                            ItemStack stack = new ItemStack(Miapi.itemRegistry.get("miapi:modular_item"));
+                            ItemStack stack = new ItemStack(Miapi.modularItemRegistry.get("miapi:modular_item"));
                             stack.getOrCreateNbt().putString("modules", moduleString.toString());
                             regexes.put(itemId, stack);
                         });

@@ -7,13 +7,13 @@ import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.registry.ReloadListenerRegistry;
 import dev.architectury.registry.menu.MenuRegistry;
 import net.minecraft.block.AbstractBlock;
-import net.minecraft.block.Blocks;
+import net.minecraft.block.Block;
 import net.minecraft.block.MapColor;
 import net.minecraft.block.enums.Instrument;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
-import net.minecraft.item.BlockItem;
+import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.item.Item;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.Registries;
@@ -44,6 +44,8 @@ import smartin.miapi.modules.abilities.*;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.conditions.ConditionManager;
+import smartin.miapi.modules.conditions.MaterialModuleCondition;
+import smartin.miapi.modules.conditions.OtherModuleModuleCondition;
 import smartin.miapi.modules.edit_options.EditOption;
 import smartin.miapi.modules.edit_options.PropertyInjectionDev;
 import smartin.miapi.modules.edit_options.skins.SkinOptions;
@@ -53,10 +55,8 @@ import smartin.miapi.modules.properties.render.ModelMergeProperty;
 import smartin.miapi.modules.properties.render.ModelProperty;
 import smartin.miapi.modules.properties.render.ModelTransformationProperty;
 import smartin.miapi.modules.properties.util.ModuleProperty;
-import smartin.miapi.modules.conditions.MaterialModuleCondition;
-import smartin.miapi.modules.conditions.OtherModuleModuleCondition;
-import smartin.miapi.modules.synergies.SynergyManager;
 import smartin.miapi.modules.properties.util.PropertyApplication;
+import smartin.miapi.modules.synergies.SynergyManager;
 import smartin.miapi.registries.MiapiRegistry;
 
 import java.util.HashMap;
@@ -64,12 +64,12 @@ import java.util.HashMap;
 public class Miapi {
     public static final String MOD_ID = "miapi";
     public static final Logger LOGGER = LoggerFactory.getLogger("ModularItem API");
+    public static final MiapiRegistry<EntityAttribute> entityAttributeRegistry = MiapiRegistry.getInstance(EntityAttribute.class);
     public static final MiapiRegistry<ModuleProperty> modulePropertyRegistry = MiapiRegistry.getInstance(ModuleProperty.class);
     public static final MiapiRegistry<ItemModule> moduleRegistry = MiapiRegistry.getInstance(ItemModule.class);
-    public static final MiapiRegistry<Item> itemRegistry = MiapiRegistry.getInstance(Item.class);
+    public static final MiapiRegistry<Item> modularItemRegistry = MiapiRegistry.getInstance(Item.class);
+    public static final MiapiRegistry<Block> blockItemRegistry = MiapiRegistry.getInstance(Block.class);
     public static final MiapiRegistry<EditOption> editOptions = MiapiRegistry.getInstance(EditOption.class);
-    public static final ModularWorkBench WORK_BENCH = new ModularWorkBench(AbstractBlock.Settings.create().mapColor(MapColor.IRON_GRAY).instrument(Instrument.IRON_XYLOPHONE).requiresTool().strength(5.0F, 6.0F).sounds(BlockSoundGroup.METAL).nonOpaque());
-    public static final Identifier WORK_BENCH_IDENTIFIER = new Identifier(Miapi.MOD_ID, "modular_work_bench");
     public static final EntityType ItemProjectile = registerEntity("miapi:thrown_item", EntityType.Builder.create(smartin.miapi.modules.abilities.util.ItemProjectile.ItemProjectile::new, SpawnGroup.MISC).setDimensions(0.5F, 0.5F).maxTrackingRange(4).trackingTickInterval(20));
 
 
@@ -93,9 +93,6 @@ public class Miapi {
             moduleRegistry.clear();
             ReloadEvents.DATA_PACKS.forEach(ItemModule::loadFromData);
         }, 0.0f);
-        Miapi.itemRegistry.addCallback(item -> {
-            Registry.register(Registries.ITEM, new Identifier(Miapi.itemRegistry.findKey(item)), item);
-        });
         MenuRegistry.registerScreenFactory(CRAFTING_SCREEN_HANDLER, CraftingGUI::new);
         PropertyResolver.propertyProviderRegistry.register("module", (moduleInstance, oldMap) -> {
             HashMap<ModuleProperty, JsonElement> map = new HashMap<>();
@@ -162,30 +159,39 @@ public class Miapi {
         ReloadEvents.registerDataPackPathToSync(Miapi.MOD_ID, "modular_converter");
         ReloadEvents.registerDataPackPathToSync(Miapi.MOD_ID, "skins");
 
+        Miapi.blockItemRegistry.register(Miapi.MOD_ID+ ":modular_work_bench",new ModularWorkBench(
+                AbstractBlock.Settings.create().
+                        mapColor(MapColor.IRON_GRAY).
+                        instrument(Instrument.IRON_XYLOPHONE).
+                        requiresTool().
+                        strength(5.0F, 6.0F).
+                        sounds(BlockSoundGroup.METAL).
+                        nonOpaque()));
+
         //ITEM
-        Miapi.itemRegistry.register(MOD_ID + ":modular_item", new ExampleModularItem());
-        Miapi.itemRegistry.register(MOD_ID + ":modular_handle", new ModularWeapon());
-        Miapi.itemRegistry.register(MOD_ID + ":modular_sword", new ModularWeapon());
-        Miapi.itemRegistry.register(MOD_ID + ":modular_katana", new ModularWeapon());
-        Miapi.itemRegistry.register(MOD_ID + ":modular_naginata", new ModularWeapon());
-        Miapi.itemRegistry.register(MOD_ID + ":modular_greatsword", new ModularWeapon());
-        Miapi.itemRegistry.register(MOD_ID + ":modular_dagger", new ModularWeapon());
-        Miapi.itemRegistry.register(MOD_ID + ":modular_throwing_knife", new ModularWeapon());
-        Miapi.itemRegistry.register(MOD_ID + ":modular_rapier", new ModularWeapon());
-        Miapi.itemRegistry.register(MOD_ID + ":modular_longsword", new ModularWeapon());
+        Miapi.modularItemRegistry.register(MOD_ID + ":modular_item", new ExampleModularItem());
+        Miapi.modularItemRegistry.register(MOD_ID + ":modular_handle", new ModularWeapon());
+        Miapi.modularItemRegistry.register(MOD_ID + ":modular_sword", new ModularWeapon());
+        Miapi.modularItemRegistry.register(MOD_ID + ":modular_katana", new ModularWeapon());
+        Miapi.modularItemRegistry.register(MOD_ID + ":modular_naginata", new ModularWeapon());
+        Miapi.modularItemRegistry.register(MOD_ID + ":modular_greatsword", new ModularWeapon());
+        Miapi.modularItemRegistry.register(MOD_ID + ":modular_dagger", new ModularWeapon());
+        Miapi.modularItemRegistry.register(MOD_ID + ":modular_throwing_knife", new ModularWeapon());
+        Miapi.modularItemRegistry.register(MOD_ID + ":modular_rapier", new ModularWeapon());
+        Miapi.modularItemRegistry.register(MOD_ID + ":modular_longsword", new ModularWeapon());
 
-        Miapi.itemRegistry.register(MOD_ID + ":modular_shovel", new ModularWeapon());
-        Miapi.itemRegistry.register(MOD_ID + ":modular_pickaxe", new ModularWeapon());
-        Miapi.itemRegistry.register(MOD_ID + ":modular_axe", new ModularWeapon());
-        Miapi.itemRegistry.register(MOD_ID + ":modular_hoe", new ModularWeapon());
-        Miapi.itemRegistry.register(MOD_ID + ":modular_mattock", new ModularWeapon());
+        Miapi.modularItemRegistry.register(MOD_ID + ":modular_shovel", new ModularWeapon());
+        Miapi.modularItemRegistry.register(MOD_ID + ":modular_pickaxe", new ModularWeapon());
+        Miapi.modularItemRegistry.register(MOD_ID + ":modular_axe", new ModularWeapon());
+        Miapi.modularItemRegistry.register(MOD_ID + ":modular_hoe", new ModularWeapon());
+        Miapi.modularItemRegistry.register(MOD_ID + ":modular_mattock", new ModularWeapon());
 
-        Miapi.itemRegistry.register(MOD_ID + ":modular_bow", new ExampleModularBowItem());
+        Miapi.modularItemRegistry.register(MOD_ID + ":modular_bow", new ExampleModularBowItem());
 
-        Miapi.itemRegistry.register(MOD_ID + ":modular_helmet", new ModularHelmet());
-        Miapi.itemRegistry.register(MOD_ID + ":modular_chestplate", new ModularChestPlate());
-        Miapi.itemRegistry.register(MOD_ID + ":modular_leggings", new ModularLeggings());
-        Miapi.itemRegistry.register(MOD_ID + ":modular_boots", new ModularBoots());
+        Miapi.modularItemRegistry.register(MOD_ID + ":modular_helmet", new ModularHelmet());
+        Miapi.modularItemRegistry.register(MOD_ID + ":modular_chestplate", new ModularChestPlate());
+        Miapi.modularItemRegistry.register(MOD_ID + ":modular_leggings", new ModularLeggings());
+        Miapi.modularItemRegistry.register(MOD_ID + ":modular_boots", new ModularBoots());
 
         //EDITPROPERTIES
         Miapi.editOptions.register("dev", new PropertyInjectionDev());
@@ -224,9 +230,6 @@ public class Miapi {
         ItemAbilityManager.useAbilityRegistry.register(HeavyAttackProperty.KEY, new HeavyAttackAbility());
         ItemAbilityManager.useAbilityRegistry.register(CircleAttackProperty.KEY, new CircleAttackAbility());
         ItemAbilityManager.useAbilityRegistry.register(CrossbowProperty.KEY, new CrossbowAbility());
-
-        Registry.register(Registries.BLOCK, WORK_BENCH_IDENTIFIER, WORK_BENCH);
-        Registry.register(Registries.ITEM, WORK_BENCH_IDENTIFIER, new BlockItem(WORK_BENCH, new Item.Settings()));
     }
 
     private static <T extends ScreenHandler> ScreenHandlerType<T> register(Identifier id, ScreenHandlerType.Factory<T> factory) {

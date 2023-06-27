@@ -23,7 +23,7 @@ public class MiapiClient {
     }
 
     protected static void clientStart(MinecraftClient client){
-        Miapi.itemRegistry.addCallback(item -> {
+        Miapi.modularItemRegistry.addCallback(item -> {
             ((ItemRendererAccessor) client.getItemRenderer()).color().register(new CustomColorProvider(), item);
         });
         EntityRendererRegistry.register(() -> {

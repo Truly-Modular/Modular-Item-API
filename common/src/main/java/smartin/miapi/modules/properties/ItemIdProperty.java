@@ -15,7 +15,7 @@ import java.util.List;
 
 /**
  * This Property changes the ItemIdentifier of an ModularItem on Craft
- * it only supports preregisterd ids in {@link Miapi#itemRegistry}
+ * it only supports preregisterd ids in {@link Miapi#modularItemRegistry}
  */
 public class ItemIdProperty implements CraftingProperty,ModuleProperty {
     public static final String KEY = "itemId";
@@ -28,7 +28,7 @@ public class ItemIdProperty implements CraftingProperty,ModuleProperty {
     @Override
     public boolean load(String moduleKey, JsonElement data) throws Exception {
         data.getAsString();
-        assert Miapi.itemRegistry.get(data.getAsString()) != null;
+        assert Miapi.modularItemRegistry.get(data.getAsString()) != null;
         return true;
     }
 
@@ -53,7 +53,7 @@ public class ItemIdProperty implements CraftingProperty,ModuleProperty {
         if (data != null) {
             translationKey = data.getAsString();
         }
-        Item item = Miapi.itemRegistry.get(translationKey);
+        Item item = Miapi.modularItemRegistry.get(translationKey);
         if (item != null) {
             ItemStack newStack = new ItemStack(item);
             newStack.setNbt(crafting.getNbt());

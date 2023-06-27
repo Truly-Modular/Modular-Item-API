@@ -32,6 +32,7 @@ import java.util.*;
 public class AttributeProperty implements ModuleProperty {
     public static final String KEY = "attributes";
     public static ModuleProperty property;
+    public static final Map<String, EntityAttribute> replaceMap = new HashMap<>();
 
     public AttributeProperty() {
         property = this;
@@ -47,7 +48,7 @@ public class AttributeProperty implements ModuleProperty {
             double value = StatResolver.resolveDouble(attributeJson.get("value").getAsString(), new ItemModule.ModuleInstance(ItemModule.empty));
             EntityAttributeModifier.Operation operation = getOperation(attributeJson.get("operation").getAsString());
             EquipmentSlot slot = getSlot(attributeJson.get("slot").getAsString());
-            EntityAttribute attribute = Registries.ATTRIBUTE.get(new Identifier(attributeName));
+            EntityAttribute attribute = replaceMap.getOrDefault(attributeName, Registries.ATTRIBUTE.get(new Identifier(attributeName)));
             UUID uuid = null;
 
             if (attributeJson.has("uuid")) {

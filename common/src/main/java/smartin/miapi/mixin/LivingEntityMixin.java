@@ -17,10 +17,14 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import smartin.miapi.Miapi;
 import smartin.miapi.events.Event;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.modules.properties.EquipmentSlotProperty;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Mixin(LivingEntity.class)
 abstract class LivingEntityMixin {
@@ -51,7 +55,7 @@ abstract class LivingEntityMixin {
     private static void addAttributes(CallbackInfoReturnable<DefaultAttributeContainer.Builder> cir) {
         DefaultAttributeContainer.Builder builder = cir.getReturnValue();
         if (builder != null) {
-            AttributeRegistry.entityAttributeRegistry.getFlatMap().forEach((id, attribute)->{
+            Miapi.entityAttributeRegistry.getFlatMap().forEach((id, attribute)->{
                 builder
                         .add(attribute);
             });

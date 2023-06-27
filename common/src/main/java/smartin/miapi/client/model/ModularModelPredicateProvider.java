@@ -15,7 +15,7 @@ public class ModularModelPredicateProvider {
     }
 
     public static void registerModularModelOverride(Identifier id, ClampedModelPredicateProvider provider){
-        Miapi.itemRegistry.addCallback((item)->{
+        Miapi.modularItemRegistry.addCallback((item)->{
             ModelPredicateProviderRegistryAccessor.register(item,id,provider);
         });
     }
@@ -25,7 +25,7 @@ public class ModularModelPredicateProvider {
     }
 
     public static void registerModularItemModelOverride(Identifier identifier, Identifier id, ClampedModelPredicateProvider provider){
-        Item item = Miapi.itemRegistry.get(identifier.toString());
+        Item item = Miapi.modularItemRegistry.get(identifier.toString());
         ModelPredicateProviderRegistryAccessor.register(item,id,provider);
     }
 }

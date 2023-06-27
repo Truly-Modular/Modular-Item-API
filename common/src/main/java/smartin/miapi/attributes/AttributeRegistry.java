@@ -9,17 +9,17 @@ import net.minecraft.entity.attribute.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
 import smartin.miapi.events.Event;
 import smartin.miapi.Miapi;
 import smartin.miapi.registries.MiapiRegistry;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class AttributeRegistry {
-    public static final MiapiRegistry<EntityAttribute> entityAttributeRegistry = MiapiRegistry.getInstance(EntityAttribute.class);
+    public static Map<String, EntityAttribute> entityAttributeMap = new HashMap<>();
 
     public static final EntityAttribute ITEM_DURABILITY = register(Miapi.MOD_ID + ":generic.durability", (new ClampedEntityAttribute("miapi.attribute.name.durability", 300.0, 1.0, 16777216)).setTracked(true));
 
@@ -82,12 +82,12 @@ public class AttributeRegistry {
     }
 
     private static EntityAttribute register(String id, EntityAttribute attribute) {
-        return Registry.register(Registries.ATTRIBUTE, id, attribute);
+        return Miapi.entityAttributeRegistry.register(id, attribute);
     }
 
     private static EntityAttribute registerOnEntity(String id, EntityAttribute attribute) {
-        entityAttributeRegistry.register(id,attribute);
-        return Registry.register(Registries.ATTRIBUTE, id, attribute);
+        entityAttributeMap.put(id, attribute);
+        return Miapi.entityAttributeRegistry.register(id, attribute);
     }
 
     public static double getAttribute(ItemStack stack, EntityAttribute attribute, EquipmentSlot slot, double defaultValue) {

@@ -92,7 +92,7 @@ public class MiapiRegistry<T> {
      * @param value the value of the entry to be registered
      * @throws IllegalArgumentException if an entry with the same name already exists
      */
-    public void register(String name, T value) {
+    public T register(String name, T value) {
         if (entries.containsKey(name)) {
             throw new IllegalArgumentException("Entry with name '" + name + "' already exists.");
         }
@@ -100,6 +100,7 @@ public class MiapiRegistry<T> {
 
         // Call the callbacks for the class type
         callbacks.forEach(callback -> callback.accept(value));
+        return value;
     }
 
     /**
