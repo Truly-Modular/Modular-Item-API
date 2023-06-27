@@ -209,7 +209,8 @@ public class CraftView extends InteractAbleWidget {
         }
         //only preview on inventory change?
         // Add the initial GUI to the screen
-        addGui(craftingGuis.get(currentGuiIndex));
+        if (!craftingGuis.isEmpty())
+            addGui(craftingGuis.get(currentGuiIndex));
         super.render(drawContext, mouseX, mouseY, delta);
     }
 

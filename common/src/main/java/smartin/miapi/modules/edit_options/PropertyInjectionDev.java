@@ -64,9 +64,6 @@ public class PropertyInjectionDev implements EditOption {
 
             SimpleButton<Objects> craftButton = new SimpleButton<>(this.getX() + this.width - 50, this.getY() + this.height - 10, 40, 10, Text.literal("Apply"), null, (a) -> {
                 String raw = textFieldWidget.getText();
-                Miapi.LOGGER.info("attempting writing runtime Properties");
-                Miapi.LOGGER.info(raw);
-                //validateString
                 try {
                     boolean success = true;
                     if (raw != null) {
@@ -86,7 +83,6 @@ public class PropertyInjectionDev implements EditOption {
                         }
                     }
                     if (success) {
-                        Miapi.LOGGER.info("success");
                         PacketByteBuf buf = Networking.createBuffer();
                         buf.writeString(raw);
                         craft.accept(buf);

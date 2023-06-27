@@ -124,7 +124,7 @@ public class SlotDisplay extends InteractAbleWidget {
     public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
         if (isMouseOver(mouseX, mouseY)) {
             double scale = Math.pow(2, amount / 10);
-            slotProjection.scale((float) scale, (float) scale, 1);
+            slotProjection.scale((float) scale, (float) scale, (float) scale);
             return true;
         }
         return super.mouseScrolled(mouseX, mouseY, amount);

@@ -87,7 +87,6 @@ public class MiningLevelProperty implements ModuleProperty {
     public static float getMiningSpeedMultiplier(ItemStack stack, BlockState state) {
         if (state.isIn(BlockTags.PICKAXE_MINEABLE)) {
             double value = AttributeProperty.getActualValue(stack, EquipmentSlot.MAINHAND, AttributeRegistry.MINING_SPEED_PICKAXE);
-            Miapi.LOGGER.error(String.valueOf(value));
             return (float) value;
         }
         if (state.isIn(BlockTags.AXE_MINEABLE)) {

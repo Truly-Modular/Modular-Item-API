@@ -38,7 +38,6 @@ public class EquipmentSlotProperty implements ModuleProperty {
     @Nullable
     public static EquipmentSlot getSlot(ItemStack stack) {
         ItemModule.ModuleInstance root = ItemModule.getModules(stack);
-        Miapi.LOGGER.error("resolving Equipment Slot, if the item has this property");
         if (root != null) {
             JsonElement element = ItemModule.getMergedProperty(root, property, MergeType.OVERWRITE);
             if (element != null) {

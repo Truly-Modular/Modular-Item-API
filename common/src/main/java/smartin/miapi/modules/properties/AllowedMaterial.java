@@ -126,8 +126,6 @@ public class AllowedMaterial implements CraftingProperty, ModuleProperty {
             startX = x + 5;
             startY = y + 5;
             this.action = action;
-            Miapi.LOGGER.warn("WIDTH " + width + " height " + height);
-            Miapi.LOGGER.warn("WIDTH X" + x + " height Y" + y);
 
             ItemModule.ModuleInstance moduleInstance = new ItemModule.ModuleInstance(action.toAdd);
             Text displayText = StatResolver.translateAndResolve(Miapi.MOD_ID + ".module." + moduleInstance.module.getName(), moduleInstance);

@@ -43,7 +43,8 @@ public class GuiOffsetProperty implements ModuleProperty {
                     guiOffsetJson.y -= guiOffsetJson.sizeY/2;
                     guiOffsetJson.sizeX = guiTransform.scale.x() - guiOffsetJson.sizeX / 16.0f;
                     guiOffsetJson.sizeY = guiTransform.scale.y() - guiOffsetJson.sizeY / 16.0f;
-                    guiTransform = new Transform(guiTransform.rotation,new Vector3f(guiOffsetJson.x / 16.0f, guiOffsetJson.y / 16.0f, 0),new Vector3f(guiOffsetJson.sizeX, guiOffsetJson.sizeY, 1.0f));
+                    float guiZ = (guiOffsetJson.sizeX + guiOffsetJson.sizeY)/2;
+                    guiTransform = new Transform(guiTransform.rotation,new Vector3f(guiOffsetJson.x / 16.0f, guiOffsetJson.y / 16.0f, 0),new Vector3f(guiOffsetJson.sizeX, guiOffsetJson.sizeY, guiZ));
                     dynamicBakedModel.modelTransformation = new ModelTransformation(
                             dynamicBakedModel.getTransformation().getTransformation(ModelTransformationMode.THIRD_PERSON_LEFT_HAND),
                             dynamicBakedModel.getTransformation().getTransformation(ModelTransformationMode.THIRD_PERSON_RIGHT_HAND),
