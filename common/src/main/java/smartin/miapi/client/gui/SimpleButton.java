@@ -94,7 +94,7 @@ public class SimpleButton<T> extends InteractAbleWidget {
      * @param delta       The time since the last tick.
      */
     public void renderButton(DrawContext drawContext, int mouseX, int mouseY, float delta) {
-        //RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.setShader(GameRenderer::getPositionProgram);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
         int offset = 0;
         if (this.isMouseOver(mouseX, mouseY)) {

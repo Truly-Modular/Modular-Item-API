@@ -128,7 +128,6 @@ class SkinTabGui extends InteractAbleWidget implements SkinGui.SortAble {
             //Header
             RenderSystem.setShaderTexture(0, tabInfo.header.texture());
             drawTextureWithEdgeAndScale(drawContext, tabInfo.header.texture(), getX(), getY(), 0, hover, tabInfo.header.xSize(), tabInfo.header.ySize(), this.width, realHeight, tabInfo.header.xSize(), tabInfo.header.ySize() * 3, tabInfo.header.borderSize(), tabInfo.header.scale());
-            Miapi.LOGGER.warn(String.valueOf(this.width));
             if (isOpen) {
                 //Background
                 RenderSystem.setShaderTexture(0, tabInfo.background.texture());

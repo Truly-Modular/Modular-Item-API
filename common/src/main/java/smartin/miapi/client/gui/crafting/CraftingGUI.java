@@ -47,7 +47,6 @@ public class CraftingGUI extends ParentHandledScreen<CraftingScreenHandler> impl
         moduleCrafter = new ModuleCrafter((int) (((this.width - this.backgroundWidth) / 2 + 109 + 36) * (1 / scale)), (int) (((this.height - this.backgroundHeight) / 2 + 8) * (1 / scale)), (int) ((163 - 36) * (1 / scale)), (int) ((150 - 38 + 15) * (1 / scale)), (selectedSlot) -> {
             slotDisplay.select(selectedSlot);
         }, (item) -> {
-            Miapi.LOGGER.error("Module Crafter Callback");
             slotDisplay.setItem(item);
             statDisplay.setCompareTo(item);
         }, handler.inventory,

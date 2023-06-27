@@ -14,6 +14,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
+import smartin.miapi.Miapi;
 import smartin.miapi.modules.properties.render.ModelProperty;
 
 import java.util.ArrayList;
@@ -23,20 +24,17 @@ import java.util.function.Function;
 @Environment(EnvType.CLIENT)
 public class CustomModelOverrides extends ModelOverrideList {
 
-    public CustomModelOverrides(Baker baker, JsonUnbakedModel parent, List<ModelOverride> overrides) {
-        super(baker,parent,overrides);
-    }
-    public CustomModelOverrides(){
-        super(null,null,new ArrayList<>());
+    public CustomModelOverrides() {
+        super(DynamicBakery.dynamicBaker, null, new ArrayList<>());
     }
 
     @Override
     public BakedModel apply(BakedModel oldmodel, ItemStack stack, @Nullable ClientWorld world, @Nullable LivingEntity entity, int seed) {
         BakedModel model = ModelProperty.getItemModel(stack);
-        if(model!=null){
+        if (model != null) {
             ModelOverrideList modelOverride = model.getOverrides();
-            if(modelOverride!=null){
-                BakedModel bakedModel = modelOverride.apply(model,stack,world,entity,seed);
+            if (modelOverride != null) {
+                BakedModel bakedModel = modelOverride.apply(model, stack, world, entity, seed);
                 return bakedModel;
             }
             return model;

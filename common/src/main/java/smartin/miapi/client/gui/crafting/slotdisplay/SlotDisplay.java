@@ -115,8 +115,7 @@ public class SlotDisplay extends InteractAbleWidget {
         float angleX = (float) -(deltaY * 0.02f);
         float angleY = (float) -(deltaX * 0.02f);
         MatrixStack newStack = new MatrixStack();
-
-        //newStack.multiply(Quaternion.fromEulerXyz(new Vec3f(-angleX, angleY, 0)));
+        newStack.peek().getPositionMatrix().rotateAffineXYZ(-angleX, angleY, 0);
         newStack.multiplyPositionMatrix(slotProjection.peek().getPositionMatrix());
         slotProjection = newStack;
     }

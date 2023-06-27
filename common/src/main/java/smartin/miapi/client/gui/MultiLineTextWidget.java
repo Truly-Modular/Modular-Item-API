@@ -81,17 +81,7 @@ public class MultiLineTextWidget extends InteractAbleWidget {
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         int start = getY();
         for (Text line : lines) {
-            textRenderer.draw(
-                    line,
-                    getX(),
-                    start,
-                    textColor,
-                    hasTextShadow,
-                    context.getMatrices().peek().getPositionMatrix(),
-                    context.getVertexConsumers(),
-                    TextRenderer.TextLayerType.NORMAL,
-                    0,
-                    0);
+            context.drawText(textRenderer,line,getX(),start,textColor,hasTextShadow);
             start += textRenderer.fontHeight + spacer;
         }
 

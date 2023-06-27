@@ -5,6 +5,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.screen.ingame.AnvilScreen;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
@@ -126,8 +127,8 @@ public class DetailView extends InteractAbleWidget {
             AtomicInteger yOffset = new AtomicInteger();
             yOffset.addAndGet(trueHeight);
             if (isSelected) {
-                detail.setX(this.getY() + 1);
-                detail.setY(this.getX() + trueHeight - 2);
+                detail.setX(this.getX() + 1);
+                detail.setY(this.getY() + trueHeight - 2);
                 detail.setWidth(this.width - 2);
                 yOffset.addAndGet(detail.getHeight());
             }
@@ -135,7 +136,7 @@ public class DetailView extends InteractAbleWidget {
                 slotButton.setX(this.getX());
                 slotButton.setY(this.getY() + yOffset.get());
                 yOffset.addAndGet(slotButton.currentHeight);
-                slotButton.width = this.width;
+                slotButton.setWidth(this.width);
             });
         }
 
@@ -165,9 +166,9 @@ public class DetailView extends InteractAbleWidget {
             currentHeight = trueHeight;
             if (this.isOpened) {
                 updateChildren();
-                for (SlotButton detail1 : subSlots) {
-                    currentHeight += detail1.currentHeight;
-                    detail1.render(drawContext, mouseX, mouseY, delta);
+                for (SlotButton subButton : subSlots) {
+                    currentHeight += subButton.currentHeight;
+                    subButton.render(drawContext, mouseX, mouseY, delta);
                 }
             }
             if (this.isSelected) {
@@ -198,8 +199,8 @@ public class DetailView extends InteractAbleWidget {
             moduleName.setX(this.getX() + 6 * level + 3);
             int materialNameWidth = materialName.getRequiredWidth();
             moduleName.setWidth(this.width - 50 - materialNameWidth - level * 6);
-            ;
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
+            RenderSystem.setShader(GameRenderer::getPositionProgram);
             RenderSystem.enableBlend();
             RenderSystem.defaultBlendFunc();
             int textureOffset = 0;
@@ -322,13 +323,13 @@ public class DetailView extends InteractAbleWidget {
             replaceButton.setX(this.getX() + this.getWidth() - replaceButton.getWidth() - buttonSpacing);
             replaceButton.setY(this.getY() + this.getHeight() - replaceButton.getHeight() - buttonSpacing);
 
-            RenderSystem.setShaderTexture(0, texture);
-            RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
+            //RenderSystem.setShaderTexture(0, texture);
+            drawContext.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
             RenderSystem.enableBlend();
-            RenderSystem.defaultBlendFunc();
-            //drawTexture(matrices, x, y, 0, 0, 0, width, height - 5, 156, 100);
-            //drawTexture(matrices, x, y + height - 5, 0, 0, 95, width, 5, 156, 100);
-            drawTextureWithEdge(drawContext,texture, getX(), getY(), this.width, height, 156, 100, 5);
+            RenderSystem.disableDepthTest();
+            RenderSystem.setShader(GameRenderer::getPositionProgram);
+
+            drawTextureWithEdge(drawContext, texture, this.getX(), this.getY(), this.width, this.height, 156, 100, 5);
 
             headerText.setX(this.getX() + buttonSpacing);
             headerText.setY(this.getY() + buttonSpacing);

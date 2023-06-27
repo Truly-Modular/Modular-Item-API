@@ -66,8 +66,8 @@ public abstract class SingleStatDisplayDouble extends InteractAbleWidget impleme
 
         drawTextureWithEdge(drawContext, texture, getX(), getY(), 0, 166, 120, 32, width, height, 256, 256, 2);
 
-        textWidget.setX(textWidget.getX() + 5);
-        textWidget.setY(textWidget.getY() + 5);
+        textWidget.setX(this.getX() + 5);
+        textWidget.setY(this.getY() + 5);
         textWidget.setWidth(this.width - 8);
 
         statBar.setX(this.getX() + 5);

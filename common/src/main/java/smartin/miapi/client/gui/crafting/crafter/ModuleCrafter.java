@@ -127,7 +127,6 @@ public class ModuleCrafter extends InteractAbleWidget {
                         });
                         this.children().clear();
                         this.addChild(view);
-                        Miapi.LOGGER.error("edit");
                     }
                 }
             }

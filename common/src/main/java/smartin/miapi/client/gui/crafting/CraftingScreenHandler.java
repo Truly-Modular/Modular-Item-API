@@ -165,9 +165,8 @@ public class CraftingScreenHandler extends ScreenHandler {
         return true;
     }
 
-    public void close(PlayerEntity player) {
-        //TODO:figure out how to react on close
-        //super.close(player);
+    public void onClosed(PlayerEntity player) {
+        super.onClosed(player);
         this.context.run((world, pos) -> {
             this.dropInventory(player, this.inventory);
         });

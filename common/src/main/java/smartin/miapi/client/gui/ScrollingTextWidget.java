@@ -9,6 +9,7 @@ import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
+import net.minecraft.util.math.ColorHelper;
 import smartin.miapi.Miapi;
 
 /**
@@ -115,17 +116,7 @@ public class ScrollingTextWidget extends InteractAbleWidget implements Drawable,
             case CENTERED -> textStart += (this.width - textWidth) / 2;
             case RIGHT -> textStart += (this.width - textWidth);
         }
-        renderer.draw(
-                displayText,
-                textStart,
-                this.getY(),
-                textColor,
-                hasTextShadow,
-                context.getMatrices().peek().getPositionMatrix(),
-                context.getVertexConsumers(),
-                TextRenderer.TextLayerType.NORMAL,
-                0,
-                0);
+        context.drawText(renderer, displayText, textStart, this.getY(), textColor, hasTextShadow);
     }
 
     public int getRequiredWidth() {

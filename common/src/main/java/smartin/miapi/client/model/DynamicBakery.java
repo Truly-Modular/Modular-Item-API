@@ -19,6 +19,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
 import org.jetbrains.annotations.Nullable;
+import smartin.miapi.mixin.client.ModelLoaderInterfaceAccessor;
 
 import java.util.List;
 import java.util.Objects;
@@ -27,9 +28,12 @@ import java.util.function.Function;
 
 @Environment(EnvType.CLIENT)
 public class DynamicBakery {
-    private DynamicBakery(){
+    public static Baker dynamicBaker;
+
+    private DynamicBakery() {
 
     }
+
     private static final BakedQuadFactory QUAD_FACTORY = new BakedQuadFactory();
 
     public static BakedModel bake(JsonUnbakedModel model, ModelLoader loader, JsonUnbakedModel parent, Function<SpriteIdentifier, Sprite> textureGetter, ModelBakeSettings settings, Identifier id, boolean hasDepth, int color) {
@@ -76,7 +80,7 @@ public class DynamicBakery {
         private final Identifier[] dynamicConditionTypes;
 
         public OverrideList(ModelLoader modelLoader, JsonUnbakedModel parent, Function<Identifier, UnbakedModel> unbakedModelGetter, List<ModelOverride> overrides, int color) {
-            super(null,parent,overrides);
+            super(dynamicBaker, parent, overrides);
             this.dynamicConditionTypes = overrides.stream().flatMap(ModelOverride::streamConditions).map(ModelOverride.Condition::getType).distinct().toArray(Identifier[]::new);
             Object2IntMap<Identifier> object2IntMap = new Object2IntOpenHashMap();
 
@@ -128,7 +132,7 @@ public class DynamicBakery {
         @Nullable
         private BakedModel bakeOverridingModel(ModelLoader loader, JsonUnbakedModel parent, Function<Identifier, UnbakedModel> unbakedModelGetter, ModelOverride override) {
             UnbakedModel unbakedModel = unbakedModelGetter.apply(override.getModelId());
-            return Objects.equals(unbakedModel, parent) ? null : null;
+            return Objects.equals(unbakedModel, parent) ? null : dynamicBaker.bake(override.getModelId(), ModelRotation.X0_Y0);
         }
 
         @Nullable

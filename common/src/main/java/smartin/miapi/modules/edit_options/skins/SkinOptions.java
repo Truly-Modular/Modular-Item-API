@@ -50,8 +50,6 @@ public class SkinOptions implements EditOption {
     }
 
     public static SkinTab getTag(String path) {
-        Miapi.LOGGER.warn("" + tabMap.get(path));
-        Miapi.LOGGER.warn(String.valueOf(tabMap.size()));
         return tabMap.getOrDefault(path, defaultTab);
     }
 
@@ -75,12 +73,9 @@ public class SkinOptions implements EditOption {
     @Override
     public ItemStack execute(PacketByteBuf buffer, ItemStack stack, ItemModule.ModuleInstance instance) {
         String skin = buffer.readString();
-        Miapi.LOGGER.warn("Executing " + skin);
-        Miapi.LOGGER.warn(String.valueOf(instance.getRoot().toString().contains(skin)));
         instance.moduleData.put("skin", skin);
         stack.getOrCreateNbt().putString("modules", instance.getRoot().toString());
         stack.getOrCreateNbt().remove(ModularItemCache.CACHE_KEY);
-        Miapi.LOGGER.warn(String.valueOf(stack.getOrCreateNbt().getString("modules").contains(skin)));
         return stack;
     }
 

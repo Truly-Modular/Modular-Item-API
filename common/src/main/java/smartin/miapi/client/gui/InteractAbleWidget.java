@@ -1,5 +1,6 @@
 package smartin.miapi.client.gui;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -8,6 +9,7 @@ import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ClickableWidget;
+import net.minecraft.client.render.GameRenderer;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
@@ -357,6 +359,7 @@ public abstract class InteractAbleWidget extends ClickableWidget implements Draw
      */
     @Override
     public void render(DrawContext drawContext, int mouseX, int mouseY, float delta) {
+        RenderSystem.setShader(GameRenderer::getPositionProgram);
         children().forEach(element -> {
             if (element instanceof Drawable drawable) {
                 drawable.render(drawContext, mouseX, mouseY, delta);
