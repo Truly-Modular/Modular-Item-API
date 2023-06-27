@@ -55,9 +55,8 @@ abstract class LivingEntityMixin {
     private static void addAttributes(CallbackInfoReturnable<DefaultAttributeContainer.Builder> cir) {
         DefaultAttributeContainer.Builder builder = cir.getReturnValue();
         if (builder != null) {
-            Miapi.entityAttributeRegistry.getFlatMap().forEach((id, attribute)->{
-                builder
-                        .add(attribute);
+            AttributeRegistry.entityAttributeMap.forEach((id,attribute)->{
+                builder.add(attribute);
             });
         }
     }
