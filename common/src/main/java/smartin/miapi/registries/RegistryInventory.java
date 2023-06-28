@@ -15,6 +15,7 @@ import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.registry.RegistryKeys;
+import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.util.Identifier;
@@ -107,8 +108,9 @@ public class RegistryInventory {
 
     public static void setup() {
         //SCREEN
+        // TODO: check this null again
         register(screenHandlers, "default_crafting", () ->
-                new ScreenHandlerType<>(CraftingScreenHandler::new, null), // TODO: check this null again
+                new ScreenHandlerType<>(CraftingScreenHandler::new, FeatureSet.empty()),
                 scr -> craftingScreenHandler = (ScreenHandlerType<CraftingScreenHandler>) scr);
 
         //ENTITY
