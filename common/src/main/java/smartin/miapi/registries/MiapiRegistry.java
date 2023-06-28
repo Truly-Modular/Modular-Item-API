@@ -4,6 +4,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * A generic registry class that can be used to store and retrieve entries by name.
@@ -24,6 +25,8 @@ public class MiapiRegistry<T> {
      * The list of callbacks to invoke when new entries are added to the registry.
      */
     protected final List<Consumer<T>> callbacks = new ArrayList<>();
+
+    protected final Map<String, Supplier<T>> suppliers = new HashMap<>();
 
     /**
      * Protected constructor to prevent direct instantiation of the registry.
@@ -81,7 +84,7 @@ public class MiapiRegistry<T> {
         instance = (MiapiRegistry<T>) REGISTRY_MAP.get(clazz);
         MiapiRegistry<T> finalInstance = instance;
         callbacks.forEach(finalInstance::addCallback);
-        return (MiapiRegistry<T>) REGISTRY_MAP.computeIfAbsent(clazz,(T)->new MiapiRegistry<T>());
+        return (MiapiRegistry<T>) REGISTRY_MAP.computeIfAbsent(clazz, (T) -> new MiapiRegistry<T>());
     }
 
     /**
@@ -93,7 +96,7 @@ public class MiapiRegistry<T> {
      * @throws IllegalArgumentException if an entry with the same name already exists
      */
     public T register(String name, T value) {
-        if (entries.containsKey(name)) {
+        if (entries.containsKey(name) || suppliers.containsKey(name)) {
             throw new IllegalArgumentException("Entry with name '" + name + "' already exists.");
         }
         entries.put(name, value);
@@ -104,10 +107,39 @@ public class MiapiRegistry<T> {
     }
 
     /**
+     * Registers a new entry with the given name and value to this registry. If an entry with the same name already exists, an
+     * IllegalArgumentException is thrown. Calls all the callbacks associated with the class type.
+     *
+     * @param name  the name of the entry to be registered
+     * @param value the value of the entry to be registered
+     * @throws IllegalArgumentException if an entry with the same name already exists
+     */
+    public void registerSupplier(String name, Supplier<T> value) {
+        if (entries.containsKey(name)) {
+            throw new IllegalArgumentException("Entry with name '" + name + "' already exists.");
+        }
+        suppliers.put(name, value);
+    }
+
+    /**
      * Removes all entries from this registry.
      */
     public void clear() {
+        suppliers.clear();
         entries.clear();
+    }
+    /**
+     * Loads all the suppliers into the proper registry
+     */
+    public void loadAllSupplier(){
+        suppliers.forEach((id,supplier)->{
+            T entry = supplier.get();
+            entries.put(id, entry);
+            suppliers.remove(entry);
+            callbacks.forEach(callbacks->{
+                callbacks.accept(entry);
+            });
+        });
     }
 
     /**
@@ -119,6 +151,15 @@ public class MiapiRegistry<T> {
     @Nullable
     public T get(String name) {
         if (!entries.containsKey(name)) {
+            if (suppliers.containsKey(name)) {
+                T entry = suppliers.get(name).get();
+                entries.put(name, entry);
+                suppliers.remove(entry);
+                callbacks.forEach(callbacks->{
+                    callbacks.accept(entry);
+                });
+                return entry;
+            }
             return null;
         }
         return entries.get(name);
