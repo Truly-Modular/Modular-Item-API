@@ -7,14 +7,14 @@ import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.Map;
 
-public class MaterialModuleCondition implements ModuleCondition {
+public class MaterialCondition implements ModuleCondition {
     public String material = "";
 
-    public MaterialModuleCondition() {
+    public MaterialCondition() {
 
     }
 
-    public MaterialModuleCondition(String material) {
+    public MaterialCondition(String material) {
         this.material = material;
     }
 
@@ -33,6 +33,6 @@ public class MaterialModuleCondition implements ModuleCondition {
 
     @Override
     public ModuleCondition load(JsonElement element) {
-        return new MaterialModuleCondition(element.getAsJsonObject().get("material").getAsString());
+        return new MaterialCondition(element.getAsJsonObject().get("material").getAsString());
     }
 }

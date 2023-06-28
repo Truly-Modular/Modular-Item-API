@@ -62,24 +62,31 @@ public class RegistryInventory {
     public static <T> RegistrySupplier<T> registerAndSupply(Registrar<T> rg, Identifier id, Supplier<T> object) {
         return rg.register(id, object);
     }
+
     public static <T> RegistrySupplier<T> registerAndSupply(Registrar<T> rg, String id, Supplier<T> object) {
         return registerAndSupply(rg, new Identifier(MOD_ID, id), object);
     }
+
     public static <T> void register(Registrar<T> rg, Identifier id, Supplier<T> object, Consumer<T> onRegister) {
         rg.register(id, object).listen(onRegister);
     }
+
     public static <T> void register(Registrar<T> rg, String id, Supplier<T> object, Consumer<T> onRegister) {
         register(rg, new Identifier(MOD_ID, id), object, onRegister);
     }
+
     public static <T> void register(Registrar<T> rg, Identifier id, Supplier<T> object) {
         rg.register(id, object);
     }
+
     public static <T> void register(Registrar<T> rg, String id, Supplier<T> object) {
         register(rg, new Identifier(MOD_ID, id), object);
     }
+
     public static <T> void registerMiapi(MiapiRegistry<T> rg, String id, T object) {
         rg.register(id, object);
     }
+
     public static <T> void addCallback(Registrar<T> rg, Consumer<T> consumer) {
         rg.getIds().forEach(id -> rg.listen(id, consumer));
     }
@@ -87,9 +94,9 @@ public class RegistryInventory {
     /**
      * Registers an attribute.
      *
-     * @param id The id of the attribute. Miapi namespace is inferred
-     * @param attach Whether this attribute should automatically attach to living entities
-     * @param sup Supplier of the actual attribute
+     * @param id         The id of the attribute. Miapi namespace is inferred
+     * @param attach     Whether this attribute should automatically attach to living entities
+     * @param sup        Supplier of the actual attribute
      * @param onRegister Callback for after the attribute is actually registered. Use this to set static fields
      */
     public static void registerAtt(String id, boolean attach, Supplier<EntityAttribute> sup, Consumer<EntityAttribute> onRegister) {
@@ -112,14 +119,14 @@ public class RegistryInventory {
     public static void setup() {
         //SCREEN
         register(screenHandlers, "default_crafting", () ->
-                new ScreenHandlerType<>(CraftingScreenHandler::new, FeatureSet.empty()),
+                        new ScreenHandlerType<>(CraftingScreenHandler::new, FeatureSet.empty()),
                 scr -> {
                     craftingScreenHandler = (ScreenHandlerType<CraftingScreenHandler>) scr;
                     if (Platform.getEnvironment() == Env.CLIENT) MiapiClient.registerScreenHandler();
                 });
 
         //ENTITY
-            // commented out because RegistrySupplier is needed
+        // commented out because RegistrySupplier is needed
         /*register(entityTypes, "thrown_item", () ->
                 EntityType.Builder.create(ItemProjectile::new, SpawnGroup.MISC).setDimensions(0.5F, 0.5F).maxTrackingRange(4).trackingTickInterval(20).build("miapi:thrown_item"),
                 type -> itemProjectileType = (EntityType<ItemProjectile>) type);*/
@@ -162,43 +169,43 @@ public class RegistryInventory {
 
         //ATTRIBUTE
         registerAtt("generic.durability", false, () ->
-                new ClampedEntityAttribute("miapi.attribute.name.durability", 300.0, 1.0, 16777216).setTracked(true),
+                        new ClampedEntityAttribute("miapi.attribute.name.durability", 300.0, 1.0, 16777216).setTracked(true),
                 att -> ITEM_DURABILITY = att);
 
-            // reach
+        // reach
         registerAtt("generic.reach", true, () ->
-                new ClampedEntityAttribute("miapi.attribute.name.reach", 0.0, -1024.0, 1024.0).setTracked(true),
+                        new ClampedEntityAttribute("miapi.attribute.name.reach", 0.0, -1024.0, 1024.0).setTracked(true),
                 att -> REACH = att);
         registerAtt("generic.attack_range", true, () ->
-                new ClampedEntityAttribute("miapi.attribute.name.attack_range", 0.0, -1024.0, 1024.0).setTracked(true),
+                        new ClampedEntityAttribute("miapi.attribute.name.attack_range", 0.0, -1024.0, 1024.0).setTracked(true),
                 att -> ATTACK_RANGE = att);
 
-            // mining
+        // mining
         registerAtt("generic.mining_speed.pickaxe", false, () ->
-                new ClampedEntityAttribute("miapi.attribute.name.mining_speed.pickaxe", 1.0, 1.0, 1024.0).setTracked(true),
+                        new ClampedEntityAttribute("miapi.attribute.name.mining_speed.pickaxe", 1.0, 1.0, 1024.0).setTracked(true),
                 att -> MINING_SPEED_PICKAXE = att);
         registerAtt("generic.mining_speed.axe", false, () ->
-                new ClampedEntityAttribute("miapi.attribute.name.mining_speed.axe", 1.0, 1.0, 1024.0).setTracked(true),
+                        new ClampedEntityAttribute("miapi.attribute.name.mining_speed.axe", 1.0, 1.0, 1024.0).setTracked(true),
                 att -> MINING_SPEED_AXE = att);
         registerAtt("generic.mining_speed.shovel", false, () ->
-                new ClampedEntityAttribute("miapi.attribute.name.mining_speed.shovel", 1.0, 1.0, 1024.0).setTracked(true),
+                        new ClampedEntityAttribute("miapi.attribute.name.mining_speed.shovel", 1.0, 1.0, 1024.0).setTracked(true),
                 att -> MINING_SPEED_SHOVEL = att);
         registerAtt("generic.mining_speed.hoe", false, () ->
-                new ClampedEntityAttribute("miapi.attribute.name.mining_speed.hoe", 1.0, 1.0, 1024.0).setTracked(true),
+                        new ClampedEntityAttribute("miapi.attribute.name.mining_speed.hoe", 1.0, 1.0, 1024.0).setTracked(true),
                 att -> MINING_SPEED_HOE = att);
 
-            // entity attached
+        // entity attached
         registerAtt("generic.resistance", true, () ->
-                new ClampedEntityAttribute("miapi.attribute.name.resistance", 0.0, 0.0, 100).setTracked(true),
+                        new ClampedEntityAttribute("miapi.attribute.name.resistance", 0.0, 0.0, 100).setTracked(true),
                 att -> DAMAGE_RESISTANCE = att);
         registerAtt("generic.back_stab", true, () ->
-                new ClampedEntityAttribute("miapi.attribute.name.back_stab", 0.0, 0.0, 1024.0).setTracked(true),
+                        new ClampedEntityAttribute("miapi.attribute.name.back_stab", 0.0, 0.0, 1024.0).setTracked(true),
                 att -> BACK_STAB = att);
         registerAtt("generic.armor_crushing", true, () ->
-                new ClampedEntityAttribute("miapi.attribute.name.armor_crushing", 0.0, 0.0, 1024.0).setTracked(true),
+                        new ClampedEntityAttribute("miapi.attribute.name.armor_crushing", 0.0, 0.0, 1024.0).setTracked(true),
                 att -> ARMOR_CRUSHING = att);
         registerAtt("generic.shield_break", true, () ->
-                new ClampedEntityAttribute("miapi.attribute.name.shield_break", 0.0, 0.0, 1024.0).setTracked(true),
+                        new ClampedEntityAttribute("miapi.attribute.name.shield_break", 0.0, 0.0, 1024.0).setTracked(true),
                 att -> SHIELD_BREAK = att);
 
 
@@ -232,6 +239,7 @@ public class RegistryInventory {
         registerMiapi(moduleProperties, CrossbowProperty.KEY, new CrossbowProperty());
         registerMiapi(moduleProperties, ToolOrWeaponProperty.KEY, new ToolOrWeaponProperty());
         registerMiapi(moduleProperties, MiningLevelProperty.KEY, new MiningLevelProperty());
+        registerMiapi(moduleProperties, TagProperty.KEY, new TagProperty());
 
         registerMiapi(useAbilityRegistry, "throw", new ThrowingAbility());
         registerMiapi(useAbilityRegistry, "block", new BlockAbility());

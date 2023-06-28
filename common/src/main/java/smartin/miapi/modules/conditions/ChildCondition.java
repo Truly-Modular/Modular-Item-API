@@ -1,28 +1,27 @@
 package smartin.miapi.modules.conditions;
 
 import com.google.gson.JsonElement;
-import smartin.miapi.Miapi;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.util.Map;
 
-public class OtherModuleModuleCondition implements ModuleCondition {
+public class ChildCondition implements ModuleCondition {
     public ModuleCondition condition;
 
-    public OtherModuleModuleCondition() {
+    public ChildCondition() {
 
     }
 
-    private OtherModuleModuleCondition(ModuleCondition module) {
-        this.condition = module;
+    private ChildCondition(ModuleCondition condition) {
+        this.condition = condition;
     }
 
     @Override
     public boolean isAllowed(ItemModule.ModuleInstance moduleInstance, Map<ModuleProperty, JsonElement> propertyMap) {
-        for (ItemModule.ModuleInstance otherInstance : moduleInstance.getRoot().allSubModules()) {
-            if (condition.isAllowed(otherInstance, otherInstance.module.getKeyedProperties())) {
+        for (ItemModule.ModuleInstance otherInstace : moduleInstance.subModules.values()) {
+            if (condition.isAllowed(otherInstace, moduleInstance.parent.module.getKeyedProperties())) {
                 return true;
             }
         }
@@ -31,6 +30,6 @@ public class OtherModuleModuleCondition implements ModuleCondition {
 
     @Override
     public ModuleCondition load(JsonElement element) {
-        return new OtherModuleModuleCondition(ConditionManager.get(element.getAsJsonObject().get("condition")));
+        return new ChildCondition(ConditionManager.get(element.getAsJsonObject().get("condition")));
     }
 }

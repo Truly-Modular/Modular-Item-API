@@ -1,11 +1,12 @@
 {
     "axe_front": {
-        "conditions": [
-            {
-                "type": "otherModule",
+        "condition": {
+            "type": "otherModule",
+            "condition": {
+                "type": "module",
                 "module": "pickaxe_back"
             }
-        ],
+        },
         "properties": {
             "displayName": "miapi.module.mattock.name",
             "itemId": "miapi:modular_mattock"

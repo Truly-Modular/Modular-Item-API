@@ -1,10 +1,6 @@
 {
     "path": "star_wars/anakin_hilt",
     "module": "handle_long",
-    "condition": {
-        "type": "otherModule",
-        "module": "handle_polearm"
-    },
     "properties": {
         "texture": [
             {

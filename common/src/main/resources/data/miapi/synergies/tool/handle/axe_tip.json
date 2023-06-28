@@ -1,11 +1,12 @@
 {
     "handle_tool": {
-        "conditions": [
-            {
-                "type": "otherModule",
+        "condition": {
+            "type": "otherModule",
+            "condition": {
+                "type": "module",
                 "module": "axe_front"
             }
-        ],
+        },
         "properties": {
             "texture": {
                 "path": "miapi:models/item/tool/handle/tool_tip2/[material.texture].json",
