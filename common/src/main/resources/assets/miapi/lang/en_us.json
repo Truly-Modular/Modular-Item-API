@@ -17,8 +17,8 @@
 
     "miapi.attribute.name.durability":"Durability",
     "miapi.attribute.name.resistance":"Damage Ressistance",
-    "miapi.attribute.name.reach":"Reach",
-    "miapi.attribute.name.attack_range":"Attack Range",
+    "miapi.attribute.name.reach":" MIAPI Reach",
+    "miapi.attribute.name.attack_range":" MIAPI Attack Range",
 
     "miapi.stat.damage": "Damage",
     "miapi.stat.damage.description": "Damage. Raw Damage",

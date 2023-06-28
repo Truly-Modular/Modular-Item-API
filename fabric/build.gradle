@@ -7,6 +7,10 @@ architectury {
     fabric()
 }
 
+loom {
+    accessWidenerPath = project(":common").loom.accessWidenerPath
+}
+
 configurations {
     common
     shadowCommon // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
@@ -25,10 +29,10 @@ dependencies {
     //modImplementation files('libs/dummy.jar')
     //modImplementation files('libs/moonlight.jar')
 
+    implementation(include('org.mariuszgromada.math:MathParser.org-mXparser:4.4.2'))
+
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }
-
-    include 'org.mariuszgromada.math:MathParser.org-mXparser:4.4.2'
 }
 
 processResources {

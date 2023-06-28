@@ -1,9 +1,11 @@
 package smartin.miapi.registries;
 
 import com.google.common.base.Suppliers;
+import dev.architectury.platform.Platform;
 import dev.architectury.registry.registries.Registrar;
 import dev.architectury.registry.registries.RegistrarManager;
 import dev.architectury.registry.registries.RegistrySupplier;
+import dev.architectury.utils.Env;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.MapColor;
@@ -21,6 +23,7 @@ import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.util.Identifier;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.blocks.ModularWorkBench;
+import smartin.miapi.client.MiapiClient;
 import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
 import smartin.miapi.item.modular.items.*;
 import smartin.miapi.modules.ItemModule;
@@ -110,7 +113,10 @@ public class RegistryInventory {
         //SCREEN
         register(screenHandlers, "default_crafting", () ->
                 new ScreenHandlerType<>(CraftingScreenHandler::new, FeatureSet.empty()),
-                scr -> craftingScreenHandler = (ScreenHandlerType<CraftingScreenHandler>) scr);
+                scr -> {
+                    craftingScreenHandler = (ScreenHandlerType<CraftingScreenHandler>) scr;
+                    if (Platform.getEnvironment() == Env.CLIENT) MiapiClient.registerScreenHandler();
+                });
 
         //ENTITY
             // commented out because RegistrySupplier is needed

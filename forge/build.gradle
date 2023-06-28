@@ -19,14 +19,20 @@ dependencies {
     // Remove the next line if you don't want to depend on the API
     modApi "dev.architectury:architectury-forge:${rootProject.architectury_version}"
 
+    forgeRuntimeLibrary(include('org.mariuszgromada.math:MathParser.org-mXparser:4.4.2'))
+
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive = false }
-    shadowCommon 'org.mariuszgromada.math:MathParser.org-mXparser:4.4.2'
-    common 'org.mariuszgromada.math:MathParser.org-mXparser:4.4.2'
 }
 
 loom {
+    accessWidenerPath = project(":common").loom.accessWidenerPath
+
     forge {
+        convertAccessWideners = true
+        extraAccessWideners.add loom.accessWidenerPath.get().asFile.name
+
+        mixinConfig "miapi-common.mixins.json"
         mixinConfig "miapi.mixins.json"
     }
 }

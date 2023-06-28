@@ -26,7 +26,6 @@ public class CustomModel implements UnbakedModel, BakedModel {
     private CustomModelOverrides overrides;
 
     public CustomModel() {
-        overrides = new CustomModelOverrides();
     }
 
     @Override
@@ -85,6 +84,14 @@ public class CustomModel implements UnbakedModel, BakedModel {
     public BakedModel bake(Baker baker, Function<SpriteIdentifier, Sprite> textureGetter, ModelBakeSettings rotationContainer, Identifier modelId) {
         ModelProperty.textureGetter = textureGetter;
         DynamicBakery.dynamicBaker = baker;
+        overrides = new CustomModelOverrides();
         return this;
+    }
+
+    @Override
+    public String toString() {
+        return "CustomModel{" +
+                "overrides=" + overrides +
+                '}';
     }
 }

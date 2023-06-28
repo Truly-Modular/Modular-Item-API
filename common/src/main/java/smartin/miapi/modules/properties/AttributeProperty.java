@@ -25,6 +25,7 @@ import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.*;
+import java.util.function.Supplier;
 
 /**
  * This property allows Modules to set Attributes
@@ -32,7 +33,7 @@ import java.util.*;
 public class AttributeProperty implements ModuleProperty {
     public static final String KEY = "attributes";
     public static ModuleProperty property;
-    public static final Map<String, EntityAttribute> replaceMap = new HashMap<>();
+    public static final Map<String, Supplier<EntityAttribute>> replaceMap = new HashMap<>();
 
     public AttributeProperty() {
         property = this;
@@ -48,7 +49,14 @@ public class AttributeProperty implements ModuleProperty {
             double value = StatResolver.resolveDouble(attributeJson.get("value").getAsString(), new ItemModule.ModuleInstance(ItemModule.empty));
             EntityAttributeModifier.Operation operation = getOperation(attributeJson.get("operation").getAsString());
             EquipmentSlot slot = getSlot(attributeJson.get("slot").getAsString());
-            EntityAttribute attribute = replaceMap.getOrDefault(attributeName, Registries.ATTRIBUTE.get(new Identifier(attributeName)));
+
+            //todo remove debug prints
+            System.out.println("Loading Attribute: !! " + attributeName);
+            EntityAttribute attribute = replaceMap.getOrDefault(attributeName, () -> Registries.ATTRIBUTE.get(new Identifier(attributeName))).get();
+            System.out.println("Bruhhh: " + attribute);
+            System.out.println("original: " + Registries.ATTRIBUTE.get(new Identifier(attributeName)));
+            System.out.println(" replacement: " + Registries.ATTRIBUTE.getKey(attribute));
+
             UUID uuid = null;
 
             if (attributeJson.has("uuid")) {

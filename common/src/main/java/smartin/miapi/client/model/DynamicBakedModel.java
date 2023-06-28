@@ -92,7 +92,7 @@ public class DynamicBakedModel implements BakedModel {
     class DynamicOverrides extends ModelOverrideList {
 
         public DynamicOverrides() {
-            super(null, null,  new ArrayList<ModelOverride>());
+            super(DynamicBakery.dynamicBaker, null,  new ArrayList<ModelOverride>());
         }
 
         @Override
