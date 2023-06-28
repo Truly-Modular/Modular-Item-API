@@ -108,7 +108,6 @@ public class RegistryInventory {
 
     public static void setup() {
         //SCREEN
-        // TODO: check this null again
         register(screenHandlers, "default_crafting", () ->
                 new ScreenHandlerType<>(CraftingScreenHandler::new, FeatureSet.empty()),
                 scr -> craftingScreenHandler = (ScreenHandlerType<CraftingScreenHandler>) scr);
