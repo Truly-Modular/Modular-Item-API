@@ -92,7 +92,7 @@ public class DetailView extends InteractAbleWidget {
             Text materialNameText = StatResolver.translateAndResolve("[translation.[material.translation]]", moduleInstance);
             String path = StatResolver.resolveString("[material.icon]", moduleInstance);
             if (path.isEmpty()) {
-                textureIcon = new Identifier("minecraft", "missing");
+                textureIcon = new Identifier(Miapi.MOD_ID, "textures/missing.png");
             } else {
                 //textureIcon = new Identifier("minecraft", "missing");
                 textureIcon = new Identifier(path);

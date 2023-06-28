@@ -25,9 +25,7 @@ import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
 import smartin.miapi.modules.cache.ModularItemCache;
-import smartin.miapi.modules.conditions.ConditionManager;
-import smartin.miapi.modules.conditions.MaterialModuleCondition;
-import smartin.miapi.modules.conditions.OtherModuleModuleCondition;
+import smartin.miapi.modules.conditions.*;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.modules.properties.util.PropertyApplication;
 import smartin.miapi.modules.synergies.SynergyManager;
@@ -118,8 +116,16 @@ public class Miapi {
             MiapiClient.init();
         }
         SynergyManager.setup();
-        SynergyManager.moduleConditionRegistry.register("material", new MaterialModuleCondition());
-        SynergyManager.moduleConditionRegistry.register("otherModule", new OtherModuleModuleCondition());
+        ConditionManager.moduleConditionRegistry.register("true", new TrueCondition());
+        ConditionManager.moduleConditionRegistry.register("and", new AndCondition());
+        ConditionManager.moduleConditionRegistry.register("or", new OrCondition());
+        ConditionManager.moduleConditionRegistry.register("not", new NotCondition());
+        ConditionManager.moduleConditionRegistry.register("material", new MaterialCondition());
+        ConditionManager.moduleConditionRegistry.register("module", new ModuleTypeCondition());
+        ConditionManager.moduleConditionRegistry.register("tag", new TagCondition());
+        ConditionManager.moduleConditionRegistry.register("parent", new ParentCondition());
+        ConditionManager.moduleConditionRegistry.register("child", new ChildCondition());
+        ConditionManager.moduleConditionRegistry.register("otherModule", new OtherModuleModuleCondition());
     }
 
     protected static void setupNetworking() {

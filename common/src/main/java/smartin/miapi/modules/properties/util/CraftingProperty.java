@@ -44,6 +44,13 @@ public interface CraftingProperty {
     }
 
     /**
+     * If the Property should be executed on craft, for most Properties this should only happen when they are involved
+     */
+    default boolean shouldExecuteOnCraft(ItemModule.ModuleInstance module) {
+        return module.getProperties().containsKey(this);
+    }
+
+    /**
      * Write a buffer from gui to be sent to server
      *
      * @param buf        the buffer to write to

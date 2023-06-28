@@ -1,11 +1,12 @@
 {
     "pickaxe_back": {
-        "conditions": [
-            {
-                "type": "otherModule",
+        "condition": {
+            "type": "otherModule",
+            "condition": {
+                "type": "module",
                 "module": "pickaxe_front"
             }
-        ],
+        },
         "properties": {
             "mining_level": {
                 "pickaxe": "[material.mining_level]"

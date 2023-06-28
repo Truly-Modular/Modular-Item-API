@@ -49,7 +49,7 @@ public class CraftAction {
      * @param player          the player performing the action
      * @param packetByteBuffs the packet byte buffers associated with the action
      */
-    public CraftAction(ItemStack old,  SlotProperty.ModuleSlot slot, @Nullable ItemModule toAdd,  PlayerEntity player, PacketByteBuf[] packetByteBuffs) {
+    public CraftAction(ItemStack old, SlotProperty.ModuleSlot slot, @Nullable ItemModule toAdd, PlayerEntity player, PacketByteBuf[] packetByteBuffs) {
         this.old = ModularItemStackConverter.getModularVersion(old);
         this.toAdd = toAdd;
         ItemModule.ModuleInstance instance = slot.parent;
@@ -306,8 +306,9 @@ public class CraftAction {
             AtomicInteger counter = new AtomicInteger(0);
 
             List<CraftingProperty> sortedProperties =
-                    newInstance.getProperties().keySet().stream()
+                    RegistryInventory.moduleProperties.getFlatMap().values().stream()
                             .filter(property -> property instanceof CraftingProperty)
+                            .filter(property -> ((CraftingProperty) property).shouldExecuteOnCraft(newInstance))
                             .map(property -> (CraftingProperty) property)
                             .sorted(Comparator.comparingDouble(CraftingProperty::getPriority))
                             .toList();

@@ -68,6 +68,14 @@ public class ItemModule {
         return properties;
     }
 
+    public Map<ModuleProperty, JsonElement> getKeyedProperties() {
+        HashMap<ModuleProperty, JsonElement> map = new HashMap<>();
+        getProperties().forEach((key, jsonData) -> {
+            map.put(RegistryInventory.moduleProperties.get(key), jsonData);
+        });
+        return map;
+    }
+
     /**
      * Returns the name of this module.
      *
