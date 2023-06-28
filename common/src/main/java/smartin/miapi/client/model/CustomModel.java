@@ -20,6 +20,10 @@ import java.util.function.Function;
 
 @Environment(EnvType.CLIENT)
 public class CustomModel implements UnbakedModel, BakedModel {
+    public static boolean isModularItem(Identifier identifier){
+        return Miapi.modularItemRegistry.get(identifier.toString().replace("item/",""))!=null;
+    }
+
     private CustomModelOverrides overrides;
 
     public CustomModel() {

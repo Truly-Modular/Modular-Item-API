@@ -1,11 +1,22 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "smartin.miapi.mixin.fabric",
+  "package": "smartin.miapi.fabric.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "ChestStateManagerMixin",
+    "ForgingScreenHandlerMixin",
+    "ItemMixin",
+    "PlayerEntityInteractionHandlerMixin",
+    "PlayerEntityMixin",
+    "ScreenHandlerMixin",
+    "ServerPlayerInteractionManagerMixin",
+    "ServerPlayNetworkHandlerMixin",
+    "VehicleInventoryValidationMixin"
   ],
   "client": [
+    "ClientPlayerInteractionManagerMixin",
+    "GameRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -9,6 +9,7 @@ import dev.architectury.registry.ReloadListenerRegistry;
 import dev.architectury.registry.menu.MenuRegistry;
 import dev.architectury.registry.registries.Registrar;
 import dev.architectury.registry.registries.RegistrarManager;
+import dev.architectury.registry.registries.RegistrySupplier;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.MapColor;
@@ -47,6 +48,7 @@ import smartin.miapi.item.modular.items.*;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.abilities.*;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
+import smartin.miapi.modules.abilities.util.ItemProjectile.ItemProjectile;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.conditions.ConditionManager;
 import smartin.miapi.modules.conditions.MaterialModuleCondition;
@@ -79,6 +81,8 @@ public class Miapi {
     public static final Registrar<Item> itemRegistry = registrar.get().get(RegistryKeys.ITEM);
     public static final Registrar<Block> blockRegistry = registrar.get().get(RegistryKeys.BLOCK);
     public static final Registrar<EntityAttribute> attributeRegistry = registrar.get().get(RegistryKeys.ATTRIBUTE);
+    public static final Registrar<EntityType<?>> entityTypeRegistry = registrar.get().get(RegistryKeys.ENTITY_TYPE);
+    public static final Registrar<ScreenHandlerType<?>> screenHandlerRegistry = registrar.get().get(RegistryKeys.SCREEN_HANDLER);
 
     public static final MiapiRegistry<EntityAttribute> entityAttributeRegistry = MiapiRegistry.getInstance(EntityAttribute.class);
     public static final MiapiRegistry<ModuleProperty> modulePropertyRegistry = MiapiRegistry.getInstance(ModuleProperty.class);
@@ -86,12 +90,12 @@ public class Miapi {
     public static final MiapiRegistry<Item> modularItemRegistry = MiapiRegistry.getInstance(Item.class);
     public static final MiapiRegistry<Block> blockItemRegistry = MiapiRegistry.getInstance(Block.class);
     public static final MiapiRegistry<EditOption> editOptions = MiapiRegistry.getInstance(EditOption.class);
-    public static final EntityType ItemProjectile = registerEntity("miapi:thrown_item", EntityType.Builder.create(smartin.miapi.modules.abilities.util.ItemProjectile.ItemProjectile::new, SpawnGroup.MISC).setDimensions(0.5F, 0.5F).maxTrackingRange(4).trackingTickInterval(20));
+    public static final RegistrySupplier<EntityType<ItemProjectile>> itemProjectileType = registerEntity("miapi:thrown_item", (EntityType.Builder) EntityType.Builder.create(ItemProjectile::new, SpawnGroup.MISC).setDimensions(0.5F, 0.5F).maxTrackingRange(4).trackingTickInterval(20));
 
 
     public static MinecraftServer server;
     public static Gson gson = new Gson();
-    public static final ScreenHandlerType<CraftingScreenHandler> CRAFTING_SCREEN_HANDLER = register(new Identifier(Miapi.MOD_ID, "default_crafting"), CraftingScreenHandler::new);
+    public static final RegistrySupplier<ScreenHandlerType<CraftingScreenHandler>> CRAFTING_SCREEN_HANDLER = register(new Identifier(Miapi.MOD_ID, "default_crafting"), CraftingScreenHandler::new);
 
     public static void init() {
         setupNetworking();
@@ -110,7 +114,7 @@ public class Miapi {
             moduleRegistry.clear();
             ReloadEvents.DATA_PACKS.forEach(ItemModule::loadFromData);
         }, 0.0f);
-        MenuRegistry.registerScreenFactory(CRAFTING_SCREEN_HANDLER, CraftingGUI::new);
+        MenuRegistry.registerScreenFactory(CRAFTING_SCREEN_HANDLER.get(), CraftingGUI::new);
         PropertyResolver.propertyProviderRegistry.register("module", (moduleInstance, oldMap) -> {
             HashMap<ModuleProperty, JsonElement> map = new HashMap<>();
             moduleInstance.module.getProperties().forEach((key, jsonData) -> {
@@ -267,13 +271,13 @@ public class Miapi {
         });
     }
 
-    private static <T extends ScreenHandler> ScreenHandlerType<T> register(Identifier id, ScreenHandlerType.Factory<T> factory) {
+    private static <T extends ScreenHandler> RegistrySupplier<ScreenHandlerType<T>> register(Identifier id, ScreenHandlerType.Factory<T> factory) {
         //TODO:check this again
-        return (ScreenHandlerType) Registry.register(Registries.SCREEN_HANDLER, id, new ScreenHandlerType(factory, null));
+        return screenHandlerRegistry.register(id, () -> new ScreenHandlerType(factory, null));
     }
 
-    private static <T extends Entity> EntityType<T> registerEntity(String id, EntityType.Builder<T> type) {
-        return (EntityType) Registry.register(Registries.ENTITY_TYPE, id, type.build(id));
+    private static <T extends Entity> RegistrySupplier<EntityType<T>> registerEntity(String id, EntityType.Builder<T> type) {
+        return entityTypeRegistry.register(new Identifier(id), () -> type.build(id));
     }
 
 }

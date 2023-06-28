@@ -1,4 +1,4 @@
-package smartin.miapi.mixin.client;
+package smartin.miapi.fabric.mixin;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.GameRenderer;

@@ -26,10 +26,6 @@ public class MiapiClient {
         Miapi.modularItemRegistry.addCallback(item -> {
             ((ItemRendererAccessor) client.getItemRenderer()).color().register(new CustomColorProvider(), item);
         });
-        EntityRendererRegistry.register(() -> {
-            return Miapi.ItemProjectile;
-        }, (context) -> {
-            return new ItemProjectileRenderer(context);
-        });
+        EntityRendererRegistry.register(Miapi.itemProjectileType, ItemProjectileRenderer::new);
     }
 }

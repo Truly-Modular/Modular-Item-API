@@ -1,4 +1,4 @@
-package smartin.miapi.mixin;
+package smartin.miapi.fabric.mixin;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;

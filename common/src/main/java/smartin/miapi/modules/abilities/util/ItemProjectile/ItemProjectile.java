@@ -6,13 +6,11 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
-import net.minecraft.entity.projectile.TridentEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
@@ -41,7 +39,7 @@ public class ItemProjectile extends PersistentProjectileEntity {
     }
 
     public ItemProjectile(World world, LivingEntity owner, ItemStack stack) {
-        super(Miapi.ItemProjectile, owner, world);
+        super(Miapi.itemProjectileType.get(), owner, world);
         this.thrownStack = new ItemStack(Items.WOODEN_AXE);
         this.thrownStack = stack.copy();
         this.dataTracker.set(LOYALTY, (byte) EnchantmentHelper.getLoyalty(stack));

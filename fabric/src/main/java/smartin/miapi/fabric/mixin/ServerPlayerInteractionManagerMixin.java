@@ -1,4 +1,4 @@
-package smartin.miapi.mixin;
+package smartin.miapi.fabric.mixin;
 
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;

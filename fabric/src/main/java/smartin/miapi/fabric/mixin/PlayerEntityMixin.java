@@ -1,4 +1,4 @@
-package smartin.miapi.mixin;
+package smartin.miapi.fabric.mixin;
 
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;

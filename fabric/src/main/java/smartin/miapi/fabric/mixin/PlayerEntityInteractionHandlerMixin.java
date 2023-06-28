@@ -1,4 +1,4 @@
-package smartin.miapi.mixin;
+package smartin.miapi.fabric.mixin;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.network.packet.c2s.play.PlayerInteractEntityC2SPacket;

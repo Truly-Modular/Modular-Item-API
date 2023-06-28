@@ -49,7 +49,7 @@ public class CraftingScreenHandler extends ScreenHandler {
      * @param context         the context of the screen
      */
     public CraftingScreenHandler(int syncId, PlayerInventory playerInventory, ScreenHandlerContext context) {
-        super(Miapi.CRAFTING_SCREEN_HANDLER, syncId);
+        super(Miapi.CRAFTING_SCREEN_HANDLER.get(), syncId);
         packetID = Miapi.MOD_ID + PACKET_ID + playerInventory.player.getUuidAsString() + "_" + syncId;
         packetIDSlotAdd = Miapi.MOD_ID + PACKET_ID + "_" + playerInventory.player.getUuidAsString() + "_" + syncId + "_slotAdd";
         packetIDSlotRemove = Miapi.MOD_ID + PACKET_ID + "_" + playerInventory.player.getUuidAsString() + "_" + syncId + "_slotRemove";
