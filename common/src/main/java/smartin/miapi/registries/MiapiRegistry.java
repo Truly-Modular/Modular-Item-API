@@ -1,5 +1,6 @@
 package smartin.miapi.registries;
 
+import dev.architectury.registry.registries.Registrar;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;

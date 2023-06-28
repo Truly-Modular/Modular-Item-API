@@ -9,6 +9,7 @@ import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.conditions.ModuleCondition;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.registries.MiapiRegistry;
+import smartin.miapi.registries.RegistryInventory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -52,7 +53,7 @@ public class SynergyManager {
     public static void load(String data) {
         JsonObject element = Miapi.gson.fromJson(data, JsonObject.class);
         element.getAsJsonObject().entrySet().forEach((entry) -> {
-            ItemModule property = Miapi.moduleRegistry.get(entry.getKey());
+            ItemModule property = RegistryInventory.modules.get(entry.getKey());
             JsonObject entryData = entry.getValue().getAsJsonObject();
             Synergy synergy = new Synergy();
             for (JsonElement conditionJson : entryData.get("conditions").getAsJsonArray()) {
@@ -65,7 +66,7 @@ public class SynergyManager {
             synergies.add(synergy);
             JsonObject object = entry.getValue().getAsJsonObject().get("properties").getAsJsonObject();
             object.entrySet().forEach(propertyEntry -> {
-                ModuleProperty property1 = Miapi.modulePropertyRegistry.get(propertyEntry.getKey());
+                ModuleProperty property1 = RegistryInventory.moduleProperties.get(propertyEntry.getKey());
                 try {
                     property1.load("synergy", propertyEntry.getValue());
                 } catch (Exception e) {
@@ -79,7 +80,7 @@ public class SynergyManager {
     public static Map<ModuleProperty, JsonElement> getProperties(JsonElement element) {
         Map<ModuleProperty, JsonElement> properties = new HashMap<>();
         element.getAsJsonObject().entrySet().forEach(propertyEntry -> {
-            ModuleProperty property1 = Miapi.modulePropertyRegistry.get(propertyEntry.getKey());
+            ModuleProperty property1 = RegistryInventory.moduleProperties.get(propertyEntry.getKey());
             try {
                 property1.load("synergy", propertyEntry.getValue());
             } catch (Exception e) {

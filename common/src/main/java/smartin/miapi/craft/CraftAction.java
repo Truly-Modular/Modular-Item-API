@@ -15,6 +15,7 @@ import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.SlotProperty;
 import smartin.miapi.modules.properties.util.CraftingProperty;
 import smartin.miapi.network.Networking;
+import smartin.miapi.registries.RegistryInventory;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -76,7 +77,7 @@ public class CraftAction {
         }
         String modules = buf.readString();
         if (!modules.equals("null")) {
-            toAdd = Miapi.moduleRegistry.get(modules);
+            toAdd = RegistryInventory.modules.get(modules);
         } else {
             toAdd = null;
         }

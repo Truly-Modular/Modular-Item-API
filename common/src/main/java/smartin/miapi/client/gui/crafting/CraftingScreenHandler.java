@@ -17,6 +17,7 @@ import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.MutableSlot;
 import smartin.miapi.craft.CraftAction;
 import smartin.miapi.network.Networking;
+import smartin.miapi.registries.RegistryInventory;
 
 /**
  * This is the screen handler class for miapis default Crafting Screen.
@@ -51,7 +52,7 @@ public class CraftingScreenHandler extends ScreenHandler {
      * @param context         the context of the screen
      */
     public CraftingScreenHandler(int syncId, PlayerInventory playerInventory, ScreenHandlerContext context) {
-        super(Miapi.CRAFTING_SCREEN_HANDLER.get(), syncId);
+        super(RegistryInventory.craftingScreenHandler, syncId);
         packetID = Miapi.MOD_ID + PACKET_ID + playerInventory.player.getUuidAsString() + "_" + syncId;
         packetIDSlotAdd = Miapi.MOD_ID + PACKET_ID + "_" + playerInventory.player.getUuidAsString() + "_" + syncId + "_slotAdd";
         packetIDSlotRemove = Miapi.MOD_ID + PACKET_ID + "_" + playerInventory.player.getUuidAsString() + "_" + syncId + "_slotRemove";

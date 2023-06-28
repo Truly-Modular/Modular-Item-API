@@ -10,6 +10,7 @@ import smartin.miapi.modules.conditions.ConditionManager;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.modules.conditions.ModuleCondition;
 import smartin.miapi.modules.synergies.SynergyManager;
+import smartin.miapi.registries.RegistryInventory;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -25,7 +26,7 @@ public class Skin {
     public static Skin fromJson(JsonElement element) {
         JsonObject jsonObject = element.getAsJsonObject();
         Skin skin = new Skin();
-        skin.module = Miapi.moduleRegistry.get(jsonObject.get("module").getAsString());
+        skin.module = RegistryInventory.modules.get(jsonObject.get("module").getAsString());
         skin.condition = ConditionManager.get(jsonObject.get("condition"));
         skin.properties = SynergyManager.getProperties(jsonObject.get("properties"));
         skin.path = jsonObject.get("path").getAsString();

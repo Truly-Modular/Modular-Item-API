@@ -1,9 +1,9 @@
 package smartin.miapi.modules.conditions;
 
 import com.google.gson.JsonElement;
-import smartin.miapi.Miapi;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.util.ModuleProperty;
+import smartin.miapi.registries.RegistryInventory;
 
 import java.util.Map;
 
@@ -29,6 +29,6 @@ public class OtherModuleModuleCondition implements ModuleCondition {
 
     @Override
     public ModuleCondition load(JsonElement element) {
-        return new OtherModuleModuleCondition(Miapi.moduleRegistry.get(element.getAsJsonObject().get("module").getAsString()));
+        return new OtherModuleModuleCondition(RegistryInventory.modules.get(element.getAsJsonObject().get("module").getAsString()));
     }
 }

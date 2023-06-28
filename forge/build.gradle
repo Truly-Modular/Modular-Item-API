@@ -21,6 +21,14 @@ dependencies {
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive = false }
+    shadowCommon 'org.mariuszgromada.math:MathParser.org-mXparser:4.4.2'
+    common 'org.mariuszgromada.math:MathParser.org-mXparser:4.4.2'
+}
+
+loom {
+    forge {
+        mixinConfig "miapi.mixins.json"
+    }
 }
 
 processResources {

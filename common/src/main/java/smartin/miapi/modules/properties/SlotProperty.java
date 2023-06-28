@@ -4,11 +4,11 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.reflect.TypeToken;
 import org.jetbrains.annotations.Nullable;
-import smartin.miapi.Miapi;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.item.modular.Transform;
 import smartin.miapi.item.modular.TransformMap;
 import smartin.miapi.modules.properties.util.ModuleProperty;
+import smartin.miapi.registries.RegistryInventory;
 
 import java.lang.reflect.Type;
 import java.util.*;
@@ -22,7 +22,7 @@ public class SlotProperty implements ModuleProperty {
     public static final String KEY = "slots";
 
     public static SlotProperty getInstance() {
-        return (SlotProperty) Miapi.modulePropertyRegistry.get(KEY);
+        return (SlotProperty) RegistryInventory.moduleProperties.get(KEY);
     }
 
     public static Transform getTransform(ItemModule.ModuleInstance instance) {
@@ -78,7 +78,7 @@ public class SlotProperty implements ModuleProperty {
     }
 
     public static Map<Integer, ModuleSlot> getSlots(ItemModule.ModuleInstance instance) {
-        ModuleProperty property = Miapi.modulePropertyRegistry.get(KEY);
+        ModuleProperty property = RegistryInventory.moduleProperties.get(KEY);
         JsonElement data = instance.getProperties().get(property);
         if (data != null) {
             Gson gson = new Gson();
@@ -111,7 +111,7 @@ public class SlotProperty implements ModuleProperty {
     }
 
     public static Transform getLocalTransform(ItemModule.ModuleInstance instance) {
-        ModuleProperty property = Miapi.modulePropertyRegistry.get(KEY);
+        ModuleProperty property = RegistryInventory.moduleProperties.get(KEY);
         JsonElement test = instance.getProperties().get(property);
         if (test != null) {
             ModuleSlot slot = getSlotIn(instance);
@@ -123,7 +123,7 @@ public class SlotProperty implements ModuleProperty {
     }
 
     public static TransformMap getLocalTransformStack(ItemModule.ModuleInstance instance) {
-        ModuleProperty property = Miapi.modulePropertyRegistry.get(KEY);
+        ModuleProperty property = RegistryInventory.moduleProperties.get(KEY);
         JsonElement test = instance.getProperties().get(property);
         if (test != null) {
             ModuleSlot slot = getSlotIn(instance);

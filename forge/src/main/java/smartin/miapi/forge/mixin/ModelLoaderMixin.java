@@ -9,6 +9,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import smartin.miapi.client.model.CustomModel;
+import smartin.miapi.registries.RegistryInventory;
 
 @Mixin(ModelLoader.class)
 public class ModelLoaderMixin {
@@ -18,6 +19,7 @@ public class ModelLoaderMixin {
 
     @Inject(at = @At("HEAD"), method = "loadModel", cancellable = true)
     private void loadModelHook(Identifier id, CallbackInfo ci) {
+        System.out.println("MIXIN");
         if (CustomModel.isModularItem(id)) {
             System.out.println("Mixin applying to: " + id);
             putModel(id, new CustomModel());

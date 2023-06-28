@@ -3,11 +3,9 @@ package smartin.miapi.modules.edit_options;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.pack.ResourcePackOrganizer;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.screen.ScreenHandler;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.ColorHelper;
@@ -15,12 +13,11 @@ import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.ScrollingTextWidget;
 import smartin.miapi.client.gui.SimpleButton;
-import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.cache.ModularItemCache;
-import smartin.miapi.modules.properties.SlotProperty;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.network.Networking;
+import smartin.miapi.registries.RegistryInventory;
 
 import java.util.Map;
 import java.util.Objects;
@@ -70,7 +67,7 @@ public class PropertyInjectionDev implements EditOption {
                         JsonObject moduleJson = Miapi.gson.fromJson(raw, JsonObject.class);
                         if (moduleJson != null) {
                             for (Map.Entry<String, JsonElement> stringJsonElementEntry : moduleJson.entrySet()) {
-                                ModuleProperty property = Miapi.modulePropertyRegistry.get(stringJsonElementEntry.getKey());
+                                ModuleProperty property = RegistryInventory.moduleProperties.get(stringJsonElementEntry.getKey());
                                 try {
                                     property.load(moduleInstance.module.getName(), stringJsonElementEntry.getValue());
                                 } catch (Exception e) {

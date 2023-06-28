@@ -1,106 +1,53 @@
 package smartin.miapi;
 
-import com.google.common.base.Suppliers;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.registry.ReloadListenerRegistry;
 import dev.architectury.registry.menu.MenuRegistry;
-import dev.architectury.registry.registries.Registrar;
-import dev.architectury.registry.registries.RegistrarManager;
-import dev.architectury.registry.registries.RegistrySupplier;
-import net.minecraft.block.AbstractBlock;
-import net.minecraft.block.Block;
-import net.minecraft.block.MapColor;
-import net.minecraft.block.enums.Instrument;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.SpawnGroup;
-import net.minecraft.entity.attribute.EntityAttribute;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.Item;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
-import net.minecraft.registry.RegistryKeys;
 import net.minecraft.resource.ResourceType;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import smartin.miapi.attributes.AttributeRegistry;
-import smartin.miapi.blocks.ModularWorkBench;
 import smartin.miapi.client.MiapiClient;
 import smartin.miapi.client.gui.crafting.CraftingGUI;
-import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.datapack.ReloadListener;
 import smartin.miapi.item.ItemToModularConverter;
 import smartin.miapi.item.ModularItemStackConverter;
 import smartin.miapi.item.modular.PropertyResolver;
 import smartin.miapi.item.modular.StatResolver;
-import smartin.miapi.item.modular.items.*;
 import smartin.miapi.modules.ItemModule;
-import smartin.miapi.modules.abilities.*;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
-import smartin.miapi.modules.abilities.util.ItemProjectile.ItemProjectile;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.conditions.ConditionManager;
 import smartin.miapi.modules.conditions.MaterialModuleCondition;
 import smartin.miapi.modules.conditions.OtherModuleModuleCondition;
-import smartin.miapi.modules.edit_options.EditOption;
-import smartin.miapi.modules.edit_options.PropertyInjectionDev;
-import smartin.miapi.modules.edit_options.skins.SkinOptions;
-import smartin.miapi.modules.properties.*;
-import smartin.miapi.modules.properties.render.GuiOffsetProperty;
-import smartin.miapi.modules.properties.render.ModelMergeProperty;
-import smartin.miapi.modules.properties.render.ModelProperty;
-import smartin.miapi.modules.properties.render.ModelTransformationProperty;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.modules.properties.util.PropertyApplication;
 import smartin.miapi.modules.synergies.SynergyManager;
 import smartin.miapi.network.Networking;
 import smartin.miapi.network.NetworkingImplCommon;
-import smartin.miapi.registries.MiapiRegistry;
+import smartin.miapi.registries.RegistryInventory;
 
 import java.util.HashMap;
-import java.util.Objects;
-import java.util.function.Supplier;
 
 public class Miapi {
     public static final String MOD_ID = "miapi";
     public static final Logger LOGGER = LoggerFactory.getLogger("ModularItem API");
     public static NetworkingImplCommon networkingImplementation;
-
-    public static final Supplier<RegistrarManager> registrar = Suppliers.memoize(() -> RegistrarManager.get(MOD_ID));
-    public static final Registrar<Item> itemRegistry = registrar.get().get(RegistryKeys.ITEM);
-    public static final Registrar<Block> blockRegistry = registrar.get().get(RegistryKeys.BLOCK);
-    public static final Registrar<EntityAttribute> attributeRegistry = registrar.get().get(RegistryKeys.ATTRIBUTE);
-    public static final Registrar<EntityType<?>> entityTypeRegistry = registrar.get().get(RegistryKeys.ENTITY_TYPE);
-    public static final Registrar<ScreenHandlerType<?>> screenHandlerRegistry = registrar.get().get(RegistryKeys.SCREEN_HANDLER);
-
-    public static final MiapiRegistry<EntityAttribute> entityAttributeRegistry = MiapiRegistry.getInstance(EntityAttribute.class);
-    public static final MiapiRegistry<ModuleProperty> modulePropertyRegistry = MiapiRegistry.getInstance(ModuleProperty.class);
-    public static final MiapiRegistry<ItemModule> moduleRegistry = MiapiRegistry.getInstance(ItemModule.class);
-    public static final MiapiRegistry<Item> modularItemRegistry = MiapiRegistry.getInstance(Item.class);
-    public static final MiapiRegistry<Block> blockItemRegistry = MiapiRegistry.getInstance(Block.class);
-    public static final MiapiRegistry<EditOption> editOptions = MiapiRegistry.getInstance(EditOption.class);
-    public static final RegistrySupplier<EntityType<ItemProjectile>> itemProjectileType = registerEntity("miapi:thrown_item", (EntityType.Builder) EntityType.Builder.create(ItemProjectile::new, SpawnGroup.MISC).setDimensions(0.5F, 0.5F).maxTrackingRange(4).trackingTickInterval(20));
-
-
     public static MinecraftServer server;
     public static Gson gson = new Gson();
-    public static final RegistrySupplier<ScreenHandlerType<CraftingScreenHandler>> CRAFTING_SCREEN_HANDLER = register(new Identifier(Miapi.MOD_ID, "default_crafting"), CraftingScreenHandler::new);
 
     public static void init() {
         setupNetworking();
-        setupRegistries();
-        PropertyApplication.init();
+        setupDatapackPaths();
+        RegistryInventory.setup();
+        PropertyApplication.setup();
         ReloadEvents.setup();
         ItemAbilityManager.setup();
         AttributeRegistry.setup();
@@ -111,14 +58,14 @@ public class Miapi {
         });
         ReloadListenerRegistry.register(ResourceType.SERVER_DATA, new ReloadListener());
         ReloadEvents.MAIN.subscribe((isClient) -> {
-            moduleRegistry.clear();
+            RegistryInventory.modules.clear();
             ReloadEvents.DATA_PACKS.forEach(ItemModule::loadFromData);
         }, 0.0f);
-        MenuRegistry.registerScreenFactory(CRAFTING_SCREEN_HANDLER.get(), CraftingGUI::new);
+        MenuRegistry.registerScreenFactory(RegistryInventory.craftingScreenHandler, CraftingGUI::new);
         PropertyResolver.propertyProviderRegistry.register("module", (moduleInstance, oldMap) -> {
             HashMap<ModuleProperty, JsonElement> map = new HashMap<>();
             moduleInstance.module.getProperties().forEach((key, jsonData) -> {
-                map.put(Miapi.modulePropertyRegistry.get(key), jsonData);
+                map.put(RegistryInventory.moduleProperties.get(key), jsonData);
             });
             return map;
         });
@@ -129,7 +76,7 @@ public class Miapi {
                 JsonObject moduleJson = gson.fromJson(properties, JsonObject.class);
                 if (moduleJson != null) {
                     moduleJson.entrySet().forEach(stringJsonElementEntry -> {
-                        ModuleProperty property = modulePropertyRegistry.get(stringJsonElementEntry.getKey());
+                        ModuleProperty property = RegistryInventory.moduleProperties.get(stringJsonElementEntry.getKey());
                         if (property != null) {
                             map.put(property, stringJsonElementEntry.getValue());
                         }
@@ -178,106 +125,12 @@ public class Miapi {
         networkingImplementation.setupServer();
     }
 
-    protected static void setupRegistries() {
+    protected static void setupDatapackPaths() {
         //DataPackPaths
         ReloadEvents.registerDataPackPathToSync(Miapi.MOD_ID, "modules");
         ReloadEvents.registerDataPackPathToSync(Miapi.MOD_ID, "materials");
         ReloadEvents.registerDataPackPathToSync(Miapi.MOD_ID, "synergies");
         ReloadEvents.registerDataPackPathToSync(Miapi.MOD_ID, "modular_converter");
         ReloadEvents.registerDataPackPathToSync(Miapi.MOD_ID, "skins");
-
-        Miapi.blockItemRegistry.register(Miapi.MOD_ID+ ":modular_work_bench",new ModularWorkBench(
-                AbstractBlock.Settings.create().
-                        mapColor(MapColor.IRON_GRAY).
-                        instrument(Instrument.IRON_XYLOPHONE).
-                        requiresTool().
-                        strength(5.0F, 6.0F).
-                        sounds(BlockSoundGroup.METAL).
-                        nonOpaque()));
-
-        //ITEM
-        Miapi.modularItemRegistry.register(MOD_ID + ":modular_item", new ExampleModularItem());
-        Miapi.modularItemRegistry.register(MOD_ID + ":modular_handle", new ModularWeapon());
-        Miapi.modularItemRegistry.register(MOD_ID + ":modular_sword", new ModularWeapon());
-        Miapi.modularItemRegistry.register(MOD_ID + ":modular_katana", new ModularWeapon());
-        Miapi.modularItemRegistry.register(MOD_ID + ":modular_naginata", new ModularWeapon());
-        Miapi.modularItemRegistry.register(MOD_ID + ":modular_greatsword", new ModularWeapon());
-        Miapi.modularItemRegistry.register(MOD_ID + ":modular_dagger", new ModularWeapon());
-        Miapi.modularItemRegistry.register(MOD_ID + ":modular_throwing_knife", new ModularWeapon());
-        Miapi.modularItemRegistry.register(MOD_ID + ":modular_rapier", new ModularWeapon());
-        Miapi.modularItemRegistry.register(MOD_ID + ":modular_longsword", new ModularWeapon());
-
-        Miapi.modularItemRegistry.register(MOD_ID + ":modular_shovel", new ModularWeapon());
-        Miapi.modularItemRegistry.register(MOD_ID + ":modular_pickaxe", new ModularWeapon());
-        Miapi.modularItemRegistry.register(MOD_ID + ":modular_axe", new ModularWeapon());
-        Miapi.modularItemRegistry.register(MOD_ID + ":modular_hoe", new ModularWeapon());
-        Miapi.modularItemRegistry.register(MOD_ID + ":modular_mattock", new ModularWeapon());
-
-        Miapi.modularItemRegistry.register(MOD_ID + ":modular_bow", new ExampleModularBowItem());
-
-        Miapi.modularItemRegistry.register(MOD_ID + ":modular_helmet", new ModularHelmet());
-        Miapi.modularItemRegistry.register(MOD_ID + ":modular_chestplate", new ModularChestPlate());
-        Miapi.modularItemRegistry.register(MOD_ID + ":modular_leggings", new ModularLeggings());
-        Miapi.modularItemRegistry.register(MOD_ID + ":modular_boots", new ModularBoots());
-
-        //EDITPROPERTIES
-        Miapi.editOptions.register("dev", new PropertyInjectionDev());
-        Miapi.editOptions.register("skin", new SkinOptions());
-
-        //MODULEPROPERTIES
-        Miapi.modulePropertyRegistry.register(NameProperty.KEY, new NameProperty());
-        Miapi.modulePropertyRegistry.register(ModelProperty.KEY, new ModelProperty());
-        Miapi.modulePropertyRegistry.register(SlotProperty.KEY, new SlotProperty());
-        Miapi.modulePropertyRegistry.register(AllowedSlots.KEY, new AllowedSlots());
-        Miapi.modulePropertyRegistry.register(MaterialProperty.KEY, new MaterialProperty());
-        Miapi.modulePropertyRegistry.register(AllowedMaterial.KEY, new AllowedMaterial());
-        Miapi.modulePropertyRegistry.register(AttributeProperty.KEY, new AttributeProperty());
-        Miapi.modulePropertyRegistry.register(PotionEffectProperty.KEY, new PotionEffectProperty());
-        Miapi.modulePropertyRegistry.register(ModelTransformationProperty.KEY, new ModelTransformationProperty());
-        Miapi.modulePropertyRegistry.register(DisplayNameProperty.KEY, new DisplayNameProperty());
-        Miapi.modulePropertyRegistry.register(ItemIdProperty.KEY, new ItemIdProperty());
-        Miapi.modulePropertyRegistry.register(GuiOffsetProperty.KEY, new GuiOffsetProperty());
-        Miapi.modulePropertyRegistry.register(EquipmentSlotProperty.KEY, new EquipmentSlotProperty());
-        Miapi.modulePropertyRegistry.register(ModelMergeProperty.KEY, new ModelMergeProperty());
-        Miapi.modulePropertyRegistry.register(FlexibilityProperty.KEY, new FlexibilityProperty());
-        Miapi.modulePropertyRegistry.register(AbilityProperty.KEY, new AbilityProperty());
-        Miapi.modulePropertyRegistry.register(BlockProperty.KEY, new BlockProperty());
-        Miapi.modulePropertyRegistry.register(RiptideProperty.KEY, new RiptideProperty());
-        Miapi.modulePropertyRegistry.register(HealthPercentDamage.KEY, new HealthPercentDamage());
-        Miapi.modulePropertyRegistry.register(ArmorPenProperty.KEY, new ArmorPenProperty());
-        Miapi.modulePropertyRegistry.register(HeavyAttackProperty.KEY, new HeavyAttackProperty());
-        Miapi.modulePropertyRegistry.register(CircleAttackProperty.KEY, new CircleAttackProperty());
-        Miapi.modulePropertyRegistry.register(CrossbowProperty.KEY, new CrossbowProperty());
-        Miapi.modulePropertyRegistry.register(ToolOrWeaponProperty.KEY, new ToolOrWeaponProperty());
-        Miapi.modulePropertyRegistry.register(MiningLevelProperty.KEY, new MiningLevelProperty());
-
-        ItemAbilityManager.useAbilityRegistry.register("throw", new ThrowingAbility());
-        ItemAbilityManager.useAbilityRegistry.register("block", new BlockAbility());
-        ItemAbilityManager.useAbilityRegistry.register(RiptideProperty.KEY, new RiptideAbility());
-        ItemAbilityManager.useAbilityRegistry.register(HeavyAttackProperty.KEY, new HeavyAttackAbility());
-        ItemAbilityManager.useAbilityRegistry.register(CircleAttackProperty.KEY, new CircleAttackAbility());
-        ItemAbilityManager.useAbilityRegistry.register(CrossbowProperty.KEY, new CrossbowAbility());
-
-        // actually registering stuff to minecraft
-        Miapi.modularItemRegistry.addCallback(item -> {
-            itemRegistry.register(new Identifier(Objects.requireNonNull(Miapi.modularItemRegistry.findKey(item))), () -> item);
-        });
-        Miapi.entityAttributeRegistry.addCallback(item -> {
-            attributeRegistry.register(new Identifier(Objects.requireNonNull(Miapi.entityAttributeRegistry.findKey(item))), () -> item);
-        });
-        Miapi.blockItemRegistry.addCallback(item -> {
-            blockRegistry.register(new Identifier(Objects.requireNonNull(Miapi.blockItemRegistry.findKey(item))), () -> item);
-            itemRegistry.register(new Identifier(Objects.requireNonNull(Miapi.blockItemRegistry.findKey(item))), () -> new BlockItem(item, new Item.Settings()));
-        });
     }
-
-    private static <T extends ScreenHandler> RegistrySupplier<ScreenHandlerType<T>> register(Identifier id, ScreenHandlerType.Factory<T> factory) {
-        //TODO:check this again
-        return screenHandlerRegistry.register(id, () -> new ScreenHandlerType(factory, null));
-    }
-
-    private static <T extends Entity> RegistrySupplier<EntityType<T>> registerEntity(String id, EntityType.Builder<T> type) {
-        return entityTypeRegistry.register(new Identifier(id), () -> type.build(id));
-    }
-
 }
