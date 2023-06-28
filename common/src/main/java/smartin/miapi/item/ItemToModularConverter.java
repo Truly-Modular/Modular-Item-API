@@ -6,6 +6,7 @@ import net.minecraft.registry.Registries;
 import smartin.miapi.Miapi;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.modules.ItemModule;
+import smartin.miapi.registries.RegistryInventory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,7 +33,7 @@ public class ItemToModularConverter implements ModularItemStackConverter.Modular
                         dataMap = Miapi.gson.fromJson(data, token.getType());
 
                         dataMap.forEach((itemId, moduleString) -> {
-                            ItemStack stack = new ItemStack(Miapi.modularItemRegistry.get("miapi:modular_item"));
+                            ItemStack stack = new ItemStack(RegistryInventory.modularItem);
                             stack.getOrCreateNbt().putString("modules", moduleString.toString());
                             regexes.put(itemId, stack);
                         });

@@ -23,7 +23,7 @@ import java.util.*;
 import java.util.function.BiPredicate;
 
 public class PropertyApplication {
-    public static void init() {
+    public static void setup() {
         Event.LIVING_HURT.register(event -> {
             Cancellable<Event.LivingHurtEvent> ev = new Cancellable<>(event);
             ApplicationEvent.HURT.call(ev);

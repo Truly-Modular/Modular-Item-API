@@ -11,6 +11,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import smartin.miapi.Miapi;
 import smartin.miapi.events.Event;
+import smartin.miapi.registries.RegistryInventory;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -20,20 +21,20 @@ import java.util.Map;
 public class AttributeRegistry {
     public static Map<String, EntityAttribute> entityAttributeMap = new HashMap<>();
 
-    public static final EntityAttribute ITEM_DURABILITY = register(Miapi.MOD_ID + ":generic.durability", (new ClampedEntityAttribute("miapi.attribute.name.durability", 300.0, 1.0, 16777216)).setTracked(true));
+    public static EntityAttribute ITEM_DURABILITY;
 
-    public static final EntityAttribute REACH = registerOnEntity(Miapi.MOD_ID + ":generic.reach", (new ClampedEntityAttribute("miapi.attribute.name.reach", 0.0, -1024.0, 1024.0)).setTracked(true));
-    public static final EntityAttribute ATTACK_RANGE = registerOnEntity(Miapi.MOD_ID + ":generic.attack_range", (new ClampedEntityAttribute("miapi.attribute.name.attack_range", 0.0, -1024.0, 1024.0)).setTracked(true));
+    public static EntityAttribute REACH;
+    public static EntityAttribute ATTACK_RANGE;
 
-    public static final EntityAttribute MINING_SPEED_PICKAXE = register(Miapi.MOD_ID + ":generic.mining_speed.pickaxe", (new ClampedEntityAttribute("miapi.attribute.name.mining_speed.pickaxe", 1.0, 1.0, 1024.0)).setTracked(true));
-    public static final EntityAttribute MINING_SPEED_AXE = register(Miapi.MOD_ID + ":generic.mining_speed.axe", (new ClampedEntityAttribute("miapi.attribute.name.mining_speed.axe", 1.0, 1.0, 1024.0)).setTracked(true));
-    public static final EntityAttribute MINING_SPEED_SHOVEL = register(Miapi.MOD_ID + ":generic.mining_speed.shovel", (new ClampedEntityAttribute("miapi.attribute.name.mining_speed.shovel", 1.0, 1.0, 1024.0)).setTracked(true));
-    public static final EntityAttribute MINING_SPEED_HOE = register(Miapi.MOD_ID + ":generic.mining_speed.hoe", (new ClampedEntityAttribute("miapi.attribute.name.mining_speed.hoe", 1.0, 1.0, 1024.0)).setTracked(true));
+    public static EntityAttribute MINING_SPEED_PICKAXE;
+    public static EntityAttribute MINING_SPEED_AXE;
+    public static EntityAttribute MINING_SPEED_SHOVEL;
+    public static EntityAttribute MINING_SPEED_HOE;
 
-    public static final EntityAttribute DAMAGE_RESISTANCE = registerOnEntity(Miapi.MOD_ID + ":generic.resistance", (new ClampedEntityAttribute("miapi.attribute.name.resistance", 0.0, 0.0, 100)).setTracked(true));
-    public static final EntityAttribute BACK_STAB = registerOnEntity(Miapi.MOD_ID + ":generic.back_stab", (new ClampedEntityAttribute("miapi.attribute.name.back_stab", 0.0, 0.0, 1024.0)).setTracked(true));
-    public static final EntityAttribute ARMOR_CRUSHING = registerOnEntity(Miapi.MOD_ID + ":generic.armor_crushing", (new ClampedEntityAttribute("miapi.attribute.name.armor_crushing", 0.0, 0.0, 1024.0)).setTracked(true));
-    public static final EntityAttribute SHIELD_BREAK = registerOnEntity(Miapi.MOD_ID + ":generic.shield_break", (new ClampedEntityAttribute("miapi.attribute.name.shield_break", 0.0, 0.0, 1024.0)).setTracked(true));
+    public static EntityAttribute DAMAGE_RESISTANCE;
+    public static EntityAttribute BACK_STAB;
+    public static EntityAttribute ARMOR_CRUSHING;
+    public static EntityAttribute SHIELD_BREAK;
 
 
     public static void setup() {
@@ -78,15 +79,6 @@ public class AttributeRegistry {
             }
             return EventResult.pass();
         }));
-    }
-
-    private static EntityAttribute register(String id, EntityAttribute attribute) {
-        return Miapi.entityAttributeRegistry.register(id, attribute);
-    }
-
-    private static EntityAttribute registerOnEntity(String id, EntityAttribute attribute) {
-        entityAttributeMap.put(id, attribute);
-        return Miapi.entityAttributeRegistry.register(id, attribute);
     }
 
     public static double getAttribute(ItemStack stack, EntityAttribute attribute, EquipmentSlot slot, double defaultValue) {

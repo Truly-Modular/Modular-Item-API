@@ -3,10 +3,10 @@ package smartin.miapi.modules.properties;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.reflect.TypeToken;
-import smartin.miapi.Miapi;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.util.ModuleProperty;
+import smartin.miapi.registries.RegistryInventory;
 
 import java.lang.reflect.Type;
 import java.util.*;
@@ -19,7 +19,7 @@ public class AllowedSlots implements ModuleProperty {
     static HashMap<String, Set<ItemModule>> allowedInMap = new HashMap<>();
 
     public AllowedSlots() {
-        Miapi.moduleRegistry.addCallback(itemModule -> {
+        RegistryInventory.modules.addCallback(itemModule -> {
             getAllowedSlots(itemModule).forEach(slot -> {
                 if (allowedInMap.containsKey(slot)) {
                     allowedInMap.get(slot).add(itemModule);

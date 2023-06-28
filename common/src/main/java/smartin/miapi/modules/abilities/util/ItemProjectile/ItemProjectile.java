@@ -24,6 +24,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
+import smartin.miapi.registries.RegistryInventory;
 
 public class ItemProjectile extends PersistentProjectileEntity {
     private static final TrackedData<Byte> LOYALTY;
@@ -39,7 +40,7 @@ public class ItemProjectile extends PersistentProjectileEntity {
     }
 
     public ItemProjectile(World world, LivingEntity owner, ItemStack stack) {
-        super(Miapi.itemProjectileType.get(), owner, world);
+        super(RegistryInventory.itemProjectileType.get(), owner, world);
         this.thrownStack = new ItemStack(Items.WOODEN_AXE);
         this.thrownStack = stack.copy();
         this.dataTracker.set(LOYALTY, (byte) EnchantmentHelper.getLoyalty(stack));

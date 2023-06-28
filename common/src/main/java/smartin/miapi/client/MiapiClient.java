@@ -7,6 +7,7 @@ import smartin.miapi.Miapi;
 import smartin.miapi.client.model.CustomColorProvider;
 import smartin.miapi.mixin.client.ItemRendererAccessor;
 import smartin.miapi.modules.abilities.util.ItemProjectile.ItemProjectileRenderer;
+import smartin.miapi.registries.RegistryInventory;
 
 public class MiapiClient {
 
@@ -22,10 +23,10 @@ public class MiapiClient {
         SpriteLoader.setup();
     }
 
-    protected static void clientStart(MinecraftClient client){
-        Miapi.modularItemRegistry.addCallback(item -> {
+    protected static void clientStart(MinecraftClient client) {
+        RegistryInventory.addCallback(RegistryInventory.modularItems, item -> {
             ((ItemRendererAccessor) client.getItemRenderer()).color().register(new CustomColorProvider(), item);
         });
-        EntityRendererRegistry.register(Miapi.itemProjectileType, ItemProjectileRenderer::new);
+        EntityRendererRegistry.register(RegistryInventory.itemProjectileType, ItemProjectileRenderer::new);
     }
 }

@@ -1,6 +1,5 @@
 package smartin.miapi.client.model;
 
-import com.mojang.datafixers.util.Pair;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
@@ -12,8 +11,8 @@ import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
 import org.jetbrains.annotations.Nullable;
-import smartin.miapi.Miapi;
 import smartin.miapi.modules.properties.render.ModelProperty;
+import smartin.miapi.registries.RegistryInventory;
 
 import java.util.*;
 import java.util.function.Function;
@@ -21,7 +20,7 @@ import java.util.function.Function;
 @Environment(EnvType.CLIENT)
 public class CustomModel implements UnbakedModel, BakedModel {
     public static boolean isModularItem(Identifier identifier){
-        return Miapi.modularItemRegistry.get(identifier.toString().replace("item/",""))!=null;
+        return RegistryInventory.modularItems.get(identifier.toString().replace("item/",""))!=null;
     }
 
     private CustomModelOverrides overrides;

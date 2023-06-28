@@ -13,6 +13,7 @@ import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.registries.MiapiRegistry;
+import smartin.miapi.registries.RegistryInventory;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -111,7 +112,7 @@ public class ItemModule {
             for (Map.Entry<String, JsonElement> entry : jsonObject.entrySet()) {
                 String key = entry.getKey();
                 JsonElement value = entry.getValue();
-                ModuleProperty property = Miapi.modulePropertyRegistry.get(key);
+                ModuleProperty property = RegistryInventory.moduleProperties.get(key);
                 if (property != null) {
                     if (isValidProperty(key, name, value)) {
                         moduleProperties.put(key, value);
@@ -140,7 +141,7 @@ public class ItemModule {
      * @throws RuntimeException if an error occurs during loading
      */
     protected static boolean isValidProperty(String key, String moduleKey, JsonElement data) {
-        ModuleProperty property = Miapi.modulePropertyRegistry.get(key);
+        ModuleProperty property = RegistryInventory.moduleProperties.get(key);
         if (property != null) {
             try {
                 return property.load(moduleKey, data);
@@ -351,7 +352,7 @@ public class ItemModule {
         public Map<String, JsonElement> getKeyedProperties() {
             Map<String, JsonElement> map = new HashMap<>();
             getProperties().forEach((property, jsonElement) -> {
-                map.put(Miapi.modulePropertyRegistry.findKey(property), jsonElement);
+                map.put(RegistryInventory.moduleProperties.findKey(property), jsonElement);
             });
             return map;
         }

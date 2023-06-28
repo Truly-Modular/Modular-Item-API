@@ -5,8 +5,8 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.item.ClampedModelPredicateProvider;
 import net.minecraft.item.Item;
 import net.minecraft.util.Identifier;
-import smartin.miapi.Miapi;
 import smartin.miapi.mixin.client.ModelPredicateProviderRegistryAccessor;
+import smartin.miapi.registries.RegistryInventory;
 
 @Environment(EnvType.CLIENT)
 public class ModularModelPredicateProvider {
@@ -15,7 +15,7 @@ public class ModularModelPredicateProvider {
     }
 
     public static void registerModularModelOverride(Identifier id, ClampedModelPredicateProvider provider){
-        Miapi.modularItemRegistry.addCallback((item)->{
+        RegistryInventory.addCallback(RegistryInventory.modularItems, item -> {
             ModelPredicateProviderRegistryAccessor.register(item,id,provider);
         });
     }
@@ -25,7 +25,7 @@ public class ModularModelPredicateProvider {
     }
 
     public static void registerModularItemModelOverride(Identifier identifier, Identifier id, ClampedModelPredicateProvider provider){
-        Item item = Miapi.modularItemRegistry.get(identifier.toString());
+        Item item = RegistryInventory.modularItems.get(identifier);
         ModelPredicateProviderRegistryAccessor.register(item,id,provider);
     }
 }

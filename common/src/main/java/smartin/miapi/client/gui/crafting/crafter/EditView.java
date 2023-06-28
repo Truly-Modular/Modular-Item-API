@@ -5,8 +5,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Element;
-import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandler;
@@ -20,8 +18,7 @@ import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.edit_options.EditOption;
-import smartin.miapi.modules.properties.AllowedSlots;
-import smartin.miapi.modules.properties.SlotProperty;
+import smartin.miapi.registries.RegistryInventory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,7 +49,7 @@ public class EditView extends InteractAbleWidget {
         defaultChildren.add(new SimpleButton<>(this.getX() + 2, this.getY() + this.height - 10, 40, 12, Text.translatable(Miapi.MOD_ID + ".ui.back"), stack, back));
         ArrayList<InteractAbleWidget> toList = new ArrayList<>();
 
-        Miapi.editOptions.getFlatMap().forEach((s, editOption) -> {
+        RegistryInventory.editOptions.getFlatMap().forEach((s, editOption) -> {
             if (editOption.isVisible(stack, instance.copy())) {
                 toList.add(new SlotButton(0, 0, this.width, 15, s, editOption, instance.copy()));
             }
