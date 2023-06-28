@@ -9,9 +9,8 @@ import net.minecraft.entity.attribute.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import smartin.miapi.events.Event;
 import smartin.miapi.Miapi;
-import smartin.miapi.registries.MiapiRegistry;
+import smartin.miapi.events.Event;
 
 import java.util.Collection;
 import java.util.HashMap;

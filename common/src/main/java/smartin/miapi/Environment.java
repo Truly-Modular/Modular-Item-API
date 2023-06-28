@@ -24,7 +24,7 @@ public class Environment {
     }
 
     public static boolean isClientServer(){
-        if(MinecraftClient.getInstance()==null){
+        if(!isClient()){
             return false;
         }
         if(Miapi.server==null){
