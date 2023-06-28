@@ -25,6 +25,12 @@ dependencies {
     common 'org.mariuszgromada.math:MathParser.org-mXparser:4.4.2'
 }
 
+loom {
+    forge {
+        mixinConfig "miapi.mixins.json"
+    }
+}
+
 processResources {
     inputs.property "version", project.version
 
