@@ -30,18 +30,16 @@ public class ItemProjectile extends PersistentProjectileEntity {
     private static final TrackedData<Byte> LOYALTY;
     private static final TrackedData<Boolean> ENCHANTED;
     private static final TrackedData<ItemStack> throwingStack;
-    public ItemStack thrownStack;
+    public ItemStack thrownStack = ItemStack.EMPTY;
     private boolean dealtDamage;
     public int returnTimer;
 
     public ItemProjectile(EntityType<? extends Entity> entityType, World world) {
         super((EntityType<? extends PersistentProjectileEntity>) entityType, world);
-        this.thrownStack = new ItemStack(Items.STONE_SHOVEL);
     }
 
     public ItemProjectile(World world, LivingEntity owner, ItemStack stack) {
         super(RegistryInventory.itemProjectileType.get(), owner, world);
-        this.thrownStack = new ItemStack(Items.WOODEN_AXE);
         this.thrownStack = stack.copy();
         this.dataTracker.set(LOYALTY, (byte) EnchantmentHelper.getLoyalty(stack));
         this.dataTracker.set(ENCHANTED, stack.hasGlint());
@@ -50,7 +48,7 @@ public class ItemProjectile extends PersistentProjectileEntity {
 
     protected void initDataTracker() {
         super.initDataTracker();
-        this.dataTracker.startTracking(throwingStack, thrownStack);
+        this.dataTracker.startTracking(throwingStack, ItemStack.EMPTY);
         this.dataTracker.startTracking(LOYALTY, (byte) 0);
         this.dataTracker.startTracking(ENCHANTED, false);
     }

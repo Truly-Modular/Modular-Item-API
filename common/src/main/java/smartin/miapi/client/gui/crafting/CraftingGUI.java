@@ -34,7 +34,6 @@ public class CraftingGUI extends ParentHandledScreen<CraftingScreenHandler> impl
 
     public CraftingGUI(CraftingScreenHandler handler, PlayerInventory playerInventory, Text title) {
         super(handler, playerInventory, Text.empty());
-        System.out.println("created new crafting gui");
         this.backgroundWidth = 278;
         this.backgroundHeight = 221;
     }

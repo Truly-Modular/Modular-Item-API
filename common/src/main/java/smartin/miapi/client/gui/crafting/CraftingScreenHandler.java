@@ -39,7 +39,6 @@ public class CraftingScreenHandler extends ScreenHandler {
      */
     public CraftingScreenHandler(int syncId, PlayerInventory playerInventory) {
         this(syncId, playerInventory, ScreenHandlerContext.EMPTY);
-        System.out.println("created crafting screen handler");
     }
 
     /**

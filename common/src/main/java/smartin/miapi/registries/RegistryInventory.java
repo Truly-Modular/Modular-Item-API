@@ -107,6 +107,12 @@ public class RegistryInventory {
     public static Item modularItem;
     public static RegistrySupplier<EntityType<ItemProjectile>> itemProjectileType = (RegistrySupplier) registerAndSupply(entityTypes, "thrown_item", () ->
             EntityType.Builder.create(ItemProjectile::new, SpawnGroup.MISC).setDimensions(0.5F, 0.5F).maxTrackingRange(4).trackingTickInterval(20).build("miapi:thrown_item"));
+    static {
+        itemProjectileType.listen(e -> {
+            if (Platform.getEnvironment() == Env.CLIENT)
+                MiapiClient.registerEntityRenderer();
+        });
+    }
     public static ScreenHandlerType<CraftingScreenHandler> craftingScreenHandler;
 
     public static void setup() {

@@ -31,10 +31,11 @@ public class ItemProjectileRenderer extends EntityRenderer<ItemProjectile> {
         return null;
     }
 
+    //todo correct direction rotatiion
     @Override
     public void render(ItemProjectile entity, float yaw, float tickDelta, MatrixStack matrixStack, VertexConsumerProvider vertexConsumers, int light) {
         ItemStack itemStack = entity.asItemStack();
-        Miapi.LOGGER.error(String.valueOf(itemStack));
+        //Miapi.LOGGER.error(String.valueOf(itemStack));
         if (itemStack != null && !itemStack.isEmpty()) {
             BakedModel model = ModelProperty.getItemModel(itemStack);
             if (model != null) {

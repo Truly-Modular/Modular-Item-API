@@ -14,6 +14,7 @@ import net.minecraft.world.World;
 import smartin.miapi.Miapi;
 import smartin.miapi.modules.abilities.util.ItemProjectile.ItemProjectile;
 import smartin.miapi.modules.abilities.util.ItemUseAbility;
+import smartin.miapi.registries.RegistryInventory;
 
 /**
  * This Ability allows you to throw the Item in question like a Trident
@@ -54,9 +55,10 @@ public class ThrowingAbility implements ItemUseAbility {
                     stack.damage(1, playerEntity, (p) -> {
                         p.sendToolBreakStatus(user.getActiveHand());
                     });
+
                     ItemProjectile tridentEntity = new ItemProjectile(world, playerEntity, stack);
-                    world.spawnEntity(tridentEntity);
                     tridentEntity.setVelocity(playerEntity, playerEntity.getPitch(), playerEntity.getYaw(), 0.0F, 2.5F + (float) 2 * 0.5F, 1.0F);
+                    world.spawnEntity(tridentEntity);
                     if (playerEntity.getAbilities().creativeMode) {
                         tridentEntity.pickupType = PersistentProjectileEntity.PickupPermission.CREATIVE_ONLY;
                     }

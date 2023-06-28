@@ -1,2 +1,3 @@
 - test.json predicate
 - katana blade potion effects
+- lang modifications for range and reach
