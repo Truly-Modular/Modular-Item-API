@@ -2,11 +2,37 @@ plugins {
     id "architectury-plugin" version "3.4-SNAPSHOT"
     id "dev.architectury.loom" version "1.1-SNAPSHOT" apply false
     //id "com.github.johnrengelman.shadow" version '7.1.2' apply true
+
+    // Plugin to create merged jars
+    id "io.github.pacifistmc.forgix" version "1.2.6"
+
 }
+
+//apply plugin: "io.github.pacifistmc.forgix"
 
 architectury {
     minecraft = rootProject.minecraft_version
 }
+
+forgix {
+    group = "smartin.miapi"
+    mergedJarName = "Truly-Modular-${rootProject.mod_version}.jar"
+
+    /*
+    if (findProject(":forge"))
+        forge {
+            jarLocation = "forge/build/libs/miapi-${rootProject.versionStr}.jar"
+        }
+
+    findProject(":fabric")
+    fabric {
+        jarLocation = "fabric/build/libs/miapi-${rootProject.versionStr}.jar"
+    }
+
+    removeDuplicate "smartin.miapi"
+     */
+}
+
 
 subprojects {
     apply plugin: "dev.architectury.loom"
