@@ -397,7 +397,7 @@ public class ItemModule {
          *
          * @param position The list to store the position.
          */
-        private void calculatePosition(List<Integer> position) {
+        public void calculatePosition(List<Integer> position) {
             if (parent != null) {
                 parent.calculatePosition(position);
                 position.add(this.getId());
@@ -411,8 +411,9 @@ public class ItemModule {
          * @return The module instance at the specified position.
          */
         public ModuleInstance getPosition(List<Integer> position) {
-            if (position.size() > 0) {
+            if (!position.isEmpty()) {
                 int pos = position.remove(0);
+                Miapi.LOGGER.error("accesing slot n#" + pos);
                 return subModules.get(pos).getPosition(position);
             } else {
                 return this;

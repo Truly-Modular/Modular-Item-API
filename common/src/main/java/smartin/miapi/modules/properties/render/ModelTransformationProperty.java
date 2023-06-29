@@ -2,6 +2,8 @@ package smartin.miapi.modules.properties.render;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.render.model.json.Transformation;
@@ -14,6 +16,7 @@ import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.*;
 
+@Environment(EnvType.CLIENT)
 public class ModelTransformationProperty implements ModuleProperty {
 
     public static final String KEY = "modelTransform";
@@ -37,7 +40,7 @@ public class ModelTransformationProperty implements ModuleProperty {
                                     for (String modeString : getStringOfMode(mode)) {
                                         if (replace.has(modeString)) {
                                             Transform transform = Transform.toModelTransformation(Miapi.gson.fromJson(replace.getAsJsonObject(modeString), Transform.class));
-                                            map.put(mode, transform);
+                                            map.put(mode, transform.toTransformation());
                                         }
                                     }
                                 }
@@ -49,7 +52,7 @@ public class ModelTransformationProperty implements ModuleProperty {
                                     for (String modeString : getStringOfMode(mode)) {
                                         if (replace.has(modeString)) {
                                             Transform merged = Transform.merge(new Transform(transformation.getTransformation(mode)), Miapi.gson.fromJson(replace.getAsJsonObject(modeString), Transform.class));
-                                            map.put(mode, merged);
+                                            map.put(mode, merged.toTransformation());
                                         }
                                     }
                                 }

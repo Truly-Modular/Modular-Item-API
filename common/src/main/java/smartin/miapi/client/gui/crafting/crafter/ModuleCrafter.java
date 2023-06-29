@@ -122,7 +122,7 @@ public class ModuleCrafter extends InteractAbleWidget {
                         EditView view = new EditView(this.getX(), this.getY(), this.width, this.height, stack, instance, (previewItem) -> {
                             preview.accept(previewItem);
                         }, (object) -> {
-                            //bacl
+                            this.children().clear();
                             setMode(Mode.DETAIL);
                         });
                         this.children().clear();

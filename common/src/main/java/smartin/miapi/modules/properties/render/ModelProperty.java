@@ -3,6 +3,8 @@ package smartin.miapi.modules.properties.render;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.ModelBakeSettings;
 import net.minecraft.client.render.model.ModelLoader;
@@ -39,6 +41,8 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 
+
+@Environment(EnvType.CLIENT)
 public class ModelProperty implements ModuleProperty {
     public static ModuleProperty property;
     private static final String CACHE_KEY_MAP = Miapi.MOD_ID + ":modelMap";
@@ -113,7 +117,7 @@ public class ModelProperty implements ModuleProperty {
             Gson gson = Miapi.gson;
             List<ModelJson> modelJsonList = new ArrayList<>();
             JsonElement data = moduleI.getProperties().get(property);
-            if (data == null) {
+            if(data==null){
                 return unbakedModels;
             }
             if (data.isJsonArray()) {

@@ -18,6 +18,7 @@ import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.edit_options.EditOption;
+import smartin.miapi.network.Networking;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.util.ArrayList;
@@ -29,6 +30,7 @@ public class EditView extends InteractAbleWidget {
     ItemStack stack;
     ItemModule.ModuleInstance instance;
     Consumer<ItemStack> preview;
+    Consumer<Object> back;
     List<Element> defaultChildren = new ArrayList<>();
 
     public EditView(int x, int y, int width, int height, ItemStack stack, ItemModule.ModuleInstance instance, Consumer<ItemStack> preview, Consumer<Object> back) {
@@ -36,6 +38,7 @@ public class EditView extends InteractAbleWidget {
         this.preview = preview;
         this.stack = stack;
         this.instance = instance;
+        this.back = back;
         float headerScale = 1.5f;
         TransformableWidget headerHolder = new TransformableWidget(x, y, width, height, headerScale);
         defaultChildren.add(headerHolder);
@@ -67,13 +70,20 @@ public class EditView extends InteractAbleWidget {
     public void setEditOption(EditOption option) {
         Consumer<PacketByteBuf> craftBuffer = (packetByteBuf) -> {
             //TODO:Execute this on server
-            ItemModule.ModuleInstance toCrafter = instance;
-            stack.getOrCreateNbt().remove(ModularItemCache.CACHE_KEY);
-            ItemStack crafted = option.execute(packetByteBuf, stack, toCrafter);
-            preview.accept(crafted);
             ScreenHandler screenHandler = Miapi.server.getPlayerManager().getPlayerList().get(0).currentScreenHandler;
             if (screenHandler instanceof CraftingScreenHandler screenHandler1) {
-                screenHandler1.setItem(crafted.copy());
+                ItemModule.ModuleInstance toCrafter = instance;
+                PacketByteBuf buf = Networking.createBuffer();
+                buf.writeString(RegistryInventory.editOptions.findKey(option));
+                List<Integer> position = new ArrayList<>();
+                toCrafter.calculatePosition(position);
+                int[] positionArray = position.stream()
+                        .mapToInt(Integer::intValue)
+                        .toArray();
+                buf.writeIntArray(positionArray);
+                buf.writeBytes(packetByteBuf.copy());
+                back.accept(null);
+                Networking.sendC2S(screenHandler1.editPacketID, buf);
             }
         };
         Consumer<PacketByteBuf> previewBuffer = (packetByteBuf) -> preview.accept(option.execute(packetByteBuf, stack, instance.copy()));

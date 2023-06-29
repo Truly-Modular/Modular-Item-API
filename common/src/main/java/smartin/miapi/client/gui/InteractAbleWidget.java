@@ -360,11 +360,11 @@ public abstract class InteractAbleWidget extends ClickableWidget implements Draw
     @Override
     public void render(DrawContext drawContext, int mouseX, int mouseY, float delta) {
         RenderSystem.setShader(GameRenderer::getPositionProgram);
-        children().forEach(element -> {
+        for (Element element : children()) {
             if (element instanceof Drawable drawable) {
                 drawable.render(drawContext, mouseX, mouseY, delta);
             }
-        });
+        }
     }
 
     /**

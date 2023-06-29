@@ -1,5 +1,7 @@
 package smartin.miapi.modules.edit_options.skins.gui;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Text;
@@ -21,6 +23,7 @@ public class SkinGui extends InteractAbleWidget {
     public String currentPreview;
     public ItemModule.ModuleInstance instance;
 
+    @Environment(EnvType.CLIENT)
     public SkinGui(int x, int y, int width, int height, ItemStack stack, ItemModule.ModuleInstance instance, Consumer<PacketByteBuf> craft, Consumer<PacketByteBuf> preview, Consumer<Objects> back) {
         super(x, y, width, height, Text.empty());
         this.craft = craft;

@@ -2,6 +2,8 @@ package smartin.miapi.modules.properties;
 
 import com.google.gson.JsonElement;
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -38,6 +40,8 @@ public class AllowedMaterial implements CraftingProperty, ModuleProperty {
         return -1;
     }
 
+
+    @Environment(EnvType.CLIENT)
     public InteractAbleWidget createGui(int x, int y, int width, int height, CraftAction action) {
         return new MaterialCraftingWidget(x, y, width, height, action);
     }
@@ -100,6 +104,7 @@ public class AllowedMaterial implements CraftingProperty, ModuleProperty {
         return true;
     }
 
+    @Environment(EnvType.CLIENT)
     static class MaterialCraftingWidget extends InteractAbleWidget {
         private final int startX;
         private final int startY;

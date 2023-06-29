@@ -1,6 +1,8 @@
 package smartin.miapi.client.gui.crafting.statdisplay;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.render.GameRenderer;
@@ -20,6 +22,7 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
 
+@Environment(EnvType.CLIENT)
 public abstract class SingleStatDisplayDouble extends InteractAbleWidget implements SingleStatDisplay, Drawable {
     public Identifier texture = new Identifier("textures/gui/container/inventory.png");
     public ItemStack original = ItemStack.EMPTY;

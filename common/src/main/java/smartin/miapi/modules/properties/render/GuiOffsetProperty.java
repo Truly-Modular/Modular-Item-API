@@ -1,6 +1,8 @@
 package smartin.miapi.modules.properties.render;
 
 import com.google.gson.JsonElement;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.item.ItemStack;
@@ -16,6 +18,7 @@ import java.util.Map;
 /**
  * This Property allows to have a simple way to change the gui position and size of an item
  */
+@Environment(EnvType.CLIENT)
 public class GuiOffsetProperty implements ModuleProperty {
     public static final String KEY = "guiOffset";
     public static ModuleProperty property;
@@ -38,7 +41,7 @@ public class GuiOffsetProperty implements ModuleProperty {
                             guiOffsetJson.sizeY += add.sizeY;
                         }
                     }
-                    Transform guiTransform = Transform.repair(dynamicBakedModel.getTransformation().getTransformation(ModelTransformationMode.GUI));
+                    Transform guiTransform = new Transform(dynamicBakedModel.getTransformation().getTransformation(ModelTransformationMode.GUI));
                     guiOffsetJson.x -=guiOffsetJson.sizeX/2;
                     guiOffsetJson.y -= guiOffsetJson.sizeY/2;
                     guiOffsetJson.sizeX = guiTransform.scale.x() - guiOffsetJson.sizeX / 16.0f;
@@ -51,7 +54,7 @@ public class GuiOffsetProperty implements ModuleProperty {
                             dynamicBakedModel.getTransformation().getTransformation(ModelTransformationMode.FIRST_PERSON_LEFT_HAND),
                             dynamicBakedModel.getTransformation().getTransformation(ModelTransformationMode.FIRST_PERSON_RIGHT_HAND),
                             dynamicBakedModel.getTransformation().getTransformation(ModelTransformationMode.HEAD),
-                            guiTransform,
+                            guiTransform.toTransformation(),
                             dynamicBakedModel.getTransformation().getTransformation(ModelTransformationMode.GROUND),
                             dynamicBakedModel.getTransformation().getTransformation(ModelTransformationMode.FIXED)
                     );

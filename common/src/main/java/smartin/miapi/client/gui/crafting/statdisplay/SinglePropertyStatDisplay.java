@@ -1,10 +1,13 @@
 package smartin.miapi.client.gui.crafting.statdisplay;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import smartin.miapi.Miapi;
 import smartin.miapi.modules.properties.util.SimpleDoubleProperty;
 
+@Environment(EnvType.CLIENT)
 public class SinglePropertyStatDisplay extends SingleStatDisplayDouble {
     protected SimpleDoubleProperty property;
 

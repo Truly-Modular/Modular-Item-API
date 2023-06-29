@@ -1,5 +1,7 @@
 package smartin.miapi.client.gui;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Drawable;
@@ -10,6 +12,7 @@ import org.joml.Matrix4f;
 import org.joml.Vector4f;
 import smartin.miapi.Miapi;
 
+@Environment(EnvType.CLIENT)
 public class TransformableWidget extends InteractAbleWidget {
 
     public Matrix4f rawProjection = new Matrix4f();

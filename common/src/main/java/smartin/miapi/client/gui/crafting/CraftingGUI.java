@@ -1,6 +1,8 @@
 package smartin.miapi.client.gui.crafting;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.ScreenHandlerProvider;
 import net.minecraft.entity.player.PlayerInventory;
@@ -23,6 +25,7 @@ import smartin.miapi.modules.properties.SlotProperty;
 import java.util.ArrayList;
 import java.util.List;
 
+@Environment(EnvType.CLIENT)
 public class CraftingGUI extends ParentHandledScreen<CraftingScreenHandler> implements ScreenHandlerProvider<CraftingScreenHandler> {
 
     private static final Identifier BACKGROUND_TEXTURE = new Identifier(Miapi.MOD_ID, "textures/crafting_gui_background.png");
@@ -113,7 +116,7 @@ public class CraftingGUI extends ParentHandledScreen<CraftingScreenHandler> impl
         slotDisplay.setItem(stack);
         ItemStack converted = ModularItemStackConverter.getModularVersion(stack);
 
-        setItem(handler.inventory.getStack(0));
+        //setItem(handler.inventory.getStack(0));
         baseSlot.inSlot = ItemModule.getModules(converted);
         //baseSlot.allowed = AllowedSlots.getAllowedSlots(baseSlot.inSlot.module);
         SlotProperty.ModuleSlot current = baseSlot;

@@ -34,10 +34,7 @@ import smartin.miapi.modules.edit_options.EditOption;
 import smartin.miapi.modules.edit_options.PropertyInjectionDev;
 import smartin.miapi.modules.edit_options.skins.SkinOptions;
 import smartin.miapi.modules.properties.*;
-import smartin.miapi.modules.properties.render.GuiOffsetProperty;
-import smartin.miapi.modules.properties.render.ModelMergeProperty;
-import smartin.miapi.modules.properties.render.ModelProperty;
-import smartin.miapi.modules.properties.render.ModelTransformationProperty;
+import smartin.miapi.modules.properties.render.*;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.function.Consumer;
@@ -233,20 +230,28 @@ public class RegistryInventory {
         registerMiapi(ConditionManager.moduleConditionRegistry, "tag", new TagCondition());
 
         //MODULEPROPERTIES
+        try{
+            registerMiapi(moduleProperties, ModelProperty.KEY, new ModelProperty());
+            registerMiapi(moduleProperties, ModelTransformationProperty.KEY, new ModelTransformationProperty());
+            registerMiapi(moduleProperties, ModelMergeProperty.KEY, new ModelMergeProperty());
+            registerMiapi(moduleProperties, GuiOffsetProperty.KEY, new GuiOffsetProperty());
+        }
+        catch (Exception surpressed){
+            registerMiapi(moduleProperties, "texture", new ServerReplaceProperty());
+            registerMiapi(moduleProperties, "modelTransform", new ServerReplaceProperty());
+            registerMiapi(moduleProperties, "modelMerge", new ServerReplaceProperty());
+            registerMiapi(moduleProperties, "guiOffset", new ServerReplaceProperty());
+        }
         registerMiapi(moduleProperties, NameProperty.KEY, new NameProperty());
-        registerMiapi(moduleProperties, ModelProperty.KEY, new ModelProperty());
         registerMiapi(moduleProperties, SlotProperty.KEY, new SlotProperty());
         registerMiapi(moduleProperties, AllowedSlots.KEY, new AllowedSlots());
         registerMiapi(moduleProperties, MaterialProperty.KEY, new MaterialProperty());
         registerMiapi(moduleProperties, AllowedMaterial.KEY, new AllowedMaterial());
         registerMiapi(moduleProperties, AttributeProperty.KEY, new AttributeProperty());
         registerMiapi(moduleProperties, PotionEffectProperty.KEY, new PotionEffectProperty());
-        registerMiapi(moduleProperties, ModelTransformationProperty.KEY, new ModelTransformationProperty());
         registerMiapi(moduleProperties, DisplayNameProperty.KEY, new DisplayNameProperty());
         registerMiapi(moduleProperties, ItemIdProperty.KEY, new ItemIdProperty());
-        registerMiapi(moduleProperties, GuiOffsetProperty.KEY, new GuiOffsetProperty());
         registerMiapi(moduleProperties, EquipmentSlotProperty.KEY, new EquipmentSlotProperty());
-        registerMiapi(moduleProperties, ModelMergeProperty.KEY, new ModelMergeProperty());
         registerMiapi(moduleProperties, FlexibilityProperty.KEY, new FlexibilityProperty());
         registerMiapi(moduleProperties, AbilityProperty.KEY, new AbilityProperty());
         registerMiapi(moduleProperties, BlockProperty.KEY, new BlockProperty());

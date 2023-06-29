@@ -14,6 +14,8 @@ import smartin.miapi.modules.properties.DisplayNameProperty;
 public class ExampleModularBowItem extends BowItem implements ModularItem {
     public ExampleModularBowItem() {
         super(new Item.Settings());
+        /*
+        TODO:reimplement this somehow on client
         ModularModelPredicateProvider.registerModelOverride(this, new Identifier("pull"), (stack, world, entity, seed) -> {
             if (entity == null) {
                 return 0.0F;
@@ -24,6 +26,8 @@ public class ExampleModularBowItem extends BowItem implements ModularItem {
         ModularModelPredicateProvider.registerModelOverride(this, new Identifier("pulling"), (stack, world, entity, seed) -> {
             return entity != null && entity.isUsingItem() && entity.getActiveItem() == stack ? 1.0F : 0.0F;
         });
+
+         */
     }
 
     public Text getName(ItemStack stack) {

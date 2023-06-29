@@ -3,6 +3,8 @@ package smartin.miapi.modules.properties;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.reflect.TypeToken;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.item.modular.Transform;
@@ -25,6 +27,7 @@ public class SlotProperty implements ModuleProperty {
         return (SlotProperty) RegistryInventory.moduleProperties.get(KEY);
     }
 
+    @Environment(EnvType.CLIENT)
     public static Transform getTransform(ItemModule.ModuleInstance instance) {
         ModuleSlot slot = getSlotIn(instance);
         if (slot == null) return Transform.IDENTITY;
@@ -37,6 +40,7 @@ public class SlotProperty implements ModuleProperty {
         return getTransform(slot);
     }
 
+    @Environment(EnvType.CLIENT)
     public static Transform getTransform(ModuleSlot moduleSlot) {
         ItemModule.ModuleInstance current = moduleSlot.parent;
         Transform mergedTransform = Transform.IDENTITY;
@@ -48,16 +52,19 @@ public class SlotProperty implements ModuleProperty {
         return mergedTransform;
     }
 
+    @Environment(EnvType.CLIENT)
     public static Transform getTransform(ModuleSlot moduleSlot, String id) {
         return getTransformStack(moduleSlot).get(id);
     }
 
+    @Environment(EnvType.CLIENT)
     public static TransformMap getTransformStack(ItemModule.ModuleInstance instance) {
         ModuleSlot slot = getSlotIn(instance);
         if (slot == null) return new TransformMap();
         return getTransformStack(slot);
     }
 
+    @Environment(EnvType.CLIENT)
     public static TransformMap getTransformStack(ModuleSlot moduleSlot) {
         if (moduleSlot == null) {
             return new TransformMap();
@@ -110,6 +117,7 @@ public class SlotProperty implements ModuleProperty {
         return 0;
     }
 
+    @Environment(EnvType.CLIENT)
     public static Transform getLocalTransform(ItemModule.ModuleInstance instance) {
         ModuleProperty property = RegistryInventory.moduleProperties.get(KEY);
         JsonElement test = instance.getProperties().get(property);
@@ -122,6 +130,7 @@ public class SlotProperty implements ModuleProperty {
         return Transform.IDENTITY;
     }
 
+    @Environment(EnvType.CLIENT)
     public static TransformMap getLocalTransformStack(ItemModule.ModuleInstance instance) {
         ModuleProperty property = RegistryInventory.moduleProperties.get(KEY);
         JsonElement test = instance.getProperties().get(property);
@@ -170,6 +179,7 @@ public class SlotProperty implements ModuleProperty {
         }
 
         public List<String> allowed = new ArrayList<>();
+        @Environment(EnvType.CLIENT)
         public Transform transform = Transform.IDENTITY;
         @Nullable
         public ItemModule.ModuleInstance inSlot;
@@ -186,6 +196,7 @@ public class SlotProperty implements ModuleProperty {
             return false;
         }
 
+        @Environment(EnvType.CLIENT)
         public TransformMap getTransformStack() {
             TransformMap stack = new TransformMap();
             stack.add(transform);

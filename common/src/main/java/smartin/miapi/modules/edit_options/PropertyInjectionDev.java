@@ -2,6 +2,8 @@ package smartin.miapi.modules.edit_options;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.item.ItemStack;
@@ -40,11 +42,13 @@ public class PropertyInjectionDev implements EditOption {
         return true;
     }
 
+    @Environment(EnvType.CLIENT)
     @Override
     public InteractAbleWidget getGui(int x, int y, int width, int height, ItemStack stack, ItemModule.ModuleInstance instance, Consumer<PacketByteBuf> craft, Consumer<PacketByteBuf> preview, Consumer<Objects> back) {
         return new EditDevView(x, y, width, height, stack, instance, craft, back);
     }
 
+    @Environment(EnvType.CLIENT)
     public class EditDevView extends InteractAbleWidget {
 
         public EditDevView(int x, int y, int width, int height, ItemStack stack, ItemModule.ModuleInstance moduleInstance, Consumer<PacketByteBuf> craft, Consumer<Objects> back) {

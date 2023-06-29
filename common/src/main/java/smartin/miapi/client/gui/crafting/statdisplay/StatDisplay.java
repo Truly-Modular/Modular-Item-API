@@ -1,5 +1,7 @@
 package smartin.miapi.client.gui.crafting.statdisplay;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.widget.ClickableWidget;
@@ -21,6 +23,7 @@ import smartin.miapi.modules.properties.HealthPercentDamage;
 import java.util.ArrayList;
 import java.util.List;
 
+@Environment(EnvType.CLIENT)
 public class StatDisplay extends InteractAbleWidget {
     private static final List<InteractAbleWidget> statDisplays = new ArrayList<>();
     private final BoxList boxList;

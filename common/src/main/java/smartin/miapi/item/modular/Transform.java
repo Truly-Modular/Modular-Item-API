@@ -6,6 +6,8 @@ import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.render.model.ModelBakeSettings;
 import net.minecraft.client.render.model.json.Transformation;
 import net.minecraft.util.math.AffineTransformation;
@@ -21,8 +23,11 @@ import java.io.IOException;
  * It extends the Transformation class with additional utility methods.
  */
 @JsonAdapter(Transform.TransformJsonAdapter.class)
-public class Transform extends Transformation {
+public class Transform {
     public String origin;
+    public final Vector3f rotation;
+    public final Vector3f translation;
+    public final Vector3f scale;
     /**
      * The identity bakedTransform, representing no transformation at all.
      */
@@ -36,11 +41,16 @@ public class Transform extends Transformation {
      * @param scale       the scale vector, as a Vec3f
      */
     public Transform(Vector3f rotation, Vector3f translation, Vector3f scale) {
-        super(new Vector3f(rotation), new Vector3f(translation), new Vector3f(scale));
+        this.rotation = new Vector3f(rotation);
+        this.translation = new Vector3f(translation);
+        this.scale = new Vector3f(scale);
     }
 
+    @Environment(EnvType.CLIENT)
     public Transform(Transformation transformation) {
-        super(new Vector3f(transformation.rotation), new Vector3f(transformation.translation), new Vector3f(transformation.scale));
+        this.rotation = new Vector3f(transformation.rotation);
+        this.translation = new Vector3f(transformation.translation);
+        this.scale = new Vector3f(transformation.scale);
     }
 
     /**
@@ -51,6 +61,11 @@ public class Transform extends Transformation {
      */
     public Transform merge(Transform child) {
         return Transform.merge(this, child);
+    }
+
+    @Environment(EnvType.CLIENT)
+    public Transformation toTransformation() {
+        return new Transformation(rotation, translation, scale);
     }
 
     /**
@@ -136,7 +151,7 @@ public class Transform extends Transformation {
      * @param transformation the Transformation to repair, as a Transformation
      * @return the repaired transformation, as a new Transform
      */
-    public static Transform repair(Transformation transformation) {
+    public static Transform repair(Transform transformation) {
         Vector3f parentRotation = transformation.rotation;
         if (parentRotation == null) {
             parentRotation = new Vector3f(0, 0, 0);
@@ -158,7 +173,7 @@ public class Transform extends Transformation {
      * @param transformation the Transformation to convert, as a Transformation
      * @return the new model Transformation, as a Transform
      */
-    public static Transform toModelTransformation(Transformation transformation) {
+    public static Transform toModelTransformation(Transform transformation) {
         Transform transform = repair(transformation);
         //TODO:enable this and change all jsons
         transform.translation.mul(1.0f / 16.0f);
@@ -171,6 +186,7 @@ public class Transform extends Transformation {
      *
      * @return an AffineTransformation with the rotation, translation, and scale from this Transform.
      */
+    @Environment(EnvType.CLIENT)
     public AffineTransformation toAffineTransformation() {
         Transform transform = this.copy();
         Quaternionf rotation = new Quaternionf().rotationXYZ(this.rotation.x, this.rotation.y, this.rotation.z);
@@ -186,6 +202,7 @@ public class Transform extends Transformation {
      *
      * @return a ModelBakeSettings
      */
+    @Environment(EnvType.CLIENT)
     public ModelBakeSettings toModelBakeSettings() {
         Transform transform = toModelTransformation(this);
         AffineTransformation affineTransformation = transform.toAffineTransformation();
@@ -212,6 +229,24 @@ public class Transform extends Transformation {
     public String toString() {
         Gson gson = new Gson();
         return gson.toJson(this);
+    }
+
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        } else if (this.getClass() != o.getClass()) {
+            return false;
+        } else {
+            Transformation transformation = (Transformation) o;
+            return this.rotation.equals(transformation.rotation) && this.scale.equals(transformation.scale) && this.translation.equals(transformation.translation);
+        }
+    }
+
+    public int hashCode() {
+        int i = this.rotation.hashCode();
+        i = 31 * i + this.translation.hashCode();
+        i = 31 * i + this.scale.hashCode();
+        return i;
     }
 
     public static class TransformJsonAdapter extends TypeAdapter<Transform> {

@@ -1,10 +1,13 @@
 package smartin.miapi.client.gui;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.ColorHelper;
 
+@Environment(EnvType.CLIENT)
 public class StatBar extends InteractAbleWidget {
     double primaryPercent = 0;
     double secondaryPercent = 0;

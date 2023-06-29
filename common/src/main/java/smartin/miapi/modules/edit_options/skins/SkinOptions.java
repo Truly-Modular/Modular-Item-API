@@ -1,6 +1,8 @@
 package smartin.miapi.modules.edit_options.skins;
 
 import com.google.gson.JsonObject;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import smartin.miapi.Miapi;
@@ -83,6 +85,7 @@ public class SkinOptions implements EditOption {
         return true;
     }
 
+    @Environment(EnvType.CLIENT)
     @Override
     public InteractAbleWidget getGui(int x, int y, int width, int height, ItemStack stack, ItemModule.ModuleInstance instance, Consumer<PacketByteBuf> craft, Consumer<PacketByteBuf> preview, Consumer<Objects> back) {
         return new SkinGui(x, y, width, height, stack, instance, craft, preview, back);

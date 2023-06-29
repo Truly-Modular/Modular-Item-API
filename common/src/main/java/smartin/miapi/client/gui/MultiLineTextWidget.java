@@ -1,5 +1,7 @@
 package smartin.miapi.client.gui;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
@@ -13,6 +15,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Environment(EnvType.CLIENT)
 public class MultiLineTextWidget extends InteractAbleWidget {
 
     public Text rawText;

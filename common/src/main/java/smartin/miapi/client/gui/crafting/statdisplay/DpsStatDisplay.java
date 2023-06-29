@@ -1,11 +1,14 @@
 package smartin.miapi.client.gui.crafting.statdisplay;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import smartin.miapi.attributes.AttributeRegistry;
 
+@Environment(EnvType.CLIENT)
 public class DpsStatDisplay extends SingleStatDisplayDouble{
 
     public DpsStatDisplay() {

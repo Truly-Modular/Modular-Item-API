@@ -1,5 +1,7 @@
 package smartin.miapi.client.gui.crafting.statdisplay;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.item.ItemStack;
@@ -12,6 +14,7 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
 
+@Environment(EnvType.CLIENT)
 public class AttributeSingleDisplay extends SingleStatDisplayDouble {
     final EntityAttribute attribute;
     final EquipmentSlot slot;

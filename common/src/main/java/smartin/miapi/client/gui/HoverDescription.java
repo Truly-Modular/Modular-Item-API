@@ -1,6 +1,8 @@
 package smartin.miapi.client.gui;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
@@ -10,6 +12,7 @@ import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.MultiLineTextWidget;
 
+@Environment(EnvType.CLIENT)
 public class HoverDescription extends InteractAbleWidget {
     public Identifier texture = new Identifier(Miapi.MOD_ID, "textures/gui/stat_display/hover_background.png");
     public MultiLineTextWidget textWidget;

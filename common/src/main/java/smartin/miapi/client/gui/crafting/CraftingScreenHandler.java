@@ -16,8 +16,14 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.MutableSlot;
 import smartin.miapi.craft.CraftAction;
+import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.edit_options.EditOption;
 import smartin.miapi.network.Networking;
 import smartin.miapi.registries.RegistryInventory;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * This is the screen handler class for miapis default Crafting Screen.
@@ -28,6 +34,7 @@ public class CraftingScreenHandler extends ScreenHandler {
     public Inventory inventory;
     public PlayerInventory playerInventory;
     public final String packetID;
+    public final String editPacketID;
     public final String packetIDSlotAdd;
     public final String packetIDSlotRemove;
 
@@ -54,6 +61,7 @@ public class CraftingScreenHandler extends ScreenHandler {
     public CraftingScreenHandler(int syncId, PlayerInventory playerInventory, ScreenHandlerContext context) {
         super(RegistryInventory.craftingScreenHandler, syncId);
         packetID = Miapi.MOD_ID + PACKET_ID + playerInventory.player.getUuidAsString() + "_" + syncId;
+        editPacketID = Miapi.MOD_ID + PACKET_ID + "_edit_" + playerInventory.player.getUuidAsString() + "_" + syncId;
         packetIDSlotAdd = Miapi.MOD_ID + PACKET_ID + "_" + playerInventory.player.getUuidAsString() + "_" + syncId + "_slotAdd";
         packetIDSlotRemove = Miapi.MOD_ID + PACKET_ID + "_" + playerInventory.player.getUuidAsString() + "_" + syncId + "_slotRemove";
         this.playerInventory = playerInventory;
@@ -78,6 +86,20 @@ public class CraftingScreenHandler extends ScreenHandler {
             Networking.registerC2SPacket(packetIDSlotRemove, (buffer, player) -> {
                 int slotId = buffer.readInt();
                 transferSlot(playerInventory.player, slotId);
+            });
+            Networking.registerC2SPacket(editPacketID, (buffer, player) -> {
+                EditOption option = RegistryInventory.editOptions.get(buffer.readString());
+                int[] intArray = buffer.readIntArray();
+                ItemStack stack = inventory.getStack(0);
+                ItemModule.ModuleInstance root = ItemModule.getModules(stack);
+                List<Integer> position = new ArrayList<>();
+                for (int value : intArray) {
+                    Miapi.LOGGER.error("value " + value);
+                    position.add(value);
+                }
+                Miapi.LOGGER.warn(root.toString());
+                stack = option.execute(buffer, stack, root.getPosition(position).copy());
+                inventory.setStack(0,stack);
             });
         }
         this.context = context;
