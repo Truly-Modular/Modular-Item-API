@@ -50,12 +50,7 @@ public class AttributeProperty implements ModuleProperty {
             EntityAttributeModifier.Operation operation = getOperation(attributeJson.get("operation").getAsString());
             EquipmentSlot slot = getSlot(attributeJson.get("slot").getAsString());
 
-            //todo remove debug prints
-            System.out.println("Loading Attribute: !! " + attributeName);
             EntityAttribute attribute = replaceMap.getOrDefault(attributeName, () -> Registries.ATTRIBUTE.get(new Identifier(attributeName))).get();
-            System.out.println("Bruhhh: " + attribute);
-            System.out.println("original: " + Registries.ATTRIBUTE.get(new Identifier(attributeName)));
-            System.out.println(" replacement: " + Registries.ATTRIBUTE.getKey(attribute));
 
             UUID uuid = null;
 
@@ -195,7 +190,7 @@ public class AttributeProperty implements ModuleProperty {
             String attributeName = attributeJson.attribute;
             double value = StatResolver.resolveDouble(attributeJson.value, instance);
             EntityAttributeModifier.Operation operation = getOperation(attributeJson.operation);
-            EntityAttribute attribute = Registries.ATTRIBUTE.get(new Identifier(attributeJson.attribute));
+            EntityAttribute attribute = replaceMap.getOrDefault(attributeName, () -> Registries.ATTRIBUTE.get(new Identifier(attributeName))).get();
             assert attribute != null;
             if (attributeJson.uuid != null) {
                 UUID uuid = UUID.fromString(attributeJson.uuid);

@@ -29,6 +29,7 @@ import smartin.miapi.item.modular.items.*;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.abilities.*;
 import smartin.miapi.modules.abilities.util.ItemProjectile.ItemProjectile;
+import smartin.miapi.modules.conditions.*;
 import smartin.miapi.modules.edit_options.EditOption;
 import smartin.miapi.modules.edit_options.PropertyInjectionDev;
 import smartin.miapi.modules.edit_options.skins.SkinOptions;
@@ -218,6 +219,18 @@ public class RegistryInventory {
         //EDITPROPERTIES
         registerMiapi(editOptions, "dev", new PropertyInjectionDev());
         registerMiapi(editOptions, "skin", new SkinOptions());
+
+        //CONDITIONS
+        registerMiapi(ConditionManager.moduleConditionRegistry, "true", new TrueCondition());
+        registerMiapi(ConditionManager.moduleConditionRegistry, "not", new NotCondition());
+        registerMiapi(ConditionManager.moduleConditionRegistry, "or", new OrCondition());
+        registerMiapi(ConditionManager.moduleConditionRegistry, "and", new AndCondition());
+        registerMiapi(ConditionManager.moduleConditionRegistry, "child", new ChildCondition());
+        registerMiapi(ConditionManager.moduleConditionRegistry, "parent", new ParentCondition());
+        registerMiapi(ConditionManager.moduleConditionRegistry, "otherModule", new OtherModuleModuleCondition());
+        registerMiapi(ConditionManager.moduleConditionRegistry, "module", new ModuleTypeCondition());
+        registerMiapi(ConditionManager.moduleConditionRegistry, "material", new MaterialCondition());
+        registerMiapi(ConditionManager.moduleConditionRegistry, "tag", new TagCondition());
 
         //MODULEPROPERTIES
         registerMiapi(moduleProperties, NameProperty.KEY, new NameProperty());
