@@ -113,7 +113,7 @@ public class ModelProperty implements ModuleProperty {
             Gson gson = Miapi.gson;
             List<ModelJson> modelJsonList = new ArrayList<>();
             JsonElement data = moduleI.getProperties().get(property);
-            if(data==null){
+            if (data == null) {
                 return unbakedModels;
             }
             if (data.isJsonArray()) {
@@ -296,6 +296,7 @@ public class ModelProperty implements ModuleProperty {
             if (transform == null) {
                 transform = Transform.IDENTITY;
             }
+            transform = Transform.repair(transform);
         }
     }
 }

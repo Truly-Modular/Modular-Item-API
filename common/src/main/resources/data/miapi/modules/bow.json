@@ -21,7 +21,7 @@
         }
     },
     "allowedInSlots": [
-        "melee"
+        "bow"
     ],
     "modelTransform": {
         "replace": {

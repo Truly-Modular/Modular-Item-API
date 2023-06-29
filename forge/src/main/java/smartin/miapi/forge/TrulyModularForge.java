@@ -2,9 +2,11 @@ package smartin.miapi.forge;
 
 import dev.architectury.platform.forge.EventBuses;
 import net.minecraftforge.common.ForgeMod;
+import net.minecraftforge.registries.DeferredRegister;
 import smartin.miapi.Miapi;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.modules.properties.AttributeProperty;
 
 import static smartin.miapi.Miapi.MOD_ID;
@@ -19,6 +21,8 @@ public class TrulyModularForge {
         //ATTRIBUTE REPLACEMENT
         AttributeProperty.replaceMap.put("miapi:generic.reach", ForgeMod.BLOCK_REACH);
         AttributeProperty.replaceMap.put("miapi:generic.attack_range", ForgeMod.ENTITY_REACH);
+        //AttributeProperty.priorityMap.put(ForgeMod.BLOCK_REACH, -7.0f);
+        //AttributeProperty.priorityMap.put(ForgeMod.ENTITY_REACH, -7.0f);
     }
 
     public static class ClientEvents {

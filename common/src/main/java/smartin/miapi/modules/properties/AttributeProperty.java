@@ -1,16 +1,11 @@
 package smartin.miapi.modules.properties;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
+import com.google.common.collect.*;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.attribute.AttributeContainer;
-import net.minecraft.entity.attribute.DefaultAttributeContainer;
-import net.minecraft.entity.attribute.EntityAttribute;
-import net.minecraft.entity.attribute.EntityAttributeModifier;
+import net.minecraft.entity.attribute.*;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
@@ -34,10 +29,22 @@ public class AttributeProperty implements ModuleProperty {
     public static final String KEY = "attributes";
     public static ModuleProperty property;
     public static final Map<String, Supplier<EntityAttribute>> replaceMap = new HashMap<>();
+    public static final Map<EntityAttribute, Float> priorityMap = new HashMap<>();
 
     public AttributeProperty() {
         property = this;
         ModularItemCache.setSupplier(KEY, (AttributeProperty::createAttributeCache));
+        priorityMap.put(EntityAttributes.GENERIC_ATTACK_DAMAGE, -10.0f);
+        priorityMap.put(EntityAttributes.GENERIC_ATTACK_SPEED, -9.0f);
+        priorityMap.put(AttributeRegistry.MINING_SPEED_AXE, -8.0f);
+        priorityMap.put(AttributeRegistry.MINING_SPEED_PICKAXE, -8.0f);
+        priorityMap.put(AttributeRegistry.MINING_SPEED_HOE, -8.0f);
+        priorityMap.put(AttributeRegistry.MINING_SPEED_SHOVEL, -8.0f);
+        priorityMap.put(AttributeRegistry.REACH, -7.0f);
+        priorityMap.put(AttributeRegistry.ATTACK_RANGE, -7.0f);
+        priorityMap.put(AttributeRegistry.BACK_STAB, -6.0f);
+        priorityMap.put(AttributeRegistry.SHIELD_BREAK, -6.0f);
+        priorityMap.put(AttributeRegistry.ARMOR_CRUSHING, -6.0f);
     }
 
     @Override
@@ -146,9 +153,38 @@ public class AttributeProperty implements ModuleProperty {
                     toAdding.put(key, entityAttributeModifier);
                 });
             });
+
+            sortMultimap(toAdding);
             return toAdding;
         }
         return toAdding;
+    }
+
+    private static void sortMultimap(Multimap<EntityAttribute, EntityAttributeModifier> multimap) {
+        Comparator<EntityAttribute> comparator = (attribute1, attribute2) -> {
+            // Get the priority values for the attributes, using 0 as the default value
+            float priority1 = priorityMap.getOrDefault(attribute1, 0f);
+            float priority2 = priorityMap.getOrDefault(attribute2, 0f);
+
+            // Sort in ascending order (lower priority values first)
+            return Float.compare(priority1, priority2);
+        };
+
+        // Sort the keys (attributes) of the Multimap using the comparator
+        List<EntityAttribute> sortedKeys = new ArrayList<>(multimap.keySet());
+        sortedKeys.sort(comparator);
+
+        // Create a new Multimap with the sorted keys
+        ListMultimap<EntityAttribute, EntityAttributeModifier> sortedMultimap = ArrayListMultimap.create();
+
+        // Iterate over the sorted keys and add the corresponding values to the sorted Multimap
+        for (EntityAttribute attribute : sortedKeys) {
+            sortedMultimap.putAll(attribute, multimap.get(attribute));
+        }
+
+        // Clear the original Multimap and add the sorted entries
+        multimap.clear();
+        multimap.putAll(sortedMultimap);
     }
 
     public static double getActualValue(ItemStack stack, EquipmentSlot slot, EntityAttribute entityAttribute) {

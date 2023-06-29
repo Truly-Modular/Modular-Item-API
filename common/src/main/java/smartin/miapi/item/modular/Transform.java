@@ -1,18 +1,26 @@
 package smartin.miapi.item.modular;
 
 import com.google.gson.Gson;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonToken;
+import com.google.gson.stream.JsonWriter;
 import net.minecraft.client.render.model.ModelBakeSettings;
 import net.minecraft.client.render.model.json.Transformation;
-import net.minecraft.util.math.*;
+import net.minecraft.util.math.AffineTransformation;
+import net.minecraft.util.math.MathHelper;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
-import org.joml.Vector4f;
+
+import java.io.IOException;
 
 /**
  * A Transform represents a transformation in 3D space, including rotation, translation, and scaling.
  * It extends the Transformation class with additional utility methods.
  */
+@JsonAdapter(Transform.TransformJsonAdapter.class)
 public class Transform extends Transformation {
     public String origin;
     /**
@@ -112,7 +120,12 @@ public class Transform extends Transformation {
      * @return the new Transform copy
      */
     public Transform copy() {
-        Transform copy = new Transform(new Vector3f(this.rotation), new Vector3f(this.translation), new Vector3f(this.scale));
+        Transform copy = new Transform(
+                this.rotation != null ? new Vector3f(this.rotation) : new Vector3f(),
+                this.translation != null ? new Vector3f(this.translation) : new Vector3f(),
+                this.scale != null ? new Vector3f(this.scale) : new Vector3f()
+        );
+
         copy.origin = this.origin;
         return copy;
     }
@@ -199,5 +212,93 @@ public class Transform extends Transformation {
     public String toString() {
         Gson gson = new Gson();
         return gson.toJson(this);
+    }
+
+    public static class TransformJsonAdapter extends TypeAdapter<Transform> {
+        @Override
+        public void write(JsonWriter jsonWriter, Transform transform) throws IOException {
+            jsonWriter.beginObject();
+            writeVector3f(jsonWriter, "rotation", transform.rotation);
+            writeVector3f(jsonWriter, "translation", transform.translation);
+            writeVector3f(jsonWriter, "scale", transform.scale);
+            jsonWriter.endObject();
+        }
+
+        @Override
+        public Transform read(JsonReader jsonReader) throws IOException {
+            Vector3f rotation = null;
+            Vector3f translation = null;
+            Vector3f scale = null;
+            String origin = "";
+
+            jsonReader.beginObject();
+            while (jsonReader.hasNext()) {
+                String name = jsonReader.nextName();
+                if ("origin".equals(name)) {
+                    origin = jsonReader.nextString();
+                } else if ("rotation".equals(name)) {
+                    rotation = readVector3f(jsonReader);
+                } else if ("translation".equals(name)) {
+                    translation = readVector3f(jsonReader);
+                } else if ("scale".equals(name)) {
+                    scale = readVector3f(jsonReader);
+                } else {
+                    jsonReader.skipValue();
+                }
+            }
+            jsonReader.endObject();
+
+            // Ensure non-null values for final fields
+            if (rotation == null) {
+                rotation = new Vector3f();
+            }
+            if (translation == null) {
+                translation = new Vector3f();
+            }
+            if (scale == null) {
+                scale = new Vector3f();
+            }
+            Transform transform = new Transform(rotation, translation, scale);
+            transform.origin = origin;
+            return transform;
+        }
+
+        private void writeVector3f(JsonWriter jsonWriter, String name, Vector3f vector3f) throws IOException {
+            jsonWriter.name(name);
+            jsonWriter.beginArray();
+            jsonWriter.value(vector3f.x);
+            jsonWriter.value(vector3f.y);
+            jsonWriter.value(vector3f.z);
+            jsonWriter.endArray();
+        }
+
+        private Vector3f readVector3f(JsonReader jsonReader) throws IOException {
+            Vector3f vector3f = new Vector3f();
+
+            if (jsonReader.peek() == JsonToken.BEGIN_ARRAY) {
+                // Read as an array
+                jsonReader.beginArray();
+                vector3f.x = (float) jsonReader.nextDouble();
+                vector3f.y = (float) jsonReader.nextDouble();
+                vector3f.z = (float) jsonReader.nextDouble();
+                jsonReader.endArray();
+            } else if (jsonReader.peek() == JsonToken.BEGIN_OBJECT) {
+                // Read as an object with components
+                jsonReader.beginObject();
+                while (jsonReader.hasNext()) {
+                    String propName = jsonReader.nextName();
+                    if ("x".equals(propName)) {
+                        vector3f.x = (float) jsonReader.nextDouble();
+                    } else if ("y".equals(propName)) {
+                        vector3f.y = (float) jsonReader.nextDouble();
+                    } else if ("z".equals(propName)) {
+                        vector3f.z = (float) jsonReader.nextDouble();
+                    }
+                }
+                jsonReader.endObject();
+            }
+
+            return vector3f;
+        }
     }
 }

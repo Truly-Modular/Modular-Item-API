@@ -22,7 +22,7 @@
         }
     },
     "allowedInSlots": [
-        "melee"
+        "chest"
     ],
     "slots": {
         "0": {
