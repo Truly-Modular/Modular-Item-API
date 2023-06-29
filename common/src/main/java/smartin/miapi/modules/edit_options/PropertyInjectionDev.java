@@ -28,9 +28,8 @@ public class PropertyInjectionDev implements EditOption {
     public ItemStack execute(PacketByteBuf buffer, ItemStack stack, ItemModule.ModuleInstance moduleInstance) {
         String raw = buffer.readString();
         moduleInstance.moduleData.put("properties", raw);
-        stack.getOrCreateNbt().putString("modules", moduleInstance.getRoot().toString());
         ItemStack stack1 = stack.copy();
-        stack1.getOrCreateNbt().remove(ModularItemCache.CACHE_KEY);
+        moduleInstance.writeToItem(stack1);
         ModularItemCache.discardCache();
         return stack1;
     }

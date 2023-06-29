@@ -44,14 +44,13 @@ public class FlexibilityProperty extends SimpleDoubleProperty implements Craftin
     }
 
     @Override
-    public boolean canPerform(ItemStack old, ItemStack crafting, PlayerEntity player, ItemModule.ModuleInstance newModule, ItemModule module, List<ItemStack> inventory, PacketByteBuf buf) {
-        Double flexibility = getValue(crafting);
-        flexibility = flexibility == null ? 0 : flexibility;
-        return flexibility >= 0;
+    public boolean shouldExecuteOnCraft(ItemModule.ModuleInstance module) {
+        return ItemModule.getMergedProperty(module.getRoot(),this)!=null;
     }
 
+
     @Override
-    public boolean canPerformOnRemove(ItemStack old, ItemStack crafting, PlayerEntity player, ItemModule.ModuleInstance newModule, ItemModule module, List<ItemStack> inventory, PacketByteBuf buf) {
+    public boolean canPerform(ItemStack old, ItemStack crafting, PlayerEntity player, ItemModule.ModuleInstance newModule, ItemModule module, List<ItemStack> inventory, PacketByteBuf buf) {
         Double flexibility = getValue(crafting);
         flexibility = flexibility == null ? 0 : flexibility;
         return flexibility >= 0;

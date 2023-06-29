@@ -90,22 +90,6 @@ public interface CraftingProperty {
     }
 
     /**
-     * a check if the Crafting can happen
-     *
-     * @param old       the old Itemstack
-     * @param crafting  the newly Crafted Itemstack
-     * @param player    the player crafting
-     * @param newModule the new ModuleInstance
-     * @param module    the new Module
-     * @param inventory Linked Inventory, length of {@link #getSlotPositions()}
-     * @param buf       the writen buffer from {@link #writeCraftingBuffer(PacketByteBuf, InteractAbleWidget)}
-     * @return if the crafting can happen
-     */
-    default boolean canPerformOnRemove(ItemStack old, ItemStack crafting, PlayerEntity player, ItemModule.ModuleInstance newModule, ItemModule module, List<ItemStack> inventory, PacketByteBuf buf) {
-        return true;
-    }
-
-    /**
      * to create a preview even if the conditions are not met
      *
      * @param old       the old Itemstack

@@ -1,10 +1,14 @@
 package smartin.miapi.modules.conditions;
 
 import com.google.gson.JsonElement;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.text.Text;
+import org.jetbrains.annotations.Nullable;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.registries.RegistryInventory;
 
+import java.util.List;
 import java.util.Map;
 
 public class ChildCondition implements ModuleCondition {
@@ -19,9 +23,9 @@ public class ChildCondition implements ModuleCondition {
     }
 
     @Override
-    public boolean isAllowed(ItemModule.ModuleInstance moduleInstance, Map<ModuleProperty, JsonElement> propertyMap) {
+    public boolean isAllowed(ItemModule.ModuleInstance moduleInstance, @Nullable PlayerEntity player, Map<ModuleProperty, JsonElement> propertyMap, List<Text> reasons) {
         for (ItemModule.ModuleInstance otherInstace : moduleInstance.subModules.values()) {
-            if (condition.isAllowed(otherInstace, moduleInstance.parent.module.getKeyedProperties())) {
+            if (condition.isAllowed(otherInstace, player, moduleInstance.parent.module.getKeyedProperties(), reasons)) {
                 return true;
             }
         }

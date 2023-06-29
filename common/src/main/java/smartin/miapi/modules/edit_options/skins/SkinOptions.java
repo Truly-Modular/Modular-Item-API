@@ -74,8 +74,7 @@ public class SkinOptions implements EditOption {
     public ItemStack execute(PacketByteBuf buffer, ItemStack stack, ItemModule.ModuleInstance instance) {
         String skin = buffer.readString();
         instance.moduleData.put("skin", skin);
-        stack.getOrCreateNbt().putString("modules", instance.getRoot().toString());
-        stack.getOrCreateNbt().remove(ModularItemCache.CACHE_KEY);
+        instance.getRoot().writeToItem(stack);
         return stack;
     }
 

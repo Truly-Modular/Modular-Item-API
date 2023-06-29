@@ -2,6 +2,9 @@ package smartin.miapi.modules.conditions;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.text.Text;
+import org.jetbrains.annotations.Nullable;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
@@ -21,8 +24,8 @@ public class NotCondition implements ModuleCondition {
     }
 
     @Override
-    public boolean isAllowed(ItemModule.ModuleInstance moduleInstance, Map<ModuleProperty, JsonElement> propertyMap) {
-        return !conditions.isAllowed(moduleInstance,propertyMap);
+    public boolean isAllowed(ItemModule.ModuleInstance moduleInstance, @Nullable PlayerEntity player, Map<ModuleProperty, JsonElement> propertyMap, List<Text> reasons) {
+        return !conditions.isAllowed(moduleInstance, player, propertyMap, reasons);
     }
 
     @Override

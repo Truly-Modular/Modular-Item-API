@@ -5,8 +5,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.registry.ReloadListenerRegistry;
-import dev.architectury.registry.menu.MenuRegistry;
-import net.minecraft.client.gui.screen.ingame.HandledScreens;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.server.MinecraftServer;
@@ -15,7 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.client.MiapiClient;
-import smartin.miapi.client.gui.crafting.CraftingGUI;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.datapack.ReloadListener;
 import smartin.miapi.item.ItemToModularConverter;
@@ -116,16 +113,6 @@ public class Miapi {
             MiapiClient.init();
         }
         SynergyManager.setup();
-        ConditionManager.moduleConditionRegistry.register("true", new TrueCondition());
-        ConditionManager.moduleConditionRegistry.register("and", new AndCondition());
-        ConditionManager.moduleConditionRegistry.register("or", new OrCondition());
-        ConditionManager.moduleConditionRegistry.register("not", new NotCondition());
-        ConditionManager.moduleConditionRegistry.register("material", new MaterialCondition());
-        ConditionManager.moduleConditionRegistry.register("module", new ModuleTypeCondition());
-        ConditionManager.moduleConditionRegistry.register("tag", new TagCondition());
-        ConditionManager.moduleConditionRegistry.register("parent", new ParentCondition());
-        ConditionManager.moduleConditionRegistry.register("child", new ChildCondition());
-        ConditionManager.moduleConditionRegistry.register("otherModule", new OtherModuleModuleCondition());
     }
 
     protected static void setupNetworking() {

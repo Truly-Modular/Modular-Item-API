@@ -453,6 +453,28 @@ public class ItemModule {
         }
 
         /**
+         * Writes the module to the item using the current module.
+         *
+         * @param stack The ItemStack to write the module to.
+         */
+        public void writeToItem(ItemStack stack) {
+            writeToItem(stack, true);
+        }
+
+        /**
+         * Writes the module to the item using the current module.
+         *
+         * @param stack      The ItemStack to write the module to.
+         * @param clearCache Determines whether to clear the cache after writing the module.
+         */
+        public void writeToItem(ItemStack stack, boolean clearCache) {
+            stack.getOrCreateNbt().putString("modules", this.toString());
+            if (clearCache) {
+                stack.getNbt().remove(ModularItemCache.CACHE_KEY);
+            }
+        }
+
+        /**
          * Returns a JSON string representation of this module instance.
          *
          * @return a JSON string representation of this module instance

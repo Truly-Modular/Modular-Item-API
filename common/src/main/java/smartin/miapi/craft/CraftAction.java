@@ -152,7 +152,7 @@ public class CraftAction {
             if (!stack.hasNbt()) {
                 stack.setNbt(new NbtCompound());
             }
-            stack.getNbt().putString("modules", instance.toString());
+            instance.writeToItem(stack);
         }
     }
 
@@ -224,7 +224,7 @@ public class CraftAction {
                     newModule.subModules.put(id, module);
                 }
             });
-            craftingStack.getNbt().putString("modules", newModule.toString());
+            newModule.writeToItem(craftingStack);
             return craftingStack;
         }
         ItemModule.ModuleInstance parsingInstance = newBaseModule;
@@ -251,7 +251,7 @@ public class CraftAction {
             newModule.parent = parsingInstance;
             parsingInstance.subModules.put(slotId.get(0), newModule);
         }
-        craftingStack.getNbt().putString("modules", newBaseModule.toString());
+        newBaseModule.writeToItem(craftingStack);
         return craftingStack;
     }
 

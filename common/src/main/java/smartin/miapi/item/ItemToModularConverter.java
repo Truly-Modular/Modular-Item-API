@@ -34,7 +34,7 @@ public class ItemToModularConverter implements ModularItemStackConverter.Modular
 
                         dataMap.forEach((itemId, moduleString) -> {
                             ItemStack stack = new ItemStack(RegistryInventory.modularItem);
-                            stack.getOrCreateNbt().putString("modules", moduleString.toString());
+                            moduleString.writeToItem(stack);
                             regexes.put(itemId, stack);
                         });
                     }
