@@ -43,6 +43,7 @@ import java.util.function.Supplier;
 import static smartin.miapi.Miapi.MOD_ID;
 import static smartin.miapi.modules.abilities.util.ItemAbilityManager.useAbilityRegistry;
 import static smartin.miapi.attributes.AttributeRegistry.*;
+import static smartin.miapi.modules.conditions.ConditionManager.moduleConditionRegistry;
 
 public class RegistryInventory {
     public static final Supplier<RegistrarManager> registrar = Suppliers.memoize(() -> RegistrarManager.get(MOD_ID));
@@ -218,16 +219,16 @@ public class RegistryInventory {
         registerMiapi(editOptions, "skin", new SkinOptions());
 
         //CONDITIONS
-        registerMiapi(ConditionManager.moduleConditionRegistry, "true", new TrueCondition());
-        registerMiapi(ConditionManager.moduleConditionRegistry, "not", new NotCondition());
-        registerMiapi(ConditionManager.moduleConditionRegistry, "or", new OrCondition());
-        registerMiapi(ConditionManager.moduleConditionRegistry, "and", new AndCondition());
-        registerMiapi(ConditionManager.moduleConditionRegistry, "child", new ChildCondition());
-        registerMiapi(ConditionManager.moduleConditionRegistry, "parent", new ParentCondition());
-        registerMiapi(ConditionManager.moduleConditionRegistry, "otherModule", new OtherModuleModuleCondition());
-        registerMiapi(ConditionManager.moduleConditionRegistry, "module", new ModuleTypeCondition());
-        registerMiapi(ConditionManager.moduleConditionRegistry, "material", new MaterialCondition());
-        registerMiapi(ConditionManager.moduleConditionRegistry, "tag", new TagCondition());
+        registerMiapi(moduleConditionRegistry, "true", new TrueCondition());
+        registerMiapi(moduleConditionRegistry, "not", new NotCondition());
+        registerMiapi(moduleConditionRegistry, "or", new OrCondition());
+        registerMiapi(moduleConditionRegistry, "and", new AndCondition());
+        registerMiapi(moduleConditionRegistry, "child", new ChildCondition());
+        registerMiapi(moduleConditionRegistry, "parent", new ParentCondition());
+        registerMiapi(moduleConditionRegistry, "otherModule", new OtherModuleModuleCondition());
+        registerMiapi(moduleConditionRegistry, "module", new ModuleTypeCondition());
+        registerMiapi(moduleConditionRegistry, "material", new MaterialCondition());
+        registerMiapi(moduleConditionRegistry, "tag", new TagCondition());
 
         //MODULEPROPERTIES
         try{
@@ -265,6 +266,7 @@ public class RegistryInventory {
         registerMiapi(moduleProperties, MiningLevelProperty.KEY, new MiningLevelProperty());
         registerMiapi(moduleProperties, TagProperty.KEY, new TagProperty());
 
+        // ABILITIES
         registerMiapi(useAbilityRegistry, "throw", new ThrowingAbility());
         registerMiapi(useAbilityRegistry, "block", new BlockAbility());
         registerMiapi(useAbilityRegistry, RiptideProperty.KEY, new RiptideAbility());
