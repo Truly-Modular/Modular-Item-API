@@ -136,9 +136,9 @@ public class Transform {
      */
     public Transform copy() {
         Transform copy = new Transform(
-                this.rotation != null ? new Vector3f(this.rotation) : new Vector3f(),
-                this.translation != null ? new Vector3f(this.translation) : new Vector3f(),
-                this.scale != null ? new Vector3f(this.scale) : new Vector3f()
+                this.rotation != null ? new Vector3f(this.rotation) : new Vector3f(0,0,0),
+                this.translation != null ? new Vector3f(this.translation) : new Vector3f(0,0,0),
+                this.scale != null ? new Vector3f(this.scale) : new Vector3f(1,1,1)
         );
 
         copy.origin = this.origin;

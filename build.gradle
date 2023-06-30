@@ -7,32 +7,22 @@ plugins {
     id "io.github.pacifistmc.forgix" version "1.2.6"
 
 }
-
-//apply plugin: "io.github.pacifistmc.forgix"
-
 architectury {
     minecraft = rootProject.minecraft_version
 }
 
 forgix {
     group = "smartin.miapi"
-    mergedJarName = "Truly-Modular-${rootProject.mod_version}.jar"
-
-    /*
-    if (findProject(":forge"))
-        forge {
-            jarLocation = "forge/build/libs/miapi-${rootProject.versionStr}.jar"
-        }
-
-    findProject(":fabric")
-    fabric {
-        jarLocation = "fabric/build/libs/miapi-${rootProject.versionStr}.jar"
-    }
-
-    removeDuplicate "smartin.miapi"
-     */
+    mergedJarName = "Truly-Modular-miapi-${rootProject.mod_version}-${rootProject.minecraft_version}.jar"
 }
 
+tasks.register('buildMerged') {
+    dependsOn 'miapi:forge', 'miapi build', 'miapi:mergeJars'
+
+    doLast {
+        println "Build completed"
+    }
+}
 
 subprojects {
     apply plugin: "dev.architectury.loom"

@@ -62,10 +62,24 @@
     "attributes": [
         {
             "attribute": "miapi:generic.mining_speed.axe",
-            "value": "[material.mining_speed]",
+            "value": "[material.mining_speed]* 0.75",
             "operation": "+",
             "slot": "mainhand",
             "uuid": "AA233E1C-4180-4865-B01B-BCCE9785ACA4"
+        },
+        {
+            "attribute": "miapi:generic.shield_break",
+            "value": "5",
+            "operation": "+",
+            "slot": "mainhand",
+            "uuid": "AAAAAAAA-4180-4865-B01B-BCCE9785ACA3"
+        },
+        {
+            "attribute": "miapi:generic.durability",
+            "value": "[material.durability]* 0.25",
+            "operation": "+",
+            "slot": "mainhand",
+            "uuid": "AAAAAAAA-4180-4865-B01B-BCCE9785ACA3"
         }
     ],
     "displayName": "miapi.module.axe_front.name",

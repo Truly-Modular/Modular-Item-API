@@ -6,7 +6,7 @@
   "hardness": 5,
   "density": 3.8,
   "flexibility": 1,
-  "durability": 800,
+  "durability": 250,
   "color": "FCFCFC",
   "textures": [
     "metal"

@@ -43,56 +43,19 @@
             "operation": "+",
             "slot": "mainhand",
             "uuid": "CB3F55D3-645C-4F38-A497-9C13A33DB5CF"
+        },
+        {
+            "attribute": "miapi:generic.durability",
+            "value": "[material.durability]* 0.25",
+            "operation": "+",
+            "slot": "mainhand",
+            "uuid": "AAAAAAAA-4180-4865-B01B-BCCE9785ACA3"
         }
     ],
     "guiOffset": {
         "sizeX": 3,
         "sizeY": 3
     },
-    "abilities": [
-        "circleAttack"
-    ],
-    "circleAttack": {
-        "damage": 1.5,
-        "range": 8,
-        "minHold": 40,
-        "cooldown": 60,
-        "particles": [
-            {
-                "particle": "minecraft:sweep_attack",
-                "count": 0,
-                "rangePercent": 0.75
-            },
-            {
-                "particle": "minecraft:bubble",
-                "count": 0,
-                "rangePercent": 0.3
-            }
-        ]
-    },
-    "applyPotionEffects": [
-        {
-            "event": "attack",
-            "target": "target",
-            "duration": 20,
-            "amplifier": 0,
-            "effect": "minecraft:glowing",
-            "predicate": "miapi:test"
-        },
-        {
-            "event": "ABILITY_STOP_USING",
-            "target": "self",
-            "duration": 60,
-            "amplifier": 0,
-            "effect": "minecraft:glowing",
-            "predicate": "miapi:test",
-            "ability": {
-                "useTime": {
-                    "min": 40
-                }
-            }
-        }
-    ],
     "displayName": "miapi.module.blade_katana.name",
     "itemId": "miapi:modular_katana"
 }

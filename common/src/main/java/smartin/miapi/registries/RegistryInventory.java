@@ -173,7 +173,7 @@ public class RegistryInventory {
 
         //ATTRIBUTE
         registerAtt("generic.durability", false, () ->
-                        new ClampedEntityAttribute("miapi.attribute.name.durability", 300.0, 1.0, 16777216).setTracked(true),
+                        new ClampedEntityAttribute("miapi.attribute.name.durability", 1.0, 1.0, 16777216).setTracked(true),
                 att -> ITEM_DURABILITY = att);
 
         // reach

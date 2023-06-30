@@ -46,6 +46,20 @@
             "operation": "+",
             "slot": "mainhand",
             "uuid": "CB3F55D3-645C-4F38-A497-9C13A33DB5CF"
+        },
+        {
+            "attribute": "miapi:generic.shield_break",
+            "value": "2",
+            "operation": "+",
+            "slot": "mainhand",
+            "uuid": "AAAAAAAA-4180-4865-B01B-BCCE9785ACA3"
+        },
+        {
+            "attribute": "miapi:generic.durability",
+            "value": "[material.durability]* 0.25",
+            "operation": "+",
+            "slot": "mainhand",
+            "uuid": "AAAAAAAA-4180-4865-B01B-BCCE9785ACA3"
         }
     ],
     "guiOffset": {
@@ -57,10 +71,10 @@
         "heavyAttack"
     ],
     "heavyAttack": {
-        "damage": 1.5,
-        "sweeping": 10,
-        "range": 8,
-        "minHold": 40,
+        "damage": 2,
+        "sweeping": 3,
+        "range": 7,
+        "minHold": 15,
         "cooldown": 60
     },
     "itemId": "miapi:modular_greatsword"

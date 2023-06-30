@@ -50,12 +50,18 @@
             "operation": "+",
             "slot": "mainhand",
             "uuid": "FA233E1C-4180-4865-B01B-BCCE9785ACA3"
+        },
+        {
+            "attribute": "miapi:generic.durability",
+            "value": "[material.durability]* 0.25",
+            "operation": "+",
+            "slot": "mainhand",
+            "uuid": "AAAAAAAA-4180-4865-B01B-BCCE9785ACA3"
         }
     ],
     "abilities": [
         "throw"
     ],
-    "healthPercent": 10000,
     "displayName": "miapi.module.blade_throwing_knife.name",
     "itemId": "miapi:modular_throwing_knife"
 }

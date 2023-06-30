@@ -8,7 +8,7 @@
     "hardness": 3.8,
     "density": 3.6,
     "flexibility": 1,
-    "durability": 800,
+    "durability": 200,
     "color": "E47B55",
     "textures": [
         "metal"

@@ -49,13 +49,6 @@
             "seperateOnItem": true
         },
         {
-            "attribute": "miapi:generic.shield_break",
-            "value": "1.5",
-            "operation": "+",
-            "slot": "mainhand",
-            "uuid": "AAAAAAAA-4180-4865-B01B-BCCE9785ACA3"
-        },
-        {
             "attribute": "generic.attack_speed",
             "value": "+0.5",
             "operation": "+",
@@ -68,6 +61,23 @@
             "operation": "+",
             "slot": "mainhand",
             "uuid": "CB3F55D3-645C-4F38-A497-9C13A33DB5CF"
+        },
+        {
+            "attribute": "miapi:generic.durability",
+            "value": "[material.durability]* 0.25",
+            "operation": "+",
+            "slot": "mainhand",
+            "uuid": "AAAAAAAA-4180-4865-B01B-BCCE9785ACA3"
+        }
+    ],
+    "applyPotionEffects": [
+        {
+            "event": "attack",
+            "target": "target",
+            "duration": 5,
+            "amplifier": 1,
+            "effect": "minecraft:poison",
+            "predicate": "miapi:test"
         }
     ],
     "displayName": "miapi.module.blade_dagger.name",

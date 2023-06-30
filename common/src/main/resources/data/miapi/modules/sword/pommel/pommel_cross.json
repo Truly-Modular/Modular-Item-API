@@ -3,16 +3,46 @@
     "texture": {
         "path": "miapi:models/item/sword/pommel/cross/[material.texture].json",
         "transform": {
-            "rotation": {"x": 0.0, "y": 0.0, "z": 0.0}, "translation": {"x": -4.0, "y": -5.0, "z": 0.0}, "scale": {"x": 1.0, "y": 1.0, "z": 1.0}
+            "rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "translation": {
+                "x": -4.0,
+                "y": -5.0,
+                "z": 0.0
+            },
+            "scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+            }
         }
     },
-    "allowedInSlots": ["sword_pommel"],
+    "allowedInSlots": [
+        "sword_pommel"
+    ],
     "slots": {
     },
     "allowedMaterial": {
-        "allowedMaterials": ["wood","stone","metal","crystal"],
+        "allowedMaterials": [
+            "wood",
+            "stone",
+            "metal",
+            "crystal"
+        ],
         "cost": 1
     },
+    "attributes": [
+        {
+            "attribute": "miapi:generic.durability",
+            "value": "[material.durability]* 0.25",
+            "operation": "+",
+            "slot": "mainhand",
+            "uuid": "AAAAAAAA-4180-4865-B01B-BCCE9785ACA3"
+        }
+    ],
     "guiOffset": {
         "x": 1,
         "y": 1,
