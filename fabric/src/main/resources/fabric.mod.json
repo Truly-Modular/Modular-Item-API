@@ -12,7 +12,7 @@
     "KawataroTB"
   ],
   "contact": {},
-  "license": "All-Rights-Reserved",
+  "license": "CC-BY-NC-4.0",
   "icon": "icon.png",
   "environment": "*",
   "entrypoints": {

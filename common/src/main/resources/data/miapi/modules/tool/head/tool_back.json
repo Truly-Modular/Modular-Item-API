@@ -26,35 +26,35 @@
     "attributes": [
         {
             "attribute": "miapi:generic.mining_speed.shovel",
-            "value": "0.25",
+            "value": "1.1",
             "operation": "*",
             "slot": "mainhand",
             "uuid": "AA233E1C-4180-4865-B01B-BCCE9785ACA4"
         },
         {
             "attribute": "miapi:generic.mining_speed.hoe",
-            "value": "0.25",
+            "value": "1 / 0.75 -1",
             "operation": "*",
             "slot": "mainhand",
             "uuid": "AA233E1C-4180-4865-B01B-BCCE9785ACA4"
         },
         {
             "attribute": "miapi:generic.mining_speed.pickaxe",
-            "value": "0.25",
+            "value": "1.1",
             "operation": "*",
             "slot": "mainhand",
             "uuid": "AA233E1C-4180-4865-B01B-BCCE9785ACA4"
         },
         {
             "attribute": "miapi:generic.mining_speed.axe",
-            "value": "0.25",
+            "value": "1 / 0.75 -1",
             "operation": "*",
             "slot": "mainhand",
             "uuid": "AA233E1C-4180-4865-B01B-BCCE9785ACA4"
         },
         {
             "attribute": "miapi:generic.durability",
-            "value": "[material.durability]* 0.5",
+            "value": "[material.durability] / 2",
             "operation": "+",
             "slot": "mainhand",
             "uuid": "AAAAAAAA-4180-4865-B01B-BCCE9785ACA3"
@@ -62,7 +62,10 @@
     ],
     "allowedMaterial": {
         "allowedMaterials": [
-            "wood","stone","metal","crystal"
+            "wood",
+            "stone",
+            "metal",
+            "crystal"
         ],
         "cost": 1
     }

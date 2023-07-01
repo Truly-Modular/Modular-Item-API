@@ -60,7 +60,7 @@
         },
         {
             "attribute": "miapi:generic.durability",
-            "value": "[material.durability]* 0.25",
+            "value": "[material.durability]* 0.5",
             "operation": "+",
             "slot": "mainhand",
             "uuid": "AAAAAAAA-4180-4865-B01B-BCCE9785ACA3"

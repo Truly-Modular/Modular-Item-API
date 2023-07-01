@@ -149,8 +149,10 @@ public class AttributeProperty implements ModuleProperty {
                         }
                     }
                     startValue = startValue - key.getDefaultValue();
-                    EntityAttributeModifier entityAttributeModifier = new EntityAttributeModifier(uuid, "generic.miapi." + key.getTranslationKey(), startValue, EntityAttributeModifier.Operation.ADDITION);
-                    toAdding.put(key, entityAttributeModifier);
+                    if (startValue != 0) {
+                        EntityAttributeModifier entityAttributeModifier = new EntityAttributeModifier(uuid, "generic.miapi." + key.getTranslationKey(), startValue, EntityAttributeModifier.Operation.ADDITION);
+                        toAdding.put(key, entityAttributeModifier);
+                    }
                 });
             });
 
@@ -187,7 +189,7 @@ public class AttributeProperty implements ModuleProperty {
         multimap.putAll(sortedMultimap);
     }
 
-    public static double getActualValue(ItemStack stack, EquipmentSlot slot, EntityAttribute entityAttribute) {
+    public static double getActualValue(ItemStack stack, EquipmentSlot slot, EntityAttribute entityAttribute, double fallback) {
         Collection<EntityAttributeModifier> attributes = stack.getAttributeModifiers(slot).get(entityAttribute);
         Multimap<EntityAttribute, EntityAttributeModifier> map = HashMultimap.create();
         attributes.forEach(attribute -> {
@@ -199,8 +201,15 @@ public class AttributeProperty implements ModuleProperty {
         AttributeContainer container1 = new AttributeContainer(container);
 
         container1.addTemporaryModifiers(map);
+        if (container1.hasAttribute(entityAttribute)) {
+            return container1.getValue(entityAttribute);
+        } else {
+            return fallback;
+        }
+    }
 
-        return container1.getValue(entityAttribute);
+    public static double getActualValue(ItemStack stack, EquipmentSlot slot, EntityAttribute entityAttribute) {
+        return getActualValue(stack, slot, entityAttribute, entityAttribute.getDefaultValue());
     }
 
     private static Multimap<EntityAttribute, EntityAttributeModifierHolder> createAttributeCache(ItemStack itemStack) {

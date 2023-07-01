@@ -76,10 +76,24 @@
         },
         {
             "attribute": "miapi:generic.durability",
-            "value": "[material.durability]* 0.25",
+            "value": "[material.durability]* 0.5",
             "operation": "+",
             "slot": "mainhand",
             "uuid": "AAAAAAAA-4180-4865-B01B-BCCE9785ACA3"
+        },
+        {
+            "attribute": "generic.attack_damage",
+            "value": "8",
+            "operation": "+",
+            "slot": "mainhand",
+            "uuid": "CB3F55D3-645C-4F38-A497-9C13A33DB5CF"
+        },
+        {
+            "attribute": "generic.attack_speed",
+            "value": "+0.5",
+            "operation": "+",
+            "slot": "mainhand",
+            "uuid": "FA233E1C-4180-4865-B01B-BCCE9785ACA3"
         }
     ],
     "displayName": "miapi.module.axe_front.name",

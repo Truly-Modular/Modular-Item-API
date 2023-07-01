@@ -78,7 +78,7 @@ public class MiningLevelProperty implements ModuleProperty {
 
     public static boolean canMine(BlockState state, World world, BlockPos pos, PlayerEntity miner) {
         ItemStack stack = miner.getActiveItem();
-        if(ToolOrWeaponProperty.isWeapon(stack)){
+        if (ToolOrWeaponProperty.isWeapon(stack)) {
             return !miner.isCreative();
         }
         return true;
@@ -86,20 +86,20 @@ public class MiningLevelProperty implements ModuleProperty {
 
     public static float getMiningSpeedMultiplier(ItemStack stack, BlockState state) {
         if (state.isIn(BlockTags.PICKAXE_MINEABLE)) {
-            double value = AttributeProperty.getActualValue(stack, EquipmentSlot.MAINHAND, AttributeRegistry.MINING_SPEED_PICKAXE);
-            return (float) value;
+            double value = AttributeProperty.getActualValue(stack, EquipmentSlot.MAINHAND, AttributeRegistry.MINING_SPEED_PICKAXE, 1);
+            return (value == 0) ? 1.0f : (float) value;
         }
         if (state.isIn(BlockTags.AXE_MINEABLE)) {
-            double value = AttributeProperty.getActualValue(stack, EquipmentSlot.MAINHAND, AttributeRegistry.MINING_SPEED_AXE);
-            return (float) value;
+            double value = AttributeProperty.getActualValue(stack, EquipmentSlot.MAINHAND, AttributeRegistry.MINING_SPEED_AXE, 1);
+            return (value == 0) ? 1.0f : (float) value;
         }
         if (state.isIn(BlockTags.SHOVEL_MINEABLE)) {
-            double value = AttributeProperty.getActualValue(stack, EquipmentSlot.MAINHAND, AttributeRegistry.MINING_SPEED_SHOVEL);
-            return (float) value;
+            double value = AttributeProperty.getActualValue(stack, EquipmentSlot.MAINHAND, AttributeRegistry.MINING_SPEED_SHOVEL, 1);
+            return (value == 0) ? 1.0f : (float) value;
         }
         if (state.isIn(BlockTags.HOE_MINEABLE)) {
-            double value = AttributeProperty.getActualValue(stack, EquipmentSlot.MAINHAND, AttributeRegistry.MINING_SPEED_HOE);
-            return (float) value;
+            double value = AttributeProperty.getActualValue(stack, EquipmentSlot.MAINHAND, AttributeRegistry.MINING_SPEED_HOE, 1);
+            return (value == 0) ? 1.0f : (float) value;
         }
         return 1.0f;
     }
