@@ -17,12 +17,14 @@ forgix {
 }
 
 tasks.register('buildMerged') {
-    dependsOn 'miapi:forge', 'miapi build', 'miapi:mergeJars'
+    dependsOn(':forge:build', ':fabric:build')
 
     doLast {
         println "Build completed"
     }
+    finalizedBy ':mergeJars'
 }
+
 
 subprojects {
     apply plugin: "dev.architectury.loom"
