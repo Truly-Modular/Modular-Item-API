@@ -23,6 +23,7 @@ import net.minecraft.registry.RegistryKeys;
 import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.sound.BlockSoundGroup;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.blocks.ModularWorkBench;
@@ -151,13 +152,16 @@ public class RegistryInventory {
                         nonOpaque()), b -> modularWorkBench = b);
         register(items, "modular_work_bench", () -> new BlockItem(modularWorkBench, new Item.Settings()));
 
+
         // CREATIVE TAB
-        /*register(tab, "<miapi_tab>", () -> CreativeTabRegistry.create
+        register(tab, "miapi_tab", () -> CreativeTabRegistry.create
                 (b -> {
-                    b.title(Component.translatable("tab.miapi"));
+                    b.displayName(Text.translatable("tab.miapi"));
                     b.icon(() -> new ItemStack(modularWorkBench));
-                    b.displayItems((flagSet, out) -> out.accept(modularWorkBench));
-                }));*/
+                    b.entries((displayContext, entries) -> {
+                        entries.add(modularWorkBench);
+                    });
+                }));
 
         //ITEM
         register(modularItems, "modular_item", ExampleModularItem::new, i -> modularItem = i);
