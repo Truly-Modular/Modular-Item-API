@@ -1,7 +1,21 @@
 plugins {
     id "com.github.johnrengelman.shadow" version "7.1.2"
 }
-
+repositories {
+    maven { url 'https://maven.kosmx.dev/' }
+    maven { url 'https://maven.shedaniel.me/' }
+    maven { url 'https://maven.fabricmc.net/' }
+    maven { url 'https://jitpack.io' }
+    maven { url 'https://maven.terraformersmc.com/' }
+    maven { url 'https://www.cursemaven.com' }
+    maven {
+        name = 'Modrinth'
+        url = 'https://api.modrinth.com/maven'
+        content {
+            includeGroup 'maven.modrinth'
+        }
+    }
+}
 architectury {
     platformSetupLoomIde()
     fabric()
@@ -30,6 +44,10 @@ dependencies {
     //modImplementation files('libs/moonlight.jar')
 
     implementation(include('org.mariuszgromada.math:MathParser.org-mXparser:4.4.2'))
+
+    //modImplementation "curse.maven:cloth-348521:4554906"
+    //modImplementation "curse.maven:bettercombat-639842:4597949"
+    //modImplementation 'dev.kosmx.player-anim:player-animation-lib-fabric:1.0.2-rc1+1.20'
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }

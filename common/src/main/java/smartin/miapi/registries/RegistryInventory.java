@@ -34,6 +34,7 @@ import smartin.miapi.modules.edit_options.EditOption;
 import smartin.miapi.modules.edit_options.PropertyInjectionDev;
 import smartin.miapi.modules.edit_options.skins.SkinOptions;
 import smartin.miapi.modules.properties.*;
+import smartin.miapi.modules.properties.compat.BetterCombatProperty;
 import smartin.miapi.modules.properties.render.*;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
@@ -265,6 +266,9 @@ public class RegistryInventory {
         registerMiapi(moduleProperties, ToolOrWeaponProperty.KEY, new ToolOrWeaponProperty());
         registerMiapi(moduleProperties, MiningLevelProperty.KEY, new MiningLevelProperty());
         registerMiapi(moduleProperties, TagProperty.KEY, new TagProperty());
+
+        //compat
+        registerMiapi(moduleProperties, BetterCombatProperty.KEY, new BetterCombatProperty());
 
         // ABILITIES
         registerMiapi(useAbilityRegistry, "throw", new ThrowingAbility());

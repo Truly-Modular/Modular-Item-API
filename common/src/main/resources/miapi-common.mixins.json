@@ -4,11 +4,12 @@
     "package": "smartin.miapi.mixin",
     "compatibilityLevel": "JAVA_17",
     "mixins": [
-        "LootContextTypesAccessor",
+        "BCWeaponRegistryMixin",
+        "InventoryValidationMixin",
         "ItemStackMixin",
         "LivingEntityAccessor",
         "LivingEntityMixin",
-        "InventoryValidationMixin"
+        "LootContextTypesAccessor"
     ],
     "client": [
         "client.ArmorFeatureRendererMixin",

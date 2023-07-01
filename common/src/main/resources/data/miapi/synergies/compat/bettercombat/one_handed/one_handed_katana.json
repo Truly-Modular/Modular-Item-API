@@ -1,0 +1,16 @@
+{
+    "blade_katana": {
+        "condition": {
+            "type": "otherModule",
+            "condition": {
+                "type": "module",
+                "module": "handle_short"
+            }
+        },
+        "properties": {
+            "better_combat_config": {
+                "parent": "bettercombat:sword"
+            }
+        }
+    }
+}

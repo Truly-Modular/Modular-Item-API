@@ -23,6 +23,9 @@
     "allowedInSlots": [
         "sword_blade_large"
     ],
+    "better_combat_config": {
+        "parent": "bettercombat:katana"
+    },
     "allowedMaterial": {
         "allowedMaterials": [
             "wood","stone","metal","crystal"

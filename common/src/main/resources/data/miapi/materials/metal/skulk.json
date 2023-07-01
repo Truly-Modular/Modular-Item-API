@@ -1,0 +1,25 @@
+{
+  "key": "sculk",
+  "translation": "miapi.material.skulk",
+  "icon": "textures/item/iron.png",
+  "groups": [
+    "wood",
+    "metal"
+  ],
+  "hardness": 1,
+  "density": 1,
+  "flexibility": 0,
+  "durability": 3000,
+  "mining_speed": 75,
+  "mining_level": 3,
+  "color": "444444",
+  "textures": [
+    "contrast"
+  ],
+  "items": [
+    {
+      "item": "minecraft:sculk",
+      "value": 1.0
+    }
+  ]
+}

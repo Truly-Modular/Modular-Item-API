@@ -20,6 +20,9 @@
             }
         }
     },
+    "better_combat_config": {
+        "parent": "bettercombat:claymore"
+    },
     "allowedInSlots": [
         "sword_blade_large"
     ],

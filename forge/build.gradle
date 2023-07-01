@@ -21,6 +21,9 @@ dependencies {
 
     forgeRuntimeLibrary(include('org.mariuszgromada.math:MathParser.org-mXparser:4.4.2'))
 
+    //forgeRuntimeLibrary(include("dev.kosmx.player-anim:player-animation-lib-forge:0.4.2"
+    //modApi include("curse.maven:bettercombat-639842:4357578")
+
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive = false }
 }
@@ -84,6 +87,12 @@ publishing {
 
     // See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
     repositories {
-        // Add repositories to publish to here.
+        maven {
+            //name "KosmX's maven"
+            url 'https://maven.kosmx.dev/'
+        }
+        maven {
+            url 'https://www.cursemaven.com'
+        }
     }
 }

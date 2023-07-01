@@ -23,6 +23,9 @@
     "allowedInSlots": [
         "sword_blade"
     ],
+    "better_combat_config": {
+        "parent": "bettercombat:sword"
+    },
     "allowedMaterial": {
         "allowedMaterials": [
             "wood","stone","metal","crystal"

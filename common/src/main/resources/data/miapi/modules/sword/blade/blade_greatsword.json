@@ -32,6 +32,9 @@
         ],
         "cost": 1
     },
+    "better_combat_config": {
+        "parent": "bettercombat:claymore"
+    },
     "attributes": [
         {
             "attribute": "generic.attack_speed",
