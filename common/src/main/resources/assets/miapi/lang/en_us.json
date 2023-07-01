@@ -43,6 +43,8 @@
     "miapi.material.diamond": "Diamond ",
     "miapi.material.netherite": "Netherite ",
 
+    "block.miapi.modular_work_bench": "Modular Workbench",
+
     "miapi.module.empty": "Empty Slot",
     "miapi.module.empty.name": "Empty Slot",
     "miapi.module.empty.description": "An Empty module slot, can be used to add a module to.",
