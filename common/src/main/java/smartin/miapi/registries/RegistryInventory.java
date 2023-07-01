@@ -2,6 +2,7 @@ package smartin.miapi.registries;
 
 import com.google.common.base.Suppliers;
 import dev.architectury.platform.Platform;
+import dev.architectury.registry.CreativeTabRegistry;
 import dev.architectury.registry.registries.Registrar;
 import dev.architectury.registry.registries.RegistrarManager;
 import dev.architectury.registry.registries.RegistrySupplier;
@@ -16,6 +17,8 @@ import net.minecraft.entity.attribute.ClampedEntityAttribute;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemGroup;
+import net.minecraft.item.ItemStack;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.screen.ScreenHandlerType;
@@ -37,6 +40,7 @@ import smartin.miapi.modules.properties.*;
 import smartin.miapi.modules.properties.render.*;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
+import java.awt.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -56,6 +60,7 @@ public class RegistryInventory {
     public static final MiapiRegistry<ModuleProperty> moduleProperties = MiapiRegistry.getInstance(ModuleProperty.class);
     public static final MiapiRegistry<ItemModule> modules = MiapiRegistry.getInstance(ItemModule.class);
     public static final MiapiRegistry<EditOption> editOptions = MiapiRegistry.getInstance(EditOption.class);
+    public static final Registrar<ItemGroup> tab = registrar.get().get(RegistryKeys.ITEM_GROUP);
 
     public static <T> RegistrySupplier<T> registerAndSupply(Registrar<T> rg, Identifier id, Supplier<T> object) {
         return rg.register(id, object);
@@ -145,6 +150,14 @@ public class RegistryInventory {
                         sounds(BlockSoundGroup.METAL).
                         nonOpaque()), b -> modularWorkBench = b);
         register(items, "modular_work_bench", () -> new BlockItem(modularWorkBench, new Item.Settings()));
+
+        // CREATIVE TAB
+        /*register(tab, "<miapi_tab>", () -> CreativeTabRegistry.create
+                (b -> {
+                    b.title(Component.translatable("tab.miapi"));
+                    b.icon(() -> new ItemStack(modularWorkBench));
+                    b.displayItems((flagSet, out) -> out.accept(modularWorkBench));
+                }));*/
 
         //ITEM
         register(modularItems, "modular_item", ExampleModularItem::new, i -> modularItem = i);
