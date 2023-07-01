@@ -1,0 +1,16 @@
+{
+    "blade_longsword": {
+        "condition": {
+            "type": "otherModule",
+            "condition": {
+                "type": "module",
+                "module": "handle_short"
+            }
+        },
+        "properties": {
+            "better_combat_config": {
+                "parent": "bettercombat:staff"
+            }
+        }
+    }
+}

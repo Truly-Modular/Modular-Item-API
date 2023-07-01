@@ -1,0 +1,16 @@
+{
+    "blade_greatsword": {
+        "condition": {
+            "type": "otherModule",
+            "condition": {
+                "type": "module",
+                "module": "handle_polearm"
+            }
+        },
+        "properties": {
+            "better_combat_config": {
+                "parent": "bettercombat:staff"
+            }
+        }
+    }
+}

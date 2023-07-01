@@ -43,7 +43,9 @@ public class BetterCombatHelper {
     public static net.bettercombat.api.WeaponAttributes getAttributes(ItemStack stack) {
         if (stack.getItem() instanceof ModularItem) {
             net.bettercombat.api.WeaponAttributes attributes = (net.bettercombat.api.WeaponAttributes) ModularItemCache.get(stack, BetterCombatProperty.KEY);
-            attributes = new net.bettercombat.api.WeaponAttributes(getAttackRange(stack), attributes.pose(), attributes.offHandPose(), attributes.isTwoHanded(), attributes.category(), attributes.attacks());
+            if(attributes!=null){
+                attributes = new net.bettercombat.api.WeaponAttributes(getAttackRange(stack), attributes.pose(), attributes.offHandPose(), attributes.isTwoHanded(), attributes.category(), attributes.attacks());
+            }
             return attributes;
         } else {
             return null;

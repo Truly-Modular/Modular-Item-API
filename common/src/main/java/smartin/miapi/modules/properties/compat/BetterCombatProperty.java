@@ -19,7 +19,7 @@ public class BetterCombatProperty implements ModuleProperty {
     @Override
     public boolean load(String moduleKey, JsonElement data) throws Exception {
         if (Platform.isModLoaded("bettercombat")) {
-            BetterCombatHelper.container(data);
+            //BetterCombatHelper.container(data);
             return true;
         }
         return false;
