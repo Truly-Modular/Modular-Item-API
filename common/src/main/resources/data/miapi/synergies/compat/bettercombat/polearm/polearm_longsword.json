@@ -9,7 +9,7 @@
         },
         "properties": {
             "better_combat_config": {
-                "parent": "bettercombat:staff"
+                "parent": "bettercombat:halberd"
             }
         }
     }
