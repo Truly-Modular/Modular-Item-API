@@ -27,7 +27,7 @@ public class BetterCombatHelper {
         return (float) AttributeProperty.getActualValue(stack, EquipmentSlot.MAINHAND, AttributeRegistry.ATTACK_RANGE) + 2.5f;
     }
 
-    private static net.bettercombat.api.WeaponAttributes container(JsonElement data) {
+    public static net.bettercombat.api.WeaponAttributes container(JsonElement data) {
         if (data == null) {
             Miapi.LOGGER.warn("returning null cause data is null");
             return null;
