@@ -177,10 +177,10 @@
     "miapi.module.hoe_front.description": "A front part of a hoe used for tilling soil.",
     "miapi.module.hoe_front.short_description": "A hoe head",
 
-    "miapi.module.hoe_front": "Spear Head",
-    "miapi.module.hoe_front.name": "[translation.[material.translation]]Spear",
-    "miapi.module.hoe_front.description": "A front part of a spear used to stab people.",
-    "miapi.module.hoe_front.short_description": "A short head of Spear",
+    "miapi.module.blade_spear": "Spear Head",
+    "miapi.module.blade_spear.name": "[translation.[material.translation]]Spear",
+    "miapi.module.blade_spear.description": "A front part of a spear used to stab people.",
+    "miapi.module.blade_spear.short_description": "A short head of Spear",
 
     "miapi.module.mattock.name": "[translation.[material.translation]]Mattock"
 }

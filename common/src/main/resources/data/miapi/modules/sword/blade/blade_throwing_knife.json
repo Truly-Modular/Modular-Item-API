@@ -24,7 +24,7 @@
         "sword_blade_small"
     ],
     "better_combat_config": {
-        "parent": "bettercombat:soul_knife"
+        "parent": "bettercombat:dagger"
     },
     "allowedMaterial": {
         "allowedMaterials": [
