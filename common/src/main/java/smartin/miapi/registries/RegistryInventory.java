@@ -15,10 +15,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.entity.attribute.ClampedEntityAttribute;
 import net.minecraft.entity.attribute.EntityAttribute;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
+import net.minecraft.item.*;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.screen.ScreenHandlerType;
@@ -149,10 +146,12 @@ public class RegistryInventory {
                         mapColor(MapColor.IRON_GRAY).
                         instrument(Instrument.IRON_XYLOPHONE).
                         requiresTool().
-                        strength(5.0F, 6.0F).
+                        strength(2.0F, 6.0F).
                         sounds(BlockSoundGroup.METAL).
                         nonOpaque()), b -> modularWorkBench = b);
         register(items, "modular_work_bench", () -> new BlockItem(modularWorkBench, new Item.Settings()));
+
+
 
 
         // CREATIVE TAB
@@ -173,6 +172,7 @@ public class RegistryInventory {
         register(modularItems, "modular_naginata", ModularWeapon::new);
         register(modularItems, "modular_greatsword", ModularWeapon::new);
         register(modularItems, "modular_dagger", ModularWeapon::new);
+        register(modularItems, "modular_spear", ModularWeapon::new);
         register(modularItems, "modular_throwing_knife", ModularWeapon::new);
         register(modularItems, "modular_rapier", ModularWeapon::new);
         register(modularItems, "modular_longsword", ModularWeapon::new);

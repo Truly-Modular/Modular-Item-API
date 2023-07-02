@@ -26,7 +26,7 @@
     "attributes": [
         {
             "attribute": "miapi:generic.mining_speed.shovel",
-            "value": "1.1",
+            "value": "0.1",
             "operation": "*",
             "slot": "mainhand",
             "uuid": "AA233E1C-4180-4865-B01B-BCCE9785ACA4"
@@ -40,7 +40,7 @@
         },
         {
             "attribute": "miapi:generic.mining_speed.pickaxe",
-            "value": "1.1",
+            "value": "0.1",
             "operation": "*",
             "slot": "mainhand",
             "uuid": "AA233E1C-4180-4865-B01B-BCCE9785ACA4"

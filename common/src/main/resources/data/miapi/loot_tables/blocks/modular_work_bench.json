@@ -8,6 +8,11 @@
                     "type": "minecraft:item",
                     "name": "miapi:modular_work_bench"
                 }
+            ],
+            "conditions": [
+                {
+                    "condition": "minecraft:survives_explosion"
+                }
             ]
         }
     ]

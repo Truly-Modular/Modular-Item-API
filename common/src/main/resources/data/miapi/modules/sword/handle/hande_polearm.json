@@ -234,9 +234,9 @@
     ],
     "circleAttack": {
         "damage": 1.5,
-        "range": 8,
-        "minHold": 40,
-        "cooldown": 60,
+        "range": 5,
+        "minHold": 10,
+        "cooldown": 50,
         "particles": [
             {
                 "particle": "minecraft:sweep_attack",

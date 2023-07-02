@@ -21,9 +21,11 @@ public class TrulyModularForge {
         //ATTRIBUTE REPLACEMENT
         AttributeProperty.replaceMap.put("miapi:generic.reach", ForgeMod.BLOCK_REACH);
         AttributeProperty.replaceMap.put("miapi:generic.attack_range", ForgeMod.ENTITY_REACH);
+        //AttributeRegistry.ATTACK_RANGE = ForgeMod.ENTITY_REACH.get();
         //AttributeProperty.priorityMap.put(ForgeMod.BLOCK_REACH, -7.0f);
         //AttributeProperty.priorityMap.put(ForgeMod.ENTITY_REACH, -7.0f);
     }
+
 
     public static class ClientEvents {
         //@Mod.EventBusSubscriber(modid = MOD_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
