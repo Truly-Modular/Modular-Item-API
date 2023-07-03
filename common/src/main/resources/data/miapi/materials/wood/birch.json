@@ -1,13 +1,13 @@
 {
-  "key": "wood",
-  "translation": "miapi.material.wood",
-  "icon": "textures/block/oak_planks.png",
+  "key": "wood_birch",
+  "translation": "miapi.material.wood.birch",
+  "icon": "textures/block/birch_planks.png",
   "groups": ["wood"],
   "hardness": 3,
   "density": 1.7,
   "flexibility": 6,
   "durability": 59,
-  "color": "8B6B45",
+  "color": "D8BF8B",
   "mining_speed": 2,
   "mining_level": 0,
   "textures": [
@@ -17,8 +17,8 @@
 
   "items": [
     {
-      "item": "minecraft:stick",
-      "value": 0.5
+      "item": "minecraft:birch_planks",
+      "value": 1.0
     }
   ]
 }

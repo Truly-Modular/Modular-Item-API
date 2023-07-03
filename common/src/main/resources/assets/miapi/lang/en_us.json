@@ -36,6 +36,17 @@
     "miapi.stat.blocking.description": "Blocks %d% of incoming Damage",
 
     "miapi.material.wood": "Wooden ",
+    "miapi.material.wood.acacia": "Acaica ",
+    "miapi.material.wood.birch": "Birch ",
+    "miapi.material.wood.cherry": "Cherry ",
+    "miapi.material.wood.crimson": "Crimson ",
+    "miapi.material.wood.dark_oak": "Dark Oak ",
+    "miapi.material.wood.jungle": "Jungle ",
+    "miapi.material.wood.mangrove": "mangrove ",
+    "miapi.material.wood.oak": "Oak ",
+    "miapi.material.wood.spruce": "Spruce ",
+    "miapi.material.wood.warped": "Warped ",
+    
     "miapi.material.stone": "Stone ",
     "miapi.material.copper": "Copper ",
     "miapi.material.gold": "Golden ",

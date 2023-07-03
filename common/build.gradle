@@ -12,6 +12,7 @@ repositories {
             includeGroup 'maven.modrinth'
         }
     }
+
 }
 
 loom {

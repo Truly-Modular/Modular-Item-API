@@ -1,6 +1,6 @@
 {
-  "key": "wood",
-  "translation": "miapi.material.wood",
+  "key": "wood_oak",
+  "translation": "miapi.material.wood.oak",
   "icon": "textures/block/oak_planks.png",
   "groups": ["wood"],
   "hardness": 3,
@@ -17,8 +17,8 @@
 
   "items": [
     {
-      "item": "minecraft:stick",
-      "value": 0.5
+      "item": "minecraft:oak_planks",
+      "value": 1.0
     }
   ]
 }

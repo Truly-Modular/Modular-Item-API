@@ -13,6 +13,7 @@ import net.minecraft.item.ArmorItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ToolItem;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -21,6 +22,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.modules.properties.MiningLevelProperty;
 
@@ -38,25 +40,18 @@ public abstract class ItemStackMixin {
     @Deprecated
     private Item item;
 
-    @Inject(method = "getTooltip(Lnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/client/item/TooltipContext;)Ljava/util/List;", at = @At("HEAD"), cancellable = true)
-    private void skipAttributeModifier(PlayerEntity player, TooltipContext context, CallbackInfoReturnable<List<Text>> cir) {
-        /*
-        if (item instanceof ArmorItem || item instanceof ToolItem) {
-            Multimap<EntityAttribute, EntityAttributeModifier> multimap = item.getAttributeModifiers(EquipmentSlot.MAINHAND);
-
-            Iterator<Map.Entry<EntityAttribute, EntityAttributeModifier>> iterator = multimap.entries().iterator();
-            while (iterator.hasNext()) {
-                Map.Entry<EntityAttribute, EntityAttributeModifier> entry = iterator.next();
-                EntityAttribute attribute = entry.getKey();
-
-                // Skip specific attributes from being added to the list
-                if (attribute == EntityAttributes.GENERIC_ATTACK_DAMAGE ||
-                        attribute == EntityAttributes.GENERIC_ATTACK_SPEED) {
-                    iterator.remove();
-                }
-            }
-        }
-         */
+    //@Inject(method = "foo()V", at = @At(value = "INVOKE", target = "La/b/c/Something;doSomething()V", shift = At.Shift.AFTER))
+    @Inject(
+            method = "getTooltip(Lnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/client/item/TooltipContext;)Ljava/util/List;",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Ljava/util/Collection;iterator()Ljava/util/Iterator;",
+                    shift = At.Shift.AFTER
+            ),
+            locals = LocalCapture.CAPTURE_FAILHARD,
+            cancellable = true)
+    private void skipAttributeModifier(PlayerEntity player, TooltipContext context, CallbackInfoReturnable<List<Text>> cir, List list, MutableText mutableText, int i, EquipmentSlot[] var6, int var7, int var8, EquipmentSlot equipmentSlot, Multimap multimap) {
+        //
     }
 
     @Inject(method = "getAttributeModifiers", at = @At("RETURN"), cancellable = true)

@@ -1,13 +1,13 @@
 {
-  "key": "wood",
-  "translation": "miapi.material.wood",
-  "icon": "textures/block/oak_planks.png",
+  "key": "wood_dark_oak",
+  "translation": "miapi.material.wood.dark_oak",
+  "icon": "textures/block/dark_oak_planks.png",
   "groups": ["wood"],
   "hardness": 3,
   "density": 1.7,
   "flexibility": 6,
   "durability": 59,
-  "color": "8B6B45",
+  "color": "4A2B0F",
   "mining_speed": 2,
   "mining_level": 0,
   "textures": [
@@ -17,8 +17,8 @@
 
   "items": [
     {
-      "item": "minecraft:stick",
-      "value": 0.5
+      "item": "minecraft:dark_oak_planks",
+      "value": 1.0
     }
   ]
 }
