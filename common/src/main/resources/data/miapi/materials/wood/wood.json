@@ -17,7 +17,39 @@
 
   "items": [
     {
-      "item": "minecraft:planks",
+      "item": "minecraft:oak_planks",
+      "value": 1.0
+    },
+    {
+      "item": "minecraft:birch_planks",
+      "value": 1.0
+    },
+    {
+      "item": "minecraft:dark_oak_planks",
+      "value": 1.0
+    },
+    {
+      "item": "minecraft:spruce_planks",
+      "value": 1.0
+    },
+    {
+      "item": "minecraft:jungle_planks",
+      "value": 1.0
+    },
+    {
+      "item": "minecraft:acacia_planks",
+      "value": 1.0
+    },
+    {
+      "item": "minecraft:bamboo_planks",
+      "value": 1.0
+    },
+    {
+      "item": "minecraft:cherry_planks",
+      "value": 1.0
+    },
+    {
+      "item": "minecraft:mangrove_planks",
       "value": 1.0
     }
   ]

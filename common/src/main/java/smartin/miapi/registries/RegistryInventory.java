@@ -163,7 +163,6 @@ public class RegistryInventory {
                         entries.add(modularWorkBench);
                     });
                 }));
-
         //ITEM
         register(modularItems, "modular_item", ExampleModularItem::new, i -> modularItem = i);
         register(modularItems, "modular_handle", ModularWeapon::new);

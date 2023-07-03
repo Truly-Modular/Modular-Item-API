@@ -8,6 +8,7 @@ import net.minecraft.item.*;
 import net.minecraft.text.Text;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
 import smartin.miapi.item.modular.ModularItem;
@@ -26,6 +27,15 @@ public class ModularWeapon extends Item implements ModularItem {
 
     public float getMiningSpeedMultiplier(ItemStack stack, BlockState state) {
         return MiningLevelProperty.getMiningSpeedMultiplier(stack, state);
+    }
+
+    public int getItemBarStep(ItemStack stack) {
+        return Math.round(13.0F - (float)stack.getDamage() * 13.0F / ModularItem.getDurability(stack));
+    }
+
+    public int getItemBarColor(ItemStack stack) {
+        float f = Math.max(0.0F, ((float) ModularItem.getDurability(stack) - (float)stack.getDamage()) / ModularItem.getDurability(stack));
+        return MathHelper.hsvToRgb(f / 3.0F, 1.0F, 1.0F);
     }
 
     public boolean postHit(ItemStack stack, LivingEntity target, LivingEntity attacker) {

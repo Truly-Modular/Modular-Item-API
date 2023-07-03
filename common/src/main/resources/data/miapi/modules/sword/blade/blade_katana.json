@@ -28,7 +28,10 @@
     },
     "allowedMaterial": {
         "allowedMaterials": [
-            "wood","stone","metal","crystal"
+            "wood",
+            "stone",
+            "metal",
+            "crystal"
         ],
         "cost": 1
     },
@@ -59,6 +62,8 @@
         "sizeX": 3,
         "sizeY": 3
     },
+    "healthPercent": 50,
+    "armor_pen": -20,
     "displayName": "miapi.module.blade_katana.name",
     "itemId": "miapi:modular_katana"
 }

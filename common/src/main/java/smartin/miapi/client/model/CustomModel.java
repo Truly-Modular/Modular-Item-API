@@ -3,10 +3,12 @@ package smartin.miapi.client.model;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.model.*;
 import net.minecraft.client.render.model.json.ModelOverrideList;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.texture.Sprite;
+import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
@@ -60,7 +62,8 @@ public class CustomModel implements UnbakedModel, BakedModel {
 
     @Override
     public Sprite getParticleSprite() {
-        return null;
+        Identifier stoneTextureId = new Identifier("minecraft", "block/stone");
+        return MinecraftClient.getInstance().getSpriteAtlas(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE).apply(stoneTextureId);
     }
 
     @Override
