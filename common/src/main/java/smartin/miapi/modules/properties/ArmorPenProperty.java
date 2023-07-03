@@ -24,7 +24,7 @@ public class ArmorPenProperty extends SimpleDoubleProperty {
         property = this;
         Event.LIVING_HURT.register((event -> {
             if (event.damageSource.getAttacker() instanceof LivingEntity attacker) {
-                ItemStack itemStack = attacker.getMainHandStack();
+                ItemStack itemStack = event.getCausingItemStack();
                 if (property.hasValue(itemStack)) {
                     double value = valueRemap(property.getValueSafe(itemStack)) / 100;
                     Miapi.LOGGER.warn("Scaled to" + value);

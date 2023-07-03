@@ -16,7 +16,7 @@ public class HealthPercentDamage extends SimpleDoubleProperty {
         property = this;
         Event.LIVING_HURT.register((livingHurtEvent -> {
             if (livingHurtEvent.damageSource.getAttacker() instanceof LivingEntity livingAttacker) {
-                ItemStack itemStack = livingAttacker.getMainHandStack();
+                ItemStack itemStack = livingHurtEvent.getCausingItemStack();
                 if(livingAttacker instanceof PlayerEntity player){
                     if(player.lastHandSwingProgress!=0.0){
                         return EventResult.pass();
