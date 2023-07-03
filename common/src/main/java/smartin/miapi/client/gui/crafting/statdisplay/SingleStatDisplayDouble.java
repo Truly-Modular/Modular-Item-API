@@ -13,10 +13,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.ColorHelper;
 import smartin.miapi.Miapi;
-import smartin.miapi.client.gui.InteractAbleWidget;
-import smartin.miapi.client.gui.MultiLineTextWidget;
-import smartin.miapi.client.gui.ScrollingTextWidget;
-import smartin.miapi.client.gui.StatBar;
+import smartin.miapi.client.gui.*;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -33,25 +30,34 @@ public abstract class SingleStatDisplayDouble extends InteractAbleWidget impleme
     public ScrollingTextWidget centerValue;
     public ScrollingTextWidget textWidget;
     public DecimalFormat modifierFormat;
-    public Text text;
-    public Text hover;
+    public TextGetter text;
+    public TextGetter hover;
     public HoverDescription hoverDescription;
 
-    public SingleStatDisplayDouble(int x, int y, int width, int height, Text title, Text hover) {
+    public SingleStatDisplayDouble(int x, int y, int width, int height, TextGetter title, TextGetter hover) {
         super(x, y, width, height, Text.empty());
         text = title;
         this.hover = hover;
-        textWidget = new ScrollingTextWidget(x, y, 80, text, ColorHelper.Argb.getArgb(255, 255, 255, 255));
-        currentValue = new ScrollingTextWidget(x, y, 50, text, ColorHelper.Argb.getArgb(255, 255, 255, 255));
-        centerValue = new ScrollingTextWidget(x, y, (int) ((80 - 10) * (1.0 / 1.2)), text, ColorHelper.Argb.getArgb(255, 255, 255, 255));
+        textWidget = new ScrollingTextWidget(x, y, 80, Text.empty(), ColorHelper.Argb.getArgb(255, 255, 255, 255));
+        currentValue = new ScrollingTextWidget(x, y, 50, Text.empty(), ColorHelper.Argb.getArgb(255, 255, 255, 255));
+        centerValue = new ScrollingTextWidget(x, y, (int) ((80 - 10) * (1.0 / 1.2)), Text.empty(), ColorHelper.Argb.getArgb(255, 255, 255, 255));
         centerValue.setOrientation(ScrollingTextWidget.ORIENTATION.CENTERED);
-        compareValue = new ScrollingTextWidget(x, y, (int) ((80 - 10) * (1.0 / 1.2)), text, ColorHelper.Argb.getArgb(255, 255, 255, 255));
+        compareValue = new ScrollingTextWidget(x, y, (int) ((80 - 10) * (1.0 / 1.2)), Text.empty(), ColorHelper.Argb.getArgb(255, 255, 255, 255));
         compareValue.setOrientation(ScrollingTextWidget.ORIENTATION.RIGHT);
         statBar = new StatBar(0, 0, width, 10, ColorHelper.Argb.getArgb(255, 0, 0, 0));
         modifierFormat = Util.make(new DecimalFormat("##.##"), (decimalFormat) -> {
             decimalFormat.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ROOT));
         });
-        hoverDescription = new HoverDescription(x, y, width, height, hover);
+        hoverDescription = new HoverDescription(x, y, width, height, Text.empty());
+    }
+
+    public boolean shouldRender(ItemStack original, ItemStack compareTo) {
+        ItemStack mainStack = compareTo.isEmpty() ? original : compareTo;
+        textWidget.setText(text.resolve(mainStack));
+        hoverDescription.textWidget.setText(hover.resolve(mainStack));
+        this.original = original;
+        this.compareTo = compareTo;
+        return true;
     }
 
     public abstract double getValue(ItemStack stack);
@@ -101,7 +107,7 @@ public abstract class SingleStatDisplayDouble extends InteractAbleWidget impleme
         currentValue.setText(Text.literal(modifierFormat.format(oldValue)));
         currentValue.render(drawContext, mouseX, mouseY, delta);
         centerValue.setX(this.getX() + 5);
-        centerValue.setY(this.getY()+15);
+        centerValue.setY(this.getY() + 15);
         centerValue.setText(Text.literal(centerText));
         centerValue.render(drawContext, mouseX, mouseY, delta);
         statBar.render(drawContext, mouseX, mouseY, delta);
@@ -112,10 +118,13 @@ public abstract class SingleStatDisplayDouble extends InteractAbleWidget impleme
         return hoverDescription;
     }
 
+    public interface TextGetter {
+        Text resolve(ItemStack stack);
+    }
+
     public class HoverDescription extends InteractAbleWidget {
         public Identifier texture = new Identifier(Miapi.MOD_ID, "textures/gui/stat_display/hover_background.png");
         public MultiLineTextWidget textWidget;
-        public Text text;
 
         public HoverDescription(int x, int y, int width, int height, Text text) {
             super(x, y, width, height, Text.empty());
@@ -123,17 +132,18 @@ public abstract class SingleStatDisplayDouble extends InteractAbleWidget impleme
             this.addChild(textWidget);
             this.width = textWidget.getWidth() + 5;
             this.height = textWidget.getHeight() + 5;
-            this.text = text;
         }
 
         @Override
         public void render(DrawContext drawContext, int mouseX, int mouseY, float delta) {
-            if (!text.getString().isEmpty()) {
+            if (!textWidget.rawText.getString().isEmpty()) {
                 RenderSystem.disableDepthTest();
                 RenderSystem.enableBlend();
-                drawTextureWithEdge(drawContext,texture, this.getX(), this.getY(), this.width, this.height, 120, 32, 3);
-                textWidget.setX(this.getX()+3);
-                textWidget.setY(this.getY()+3);
+                this.setWidth(textWidget.getWidth() + 5);
+                this.setHeight(textWidget.getHeight() + 5);
+                drawTextureWithEdge(drawContext, texture, this.getX(), this.getY(), this.width, this.height, 120, 32, 3);
+                textWidget.setX(this.getX() + 3);
+                textWidget.setY(this.getY() + 3);
                 super.render(drawContext, mouseX, mouseY, delta);
                 RenderSystem.enableDepthTest();
             }

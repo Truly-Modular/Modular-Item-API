@@ -8,16 +8,16 @@ import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.item.ItemStack;
+import smartin.miapi.Miapi;
 import smartin.miapi.events.Event;
 import smartin.miapi.modules.properties.util.SimpleDoubleProperty;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.WeakHashMap;
 
 public class ArmorPenProperty extends SimpleDoubleProperty {
     public static final String KEY = "armor_pen";
     public static ArmorPenProperty property;
-    private static Map<LivingEntity, Multimap<EntityAttribute, EntityAttributeModifier>> cache = new HashMap<>();
+    private static WeakHashMap<LivingEntity, Multimap<EntityAttribute, EntityAttributeModifier>> cache = new WeakHashMap<>();
 
     public ArmorPenProperty() {
         super(KEY);
@@ -26,7 +26,8 @@ public class ArmorPenProperty extends SimpleDoubleProperty {
             if (event.damageSource.getAttacker() instanceof LivingEntity attacker) {
                 ItemStack itemStack = attacker.getMainHandStack();
                 if (property.hasValue(itemStack)) {
-                    double value = -valueRemap(property.getValue(itemStack))/100;
+                    double value = valueRemap(property.getValueSafe(itemStack)) / 100;
+                    Miapi.LOGGER.warn("Scaled to" + value);
                     Multimap<EntityAttribute, EntityAttributeModifier> multimap = ArrayListMultimap.create();
                     multimap.put(EntityAttributes.GENERIC_ARMOR, new EntityAttributeModifier("tempArmorPen", value, EntityAttributeModifier.Operation.MULTIPLY_TOTAL));
                     cache.put(event.livingEntity, multimap);
@@ -44,7 +45,26 @@ public class ArmorPenProperty extends SimpleDoubleProperty {
         }));
     }
 
+
     public static double valueRemap(double value) {
-        return ((200) / (1 + Math.exp(-(value) / 120)) - 100);
+        return 100 - ((200) / (1 + Math.exp(-(value) / 120)) - 100);
+    }
+
+    @Override
+    public Double getValue(ItemStack stack) {
+        Double value = getValueRaw(stack);
+        if (value != null) {
+            return valueRemap(value);
+        }
+        return null;
+    }
+
+    @Override
+    public double getValueSafe(ItemStack stack) {
+        Double value = getValueRaw(stack);
+        if (value != null) {
+            return valueRemap(value);
+        }
+        return valueRemap(0);
     }
 }

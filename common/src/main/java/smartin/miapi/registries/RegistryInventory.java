@@ -1,6 +1,7 @@
 package smartin.miapi.registries;
 
 import com.google.common.base.Suppliers;
+import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.platform.Platform;
 import dev.architectury.registry.CreativeTabRegistry;
 import dev.architectury.registry.registries.Registrar;
@@ -15,6 +16,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.entity.attribute.ClampedEntityAttribute;
 import net.minecraft.entity.attribute.EntityAttribute;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.item.*;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.resource.featuretoggle.FeatureSet;
@@ -230,68 +232,69 @@ public class RegistryInventory {
                         new ClampedEntityAttribute("miapi.attribute.name.shield_break", 0.0, 0.0, 1024.0).setTracked(true),
                 att -> SHIELD_BREAK = att);
 
+        LifecycleEvent.SETUP.register(()->{
+            //EDITPROPERTIES
+            registerMiapi(editOptions, "dev", new PropertyInjectionDev());
+            registerMiapi(editOptions, "skin", new SkinOptions());
 
-        //EDITPROPERTIES
-        registerMiapi(editOptions, "dev", new PropertyInjectionDev());
-        registerMiapi(editOptions, "skin", new SkinOptions());
+            //CONDITIONS
+            registerMiapi(moduleConditionRegistry, "true", new TrueCondition());
+            registerMiapi(moduleConditionRegistry, "not", new NotCondition());
+            registerMiapi(moduleConditionRegistry, "or", new OrCondition());
+            registerMiapi(moduleConditionRegistry, "and", new AndCondition());
+            registerMiapi(moduleConditionRegistry, "child", new ChildCondition());
+            registerMiapi(moduleConditionRegistry, "parent", new ParentCondition());
+            registerMiapi(moduleConditionRegistry, "otherModule", new OtherModuleModuleCondition());
+            registerMiapi(moduleConditionRegistry, "module", new ModuleTypeCondition());
+            registerMiapi(moduleConditionRegistry, "material", new MaterialCondition());
+            registerMiapi(moduleConditionRegistry, "tag", new TagCondition());
 
-        //CONDITIONS
-        registerMiapi(moduleConditionRegistry, "true", new TrueCondition());
-        registerMiapi(moduleConditionRegistry, "not", new NotCondition());
-        registerMiapi(moduleConditionRegistry, "or", new OrCondition());
-        registerMiapi(moduleConditionRegistry, "and", new AndCondition());
-        registerMiapi(moduleConditionRegistry, "child", new ChildCondition());
-        registerMiapi(moduleConditionRegistry, "parent", new ParentCondition());
-        registerMiapi(moduleConditionRegistry, "otherModule", new OtherModuleModuleCondition());
-        registerMiapi(moduleConditionRegistry, "module", new ModuleTypeCondition());
-        registerMiapi(moduleConditionRegistry, "material", new MaterialCondition());
-        registerMiapi(moduleConditionRegistry, "tag", new TagCondition());
+            //MODULEPROPERTIES
+            try{
+                registerMiapi(moduleProperties, ModelProperty.KEY, new ModelProperty());
+                registerMiapi(moduleProperties, ModelTransformationProperty.KEY, new ModelTransformationProperty());
+                registerMiapi(moduleProperties, ModelMergeProperty.KEY, new ModelMergeProperty());
+                registerMiapi(moduleProperties, GuiOffsetProperty.KEY, new GuiOffsetProperty());
+            }
+            catch (Exception surpressed){
+                registerMiapi(moduleProperties, "texture", new ServerReplaceProperty());
+                registerMiapi(moduleProperties, "modelTransform", new ServerReplaceProperty());
+                registerMiapi(moduleProperties, "modelMerge", new ServerReplaceProperty());
+                registerMiapi(moduleProperties, "guiOffset", new ServerReplaceProperty());
+            }
+            registerMiapi(moduleProperties, NameProperty.KEY, new NameProperty());
+            registerMiapi(moduleProperties, SlotProperty.KEY, new SlotProperty());
+            registerMiapi(moduleProperties, AllowedSlots.KEY, new AllowedSlots());
+            registerMiapi(moduleProperties, MaterialProperty.KEY, new MaterialProperty());
+            registerMiapi(moduleProperties, AllowedMaterial.KEY, new AllowedMaterial());
+            registerMiapi(moduleProperties, AttributeProperty.KEY, new AttributeProperty());
+            registerMiapi(moduleProperties, PotionEffectProperty.KEY, new PotionEffectProperty());
+            registerMiapi(moduleProperties, DisplayNameProperty.KEY, new DisplayNameProperty());
+            registerMiapi(moduleProperties, ItemIdProperty.KEY, new ItemIdProperty());
+            registerMiapi(moduleProperties, EquipmentSlotProperty.KEY, new EquipmentSlotProperty());
+            registerMiapi(moduleProperties, FlexibilityProperty.KEY, new FlexibilityProperty());
+            registerMiapi(moduleProperties, AbilityProperty.KEY, new AbilityProperty());
+            registerMiapi(moduleProperties, BlockProperty.KEY, new BlockProperty());
+            registerMiapi(moduleProperties, RiptideProperty.KEY, new RiptideProperty());
+            registerMiapi(moduleProperties, HealthPercentDamage.KEY, new HealthPercentDamage());
+            registerMiapi(moduleProperties, ArmorPenProperty.KEY, new ArmorPenProperty());
+            registerMiapi(moduleProperties, HeavyAttackProperty.KEY, new HeavyAttackProperty());
+            registerMiapi(moduleProperties, CircleAttackProperty.KEY, new CircleAttackProperty());
+            registerMiapi(moduleProperties, CrossbowProperty.KEY, new CrossbowProperty());
+            registerMiapi(moduleProperties, ToolOrWeaponProperty.KEY, new ToolOrWeaponProperty());
+            registerMiapi(moduleProperties, MiningLevelProperty.KEY, new MiningLevelProperty());
+            registerMiapi(moduleProperties, TagProperty.KEY, new TagProperty());
 
-        //MODULEPROPERTIES
-        try{
-            registerMiapi(moduleProperties, ModelProperty.KEY, new ModelProperty());
-            registerMiapi(moduleProperties, ModelTransformationProperty.KEY, new ModelTransformationProperty());
-            registerMiapi(moduleProperties, ModelMergeProperty.KEY, new ModelMergeProperty());
-            registerMiapi(moduleProperties, GuiOffsetProperty.KEY, new GuiOffsetProperty());
-        }
-        catch (Exception surpressed){
-            registerMiapi(moduleProperties, "texture", new ServerReplaceProperty());
-            registerMiapi(moduleProperties, "modelTransform", new ServerReplaceProperty());
-            registerMiapi(moduleProperties, "modelMerge", new ServerReplaceProperty());
-            registerMiapi(moduleProperties, "guiOffset", new ServerReplaceProperty());
-        }
-        registerMiapi(moduleProperties, NameProperty.KEY, new NameProperty());
-        registerMiapi(moduleProperties, SlotProperty.KEY, new SlotProperty());
-        registerMiapi(moduleProperties, AllowedSlots.KEY, new AllowedSlots());
-        registerMiapi(moduleProperties, MaterialProperty.KEY, new MaterialProperty());
-        registerMiapi(moduleProperties, AllowedMaterial.KEY, new AllowedMaterial());
-        registerMiapi(moduleProperties, AttributeProperty.KEY, new AttributeProperty());
-        registerMiapi(moduleProperties, PotionEffectProperty.KEY, new PotionEffectProperty());
-        registerMiapi(moduleProperties, DisplayNameProperty.KEY, new DisplayNameProperty());
-        registerMiapi(moduleProperties, ItemIdProperty.KEY, new ItemIdProperty());
-        registerMiapi(moduleProperties, EquipmentSlotProperty.KEY, new EquipmentSlotProperty());
-        registerMiapi(moduleProperties, FlexibilityProperty.KEY, new FlexibilityProperty());
-        registerMiapi(moduleProperties, AbilityProperty.KEY, new AbilityProperty());
-        registerMiapi(moduleProperties, BlockProperty.KEY, new BlockProperty());
-        registerMiapi(moduleProperties, RiptideProperty.KEY, new RiptideProperty());
-        registerMiapi(moduleProperties, HealthPercentDamage.KEY, new HealthPercentDamage());
-        registerMiapi(moduleProperties, ArmorPenProperty.KEY, new ArmorPenProperty());
-        registerMiapi(moduleProperties, HeavyAttackProperty.KEY, new HeavyAttackProperty());
-        registerMiapi(moduleProperties, CircleAttackProperty.KEY, new CircleAttackProperty());
-        registerMiapi(moduleProperties, CrossbowProperty.KEY, new CrossbowProperty());
-        registerMiapi(moduleProperties, ToolOrWeaponProperty.KEY, new ToolOrWeaponProperty());
-        registerMiapi(moduleProperties, MiningLevelProperty.KEY, new MiningLevelProperty());
-        registerMiapi(moduleProperties, TagProperty.KEY, new TagProperty());
+            //compat
+            registerMiapi(moduleProperties, BetterCombatProperty.KEY, new BetterCombatProperty());
 
-        //compat
-        registerMiapi(moduleProperties, BetterCombatProperty.KEY, new BetterCombatProperty());
-
-        // ABILITIES
-        registerMiapi(useAbilityRegistry, "throw", new ThrowingAbility());
-        registerMiapi(useAbilityRegistry, "block", new BlockAbility());
-        registerMiapi(useAbilityRegistry, RiptideProperty.KEY, new RiptideAbility());
-        registerMiapi(useAbilityRegistry, HeavyAttackProperty.KEY, new HeavyAttackAbility());
-        registerMiapi(useAbilityRegistry, CircleAttackProperty.KEY, new CircleAttackAbility());
-        registerMiapi(useAbilityRegistry, CrossbowProperty.KEY, new CrossbowAbility());
+            // ABILITIES
+            registerMiapi(useAbilityRegistry, "throw", new ThrowingAbility());
+            registerMiapi(useAbilityRegistry, "block", new BlockAbility());
+            registerMiapi(useAbilityRegistry, RiptideProperty.KEY, new RiptideAbility());
+            registerMiapi(useAbilityRegistry, HeavyAttackProperty.KEY, new HeavyAttackAbility());
+            registerMiapi(useAbilityRegistry, CircleAttackProperty.KEY, new CircleAttackAbility());
+            registerMiapi(useAbilityRegistry, CrossbowProperty.KEY, new CrossbowAbility());
+        });
     }
 }

@@ -22,7 +22,7 @@ public class HealthPercentDamage extends SimpleDoubleProperty {
                         return EventResult.pass();
                     }
                 }
-                double percentage = actualValue(itemStack);
+                double percentage = getValueSafe(itemStack);
                 double increasingBy = livingHurtEvent.livingEntity.getHealth() / (100 / percentage);
                 livingHurtEvent.amount += increasingBy;
             }
@@ -30,10 +30,20 @@ public class HealthPercentDamage extends SimpleDoubleProperty {
         }));
     }
 
-    public static double actualValue(ItemStack itemStack) {
-        Double value = property.getValue(itemStack);
+    @Override
+    public Double getValue(ItemStack stack) {
+        Double value = property.getValueRaw(stack);
         if (value == null) {
-            return 0;
+            return 0.0;
+        }
+        return ((200) / (1 + Math.exp(-Math.sqrt(value) / 50))) - 100;
+    }
+
+    @Override
+    public double getValueSafe(ItemStack stack) {
+        Double value = property.getValueRaw(stack);
+        if (value == null) {
+            return 0.0;
         }
         return ((200) / (1 + Math.exp(-Math.sqrt(value) / 50))) - 100;
     }

@@ -11,6 +11,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
+import smartin.miapi.Miapi;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.client.gui.BoxList;
 import smartin.miapi.client.gui.InteractAbleWidget;
@@ -34,14 +35,32 @@ public class StatDisplay extends InteractAbleWidget {
     private ItemStack compareTo = ItemStack.EMPTY;
 
     static {
-        addStatDisplay(AttributeSingleDisplay.Builder(EntityAttributes.GENERIC_ATTACK_DAMAGE).setTranslationKey("damage").setDefault(1).build());
-        addStatDisplay(AttributeSingleDisplay.Builder(EntityAttributes.GENERIC_ATTACK_SPEED).setTranslationKey("attack_speed").setDefault(4).build());
+        addStatDisplay(AttributeSingleDisplay
+                .Builder(EntityAttributes.GENERIC_ATTACK_DAMAGE)
+                .setTranslationKey("damage")
+                .setDefault(1).build());
+        addStatDisplay(AttributeSingleDisplay
+                .Builder(EntityAttributes.GENERIC_ATTACK_SPEED)
+                .setTranslationKey("attack_speed")
+                .setDefault(4).build());
         addStatDisplay(new DpsStatDisplay());
-        addStatDisplay(AttributeSingleDisplay.Builder(AttributeRegistry.ITEM_DURABILITY).setTranslationKey("durability").setDefault(0).build());
-        addStatDisplay(SinglePropertyStatDisplay.Builder(FlexibilityProperty.property).setTranslationKey(FlexibilityProperty.KEY).build());
-        addStatDisplay(SinglePropertyStatDisplay.Builder(HealthPercentDamage.property).setTranslationKey(HealthPercentDamage.KEY).build());
-        addStatDisplay(SinglePropertyStatDisplay.Builder(ArmorPenProperty.property).setTranslationKey(ArmorPenProperty.KEY).build());
-        addStatDisplay(SinglePropertyStatDisplay.Builder(BlockProperty.property).setTranslationKey(BlockProperty.KEY).build());
+        addStatDisplay(AttributeSingleDisplay
+                .Builder(AttributeRegistry.ITEM_DURABILITY)
+                .setTranslationKey("durability")
+                .setDefault(0).build());
+        addStatDisplay(SinglePropertyStatDisplay
+                .Builder(FlexibilityProperty.property)
+                .setTranslationKey(FlexibilityProperty.KEY)
+                .build());
+        addStatDisplay(SinglePropertyStatDisplay
+                .Builder(HealthPercentDamage.property)
+                .setTranslationKey(HealthPercentDamage.KEY).build());
+        addStatDisplay(SinglePropertyStatDisplay
+                .Builder(ArmorPenProperty.property)
+                .setTranslationKey(ArmorPenProperty.KEY).build());
+        addStatDisplay(SinglePropertyStatDisplay
+                .Builder(BlockProperty.property)
+                .setTranslationKey(BlockProperty.KEY).build());
     }
 
     public StatDisplay(int x, int y, int width, int height) {
@@ -75,12 +94,8 @@ public class StatDisplay extends InteractAbleWidget {
             float scale = 0.667f;
             hoverDisplay.setX((int) ((mouseX + 5) * (1 / scale)));
             hoverDisplay.setY((int) ((mouseY - hoverDisplay.getHeight() / 2 * scale) * (1 / scale)));
-
             hoverText.renderWidget(hoverDisplay, drawContext, mouseX, mouseY, delta);
-
-            //hoverDisplay.render(matrices, mouseX, mouseY, delta);
         }
-        //drawSquareBorder(matrices, x, y, width, height, 1, ColorHelper.Argb.getArgb(255, 255, 0, 255));
     }
 
     private void update() {

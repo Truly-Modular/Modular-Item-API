@@ -9,7 +9,6 @@ import smartin.miapi.Miapi;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.util.CraftingProperty;
 import smartin.miapi.modules.properties.util.MergeType;
-import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.modules.properties.util.SimpleDoubleProperty;
 
 import java.util.List;
@@ -34,6 +33,16 @@ public class FlexibilityProperty extends SimpleDoubleProperty implements Craftin
     }
 
     @Override
+    public Double getValue(ItemStack stack) {
+        return getValueRaw(stack);
+    }
+
+    @Override
+    public double getValueSafe(ItemStack stack) {
+        return getValueSafeRaw(stack);
+    }
+
+    @Override
     public JsonElement merge(JsonElement old, JsonElement toMerge, MergeType type) {
         if (Objects.requireNonNull(type) == MergeType.SMART || type == MergeType.EXTEND) {
             return Miapi.gson.toJsonTree(toMerge.getAsDouble() + old.getAsDouble());
@@ -51,8 +60,7 @@ public class FlexibilityProperty extends SimpleDoubleProperty implements Craftin
 
     @Override
     public boolean canPerform(ItemStack old, ItemStack crafting, PlayerEntity player, ItemModule.ModuleInstance newModule, ItemModule module, List<ItemStack> inventory, PacketByteBuf buf) {
-        Double flexibility = getValue(crafting);
-        flexibility = flexibility == null ? 0 : flexibility;
+        double flexibility = getValueSafe(crafting);
         return flexibility >= 0;
     }
 

@@ -33,7 +33,7 @@
     "miapi.stat.armor_pen": "Armor Penetration",
     "miapi.stat.armor_pen.description": "Scales Target armor to %d percent",
     "miapi.stat.blocking": "Blocking",
-    "miapi.stat.blocking.description": "Blocks %d% of incoming Damage",
+    "miapi.stat.blocking.description": "Blocks %d percent of incoming Damage",
 
     "miapi.material.wood": "Wooden ",
     "miapi.material.wood.acacia": "Acaica ",
@@ -42,7 +42,7 @@
     "miapi.material.wood.crimson": "Crimson ",
     "miapi.material.wood.dark_oak": "Dark Oak ",
     "miapi.material.wood.jungle": "Jungle ",
-    "miapi.material.wood.mangrove": "mangrove ",
+    "miapi.material.wood.mangrove": "Mangrove ",
     "miapi.material.wood.oak": "Oak ",
     "miapi.material.wood.spruce": "Spruce ",
     "miapi.material.wood.warped": "Warped ",

@@ -4,22 +4,26 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
+import net.minecraft.util.Util;
 import smartin.miapi.Miapi;
 import smartin.miapi.modules.properties.util.SimpleDoubleProperty;
+
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.Locale;
 
 @Environment(EnvType.CLIENT)
 public class SinglePropertyStatDisplay extends SingleStatDisplayDouble {
     protected SimpleDoubleProperty property;
 
-    protected SinglePropertyStatDisplay(Text title, Text hover, SimpleDoubleProperty property) {
+    protected SinglePropertyStatDisplay(TextGetter title, TextGetter hover, SimpleDoubleProperty property) {
         super(0, 0, 80, 32, title, hover);
         this.property = property;
     }
 
     @Override
     public boolean shouldRender(ItemStack original, ItemStack compareTo) {
-        this.original = original;
-        this.compareTo = compareTo;
+        super.shouldRender(original, compareTo);
         if (property.hasValue(original)) {
             return true;
         }
@@ -31,9 +35,7 @@ public class SinglePropertyStatDisplay extends SingleStatDisplayDouble {
 
     @Override
     public double getValue(ItemStack stack) {
-        Double value = property.getValue(stack);
-        if (value != null) return value;
-        return 0;
+        return property.getValueSafeRaw(stack);
     }
 
     public static Builder Builder(SimpleDoubleProperty property) {
@@ -42,41 +44,50 @@ public class SinglePropertyStatDisplay extends SingleStatDisplayDouble {
 
     public static class Builder {
         SimpleDoubleProperty property;
-        public Text name;
-        public Text hoverDescription = Text.empty();
+        public TextGetter name;
+        public TextGetter hoverDescription = (stack) -> Text.empty();
         public String translationKey = "";
         public Object[] descriptionArgs = new Object[]{};
-        public String format = "##.##";
+        public DecimalFormat modifierFormat;
 
         private Builder(SimpleDoubleProperty property) {
             this.property = property;
+            modifierFormat = Util.make(new DecimalFormat("##.##"), (decimalFormat) -> {
+                decimalFormat.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ROOT));
+            });
         }
 
         public Builder setName(Text name) {
+            this.name = (stack) -> name;
+            return this;
+        }
+
+        public Builder setName(TextGetter name) {
             this.name = name;
             return this;
         }
 
         public Builder setTranslationKey(String key) {
             translationKey = key;
-            name = Text.translatable(Miapi.MOD_ID + ".stat." + key);
-            hoverDescription = Text.translatable(Miapi.MOD_ID + ".stat." + key + ".description", descriptionArgs);
-            return this;
-        }
-
-        public Builder setDescriptionArguments(Object... args) {
-            descriptionArgs = args;
-            hoverDescription = Text.translatable(Miapi.MOD_ID + ".stat." + translationKey + ".description", descriptionArgs);
+            name = (stack) -> Text.translatable(Miapi.MOD_ID + ".stat." + key, modifierFormat.format(property.getValueSafe(stack)));
+            hoverDescription = (stack) -> Text.translatable(Miapi.MOD_ID + ".stat." + key + ".description", modifierFormat.format(property.getValueSafe(stack)));
             return this;
         }
 
         public Builder setHoverDescription(Text hoverDescription) {
+            this.hoverDescription = (stack) -> hoverDescription;
+            return this;
+        }
+
+        public Builder setHoverDescription(TextGetter hoverDescription) {
             this.hoverDescription = hoverDescription;
             return this;
         }
 
         public Builder setFormat(String format) {
-            this.format = format;
+            modifierFormat = Util.make(new DecimalFormat(format), (decimalFormat) -> {
+                decimalFormat.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ROOT));
+            });
             return this;
         }
 

@@ -3,6 +3,8 @@ package smartin.miapi.modules.properties;
 import com.google.common.collect.*;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import dev.architectury.event.Event;
+import dev.architectury.event.events.common.LifecycleEvent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.attribute.*;

@@ -12,13 +12,12 @@ import smartin.miapi.attributes.AttributeRegistry;
 public class DpsStatDisplay extends SingleStatDisplayDouble{
 
     public DpsStatDisplay() {
-        super(0, 0, 80, 32, Text.literal("DPS"), Text.empty());
+        super(0, 0, 80, 32, (stack)->Text.literal("DPS"), (stack)->Text.empty());
     }
 
     @Override
     public boolean shouldRender(ItemStack original, ItemStack compareTo) {
-        this.original = original;
-        this.compareTo = compareTo;
+        super.shouldRender(original,compareTo);
         return true;
     }
 

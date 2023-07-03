@@ -18,29 +18,24 @@ import java.util.Locale;
 public class AttributeSingleDisplay extends SingleStatDisplayDouble {
     final EntityAttribute attribute;
     final EquipmentSlot slot;
-    Text text;
     double defaultValue;
 
-    private AttributeSingleDisplay(EntityAttribute attribute, EquipmentSlot slot, Text text, Text hover, double defaultValue, String format) {
+    private AttributeSingleDisplay(EntityAttribute attribute, EquipmentSlot slot, TextGetter text, TextGetter hover, double defaultValue, DecimalFormat modifierFormat) {
         super(0, 0, 80, 32, text, hover);
         this.slot = slot;
         this.attribute = attribute;
         this.defaultValue = defaultValue;
-        this.text = text;
-        modifierFormat = Util.make(new DecimalFormat(format), (decimalFormat) -> {
-            decimalFormat.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ROOT));
-        });
+        this.modifierFormat = modifierFormat;
     }
 
     @Override
-    public double getValue(ItemStack stack){
+    public double getValue(ItemStack stack) {
         return AttributeRegistry.getAttribute(stack, attribute, slot, defaultValue);
     }
 
     @Override
     public boolean shouldRender(ItemStack original, ItemStack compareTo) {
-        this.original = original;
-        this.compareTo = compareTo;
+        super.shouldRender(original, compareTo);
         if (original.getAttributeModifiers(slot).containsKey(attribute)) {
             return true;
         }
@@ -57,15 +52,18 @@ public class AttributeSingleDisplay extends SingleStatDisplayDouble {
     public static class Builder {
         EntityAttribute attribute;
         public double defaultValue = 1;
-        public Text name;
-        public Text hoverDescription = Text.empty();
+        public TextGetter name;
+        public TextGetter hoverDescription = (stack) -> Text.empty();
         public EquipmentSlot slot = EquipmentSlot.MAINHAND;
         public String translationKey = "";
         public Object[] descriptionArgs = new Object[]{};
-        public String format = "##.##";
+        public DecimalFormat modifierFormat;
 
         private Builder(EntityAttribute attribute) {
             this.attribute = attribute;
+            modifierFormat = Util.make(new DecimalFormat("##.##"), (decimalFormat) -> {
+                decimalFormat.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ROOT));
+            });
         }
 
         public Builder setDefault(double defaultValue) {
@@ -75,18 +73,17 @@ public class AttributeSingleDisplay extends SingleStatDisplayDouble {
 
         public Builder setTranslationKey(String key) {
             translationKey = key;
-            name = Text.translatable(Miapi.MOD_ID + ".stat." + key);
-            hoverDescription = Text.translatable(Miapi.MOD_ID + ".stat." + key + ".description", descriptionArgs);
-            return this;
-        }
-
-        public Builder setDescriptionArguments(Object... args) {
-            descriptionArgs = args;
-            hoverDescription = Text.translatable(Miapi.MOD_ID + ".stat." + translationKey + ".description", descriptionArgs);
+            name = (stack) -> Text.translatable(Miapi.MOD_ID + ".stat." + key);
+            hoverDescription = (stack) -> Text.translatable(Miapi.MOD_ID + ".stat." + key + ".description", descriptionArgs);
             return this;
         }
 
         public Builder setName(Text name) {
+            this.name = (stack) -> name;
+            return this;
+        }
+
+        public Builder setName(TextGetter name) {
             this.name = name;
             return this;
         }
@@ -97,12 +94,19 @@ public class AttributeSingleDisplay extends SingleStatDisplayDouble {
         }
 
         public Builder setHoverDescription(Text hoverDescription) {
+            this.hoverDescription = (stack) -> hoverDescription;
+            return this;
+        }
+
+        public Builder setHoverDescription(TextGetter hoverDescription) {
             this.hoverDescription = hoverDescription;
             return this;
         }
 
         public Builder setFormat(String format) {
-            this.format = format;
+            modifierFormat = Util.make(new DecimalFormat(format), (decimalFormat) -> {
+                decimalFormat.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ROOT));
+            });
             return this;
         }
 
@@ -116,7 +120,7 @@ public class AttributeSingleDisplay extends SingleStatDisplayDouble {
             }
 
             // Create an instance of AttributeProperty with the builder values
-            return new AttributeSingleDisplay(attribute, slot, name, hoverDescription, defaultValue, format);
+            return new AttributeSingleDisplay(attribute, slot, name, hoverDescription, defaultValue, modifierFormat);
         }
     }
 }
