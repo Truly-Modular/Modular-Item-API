@@ -1,0 +1,24 @@
+{
+  "key": "wood_bamboo",
+  "translation": "miapi.material.wood.bamboo",
+  "icon": "textures/block/bamboo_planks.png",
+  "groups": ["wood"],
+  "hardness": 2.5,
+  "density": 1.7,
+  "flexibility": 7,
+  "durability": 42,
+  "color": "C6AF4C",
+  "mining_speed": 1.9,
+  "mining_level": 0,
+  "textures": [
+    "wood"
+  ],
+  "propertyList": [],
+
+  "items": [
+    {
+      "item": "minecraft:bamboo_planks",
+      "value": 1.0
+    }
+  ]
+}

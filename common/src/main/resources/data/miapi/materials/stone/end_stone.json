@@ -1,0 +1,24 @@
+{
+  "key": "stone_end_stone",
+  "translation": "miapi.material.stone.end_stone",
+  "icon": "textures/block/end_stone.png",
+  "groups": ["stone"],
+  "hardness": 6,
+  "density": 4,
+  "flexibility": 0,
+  "durability": 1031,
+  "color": "EBF3B2",
+  "mining_speed": 4,
+  "mining_level": 1,
+  "textures": [
+    "stone"
+  ],
+  "propertyList": [],
+
+  "items": [
+    {
+      "item": "minecraft:end_stone",
+      "value": 1.0
+    }
+  ]
+}

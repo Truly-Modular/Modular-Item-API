@@ -1,0 +1,24 @@
+{
+  "key": "stone_obsidian",
+  "translation": "miapi.material.stone.obsidian",
+  "icon": "textures/block/obsidian.png",
+  "groups": ["stone"],
+  "hardness": 5,
+  "density": 8,
+  "flexibility": 0,
+  "durability": 2596,
+  "color": "3A2753",
+  "mining_speed": 4,
+  "mining_level": 1,
+  "textures": [
+    "stone"
+  ],
+  "propertyList": [],
+
+  "items": [
+    {
+      "item": "minecraft:obsidian",
+      "value": 1.0
+    }
+  ]
+}

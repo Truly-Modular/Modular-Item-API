@@ -1,0 +1,24 @@
+{
+  "key": "sandstone",
+  "translation": "miapi.material.stone.sandstone",
+  "icon": "textures/block/sandstone.png",
+  "groups": ["stone"],
+  "hardness": 3,
+  "density": 2.8,
+  "flexibility": 0,
+  "durability": 111,
+  "color": "E0D8AE",
+  "mining_speed": 3.8,
+  "mining_level": 1,
+  "textures": [
+    "stone"
+  ],
+  "propertyList": [],
+
+  "items": [
+    {
+      "item": "minecraft:sandstone",
+      "value": 1.0
+    }
+  ]
+}
