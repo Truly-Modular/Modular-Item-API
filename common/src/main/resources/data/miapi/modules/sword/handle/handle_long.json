@@ -11,6 +11,11 @@
     "allowedInSlots": [
         "melee"
     ],
+    "enchantments": {
+        "allowed": [
+            "miapi:basic"
+        ]
+    },
     "slots": {
         "0": {
             "allowed": [

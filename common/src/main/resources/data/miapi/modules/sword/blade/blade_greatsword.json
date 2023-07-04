@@ -20,6 +20,12 @@
             }
         }
     },
+    "enchantments": {
+        "allowed": [
+            "miapi:edged",
+            "miapi:weapon"
+        ]
+    },
     "allowedInSlots": [
         "sword_blade_large"
     ],

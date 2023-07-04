@@ -20,6 +20,12 @@
             }
         }
     },
+    "enchantments": {
+        "allowed": [
+            "miapi:edged",
+            "miapi:weapon"
+        ]
+    },
     "better_combat_config": {
         "parent": "bettercombat:claymore"
     },

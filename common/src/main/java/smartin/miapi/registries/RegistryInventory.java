@@ -284,6 +284,7 @@ public class RegistryInventory {
             registerMiapi(moduleProperties, ToolOrWeaponProperty.KEY, new ToolOrWeaponProperty());
             registerMiapi(moduleProperties, MiningLevelProperty.KEY, new MiningLevelProperty());
             registerMiapi(moduleProperties, TagProperty.KEY, new TagProperty());
+            registerMiapi(moduleProperties, EnchantmentProperty.KEY, new EnchantmentProperty());
 
             //compat
             registerMiapi(moduleProperties, BetterCombatProperty.KEY, new BetterCombatProperty());

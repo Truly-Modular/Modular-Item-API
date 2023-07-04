@@ -23,6 +23,11 @@
     "allowedInSlots": [
         "tool_head"
     ],
+    "enchantments": {
+        "allowed": [
+            "miapi:tool"
+        ]
+    },
     "slots": {
         "0": {
             "allowed": [

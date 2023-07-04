@@ -23,6 +23,13 @@
             }
         }
     ],
+    "enchantments": {
+        "allowed": [
+            "miapi:edged",
+            "miapi:weapon",
+            "minecraft:loyalty"
+        ]
+    },
     "allowedInSlots": [
         "polearm_blade"
     ],

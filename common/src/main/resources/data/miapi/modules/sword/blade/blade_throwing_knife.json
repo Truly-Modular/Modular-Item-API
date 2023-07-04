@@ -20,6 +20,13 @@
             }
         }
     },
+    "enchantments": {
+        "allowed": [
+            "miapi:edged",
+            "miapi:weapon",
+            "minecraft:loyalty"
+        ]
+    },
     "allowedInSlots": [
         "sword_blade_small"
     ],

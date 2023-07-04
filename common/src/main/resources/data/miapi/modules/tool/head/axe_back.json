@@ -23,6 +23,11 @@
     "allowedInSlots": [
         "tool_head_back"
     ],
+    "enchantments": {
+        "allowed": [
+            "miapi:tool"
+        ]
+    },
     "allowedMaterial": {
         "allowedMaterials": [
             "wood",

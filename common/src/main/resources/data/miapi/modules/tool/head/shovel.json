@@ -23,6 +23,11 @@
     "allowedInSlots": [
         "tool_head"
     ],
+    "enchantments": {
+        "allowed": [
+            "miapi:tool"
+        ]
+    },
     "mining_level": {
         "shovel": "[material.mining_level]"
     },

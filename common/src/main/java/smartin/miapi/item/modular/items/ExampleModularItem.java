@@ -1,5 +1,6 @@
 package smartin.miapi.item.modular.items;
 
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;

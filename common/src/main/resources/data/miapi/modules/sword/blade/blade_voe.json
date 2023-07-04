@@ -20,6 +20,12 @@
             }
         }
     },
+    "enchantments": {
+        "allowed": [
+            "miapi:edged",
+            "miapi:weapon"
+        ]
+    },
     "allowedInSlots": [
         "polearm_blade"
     ],

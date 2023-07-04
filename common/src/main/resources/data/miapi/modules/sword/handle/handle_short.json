@@ -34,6 +34,11 @@
             }
         }
     },
+    "enchantments": {
+        "allowed": [
+            "miapi:basic"
+        ]
+    },
     "modelTransform": {
         "replace": {
             "thirdperson_righthand": {
