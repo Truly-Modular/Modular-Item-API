@@ -39,19 +39,7 @@ public class MaterialProperty implements ModuleProperty {
                         String materialKey = jsonData.getAsString();
                         Material material = materials.get(materialKey);
                         if (material != null) {
-                            jsonData = materials.get(jsonData.getAsString()).rawJson;
-                            if (jsonData != null) {
-                                String[] keys = data.split("\\.");
-                                for (String key : keys) {
-                                    jsonData = jsonData.getAsJsonObject().get(key);
-                                    if (jsonData == null) {
-                                        break;
-                                    }
-                                }
-                                if (jsonData != null) {
-                                    return jsonData.getAsDouble();
-                                }
-                            }
+                            return material.getDouble(data);
                         }
                     }
                 } catch (Exception exception) {
@@ -70,19 +58,7 @@ public class MaterialProperty implements ModuleProperty {
                         String materialKey = jsonData.getAsString();
                         Material material = materials.get(materialKey);
                         if (material != null) {
-                            jsonData = materials.get(jsonData.getAsString()).rawJson;
-                            if (jsonData != null) {
-                                String[] keys = data.split("\\.");
-                                for (String key : keys) {
-                                    jsonData = jsonData.getAsJsonObject().get(key);
-                                    if (jsonData == null) {
-                                        break;
-                                    }
-                                }
-                                if (jsonData != null) {
-                                    return jsonData.getAsString();
-                                }
-                            }
+                            return material.getData(data);
                         } else {
                             Miapi.LOGGER.warn("Material " + materialKey + " not found");
                         }
@@ -116,7 +92,7 @@ public class MaterialProperty implements ModuleProperty {
         textureKeys.add("base");
         for (Material material : materials.values()) {
             textureKeys.add(material.key);
-            JsonArray textures = material.rawJson.getAsJsonObject().getAsJsonArray("textures");
+            JsonArray textures = material.getRawElement("textures").getAsJsonArray();
             for (JsonElement texture : textures) {
                 textureKeys.add(texture.getAsString());
             }
@@ -145,8 +121,7 @@ public class MaterialProperty implements ModuleProperty {
     @Nullable
     public static Material getMaterial(ItemStack item) {
         for (Material material : materials.values()) {
-            JsonObject obj = material.rawJson.getAsJsonObject();
-            JsonArray items = obj.getAsJsonArray("items");
+            JsonArray items = material.getRawElement("items").getAsJsonArray();
 
             for (JsonElement element : items) {
                 JsonObject itemObj = element.getAsJsonObject();
@@ -196,7 +171,7 @@ public class MaterialProperty implements ModuleProperty {
 
     public class Material {
         public String key;
-        public JsonElement rawJson;
+        protected JsonElement rawJson;
 
         public List<String> getGroups() {
             List<String> groups = new ArrayList<>();
@@ -207,6 +182,40 @@ public class MaterialProperty implements ModuleProperty {
                 groups.add(group);
             }
             return groups;
+        }
+
+        public JsonElement getRawElement(String key){
+            return rawJson.getAsJsonObject().get(key);
+        }
+
+        public double getDouble(String property) {
+            String[] keys = property.split("\\.");
+            JsonElement jsonData = rawJson;
+            for (String key : keys) {
+                jsonData = jsonData.getAsJsonObject().get(key);
+                if (jsonData == null) {
+                    break;
+                }
+            }
+            if (jsonData != null) {
+                return jsonData.getAsDouble();
+            }
+            return 0;
+        }
+
+        public String getData(String property) {
+            String[] keys = property.split("\\.");
+            JsonElement jsonData = rawJson;
+            for (String key : keys) {
+                jsonData = jsonData.getAsJsonObject().get(key);
+                if (jsonData == null) {
+                    break;
+                }
+            }
+            if (jsonData != null) {
+                return jsonData.getAsString();
+            }
+            return "";
         }
 
         public List<String> getTextureKeys() {
