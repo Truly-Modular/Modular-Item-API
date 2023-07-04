@@ -119,12 +119,14 @@ public class RegistryInventory {
     public static Item modularItem;
     public static RegistrySupplier<EntityType<ItemProjectile>> itemProjectileType = (RegistrySupplier) registerAndSupply(entityTypes, "thrown_item", () ->
             EntityType.Builder.create(ItemProjectile::new, SpawnGroup.MISC).setDimensions(0.5F, 0.5F).maxTrackingRange(4).trackingTickInterval(20).build("miapi:thrown_item"));
+
     static {
         itemProjectileType.listen(e -> {
             if (Platform.getEnvironment() == Env.CLIENT)
                 MiapiClient.registerEntityRenderer();
         });
     }
+
     public static ScreenHandlerType<CraftingScreenHandler> craftingScreenHandler;
 
     public static void setup() {
@@ -152,8 +154,6 @@ public class RegistryInventory {
                         sounds(BlockSoundGroup.METAL).
                         nonOpaque()), b -> modularWorkBench = b);
         register(items, "modular_work_bench", () -> new BlockItem(modularWorkBench, new Item.Settings()));
-
-
 
 
         // CREATIVE TAB
@@ -232,7 +232,7 @@ public class RegistryInventory {
                         new ClampedEntityAttribute("miapi.attribute.name.shield_break", 0.0, 0.0, 1024.0).setTracked(true),
                 att -> SHIELD_BREAK = att);
 
-        LifecycleEvent.SETUP.register(()->{
+        LifecycleEvent.SETUP.register(() -> {
             //EDITPROPERTIES
             registerMiapi(editOptions, "dev", new PropertyInjectionDev());
             registerMiapi(editOptions, "skin", new SkinOptions());
@@ -250,13 +250,12 @@ public class RegistryInventory {
             registerMiapi(moduleConditionRegistry, "tag", new TagCondition());
 
             //MODULEPROPERTIES
-            try{
+            try {
                 registerMiapi(moduleProperties, ModelProperty.KEY, new ModelProperty());
                 registerMiapi(moduleProperties, ModelTransformationProperty.KEY, new ModelTransformationProperty());
                 registerMiapi(moduleProperties, ModelMergeProperty.KEY, new ModelMergeProperty());
                 registerMiapi(moduleProperties, GuiOffsetProperty.KEY, new GuiOffsetProperty());
-            }
-            catch (Exception surpressed){
+            } catch (Exception surpressed) {
                 registerMiapi(moduleProperties, "texture", new ServerReplaceProperty());
                 registerMiapi(moduleProperties, "modelTransform", new ServerReplaceProperty());
                 registerMiapi(moduleProperties, "modelMerge", new ServerReplaceProperty());
@@ -285,6 +284,7 @@ public class RegistryInventory {
             registerMiapi(moduleProperties, MiningLevelProperty.KEY, new MiningLevelProperty());
             registerMiapi(moduleProperties, TagProperty.KEY, new TagProperty());
             registerMiapi(moduleProperties, EnchantmentProperty.KEY, new EnchantmentProperty());
+            registerMiapi(moduleProperties, MaterialProperties.KEY, new MaterialProperties());
 
             //compat
             registerMiapi(moduleProperties, BetterCombatProperty.KEY, new BetterCombatProperty());

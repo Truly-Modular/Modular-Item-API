@@ -1,0 +1,24 @@
+{
+  "key": "stone_prismarine",
+  "translation": "miapi.material.stone.prismarine",
+  "icon": "textures/block/prismarine.png",
+  "groups": ["stone"],
+  "hardness": 4,
+  "density": 3,
+  "flexibility": 0,
+  "durability": 131,
+  "color": "78B5A9",
+  "mining_speed": 4,
+  "mining_level": 1,
+  "textures": [
+    "stone"
+  ],
+  "propertyList": [],
+
+  "items": [
+    {
+      "item": "minecraft:prismarine",
+      "value": 1.0
+    }
+  ]
+}

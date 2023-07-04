@@ -1,0 +1,22 @@
+{
+  "key": "end_rod",
+  "translation": "miapi.material.end_rod",
+  "icon": "textures/item/end_rod.png",
+  "groups": ["rod"],
+  "hardness": 3,
+  "density": 3,
+  "flexibility": 3,
+  "durability": 196,
+  "color": "A39E93",
+  "mining_speed": 5,
+  "mining_level": 1,
+  "textures": [
+    "contrast"
+  ],
+  "items": [
+    {
+      "item": "minecraft:end_rod",
+      "value": 1.0
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "key": "quartz",
+  "translation": "miapi.material.quartz",
+  "icon": "textures/item/quartz.png",
+  "groups": ["crystal","gem"],
+  "hardness": 5.9,
+  "density": 0.5,
+  "flexibility": 0,
+  "durability": 1,
+  "mining_speed": 5,
+  "mining_level": 0,
+  "color": "F4F2EF",
+  "textures": [
+    "contrast"
+  ],
+  "items": [
+    {
+      "item": "minecraft:quartz",
+      "value": 1.0
+    },
+    {
+      "item": "minecraft:quartz_block",
+      "value": 4.0
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "key": "emerald",
+  "translation": "miapi.material.emerald",
+  "icon": "textures/item/emerald.png",
+  "groups": ["crystal","gem"],
+  "hardness": 5,
+  "density": 2.9,
+  "flexibility": 0,
+  "durability": 830,
+  "mining_speed": 8,
+  "mining_level": 3,
+  "color": "17DA61",
+  "textures": [
+    "contrast"
+  ],
+  "items": [
+    {
+      "item": "minecraft:emerald",
+      "value": 1.0
+    }
+  ]
+}

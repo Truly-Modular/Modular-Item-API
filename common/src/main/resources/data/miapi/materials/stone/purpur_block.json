@@ -1,0 +1,24 @@
+{
+  "key": "stone_purpur",
+  "translation": "miapi.material.stone.purpur_block",
+  "icon": "textures/block/purpur_block.png",
+  "groups": ["stone"],
+  "hardness": 4,
+  "density": 3,
+  "flexibility": 0,
+  "durability": 131,
+  "color": "B084B0",
+  "mining_speed": 4,
+  "mining_level": 1,
+  "textures": [
+    "stone"
+  ],
+  "propertyList": [],
+
+  "items": [
+    {
+      "item": "minecraft:purpur_block",
+      "value": 1.0
+    }
+  ]
+}

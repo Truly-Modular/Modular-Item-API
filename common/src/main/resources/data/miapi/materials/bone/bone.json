@@ -1,0 +1,26 @@
+{
+  "key": "bone",
+  "translation": "miapi.material.bone",
+  "icon": "textures/item/bone.png",
+  "groups": ["bone","metal"],
+  "hardness": 5,
+  "density": 3,
+  "flexibility": 0,
+  "durability": 189,
+  "color": "F9F8EA",
+  "mining_speed": 4,
+  "mining_level": 1,
+  "textures": [
+    "contrast"
+  ],
+  "items": [
+    {
+      "item": "minecraft:bone",
+      "value": 1.0
+    },
+    {
+      "item": "minecraft:bone_block",
+      "value": 4.0
+    }
+  ]
+}

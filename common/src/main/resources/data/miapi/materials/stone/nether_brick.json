@@ -1,0 +1,24 @@
+{
+  "key": "stone_nether_brick",
+  "translation": "miapi.material.stone.nether_brick",
+  "icon": "textures/item/nether_brick.png",
+  "groups": ["stone"],
+  "hardness": 4,
+  "density": 3,
+  "flexibility": 0,
+  "durability": 131,
+  "color": "A77663",
+  "mining_speed": 4,
+  "mining_level": 1,
+  "textures": [
+    "stone"
+  ],
+  "propertyList": [],
+
+  "items": [
+    {
+      "item": "minecraft:nether_brick",
+      "value": 1.0
+    }
+  ]
+}

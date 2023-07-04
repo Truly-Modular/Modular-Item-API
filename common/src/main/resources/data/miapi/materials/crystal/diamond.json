@@ -4,7 +4,7 @@
   "icon": "textures/item/diamond.png",
   "groups": ["crystal","gem"],
   "hardness": 6,
-  "density": 2.9,
+  "density": 3.0,
   "flexibility": 0,
   "durability": 1560,
   "mining_speed": 8,

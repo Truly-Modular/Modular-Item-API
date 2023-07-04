@@ -159,7 +159,7 @@
     },
     "allowedMaterial": {
         "allowedMaterials": [
-            "wood","stone","metal","crystal"
+            "wood","stone","metal","crystal","rod"
         ],
         "cost": 1
     },

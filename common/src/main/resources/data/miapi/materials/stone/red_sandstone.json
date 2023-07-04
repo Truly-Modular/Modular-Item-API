@@ -1,0 +1,24 @@
+{
+  "key": "red_sandstone",
+  "translation": "miapi.material.stone.red_sandstone",
+  "icon": "textures/block/red_sandstone.png",
+  "groups": ["stone"],
+  "hardness": 3,
+  "density": 2.8,
+  "flexibility": 0,
+  "durability": 111,
+  "color": "B96522",
+  "mining_speed": 3.8,
+  "mining_level": 1,
+  "textures": [
+    "stone"
+  ],
+  "propertyList": [],
+
+  "items": [
+    {
+      "item": "minecraft:red_sandstone",
+      "value": 1.0
+    }
+  ]
+}

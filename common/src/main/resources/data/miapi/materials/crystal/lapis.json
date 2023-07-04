@@ -1,0 +1,22 @@
+{
+  "key": "lapis_lazuli",
+  "translation": "miapi.material.lapis_lazuli",
+  "icon": "textures/item/lapis_lazuli.png",
+  "groups": ["crystal","gem"],
+  "hardness": 3,
+  "density": 0.6,
+  "flexibility": 0,
+  "durability": 196,
+  "mining_speed": 4,
+  "mining_level": 0,
+  "color": "1C52A6",
+  "textures": [
+    "contrast"
+  ],
+  "items": [
+    {
+      "item": "minecraft:lapis_lazuli",
+      "value": 1.0
+    }
+  ]
+}

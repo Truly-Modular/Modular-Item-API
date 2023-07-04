@@ -1,0 +1,26 @@
+{
+  "key": "amethyst",
+  "translation": "miapi.material.amethyst",
+  "icon": "textures/item/amethyst_cluster.png",
+  "groups": ["crystal","gem"],
+  "hardness": 5,
+  "density": 0.5,
+  "flexibility": 0,
+  "durability": 1,
+  "mining_speed": 5,
+  "mining_level": 0,
+  "color": "A477EE",
+  "textures": [
+    "contrast"
+  ],
+  "items": [
+    {
+      "item": "minecraft:amethyst_cluster",
+      "value": 0.25
+    },
+    {
+      "item": "minecraft:amethyst_block",
+      "value": 1.0
+    }
+  ]
+}

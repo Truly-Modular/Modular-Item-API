@@ -1,0 +1,22 @@
+{
+  "key": "blaze_rod",
+  "translation": "miapi.material.blaze_rod",
+  "icon": "textures/item/blaze_rod.png",
+  "groups": ["rod"],
+  "hardness": 3,
+  "density": 3,
+  "flexibility": 3,
+  "durability": 196,
+  "color": "FCBF00",
+  "mining_speed": 5,
+  "mining_level": 1,
+  "textures": [
+    "contrast"
+  ],
+  "items": [
+    {
+      "item": "minecraft:blaze_rod",
+      "value": 1.0
+    }
+  ]
+}
