@@ -1,6 +1,6 @@
 {
   "key": "end_rod",
-  "translation": "miapi.material.end_rod",
+  "translation": "miapi.material.rod.end_rod",
   "icon": "textures/item/end_rod.png",
   "groups": ["rod"],
   "hardness": 3,

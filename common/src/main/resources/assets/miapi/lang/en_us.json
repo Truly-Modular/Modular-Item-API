@@ -37,6 +37,7 @@
 
     "miapi.material.wood": "Wooden ",
     "miapi.material.wood.acacia": "Acaica ",
+    "miapi.material.wood.bamboo": "Bamboo ",
     "miapi.material.wood.birch": "Birch ",
     "miapi.material.wood.cherry": "Cherry ",
     "miapi.material.wood.crimson": "Crimson ",
@@ -48,10 +49,39 @@
     "miapi.material.wood.warped": "Warped ",
     
     "miapi.material.stone": "Stone ",
+    "miapi.material.stone.andesite": "Andesite ",
+    "miapi.material.stone.blackstone": "Blackstone ",
+    "miapi.material.stone.calcite": "Calcite ",
+    "miapi.material.stone.deepslate": "Deepslate ",
+    "miapi.material.stone.diorite": "Diorite ",
+    "miapi.material.stone.dripstone": "Dripstone ",
+    "miapi.material.stone.end_stone": "End Stone ",
+    "miapi.material.stone.granite": "Granite ",    
+    "miapi.material.stone.nether_brick": "Nether Brick ",
+    "miapi.material.stone.netherrack": "Netherrack ",
+    "miapi.material.stone.obsidian": "Obsidian ",
+    "miapi.material.stone.prismarine": "Prismarine ",
+    "miapi.material.stone.purpur": "Purpur ",
+    "miapi.material.stone.red_sandstone": "Red Sandstone ",
+    "miapi.material.stone.sandstone": "Sandstone ",
+
+    "miapi.material.rod.end_rod": "End Rod ",
+    "miapi.material.rod.blaze_rod": "Blaze Rod ",
+
+    "miapi.material.flint": "Flint ",
+
+
+    "miapi.material.bone": "Bone ",
+
+    "miapi.material.crystal.amethyst": "Flint ",
+    "miapi.material.crystal.diamond": "Diamond ",
+    "miapi.material.crystal.emerald": "Flint ",
+    "miapi.material.crystal.lapis_lazuli": "Lapis ",
+    "miapi.material.crystal.nether_quartz": "Quartz ",
+
     "miapi.material.copper": "Copper ",
     "miapi.material.gold": "Golden ",
     "miapi.material.iron": "Iron ",
-    "miapi.material.diamond": "Diamond ",
     "miapi.material.netherite": "Netherite ",
 
     "block.miapi.modular_work_bench": "Modular Workbench",

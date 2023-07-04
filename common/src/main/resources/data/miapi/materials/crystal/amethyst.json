@@ -1,6 +1,6 @@
 {
   "key": "amethyst",
-  "translation": "miapi.material.amethyst",
+  "translation": "miapi.material.crystal.amethyst",
   "icon": "textures/item/amethyst_cluster.png",
   "groups": ["crystal","gem"],
   "hardness": 5,

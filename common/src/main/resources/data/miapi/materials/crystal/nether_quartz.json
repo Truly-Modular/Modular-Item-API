@@ -1,15 +1,15 @@
 {
-  "key": "quartz",
-  "translation": "miapi.material.quartz",
+  "key": "nether_quartz",
+  "translation": "miapi.material.crystal.nether_quartz",
   "icon": "textures/item/quartz.png",
   "groups": ["crystal","gem"],
   "hardness": 5.9,
   "density": 0.5,
   "flexibility": 0,
   "durability": 1,
+  "color": "F4F2EF",
   "mining_speed": 5,
   "mining_level": 0,
-  "color": "F4F2EF",
   "textures": [
     "contrast"
   ],

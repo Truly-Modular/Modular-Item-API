@@ -1,6 +1,6 @@
 {
   "key": "emerald",
-  "translation": "miapi.material.emerald",
+  "translation": "miapi.material.crystal.emerald",
   "icon": "textures/item/emerald.png",
   "groups": ["crystal","gem"],
   "hardness": 5,
