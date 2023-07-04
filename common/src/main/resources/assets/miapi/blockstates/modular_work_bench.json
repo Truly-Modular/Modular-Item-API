@@ -1,7 +1,19 @@
 {
   "variants": {
-    "": {
+    "facing=east": {
+      "model": "miapi:block/modular_work_bench",
+      "y": 270
+    },
+    "facing=north": {
+      "model": "miapi:block/modular_work_bench",
+      "y": 180
+    },
+    "facing=south": {
       "model": "miapi:block/modular_work_bench"
+    },
+    "facing=west": {
+      "model": "miapi:block/modular_work_bench",
+      "y": 90
     }
   }
 }

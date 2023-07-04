@@ -38,28 +38,37 @@ public class StatDisplay extends InteractAbleWidget {
         addStatDisplay(AttributeSingleDisplay
                 .Builder(EntityAttributes.GENERIC_ATTACK_DAMAGE)
                 .setTranslationKey("damage")
-                .setDefault(1).build());
+                .setDefault(1)
+                .setMax(13.0).build());
         addStatDisplay(AttributeSingleDisplay
                 .Builder(EntityAttributes.GENERIC_ATTACK_SPEED)
                 .setTranslationKey("attack_speed")
-                .setDefault(4).build());
+                .setDefault(4)
+                .setMax(4.0).build());
         addStatDisplay(new DpsStatDisplay());
         addStatDisplay(AttributeSingleDisplay
                 .Builder(AttributeRegistry.ITEM_DURABILITY)
                 .setTranslationKey("durability")
-                .setDefault(0).build());
+                .setDefault(0)
+                .setFormat("##")
+                .setMax(2000).build());
         addStatDisplay(SinglePropertyStatDisplay
                 .Builder(FlexibilityProperty.property)
                 .setTranslationKey(FlexibilityProperty.KEY)
+                .setMax(10)
                 .build());
         addStatDisplay(SinglePropertyStatDisplay
                 .Builder(HealthPercentDamage.property)
+                .setMax(50)
                 .setTranslationKey(HealthPercentDamage.KEY).build());
         addStatDisplay(SinglePropertyStatDisplay
                 .Builder(ArmorPenProperty.property)
+                .setMin(-20)
+                .setMax(50)
                 .setTranslationKey(ArmorPenProperty.KEY).build());
         addStatDisplay(SinglePropertyStatDisplay
                 .Builder(BlockProperty.property)
+                .setMax(50)
                 .setTranslationKey(BlockProperty.KEY).build());
     }
 

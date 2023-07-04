@@ -182,6 +182,11 @@ public class EnchantmentProperty implements CraftingProperty, ModuleProperty {
                 newEnchants.put(entry.getKey(), entry.getValue());
             }
         }
+        for (Map.Entry<Enchantment, Integer> entry : EnchantmentHelper.get(old).entrySet()) {
+            if (allowedEnchants.contains(entry.getKey())) {
+                newEnchants.put(entry.getKey(), entry.getValue());
+            }
+        }
         crafting.removeSubNbt("Enchantments");
         EnchantmentHelper.set(newEnchants, crafting);
         return crafting;

@@ -49,12 +49,24 @@ public class SinglePropertyStatDisplay extends SingleStatDisplayDouble {
         public String translationKey = "";
         public Object[] descriptionArgs = new Object[]{};
         public DecimalFormat modifierFormat;
+        public double min = 0;
+        public double max = 100;
 
         private Builder(SimpleDoubleProperty property) {
             this.property = property;
             modifierFormat = Util.make(new DecimalFormat("##.##"), (decimalFormat) -> {
                 decimalFormat.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ROOT));
             });
+        }
+
+        public Builder setMax(double maxValue){
+            max = maxValue;
+            return this;
+        }
+
+        public Builder setMin(double minValue){
+            min = minValue;
+            return this;
         }
 
         public Builder setName(Text name) {
@@ -101,7 +113,10 @@ public class SinglePropertyStatDisplay extends SingleStatDisplayDouble {
             }
 
             // Create an instance of AttributeProperty with the builder values
-            return new SinglePropertyStatDisplay(name, hoverDescription, property);
+            SinglePropertyStatDisplay display = new SinglePropertyStatDisplay(name, hoverDescription, property);
+            display.maxValue = max;
+            display.minValue = min;
+            return display;
         }
     }
 }

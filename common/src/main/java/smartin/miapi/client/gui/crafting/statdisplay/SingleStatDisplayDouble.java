@@ -5,15 +5,16 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Drawable;
-import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.ColorHelper;
 import smartin.miapi.Miapi;
-import smartin.miapi.client.gui.*;
+import smartin.miapi.client.gui.InteractAbleWidget;
+import smartin.miapi.client.gui.MultiLineTextWidget;
+import smartin.miapi.client.gui.ScrollingTextWidget;
+import smartin.miapi.client.gui.StatBar;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -29,6 +30,8 @@ public abstract class SingleStatDisplayDouble extends InteractAbleWidget impleme
     public ScrollingTextWidget compareValue;
     public ScrollingTextWidget centerValue;
     public ScrollingTextWidget textWidget;
+    public double maxValue = 100;
+    public double minValue = 0;
     public DecimalFormat modifierFormat;
     public TextGetter text;
     public TextGetter hover;
@@ -40,15 +43,15 @@ public abstract class SingleStatDisplayDouble extends InteractAbleWidget impleme
         this.hover = hover;
         textWidget = new ScrollingTextWidget(x, y, 80, Text.empty(), ColorHelper.Argb.getArgb(255, 255, 255, 255));
         currentValue = new ScrollingTextWidget(x, y, 50, Text.empty(), ColorHelper.Argb.getArgb(255, 255, 255, 255));
-        centerValue = new ScrollingTextWidget(x, y, (int) ((80 - 10) * (1.0 / 1.2)), Text.empty(), ColorHelper.Argb.getArgb(255, 255, 255, 255));
+        centerValue = new ScrollingTextWidget(x, y, 80 - 10, Text.empty(), ColorHelper.Argb.getArgb(255, 255, 255, 255));
         centerValue.setOrientation(ScrollingTextWidget.ORIENTATION.CENTERED);
-        compareValue = new ScrollingTextWidget(x, y, (int) ((80 - 10) * (1.0 / 1.2)), Text.empty(), ColorHelper.Argb.getArgb(255, 255, 255, 255));
+        compareValue = new ScrollingTextWidget(x, y, 80 - 10, Text.empty(), ColorHelper.Argb.getArgb(255, 255, 255, 255));
         compareValue.setOrientation(ScrollingTextWidget.ORIENTATION.RIGHT);
         statBar = new StatBar(0, 0, width, 10, ColorHelper.Argb.getArgb(255, 0, 0, 0));
         modifierFormat = Util.make(new DecimalFormat("##.##"), (decimalFormat) -> {
             decimalFormat.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ROOT));
         });
-        hoverDescription = new HoverDescription(x, y, width, height, Text.empty());
+        hoverDescription = new HoverDescription(x, y, 200, height, Text.empty());
     }
 
     public boolean shouldRender(ItemStack original, ItemStack compareTo) {
@@ -66,10 +69,9 @@ public abstract class SingleStatDisplayDouble extends InteractAbleWidget impleme
     public void render(DrawContext drawContext, int mouseX, int mouseY, float delta) {
         double oldValue = getValue(original);
         double compareToValue = getValue(compareTo);
-        double higher = Math.max(oldValue, compareToValue) * 1.2;
-        if (higher == 0) {
-            higher = 1;
-        }
+
+        double min = Math.min(minValue,Math.min(oldValue,compareToValue));
+        double max = Math.max(maxValue,Math.max(oldValue,compareToValue));
 
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
 
@@ -85,12 +87,12 @@ public abstract class SingleStatDisplayDouble extends InteractAbleWidget impleme
         statBar.setHeight(3);
         String centerText = "";
         if (oldValue < compareToValue) {
-            statBar.setPrimary(oldValue / higher, ColorHelper.Argb.getArgb(255, 255, 255, 255));
-            statBar.setSecondary(compareToValue / higher, ColorHelper.Argb.getArgb(255, 0, 255, 0));
+            statBar.setPrimary((oldValue - min) / (max - min), ColorHelper.Argb.getArgb(255, 255, 255, 255));
+            statBar.setSecondary((compareToValue - min) / (max - min), ColorHelper.Argb.getArgb(255, 0, 255, 0));
             compareValue.textColor = ColorHelper.Argb.getArgb(255, 0, 255, 0);
         } else {
-            statBar.setPrimary(compareToValue / higher, ColorHelper.Argb.getArgb(255, 255, 255, 255));
-            statBar.setSecondary(oldValue / higher, ColorHelper.Argb.getArgb(255, 255, 0, 0));
+            statBar.setPrimary((compareToValue - min) / (max - min), ColorHelper.Argb.getArgb(255, 255, 255, 255));
+            statBar.setSecondary((oldValue - min) / (max - min), ColorHelper.Argb.getArgb(255, 255, 0, 0));
             compareValue.textColor = ColorHelper.Argb.getArgb(255, 255, 0, 0);
         }
         if (oldValue == compareToValue) {

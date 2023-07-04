@@ -47,6 +47,9 @@ public class ItemToModularConverter implements ModularItemStackConverter.Modular
     public ItemStack convert(ItemStack stack) {
         for (Map.Entry<String, ItemStack> entry : regexes.entrySet()) {
             if (Registries.ITEM.getId(stack.getItem()).toString().matches(entry.getKey())) {
+                ItemStack nextStack = entry.getValue().copy();
+                nextStack.setNbt(stack.copy().getNbt());
+                nextStack.getNbt().put("modules", entry.getValue().getNbt().get("modules"));
                 return entry.getValue().copy();
             }
         }

@@ -58,12 +58,24 @@ public class AttributeSingleDisplay extends SingleStatDisplayDouble {
         public String translationKey = "";
         public Object[] descriptionArgs = new Object[]{};
         public DecimalFormat modifierFormat;
+        public double min = 0;
+        public double max = 100;
 
         private Builder(EntityAttribute attribute) {
             this.attribute = attribute;
             modifierFormat = Util.make(new DecimalFormat("##.##"), (decimalFormat) -> {
                 decimalFormat.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ROOT));
             });
+        }
+
+        public Builder setMax(double maxValue){
+            max = maxValue;
+            return this;
+        }
+
+        public Builder setMin(double minValue){
+            min = minValue;
+            return this;
         }
 
         public Builder setDefault(double defaultValue) {
@@ -120,7 +132,10 @@ public class AttributeSingleDisplay extends SingleStatDisplayDouble {
             }
 
             // Create an instance of AttributeProperty with the builder values
-            return new AttributeSingleDisplay(attribute, slot, name, hoverDescription, defaultValue, modifierFormat);
+            AttributeSingleDisplay display = new AttributeSingleDisplay(attribute, slot, name, hoverDescription, defaultValue, modifierFormat);
+            display.minValue = min;
+            display.maxValue = max;
+            return display;
         }
     }
 }

@@ -1,12 +1,17 @@
 {
     "type": "minecraft:crafting_shaped",
+    "category": "misc",
     "pattern": [
         "bbb",
-        " b "
+        " w ",
+        "www"
     ],
     "key": {
         "b": {
-          "item": "minecraft:blackstone"
+          "item": "minecraft:iron_ingot"
+        },
+        "w": {
+            "item": "minecraft:deepslate"
         }
     },
     "result": {
