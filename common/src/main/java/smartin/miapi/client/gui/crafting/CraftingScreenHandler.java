@@ -1,14 +1,11 @@
 package smartin.miapi.client.gui.crafting;
 
-import dev.architectury.event.events.client.ClientTooltipEvent;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.screen.EnchantmentScreenHandler;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.screen.slot.Slot;
@@ -22,7 +19,6 @@ import smartin.miapi.network.Networking;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -85,7 +81,7 @@ public class CraftingScreenHandler extends ScreenHandler {
             });
             Networking.registerC2SPacket(packetIDSlotRemove, (buffer, player) -> {
                 int slotId = buffer.readInt();
-                transferSlot(playerInventory.player, slotId);
+                quickMove(playerInventory.player, slotId);
             });
             Networking.registerC2SPacket(editPacketID, (buffer, player) -> {
                 EditOption option = RegistryInventory.editOptions.get(buffer.readString());
@@ -99,7 +95,7 @@ public class CraftingScreenHandler extends ScreenHandler {
                 }
                 Miapi.LOGGER.warn(root.toString());
                 stack = option.execute(buffer, stack, root.getPosition(position).copy());
-                inventory.setStack(0,stack);
+                inventory.setStack(0, stack);
             });
         }
         this.context = context;
@@ -143,7 +139,7 @@ public class CraftingScreenHandler extends ScreenHandler {
     public void removeSlotByClient(Slot slot) {
         if (!slots.contains(slot))
             return;
-        transferSlot(playerInventory.player, slot.id);
+        quickMove(playerInventory.player, slot.id);
         slot.markDirty();
         if (slot instanceof MutableSlot mutableSlot) {
             mutableSlot.setEnabled(false);
@@ -170,19 +166,6 @@ public class CraftingScreenHandler extends ScreenHandler {
         Networking.sendC2S(packetIDSlotAdd, buf);
 
         slot.markDirty();
-    }
-
-    /**
-     * Transfers an {@link ItemStack} from the slot with the given index to the player's inventory.
-     *
-     * @param player the player who is performing the transfer
-     * @param index  the index of the slot to transfer from
-     * @return the ItemStack that was transferred, or {@link ItemStack#EMPTY} if the transfer was unsuccessful
-     */
-    public ItemStack transferSlot(PlayerEntity player, int index) {
-        Slot slot = this.slots.get(index);
-        player.getInventory().offerOrDrop(slot.getStack());
-        return ItemStack.EMPTY;
     }
 
     @Override
@@ -216,8 +199,41 @@ public class CraftingScreenHandler extends ScreenHandler {
         inventory.markDirty();
     }
 
-    public ItemStack quickMove(PlayerEntity player, int slot) {
-        return ItemStack.EMPTY;
+    public ItemStack quickMove(PlayerEntity player, int index) {
+        ItemStack itemStack = ItemStack.EMPTY;
+        Slot slot = this.slots.get(index);
+        if (slot != null && slot.hasStack()) {
+            ItemStack itemStack2 = slot.getStack();
+            itemStack = itemStack2.copy();
+            if (index == 36) {
+                //case 1: tool slot to player
+                if (!this.insertItem(itemStack2, 0, 36, true)) {
+                    return ItemStack.EMPTY;
+                }
+                slot.markDirty();
+            } else if (index > 36) {
+                //additional Material Slot
+                if (!this.insertItem(itemStack2, 0, 36, true)) {
+                    return ItemStack.EMPTY;
+                }
+                slot.markDirty();
+            } else {
+                //PlayerInv
+                if ((slots.get(36).getStack().isEmpty() || slots.get(36).getStack().getItem().equals(itemStack2.getItem())) && !this.insertItem(itemStack2, 36, 37, true)) {
+                    return ItemStack.EMPTY;
+                } else {
+                    for (Slot slot1 : slots) {
+                        if (slot1.id > 36) {
+                            if (!this.insertItem(itemStack2, slot1.id, slot1.id + 1, true)) {
+                                return ItemStack.EMPTY;
+                            }
+                        }
+                    }
+                }
+                slot.onTakeItem(player, itemStack2);
+            }
+        }
+        return itemStack;
     }
 
     @Override

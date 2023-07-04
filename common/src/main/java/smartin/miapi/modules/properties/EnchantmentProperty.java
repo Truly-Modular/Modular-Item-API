@@ -32,7 +32,6 @@ public class EnchantmentProperty implements CraftingProperty, ModuleProperty {
         addToReplaceMap("miapi:basic", "minecraft:mending");
         addToReplaceMap("miapi:basic", "minecraft:unbreaking");
         addToReplaceMap("miapi:basic", "minecraft:vanishing_curse");
-        addToReplaceMap("miapi:basic", "minecraft:curse_of_vanishing");
         addToReplaceMap("miapi:weapon", "minecraft:fire_aspect");
         addToReplaceMap("miapi:weapon", "minecraft:looting");
         addToReplaceMap("miapi:weapon", "minecraft:knockback");
@@ -55,6 +54,7 @@ public class EnchantmentProperty implements CraftingProperty, ModuleProperty {
         addToReplaceMap("miapi:armor", "minecraft:projectile_protection");
         addToReplaceMap("miapi:armor", "minecraft:fire_protection");
         addToReplaceMap("miapi:armor", "minecraft:thorns");
+        addToReplaceMap("miapi:armor", "minecraft:binding_curse");
         addToReplaceMap("miapi:helmet", "minecraft:aqua_affinity");
         addToReplaceMap("miapi:helmet", "minecraft:respiration");
         addToReplaceMap("miapi:boots", "minecraft:feather_falling");
@@ -90,12 +90,10 @@ public class EnchantmentProperty implements CraftingProperty, ModuleProperty {
         List<String> list = replaceMap.getOrDefault(key, new ArrayList<>());
         list.add(enchant);
         replaceMap.put(key, list);
-        Miapi.LOGGER.error(String.valueOf(replaceMap.get(key)));
     }
 
     public static boolean isAllowed(ItemStack stack, Enchantment enchantment) {
         boolean isAllwed = getAllowedList(stack).contains(enchantment);
-        Miapi.LOGGER.error("isAllowed " + isAllwed);
         getAllowedList(stack).forEach(enchantment1 -> {
             Miapi.LOGGER.error(String.valueOf(enchantment1));
         });
@@ -114,29 +112,21 @@ public class EnchantmentProperty implements CraftingProperty, ModuleProperty {
         List<String> replaceList = new ArrayList<>();
         for (String id : list) {
             if (replaceMap.containsKey(id)) {
-                Miapi.LOGGER.warn("adding key replace " + id);
                 replaceList.addAll(replaceMap.get(id));
             } else {
-                Miapi.LOGGER.warn("adding key raw " + id);
                 replaceList.add(id);
             }
         }
         List<Enchantment> enchantments = new ArrayList<>();
         for (String id : replaceList) {
-            Miapi.LOGGER.warn("loading " + id);
             if (id.contains(":")) {
                 if (Platform.isModLoaded(id.split(":")[0])) {
                     enchantments.add(Registries.ENCHANTMENT.get(new Identifier(id)));
-                    Miapi.LOGGER.warn("loading converted" + enchantments.get(enchantments.size() - 1));
                 }
             } else {
                 enchantments.add(Registries.ENCHANTMENT.get(new Identifier(id)));
-                Miapi.LOGGER.warn("loading RAW " + enchantments.get(enchantments.size() - 1));
             }
         }
-        enchantments.forEach(enchantment1 -> {
-            Miapi.LOGGER.error(String.valueOf(enchantment1));
-        });
         return enchantments;
     }
 
