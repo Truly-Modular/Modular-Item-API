@@ -2,11 +2,8 @@ package smartin.miapi.modules.properties;
 
 import com.google.gson.JsonElement;
 import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.server.world.ServerWorld;
 import org.jetbrains.annotations.Nullable;
-import smartin.miapi.Miapi;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
@@ -38,16 +35,14 @@ public class EquipmentSlotProperty implements ModuleProperty {
     @Nullable
     public static EquipmentSlot getSlot(ItemStack stack) {
         ItemModule.ModuleInstance root = ItemModule.getModules(stack);
-        if (root != null) {
-            JsonElement element = ItemModule.getMergedProperty(root, property, MergeType.OVERWRITE);
-            if (element != null) {
-                String name = element.getAsString();
-                try{
-                    return EquipmentSlot.byName(name);
-                }
-                catch (Exception ignored){
+        JsonElement element = ItemModule.getMergedProperty(root, property, MergeType.OVERWRITE);
+        if (element != null) {
+            String name = element.getAsString();
+            try{
+                return EquipmentSlot.byName(name);
+            }
+            catch (Exception ignored){
 
-                }
             }
         }
         return null;

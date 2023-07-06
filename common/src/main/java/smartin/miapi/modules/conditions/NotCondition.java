@@ -1,14 +1,12 @@
 package smartin.miapi.modules.conditions;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 

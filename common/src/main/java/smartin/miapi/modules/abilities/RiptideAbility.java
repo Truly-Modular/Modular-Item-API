@@ -78,7 +78,7 @@ public class RiptideAbility implements ItemUseAbility {
                 h *= n / m;
                 k *= n / m;
                 l *= n / m;
-                playerEntity.addVelocity((double) h, (double) k, (double) l);
+                playerEntity.addVelocity(h, k, l);
                 playerEntity.useRiptide(20);
                 if (playerEntity.isOnGround()) {
                     float o = 1.1999999F;

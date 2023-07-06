@@ -5,8 +5,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.ColorHelper;
 
@@ -15,13 +13,16 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * A configurable Multiline Textwidget
+ */
 @Environment(EnvType.CLIENT)
 public class MultiLineTextWidget extends InteractAbleWidget {
 
     public Text rawText;
     public List<Text> lines = new ArrayList<>();
     private int longestLine;
-    public int maxLineLength = -1;
+    public int maxLineLength;
     public TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
     public int spacer = 1;
     public boolean hasTextShadow = true;
@@ -84,7 +85,7 @@ public class MultiLineTextWidget extends InteractAbleWidget {
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         int start = getY();
         for (Text line : lines) {
-            context.drawText(textRenderer,line,getX(),start,textColor,hasTextShadow);
+            context.drawText(textRenderer, line, getX(), start, textColor, hasTextShadow);
             start += textRenderer.fontHeight + spacer;
         }
 

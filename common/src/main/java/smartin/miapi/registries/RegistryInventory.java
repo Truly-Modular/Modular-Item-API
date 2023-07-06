@@ -16,8 +16,10 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.entity.attribute.ClampedEntityAttribute;
 import net.minecraft.entity.attribute.EntityAttribute;
-import net.minecraft.entity.attribute.EntityAttributes;
-import net.minecraft.item.*;
+import net.minecraft.item.BlockItem;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemGroup;
+import net.minecraft.item.ItemStack;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.screen.ScreenHandlerType;
@@ -41,13 +43,12 @@ import smartin.miapi.modules.properties.compat.BetterCombatProperty;
 import smartin.miapi.modules.properties.render.*;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
-import java.awt.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import static smartin.miapi.Miapi.MOD_ID;
-import static smartin.miapi.modules.abilities.util.ItemAbilityManager.useAbilityRegistry;
 import static smartin.miapi.attributes.AttributeRegistry.*;
+import static smartin.miapi.modules.abilities.util.ItemAbilityManager.useAbilityRegistry;
 import static smartin.miapi.modules.conditions.ConditionManager.moduleConditionRegistry;
 
 public class RegistryInventory {

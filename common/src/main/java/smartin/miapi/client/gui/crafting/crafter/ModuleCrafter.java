@@ -3,11 +3,8 @@ package smartin.miapi.client.gui.crafting.crafter;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.ClickableWidget;
-import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
@@ -18,25 +15,24 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.InteractAbleWidget;
-import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
 import smartin.miapi.craft.CraftAction;
 import smartin.miapi.modules.ItemModule;
-import smartin.miapi.modules.edit_options.EditOption;
 import smartin.miapi.modules.properties.SlotProperty;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
+/**
+ * The Managing class of the Modular Crafting Table
+ */
 @Environment(EnvType.CLIENT)
 public class ModuleCrafter extends InteractAbleWidget {
     private ItemStack stack;
     private ItemModule module;
     private SlotProperty.ModuleSlot slot;
     private final Consumer<ItemStack> preview;
-    private final Consumer<SlotProperty.ModuleSlot> selectedSlot;
     private SlotProperty.ModuleSlot baseSlot = new SlotProperty.ModuleSlot(new ArrayList<>());
-    private static final Identifier BACKGROUND_TEXTURE = new Identifier(Miapi.MOD_ID, "textures/crafting_gui_background_black.png");
     private String paketIdentifier;
     private Inventory linkedInventory;
     CraftView craftView;
@@ -46,11 +42,8 @@ public class ModuleCrafter extends InteractAbleWidget {
 
     public ModuleCrafter(int x, int y, int width, int height, Consumer<SlotProperty.ModuleSlot> selected, Consumer<ItemStack> craftedItem, Inventory linkedInventory, Consumer<Slot> addSlot, Consumer<Slot> removeSlot) {
         super(x, y, width, height, Text.empty());
-        this.linkedInventory = linkedInventory;
-        //set Header, current Module Selected
-        List<ClickableWidget> widgets = new ArrayList<>();
+        this.linkedInventory = linkedInventory;;
         this.preview = craftedItem;
-        this.selectedSlot = selected;
         this.removeSlot = removeSlot;
         this.addSlot = addSlot;
         CraftView.currentSlots.forEach(removeSlot::accept);
@@ -73,15 +66,7 @@ public class ModuleCrafter extends InteractAbleWidget {
         paketIdentifier = identifier;
     }
 
-    private void selectSlot(SlotProperty.ModuleSlot slot) {
-        selectedSlot.accept(slot);
-        setSelectedSlot(slot);
-    }
-
     public void setMode(Mode mode) {
-        if (!mode.equals(Mode.CRAFT)) {
-            //preview.accept(stack);
-        }
         if (craftView != null) {
             craftView.closeSlot();
             craftView = null;
@@ -147,23 +132,6 @@ public class ModuleCrafter extends InteractAbleWidget {
         }
     }
 
-    private void renderBackground(DrawContext drawContext, int mouseX, int mouseY, float delta) {
-        //RENDER Selected Module Top
-        Text moduleName = Text.translatable(Miapi.MOD_ID + ".module.empty");
-        try {
-            moduleName = Text.translatable(Miapi.MOD_ID + ".module." + slot.inSlot.module.getName());
-        } catch (Exception e) {
-
-        }
-        //drawSquareBorder(matrices,this.x,this.y,this.width,16,2,9145227);
-        drawSquareBorder(drawContext, this.getX(), this.getY(), this.width, 15, 2, ColorHelper.Argb.getArgb(255, 139, 139, 139));
-        //MinecraftClient.getInstance().textRenderer.draw(drawContext, moduleName, this.getX() + 4, this.getY() + 4, ColorHelper.Argb.getArgb(255, 59, 59, 59));
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        RenderSystem.setShaderTexture(0, BACKGROUND_TEXTURE);
-        //this.drawTexture(matrices, this.x, this.y, 0, 0, this.width, this.height);
-        //drawText
-    }
-
     @Override
     public void render(DrawContext drawContext, int mouseX, int mouseY, float delta) {
         //drawSquareBorder(matrices, x, y, width, height, 1, ColorHelper.Argb.getArgb(255, 0, 255, 0));
@@ -175,46 +143,5 @@ public class ModuleCrafter extends InteractAbleWidget {
         EDIT,
         REPLACE,
         CRAFT
-    }
-
-    public class BottomButton extends InteractAbleWidget {
-        private static final Identifier ButtonTexture = new Identifier(Miapi.MOD_ID, "textures/button.png");
-        public ItemModule.ModuleInstance moduleInstance;
-
-        /**
-         * This is a Widget build to support Children and parse the events down to them.
-         * Best use in conjunction with the ParentHandledScreen as it also handles Children correct,
-         * unlike the base vanilla classes.
-         * If you choose to handle some Events yourself and want to support Children yourself, you need to call the correct
-         * super method or handle the children yourself
-         *
-         * @param x      the X Position
-         * @param y      the y Position
-         * @param width  the width
-         * @param height the height
-         *               These for Params above are used to create feedback on isMouseOver() by default
-         * @param title
-         */
-        public BottomButton(int x, int y, int width, int height, Text title) {
-            super(x, y, width, height, title);
-        }
-
-        public void render(DrawContext drawContext, int mouseX, int mouseY, float delta) {
-            this.renderButton(drawContext, mouseX, mouseY, delta);
-            super.render(drawContext, mouseX, mouseY, delta);
-        }
-
-        public void renderButton(DrawContext drawContext, int mouseX, int mouseY, float delta) {
-            RenderSystem.setShaderTexture(0, ButtonTexture);
-            RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
-            RenderSystem.enableBlend();
-            RenderSystem.defaultBlendFunc();
-            RenderSystem.enableDepthTest();
-
-            int textureSize = 30;
-            int textureOffset = 0;
-
-            drawContext.drawTexture(ButtonTexture, getX(), getY(), 0, textureOffset, 0, this.width, this.height, this.width, this.height);
-        }
     }
 }

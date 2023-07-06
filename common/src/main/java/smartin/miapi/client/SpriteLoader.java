@@ -4,7 +4,6 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.model.json.JsonUnbakedModel;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.resource.Resource;
 import net.minecraft.util.Identifier;
@@ -12,9 +11,7 @@ import smartin.miapi.Miapi;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.modules.cache.ModularItemCache;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -24,8 +21,6 @@ public class SpriteLoader {
     public static List<String> preLoadTexturePaths = new ArrayList<>();
 
     public static void setup() {
-        //ClientTextureStitchEvent.PRE.register(SpriteLoader::onTextureStitch);
-        //ClientTextureStitchEvent.POST.register((atlas)-> ModularItemCache.discardCache());
         ReloadEvents.START.subscribe(isClient -> ModularItemCache.discardCache());
     }
 

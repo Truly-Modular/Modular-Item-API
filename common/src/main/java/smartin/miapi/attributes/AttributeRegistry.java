@@ -5,13 +5,14 @@ import com.google.common.collect.Multimap;
 import dev.architectury.event.EventResult;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.*;
+import net.minecraft.entity.attribute.AttributeContainer;
+import net.minecraft.entity.attribute.DefaultAttributeContainer;
+import net.minecraft.entity.attribute.EntityAttribute;
+import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import smartin.miapi.Miapi;
 import smartin.miapi.events.Event;
-import smartin.miapi.registries.RegistryInventory;
 
 import java.util.Collection;
 import java.util.HashMap;

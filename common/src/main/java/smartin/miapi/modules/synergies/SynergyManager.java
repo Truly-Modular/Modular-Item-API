@@ -9,9 +9,7 @@ import smartin.miapi.item.modular.PropertyResolver;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.conditions.ConditionManager;
 import smartin.miapi.modules.conditions.ModuleCondition;
-import smartin.miapi.modules.conditions.TrueCondition;
 import smartin.miapi.modules.properties.util.ModuleProperty;
-import smartin.miapi.registries.MiapiRegistry;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.util.ArrayList;
@@ -62,6 +60,7 @@ public class SynergyManager {
             object.entrySet().forEach(propertyEntry -> {
                 ModuleProperty property1 = RegistryInventory.moduleProperties.get(propertyEntry.getKey());
                 try {
+                    assert property1 != null;
                     property1.load("synergy", propertyEntry.getValue());
                 } catch (Exception e) {
                     throw new RuntimeException(e);
@@ -76,6 +75,7 @@ public class SynergyManager {
         element.getAsJsonObject().entrySet().forEach(propertyEntry -> {
             ModuleProperty property1 = RegistryInventory.moduleProperties.get(propertyEntry.getKey());
             try {
+                assert property1 != null;
                 property1.load("synergy", propertyEntry.getValue());
             } catch (Exception e) {
                 throw new RuntimeException(e);

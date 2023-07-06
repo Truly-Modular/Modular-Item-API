@@ -170,7 +170,7 @@ public class MaterialProperty implements ModuleProperty {
         instance.moduleData.put("properties", Miapi.gson.toJson(moduleJson));
     }
 
-    public class Material {
+    public static class Material {
         public String key;
         protected JsonElement rawJson;
 

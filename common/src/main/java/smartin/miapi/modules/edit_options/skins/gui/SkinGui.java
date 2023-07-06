@@ -4,7 +4,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.input.Input;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Text;
@@ -50,11 +49,9 @@ public class SkinGui extends InteractAbleWidget {
         textFieldWidget.setEditable(true);
         textFieldWidget.setVisible(true);
         textFieldWidget.setPlaceholder(Text.translatable(Miapi.MOD_ID+".ui.search_placeholder"));
-        textFieldWidget.setChangedListener((change) -> {
-            parentSkinTab.filter(change);
-        });
+        textFieldWidget.setChangedListener(parentSkinTab::filter);
         this.addChild(textFieldWidget);
-        SimpleButton<Objects> backButton = new SimpleButton(this.getX() + 10, this.getY() + this.height - 10, 45, 14, Text.translatable(Miapi.MOD_ID+".ui.back"), null, back);
+        SimpleButton<Objects> backButton = new SimpleButton<>(this.getX() + 10, this.getY() + this.height - 10, 45, 14, Text.translatable(Miapi.MOD_ID+".ui.back"), null, back);
         this.addChild(backButton);
     }
 

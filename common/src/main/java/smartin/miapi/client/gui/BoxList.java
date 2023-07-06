@@ -4,16 +4,16 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ClickableWidget;
-import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Environment(EnvType.CLIENT)
 public class BoxList extends InteractAbleWidget {
@@ -48,9 +48,7 @@ public class BoxList extends InteractAbleWidget {
     public void setSpace(int space) {
         this.space = space;
         List<ClickableWidget> widgets = new ArrayList<>();
-        widgetPages.values().stream().forEach(subList -> {
-            widgets.addAll(subList);
-        });
+        widgetPages.values().stream().forEach(widgets::addAll);
         setWidgets(widgets, space);
     }
 
@@ -75,22 +73,22 @@ public class BoxList extends InteractAbleWidget {
         }
         maxHeight = 0;
         maxWidth = 0;
-        for (int i = 0; i < widgets.size(); i++) {
-            if (widgets.get(i).getWidth() > maxWidth) {
-                maxWidth = widgets.get(i).getWidth();
+        for (ClickableWidget widget : widgets) {
+            if (widget.getWidth() > maxWidth) {
+                maxWidth = widget.getWidth();
             }
-            if (widgets.get(i).getHeight() > maxHeight) {
-                maxHeight = widgets.get(i).getHeight();
+            if (widget.getHeight() > maxHeight) {
+                maxHeight = widget.getHeight();
             }
         }
         int pageButtonHeight = Math.max(left.getHeight(), right.getHeight());
         int availableWidth = this.width - (2 * space);
         int availableHeight = this.height - (3 * space) - pageButtonHeight;
-        int maxColumns = (int) Math.floor(availableWidth / (maxWidth + space));
-        int maxRows = (int) Math.floor(availableHeight / (maxHeight + space));
-        int totalPages = (int) Math.ceil((double) widgets.size() / (maxColumns * maxRows));
+        int maxColumns = availableWidth / (maxWidth + space);
+        int maxRows = (int) Math.floor((double) availableHeight / (maxHeight + space));
+        int totalPagesPre = (int) Math.ceil((double) widgets.size() / (maxColumns * maxRows));
         widgetPages = new HashMap<>();
-        for (int i = 0; i < totalPages; i++) {
+        for (int i = 0; i < totalPagesPre; i++) {
             widgetPages.put(i, new ArrayList<>());
         }
         for (int i = 0; i < widgets.size(); i++) {
@@ -101,7 +99,7 @@ public class BoxList extends InteractAbleWidget {
             widgets.get(i).setY((rowIndex * (maxHeight + space)) + space + this.getY());
             widgetPages.get(page).add(widgets.get(i));
         }
-        this.totalPages = totalPages;
+        this.totalPages = totalPagesPre;
         setPage(currentPage);
         left.setX(this.getX() + space);
         left.setY(this.getY() + this.height - left.getHeight() - space);
@@ -138,7 +136,6 @@ public class BoxList extends InteractAbleWidget {
         @Override
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
             if (button == 0 && isMouseOver(mouseX, mouseY)) {
-                //TODO:CHECK
                 this.isClicked = true;
                 if (isLeft) {
                     setPage(currentPage - 1);

@@ -124,7 +124,7 @@ public abstract class SingleStatDisplayDouble extends InteractAbleWidget impleme
         Text resolve(ItemStack stack);
     }
 
-    public class HoverDescription extends InteractAbleWidget {
+    public static class HoverDescription extends InteractAbleWidget {
         public Identifier texture = new Identifier(Miapi.MOD_ID, "textures/gui/stat_display/hover_background.png");
         public MultiLineTextWidget textWidget;
 

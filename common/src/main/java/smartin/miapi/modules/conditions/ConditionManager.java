@@ -1,7 +1,6 @@
 package smartin.miapi.modules.conditions;
 
 import com.google.gson.JsonElement;
-import smartin.miapi.Miapi;
 import smartin.miapi.registries.MiapiRegistry;
 
 public class ConditionManager {
@@ -16,6 +15,7 @@ public class ConditionManager {
             return new TrueCondition();
         }
         ModuleCondition condition = moduleConditionRegistry.get(element.getAsJsonObject().get("type").getAsString());
+        assert condition != null;
         return condition.load(element);
     }
 }

@@ -35,7 +35,7 @@ public class ReloadListener implements ResourceReloader {
                                 data.put(fullPath,dataString);
                             }
                             catch (Exception e){
-                                Miapi.LOGGER.warn("Error Loading Resource"+identifier+""+ resources);
+                                Miapi.LOGGER.warn("Error Loading Resource"+identifier+" "+ resources);
                             }
                         });
                     }

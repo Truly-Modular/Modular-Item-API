@@ -127,13 +127,10 @@ public abstract class SimpleDoubleProperty implements ModuleProperty {
     }
 
     private static EntityAttributeModifier.Operation getOperation(String operationString) {
-        switch (operationString) {
-            case "*":
-                return EntityAttributeModifier.Operation.MULTIPLY_BASE;
-            case "**":
-                return EntityAttributeModifier.Operation.MULTIPLY_TOTAL;
-            default:
-                return EntityAttributeModifier.Operation.ADDITION;
-        }
+        return switch (operationString) {
+            case "*" -> EntityAttributeModifier.Operation.MULTIPLY_BASE;
+            case "**" -> EntityAttributeModifier.Operation.MULTIPLY_TOTAL;
+            default -> EntityAttributeModifier.Operation.ADDITION;
+        };
     }
 }

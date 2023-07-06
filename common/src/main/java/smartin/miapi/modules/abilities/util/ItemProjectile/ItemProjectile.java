@@ -142,7 +142,7 @@ public class ItemProjectile extends PersistentProjectileEntity {
         if (this.getWorld() instanceof ServerWorld && this.getWorld().isThundering() && this.hasChanneling()) {
             BlockPos blockPos = entity.getBlockPos();
             if (this.getWorld().isSkyVisible(blockPos)) {
-                LightningEntity lightningEntity = (LightningEntity) EntityType.LIGHTNING_BOLT.create(this.getWorld());
+                LightningEntity lightningEntity = EntityType.LIGHTNING_BOLT.create(this.getWorld());
                 lightningEntity.refreshPositionAfterTeleport(Vec3d.ofBottomCenter(blockPos));
                 lightningEntity.setChanneler(entity2 instanceof ServerPlayerEntity ? (ServerPlayerEntity) entity2 : null);
                 this.getWorld().spawnEntity(lightningEntity);

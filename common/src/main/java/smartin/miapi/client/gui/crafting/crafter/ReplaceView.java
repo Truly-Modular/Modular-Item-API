@@ -4,9 +4,6 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
@@ -14,12 +11,15 @@ import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.*;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ItemModule;
-import smartin.miapi.modules.properties.SlotProperty;
 import smartin.miapi.modules.properties.AllowedSlots;
+import smartin.miapi.modules.properties.SlotProperty;
 
 import java.util.ArrayList;
 import java.util.function.Consumer;
 
+/**
+ * The Module Selector when clicked on Relplace, a simple list of modules that fit in the slot
+ */
 @Environment(EnvType.CLIENT)
 public class ReplaceView extends InteractAbleWidget {
     Consumer<ItemModule> craft;
@@ -80,7 +80,7 @@ public class ReplaceView extends InteractAbleWidget {
             if (isMouseOver(mouseX, mouseY)) {
                 hoverOffset = 14;
             }
-            drawTextureWithEdge(drawContext,texture, this.getX(), this.getY(), 0, hoverOffset, 140, 14, this.getWidth(), this.getHeight(), 140, 28, 2);
+            drawTextureWithEdge(drawContext, texture, this.getX(), this.getY(), 0, hoverOffset, 140, 14, this.getWidth(), this.getHeight(), 140, 28, 2);
             textWidget.setX(this.getX() + 2);
             textWidget.setY(this.getY() + 3);
 
@@ -99,11 +99,10 @@ public class ReplaceView extends InteractAbleWidget {
 
         @Override
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
-            if (isMouseOver(mouseX, mouseY)) {
-                if (button == 0) {
+            if (isMouseOver(mouseX, mouseY) && (button == 0)) {
                     craft.accept(module);
                     return true;
-                }
+
             }
             return super.mouseClicked(mouseX, mouseY, button);
         }

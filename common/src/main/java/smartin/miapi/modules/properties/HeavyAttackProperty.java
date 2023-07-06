@@ -9,6 +9,9 @@ import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
+/**
+ * This property controls {@link smartin.miapi.modules.abilities.HeavyAttackAbility}
+ */
 public class HeavyAttackProperty implements ModuleProperty {
     public static String KEY = "heavyAttack";
     public static HeavyAttackProperty property;

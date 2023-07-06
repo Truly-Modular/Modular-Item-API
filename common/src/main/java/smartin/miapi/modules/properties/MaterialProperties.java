@@ -10,6 +10,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * This property allows materials to set specific Properties
+ */
 public class MaterialProperties implements ModuleProperty {
     public static String KEY = "materialProperty";
     public static MaterialProperties property;

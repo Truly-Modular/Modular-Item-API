@@ -18,7 +18,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 import org.jetbrains.annotations.Nullable;
-import smartin.miapi.Miapi;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -96,7 +95,7 @@ public class DynamicBakedModel implements BakedModel {
     class DynamicOverrides extends ModelOverrideList {
 
         public DynamicOverrides() {
-            super(DynamicBakery.dynamicBaker, null,  new ArrayList<ModelOverride>());
+            super(DynamicBakery.dynamicBaker, null,  new ArrayList<>());
         }
 
         @Override

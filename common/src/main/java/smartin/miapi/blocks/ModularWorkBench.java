@@ -8,7 +8,6 @@ import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.DirectionProperty;
-import net.minecraft.state.property.Property;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.BlockMirror;
@@ -62,7 +61,7 @@ public class ModularWorkBench extends BlockWithEntity {
     @Nullable
     @Override
     public BlockState getPlacementState(ItemPlacementContext ctx) {
-        return (BlockState) this.getDefaultState().with(FACING, ctx.getHorizontalPlayerFacing().getOpposite());
+        return this.getDefaultState().with(FACING, ctx.getHorizontalPlayerFacing().getOpposite());
     }
 
     public BlockState rotate(BlockState state, BlockRotation rotation) {
@@ -90,11 +89,8 @@ public class ModularWorkBench extends BlockWithEntity {
     @Nullable
     @Override
     public NamedScreenHandlerFactory createScreenHandlerFactory(BlockState state, World world, BlockPos pos) {
-        BlockEntity blockEntity = world.getBlockEntity(pos);
         Text text = Text.literal("test");
-        return new SimpleNamedScreenHandlerFactory((syncId, inventory, player) -> {
-            return new CraftingScreenHandler(syncId, inventory);
-        }, text);
+        return new SimpleNamedScreenHandlerFactory((syncId, inventory, player) -> new CraftingScreenHandler(syncId, inventory), text);
     }
 
     @Nullable

@@ -3,7 +3,6 @@ package smartin.miapi.mixin;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import dev.architectury.event.EventResult;
-import dev.architectury.registry.level.entity.EntityAttributeRegistry;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
@@ -14,17 +13,15 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.*;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import smartin.miapi.Miapi;
-import smartin.miapi.events.Event;
 import smartin.miapi.attributes.AttributeRegistry;
+import smartin.miapi.events.Event;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.modules.properties.EquipmentSlotProperty;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @Mixin(LivingEntity.class)
 abstract class LivingEntityMixin {

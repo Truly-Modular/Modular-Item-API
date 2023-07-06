@@ -209,14 +209,12 @@ public class CraftAction {
         ItemModule.ModuleInstance oldBaseModule = ItemModule.getModules(old);
         ItemModule.ModuleInstance newBaseModule = ItemModule.ModuleInstance.fromString(oldBaseModule.toString());
         Map<Integer, ItemModule.ModuleInstance> subModuleMap = new HashMap<>();
-        if (slotId.size() == 0) {
+        if (slotId.isEmpty()) {
             //a module already exists, replacing module 0
             if (toAdd == null) {
                 return ItemStack.EMPTY;
             }
-            if (oldBaseModule != null) {
-                subModuleMap = oldBaseModule.subModules;
-            }
+            subModuleMap = oldBaseModule.subModules;
             ItemModule.ModuleInstance newModule = new ItemModule.ModuleInstance(toAdd);
             subModuleMap.forEach((id, module) -> {
                 SlotProperty.ModuleSlot slot = SlotProperty.getSlots(newModule).get(id);

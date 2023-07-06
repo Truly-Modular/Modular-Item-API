@@ -19,11 +19,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
 import org.jetbrains.annotations.Nullable;
-import smartin.miapi.mixin.client.ModelLoaderInterfaceAccessor;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 
 @Environment(EnvType.CLIENT)
@@ -82,7 +80,7 @@ public class DynamicBakery {
         public OverrideList(ModelLoader modelLoader, JsonUnbakedModel parent, Function<Identifier, UnbakedModel> unbakedModelGetter, List<ModelOverride> overrides, int color) {
             super(dynamicBaker, parent, overrides);
             this.dynamicConditionTypes = overrides.stream().flatMap(ModelOverride::streamConditions).map(ModelOverride.Condition::getType).distinct().toArray(Identifier[]::new);
-            Object2IntMap<Identifier> object2IntMap = new Object2IntOpenHashMap();
+            Object2IntMap<Identifier> object2IntMap = new Object2IntOpenHashMap<>();
 
             for (int i = 0; i < this.dynamicConditionTypes.length; ++i) {
                 object2IntMap.put(this.dynamicConditionTypes[i], i);
@@ -152,11 +150,7 @@ public class DynamicBakery {
                     }
                 }
 
-                DynamicBakedOverride[] var16 = this.dynamicOverrides;
-                int var14 = var16.length;
-
-                for (int var15 = 0; var15 < var14; ++var15) {
-                    DynamicBakedOverride bakedOverride = var16[var15];
+                for (DynamicBakedOverride bakedOverride : this.dynamicOverrides) {
                     if (bakedOverride.test(fs)) {
                         BakedModel bakedModel = bakedOverride.model;
                         if (bakedModel == null) {

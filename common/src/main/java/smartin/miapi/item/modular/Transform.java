@@ -136,9 +136,9 @@ public class Transform {
      */
     public Transform copy() {
         Transform copy = new Transform(
-                this.rotation != null ? new Vector3f(this.rotation) : new Vector3f(0,0,0),
-                this.translation != null ? new Vector3f(this.translation) : new Vector3f(0,0,0),
-                this.scale != null ? new Vector3f(this.scale) : new Vector3f(1,1,1)
+                this.rotation != null ? new Vector3f(this.rotation) : new Vector3f(0, 0, 0),
+                this.translation != null ? new Vector3f(this.translation) : new Vector3f(0, 0, 0),
+                this.scale != null ? new Vector3f(this.scale) : new Vector3f(1, 1, 1)
         );
 
         copy.origin = this.origin;
@@ -234,7 +234,9 @@ public class Transform {
     public boolean equals(Object o) {
         if (this == o) {
             return true;
-        } else if (this.getClass() != o.getClass()) {
+        } else if (o == null) {
+                return false;
+        } else if (o.getClass() != this.getClass()) {
             return false;
         } else {
             Transformation transformation = (Transformation) o;

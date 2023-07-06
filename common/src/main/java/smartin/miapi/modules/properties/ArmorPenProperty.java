@@ -14,6 +14,9 @@ import smartin.miapi.modules.properties.util.SimpleDoubleProperty;
 
 import java.util.WeakHashMap;
 
+/**
+ * This property allows for armor penetration, so weapons can igonre some armor
+ */
 public class ArmorPenProperty extends SimpleDoubleProperty {
     public static final String KEY = "armor_pen";
     public static ArmorPenProperty property;

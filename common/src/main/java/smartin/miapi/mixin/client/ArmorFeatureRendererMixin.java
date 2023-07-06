@@ -53,9 +53,6 @@ public abstract class ArmorFeatureRendererMixin<T extends LivingEntity, M extend
                 matrixStack.multiplyPositionMatrix(matrices.peek().getPositionMatrix());
                 matrixStack.push();
                 getModelPart(armorModel, partId).rotate(matrixStack);
-                if(model.getOverrides()!=null){
-                    //model = model.getOverrides().apply(model,itemStack, (ClientWorld) entity.getWorld(),entity,0);
-                }
                 ItemRenderUtil.renderModel(matrixStack, itemStack, model, ModelTransformationMode.HEAD, vertexConsumers, light, OverlayTexture.DEFAULT_UV);
                 matrixStack.pop();
             }

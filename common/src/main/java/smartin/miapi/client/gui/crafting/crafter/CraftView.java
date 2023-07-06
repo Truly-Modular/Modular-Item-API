@@ -32,6 +32,10 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
+/**
+ * This Widget manages the actual craftView.
+ * Its manages the replacing of a module with a new Module
+ */
 @Environment(EnvType.CLIENT)
 public class CraftView extends InteractAbleWidget {
     ItemStack compareStack;
@@ -236,7 +240,7 @@ public class CraftView extends InteractAbleWidget {
         return compareStack;
     }
 
-    public class PageButton<T> extends SimpleButton<T> {
+    public static class PageButton<T> extends SimpleButton<T> {
         private boolean isLeft;
         private Identifier texture;
         private boolean isClicked;
@@ -297,14 +301,14 @@ public class CraftView extends InteractAbleWidget {
 
         @Override
         public void renderHover(DrawContext drawContext, int mouseX, int mouseY, float delta) {
-            String message = Text.translatable(Miapi.MOD_ID + ".ui.craft.warning").getString();
+            StringBuilder message = new StringBuilder(Text.translatable(Miapi.MOD_ID + ".ui.craft.warning").getString());
             hover.setX(this.getX());
             hover.setY(this.getY() + this.getHeight());
 
             for (Text text : warnings) {
-                message += "\n - " + text.getString();
+                message.append("\n - ").append(text.getString());
             }
-            hover.setText(Text.of(message));
+            hover.setText(Text.of(message.toString()));
             if (!this.isEnabled && isMouseOver(mouseX, mouseY)) {
                 RenderSystem.enableDepthTest();
                 RenderSystem.enableBlend();

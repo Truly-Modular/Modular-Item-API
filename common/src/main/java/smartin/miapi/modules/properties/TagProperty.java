@@ -10,6 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Allows the Modules to define tags to identify eachother
+ */
 public class TagProperty implements ModuleProperty {
     public static final String KEY = "tag";
     public static TagProperty property;

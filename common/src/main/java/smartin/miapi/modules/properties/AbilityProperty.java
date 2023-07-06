@@ -2,20 +2,20 @@ package smartin.miapi.modules.properties;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.AxeItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.ShieldItem;
 import smartin.miapi.Miapi;
+import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
 import smartin.miapi.modules.abilities.util.ItemUseAbility;
-import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This property manages the active {@link smartin.miapi.modules.properties.util.PropertyApplication.Ability}
+ */
 public class AbilityProperty implements ModuleProperty {
     public static final String KEY = "abilities";
     public static ModuleProperty property;

@@ -3,17 +3,19 @@ package smartin.miapi.client.gui;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.ColorHelper;
 
+/**
+ * A complex utility to render a bar with 3 parts in different colors
+ */
 @Environment(EnvType.CLIENT)
 public class StatBar extends InteractAbleWidget {
     double primaryPercent = 0;
     double secondaryPercent = 0;
     int primaryColor = 0;
     int secondaryColor = 0;
-    int offColor = 0;
+    int offColor;
 
     public StatBar(int x, int y, int width, int height, int offColor) {
         super(x, y, width, height, Text.empty());

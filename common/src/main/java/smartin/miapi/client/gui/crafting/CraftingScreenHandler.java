@@ -206,14 +206,8 @@ public class CraftingScreenHandler extends ScreenHandler {
         if (slot != null && slot.hasStack()) {
             ItemStack itemStack2 = slot.getStack();
             itemStack = itemStack2.copy();
-            if (index == 36) {
+            if (index >= 36 ) {
                 //case 1: tool slot to player
-                if (!this.insertItem(itemStack2, 0, 36, true)) {
-                    return ItemStack.EMPTY;
-                }
-                slot.markDirty();
-            } else if (index > 36) {
-                //additional Material Slot
                 if (!this.insertItem(itemStack2, 0, 36, true)) {
                     return ItemStack.EMPTY;
                 }

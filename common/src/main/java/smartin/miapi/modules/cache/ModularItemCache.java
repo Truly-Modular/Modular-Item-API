@@ -62,6 +62,7 @@ public class ModularItemCache {
         UUID lookUpUUId = lookUpTable.get(stack);
         String uuidString = stack.getOrCreateNbt().getString(CACHE_KEY);
         if(lookUpUUId!=null){
+            //do nothing
         }
         else if(uuidString!=null && !uuidString.equals("")){
             lookUpUUId = UUID.fromString(uuidString);

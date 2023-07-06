@@ -4,6 +4,9 @@ import net.minecraft.item.ItemStack;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.modules.properties.util.SimpleDoubleProperty;
 
+/**
+ * This property controls {@link smartin.miapi.modules.abilities.BlockAbility}
+ */
 public class BlockProperty extends SimpleDoubleProperty implements ModuleProperty {
     public static final String KEY = "blocking";
     public static BlockProperty property;

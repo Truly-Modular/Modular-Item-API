@@ -15,6 +15,10 @@ import smartin.miapi.modules.abilities.util.AttackUtil;
 import smartin.miapi.modules.abilities.util.ItemUseAbility;
 import smartin.miapi.modules.properties.HeavyAttackProperty;
 
+/**
+ * This Ability allows a stronger attack than the normal left click.
+ * Has Configurable range and default sweeping and a scale factor for Damage
+ */
 public class HeavyAttackAbility implements ItemUseAbility {
     @Override
     public boolean allowedOnItem(ItemStack itemStack, World world, PlayerEntity player, Hand hand) {

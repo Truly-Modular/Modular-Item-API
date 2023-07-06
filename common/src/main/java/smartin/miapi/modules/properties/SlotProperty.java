@@ -178,7 +178,7 @@ public class SlotProperty implements ModuleProperty {
             id = 0;
         }
 
-        public List<String> allowed = new ArrayList<>();
+        public List<String> allowed;
         @Environment(EnvType.CLIENT)
         public Transform transform = Transform.IDENTITY;
         @Nullable

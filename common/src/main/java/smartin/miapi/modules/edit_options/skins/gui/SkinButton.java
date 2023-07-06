@@ -3,12 +3,8 @@ package smartin.miapi.modules.edit_options.skins.gui;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Drawable;
-import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
 import smartin.miapi.Miapi;
-import smartin.miapi.client.MiapiClient;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.ScrollingTextWidget;
 import smartin.miapi.item.modular.StatResolver;
@@ -68,11 +64,7 @@ class SkinButton extends InteractAbleWidget implements SkinGui.SortAble {
 
     @Override
     public void filter(String search) {
-        if (this.skinPath.toLowerCase().contains(search.toLowerCase()) || this.textWidget.getText().toString().toLowerCase().contains(search.toLowerCase())) {
-            this.isEnabled = true;
-        } else {
-            this.isEnabled = false;
-        }
+        this.isEnabled = this.skinPath.toLowerCase().contains(search.toLowerCase()) || this.textWidget.getText().toString().toLowerCase().contains(search.toLowerCase());
     }
 
     @Override

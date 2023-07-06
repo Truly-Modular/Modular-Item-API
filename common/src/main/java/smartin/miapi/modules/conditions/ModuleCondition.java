@@ -1,7 +1,6 @@
 package smartin.miapi.modules.conditions;
 
 import com.google.gson.JsonElement;
-import dev.architectury.event.events.common.TickEvent;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;

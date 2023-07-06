@@ -34,6 +34,9 @@ import smartin.miapi.modules.properties.CrossbowProperty;
 import java.util.List;
 import java.util.function.Predicate;
 
+/**
+ * An ability that allows the usage of the Item like a crossbow
+ */
 public class CrossbowAbility implements ItemUseAbility {
     private boolean charged = false;
     private boolean loaded = false;
@@ -356,15 +359,11 @@ public class CrossbowAbility implements ItemUseAbility {
     }
 
     private SoundEvent getQuickChargeSound(int stage) {
-        switch (stage) {
-            case 1:
-                return SoundEvents.ITEM_CROSSBOW_QUICK_CHARGE_1;
-            case 2:
-                return SoundEvents.ITEM_CROSSBOW_QUICK_CHARGE_2;
-            case 3:
-                return SoundEvents.ITEM_CROSSBOW_QUICK_CHARGE_3;
-            default:
-                return SoundEvents.ITEM_CROSSBOW_LOADING_START;
-        }
+        return switch (stage) {
+            case 1 -> SoundEvents.ITEM_CROSSBOW_QUICK_CHARGE_1;
+            case 2 -> SoundEvents.ITEM_CROSSBOW_QUICK_CHARGE_2;
+            case 3 -> SoundEvents.ITEM_CROSSBOW_QUICK_CHARGE_3;
+            default -> SoundEvents.ITEM_CROSSBOW_LOADING_START;
+        };
     }
 }

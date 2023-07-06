@@ -1,6 +1,5 @@
 package smartin.miapi.registries;
 
-import dev.architectury.registry.registries.Registrar;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -44,7 +43,7 @@ public class MiapiRegistry<T> {
      */
     public static <T> MiapiRegistry<T> getInstance(Class<T> clazz) {
         if (!REGISTRY_MAP.containsKey(clazz)) {
-            MiapiRegistry<T> instance = new MiapiRegistry<T>();
+            MiapiRegistry<T> instance = new MiapiRegistry<>();
             REGISTRY_MAP.put(clazz, instance);
             return instance;
         }

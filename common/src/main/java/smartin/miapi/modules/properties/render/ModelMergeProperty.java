@@ -60,9 +60,6 @@ public class ModelMergeProperty implements ModuleProperty {
                                     TransformMap stack1 = unbakedModel.transform().copy();
                                     stack1.add(json.to, json.transform);
                                     stack1.primary = json.to;
-                                    if(stack1.primary!=null){
-                                        //stack1.add(json.to, json.transform);
-                                    }
                                     ModelProperty.TransformedUnbakedModel transformedUnbakedModel1 = new ModelProperty.TransformedUnbakedModel(stack1, unbakedModel.unbakedModel(), unbakedModel.instance(),unbakedModel.color());
                                     newList.add(transformedUnbakedModel1);
                                 }

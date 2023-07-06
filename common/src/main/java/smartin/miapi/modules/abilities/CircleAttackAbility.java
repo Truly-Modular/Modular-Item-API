@@ -16,6 +16,9 @@ import smartin.miapi.modules.abilities.util.AttackUtil;
 import smartin.miapi.modules.abilities.util.ItemUseAbility;
 import smartin.miapi.modules.properties.CircleAttackProperty;
 
+/**
+ * An ability that attacks everything in a designated radius arround the Caster
+ */
 public class CircleAttackAbility implements ItemUseAbility {
     @Override
     public boolean allowedOnItem(ItemStack itemStack, World world, PlayerEntity player, Hand hand) {

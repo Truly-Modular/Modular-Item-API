@@ -1,11 +1,11 @@
 package smartin.miapi.modules.properties;
 
-import com.google.common.collect.*;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.ListMultimap;
+import com.google.common.collect.Multimap;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import dev.architectury.event.Event;
-import dev.architectury.event.events.common.LifecycleEvent;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.attribute.*;
 import net.minecraft.item.ItemStack;
@@ -13,11 +13,11 @@ import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 import smartin.miapi.Miapi;
 import smartin.miapi.attributes.AttributeRegistry;
-import smartin.miapi.modules.ItemModule;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.StatResolver;
-import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.item.modular.items.ExampleModularItem;
+import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
@@ -257,14 +257,11 @@ public class AttributeProperty implements ModuleProperty {
     }
 
     private static EntityAttributeModifier.Operation getOperation(String operationString) {
-        switch (operationString) {
-            case "*":
-                return EntityAttributeModifier.Operation.MULTIPLY_BASE;
-            case "**":
-                return EntityAttributeModifier.Operation.MULTIPLY_TOTAL;
-            default:
-                return EntityAttributeModifier.Operation.ADDITION;
-        }
+        return switch (operationString) {
+            case "*" -> EntityAttributeModifier.Operation.MULTIPLY_BASE;
+            case "**" -> EntityAttributeModifier.Operation.MULTIPLY_TOTAL;
+            default -> EntityAttributeModifier.Operation.ADDITION;
+        };
     }
 
     private static EquipmentSlot getSlot(String slotString) {
@@ -284,7 +281,7 @@ public class AttributeProperty implements ModuleProperty {
                                                 boolean seperateOnItem) {
     }
 
-    public class AttributeJson {
+    public static class AttributeJson {
         public String attribute;
         public String value;
         public String operation;

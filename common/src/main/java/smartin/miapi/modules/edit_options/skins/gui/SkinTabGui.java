@@ -3,9 +3,6 @@ package smartin.miapi.modules.edit_options.skins.gui;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Drawable;
-import net.minecraft.client.gui.Element;
-import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
@@ -20,12 +17,10 @@ import smartin.miapi.modules.edit_options.skins.SkinTab;
 import java.util.*;
 
 class SkinTabGui extends InteractAbleWidget implements SkinGui.SortAble {
-    private final SkinGui skinGui;
-    Identifier texture = new Identifier(Miapi.MOD_ID, "textures/gui/skin/tab_button.png");
     Identifier arrow_texture = new Identifier(Miapi.MOD_ID, "textures/gui/skin/arrow.png");
     boolean isOpen = true;
     List<SkinGui.SortAble> fullList = new ArrayList<>();
-    List<SkinGui.SortAble> currentList = new ArrayList<>();
+    List<SkinGui.SortAble> currentList;
     ScrollingTextWidget textWidget;
     String sortAble;
     int spacing = 10;
@@ -37,7 +32,6 @@ class SkinTabGui extends InteractAbleWidget implements SkinGui.SortAble {
 
     public SkinTabGui(SkinGui skinGui, int x, int y, int width, String currentTab, Map<String, Skin> mapsToDo) {
         super(x, y, width, sizeY, Text.empty());
-        this.skinGui = skinGui;
         this.tabInfo = SkinOptions.getTag(currentTab);
         height = realHeight;
         isRoot = currentTab.isBlank();
@@ -110,10 +104,9 @@ class SkinTabGui extends InteractAbleWidget implements SkinGui.SortAble {
     }
 
     private boolean isMouseOverReal(double mouseX, double mouseY) {
-        if (mouseY > this.getY() && mouseY < this.getY() + realHeight) {
-            if (mouseX > this.getX() && mouseX < this.getX() + width) {
+        if (mouseY > this.getY() && mouseY < this.getY() + realHeight && (mouseX > this.getX() && mouseX < this.getX() + width)) {
                 return true;
-            }
+
         }
         return false;
     }
@@ -141,17 +134,6 @@ class SkinTabGui extends InteractAbleWidget implements SkinGui.SortAble {
             textWidget.setY(this.getY() + 2);
             textWidget.render(drawContext, mouseX, mouseY, delta);
         }
-        children().forEach(element -> {
-            if (element instanceof Drawable drawable) {
-                if (drawable instanceof SkinTabGui skinTabGui) {
-                    //render 14 top pixels + increment by 14
-                }
-                if (drawable instanceof SkinButton skinTabGui) {
-                    //render 16 bottom pixels + increment by 16
-                }
-                drawable.render(drawContext, mouseX, mouseY, delta);
-            }
-        });
     }
 
     private void setChildren(boolean updateChildren) {
@@ -160,9 +142,9 @@ class SkinTabGui extends InteractAbleWidget implements SkinGui.SortAble {
         }
         this.children().clear();
         int yHeight = getY() + realHeight;
-        for (SkinGui.SortAble sortAble : currentList) {
-            if (sortAble instanceof InteractAbleWidget widget) {
-                if (sortAble.isActive()) {
+        for (SkinGui.SortAble sortableElement : currentList) {
+            if (sortableElement instanceof InteractAbleWidget widget) {
+                if (sortableElement.isActive()) {
                     widget.setY(yHeight);
                     yHeight += widget.getHeight();
                     this.addChild(widget);

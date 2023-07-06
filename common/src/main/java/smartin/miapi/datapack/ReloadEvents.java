@@ -58,7 +58,7 @@ public class ReloadEvents {
      * @param modId The ID of the mod.
      * @param path  The path of the data pack to be synced.
      */
-    public static void registerDataPackPathToSync(String modId,  String path) {
+    public static void registerDataPackPathToSync(String modId, String path) {
         syncedPaths.computeIfAbsent(modId, k -> new ArrayList<>()).add(path);
     }
 
@@ -131,13 +131,13 @@ public class ReloadEvents {
                 return;
             }
             int counterinit = 0;
-            while (MinecraftClient.getInstance().getNetworkHandler()==null){
+            while (MinecraftClient.getInstance().getNetworkHandler() == null) {
                 counterinit++;
                 try {
                     Thread.sleep(100);
                 } catch (InterruptedException e) {
                 }
-                if(counterinit>20){
+                if (counterinit > 20) {
                     throw new RuntimeException("Miapi waited 2 Minutes and still could not establish a Connection with the server and is unable to force disconnect");
                 }
             }
@@ -146,9 +146,9 @@ public class ReloadEvents {
             PacketByteBuf buf = Networking.createBuffer();
             buf.writeBoolean(true);
             DATA_PACKS.clear();
-            MinecraftClient.getInstance().execute(()->{
+            MinecraftClient.getInstance().execute(() -> {
                 ReloadEvents.START.fireEvent(true);
-                while (DATA_PACKS.size() != dataPackSize){
+                while (DATA_PACKS.size() != dataPackSize) {
                     try {
                         Thread.sleep(10);
                     } catch (InterruptedException e) {
@@ -156,14 +156,14 @@ public class ReloadEvents {
                 }
                 try {
                     int counter = 0;
-                    while (DATA_PACKS.size() != dataPackSize || counter==-1){
+                    while (DATA_PACKS.size() != dataPackSize || counter == -1) {
                         counter++;
                         Thread.sleep(10);
-                        /**
+                        /*
                          * If reload takes more than 2 min, force disconnect(maybe rewrite for last package less than 30s?)
                          */
-                        if(counter>10*100*60*2){
-                            counter=-1;
+                        if (counter > 10 * 100 * 60 * 2) {
+                            counter = -1;
                             MinecraftClient.getInstance().disconnect();
                         }
                     }

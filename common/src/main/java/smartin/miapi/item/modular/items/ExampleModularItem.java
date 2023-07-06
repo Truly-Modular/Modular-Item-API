@@ -1,6 +1,5 @@
 package smartin.miapi.item.modular.items;
 
-import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
@@ -17,6 +16,7 @@ public class ExampleModularItem extends Item implements ModularItem {
         modularItem = this;
     }
 
+    @Override
     public Text getName(ItemStack stack) {
         return DisplayNameProperty.getDisplayText(stack);
     }

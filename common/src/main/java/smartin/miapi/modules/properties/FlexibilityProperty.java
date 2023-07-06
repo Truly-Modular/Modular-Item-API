@@ -14,6 +14,10 @@ import smartin.miapi.modules.properties.util.SimpleDoubleProperty;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Flexibility is a optional tool to limit items to be somewhat reasonable
+ *
+ */
 public class FlexibilityProperty extends SimpleDoubleProperty implements CraftingProperty {
     public static final String KEY = "flexibility";
     public static SimpleDoubleProperty property;
@@ -21,11 +25,6 @@ public class FlexibilityProperty extends SimpleDoubleProperty implements Craftin
     public FlexibilityProperty() {
         super(KEY);
         property = this;
-    }
-
-    @Override
-    public float getPriority() {
-        return 0;
     }
 
     public Text getWarning() {
@@ -40,16 +39,6 @@ public class FlexibilityProperty extends SimpleDoubleProperty implements Craftin
     @Override
     public double getValueSafe(ItemStack stack) {
         return getValueSafeRaw(stack);
-    }
-
-    @Override
-    public JsonElement merge(JsonElement old, JsonElement toMerge, MergeType type) {
-        if (Objects.requireNonNull(type) == MergeType.SMART || type == MergeType.EXTEND) {
-            return Miapi.gson.toJsonTree(toMerge.getAsDouble() + old.getAsDouble());
-        } else if (type == MergeType.OVERWRITE) {
-            return toMerge;
-        }
-        return old;
     }
 
     @Override

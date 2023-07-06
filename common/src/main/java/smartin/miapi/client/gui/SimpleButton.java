@@ -5,11 +5,9 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
-import org.lwjgl.opengl.GL11;
 import smartin.miapi.Miapi;
 
 import java.util.function.Consumer;
@@ -76,11 +74,10 @@ public class SimpleButton<T> extends InteractAbleWidget {
      * @return {@code true} if the button was clicked, {@code false} otherwise.
      */
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (isMouseOver(mouseX, mouseY)) {
-            if (isEnabled) {
+        if (isMouseOver(mouseX, mouseY) && (isEnabled)) {
                 callback.accept(toCallback);
                 return true;
-            }
+
         }
         return false;
     }

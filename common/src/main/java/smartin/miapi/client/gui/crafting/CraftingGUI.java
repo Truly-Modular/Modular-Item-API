@@ -25,6 +25,9 @@ import smartin.miapi.modules.properties.SlotProperty;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The main Modular Work Benchs Screen
+ */
 @Environment(EnvType.CLIENT)
 public class CraftingGUI extends ParentHandledScreen<CraftingScreenHandler> implements ScreenHandlerProvider<CraftingScreenHandler> {
 

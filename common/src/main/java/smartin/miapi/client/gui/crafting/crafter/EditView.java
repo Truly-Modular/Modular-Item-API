@@ -16,7 +16,6 @@ import smartin.miapi.client.gui.*;
 import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ItemModule;
-import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.edit_options.EditOption;
 import smartin.miapi.network.Networking;
 import smartin.miapi.registries.RegistryInventory;
@@ -25,6 +24,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
+/**
+ * This is the selector screen to select witch EditProperty you want to interact with
+ */
 @Environment(EnvType.CLIENT)
 public class EditView extends InteractAbleWidget {
     ItemStack stack;
@@ -69,7 +71,6 @@ public class EditView extends InteractAbleWidget {
 
     public void setEditOption(EditOption option) {
         Consumer<PacketByteBuf> craftBuffer = (packetByteBuf) -> {
-            //TODO:Execute this on server
             ScreenHandler screenHandler = Miapi.server.getPlayerManager().getPlayerList().get(0).currentScreenHandler;
             if (screenHandler instanceof CraftingScreenHandler screenHandler1) {
                 ItemModule.ModuleInstance toCrafter = instance;
@@ -124,11 +125,10 @@ public class EditView extends InteractAbleWidget {
 
         @Override
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
-            if (isMouseOver(mouseX, mouseY)) {
-                if (button == 0) {
+            if (isMouseOver(mouseX, mouseY) && (button == 0)) {
                     setEditOption(option);
                     return true;
-                }
+
             }
             return super.mouseClicked(mouseX, mouseY, button);
         }

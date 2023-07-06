@@ -7,6 +7,9 @@ import net.minecraft.item.ItemStack;
 import smartin.miapi.events.Event;
 import smartin.miapi.modules.properties.util.SimpleDoubleProperty;
 
+/**
+ * This Property allows currentHealthpercent damage ontop of already dealt damage
+ */
 public class HealthPercentDamage extends SimpleDoubleProperty {
     public static final String KEY = "healthPercent";
     public static HealthPercentDamage property;
@@ -17,8 +20,8 @@ public class HealthPercentDamage extends SimpleDoubleProperty {
         Event.LIVING_HURT.register((livingHurtEvent -> {
             if (livingHurtEvent.damageSource.getAttacker() instanceof LivingEntity livingAttacker) {
                 ItemStack itemStack = livingHurtEvent.getCausingItemStack();
-                if(livingAttacker instanceof PlayerEntity player){
-                    if(player.lastHandSwingProgress!=0.0){
+                if (livingAttacker instanceof PlayerEntity player) {
+                    if (player.lastHandSwingProgress != 0.0) {
                         return EventResult.pass();
                     }
                 }

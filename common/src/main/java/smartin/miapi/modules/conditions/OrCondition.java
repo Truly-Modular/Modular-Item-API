@@ -31,7 +31,7 @@ public class OrCondition implements ModuleCondition {
                 isAllowed = true;
             }
         }
-        return false;
+        return isAllowed;
     }
 
     @Override

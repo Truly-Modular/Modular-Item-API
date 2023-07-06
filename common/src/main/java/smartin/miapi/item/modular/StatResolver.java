@@ -7,7 +7,6 @@ import net.minecraft.text.Text;
 import org.mariuszgromada.math.mxparser.Expression;
 import smartin.miapi.modules.ItemModule;
 
-import javax.naming.spi.Resolver;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

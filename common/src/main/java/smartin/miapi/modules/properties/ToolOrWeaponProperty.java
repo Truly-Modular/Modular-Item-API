@@ -5,6 +5,10 @@ import net.minecraft.item.ItemStack;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
+/**
+ * This Property allows to designate the Item as Tool or Weapon,
+ * mainly affecting durability calculations
+ */
 public class ToolOrWeaponProperty implements ModuleProperty {
     public static final String KEY = "isWeapon";
     public static ToolOrWeaponProperty property;

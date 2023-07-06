@@ -1,19 +1,10 @@
 package smartin.miapi.modules.edit_options.skins;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
 import smartin.miapi.Miapi;
-import smartin.miapi.modules.ItemModule;
-import smartin.miapi.modules.conditions.ConditionManager;
-import smartin.miapi.modules.conditions.ModuleCondition;
-import smartin.miapi.modules.properties.util.ModuleProperty;
-import smartin.miapi.modules.synergies.SynergyManager;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class SkinTab {
     public TextureOptions header;

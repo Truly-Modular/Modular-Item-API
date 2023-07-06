@@ -84,7 +84,7 @@ public class Miapi {
             return map;
         });
         ModularItemCache.setSupplier(ItemModule.moduleKey, itemStack -> {
-            NbtCompound tag = itemStack.getNbt();
+            NbtCompound tag = itemStack.getOrCreateNbt();
             try {
                 String modulesString = tag.getString(ItemModule.moduleKey);
                 Gson gson = new Gson();

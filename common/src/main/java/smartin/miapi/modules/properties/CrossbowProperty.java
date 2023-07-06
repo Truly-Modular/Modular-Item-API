@@ -8,6 +8,9 @@ import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.function.Predicate;
 
+/**
+ * This property controls {@link smartin.miapi.modules.abilities.CrossbowAbility}
+ */
 public class CrossbowProperty implements ModuleProperty {
     public static final String KEY = "Crossbow";
 

@@ -26,6 +26,9 @@ import smartin.miapi.modules.properties.util.ModuleProperty;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This property manages the allowed Materials for a module
+ */
 public class AllowedMaterial implements CraftingProperty, ModuleProperty {
     public static final String KEY = "allowedMaterial";
 

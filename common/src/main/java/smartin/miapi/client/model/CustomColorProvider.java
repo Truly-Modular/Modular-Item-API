@@ -4,7 +4,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.color.item.ItemColorProvider;
 import net.minecraft.item.ItemStack;
-import smartin.miapi.Miapi;
 import smartin.miapi.item.modular.ModularItem;
 
 @Environment(EnvType.CLIENT)

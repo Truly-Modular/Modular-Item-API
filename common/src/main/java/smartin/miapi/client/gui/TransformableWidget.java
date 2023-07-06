@@ -6,12 +6,15 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.Element;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
-import smartin.miapi.Miapi;
 
+/**
+ * This class focuses on making the gui animatable.
+ * All its children are affected correctly by its {@link TransformableWidget#rawProjection}
+ * this allows to animate and scale Elements fairly simple
+ */
 @Environment(EnvType.CLIENT)
 public class TransformableWidget extends InteractAbleWidget {
 

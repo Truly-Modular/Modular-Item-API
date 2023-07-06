@@ -4,10 +4,13 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.text.Text;
 import smartin.miapi.Miapi;
 
+/**
+ * This Widget is an Extention of the {@link TextFieldWidget}
+ * It auto-disables the e-close mechanic and is selectable by clicking
+ */
 public class ClickAbleTextWidget extends TextFieldWidget {
     public ClickAbleTextWidget(TextRenderer textRenderer, int x, int y, int width, int height, Text text) {
         super(textRenderer, x, y, width, height, text);
@@ -37,10 +40,10 @@ public class ClickAbleTextWidget extends TextFieldWidget {
     }
 
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if(isActive() && isFocused()){
-            super.keyPressed(keyCode,scanCode,modifiers);
+        if (isActive() && isFocused()) {
+            super.keyPressed(keyCode, scanCode, modifiers);
             return true;
         }
-        return super.keyPressed(keyCode,scanCode,modifiers);
+        return super.keyPressed(keyCode, scanCode, modifiers);
     }
 }

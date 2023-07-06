@@ -5,13 +5,11 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.widget.ClickableWidget;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
-import smartin.miapi.Miapi;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.client.gui.BoxList;
 import smartin.miapi.client.gui.InteractAbleWidget;
@@ -90,13 +88,12 @@ public class StatDisplay extends InteractAbleWidget {
         Vector4f vector4f = transformableWidget.transFormMousePos(mouseX, mouseY);
         InteractAbleWidget hoverDisplay = null;
         for (Element children : boxList.children()) {
-            if (children.isMouseOver(vector4f.x(), vector4f.y())) {
-                if (children instanceof SingleStatDisplay widget) {
+            if (children.isMouseOver(vector4f.x(), vector4f.y()) && (children instanceof SingleStatDisplay widget)) {
                     InteractAbleWidget ableWidget = widget.getHoverWidget();
                     if (ableWidget != null) {
                         hoverDisplay = ableWidget;
                     }
-                }
+
             }
         }
         if (hoverDisplay != null) {
@@ -110,12 +107,11 @@ public class StatDisplay extends InteractAbleWidget {
     private void update() {
         List<ClickableWidget> widgets = new ArrayList<>();
         for (InteractAbleWidget statDisplay : statDisplays) {
-            if (statDisplay instanceof SingleStatDisplay singleStatDisplay) {
-                if (singleStatDisplay.shouldRender(original, compareTo)) {
+            if (statDisplay instanceof SingleStatDisplay singleStatDisplay && (singleStatDisplay.shouldRender(original, compareTo))) {
                     statDisplay.setHeight(singleStatDisplay.getHeightDesired());
                     statDisplay.setWidth(singleStatDisplay.getWidthDesired());
                     widgets.add(statDisplay);
-                }
+
             }
         }
         boxList.setWidgets(widgets, 1);

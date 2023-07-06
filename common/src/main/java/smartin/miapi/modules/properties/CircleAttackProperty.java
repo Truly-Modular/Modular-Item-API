@@ -3,9 +3,7 @@ package smartin.miapi.modules.properties;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
-import net.minecraft.client.particle.Particle;
 import net.minecraft.item.ItemStack;
-import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.particle.ParticleType;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
@@ -19,6 +17,9 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This property controls {@link smartin.miapi.modules.abilities.CircleAttackAbility}
+ */
 public class CircleAttackProperty implements ModuleProperty {
     public static String KEY = "circleAttack";
     public static CircleAttackProperty property;
@@ -91,7 +92,7 @@ public class CircleAttackProperty implements ModuleProperty {
             }
         }
 
-        public class ParticleJson {
+        public static class ParticleJson {
             public String particle;
             public ParticleType particleType;
             public int count;

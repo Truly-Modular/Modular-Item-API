@@ -7,6 +7,9 @@ import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
+/**
+ * The Property controling {@link smartin.miapi.modules.abilities.RiptideAbility}
+ */
 public class RiptideProperty implements ModuleProperty {
     public static RiptideProperty property;
     public static final String KEY = "riptide";
@@ -42,7 +45,7 @@ public class RiptideProperty implements ModuleProperty {
         return old;
     }
 
-    public class RiptideJson{
+    public static class RiptideJson{
         public boolean needsWater = false;
         public boolean allowLava = false;
         public boolean needRiptideEnchant = true;

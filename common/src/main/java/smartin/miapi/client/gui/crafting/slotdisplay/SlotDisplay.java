@@ -6,31 +6,24 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.DiffuseLighting;
-import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.item.ItemRenderer;
-import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import org.joml.Quaterniond;
-import org.joml.Quaternionf;
 import org.joml.Vector3f;
-import org.joml.Vector4f;
 import org.lwjgl.opengl.GL11;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.InteractAbleWidget;
-import smartin.miapi.modules.properties.MiningLevelProperty;
 import smartin.miapi.modules.properties.SlotProperty;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Vector;
 import java.util.function.Consumer;
 
 /**
@@ -177,7 +170,6 @@ public class SlotDisplay extends InteractAbleWidget {
     }
 
     private Vector3f position() {
-        ItemRenderer renderer = MinecraftClient.getInstance().getItemRenderer();
         return new Vector3f(getX() + (float) (width - 16) / 2, getY() + (float) (height - 16) / 2, (100.0F + 50));
     }
 
@@ -201,7 +193,6 @@ public class SlotDisplay extends InteractAbleWidget {
         RenderSystem.enableDepthTest();
         renderer.renderItem(stack, ModelTransformationMode.GUI, 15728880, OverlayTexture.DEFAULT_UV, slotProjection, immediate, MinecraftClient.getInstance().world, 0);
         immediate.draw();
-        //renderButtons(matrixStack, slotProjection);
         RenderSystem.enableDepthTest();
         if (bl) {
             DiffuseLighting.enableGuiDepthLighting();

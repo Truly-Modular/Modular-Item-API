@@ -160,8 +160,7 @@ public abstract class InteractAbleWidget extends ClickableWidget implements Draw
     }
 
     public List<InteractAbleWidget> getHoverElements() {
-        List<InteractAbleWidget> allHoverElements = new ArrayList<>();
-        allHoverElements.addAll(hoverElements);
+        List<InteractAbleWidget> allHoverElements = new ArrayList<>(hoverElements);
         children().forEach(children -> {
             if (children instanceof InteractAbleWidget widget) {
                 allHoverElements.addAll(widget.getHoverElements());

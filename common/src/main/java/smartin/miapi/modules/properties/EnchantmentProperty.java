@@ -21,6 +21,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * This property allows to set allowed enchantments
+ */
 public class EnchantmentProperty implements CraftingProperty, ModuleProperty {
     public static String KEY = "enchantments";
     public static EnchantmentProperty property;

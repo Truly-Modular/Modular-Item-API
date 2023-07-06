@@ -50,7 +50,7 @@ public class PropertyInjectionDev implements EditOption {
     }
 
     @Environment(EnvType.CLIENT)
-    public class EditDevView extends InteractAbleWidget {
+    public static class EditDevView extends InteractAbleWidget {
 
         public EditDevView(int x, int y, int width, int height, ItemStack stack, ItemModule.ModuleInstance moduleInstance, Consumer<PacketByteBuf> craft, Consumer<Objects> back) {
             super(x, y, width, height, Text.empty());
@@ -73,6 +73,7 @@ public class PropertyInjectionDev implements EditOption {
                             for (Map.Entry<String, JsonElement> stringJsonElementEntry : moduleJson.entrySet()) {
                                 ModuleProperty property = RegistryInventory.moduleProperties.get(stringJsonElementEntry.getKey());
                                 try {
+                                    assert property != null;
                                     property.load(moduleInstance.module.getName(), stringJsonElementEntry.getValue());
                                 } catch (Exception e) {
                                     error.setText(Text.of(e.getMessage()));
