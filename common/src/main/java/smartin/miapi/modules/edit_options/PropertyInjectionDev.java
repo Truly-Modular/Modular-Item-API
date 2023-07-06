@@ -2,6 +2,7 @@ package smartin.miapi.modules.edit_options;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import dev.architectury.platform.Platform;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -12,6 +13,7 @@ import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.ColorHelper;
 import smartin.miapi.Miapi;
+import smartin.miapi.client.gui.ClickAbleTextWidget;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.ScrollingTextWidget;
 import smartin.miapi.client.gui.SimpleButton;
@@ -38,8 +40,7 @@ public class PropertyInjectionDev implements EditOption {
 
     @Override
     public boolean isVisible(ItemStack stack, ItemModule.ModuleInstance instance) {
-
-        return true;
+        return Platform.isDevelopmentEnvironment();
     }
 
     @Environment(EnvType.CLIENT)
@@ -53,9 +54,9 @@ public class PropertyInjectionDev implements EditOption {
 
         public EditDevView(int x, int y, int width, int height, ItemStack stack, ItemModule.ModuleInstance moduleInstance, Consumer<PacketByteBuf> craft, Consumer<Objects> back) {
             super(x, y, width, height, Text.empty());
-            SimpleButton<Objects> backButton = new SimpleButton(this.getX() + 10, this.getY() + this.height - 10, 40, 10, Text.literal("Back"), null, back);
+            SimpleButton<Objects> backButton = new SimpleButton(this.getX() + 10, this.getY() + this.height - 10, 40, 10, Text.translatable(Miapi.MOD_ID+".ui.back"), null, back);
             MutableText text = Text.literal(moduleInstance.moduleData.get("properties")).copy();
-            TextFieldWidget textFieldWidget = new TextFieldWidget(MinecraftClient.getInstance().textRenderer, x + 5, y + 10, this.width - 10, 20, text);
+            TextFieldWidget textFieldWidget = new ClickAbleTextWidget(MinecraftClient.getInstance().textRenderer, x + 5, y + 10, this.width - 10, 20, text);
             textFieldWidget.setMaxLength(Integer.MAX_VALUE);
             textFieldWidget.setEditable(true);
 

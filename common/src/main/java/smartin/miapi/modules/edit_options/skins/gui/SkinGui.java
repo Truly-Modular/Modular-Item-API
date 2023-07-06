@@ -2,11 +2,17 @@ package smartin.miapi.modules.edit_options.skins.gui;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.input.Input;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Text;
 import smartin.miapi.Miapi;
+import smartin.miapi.client.gui.ClickAbleTextWidget;
 import smartin.miapi.client.gui.InteractAbleWidget;
+import smartin.miapi.client.gui.ScrollList;
+import smartin.miapi.client.gui.SimpleButton;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.edit_options.skins.Skin;
 import smartin.miapi.modules.edit_options.skins.SkinOptions;
@@ -34,7 +40,22 @@ public class SkinGui extends InteractAbleWidget {
         if (maps == null) {
             maps = new HashMap<>();
         }
-        this.addChild(new SkinTabGui(this, x, y, width, "", maps));
+        List<InteractAbleWidget> widgets = new ArrayList<>();
+        SkinTabGui parentSkinTab = new SkinTabGui(this, x, y + 30, width, "", maps);
+        widgets.add(parentSkinTab);
+        ScrollList list = new ScrollList(x, y + 30, width, height - 45, widgets);
+        this.addChild(list);
+        TextFieldWidget textFieldWidget = new ClickAbleTextWidget(MinecraftClient.getInstance().textRenderer, x, y, this.width, 20, Text.literal("TITLE"));
+        textFieldWidget.setMaxLength(Integer.MAX_VALUE);
+        textFieldWidget.setEditable(true);
+        textFieldWidget.setVisible(true);
+        textFieldWidget.setPlaceholder(Text.translatable(Miapi.MOD_ID+".ui.search_placeholder"));
+        textFieldWidget.setChangedListener((change) -> {
+            parentSkinTab.filter(change);
+        });
+        this.addChild(textFieldWidget);
+        SimpleButton<Objects> backButton = new SimpleButton(this.getX() + 10, this.getY() + this.height - 10, 45, 14, Text.translatable(Miapi.MOD_ID+".ui.back"), null, back);
+        this.addChild(backButton);
     }
 
     public String currentSkin() {
@@ -70,6 +91,8 @@ public class SkinGui extends InteractAbleWidget {
         void filter(String search);
 
         String sortAndGetTop();
+
+        boolean isActive();
     }
 
 }

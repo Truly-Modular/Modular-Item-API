@@ -3,6 +3,7 @@ package smartin.miapi.modules.edit_options.skins.gui;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Drawable;
+import net.minecraft.client.gui.Element;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
@@ -40,6 +41,10 @@ class SkinTabGui extends InteractAbleWidget implements SkinGui.SortAble {
         this.tabInfo = SkinOptions.getTag(currentTab);
         height = realHeight;
         isRoot = currentTab.isBlank();
+        if (isRoot) {
+            this.height = 0;
+            this.realHeight = 0;
+        }
         if (isRoot) {
             spacing = 0;
             SkinButton child = new SkinButton(skinGui, x + spacing, y, width - spacing, "", new Skin());
@@ -157,12 +162,14 @@ class SkinTabGui extends InteractAbleWidget implements SkinGui.SortAble {
         int yHeight = getY() + realHeight;
         for (SkinGui.SortAble sortAble : currentList) {
             if (sortAble instanceof InteractAbleWidget widget) {
-                widget.setY(yHeight);
-                yHeight += widget.getHeight();
-                this.addChild(widget);
-                if (widget instanceof SkinTabGui tab) {
-                    if (updateChildren) {
-                        tab.setChildren(true);
+                if (sortAble.isActive()) {
+                    widget.setY(yHeight);
+                    yHeight += widget.getHeight();
+                    this.addChild(widget);
+                    if (widget instanceof SkinTabGui tab) {
+                        if (updateChildren) {
+                            tab.setChildren(true);
+                        }
                     }
                 }
             }
@@ -176,7 +183,10 @@ class SkinTabGui extends InteractAbleWidget implements SkinGui.SortAble {
 
     @Override
     public void filter(String search) {
-
+        for (SkinGui.SortAble element : fullList) {
+            element.filter(search);
+        }
+        setChildren(true);
     }
 
     @Override
@@ -185,5 +195,16 @@ class SkinTabGui extends InteractAbleWidget implements SkinGui.SortAble {
         currentList = new ArrayList<>(fullList);
         setChildren(true);
         return "." + fullList.get(0).sortAndGetTop();
+    }
+
+    @Override
+    public boolean isActive() {
+        boolean isEnabled = false;
+        for (SkinGui.SortAble element : fullList) {
+            if (element.isActive()) {
+                isEnabled = true;
+            }
+        }
+        return isEnabled;
     }
 }

@@ -11,10 +11,8 @@
   "mining_speed": 4,
   "mining_level": 1,
   "textures": [
-    "stone"
+    "rough"
   ],
-  "propertyList": [],
-
   "items": [
     {
       "item": "minecraft:purpur_block",

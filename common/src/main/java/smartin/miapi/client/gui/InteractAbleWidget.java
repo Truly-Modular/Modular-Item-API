@@ -225,7 +225,7 @@ public abstract class InteractAbleWidget extends ClickableWidget implements Draw
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         for (Element child : this.children()) {
-            if (child.isMouseOver(mouseX, mouseY) && child.mouseClicked(mouseX, mouseY, button)) {
+            if (child.mouseClicked(mouseX, mouseY, button)) {
                 return true;
             }
         }

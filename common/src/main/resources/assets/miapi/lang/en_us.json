@@ -3,6 +3,7 @@
     "miapi.ui.back": "Back",
     "miapi.ui.craft": "Craft",
     "miapi.ui.edit": "Edit",
+    "miapi.ui.search_placeholder": " search...",
     "miapi.ui.edit.header": "Select thing to Edit:",
     "miapi.ui.replace": "Replace",
     "miapi.ui.replace.header": "Select a new Module:",
@@ -10,6 +11,7 @@
     "miapi.ui.craft.warning.material":"insufficient Material",
     "miapi.ui.craft.warning.flexibility":"Flexibility cannot go bellow 0",
 
+    "miapi.skin.name.": "Default Skin",
     "miapi.skin.name.star_wars": "",
     "miapi.skin.name.skyrim": "",
     "miapi.skin.name.goldbrand": "",

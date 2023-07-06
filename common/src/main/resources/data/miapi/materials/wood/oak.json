@@ -11,10 +11,9 @@
   "mining_speed": 2,
   "mining_level": 0,
   "textures": [
-    "wood"
+    "wood",
+    "rough"
   ],
-  "propertyList": [],
-
   "items": [
     {
       "item": "minecraft:oak_planks",

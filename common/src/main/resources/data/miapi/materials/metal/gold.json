@@ -11,7 +11,7 @@
     "durability": 32,
     "color": "FFD700",
     "textures": [
-        "contrast"
+        "metalic"
     ],
     "mining_speed": 12,
     "mining_level": 1,

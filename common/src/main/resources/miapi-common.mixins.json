@@ -19,6 +19,7 @@
         "client.ItemRendererMixin",
         "client.ModelLoaderAccessor",
         "client.ModelLoaderInterfaceAccessor",
+        "client.ModelLoaderMixin",
         "client.ModelPredicateProviderRegistryAccessor"
     ],
     "injectors": {

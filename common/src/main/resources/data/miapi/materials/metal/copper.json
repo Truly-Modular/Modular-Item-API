@@ -11,11 +11,10 @@
     "durability": 200,
     "color": "E47B55",
     "textures": [
-        "metal"
+        "metalic"
     ],
     "mining_speed": 5,
     "mining_level": 2,
-    "propertyList": [],
     "items": [
         {
             "item": "minecraft:copper_ingot",

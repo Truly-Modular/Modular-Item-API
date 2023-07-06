@@ -9,7 +9,7 @@
   "durability": 250,
   "color": "FCFCFC",
   "textures": [
-    "metal"
+    "metalic"
   ],
   "mining_speed": 6,
   "mining_level": 2,

@@ -13,7 +13,7 @@ public class ModularWorkBenchEntity extends BlockEntity {
 
     public ModularWorkBenchEntity(BlockPos pos, BlockState state) {
         super(null, pos, state);
-        this.inventory = DefaultedList.ofSize(9 * 4, ItemStack.EMPTY);
+        this.inventory = DefaultedList.ofSize(1, ItemStack.EMPTY);
     }
 
     @Override

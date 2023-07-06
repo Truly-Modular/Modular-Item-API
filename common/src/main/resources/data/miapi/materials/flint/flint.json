@@ -11,7 +11,7 @@
   "mining_speed": 4,
   "mining_level": 2,
   "textures": [
-    "contrast"
+    "rough"
   ],
   "items": [
     {

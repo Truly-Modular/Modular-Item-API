@@ -13,6 +13,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.MutableSlot;
 import smartin.miapi.craft.CraftAction;
+import smartin.miapi.item.ModularItemStackConverter;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.edit_options.EditOption;
 import smartin.miapi.network.Networking;
@@ -86,7 +87,7 @@ public class CraftingScreenHandler extends ScreenHandler {
             Networking.registerC2SPacket(editPacketID, (buffer, player) -> {
                 EditOption option = RegistryInventory.editOptions.get(buffer.readString());
                 int[] intArray = buffer.readIntArray();
-                ItemStack stack = inventory.getStack(0);
+                ItemStack stack = ModularItemStackConverter.getModularVersion(inventory.getStack(0));
                 ItemModule.ModuleInstance root = ItemModule.getModules(stack);
                 List<Integer> position = new ArrayList<>();
                 for (int value : intArray) {

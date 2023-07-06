@@ -24,7 +24,7 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
 
-public class ModularWorkBench extends Block {
+public class ModularWorkBench extends BlockWithEntity {
     private static final VoxelShape BOTTOM = Block.createCuboidShape(2, 0, 4, 14, 3, 12);
     private static final VoxelShape CONNECTOR = Block.createCuboidShape(3, 3, 5, 13, 8, 11);
     private static final VoxelShape BASE = VoxelShapes.union(BOTTOM, CONNECTOR);
@@ -81,6 +81,10 @@ public class ModularWorkBench extends Block {
             player.openHandledScreen(state.createScreenHandlerFactory(world, pos));
             return ActionResult.CONSUME;
         }
+    }
+
+    public BlockRenderType getRenderType(BlockState state) {
+        return BlockRenderType.MODEL;
     }
 
     @Nullable

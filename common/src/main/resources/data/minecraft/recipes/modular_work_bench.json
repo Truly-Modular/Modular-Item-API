@@ -10,9 +10,17 @@
         "b": {
           "item": "minecraft:iron_ingot"
         },
-        "w": {
-            "item": "minecraft:deepslate"
-        }
+        "w": [
+            {
+                "item": "minecraft:deepslate"
+            },
+            {
+                "item": "minecraft:cobbled_deepslate"
+            },
+            {
+                "item": "minecraft:blackstone"
+            }
+        ]
     },
     "result": {
         "item": "miapi:modular_work_bench"

@@ -11,10 +11,8 @@
   "mining_speed": 2.5,
   "mining_level": 0,
   "textures": [
-    "stone"
+    "rough"
   ],
-  "propertyList": [],
-
   "items": [
     {
       "item": "minecraft:netherrack",

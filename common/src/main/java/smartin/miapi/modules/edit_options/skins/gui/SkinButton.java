@@ -8,6 +8,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import smartin.miapi.Miapi;
+import smartin.miapi.client.MiapiClient;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.ScrollingTextWidget;
 import smartin.miapi.item.modular.StatResolver;
@@ -20,6 +21,7 @@ class SkinButton extends InteractAbleWidget implements SkinGui.SortAble {
     String sortAble;
     ScrollingTextWidget textWidget;
     static final int sizeY = 16;
+    public boolean isEnabled = true;
 
 
     public SkinButton(SkinGui skinGui, int x, int y, int width, String skinPath, Skin skin) {
@@ -57,17 +59,29 @@ class SkinButton extends InteractAbleWidget implements SkinGui.SortAble {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        skinGui.setCraft(skinPath);
-        return true;
+        if (isMouseOver(mouseX, mouseY)) {
+            skinGui.setCraft(skinPath);
+            return true;
+        }
+        return false;
     }
 
     @Override
     public void filter(String search) {
-
+        if (this.skinPath.toLowerCase().contains(search.toLowerCase()) || this.textWidget.getText().toString().toLowerCase().contains(search.toLowerCase())) {
+            this.isEnabled = true;
+        } else {
+            this.isEnabled = false;
+        }
     }
 
     @Override
     public String sortAndGetTop() {
         return sortAble;
+    }
+
+    @Override
+    public boolean isActive() {
+        return isEnabled;
     }
 }

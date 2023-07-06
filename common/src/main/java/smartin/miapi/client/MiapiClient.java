@@ -1,11 +1,10 @@
 package smartin.miapi.client;
 
 import dev.architectury.event.events.client.ClientLifecycleEvent;
-import dev.architectury.platform.Platform;
 import dev.architectury.registry.client.level.entity.EntityRendererRegistry;
 import dev.architectury.registry.menu.MenuRegistry;
 import net.minecraft.client.MinecraftClient;
-import smartin.miapi.Miapi;
+import net.minecraft.client.world.ClientWorld;
 import smartin.miapi.client.gui.crafting.CraftingGUI;
 import smartin.miapi.client.model.CustomColorProvider;
 import smartin.miapi.mixin.client.ItemRendererAccessor;
@@ -20,8 +19,8 @@ public class MiapiClient {
     public static void init(){
         ClientLifecycleEvent.CLIENT_SETUP.register(MiapiClient::clientSetup);
         ClientLifecycleEvent.CLIENT_STARTED.register(MiapiClient::clientStart);
+        ClientLifecycleEvent.CLIENT_LEVEL_LOAD.register(MiapiClient::clientLevelLoad);
     }
-
     protected static void clientSetup(MinecraftClient client){
         SpriteLoader.setup();
     }
@@ -32,12 +31,15 @@ public class MiapiClient {
         });
     }
 
+    protected static void clientLevelLoad(ClientWorld clientWorld){
+        SpriteLoader.clientStart();
+    }
+
     public static void registerScreenHandler() {
         MenuRegistry.registerScreenFactory(RegistryInventory.craftingScreenHandler, CraftingGUI::new);
     }
 
     public static void registerEntityRenderer() {
-        System.out.println("added entity renderer");
         EntityRendererRegistry.register(RegistryInventory.itemProjectileType, ItemProjectileRenderer::new);
     }
 }

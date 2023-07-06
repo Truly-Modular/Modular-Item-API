@@ -7,10 +7,7 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.Element;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
-import net.minecraft.util.math.ColorHelper;
-import smartin.miapi.Miapi;
 
 /**
  * This is a widget that displays a scrolling text. The text slowly scrolls through
@@ -68,6 +65,15 @@ public class ScrollingTextWidget extends InteractAbleWidget implements Drawable,
         this.text = text;
         scrollPosition = 0;
         timer = -firstLetterExtraTime;
+    }
+
+    /**
+     * get the current Text
+     *
+     * @return
+     */
+    public Text getText() {
+        return text;
     }
 
     public void setOrientation(ORIENTATION orientation) {
