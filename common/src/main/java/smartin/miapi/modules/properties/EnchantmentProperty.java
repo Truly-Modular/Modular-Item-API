@@ -16,10 +16,7 @@ import smartin.miapi.modules.properties.util.CraftingProperty;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * This property allows to set allowed enchantments
@@ -85,7 +82,7 @@ public class EnchantmentProperty implements CraftingProperty, ModuleProperty {
     }
 
     public static List<Enchantment> getAllowedList(ItemStack stack) {
-        return (List<Enchantment>) ModularItemCache.get(stack, KEY);
+        return Collections.unmodifiableList((List<Enchantment>) ModularItemCache.get(stack, KEY));
     }
 
     public static void addToReplaceMap(String key, String enchant) {
@@ -95,11 +92,11 @@ public class EnchantmentProperty implements CraftingProperty, ModuleProperty {
     }
 
     public static boolean isAllowed(ItemStack stack, Enchantment enchantment) {
-        boolean isAllwed = getAllowedList(stack).contains(enchantment);
+        boolean allowed = getAllowedList(stack).contains(enchantment);
         getAllowedList(stack).forEach(enchantment1 -> {
             Miapi.LOGGER.error(String.valueOf(enchantment1));
         });
-        return isAllwed;
+        return allowed;
     }
 
     @Override

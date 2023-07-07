@@ -4,6 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.Text;
+import net.minecraft.util.math.BlockPos;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.util.ModuleProperty;
@@ -24,10 +25,10 @@ public class AndCondition implements ModuleCondition {
     }
 
     @Override
-    public boolean isAllowed(ItemModule.ModuleInstance moduleInstance, @Nullable PlayerEntity player, Map<ModuleProperty, JsonElement> propertyMap, List<Text> reasons) {
+    public boolean isAllowed(ItemModule.ModuleInstance moduleInstance, @Nullable BlockPos tablePos, @Nullable PlayerEntity player, Map<ModuleProperty, JsonElement> propertyMap, List<Text> reasons) {
         boolean isAllowed = true;
         for (ModuleCondition condition : conditions) {
-            if (!condition.isAllowed(moduleInstance, player, propertyMap, reasons)) {
+            if (!condition.isAllowed(moduleInstance, tablePos, player, propertyMap, reasons)) {
                 isAllowed = false;
             }
         }

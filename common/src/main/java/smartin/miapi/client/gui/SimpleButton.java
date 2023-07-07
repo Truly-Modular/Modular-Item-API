@@ -37,6 +37,7 @@ public class SimpleButton<T> extends InteractAbleWidget {
      */
     public SimpleButton(int x, int y, int width, int height, Text title, T toCallback, Consumer<T> callback) {
         super(x, y, width, height, title);
+        assert callback != null;
         this.toCallback = toCallback;
         this.callback = callback;
         ScrollingTextWidget textWidget = new ScrollingTextWidget(x, y, width, title, ColorHelper.Argb.getArgb(255, 200, 200, 200));
@@ -75,8 +76,8 @@ public class SimpleButton<T> extends InteractAbleWidget {
      */
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (isMouseOver(mouseX, mouseY) && (isEnabled)) {
-                callback.accept(toCallback);
-                return true;
+            callback.accept(toCallback);
+            return true;
 
         }
         return false;
@@ -100,6 +101,6 @@ public class SimpleButton<T> extends InteractAbleWidget {
         if (!isEnabled) {
             offset = 20;
         }
-        drawTextureWithEdge(drawContext,texture, getX(), getY(), offset, 0, 10, 10, this.width, height, 30, 10, 3);
+        drawTextureWithEdge(drawContext, texture, getX(), getY(), offset, 0, 10, 10, this.width, height, 30, 10, 3);
     }
 }

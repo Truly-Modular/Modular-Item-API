@@ -302,8 +302,14 @@ public class DetailView extends InteractAbleWidget {
             for (String line : rawLines) {
                 lines.add(new ScrollingTextWidget(this.getX(), this.getY(), this.width, Text.of(line), textColor));
             }
-            editButton = new SimpleButton<>(this.getX(), this.getY(), 30, 11, Text.translatable(Miapi.MOD_ID + ".ui.edit"), slot, edit::accept);
-            replaceButton = new SimpleButton<>(this.getX(), this.getY(), 60, 11, Text.translatable(Miapi.MOD_ID + ".ui.replace"), slot, replace::accept);
+            editButton = new SimpleButton<>(this.getX(), this.getY(), 30, 11, Text.translatable(Miapi.MOD_ID + ".ui.edit"), slot, (object) -> {
+                //idk why but if i remove the lambda it causes a npe
+                edit.accept(object);
+            });
+            replaceButton = new SimpleButton<>(this.getX(), this.getY(), 60, 11, Text.translatable(Miapi.MOD_ID + ".ui.replace"), slot, (moduleSlot -> {
+                //idk why but if i remove the lambda it causes a npe
+                replace.accept(moduleSlot);
+            }));
             this.height = Math.max(minSize, lines.size() * (fontSize + lineSpacing) + buttonSpacing * 2 + Math.max(replaceButton.getHeight(), editButton.getHeight()) + buttonSpacing * 2 + HeaderSize);
             this.height = Math.max(minSize, description.getHeight() + buttonSpacing * 2 + Math.max(replaceButton.getHeight(), editButton.getHeight()) + buttonSpacing * 2 + HeaderSize);
             addChild(editButton);

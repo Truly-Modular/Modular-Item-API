@@ -27,7 +27,7 @@ public class SynergyManager {
                     if (moduleInstance.module.equals(itemModule)) {
                         synergies.forEach(synergy -> {
                             List<Text> error = new ArrayList<>();
-                            if (synergy.condition.isAllowed(moduleInstance, null, oldMap, error)) {
+                            if (synergy.condition.isAllowed(moduleInstance, null, null, oldMap, error)) {
                                 oldMap.putAll(synergy.properties);
                             }
                         });

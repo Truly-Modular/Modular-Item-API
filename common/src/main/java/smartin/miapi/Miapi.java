@@ -94,9 +94,7 @@ public class Miapi {
                 return null;
             }
         });
-        ModularItemCache.setSupplier(ItemModule.propertyKey, itemStack -> {
-            return ItemModule.getUnmergedProperties((ItemModule.ModuleInstance) ModularItemCache.get(itemStack, ItemModule.moduleKey));
-        });
+        ModularItemCache.setSupplier(ItemModule.propertyKey, itemStack -> ItemModule.getUnmergedProperties((ItemModule.ModuleInstance) ModularItemCache.get(itemStack, ItemModule.moduleKey)));
         StatResolver.registerResolver("translation", new StatResolver.Resolver() {
             @Override
             public double resolveDouble(String data, ItemModule.ModuleInstance instance) {
