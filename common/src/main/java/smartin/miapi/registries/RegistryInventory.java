@@ -286,6 +286,7 @@ public class RegistryInventory {
             registerMiapi(moduleProperties, TagProperty.KEY, new TagProperty());
             registerMiapi(moduleProperties, EnchantmentProperty.KEY, new EnchantmentProperty());
             registerMiapi(moduleProperties, MaterialProperties.KEY, new MaterialProperties());
+            registerMiapi(moduleProperties, CraftingConditionProperty.KEY, new CraftingConditionProperty());
 
             //compat
             registerMiapi(moduleProperties, BetterCombatProperty.KEY, new BetterCombatProperty());

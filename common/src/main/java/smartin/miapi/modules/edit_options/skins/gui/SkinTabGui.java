@@ -55,6 +55,7 @@ class SkinTabGui extends InteractAbleWidget implements SkinGui.SortAble {
         Map<String, Map<String, Skin>> toDoMap = new HashMap<>();
         for (Map.Entry<String, Skin> entry : mapsToDo.entrySet()) {
             String skinPath = entry.getKey();
+            Miapi.LOGGER.error("skin " + skinPath);
             String[] pathParts = skinPath.split("/");
 
             // Check if the current path is under the current tab
@@ -105,7 +106,7 @@ class SkinTabGui extends InteractAbleWidget implements SkinGui.SortAble {
 
     private boolean isMouseOverReal(double mouseX, double mouseY) {
         if (mouseY > this.getY() && mouseY < this.getY() + realHeight && (mouseX > this.getX() && mouseX < this.getX() + width)) {
-                return true;
+            return true;
 
         }
         return false;
@@ -134,6 +135,7 @@ class SkinTabGui extends InteractAbleWidget implements SkinGui.SortAble {
             textWidget.setY(this.getY() + 2);
             textWidget.render(drawContext, mouseX, mouseY, delta);
         }
+        super.render(drawContext, mouseX, mouseY, delta);
     }
 
     private void setChildren(boolean updateChildren) {

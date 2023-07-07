@@ -109,6 +109,18 @@ public class ScrollList extends InteractAbleWidget {
     }
 
     @Override
+    public void renderHover(DrawContext drawContext, int mouseX, int mouseY, float delta) {
+        for (InteractAbleWidget widget : this.widgets) {
+            Matrix4f matrix4f = new Matrix4f(drawContext.getMatrices().peek().getPositionMatrix());
+            Vector4f posX = TransformableWidget.transFormMousePos(getX(), getY(), matrix4f);
+            Vector4f posY = TransformableWidget.transFormMousePos(getX() + width, getY() + height, matrix4f);
+            //drawContext.enableScissor((int) posX.x(), (int) posX.y, (int) posY.x(), (int) posY.y());
+            widget.renderHover(drawContext, mouseX, mouseY, delta);
+            //drawContext.disableScissor();
+        }
+    }
+
+    @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
         if (this.widgets == null) {
             return false;

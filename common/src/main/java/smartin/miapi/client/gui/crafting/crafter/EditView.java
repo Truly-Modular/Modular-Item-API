@@ -115,7 +115,7 @@ public class EditView extends InteractAbleWidget {
             if (isMouseOver(mouseX, mouseY)) {
                 hoverOffset = 14;
             }
-            drawTextureWithEdge(drawContext, texture, this.getX(), this.getY(), 0, hoverOffset, 140, 14, this.getWidth(), this.getHeight(), 140, 28, 2);
+            drawTextureWithEdge(drawContext, texture, this.getX(), this.getY(), 0, hoverOffset, 140, 14, this.getWidth(), this.getHeight(), 140, 42, 2);
             textWidget.setX(this.getX() + 2);
             textWidget.setY(this.getY() + 3);
 

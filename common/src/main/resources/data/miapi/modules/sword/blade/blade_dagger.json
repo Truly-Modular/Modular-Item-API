@@ -34,7 +34,10 @@
     ],
     "allowedMaterial": {
         "allowedMaterials": [
-            "wood","stone","metal","crystal"
+            "wood",
+            "stone",
+            "metal",
+            "crystal"
         ],
         "cost": 1
     },
@@ -90,5 +93,13 @@
         }
     ],
     "displayName": "miapi.module.blade_dagger.name",
+    "crafting_condition": {
+        "craftable": {
+            "type": "true"
+        },
+        "visible": {
+            "type": "true"
+        }
+    },
     "itemId": "miapi:modular_dagger"
 }

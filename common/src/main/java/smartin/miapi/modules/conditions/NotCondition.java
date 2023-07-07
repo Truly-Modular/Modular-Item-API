@@ -24,6 +24,7 @@ public class NotCondition implements ModuleCondition {
 
     @Override
     public boolean isAllowed(ItemModule.ModuleInstance moduleInstance, @Nullable BlockPos tablePos, @Nullable PlayerEntity player, Map<ModuleProperty, JsonElement> propertyMap, List<Text> reasons) {
+        reasons.add(Text.literal("Just no"));
         return !conditions.isAllowed(moduleInstance, tablePos, player, propertyMap, reasons);
     }
 
