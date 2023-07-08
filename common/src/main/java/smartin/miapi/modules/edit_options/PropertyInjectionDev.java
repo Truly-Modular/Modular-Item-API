@@ -33,7 +33,7 @@ public class PropertyInjectionDev implements EditOption {
         String raw = buffer.readString();
         moduleInstance.moduleData.put("properties", raw);
         ItemStack stack1 = stack.copy();
-        moduleInstance.writeToItem(stack1);
+        moduleInstance.getRoot().writeToItem(stack1);
         ModularItemCache.discardCache();
         return stack1;
     }
@@ -54,7 +54,7 @@ public class PropertyInjectionDev implements EditOption {
 
         public EditDevView(int x, int y, int width, int height, ItemStack stack, ItemModule.ModuleInstance moduleInstance, Consumer<PacketByteBuf> craft, Consumer<Objects> back) {
             super(x, y, width, height, Text.empty());
-            SimpleButton<Objects> backButton = new SimpleButton(this.getX() + 10, this.getY() + this.height - 10, 40, 10, Text.translatable(Miapi.MOD_ID+".ui.back"), null, back);
+            SimpleButton<Objects> backButton = new SimpleButton<>(this.getX() + 10, this.getY() + this.height - 10, 40, 10, Text.translatable(Miapi.MOD_ID+".ui.back"), null, back);
             MutableText text = Text.literal(moduleInstance.moduleData.get("properties")).copy();
             TextFieldWidget textFieldWidget = new ClickAbleTextWidget(MinecraftClient.getInstance().textRenderer, x + 5, y + 10, this.width - 10, 20, text);
             textFieldWidget.setMaxLength(Integer.MAX_VALUE);

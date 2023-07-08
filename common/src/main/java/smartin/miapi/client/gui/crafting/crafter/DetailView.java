@@ -273,13 +273,13 @@ public class DetailView extends InteractAbleWidget {
         private final MultiLineTextWidget description;
         private final List<ScrollingTextWidget> lines = new ArrayList<>();
         private final ScrollingTextWidget headerText;
-        private final static int lineSpacing = 2;
-        private final static int buttonSpacing = 3;
-        private final static int minSize = 30;
-        private final static int HeaderSize = 11;
-        private SimpleButton editButton;
-        private SimpleButton replaceButton;
+        private final SimpleButton editButton;
+        private final SimpleButton replaceButton;
         private int textColor = ColorHelper.Argb.getArgb(255, 255, 255, 255);
+        private static final int lineSpacing = 2;
+        private static final int buttonSpacing = 3;
+        private static final int minSize = 30;
+        private static final int HeaderSize = 11;
 
         public ModuleDetail(int x, int y, int width, SlotProperty.ModuleSlot slot) {
             super(x, y, width, 10, Text.empty());

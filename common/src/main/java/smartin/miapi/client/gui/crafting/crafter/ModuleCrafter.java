@@ -93,7 +93,8 @@ public class ModuleCrafter extends InteractAbleWidget {
             }
             case CRAFT -> {
                 craftView = new CraftView(this.getX(), this.getY(), this.width, this.height, paketIdentifier, module, stack, linkedInventory, 1, slot, (backSlot) -> {
-                    setSelectedSlot(backSlot);
+                    slot = backSlot;
+                    setMode(Mode.REPLACE);
                 }, (replaceItem) -> {
                     preview.accept(replaceItem);
                 }, addSlot, removeSlot, handler);
@@ -107,7 +108,6 @@ public class ModuleCrafter extends InteractAbleWidget {
                         EditView view = new EditView(this.getX(), this.getY(), this.width, this.height, stack, instance, (previewItem) -> {
                             preview.accept(previewItem);
                         }, (object) -> {
-                            this.children().clear();
                             setMode(Mode.DETAIL);
                         });
                         this.children().clear();

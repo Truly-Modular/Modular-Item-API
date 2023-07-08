@@ -40,6 +40,7 @@ public class ModularItemCache {
 
     public static void discardCache(){
         cache.cleanUp();
+        cache.invalidateAll();
     }
 
     public static void updateNBT(ItemStack stack){
