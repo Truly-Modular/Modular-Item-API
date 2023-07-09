@@ -37,6 +37,15 @@
     "miapi.stat.blocking": "Blocking",
     "miapi.stat.blocking.description": "Blocks %d percent of incoming Damage",
 
+
+    "miapi.material_stat.color": "Color",
+    "miapi.material_stat.flexibility": "Flexibility",
+    "miapi.material_stat.density": "Density",
+    "miapi.material_stat.hardness": "Hardness",
+    "miapi.material_stat.durability": "Durability",
+    "miapi.material_stat.mining_speed": "Mining Speed",
+    "miapi.material_stat.mining_level": "Mining Level",
+
     "miapi.material.wood": "Wooden ",
     "miapi.material.wood.acacia": "Acaica ",
     "miapi.material.wood.bamboo": "Bamboo ",

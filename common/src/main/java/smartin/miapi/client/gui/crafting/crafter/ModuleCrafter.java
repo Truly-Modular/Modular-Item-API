@@ -16,7 +16,9 @@ import net.minecraft.util.math.ColorHelper;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.craft.CraftAction;
+import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.properties.MaterialProperty;
 import smartin.miapi.modules.properties.SlotProperty;
 
 import java.util.ArrayList;
@@ -42,7 +44,8 @@ public class ModuleCrafter extends InteractAbleWidget {
 
     public ModuleCrafter(int x, int y, int width, int height, Consumer<SlotProperty.ModuleSlot> selected, Consumer<ItemStack> craftedItem, Inventory linkedInventory, Consumer<Slot> addSlot, Consumer<Slot> removeSlot) {
         super(x, y, width, height, Text.empty());
-        this.linkedInventory = linkedInventory;;
+        this.linkedInventory = linkedInventory;
+        ;
         this.preview = craftedItem;
         this.removeSlot = removeSlot;
         this.addSlot = addSlot;
@@ -70,6 +73,12 @@ public class ModuleCrafter extends InteractAbleWidget {
         if (craftView != null) {
             craftView.closeSlot();
             craftView = null;
+        }
+        if (mode == Mode.DETAIL && !(stack.getItem() instanceof ModularItem)) {
+            MaterialProperty.Material material = MaterialProperty.getMaterial(stack);
+            if (material != null) {
+                mode = Mode.MATERIAL;
+            }
         }
         switch (mode) {
             case DETAIL -> {
@@ -129,6 +138,13 @@ public class ModuleCrafter extends InteractAbleWidget {
                 }));
                 addChild(view);
             }
+            case MATERIAL -> {
+                this.children.clear();
+                MaterialDetailView detailView = new MaterialDetailView(this.getX(), this.getY(), this.width, this.getHeight(), stack, (object) -> {
+                    setMode(Mode.DETAIL);
+                });
+                this.addChild(detailView);
+            }
         }
     }
 
@@ -142,6 +158,7 @@ public class ModuleCrafter extends InteractAbleWidget {
         DETAIL,
         EDIT,
         REPLACE,
-        CRAFT
+        CRAFT,
+        MATERIAL
     }
 }
