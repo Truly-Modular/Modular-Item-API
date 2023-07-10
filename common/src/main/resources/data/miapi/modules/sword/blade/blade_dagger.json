@@ -86,10 +86,9 @@
         {
             "event": "attack",
             "target": "target",
-            "duration": 5,
-            "amplifier": 1,
-            "effect": "minecraft:poison",
-            "predicate": "miapi:test"
+            "duration": 50,
+            "amplifier": 2,
+            "effect": "minecraft:poison"
         }
     ],
     "displayName": "miapi.module.blade_dagger.name",
@@ -99,6 +98,9 @@
         },
         "visible": {
             "type": "true"
+        },
+        "on_craft": {
+            "type": "not"
         }
     },
     "itemId": "miapi:modular_dagger"

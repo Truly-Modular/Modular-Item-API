@@ -71,22 +71,24 @@ public class PotionEffectProperty extends SimpleEventProperty {
             if (effect.target.equals("target"))
                 toApply = attacker;
 
-            if (predicateManager == null || effect.predicate.isEmpty())
-                toApply.addStatusEffect(effect.creator.get());
-            else {
-                 LootCondition condition = predicateManager.getElement(LootDataType.PREDICATES, effect.predicate.get());
-                 if (condition != null) {
-                         LootContextParameterSet.Builder builder = new LootContextParameterSet.Builder(world)
-                             .add(LootContextParameters.THIS_ENTITY, toApply) // THIS_ENTITY is whomever the effect is applied to
-                             .add(LootContextParameters.ORIGIN, toApply.getPos())
-                             .add(LootContextParameters.DAMAGE_SOURCE, event.damageSource)
-                             .add(LootContextParameters.KILLER_ENTITY, event.damageSource.getAttacker())
-                             .add(LootContextParameters.DIRECT_KILLER_ENTITY, event.damageSource.getSource());
-                     if (toApply.getAttacker() instanceof PlayerEntity player)
+            if (predicateManager == null || effect.predicate.isEmpty()) {
+                //toApply.addStatusEffect(effect.creator.get());
+                StatusEffectInstance instance = effect.creator.get();
+                toApply.addStatusEffect(instance, holder.event().damageSource.getAttacker());
+            } else {
+                LootCondition condition = predicateManager.getElement(LootDataType.PREDICATES, effect.predicate.get());
+                if (condition != null) {
+                    LootContextParameterSet.Builder builder = new LootContextParameterSet.Builder(world)
+                            .add(LootContextParameters.THIS_ENTITY, toApply) // THIS_ENTITY is whomever the effect is applied to
+                            .add(LootContextParameters.ORIGIN, toApply.getPos())
+                            .add(LootContextParameters.DAMAGE_SOURCE, event.damageSource)
+                            .add(LootContextParameters.KILLER_ENTITY, event.damageSource.getAttacker())
+                            .add(LootContextParameters.DIRECT_KILLER_ENTITY, event.damageSource.getSource());
+                    if (toApply.getAttacker() instanceof PlayerEntity player)
                         builder.add(LootContextParameters.LAST_DAMAGE_PLAYER, player);
-                     if (condition.test(new LootContext.Builder(builder.build(LootContextTypes.ENTITY)).build(null)))
+                    if (condition.test(new LootContext.Builder(builder.build(LootContextTypes.ENTITY)).build(null)))
                         toApply.addStatusEffect(effect.creator.get());
-                 } else
+                } else
                     Miapi.LOGGER.warn("Found null predicate during PotionEffectProperty application.");
             }
         }
@@ -108,15 +110,15 @@ public class PotionEffectProperty extends SimpleEventProperty {
                 if (manager == null || effect.predicate.isEmpty() || !(ability.world() instanceof ServerWorld world))
                     ability.user().addStatusEffect(effect.creator.get());
                 else {
-                     LootCondition condition = manager.getElement(LootDataType.PREDICATES, effect.predicate.get());
-                     if (condition != null) {
-                         LootContextParameterSet.Builder builder = new LootContextParameterSet.Builder(world)
-                         .add(LootContextParameters.THIS_ENTITY, ability.user()) // THIS_ENTITY is whomever the effect is applied to
-                         .add(LootContextParameters.ORIGIN, ability.user().getPos())
-                         .add(LootContextParameters.TOOL, ability.stack());
-                         if (condition.test(new LootContext.Builder(builder.build(PropertyApplication.Ability.LOOT_CONTEXT)).build(null)))
+                    LootCondition condition = manager.getElement(LootDataType.PREDICATES, effect.predicate.get());
+                    if (condition != null) {
+                        LootContextParameterSet.Builder builder = new LootContextParameterSet.Builder(world)
+                                .add(LootContextParameters.THIS_ENTITY, ability.user()) // THIS_ENTITY is whomever the effect is applied to
+                                .add(LootContextParameters.ORIGIN, ability.user().getPos())
+                                .add(LootContextParameters.TOOL, ability.stack());
+                        if (condition.test(new LootContext.Builder(builder.build(PropertyApplication.Ability.LOOT_CONTEXT)).build(null)))
                             ability.user().addStatusEffect(effect.creator.get());
-                     } else
+                    } else
                         Miapi.LOGGER.warn("Found null predicate during PotionEffectProperty application.");
                 }
             }
@@ -151,12 +153,7 @@ public class PotionEffectProperty extends SimpleEventProperty {
     }
 
     public List<StatusEffectData> get(ItemStack itemStack) {
-        JsonElement element = ItemModule.getMergedProperty(itemStack, property);
-        if (element == null) {
-            return null;
-        }
-        return StatusEffectData.CODEC(ItemModule.getModules(itemStack)).listOf().parse(JsonOps.INSTANCE, element).getOrThrow(false, s -> {
-        });
+        return (List<StatusEffectData>) ModularItemCache.get(itemStack, KEY);
     }
 
     public static List<StatusEffectData> createCache(ItemStack stack) {

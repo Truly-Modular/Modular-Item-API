@@ -2,18 +2,21 @@ package smartin.miapi.modules.properties;
 
 import com.google.gson.JsonElement;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.conditions.ConditionManager;
 import smartin.miapi.modules.conditions.ModuleCondition;
+import smartin.miapi.modules.properties.util.CraftingProperty;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class CraftingConditionProperty implements ModuleProperty {
+public class CraftingConditionProperty implements ModuleProperty, CraftingProperty {
     public static final String KEY = "crafting_condition";
     public static CraftingConditionProperty property;
 
@@ -62,13 +65,40 @@ public class CraftingConditionProperty implements ModuleProperty {
         return ModuleProperty.super.merge(old, toMerge, type);
     }
 
+    @Override
+    public boolean shouldExecuteOnCraft(ItemModule.ModuleInstance module) {
+        return true;
+    }
+
+    @Override
+    public Text getWarning() {
+        return CraftingProperty.super.getWarning();
+    }
+
+    @Override
+    public boolean canPerform(ItemStack old, ItemStack crafting, PlayerEntity player, ItemModule.ModuleInstance newModule, ItemModule module, List<ItemStack> inventory, PacketByteBuf buf) {
+        JsonElement element = newModule.getProperties().get(property);
+        if(element!=null){
+            List<Text> reasons = new ArrayList<>();
+            return new CraftingConditionJson(element).craftAble.isAllowed(newModule,null,player,newModule.getProperties(),reasons);
+        }
+        return true;
+    }
+
+    @Override
+    public ItemStack preview(ItemStack old, ItemStack crafting, PlayerEntity player, ItemModule.ModuleInstance newModule, ItemModule module, List<ItemStack> inventory, PacketByteBuf buf) {
+        return crafting;
+    }
+
     public static class CraftingConditionJson {
         public ModuleCondition visible;
         public ModuleCondition craftAble;
+        public ModuleCondition on_craft;
 
         public CraftingConditionJson(JsonElement element) {
             visible = ConditionManager.get(element.getAsJsonObject().get("visible"));
             craftAble = ConditionManager.get(element.getAsJsonObject().get("craftable"));
+            on_craft = ConditionManager.get(element.getAsJsonObject().get("on_craft"));
         }
 
         public ModuleCondition getVisible() {
