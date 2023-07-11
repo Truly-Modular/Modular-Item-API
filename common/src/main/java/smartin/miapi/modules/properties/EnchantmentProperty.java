@@ -1,15 +1,20 @@
 package smartin.miapi.modules.properties;
 
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.platform.Platform;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.enchantment.EnchantmentTarget;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.JsonHelper;
 import smartin.miapi.Miapi;
+import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.util.CraftingProperty;
@@ -24,11 +29,11 @@ import java.util.*;
 public class EnchantmentProperty implements CraftingProperty, ModuleProperty {
     public static String KEY = "enchantments";
     public static EnchantmentProperty property;
-    public static HashMap<String, List<String>> replaceMap = new HashMap<>();
+    public static HashMap<String, Set<String>> replaceMap = new HashMap<>();
 
     public EnchantmentProperty() {
         property = this;
-        addToReplaceMap("miapi:basic", "minecraft:mending");
+        /*addToReplaceMap("miapi:basic", "minecraft:mending");
         addToReplaceMap("miapi:basic", "minecraft:unbreaking");
         addToReplaceMap("miapi:basic", "minecraft:vanishing_curse");
         addToReplaceMap("miapi:weapon", "minecraft:fire_aspect");
@@ -64,9 +69,45 @@ public class EnchantmentProperty implements CraftingProperty, ModuleProperty {
         addToReplaceMap("miapi:trident", "minecraft:riptide");
         addToReplaceMap("miapi:trident", "minecraft:loyalty");
         addToReplaceMap("miapi:trident", "minecraft:channeling");
-        addToReplaceMap("miapi:trident", "minecraft:impaling");
+        addToReplaceMap("miapi:trident", "minecraft:impaling");*/
+        addToReplaceMap("miapi:armor", EnchantmentTarget.ARMOR);
+        addToReplaceMap("miapi:basic", EnchantmentTarget.BREAKABLE);
+        addToReplaceMap("miapi:weapon", EnchantmentTarget.WEAPON);
+        addToReplaceMap("miapi:tool", EnchantmentTarget.DIGGER);
+        addToReplaceMap("miapi:fishing_rod", EnchantmentTarget.FISHING_ROD); // miapi doesn't have fishing rods as of making this, but whatever
+        // no edged, it has no category, so it is done only in json.
+        addToReplaceMap("miapi:bow", EnchantmentTarget.BOW);
+        addToReplaceMap("miapi:crossbow", EnchantmentTarget.CROSSBOW);
+        addToReplaceMap("miapi:helmet", EnchantmentTarget.ARMOR_HEAD);
+        addToReplaceMap("miapi:chestplate", EnchantmentTarget.ARMOR_CHEST); // does nothing in vanilla, has potential with other mods installed though
+        addToReplaceMap("miapi:leggings", EnchantmentTarget.ARMOR_LEGS);
+        addToReplaceMap("miapi:boots", EnchantmentTarget.ARMOR_FEET);
+        addToReplaceMap("miapi:trident", EnchantmentTarget.TRIDENT);
 
         ModularItemCache.setSupplier(KEY, this::createAllowedList);
+
+        Miapi.registerReloadHandler(ReloadEvents.MAIN, "enchantment_categories", (isClient, path, data) -> {
+            JsonObject obj = JsonHelper.deserialize(data);
+            String id = obj.getAsJsonPrimitive("id").getAsString();
+
+            if (obj.has("add")) {
+                obj.getAsJsonArray("add").forEach(element -> {
+                    addToReplaceMap(
+                            id,
+                            element.getAsJsonPrimitive().getAsString()
+                    );
+                });
+            }
+
+            // 😭 doesn't work in non-dev cuz obfuscation
+            /*if (obj.has("addCategory"))
+                obj.getAsJsonArray("addCategory").forEach(element -> {
+                    addToReplaceMap(
+                            id,
+                            EnchantmentTarget.valueOf(element.getAsJsonPrimitive().toString().toUpperCase())
+                    );
+                });*/
+        });
     }
 
     private List<Enchantment> createAllowedList(ItemStack itemStack) {
@@ -86,8 +127,19 @@ public class EnchantmentProperty implements CraftingProperty, ModuleProperty {
     }
 
     public static void addToReplaceMap(String key, String enchant) {
-        List<String> list = replaceMap.getOrDefault(key, new ArrayList<>());
+        Set<String> list = replaceMap.getOrDefault(key, new HashSet<>());
         list.add(enchant);
+        replaceMap.put(key, list);
+    }
+
+    public static void addToReplaceMap(String key, EnchantmentTarget target) {
+        Set<String> list = replaceMap.getOrDefault(key, new HashSet<>());
+        LifecycleEvent.SERVER_BEFORE_START.register(server -> {
+            Registries.ENCHANTMENT.forEach(ench -> {
+                if (ench.target == target)
+                    list.add(Objects.requireNonNull(Registries.ENCHANTMENT.getId(ench)).toString());
+            });
+        });
         replaceMap.put(key, list);
     }
 

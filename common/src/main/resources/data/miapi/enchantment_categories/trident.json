@@ -1,0 +1,9 @@
+{
+  "id": "miapi:trident",
+  "add": [],
+  "addCategory": [
+    "trident"
+  ],
+  "__comment": "The 'add' field can be used to directly add enchantments.",
+  "___comment": "The 'addCategory' field doesn't do anything functionally, and is just for reference purposes."
+}
