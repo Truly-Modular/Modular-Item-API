@@ -36,13 +36,7 @@ public class SynergyManager {
             }
             return oldMap;
         });
-        ReloadEvents.END.subscribe((isClient -> {
-            ReloadEvents.DATA_PACKS.forEach((path, data) -> {
-                if (path.startsWith("synergies")) {
-                    load(data);
-                }
-            });
-        }));
+        Miapi.registerReloadHandler(ReloadEvents.END, "synergies", (isClient, path, data) -> load(data));
     }
 
     public static void load(String data) {

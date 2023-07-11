@@ -71,21 +71,15 @@ public class MaterialProperty implements ModuleProperty {
                 return "";
             }
         });
-        ReloadEvents.MAIN.subscribe((isClient -> {
-            materials.clear();
-            ReloadEvents.DATA_PACKS.forEach((path, data) -> {
-                if (path.contains(KEY)) {
-                    //load Material Logic
-                    JsonParser parser = new JsonParser();
-                    JsonObject obj = parser.parse(data).getAsJsonObject();
-                    String key = obj.get("key").getAsString();
-                    Material material = new Material();
-                    material.key = key;
-                    material.rawJson = obj;
-                    materials.put(key, material);
-                }
-            });
-        }), -1.0f);
+        Miapi.registerReloadHandler(ReloadEvents.MAIN, "materials", materials, (isClient, path, data) -> {
+            JsonParser parser = new JsonParser();
+            JsonObject obj = parser.parse(data).getAsJsonObject();
+            String key = obj.get("key").getAsString();
+            Material material = new Material();
+            material.key = key;
+            material.rawJson = obj;
+            materials.put(key, material);
+        }, -1f);
     }
 
     public static List<String> getTextureKeys() {
