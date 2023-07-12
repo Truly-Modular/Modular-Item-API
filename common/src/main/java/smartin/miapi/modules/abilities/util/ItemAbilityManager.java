@@ -5,17 +5,11 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
-import net.minecraft.loot.LootDataType;
-import net.minecraft.loot.LootManager;
-import net.minecraft.loot.condition.LootCondition;
-import net.minecraft.loot.context.LootContext;
-import net.minecraft.loot.context.LootContextParameterSet;
-import net.minecraft.loot.context.LootContextParameters;
-import net.minecraft.loot.context.LootContextTypes;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.*;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
+import net.minecraft.util.TypedActionResult;
+import net.minecraft.util.UseAction;
 import net.minecraft.world.World;
-import smartin.miapi.Miapi;
 import smartin.miapi.modules.properties.AbilityProperty;
 import smartin.miapi.modules.properties.util.event.PropertyApplication;
 import smartin.miapi.registries.MiapiRegistry;
@@ -70,28 +64,7 @@ public class ItemAbilityManager {
     }
 
     private static ItemUseAbility getAbility(ItemStack itemStack, World world, PlayerEntity player, Hand hand) {
-        LootManager manager = world.getServer() != null ? world.getServer().getLootManager() : null;
-        System.out.println(AbilityProperty.getStatic(itemStack));
-        for (Map.Entry<ItemUseAbility, Identifier> entry : AbilityProperty.getStatic(itemStack).entrySet()) {
-            ItemUseAbility ability = entry.getKey();
-            Identifier predicate = entry.getValue();
-
-            System.out.println(ability + " is ab");
-            System.out.println("pred: " + predicate);
-            if (predicate != null && !predicate.getPath().equals(".none") && manager != null && world instanceof ServerWorld sw) {
-                LootCondition condition = manager.getElement(LootDataType.PREDICATES, predicate);
-                if (condition != null) {
-                    LootContextParameterSet.Builder builder = new LootContextParameterSet.Builder(sw)
-                            .add(LootContextParameters.THIS_ENTITY, player)
-                            .add(LootContextParameters.ORIGIN, player.getPos());
-                    if (!condition.test(new LootContext.Builder(builder.build(LootContextTypes.SELECTOR)).build(null))) {
-                        System.out.println("continuing");
-                        continue;
-                    }
-                } else
-                    Miapi.LOGGER.warn("Found null predicate used for ItemUseAbility.");
-            }
-
+        for (ItemUseAbility ability : AbilityProperty.get(itemStack)) {
             if (ability.allowedOnItem(itemStack, world, player, hand)) {
                 return ability;
             }

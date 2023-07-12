@@ -69,9 +69,9 @@
             "uuid": "AAAAAAAA-4180-4865-B01B-BCCE9785ACA3"
         }
     ],
-    "abilities": {
-        "throw": "miapi:test"
-    },
+    "abilities": [
+        "throw"
+    ],
     "displayName": "miapi.module.blade_throwing_knife.name",
     "itemId": "miapi:modular_throwing_knife"
 }
