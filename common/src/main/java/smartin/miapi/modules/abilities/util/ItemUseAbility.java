@@ -1,5 +1,6 @@
 package smartin.miapi.modules.abilities.util;
 
+import com.mojang.serialization.Codec;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -9,6 +10,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
 import net.minecraft.world.World;
+import smartin.miapi.Miapi;
 
 /**
  * Implement this interface to provide custom behavior for item usage and handling.
@@ -16,6 +18,15 @@ import net.minecraft.world.World;
  * Register implementations in the {@link ItemAbilityManager#useAbilityRegistry} to be used.
  */
 public interface ItemUseAbility {
+    Codec<ItemUseAbility> codec = Codec.STRING.xmap(s -> {
+        ItemUseAbility ability = ItemAbilityManager.useAbilityRegistry.get(s);
+        if (ability != null) {
+            return ability;
+        }
+        Miapi.LOGGER.error("Failed to find ability {}!", s);
+        throw new IllegalArgumentException();
+    }, ItemAbilityManager.useAbilityRegistry::findKey);
+
     /**
      * Checks if this {@link ItemUseAbility} is allowed on the specified item stack, world, player, and hand.
      *
