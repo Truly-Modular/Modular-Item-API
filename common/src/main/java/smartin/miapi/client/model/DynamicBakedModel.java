@@ -7,7 +7,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.BakedQuad;
 import net.minecraft.client.render.model.BasicBakedModel;
-import net.minecraft.client.render.model.json.ModelOverride;
 import net.minecraft.client.render.model.json.ModelOverrideList;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.texture.Sprite;
@@ -22,7 +21,6 @@ import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * A BakedModel made to be semi mutable and allow for more dynamic interactions
