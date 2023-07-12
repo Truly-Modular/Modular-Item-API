@@ -45,6 +45,8 @@ dependencies {
 
     implementation(include('org.mariuszgromada.math:MathParser.org-mXparser:4.4.2'))
 
+    modApi(include("com.github.RedPxnda.Nucleus:nucleus-fabric:${rootProject.nucleus_version}"))
+
     modImplementation "curse.maven:cloth-348521:4554906"
     modImplementation "curse.maven:bettercombat-639842:4597949"
     modImplementation 'dev.kosmx.player-anim:player-animation-lib-fabric:1.0.2-rc1+1.20'

@@ -37,6 +37,7 @@ import java.util.function.Supplier;
 
 import static smartin.miapi.modules.properties.util.PropertyApplication.ApplicationEvent.*;
 
+//todo refactor to extend CodecBasedEventProperty, since this is based on a codec
 public class PotionEffectProperty extends SimpleEventProperty {
     public static String KEY = "applyPotionEffects";
     public static PotionEffectProperty property;

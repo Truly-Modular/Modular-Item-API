@@ -269,6 +269,8 @@ public class RegistryInventory {
             registerMiapi(moduleProperties, AllowedMaterial.KEY, new AllowedMaterial());
             registerMiapi(moduleProperties, AttributeProperty.KEY, new AttributeProperty());
             registerMiapi(moduleProperties, PotionEffectProperty.KEY, new PotionEffectProperty());
+            registerMiapi(moduleProperties, ParticleShapingProperty.KEY, new ParticleShapingProperty());
+            registerMiapi(moduleProperties, PlaySoundProperty.KEY, new PlaySoundProperty());
             registerMiapi(moduleProperties, DisplayNameProperty.KEY, new DisplayNameProperty());
             registerMiapi(moduleProperties, ItemIdProperty.KEY, new ItemIdProperty());
             registerMiapi(moduleProperties, EquipmentSlotProperty.KEY, new EquipmentSlotProperty());
