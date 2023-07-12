@@ -133,9 +133,6 @@ public class PropertyApplication {
         public void call(E e) {
             this.listeners.forEach(handler -> {
                 handler.onEvent(this, e);
-                if (this.equals(ABILITY_STOP)) {
-                    //System.out.println("fired event " + this + " with " + e);
-                }
             });
         }
 
