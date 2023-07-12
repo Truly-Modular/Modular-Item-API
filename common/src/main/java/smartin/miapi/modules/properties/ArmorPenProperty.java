@@ -30,7 +30,6 @@ public class ArmorPenProperty extends SimpleDoubleProperty {
                 ItemStack itemStack = event.getCausingItemStack();
                 if (property.hasValue(itemStack)) {
                     double value = valueRemap(property.getValueSafe(itemStack)) / 100;
-                    Miapi.LOGGER.warn("Scaled to" + value);
                     Multimap<EntityAttribute, EntityAttributeModifier> multimap = ArrayListMultimap.create();
                     multimap.put(EntityAttributes.GENERIC_ARMOR, new EntityAttributeModifier("tempArmorPen", value, EntityAttributeModifier.Operation.MULTIPLY_TOTAL));
                     cache.put(event.livingEntity, multimap);

@@ -17,6 +17,10 @@
     {
       "item": "minecraft:deepslate",
       "value": 1.0
+    },
+    {
+      "item": "minecraft:cobbled_deepslate",
+      "value": 1.0
     }
   ]
 }

@@ -17,6 +17,10 @@
     {
       "item": "minecraft:cobblestone",
       "value": 1.0
+    },
+    {
+      "tag": "minecraft:base_stone_overworld",
+      "value": 1.0
     }
   ]
 }

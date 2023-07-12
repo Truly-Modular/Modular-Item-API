@@ -20,6 +20,8 @@ import java.util.function.Consumer;
 public class SpriteLoader {
     public static List<String> preLoadTexturePaths = new ArrayList<>();
 
+    public static List<Identifier> miapiModels = new ArrayList<>();
+
     public static void setup() {
         ReloadEvents.START.subscribe(isClient -> ModularItemCache.discardCache());
     }
@@ -27,15 +29,21 @@ public class SpriteLoader {
     public static void clientStart() {
         preLoadTexturePaths.add("skin");
         preLoadTexturePaths.add("gui");
-        preLoadTexturePaths.forEach(preLoadTexturePath -> {
+        /*
+        doesnt actually preload the textures
+                preLoadTexturePaths.forEach(preLoadTexturePath -> {
             Map<Identifier, Resource> rawTextures = MinecraftClient.getInstance().getResourceManager().findResources("textures/" + preLoadTexturePath, (identifier ->
             {
-                return identifier.getNamespace().equals(Miapi.MOD_ID)&&identifier.toString().endsWith(".png");
+                return identifier.getNamespace().equals(Miapi.MOD_ID) && identifier.toString().endsWith(".png");
             }));
             rawTextures.forEach((id, rawTexture) -> {
                 Miapi.LOGGER.info("loading texture" + id);
                 RenderSystem.setShaderTexture(0, id);
             });
+        });
+         */
+        MinecraftClient.getInstance().getResourceManager().findAllResources("models", (identifier -> identifier.getNamespace().equals(Miapi.MOD_ID))).forEach((identifier, resources) -> {
+            miapiModels.add(identifier);
         });
     }
 

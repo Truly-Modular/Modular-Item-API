@@ -132,7 +132,13 @@ public class MaterialProperty implements ModuleProperty {
                     if (Registries.ITEM.getId(item.getItem()).toString().equals(itemId)) {
                         return material;
                     }
-                } else if (itemObj.has("tag")) {
+                }
+            }
+
+            for (JsonElement element : items) {
+                JsonObject itemObj = element.getAsJsonObject();
+
+                if (itemObj.has("tag")) {
                     String tagId = itemObj.get("tag").getAsString();
                     TagKey<Item> tag = TagKey.of(Registries.ITEM.getKey(), new Identifier(tagId));
                     if (tag != null && item.isIn(tag)) {

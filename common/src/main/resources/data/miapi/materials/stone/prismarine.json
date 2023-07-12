@@ -17,6 +17,10 @@
     {
       "item": "minecraft:prismarine",
       "value": 1.0
+    },
+    {
+      "item": "minecraft:prismarine_shard",
+      "value": 0.25
     }
   ]
 }

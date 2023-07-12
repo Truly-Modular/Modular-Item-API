@@ -5,15 +5,13 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.model.BakedModel;
-import net.minecraft.client.render.model.ModelBakeSettings;
-import net.minecraft.client.render.model.ModelLoader;
-import net.minecraft.client.render.model.ModelRotation;
+import net.minecraft.client.render.model.*;
 import net.minecraft.client.render.model.json.ItemModelGenerator;
 import net.minecraft.client.render.model.json.JsonUnbakedModel;
 import net.minecraft.client.render.model.json.ModelOverrideList;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.SpriteIdentifier;
+import net.minecraft.item.ArrowItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
@@ -46,7 +44,7 @@ public class ModelProperty implements ModuleProperty {
     public static ModuleProperty property;
     private static final String CACHE_KEY_MAP = Miapi.MOD_ID + ":modelMap";
     private static final String CACHE_KEY_ITEM = Miapi.MOD_ID + ":itemModelodel";
-    private static final Map<String, JsonUnbakedModel> modelCache = new HashMap<>();
+    public static final Map<String, JsonUnbakedModel> modelCache = new HashMap<>();
     public static final String KEY = "texture";
     public static final List<ModelTransformer> modelTransformers = new ArrayList<>();
     public static Function<SpriteIdentifier, Sprite> textureGetter;
@@ -61,15 +59,15 @@ public class ModelProperty implements ModuleProperty {
         ModularItemCache.setSupplier(CACHE_KEY_MAP, ModelProperty::generateModels);
     }
 
-    public static Map<String, DynamicBakedModel> getModelMap(ItemStack stack) {
-        return (Map<String, DynamicBakedModel>) ModularItemCache.get(stack, CACHE_KEY_MAP);
+    public static Map<String, BakedModel> getModelMap(ItemStack stack) {
+        return (Map<String, BakedModel>) ModularItemCache.get(stack, CACHE_KEY_MAP);
     }
 
     public static BakedModel getItemModel(ItemStack stack) {
         return (BakedModel) ModularItemCache.get(stack, CACHE_KEY_ITEM);
     }
 
-    protected static Map<String, DynamicBakedModel> generateModels(ItemStack itemStack) {
+    protected static Map<String, BakedModel> generateModels(ItemStack itemStack) {
         ItemModule.ModuleInstance root = ItemModule.getModules(itemStack);
 
         List<TransformedUnbakedModel> unbakedModels = resolveUnbakedModel(root);
@@ -82,14 +80,23 @@ public class ModelProperty implements ModuleProperty {
         for (ModelTransformer transformer : modelTransformers) {
             bakedModelMap = transformer.bakedTransform(bakedModelMap, itemStack);
         }
-        return bakedModelMap;
+        Map<String, BakedModel> optimizedMap = optimize(bakedModelMap);
+        return optimizedMap;
+    }
+
+    protected static Map<String, BakedModel> optimize(Map<String, DynamicBakedModel> bakedModelMap) {
+        HashMap<String, BakedModel> map = new HashMap<>();
+        bakedModelMap.forEach((id, dynamicModel) -> {
+            map.put(id, dynamicModel.optimize());
+        });
+        return map;
     }
 
     protected static Map<String, DynamicBakedModel> bakedModelMap(List<TransformedUnbakedModel> unbakedModels) {
         Map<String, DynamicBakedModel> bakedModelMap = new HashMap<>();
         for (TransformedUnbakedModel unbakedModel : unbakedModels) {
             ModelBakeSettings settings = unbakedModel.transform.get().toModelBakeSettings();
-            BakedModel model = bakeModel(unbakedModel.unbakedModel, mirroredGetter, unbakedModel.color, settings);
+            DynamicBakedModel model = DynamicBakery.bakeModel(unbakedModel.unbakedModel, mirroredGetter, unbakedModel.color, settings);
             DynamicBakedModel dynamicBakedModel = bakedModelMap.computeIfAbsent(unbakedModel.transform.primary, (key) ->
                     new DynamicBakedModel(new ArrayList<>())
             );
@@ -116,7 +123,7 @@ public class ModelProperty implements ModuleProperty {
             Gson gson = Miapi.gson;
             List<ModelJson> modelJsonList = new ArrayList<>();
             JsonElement data = moduleI.getProperties().get(property);
-            if(data==null){
+            if (data == null) {
                 return unbakedModels;
             }
             if (data.isJsonArray()) {
@@ -155,7 +162,6 @@ public class ModelProperty implements ModuleProperty {
                         }
                     }
                     assert unbakedModel != null;
-                    scaleAdder.updateAndGet(v -> (v + 0.0003f));
                     TransformMap transformMap = SlotProperty.getTransformStack(moduleI);
                     if (json.transform == null) {
                         json.transform = Transform.IDENTITY;
@@ -174,20 +180,6 @@ public class ModelProperty implements ModuleProperty {
             }
         }
         return unbakedModels;
-    }
-
-    protected static BakedModel bakeModel(JsonUnbakedModel unbakedModel, Function<SpriteIdentifier, Sprite> textureGetter, int color, ModelBakeSettings settings) {
-        try {
-            ModelLoader modelLoader = ModelLoadAccessor.getLoader();
-            AtomicReference<JsonUnbakedModel> actualModel = new AtomicReference<>(unbakedModel);
-            unbakedModel.getModelDependencies().stream().filter(identifier -> identifier.toString().equals("minecraft:item/generated") || identifier.toString().contains("handheld")).findFirst().ifPresent(identifier -> {
-                actualModel.set(generator.create(mirroredGetter, unbakedModel));
-            });
-            return DynamicBakery.bake(actualModel.get(), modelLoader, unbakedModel.getRootModel(), textureGetter, settings, new Identifier(unbakedModel.id), true, color);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
     }
 
     protected static JsonUnbakedModel loadModelFromFilePath(String filePath2) throws FileNotFoundException {
@@ -212,6 +204,14 @@ public class ModelProperty implements ModuleProperty {
             filePath2 = filePath2.replace("item/", "models/item/");
         }
         modelCache.put(filePath2, model);
+        modelCache.put(modelId.toString(), model);
+        model.getOverrides().forEach(modelOverride -> {
+            try {
+                loadModelFromFilePath(modelOverride.getModelId().toString());
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+        });
         loadTextureDependencies(model);
         return model;
     }
@@ -250,7 +250,7 @@ public class ModelProperty implements ModuleProperty {
     }
 
     protected static void loadTextureDependencies(JsonUnbakedModel model) {
-        bakeModel(model, (identifier) -> mirroredGetter.apply(identifier), 0, ModelRotation.X0_Y0);
+        DynamicBakery.bakeModel(model, (identifier) -> mirroredGetter.apply(identifier), 0, ModelRotation.X0_Y0);
     }
 
     @Override

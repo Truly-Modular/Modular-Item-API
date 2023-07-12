@@ -7,7 +7,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.item.ModelPredicateProvider;
 import net.minecraft.client.item.ModelPredicateProviderRegistry;
-import net.minecraft.client.render.model.ModelRotation;
 import net.minecraft.client.render.model.*;
 import net.minecraft.client.render.model.json.*;
 import net.minecraft.client.texture.Sprite;
@@ -18,15 +17,20 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.random.Random;
 import org.jetbrains.annotations.Nullable;
+import smartin.miapi.modules.properties.render.ModelProperty;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 
 @Environment(EnvType.CLIENT)
 public class DynamicBakery {
     public static Baker dynamicBaker;
+    static final ItemModelGenerator ITEM_MODEL_GENERATOR = new ItemModelGenerator();
 
     private DynamicBakery() {
 
@@ -34,12 +38,38 @@ public class DynamicBakery {
 
     private static final BakedQuadFactory QUAD_FACTORY = new BakedQuadFactory();
 
-    public static BakedModel bake(JsonUnbakedModel model, ModelLoader loader, JsonUnbakedModel parent, Function<SpriteIdentifier, Sprite> textureGetter, ModelBakeSettings settings, Identifier id, boolean hasDepth, int color) {
+    public static DynamicBakedModel bakeModel(JsonUnbakedModel unbakedModel, Function<SpriteIdentifier, Sprite> textureGetter, int color, ModelBakeSettings settings) {
+        try {
+            ModelLoader modelLoader = ModelLoadAccessor.getLoader();
+            AtomicReference<JsonUnbakedModel> actualModel = new AtomicReference<>(unbakedModel);
+            unbakedModel.getModelDependencies().stream().filter(identifier -> identifier.toString().equals("minecraft:item/generated") || identifier.toString().contains("handheld")).findFirst().ifPresent(identifier -> {
+                actualModel.set(ITEM_MODEL_GENERATOR.create(ModelProperty.textureGetter, unbakedModel));
+            });
+            DynamicBakedModel model = DynamicBakery.bake(actualModel.get(), modelLoader, unbakedModel.getRootModel(), textureGetter, settings, new Identifier(unbakedModel.id), true, color);
+            for (Direction direction : Direction.values()) {
+                if (!model.getQuads(null, direction, Random.create()).isEmpty()) {
+                    return model;
+                }
+            }
+            try {
+                actualModel.set(ITEM_MODEL_GENERATOR.create(ModelProperty.textureGetter, unbakedModel));
+                return DynamicBakery.bake(actualModel.get(), modelLoader, unbakedModel.getRootModel(), textureGetter, settings, new Identifier(unbakedModel.id), true, color);
+            } catch (Exception surpressed) {
+
+            }
+            return model;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static DynamicBakedModel bake(JsonUnbakedModel model, ModelLoader loader, JsonUnbakedModel parent, Function<SpriteIdentifier, Sprite> textureGetter, ModelBakeSettings settings, Identifier id, boolean hasDepth, int color) {
         Sprite sprite = textureGetter.apply(model.resolveSprite("particle"));
         if (model.getRootModel() == ModelLoader.BLOCK_ENTITY_MARKER) {
-            return new BuiltinBakedModel(model.getTransformations(), compileOverrides(model, loader, parent, color), sprite, model.getGuiLight().isSide());
+            return dynamicBakedModel(new BuiltinBakedModel(model.getTransformations(), compileOverrides(model, loader, parent, textureGetter, settings, color), sprite, model.getGuiLight().isSide()));
         } else {
-            BasicBakedModel.Builder builder = (new BasicBakedModel.Builder(model, compileOverrides(model, loader, parent, color), hasDepth)).setParticle(sprite);
+            BasicBakedModel.Builder builder = (new BasicBakedModel.Builder(model, compileOverrides(model, loader, parent, textureGetter, settings, color), hasDepth)).setParticle(sprite);
 
             for (ModelElement modelElement : model.getElements()) {
 
@@ -54,16 +84,31 @@ public class DynamicBakery {
                 }
             }
 
-            return builder.build();
+            return dynamicBakedModel(builder.build());
         }
     }
 
-    private static ModelOverrideList compileOverrides(JsonUnbakedModel model, ModelLoader modelLoader, JsonUnbakedModel parent, int color) {
+    public static DynamicBakedModel dynamicBakedModel(BakedModel model) {
+        if (model instanceof DynamicBakedModel dynamicBakedModel) {
+            new Exception().printStackTrace();
+            return dynamicBakedModel;
+        }
+        List<BakedQuad> quads = new ArrayList<>();
+        quads.addAll(model.getQuads(null, null, Random.create()));
+        for (Direction dir : Direction.values()) {
+            quads.addAll(model.getQuads(null, dir, Random.create()));
+        }
+        DynamicBakedModel model1 = new DynamicBakedModel(quads);
+        model1.overrideList = model.getOverrides();
+        return model1;
+    }
+
+    private static ModelOverrideList compileOverrides(JsonUnbakedModel model, ModelLoader modelLoader, JsonUnbakedModel parent, Function<SpriteIdentifier, Sprite> textureGetter, ModelBakeSettings rotation, int color) {
         if (model.getOverrides().isEmpty()) {
             return ModelOverrideList.EMPTY;
         } else {
             Objects.requireNonNull(modelLoader);
-            return new OverrideList(modelLoader, parent, modelLoader::getOrLoadModel, model.getOverrides(), color);
+            return new DynamicOverrideList(modelLoader, parent, modelLoader::getOrLoadModel, model.getOverrides(), textureGetter, rotation, color);
         }
     }
 
@@ -73,14 +118,16 @@ public class DynamicBakery {
         return quad;
     }
 
-    static class OverrideList extends ModelOverrideList {
-        private final DynamicBakedOverride[] dynamicOverrides;
-        private final Identifier[] dynamicConditionTypes;
+    static class DynamicOverrideList extends ModelOverrideList {
+        public final DynamicBakedOverride[] dynamicOverrides;
+        public final Identifier[] dynamicConditionTypes;
+        public final List<ModelOverride> overrideList;
 
-        public OverrideList(ModelLoader modelLoader, JsonUnbakedModel parent, Function<Identifier, UnbakedModel> unbakedModelGetter, List<ModelOverride> overrides, int color) {
+        public DynamicOverrideList(ModelLoader modelLoader, JsonUnbakedModel parent, Function<Identifier, UnbakedModel> unbakedModelGetter, List<ModelOverride> overrides, Function<SpriteIdentifier, Sprite> textureGetter, ModelBakeSettings rotation, int color) {
             super(dynamicBaker, parent, overrides);
             this.dynamicConditionTypes = overrides.stream().flatMap(ModelOverride::streamConditions).map(ModelOverride.Condition::getType).distinct().toArray(Identifier[]::new);
             Object2IntMap<Identifier> object2IntMap = new Object2IntOpenHashMap<>();
+            this.overrideList = overrides;
 
             for (int i = 0; i < this.dynamicConditionTypes.length; ++i) {
                 object2IntMap.put(this.dynamicConditionTypes[i], i);
@@ -90,28 +137,31 @@ public class DynamicBakery {
 
             for (int j = overrides.size() - 1; j >= 0; --j) {
                 ModelOverride modelOverride = overrides.get(j);
-                BakedModel bakedModel = this.bakeOverridingModel(modelLoader, parent, unbakedModelGetter, modelOverride);
+                JsonUnbakedModel model = ModelProperty.modelCache.get(modelOverride.getModelId().toString());
+                DynamicBakedModel bakedModel = bakeModel(model, textureGetter, color, rotation);
                 assert bakedModel != null;
-                bakedModel = ColorUtil.recolorModel(bakedModel, color);
+                bakedModel = (DynamicBakedModel) ColorUtil.recolorModel(bakedModel, color);
                 InlinedCondition[] inlinedConditions = modelOverride.streamConditions().map((condition) -> {
                     int i = object2IntMap.getInt(condition.getType());
                     return new InlinedCondition(i, condition.getThreshold());
                 }).toArray(InlinedCondition[]::new);
-                list.add(new DynamicBakedOverride(inlinedConditions, bakedModel));
+                list.add(new DynamicBakedOverride(inlinedConditions, bakedModel, overrides.get(j)));
             }
 
             this.dynamicOverrides = list.toArray(new DynamicBakedOverride[0]);
         }
 
         @Environment(EnvType.CLIENT)
-        static class DynamicBakedOverride {
-            private final InlinedCondition[] conditions;
+        public static class DynamicBakedOverride {
+            public final InlinedCondition[] conditions;
             @Nullable
-            final BakedModel model;
+            public final BakedModel model;
+            public final DynamicModelOverrides.ConditionHolder conditionHolder;
 
-            DynamicBakedOverride(InlinedCondition[] conditions, @Nullable BakedModel model) {
+            DynamicBakedOverride(InlinedCondition[] conditions, @Nullable BakedModel model, ModelOverride override) {
                 this.conditions = conditions;
                 this.model = model;
+                this.conditionHolder = new DynamicModelOverrides.ConditionHolder(override);
             }
 
             boolean test(float[] values) {
@@ -125,12 +175,6 @@ public class DynamicBakery {
 
                 return true;
             }
-        }
-
-        @Nullable
-        private BakedModel bakeOverridingModel(ModelLoader loader, JsonUnbakedModel parent, Function<Identifier, UnbakedModel> unbakedModelGetter, ModelOverride override) {
-            UnbakedModel unbakedModel = unbakedModelGetter.apply(override.getModelId());
-            return Objects.equals(unbakedModel, parent) ? null : dynamicBaker.bake(override.getModelId(), ModelRotation.X0_Y0);
         }
 
         @Nullable

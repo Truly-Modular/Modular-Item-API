@@ -69,7 +69,7 @@ public class ModelTransformationProperty implements ModuleProperty {
                             );
                         }
                     }
-                    dynamicBakedModel.modelTransformation = transformation;
+                    dynamicBakedModel.setModelTransformation(transformation);
                     dynamicBakedModelmap.put(id,dynamicBakedModel);
                 });
                 return dynamicBakedModelmap;

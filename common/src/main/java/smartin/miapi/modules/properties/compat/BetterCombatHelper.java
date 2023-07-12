@@ -29,14 +29,11 @@ public class BetterCombatHelper {
 
     public static net.bettercombat.api.WeaponAttributes container(JsonElement data) {
         if (data == null) {
-            Miapi.LOGGER.warn("returning null cause data is null");
             return null;
         }
         String jsonString = data.toString();
-        Miapi.LOGGER.warn(jsonString);
         JsonReader jsonReader = new JsonReader(new StringReader(jsonString));
         net.bettercombat.api.WeaponAttributes attributes = net.bettercombat.logic.WeaponRegistry.resolveAttributes(new Identifier(Miapi.MOD_ID, "modular_item"), net.bettercombat.api.WeaponAttributesHelper.decode(jsonReader));
-        Miapi.LOGGER.warn(attributes.toString());
         return attributes;
     }
 

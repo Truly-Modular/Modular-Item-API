@@ -24,6 +24,7 @@ abstract class ModelLoaderMixin {
             at = @At(value = "HEAD"),
             ordinal = 0)
     private static Map<Identifier, JsonUnbakedModel> jsonUnbakedModels(Map<Identifier, JsonUnbakedModel> jsonUnbakedModels) {
+        /*
         Map<Identifier, Resource> rawModels = MinecraftClient.getInstance().getResourceManager().findResources("models", (identifier -> identifier.getNamespace().equals(Miapi.MOD_ID)));
 
         Map<Identifier, JsonUnbakedModel> mutableMap = new HashMap<>(jsonUnbakedModels);
@@ -38,5 +39,8 @@ abstract class ModelLoaderMixin {
         });
 
         return mutableMap;
+
+         */
+        return jsonUnbakedModels;
     }
 }

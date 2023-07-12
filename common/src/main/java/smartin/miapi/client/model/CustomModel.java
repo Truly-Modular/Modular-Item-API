@@ -19,10 +19,12 @@ import smartin.miapi.registries.RegistryInventory;
 import java.util.*;
 import java.util.function.Function;
 
+import static smartin.miapi.client.SpriteLoader.miapiModels;
+
 @Environment(EnvType.CLIENT)
 public class CustomModel implements UnbakedModel, BakedModel {
-    public static boolean isModularItem(Identifier identifier){
-        return RegistryInventory.modularItems.get(identifier.toString().replace("item/",""))!=null;
+    public static boolean isModularItem(Identifier identifier) {
+        return RegistryInventory.modularItems.get(identifier.toString().replace("item/", "")) != null;
     }
 
     private CustomModelOverrides overrides;
@@ -74,12 +76,14 @@ public class CustomModel implements UnbakedModel, BakedModel {
 
     @Override
     public Collection<Identifier> getModelDependencies() {
-        return Collections.EMPTY_LIST;
+        return miapiModels;
     }
 
     @Override
     public void setParents(Function<Identifier, UnbakedModel> modelLoader) {
-
+        miapiModels.forEach(identifier -> {
+            modelLoader.apply(identifier);
+        });
     }
 
     @Nullable

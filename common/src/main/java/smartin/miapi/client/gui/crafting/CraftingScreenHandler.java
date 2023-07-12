@@ -91,10 +91,8 @@ public class CraftingScreenHandler extends ScreenHandler {
                 ItemModule.ModuleInstance root = ItemModule.getModules(stack);
                 List<Integer> position = new ArrayList<>();
                 for (int value : intArray) {
-                    Miapi.LOGGER.error("value " + value);
                     position.add(value);
                 }
-                Miapi.LOGGER.warn(root.toString());
                 stack = option.execute(buffer, stack, root.getPosition(position).copy());
                 inventory.setStack(0, stack);
             });
