@@ -1,5 +1,7 @@
 package smartin.miapi.modules.abilities.util;
 
+import dev.architectury.event.EventResult;
+import dev.architectury.event.events.common.PlayerEvent;
 import dev.architectury.event.events.common.TickEvent;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -30,34 +32,33 @@ public class ItemAbilityManager {
     public static final MiapiRegistry<ItemUseAbility> useAbilityRegistry = MiapiRegistry.getInstance(ItemUseAbility.class);
     private static final EmptyAbility emptyAbility = new EmptyAbility();
     private static final Map<ItemStack, ItemUseAbility> abilityMap = new WeakHashMap<>();
+    static boolean dropped = false;
 
     public static void setup() {
         TickEvent.PLAYER_PRE.register((playerEntity) -> {
-            if (playerEntity instanceof ServerPlayerEntity) {
-                ItemStack oldItem = playerActiveItems.get(playerEntity);
-                ItemStack playerItem = playerEntity.getActiveItem();
-                if (playerItem != null && !playerItem.equals(oldItem)) {
-                    playerActiveItems.put(playerEntity, playerEntity.getActiveItem());
-                    if (oldItem != null) {
-                        ItemUseAbility ability = getAbility(oldItem);
-                        trigger(new Ability(oldItem, playerEntity.getWorld(), playerEntity, null, ability), ABILITY_END, ABILITY_STOP, ABILITY_STOP_HOLDING);
-                        ability.onStoppedHolding(oldItem, playerEntity.getWorld(), playerEntity);
-                        abilityMap.remove(oldItem);
-                    }
+            Map<PlayerEntity, ItemStack> activeItems = playerActiveItems;
+            if (playerEntity.getWorld().isClient)
+                activeItems = playerActiveItemsClient;
+
+            ItemStack oldItem = activeItems.get(playerEntity);
+            ItemStack playerItem = playerEntity.getActiveItem();
+
+            int oldSlot = oldItem == null || oldItem.isEmpty() ? -1 : playerEntity.getInventory().getSlotWithStack(oldItem);
+            int slot = playerEntity.getInventory().selectedSlot;
+
+            if (playerItem != null && oldSlot != slot && (oldItem == null || !oldItem.isEmpty()) && playerItem.isEmpty()) {
+                System.out.println("!! stopped !!");
+                System.out.println(oldItem);
+                activeItems.put(playerEntity, playerItem.copy());
+                if (oldItem != null) {
+                    System.out.println("triggering ability");
+                    ItemUseAbility ability = getAbility(oldItem);
+                    trigger(new Ability(oldItem, playerEntity.getWorld(), playerEntity, playerEntity.getItemUseTimeLeft(), ability), ABILITY_END, ABILITY_STOP, ABILITY_STOP_HOLDING);
+                    ability.onStoppedHolding(oldItem, playerEntity.getWorld(), playerEntity);
+                    abilityMap.remove(oldItem);
                 }
-            } else {
-                ItemStack oldItem = playerActiveItemsClient.get(playerEntity);
-                ItemStack playerItem = playerEntity.getActiveItem();
-                if (playerItem != null && !playerItem.equals(oldItem)) {
-                    playerActiveItemsClient.put(playerEntity, playerEntity.getActiveItem());
-                    if (oldItem != null) {
-                        ItemUseAbility ability = getAbility(oldItem);
-                        trigger(new Ability(oldItem, playerEntity.getWorld(), playerEntity, null, ability), ABILITY_END, ABILITY_STOP, ABILITY_STOP_HOLDING);
-                        ability.onStoppedHolding(oldItem, playerEntity.getWorld(), playerEntity);
-                        abilityMap.remove(oldItem);
-                    }
-                }
-            }
+            } else if (playerItem != null && oldItem != null && oldItem.isEmpty() && !playerItem.isEmpty())
+                activeItems.put(playerEntity, playerItem.copy());
         });
         useAbilityRegistry.register("empty", emptyAbility);
     }
@@ -111,6 +112,13 @@ public class ItemAbilityManager {
     public static void onStoppedUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
         ItemUseAbility ability = getAbility(stack);
         ability.onStoppedUsing(stack, world, user, remainingUseTicks);
+
+        if (user instanceof PlayerEntity player) {
+            Map<PlayerEntity, ItemStack> activeItems = playerActiveItems;
+            if (player.getWorld().isClient)
+                activeItems = playerActiveItemsClient;
+            activeItems.put(player, ItemStack.EMPTY);
+        }
 
         trigger(new Ability(stack, world, user, remainingUseTicks, ability), ABILITY_STOP, ABILITY_STOP_USING, ABILITY_END);
 

@@ -46,6 +46,7 @@ public class ParticleShapingProperty extends CodecBasedEventProperty<ParticleSha
     protected static void onAbility(PropertyApplication.ApplicationEvent<PropertyApplication.Ability> event, PropertyApplication.Ability ability) {
         if (!(ability.world() instanceof ServerWorld world)) return;
         Holder holder = property.get(ability.stack());
+        if (holder == null) return;
 
         if (holder.abilityConditions.isPresent() && !holder.abilityConditions.get().test(ability)) return; // used to check ability name and time
         if (holder.predicate.isPresent()) {

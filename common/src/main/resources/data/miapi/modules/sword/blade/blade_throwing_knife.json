@@ -112,5 +112,11 @@
             "yaw": true
         },
         "predicate": "miapi:test"
-    }
+    },
+    "playSound": [{
+        "event": "ability.stop",
+        "sound": "minecraft:entity.generic.explode",
+        "pitch": 1,
+        "volume": 1
+    }]
 }

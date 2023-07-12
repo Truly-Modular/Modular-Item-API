@@ -28,8 +28,20 @@ public class PlaySoundProperty extends CodecBasedEventProperty<List<PlaySoundPro
     protected static void onAbility(PropertyApplication.ApplicationEvent<PropertyApplication.Ability> event, PropertyApplication.Ability ability) {
         if (!(ability.world() instanceof ServerWorld world)) return;
 
-        property.get(ability.stack()).forEach(h -> {
-            
+        List<Holder> sounds = property.get(ability.stack());
+        if (sounds == null) return;
+
+        sounds.forEach(h -> {
+            if (event.equals(h.event)) {
+                /*System.out.println(event.name);
+                System.out.println(ability.world().isClient);*/
+                world.playSound(
+                        null,
+                        ability.user().getX(), ability.user().getY(), ability.user().getZ(),
+                        h.sound, SoundCategory.MASTER,
+                        h.volume, h.pitch
+                );
+            }
         });
     }
 
@@ -39,9 +51,9 @@ public class PlaySoundProperty extends CodecBasedEventProperty<List<PlaySoundPro
     }
 
     public static class Holder {
-        SoundEvent soundEvent;
-        float pitch;
-        float volume;
+        SoundEvent sound;
+        @AutoCodec.Optional float pitch = 1;
+        @AutoCodec.Optional float volume = 1;
         PropertyApplication.ApplicationEvent<?> event;
     }
 }

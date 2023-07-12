@@ -80,6 +80,7 @@ public class PropertyApplication {
         public static <E> void trigger(E instance, ApplicationEvent<E>... events) {
             for (ApplicationEvent<E> event : events) {
                 event.call(instance);
+                //System.out.println("called " + event + " with " + instance);
             }
         }
 
@@ -130,7 +131,12 @@ public class PropertyApplication {
         }
 
         public void call(E e) {
-            this.listeners.forEach(handler -> handler.onEvent(this, e));
+            this.listeners.forEach(handler -> {
+                handler.onEvent(this, e);
+                if (this.equals(ABILITY_STOP)) {
+                    //System.out.println("fired event " + this + " with " + e);
+                }
+            });
         }
 
         @Override
