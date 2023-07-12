@@ -16,14 +16,14 @@ import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import org.joml.Quaterniond;
-import org.joml.Vector3d;
 import smartin.miapi.Miapi;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
 import smartin.miapi.modules.abilities.util.ItemUseAbility;
 import smartin.miapi.modules.properties.util.CodecBasedEventProperty;
 import smartin.miapi.modules.properties.util.MergeType;
-import smartin.miapi.modules.properties.util.PropertyApplication;
+import smartin.miapi.modules.properties.util.event.ApplicationEvent;
+import smartin.miapi.modules.properties.util.event.PropertyApplication;
 
 import java.util.Optional;
 
@@ -36,14 +36,14 @@ public class ParticleShapingProperty extends CodecBasedEventProperty<ParticleSha
                 KEY,
                 true,
                 new EventHandlingMap<>()
-                        .setAll(PropertyApplication.ApplicationEvent.ABILITIES, ParticleShapingProperty::onAbility),
+                        .setAll(PropertyApplication.ABILITIES, ParticleShapingProperty::onAbility),
                 holder -> holder.event
         );
 
         property = this;
     }
 
-    protected static void onAbility(PropertyApplication.ApplicationEvent<PropertyApplication.Ability> event, PropertyApplication.Ability ability) {
+    protected static void onAbility(ApplicationEvent<PropertyApplication.Ability> event, PropertyApplication.Ability ability) {
         if (!(ability.world() instanceof ServerWorld world)) return;
         Holder holder = property.get(ability.stack());
         if (holder == null) return;
@@ -96,7 +96,7 @@ public class ParticleShapingProperty extends CodecBasedEventProperty<ParticleSha
                 .codec();
 
         private static final Codec<Holder> partialCodec = RecordCodecBuilder.create(inst -> inst.group(
-                PropertyApplication.ApplicationEvent.CODEC.fieldOf("event").forGetter(i -> i.event),
+                ApplicationEvent.CODEC.fieldOf("event").forGetter(i -> i.event),
                 abConditions.optionalFieldOf("ability").forGetter(i -> i.abilityConditions),
                 Identifier.CODEC.optionalFieldOf("predicate").forGetter(i -> i.predicate),
                 Codec.pair(
@@ -116,12 +116,12 @@ public class ParticleShapingProperty extends CodecBasedEventProperty<ParticleSha
                         h.predicate, h.align)));
 
         private final JsonParticleShaping.StoringParticleShaper shaper;
-        private final PropertyApplication.ApplicationEvent<?> event;
+        private final ApplicationEvent<?> event;
         private final Optional<ValueTester<PropertyApplication.Ability>> abilityConditions;
         private final Optional<Identifier> predicate;
         private final Pair<Boolean, Boolean> align;
 
-        private Holder(JsonParticleShaping.StoringParticleShaper shaper, PropertyApplication.ApplicationEvent<?> event, Optional<ValueTester<PropertyApplication.Ability>> abilityConditions, Optional<Identifier> predicate, Pair<Boolean, Boolean> align) {
+        private Holder(JsonParticleShaping.StoringParticleShaper shaper, ApplicationEvent<?> event, Optional<ValueTester<PropertyApplication.Ability>> abilityConditions, Optional<Identifier> predicate, Pair<Boolean, Boolean> align) {
             this.shaper = shaper;
             this.event = event;
             this.abilityConditions = abilityConditions;

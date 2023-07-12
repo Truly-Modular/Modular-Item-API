@@ -2,47 +2,69 @@ package smartin.miapi.modules.properties;
 
 import com.mojang.serialization.Codec;
 import com.redpxnda.nucleus.datapack.codec.AutoCodec;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
+import smartin.miapi.events.Event;
 import smartin.miapi.modules.ItemModule;
-import smartin.miapi.modules.properties.util.CodecBasedEventProperty;
-import smartin.miapi.modules.properties.util.PropertyApplication;
+import smartin.miapi.modules.properties.util.ApplicationEventHandler;
+import smartin.miapi.modules.properties.util.CodecBasedProperty;
+import smartin.miapi.modules.properties.util.event.ApplicationEvent;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class PlaySoundProperty extends CodecBasedEventProperty<List<PlaySoundProperty.Holder>> {
+public class PlaySoundProperty extends CodecBasedProperty<List<PlaySoundProperty.Holder>> implements ApplicationEventHandler {
     public static final String KEY = "playSound";
     public static PlaySoundProperty property;
 
     public PlaySoundProperty() {
-        super(
-                KEY,
-                new EventHandlingMap<>()
-                        .setAll(PropertyApplication.ApplicationEvent.ABILITIES, PlaySoundProperty::onAbility)
-        );
+        super(KEY);
+
+        ApplicationEvent.getAllEvents().forEach(e -> {
+            e.addListener(this);
+        });
 
         property = this;
     }
 
-    protected static void onAbility(PropertyApplication.ApplicationEvent<PropertyApplication.Ability> event, PropertyApplication.Ability ability) {
-        if (!(ability.world() instanceof ServerWorld world)) return;
+    @Override
+    public <E> void onEvent(ApplicationEvent<E> main, E instance) {
+        if (main instanceof ApplicationEvent.EntityHolding<E> event) {
+            if (!(event.getEntity(instance).getWorld() instanceof ServerWorld world)) return;
+            LivingEntity entity = event.getEntity(instance);
 
-        List<Holder> sounds = property.get(ability.stack());
-        if (sounds == null) return;
-
-        sounds.forEach(h -> {
-            if (event.equals(h.event)) {
-                /*System.out.println(event.name);
-                System.out.println(ability.world().isClient);*/
-                world.playSound(
-                        null,
-                        ability.user().getX(), ability.user().getY(), ability.user().getZ(),
-                        h.sound, SoundCategory.MASTER,
-                        h.volume, h.pitch
-                );
+            ItemStack stack = event.stackGetter.apply(instance);
+            ItemStack alternateStack = null;
+            if (stack == null) {
+                if (instance instanceof Event.LivingHurtEvent lh) {
+                    stack = lh.getCausingItemStack();
+                    alternateStack = lh.livingEntity.getMainHandStack();
+                } else
+                    stack = entity.getMainHandStack();
             }
-        });
+
+            List<Holder> sounds = property.get(stack);
+            List<Holder> alternate = alternateStack == null ? null : property.get(alternateStack);
+            if (sounds == null) sounds = new ArrayList<>();
+            if (alternate != null) {
+                List<Holder> finalSounds = sounds;
+                alternate.forEach(h -> finalSounds.add(new Holder(h.sound, h.pitch, h.volume, h.event, !h.target)));
+            }
+
+            sounds.forEach(h -> {
+                if (event.equals(h.event) && h.target) {
+                    world.playSound(
+                            null,
+                            entity.getX(), entity.getY(), entity.getZ(),
+                            h.sound, SoundCategory.MASTER,
+                            h.volume, h.pitch
+                    );
+                }
+            });
+        }
     }
 
     @Override
@@ -54,6 +76,35 @@ public class PlaySoundProperty extends CodecBasedEventProperty<List<PlaySoundPro
         SoundEvent sound;
         @AutoCodec.Optional float pitch = 1;
         @AutoCodec.Optional float volume = 1;
-        PropertyApplication.ApplicationEvent<?> event;
+        ApplicationEvent<?> event;
+        @AutoCodec.Override("target_codec")
+        @AutoCodec.Optional boolean target = true;
+
+        public Holder() {}
+
+        public Holder(SoundEvent sound, float pitch, float volume, ApplicationEvent<?> event, boolean targetIsMain) {
+            this.sound = sound;
+            this.pitch = pitch;
+            this.volume = volume;
+            this.event = event;
+            this.target = targetIsMain;
+        }
+
+        public static final Codec<Boolean> target_codec = Codec.STRING.xmap(
+                ApplicationEvent.EntityHolding::isTargetMain,
+                bl -> bl ? "main" : "alternate"
+        );
+
+
+        @Override
+        public String toString() {
+            return "Holder{" +
+                    "sound=" + sound +
+                    ", pitch=" + pitch +
+                    ", volume=" + volume +
+                    ", event=" + event +
+                    ", target=" + target +
+                    '}';
+        }
     }
 }

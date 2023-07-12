@@ -1,6 +1,7 @@
 package smartin.miapi.modules.properties.util;
 
 import org.jetbrains.annotations.Nullable;
+import smartin.miapi.modules.properties.util.event.ApplicationEvent;
 
 import java.util.function.Function;
 
@@ -11,26 +12,26 @@ import java.util.function.Function;
 public abstract class CodecBasedEventProperty<T> extends CodecBasedProperty<T> implements ApplicationEventHandler {
     private final EventHandlingMap<?> handlers;
     private final boolean requireModular;
-    private final @Nullable Function<T, PropertyApplication.ApplicationEvent<?>> eventGetter;
+    private final @Nullable Function<T, ApplicationEvent<?>> eventGetter;
 
-    public CodecBasedEventProperty(String key, boolean requireModular, EventHandlingMap<?> map, Function<T, PropertyApplication.ApplicationEvent<?>> eventGetter) {
+    public CodecBasedEventProperty(String key, boolean requireModular, EventHandlingMap<?> map, @Nullable Function<T, ApplicationEvent<?>> eventGetter) {
         super(key);
         this.handlers = map;
         this.requireModular = requireModular;
         this.eventGetter = eventGetter;
-        for (PropertyApplication.ApplicationEvent<?> event : this.handlers.keySet()) {
+        for (ApplicationEvent<?> event : this.handlers.keySet()) {
             event.addListener(this);
         }
     }
     public CodecBasedEventProperty(String key, EventHandlingMap<?> map) {
         this(key, false, map, null);
     }
-    public CodecBasedEventProperty(String key, EventHandlingMap<?> map, Function<T, PropertyApplication.ApplicationEvent<?>> eventGetter) {
+    public CodecBasedEventProperty(String key, EventHandlingMap<?> map, Function<T, ApplicationEvent<?>> eventGetter) {
         this(key, false, map, eventGetter);
     }
 
     @Override
-    public <E> void onEvent(PropertyApplication.ApplicationEvent<E> event, E instance) {
+    public <E> void onEvent(ApplicationEvent<E> event, E instance) {
         if (requireModular && !event.predicate.test(instance, this)) return;
         if (eventGetter != null && !eventGetter.apply(this.get(event.stackGetter.apply(instance))).equals(event)) return;
         handlers.get(event).accept(instance);

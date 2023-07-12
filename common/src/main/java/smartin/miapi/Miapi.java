@@ -25,7 +25,7 @@ import smartin.miapi.modules.abilities.util.ItemAbilityManager;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.conditions.*;
 import smartin.miapi.modules.properties.util.ModuleProperty;
-import smartin.miapi.modules.properties.util.PropertyApplication;
+import smartin.miapi.modules.properties.util.event.PropertyApplication;
 import smartin.miapi.modules.synergies.SynergyManager;
 import smartin.miapi.network.Networking;
 import smartin.miapi.network.NetworkingImplCommon;

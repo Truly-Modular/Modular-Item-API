@@ -1,13 +1,12 @@
 package smartin.miapi.modules.properties.util;
 
 import smartin.miapi.modules.properties.PotionEffectProperty;
+import smartin.miapi.modules.properties.util.event.ApplicationEvent;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-
-import static smartin.miapi.modules.properties.util.PropertyApplication.*;
 
 /**
  * {@link ApplicationEventHandler} is an interface used to manage the handling of {@link ApplicationEvent}s.
@@ -34,16 +33,23 @@ public interface ApplicationEventHandler {
             return this;
         }
 
-        public <E> EventHandlingMap<V> setAll(Collection<ApplicationEvent<E>> events, Consumer<E> instance) {
+        public <E> EventHandlingMap<V> setAll(Collection<? extends ApplicationEvent<E>> events, Consumer<E> instance) {
             for (ApplicationEvent<E> event : events) {
                 super.put((ApplicationEvent<V>) event, (Consumer<V>) instance);
             }
             return this;
         }
 
-        public <E> EventHandlingMap<V> setAll(Collection<ApplicationEvent<E>> events, BiConsumer<ApplicationEvent<E>, E> instance) {
+        public <E> EventHandlingMap<V> setAll(Collection<? extends ApplicationEvent<E>> events, BiConsumer<ApplicationEvent<E>, E> instance) {
             for (ApplicationEvent<E> event : events) {
                 super.put((ApplicationEvent<V>) event, v -> instance.accept(event, (E) v));
+            }
+            return this;
+        }
+
+        public EventHandlingMap<V> setAll(BiConsumer<ApplicationEvent<V>, V> instance) {
+            for (ApplicationEvent<?> event : ApplicationEvent.getAllEvents()) {
+                super.put((ApplicationEvent<V>) event, v -> instance.accept((ApplicationEvent<V>) event, v));
             }
             return this;
         }
