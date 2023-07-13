@@ -120,7 +120,7 @@ public class RegistryInventory {
     }
 
     public static Block modularWorkBench;
-    public static BlockEntityType<?> modularWorkBenchEntityType;
+    public static BlockEntityType<ModularWorkBenchEntity> modularWorkBenchEntityType;
     public static Item modularItem;
     public static RegistrySupplier<EntityType<ItemProjectile>> itemProjectileType = (RegistrySupplier) registerAndSupply(entityTypes, "thrown_item", () ->
             EntityType.Builder.create(ItemProjectile::new, SpawnGroup.MISC).setDimensions(0.5F, 0.5F).maxTrackingRange(4).trackingTickInterval(20).build("miapi:thrown_item"));
@@ -160,7 +160,10 @@ public class RegistryInventory {
                         nonOpaque()), b -> modularWorkBench = b);
         register(blockEntities, "modular_work_bench", () -> BlockEntityType.Builder.create(
                 ModularWorkBenchEntity::new, modularWorkBench
-        ).build(null), be -> modularWorkBenchEntityType = be);
+        ).build(null), be -> {
+            modularWorkBenchEntityType = (BlockEntityType<ModularWorkBenchEntity>) be;
+            if (Platform.getEnvironment() == Env.CLIENT) MiapiClient.registerBlockEntityRenderer();
+        });
         register(items, "modular_work_bench", () -> new BlockItem(modularWorkBench, new Item.Settings()));
 
 

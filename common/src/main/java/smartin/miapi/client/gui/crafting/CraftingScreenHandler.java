@@ -33,7 +33,7 @@ public class CraftingScreenHandler extends ScreenHandler {
     private static final String PACKET_ID = ":crafting_packet_";
     public Inventory inventory;
     public PlayerInventory playerInventory;
-    public final ModularWorkBenchEntity blockEntity;
+    public final @Nullable ModularWorkBenchEntity blockEntity;
     public final String packetID;
     public final String editPacketID;
     public final String packetIDSlotAdd;
@@ -151,8 +151,14 @@ public class CraftingScreenHandler extends ScreenHandler {
                 super.setStack(stack);
                 if (blockEntity != null) {
                     blockEntity.setItem(stack);
+                    blockEntity.saveAndSync();
                 }
                 this.markDirty();
+            }
+
+            @Override
+            public void onTakeItem(PlayerEntity player, ItemStack stack) {
+                super.onTakeItem(player, stack);
             }
 
             @Override
@@ -182,7 +188,6 @@ public class CraftingScreenHandler extends ScreenHandler {
         PacketByteBuf buf = Networking.createBuffer();
         buf.writeInt(slot.id);
         Networking.sendC2S(packetIDSlotRemove, buf);
-
     }
 
     /**
@@ -226,6 +231,7 @@ public class CraftingScreenHandler extends ScreenHandler {
         Networking.unRegisterC2SPacket(packetID);
         Networking.unRegisterC2SPacket(packetIDSlotAdd);
         Networking.unRegisterC2SPacket(packetIDSlotRemove);
+        if (blockEntity != null) blockEntity.saveAndSync();
     }
 
     public void setItem(ItemStack stack) {
@@ -240,13 +246,20 @@ public class CraftingScreenHandler extends ScreenHandler {
     public ItemStack quickMove(PlayerEntity player, int index) {
         ItemStack itemStack = ItemStack.EMPTY;
         Slot slot = this.slots.get(index);
+
         if (slot != null && slot.hasStack()) {
             ItemStack itemStack2 = slot.getStack();
             itemStack = itemStack2.copy();
             if (index >= 36 ) {
                 //case 1: tool slot to player
+                slot.onTakeItem(player, itemStack2);
                 if (!this.insertItem(itemStack2, 0, 36, true)) {
                     return ItemStack.EMPTY;
+                }
+
+                if (index == 36 && blockEntity != null) {
+                    blockEntity.setItem(itemStack2);
+                    blockEntity.saveAndSync();
                 }
                 slot.markDirty();
             } else {
@@ -255,14 +268,14 @@ public class CraftingScreenHandler extends ScreenHandler {
                     return ItemStack.EMPTY;
                 } else {
                     for (Slot slot1 : slots) {
-                        if (slot1.id > 36) {
+                        if (slot1.id >= 36) {
                             if (!this.insertItem(itemStack2, slot1.id, slot1.id + 1, true)) {
                                 return ItemStack.EMPTY;
                             }
                         }
                     }
                 }
-                slot.onTakeItem(player, itemStack2);
+                slot.markDirty();
             }
         }
         return itemStack;
