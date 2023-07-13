@@ -18,7 +18,7 @@ abstract class ServerPlayerInteractionManagerMixin {
     @Redirect(
         method = "processBlockBreakingAction",
         at = @At(value = "FIELD", target = "Lnet/minecraft/server/network/ServerPlayNetworkHandler;MAX_BREAK_SQUARED_DISTANCE:D", opcode = Opcodes.GETSTATIC))
-    private double miapi$getActualReachDistance() {
+    private double getActualReachDistance() {
         return ReachEntityAttributes.getSquaredReachDistance(this.player, ServerPlayNetworkHandler.MAX_BREAK_SQUARED_DISTANCE);
     }
 }

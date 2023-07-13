@@ -164,11 +164,7 @@ public class Transform {
         if (parentScale == null) {
             parentScale = new Vector3f(1, 1, 1);
         }
-        return new Transform(new Vector3f(parentRotation), new Vector3f(parentTranslation), new Vector3f(parentScale)).withOrigin(transformation.origin);
-    }
-    public Transform withOrigin(String origin) {
-        this.origin = origin;
-        return this;
+        return new Transform(new Vector3f(parentRotation), new Vector3f(parentTranslation), new Vector3f(parentScale));
     }
 
     /**
@@ -259,7 +255,6 @@ public class Transform {
         @Override
         public void write(JsonWriter jsonWriter, Transform transform) throws IOException {
             jsonWriter.beginObject();
-            jsonWriter.name("origin").value(transform.origin);
             writeVector3f(jsonWriter, "rotation", transform.rotation);
             writeVector3f(jsonWriter, "translation", transform.translation);
             writeVector3f(jsonWriter, "scale", transform.scale);
@@ -271,7 +266,7 @@ public class Transform {
             Vector3f rotation = null;
             Vector3f translation = null;
             Vector3f scale = null;
-            String origin = null;
+            String origin = "";
 
             jsonReader.beginObject();
             while (jsonReader.hasNext()) {
@@ -289,6 +284,7 @@ public class Transform {
                 }
             }
             jsonReader.endObject();
+
             // Ensure non-null values for final fields
             if (rotation == null) {
                 rotation = new Vector3f();

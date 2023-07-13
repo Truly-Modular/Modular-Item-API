@@ -19,7 +19,7 @@ public class BCWeaponRegistryMixin {
             cancellable = true,
             remap = true,
             require = -1)
-    private static void miapi$getAttributes(ItemStack itemStack, CallbackInfoReturnable<WeaponAttributes> cir) {
+    private static void getAttributes(ItemStack itemStack, CallbackInfoReturnable<WeaponAttributes> cir) {
         if(itemStack.getItem() instanceof ModularItem){
             WeaponAttributes attributes = BetterCombatHelper.getAttributes(itemStack);
             if (attributes != null) {

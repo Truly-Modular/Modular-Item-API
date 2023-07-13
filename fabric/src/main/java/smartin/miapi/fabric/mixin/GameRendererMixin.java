@@ -17,7 +17,7 @@ abstract class GameRendererMixin implements SynchronousResourceReloader/*, AutoC
     @ModifyConstant(
         method = "updateTargetedEntity(F)V",
         require = 1, allow = 1, constant = @Constant(doubleValue = 6.0))
-    private double miapi$getActualReachDistance(final double reachDistance) {
+    private double getActualReachDistance(final double reachDistance) {
         if (this.client.player != null) {
             return ReachEntityAttributes.getReachDistance(this.client.player, reachDistance);
         }
@@ -25,7 +25,7 @@ abstract class GameRendererMixin implements SynchronousResourceReloader/*, AutoC
     }
 
     @ModifyConstant(method = "updateTargetedEntity(F)V", constant = @Constant(doubleValue = 9.0))
-    private double miapi$getActualAttackRange1(final double attackRange) {
+    private double getActualAttackRange1(final double attackRange) {
         if (this.client.player != null) {
             return ReachEntityAttributes.getSquaredAttackRange(this.client.player, attackRange);
         }
@@ -33,7 +33,7 @@ abstract class GameRendererMixin implements SynchronousResourceReloader/*, AutoC
     }
 
     @ModifyConstant(method = "updateTargetedEntity(F)V", constant = @Constant(doubleValue = 3.0))
-    private double miapi$getActualAttackRange0(final double attackRange) {
+    private double getActualAttackRange0(final double attackRange) {
         if (this.client.player != null) {
             return ReachEntityAttributes.getAttackRange(this.client.player, attackRange);
         }

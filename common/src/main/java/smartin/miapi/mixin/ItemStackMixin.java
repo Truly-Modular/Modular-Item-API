@@ -39,12 +39,12 @@ public abstract class ItemStackMixin {
             ),
             locals = LocalCapture.CAPTURE_FAILHARD,
             cancellable = true)
-    private void miapi$skipAttributeModifier(PlayerEntity player, TooltipContext context, CallbackInfoReturnable<List<Text>> cir, List list, MutableText mutableText, int i, EquipmentSlot[] var6, int var7, int var8, EquipmentSlot equipmentSlot, Multimap multimap) {
+    private void skipAttributeModifier(PlayerEntity player, TooltipContext context, CallbackInfoReturnable<List<Text>> cir, List list, MutableText mutableText, int i, EquipmentSlot[] var6, int var7, int var8, EquipmentSlot equipmentSlot, Multimap multimap) {
         //
     }
 
     @Inject(method = "getAttributeModifiers", at = @At("RETURN"), cancellable = true)
-    public void miapi$modifyAttributeModifiers(EquipmentSlot slot, CallbackInfoReturnable<Multimap<EntityAttribute, EntityAttributeModifier>> cir) {
+    public void modifyAttributeModifiers(EquipmentSlot slot, CallbackInfoReturnable<Multimap<EntityAttribute, EntityAttributeModifier>> cir) {
         ItemStack stack = (ItemStack) (Object) this;
 
         if (stack.getItem() instanceof ModularItem) {
@@ -53,7 +53,7 @@ public abstract class ItemStackMixin {
     }
 
     @Inject(method = "getMaxDamage", at = @At("HEAD"), cancellable = true)
-    public void miapi$modifyDurability(CallbackInfoReturnable<Integer> cir) {
+    public void modifyDurability(CallbackInfoReturnable<Integer> cir) {
         ItemStack stack = (ItemStack) (Object) this;
         if (stack.getItem() instanceof ModularItem) {
             cir.setReturnValue(ModularItem.getDurability(stack));
@@ -61,7 +61,7 @@ public abstract class ItemStackMixin {
     }
 
     @Inject(method = "isSuitableFor(Lnet/minecraft/block/BlockState;)Z", at = @At("HEAD"), cancellable = true)
-    public void miapi$injectIsSuitable(BlockState state, CallbackInfoReturnable<Boolean> cir) {
+    public void injectIsSuitable(BlockState state, CallbackInfoReturnable<Boolean> cir) {
         ItemStack stack = (ItemStack) (Object) this;
         if (stack.getItem() instanceof ModularItem) {
             cir.setReturnValue(MiningLevelProperty.IsSuitable(stack, state));

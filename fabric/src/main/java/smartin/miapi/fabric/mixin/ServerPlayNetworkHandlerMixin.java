@@ -24,21 +24,21 @@ abstract class ServerPlayNetworkHandlerMixin implements ServerPlayPacketListener
     @Redirect(
         method = "onPlayerInteractEntity(Lnet/minecraft/network/packet/c2s/play/PlayerInteractEntityC2SPacket;)V",
         at = @At(value = "FIELD", target = "Lnet/minecraft/server/network/ServerPlayNetworkHandler;MAX_BREAK_SQUARED_DISTANCE:D", opcode = Opcodes.GETSTATIC))
-    private double miapi$getActualAttackRange() {
+    private double getActualAttackRange() {
         return ReachEntityAttributes.getSquaredReachDistance(this.player, ServerPlayNetworkHandler.MAX_BREAK_SQUARED_DISTANCE);
     }
 
     @Redirect(
         method = "onPlayerInteractBlock(Lnet/minecraft/network/packet/c2s/play/PlayerInteractBlockC2SPacket;)V",
         at = @At(value = "FIELD", target = "Lnet/minecraft/server/network/ServerPlayNetworkHandler;MAX_BREAK_SQUARED_DISTANCE:D", opcode = Opcodes.GETSTATIC))
-    private double miapi$getActualReachDistance() {
+    private double getActualReachDistance() {
         return ReachEntityAttributes.getSquaredReachDistance(this.player, ServerPlayNetworkHandler.MAX_BREAK_SQUARED_DISTANCE);
     }
 
     @ModifyConstant(
         method = "onPlayerInteractBlock(Lnet/minecraft/network/packet/c2s/play/PlayerInteractBlockC2SPacket;)V",
         require = 1, allow = 1, constant = @Constant(doubleValue = 64.0))
-    private double miapi$getActualReachDistance(final double reachDistance) {
+    private double getActualReachDistance(final double reachDistance) {
         return ReachEntityAttributes.getSquaredReachDistance(this.player, reachDistance);
     }
 }

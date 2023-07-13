@@ -31,7 +31,7 @@ abstract class LivingEntityMixin {
     //}
 
     @Inject(method = "<init>(Lnet/minecraft/entity/EntityType;Lnet/minecraft/world/World;)V", at = @At("TAIL"), cancellable = false)
-    private void miapi$constructor(EntityType entityType, World world, CallbackInfo ci) {
+    private void constructor(EntityType entityType, World world, CallbackInfo ci) {
         LivingEntity entity = (LivingEntity) (Object) this;
         Multimap<EntityAttribute, EntityAttributeModifier> map = HashMultimap.create();
         map.put(AttributeRegistry.BACK_STAB, new EntityAttributeModifier("default", 1, EntityAttributeModifier.Operation.ADDITION));
@@ -39,7 +39,7 @@ abstract class LivingEntityMixin {
     }
 
     @Inject(method = "getPreferredEquipmentSlot", at = @At("HEAD"), cancellable = true)
-    private static void miapi$onGetPreferredEquipmentSlot(ItemStack stack, CallbackInfoReturnable<EquipmentSlot> cir) {
+    private static void onGetPreferredEquipmentSlot(ItemStack stack, CallbackInfoReturnable<EquipmentSlot> cir) {
         if (stack.getItem() instanceof ModularItem) {
             EquipmentSlot slot = EquipmentSlotProperty.getSlot(stack);
             if (slot != null) {
@@ -49,7 +49,7 @@ abstract class LivingEntityMixin {
     }
 
     @Inject(method = "createLivingAttributes", at = @At("TAIL"), cancellable = true)
-    private static void miapi$addAttributes(CallbackInfoReturnable<DefaultAttributeContainer.Builder> cir) {
+    private static void addAttributes(CallbackInfoReturnable<DefaultAttributeContainer.Builder> cir) {
         DefaultAttributeContainer.Builder builder = cir.getReturnValue();
         if (builder != null) {
             AttributeRegistry.entityAttributeMap.forEach((id,attribute)->{
@@ -61,8 +61,8 @@ abstract class LivingEntityMixin {
     private float storedValue;
     private DamageSource storedDamageSource;
 
-    @Inject(method = "damage", at = @At(value = "HEAD"), cancellable = true)
-    private void miapi$damageEvent(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
+    @Inject(method = "damage", at = @At(value = "HEAD"))
+    private void damageEvent(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
         Event.LivingHurtEvent livingHurtEvent = new Event.LivingHurtEvent((LivingEntity) (Object) this, source, amount);
         EventResult result = Event.LIVING_HURT.invoker().hurt(livingHurtEvent);
         if (result.interruptsFurtherEvaluation()) {
@@ -74,18 +74,18 @@ abstract class LivingEntityMixin {
     }
 
     @Inject(method = "damage", at = @At(value = "TAIL"))
-    private void miapi$damageEventAfter(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
+    private void damageEventAfter(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
         Event.LivingHurtEvent livingHurtEvent = new Event.LivingHurtEvent((LivingEntity) (Object) this, source, amount);
         Event.LIVING_HURT_AFTER.invoker().hurt(livingHurtEvent);
     }
 
     @ModifyVariable(method = "damage", at = @At(value = "HEAD"), ordinal = 0)
-    private float miapi$damageEventValue(float value) {
+    private float damageEventValue(float value) {
         return storedValue;
     }
 
     @ModifyVariable(method = "damage", at = @At(value = "HEAD"), ordinal = 0)
-    private DamageSource miapi$damageEventSource(DamageSource value) {
+    private DamageSource damageEventSource(DamageSource value) {
         return storedDamageSource;
     }
 }

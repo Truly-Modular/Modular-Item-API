@@ -16,7 +16,7 @@ abstract class PlayerEntityMixin extends LivingEntity {
     }
 
     @ModifyConstant(method = "attack(Lnet/minecraft/entity/Entity;)V", constant = @Constant(doubleValue = 9.0))
-    private double miapi$getActualAttackRange(final double attackRange) {
+    private double getActualAttackRange(final double attackRange) {
         return ReachEntityAttributes.getSquaredAttackRange(this, attackRange);
     }
 }

@@ -5,12 +5,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.registry.ReloadListenerRegistry;
-import net.minecraft.client.render.LightmapTextureManager;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.entity.model.BipedEntityModel;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.server.MinecraftServer;
@@ -158,12 +152,5 @@ public class Miapi {
 
     public static void registerReloadHandler(ReloadEvents.ReloadEvent event, String location, Map<?, ?> toClear, TriConsumer<Boolean, String, String> handler, float prio) {
         registerReloadHandler(event, location, true, bl -> toClear.clear(), handler, prio);
-    }
-
-    public static /*<T extends LivingEntity, M extends BipedEntityModel<T>, A extends BipedEntityModel<T>>*/ int
-    flipLight(MatrixStack matrices, VertexConsumerProvider vertexConsumers, LivingEntity entity, EquipmentSlot armorSlot, int light) {
-
-
-        return LightmapTextureManager.MAX_LIGHT_COORDINATE;
     }
 }

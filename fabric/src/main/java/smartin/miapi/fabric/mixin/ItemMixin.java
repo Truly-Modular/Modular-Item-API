@@ -14,7 +14,7 @@ abstract class ItemMixin implements ItemConvertible {
     @ModifyConstant(
         method = "raycast(Lnet/minecraft/world/World;Lnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/world/RaycastContext$FluidHandling;)Lnet/minecraft/util/hit/BlockHitResult;",
         require = 4, allow = 4, constant = @Constant(doubleValue = 5.0))
-    private static double miapi$getActualReachDistance(final double reachDistance, final World world, final PlayerEntity player) {
+    private static double getActualReachDistance(final double reachDistance, final World world, final PlayerEntity player) {
         return ReachEntityAttributes.getReachDistance(player, reachDistance);
     }
 }
