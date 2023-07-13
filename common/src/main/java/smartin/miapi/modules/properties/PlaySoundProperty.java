@@ -80,7 +80,7 @@ public class PlaySoundProperty extends CodecBasedProperty<List<PlaySoundProperty
             case SMART, EXTEND -> {
                 JsonArray array = old.deepCopy().getAsJsonArray();
                 array.addAll(toMerge.deepCopy().getAsJsonArray());
-                return Miapi.gson.toJsonTree(array);
+                return array;
             }
         }
         return old;
