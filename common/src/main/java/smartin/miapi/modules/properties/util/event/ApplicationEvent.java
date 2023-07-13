@@ -139,7 +139,7 @@ public class ApplicationEvent<E> {
 
         public static boolean isTargetMain(String target) {
             switch (target) {
-                case "alternative", "alternate", "victim", "2" -> {
+                case "alternative", "alternate", "victim", "2", "this" -> {
                     return false;
                 }
                 default -> {
