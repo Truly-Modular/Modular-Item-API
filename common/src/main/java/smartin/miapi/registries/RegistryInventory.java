@@ -11,6 +11,7 @@ import dev.architectury.utils.Env;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.MapColor;
+import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.enums.Instrument;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
@@ -28,6 +29,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.blocks.ModularWorkBench;
+import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.client.MiapiClient;
 import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
 import smartin.miapi.item.modular.items.*;
@@ -57,6 +59,7 @@ public class RegistryInventory {
     public static final MiapiRegistrar<Item> modularItems = MiapiRegistrar.of(registrar.get().get(RegistryKeys.ITEM));
     public static final Registrar<Item> items = registrar.get().get(RegistryKeys.ITEM);
     public static final Registrar<Block> blocks = registrar.get().get(RegistryKeys.BLOCK);
+    public static final Registrar<BlockEntityType<?>> blockEntities = registrar.get().get(RegistryKeys.BLOCK_ENTITY_TYPE);
     public static final Registrar<EntityAttribute> attributes = registrar.get().get(RegistryKeys.ATTRIBUTE);
     public static final Registrar<EntityType<?>> entityTypes = registrar.get().get(RegistryKeys.ENTITY_TYPE);
     public static final Registrar<ScreenHandlerType<?>> screenHandlers = registrar.get().get(RegistryKeys.SCREEN_HANDLER);
@@ -117,6 +120,7 @@ public class RegistryInventory {
     }
 
     public static Block modularWorkBench;
+    public static BlockEntityType<?> modularWorkBenchEntityType;
     public static Item modularItem;
     public static RegistrySupplier<EntityType<ItemProjectile>> itemProjectileType = (RegistrySupplier) registerAndSupply(entityTypes, "thrown_item", () ->
             EntityType.Builder.create(ItemProjectile::new, SpawnGroup.MISC).setDimensions(0.5F, 0.5F).maxTrackingRange(4).trackingTickInterval(20).build("miapi:thrown_item"));
@@ -154,6 +158,9 @@ public class RegistryInventory {
                         strength(2.0F, 6.0F).
                         sounds(BlockSoundGroup.METAL).
                         nonOpaque()), b -> modularWorkBench = b);
+        register(blockEntities, "modular_work_bench", () -> BlockEntityType.Builder.create(
+                ModularWorkBenchEntity::new, modularWorkBench
+        ).build(null), be -> modularWorkBenchEntityType = be);
         register(items, "modular_work_bench", () -> new BlockItem(modularWorkBench, new Item.Settings()));
 
 
