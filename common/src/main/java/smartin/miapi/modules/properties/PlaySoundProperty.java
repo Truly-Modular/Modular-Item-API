@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PlaySoundProperty extends CodecBasedProperty<List<PlaySoundProperty.Holder>> implements ApplicationEventHandler {
-    public static final String KEY = "playSound";
+    public static final String KEY = "playSounds";
     public static PlaySoundProperty property;
 
     public PlaySoundProperty() {
