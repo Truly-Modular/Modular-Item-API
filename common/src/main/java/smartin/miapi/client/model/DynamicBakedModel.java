@@ -154,14 +154,23 @@ public class DynamicBakedModel implements BakedModel {
                 if (dynamicBakedModel.overrideList instanceof DynamicBakery.DynamicOverrideList dynamicOverrideList) {
                     completeList.forEach(((conditionHolder, directionBakedQuadHashMap) -> {
                         int index = -1;
+                        boolean fallback = true;
                         for (int i = 0; i < dynamicOverrideList.dynamicOverrides.length; i++) {
+                            DynamicModelOverrides.ConditionHolder otherCOndition = dynamicOverrideList.dynamicOverrides[i].conditionHolder;
                             if (dynamicOverrideList.dynamicOverrides[i].conditionHolder.equals(conditionHolder)) {
-                                index = i;
                                 putDirectionalQuads(directionBakedQuadHashMap, dynamicOverrideList.dynamicOverrides[i].model);
+                                fallback = false;
+                            }
+                            if (conditionHolder.isAcceptable(otherCOndition)) {
+                                index = i;
                             }
                         }
                         if (index == -1) {
                             putDirectionalQuads(directionBakedQuadHashMap, dynamicBakedModel);
+                        } else {
+                            if (fallback) {
+                                putDirectionalQuads(directionBakedQuadHashMap, dynamicOverrideList.dynamicOverrides[index].model);
+                            }
                         }
                     }));
                 }
