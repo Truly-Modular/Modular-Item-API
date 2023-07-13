@@ -29,14 +29,14 @@ import smartin.miapi.modules.abilities.util.ItemAbilityManager;
 import smartin.miapi.modules.abilities.util.ItemUseAbility;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.util.MergeType;
-import smartin.miapi.modules.properties.util.PropertyApplication;
+import smartin.miapi.modules.properties.util.event.ApplicationEvent;
+import smartin.miapi.modules.properties.util.event.PropertyApplication;
 import smartin.miapi.modules.properties.util.SimpleEventProperty;
 
 import java.util.*;
 import java.util.function.Supplier;
 
-import static smartin.miapi.modules.properties.util.PropertyApplication.ApplicationEvent.*;
-
+//todo refactor to extend CodecBasedEventProperty, since this is based on a codec
 public class PotionEffectProperty extends SimpleEventProperty {
     public static String KEY = "applyPotionEffects";
     public static PotionEffectProperty property;
@@ -44,8 +44,8 @@ public class PotionEffectProperty extends SimpleEventProperty {
     public PotionEffectProperty() {
         super(
                 new EventHandlingMap<>()
-                        .set(HURT, PotionEffectProperty::onEntityHurt)
-                        .setAll(ABILITIES, PotionEffectProperty::onAbility),
+                        .set(PropertyApplication.HURT, PotionEffectProperty::onEntityHurt)
+                        .setAll(PropertyApplication.ABILITIES, PotionEffectProperty::onAbility),
                 false, () -> property
         );
         property = this;
@@ -66,7 +66,7 @@ public class PotionEffectProperty extends SimpleEventProperty {
         );
 
         for (StatusEffectData effect : effects) {
-            if (!effect.event.equals(HURT) || effect.shouldReverse) continue;
+            if (!effect.event.equals(PropertyApplication.HURT) || effect.shouldReverse) continue;
             LivingEntity toApply = victim;
             if (effect.target.equals("target"))
                 toApply = attacker;
@@ -94,7 +94,7 @@ public class PotionEffectProperty extends SimpleEventProperty {
         }
     }
 
-    public static void onAbility(PropertyApplication.ApplicationEvent<PropertyApplication.Ability> event, PropertyApplication.Ability ability) {
+    public static void onAbility(ApplicationEvent<PropertyApplication.Ability> event, PropertyApplication.Ability ability) {
         if (ability.world().isClient) return;
 
         List<PotionEffectProperty.StatusEffectData> potionEffects = property.get(ability.stack());
@@ -173,7 +173,7 @@ public class PotionEffectProperty extends SimpleEventProperty {
         }));
     }
 
-    public record StatusEffectData(PropertyApplication.ApplicationEvent<?> event, String target,
+    public record StatusEffectData(ApplicationEvent<?> event, String target,
                                    Supplier<StatusEffectInstance> creator, StatusEffect effect, int duration,
                                    int amplifier, boolean ambient, boolean visible, boolean showIcon,
                                    Optional<Identifier> predicate, boolean shouldReverse,
@@ -203,7 +203,7 @@ public class PotionEffectProperty extends SimpleEventProperty {
 
         public static StatusEffectData create(String applyEvent, String applyTarget, int duration, int amplifier, StatusEffect effect, boolean ambient, boolean visible, boolean showIcon, Optional<Identifier> predicateLocation, Optional<String> abilityName, Optional<IntegerRange> time) {
             return new StatusEffectData(
-                    PropertyApplication.ApplicationEvent.get(applyEvent),
+                    ApplicationEvent.get(applyEvent),
                     applyTarget,
                     () -> new StatusEffectInstance(effect, duration, amplifier, ambient, visible, showIcon),
                     effect,

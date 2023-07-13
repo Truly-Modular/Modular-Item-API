@@ -146,6 +146,7 @@ public class ModuleCrafter extends InteractAbleWidget {
                 this.addChild(detailView);
             }
         }
+        preview.accept(stack);
     }
 
     @Override

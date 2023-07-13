@@ -298,7 +298,8 @@ public class ModelProperty implements ModuleProperty {
             //this shouldn't be necessary as the values should be loaded from the class but anyways
             if (transform == null) {
                 transform = Transform.IDENTITY;
-            }
+            } else if (transform.origin == null || transform.origin.equals(""))
+                transform.origin = "item";
             transform = Transform.repair(transform);
         }
     }

@@ -5,19 +5,19 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
 import net.minecraft.world.World;
 import smartin.miapi.modules.properties.AbilityProperty;
+import smartin.miapi.modules.properties.util.event.PropertyApplication;
 import smartin.miapi.registries.MiapiRegistry;
 
 import java.util.*;
 
-import static smartin.miapi.modules.properties.util.PropertyApplication.ApplicationEvent.*;
-import static smartin.miapi.modules.properties.util.PropertyApplication.Ability;
+import static smartin.miapi.modules.properties.util.event.ApplicationEvent.*;
+import static smartin.miapi.modules.properties.util.event.PropertyApplication.Ability;
 
 /**
  * The ItemAbilityManager is the brain and control behind what Ability is executed on what Item.
@@ -33,29 +33,21 @@ public class ItemAbilityManager {
 
     public static void setup() {
         TickEvent.PLAYER_PRE.register((playerEntity) -> {
-            if (playerEntity instanceof ServerPlayerEntity) {
-                ItemStack oldItem = playerActiveItems.get(playerEntity);
-                ItemStack playerItem = playerEntity.getActiveItem();
-                if (playerItem != null && !playerItem.equals(oldItem)) {
-                    playerActiveItems.put(playerEntity, playerEntity.getActiveItem());
-                    if (oldItem != null) {
-                        ItemUseAbility ability = getAbility(oldItem);
-                        trigger(new Ability(oldItem, playerEntity.getWorld(), playerEntity, null, ability), ABILITY_END, ABILITY_STOP, ABILITY_STOP_HOLDING);
-                        ability.onStoppedHolding(oldItem, playerEntity.getWorld(), playerEntity);
-                        abilityMap.remove(oldItem);
-                    }
-                }
-            } else {
-                ItemStack oldItem = playerActiveItemsClient.get(playerEntity);
-                ItemStack playerItem = playerEntity.getActiveItem();
-                if (playerItem != null && !playerItem.equals(oldItem)) {
-                    playerActiveItemsClient.put(playerEntity, playerEntity.getActiveItem());
-                    if (oldItem != null) {
-                        ItemUseAbility ability = getAbility(oldItem);
-                        trigger(new Ability(oldItem, playerEntity.getWorld(), playerEntity, null, ability), ABILITY_END, ABILITY_STOP, ABILITY_STOP_HOLDING);
-                        ability.onStoppedHolding(oldItem, playerEntity.getWorld(), playerEntity);
-                        abilityMap.remove(oldItem);
-                    }
+            Map<PlayerEntity, ItemStack> activeItems = playerActiveItems;
+            if (playerEntity.getWorld().isClient)
+                activeItems = playerActiveItemsClient;
+
+            ItemStack oldItem = activeItems.get(playerEntity);
+            ItemStack playerItem = playerEntity.getActiveItem();
+
+            if (playerItem != null && !playerItem.equals(oldItem)) {
+                activeItems.put(playerEntity, playerEntity.getActiveItem());
+                if (oldItem != null) {
+                    ItemUseAbility ability = getAbility(oldItem);
+                    if (ability != emptyAbility)
+                        trigger(new Ability(oldItem, playerEntity.getWorld(), playerEntity, playerEntity.getItemUseTimeLeft(), ability), PropertyApplication.ABILITY_END, PropertyApplication.ABILITY_STOP, PropertyApplication.ABILITY_STOP_HOLDING);
+                    ability.onStoppedHolding(oldItem, playerEntity.getWorld(), playerEntity);
+                    abilityMap.remove(oldItem);
                 }
             }
         });
@@ -93,7 +85,8 @@ public class ItemAbilityManager {
         ItemUseAbility ability = getAbility(itemStack, world, user, hand);
         abilityMap.put(itemStack, ability);
 
-        trigger(new Ability(itemStack, world, user, null, ability), ABILITY_START);
+        if (ability != emptyAbility)
+            trigger(new Ability(itemStack, world, user, null, ability), PropertyApplication.ABILITY_START);
 
         return ability.use(world, user, hand);
     }
@@ -103,7 +96,8 @@ public class ItemAbilityManager {
         ItemStack itemStack = ability.finishUsing(stack, world, user);
         abilityMap.remove(stack);
 
-        trigger(new Ability(itemStack, world, user, null, ability), ABILITY_FINISH, ABILITY_END);
+        if (ability != emptyAbility)
+            trigger(new Ability(itemStack, world, user, null, ability), PropertyApplication.ABILITY_FINISH, PropertyApplication.ABILITY_END);
 
         return itemStack;
     }
@@ -112,14 +106,16 @@ public class ItemAbilityManager {
         ItemUseAbility ability = getAbility(stack);
         ability.onStoppedUsing(stack, world, user, remainingUseTicks);
 
-        trigger(new Ability(stack, world, user, remainingUseTicks, ability), ABILITY_STOP, ABILITY_STOP_USING, ABILITY_END);
+        if (ability != emptyAbility)
+            trigger(new Ability(stack, world, user, remainingUseTicks, ability), PropertyApplication.ABILITY_STOP, PropertyApplication.ABILITY_STOP_USING, PropertyApplication.ABILITY_END);
 
         abilityMap.remove(stack);
     }
 
     public static void usageTick(World world, LivingEntity user, ItemStack stack, int remainingUseTicks) {
         ItemUseAbility ability = getAbility(stack);
-        trigger(new Ability(stack, world, user, remainingUseTicks, ability), ABILITY_TICK);
+        if (ability != emptyAbility)
+            trigger(new Ability(stack, world, user, remainingUseTicks, ability), PropertyApplication.ABILITY_TICK);
         ability.usageTick(world, user, stack, remainingUseTicks);
     }
 

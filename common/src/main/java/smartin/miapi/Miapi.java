@@ -5,10 +5,17 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.registry.ReloadListenerRegistry;
+import net.minecraft.client.render.LightmapTextureManager;
+import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.entity.model.BipedEntityModel;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.text.Text;
+import org.apache.logging.log4j.util.TriConsumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import smartin.miapi.attributes.AttributeRegistry;
@@ -24,13 +31,16 @@ import smartin.miapi.modules.abilities.util.ItemAbilityManager;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.conditions.*;
 import smartin.miapi.modules.properties.util.ModuleProperty;
-import smartin.miapi.modules.properties.util.PropertyApplication;
+import smartin.miapi.modules.properties.util.event.PropertyApplication;
 import smartin.miapi.modules.synergies.SynergyManager;
 import smartin.miapi.network.Networking;
 import smartin.miapi.network.NetworkingImplCommon;
+import smartin.miapi.registries.MiapiRegistry;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Consumer;
 
 public class Miapi {
     public static final String MOD_ID = "miapi";
@@ -41,7 +51,6 @@ public class Miapi {
 
     public static void init() {
         setupNetworking();
-        setupDatapackPaths();
         RegistryInventory.setup();
         PropertyApplication.setup();
         ReloadEvents.setup();
@@ -53,13 +62,9 @@ public class Miapi {
             LOGGER.info("Server before started");
         });
         ReloadListenerRegistry.register(ResourceType.SERVER_DATA, new ReloadListener());
-        ReloadEvents.MAIN.subscribe((isClient) -> {
-            RegistryInventory.modules.clear();
-            ReloadEvents.DATA_PACKS.forEach(ItemModule::loadFromData);
-        }, 0.0f);
-
-        //MenuRegistry.registerScreenFactory(RegistryInventory.craftingScreenHandler, CraftingGUI::new);
-
+        registerReloadHandler(ReloadEvents.MAIN, "modules", RegistryInventory.modules, (isClient, path, data) -> {
+            ItemModule.loadFromData(path, data);
+        });
         PropertyResolver.propertyProviderRegistry.register("module", (moduleInstance, oldMap) -> {
             HashMap<ModuleProperty, JsonElement> map = new HashMap<>();
             moduleInstance.module.getProperties().forEach((key, jsonData) -> {
@@ -119,12 +124,46 @@ public class Miapi {
         networkingImplementation.setupServer();
     }
 
-    protected static void setupDatapackPaths() {
-        //DataPackPaths
-        ReloadEvents.registerDataPackPathToSync(Miapi.MOD_ID, "modules");
-        ReloadEvents.registerDataPackPathToSync(Miapi.MOD_ID, "materials");
-        ReloadEvents.registerDataPackPathToSync(Miapi.MOD_ID, "synergies");
-        ReloadEvents.registerDataPackPathToSync(Miapi.MOD_ID, "modular_converter");
-        ReloadEvents.registerDataPackPathToSync(Miapi.MOD_ID, "skins");
+    public static void registerReloadHandler(ReloadEvents.ReloadEvent event, String location, boolean syncToClient, Consumer<Boolean> beforeLoop, TriConsumer<Boolean, String, String> handler, float priority) {
+        if (syncToClient)
+            ReloadEvents.registerDataPackPathToSync(MOD_ID, location);
+        event.subscribe(isClient -> {
+            beforeLoop.accept(isClient);
+            ReloadEvents.DATA_PACKS.forEach((path, data) -> {
+                if (path.startsWith(location))
+                    handler.accept(isClient, path, data);
+            });
+        }, priority);
+    }
+
+    public static void registerReloadHandler(ReloadEvents.ReloadEvent event, String location, boolean syncToClient, TriConsumer<Boolean, String, String> handler) {
+        registerReloadHandler(event, location, syncToClient, bl -> {}, handler, 0f);
+    }
+
+    public static void registerReloadHandler(ReloadEvents.ReloadEvent event, String location, TriConsumer<Boolean, String, String> handler) {
+        registerReloadHandler(event, location, true, bl -> {}, handler, 0f);
+    }
+
+    public static void registerReloadHandler(ReloadEvents.ReloadEvent event, String location, MiapiRegistry<?> toClear, TriConsumer<Boolean, String, String> handler) {
+        registerReloadHandler(event, location, true, bl -> toClear.clear(), handler, 0f);
+    }
+
+    public static void registerReloadHandler(ReloadEvents.ReloadEvent event, String location, MiapiRegistry<?> toClear, TriConsumer<Boolean, String, String> handler, float prio) {
+        registerReloadHandler(event, location, true, bl -> toClear.clear(), handler, prio);
+    }
+
+    public static void registerReloadHandler(ReloadEvents.ReloadEvent event, String location, Map<?, ?> toClear, TriConsumer<Boolean, String, String> handler) {
+        registerReloadHandler(event, location, true, bl -> toClear.clear(), handler, 0f);
+    }
+
+    public static void registerReloadHandler(ReloadEvents.ReloadEvent event, String location, Map<?, ?> toClear, TriConsumer<Boolean, String, String> handler, float prio) {
+        registerReloadHandler(event, location, true, bl -> toClear.clear(), handler, prio);
+    }
+
+    public static /*<T extends LivingEntity, M extends BipedEntityModel<T>, A extends BipedEntityModel<T>>*/ int
+    flipLight(MatrixStack matrices, VertexConsumerProvider vertexConsumers, LivingEntity entity, EquipmentSlot armorSlot, int light) {
+
+
+        return LightmapTextureManager.MAX_LIGHT_COORDINATE;
     }
 }

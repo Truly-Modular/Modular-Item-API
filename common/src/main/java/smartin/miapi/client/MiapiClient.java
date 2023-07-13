@@ -2,9 +2,11 @@ package smartin.miapi.client;
 
 import dev.architectury.event.events.client.ClientLifecycleEvent;
 import dev.architectury.registry.client.level.entity.EntityRendererRegistry;
+import dev.architectury.registry.client.rendering.BlockEntityRendererRegistry;
 import dev.architectury.registry.menu.MenuRegistry;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.world.ClientWorld;
+import smartin.miapi.blocks.ModularWorkBenchRenderer;
 import smartin.miapi.client.gui.crafting.CraftingGUI;
 import smartin.miapi.client.model.CustomColorProvider;
 import smartin.miapi.mixin.client.ItemRendererAccessor;
@@ -41,5 +43,9 @@ public class MiapiClient {
 
     public static void registerEntityRenderer() {
         EntityRendererRegistry.register(RegistryInventory.itemProjectileType, ItemProjectileRenderer::new);
+    }
+
+    public static void registerBlockEntityRenderer() {
+        BlockEntityRendererRegistry.register(RegistryInventory.modularWorkBenchEntityType, ModularWorkBenchRenderer::new);
     }
 }

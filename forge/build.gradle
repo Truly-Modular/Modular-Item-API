@@ -14,6 +14,10 @@ configurations {
     developmentForge.extendsFrom common
 }
 
+repositories {
+    maven { url 'https://jitpack.io' }
+}
+
 dependencies {
     forge "net.minecraftforge:forge:${rootProject.forge_version}"
     // Remove the next line if you don't want to depend on the API
@@ -23,6 +27,8 @@ dependencies {
 
     //forgeRuntimeLibrary(include("dev.kosmx.player-anim:player-animation-lib-forge:0.4.2"
     //modApi include("curse.maven:bettercombat-639842:4357578")
+
+    modApi(include("com.github.RedPxnda.Nucleus:nucleus-forge:${rootProject.nucleus_version}"))
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive = false }

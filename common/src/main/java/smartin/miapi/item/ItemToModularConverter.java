@@ -14,31 +14,25 @@ import java.util.List;
 import java.util.Map;
 
 public class ItemToModularConverter implements ModularItemStackConverter.ModularConverter {
-    public static List<String> pathRegexes = new ArrayList<>();
     public Map<String, ItemStack> regexes = new HashMap<>();
 
+    /*public static List<String> pathRegexes = new ArrayList<>();
     static {
         pathRegexes.add("^modular_converter\\+");
-    }
+    }*/
 
     public ItemToModularConverter() {
-        ReloadEvents.END.subscribe(isClient -> {
-            ReloadEvents.DATA_PACKS.forEach((path, data) -> {
-                for (String regex : pathRegexes) {
-                    if (path.matches(regex) || path.contains("modular_converter")) {
-                        Map<String, ItemModule.ModuleInstance> dataMap;
-                        TypeToken<Map<String, ItemModule.ModuleInstance>> token = new TypeToken<>() {
-                        };
+        Miapi.registerReloadHandler(ReloadEvents.END, "modular_converter", (isClient, path, data) -> {
+            Map<String, ItemModule.ModuleInstance> dataMap;
+            TypeToken<Map<String, ItemModule.ModuleInstance>> token = new TypeToken<>() {
+            };
 
-                        dataMap = Miapi.gson.fromJson(data, token.getType());
+            dataMap = Miapi.gson.fromJson(data, token.getType());
 
-                        dataMap.forEach((itemId, moduleString) -> {
-                            ItemStack stack = new ItemStack(RegistryInventory.modularItem);
-                            moduleString.writeToItem(stack);
-                            regexes.put(itemId, stack);
-                        });
-                    }
-                }
+            dataMap.forEach((itemId, moduleString) -> {
+                ItemStack stack = new ItemStack(RegistryInventory.modularItem);
+                moduleString.writeToItem(stack);
+                regexes.put(itemId, stack);
             });
         });
     }

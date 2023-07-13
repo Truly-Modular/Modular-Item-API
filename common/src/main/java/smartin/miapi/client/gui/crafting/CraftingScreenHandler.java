@@ -10,7 +10,9 @@ import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.server.network.ServerPlayerEntity;
+import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
+import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.client.gui.MutableSlot;
 import smartin.miapi.craft.CraftAction;
 import smartin.miapi.item.ModularItemStackConverter;
@@ -21,6 +23,7 @@ import smartin.miapi.registries.RegistryInventory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 /**
  * This is the screen handler class for miapis default Crafting Screen.
@@ -30,6 +33,7 @@ public class CraftingScreenHandler extends ScreenHandler {
     private static final String PACKET_ID = ":crafting_packet_";
     public Inventory inventory;
     public PlayerInventory playerInventory;
+    public final @Nullable ModularWorkBenchEntity blockEntity;
     public final String packetID;
     public final String editPacketID;
     public final String packetIDSlotAdd;
@@ -42,7 +46,10 @@ public class CraftingScreenHandler extends ScreenHandler {
      * @param playerInventory the player inventory
      */
     public CraftingScreenHandler(int syncId, PlayerInventory playerInventory) {
-        this(syncId, playerInventory, ScreenHandlerContext.EMPTY);
+        this(syncId, playerInventory, null, ScreenHandlerContext.EMPTY);
+    }
+    public CraftingScreenHandler(int syncId, PlayerInventory playerInventory, ModularWorkBenchEntity benchEntity) {
+        this(syncId, playerInventory, benchEntity, ScreenHandlerContext.EMPTY);
     }
 
     /**
@@ -55,20 +62,26 @@ public class CraftingScreenHandler extends ScreenHandler {
      * @param playerInventory the player's inventory
      * @param context         the context of the screen
      */
-    public CraftingScreenHandler(int syncId, PlayerInventory playerInventory, ScreenHandlerContext context) {
+    public CraftingScreenHandler(int syncId, PlayerInventory playerInventory, @Nullable ModularWorkBenchEntity benchEntity, ScreenHandlerContext context) {
         super(RegistryInventory.craftingScreenHandler, syncId);
         packetID = Miapi.MOD_ID + PACKET_ID + playerInventory.player.getUuidAsString() + "_" + syncId;
         editPacketID = Miapi.MOD_ID + PACKET_ID + "_edit_" + playerInventory.player.getUuidAsString() + "_" + syncId;
         packetIDSlotAdd = Miapi.MOD_ID + PACKET_ID + "_" + playerInventory.player.getUuidAsString() + "_" + syncId + "_slotAdd";
         packetIDSlotRemove = Miapi.MOD_ID + PACKET_ID + "_" + playerInventory.player.getUuidAsString() + "_" + syncId + "_slotRemove";
         this.playerInventory = playerInventory;
+        this.blockEntity = benchEntity;
         if (playerInventory.player instanceof ServerPlayerEntity) {
             Networking.registerC2SPacket(packetID, (buffer, player) -> {
                 CraftAction action = new CraftAction(buffer);
                 action.setItem(inventory.getStack(0));
                 action.linkInventory(inventory, 1);
                 if (action.canPerform()) {
-                    inventory.setStack(0, action.perform());
+                    ItemStack stack = action.perform();
+                    inventory.setStack(0, stack);
+                    if (blockEntity != null) {
+                        blockEntity.setItem(stack);
+                        blockEntity.saveAndSync();
+                    }
                     this.onContentChanged(inventory);
                 }
             });
@@ -105,6 +118,9 @@ public class CraftingScreenHandler extends ScreenHandler {
                 CraftingScreenHandler.this.onContentChanged(this);
             }
         };
+        if (blockEntity != null) {
+            this.setItem(blockEntity.getItem());
+        }
         int i = 18 * 2 + 1;
         int offset = 30 + 4 * 18;
         for (int j = 0; j < 3; ++j) {
@@ -127,6 +143,28 @@ public class CraftingScreenHandler extends ScreenHandler {
             public int getMaxItemCount() {
                 return 64;
             }
+
+            @Override
+            public void setStack(ItemStack stack) {
+                super.setStack(stack);
+                if (blockEntity != null) {
+                    blockEntity.setItem(stack);
+                    blockEntity.saveAndSync();
+                }
+                this.markDirty();
+            }
+
+            @Override
+            public void onTakeItem(PlayerEntity player, ItemStack stack) {
+                super.onTakeItem(player, stack);
+            }
+
+            @Override
+            public ItemStack getStack() {
+                ItemStack stack = super.getStack();
+                if (blockEntity != null && !stack.isEmpty()) return blockEntity.getItem();
+                return stack;
+            }
         });
     }
 
@@ -148,7 +186,6 @@ public class CraftingScreenHandler extends ScreenHandler {
         PacketByteBuf buf = Networking.createBuffer();
         buf.writeInt(slot.id);
         Networking.sendC2S(packetIDSlotRemove, buf);
-
     }
 
     /**
@@ -180,6 +217,7 @@ public class CraftingScreenHandler extends ScreenHandler {
 
         // Transfer the items in the inventory to the player's inventory
         for (int i = 0; i < this.inventory.size(); i++) {
+            if (i == 0) continue;
             ItemStack stack = this.inventory.getStack(i);
             if (!stack.isEmpty()) {
                 if (!player.getInventory().insertStack(stack)) {
@@ -191,23 +229,35 @@ public class CraftingScreenHandler extends ScreenHandler {
         Networking.unRegisterC2SPacket(packetID);
         Networking.unRegisterC2SPacket(packetIDSlotAdd);
         Networking.unRegisterC2SPacket(packetIDSlotRemove);
+        if (blockEntity != null) blockEntity.saveAndSync();
     }
 
     public void setItem(ItemStack stack) {
         inventory.setStack(0, stack);
         inventory.markDirty();
+        if (blockEntity != null) {
+            blockEntity.setItem(stack);
+            blockEntity.saveAndSync();
+        }
     }
 
     public ItemStack quickMove(PlayerEntity player, int index) {
         ItemStack itemStack = ItemStack.EMPTY;
         Slot slot = this.slots.get(index);
+
         if (slot != null && slot.hasStack()) {
             ItemStack itemStack2 = slot.getStack();
             itemStack = itemStack2.copy();
             if (index >= 36 ) {
                 //case 1: tool slot to player
+                slot.onTakeItem(player, itemStack2);
                 if (!this.insertItem(itemStack2, 0, 36, true)) {
                     return ItemStack.EMPTY;
+                }
+
+                if (index == 36 && blockEntity != null) {
+                    blockEntity.setItem(itemStack2);
+                    blockEntity.saveAndSync();
                 }
                 slot.markDirty();
             } else {
@@ -216,17 +266,34 @@ public class CraftingScreenHandler extends ScreenHandler {
                     return ItemStack.EMPTY;
                 } else {
                     for (Slot slot1 : slots) {
-                        if (slot1.id > 36) {
+                        if (slot1.id >= 36) {
                             if (!this.insertItem(itemStack2, slot1.id, slot1.id + 1, true)) {
                                 return ItemStack.EMPTY;
                             }
                         }
                     }
                 }
-                slot.onTakeItem(player, itemStack2);
+                slot.markDirty();
             }
         }
         return itemStack;
+    }
+
+    @Override
+    protected void dropInventory(PlayerEntity player, Inventory inventory) {
+        if (!player.isAlive() || player instanceof ServerPlayerEntity && ((ServerPlayerEntity)player).isDisconnected()) {
+            for (int i = 0; i < inventory.size(); ++i) {
+                if (i == 0) continue;
+                player.dropItem(inventory.removeStack(i), false);
+            }
+            return;
+        }
+        for (int i = 0; i < inventory.size(); ++i) {
+            if (i == 0) continue;
+            PlayerInventory playerInventory = player.getInventory();
+            if (!(playerInventory.player instanceof ServerPlayerEntity)) continue;
+            playerInventory.offerOrDrop(inventory.removeStack(i));
+        }
     }
 
     @Override

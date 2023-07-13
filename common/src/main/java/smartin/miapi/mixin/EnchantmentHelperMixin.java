@@ -18,7 +18,7 @@ import java.util.List;
 public class EnchantmentHelperMixin {
 
     @Inject(method = "Lnet/minecraft/enchantment/EnchantmentHelper;getPossibleEntries(ILnet/minecraft/item/ItemStack;Z)Ljava/util/List;", at = @At("HEAD"), cancellable = true)
-    private static void modifyAttributeModifiers(int power, ItemStack stack, boolean treasureAllowed, CallbackInfoReturnable<List<EnchantmentLevelEntry>> cir) {
+    private static void miapi$modifyAttributeModifiers(int power, ItemStack stack, boolean treasureAllowed, CallbackInfoReturnable<List<EnchantmentLevelEntry>> cir) {
         if (stack.getItem() instanceof ModularItem) {
             List<EnchantmentLevelEntry> enchantments = new ArrayList<>();
 

@@ -2,6 +2,8 @@ package smartin.miapi.blocks;
 
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityTicker;
+import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.screen.NamedScreenHandlerFactory;
@@ -9,17 +11,16 @@ import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.text.Text;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.BlockMirror;
-import net.minecraft.util.BlockRotation;
-import net.minecraft.util.Hand;
+import net.minecraft.util.*;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
 
@@ -45,6 +46,11 @@ public class ModularWorkBench extends BlockWithEntity {
 
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(FACING);
+    }
+
+    @Override
+    public boolean hasRandomTicks(BlockState state) {
+        return false;
     }
 
     @Override
@@ -82,6 +88,16 @@ public class ModularWorkBench extends BlockWithEntity {
         }
     }
 
+    @Override
+    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+        if (state.isOf(newState.getBlock())) return;
+        if (world.getBlockEntity(pos) instanceof ModularWorkBenchEntity be)
+            if (!be.getItem().isEmpty()) {
+                Vec3d vec = pos.toCenterPos();
+                ItemScatterer.spawn(world, vec.x, vec.y, vec.z, be.getItem());
+            }
+    }
+
     public BlockRenderType getRenderType(BlockState state) {
         return BlockRenderType.MODEL;
     }
@@ -89,12 +105,19 @@ public class ModularWorkBench extends BlockWithEntity {
     @Nullable
     @Override
     public NamedScreenHandlerFactory createScreenHandlerFactory(BlockState state, World world, BlockPos pos) {
-        Text text = Text.literal("test");
-        return new SimpleNamedScreenHandlerFactory((syncId, inventory, player) -> new CraftingScreenHandler(syncId, inventory), text);
+        if (world.getBlockEntity(pos) instanceof ModularWorkBenchEntity be)
+            return be;
+        return null;
     }
 
     @Nullable
     public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
+        return new ModularWorkBenchEntity(pos, state);
+    }
+
+    @Nullable
+    @Override
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
         return null;
     }
 }

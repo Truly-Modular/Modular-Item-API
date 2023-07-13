@@ -19,7 +19,7 @@ import java.util.Map;
 public abstract class ModelLoaderAccessor {
 
     @Inject(method = "<init>(Lnet/minecraft/client/color/block/BlockColors;Lnet/minecraft/util/profiler/Profiler;Ljava/util/Map;Ljava/util/Map;)V", at = @At("RETURN"), cancellable = false)
-    public void modelLoad(BlockColors blockColors, Profiler profiler, Map jsonUnbakedModels, Map blockStates, CallbackInfo ci){
+    public void miapi$modelLoad(BlockColors blockColors, Profiler profiler, Map jsonUnbakedModels, Map blockStates, CallbackInfo ci){
         ModelLoader loader = (ModelLoader) (Object) this;
         ModelLoadAccessor.setLoader(loader);
     }
