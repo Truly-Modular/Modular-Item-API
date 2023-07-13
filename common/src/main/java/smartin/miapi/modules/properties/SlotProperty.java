@@ -155,8 +155,8 @@ public class SlotProperty implements ModuleProperty {
                 if (moduleSlot.inSlot == null) return false;
                 return moduleSlot.inSlot.equals(instance);
             }).findFirst().orElse(null);
-            if (slot != null && slot.transform.origin != null && slot.transform.origin.equals("")) {
-                slot.transform.origin = null;
+            if (slot != null && (slot.transform.origin == null)) {
+                slot.transform.origin = "item";
             }
             return slot;
         }

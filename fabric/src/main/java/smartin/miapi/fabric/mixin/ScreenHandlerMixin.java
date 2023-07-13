@@ -13,7 +13,7 @@ abstract class ScreenHandlerMixin {
     @ModifyConstant(
         method = "method_17696(Lnet/minecraft/block/Block;Lnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;)Ljava/lang/Boolean;",
         require = 1, allow = 1, constant = @Constant(doubleValue = 64.0))
-    private static double getActualReachDistance(final double reachDistance, final Block block, final PlayerEntity player) {
+    private static double miapi$getActualReachDistance(final double reachDistance, final Block block, final PlayerEntity player) {
         return ReachEntityAttributes.getSquaredReachDistance(player, reachDistance);
     }
 }

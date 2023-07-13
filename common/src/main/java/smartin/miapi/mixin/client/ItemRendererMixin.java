@@ -22,7 +22,7 @@ public class ItemRendererMixin {
      * 10 bit Color Support, should be refactored to be less intrusive if possible
      */
     @Inject(method = "renderBakedItemQuads(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumer;Ljava/util/List;Lnet/minecraft/item/ItemStack;II)V", at = @At("HEAD"), cancellable = true)
-    private void colorSupport10bitColor(MatrixStack matrices, VertexConsumer vertices, List<BakedQuad> quads, ItemStack stack, int light, int overlay, CallbackInfo ci){
+    private void miapi$colorSupport10bitColor(MatrixStack matrices, VertexConsumer vertices, List<BakedQuad> quads, ItemStack stack, int light, int overlay, CallbackInfo ci){
         boolean bl = !stack.isEmpty();
         MatrixStack.Entry entry = matrices.peek();
         Iterator var9 = quads.iterator();

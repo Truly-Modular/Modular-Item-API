@@ -32,7 +32,7 @@ public abstract class ModelLoaderMixin {
     @Shadow @Final private Map<Identifier, UnbakedModel> modelsToBake;
 
     @Inject(at = @At("HEAD"), method = "loadModel", cancellable = true)
-    private void loadModelHook(Identifier id, CallbackInfo ci) {
+    private void miapi$loadModelHook(Identifier id, CallbackInfo ci) {
         if (isModularItem(id) && id instanceof ModelIdentifier model && Objects.equals(model.getVariant(), "inventory")) {
             Identifier identifier = id.withPrefixedPath("item/");
             UnbakedModel unbaked = new CustomModel();

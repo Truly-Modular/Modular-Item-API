@@ -21,7 +21,7 @@ abstract class ChestStateManagerMixin {
         require = 1, allow = 1,
         at = @At(value = "INVOKE", opcode = Opcodes.INVOKEVIRTUAL,
             target = "Lnet/minecraft/block/entity/ViewerCountManager;getInRangeViewerCount(Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;)I"))
-    private int getReachAccountingOpenCount(final ViewerCountManager manager, final World world, final BlockPos pos) {
+    private int miapi$getReachAccountingOpenCount(final ViewerCountManager manager, final World world, final BlockPos pos) {
         return ReachEntityAttributes.getPlayersWithinReach(this::isPlayerViewing, world, pos.getX(), pos.getY(), pos.getZ(), 5.0).size();
     }
 }

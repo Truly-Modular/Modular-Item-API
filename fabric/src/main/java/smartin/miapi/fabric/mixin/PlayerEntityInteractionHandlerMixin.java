@@ -17,7 +17,7 @@ abstract class PlayerEntityInteractionHandlerMixin implements PlayerInteractEnti
     @Shadow(aliases = "field_28962") @Final private Entity field_28962;
 
     @Inject(method = "attack()V", at = @At("HEAD"), require = 1, allow = 1, cancellable = true)
-    private void ensureWithinAttackRange(final CallbackInfo ci) {
+    private void miapi$ensureWithinAttackRange(final CallbackInfo ci) {
         if (!ReachEntityAttributes.isWithinAttackRange(this.field_28963.player, this.field_28962)) {
             ci.cancel();
         }
