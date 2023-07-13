@@ -12,6 +12,7 @@ import net.minecraft.client.render.model.BakedQuad;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.math.Direction;
 import smartin.miapi.mixin.client.ItemRendererAccessor;
 
 import java.util.Iterator;
@@ -21,7 +22,7 @@ import static net.minecraft.client.render.item.ItemRenderer.getDirectItemGlintCo
 
 @Environment(EnvType.CLIENT)
 public class ItemRenderUtil {
-    private ItemRenderUtil(){
+    private ItemRenderUtil() {
 
     }
 
@@ -34,6 +35,9 @@ public class ItemRenderUtil {
         VertexConsumer vertexConsumer = getDirectItemGlintConsumer(vertexConsumers, renderLayer, true, stack.hasGlint());
         model.getTransformation().getTransformation(renderMode).apply(true, matrices);
         matrices.translate(-0.5, -0.5, -0.5);
+        for (Direction direction : Direction.values()) {
+            renderBakedItemQuads(matrices, vertexConsumer, model.getQuads(null, direction, null), stack, light, overlay);
+        }
         renderBakedItemQuads(matrices, vertexConsumer, model.getQuads(null, null, null), stack, light, overlay);
     }
 

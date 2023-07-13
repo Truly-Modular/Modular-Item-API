@@ -193,6 +193,18 @@ public class DynamicModelOverrides extends ModelOverrideList {
             return false;
         }
 
+        public boolean isAcceptable(ConditionHolder other) {
+            for (Condition condition : other.conditions) {
+                Optional<Condition> exist = conditions.stream().filter(condition1 -> condition1.type.equals(condition.type)).findFirst();
+                if (exist.isPresent()) {
+                    if (condition.threshold < exist.get().threshold) {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
         @Override
         public int hashCode() {
             int result = 17;
