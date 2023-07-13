@@ -1,5 +1,7 @@
 package smartin.miapi.modules.properties;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.mojang.serialization.Codec;
 import com.redpxnda.nucleus.datapack.codec.AutoCodec;
 import net.minecraft.entity.LivingEntity;
@@ -7,10 +9,12 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
+import smartin.miapi.Miapi;
 import smartin.miapi.events.Event;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.util.ApplicationEventHandler;
 import smartin.miapi.modules.properties.util.CodecBasedProperty;
+import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.event.ApplicationEvent;
 
 import java.util.ArrayList;
@@ -65,6 +69,21 @@ public class PlaySoundProperty extends CodecBasedProperty<List<PlaySoundProperty
                 }
             });
         }
+    }
+
+    @Override
+    public JsonElement merge(JsonElement old, JsonElement toMerge, MergeType type) {
+        switch (type) {
+            case OVERWRITE -> {
+                return toMerge.deepCopy();
+            }
+            case SMART, EXTEND -> {
+                JsonArray array = old.deepCopy().getAsJsonArray();
+                array.addAll(toMerge.deepCopy().getAsJsonArray());
+                return Miapi.gson.toJsonTree(array);
+            }
+        }
+        return old;
     }
 
     @Override
