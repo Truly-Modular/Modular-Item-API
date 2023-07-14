@@ -15,6 +15,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.InteractAbleWidget;
+import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
 import smartin.miapi.craft.CraftAction;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.modules.ItemModule;
@@ -40,7 +41,7 @@ public class ModuleCrafter extends InteractAbleWidget {
     CraftView craftView;
     Consumer<Slot> removeSlot;
     Consumer<Slot> addSlot;
-    public ScreenHandler handler;
+    public CraftingScreenHandler handler;
 
     public ModuleCrafter(int x, int y, int width, int height, Consumer<SlotProperty.ModuleSlot> selected, Consumer<ItemStack> craftedItem, Inventory linkedInventory, Consumer<Slot> addSlot, Consumer<Slot> removeSlot) {
         super(x, y, width, height, Text.empty());
@@ -132,7 +133,7 @@ public class ModuleCrafter extends InteractAbleWidget {
                     this.module = module;
                     setMode(Mode.CRAFT);
                 }), (module -> {
-                    CraftAction action = new CraftAction(stack, slot, module, null, new PacketByteBuf[0]);
+                    CraftAction action = new CraftAction(stack, slot, module, null, null, new PacketByteBuf[0]);
                     action.linkInventory(linkedInventory, 1);
                     preview.accept(action.getPreview());
                 }));

@@ -72,7 +72,7 @@ public class CraftingScreenHandler extends ScreenHandler {
         this.blockEntity = benchEntity;
         if (playerInventory.player instanceof ServerPlayerEntity) {
             Networking.registerC2SPacket(packetID, (buffer, player) -> {
-                CraftAction action = new CraftAction(buffer);
+                CraftAction action = new CraftAction(buffer, blockEntity);
                 action.setItem(inventory.getStack(0));
                 action.linkInventory(inventory, 1);
                 if (action.canPerform()) {

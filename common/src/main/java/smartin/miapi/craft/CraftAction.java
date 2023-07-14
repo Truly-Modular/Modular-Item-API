@@ -9,6 +9,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
+import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.item.ModularItemStackConverter;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.cache.ModularItemCache;
@@ -34,6 +35,7 @@ public class CraftAction {
     public final PlayerEntity player;
     public final List<Integer> slotId = new ArrayList<>();
     private ItemStack old;
+    private final ModularWorkBenchEntity blockEntity;
     private Inventory linkedInventory;
     private int inventoryOffset;
     public PacketByteBuf[] packetByteBuffs;
@@ -47,9 +49,10 @@ public class CraftAction {
      * @param slot            the slot where the new module will be added
      * @param toAdd           the module to add
      * @param player          the player performing the action
+     * @param bench           the workbench block entity (null on client)
      * @param packetByteBuffs the packet byte buffers associated with the action
      */
-    public CraftAction(ItemStack old, SlotProperty.ModuleSlot slot, @Nullable ItemModule toAdd, PlayerEntity player, PacketByteBuf[] packetByteBuffs) {
+    public CraftAction(ItemStack old, SlotProperty.ModuleSlot slot, @Nullable ItemModule toAdd, PlayerEntity player, ModularWorkBenchEntity bench, PacketByteBuf[] packetByteBuffs) {
         this.old = ModularItemStackConverter.getModularVersion(old);
         this.toAdd = toAdd;
         ItemModule.ModuleInstance instance = slot.parent;
@@ -62,6 +65,7 @@ public class CraftAction {
             }
         }
         this.player = player;
+        this.blockEntity = bench;
         this.packetByteBuffs = packetByteBuffs;
     }
 
@@ -69,8 +73,9 @@ public class CraftAction {
      * Constructs a new instance of CraftAction from the specified packet byte buffer.
      *
      * @param buf the packet byte buffer from which to construct the CraftAction
+     * @param bench the workbench block entity to store in this CraftAction
      */
-    public CraftAction(PacketByteBuf buf) {
+    public CraftAction(PacketByteBuf buf, @Nullable ModularWorkBenchEntity bench) {
         int size = buf.readInt();
         for (int i = 0; i < size; i++) {
             slotId.add(buf.readInt());
@@ -82,6 +87,7 @@ public class CraftAction {
             toAdd = null;
         }
         player = getPlayerFromUuid(buf.readUuid());
+        blockEntity = bench;
 
         int numBuffers = buf.readInt();
         packetByteBuffs = new PacketByteBuf[numBuffers];
@@ -132,7 +138,7 @@ public class CraftAction {
         AtomicBoolean test = new AtomicBoolean(true);
         forEachCraftingProperty(crafted, (guiCraftingProperty, module, inventory, start, end, buffer) -> {
             if (test.get()) {
-                test.set(guiCraftingProperty.canPerform(old, crafted, player, module, toAdd, inventory, buffer));
+                test.set(guiCraftingProperty.canPerform(old, crafted, blockEntity, player, module, toAdd, inventory, buffer));
             }
         });
         return test.get();
@@ -175,7 +181,7 @@ public class CraftAction {
     public ItemStack perform() {
         final ItemStack[] craftingStack = {craft()};
         forEachCraftingProperty(craftingStack[0], (craftingProperty, module, inventory, start, end, buffer) -> {
-            List<ItemStack> itemStacks = craftingProperty.performCraftAction(old, craftingStack[0], player, module, toAdd, inventory, buffer);
+            List<ItemStack> itemStacks = craftingProperty.performCraftAction(old, craftingStack[0], player, blockEntity, module, toAdd, inventory, buffer);
             updateItem(craftingStack[0], module);
             craftingStack[0] = itemStacks.remove(0);
             for (int i = start; i < end; i++) {
@@ -262,7 +268,7 @@ public class CraftAction {
     public ItemStack getPreview() {
         AtomicReference<ItemStack> craftingStack = new AtomicReference<>(craft());
         forEachCraftingProperty(craftingStack.get(), (guiCraftingProperty, module, inventory, start, end, buffer) -> {
-            craftingStack.set(guiCraftingProperty.preview(old, craftingStack.get(), player, module, toAdd, inventory, buffer));
+            craftingStack.set(guiCraftingProperty.preview(old, craftingStack.get(), player, blockEntity, module, toAdd, inventory, buffer));
         });
         ItemModule.ModuleInstance parsingInstance = ItemModule.getModules(craftingStack.get());
         for (int i = slotId.size() - 1; i >= 0; i--) {

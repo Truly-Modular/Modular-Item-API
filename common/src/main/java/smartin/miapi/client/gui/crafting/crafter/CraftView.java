@@ -75,7 +75,7 @@ public class CraftView extends InteractAbleWidget {
         replacingModule = module;
         this.addSlot = addSlot;
         this.removeSlot = removeSlot;
-        action = new CraftAction(originalStack, slotToChange, module, MinecraftClient.getInstance().player, null);
+        action = new CraftAction(originalStack, slotToChange, module, MinecraftClient.getInstance().player, null, null);
         action.linkInventory(inventory, offset);
         compareStack = action.getPreview();
         action.forEachCraftingProperty(compareStack, ((craftingProperty, moduleInstance, itemStacks, invStart, invEnd, buf) -> {
