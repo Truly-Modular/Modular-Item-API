@@ -8,6 +8,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.item.ModelPredicateProvider;
 import net.minecraft.client.item.ModelPredicateProviderRegistry;
 import net.minecraft.client.render.model.*;
+import net.minecraft.client.render.model.ModelRotation;
 import net.minecraft.client.render.model.json.*;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.SpriteIdentifier;
@@ -19,11 +20,10 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 import org.jetbrains.annotations.Nullable;
+import smartin.miapi.item.modular.Transform;
 import smartin.miapi.modules.properties.render.ModelProperty;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 
@@ -38,7 +38,7 @@ public class DynamicBakery {
 
     private static final BakedQuadFactory QUAD_FACTORY = new BakedQuadFactory();
 
-    public static DynamicBakedModel bakeModel(JsonUnbakedModel unbakedModel, Function<SpriteIdentifier, Sprite> textureGetter, int color, ModelBakeSettings settings) {
+    public static DynamicBakedModel bakeModel(JsonUnbakedModel unbakedModel, Function<SpriteIdentifier, Sprite> textureGetter, int color, Transform settings) {
         try {
             ModelLoader modelLoader = ModelLoadAccessor.getLoader();
             AtomicReference<JsonUnbakedModel> actualModel = new AtomicReference<>(unbakedModel);
@@ -64,12 +64,13 @@ public class DynamicBakery {
         }
     }
 
-    public static DynamicBakedModel bake(JsonUnbakedModel model, ModelLoader loader, JsonUnbakedModel parent, Function<SpriteIdentifier, Sprite> textureGetter, ModelBakeSettings settings, Identifier id, boolean hasDepth, int color) {
+    public static DynamicBakedModel bake(JsonUnbakedModel model, ModelLoader loader, JsonUnbakedModel parent, Function<SpriteIdentifier, Sprite> textureGetter, Transform settings, Identifier id, boolean hasDepth, int color) {
         Sprite sprite = textureGetter.apply(model.resolveSprite("particle"));
         if (model.getRootModel() == ModelLoader.BLOCK_ENTITY_MARKER) {
-            return dynamicBakedModel(new BuiltinBakedModel(model.getTransformations(), compileOverrides(model, loader, parent, textureGetter, settings, color), sprite, model.getGuiLight().isSide()));
+            BakedModel model1 = new BuiltinBakedModel(model.getTransformations(), compileOverrides(model, loader, parent, textureGetter, ModelRotation.X0_Y0, color), sprite, model.getGuiLight().isSide());
+            return dynamicBakedModel(rotate(model1, settings));
         } else {
-            BasicBakedModel.Builder builder = (new BasicBakedModel.Builder(model, compileOverrides(model, loader, parent, textureGetter, settings, color), hasDepth)).setParticle(sprite);
+            BasicBakedModel.Builder builder = (new BasicBakedModel.Builder(model, compileOverrides(model, loader, parent, textureGetter, ModelRotation.X0_Y0, color), hasDepth)).setParticle(sprite);
 
             for (ModelElement modelElement : model.getElements()) {
 
@@ -77,15 +78,36 @@ public class DynamicBakery {
                     ModelElementFace modelElementFace = modelElement.faces.get(direction);
                     Sprite sprite2 = textureGetter.apply(model.resolveSprite(modelElementFace.textureId));
                     if (modelElementFace.cullFace == null) {
-                        builder.addQuad(createQuad(modelElement, modelElementFace, sprite2, direction, settings, id, color));
+                        builder.addQuad(createQuad(modelElement, modelElementFace, sprite2, direction, ModelRotation.X0_Y0, id, color));
                     } else {
-                        builder.addQuad(Direction.transform(settings.getRotation().getMatrix(), modelElementFace.cullFace), createQuad(modelElement, modelElementFace, sprite2, direction, settings, id, color));
+                        builder.addQuad(Direction.transform(ModelRotation.X0_Y0.getRotation().getMatrix(), modelElementFace.cullFace), createQuad(modelElement, modelElementFace, sprite2, direction, ModelRotation.X0_Y0, id, color));
                     }
                 }
             }
 
-            return dynamicBakedModel(builder.build());
+            return dynamicBakedModel(rotate(builder.build(), settings));
         }
+    }
+
+    public static BakedModel rotate(BakedModel model, Transform transform) {
+        List<BakedQuad> quads = new ArrayList<>();
+        Map<Direction, List<BakedQuad>> directionBakedModelMap = new HashMap<>();
+        for (Direction direction : Direction.values()) {
+            directionBakedModelMap.put(direction, new ArrayList<>());
+        }
+        for (BakedQuad quad : model.getQuads(null, null, Random.create())) {
+            quads.add(rotate(quad, transform));
+        }
+        for (Direction direction : Direction.values()) {
+            for (BakedQuad quad : model.getQuads(null, direction, Random.create())) {
+                quads.add(rotate(quad, transform));
+            }
+        }
+        return new BasicBakedModel(quads, directionBakedModelMap, model.useAmbientOcclusion(), model.isSideLit(), model.hasDepth(), model.getParticleSprite(), model.getTransformation(), model.getOverrides());
+    }
+
+    public static BakedQuad rotate(BakedQuad quad, Transform transform) {
+        return new BakedQuad(transform.rotateVertexData(quad.getVertexData()), quad.getColorIndex(), quad.getFace(), quad.getSprite(), quad.hasShade());
     }
 
     public static DynamicBakedModel dynamicBakedModel(BakedModel model) {
@@ -138,7 +160,7 @@ public class DynamicBakery {
             for (int j = overrides.size() - 1; j >= 0; --j) {
                 ModelOverride modelOverride = overrides.get(j);
                 JsonUnbakedModel model = ModelProperty.modelCache.get(modelOverride.getModelId().toString());
-                DynamicBakedModel bakedModel = bakeModel(model, textureGetter, color, rotation);
+                DynamicBakedModel bakedModel = bakeModel(model, textureGetter, color, Transform.IDENTITY);
                 assert bakedModel != null;
                 bakedModel = (DynamicBakedModel) ColorUtil.recolorModel(bakedModel, color);
                 InlinedCondition[] inlinedConditions = modelOverride.streamConditions().map((condition) -> {

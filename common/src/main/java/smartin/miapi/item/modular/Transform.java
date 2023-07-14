@@ -15,6 +15,8 @@ import net.minecraft.util.math.MathHelper;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
+import org.joml.Vector4f;
+import smartin.miapi.Miapi;
 
 import java.io.IOException;
 
@@ -122,12 +124,27 @@ public class Transform {
     }
 
     public Matrix4f toMatrix() {
-        Matrix4f matrix = new Matrix4f()
-                .translate(translation)                            // Set the translation (position)
-                .rotateXYZ(rotation.x, rotation.y, rotation.z)  // Set the rotation (in Euler angles)
-                .scale(scale);
+        Matrix4f matrix = new Matrix4f();
+
+        // Set the translation (position)
+        matrix.translate(translation);
+
+        // Create quaternion rotations from Euler angles
+        Quaternionf rotation = new Quaternionf().rotationXYZ(
+                (float) Math.toRadians(this.rotation.x),
+                (float) Math.toRadians(this.rotation.y),
+                (float) Math.toRadians(this.rotation.z)
+        );
+
+        // Convert quaternion rotations to matrix rotations
+        matrix.rotation(rotation);
+
+        // Set the scale
+        matrix.scale(scale);
+
         return matrix;
     }
+
 
     /**
      * Creates a new copy of this Transform.
@@ -166,6 +183,7 @@ public class Transform {
         }
         return new Transform(new Vector3f(parentRotation), new Vector3f(parentTranslation), new Vector3f(parentScale)).withOrigin(transformation.origin);
     }
+
     public Transform withOrigin(String origin) {
         this.origin = origin;
         return this;
@@ -193,12 +211,46 @@ public class Transform {
     @Environment(EnvType.CLIENT)
     public AffineTransformation toAffineTransformation() {
         Transform transform = this.copy();
-        Quaternionf rotation = new Quaternionf().rotationXYZ(this.rotation.x, this.rotation.y, this.rotation.z);
+        Quaternionf quaternionf = new Quaternionf();
+        quaternionf.rotationXYZ(
+                (float) Math.toRadians(this.rotation.x),
+                (float) Math.toRadians(this.rotation.y),
+                (float) Math.toRadians(this.rotation.z)
+        );
         Vector3f translationVector = new Vector3f(transform.translation);
-        //translationVector.multiplyComponentwise(1 / scale.getX(), 1 / scale.getY(), 1 / scale.getZ());
-        AffineTransformation affineTransformation = new AffineTransformation(translationVector, null, new Vector3f(transform.scale), rotation);
-        //affineTransformation = new AffineTransformation(this.toMatrix());
-        return affineTransformation;
+        Vector3f scaleVector = new Vector3f(transform.scale);
+        if (this.rotation.x + this.rotation.y + this.rotation.z != 0) {
+            Miapi.LOGGER.warn(this.rotation.toString());
+            Miapi.LOGGER.error("radians " + Math.toRadians(this.rotation.x) + " , " + Math.toRadians(this.rotation.y) + " + " + (float) Math.toRadians(this.rotation.z));
+            Miapi.LOGGER.error(quaternionf.toString());
+        }
+        return new AffineTransformation(translationVector, quaternionf, scaleVector, quaternionf);
+    }
+
+    public int[] rotateVertexData(int[] vertexData) {
+        for (int i = 0; i < vertexData.length; i += 8) {
+            // Extract position components from vertex data
+            float x = Float.intBitsToFloat(vertexData[i]);
+            float y = Float.intBitsToFloat(vertexData[i + 1]);
+            float z = Float.intBitsToFloat(vertexData[i + 2]);
+
+            // Create Vector4f representing the position (X, Y, Z, 1.0)
+            Vector4f position = new Vector4f(x, y, z, 1.0f);
+
+            // Apply the transformation to the position
+            Vector4f transformedPosition = this.toMatrix().transform(position);
+
+            // Extract the transformed position components
+            float transformedX = transformedPosition.x;
+            float transformedY = transformedPosition.y;
+            float transformedZ = transformedPosition.z;
+
+            // Update the vertex array with the new transformed position values
+            vertexData[i] = Float.floatToIntBits(transformedX);
+            vertexData[i + 1] = Float.floatToIntBits(transformedY);
+            vertexData[i + 2] = Float.floatToIntBits(transformedZ);
+        }
+        return vertexData;
     }
 
     /**
@@ -223,10 +275,25 @@ public class Transform {
         };
     }
 
-    public static Transform fromMatrix(Matrix4f matrix4f) {
-        AffineTransformation affineTransformation = new AffineTransformation(matrix4f);
-        Vector3f translation = affineTransformation.getTranslation();
-        return new Transform(affineTransformation.getLeftRotation().getEulerAnglesXYZ(new Vector3f(0, 0, 0)), translation, affineTransformation.getScale());
+    public static Transform fromMatrix(Matrix4f matrix) {
+        // Extract translation
+        Vector3f translation = new Vector3f(matrix.m30(), matrix.m31(), matrix.m32());
+
+        // Extract rotation (in Euler angles)
+        Vector3f rotation = new Vector3f();
+        rotation.x = (float) Math.toDegrees((float) Math.atan2(matrix.m21(), matrix.m22()));
+        rotation.y = (float) Math.toDegrees((float) Math.atan2(-matrix.m20(), Math.sqrt(matrix.m21() * matrix.m21() + matrix.m22() * matrix.m22())));
+        rotation.z = (float) Math.toDegrees((float) Math.atan2(matrix.m10(), matrix.m00()));
+
+        // Extract scale
+        Vector3f scale = new Vector3f(matrix.m00(), matrix.m11(), matrix.m22());
+
+        if (rotation.x + rotation.y + rotation.z != 0) {
+            Miapi.LOGGER.error("fromMatrix");
+            Miapi.LOGGER.error(rotation.toString());
+        }
+
+        return new Transform(rotation, translation, scale);
     }
 
     @Override
@@ -239,7 +306,7 @@ public class Transform {
         if (this == o) {
             return true;
         } else if (o == null) {
-                return false;
+            return false;
         } else if (o.getClass() != this.getClass()) {
             return false;
         } else {
