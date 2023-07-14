@@ -133,7 +133,7 @@ public class ModuleCrafter extends InteractAbleWidget {
                     this.module = module;
                     setMode(Mode.CRAFT);
                 }), (module -> {
-                    CraftAction action = new CraftAction(stack, slot, module, null, null, new PacketByteBuf[0]);
+                    CraftAction action = new CraftAction(stack, slot, module, null, handler.blockEntity, new PacketByteBuf[0]);
                     action.linkInventory(linkedInventory, 1);
                     preview.accept(action.getPreview());
                 }));

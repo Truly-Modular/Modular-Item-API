@@ -32,9 +32,12 @@ import net.minecraft.world.event.GameEvent;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.blocks.ModularWorkBench;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
+import smartin.miapi.blocks.StatProvidingBlock;
+import smartin.miapi.blocks.StatProvidingBlockEntity;
 import smartin.miapi.client.MiapiClient;
 import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
 import smartin.miapi.craft.stat.CraftingStat;
+import smartin.miapi.craft.stat.SimpleCraftingStat;
 import smartin.miapi.item.modular.items.*;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.abilities.*;
@@ -100,6 +103,10 @@ public class RegistryInventory {
     public static <T> void registerMiapi(MiapiRegistry<T> rg, String id, T object) {
         rg.register(id, object);
     }
+    public static <T> void registerMiapi(MiapiRegistry<T> rg, String id, T object, Consumer<T> onRegister) {
+        rg.register(id, object);
+        onRegister.accept(object);
+    }
 
     public static <T> void addCallback(Registrar<T> rg, Consumer<T> consumer) {
         rg.getIds().forEach(id -> rg.listen(id, consumer));
@@ -125,9 +132,12 @@ public class RegistryInventory {
     }
 
     public static Block modularWorkBench;
+    public static Block exampleStatProviderBlock;
     public static BlockEntityType<ModularWorkBenchEntity> modularWorkBenchEntityType;
+    public static BlockEntityType<StatProvidingBlockEntity> exampleStatProviderBlockEntityType;
     public static Item modularItem;
     public static GameEvent statUpdateEvent;
+    public static SimpleCraftingStat exampleCraftingStat;
     public static RegistrySupplier<EntityType<ItemProjectile>> itemProjectileType = (RegistrySupplier) registerAndSupply(entityTypes, "thrown_item", () ->
             EntityType.Builder.create(ItemProjectile::new, SpawnGroup.MISC).setDimensions(0.5F, 0.5F).maxTrackingRange(4).trackingTickInterval(20).build("miapi:thrown_item"));
 
@@ -172,6 +182,16 @@ public class RegistryInventory {
             if (Platform.getEnvironment() == Env.CLIENT) MiapiClient.registerBlockEntityRenderer();
         });
         register(items, "modular_work_bench", () -> new BlockItem(modularWorkBench, new Item.Settings()));
+
+
+        register(blocks, "example_stat_provider", () ->
+                new StatProvidingBlock(AbstractBlock.Settings.create(), StatProvidingBlockEntity.Example::new), b -> exampleStatProviderBlock = b);
+        register(blockEntities, "example_stat_provider", () -> BlockEntityType.Builder.create(
+                StatProvidingBlockEntity.Example::new, exampleStatProviderBlock
+        ).build(null), be -> {
+            exampleStatProviderBlockEntityType = (BlockEntityType<StatProvidingBlockEntity>) be;
+        });
+        register(items, "example_stat_provider", () -> new BlockItem(exampleStatProviderBlock, new Item.Settings()));
 
 
         // CREATIVE TAB
@@ -309,9 +329,14 @@ public class RegistryInventory {
             registerMiapi(moduleProperties, EnchantmentProperty.KEY, new EnchantmentProperty());
             registerMiapi(moduleProperties, MaterialProperties.KEY, new MaterialProperties());
             registerMiapi(moduleProperties, CraftingConditionProperty.KEY, new CraftingConditionProperty());
+            registerMiapi(moduleProperties, StatRequirementProperty.KEY, new StatRequirementProperty());
+            registerMiapi(moduleProperties, StatProvisionProperty.KEY, new StatProvisionProperty());
 
             //compat
             registerMiapi(moduleProperties, BetterCombatProperty.KEY, new BetterCombatProperty());
+
+            // CRAFTING STATS
+            registerMiapi(craftingStats, "hammering", new SimpleCraftingStat(0), stat -> exampleCraftingStat = (SimpleCraftingStat) stat);
 
             // ABILITIES
             registerMiapi(useAbilityRegistry, "throw", new ThrowingAbility());

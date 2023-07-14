@@ -11,7 +11,7 @@
 	"texture_size": [64, 64],
 	"textures": {
 		"1": "miapi:block/texture",
-		"particle": "miapi:block/smithing_table"
+		"particle": "block/smithing_table_side"
 	},
 	"elements": [
 		{

@@ -27,9 +27,9 @@ public abstract class StatProvidingBlockEntity extends BlockEntity implements Ga
      * @param pos    the pos of the workbench
      * @param state  the block state at the workbench
      * @param bench  the workbench block entity
-     * @return the map of {@link CraftingStat} -> stat instance
+     * @return the map of {@link CraftingStat} -> stat instance. Return null if you don't want to provide any stats.
      */
-    public abstract CraftingStat.Map<?> setupStats(PlayerEntity player, BlockPos pos, BlockState state, ModularWorkBenchEntity bench);
+    public abstract CraftingStat.StatMap<?> setupStats(PlayerEntity player, BlockPos pos, BlockState state, ModularWorkBenchEntity bench);
 
     @Override
     public PositionSource getPositionSource() {
@@ -39,16 +39,33 @@ public abstract class StatProvidingBlockEntity extends BlockEntity implements Ga
     @Override
     public boolean listen(ServerWorld world, GameEvent event, GameEvent.Emitter emitter, Vec3d pos) {
         if (event.equals(RegistryInventory.statUpdateEvent)) {
-            BlockPos bPos = new BlockPos((int) pos.x, (int) pos.y, (int) pos.z);
+            BlockPos bPos = new BlockPos((int) (pos.x-0.5), (int) (pos.y-0.5), (int) (pos.z-0.5));
             if (
                     !(emitter.sourceEntity() instanceof PlayerEntity player) ||
                     !(world.getBlockEntity(bPos) instanceof ModularWorkBenchEntity bench)
             ) return false;
 
-            CraftingStat.Map.forEach(setupStats(player, bPos, emitter.affectedState(), bench), bench::setBlockStat);
+            CraftingStat.StatMap.forEach(setupStats(player, bPos, emitter.affectedState(), bench), bench::setBlockStat);
 
             return true;
         }
         return false;
+    }
+
+    public static class Example extends StatProvidingBlockEntity {
+        public Example(BlockPos pos, BlockState state) {
+            super(RegistryInventory.exampleStatProviderBlockEntityType, pos, state);
+        }
+
+        @Override
+        public CraftingStat.StatMap<?> setupStats(PlayerEntity player, BlockPos pos, BlockState state, ModularWorkBenchEntity bench) {
+            return new CraftingStat.StatMap<>()
+                    .set(RegistryInventory.exampleCraftingStat, 3d);
+        }
+
+        @Override
+        public int getRange() {
+            return 8;
+        }
     }
 }

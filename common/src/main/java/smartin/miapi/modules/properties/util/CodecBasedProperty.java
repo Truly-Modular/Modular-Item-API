@@ -18,7 +18,7 @@ import smartin.miapi.modules.cache.ModularItemCache;
 public abstract class CodecBasedProperty<T> implements ModuleProperty {
     private final String key;
 
-    protected CodecBasedProperty(String key) {
+    public CodecBasedProperty(String key) {
         this.key = key;
 
         ModularItemCache.setSupplier(key, this::createCache);

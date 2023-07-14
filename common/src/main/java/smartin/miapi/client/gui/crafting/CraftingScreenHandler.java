@@ -1,15 +1,20 @@
 package smartin.miapi.client.gui.crafting;
 
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.screen.ArrayPropertyDelegate;
+import net.minecraft.screen.PropertyDelegate;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
@@ -33,7 +38,8 @@ public class CraftingScreenHandler extends ScreenHandler {
     private static final String PACKET_ID = ":crafting_packet_";
     public Inventory inventory;
     public PlayerInventory playerInventory;
-    public final @Nullable ModularWorkBenchEntity blockEntity;
+    public @Nullable ModularWorkBenchEntity blockEntity;
+    public final PropertyDelegate delegate;
     public final String packetID;
     public final String editPacketID;
     public final String packetIDSlotAdd;
@@ -46,10 +52,10 @@ public class CraftingScreenHandler extends ScreenHandler {
      * @param playerInventory the player inventory
      */
     public CraftingScreenHandler(int syncId, PlayerInventory playerInventory) {
-        this(syncId, playerInventory, null, ScreenHandlerContext.EMPTY);
+        this(syncId, playerInventory, null, ScreenHandlerContext.EMPTY, new ArrayPropertyDelegate(7));
     }
-    public CraftingScreenHandler(int syncId, PlayerInventory playerInventory, ModularWorkBenchEntity benchEntity) {
-        this(syncId, playerInventory, benchEntity, ScreenHandlerContext.EMPTY);
+    public CraftingScreenHandler(int syncId, PlayerInventory playerInventory, ModularWorkBenchEntity benchEntity, PropertyDelegate delegate) {
+        this(syncId, playerInventory, benchEntity, ScreenHandlerContext.EMPTY, delegate);
     }
 
     /**
@@ -62,12 +68,13 @@ public class CraftingScreenHandler extends ScreenHandler {
      * @param playerInventory the player's inventory
      * @param context         the context of the screen
      */
-    public CraftingScreenHandler(int syncId, PlayerInventory playerInventory, @Nullable ModularWorkBenchEntity benchEntity, ScreenHandlerContext context) {
+    public CraftingScreenHandler(int syncId, PlayerInventory playerInventory, @Nullable ModularWorkBenchEntity benchEntity, ScreenHandlerContext context, PropertyDelegate delegate) {
         super(RegistryInventory.craftingScreenHandler, syncId);
         packetID = Miapi.MOD_ID + PACKET_ID + playerInventory.player.getUuidAsString() + "_" + syncId;
         editPacketID = Miapi.MOD_ID + PACKET_ID + "_edit_" + playerInventory.player.getUuidAsString() + "_" + syncId;
         packetIDSlotAdd = Miapi.MOD_ID + PACKET_ID + "_" + playerInventory.player.getUuidAsString() + "_" + syncId + "_slotAdd";
         packetIDSlotRemove = Miapi.MOD_ID + PACKET_ID + "_" + playerInventory.player.getUuidAsString() + "_" + syncId + "_slotRemove";
+        this.delegate = delegate;
         this.playerInventory = playerInventory;
         this.blockEntity = benchEntity;
         if (playerInventory.player instanceof ServerPlayerEntity) {
@@ -149,7 +156,7 @@ public class CraftingScreenHandler extends ScreenHandler {
             @Override
             public void setStack(ItemStack stack) {
                 super.setStack(stack);
-                if (blockEntity != null) {
+                if (notClient() && blockEntity != null) {
                     blockEntity.setItem(stack);
                     blockEntity.saveAndSync();
                 }
@@ -164,10 +171,36 @@ public class CraftingScreenHandler extends ScreenHandler {
             @Override
             public ItemStack getStack() {
                 ItemStack stack = super.getStack();
-                if (blockEntity != null && !stack.isEmpty()) return blockEntity.getItem();
+                if (notClient() && blockEntity != null && !stack.isEmpty()) return blockEntity.getItem();
                 return stack;
             }
         });
+
+        this.addProperties(delegate);
+    }
+
+    public boolean notClient() {
+        return !playerInventory.player.getWorld().isClient;
+    }
+
+    public void sendContentUpdates() {
+        super.sendContentUpdates();
+        if (blockEntity == null && delegate.get(0) == 1) {
+            short xsh = (short) delegate.get(1);
+            short xsl = (short) delegate.get(2);
+            int x = (xsh << 16) | (xsl & 0xFFFF);
+
+            short ysh = (short) delegate.get(3);
+            short ysl = (short) delegate.get(4);
+            int y = (ysh << 16) | (ysl & 0xFFFF);
+
+            short zsh = (short) delegate.get(5);
+            short zsl = (short) delegate.get(6);
+            int z = (zsh << 16) | (zsl & 0xFFFF);
+
+            BlockEntity be = playerInventory.player.getWorld().getBlockEntity(new BlockPos(x, y, z));
+            if (be instanceof ModularWorkBenchEntity casted) blockEntity = casted;
+        }
     }
 
     /**
@@ -231,7 +264,8 @@ public class CraftingScreenHandler extends ScreenHandler {
         Networking.unRegisterC2SPacket(packetID);
         Networking.unRegisterC2SPacket(packetIDSlotAdd);
         Networking.unRegisterC2SPacket(packetIDSlotRemove);
-        if (blockEntity != null) blockEntity.saveAndSync();
+        Networking.unRegisterC2SPacket(editPacketID);
+        if (notClient() && blockEntity != null) blockEntity.saveAndSync();
     }
 
     public void setItem(ItemStack stack) {
@@ -239,7 +273,7 @@ public class CraftingScreenHandler extends ScreenHandler {
         inventory.markDirty();
         if (blockEntity != null) {
             blockEntity.setItem(stack);
-            blockEntity.saveAndSync();
+            if (notClient()) blockEntity.saveAndSync();
         }
     }
 
@@ -259,7 +293,7 @@ public class CraftingScreenHandler extends ScreenHandler {
 
                 if (index == 36 && blockEntity != null) {
                     blockEntity.setItem(itemStack2);
-                    blockEntity.saveAndSync();
+                    if (notClient()) blockEntity.saveAndSync();
                 }
                 slot.markDirty();
             } else {

@@ -73,5 +73,11 @@
         "throw"
     ],
     "displayName": "miapi.module.blade_throwing_knife.name",
-    "itemId": "miapi:modular_throwing_knife"
+    "itemId": "miapi:modular_throwing_knife",
+
+
+
+    "statRequirements": {
+        "hammering": 1
+    }
 }

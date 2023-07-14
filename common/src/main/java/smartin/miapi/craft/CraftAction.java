@@ -1,5 +1,6 @@
 package smartin.miapi.craft;
 
+import com.mojang.datafixers.util.Pair;
 import io.netty.buffer.Unpooled;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerEntity;
@@ -142,6 +143,23 @@ public class CraftAction {
             }
         });
         return test.get();
+    }
+
+    /**
+     * Does a full check to dynamically decide which {@link CraftingProperty}s can and can't be performed.
+     *
+     * @return a pair of a map pointing each {@link CraftingProperty} to whether it can be performed, and a boolean determining the overall outcome
+     */
+    public Pair<Map<CraftingProperty, Boolean>, Boolean> fullCanPerform() {
+        Map<CraftingProperty, Boolean> map = new HashMap<>();
+        ItemStack crafted = getPreview();
+        AtomicBoolean test = new AtomicBoolean(true);
+        forEachCraftingProperty(crafted, (guiCraftingProperty, module, inventory, start, end, buffer) -> {
+            boolean result = guiCraftingProperty.canPerform(old, crafted, blockEntity, player, module, toAdd, inventory, buffer);
+            map.put(guiCraftingProperty, result);
+            if (test.get()) test.set(result);
+        });
+        return Pair.of(map, test.get());
     }
 
     /**

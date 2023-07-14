@@ -8,24 +8,28 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.event.listener.GameEventListener;
 import org.jetbrains.annotations.Nullable;
 
-public class StatProvidingBlock extends Block implements BlockEntityProvider {
-    private final int range;
+import java.util.function.BiFunction;
 
-    protected StatProvidingBlock(Settings settings, int range) {
+public class StatProvidingBlock extends Block implements BlockEntityProvider {
+    private final BiFunction<BlockPos, BlockState, ? extends StatProvidingBlockEntity> blockEntityGetter;
+
+    public StatProvidingBlock(Settings settings, BiFunction<BlockPos, BlockState, ? extends StatProvidingBlockEntity> blockEntityGetter) {
         super(settings.pistonBehavior(PistonBehavior.IGNORE));
-        this.range = range;
+        this.blockEntityGetter = blockEntityGetter;
     }
 
 
     @Nullable
     @Override
     public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
-        return null;
+        return blockEntityGetter.apply(pos, state);
     }
 
     @Nullable
     @Override
     public <T extends BlockEntity> GameEventListener getGameEventListener(ServerWorld world, T blockEntity) {
-        return BlockEntityProvider.super.getGameEventListener(world, blockEntity);
+        if (blockEntity instanceof StatProvidingBlockEntity be)
+            return be;
+        return null;
     }
 }

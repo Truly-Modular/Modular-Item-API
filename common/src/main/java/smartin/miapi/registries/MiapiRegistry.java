@@ -1,5 +1,6 @@
 package smartin.miapi.registries;
 
+import com.mojang.serialization.Codec;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -184,5 +185,12 @@ public class MiapiRegistry<T> {
      */
     public Map<String, T> getFlatMap() {
         return entries;
+    }
+
+    public Codec<T> codec() {
+        return Codec.STRING.xmap(
+                this::get,
+                this::findKey
+        );
     }
 }

@@ -86,5 +86,10 @@
         "minHold": 15,
         "cooldown": 60
     },
-    "itemId": "miapi:modular_greatsword"
+    "itemId": "miapi:modular_greatsword",
+
+
+    "provideStats": {
+        "hammering": 5
+    }
 }

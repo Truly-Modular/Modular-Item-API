@@ -1,6 +1,7 @@
 package smartin.miapi.client.gui.crafting.crafter;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.datafixers.util.Pair;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -19,8 +20,10 @@ import net.minecraft.util.math.ColorHelper;
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
 import smartin.miapi.Miapi;
+import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.client.gui.*;
 import smartin.miapi.client.gui.HoverDescription;
+import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
 import smartin.miapi.craft.CraftAction;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.util.CraftingProperty;
@@ -29,6 +32,7 @@ import smartin.miapi.network.Networking;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
@@ -75,7 +79,11 @@ public class CraftView extends InteractAbleWidget {
         replacingModule = module;
         this.addSlot = addSlot;
         this.removeSlot = removeSlot;
-        action = new CraftAction(originalStack, slotToChange, module, MinecraftClient.getInstance().player, null, null);
+
+        ModularWorkBenchEntity bench = null;
+        if (handler instanceof CraftingScreenHandler csh) bench = csh.blockEntity;
+
+        action = new CraftAction(originalStack, slotToChange, module, MinecraftClient.getInstance().player, bench, null);
         action.linkInventory(inventory, offset);
         compareStack = action.getPreview();
         action.forEachCraftingProperty(compareStack, ((craftingProperty, moduleInstance, itemStacks, invStart, invEnd, buf) -> {
@@ -145,13 +153,15 @@ public class CraftView extends InteractAbleWidget {
             if (!isClosed) {
                 preview.accept(action.getPreview());
                 setBuffers();
-                craftButton.isEnabled = action.canPerform();
+                Pair<Map<CraftingProperty, Boolean>, Boolean> canPerform = action.fullCanPerform();
+                craftButton.isEnabled = canPerform.getSecond();
 
-                craftingProperties.forEach(craftingProperty -> {
-                    warnings.clear();
-                    Text warning = craftingProperty.getWarning();
-                    if (warning != null && !warning.getString().isEmpty()) {
-                        warnings.add(warning);
+                warnings.clear();
+                canPerform.getFirst().forEach((property, result) -> {
+                    if (!result) {
+                        Text warning = property.getWarning();
+                        if (warning != null && !warning.getString().isEmpty())
+                            warnings.add(warning);
                     }
                 });
             }
