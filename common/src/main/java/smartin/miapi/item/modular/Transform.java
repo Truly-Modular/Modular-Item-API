@@ -67,7 +67,7 @@ public class Transform {
 
     @Environment(EnvType.CLIENT)
     public Transformation toTransformation() {
-        return new Transformation(rotation, translation, scale);
+        return new Transformation(new Vector3f(rotation), new Vector3f(translation), new Vector3f(scale));
     }
 
     /**
@@ -87,47 +87,12 @@ public class Transform {
         return fromMatrix(childMatrix);
     }
 
-    /**
-     * Applies the transformation to a vector in 3D space.
-     *
-     * @param vector the vector to bakedTransform, as a Vec3f
-     * @return the transformed vector, as a new Vec3f
-     */
-    public Vector3f transformVector(Vector3f vector) {
-        // Apply scaling
-        float x = vector.x() * scale.x();
-        float y = vector.y() * scale.y();
-        float z = vector.z() * scale.z();
-
-        // Apply rotation
-        float cosX = MathHelper.cos(rotation.x());
-        float sinX = MathHelper.sin(rotation.x());
-        float cosY = MathHelper.cos(rotation.y());
-        float sinY = MathHelper.sin(rotation.y());
-        float cosZ = MathHelper.cos(rotation.z());
-        float sinZ = MathHelper.sin(rotation.z());
-
-        float x2 = cosY * (sinZ * y + cosZ * x) - sinY * z;
-        float y2 = sinX * (cosY * z + sinY * (sinZ * y + cosZ * x)) + cosX * (cosZ * y - sinZ * x);
-        float z2 = cosX * (cosY * z + sinY * (sinZ * y + cosZ * x)) - sinX * (cosZ * y - sinZ * x);
-
-        x = x2;
-        y = y2;
-        z = z2;
-
-        // Apply translation
-        x += translation.x();
-        y += translation.y();
-        z += translation.z();
-
-        return new Vector3f(x, y, z);
-    }
-
     public Matrix4f toMatrix() {
         Matrix4f matrix = new Matrix4f();
 
         // Set the translation (position)
         matrix.translate(translation);
+        matrix.translation(translation);
 
         // Create quaternion rotations from Euler angles
         Quaternionf rotation = new Quaternionf().rotationXYZ(
@@ -137,12 +102,34 @@ public class Transform {
         );
 
         // Convert quaternion rotations to matrix rotations
-        matrix.rotation(rotation);
+        Matrix4f rotationMatrix = new Matrix4f();
+        rotationMatrix.rotate(rotation);
+        matrix.mul(rotationMatrix);
 
         // Set the scale
-        matrix.scale(scale);
+        Matrix4f scaleMatrix = new Matrix4f();
+        scaleMatrix.scale(scale);
+        matrix.mul(scaleMatrix);
+
 
         return matrix;
+    }
+
+    public static Transform fromMatrix(Matrix4f matrix) {
+        // Extract translation
+        Vector3f translation = new Vector3f();
+        matrix.getTranslation(translation);
+
+        // Extract rotation (in Euler angles)
+        Vector3f rotation = new Vector3f();
+        rotation.x = (float) Math.toDegrees((float) Math.atan2(matrix.m21(), matrix.m22()));
+        rotation.y = (float) Math.toDegrees((float) Math.atan2(-matrix.m20(), Math.sqrt(matrix.m21() * matrix.m21() + matrix.m22() * matrix.m22())));
+        rotation.z = (float) Math.toDegrees((float) Math.atan2(matrix.m10(), matrix.m00()));
+
+        // Extract scale
+        Vector3f scale = new Vector3f(matrix.m00(), matrix.m11(), matrix.m22());
+
+        return new Transform(rotation, translation, scale);
     }
 
 
@@ -219,11 +206,6 @@ public class Transform {
         );
         Vector3f translationVector = new Vector3f(transform.translation);
         Vector3f scaleVector = new Vector3f(transform.scale);
-        if (this.rotation.x + this.rotation.y + this.rotation.z != 0) {
-            Miapi.LOGGER.warn(this.rotation.toString());
-            Miapi.LOGGER.error("radians " + Math.toRadians(this.rotation.x) + " , " + Math.toRadians(this.rotation.y) + " + " + (float) Math.toRadians(this.rotation.z));
-            Miapi.LOGGER.error(quaternionf.toString());
-        }
         return new AffineTransformation(translationVector, quaternionf, scaleVector, quaternionf);
     }
 
@@ -238,7 +220,11 @@ public class Transform {
             Vector4f position = new Vector4f(x, y, z, 1.0f);
 
             // Apply the transformation to the position
+            //this.translation.mul(1/16);
             Vector4f transformedPosition = this.toMatrix().transform(position);
+            if (translation.length() != 0)
+                Miapi.LOGGER.error(translation.toString());
+
 
             // Extract the transformed position components
             float transformedX = transformedPosition.x;
@@ -273,27 +259,6 @@ public class Transform {
                 return false;
             }
         };
-    }
-
-    public static Transform fromMatrix(Matrix4f matrix) {
-        // Extract translation
-        Vector3f translation = new Vector3f(matrix.m30(), matrix.m31(), matrix.m32());
-
-        // Extract rotation (in Euler angles)
-        Vector3f rotation = new Vector3f();
-        rotation.x = (float) Math.toDegrees((float) Math.atan2(matrix.m21(), matrix.m22()));
-        rotation.y = (float) Math.toDegrees((float) Math.atan2(-matrix.m20(), Math.sqrt(matrix.m21() * matrix.m21() + matrix.m22() * matrix.m22())));
-        rotation.z = (float) Math.toDegrees((float) Math.atan2(matrix.m10(), matrix.m00()));
-
-        // Extract scale
-        Vector3f scale = new Vector3f(matrix.m00(), matrix.m11(), matrix.m22());
-
-        if (rotation.x + rotation.y + rotation.z != 0) {
-            Miapi.LOGGER.error("fromMatrix");
-            Miapi.LOGGER.error(rotation.toString());
-        }
-
-        return new Transform(rotation, translation, scale);
     }
 
     @Override

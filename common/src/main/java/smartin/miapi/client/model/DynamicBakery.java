@@ -45,7 +45,7 @@ public class DynamicBakery {
             unbakedModel.getModelDependencies().stream().filter(identifier -> identifier.toString().equals("minecraft:item/generated") || identifier.toString().contains("handheld")).findFirst().ifPresent(identifier -> {
                 actualModel.set(ITEM_MODEL_GENERATOR.create(ModelProperty.textureGetter, unbakedModel));
             });
-            DynamicBakedModel model = DynamicBakery.bake(actualModel.get(), modelLoader, unbakedModel.getRootModel(), textureGetter, settings, new Identifier(unbakedModel.id), true, color);
+            DynamicBakedModel model = DynamicBakery.bake(actualModel.get(), modelLoader, unbakedModel.getRootModel(), textureGetter, Transform.toModelTransformation(settings), new Identifier(unbakedModel.id), true, color);
             for (Direction direction : Direction.values()) {
                 if (!model.getQuads(null, direction, Random.create()).isEmpty()) {
                     return model;
@@ -53,7 +53,7 @@ public class DynamicBakery {
             }
             try {
                 actualModel.set(ITEM_MODEL_GENERATOR.create(ModelProperty.textureGetter, unbakedModel));
-                return DynamicBakery.bake(actualModel.get(), modelLoader, unbakedModel.getRootModel(), textureGetter, settings, new Identifier(unbakedModel.id), true, color);
+                return DynamicBakery.bake(actualModel.get(), modelLoader, unbakedModel.getRootModel(), textureGetter, Transform.toModelTransformation(settings), new Identifier(unbakedModel.id), true, color);
             } catch (Exception surpressed) {
 
             }

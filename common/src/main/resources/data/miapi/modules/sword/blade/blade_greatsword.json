@@ -5,8 +5,8 @@
         "transform": {
             "rotation": {
                 "x": 0.0,
-                "y": 10.0,
-                "z": 0.0
+                "y": 30.0,
+                "z": 15.0
             },
             "translation": {
                 "x": 1.0,
