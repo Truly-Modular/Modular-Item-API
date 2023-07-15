@@ -178,11 +178,15 @@ public class DynamicBakedModel implements BakedModel {
         });
         Map<DynamicModelOverrides.ConditionHolder, BakedModel> overrideModels = new LinkedHashMap<>();
         completeList.forEach(((conditionHolder, directionBakedQuadHashMap) -> {
-            BakedModel model = new BasicBakedModel(new ArrayList<>(), directionBakedQuadHashMap, true, false, true, this.getParticleSprite(), this.modelTransformation, ModelOverrideList.EMPTY);
+            List<BakedQuad> defaultList = directionBakedQuadHashMap.get(null);
+            defaultList = defaultList == null ? new ArrayList<>() : defaultList;
+            BakedModel model = new BasicBakedModel(defaultList, directionBakedQuadHashMap, true, false, true, this.getParticleSprite(), this.modelTransformation, ModelOverrideList.EMPTY);
             overrideModels.put(conditionHolder, model);
         }));
         ModelOverrideList list = overrideModels.isEmpty() ? ModelOverrideList.EMPTY : new DynamicModelOverrides(overrideModels);
-        BakedModel model = new BasicBakedModel(new ArrayList<>(), bakedQuads, true, false, true, this.getParticleSprite(), this.modelTransformation, list);
+        List<BakedQuad> defaultList = bakedQuads.get(null);
+        defaultList = defaultList == null ? new ArrayList<>() : defaultList;
+        BakedModel model = new BasicBakedModel(defaultList, bakedQuads, true, false, true, this.getParticleSprite(), this.modelTransformation, list);
         return model;
     }
 
@@ -191,6 +195,7 @@ public class DynamicBakedModel implements BakedModel {
         for (Direction direction : Direction.values()) {
             defaultMap.put(direction, new ArrayList<>());
         }
+        defaultMap.put(null, new ArrayList<>());
         return defaultMap;
     }
 
@@ -210,6 +215,7 @@ public class DynamicBakedModel implements BakedModel {
         for (Direction direction : Direction.values()) {
             directionalQuads.put(direction, cleanUp(directionalQuads.get(direction)));
         }
+        directionalQuads.put(null, cleanUp(directionalQuads.get(null)));
     }
 
     private List<BakedQuad> cleanUp(List<BakedQuad> quads) {

@@ -25,6 +25,7 @@ public class ModularWorkBenchEntity extends BlockEntity implements NamedScreenHa
     public ModularWorkBenchEntity(BlockPos pos, BlockState state) {
         super(RegistryInventory.modularWorkBenchEntityType, pos, state);
         this.stack = ItemStack.EMPTY;
+        this.markDirty();
     }
 
     @Override
@@ -33,6 +34,14 @@ public class ModularWorkBenchEntity extends BlockEntity implements NamedScreenHa
 
         tag.put("Item", stack.writeNbt(new NbtCompound()));
     }
+
+    @Override
+    public NbtCompound toInitialChunkDataNbt() {
+        NbtCompound compound = new NbtCompound();
+        writeNbt(compound);
+        return compound;
+    }
+
 
     @Override
     public void readNbt(NbtCompound tag) {

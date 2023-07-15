@@ -107,7 +107,11 @@ public class DynamicBakery {
     }
 
     public static BakedQuad rotate(BakedQuad quad, Transform transform) {
-        return new BakedQuad(transform.rotateVertexData(quad.getVertexData()), quad.getColorIndex(), quad.getFace(), quad.getSprite(), quad.hasShade());
+        Direction face = quad.getFace();
+        if (transform.rotation.length() != 0) {
+            //face = null;
+        }
+        return new BakedQuad(transform.rotateVertexData(quad.getVertexData()), quad.getColorIndex(), face, quad.getSprite(), quad.hasShade());
     }
 
     public static DynamicBakedModel dynamicBakedModel(BakedModel model) {
