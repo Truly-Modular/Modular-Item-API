@@ -88,31 +88,25 @@ public class Transform {
     }
 
     public Matrix4f toMatrix() {
-        Matrix4f matrix = new Matrix4f();
+        // Create the translation matrix
+        Matrix4f translationMatrix = new Matrix4f().translate(translation);
 
-        // Set the translation (position)
-        matrix.translate(translation);
-        matrix.translation(translation);
+        // Create the rotation matrix
+        Matrix4f rotationMatrix = new Matrix4f()
+                .rotateX((float) Math.toRadians(rotation.x))
+                .rotateY((float) Math.toRadians(rotation.y))
+                .rotateZ((float) Math.toRadians(rotation.z));
 
-        // Create quaternion rotations from Euler angles
-        Quaternionf rotation = new Quaternionf().rotationXYZ(
-                (float) Math.toRadians(this.rotation.x),
-                (float) Math.toRadians(this.rotation.y),
-                (float) Math.toRadians(this.rotation.z)
-        );
+        // Create the scale matrix
+        Matrix4f scaleMatrix = new Matrix4f().scale(scale);
 
-        // Convert quaternion rotations to matrix rotations
-        Matrix4f rotationMatrix = new Matrix4f();
-        rotationMatrix.rotate(rotation);
-        matrix.mul(rotationMatrix);
+        // Combine the matrices
+        Matrix4f transformationMatrix = new Matrix4f()
+                .mul(translationMatrix)
+                .mul(rotationMatrix)
+                .mul(scaleMatrix);
 
-        // Set the scale
-        Matrix4f scaleMatrix = new Matrix4f();
-        scaleMatrix.scale(scale);
-        matrix.mul(scaleMatrix);
-
-
-        return matrix;
+        return transformationMatrix;
     }
 
     public static Transform fromMatrix(Matrix4f matrix) {
@@ -121,13 +115,13 @@ public class Transform {
         matrix.getTranslation(translation);
 
         // Extract rotation (in Euler angles)
-        Vector3f rotation = new Vector3f();
-        rotation.x = (float) Math.toDegrees((float) Math.atan2(matrix.m21(), matrix.m22()));
-        rotation.y = (float) Math.toDegrees((float) Math.atan2(-matrix.m20(), Math.sqrt(matrix.m21() * matrix.m21() + matrix.m22() * matrix.m22())));
-        rotation.z = (float) Math.toDegrees((float) Math.atan2(matrix.m10(), matrix.m00()));
+        Vector3f rotation = matrix.getEulerAnglesXYZ(new Vector3f());
+        rotation.x = (float) Math.toDegrees(rotation.x());
+        rotation.y = (float) Math.toDegrees(rotation.y());
+        rotation.z = (float) Math.toDegrees(rotation.z());
 
         // Extract scale
-        Vector3f scale = new Vector3f(matrix.m00(), matrix.m11(), matrix.m22());
+        Vector3f scale = matrix.getScale(new Vector3f());
 
         return new Transform(rotation, translation, scale);
     }
@@ -222,8 +216,6 @@ public class Transform {
             // Apply the transformation to the position
             //this.translation.mul(1/16);
             Vector4f transformedPosition = this.toMatrix().transform(position);
-            if (translation.length() != 0)
-                Miapi.LOGGER.error(translation.toString());
 
 
             // Extract the transformed position components
