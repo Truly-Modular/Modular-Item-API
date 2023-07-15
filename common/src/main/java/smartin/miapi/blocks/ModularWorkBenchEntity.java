@@ -143,6 +143,13 @@ public class ModularWorkBenchEntity extends BlockEntity implements NamedScreenHa
         });
     }
 
+    @Override
+    public NbtCompound toInitialChunkDataNbt() {
+        NbtCompound tag = new NbtCompound();
+        writeNbt(tag);
+        return tag;
+    }
+
     @Nullable
     @Override
     public Packet<ClientPlayPacketListener> toUpdatePacket() {
@@ -172,12 +179,12 @@ public class ModularWorkBenchEntity extends BlockEntity implements NamedScreenHa
             stats.forEach((stat, inst) -> setItemStat((CraftingStat<Object>) stat, inst)); // casting here weirdly because uh java is weird
         });
     }
-    public void updateAllStats(PlayerInventory inventory, PlayerEntity player) {
+    public void updateAllStats(List<ItemStack> inventory, PlayerEntity player) {
         if (hasWorld() && !world.isClient) {
             blockStats.clear();
             itemStats.clear();
             world.emitGameEvent(RegistryInventory.statUpdateEvent, pos, new GameEvent.Emitter(player, getCachedState()));
-            updateStatsFromItems(inventory.main, player);
+            updateStatsFromItems(inventory, player);
             this.world.updateListeners(pos, world.getBlockState(pos), this.getCachedState(), 3);
         }
     }
@@ -185,7 +192,7 @@ public class ModularWorkBenchEntity extends BlockEntity implements NamedScreenHa
     @Nullable
     @Override
     public ScreenHandler createMenu(int syncId, PlayerInventory playerInventory, PlayerEntity player) {
-        updateAllStats(playerInventory, player);
+        updateAllStats(playerInventory.main, player);
         return new CraftingScreenHandler(syncId, playerInventory, this, propertyDelegate);
     }
 }
