@@ -4,9 +4,9 @@
         "path": "miapi:models/item/armor/chest/base/[material.texture].json",
         "transform": {
             "rotation": {
-                "x": 180.0,
+                "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 180.0
             },
             "translation": {
                 "x": -10.0,
