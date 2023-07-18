@@ -21,7 +21,7 @@ import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.registry.Registries;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
-import smartin.miapi.events.Event;
+import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.Miapi;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ItemModule;
@@ -52,8 +52,8 @@ public class PotionEffectProperty extends SimpleEventProperty {
         ModularItemCache.setSupplier(KEY, PotionEffectProperty::createCache);
     }
 
-    public static void onEntityHurt(PropertyApplication.Cancellable<Event.LivingHurtEvent> holder) {
-        Event.LivingHurtEvent event = holder.event();
+    public static void onEntityHurt(PropertyApplication.Cancellable<MiapiEvents.LivingHurtEvent> holder) {
+        MiapiEvents.LivingHurtEvent event = holder.event();
         LivingEntity victim = event.livingEntity;
         if (!(victim.getWorld() instanceof ServerWorld world) || !(event.damageSource.getAttacker() instanceof LivingEntity attacker))
             return;

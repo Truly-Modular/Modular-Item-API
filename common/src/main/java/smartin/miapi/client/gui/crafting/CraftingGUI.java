@@ -14,6 +14,7 @@ import net.minecraft.util.Identifier;
 import org.joml.Matrix4f;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.ParentHandledScreen;
+import smartin.miapi.client.gui.SimpleScreenHandlerListener;
 import smartin.miapi.client.gui.TransformableWidget;
 import smartin.miapi.client.gui.crafting.crafter.ModuleCrafter;
 import smartin.miapi.client.gui.crafting.slotdisplay.SlotDisplay;
@@ -41,7 +42,7 @@ public class CraftingGUI extends ParentHandledScreen<CraftingScreenHandler> impl
     public CraftingGUI(CraftingScreenHandler handler, PlayerInventory playerInventory, Text title) {
         super(handler, playerInventory, Text.empty());
         this.backgroundWidth = 278;
-        this.backgroundHeight = 221;
+        this.backgroundHeight = 222;
     }
 
     public void init() {
@@ -79,19 +80,11 @@ public class CraftingGUI extends ParentHandledScreen<CraftingScreenHandler> impl
         if (moduleCrafter != null) {
             moduleCrafter.handler = handler;
         }
-        this.handler.addListener(new ScreenHandlerListener() {
-            @Override
-            public void onSlotUpdate(ScreenHandler handler, int slotId, ItemStack stack) {
-                if (slotId == 36) {
-                    updateItem(stack);
-                }
+        this.handler.addListener(new SimpleScreenHandlerListener((handler, slotId, stack) -> {
+            if (slotId == 36) {
+                updateItem(stack);
             }
-
-            @Override
-            public void onPropertyUpdate(ScreenHandler handler, int property, int value) {
-
-            }
-        });
+        }));
 
     }
 

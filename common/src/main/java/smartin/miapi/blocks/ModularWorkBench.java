@@ -8,6 +8,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.text.Text;
@@ -21,6 +22,7 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
+import net.minecraft.world.event.listener.GameEventListener;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
 
@@ -107,6 +109,12 @@ public class ModularWorkBench extends BlockWithEntity {
     public NamedScreenHandlerFactory createScreenHandlerFactory(BlockState state, World world, BlockPos pos) {
         if (world.getBlockEntity(pos) instanceof ModularWorkBenchEntity be)
             return be;
+        return null;
+    }
+
+    public <T extends BlockEntity> GameEventListener getGameEventListener(ServerWorld world, T blockEntity) {
+        if (blockEntity instanceof ModularWorkBenchEntity bench)
+            return bench;
         return null;
     }
 

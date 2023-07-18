@@ -14,7 +14,9 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerListener;
 import net.minecraft.screen.slot.Slot;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
 import org.joml.Matrix4f;
@@ -133,19 +135,12 @@ public class CraftView extends InteractAbleWidget {
         });
         addChild(craftButton);
 
-        handler.addListener(new ScreenHandlerListener() {
-            @Override
-            public void onSlotUpdate(ScreenHandler handler, int slotId, ItemStack stack) {
-                if (currentSlots.stream().anyMatch(slot1 -> slot1.id == slotId)) {
+        handler.addListener(new SimpleScreenHandlerListener((h, slotId, itemStack) -> {
+            /*if (currentSlots.stream().anyMatch(slot1 -> slot1.id == slotId)) {
                     update();
-                }
-            }
-
-            @Override
-            public void onPropertyUpdate(ScreenHandler handler, int property, int value) {
-
-            }
-        });
+                }*/
+            update();
+        }));
     }
 
     private void update() {
@@ -300,8 +295,7 @@ public class CraftView extends InteractAbleWidget {
 
         public CraftButton(int x, int y, int width, int height, Text title, T toCallback, Consumer<T> callback) {
             super(x, y, width, height, title, toCallback, callback);
-            hover = new HoverDescription(x, y + height, width * 3, height, Text.empty());
-            hover.textWidget.textColor = ColorHelper.Argb.getArgb(255, 255, 0, 0);
+            hover = new HoverDescription(x, y + height, List.of());
         }
 
         @Override
@@ -311,20 +305,17 @@ public class CraftView extends InteractAbleWidget {
 
         @Override
         public void renderHover(DrawContext drawContext, int mouseX, int mouseY, float delta) {
-            StringBuilder message = new StringBuilder(Text.translatable(Miapi.MOD_ID + ".ui.craft.warning").getString());
-            hover.setX(this.getX());
-            hover.setY(this.getY() + this.getHeight());
-
-            for (Text text : warnings) {
-                message.append("\n - ").append(text.getString());
-            }
-            hover.setText(Text.of(message.toString()));
             if (!this.isEnabled && isMouseOver(mouseX, mouseY)) {
-                RenderSystem.enableDepthTest();
-                RenderSystem.enableBlend();
-                RenderSystem.defaultBlendFunc();
-                hover.renderHover(drawContext, mouseX, mouseY, delta);
-                RenderSystem.disableBlend();
+                MutableText text = Text.translatable(Miapi.MOD_ID + ".ui.craft.warning").formatted(Formatting.RED);
+                hover.addText(text);
+                hover.setX(this.getX());
+                hover.setY(this.getY() + this.getHeight());
+
+                for (Text warning : warnings) {
+                    hover.addText(Text.literal(" - ").append(warning).formatted(Formatting.RED));
+                }
+                hover.render(drawContext, mouseX, mouseY, delta);
+                hover.reset();
             }
         }
     }

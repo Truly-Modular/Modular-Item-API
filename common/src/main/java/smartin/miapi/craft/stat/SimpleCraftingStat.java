@@ -10,10 +10,14 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
+import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ItemModule;
 
 import java.util.List;
 
+/**
+ * An implementation of {@link CraftingStat} with a double as its stat instance.
+ */
 public class SimpleCraftingStat implements CraftingStat<Double> {
     private final double defaultVal;
 
@@ -28,7 +32,7 @@ public class SimpleCraftingStat implements CraftingStat<Double> {
 
     @Override
     public Double createFromJson(JsonElement json, ItemModule.ModuleInstance instance) {
-        return json.getAsJsonPrimitive().getAsDouble();
+        return StatResolver.resolveDouble(json, instance);
     }
 
     @Override

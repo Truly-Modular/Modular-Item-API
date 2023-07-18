@@ -9,7 +9,7 @@ import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.item.ItemStack;
 import smartin.miapi.Miapi;
-import smartin.miapi.events.Event;
+import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.modules.properties.util.SimpleDoubleProperty;
 
 import java.util.WeakHashMap;
@@ -25,7 +25,7 @@ public class ArmorPenProperty extends SimpleDoubleProperty {
     public ArmorPenProperty() {
         super(KEY);
         property = this;
-        Event.LIVING_HURT.register((event -> {
+        MiapiEvents.LIVING_HURT.register((event -> {
             if (event.damageSource.getAttacker() instanceof LivingEntity attacker) {
                 ItemStack itemStack = event.getCausingItemStack();
                 if (property.hasValue(itemStack)) {
@@ -40,7 +40,7 @@ public class ArmorPenProperty extends SimpleDoubleProperty {
             return EventResult.pass();
         }));
 
-        Event.LIVING_HURT_AFTER.register((event -> {
+        MiapiEvents.LIVING_HURT_AFTER.register((event -> {
             if (cache.containsKey(event.livingEntity)) {
                 event.livingEntity.getAttributes().removeModifiers(cache.get(event.livingEntity));
             }

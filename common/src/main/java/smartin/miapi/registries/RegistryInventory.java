@@ -137,6 +137,7 @@ public class RegistryInventory {
     public static BlockEntityType<StatProvidingBlockEntity> exampleStatProviderBlockEntityType;
     public static Item modularItem;
     public static GameEvent statUpdateEvent;
+    public static GameEvent statProviderUpdatedEvent;
     public static SimpleCraftingStat exampleCraftingStat;
     public static RegistrySupplier<EntityType<ItemProjectile>> itemProjectileType = (RegistrySupplier) registerAndSupply(entityTypes, "thrown_item", () ->
             EntityType.Builder.create(ItemProjectile::new, SpawnGroup.MISC).setDimensions(0.5F, 0.5F).maxTrackingRange(4).trackingTickInterval(20).build("miapi:thrown_item"));
@@ -271,7 +272,8 @@ public class RegistryInventory {
                 att -> SHIELD_BREAK = att);
 
         // GAME EVENTS
-        register(gameEvents, "crafting_stat_update", () -> new GameEvent(MOD_ID + ":crafting_stat_update", 16), ev -> statUpdateEvent = ev);
+        register(gameEvents, "request_crafting_stat_update", () -> new GameEvent(MOD_ID + ":crafting_stat_update", 16), ev -> statUpdateEvent = ev);
+        register(gameEvents, "stat_provider_updated", () -> new GameEvent(MOD_ID + ":stat_provider_updated", 16), ev -> statProviderUpdatedEvent = ev);
 
         LifecycleEvent.SETUP.register(() -> {
             //EDITPROPERTIES

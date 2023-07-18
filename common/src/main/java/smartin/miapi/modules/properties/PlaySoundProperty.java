@@ -9,8 +9,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
-import smartin.miapi.Miapi;
-import smartin.miapi.events.Event;
+import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.util.ApplicationEventHandler;
 import smartin.miapi.modules.properties.util.CodecBasedProperty;
@@ -43,7 +42,7 @@ public class PlaySoundProperty extends CodecBasedProperty<List<PlaySoundProperty
             ItemStack stack = event.stackGetter.apply(instance);
             ItemStack alternateStack = null;
             if (stack == null) {
-                if (instance instanceof Event.LivingHurtEvent lh) {
+                if (instance instanceof MiapiEvents.LivingHurtEvent lh) {
                     stack = lh.getCausingItemStack();
                     alternateStack = lh.livingEntity.getMainHandStack();
                 } else

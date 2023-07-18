@@ -1,10 +1,10 @@
 package smartin.miapi.blocks;
 
+import dev.architectury.event.EventResult;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.Inventory;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.network.listener.ClientPlayPacketListener;
@@ -13,21 +13,27 @@ import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.PropertyDelegate;
 import net.minecraft.screen.ScreenHandler;
+import net.minecraft.screen.ScreenHandlerListener;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.event.BlockPositionSource;
 import net.minecraft.world.event.GameEvent;
+import net.minecraft.world.event.PositionSource;
+import net.minecraft.world.event.listener.GameEventListener;
 import org.jetbrains.annotations.Nullable;
+import smartin.miapi.client.gui.SimpleScreenHandlerListener;
 import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
 import smartin.miapi.craft.stat.CraftingStat;
+import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.item.StatProvidingItem;
 import smartin.miapi.modules.properties.StatProvisionProperty;
 import smartin.miapi.registries.RegistryInventory;
 
-import java.util.List;
-
-public class ModularWorkBenchEntity extends BlockEntity implements NamedScreenHandlerFactory {
+public class ModularWorkBenchEntity extends BlockEntity implements NamedScreenHandlerFactory, GameEventListener {
     protected final PropertyDelegate propertyDelegate;
     private ItemStack stack;
     public final CraftingStat.StatMap<?> blockStats = new CraftingStat.StatMap<>();
@@ -35,6 +41,8 @@ public class ModularWorkBenchEntity extends BlockEntity implements NamedScreenHa
     public int x;
     public int y;
     public int z;
+    protected BlockPositionSource blockPositionSource;
+    public long lastItemStatUpdate = -100;
 
     public ModularWorkBenchEntity(BlockPos pos, BlockState state) {
         super(RegistryInventory.modularWorkBenchEntityType, pos, state);
@@ -125,7 +133,7 @@ public class ModularWorkBenchEntity extends BlockEntity implements NamedScreenHa
         itemStats.clear();
 
         if (tag.contains("Item"))
-            this.stack = ItemStack.fromNbt(tag.getCompound("Item"));
+            stack = ItemStack.fromNbt(tag.getCompound("Item"));
 
         NbtCompound blocks = tag.getCompound("BlockStats");
         blocks.getKeys().forEach(key -> {
@@ -157,9 +165,9 @@ public class ModularWorkBenchEntity extends BlockEntity implements NamedScreenHa
     }
 
     public void saveAndSync() {
-        this.markDirty();
-        if (this.hasWorld())
-            this.world.updateListeners(pos, world.getBlockState(pos), this.getCachedState(), 3);
+        markDirty();
+        if (hasWorld())
+            world.updateListeners(pos, world.getBlockState(pos), getCachedState(), 3);
     }
 
     @Override
@@ -168,31 +176,74 @@ public class ModularWorkBenchEntity extends BlockEntity implements NamedScreenHa
     }
 
     // Set player to null if you don't have one. This will make items that try to provide stats without the StatProvisionProperty ignored.
-    public void updateStatsFromItems(List<ItemStack> inventory, @Nullable PlayerEntity player) {
+    public void updateStatsFromItems(Iterable<ItemStack> inventory, @Nullable PlayerEntity player) {
+        EventResult result = MiapiEvents.ITEM_STAT_UPDATE.invoker().call(this, inventory, player);
+        if (result.interruptsFurtherEvaluation()) return;
+        itemStats.clear();
         inventory.forEach(stack -> {
             CraftingStat.StatMap<?> stats = StatProvisionProperty.property.get(stack);
             if (stats == null) {
                 if (player != null && stack.getItem() instanceof StatProvidingItem item)
-                    stats = item.getStats(this, inventory, player, stack);
+                    stats = item.getStats(this, player, stack);
                 else return;
             }
             stats.forEach((stat, inst) -> setItemStat((CraftingStat<Object>) stat, inst)); // casting here weirdly because uh java is weird
         });
     }
-    public void updateAllStats(List<ItemStack> inventory, PlayerEntity player) {
+    public void updateBlockStats(@Nullable PlayerEntity player) {
+        EventResult result = MiapiEvents.BLOCK_STAT_UPDATE.invoker().call(this, player);
+        if (result.interruptsFurtherEvaluation()) return;
+        blockStats.clear();
+        world.emitGameEvent(RegistryInventory.statUpdateEvent, pos, new GameEvent.Emitter(player, getCachedState()));
+    }
+    public void updateAllStats(Iterable<ItemStack> inventory, PlayerEntity player) {
         if (hasWorld() && !world.isClient) {
-            blockStats.clear();
-            itemStats.clear();
-            world.emitGameEvent(RegistryInventory.statUpdateEvent, pos, new GameEvent.Emitter(player, getCachedState()));
+            updateBlockStats(player);
             updateStatsFromItems(inventory, player);
-            this.world.updateListeners(pos, world.getBlockState(pos), this.getCachedState(), 3);
+            world.updateListeners(pos, world.getBlockState(pos), getCachedState(), 3);
         }
     }
 
     @Nullable
     @Override
     public ScreenHandler createMenu(int syncId, PlayerInventory playerInventory, PlayerEntity player) {
-        updateAllStats(playerInventory.main, player);
-        return new CraftingScreenHandler(syncId, playerInventory, this, propertyDelegate);
+        updateBlockStats(player);
+        CraftingScreenHandler handler = new CraftingScreenHandler(syncId, playerInventory, this, propertyDelegate);
+        handler.addListener(new SimpleScreenHandlerListener((h, slotId, stack) -> {
+            long currentWorldTime;
+            if (
+                    hasWorld() && !world.isClient &&
+                            lastItemStatUpdate != (currentWorldTime = world.getTime()) &&
+                            slotId < 36 && h instanceof CraftingScreenHandler csh) {
+                updateStatsFromItems(csh.playerInventory.main, csh.playerInventory.player);
+                lastItemStatUpdate = currentWorldTime;
+                world.updateListeners(pos, world.getBlockState(pos), getCachedState(), 3);
+            }
+        }));
+        return handler;
+    }
+
+    @Override
+    public PositionSource getPositionSource() {
+        if (blockPositionSource == null) blockPositionSource = new BlockPositionSource(pos);
+        return blockPositionSource;
+    }
+
+    @Override
+    public int getRange() {
+        return 16;
+    }
+
+    @Override
+    public boolean listen(ServerWorld world, GameEvent event, GameEvent.Emitter emitter, Vec3d emitterPos) {
+        if (event.equals(RegistryInventory.statProviderUpdatedEvent)) {
+            if (hasWorld()) {
+                blockStats.clear();
+                updateBlockStats(null);
+                this.world.updateListeners(pos, world.getBlockState(pos), getCachedState(), 3);
+                return true;
+            }
+        }
+        return false;
     }
 }

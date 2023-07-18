@@ -14,7 +14,6 @@ import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
@@ -28,7 +27,6 @@ import smartin.miapi.registries.RegistryInventory;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
 
 /**
  * This is the screen handler class for miapis default Crafting Screen.
@@ -134,47 +132,15 @@ public class CraftingScreenHandler extends ScreenHandler {
         int offset = 30 + 4 * 18;
         for (int j = 0; j < 3; ++j) {
             for (int k = 0; k < 9; ++k) {
-                this.addSlot(new Slot(playerInventory, k + j * 9 + 9, 8 + k * 18 + offset, 103 + j * 18 + i));
+                this.addSlot(new PlayerInventorySlot(playerInventory, k + j * 9 + 9, 8 + k * 18 + offset, 103 + j * 18 + i));
             }
         }
 
         for (int j = 0; j < 9; ++j) {
-            this.addSlot(new Slot(playerInventory, j, 8 + j * 18 + offset, 161 + i));
+            this.addSlot(new PlayerInventorySlot(playerInventory, j, 8 + j * 18 + offset, 161 + i));
         }
 
-        this.addSlot(new Slot(inventory, 0, 112, 118) {
-            @Override
-            public boolean canInsert(ItemStack stack) {
-                return true;
-            }
-
-            @Override
-            public int getMaxItemCount() {
-                return 64;
-            }
-
-            @Override
-            public void setStack(ItemStack stack) {
-                super.setStack(stack);
-                if (notClient() && blockEntity != null) {
-                    blockEntity.setItem(stack);
-                    blockEntity.saveAndSync();
-                }
-                this.markDirty();
-            }
-
-            @Override
-            public void onTakeItem(PlayerEntity player, ItemStack stack) {
-                super.onTakeItem(player, stack);
-            }
-
-            @Override
-            public ItemStack getStack() {
-                ItemStack stack = super.getStack();
-                if (notClient() && blockEntity != null && !stack.isEmpty()) return blockEntity.getItem();
-                return stack;
-            }
-        });
+        this.addSlot(new ModifyingSlot(inventory, 0, 112, 118, blockEntity));
 
         this.addProperties(delegate);
     }
@@ -335,5 +301,55 @@ public class CraftingScreenHandler extends ScreenHandler {
     @Override
     public void onContentChanged(Inventory inventory) {
         this.sendContentUpdates();
+    }
+
+    public static class ModifyingSlot extends Slot {
+        protected final ModularWorkBenchEntity blockEntity;
+
+        public ModifyingSlot(Inventory inventory, int index, int x, int y, ModularWorkBenchEntity blockEntity) {
+            super(inventory, index, x, y);
+            this.blockEntity = blockEntity;
+        }
+
+        public boolean notClient() {
+            return blockEntity != null && blockEntity.hasWorld() && !blockEntity.getWorld().isClient;
+        }
+
+        @Override
+        public boolean canInsert(ItemStack stack) {
+            return true;
+        }
+
+        @Override
+        public int getMaxItemCount() {
+            return 64;
+        }
+
+        @Override
+        public void setStack(ItemStack stack) {
+            super.setStack(stack);
+            if (notClient()) {
+                blockEntity.setItem(stack);
+                blockEntity.saveAndSync();
+            }
+            this.markDirty();
+        }
+
+        @Override
+        public ItemStack getStack() {
+            ItemStack stack = super.getStack();
+            if (notClient() && !stack.isEmpty()) return blockEntity.getItem();
+            return stack;
+        }
+    }
+    public static class PlayerInventorySlot extends Slot {
+        public PlayerInventorySlot(PlayerInventory inventory, int index, int x, int y) {
+            super(inventory, index, x, y);
+        }
+
+        @Override
+        public void setStack(ItemStack stack) {
+            super.setStack(stack);
+        }
     }
 }

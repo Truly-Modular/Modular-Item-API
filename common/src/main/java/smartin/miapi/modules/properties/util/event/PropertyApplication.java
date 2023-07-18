@@ -12,7 +12,7 @@ import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextType;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
-import smartin.miapi.events.Event;
+import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.mixin.LootContextTypesAccessor;
 import smartin.miapi.modules.abilities.util.ItemUseAbility;
 
@@ -23,8 +23,8 @@ import static smartin.miapi.modules.properties.util.event.ApplicationEvent.Entit
 public final class PropertyApplication {
     public static final ApplicationEvent<?> EMPTY = new ApplicationEvent<>("empty");
     public static final EntityHolding<ItemDrop> ITEM_DROP = new EntityHolding<>(c -> c.entity.getStack(), ItemDrop::player, ItemDrop::entity, "item_drop"); // fire when an item is dropped
-    public static final EntityHolding<Cancellable<Event.LivingHurtEvent>> HURT = new EntityHolding<>(c -> c.event.livingEntity, c -> c.event.damageSource.getAttacker(), "hurt", "hit", "attack"); // fire when something gets hit
-    public static final EntityHolding<Event.LivingHurtEvent> HURT_AFTER = new EntityHolding<>(c -> c.livingEntity, c -> c.damageSource.getAttacker(), "hurt.after"); // fire after something gets hit and damage is confirmed
+    public static final EntityHolding<Cancellable<MiapiEvents.LivingHurtEvent>> HURT = new EntityHolding<>(c -> c.event.livingEntity, c -> c.event.damageSource.getAttacker(), "hurt", "hit", "attack"); // fire when something gets hit
+    public static final EntityHolding<MiapiEvents.LivingHurtEvent> HURT_AFTER = new EntityHolding<>(c -> c.livingEntity, c -> c.damageSource.getAttacker(), "hurt.after"); // fire after something gets hit and damage is confirmed
     public static final EntityHolding<Cancellable<ItemPickup>> ITEM_PICKUP = new EntityHolding<>(c -> c.event.stack, c -> c.event.player, c -> c.event.entity, "item_pickup"); // fire when an item is picked up
     public static final EntityHolding<ItemPickup> ITEM_PICKUP_AFTER = new EntityHolding<>(c -> c.stack, ItemPickup::player, ItemPickup::entity, "item_pickup.after"); // fire after an item is picked up
     public static final ApplicationEvent<EnterChunk> ENTER_CHUNK = new ApplicationEvent<>("enter_chunk"); // fire when an entity enters a new chunk
@@ -40,12 +40,12 @@ public final class PropertyApplication {
 
 
     public static void setup() {
-        Event.LIVING_HURT.register(event -> {
-            Cancellable<Event.LivingHurtEvent> ev = new Cancellable<>(event);
+        MiapiEvents.LIVING_HURT.register(event -> {
+            Cancellable<MiapiEvents.LivingHurtEvent> ev = new Cancellable<>(event);
             HURT.call(ev);
             return ev.result();
         });
-        Event.LIVING_HURT_AFTER.register(event -> {
+        MiapiEvents.LIVING_HURT_AFTER.register(event -> {
             HURT_AFTER.call(event);
             return EventResult.pass();
         });
