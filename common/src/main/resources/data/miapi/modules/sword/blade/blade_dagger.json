@@ -84,8 +84,9 @@
     },
     "applyPotionEffects": [
         {
-            "event": "attack",
-            "target": "target",
+            "event": "hurt",
+            "item": "attacker.mainhand",
+            "applyTo": "victim",
             "duration": 50,
             "amplifier": 2,
             "effect": "minecraft:poison"

@@ -28,8 +28,8 @@ public abstract class CodecBasedProperty<T> implements ModuleProperty {
 
     @Override
     public boolean load(String moduleKey, JsonElement data) {
-        codec(new ItemModule.ModuleInstance(ItemModule.empty)).parse(JsonOps.INSTANCE, data).getOrThrow(false, s -> {
-        });
+        codec(new ItemModule.ModuleInstance(ItemModule.empty)).parse(JsonOps.INSTANCE, data).getOrThrow(false, s ->
+                Miapi.LOGGER.error("Failed to load CodecBasedProperty! -> {}", s));
         return true;
     }
 

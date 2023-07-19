@@ -16,6 +16,7 @@ import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.client.MiapiClient;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.datapack.ReloadListener;
+import smartin.miapi.events.property.ApplicationEvents;
 import smartin.miapi.item.ItemToModularConverter;
 import smartin.miapi.item.ModularItemStackConverter;
 import smartin.miapi.item.modular.PropertyResolver;
@@ -25,7 +26,6 @@ import smartin.miapi.modules.abilities.util.ItemAbilityManager;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.conditions.*;
 import smartin.miapi.modules.properties.util.ModuleProperty;
-import smartin.miapi.modules.properties.util.event.PropertyApplication;
 import smartin.miapi.modules.synergies.SynergyManager;
 import smartin.miapi.network.Networking;
 import smartin.miapi.network.NetworkingImplCommon;
@@ -45,8 +45,8 @@ public class Miapi {
 
     public static void init() {
         setupNetworking();
+        ApplicationEvents.setup();
         RegistryInventory.setup();
-        PropertyApplication.setup();
         ReloadEvents.setup();
         ItemAbilityManager.setup();
         AttributeRegistry.setup();

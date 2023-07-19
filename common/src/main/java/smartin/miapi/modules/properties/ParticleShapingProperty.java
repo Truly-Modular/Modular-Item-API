@@ -7,45 +7,30 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.redpxnda.nucleus.datapack.codec.ValueTester;
 import com.redpxnda.nucleus.datapack.json.JsonParticleShaping;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.loot.LootDataType;
-import net.minecraft.loot.LootManager;
-import net.minecraft.loot.condition.LootCondition;
-import net.minecraft.loot.context.LootContext;
-import net.minecraft.loot.context.LootContextParameterSet;
-import net.minecraft.loot.context.LootContextParameters;
-import net.minecraft.loot.context.LootContextTypes;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
-import org.joml.Quaterniond;
-import smartin.miapi.Miapi;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
 import smartin.miapi.modules.abilities.util.ItemUseAbility;
-import smartin.miapi.modules.properties.util.ApplicationEventHandler;
 import smartin.miapi.modules.properties.util.CodecBasedProperty;
 import smartin.miapi.modules.properties.util.MergeType;
-import smartin.miapi.modules.properties.util.event.ApplicationEvent;
-import smartin.miapi.modules.properties.util.event.PropertyApplication;
 
 import java.util.List;
 import java.util.Optional;
 
-public class ParticleShapingProperty extends CodecBasedProperty<List<ParticleShapingProperty.Holder>> implements ApplicationEventHandler {
+//todo finish new morphing system and add to this
+public class ParticleShapingProperty extends CodecBasedProperty<List<ParticleShapingProperty.Holder>> {
     public static final String KEY = "particleShaping";
     private static ParticleShapingProperty property;
 
     public ParticleShapingProperty() {
         super(KEY);
-        ApplicationEvent.getAllEvents().forEach(e -> e.addListener(this));
+        //AppEventOld.getAllEvents().forEach(e -> e.addListener(this));
         property = this;
     }
 
-    // todo hurt event allow attacker and victim
-    @Override
-    public <E> void onEvent(ApplicationEvent<E> main, E instance) {
-        if (main instanceof ApplicationEvent.EntityHolding<E> event) {
+    /*@Override
+    public <E> void onEvent(AppEventOld<E> main, E instance) {
+        if (main instanceof AppEventOld.EntityHolding<E> event) {
             LivingEntity entity = event.getEntity(instance);
             if (!(entity.getWorld() instanceof ServerWorld world)) return;
             ItemStack stack = event.stackGetter.apply(instance);
@@ -57,7 +42,7 @@ public class ParticleShapingProperty extends CodecBasedProperty<List<ParticleSha
             for (Holder holder : holders) {
                 if (!holder.event.equals(event)) continue;
 
-                if (instance instanceof PropertyApplication.Ability ability && holder.abilityConditions.isPresent() && !holder.abilityConditions.get().test(ability)) continue; // used to check ability name and time
+                if (instance instanceof PropAppOld.Ability ability && holder.abilityConditions.isPresent() && !holder.abilityConditions.get().test(ability)) continue; // used to check ability name and time
                 if (holder.predicate.isPresent()) {
                     LootManager manager = world.getServer().getLootManager();
                     if (manager != null) {
@@ -83,11 +68,11 @@ public class ParticleShapingProperty extends CodecBasedProperty<List<ParticleSha
                 holder.shaper.fromServer().transform(quaterniond).runAt(entity.getWorld(), entity.getX(), entity.getY(), entity.getZ());
             }
         }
-    }
+    }*/
 
     @Override
     public Codec<List<Holder>> codec(ItemModule.ModuleInstance instance) {
-        return Holder.codec.listOf();
+        return null;
     }
 
     @Override
@@ -106,7 +91,7 @@ public class ParticleShapingProperty extends CodecBasedProperty<List<ParticleSha
     }
 
     public static class Holder {
-        private static final Codec<ValueTester<PropertyApplication.Ability>> abConditions = new ValueTester.Builder<PropertyApplication.Ability>()
+       /* private static final Codec<ValueTester<PropAppOld.Ability>> abConditions = new ValueTester.Builder<PropAppOld.Ability>()
                 .add("name", Codec.STRING, (ab, name) -> {
                     if (name.equals("$all")) return true;
                     ItemUseAbility ability = ItemAbilityManager.useAbilityRegistry.get(name);
@@ -117,7 +102,7 @@ public class ParticleShapingProperty extends CodecBasedProperty<List<ParticleSha
                 .codec();
 
         private static final Codec<Holder> partialCodec = RecordCodecBuilder.create(inst -> inst.group(
-                ApplicationEvent.CODEC.fieldOf("event").forGetter(i -> i.event),
+                AppEventOld.CODEC.fieldOf("event").forGetter(i -> i.event),
                 abConditions.optionalFieldOf("ability").forGetter(i -> i.abilityConditions),
                 Identifier.CODEC.optionalFieldOf("predicate").forGetter(i -> i.predicate),
                 Codec.pair(
@@ -137,17 +122,17 @@ public class ParticleShapingProperty extends CodecBasedProperty<List<ParticleSha
                         h.predicate, h.align)));
 
         private final JsonParticleShaping.StoringParticleShaper shaper;
-        private final ApplicationEvent<?> event;
-        private final Optional<ValueTester<PropertyApplication.Ability>> abilityConditions;
+        private final AppEventOld<?> event;
+        private final Optional<ValueTester<PropAppOld.Ability>> abilityConditions;
         private final Optional<Identifier> predicate;
         private final Pair<Boolean, Boolean> align;
 
-        private Holder(JsonParticleShaping.StoringParticleShaper shaper, ApplicationEvent<?> event, Optional<ValueTester<PropertyApplication.Ability>> abilityConditions, Optional<Identifier> predicate, Pair<Boolean, Boolean> align) {
+        private Holder(JsonParticleShaping.StoringParticleShaper shaper, AppEventOld<?> event, Optional<ValueTester<PropAppOld.Ability>> abilityConditions, Optional<Identifier> predicate, Pair<Boolean, Boolean> align) {
             this.shaper = shaper;
             this.event = event;
             this.abilityConditions = abilityConditions;
             this.predicate = predicate;
             this.align = align;
-        }
+        }*/
     }
 }

@@ -4,69 +4,70 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.mojang.serialization.Codec;
 import com.redpxnda.nucleus.datapack.codec.AutoCodec;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
-import smartin.miapi.events.MiapiEvents;
+import smartin.miapi.events.property.ApplicationEvent;
+import smartin.miapi.events.property.ApplicationEvents;
 import smartin.miapi.modules.ItemModule;
-import smartin.miapi.modules.properties.util.ApplicationEventHandler;
 import smartin.miapi.modules.properties.util.CodecBasedProperty;
 import smartin.miapi.modules.properties.util.MergeType;
-import smartin.miapi.modules.properties.util.event.ApplicationEvent;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-public class PlaySoundProperty extends CodecBasedProperty<List<PlaySoundProperty.Holder>> implements ApplicationEventHandler {
+public class PlaySoundProperty extends CodecBasedProperty<List<PlaySoundProperty.Holder>> {
     public static final String KEY = "playSounds";
     public static PlaySoundProperty property;
+    public static final Codec<List<Holder>> codec = AutoCodec.of(Holder.class).codec().listOf();
 
     public PlaySoundProperty() {
         super(KEY);
-
-        ApplicationEvent.getAllEvents().forEach(e -> {
-            e.addListener(this);
-        });
-
         property = this;
+
+        ApplicationEvents.ENTITY_RELATED.startListening(
+                (event, entity, stack, data, originals) -> onEntityEvent(event, stack, entity, (List<Holder>) data, originals),
+                ApplicationEvents.StackGetterHolder.ofMulti(
+                        property::get,
+                        list -> list.stream().map(h -> h.item).toList(),
+                        (list, target) -> list.stream().filter(d -> d.item.equals(target)).toList()
+                )
+        );
     }
 
-    @Override
-    public <E> void onEvent(ApplicationEvent<E> main, E instance) {
-        if (main instanceof ApplicationEvent.EntityHolding<E> event) {
-            if (!(event.getEntity(instance).getWorld() instanceof ServerWorld world)) return;
-            LivingEntity entity = event.getEntity(instance);
+    public void onEntityEvent(ApplicationEvent<?, ?, ?> event, ItemStack stack, Entity entity, List<Holder> sounds, Object... originals) {
+        if (!(entity.getWorld() instanceof ServerWorld world)) return;
 
-            ItemStack stack = event.stackGetter.apply(instance);
-            ItemStack alternateStack = null;
-            if (stack == null) {
-                if (instance instanceof MiapiEvents.LivingHurtEvent lh) {
-                    stack = lh.getCausingItemStack();
-                    alternateStack = lh.livingEntity.getMainHandStack();
-                } else
-                    stack = entity.getMainHandStack();
+        Map<String, Entity> validEntities = new HashMap<>();
+        validEntities.put("this", entity);
+        if (event instanceof ApplicationEvents.HurtEvent) {
+            DamageSource damageSource = (DamageSource) originals[1];
+            LivingEntity victim = (LivingEntity) originals[0];
+
+            validEntities.put("victim", victim);
+            if (damageSource != null) {
+                if (damageSource.getAttacker() != null) validEntities.put("attacker", damageSource.getAttacker());
+                if (damageSource.getSource() != null) validEntities.put("source", damageSource.getSource());
             }
+        }
 
-            List<Holder> sounds = property.get(stack);
-            List<Holder> alternate = alternateStack == null ? null : property.get(alternateStack);
-            if (sounds == null) sounds = new ArrayList<>();
-            if (alternate != null) {
-                List<Holder> finalSounds = sounds;
-                alternate.forEach(h -> finalSounds.add(new Holder(h.sound, h.pitch, h.volume, h.event, !h.target)));
-            }
+        for (Holder h : sounds) {
+            if (!h.event.equals(event)) continue;
 
-            sounds.forEach(h -> {
-                if (event.equals(h.event) && h.target) {
-                    world.playSound(
-                            null,
-                            entity.getX(), entity.getY(), entity.getZ(),
-                            h.sound, SoundCategory.MASTER,
-                            h.volume, h.pitch
-                    );
-                }
-            });
+            Entity target = ApplicationEvents.getEntityForTarget(h.at, validEntities, entity);
+            if (target == null) continue;
+
+            world.playSound(
+                    null,
+                    target.getX(), target.getY(), target.getZ(),
+                    h.sound, SoundCategory.MASTER,
+                    h.volume, h.pitch
+            );
         }
     }
 
@@ -87,32 +88,18 @@ public class PlaySoundProperty extends CodecBasedProperty<List<PlaySoundProperty
 
     @Override
     public Codec<List<PlaySoundProperty.Holder>> codec(ItemModule.ModuleInstance instance) {
-        return AutoCodec.of(Holder.class).codec().listOf();
+        return codec;
     }
 
     public static class Holder {
-        SoundEvent sound;
-        @AutoCodec.Optional float pitch = 1;
-        @AutoCodec.Optional float volume = 1;
-        ApplicationEvent<?> event;
-        @AutoCodec.Override("target_codec")
-        @AutoCodec.Optional boolean target = true;
+        public SoundEvent sound;
+        public @AutoCodec.Optional float pitch = 1;
+        public @AutoCodec.Optional float volume = 1;
+        public @AutoCodec.Optional String at = "this";
+        public ApplicationEvent<?, ?, ?> event;
+        public String item;
 
         public Holder() {}
-
-        public Holder(SoundEvent sound, float pitch, float volume, ApplicationEvent<?> event, boolean targetIsMain) {
-            this.sound = sound;
-            this.pitch = pitch;
-            this.volume = volume;
-            this.event = event;
-            this.target = targetIsMain;
-        }
-
-        public static final Codec<Boolean> target_codec = Codec.STRING.xmap(
-                ApplicationEvent.EntityHolding::isTargetMain,
-                bl -> bl ? "main" : "alternate"
-        );
-
 
         @Override
         public String toString() {
@@ -121,7 +108,8 @@ public class PlaySoundProperty extends CodecBasedProperty<List<PlaySoundProperty
                     ", pitch=" + pitch +
                     ", volume=" + volume +
                     ", event=" + event +
-                    ", target=" + target +
+                    ", item=" + item +
+                    ", at=" + at +
                     '}';
         }
     }

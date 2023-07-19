@@ -9,13 +9,12 @@ import smartin.miapi.modules.abilities.util.ItemAbilityManager;
 import smartin.miapi.modules.abilities.util.ItemUseAbility;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
-import smartin.miapi.modules.properties.util.event.PropertyApplication;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This property manages the active {@link PropertyApplication.Ability}
+ * This property manages the active {@link ItemUseAbility}
  */
 public class AbilityProperty implements ModuleProperty {
     public static final String KEY = "abilities";

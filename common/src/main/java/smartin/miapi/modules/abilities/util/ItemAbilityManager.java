@@ -10,14 +10,11 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
 import net.minecraft.world.World;
+import smartin.miapi.events.property.ApplicationEvents;
 import smartin.miapi.modules.properties.AbilityProperty;
-import smartin.miapi.modules.properties.util.event.PropertyApplication;
 import smartin.miapi.registries.MiapiRegistry;
 
 import java.util.*;
-
-import static smartin.miapi.modules.properties.util.event.ApplicationEvent.*;
-import static smartin.miapi.modules.properties.util.event.PropertyApplication.Ability;
 
 /**
  * The ItemAbilityManager is the brain and control behind what Ability is executed on what Item.
@@ -41,11 +38,13 @@ public class ItemAbilityManager {
             ItemStack playerItem = playerEntity.getActiveItem();
 
             if (playerItem != null && !playerItem.equals(oldItem)) {
-                activeItems.put(playerEntity, playerEntity.getActiveItem());
+                activeItems.put(playerEntity, playerItem);
                 if (oldItem != null) {
                     ItemUseAbility ability = getAbility(oldItem);
-                    if (ability != emptyAbility)
-                        trigger(new Ability(oldItem, playerEntity.getWorld(), playerEntity, playerEntity.getItemUseTimeLeft(), ability), PropertyApplication.ABILITY_END, PropertyApplication.ABILITY_STOP, PropertyApplication.ABILITY_STOP_HOLDING);
+                    if (ability != emptyAbility) {
+                        ApplicationEvents.ABILITY_STOP_HOLDING.invoker().call(playerItem, playerEntity.getWorld(), playerEntity, playerEntity.getItemUseTimeLeft(), ability);
+                        ApplicationEvents.ABILITY_STOP.invoker().call(playerItem, playerEntity.getWorld(), playerEntity, playerEntity.getItemUseTimeLeft(), ability);
+                    }
                     ability.onStoppedHolding(oldItem, playerEntity.getWorld(), playerEntity);
                     abilityMap.remove(oldItem);
                 }
@@ -86,7 +85,7 @@ public class ItemAbilityManager {
         abilityMap.put(itemStack, ability);
 
         if (ability != emptyAbility)
-            trigger(new Ability(itemStack, world, user, null, ability), PropertyApplication.ABILITY_START);
+            ApplicationEvents.ABILITY_START.invoker().call(itemStack, world, user, user.getItemUseTimeLeft(), ability);
 
         return ability.use(world, user, hand);
     }
@@ -97,7 +96,7 @@ public class ItemAbilityManager {
         abilityMap.remove(stack);
 
         if (ability != emptyAbility)
-            trigger(new Ability(itemStack, world, user, null, ability), PropertyApplication.ABILITY_FINISH, PropertyApplication.ABILITY_END);
+            ApplicationEvents.ABILITY_FINISH.invoker().call(itemStack, world, user, user.getItemUseTimeLeft(), ability);
 
         return itemStack;
     }
@@ -106,8 +105,10 @@ public class ItemAbilityManager {
         ItemUseAbility ability = getAbility(stack);
         ability.onStoppedUsing(stack, world, user, remainingUseTicks);
 
-        if (ability != emptyAbility)
-            trigger(new Ability(stack, world, user, remainingUseTicks, ability), PropertyApplication.ABILITY_STOP, PropertyApplication.ABILITY_STOP_USING, PropertyApplication.ABILITY_END);
+        if (ability != emptyAbility) {
+            ApplicationEvents.ABILITY_STOP_USING.invoker().call(stack, world, user, remainingUseTicks, ability);
+            ApplicationEvents.ABILITY_STOP.invoker().call(stack, world, user, remainingUseTicks, ability);
+        }
 
         abilityMap.remove(stack);
     }
@@ -115,7 +116,7 @@ public class ItemAbilityManager {
     public static void usageTick(World world, LivingEntity user, ItemStack stack, int remainingUseTicks) {
         ItemUseAbility ability = getAbility(stack);
         if (ability != emptyAbility)
-            trigger(new Ability(stack, world, user, remainingUseTicks, ability), PropertyApplication.ABILITY_TICK);
+            ApplicationEvents.ABILITY_TICK.invoker().call(stack, world, user, remainingUseTicks, ability);
         ability.usageTick(world, user, stack, remainingUseTicks);
     }
 

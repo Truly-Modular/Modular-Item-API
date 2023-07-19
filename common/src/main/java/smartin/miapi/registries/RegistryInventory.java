@@ -185,14 +185,14 @@ public class RegistryInventory {
         register(items, "modular_work_bench", () -> new BlockItem(modularWorkBench, new Item.Settings()));
 
 
-        register(blocks, "example_stat_provider", () ->
+        /*register(blocks, "example_stat_provider", () ->
                 new StatProvidingBlock(AbstractBlock.Settings.create(), StatProvidingBlockEntity.Example::new), b -> exampleStatProviderBlock = b);
         register(blockEntities, "example_stat_provider", () -> BlockEntityType.Builder.create(
                 StatProvidingBlockEntity.Example::new, exampleStatProviderBlock
         ).build(null), be -> {
             exampleStatProviderBlockEntityType = (BlockEntityType<StatProvidingBlockEntity>) be;
         });
-        register(items, "example_stat_provider", () -> new BlockItem(exampleStatProviderBlock, new Item.Settings()));
+        register(items, "example_stat_provider", () -> new BlockItem(exampleStatProviderBlock, new Item.Settings()));*/
 
 
         // CREATIVE TAB
@@ -311,7 +311,7 @@ public class RegistryInventory {
             registerMiapi(moduleProperties, AllowedMaterial.KEY, new AllowedMaterial());
             registerMiapi(moduleProperties, AttributeProperty.KEY, new AttributeProperty());
             registerMiapi(moduleProperties, PotionEffectProperty.KEY, new PotionEffectProperty());
-            registerMiapi(moduleProperties, ParticleShapingProperty.KEY, new ParticleShapingProperty());
+            //registerMiapi(moduleProperties, ParticleShapingProperty.KEY, new ParticleShapingProperty());
             registerMiapi(moduleProperties, PlaySoundProperty.KEY, new PlaySoundProperty());
             registerMiapi(moduleProperties, DisplayNameProperty.KEY, new DisplayNameProperty());
             registerMiapi(moduleProperties, ItemIdProperty.KEY, new ItemIdProperty());
@@ -338,7 +338,7 @@ public class RegistryInventory {
             registerMiapi(moduleProperties, BetterCombatProperty.KEY, new BetterCombatProperty());
 
             // CRAFTING STATS
-            registerMiapi(craftingStats, "hammering", new SimpleCraftingStat(0), stat -> exampleCraftingStat = (SimpleCraftingStat) stat);
+            //registerMiapi(craftingStats, "hammering", new SimpleCraftingStat(0), stat -> exampleCraftingStat = (SimpleCraftingStat) stat);
 
             // ABILITIES
             registerMiapi(useAbilityRegistry, "throw", new ThrowingAbility());
