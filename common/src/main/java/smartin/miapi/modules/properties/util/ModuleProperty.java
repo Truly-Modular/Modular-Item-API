@@ -1,5 +1,6 @@
 package smartin.miapi.modules.properties.util;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.reflect.TypeToken;
 import smartin.miapi.Miapi;
@@ -43,6 +44,20 @@ public interface ModuleProperty {
             return Miapi.gson.toJsonTree(oldList, typeToken);
         } else if (type == MergeType.OVERWRITE) {
             return toMerge;
+        }
+        return old;
+    }
+
+    static JsonElement mergeList(JsonElement old, JsonElement toMerge, MergeType type) {
+        switch (type) {
+            case OVERWRITE -> {
+                return toMerge.deepCopy();
+            }
+            case SMART, EXTEND -> {
+                JsonArray array = old.deepCopy().getAsJsonArray();
+                array.addAll(toMerge.deepCopy().getAsJsonArray());
+                return array;
+            }
         }
         return old;
     }

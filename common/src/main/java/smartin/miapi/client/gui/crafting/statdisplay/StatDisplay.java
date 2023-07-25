@@ -33,6 +33,14 @@ public class StatDisplay extends InteractAbleWidget {
     private ItemStack compareTo = ItemStack.EMPTY;
 
     static {
+        addStatDisplay(new MultiComponentStatDisplay(0, 0, 160, 32, stack -> Text.literal("1 and first"), stack -> Text.literal("yep")));
+        addStatDisplay(new MultiComponentStatDisplay(0, 0, 160, 32, stack -> Text.literal("2 dwkad"), stack -> Text.literal("yep")));
+        addStatDisplay(new MultiComponentStatDisplay(0, 0, 160, 32, stack -> Text.literal("3 efef"), stack -> Text.literal("yep")));
+        addStatDisplay(new MultiComponentStatDisplay(0, 0, 160, 32, stack -> Text.literal("4 bbbb"), stack -> Text.literal("yep")));
+        addStatDisplay(new MultiComponentStatDisplay(0, 0, 160, 32, stack -> Text.literal("5 mdallwl"), stack -> Text.literal("yep")));
+        addStatDisplay(new MultiComponentStatDisplay(0, 0, 160, 32, stack -> Text.literal("6"), stack -> Text.literal("yep")));
+        addStatDisplay(new MultiComponentStatDisplay(0, 0, 160, 32, stack -> Text.literal("7"), stack -> Text.literal("yep")));
+        addStatDisplay(new MultiComponentStatDisplay(0, 0, 160, 32, stack -> Text.literal("8 and last"), stack -> Text.literal("yep")));
         addStatDisplay(AttributeSingleDisplay
                 .Builder(EntityAttributes.GENERIC_ATTACK_DAMAGE)
                 .setTranslationKey("damage")
@@ -74,6 +82,7 @@ public class StatDisplay extends InteractAbleWidget {
         super(x, y, width, height, Text.empty());
         transformableWidget = new TransformableWidget(x, y, width, height, Text.empty());
         boxList = new BoxList(x * 2, y * 2, width * 2, height * 2, Text.empty(), new ArrayList<>());
+        boxList.maxPageHeight = 100;
         transformableWidget.addChild(boxList);
         transformableWidget.rawProjection = new Matrix4f();
         transformableWidget.rawProjection.scale(0.5f, 0.5f, 0.5f);
@@ -129,5 +138,9 @@ public class StatDisplay extends InteractAbleWidget {
     public void setCompareTo(ItemStack compareTo) {
         this.compareTo = compareTo;
         update();
+    }
+
+    public interface TextGetter {
+        Text resolve(ItemStack stack);
     }
 }

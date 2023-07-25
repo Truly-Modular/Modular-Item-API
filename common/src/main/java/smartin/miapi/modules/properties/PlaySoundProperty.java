@@ -2,6 +2,7 @@ package smartin.miapi.modules.properties;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.redpxnda.nucleus.datapack.codec.AutoCodec;
 import net.minecraft.entity.Entity;
@@ -27,48 +28,30 @@ public class PlaySoundProperty extends CodecBasedProperty<List<PlaySoundProperty
     public static final Codec<List<Holder>> codec = AutoCodec.of(Holder.class).codec().listOf();
 
     public PlaySoundProperty() {
-        super(KEY);
+        super(KEY, codec);
         property = this;
 
         ApplicationEvents.ENTITY_RELATED.startListening(
-                (event, entity, stack, data, originals) -> onEntityEvent(event, stack, entity, (List<Holder>) data, originals),
+                (event, entity, stack, data, originals) -> onEntityEvent(event, stack, entity, (Holder) data, originals),
                 ApplicationEvents.StackGetterHolder.ofMulti(
                         property::get,
-                        list -> list.stream().map(h -> h.item).toList(),
-                        (list, target) -> list.stream().filter(d -> d.item.equals(target)).toList()
+                        list -> list.stream().map(h -> Pair.of(h.item, h)).toList()
                 )
         );
     }
 
-    public void onEntityEvent(ApplicationEvent<?, ?, ?> event, ItemStack stack, Entity entity, List<Holder> sounds, Object... originals) {
-        if (!(entity.getWorld() instanceof ServerWorld world)) return;
+    public void onEntityEvent(ApplicationEvent<?, ?, ?> event, ItemStack stack, Entity entity, Holder h, Object... originals) {
+        if (!(entity.getWorld() instanceof ServerWorld world) || !h.event.equals(event)) return;
 
-        Map<String, Entity> validEntities = new HashMap<>();
-        validEntities.put("this", entity);
-        if (event instanceof ApplicationEvents.HurtEvent) {
-            DamageSource damageSource = (DamageSource) originals[1];
-            LivingEntity victim = (LivingEntity) originals[0];
+        Entity target = ApplicationEvents.getEntityForTarget(h.at, entity, event, originals);
+        if (target == null) return;
 
-            validEntities.put("victim", victim);
-            if (damageSource != null) {
-                if (damageSource.getAttacker() != null) validEntities.put("attacker", damageSource.getAttacker());
-                if (damageSource.getSource() != null) validEntities.put("source", damageSource.getSource());
-            }
-        }
-
-        for (Holder h : sounds) {
-            if (!h.event.equals(event)) continue;
-
-            Entity target = ApplicationEvents.getEntityForTarget(h.at, validEntities, entity);
-            if (target == null) continue;
-
-            world.playSound(
-                    null,
-                    target.getX(), target.getY(), target.getZ(),
-                    h.sound, SoundCategory.MASTER,
-                    h.volume, h.pitch
-            );
-        }
+        world.playSound(
+                null,
+                target.getX(), target.getY(), target.getZ(),
+                h.sound, getSoundCategory(h.category),
+                h.volume, h.pitch
+        );
     }
 
     @Override
@@ -86,11 +69,6 @@ public class PlaySoundProperty extends CodecBasedProperty<List<PlaySoundProperty
         return old;
     }
 
-    @Override
-    public Codec<List<PlaySoundProperty.Holder>> codec(ItemModule.ModuleInstance instance) {
-        return codec;
-    }
-
     public static class Holder {
         public SoundEvent sound;
         public @AutoCodec.Optional float pitch = 1;
@@ -98,6 +76,7 @@ public class PlaySoundProperty extends CodecBasedProperty<List<PlaySoundProperty
         public @AutoCodec.Optional String at = "this";
         public ApplicationEvent<?, ?, ?> event;
         public String item;
+        public @AutoCodec.Optional String category = "master";
 
         public Holder() {}
 
@@ -112,5 +91,20 @@ public class PlaySoundProperty extends CodecBasedProperty<List<PlaySoundProperty
                     ", at=" + at +
                     '}';
         }
+    }
+
+    public static SoundCategory getSoundCategory(String str) {
+        return switch (str) {
+            case "music" -> SoundCategory.MUSIC;
+            case "records" -> SoundCategory.RECORDS;
+            case "weather" -> SoundCategory.WEATHER;
+            case "blocks" -> SoundCategory.BLOCKS;
+            case "hostile" -> SoundCategory.HOSTILE;
+            case "neutral" -> SoundCategory.NEUTRAL;
+            case "players" -> SoundCategory.PLAYERS;
+            case "ambient" -> SoundCategory.AMBIENT;
+            case "voice" -> SoundCategory.VOICE;
+            default -> SoundCategory.MASTER;
+        };
     }
 }

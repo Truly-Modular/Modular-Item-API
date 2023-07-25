@@ -6,7 +6,6 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.redpxnda.nucleus.datapack.codec.ValueTester;
-import com.redpxnda.nucleus.datapack.json.JsonParticleShaping;
 import net.minecraft.util.Identifier;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
@@ -23,7 +22,7 @@ public class ParticleShapingProperty extends CodecBasedProperty<List<ParticleSha
     private static ParticleShapingProperty property;
 
     public ParticleShapingProperty() {
-        super(KEY);
+        super(KEY, null);
         //AppEventOld.getAllEvents().forEach(e -> e.addListener(this));
         property = this;
     }
@@ -69,11 +68,6 @@ public class ParticleShapingProperty extends CodecBasedProperty<List<ParticleSha
             }
         }
     }*/
-
-    @Override
-    public Codec<List<Holder>> codec(ItemModule.ModuleInstance instance) {
-        return null;
-    }
 
     @Override
     public JsonElement merge(JsonElement old, JsonElement toMerge, MergeType type) {

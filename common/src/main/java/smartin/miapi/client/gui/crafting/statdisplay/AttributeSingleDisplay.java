@@ -20,7 +20,7 @@ public class AttributeSingleDisplay extends SingleStatDisplayDouble {
     final EquipmentSlot slot;
     double defaultValue;
 
-    private AttributeSingleDisplay(EntityAttribute attribute, EquipmentSlot slot, TextGetter text, TextGetter hover, double defaultValue, DecimalFormat modifierFormat) {
+    private AttributeSingleDisplay(EntityAttribute attribute, EquipmentSlot slot, StatDisplay.TextGetter text, StatDisplay.TextGetter hover, double defaultValue, DecimalFormat modifierFormat) {
         super(0, 0, 80, 32, text, hover);
         this.slot = slot;
         this.attribute = attribute;
@@ -52,8 +52,8 @@ public class AttributeSingleDisplay extends SingleStatDisplayDouble {
     public static class Builder {
         EntityAttribute attribute;
         public double defaultValue = 1;
-        public TextGetter name;
-        public TextGetter hoverDescription = (stack) -> Text.empty();
+        public StatDisplay.TextGetter name;
+        public StatDisplay.TextGetter hoverDescription = (stack) -> Text.empty();
         public EquipmentSlot slot = EquipmentSlot.MAINHAND;
         public String translationKey = "";
         public Object[] descriptionArgs = new Object[]{};
@@ -95,7 +95,7 @@ public class AttributeSingleDisplay extends SingleStatDisplayDouble {
             return this;
         }
 
-        public Builder setName(TextGetter name) {
+        public Builder setName(StatDisplay.TextGetter name) {
             this.name = name;
             return this;
         }
@@ -110,7 +110,7 @@ public class AttributeSingleDisplay extends SingleStatDisplayDouble {
             return this;
         }
 
-        public Builder setHoverDescription(TextGetter hoverDescription) {
+        public Builder setHoverDescription(StatDisplay.TextGetter hoverDescription) {
             this.hoverDescription = hoverDescription;
             return this;
         }

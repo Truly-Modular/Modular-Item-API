@@ -9,26 +9,28 @@ import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.cache.ModularItemCache;
 
 /**
- * Simple property template with loading and caching via codec pre-implemented.
- * Define a codec with the {@link CodecBasedProperty#codec(ItemModule.ModuleInstance)} method, and use the
- * {@link CodecBasedProperty#get(ItemStack)} method to get the object you specified for the specified stack.
+ * Simple property template with loading and caching via codecs.
+ * Define a codec in the constructor(your super call), and use the {@link CodecBasedProperty#get(ItemStack)} method
+ * to get the object you specified for that stack.
+ * If you want to hold lists of data or resolve material stats, I recommend using the {@link DynamicCodecBasedProperty}.
+ * However, this may still work, depending on your needs.
  *
  * @param <T> The type of object to hold
  */
 public abstract class CodecBasedProperty<T> implements ModuleProperty {
     private final String key;
+    protected final Codec<T> codec;
 
-    public CodecBasedProperty(String key) {
+    public CodecBasedProperty(String key, Codec<T> codec) {
         this.key = key;
+        this.codec = codec;
 
         ModularItemCache.setSupplier(key, this::createCache);
     }
 
-    public abstract Codec<T> codec(ItemModule.ModuleInstance instance);
-
     @Override
     public boolean load(String moduleKey, JsonElement data) {
-        codec(new ItemModule.ModuleInstance(ItemModule.empty)).parse(JsonOps.INSTANCE, data).getOrThrow(false, s ->
+        codec.parse(JsonOps.INSTANCE, data).getOrThrow(false, s ->
                 Miapi.LOGGER.error("Failed to load CodecBasedProperty! -> {}", s));
         return true;
     }
@@ -42,7 +44,7 @@ public abstract class CodecBasedProperty<T> implements ModuleProperty {
         if(element == null){
             return null;
         }
-        return codec(ItemModule.getModules(stack)).parse(JsonOps.INSTANCE, element).getOrThrow(false, s -> {
+        return codec.parse(JsonOps.INSTANCE, element).getOrThrow(false, s -> {
             Miapi.LOGGER.error("Failed to decode using codec during cache creation for a CodecBasedProperty! -> " + s);
         });
     }

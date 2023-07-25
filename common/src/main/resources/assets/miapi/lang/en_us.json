@@ -16,7 +16,8 @@
     "miapi.skin.name.star_wars": "",
     "miapi.skin.name.skyrim": "",
     "miapi.skin.name.goldbrand": "",
-    
+
+    "effect.miapi.cryo": "Cryo",
 
     "miapi.attribute.name.durability":"Durability",
     "miapi.attribute.name.resistance":"Damage Ressistance",

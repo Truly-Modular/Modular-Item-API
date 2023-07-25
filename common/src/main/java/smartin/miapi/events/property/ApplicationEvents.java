@@ -1,12 +1,10 @@
 package smartin.miapi.events.property;
 
 import com.mojang.datafixers.util.Pair;
-import com.redpxnda.nucleus.datapack.codec.AutoCodec;
 import dev.architectury.event.Event;
 import dev.architectury.event.EventResult;
-import dev.architectury.event.events.common.EntityEvent;
-import dev.architectury.event.events.common.PlayerEvent;
-import dev.architectury.event.events.common.TickEvent;
+import dev.architectury.event.events.common.*;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ItemEntity;
@@ -15,31 +13,40 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.Hand;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 import org.apache.logging.log4j.util.TriConsumer;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.modules.abilities.util.ItemProjectile.ItemProjectile;
 import smartin.miapi.modules.abilities.util.ItemUseAbility;
+import smartin.miapi.modules.properties.PlaySoundProperty;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 
 /**
  * A class holding all of Miapi's base {@link ApplicationEvent}s.
  * Additionally, it also contains a few helpers for {@link ApplicationEvent}s or their listeners.
+ * <p></p>
  * {@link #entityEvents}: A list containing every entity related event. This is used so that listeners
  * can easily listen to and handle every entity related event at the same time.
+ * <p></p>
  * {@link #entityDataReaders}: A registry representing ways to get items out of entities.
  * By default, you can check entities' offhands, mainhands, armor slots, or active using item. This is
  * also used to get the itemstack in modular projectile entities, or the itemstack in dropped ItemEntities.
+ * <p></p>
  * {@link #entityRedirectors}: A registry representing ways to get other entities from
  * an inputted one. By default, you can the entity's attacker, or the entity's victim.
+ * <p></p>
+ * {@link #entityTargetFillers}: A list containing directions allowing for additional "target" selection
+ * on application events. For instance, often, in the hurt events, you may want to choose which of the
+ * entities your property should apply to. You could hardcode this, or, you could use the entityTargetFillers
+ * to allow any of them, defined by your json. See {@link PlaySoundProperty} for a simple example.
+ * (Use the {@link #getEntityForTarget(String, Entity, ApplicationEvent, Object[])} method to generate this target)
  * <p></p>
  * Example usages of these helpers can be seen in the PotionEffectProperty.
  */
@@ -47,6 +54,7 @@ public class ApplicationEvents {
     public static final Map<String, Function<Entity, ItemStack>> entityDataReaders = new HashMap<>();
     private static final Map<String, Function<Entity, Entity>> entityRedirectors = new HashMap<>();
     private static final List<BiConsumer<EntityInvoker, StackGetterHolder<?>>> entityEvents = new ArrayList<>();
+    private static final List<TriConsumer<ApplicationEvent<?, ?, ?>, Map<String, Entity>, Object[]>> entityTargetFillers = new ArrayList<>();
     public static void registerEntityRedirector(String key, Function<Entity, Entity> redirector) {
         entityRedirectors.put(key, redirector);
     }
@@ -69,6 +77,24 @@ public class ApplicationEvents {
         if (entity == null) return null;
         return segments.length == 1 ? entity : getEntityRedirector(segments[1]).apply(entity);
     }
+    /**
+     * Same thing as above but the map is generated for you via {@link #setupTargetEntities(Entity, ApplicationEvent, Object[])}
+     */
+    public static @Nullable Entity getEntityForTarget(String target, Entity fallback, ApplicationEvent<?, ?, ?> event, Object[] originals) {
+        return getEntityForTarget(target, setupTargetEntities(fallback, event, originals), fallback);
+    }
+
+    public static void setupTargetEntities(Map<String, Entity> validEntities, Entity thisEntity, ApplicationEvent<?, ?, ?> event, Object[] originals) {
+        validEntities.put("this", thisEntity);
+        entityTargetFillers.forEach(filler -> {
+            filler.accept(event, validEntities, originals);
+        });
+    }
+    public static Map<String, Entity> setupTargetEntities(Entity thisEntity, ApplicationEvent<?, ?, ?> event, Object[] originals) {
+        Map<String, Entity> map = new HashMap<>();
+        setupTargetEntities(map, thisEntity, event, originals);
+        return map;
+    }
 
     /**
      * Registers a new entity based event. See this class's javadoc for more info.
@@ -77,6 +103,14 @@ public class ApplicationEvents {
      */
     public static void registerEntityEvent(BiConsumer<EntityInvoker, StackGetterHolder<?>> consumer) {
         entityEvents.add(consumer);
+    }
+
+    /**
+     * Registers a new entity target filler. See this class's javadoc for more info, or see the {@link #setup()} method for usage examples.
+     * @param targetFiller the actual target filler.
+     */
+    public static void registerTargetFiller(TriConsumer<ApplicationEvent<?, ?, ?>, Map<String, Entity>, Object[]> targetFiller) {
+        entityTargetFillers.add(targetFiller);
     }
 
     /**
@@ -101,6 +135,91 @@ public class ApplicationEvents {
                 listener.call(HURT_AFTER, selected, stack, data, victim, source, amount);
             }, stackGetter);
         });
+        registerTargetFiller((event, validEntities, originals) -> {
+            if (event instanceof HurtEvent) {
+                DamageSource damageSource = (DamageSource) originals[1];
+                LivingEntity victim = (LivingEntity) originals[0];
+
+                validEntities.put("victim", victim);
+                if (damageSource != null) {
+                    if (damageSource.getAttacker() != null) validEntities.put("attacker", damageSource.getAttacker());
+                    if (damageSource.getSource() != null) validEntities.put("source", damageSource.getSource());
+                }
+            }
+        });
+
+        registerEntityEvent((listener, stackGetter) -> {
+            START_RIDING.startListening((stack, selected, data, passenger, vehicle) -> {
+                listener.call(START_RIDING, selected, stack, data, passenger, vehicle);
+            }, stackGetter);
+        });
+        registerEntityEvent((listener, stackGetter) -> {
+            STOP_RIDING.startListening((stack, selected, data, passenger, vehicle) -> {
+                listener.call(STOP_RIDING, selected, stack, data, passenger, vehicle);
+            }, stackGetter);
+        });
+        registerTargetFiller((event, validEntities, originals) -> {
+            if (event instanceof RideEvent) {
+                Entity passenger = (Entity) originals[0];
+                Entity vehicle = (Entity) originals[1];
+
+                validEntities.put("passenger", passenger);
+                validEntities.put("vehicle", vehicle);
+            }
+        });
+
+        dev.architectury.event.events.common.BlockEvent.BREAK.register((world, pos, state, entity, xp) -> {
+            BLOCK_BREAK.invoker().call(world, pos, state, entity);
+            return EventResult.pass();
+        });
+        registerEntityEvent((listener, stackGetter) -> {
+            BLOCK_BREAK.startListening((stack, selected, data, world, pos, state, original) -> {
+                listener.call(BLOCK_BREAK, selected, stack, data, world, pos, state, original);
+            }, stackGetter);
+        });
+        dev.architectury.event.events.common.BlockEvent.PLACE.register((world, pos, state, entity) -> {
+            BLOCK_PLACE.invoker().call(world, pos, state, entity);
+            return EventResult.pass();
+        });
+        registerEntityEvent((listener, stackGetter) -> {
+            BLOCK_PLACE.startListening((stack, selected, data, world, pos, state, original) -> {
+                listener.call(BLOCK_PLACE, selected, stack, data, world, pos, state, original);
+            }, stackGetter);
+        });
+
+        InteractionEvent.LEFT_CLICK_BLOCK.register((player, hand, pos, face) -> {
+            BLOCK_LEFT_CLICK.invoker().call(player, hand, pos, face);
+            return EventResult.pass();
+        });
+        registerEntityEvent((listener, stackGetter) -> {
+            BLOCK_LEFT_CLICK.startListening((stack, selected, data, player, hand, pos, face) -> {
+                listener.call(BLOCK_LEFT_CLICK, selected, stack, data, player, hand, pos, face);
+            }, stackGetter);
+        });
+        InteractionEvent.RIGHT_CLICK_BLOCK.register((player, hand, pos, face) -> {
+            BLOCK_RIGHT_CLICK.invoker().call(player, hand, pos, face);
+            return EventResult.pass();
+        });
+        registerEntityEvent((listener, stackGetter) -> {
+            BLOCK_RIGHT_CLICK.startListening((stack, selected, data, player, hand, pos, face) -> {
+                listener.call(BLOCK_RIGHT_CLICK, selected, stack, data, player, hand, pos, face);
+            }, stackGetter);
+        });
+
+        registerEntityEvent((listener, stackGetter) -> {
+            ENTITY_RIGHT_CLICK.startListening((stack, selected, data, player, entity, hand) -> {
+                listener.call(ENTITY_RIGHT_CLICK, selected, stack, data, player, entity, hand);
+            }, stackGetter);
+        });
+        registerTargetFiller((event, validEntities, originals) -> {
+            if (event instanceof EntityInteractEvent) {
+                PlayerEntity player = (PlayerEntity) originals[0];
+                Entity entity = (Entity) originals[1];
+
+                validEntities.put("interactor", player);
+                validEntities.put("interacted", entity);
+            }
+        });
 
         registerEntityEvent((listener, stackGetter) -> {
             ENTER_CHUNK.startListening((stack, data, entity, x, y, z, px, py, pz) -> {
@@ -116,6 +235,14 @@ public class ApplicationEvents {
             ITEM_DROP.startListening((targetStack, targetEntity, data, stack, entity, player) -> {
                 listener.call(ITEM_DROP, targetEntity, targetStack, data, stack, entity, player);
             }, stackGetter);
+        });
+        registerTargetFiller((event, validEntities, originals) -> {
+            if (event instanceof ItemEntityEvent) {
+                ItemEntity item = (ItemEntity) originals[1];
+                PlayerEntity player = (PlayerEntity) originals[2];
+                validEntities.put("item", item);
+                validEntities.put("player", player);
+            }
         });
 
         PlayerEvent.PICKUP_ITEM_POST.register((player, entity, stack) -> ITEM_PICKUP.invoker().call(stack, entity, player));
@@ -158,6 +285,9 @@ public class ApplicationEvents {
         // ENTITY REDIRECTORS
         registerEntityRedirector("attacker", entity -> entity instanceof LivingEntity living ? living.getAttacker() : null);
         registerEntityRedirector("attacking", entity -> entity instanceof LivingEntity living ? living.getAttacking() : null);
+        registerEntityRedirector("vehicle", entity -> entity.getVehicle());
+        registerEntityRedirector("root_vehicle", entity -> entity.getRootVehicle());
+        registerEntityRedirector("main_passenger", entity -> entity.getFirstPassenger());
     }
 
     public static ApplicationEvent.Dynamic<EntityInvoker, StackGetterHolder<?>> ENTITY_RELATED = new ApplicationEvent.Dynamic<>("entity_event") {
@@ -176,6 +306,13 @@ public class ApplicationEvents {
     };
     public static HurtEvent HURT = new HurtEvent("hurt", MiapiEvents.LIVING_HURT); // when an entity takes damage
     public static HurtEvent HURT_AFTER = new HurtEvent("hurt.after", MiapiEvents.LIVING_HURT_AFTER); // after an entity takes damage (damage is confirmed to apply)
+    public static RideEvent START_RIDING = new RideEvent("start_riding", MiapiEvents.START_RIDING); // when an entity starts riding another
+    public static RideEvent STOP_RIDING = new RideEvent("stop_riding", MiapiEvents.STOP_RIDING); // when an entity stops riding another
+    public static BlockEvent BLOCK_BREAK = new BlockEvent("block_break"); // when an entity(always player, iirc) breaks a block
+    public static BlockEvent BLOCK_PLACE = new BlockEvent("block_place"); // when an entity places a block
+    public static BlockInteractEvent BLOCK_LEFT_CLICK = new BlockInteractEvent("block_left_click"); // when a player left clicks a block
+    public static BlockInteractEvent BLOCK_RIGHT_CLICK = new BlockInteractEvent("block_right_click"); // when a player right clicks a block
+    public static EntityInteractEvent ENTITY_RIGHT_CLICK = new EntityInteractEvent("entity_right_click"); // when a player right clicks an entity
     public static PlayerTickEvent PLAYER_TICK = new PlayerTickEvent("player_tick"); // after a player ticks
     public static EnterChunkEvent ENTER_CHUNK = new EnterChunkEvent("enter_chunk"); // when an entity enters a new chunk
     public static ItemEntityEvent ITEM_DROP = new ItemEntityEvent("item_drop"); // when a player drops an item
@@ -186,6 +323,7 @@ public class ApplicationEvents {
     public static AbilityEvent ABILITY_STOP_USING = new AbilityEvent("ability.stop.using"); // when a player stops an ItemUseAbility- specifically stops using(stops holding right click)
     public static AbilityEvent ABILITY_STOP_HOLDING = new AbilityEvent("ability.stop.holding"); // when a player stops an ItemUseAbility- specifically stops holding the use item
     public static AbilityEvent ABILITY_FINISH = new AbilityEvent("ability.finish"); // when a player's ItemUseAbility timer runs out
+
     public static List<AbilityEvent> ABILITY_EVENTS;
 
     public interface EntityInvoker {
@@ -226,11 +364,6 @@ public class ApplicationEvents {
                     Pair.of("source", direct)
             );
         }
-
-        @Override
-        public void startListening(HurtListener listener) {
-            throw new IllegalArgumentException("Cannot listen to a dynamic ApplicationEvent (HurtEvent) without providing additional data!");
-        }
     }
     public interface HurtInvoker {
         void call(LivingEntity entity, DamageSource source, float amount);
@@ -245,6 +378,116 @@ public class ApplicationEvents {
          * @param amount   the damage amount
          */
         void call(ItemStack stack, Entity selected, Object data, LivingEntity victim, DamageSource source, float amount);
+    }
+
+    public static class EntityInteractEvent extends ApplicationEvent<EntityInteractInvoker, EntityInteractListener, StackGetterHolder<?>> {
+        public EntityInteractEvent(String name) {
+            super(name);
+            InteractionEvent.INTERACT_ENTITY.register((player, entity, hand) -> {
+                this.invoker().call(player, entity, hand);
+                return EventResult.pass();
+            });
+        }
+
+        @Override
+        protected void callWithInvokerParams(EntityInteractListener toCall, Object[] params, StackGetterHolder<?> additionalData) {
+            PlayerEntity player = (PlayerEntity) params[0];
+            Entity entity = (Entity) params[1];
+            Hand hand = (Hand) params[2];
+
+            additionalData.checkAndCall(
+                    (stack, selected, data) -> toCall.call(stack, selected, data, player, entity, hand),
+                    ".",
+                    Pair.of("interactor", player),
+                    Pair.of("interacted", entity)
+            );
+        }
+    }
+    public interface EntityInteractInvoker {
+        void call(PlayerEntity player, Entity entity, Hand hand);
+    }
+    public interface EntityInteractListener {
+        void call(ItemStack stack, Entity selected, Object data, PlayerEntity player, Entity entity, Hand hand);
+    }
+
+    public static class BlockInteractEvent extends ApplicationEvent<BlockInteractInvoker, BlockInteractListener, StackGetterHolder<?>> {
+        public BlockInteractEvent(String name) {
+            super(name);
+        }
+
+        @Override
+        protected void callWithInvokerParams(BlockInteractListener toCall, Object[] params, StackGetterHolder<?> additionalData) {
+            PlayerEntity player = (PlayerEntity) params[0];
+            Hand hand = (Hand) params[1];
+            BlockPos pos = (BlockPos) params[2];
+            Direction face = (Direction) params[3];
+
+            additionalData.checkAndCall(
+                    (stack, entity, data) -> toCall.call(stack, entity, data, player, hand, pos, face),
+                    player
+            );
+        }
+    }
+    public interface BlockInteractInvoker {
+        void call(PlayerEntity player, Hand hand, BlockPos pos, Direction face);
+    }
+    public interface BlockInteractListener {
+        void call(ItemStack stack, Entity selected, Object data, PlayerEntity interactor, Hand hand, BlockPos pos, Direction face);
+    }
+
+    public static class BlockEvent extends ApplicationEvent<BlockInvoker, BlockListener, StackGetterHolder<?>> {
+        public BlockEvent(String name) {
+            super(name);
+        }
+
+        @Override
+        protected void callWithInvokerParams(BlockListener toCall, Object[] params, StackGetterHolder<?> additionalData) {
+            World world = (World) params[0];
+            BlockPos pos = (BlockPos) params[1];
+            BlockState state = (BlockState) params[2];
+            Entity entity = (Entity) params[3];
+
+            additionalData.checkAndCall(
+                    (stack, selected, data) -> toCall.call(stack, selected, data, world, pos, state, entity),
+                    entity
+            );
+        }
+    }
+    public interface BlockInvoker {
+        void call(World world, BlockPos pos, BlockState state, Entity entity);
+    }
+    public interface BlockListener {
+        void call(ItemStack stack, Entity selected, Object data, World world, BlockPos pos, BlockState state, Entity original);
+    }
+
+    public static class RideEvent extends ApplicationEvent<MiapiEvents.EntityRide, RideListener, StackGetterHolder<?>> {
+        public RideEvent(String name, Event<MiapiEvents.EntityRide> event) {
+            super(name);
+            event.register((passenger, vehicle) -> this.invoker().ride(passenger, vehicle));
+        }
+
+        @Override
+        protected void callWithInvokerParams(RideListener toCall, Object[] params, StackGetterHolder<?> additionalData) {
+            Entity passenger = (Entity) params[0];
+            Entity vehicle = (Entity) params[1];
+
+            additionalData.checkAndCall(
+                    (stack, entity, data) -> toCall.call(stack, entity, data, passenger, vehicle),
+                    ".",
+                    Pair.of("passenger", passenger),
+                    Pair.of("vehicle", vehicle)
+            );
+        }
+    }
+    public interface RideListener {
+        /**
+         * @param stack     the targeted stack chosen by the passed in {@link StackGetterHolder}
+         * @param selected  ^ but entity
+         * @param data      ^ but data used for the {@link StackGetterHolder}
+         * @param passenger the original passenger entity
+         * @param vehicle   the original vehicle entity
+         */
+        void call(ItemStack stack, Entity selected, Object data, Entity passenger, Entity vehicle);
     }
 
     public static class AbilityEvent extends ApplicationEvent<AbilityInvoker, AbilityListener, StackGetterHolder<?>> {
@@ -266,11 +509,6 @@ public class ApplicationEvents {
                     (stack, entity, o) -> toCall.call(stack, o, using, world, user, remainingUsingTicks, ability),
                     user
             );
-        }
-
-        @Override
-        public void startListening(AbilityListener listener) {
-            throw new IllegalArgumentException("Cannot listen to a dynamic ApplicationEvent (AbilityEvent) without providing additional data!");
         }
     }
     public interface AbilityInvoker {
@@ -311,11 +549,6 @@ public class ApplicationEvents {
                     entity
             );
         }
-
-        @Override
-        public void startListening(EnterChunkListener listener) {
-            throw new IllegalArgumentException("Cannot listen to a dynamic ApplicationEvent (EnterChunkEvent) without providing additional data!");
-        }
     }
     public interface EnterChunkInvoker {
         void call(Entity entity, int x, int y, int z, int prevX, int prevY, int prevZ);
@@ -341,11 +574,6 @@ public class ApplicationEvents {
                     Pair.of("entity", entity),
                     Pair.of("player", player)
             );
-        }
-
-        @Override
-        public void startListening(ItemEntityListener listener) {
-            throw new IllegalArgumentException("Cannot listen to a dynamic ApplicationEvent (ItemEntityEvent) without providing additional data!");
         }
     }
     public interface ItemEntityInvoker {
@@ -382,12 +610,13 @@ public class ApplicationEvents {
      * StackGetterHolder is a helper class used to dynamically control which ItemStack should be used
      * for some ApplicationEvent.
      * If you're interested in creating a StackGetterHolder for some ApplicationEvent's listener,here's what you should know:
-     * - If your property's data is a list, or possibly map, use the {@link #ofMulti(Function, Function, BiFunction)} method for creation.
+     * - If your property's data is a list, or possibly map, use the {@link #ofMulti(Function, Function)} method for creation.
      * - If your property's data represents a single object, use the {@link #ofSingle(Function, Function)} method for creation.
      * - The first parameter is a function providing an item stack, requiring you to return some data. Usually this is your property's data, based on the ItemStack.
      * - The second parameter provides you the data you just returned, and requires you to filter out for some string value.
      *   This string value represents the target item for the event. Eg. 'victim.mainhand', 'attacker.head'
-     *   (If you're creating with ofMulti, you will also have to define a third parameter to filter for values that match this target item.)
+     *   (If you're using ofMulti, return a pair with the first value being this string and the second being the data)
+     *   (extending ^: Make sure to use Mojang's {@link Pair} class, many libraries have their own.)
      * <p></p>
      * If you're interested in using the StackGetterHolder for a custom ApplicationEvent, here's what you should know:
      * - Set the StackGetterHolder to your event's additional data parameter, or at least something that includes it.
@@ -398,31 +627,37 @@ public class ApplicationEvents {
      * @param <T>
      */
     public static class StackGetterHolder<T> {
-        protected final Function<ItemStack, T> dataGetter;
+        protected final @Nullable Function<ItemStack, T> singleDataGetter;
+        protected final @Nullable Function<ItemStack, Collection<T>> multiDataGetter;
         protected final @Nullable Function<T, String> single;
-        protected final @Nullable Function<T, List<String>> multi;
-        protected final @Nullable BiFunction<T, String, T> filter;
+        protected final @Nullable Function<Collection<T>, List<Pair<String, T>>> multi;
 
-        public StackGetterHolder(Function<ItemStack, T> dataGetter, @Nullable Function<T, String> single, @Nullable Function<T, List<String>> multi, @Nullable BiFunction<T, String, T> filter) {
-            this.dataGetter = dataGetter;
+        protected StackGetterHolder(Function<ItemStack, T> dataGetter, Function<T, String> single) {
+            this.singleDataGetter = dataGetter;
             this.single = single;
+            this.multiDataGetter = null;
+            this.multi = null;
+        }
+        protected StackGetterHolder(boolean toDifferentiateErasure, Function<ItemStack, Collection<T>> dataGetter, Function<Collection<T>, List<Pair<String, T>>> multi) {
+            this.singleDataGetter = null;
+            this.single = null;
+            this.multiDataGetter = dataGetter;
             this.multi = multi;
-            this.filter = filter;
         }
         public static <T> StackGetterHolder<T> ofSingle(Function<ItemStack, T> dataGetter, Function<T, String> single) {
-            return new StackGetterHolder<>(dataGetter, single, null, (t, str) -> t);
+            return new StackGetterHolder<>(dataGetter, single);
         }
-        public static <T> StackGetterHolder<T> ofMulti(Function<ItemStack, T> dataGetter, Function<T, List<String>> multi, BiFunction<T, String, T> filter) {
-            return new StackGetterHolder<>(dataGetter, null, multi, filter);
+        public static <T> StackGetterHolder<T> ofMulti(Function<ItemStack, Collection<T>> dataGetter, Function<Collection<T>, List<Pair<String, T>>> multi) {
+            return new StackGetterHolder<>(true, dataGetter, multi);
         }
 
         public void ifSingle(BiConsumer<Function<ItemStack, T>, Function<T, String>> consumer) {
             if (single != null)
-                consumer.accept(dataGetter, single);
+                consumer.accept(singleDataGetter, single);
         }
-        public void ifMulti(BiConsumer<Function<ItemStack, T>, Function<T, List<String>>> consumer) {
+        public void ifMulti(BiConsumer<Function<ItemStack, Collection<T>>, Function<Collection<T>, List<Pair<String, T>>>> consumer) {
             if (multi != null)
-                consumer.accept(dataGetter, multi);
+                consumer.accept(multiDataGetter, multi);
         }
 
         /**
@@ -463,17 +698,16 @@ public class ApplicationEvents {
             });
             this.ifMulti((dataGetter, targetGetter) -> {
                 entityDataReaders.forEach((key, stackGetter) -> {
-                    assert filter != null; // can't not have a filter when using multi
                     for (Pair<String, Entity> pair : entities) {
                         ItemStack stack;
-                        T data;
-                        List<String> result;
+                        Collection<T> data;
+                        List<Pair<String, T>> result;
                         String prefix = pair.getFirst();
                         Entity entity = pair.getSecond();
                         if (entity != null && (stack = stackGetter.apply(entity)) != null && !stack.isEmpty()) // look above for explanation, it's practically the same thing
                             if ((data = dataGetter.apply(stack)) != null && (result = targetGetter.apply(data)) != null) result.forEach(expected -> { // looping the list of potential targets
-                                if (expected.equals(prefix + separator + key)) {
-                                    consumer.accept(stack, entity, filter.apply(data, expected)); // call consumer and filter data
+                                if (expected.getFirst().equals(prefix + separator + key)) {
+                                    consumer.accept(stack, entity, expected.getSecond()); // call consumer with attached data
                                 }
                             });
                     }

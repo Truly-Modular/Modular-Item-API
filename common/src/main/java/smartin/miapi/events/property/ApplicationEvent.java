@@ -36,7 +36,7 @@ public abstract class ApplicationEvent<I, L, A> {
     );
 
     private final Class<I> invokerClass;
-    protected final String name;
+    public final String name;
     protected final I invoker;
     protected final List<Pair<L, A>> listeners = new ArrayList<>();
 
@@ -81,8 +81,7 @@ public abstract class ApplicationEvent<I, L, A> {
      *
      * @param toCall the listener to call
      * @param params the parameters of the original invoker
-     * @param additionalData the additional data passed in with the listener.
-     *                       NOTE: this can be null. If you don't want that, override the {{@link #startListening(Object)}} method.
+     * @param additionalData the additional data passed in with the listener. Set to null if the event doesn't use additional data.
      */
     protected abstract void callWithInvokerParams(L toCall, Object[] params, A additionalData);
 
@@ -94,9 +93,6 @@ public abstract class ApplicationEvent<I, L, A> {
      */
     public void startListening(L listener, A additionalData) {
         listeners.add(Pair.of(listener, additionalData));
-    }
-    public void startListening(L listener) {
-        listeners.add(Pair.of(listener, null));
     }
 
     /**
@@ -144,11 +140,6 @@ public abstract class ApplicationEvent<I, L, A> {
                     throw new RuntimeException(e);
                 }
             }
-        }
-
-        @Override
-        public void startListening(T listener) {
-            throw new IllegalArgumentException("Cannot listen to a dynamic ApplicationEvent without additional data!");
         }
 
         protected abstract boolean canCall(Object[] params, A additionalData);

@@ -18,6 +18,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.entity.attribute.ClampedEntityAttribute;
 import net.minecraft.entity.attribute.EntityAttribute;
+import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
@@ -32,12 +33,12 @@ import net.minecraft.world.event.GameEvent;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.blocks.ModularWorkBench;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
-import smartin.miapi.blocks.StatProvidingBlock;
 import smartin.miapi.blocks.StatProvidingBlockEntity;
 import smartin.miapi.client.MiapiClient;
 import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
 import smartin.miapi.craft.stat.CraftingStat;
 import smartin.miapi.craft.stat.SimpleCraftingStat;
+import smartin.miapi.effects.CryoStatusEffect;
 import smartin.miapi.item.modular.items.*;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.abilities.*;
@@ -69,6 +70,7 @@ public class RegistryInventory {
     public static final Registrar<EntityAttribute> attributes = registrar.get().get(RegistryKeys.ATTRIBUTE);
     public static final Registrar<EntityType<?>> entityTypes = registrar.get().get(RegistryKeys.ENTITY_TYPE);
     public static final Registrar<ScreenHandlerType<?>> screenHandlers = registrar.get().get(RegistryKeys.SCREEN_HANDLER);
+    public static final Registrar<StatusEffect> statusEffects = registrar.get().get(RegistryKeys.STATUS_EFFECT);
     public static final Registrar<ItemGroup> tab = registrar.get().get(RegistryKeys.ITEM_GROUP);
     public static final Registrar<GameEvent> gameEvents = registrar.get().get(RegistryKeys.GAME_EVENT);
     public static final MiapiRegistry<ModuleProperty> moduleProperties = MiapiRegistry.getInstance(ModuleProperty.class);
@@ -137,6 +139,7 @@ public class RegistryInventory {
     public static BlockEntityType<StatProvidingBlockEntity> exampleStatProviderBlockEntityType;
     public static Item modularItem;
     public static GameEvent statUpdateEvent;
+    public static StatusEffect cryoStatusEffect;
     public static GameEvent statProviderUpdatedEvent;
     public static SimpleCraftingStat exampleCraftingStat;
     public static RegistrySupplier<EntityType<ItemProjectile>> itemProjectileType = (RegistrySupplier) registerAndSupply(entityTypes, "thrown_item", () ->
@@ -230,6 +233,9 @@ public class RegistryInventory {
         register(modularItems, "modular_leggings", ModularLeggings::new);
         register(modularItems, "modular_boots", ModularBoots::new);
 
+        //STATUS EFFECTS
+        register(statusEffects, "cryo", CryoStatusEffect::new, eff -> cryoStatusEffect = eff);
+
         //ATTRIBUTE
         registerAtt("generic.durability", false, () ->
                         new ClampedEntityAttribute("miapi.attribute.name.durability", 1.0, 1.0, 16777216).setTracked(true),
@@ -313,6 +319,8 @@ public class RegistryInventory {
             registerMiapi(moduleProperties, PotionEffectProperty.KEY, new PotionEffectProperty());
             //registerMiapi(moduleProperties, ParticleShapingProperty.KEY, new ParticleShapingProperty());
             registerMiapi(moduleProperties, PlaySoundProperty.KEY, new PlaySoundProperty());
+            registerMiapi(moduleProperties, ExecuteProperty.KEY, new ExecuteProperty());
+            registerMiapi(moduleProperties, ImmolateProperty.KEY, new ImmolateProperty());
             registerMiapi(moduleProperties, DisplayNameProperty.KEY, new DisplayNameProperty());
             registerMiapi(moduleProperties, ItemIdProperty.KEY, new ItemIdProperty());
             registerMiapi(moduleProperties, EquipmentSlotProperty.KEY, new EquipmentSlotProperty());

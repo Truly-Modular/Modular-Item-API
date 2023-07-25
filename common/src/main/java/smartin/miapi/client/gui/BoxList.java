@@ -7,6 +7,7 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.ColorHelper;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 
@@ -21,10 +22,10 @@ public class BoxList extends InteractAbleWidget {
     private int currentPage = 0;
     private int totalPages = 0;
     private int space = 5;
-    private int maxHeight;
-    private int maxWidth;
+    public int maxPageHeight;
     private PageButton left;
     private PageButton right;
+    public boolean usePages = true;
 
     /**
      * @param x       the x Position of the BoxList
@@ -71,7 +72,7 @@ public class BoxList extends InteractAbleWidget {
         if (widgets == null) {
             widgets = new ArrayList<>();
         }
-        maxHeight = 0;
+        /*maxHeight = 0;
         maxWidth = 0;
         for (ClickableWidget widget : widgets) {
             if (widget.getWidth() > maxWidth) {
@@ -104,14 +105,55 @@ public class BoxList extends InteractAbleWidget {
         left.setX(this.getX() + space);
         left.setY(this.getY() + this.height - left.getHeight() - space);
         right.setX(this.getX() + this.getWidth() - right.getHeight() - space);
-        right.setY(this.getY() + this.height - right.getHeight() - space);
+        right.setY(this.getY() + this.height - right.getHeight() - space);*/
+
+        widgetPages = new HashMap<>();
+        widgetPages.put(0, new ArrayList<>());
+        int columnBuffer = 0;
+        int xPos = 0;
+        int yPos = 0;
+        int page = 0;
+        for (ClickableWidget widget : widgets) {
+            if (usePages && yPos+widget.getHeight() > maxPageHeight) {
+                page++;
+                widgetPages.computeIfAbsent(page, i -> new ArrayList<>());
+                xPos = 0;
+                yPos = 0;
+                columnBuffer = 0;
+            }
+            if (xPos > 0 && xPos+widget.getWidth() > getWidth()) {
+                xPos = 0;
+                yPos+=columnBuffer+space;
+                columnBuffer = 0;
+            }
+            if (widget.getHeight() > columnBuffer) columnBuffer = widget.getHeight();
+
+            widget.setX(xPos + space + getX());
+            widget.setY(yPos + space + getY());
+            widgetPages.get(page).add(widget);
+
+            xPos+=widget.getWidth()+space;
+        }
+        if (!usePages)
+            setHeight(yPos);
+
+        totalPages = widgetPages.keySet().size();
+        if (currentPage >= totalPages)
+            currentPage = totalPages-1;
+        setPage(currentPage);
+        left.setX(getX() + space);
+        left.setY(getY() + getHeight() - left.getHeight() - space);
+        right.setX(getX() + getWidth() - right.getHeight() - space);
+        right.setY(getY() + getHeight() - right.getHeight() - space);
     }
 
     public void setPage(int i) {
         currentPage = Math.min(Math.max(i, 0), totalPages - 1);
         this.children().clear();
-        this.children().add(left);
-        this.children().add(right);
+        if (usePages) {
+            this.children().add(left);
+            this.children().add(right);
+        }
         if (widgetPages.get(currentPage) != null) {
             this.children().addAll(widgetPages.get(currentPage));
         }

@@ -10,7 +10,6 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.ColorHelper;
-import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.*;
 
 import java.text.DecimalFormat;
@@ -31,11 +30,11 @@ public abstract class SingleStatDisplayDouble extends InteractAbleWidget impleme
     public double maxValue = 100;
     public double minValue = 0;
     public DecimalFormat modifierFormat;
-    public TextGetter text;
-    public TextGetter hover;
+    public StatDisplay.TextGetter text;
+    public StatDisplay.TextGetter hover;
     public HoverDescription hoverDescription;
 
-    public SingleStatDisplayDouble(int x, int y, int width, int height, TextGetter title, TextGetter hover) {
+    public SingleStatDisplayDouble(int x, int y, int width, int height, StatDisplay.TextGetter title, StatDisplay.TextGetter hover) {
         super(x, y, width, height, Text.empty());
         text = title;
         this.hover = hover;
@@ -116,9 +115,5 @@ public abstract class SingleStatDisplayDouble extends InteractAbleWidget impleme
 
     public InteractAbleWidget getHoverWidget() {
         return hoverDescription;
-    }
-
-    public interface TextGetter {
-        Text resolve(ItemStack stack);
     }
 }
