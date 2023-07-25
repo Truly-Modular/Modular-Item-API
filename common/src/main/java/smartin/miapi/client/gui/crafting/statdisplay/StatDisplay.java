@@ -25,6 +25,7 @@ import java.util.List;
 @Environment(EnvType.CLIENT)
 public class StatDisplay extends InteractAbleWidget {
     private static final List<InteractAbleWidget> statDisplays = new ArrayList<>();
+    private static final List<StatWidgetSupplier> statWidgetSupplier = new ArrayList<>();
     private final BoxList boxList;
     private TransformableWidget transformableWidget;
     private TransformableWidget hoverText;
@@ -89,10 +90,10 @@ public class StatDisplay extends InteractAbleWidget {
         InteractAbleWidget hoverDisplay = null;
         for (Element children : boxList.children()) {
             if (children.isMouseOver(vector4f.x(), vector4f.y()) && (children instanceof SingleStatDisplay widget)) {
-                    InteractAbleWidget ableWidget = widget.getHoverWidget();
-                    if (ableWidget != null) {
-                        hoverDisplay = ableWidget;
-                    }
+                InteractAbleWidget ableWidget = widget.getHoverWidget();
+                if (ableWidget != null) {
+                    hoverDisplay = ableWidget;
+                }
 
             }
         }
@@ -104,21 +105,37 @@ public class StatDisplay extends InteractAbleWidget {
         }
     }
 
-    private void update() {
+    private <T extends InteractAbleWidget & SingleStatDisplay> void update() {
         List<ClickableWidget> widgets = new ArrayList<>();
+        for (StatWidgetSupplier supplier : statWidgetSupplier) {
+            List<T> statWidgets = supplier.currentList(original, compareTo);
+            for (T statDisplay : statWidgets) {
+                statDisplay.setHeight(statDisplay.getHeightDesired());
+                statDisplay.setWidth(statDisplay.getWidthDesired());
+                widgets.add(statDisplay);
+            }
+        }
         for (InteractAbleWidget statDisplay : statDisplays) {
             if (statDisplay instanceof SingleStatDisplay singleStatDisplay && (singleStatDisplay.shouldRender(original, compareTo))) {
-                    statDisplay.setHeight(singleStatDisplay.getHeightDesired());
-                    statDisplay.setWidth(singleStatDisplay.getWidthDesired());
-                    widgets.add(statDisplay);
+                statDisplay.setHeight(singleStatDisplay.getHeightDesired());
+                statDisplay.setWidth(singleStatDisplay.getWidthDesired());
+                widgets.add(statDisplay);
 
             }
         }
         boxList.setWidgets(widgets, 1);
     }
 
+    public interface StatWidgetSupplier {
+        <T extends InteractAbleWidget & SingleStatDisplay> List<T> currentList(ItemStack original, ItemStack compareTo);
+    }
+
     public static <T extends InteractAbleWidget & SingleStatDisplay> void addStatDisplay(T statDisplay) {
         statDisplays.add(statDisplay);
+    }
+
+    public static void addStatDisplaySupplier(StatWidgetSupplier supplier) {
+        statWidgetSupplier.add(supplier);
     }
 
     public void setOriginal(ItemStack original) {
