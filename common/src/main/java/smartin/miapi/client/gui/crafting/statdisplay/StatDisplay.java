@@ -107,7 +107,7 @@ public class StatDisplay extends InteractAbleWidget {
 
             }
         }
-        if (hoverDisplay != null) {
+        if (hoverDisplay != null && this.isMouseOver(mouseX, mouseY)) {
             float scale = 0.667f;
             hoverDisplay.setX((int) ((mouseX + 5) * (1 / scale)));
             hoverDisplay.setY((int) ((mouseY - hoverDisplay.getHeight() / 2 * scale) * (1 / scale)));
