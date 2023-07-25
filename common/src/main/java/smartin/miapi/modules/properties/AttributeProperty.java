@@ -32,6 +32,7 @@ public class AttributeProperty implements ModuleProperty {
     public static ModuleProperty property;
     public static final Map<String, Supplier<EntityAttribute>> replaceMap = new HashMap<>();
     public static final Map<EntityAttribute, Float> priorityMap = new HashMap<>();
+    public static final List<AttributeTransformer> attributeTransformers = new ArrayList<>();
 
     public AttributeProperty() {
         property = this;
@@ -100,6 +101,23 @@ public class AttributeProperty implements ModuleProperty {
     }
 
     public static Multimap<EntityAttribute, EntityAttributeModifierHolder> getAttributeModifiers(ItemStack itemStack) {
+        Multimap<EntityAttribute, EntityAttributeModifierHolder> map = getAttributeModifiersRaw(itemStack);
+        Multimap<EntityAttribute, EntityAttributeModifierHolder> map2 = ArrayListMultimap.create();
+        map.entries().forEach((entityAttributeEntityAttributeModifierHolderEntry -> {
+            map2.put(entityAttributeEntityAttributeModifierHolderEntry.getKey(), entityAttributeEntityAttributeModifierHolderEntry.getValue());
+        }));
+        map = map2;
+        for (AttributeTransformer transformer : attributeTransformers) {
+            Multimap<EntityAttribute, EntityAttributeModifierHolder> map3 = ArrayListMultimap.create();
+            transformer.transform(map, itemStack).entries().forEach((entityAttributeEntityAttributeModifierHolderEntry -> {
+                map3.put(entityAttributeEntityAttributeModifierHolderEntry.getKey(), entityAttributeEntityAttributeModifierHolderEntry.getValue());
+            }));
+            map = map3;
+        }
+        return map;
+    }
+
+    public static Multimap<EntityAttribute, EntityAttributeModifierHolder> getAttributeModifiersRaw(ItemStack itemStack) {
         return (Multimap<EntityAttribute, EntityAttributeModifierHolder>) ModularItemCache.get(itemStack, KEY);
     }
 
@@ -191,6 +209,27 @@ public class AttributeProperty implements ModuleProperty {
         multimap.putAll(sortedMultimap);
     }
 
+    public static double getActualValueFrom(Multimap<EntityAttribute, EntityAttributeModifierHolder> rawMap, EquipmentSlot slot, EntityAttribute entityAttribute, double fallback) {
+
+        DefaultAttributeContainer container = DefaultAttributeContainer.builder().add(entityAttribute).build();
+
+        AttributeContainer container1 = new AttributeContainer(container);
+
+        Multimap<EntityAttribute, EntityAttributeModifier> map = ArrayListMultimap.create();
+        rawMap.forEach(((attribute, entityAttributeModifierHolder) -> {
+            if (entityAttributeModifierHolder.slot.equals(slot)) {
+                map.put(attribute, entityAttributeModifierHolder.attributeModifier);
+            }
+        }));
+
+        container1.addTemporaryModifiers(map);
+        if (container1.hasAttribute(entityAttribute)) {
+            return container1.getValue(entityAttribute);
+        } else {
+            return fallback;
+        }
+    }
+
     public static double getActualValue(ItemStack stack, EquipmentSlot slot, EntityAttribute entityAttribute, double fallback) {
         Collection<EntityAttributeModifier> attributes = stack.getAttributeModifiers(slot).get(entityAttribute);
         Multimap<EntityAttribute, EntityAttributeModifier> map = HashMultimap.create();
@@ -279,6 +318,10 @@ public class AttributeProperty implements ModuleProperty {
 
     public record EntityAttributeModifierHolder(EntityAttributeModifier attributeModifier, EquipmentSlot slot,
                                                 boolean seperateOnItem) {
+    }
+
+    public interface AttributeTransformer {
+        Multimap<EntityAttribute, EntityAttributeModifierHolder> transform(Multimap<EntityAttribute, EntityAttributeModifierHolder> map, ItemStack itemstack);
     }
 
     public static class AttributeJson {
