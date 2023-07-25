@@ -13,6 +13,7 @@ import org.joml.Vector4f;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.client.gui.BoxList;
 import smartin.miapi.client.gui.InteractAbleWidget;
+import smartin.miapi.client.gui.ScrollList;
 import smartin.miapi.client.gui.TransformableWidget;
 import smartin.miapi.modules.properties.ArmorPenProperty;
 import smartin.miapi.modules.properties.BlockProperty;
@@ -81,9 +82,10 @@ public class StatDisplay extends InteractAbleWidget {
     public StatDisplay(int x, int y, int width, int height) {
         super(x, y, width, height, Text.empty());
         transformableWidget = new TransformableWidget(x, y, width, height, Text.empty());
-        boxList = new BoxList(x * 2, y * 2, width * 2, height * 2, Text.empty(), new ArrayList<>());
+        boxList = new BoxList(0, 0, width * 2, height * 2, Text.empty(), new ArrayList<>());
         boxList.maxPageHeight = 100;
-        transformableWidget.addChild(boxList);
+        ScrollList list = new ScrollList(x * 2, y * 2, width * 2, height * 2, List.of(boxList));
+        transformableWidget.addChild(list);
         transformableWidget.rawProjection = new Matrix4f();
         transformableWidget.rawProjection.scale(0.5f, 0.5f, 0.5f);
         addChild(transformableWidget);
@@ -98,10 +100,10 @@ public class StatDisplay extends InteractAbleWidget {
         InteractAbleWidget hoverDisplay = null;
         for (Element children : boxList.children()) {
             if (children.isMouseOver(vector4f.x(), vector4f.y()) && (children instanceof SingleStatDisplay widget)) {
-                    InteractAbleWidget ableWidget = widget.getHoverWidget();
-                    if (ableWidget != null) {
-                        hoverDisplay = ableWidget;
-                    }
+                InteractAbleWidget ableWidget = widget.getHoverWidget();
+                if (ableWidget != null) {
+                    hoverDisplay = ableWidget;
+                }
 
             }
         }
@@ -117,9 +119,9 @@ public class StatDisplay extends InteractAbleWidget {
         List<ClickableWidget> widgets = new ArrayList<>();
         for (InteractAbleWidget statDisplay : statDisplays) {
             if (statDisplay instanceof SingleStatDisplay singleStatDisplay && (singleStatDisplay.shouldRender(original, compareTo))) {
-                    statDisplay.setHeight(singleStatDisplay.getHeightDesired());
-                    statDisplay.setWidth(singleStatDisplay.getWidthDesired());
-                    widgets.add(statDisplay);
+                statDisplay.setHeight(singleStatDisplay.getHeightDesired());
+                statDisplay.setWidth(singleStatDisplay.getWidthDesired());
+                widgets.add(statDisplay);
 
             }
         }
