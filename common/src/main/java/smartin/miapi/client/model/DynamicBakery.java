@@ -5,8 +5,10 @@ import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.item.ModelPredicateProvider;
 import net.minecraft.client.item.ModelPredicateProviderRegistry;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.model.*;
 import net.minecraft.client.render.model.ModelRotation;
 import net.minecraft.client.render.model.json.*;
@@ -17,10 +19,12 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.item.modular.Transform;
+import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.render.ModelProperty;
 
 import java.util.*;
@@ -96,18 +100,38 @@ public class DynamicBakery {
             directionBakedModelMap.put(direction, new ArrayList<>());
         }
         for (BakedQuad quad : model.getQuads(null, null, Random.create())) {
-            quads.add(rotate(quad, transform));
+            quads.addAll(rotate(quad, transform));
         }
         for (Direction direction : Direction.values()) {
             for (BakedQuad quad : model.getQuads(null, direction, Random.create())) {
-                quads.add(rotate(quad, transform));
+                quads.addAll(rotate(quad, transform));
             }
         }
         return new BasicBakedModel(quads, directionBakedModelMap, model.useAmbientOcclusion(), model.isSideLit(), model.hasDepth(), model.getParticleSprite(), model.getTransformation(), model.getOverrides());
     }
 
-    public static BakedQuad rotate(BakedQuad quad, Transform transform) {
-        return new BakedQuad(transform.rotateVertexData(quad.getVertexData()), quad.getColorIndex(), Direction.transform(transform.toMatrix(), quad.getFace()), quad.getSprite(), quad.hasShade());
+    public static List<BakedQuad> rotate(BakedQuad quad, Transform transform) {
+        int[] rotatedData = transform.rotateVertexData(quad.getVertexData());
+
+        for(int i = 0;i<4;i++){
+            //rotatedData[4 + 8 * i] = Float.floatToIntBits(Float.intBitsToFloat(rotatedData[4 + 8 * i]) + Float.intBitsToFloat(rotatedData[4]) - Float.intBitsToFloat(rotatedData[4 + 8 * 3]));
+        }
+        //rotatedData[5] = rotatedData[4]+100;
+        //rotatedData[8] = rotatedData[16];
+
+        //rotatedData[9] = rotatedData[17];
+        //rotatedData[10] = rotatedData[18];
+
+        List<BakedQuad> quads = new ArrayList<>();
+        quads.add(new BakedQuad(rotatedData, quad.getColorIndex(), Direction.transform(transform.toMatrix(), quad.getFace()), quad.getSprite(), quad.hasShade()));
+
+        for (int i = 0; i < rotatedData.length; i += 8) {
+            int endIndex = Math.min(i + 8, rotatedData.length);
+            int[] individualArray = Arrays.copyOfRange(rotatedData, i, endIndex);
+            //quads.add(new BakedQuad(individualArray, quad.getColorIndex(), Direction.transform(transform.toMatrix(), quad.getFace()), quad.getSprite(), quad.hasShade()));
+
+        }
+        return quads;
     }
 
     public static DynamicBakedModel dynamicBakedModel(BakedModel model) {
@@ -125,7 +149,9 @@ public class DynamicBakery {
         return model1;
     }
 
-    private static ModelOverrideList compileOverrides(JsonUnbakedModel model, ModelLoader modelLoader, JsonUnbakedModel parent, Function<SpriteIdentifier, Sprite> textureGetter, ModelBakeSettings rotation, int color) {
+    private static ModelOverrideList compileOverrides
+            (JsonUnbakedModel model, ModelLoader modelLoader, JsonUnbakedModel parent, Function<SpriteIdentifier, Sprite> textureGetter, ModelBakeSettings rotation,
+             int color) {
         if (model.getOverrides().isEmpty()) {
             return ModelOverrideList.EMPTY;
         } else {
@@ -134,7 +160,9 @@ public class DynamicBakery {
         }
     }
 
-    private static BakedQuad createQuad(ModelElement element, ModelElementFace elementFace, Sprite sprite, Direction side, ModelBakeSettings settings, Identifier id, int color) {
+    private static BakedQuad createQuad
+            (ModelElement element, ModelElementFace elementFace, Sprite sprite, Direction side, ModelBakeSettings settings, Identifier id,
+             int color) {
         BakedQuad quad = QUAD_FACTORY.bake(element.from, element.to, elementFace, sprite, side, settings, element.rotation, element.shade, id);
         quad = ColorUtil.recolorBakedQuad(quad, color);
         return quad;

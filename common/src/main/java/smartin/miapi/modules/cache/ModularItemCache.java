@@ -6,6 +6,7 @@ import com.google.common.cache.LoadingCache;
 import net.minecraft.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import smartin.miapi.Miapi;
+import smartin.miapi.item.modular.ModularItem;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,8 +19,8 @@ import java.util.function.Function;
 
 public class ModularItemCache {
     protected static Map<String, CacheObjectSupplier> supplierMap = new HashMap<>();
-    protected static Map<ItemStack,UUID> lookUpTable = new WeakHashMap<>();
-    public static final String CACHE_KEY = Miapi.MOD_ID+"uuid";
+    protected static Map<ItemStack, UUID> lookUpTable = new WeakHashMap<>();
+    public static final String CACHE_KEY = Miapi.MOD_ID + "uuid";
     protected static final LoadingCache<UUID, Cache> cache = CacheBuilder.newBuilder()
             .maximumSize(1000)
             .expireAfterAccess(2, TimeUnit.MINUTES)
@@ -34,25 +35,27 @@ public class ModularItemCache {
     }
 
     public static Object get(ItemStack stack, String key) {
-        Cache itemCache = find(stack);
-        return itemCache.get(key);
+        if (stack.getItem() instanceof ModularItem) {
+            Cache itemCache = find(stack);
+            return itemCache.get(key);
+        }
+        return null;
     }
 
-    public static void discardCache(){
+    public static void discardCache() {
         cache.cleanUp();
         cache.invalidateAll();
     }
 
-    public static void updateNBT(ItemStack stack){
-        if(stack.hasNbt()){
+    public static void updateNBT(ItemStack stack) {
+        if (stack.hasNbt()) {
             String uuidString = stack.getNbt().getString(CACHE_KEY);
-            if(uuidString!=null){
+            if (uuidString != null) {
                 UUID uuid = UUID.fromString(uuidString);
-                try{
-                    Cache itemCacheObject = cache.get(uuid,()-> new Cache(uuid,stack));
+                try {
+                    Cache itemCacheObject = cache.get(uuid, () -> new Cache(uuid, stack));
                     itemCacheObject.nbtHash = stack.getNbt().hashCode();
-                }
-                catch (Exception ignored){
+                } catch (Exception ignored) {
 
                 }
             }
@@ -62,32 +65,29 @@ public class ModularItemCache {
     protected static Cache find(ItemStack stack) {
         UUID lookUpUUId = lookUpTable.get(stack);
         String uuidString = stack.getOrCreateNbt().getString(CACHE_KEY);
-        if(lookUpUUId!=null){
+        if (lookUpUUId != null) {
             //do nothing
-        }
-        else if(uuidString!=null && !uuidString.equals("")){
+        } else if (uuidString != null && !uuidString.equals("")) {
             lookUpUUId = UUID.fromString(uuidString);
-        }
-        else{
+        } else {
             lookUpUUId = getMissingUUID();
         }
         UUID uuid = lookUpUUId;
-        try{
-            return cache.get(lookUpUUId,()-> new Cache(uuid,stack));
-        }
-        catch (ExecutionException ignored){
+        try {
+            return cache.get(lookUpUUId, () -> new Cache(uuid, stack));
+        } catch (ExecutionException ignored) {
             UUID uuid1 = getMissingUUID();
-            Cache cache1 = new Cache(uuid1,stack);
-            cache.put(uuid1,cache1);
+            Cache cache1 = new Cache(uuid1, stack);
+            cache.put(uuid1, cache1);
             return cache1;
         }
     }
 
-    protected static UUID getMissingUUID(){
+    protected static UUID getMissingUUID() {
         UUID uuid;
-        do{
+        do {
             uuid = UUID.randomUUID();
-        } while (cache.getIfPresent(uuid)!=null);
+        } while (cache.getIfPresent(uuid) != null);
         return uuid;
     }
 
@@ -105,9 +105,9 @@ public class ModularItemCache {
         public Cache(UUID uuid, ItemStack stack) {
             //Miapi.LOGGER.warn("new Cache ");
             this.uuid = uuid;
-            stack.getOrCreateNbt().putString(CACHE_KEY,uuid.toString());
+            stack.getOrCreateNbt().putString(CACHE_KEY, uuid.toString());
             this.stack = stack;
-            if(stack.hasNbt()){
+            if (stack.hasNbt()) {
                 nbtHash = stack.getNbt().hashCode();
             }
         }
@@ -117,9 +117,9 @@ public class ModularItemCache {
         }
 
         public Object get(String key) {
-            return map.computeIfAbsent(key,(id)->{
+            return map.computeIfAbsent(key, (id) -> {
                 CacheObjectSupplier supplier = supplierMap.get(id);
-                if(supplier!=null){
+                if (supplier != null) {
                     return supplier.apply(stack);
                 }
                 return null;

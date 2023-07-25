@@ -8,6 +8,7 @@ import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.model.ModelBakeSettings;
 import net.minecraft.client.render.model.json.Transformation;
 import net.minecraft.util.math.AffineTransformation;
