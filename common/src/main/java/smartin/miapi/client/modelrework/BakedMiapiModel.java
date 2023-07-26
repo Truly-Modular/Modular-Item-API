@@ -11,6 +11,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Matrix4f;
 
 import java.util.List;
 
@@ -38,6 +39,11 @@ public class BakedMiapiModel implements MiapiModel,BakedModel {
     @Override
     public boolean isBuiltin() {
         return false;
+    }
+
+    @Override
+    public @Nullable Matrix4f subModuleMatrix(int submoduleId) {
+        return null;
     }
 
     @Override

@@ -58,7 +58,7 @@ public class Miapi {
         ReloadListenerRegistry.register(ResourceType.SERVER_DATA, new ReloadListener());
         registerReloadHandler(ReloadEvents.MAIN, "modules", RegistryInventory.modules, (isClient, path, data) -> {
             ItemModule.loadFromData(path, data);
-        });
+        },-0.5f);
         PropertyResolver.propertyProviderRegistry.register("module", (moduleInstance, oldMap) -> {
             HashMap<ModuleProperty, JsonElement> map = new HashMap<>();
             moduleInstance.module.getProperties().forEach((key, jsonData) -> {

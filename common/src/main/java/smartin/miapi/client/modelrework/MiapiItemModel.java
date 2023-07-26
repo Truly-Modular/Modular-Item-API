@@ -41,7 +41,7 @@ public class MiapiItemModel implements MiapiModel {
         List<Pair<Matrix4f, MiapiModel>> modelList = new ArrayList<>();
         if (stack.getItem() instanceof ModularItem) {
             ItemModule.getModules(stack).allSubModules().forEach(module -> {
-                Matrix4f matrix4f = SlotProperty.getLocalTransform(module).toMatrix();
+                Matrix4f matrix4f = SlotProperty.getLocalTransformStack(module).get(key).toMatrix();
                 for (ModelSupplier supplier : modelSuppliers) {
                     supplier.getModels(key, module).forEach(model -> {
                         modelList.add(new Pair<>(new Matrix4f(matrix4f), model));
@@ -72,6 +72,11 @@ public class MiapiItemModel implements MiapiModel {
             matrix4fMiapiModelPair.getSecond().render(matrices, tickDelta, vertexConsumers, light, overlay);
             matrices.pop();
         });
+    }
+
+    @Override
+    public @Nullable Matrix4f subModuleMatrix(int submoduleId) {
+        return null;
     }
 
     interface ModelSupplier {

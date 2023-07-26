@@ -472,7 +472,7 @@ public class ItemModule {
         public void writeToItem(ItemStack stack, boolean clearCache) {
             stack.getOrCreateNbt().putString("modules", this.toString());
             if (clearCache) {
-                stack.getNbt().remove(ModularItemCache.CACHE_KEY);
+                ModularItemCache.clearUUIDFor(stack);
             }
         }
 
@@ -526,7 +526,8 @@ public class ItemModule {
         public ModuleInstance read(JsonReader in) throws IOException {
             JsonObject jsonObject = JsonParser.parseReader(in).getAsJsonObject();
             String moduleKey = jsonObject.get("module").getAsString();
-            ItemModule module = moduleRegistry.get(moduleKey);
+            var test = moduleRegistry;
+            ItemModule module = test.get(moduleKey);
             if (module == null) {
                 module = ItemModule.empty;
             }
