@@ -7,6 +7,7 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.cache.ModularItemCache;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,8 +16,17 @@ public class MiapiItemModel implements MiapiModel {
     public static List<ModelSupplier> modelSuppliers = new ArrayList<>();
     public final ItemStack stack;
     public final ModuleModel rootModel;
+    private final static String cacheKey = "miapi_model_rework";
 
-    public MiapiItemModel(ItemStack stack) {
+    static {
+        ModularItemCache.setSupplier(cacheKey, (MiapiItemModel::new));
+    }
+
+    public static MiapiItemModel getItemModel(ItemStack stack) {
+        return (MiapiItemModel) ModularItemCache.get(stack, cacheKey);
+    }
+
+    private MiapiItemModel(ItemStack stack) {
         this.stack = stack;
         if (stack.getItem() instanceof ModularItem) {
             rootModel = new ModuleModel(ItemModule.getModules(stack));
