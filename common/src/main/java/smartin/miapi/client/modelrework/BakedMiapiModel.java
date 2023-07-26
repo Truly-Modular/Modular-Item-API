@@ -43,6 +43,11 @@ public class BakedMiapiModel implements MiapiModel,BakedModel {
     }
 
     @Override
+    public void render(MatrixStack matrices, ItemStack stack, float tickDelta, VertexConsumerProvider vertexConsumers, int light, int overlay) {
+
+    }
+
+    @Override
     public @Nullable Matrix4f subModuleMatrix(int submoduleId) {
         return null;
     }
@@ -60,10 +65,5 @@ public class BakedMiapiModel implements MiapiModel,BakedModel {
     @Override
     public ModelOverrideList getOverrides() {
         return null;
-    }
-
-    @Override
-    public void render(MatrixStack matrices, ItemStack stack, float tickDelta, VertexConsumerProvider vertexConsumers, int light, int overlay) {
-
     }
 }

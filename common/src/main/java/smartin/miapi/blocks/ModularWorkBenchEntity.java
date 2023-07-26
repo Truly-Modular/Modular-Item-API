@@ -127,13 +127,6 @@ public class ModularWorkBenchEntity extends BlockEntity implements NamedScreenHa
         tag.put("ItemStats", statsItem);
     }
 
-    @Override
-    public NbtCompound toInitialChunkDataNbt() {
-        NbtCompound compound = new NbtCompound();
-        writeNbt(compound);
-        return compound;
-    }
-
 
     @Override
     public void readNbt(NbtCompound tag) {

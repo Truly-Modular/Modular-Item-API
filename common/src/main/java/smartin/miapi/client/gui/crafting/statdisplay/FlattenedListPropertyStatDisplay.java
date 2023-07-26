@@ -39,6 +39,7 @@ public class FlattenedListPropertyStatDisplay<T> extends MultiComponentStatDispl
     ) {
         this(property, 0, 0, 160, 32, title);
     }
+
     public <A extends DynamicCodecBasedProperty.FlattenedList<T> & ComponentDescriptionable<T>> FlattenedListPropertyStatDisplay(
             A property,
             int x, int y, int width, int height,
@@ -54,6 +55,7 @@ public class FlattenedListPropertyStatDisplay<T> extends MultiComponentStatDispl
         hoverDescription.maxWidth = size;
         return this;
     }
+
     public FlattenedListPropertyStatDisplay<T> withArrowsInTitle() {
         placeArrowTitles = true;
         return this;
@@ -85,7 +87,7 @@ public class FlattenedListPropertyStatDisplay<T> extends MultiComponentStatDispl
     public List<ComponentHolder> getComponents(ItemStack original, ItemStack compareTo) {
         ItemStack mainStack = compareTo.isEmpty() ? original : compareTo;
         List<T> list = property.get(mainStack);
-        maxScrollPositon = list == null ? 0 : list.size()-1;
+        maxScrollPositon = list == null ? 0 : Math.max(list.size() - 1, 0);
         if (scrollPosition > maxScrollPositon) scrollPosition = maxScrollPositon;
         updateScrollIcons(mainStack);
         if (list == null || list.isEmpty()) return List.of();

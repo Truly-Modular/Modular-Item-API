@@ -41,7 +41,7 @@ public class MutableQuad {
         for (MutableQuad otherQuad : quads) {
             List<MutableQuad> thisQuadsNext = new ArrayList<>();
             for (MutableQuad thisQuad : thisQuads) {
-                if (thisQuad.isQuadOverlapping(otherQuad)) {
+                if (thisQuad.isQuadOverlapping(otherQuad) && false) {
                     //cutQuads.addAll(otherQuad.cutWithQuad(thisQuad));
                     //thisQuadsNext.addAll((thisQuad.cutWithQuad(otherQuad)));
                 } else {
@@ -350,8 +350,8 @@ public class MutableQuad {
         float w = (d00 * d21 - d01 * d20) / denom;
         float u = 1.0f - v - w;
 
-        if (((u >= -accuracy) && (v >= -accuracy) && (w >= -accuracy)) && !(u >= accuracy) &&(v >= accuracy) &&
-        (w >= accuracy)){
+        if (((u >= -accuracy) && (v >= -accuracy) && (w >= -accuracy)) && !(u >= accuracy) && (v >= accuracy) &&
+                (w >= accuracy)) {
             Miapi.LOGGER.error("CHECK");
         }
         // Check if the point is inside the triangle on the plane
