@@ -70,7 +70,7 @@ public class CraftingGUI extends ParentHandledScreen<CraftingScreenHandler> impl
         });
         slotDisplay.setItem(getItem());
         this.addChild(slotDisplay);
-        statDisplay = new StatDisplay((this.width - this.backgroundWidth) / 2 + 8 - 108 + 18 + 89, (this.height - this.backgroundHeight) / 2 - 1 + 8, 86 + 18 * 2 + 5, 206 - 100);
+        statDisplay = new StatDisplay((this.width - this.backgroundWidth) / 2 + 8 - 108 + 18 + 89, (this.height - this.backgroundHeight) / 2 - 1 + 8, 86 + 18 * 2 + 5, 95);
         this.addChild(statDisplay);
 
         super.init();
