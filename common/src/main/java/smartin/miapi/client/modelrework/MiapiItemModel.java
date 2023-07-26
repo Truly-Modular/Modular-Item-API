@@ -12,8 +12,8 @@ import java.util.List;
 
 public class MiapiItemModel {
     public static List<ModelSupplier> modelSuppliers = new ArrayList<>();
-    final ItemStack stack;
-    final ModuleModel rootModel;
+    public final ItemStack stack;
+    public final ModuleModel rootModel;
 
     public MiapiItemModel(ItemStack stack) {
         this.stack = stack;

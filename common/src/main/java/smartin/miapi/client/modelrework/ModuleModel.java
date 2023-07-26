@@ -10,11 +10,10 @@ import smartin.miapi.modules.properties.SlotProperty;
 import java.util.*;
 
 public class ModuleModel {
-
-    List<Pair<Matrix4f, MiapiModel>> models;
-    Map<String, List<Pair<Matrix4f, MiapiModel>>> otherModels;
-    final ItemModule.ModuleInstance instance;
-    Map<Integer, ModuleModel> subModuleModels = new WeakHashMap<>();
+    public List<Pair<Matrix4f, MiapiModel>> models;
+    public Map<String, List<Pair<Matrix4f, MiapiModel>>> otherModels;
+    public final ItemModule.ModuleInstance instance;
+    public Map<Integer, ModuleModel> subModuleModels = new WeakHashMap<>();
 
     public ModuleModel(ItemModule.ModuleInstance instance) {
         this.instance = instance;
@@ -37,11 +36,14 @@ public class ModuleModel {
             otherModels.put(modelType, generateModel(modelType));
         }
         Map<Integer, Matrix4f> map = new HashMap<>();
+        //render own Models
         otherModels.get(modelType).forEach(matrix4fMiapiModelPair -> {
             matrices.push();
             matrices.peek().getPositionMatrix().mul(matrix4fMiapiModelPair.getFirst());
             matrix4fMiapiModelPair.getSecond().render(matrices, tickDelta, vertexConsumers, light, overlay);
             matrices.pop();
+
+            //prepare for submodules
             instance.subModules.forEach((integer, instance1) -> {
                 Matrix4f matrix4f = map.getOrDefault(integer, new Matrix4f());
                 Matrix4f subModuleMatrix = matrix4fMiapiModelPair.getSecond().subModuleMatrix(integer);
@@ -51,6 +53,7 @@ public class ModuleModel {
                 map.put(integer, matrix4f);
             });
         });
+        //render submodules
         instance.subModules.forEach((integer, instance1) -> {
             matrices.push();
             matrices.multiplyPositionMatrix(map.get(integer));
