@@ -25,9 +25,6 @@ import java.util.List;
 
 @Environment(EnvType.CLIENT)
 public class StatDisplay extends InteractAbleWidget {
-    public static final Text scrollText = Text.literal(" [").formatted(Formatting.DARK_GRAY)
-            .append(Text.literal("+").formatted(Formatting.GRAY))
-            .append(Text.literal("]").formatted(Formatting.DARK_GRAY));
     private static final List<InteractAbleWidget> statDisplays = new ArrayList<>();
     private static final List<StatWidgetSupplier> statWidgetSupplier = new ArrayList<>();
     private final BoxList boxList;
@@ -39,8 +36,8 @@ public class StatDisplay extends InteractAbleWidget {
     static {
         addStatDisplay(new FlattenedListPropertyStatDisplay<>(
                 PotionEffectProperty.property,
-                stk -> statTranslation("tipped").append(scrollText))
-                .withLimitedDescSize(200));
+                stk -> statTranslation("tipped"))
+                .withLimitedDescSize(350).withArrowsInTitle());
         addStatDisplay(AttributeSingleDisplay
                 .Builder(EntityAttributes.GENERIC_ATTACK_DAMAGE)
                 .setTranslationKey("damage")

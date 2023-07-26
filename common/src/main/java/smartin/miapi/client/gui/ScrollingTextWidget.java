@@ -60,6 +60,16 @@ public class ScrollingTextWidget extends InteractAbleWidget implements Drawable,
     }
 
     /**
+     * Same thing as above but text color is automatically taken from the text component
+     */
+    public ScrollingTextWidget(int x, int y, int maxWidth, Text text) {
+        super(x, y, maxWidth, 9, Text.empty());
+        this.textColor = -1;
+        setText(text);
+        orientation = Orientation.LEFT;
+    }
+
+    /**
      * Calling this resets the position to 0
      *
      * @param text the Text of the scroller
@@ -105,38 +115,28 @@ public class ScrollingTextWidget extends InteractAbleWidget implements Drawable,
         if (textWidth > width) {
             String string = text.getString();
             int offsetAmount = 0;
+            boolean stallScrollPos = false;
             if (scrollPosition < string.length()) {
                 String sub = string.substring(0, scrollPosition);
+                String remaining = string.substring(Math.min(string.length()-1, scrollPosition+1));
                 int subLength = MinecraftClient.getInstance().textRenderer.getWidth(sub);
-                if (subLength < width)
-                    offsetAmount = subLength;
-            }
-
-            /*textWidth = MinecraftClient.getInstance().textRenderer.getWidth(displayText);
-
-            if (textWidth <= width) {
-                if (timer > scrollHoldTime) {
-                    timer = -firstLetterExtraTime;
-                    scrollPosition = 0;
-
-                }
-            } else {
-                if (timer > scrollDelay) {
-                    scrollPosition++;
-                    timer = 0;
-                }
+                int remainingLength = MinecraftClient.getInstance().textRenderer.getWidth(remaining);
+                offsetAmount = -subLength;
+                if (remainingLength <= width)
+                    stallScrollPos = true;
             }
 
             timer += delta / 20;
-
-            displayText = MinecraftClient.getInstance().textRenderer.trimToWidth(displayText, width);*/
-            timer += delta / 20;
-            if (timer > scrollDelay) {
+            if (timer > scrollDelay && !stallScrollPos) {
                 scrollPosition++;
                 timer = 0;
             }
+            if (timer > scrollHoldTime && stallScrollPos) {
+                scrollPosition = 0;
+                timer = -firstLetterExtraTime;
+            }
 
-            textStart-=offsetAmount;
+            textStart+=offsetAmount;
             Vector4f corner1 = TransformableWidget.transFormMousePos(getX(), getY(), context.getMatrices().peek().getPositionMatrix());
             Vector4f corner2 = TransformableWidget.transFormMousePos(getX()+width, getY()+height, context.getMatrices().peek().getPositionMatrix());
             context.enableScissor((int) corner1.x, (int) corner1.y, (int) corner2.x+1, (int) corner2.y);

@@ -5,6 +5,9 @@ import com.mojang.datafixers.util.Either;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.redpxnda.nucleus.datapack.codec.AutoCodec;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
@@ -16,8 +19,8 @@ import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.*;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.dynamic.Codecs;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
@@ -123,32 +126,52 @@ public class PotionEffectProperty extends DynamicCodecBasedProperty.Intermediate
         return old;
     }
 
+    @Environment(EnvType.CLIENT)
     @Override
     public List<DescriptionHolder> getSimpleDescriptionFor(List<Holder> holders, int scrollIndex) {
         List<DescriptionHolder> components = new ArrayList<>();
         Holder h = holders.get(scrollIndex);
 
         components.add(new DescriptionHolder(
-                Text.of("🧪"), Text.translatable(h.effect.getTranslationKey()),
-                35, h.effect.getColor()));
+                Text.of("🧪"), Text.translatable(h.effect.getTranslationKey()).styled(style -> style.withColor(h.effect.getColor())),
+                35));
         components.add(new DescriptionHolder(
                 Text.of("⌚"), Text.of(decimalFormat.format(h.actualDuration/20d) + "s"),
-                -1, -1));
+                -1));
         components.add(new DescriptionHolder(
-                Text.of("\uD83D\uDDE1"), Text.of(String.valueOf(h.actualAmplifier)),
-                -1, -1));
+                Text.of("\uD83D\uDDE1"), Text.of(String.valueOf(h.actualAmplifier+1)), // that unicode = 🗡️
+                -1));
         components.add(new DescriptionHolder(
-                Text.of("🎯"), Text.of(StringUtils.capitalize(h.applyTo)),
-                35, -1));
+                Text.of("🎯"), ApplicationEvents.getTargetTextRepresentation(h.applyTo),
+                35));
 
         return components;
     }
 
+    @Environment(EnvType.CLIENT)
     @Override
     public List<Text> getLongDescriptionFor(List<Holder> holder, int scrollIndex) {
         List<Text> text = new ArrayList<>();
+        boolean ctrl = Screen.hasControlDown();
 
         text.add(Text.translatable(Miapi.MOD_ID + ".stat.tipped.description"));
+        text.add(Text.of(" "));
+        text.add(Text.literal("[").formatted(Formatting.DARK_GRAY)
+                .append(Text.translatable("key.keyboard.left.control").formatted(ctrl ? Formatting.WHITE : Formatting.GRAY))
+                .append(Text.literal("]").formatted(Formatting.DARK_GRAY)));
+        if (ctrl) {
+            holder.forEach(h -> {
+                text.add(
+                        Text.translatable(Miapi.MOD_ID + ".stat.tipped.description.effect",
+                                Text.translatable(h.effect.getTranslationKey())
+                                    .append(Text.literal(" " + (h.actualAmplifier+1)))
+                                    .styled(s -> s.withColor(h.effect.getColor())),
+                                Text.literal(decimalFormat.format(h.actualDuration/20d)),
+                                h.target_description
+                        )
+                );
+            });
+        }
 
         return text;
     }
@@ -164,7 +187,7 @@ public class PotionEffectProperty extends DynamicCodecBasedProperty.Intermediate
         public @AutoCodec.Optional boolean visible = true;
         public @AutoCodec.Optional boolean showIcon = true;
         public @Nullable @AutoCodec.Optional Identifier predicate = null;
-        public Text description;
+        public Text target_description;
 
         public Holder refine(ItemModule.ModuleInstance modules) {
             Holder h = new Holder();
@@ -176,7 +199,7 @@ public class PotionEffectProperty extends DynamicCodecBasedProperty.Intermediate
             h.visible = visible;
             h.showIcon = showIcon;
             h.predicate = predicate;
-            h.description = description;
+            h.target_description = target_description;
             h.actualDuration = duration.evaluate(modules);
             h.actualAmplifier = amplifier.evaluate(modules);
             return h;
