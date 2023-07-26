@@ -6,6 +6,7 @@ import com.google.common.cache.LoadingCache;
 import net.minecraft.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import smartin.miapi.Miapi;
+import smartin.miapi.item.modular.ModularItem;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -34,8 +35,11 @@ public class ModularItemCache {
     }
 
     public static Object get(ItemStack stack, String key) {
-        Cache itemCache = find(stack);
-        return itemCache.get(key);
+        if(stack.getItem() instanceof ModularItem){
+            Cache itemCache = find(stack);
+            return itemCache.get(key);
+        }
+        return null;
     }
 
     public static void discardCache(){
