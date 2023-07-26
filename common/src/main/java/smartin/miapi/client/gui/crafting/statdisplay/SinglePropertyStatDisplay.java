@@ -16,7 +16,7 @@ import java.util.Locale;
 public class SinglePropertyStatDisplay extends SingleStatDisplayDouble {
     protected SimpleDoubleProperty property;
 
-    protected SinglePropertyStatDisplay(TextGetter title, TextGetter hover, SimpleDoubleProperty property) {
+    protected SinglePropertyStatDisplay(StatDisplay.TextGetter title, StatDisplay.TextGetter hover, SimpleDoubleProperty property) {
         super(0, 0, 80, 32, title, hover);
         this.property = property;
     }
@@ -24,13 +24,7 @@ public class SinglePropertyStatDisplay extends SingleStatDisplayDouble {
     @Override
     public boolean shouldRender(ItemStack original, ItemStack compareTo) {
         super.shouldRender(original, compareTo);
-        if (property.hasValue(original)) {
-            return true;
-        }
-        if (property.hasValue(compareTo)) {
-            return true;
-        }
-        return false;
+        return property.hasValue(original) || property.hasValue(compareTo);
     }
 
     @Override
@@ -44,8 +38,8 @@ public class SinglePropertyStatDisplay extends SingleStatDisplayDouble {
 
     public static class Builder {
         SimpleDoubleProperty property;
-        public TextGetter name;
-        public TextGetter hoverDescription = (stack) -> Text.empty();
+        public StatDisplay.TextGetter name;
+        public StatDisplay.TextGetter hoverDescription = (stack) -> Text.empty();
         public String translationKey = "";
         public Object[] descriptionArgs = new Object[]{};
         public DecimalFormat modifierFormat;
@@ -74,7 +68,7 @@ public class SinglePropertyStatDisplay extends SingleStatDisplayDouble {
             return this;
         }
 
-        public Builder setName(TextGetter name) {
+        public Builder setName(StatDisplay.TextGetter name) {
             this.name = name;
             return this;
         }
@@ -91,7 +85,7 @@ public class SinglePropertyStatDisplay extends SingleStatDisplayDouble {
             return this;
         }
 
-        public Builder setHoverDescription(TextGetter hoverDescription) {
+        public Builder setHoverDescription(StatDisplay.TextGetter hoverDescription) {
             this.hoverDescription = hoverDescription;
             return this;
         }

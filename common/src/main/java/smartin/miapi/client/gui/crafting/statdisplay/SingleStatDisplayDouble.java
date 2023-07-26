@@ -10,14 +10,11 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.ColorHelper;
-import smartin.miapi.Miapi;
-import smartin.miapi.client.gui.InteractAbleWidget;
-import smartin.miapi.client.gui.MultiLineTextWidget;
-import smartin.miapi.client.gui.ScrollingTextWidget;
-import smartin.miapi.client.gui.StatBar;
+import smartin.miapi.client.gui.*;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.util.List;
 import java.util.Locale;
 
 @Environment(EnvType.CLIENT)
@@ -33,31 +30,31 @@ public abstract class SingleStatDisplayDouble extends InteractAbleWidget impleme
     public double maxValue = 100;
     public double minValue = 0;
     public DecimalFormat modifierFormat;
-    public TextGetter text;
-    public TextGetter hover;
+    public StatDisplay.TextGetter text;
+    public StatDisplay.TextGetter hover;
     public HoverDescription hoverDescription;
 
-    public SingleStatDisplayDouble(int x, int y, int width, int height, TextGetter title, TextGetter hover) {
+    public SingleStatDisplayDouble(int x, int y, int width, int height, StatDisplay.TextGetter title, StatDisplay.TextGetter hover) {
         super(x, y, width, height, Text.empty());
         text = title;
         this.hover = hover;
         textWidget = new ScrollingTextWidget(x, y, 80, Text.empty(), ColorHelper.Argb.getArgb(255, 255, 255, 255));
         currentValue = new ScrollingTextWidget(x, y, 50, Text.empty(), ColorHelper.Argb.getArgb(255, 255, 255, 255));
         centerValue = new ScrollingTextWidget(x, y, 80 - 10, Text.empty(), ColorHelper.Argb.getArgb(255, 255, 255, 255));
-        centerValue.setOrientation(ScrollingTextWidget.ORIENTATION.CENTERED);
+        centerValue.setOrientation(ScrollingTextWidget.Orientation.CENTERED);
         compareValue = new ScrollingTextWidget(x, y, 80 - 10, Text.empty(), ColorHelper.Argb.getArgb(255, 255, 255, 255));
-        compareValue.setOrientation(ScrollingTextWidget.ORIENTATION.RIGHT);
+        compareValue.setOrientation(ScrollingTextWidget.Orientation.RIGHT);
         statBar = new StatBar(0, 0, width, 10, ColorHelper.Argb.getArgb(255, 0, 0, 0));
         modifierFormat = Util.make(new DecimalFormat("##.##"), (decimalFormat) -> {
             decimalFormat.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ROOT));
         });
-        hoverDescription = new HoverDescription(x, y, 200, height, Text.empty());
+        hoverDescription = new HoverDescription(x, y, List.of());
     }
 
     public boolean shouldRender(ItemStack original, ItemStack compareTo) {
         ItemStack mainStack = compareTo.isEmpty() ? original : compareTo;
         textWidget.setText(text.resolve(mainStack));
-        hoverDescription.textWidget.setText(hover.resolve(mainStack));
+        hoverDescription.setText(hover.resolve(mainStack));
         this.original = original;
         this.compareTo = compareTo;
         return true;
@@ -118,37 +115,5 @@ public abstract class SingleStatDisplayDouble extends InteractAbleWidget impleme
 
     public InteractAbleWidget getHoverWidget() {
         return hoverDescription;
-    }
-
-    public interface TextGetter {
-        Text resolve(ItemStack stack);
-    }
-
-    public static class HoverDescription extends InteractAbleWidget {
-        public Identifier texture = new Identifier(Miapi.MOD_ID, "textures/gui/stat_display/hover_background.png");
-        public MultiLineTextWidget textWidget;
-
-        public HoverDescription(int x, int y, int width, int height, Text text) {
-            super(x, y, width, height, Text.empty());
-            textWidget = new MultiLineTextWidget(x, y + 1, width, height, text);
-            this.addChild(textWidget);
-            this.width = textWidget.getWidth() + 5;
-            this.height = textWidget.getHeight() + 5;
-        }
-
-        @Override
-        public void render(DrawContext drawContext, int mouseX, int mouseY, float delta) {
-            if (!textWidget.rawText.getString().isEmpty()) {
-                RenderSystem.disableDepthTest();
-                RenderSystem.enableBlend();
-                this.setWidth(textWidget.getWidth() + 5);
-                this.setHeight(textWidget.getHeight() + 5);
-                drawTextureWithEdge(drawContext, texture, this.getX(), this.getY(), this.width, this.height, 120, 32, 3);
-                textWidget.setX(this.getX() + 3);
-                textWidget.setY(this.getY() + 3);
-                super.render(drawContext, mouseX, mouseY, delta);
-                RenderSystem.enableDepthTest();
-            }
-        }
     }
 }

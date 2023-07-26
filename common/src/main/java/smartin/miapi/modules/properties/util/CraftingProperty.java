@@ -6,6 +6,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.Vec2f;
 import org.jetbrains.annotations.Nullable;
+import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.craft.CraftAction;
 import smartin.miapi.modules.ItemModule;
@@ -75,13 +76,14 @@ public interface CraftingProperty {
      * @param old       the old Itemstack
      * @param crafting  the newly Crafted Itemstack
      * @param player    the player crafting
+     * @param bench     the workbench block entity (null on client)
      * @param newModule the new ModuleInstance
      * @param module    the new Module
      * @param inventory Linked Inventory, length of {@link #getSlotPositions()}
      * @param buf       the writen buffer from {@link #writeCraftingBuffer(PacketByteBuf, InteractAbleWidget)}
      * @return if the crafting can happen
      */
-    default boolean canPerform(ItemStack old, ItemStack crafting, PlayerEntity player, ItemModule.ModuleInstance newModule, ItemModule module, List<ItemStack> inventory, PacketByteBuf buf) {
+    default boolean canPerform(ItemStack old, ItemStack crafting, @Nullable ModularWorkBenchEntity bench, PlayerEntity player, ItemModule.ModuleInstance newModule, ItemModule module, List<ItemStack> inventory, PacketByteBuf buf) {
         return true;
     }
 
@@ -95,13 +97,14 @@ public interface CraftingProperty {
      * @param old       the old Itemstack
      * @param crafting  the newly Crafted Itemstack
      * @param player    the player crafting
+     * @param bench     the modular workbench block entity (null on client)
      * @param newModule the new ModuleInstance
      * @param module    the new Module
      * @param inventory Linked Inventory, length of {@link #getSlotPositions()}
      * @param buf       the writen buffer from {@link #writeCraftingBuffer(PacketByteBuf, InteractAbleWidget)}
      * @return the preview Itemstack
      */
-    ItemStack preview(ItemStack old, ItemStack crafting, PlayerEntity player, ItemModule.ModuleInstance newModule, ItemModule module, List<ItemStack> inventory, PacketByteBuf buf);
+    ItemStack preview(ItemStack old, ItemStack crafting, PlayerEntity player, ModularWorkBenchEntity bench, ItemModule.ModuleInstance newModule, ItemModule module, List<ItemStack> inventory, PacketByteBuf buf);
 
     /**
      * the actual CraftAction
@@ -109,15 +112,16 @@ public interface CraftingProperty {
      * @param old       the old Itemstack
      * @param crafting  the newly Crafted Itemstack
      * @param player    the player crafting
+     * @param bench     the modular workbench block entity (null on client)
      * @param newModule the new ModuleInstance
      * @param module    the new Module
      * @param inventory Linked Inventory, length of {@link #getSlotPositions()}
      * @param buf       the writen buffer from {@link #writeCraftingBuffer(PacketByteBuf, InteractAbleWidget)}
      * @return a List of Itemstacks, first is the CraftedItem, followed by a List of Itemstacks to replace Inventory slots registered by {@link #getSlotPositions()}
      */
-    default List<ItemStack> performCraftAction(ItemStack old, ItemStack crafting, PlayerEntity player, ItemModule.ModuleInstance newModule, ItemModule module, List<ItemStack> inventory, PacketByteBuf buf) {
+    default List<ItemStack> performCraftAction(ItemStack old, ItemStack crafting, PlayerEntity player, @Nullable ModularWorkBenchEntity bench, ItemModule.ModuleInstance newModule, ItemModule module, List<ItemStack> inventory, PacketByteBuf buf) {
         List<ItemStack> stacks = new ArrayList<>();
-        stacks.add(this.preview(old, crafting, player, newModule, module, inventory, buf));
+        stacks.add(this.preview(old, crafting, player, bench, newModule, module, inventory, buf));
         stacks.addAll(inventory);
         return stacks;
     }

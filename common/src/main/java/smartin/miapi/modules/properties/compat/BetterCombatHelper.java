@@ -24,7 +24,9 @@ public class BetterCombatHelper {
     }
 
     private static float getAttackRange(ItemStack stack) {
-        return (float) AttributeProperty.getActualValue(stack, EquipmentSlot.MAINHAND, AttributeRegistry.ATTACK_RANGE) + 2.5f;
+        AttributeProperty.getAttributeModifiersRaw(stack);
+        double rangeSave = AttributeProperty.getActualValueFrom(AttributeProperty.getAttributeModifiersRaw(stack), EquipmentSlot.MAINHAND, AttributeRegistry.ATTACK_RANGE, 0) + 2.5f;
+        return (float) rangeSave;
     }
 
     public static net.bettercombat.api.WeaponAttributes container(JsonElement data) {
@@ -40,7 +42,7 @@ public class BetterCombatHelper {
     public static net.bettercombat.api.WeaponAttributes getAttributes(ItemStack stack) {
         if (stack.getItem() instanceof ModularItem) {
             net.bettercombat.api.WeaponAttributes attributes = (net.bettercombat.api.WeaponAttributes) ModularItemCache.get(stack, BetterCombatProperty.KEY);
-            if(attributes!=null){
+            if (attributes != null) {
                 attributes = new net.bettercombat.api.WeaponAttributes(getAttackRange(stack), attributes.pose(), attributes.offHandPose(), attributes.isTwoHanded(), attributes.category(), attributes.attacks());
             }
             return attributes;

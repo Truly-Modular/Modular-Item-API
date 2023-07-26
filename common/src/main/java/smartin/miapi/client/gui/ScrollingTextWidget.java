@@ -8,6 +8,9 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.Element;
 import net.minecraft.text.Text;
+import net.minecraft.util.math.ColorHelper;
+import org.joml.Vector4f;
+import org.joml.Vector4i;
 
 /**
  * This is a widget that displays a scrolling text. The text slowly scrolls through
@@ -38,7 +41,7 @@ public class ScrollingTextWidget extends InteractAbleWidget implements Drawable,
      */
     public float firstLetterExtraTime = 1.0f;
     public boolean hasTextShadow = true;
-    private ORIENTATION orientation;
+    private Orientation orientation;
 
     /**
      * This is a Text that fits within its bounds and slowly scrolls through the Text
@@ -53,7 +56,7 @@ public class ScrollingTextWidget extends InteractAbleWidget implements Drawable,
         super(x, y, maxWidth, 9, Text.empty());
         this.textColor = textColor;
         setText(text);
-        orientation = ORIENTATION.LEFT;
+        orientation = Orientation.LEFT;
     }
 
     /**
@@ -76,7 +79,7 @@ public class ScrollingTextWidget extends InteractAbleWidget implements Drawable,
         return text;
     }
 
-    public void setOrientation(ORIENTATION orientation) {
+    public void setOrientation(Orientation orientation) {
         this.orientation = orientation;
     }
 
@@ -91,16 +94,27 @@ public class ScrollingTextWidget extends InteractAbleWidget implements Drawable,
      */
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        String displayText = this.text.getString();
+        int textWidth = MinecraftClient.getInstance().textRenderer.getWidth(text);
+        boolean scissorEnabled = false;
+        int textStart = getX();
+        switch (orientation) {
+            case CENTERED -> textStart += (width - textWidth) / 2;
+            case RIGHT -> textStart += (width - textWidth);
+        }
 
-        int textWidth = MinecraftClient.getInstance().textRenderer.getWidth(displayText);
+        if (textWidth > width) {
+            String string = text.getString();
+            int offsetAmount = 0;
+            if (scrollPosition < string.length()) {
+                String sub = string.substring(0, scrollPosition);
+                int subLength = MinecraftClient.getInstance().textRenderer.getWidth(sub);
+                if (subLength < width)
+                    offsetAmount = subLength;
+            }
 
-        if (textWidth > this.width) {
-            displayText = displayText.substring(scrollPosition);
+            /*textWidth = MinecraftClient.getInstance().textRenderer.getWidth(displayText);
 
-            textWidth = MinecraftClient.getInstance().textRenderer.getWidth(displayText);
-
-            if (textWidth <= this.width) {
+            if (textWidth <= width) {
                 if (timer > scrollHoldTime) {
                     timer = -firstLetterExtraTime;
                     scrollPosition = 0;
@@ -115,21 +129,28 @@ public class ScrollingTextWidget extends InteractAbleWidget implements Drawable,
 
             timer += delta / 20;
 
-            displayText = MinecraftClient.getInstance().textRenderer.trimToWidth(displayText, this.width);
+            displayText = MinecraftClient.getInstance().textRenderer.trimToWidth(displayText, width);*/
+            timer += delta / 20;
+            if (timer > scrollDelay) {
+                scrollPosition++;
+                timer = 0;
+            }
+
+            textStart-=offsetAmount;
+            Vector4f corner1 = TransformableWidget.transFormMousePos(getX(), getY(), context.getMatrices().peek().getPositionMatrix());
+            Vector4f corner2 = TransformableWidget.transFormMousePos(getX()+width, getY()+height, context.getMatrices().peek().getPositionMatrix());
+            context.enableScissor((int) corner1.x, (int) corner1.y, (int) corner2.x+1, (int) corner2.y);
+            scissorEnabled = true;
         }
-        int textStart = getX();
-        switch (orientation) {
-            case CENTERED -> textStart += (this.width - textWidth) / 2;
-            case RIGHT -> textStart += (this.width - textWidth);
-        }
-        context.drawText(renderer, displayText, textStart, this.getY(), textColor, hasTextShadow);
+        context.drawText(renderer, text, textStart, getY(), textColor, hasTextShadow);
+        if (scissorEnabled) context.disableScissor();
     }
 
     public int getRequiredWidth() {
         return Math.min(this.width, renderer.getWidth(text));
     }
 
-    public enum ORIENTATION {
+    public enum Orientation {
         LEFT,
         CENTERED,
         RIGHT

@@ -36,7 +36,15 @@ public class SkinOptions implements EditOption {
             }
             return oldMap;
         });
-        ReloadEvents.END.subscribe((isClient -> {
+        Miapi.registerReloadHandler(ReloadEvents.END, "skins/module", (isClient, path, data) -> {
+            load(data);
+        });
+        Miapi.registerReloadHandler(ReloadEvents.END, "skins/tab", (isClient, path, data) -> {
+            loadTabData(data);
+        });
+
+        // old code below, not deleted for reference reasons- Smartin feel free to delete if you want i guess
+        /*ReloadEvents.END.subscribe((isClient -> {
             skins.clear();
             ReloadEvents.DATA_PACKS.forEach((path, data) -> {
                 if (path.startsWith("skins/module")) {
@@ -46,7 +54,7 @@ public class SkinOptions implements EditOption {
                     loadTabData(data);
                 }
             });
-        }));
+        }));*/
     }
 
     public static SkinTab getTag(String path) {

@@ -156,6 +156,7 @@ public class ItemModule {
             } catch (Exception e) {
                 e.printStackTrace();
                 RuntimeException exception = new RuntimeException("Failure during moduleLoad, Error in Module " + moduleKey + " with property " + key + " with data " + data + " with error " + e.getLocalizedMessage());
+                exception.addSuppressed(e);
                 throw exception;
             }
         }

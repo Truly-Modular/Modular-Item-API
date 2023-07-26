@@ -11,11 +11,14 @@ import dev.architectury.utils.Env;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.MapColor;
+import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.enums.Instrument;
+import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.entity.attribute.ClampedEntityAttribute;
 import net.minecraft.entity.attribute.EntityAttribute;
+import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
@@ -26,10 +29,16 @@ import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.world.event.GameEvent;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.blocks.ModularWorkBench;
+import smartin.miapi.blocks.ModularWorkBenchEntity;
+import smartin.miapi.blocks.StatProvidingBlockEntity;
 import smartin.miapi.client.MiapiClient;
 import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
+import smartin.miapi.craft.stat.CraftingStat;
+import smartin.miapi.craft.stat.SimpleCraftingStat;
+import smartin.miapi.effects.CryoStatusEffect;
 import smartin.miapi.item.modular.items.*;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.abilities.*;
@@ -57,13 +66,17 @@ public class RegistryInventory {
     public static final MiapiRegistrar<Item> modularItems = MiapiRegistrar.of(registrar.get().get(RegistryKeys.ITEM));
     public static final Registrar<Item> items = registrar.get().get(RegistryKeys.ITEM);
     public static final Registrar<Block> blocks = registrar.get().get(RegistryKeys.BLOCK);
+    public static final Registrar<BlockEntityType<?>> blockEntities = registrar.get().get(RegistryKeys.BLOCK_ENTITY_TYPE);
     public static final Registrar<EntityAttribute> attributes = registrar.get().get(RegistryKeys.ATTRIBUTE);
     public static final Registrar<EntityType<?>> entityTypes = registrar.get().get(RegistryKeys.ENTITY_TYPE);
     public static final Registrar<ScreenHandlerType<?>> screenHandlers = registrar.get().get(RegistryKeys.SCREEN_HANDLER);
+    public static final Registrar<StatusEffect> statusEffects = registrar.get().get(RegistryKeys.STATUS_EFFECT);
+    public static final Registrar<ItemGroup> tab = registrar.get().get(RegistryKeys.ITEM_GROUP);
+    public static final Registrar<GameEvent> gameEvents = registrar.get().get(RegistryKeys.GAME_EVENT);
     public static final MiapiRegistry<ModuleProperty> moduleProperties = MiapiRegistry.getInstance(ModuleProperty.class);
     public static final MiapiRegistry<ItemModule> modules = MiapiRegistry.getInstance(ItemModule.class);
     public static final MiapiRegistry<EditOption> editOptions = MiapiRegistry.getInstance(EditOption.class);
-    public static final Registrar<ItemGroup> tab = registrar.get().get(RegistryKeys.ITEM_GROUP);
+    public static final MiapiRegistry<CraftingStat> craftingStats = MiapiRegistry.getInstance(CraftingStat.class);
 
     public static <T> RegistrySupplier<T> registerAndSupply(Registrar<T> rg, Identifier id, Supplier<T> object) {
         return rg.register(id, object);
@@ -92,6 +105,10 @@ public class RegistryInventory {
     public static <T> void registerMiapi(MiapiRegistry<T> rg, String id, T object) {
         rg.register(id, object);
     }
+    public static <T> void registerMiapi(MiapiRegistry<T> rg, String id, T object, Consumer<T> onRegister) {
+        rg.register(id, object);
+        onRegister.accept(object);
+    }
 
     public static <T> void addCallback(Registrar<T> rg, Consumer<T> consumer) {
         rg.getIds().forEach(id -> rg.listen(id, consumer));
@@ -117,7 +134,14 @@ public class RegistryInventory {
     }
 
     public static Block modularWorkBench;
+    public static Block exampleStatProviderBlock;
+    public static BlockEntityType<ModularWorkBenchEntity> modularWorkBenchEntityType;
+    public static BlockEntityType<StatProvidingBlockEntity> exampleStatProviderBlockEntityType;
     public static Item modularItem;
+    public static GameEvent statUpdateEvent;
+    public static StatusEffect cryoStatusEffect;
+    public static GameEvent statProviderUpdatedEvent;
+    public static SimpleCraftingStat exampleCraftingStat;
     public static RegistrySupplier<EntityType<ItemProjectile>> itemProjectileType = (RegistrySupplier) registerAndSupply(entityTypes, "thrown_item", () ->
             EntityType.Builder.create(ItemProjectile::new, SpawnGroup.MISC).setDimensions(0.5F, 0.5F).maxTrackingRange(4).trackingTickInterval(20).build("miapi:thrown_item"));
 
@@ -153,8 +177,25 @@ public class RegistryInventory {
                         requiresTool().
                         strength(2.0F, 6.0F).
                         sounds(BlockSoundGroup.METAL).
-                        nonOpaque()), b -> modularWorkBench = b);
+                        nonOpaque().
+                        pistonBehavior(PistonBehavior.IGNORE)), b -> modularWorkBench = b);
+        register(blockEntities, "modular_work_bench", () -> BlockEntityType.Builder.create(
+                ModularWorkBenchEntity::new, modularWorkBench
+        ).build(null), be -> {
+            modularWorkBenchEntityType = (BlockEntityType<ModularWorkBenchEntity>) be;
+            if (Platform.getEnvironment() == Env.CLIENT) MiapiClient.registerBlockEntityRenderer();
+        });
         register(items, "modular_work_bench", () -> new BlockItem(modularWorkBench, new Item.Settings()));
+
+
+        /*register(blocks, "example_stat_provider", () ->
+                new StatProvidingBlock(AbstractBlock.Settings.create(), StatProvidingBlockEntity.Example::new), b -> exampleStatProviderBlock = b);
+        register(blockEntities, "example_stat_provider", () -> BlockEntityType.Builder.create(
+                StatProvidingBlockEntity.Example::new, exampleStatProviderBlock
+        ).build(null), be -> {
+            exampleStatProviderBlockEntityType = (BlockEntityType<StatProvidingBlockEntity>) be;
+        });
+        register(items, "example_stat_provider", () -> new BlockItem(exampleStatProviderBlock, new Item.Settings()));*/
 
 
         // CREATIVE TAB
@@ -191,6 +232,9 @@ public class RegistryInventory {
         register(modularItems, "modular_chestplate", ModularChestPlate::new);
         register(modularItems, "modular_leggings", ModularLeggings::new);
         register(modularItems, "modular_boots", ModularBoots::new);
+
+        //STATUS EFFECTS
+        register(statusEffects, "cryo", CryoStatusEffect::new, eff -> cryoStatusEffect = eff);
 
         //ATTRIBUTE
         registerAtt("generic.durability", false, () ->
@@ -233,6 +277,10 @@ public class RegistryInventory {
                         new ClampedEntityAttribute("miapi.attribute.name.shield_break", 0.0, 0.0, 1024.0).setTracked(true),
                 att -> SHIELD_BREAK = att);
 
+        // GAME EVENTS
+        register(gameEvents, "request_crafting_stat_update", () -> new GameEvent(MOD_ID + ":crafting_stat_update", 16), ev -> statUpdateEvent = ev);
+        register(gameEvents, "stat_provider_updated", () -> new GameEvent(MOD_ID + ":stat_provider_updated", 16), ev -> statProviderUpdatedEvent = ev);
+
         LifecycleEvent.SETUP.register(() -> {
             //EDITPROPERTIES
             registerMiapi(editOptions, "dev", new PropertyInjectionDev());
@@ -269,6 +317,10 @@ public class RegistryInventory {
             registerMiapi(moduleProperties, AllowedMaterial.KEY, new AllowedMaterial());
             registerMiapi(moduleProperties, AttributeProperty.KEY, new AttributeProperty());
             registerMiapi(moduleProperties, PotionEffectProperty.KEY, new PotionEffectProperty());
+            //registerMiapi(moduleProperties, ParticleShapingProperty.KEY, new ParticleShapingProperty());
+            registerMiapi(moduleProperties, PlaySoundProperty.KEY, new PlaySoundProperty());
+            registerMiapi(moduleProperties, ExecuteProperty.KEY, new ExecuteProperty());
+            registerMiapi(moduleProperties, ImmolateProperty.KEY, new ImmolateProperty());
             registerMiapi(moduleProperties, DisplayNameProperty.KEY, new DisplayNameProperty());
             registerMiapi(moduleProperties, ItemIdProperty.KEY, new ItemIdProperty());
             registerMiapi(moduleProperties, EquipmentSlotProperty.KEY, new EquipmentSlotProperty());
@@ -287,9 +339,14 @@ public class RegistryInventory {
             registerMiapi(moduleProperties, EnchantmentProperty.KEY, new EnchantmentProperty());
             registerMiapi(moduleProperties, MaterialProperties.KEY, new MaterialProperties());
             registerMiapi(moduleProperties, CraftingConditionProperty.KEY, new CraftingConditionProperty());
+            registerMiapi(moduleProperties, StatRequirementProperty.KEY, new StatRequirementProperty());
+            registerMiapi(moduleProperties, StatProvisionProperty.KEY, new StatProvisionProperty());
 
             //compat
             registerMiapi(moduleProperties, BetterCombatProperty.KEY, new BetterCombatProperty());
+
+            // CRAFTING STATS
+            //registerMiapi(craftingStats, "hammering", new SimpleCraftingStat(0), stat -> exampleCraftingStat = (SimpleCraftingStat) stat);
 
             // ABILITIES
             registerMiapi(useAbilityRegistry, "throw", new ThrowingAbility());

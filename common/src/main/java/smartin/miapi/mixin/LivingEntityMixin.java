@@ -19,7 +19,7 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import smartin.miapi.attributes.AttributeRegistry;
-import smartin.miapi.events.Event;
+import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.modules.properties.EquipmentSlotProperty;
 
@@ -63,8 +63,8 @@ abstract class LivingEntityMixin {
 
     @Inject(method = "damage", at = @At(value = "HEAD"))
     private void damageEvent(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
-        Event.LivingHurtEvent livingHurtEvent = new Event.LivingHurtEvent((LivingEntity) (Object) this, source, amount);
-        EventResult result = Event.LIVING_HURT.invoker().hurt(livingHurtEvent);
+        MiapiEvents.LivingHurtEvent livingHurtEvent = new MiapiEvents.LivingHurtEvent((LivingEntity) (Object) this, source, amount);
+        EventResult result = MiapiEvents.LIVING_HURT.invoker().hurt(livingHurtEvent);
         if (result.interruptsFurtherEvaluation()) {
             cir.setReturnValue(false);
         }
@@ -75,8 +75,8 @@ abstract class LivingEntityMixin {
 
     @Inject(method = "damage", at = @At(value = "TAIL"))
     private void damageEventAfter(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
-        Event.LivingHurtEvent livingHurtEvent = new Event.LivingHurtEvent((LivingEntity) (Object) this, source, amount);
-        Event.LIVING_HURT_AFTER.invoker().hurt(livingHurtEvent);
+        MiapiEvents.LivingHurtEvent livingHurtEvent = new MiapiEvents.LivingHurtEvent((LivingEntity) (Object) this, source, amount);
+        MiapiEvents.LIVING_HURT_AFTER.invoker().hurt(livingHurtEvent);
     }
 
     @ModifyVariable(method = "damage", at = @At(value = "HEAD"), ordinal = 0)

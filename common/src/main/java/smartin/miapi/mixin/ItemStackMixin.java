@@ -29,7 +29,7 @@ import static smartin.miapi.modules.properties.AttributeProperty.getAttributeMod
 @Mixin(ItemStack.class)
 public abstract class ItemStackMixin {
 
-    //@Inject(method = "foo()V", at = @At(value = "INVOKE", target = "La/b/c/Something;doSomething()V", shift = At.Shift.AFTER))
+    //@Inject(method = "foo()V", at = @At(value = "INVOKE", item = "La/b/c/Something;doSomething()V", shift = At.Shift.AFTER))
     @Inject(
             method = "getTooltip(Lnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/client/item/TooltipContext;)Ljava/util/List;",
             at = @At(

@@ -8,20 +8,24 @@
     "miapi.ui.replace": "Replace",
     "miapi.ui.replace.header": "Select a new Module:",
     "miapi.ui.craft.warning":"Cant Craft:",
-    "miapi.ui.craft.warning.material":"insufficient Material",
+    "miapi.ui.craft.warning.material":"Insufficient Material",
+    "miapi.ui.craft.warning.crafting_stat":"Crafting Stat Requirement Unmet",
     "miapi.ui.craft.warning.flexibility":"Flexibility cannot go bellow 0",
 
     "miapi.skin.name.": "Default Skin",
     "miapi.skin.name.star_wars": "",
     "miapi.skin.name.skyrim": "",
     "miapi.skin.name.goldbrand": "",
-    
+
+    "effect.miapi.cryo": "Cryo",
 
     "miapi.attribute.name.durability":"Durability",
     "miapi.attribute.name.resistance":"Damage Ressistance",
     "miapi.attribute.name.reach":"Reach",
     "miapi.attribute.name.attack_range":"Attack Range",
 
+    "miapi.stat.tipped": "Tipped",
+    "miapi.stat.tipped.description": "Applies potion effects. Scroll to see every potion effect.\n🧪: The effect applied.\n⌚: The duration.\n🗡: The amplifier.\n🎯: The entity the effect is applied to.",
     "miapi.stat.damage": "Damage",
     "miapi.stat.damage.description": "Damage. Raw Damage",
     "miapi.stat.attack_speed": "Attack Speed",

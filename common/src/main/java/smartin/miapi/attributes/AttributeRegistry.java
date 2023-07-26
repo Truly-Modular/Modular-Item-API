@@ -12,7 +12,7 @@ import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import smartin.miapi.events.Event;
+import smartin.miapi.events.MiapiEvents;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -39,13 +39,13 @@ public class AttributeRegistry {
 
 
     public static void setup() {
-        Event.LIVING_HURT.register((livingHurtEvent -> {
+        MiapiEvents.LIVING_HURT.register((livingHurtEvent -> {
             if (livingHurtEvent.livingEntity.getAttributes().hasAttribute(DAMAGE_RESISTANCE)) {
                 livingHurtEvent.amount = (float) (livingHurtEvent.amount * (100 - livingHurtEvent.livingEntity.getAttributeValue(DAMAGE_RESISTANCE)) / 100);
             }
             return EventResult.pass();
         }));
-        Event.LIVING_HURT.register((livingHurtEvent -> {
+        MiapiEvents.LIVING_HURT.register((livingHurtEvent -> {
             if (livingHurtEvent.damageSource.getAttacker() instanceof LivingEntity attacker) {
                 if (attacker.getAttributes().hasAttribute(BACK_STAB)) {
                     if (livingHurtEvent.damageSource.getAttacker().getRotationVector().dotProduct(livingHurtEvent.livingEntity.getRotationVector()) > 0) {
@@ -56,7 +56,7 @@ public class AttributeRegistry {
             }
             return EventResult.pass();
         }));
-        Event.LIVING_HURT_AFTER.register((livingHurtEvent -> {
+        MiapiEvents.LIVING_HURT_AFTER.register((livingHurtEvent -> {
             if (livingHurtEvent.damageSource.getAttacker() instanceof LivingEntity attacker) {
                 if (attacker.getAttributes().hasAttribute(SHIELD_BREAK)) {
                     double value = attacker.getAttributeValue(SHIELD_BREAK);
@@ -71,7 +71,7 @@ public class AttributeRegistry {
             }
             return EventResult.pass();
         }));
-        Event.LIVING_HURT.register((livingHurtEvent -> {
+        MiapiEvents.LIVING_HURT.register((livingHurtEvent -> {
             if (livingHurtEvent.damageSource.getAttacker() instanceof LivingEntity attacker) {
                 if (attacker.getAttributes().hasAttribute(ARMOR_CRUSHING)) {
                     double value = attacker.getAttributeValue(ARMOR_CRUSHING);

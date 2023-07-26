@@ -80,14 +80,11 @@ public class ReplaceView extends InteractAbleWidget {
             this.module = module;
             if (module != null) {
                 isAllowed = CraftingConditionProperty.isCraftable(null, module, MinecraftClient.getInstance().player, null);
-                StringBuilder combinedText = new StringBuilder();
+                List<Text> texts = new ArrayList<>();
                 if (!isAllowed) {
-                    List<Text> failureList = CraftingConditionProperty.getReasonsForCraftable(null, module, MinecraftClient.getInstance().player, null);
-                    for (Text entry : failureList) {
-                        combinedText.append(entry.getString()).append("\n");
-                    }
+                    texts = CraftingConditionProperty.getReasonsForCraftable(null, module, MinecraftClient.getInstance().player, null);
                 }
-                hoverDescription = new HoverDescription(x, y, width, height, Text.literal(combinedText.toString()));
+                hoverDescription = new HoverDescription(x, y, texts);
             }
         }
 
@@ -117,7 +114,7 @@ public class ReplaceView extends InteractAbleWidget {
             if (isMouseOver(mouseX, mouseY) && !isAllowed && hoverDescription != null) {
                 hoverDescription.setX(this.getX());
                 hoverDescription.setY(this.getY() + this.getHeight());
-                hoverDescription.renderHover(drawContext, mouseX, mouseY, delta);
+                hoverDescription.render(drawContext, mouseX, mouseY, delta);
             }
         }
 

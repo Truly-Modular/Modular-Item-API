@@ -64,6 +64,7 @@ public class ScrollList extends InteractAbleWidget {
 
     @Override
     public void render(DrawContext drawContext, int mouseX, int mouseY, float delta) {
+        super.render(drawContext, mouseX, mouseY, delta);
         int totalHeight = 0;
         for (ClickableWidget widget : this.widgets) {
             totalHeight += widget.getHeight();
@@ -110,13 +111,10 @@ public class ScrollList extends InteractAbleWidget {
 
     @Override
     public void renderHover(DrawContext drawContext, int mouseX, int mouseY, float delta) {
-        for (InteractAbleWidget widget : this.widgets) {
-            Matrix4f matrix4f = new Matrix4f(drawContext.getMatrices().peek().getPositionMatrix());
-            Vector4f posX = TransformableWidget.transFormMousePos(getX(), getY(), matrix4f);
-            Vector4f posY = TransformableWidget.transFormMousePos(getX() + width, getY() + height, matrix4f);
-            //drawContext.enableScissor((int) posX.x(), (int) posX.y, (int) posY.x(), (int) posY.y());
-            widget.renderHover(drawContext, mouseX, mouseY, delta);
-            //drawContext.disableScissor();
+        if (isMouseOver(mouseX, mouseY)) {
+            for (InteractAbleWidget widget : this.widgets) {
+                widget.renderHover(drawContext, mouseX, mouseY, delta);
+            }
         }
     }
 
@@ -124,6 +122,11 @@ public class ScrollList extends InteractAbleWidget {
     public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
         if (this.widgets == null) {
             return false;
+        }
+        for (ClickableWidget widget : widgets) {
+            if (widget.isMouseOver(mouseX, mouseY) && widget.mouseScrolled(mouseX, mouseY, amount)) {
+                return true;
+            }
         }
 
         int scrollSpeed = 10;

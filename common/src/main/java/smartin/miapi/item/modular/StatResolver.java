@@ -3,11 +3,15 @@ package smartin.miapi.item.modular;
 import com.google.gson.JsonElement;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
+import com.redpxnda.nucleus.datapack.codec.AutoCodec;
+import com.redpxnda.nucleus.datapack.codec.CustomIntermediateCodec;
+import com.redpxnda.nucleus.datapack.codec.IntermediateCodec;
 import net.minecraft.text.Text;
 import org.mariuszgromada.math.mxparser.Expression;
 import smartin.miapi.modules.ItemModule;
 
 import java.util.*;
+import java.util.function.BiFunction;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -32,6 +36,73 @@ public class StatResolver {
                 if (e.left().isPresent()) return e.left().get();
                 else return e.right().get();
             }, Either::left);
+        }
+    }
+    @AutoCodec.Override("codec")
+    public static class StringFromStat extends IntermediateCodec.Median<String, ItemModule.ModuleInstance, String> {
+        public static BiFunction<String, ItemModule.ModuleInstance, String> func = StatResolver::resolveString;
+        public static Codec<StringFromStat> codec = new CustomIntermediateCodec<>(Codec.STRING, func, (s, b) -> new StringFromStat(s));
+
+        public StringFromStat(String start) {
+            super(start, func);
+        }
+    }
+    @AutoCodec.Override("fullCodec")
+    public static class DoubleFromStat extends IntermediateCodec.Median<String, ItemModule.ModuleInstance, Double> {
+        public static BiFunction<String, ItemModule.ModuleInstance, Double> func = StatResolver::resolveDouble;
+        public static Codec<DoubleFromStat> codec = new CustomIntermediateCodec<>(Codec.STRING, func, (s, b) -> new DoubleFromStat(s));
+        public static Codec<DoubleFromStat> fullCodec =
+                Codec.either(
+                        Codec.DOUBLE,
+                        codec
+                ).xmap(either -> {
+                    if (either.right().isPresent())
+                        return either.right().get();
+                    else
+                        return new DoubleFromStat(either.left().get());
+                }, Either::right);
+
+        public DoubleFromStat(String start) {
+            super(start, func);
+        }
+        public DoubleFromStat(double start) {
+            this(String.valueOf(start));
+        }
+
+        @Override
+        public String toString() {
+            return "DoubleFromStat{" +
+                    "start=" + start +
+                    '}';
+        }
+    }
+    @AutoCodec.Override("fullCodec")
+    public static class IntegerFromStat extends IntermediateCodec.Median<String, ItemModule.ModuleInstance, Integer> {
+        public static BiFunction<String, ItemModule.ModuleInstance, Integer> func = (raw, input) -> (int) resolveDouble(raw, input);
+        public static Codec<IntegerFromStat> codec = new CustomIntermediateCodec<>(Codec.STRING, func, (s, b) -> new IntegerFromStat(s));
+        public static Codec<IntegerFromStat> fullCodec =
+                Codec.either(
+                        Codec.INT,
+                        codec
+                ).xmap(either -> {
+                    if (either.right().isPresent())
+                        return either.right().get();
+                    else
+                        return new IntegerFromStat(either.left().get());
+                }, Either::right);
+
+        public IntegerFromStat(String start) {
+            super(start, func);
+        }
+        public IntegerFromStat(int start) {
+            this(String.valueOf(start));
+        }
+
+        @Override
+        public String toString() {
+            return "IntegerFromStat{" +
+                    "start=" + start +
+                    '}';
         }
     }
 

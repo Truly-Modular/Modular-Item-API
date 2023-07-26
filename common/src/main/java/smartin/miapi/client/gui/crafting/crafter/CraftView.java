@@ -1,6 +1,7 @@
 package smartin.miapi.client.gui.crafting.crafter;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.datafixers.util.Pair;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -13,14 +14,18 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerListener;
 import net.minecraft.screen.slot.Slot;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
 import smartin.miapi.Miapi;
+import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.client.gui.*;
 import smartin.miapi.client.gui.HoverDescription;
+import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
 import smartin.miapi.craft.CraftAction;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.util.CraftingProperty;
@@ -29,6 +34,7 @@ import smartin.miapi.network.Networking;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
@@ -75,7 +81,11 @@ public class CraftView extends InteractAbleWidget {
         replacingModule = module;
         this.addSlot = addSlot;
         this.removeSlot = removeSlot;
-        action = new CraftAction(originalStack, slotToChange, module, MinecraftClient.getInstance().player, null);
+
+        ModularWorkBenchEntity bench = null;
+        if (handler instanceof CraftingScreenHandler csh) bench = csh.blockEntity;
+
+        action = new CraftAction(originalStack, slotToChange, module, MinecraftClient.getInstance().player, bench, null);
         action.linkInventory(inventory, offset);
         compareStack = action.getPreview();
         action.forEachCraftingProperty(compareStack, ((craftingProperty, moduleInstance, itemStacks, invStart, invEnd, buf) -> {
@@ -125,19 +135,14 @@ public class CraftView extends InteractAbleWidget {
         });
         addChild(craftButton);
 
-        handler.addListener(new ScreenHandlerListener() {
-            @Override
-            public void onSlotUpdate(ScreenHandler handler, int slotId, ItemStack stack) {
-                if (currentSlots.stream().anyMatch(slot1 -> slot1.id == slotId)) {
+        handler.addListener(new SimpleScreenHandlerListener((h, slotId, itemStack) -> {
+            /*if (currentSlots.stream().anyMatch(slot1 -> slot1.id == slotId)) {
                     update();
-                }
+                }*/
+            if(slotId!=36){
+                update();
             }
-
-            @Override
-            public void onPropertyUpdate(ScreenHandler handler, int property, int value) {
-
-            }
-        });
+        }));
     }
 
     private void update() {
@@ -145,13 +150,15 @@ public class CraftView extends InteractAbleWidget {
             if (!isClosed) {
                 preview.accept(action.getPreview());
                 setBuffers();
-                craftButton.isEnabled = action.canPerform();
+                Pair<Map<CraftingProperty, Boolean>, Boolean> canPerform = action.fullCanPerform();
+                craftButton.isEnabled = canPerform.getSecond();
 
-                craftingProperties.forEach(craftingProperty -> {
-                    warnings.clear();
-                    Text warning = craftingProperty.getWarning();
-                    if (warning != null && !warning.getString().isEmpty()) {
-                        warnings.add(warning);
+                warnings.clear();
+                canPerform.getFirst().forEach((property, result) -> {
+                    if (!result) {
+                        Text warning = property.getWarning();
+                        if (warning != null && !warning.getString().isEmpty())
+                            warnings.add(warning);
                     }
                 });
             }
@@ -290,8 +297,7 @@ public class CraftView extends InteractAbleWidget {
 
         public CraftButton(int x, int y, int width, int height, Text title, T toCallback, Consumer<T> callback) {
             super(x, y, width, height, title, toCallback, callback);
-            hover = new HoverDescription(x, y + height, width * 3, height, Text.empty());
-            hover.textWidget.textColor = ColorHelper.Argb.getArgb(255, 255, 0, 0);
+            hover = new HoverDescription(x, y + height, List.of());
         }
 
         @Override
@@ -301,20 +307,17 @@ public class CraftView extends InteractAbleWidget {
 
         @Override
         public void renderHover(DrawContext drawContext, int mouseX, int mouseY, float delta) {
-            StringBuilder message = new StringBuilder(Text.translatable(Miapi.MOD_ID + ".ui.craft.warning").getString());
-            hover.setX(this.getX());
-            hover.setY(this.getY() + this.getHeight());
-
-            for (Text text : warnings) {
-                message.append("\n - ").append(text.getString());
-            }
-            hover.setText(Text.of(message.toString()));
             if (!this.isEnabled && isMouseOver(mouseX, mouseY)) {
-                RenderSystem.enableDepthTest();
-                RenderSystem.enableBlend();
-                RenderSystem.defaultBlendFunc();
-                hover.renderHover(drawContext, mouseX, mouseY, delta);
-                RenderSystem.disableBlend();
+                MutableText text = Text.translatable(Miapi.MOD_ID + ".ui.craft.warning").formatted(Formatting.RED);
+                hover.addText(text);
+                hover.setX(this.getX());
+                hover.setY(this.getY() + this.getHeight());
+
+                for (Text warning : warnings) {
+                    hover.addText(Text.literal(" - ").append(warning).formatted(Formatting.RED));
+                }
+                hover.render(drawContext, mouseX, mouseY, delta);
+                hover.reset();
             }
         }
     }

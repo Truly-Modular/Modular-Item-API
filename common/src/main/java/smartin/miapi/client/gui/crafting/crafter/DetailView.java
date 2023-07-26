@@ -99,7 +99,7 @@ public class DetailView extends InteractAbleWidget {
             Text displayText = StatResolver.translateAndResolve(Miapi.MOD_ID + ".module." + moduleInstance.module.getName(), moduleInstance);
             moduleName = new ScrollingTextWidget(this.getX() + 10, this.getY(), this.width - 20, displayText, ColorHelper.Argb.getArgb(255, 255, 255, 255));
             materialName = new ScrollingTextWidget(this.getX() + 10, this.getY(), this.width - 20, materialNameText, ColorHelper.Argb.getArgb(255, 255, 255, 255));
-            materialName.setOrientation(ScrollingTextWidget.ORIENTATION.RIGHT);
+            materialName.setOrientation(ScrollingTextWidget.Orientation.RIGHT);
             detail = new ModuleDetail(x, y, width, slot);
             open();
             buttonMap.put(slot, this);

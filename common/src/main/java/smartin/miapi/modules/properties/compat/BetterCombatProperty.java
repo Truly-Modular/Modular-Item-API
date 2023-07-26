@@ -2,6 +2,9 @@ package smartin.miapi.modules.properties.compat;
 
 import com.google.gson.JsonElement;
 import dev.architectury.platform.Platform;
+import smartin.miapi.attributes.AttributeRegistry;
+import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.properties.AttributeProperty;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
@@ -13,6 +16,13 @@ public class BetterCombatProperty implements ModuleProperty {
         property = this;
         if (Platform.isModLoaded("bettercombat")) {
             BetterCombatHelper.setup();
+            AttributeProperty.attributeTransformers.add((map, itemstack) -> {
+                JsonElement element = ItemModule.getMergedProperty(itemstack, property);
+                if (element != null) {
+                    map.removeAll(AttributeRegistry.ATTACK_RANGE);
+                }
+                return map;
+            });
         }
     }
 

@@ -7,6 +7,7 @@ repositories {
     maven { url 'https://maven.fabricmc.net/' }
     maven { url 'https://jitpack.io' }
     maven { url 'https://maven.terraformersmc.com/' }
+    maven { url 'https://maven.ladysnake.org/releases' }
     maven { url 'https://www.cursemaven.com' }
     maven {
         name = 'Modrinth'
@@ -44,6 +45,8 @@ dependencies {
     //modImplementation files('libs/moonlight.jar')
 
     implementation(include('org.mariuszgromada.math:MathParser.org-mXparser:4.4.2'))
+
+    modApi(include("com.github.RedPxnda.Nucleus:nucleus-fabric:${rootProject.nucleus_version}"))
 
     modImplementation "curse.maven:cloth-348521:4554906"
     modImplementation "curse.maven:bettercombat-639842:4597949"

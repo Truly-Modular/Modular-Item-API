@@ -12,6 +12,7 @@ import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.ColorHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +27,8 @@ import java.util.List;
 public abstract class InteractAbleWidget extends ClickableWidget implements Drawable, Element {
     protected final List<Element> children = new ArrayList<>();
     protected final List<InteractAbleWidget> hoverElements = new ArrayList<>();
+    public boolean debug = false;
+    public static boolean globalDebug = false;
 
     /**
      * This is a Widget build to support Children and parse the events down to them.
@@ -358,6 +361,9 @@ public abstract class InteractAbleWidget extends ClickableWidget implements Draw
      */
     @Override
     public void render(DrawContext drawContext, int mouseX, int mouseY, float delta) {
+        if (debug || globalDebug)
+            drawSquareBorder(drawContext, getX(), getY(), getWidth(), getHeight(), 2, ColorHelper.Argb.getArgb(255, 255, 0, 0));
+
         RenderSystem.setShader(GameRenderer::getPositionProgram);
         for (Element element : children()) {
             if (element instanceof Drawable drawable) {

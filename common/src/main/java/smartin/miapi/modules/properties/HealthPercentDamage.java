@@ -4,7 +4,7 @@ import dev.architectury.event.EventResult;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import smartin.miapi.events.Event;
+import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.modules.properties.util.SimpleDoubleProperty;
 
 /**
@@ -17,7 +17,7 @@ public class HealthPercentDamage extends SimpleDoubleProperty {
     public HealthPercentDamage() {
         super(KEY);
         property = this;
-        Event.LIVING_HURT.register((livingHurtEvent -> {
+        MiapiEvents.LIVING_HURT.register((livingHurtEvent -> {
             if (livingHurtEvent.damageSource.getAttacker() instanceof LivingEntity livingAttacker) {
                 ItemStack itemStack = livingHurtEvent.getCausingItemStack();
                 if (livingAttacker instanceof PlayerEntity player) {

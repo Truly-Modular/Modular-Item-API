@@ -84,11 +84,22 @@
     },
     "applyPotionEffects": [
         {
-            "event": "attack",
-            "target": "target",
+            "event": "hurt",
+            "item": "attacker.mainhand",
+            "applyTo": "victim",
             "duration": 50,
             "amplifier": 2,
-            "effect": "minecraft:poison"
+            "effect": "minecraft:poison",
+            "description": "to victims when attacking with this item."
+        },
+        {
+            "event": "hurt",
+            "item": "attacker.mainhand",
+            "applyTo": "attacker",
+            "duration": 100,
+            "amplifier": 3,
+            "effect": "minecraft:regeneration",
+            "description": "to yourself when attacking with this item."
         }
     ],
     "displayName": "miapi.module.blade_dagger.name",

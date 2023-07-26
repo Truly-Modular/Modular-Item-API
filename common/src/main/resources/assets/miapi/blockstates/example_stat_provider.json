@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "miapi:block/example_stat_provider"
+    }
+  }
+}

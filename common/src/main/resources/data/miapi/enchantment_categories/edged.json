@@ -1,0 +1,10 @@
+{
+  "id": "miapi:edged",
+  "add": [
+    "minecraft:sharpness",
+    "minecraft:sweeping"
+  ],
+  "addCategory": [],
+  "__comment": "The 'add' field can be used to directly add enchantments.",
+  "___comment": "The 'addCategory' field doesn't do anything functionally, and is just for reference purposes."
+}

@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This property manages the active {@link smartin.miapi.modules.properties.util.PropertyApplication.Ability}
+ * This property manages the active {@link ItemUseAbility}
  */
 public class AbilityProperty implements ModuleProperty {
     public static final String KEY = "abilities";
