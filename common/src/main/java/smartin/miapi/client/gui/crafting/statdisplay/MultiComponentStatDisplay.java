@@ -128,12 +128,12 @@ public abstract class MultiComponentStatDisplay extends InteractAbleWidget imple
             this.prefix = prefix;
             this.text = text;
         }
-        public ComponentHolder(Text prefix, Text scrolling, int maxWidth, int color) {
+        public ComponentHolder(Text prefix, Text scrolling, int maxWidth) {
             int prefixWidth = textRenderer.getWidth(prefix);
             if (maxWidth < 0)
                 maxWidth = textRenderer.getWidth(scrolling);
             this.prefix = new SimpleTextWidget(0, 0, prefixWidth, 9, prefix);
-            this.text = new ScrollingTextWidget(prefixWidth+2, 0, maxWidth, scrolling, color);
+            this.text = new ScrollingTextWidget(prefixWidth+2, 0, maxWidth, scrolling);
         }
 
         public int getSpacing() {
@@ -153,7 +153,7 @@ public abstract class MultiComponentStatDisplay extends InteractAbleWidget imple
         }
 
         public static ComponentHolder fromDescHolder(ComponentDescriptionable.DescriptionHolder desc) {
-            return new ComponentHolder(desc.prefix(), desc.scrolling(), desc.scrollMaxWidth(), desc.scrollingColor());
+            return new ComponentHolder(desc.prefix(), desc.scrolling(), desc.scrollMaxWidth());
         }
     }
 }

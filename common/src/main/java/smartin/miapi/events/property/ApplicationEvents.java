@@ -15,6 +15,7 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 import net.minecraft.util.dynamic.Codecs;
@@ -23,6 +24,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 import org.apache.logging.log4j.util.TriConsumer;
 import org.jetbrains.annotations.Nullable;
+import smartin.miapi.Miapi;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.modules.abilities.util.ItemProjectile.ItemProjectile;
 import smartin.miapi.modules.abilities.util.ItemUseAbility;
@@ -86,6 +88,18 @@ public class ApplicationEvents {
      */
     public static @Nullable Entity getEntityForTarget(String target, Entity fallback, ApplicationEvent<?, ?, ?> event, Object[] originals) {
         return getEntityForTarget(target, setupTargetEntities(fallback, event, originals), fallback);
+    }
+
+    /**
+     * @return the translatable text representation of a desired property application target.
+     */
+    public static Text getTargetTextRepresentation(String target) {
+        String[] segments = target.split("\\.");
+        MutableText base = Text.translatable(Miapi.MOD_ID + ".application_target." + segments[0]);
+        return segments.length == 1 ? base :
+                base.append(
+                        Text.translatable(Miapi.MOD_ID + ".application_target.redirect_possession", Text.translatable(Miapi.MOD_ID + ".application_target.redirect." + segments[1]))
+                );
     }
 
     public static void setupTargetEntities(Map<String, Entity> validEntities, Entity thisEntity, ApplicationEvent<?, ?, ?> event, Object[] originals) {

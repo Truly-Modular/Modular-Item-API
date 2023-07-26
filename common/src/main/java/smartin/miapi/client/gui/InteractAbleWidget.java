@@ -4,6 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Mouse;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.Element;
@@ -13,6 +14,7 @@ import net.minecraft.client.render.GameRenderer;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
+import org.joml.Vector2d;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -343,6 +345,15 @@ public abstract class InteractAbleWidget extends ClickableWidget implements Draw
     @Override
     public boolean isMouseOver(double mouseX, double mouseY) {
         return super.isMouseOver(mouseX, mouseY);
+    }
+
+    public Vector2d getScaledMouseCoords() {
+        MinecraftClient client = MinecraftClient.getInstance();
+        Mouse mouse = client.mouse;
+        double x = mouse.getX() * client.getWindow().getScaledWidth() / client.getWindow().getWidth();
+        double y = mouse.getY() * client.getWindow().getScaledHeight() / client.getWindow().getHeight();
+
+        return new Vector2d(x, y);
     }
 
     public void setHeight(int height) {

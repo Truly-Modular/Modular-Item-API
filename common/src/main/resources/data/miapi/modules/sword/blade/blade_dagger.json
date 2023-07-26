@@ -90,16 +90,9 @@
             "duration": 50,
             "amplifier": 2,
             "effect": "minecraft:poison",
-            "description": "to victims when attacking with this item."
-        },
-        {
-            "event": "hurt",
-            "item": "attacker.mainhand",
-            "applyTo": "attacker",
-            "duration": 100,
-            "amplifier": 3,
-            "effect": "minecraft:regeneration",
-            "description": "to yourself when attacking with this item."
+            "target_description": {
+                "translate": "miapi.application_target.description.hurt_victim"
+            }
         }
     ],
     "displayName": "miapi.module.blade_dagger.name",
