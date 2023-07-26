@@ -18,7 +18,6 @@ public class BoxList extends InteractAbleWidget {
     private List<List<ClickableWidget>> allRows = new ArrayList<>();
     private List<ClickableWidget> currentWidgets = new ArrayList<>();
     private int space = 5;
-    public int maxPageHeight;
 
     /**
      * @param x       the x Position of the BoxList
@@ -77,11 +76,11 @@ public class BoxList extends InteractAbleWidget {
                 this.addChild(widget);
                 currentWidth += widget.getWidth() + space;
                 for (int i = 0; i < toAdd.size(); i++) {
-                    if (currentWidth + toAdd.get(i).getWidth() < this.getWidth()) {
+                    if (currentWidth + toAdd.get(i).getWidth() <= this.getWidth()) {
                         ClickableWidget next = toAdd.remove(i);
                         next.setX(this.getX() + currentWidth + space);
                         next.setY(currentHeight + space);
-                        currentWidth += this.width + space;
+                        currentWidth += next.getWidth() + space;
                         this.addChild(next);
                     }
                 }

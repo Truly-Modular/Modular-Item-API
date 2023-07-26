@@ -139,7 +139,9 @@ public class CraftView extends InteractAbleWidget {
             /*if (currentSlots.stream().anyMatch(slot1 -> slot1.id == slotId)) {
                     update();
                 }*/
-            update();
+            if(slotId!=36){
+                update();
+            }
         }));
     }
 

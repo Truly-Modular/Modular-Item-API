@@ -111,7 +111,7 @@ public class ScrollList extends InteractAbleWidget {
 
     @Override
     public void renderHover(DrawContext drawContext, int mouseX, int mouseY, float delta) {
-        if(isMouseOver(mouseX,mouseY)){
+        if (isMouseOver(mouseX, mouseY)) {
             for (InteractAbleWidget widget : this.widgets) {
                 widget.renderHover(drawContext, mouseX, mouseY, delta);
             }
@@ -122,6 +122,11 @@ public class ScrollList extends InteractAbleWidget {
     public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
         if (this.widgets == null) {
             return false;
+        }
+        for (ClickableWidget widget : widgets) {
+            if (widget.isMouseOver(mouseX, mouseY) && widget.mouseScrolled(mouseX, mouseY, amount)) {
+                return true;
+            }
         }
 
         int scrollSpeed = 10;
