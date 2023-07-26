@@ -3,6 +3,7 @@ package smartin.miapi.client.modelrework;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.item.ItemStack;
 import org.joml.Matrix4f;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.SlotProperty;
@@ -31,7 +32,7 @@ public class ModuleModel {
         return modelList;
     }
 
-    public void render(String modelType, MatrixStack matrices, float tickDelta, VertexConsumerProvider vertexConsumers, int light, int overlay) {
+    public void render(String modelType, ItemStack stack, MatrixStack matrices, float tickDelta, VertexConsumerProvider vertexConsumers, int light, int overlay) {
         if (!otherModels.containsKey(modelType)) {
             otherModels.put(modelType, generateModel(modelType));
         }
@@ -40,7 +41,7 @@ public class ModuleModel {
         otherModels.get(modelType).forEach(matrix4fMiapiModelPair -> {
             matrices.push();
             matrices.peek().getPositionMatrix().mul(matrix4fMiapiModelPair.getFirst());
-            matrix4fMiapiModelPair.getSecond().render(matrices, tickDelta, vertexConsumers, light, overlay);
+            matrix4fMiapiModelPair.getSecond().render(matrices, stack, tickDelta, vertexConsumers, light, overlay);
             matrices.pop();
 
             //prepare for submodules
@@ -58,7 +59,7 @@ public class ModuleModel {
             matrices.push();
             matrices.multiplyPositionMatrix(map.get(integer));
             ModuleModel subModuleModel = subModuleModels.getOrDefault(integer, new ModuleModel(instance1));
-            subModuleModel.render(modelType, matrices, tickDelta, vertexConsumers, integer, overlay);
+            subModuleModel.render(modelType, stack, matrices, tickDelta, vertexConsumers, integer, overlay);
             matrices.pop();
         });
     }
