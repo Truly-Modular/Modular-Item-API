@@ -24,6 +24,8 @@
     "miapi.attribute.name.reach":"Reach",
     "miapi.attribute.name.attack_range":"Attack Range",
 
+    "miapi.stat.tipped": "Tipped",
+    "miapi.stat.tipped.description": "Applies potion effects. Scroll to see every potion effect.\n🧪: The effect applied.\n⌚: The duration.\n🗡: The amplifier.\n🎯: The entity the effect is applied to.",
     "miapi.stat.damage": "Damage",
     "miapi.stat.damage.description": "Damage. Raw Damage",
     "miapi.stat.attack_speed": "Attack Speed",

@@ -7,40 +7,38 @@ import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.item.ItemStack;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
+import smartin.miapi.Miapi;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.client.gui.BoxList;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.TransformableWidget;
-import smartin.miapi.modules.properties.ArmorPenProperty;
-import smartin.miapi.modules.properties.BlockProperty;
-import smartin.miapi.modules.properties.FlexibilityProperty;
-import smartin.miapi.modules.properties.HealthPercentDamage;
+import smartin.miapi.modules.properties.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Environment(EnvType.CLIENT)
 public class StatDisplay extends InteractAbleWidget {
+    public static final Text scrollText = Text.literal(" [").formatted(Formatting.DARK_GRAY)
+            .append(Text.literal("+").formatted(Formatting.GRAY))
+            .append(Text.literal("]").formatted(Formatting.DARK_GRAY));
     private static final List<InteractAbleWidget> statDisplays = new ArrayList<>();
     private final BoxList boxList;
     private TransformableWidget transformableWidget;
     private TransformableWidget hoverText;
-
     private ItemStack original = ItemStack.EMPTY;
     private ItemStack compareTo = ItemStack.EMPTY;
 
     static {
-        addStatDisplay(new MultiComponentStatDisplay(0, 0, 160, 32, stack -> Text.literal("1 and first"), stack -> Text.literal("yep")));
-        addStatDisplay(new MultiComponentStatDisplay(0, 0, 160, 32, stack -> Text.literal("2 dwkad"), stack -> Text.literal("yep")));
-        addStatDisplay(new MultiComponentStatDisplay(0, 0, 160, 32, stack -> Text.literal("3 efef"), stack -> Text.literal("yep")));
-        addStatDisplay(new MultiComponentStatDisplay(0, 0, 160, 32, stack -> Text.literal("4 bbbb"), stack -> Text.literal("yep")));
-        addStatDisplay(new MultiComponentStatDisplay(0, 0, 160, 32, stack -> Text.literal("5 mdallwl"), stack -> Text.literal("yep")));
-        addStatDisplay(new MultiComponentStatDisplay(0, 0, 160, 32, stack -> Text.literal("6"), stack -> Text.literal("yep")));
-        addStatDisplay(new MultiComponentStatDisplay(0, 0, 160, 32, stack -> Text.literal("7"), stack -> Text.literal("yep")));
-        addStatDisplay(new MultiComponentStatDisplay(0, 0, 160, 32, stack -> Text.literal("8 and last"), stack -> Text.literal("yep")));
+        addStatDisplay(new FlattenedListPropertyStatDisplay<>(
+                PotionEffectProperty.property,
+                stk -> statTranslation("tipped").append(scrollText))
+                .withLimitedDescSize(200));
         addStatDisplay(AttributeSingleDisplay
                 .Builder(EntityAttributes.GENERIC_ATTACK_DAMAGE)
                 .setTranslationKey("damage")
@@ -82,7 +80,7 @@ public class StatDisplay extends InteractAbleWidget {
         super(x, y, width, height, Text.empty());
         transformableWidget = new TransformableWidget(x, y, width, height, Text.empty());
         boxList = new BoxList(x * 2, y * 2, width * 2, height * 2, Text.empty(), new ArrayList<>());
-        boxList.maxPageHeight = 100;
+        boxList.maxPageHeight = 182;
         transformableWidget.addChild(boxList);
         transformableWidget.rawProjection = new Matrix4f();
         transformableWidget.rawProjection.scale(0.5f, 0.5f, 0.5f);
@@ -90,6 +88,10 @@ public class StatDisplay extends InteractAbleWidget {
         hoverText = new TransformableWidget(x, y, width, height, Text.empty());
         hoverText.rawProjection = new Matrix4f().scale(0.667f, 0.667f, 0.667f);
         addChild(hoverText);
+    }
+
+    public static MutableText statTranslation(String statName) {
+        return Text.translatable(Miapi.MOD_ID + ".stat." + statName);
     }
 
     public void render(DrawContext drawContext, int mouseX, int mouseY, float delta) {
@@ -142,5 +144,8 @@ public class StatDisplay extends InteractAbleWidget {
 
     public interface TextGetter {
         Text resolve(ItemStack stack);
+    }
+    public interface MultiTextGetter {
+        List<Text> resolve(ItemStack stack);
     }
 }

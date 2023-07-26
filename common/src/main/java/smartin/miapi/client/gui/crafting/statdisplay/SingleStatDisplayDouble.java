@@ -41,9 +41,9 @@ public abstract class SingleStatDisplayDouble extends InteractAbleWidget impleme
         textWidget = new ScrollingTextWidget(x, y, 80, Text.empty(), ColorHelper.Argb.getArgb(255, 255, 255, 255));
         currentValue = new ScrollingTextWidget(x, y, 50, Text.empty(), ColorHelper.Argb.getArgb(255, 255, 255, 255));
         centerValue = new ScrollingTextWidget(x, y, 80 - 10, Text.empty(), ColorHelper.Argb.getArgb(255, 255, 255, 255));
-        centerValue.setOrientation(ScrollingTextWidget.ORIENTATION.CENTERED);
+        centerValue.setOrientation(ScrollingTextWidget.Orientation.CENTERED);
         compareValue = new ScrollingTextWidget(x, y, 80 - 10, Text.empty(), ColorHelper.Argb.getArgb(255, 255, 255, 255));
-        compareValue.setOrientation(ScrollingTextWidget.ORIENTATION.RIGHT);
+        compareValue.setOrientation(ScrollingTextWidget.Orientation.RIGHT);
         statBar = new StatBar(0, 0, width, 10, ColorHelper.Argb.getArgb(255, 0, 0, 0));
         modifierFormat = Util.make(new DecimalFormat("##.##"), (decimalFormat) -> {
             decimalFormat.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ROOT));

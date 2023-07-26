@@ -15,7 +15,10 @@ import net.minecraft.loot.LootManager;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.*;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.dynamic.Codecs;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.events.property.ApplicationEvent;
@@ -23,16 +26,19 @@ import smartin.miapi.events.property.ApplicationEvents;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.mixin.LootContextTypesAccessor;
 import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.properties.util.ComponentDescriptionable;
 import smartin.miapi.modules.properties.util.DynamicCodecBasedProperty;
 import smartin.miapi.modules.properties.util.MergeType;
 
+import java.text.DecimalFormat;
 import java.util.*;
 
-public class PotionEffectProperty extends DynamicCodecBasedProperty.IntermediateList<PotionEffectProperty.Raw, PotionEffectProperty.Holder> {
+public class PotionEffectProperty extends DynamicCodecBasedProperty.IntermediateList<PotionEffectProperty.Raw, PotionEffectProperty.Holder> implements ComponentDescriptionable<PotionEffectProperty.Holder> {
     public static LootContextType LOOT_CONTEXT =
             LootContextTypesAccessor.register("miapi:loot_context", builder -> builder.require(LootContextParameters.ORIGIN).require(LootContextParameters.THIS_ENTITY).allow(LootContextParameters.TOOL));
     public static final String KEY = "applyPotionEffects";
     public static PotionEffectProperty property;
+    public static DecimalFormat decimalFormat = new DecimalFormat("#.##");
 
     public PotionEffectProperty() {
         super(KEY, AutoCodec.of(Raw.class).codec().listOf(), Raw::refine);
@@ -117,6 +123,36 @@ public class PotionEffectProperty extends DynamicCodecBasedProperty.Intermediate
         return old;
     }
 
+    @Override
+    public List<DescriptionHolder> getSimpleDescriptionFor(List<Holder> holders, int scrollIndex) {
+        List<DescriptionHolder> components = new ArrayList<>();
+        Holder h = holders.get(scrollIndex);
+
+        components.add(new DescriptionHolder(
+                Text.of("🧪"), Text.translatable(h.effect.getTranslationKey()),
+                35, h.effect.getColor()));
+        components.add(new DescriptionHolder(
+                Text.of("⌚"), Text.of(decimalFormat.format(h.actualDuration/20d) + "s"),
+                -1, -1));
+        components.add(new DescriptionHolder(
+                Text.of("\uD83D\uDDE1"), Text.of(String.valueOf(h.actualAmplifier)),
+                -1, -1));
+        components.add(new DescriptionHolder(
+                Text.of("🎯"), Text.of(StringUtils.capitalize(h.applyTo)),
+                35, -1));
+
+        return components;
+    }
+
+    @Override
+    public List<Text> getLongDescriptionFor(List<Holder> holder, int scrollIndex) {
+        List<Text> text = new ArrayList<>();
+
+        text.add(Text.translatable(Miapi.MOD_ID + ".stat.tipped.description"));
+
+        return text;
+    }
+
     public static class Raw {
         public ApplicationEvent<?, ?, ?> event;
         public String item;
@@ -128,6 +164,7 @@ public class PotionEffectProperty extends DynamicCodecBasedProperty.Intermediate
         public @AutoCodec.Optional boolean visible = true;
         public @AutoCodec.Optional boolean showIcon = true;
         public @Nullable @AutoCodec.Optional Identifier predicate = null;
+        public Text description;
 
         public Holder refine(ItemModule.ModuleInstance modules) {
             Holder h = new Holder();
@@ -139,6 +176,7 @@ public class PotionEffectProperty extends DynamicCodecBasedProperty.Intermediate
             h.visible = visible;
             h.showIcon = showIcon;
             h.predicate = predicate;
+            h.description = description;
             h.actualDuration = duration.evaluate(modules);
             h.actualAmplifier = amplifier.evaluate(modules);
             return h;

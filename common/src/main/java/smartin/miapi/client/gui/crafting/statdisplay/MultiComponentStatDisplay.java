@@ -13,10 +13,12 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.ColorHelper;
+import org.jetbrains.annotations.Nullable;
 import smartin.miapi.client.gui.HoverDescription;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.ScrollingTextWidget;
 import smartin.miapi.client.gui.SimpleTextWidget;
+import smartin.miapi.modules.properties.util.ComponentDescriptionable;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -24,18 +26,23 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.function.Function;
 
 @Environment(EnvType.CLIENT)
-public class MultiComponentStatDisplay extends InteractAbleWidget implements SingleStatDisplay, Drawable {
+public abstract class MultiComponentStatDisplay extends InteractAbleWidget implements SingleStatDisplay, Drawable {
     public Identifier texture = new Identifier("textures/gui/container/inventory.png");
     public ScrollingTextWidget textWidget;
     public DecimalFormat modifierFormat;
     public StatDisplay.TextGetter title;
-    public StatDisplay.TextGetter hover;
+    public StatDisplay.MultiTextGetter hover;
     public HoverDescription hoverDescription;
+    public int scrollPosition;
+    protected ItemStack original = ItemStack.EMPTY;
+    protected ItemStack compareTo = ItemStack.EMPTY;
     public List<ComponentHolder> components = new ArrayList<>();
+    public int maxScrollPositon;
 
-    public MultiComponentStatDisplay(int x, int y, int width, int height, StatDisplay.TextGetter title, StatDisplay.TextGetter hover) {
+    public MultiComponentStatDisplay(int x, int y, int width, int height, StatDisplay.TextGetter title, StatDisplay.MultiTextGetter hover) {
         super(x, y, width, height, Text.empty());
         this.title = title;
         this.hover = hover;
@@ -47,16 +54,28 @@ public class MultiComponentStatDisplay extends InteractAbleWidget implements Sin
     }
 
     public boolean shouldRender(ItemStack original, ItemStack compareTo) {
-        textWidget.setText(title.resolve(original));
+        ItemStack mainStack = compareTo.isEmpty() ? original : compareTo;
+        this.original = original;
+        this.compareTo = compareTo;
+        textWidget.setText(title.resolve(mainStack));
+        if (hover != null) hoverDescription.setText(hover.resolve(mainStack));
         components = getComponents(original, compareTo);
         return true;
     }
 
-    public List<ComponentHolder> getComponents(ItemStack original, ItemStack compareTo) {
-        return List.of(
-                new ComponentHolder(Text.literal("🧪"), Text.literal("Poison"), 30, ColorHelper.Argb.getArgb(255, 0, 200, 0), 45),
-                new ComponentHolder(Text.literal("⌚"), Text.literal("20s"), 20, ColorHelper.Argb.getArgb(255, 255, 255, 255), 25)
-        );
+    public abstract List<ComponentHolder> getComponents(ItemStack original, ItemStack compareTo);
+
+    @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
+        boolean bl = super.mouseScrolled(mouseX, mouseY, amount);
+        if (bl) return true;
+
+        if (components == null || components.isEmpty()) return false;
+
+        int inc = amount > 0 ? -1 : 1;
+        scrollPosition = Math.min(maxScrollPositon, Math.max(0, scrollPosition+inc));
+        shouldRender(original, compareTo);
+        return true;
     }
 
     @Override
@@ -69,15 +88,20 @@ public class MultiComponentStatDisplay extends InteractAbleWidget implements Sin
         textWidget.setY(this.getY() + 5);
         textWidget.setWidth(this.width - 8);
 
-        drawContext.getMatrices().push();
-        drawContext.getMatrices().translate(getX() + 5, getY() + 18, 0);
+        int spacingBuffer = 0;
         for (ComponentHolder component : components) {
+            int xPos = getX()+5+spacingBuffer;
+            int yPos = getY()+18;
+            component.move(xPos, yPos);
             component.render(drawContext, mouseX, mouseY, delta);
-
-            drawContext.getMatrices().translate(component.spacing, 0, 0);
+            component.move(-xPos, -yPos);
+            spacingBuffer+=component.getSpacing();
         }
-        drawContext.getMatrices().pop();
         textWidget.render(drawContext, mouseX, mouseY, delta);
+    }
+
+    public int getScrollPosition() {
+        return scrollPosition;
     }
 
     @Override
@@ -97,25 +121,39 @@ public class MultiComponentStatDisplay extends InteractAbleWidget implements Sin
     public static class ComponentHolder {
         public SimpleTextWidget prefix;
         public ScrollingTextWidget text;
-        public int spacing;
         public TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
 
-        public ComponentHolder(SimpleTextWidget prefix, ScrollingTextWidget text, int spacing) {
+        protected ComponentHolder() {}
+        public ComponentHolder(SimpleTextWidget prefix, ScrollingTextWidget text) {
             this.prefix = prefix;
             this.text = text;
-            this.spacing = spacing;
         }
-        public ComponentHolder(Text prefix, Text scrolling, int maxWidth, int color, int spacing) {
+        public ComponentHolder(Text prefix, Text scrolling, int maxWidth, int color) {
             int prefixWidth = textRenderer.getWidth(prefix);
-            this.prefix = new SimpleTextWidget(0, 0, prefixWidth, 5, prefix);
+            if (maxWidth < 0)
+                maxWidth = textRenderer.getWidth(scrolling);
+            this.prefix = new SimpleTextWidget(0, 0, prefixWidth, 9, prefix);
             this.text = new ScrollingTextWidget(prefixWidth+2, 0, maxWidth, scrolling, color);
-            this.spacing = spacing;
         }
 
+        public int getSpacing() {
+            return prefix.getWidth() + text.getWidth() + 8;
+        }
+
+        public void move(int x, int y) {
+            prefix.setX(prefix.getX()+x);
+            prefix.setY(prefix.getY()+y);
+            text.setX(text.getX()+x);
+            text.setY(text.getY()+y);
+        }
 
         public void render(DrawContext context, int mouseX, int mouseY, float delta) {
             prefix.render(context, mouseX, mouseY, delta);
             text.render(context, mouseX, mouseY, delta);
+        }
+
+        public static ComponentHolder fromDescHolder(ComponentDescriptionable.DescriptionHolder desc) {
+            return new ComponentHolder(desc.prefix(), desc.scrolling(), desc.scrollMaxWidth(), desc.scrollingColor());
         }
     }
 }
