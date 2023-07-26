@@ -12,14 +12,17 @@ import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.data.client.BlockStateVariantMap;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Vector3f;
 import smartin.miapi.Miapi;
 
+import javax.swing.*;
 import java.util.*;
 
 /**
@@ -178,11 +181,15 @@ public class DynamicBakedModel implements BakedModel {
         });
         Map<DynamicModelOverrides.ConditionHolder, BakedModel> overrideModels = new LinkedHashMap<>();
         completeList.forEach(((conditionHolder, directionBakedQuadHashMap) -> {
-            BakedModel model = new BasicBakedModel(new ArrayList<>(), directionBakedQuadHashMap, true, false, true, this.getParticleSprite(), this.modelTransformation, ModelOverrideList.EMPTY);
+            List<BakedQuad> defaultList = directionBakedQuadHashMap.get(null);
+            defaultList = defaultList == null ? new ArrayList<>() : defaultList;
+            BakedModel model = new BasicBakedModel(defaultList, directionBakedQuadHashMap, true, false, true, this.getParticleSprite(), this.modelTransformation, ModelOverrideList.EMPTY);
             overrideModels.put(conditionHolder, model);
         }));
         ModelOverrideList list = overrideModels.isEmpty() ? ModelOverrideList.EMPTY : new DynamicModelOverrides(overrideModels);
-        BakedModel model = new BasicBakedModel(new ArrayList<>(), bakedQuads, true, false, true, this.getParticleSprite(), this.modelTransformation, list);
+        List<BakedQuad> defaultList = bakedQuads.get(null);
+        defaultList = defaultList == null ? new ArrayList<>() : defaultList;
+        BakedModel model = new BasicBakedModel(defaultList, bakedQuads, true, false, true, this.getParticleSprite(), this.modelTransformation, list);
         return model;
     }
 
@@ -191,18 +198,19 @@ public class DynamicBakedModel implements BakedModel {
         for (Direction direction : Direction.values()) {
             defaultMap.put(direction, new ArrayList<>());
         }
+        defaultMap.put(null, new ArrayList<>());
         return defaultMap;
     }
 
     private void putDirectionalQuads(Map<Direction, List<BakedQuad>> directionalQuads, BakedModel model) {
         model.getQuads(null, null, Random.create()).forEach(bakedQuad -> {
-            List list = directionalQuads.getOrDefault(bakedQuad.getFace(), new ArrayList<>());
+            List<BakedQuad> list = directionalQuads.getOrDefault(bakedQuad.getFace(), new ArrayList<>());
             list.add(bakedQuad);
         });
         for (Direction dir : Direction.values()) {
             model.getQuads(null, dir, Random.create()).forEach(bakedQuad -> {
                 if (bakedQuad.getFace().equals(dir)) {
-                    List list = directionalQuads.getOrDefault(bakedQuad.getFace(), new ArrayList<>());
+                    List<BakedQuad> list = directionalQuads.getOrDefault(bakedQuad.getFace(), new ArrayList<>());
                     list.add(bakedQuad);
                 }
             });
@@ -210,29 +218,25 @@ public class DynamicBakedModel implements BakedModel {
         for (Direction direction : Direction.values()) {
             directionalQuads.put(direction, cleanUp(directionalQuads.get(direction)));
         }
+        directionalQuads.put(null, cleanUp(directionalQuads.get(null)));
     }
 
     private List<BakedQuad> cleanUp(List<BakedQuad> quads) {
-        List<BakedQuad> cleanedList = new ArrayList<>();
-        quads.forEach(quad -> {
-            for (int i = 0; i < cleanedList.size(); i++) {
-                if (quadCompare(cleanedList.get(i), quad)) {
-                    cleanedList.remove(cleanedList.get(i));
-                }
-            }
-            cleanedList.add(quad);
-        });
-        return cleanedList;
+        List<MutableQuad> cleanedList = new ArrayList<>();
+
+        for (int i = 0; i < quads.size(); i++) {
+            BakedQuad bakedQuad = quads.get(i);
+            cleanedList = new MutableQuad(bakedQuad).cutListWithQuad(cleanedList);
+        }
+
+
+        return new ArrayList<>(cleanedList.stream().map(MutableQuad::write).toList());
     }
+
 
     private boolean quadCompare(BakedQuad a, BakedQuad b) {
         if (a.getVertexData().length == b.getVertexData().length) {
             if (Arrays.equals(a.getVertexData(), b.getVertexData())) {
-                return true;
-            }
-            Set<Object> setA = new HashSet<>(Arrays.asList(a.getVertexData()));
-            Set<Object> setB = new HashSet<>(Arrays.asList(b.getVertexData()));
-            if (setA.equals(setB)) {
                 return true;
             }
         }

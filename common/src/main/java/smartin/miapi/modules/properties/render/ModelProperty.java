@@ -96,7 +96,7 @@ public class ModelProperty implements ModuleProperty {
         Map<String, DynamicBakedModel> bakedModelMap = new HashMap<>();
         for (TransformedUnbakedModel unbakedModel : unbakedModels) {
             ModelBakeSettings settings = unbakedModel.transform.get().toModelBakeSettings();
-            DynamicBakedModel model = DynamicBakery.bakeModel(unbakedModel.unbakedModel, mirroredGetter, unbakedModel.color, settings);
+            DynamicBakedModel model = DynamicBakery.bakeModel(unbakedModel.unbakedModel, mirroredGetter, unbakedModel.color, unbakedModel.transform.get());
             DynamicBakedModel dynamicBakedModel = bakedModelMap.computeIfAbsent(unbakedModel.transform.primary, (key) ->
                     new DynamicBakedModel(new ArrayList<>())
             );
@@ -250,7 +250,7 @@ public class ModelProperty implements ModuleProperty {
     }
 
     protected static void loadTextureDependencies(JsonUnbakedModel model) {
-        DynamicBakery.bakeModel(model, (identifier) -> mirroredGetter.apply(identifier), 0, ModelRotation.X0_Y0);
+        DynamicBakery.bakeModel(model, (identifier) -> mirroredGetter.apply(identifier), 0, Transform.IDENTITY);
     }
 
     @Override

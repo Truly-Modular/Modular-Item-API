@@ -1,0 +1,286 @@
+{
+    "name": "chest_base",
+    "texture": {
+        "path": "miapi:models/item/armor/chest/base/[material.texture].json",
+        "transform": {
+            "rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 180.0
+            },
+            "translation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "scale": {
+                "x": 1.25,
+                "y": 1.6,
+                "z": 1.5
+            },
+            "origin": "body"
+        }
+    },
+    "allowedInSlots": [
+        "chest"
+    ],
+    "slots": {
+        "0": {
+            "allowed": [
+                "arm_left"
+            ],
+            "transform": {
+                "rotation": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "translation": {
+                    "x": -11.0,
+                    "y": -12.0,
+                    "z": 12.0
+                },
+                "scale": {
+                    "x": 1.5,
+                    "y": 1.5,
+                    "z": 1.5
+                },
+                "origin": "left_arm"
+            }
+        },
+        "1": {
+            "allowed": [
+                "arm_right"
+            ],
+            "transform": {
+                "rotation": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "translation": {
+                    "x": -13.0,
+                    "y": -12.0,
+                    "z": 12.0
+                },
+                "scale": {
+                    "x": 1.5,
+                    "y": 1.5,
+                    "z": 1.5
+                },
+                "origin": "right_arm"
+            }
+        }
+    },
+    "modelTransform": {
+        "replace": {
+            "thirdperson_righthand": {
+                "rotation": {
+                    "x": 0,
+                    "y": -90,
+                    "z": 55
+                },
+                "translation": {
+                    "x": 0,
+                    "y": 4.0,
+                    "z": 0.5
+                },
+                "scale": {
+                    "x": 0.85,
+                    "y": 0.85,
+                    "z": 0.85
+                }
+            },
+            "thirdperson_lefthand": {
+                "rotation": {
+                    "x": 0,
+                    "y": 90,
+                    "z": -55
+                },
+                "translation": {
+                    "x": 0,
+                    "y": 4.0,
+                    "z": 0.5
+                },
+                "scale": {
+                    "x": 0.85,
+                    "y": 0.85,
+                    "z": 0.85
+                }
+            },
+            "firstperson_righthand": {
+                "rotation": {
+                    "x": 0,
+                    "y": -90,
+                    "z": 25
+                },
+                "translation": {
+                    "x": 1.13,
+                    "y": 3.2,
+                    "z": 1.13
+                },
+                "scale": {
+                    "x": 0.68,
+                    "y": 0.68,
+                    "z": 0.68
+                }
+            },
+            "firstperson_lefthand": {
+                "rotation": {
+                    "x": 0,
+                    "y": 90,
+                    "z": -25
+                },
+                "translation": {
+                    "x": 1.13,
+                    "y": 3.2,
+                    "z": 1.13
+                },
+                "scale": {
+                    "x": 0.68,
+                    "y": 0.68,
+                    "z": 0.68
+                }
+            },
+            "ground": {
+                "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0
+                },
+                "translation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0
+                },
+                "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                }
+            },
+            "gui": {
+                "rotation": {
+                    "x": 210,
+                    "y": 30,
+                    "z": 0
+                },
+                "translation": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "scale": {
+                    "x": 1.3,
+                    "y": 1.3,
+                    "z": 1.3
+                }
+            },
+            "head": {
+                "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0
+                },
+                "translation": {
+                    "x": 0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "scale": {
+                    "x": 1.0,
+                    "y": 1.0,
+                    "z": 1.0
+                }
+            },
+            "fixed": {
+                "rotation": {
+                    "x": 0,
+                    "y": 180,
+                    "z": 0
+                },
+                "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                }
+            }
+        }
+    },
+    "allowedMaterial": {
+        "allowedMaterials": [
+            "leather",
+            "metal",
+            "crystal"
+        ],
+        "cost": 7
+    },
+    "displayName": "[material.key] ChestPlate",
+    "itemId": "miapi:modular_chestplate",
+    "equipmentSlot": "chest",
+    "modelMerge": [
+        {
+            "from": "right_arm",
+            "to": "item",
+            "transform": {
+                "rotation": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "translation": {
+                    "x": 8.0,
+                    "y": -14.2,
+                    "z": 0.0
+                },
+                "scale": {
+                    "x": 1.0,
+                    "y": -1.0,
+                    "z": 1.0
+                }
+            }
+        },
+        {
+            "from": "right_arm",
+            "to": "item",
+            "transform": {
+                "rotation": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "translation": {
+                    "x": 16.0,
+                    "y": -14.2,
+                    "z": 0.0
+                },
+                "scale": {
+                    "x": 1.0,
+                    "y": -1.0,
+                    "z": 1.0
+                }
+            }
+        },
+        {
+            "from": "body",
+            "to": "item",
+            "transform": {
+                "rotation": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "translation": {
+                    "x": 12.0,
+                    "y": -12.0,
+                    "z": 0.0
+                },
+                "scale": {
+                    "x": 1.0,
+                    "y": -1.0,
+                    "z": 1.0
+                }
+            }
+        }
+    ]
+}

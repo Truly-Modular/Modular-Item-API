@@ -75,6 +75,7 @@ public class ModularWorkBenchEntity extends BlockEntity implements NamedScreenHa
                 return 7;
             }
         };
+        this.markDirty();
     }
 
     public void setItem(ItemStack stack) {
@@ -125,6 +126,14 @@ public class ModularWorkBenchEntity extends BlockEntity implements NamedScreenHa
         tag.put("BlockStats", statsBlock);
         tag.put("ItemStats", statsItem);
     }
+
+    @Override
+    public NbtCompound toInitialChunkDataNbt() {
+        NbtCompound compound = new NbtCompound();
+        writeNbt(compound);
+        return compound;
+    }
+
 
     @Override
     public void readNbt(NbtCompound tag) {

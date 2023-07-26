@@ -14,6 +14,14 @@
     "wood",
     "rough"
   ],
+  "properties": {
+    "default": {
+      "healthPercent": 50
+    },
+    "armor": {
+      "armor_pen": -20
+    }
+  },
   "items": [
     {
       "item": "minecraft:stick",

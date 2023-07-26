@@ -4,6 +4,7 @@ import net.minecraft.item.ArmorItem;
 import net.minecraft.item.ArmorMaterial;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.sound.SoundEvent;
+import net.minecraft.util.Identifier;
 
 public class ModularArmorMaterial implements ArmorMaterial {
     @Override
@@ -23,7 +24,7 @@ public class ModularArmorMaterial implements ArmorMaterial {
 
     @Override
     public SoundEvent getEquipSound() {
-        return null;
+        return SoundEvent.of(new Identifier("silent"));
     }
 
     @Override

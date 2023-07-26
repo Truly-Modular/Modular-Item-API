@@ -8,6 +8,7 @@ import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.model.ModelBakeSettings;
 import net.minecraft.client.render.model.json.Transformation;
 import net.minecraft.util.math.AffineTransformation;
@@ -15,6 +16,8 @@ import net.minecraft.util.math.MathHelper;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
+import org.joml.Vector4f;
+import smartin.miapi.Miapi;
 
 import java.io.IOException;
 
@@ -65,7 +68,7 @@ public class Transform {
 
     @Environment(EnvType.CLIENT)
     public Transformation toTransformation() {
-        return new Transformation(rotation, translation, scale);
+        return new Transformation(new Vector3f(rotation), new Vector3f(translation), new Vector3f(scale));
     }
 
     /**
@@ -85,49 +88,45 @@ public class Transform {
         return fromMatrix(childMatrix);
     }
 
-    /**
-     * Applies the transformation to a vector in 3D space.
-     *
-     * @param vector the vector to bakedTransform, as a Vec3f
-     * @return the transformed vector, as a new Vec3f
-     */
-    public Vector3f transformVector(Vector3f vector) {
-        // Apply scaling
-        float x = vector.x() * scale.x();
-        float y = vector.y() * scale.y();
-        float z = vector.z() * scale.z();
-
-        // Apply rotation
-        float cosX = MathHelper.cos(rotation.x());
-        float sinX = MathHelper.sin(rotation.x());
-        float cosY = MathHelper.cos(rotation.y());
-        float sinY = MathHelper.sin(rotation.y());
-        float cosZ = MathHelper.cos(rotation.z());
-        float sinZ = MathHelper.sin(rotation.z());
-
-        float x2 = cosY * (sinZ * y + cosZ * x) - sinY * z;
-        float y2 = sinX * (cosY * z + sinY * (sinZ * y + cosZ * x)) + cosX * (cosZ * y - sinZ * x);
-        float z2 = cosX * (cosY * z + sinY * (sinZ * y + cosZ * x)) - sinX * (cosZ * y - sinZ * x);
-
-        x = x2;
-        y = y2;
-        z = z2;
-
-        // Apply translation
-        x += translation.x();
-        y += translation.y();
-        z += translation.z();
-
-        return new Vector3f(x, y, z);
-    }
-
     public Matrix4f toMatrix() {
-        Matrix4f matrix = new Matrix4f()
-                .translate(translation)                            // Set the translation (position)
-                .rotateXYZ(rotation.x, rotation.y, rotation.z)  // Set the rotation (in Euler angles)
-                .scale(scale);
-        return matrix;
+        // Create the translation matrix
+        Matrix4f translationMatrix = new Matrix4f().translate(translation);
+
+        // Create the rotation matrix
+        Matrix4f rotationMatrix = new Matrix4f()
+                .rotateX((float) Math.toRadians(rotation.x))
+                .rotateY((float) Math.toRadians(rotation.y))
+                .rotateZ((float) Math.toRadians(rotation.z));
+
+        // Create the scale matrix
+        Matrix4f scaleMatrix = new Matrix4f().scale(scale);
+
+        // Combine the matrices
+        Matrix4f transformationMatrix = new Matrix4f()
+                .mul(translationMatrix)
+                .mul(rotationMatrix)
+                .mul(scaleMatrix);
+
+        return transformationMatrix;
     }
+
+    public static Transform fromMatrix(Matrix4f matrix) {
+        // Extract translation
+        Vector3f translation = new Vector3f();
+        matrix.getTranslation(translation);
+
+        // Extract rotation (in Euler angles)
+        Vector3f rotation = matrix.getEulerAnglesXYZ(new Vector3f());
+        rotation.x = (float) Math.toDegrees(rotation.x());
+        rotation.y = (float) Math.toDegrees(rotation.y());
+        rotation.z = (float) Math.toDegrees(rotation.z());
+
+        // Extract scale
+        Vector3f scale = matrix.getScale(new Vector3f());
+
+        return new Transform(rotation, translation, scale);
+    }
+
 
     /**
      * Creates a new copy of this Transform.
@@ -164,7 +163,12 @@ public class Transform {
         if (parentScale == null) {
             parentScale = new Vector3f(1, 1, 1);
         }
-        return new Transform(new Vector3f(parentRotation), new Vector3f(parentTranslation), new Vector3f(parentScale));
+        return new Transform(new Vector3f(parentRotation), new Vector3f(parentTranslation), new Vector3f(parentScale)).withOrigin(transformation.origin);
+    }
+
+    public Transform withOrigin(String origin) {
+        this.origin = origin;
+        return this;
     }
 
     /**
@@ -189,12 +193,43 @@ public class Transform {
     @Environment(EnvType.CLIENT)
     public AffineTransformation toAffineTransformation() {
         Transform transform = this.copy();
-        Quaternionf rotation = new Quaternionf().rotationXYZ(this.rotation.x, this.rotation.y, this.rotation.z);
+        Quaternionf quaternionf = new Quaternionf();
+        quaternionf.rotationXYZ(
+                (float) Math.toRadians(this.rotation.x),
+                (float) Math.toRadians(this.rotation.y),
+                (float) Math.toRadians(this.rotation.z)
+        );
         Vector3f translationVector = new Vector3f(transform.translation);
-        //translationVector.multiplyComponentwise(1 / scale.getX(), 1 / scale.getY(), 1 / scale.getZ());
-        AffineTransformation affineTransformation = new AffineTransformation(translationVector, null, new Vector3f(transform.scale), rotation);
-        //affineTransformation = new AffineTransformation(this.toMatrix());
-        return affineTransformation;
+        Vector3f scaleVector = new Vector3f(transform.scale);
+        return new AffineTransformation(translationVector, quaternionf, scaleVector, quaternionf);
+    }
+
+    public int[] rotateVertexData(int[] vertexData) {
+        for (int i = 0; i < vertexData.length; i += 8) {
+            // Extract position components from vertex data
+            float x = Float.intBitsToFloat(vertexData[i]);
+            float y = Float.intBitsToFloat(vertexData[i + 1]);
+            float z = Float.intBitsToFloat(vertexData[i + 2]);
+
+            // Create Vector4f representing the position (X, Y, Z, 1.0)
+            Vector4f position = new Vector4f(x, y, z, 1.0f);
+
+            // Apply the transformation to the position
+            //this.translation.mul(1/16);
+            Vector4f transformedPosition = this.toMatrix().transform(position);
+
+
+            // Extract the transformed position components
+            float transformedX = transformedPosition.x;
+            float transformedY = transformedPosition.y;
+            float transformedZ = transformedPosition.z;
+
+            // Update the vertex array with the new transformed position values
+            vertexData[i] = Float.floatToIntBits(transformedX);
+            vertexData[i + 1] = Float.floatToIntBits(transformedY);
+            vertexData[i + 2] = Float.floatToIntBits(transformedZ);
+        }
+        return vertexData;
     }
 
     /**
@@ -219,12 +254,6 @@ public class Transform {
         };
     }
 
-    public static Transform fromMatrix(Matrix4f matrix4f) {
-        AffineTransformation affineTransformation = new AffineTransformation(matrix4f);
-        Vector3f translation = affineTransformation.getTranslation();
-        return new Transform(affineTransformation.getLeftRotation().getEulerAnglesXYZ(new Vector3f(0, 0, 0)), translation, affineTransformation.getScale());
-    }
-
     @Override
     public String toString() {
         Gson gson = new Gson();
@@ -235,7 +264,7 @@ public class Transform {
         if (this == o) {
             return true;
         } else if (o == null) {
-                return false;
+            return false;
         } else if (o.getClass() != this.getClass()) {
             return false;
         } else {
@@ -255,6 +284,7 @@ public class Transform {
         @Override
         public void write(JsonWriter jsonWriter, Transform transform) throws IOException {
             jsonWriter.beginObject();
+            jsonWriter.name("origin").value(transform.origin);
             writeVector3f(jsonWriter, "rotation", transform.rotation);
             writeVector3f(jsonWriter, "translation", transform.translation);
             writeVector3f(jsonWriter, "scale", transform.scale);
@@ -266,7 +296,7 @@ public class Transform {
             Vector3f rotation = null;
             Vector3f translation = null;
             Vector3f scale = null;
-            String origin = "";
+            String origin = null;
 
             jsonReader.beginObject();
             while (jsonReader.hasNext()) {
@@ -284,7 +314,6 @@ public class Transform {
                 }
             }
             jsonReader.endObject();
-
             // Ensure non-null values for final fields
             if (rotation == null) {
                 rotation = new Vector3f();
