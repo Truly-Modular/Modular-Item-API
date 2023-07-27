@@ -6,6 +6,7 @@ import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.BakedQuad;
 import net.minecraft.client.render.model.json.ModelOverrideList;
 import net.minecraft.client.render.model.json.ModelTransformation;
+import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
@@ -43,7 +44,7 @@ public class BakedMiapiModel implements MiapiModel,BakedModel {
     }
 
     @Override
-    public void render(MatrixStack matrices, ItemStack stack, float tickDelta, VertexConsumerProvider vertexConsumers, int light, int overlay) {
+    public void render(MatrixStack matrices, ItemStack stack, ModelTransformationMode transformationMode, float tickDelta, VertexConsumerProvider vertexConsumers, int light, int overlay) {
 
     }
 

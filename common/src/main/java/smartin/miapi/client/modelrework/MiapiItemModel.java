@@ -1,8 +1,15 @@
 package smartin.miapi.client.modelrework;
 
+import com.redpxnda.nucleus.util.RenderUtil;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.model.json.ModelTransformationMode;
+import net.minecraft.client.texture.Sprite;
+import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import smartin.miapi.item.modular.ModularItem;
@@ -36,21 +43,30 @@ public class MiapiItemModel implements MiapiModel {
         }
     }
 
-    public void render(MatrixStack matrices, float tickDelta, VertexConsumerProvider vertexConsumers, int light, int overlay) {
-        render(null, matrices, tickDelta, vertexConsumers, light, overlay);
+    public void render(MatrixStack matrices, ModelTransformationMode mode, float tickDelta, VertexConsumerProvider vertexConsumers, int light, int overlay) {
+        render(null, matrices, mode, tickDelta, vertexConsumers, light, overlay);
     }
 
     @Override
-    public void render(MatrixStack matrices, ItemStack stack, float tickDelta, VertexConsumerProvider vertexConsumers, int light, int overlay) {
-        render(null, stack, matrices, tickDelta, vertexConsumers, light, overlay);
+    public void render(MatrixStack matrices, ItemStack stack, ModelTransformationMode mode, float tickDelta, VertexConsumerProvider vertexConsumers, int light, int overlay) {
+        render(null, stack, matrices, mode, tickDelta, vertexConsumers, light, overlay);
     }
 
-    public void render(String modelType, MatrixStack matrices, float tickDelta, VertexConsumerProvider vertexConsumers, int light, int overlay) {
-        render(modelType, stack, matrices, tickDelta, vertexConsumers, light, overlay);
+    public void render(String modelType, MatrixStack matrices, ModelTransformationMode mode, float tickDelta, VertexConsumerProvider vertexConsumers, int light, int overlay) {
+        render(modelType, stack, matrices, mode, tickDelta, vertexConsumers, light, overlay);
     }
 
-    public void render(String modelType, ItemStack stack, MatrixStack matrices, float tickDelta, VertexConsumerProvider vertexConsumers, int light, int overlay) {
-        rootModel.render(modelType, stack, matrices, tickDelta, vertexConsumers, light, overlay);
+    public void render(String modelType, ItemStack stack, MatrixStack matrices, ModelTransformationMode mode, float tickDelta, VertexConsumerProvider vertexConsumers, int light, int overlay) {
+        Sprite sprite = MinecraftClient.getInstance().getSpriteAtlas(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE).apply(new Identifier("nucleus", "item/blank"));
+        for (int i = 0; i < 6; i++) {
+            RenderUtil.addQuad(
+                    RenderUtil.CUBE[i], matrices, vertexConsumers.getBuffer(RenderLayer.getTranslucent()),
+                    1f, 1f, 1f, 1f,
+                    -.1f, .1f, .1f,
+                    sprite.getMinU(), sprite.getMaxU(), sprite.getMinV(), sprite.getMaxV(),
+                    light);
+        }
+        //rootModel.render(modelType, stack, matrices, mode, tickDelta, vertexConsumers, light, overlay);
     }
 
     @Override
