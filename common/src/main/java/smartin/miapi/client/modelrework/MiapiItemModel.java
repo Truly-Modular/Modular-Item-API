@@ -1,5 +1,7 @@
 package smartin.miapi.client.modelrework;
 
+import com.mojang.blaze3d.platform.TextureUtil;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.redpxnda.nucleus.util.RenderUtil;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.RenderLayer;
@@ -12,9 +14,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
+import smartin.miapi.Miapi;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.cache.ModularItemCache;
+import smartin.miapi.registries.RegistryInventory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,12 +61,17 @@ public class MiapiItemModel implements MiapiModel {
     }
 
     public void render(String modelType, ItemStack stack, MatrixStack matrices, ModelTransformationMode mode, float tickDelta, VertexConsumerProvider vertexConsumers, int light, int overlay) {
-        Sprite sprite = MinecraftClient.getInstance().getSpriteAtlas(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE).apply(new Identifier("nucleus", "item/blank"));
+        Sprite sprite = MinecraftClient.getInstance().getSpriteAtlas(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE).apply(new Identifier(Miapi.MOD_ID, "item/grayscale_test"));
+        int txtId = 10;
+        RenderSystem.setShaderTexture(txtId, new Identifier(Miapi.MOD_ID, "textures/item/material_test.png"));
+        RenderSystem.bindTexture(txtId);
+        int j = RenderSystem.getShaderTexture(txtId);
+        RegistryInventory.Client.testTranslucentShader.addSampler("MatColors", j);
         for (int i = 0; i < 6; i++) {
             RenderUtil.addQuad(
-                    RenderUtil.CUBE[i], matrices, vertexConsumers.getBuffer(RenderLayer.getTranslucent()),
+                    RenderUtil.CUBE[i], matrices, vertexConsumers.getBuffer(RegistryInventory.Client.testTranslucentRenderType),
                     1f, 1f, 1f, 1f,
-                    -.1f, .1f, .1f,
+                    -.25f, .25f, .25f,
                     sprite.getMinU(), sprite.getMaxU(), sprite.getMinV(), sprite.getMaxV(),
                     light);
         }

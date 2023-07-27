@@ -8,12 +8,19 @@ import dev.architectury.registry.registries.Registrar;
 import dev.architectury.registry.registries.RegistrarManager;
 import dev.architectury.registry.registries.RegistrySupplier;
 import dev.architectury.utils.Env;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.MapColor;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.enums.Instrument;
 import net.minecraft.block.piston.PistonBehavior;
+import net.minecraft.client.gl.ShaderProgram;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.RenderPhase;
+import net.minecraft.client.render.VertexFormat;
+import net.minecraft.client.render.VertexFormats;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.entity.attribute.ClampedEntityAttribute;
@@ -55,6 +62,7 @@ import smartin.miapi.modules.properties.util.ModuleProperty;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import static net.minecraft.client.render.RenderPhase.*;
 import static smartin.miapi.Miapi.MOD_ID;
 import static smartin.miapi.attributes.AttributeRegistry.*;
 import static smartin.miapi.modules.abilities.util.ItemAbilityManager.useAbilityRegistry;
@@ -356,5 +364,16 @@ public class RegistryInventory {
             registerMiapi(useAbilityRegistry, CircleAttackProperty.KEY, new CircleAttackAbility());
             registerMiapi(useAbilityRegistry, CrossbowProperty.KEY, new CrossbowAbility());
         });
+    }
+
+    @Environment(EnvType.CLIENT)
+    public static class Client {
+        public static ShaderProgram testTranslucentShader;
+        public static final RenderLayer testTranslucentRenderType = RenderLayer.of(
+                "miapi_translucent", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL, VertexFormat.DrawMode.QUADS,
+                0x200000, true, true,
+                RenderLayer.MultiPhaseParameters.builder()
+                        .lightmap(ENABLE_LIGHTMAP).program(new RenderPhase.ShaderProgram(() -> testTranslucentShader)).texture(MIPMAP_BLOCK_ATLAS_TEXTURE)
+                        .transparency(TRANSLUCENT_TRANSPARENCY).target(TRANSLUCENT_TARGET).build(true));
     }
 }

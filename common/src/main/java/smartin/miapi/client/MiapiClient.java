@@ -1,11 +1,15 @@
 package smartin.miapi.client;
 
+import com.redpxnda.nucleus.impl.ShaderRegistry;
 import dev.architectury.event.events.client.ClientLifecycleEvent;
 import dev.architectury.registry.client.level.entity.EntityRendererRegistry;
 import dev.architectury.registry.client.rendering.BlockEntityRendererRegistry;
 import dev.architectury.registry.menu.MenuRegistry;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.util.Identifier;
+import smartin.miapi.Miapi;
 import smartin.miapi.blocks.ModularWorkBenchRenderer;
 import smartin.miapi.client.gui.crafting.CraftingGUI;
 import smartin.miapi.client.model.CustomColorProvider;
@@ -20,6 +24,7 @@ public class MiapiClient {
     }
 
     public static void init(){
+        registerShaders();
         ClientLifecycleEvent.CLIENT_SETUP.register(MiapiClient::clientSetup);
         ClientLifecycleEvent.CLIENT_STARTED.register(MiapiClient::clientStart);
         ClientLifecycleEvent.CLIENT_LEVEL_LOAD.register(MiapiClient::clientLevelLoad);
@@ -49,5 +54,9 @@ public class MiapiClient {
 
     public static void registerBlockEntityRenderer() {
         BlockEntityRendererRegistry.register(RegistryInventory.modularWorkBenchEntityType, ModularWorkBenchRenderer::new);
+    }
+
+    public static void registerShaders() {
+        ShaderRegistry.register(new Identifier(Miapi.MOD_ID, "rendertype_color_test"), VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL, s -> RegistryInventory.Client.testTranslucentShader = s);
     }
 }
