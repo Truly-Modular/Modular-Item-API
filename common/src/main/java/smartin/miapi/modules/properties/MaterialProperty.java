@@ -5,12 +5,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.redpxnda.nucleus.util.RenderUtil;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.texture.Sprite;
-import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
@@ -177,13 +173,13 @@ public class MaterialProperty implements ModuleProperty {
     public static class JsonMaterial implements Material {
         public String key;
         protected JsonElement rawJson;
-        public Identifier materialColorPallet = new Identifier(Miapi.MOD_ID, "textures/item/material_test.png");
+        public Identifier materialColorPalette = new Identifier(Miapi.MOD_ID, "textures/item/material_test.png");
 
         public JsonMaterial(JsonObject element) {
             rawJson = element;
             key = element.get("key").getAsString();
             if (element.has("color_pallet")) {
-                materialColorPallet = new Identifier(element.get("color_pallet").getAsString());
+                materialColorPalette = new Identifier(element.get("color_pallet").getAsString());
             }
         }
 
@@ -207,7 +203,7 @@ public class MaterialProperty implements ModuleProperty {
         @Override
         public VertexConsumer getMaterialConsumer(VertexConsumerProvider provider) {
             int txtId = 10;
-            RenderSystem.setShaderTexture(txtId, new Identifier(Miapi.MOD_ID, "textures/item/material_test.png"));
+            RenderSystem.setShaderTexture(txtId, materialColorPalette);
             RenderSystem.bindTexture(txtId);
             int j = RenderSystem.getShaderTexture(txtId);
             RegistryInventory.Client.testTranslucentShader.addSampler("MatColors", j);
