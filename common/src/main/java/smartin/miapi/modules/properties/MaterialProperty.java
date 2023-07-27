@@ -81,11 +81,8 @@ public class MaterialProperty implements ModuleProperty {
         Miapi.registerReloadHandler(ReloadEvents.MAIN, "materials", materials, (isClient, path, data) -> {
             JsonParser parser = new JsonParser();
             JsonObject obj = parser.parse(data).getAsJsonObject();
-            String key = obj.get("key").getAsString();
-            JsonMaterial material = new JsonMaterial();
-            material.key = key;
-            material.rawJson = obj;
-            materials.put(key, material);
+            JsonMaterial material = new JsonMaterial(obj);
+            materials.put(material.getKey(), material);
         }, -1f);
     }
 
@@ -180,6 +177,15 @@ public class MaterialProperty implements ModuleProperty {
     public static class JsonMaterial implements Material {
         public String key;
         protected JsonElement rawJson;
+        public Identifier materialColorPallet = new Identifier(Miapi.MOD_ID, "textures/item/material_test.png");
+
+        public JsonMaterial(JsonObject element) {
+            rawJson = element;
+            key = element.get("key").getAsString();
+            if (element.has("color_pallet")) {
+                materialColorPallet = new Identifier(element.get("color_pallet").getAsString());
+            }
+        }
 
         @Override
         public String getKey() {
