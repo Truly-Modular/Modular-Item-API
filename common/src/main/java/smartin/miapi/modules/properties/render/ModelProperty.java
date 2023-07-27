@@ -11,7 +11,6 @@ import net.minecraft.client.render.model.json.JsonUnbakedModel;
 import net.minecraft.client.render.model.json.ModelOverrideList;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.SpriteIdentifier;
-import net.minecraft.item.ArrowItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
@@ -149,7 +148,7 @@ public class ModelProperty implements ModuleProperty {
                     MaterialProperty.Material material = MaterialProperty.getMaterial(moduleI);
                     List<String> list = new ArrayList<>();
                     if (material != null) {
-                        list.add(material.key);
+                        list.add(material.getKey());
                         list = material.getTextureKeys();
                     } else {
                         list.add("default");
