@@ -14,7 +14,7 @@ import smartin.miapi.modules.properties.EnchantmentProperty;
 public class EnchantmentMixin {
 
     @Inject(method = "Lnet/minecraft/enchantment/Enchantment;isAcceptableItem(Lnet/minecraft/item/ItemStack;)Z", at = @At("HEAD"), cancellable = true)
-    private void isAcceptableItemMixin(ItemStack stack, CallbackInfoReturnable<Boolean> cir) {
+    private void miapi$isAcceptableItemMixin(ItemStack stack, CallbackInfoReturnable<Boolean> cir) {
         Enchantment enchantment = (Enchantment) (Object) this;
         if (stack.getItem() instanceof ModularItem) {
             boolean acceptable = EnchantmentProperty.isAllowed(stack, enchantment);

@@ -32,7 +32,7 @@ public abstract class ArmorFeatureRendererMixin<T extends LivingEntity, M extend
     protected abstract A getArmor(EquipmentSlot slot);
 
     @Inject(method = "renderArmor", at = @At("HEAD"), cancellable = true)
-    void renderArmorInject(MatrixStack matrices, VertexConsumerProvider vertexConsumers, T entity, EquipmentSlot armorSlot, int light, A model, CallbackInfo ci) {
+    void miapi$renderArmorInject(MatrixStack matrices, VertexConsumerProvider vertexConsumers, T entity, EquipmentSlot armorSlot, int light, A model, CallbackInfo ci) {
         ItemStack itemStack = entity.getEquippedStack(armorSlot);
         if (itemStack.getItem() instanceof ModularItem) {
             // Invert the light direction doesnt work
