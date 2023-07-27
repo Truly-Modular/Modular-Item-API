@@ -4,6 +4,13 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.redpxnda.nucleus.util.RenderUtil;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.texture.Sprite;
+import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
@@ -192,6 +199,16 @@ public class MaterialProperty implements ModuleProperty {
         }
 
         @Override
+        public VertexConsumer getMaterialConsumer(VertexConsumerProvider provider) {
+            int txtId = 10;
+            RenderSystem.setShaderTexture(txtId, new Identifier(Miapi.MOD_ID, "textures/item/material_test.png"));
+            RenderSystem.bindTexture(txtId);
+            int j = RenderSystem.getShaderTexture(txtId);
+            RegistryInventory.Client.testTranslucentShader.addSampler("MatColors", j);
+            return provider.getBuffer(RegistryInventory.Client.testTranslucentRenderType);
+        }
+
+        @Override
         public Map<ModuleProperty, JsonElement> materialProperties(String key) {
             JsonElement element = rawJson.getAsJsonObject().get(key);
             Map<ModuleProperty, JsonElement> propertyMap = new HashMap<>();
@@ -303,6 +320,8 @@ public class MaterialProperty implements ModuleProperty {
         }
 
         List<String> getGroups();
+
+        VertexConsumer getMaterialConsumer(VertexConsumerProvider provider);
 
         Map<ModuleProperty, JsonElement> materialProperties(String key);
 
