@@ -13,6 +13,7 @@ import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.MaterialProperty;
+import smartin.miapi.registries.RegistryInventory;
 
 import java.util.List;
 
@@ -32,7 +33,7 @@ public class BakedMiapiModel implements MiapiModel {
         for (BakedModel model : models) {
             for (Direction direction : Direction.values()) {
                 if (material != null) {
-                    VertexConsumer consumer = material.getMaterialConsumer(vertexConsumers);
+                    VertexConsumer consumer = material.setupMaterialShader(vertexConsumers, RegistryInventory.Client.entityTranslucentMaterialRenderType, RegistryInventory.Client.entityTranslucentMaterialShader);
                     model.getQuads(null, direction, Random.create()).forEach(bakedQuad -> {
                         consumer.quad(matrices.peek(), bakedQuad, 1, 1, 1, light, overlay);
                     });
