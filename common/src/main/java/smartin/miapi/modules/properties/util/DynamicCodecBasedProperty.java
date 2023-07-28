@@ -60,6 +60,11 @@ public abstract class DynamicCodecBasedProperty<T, A> implements ModuleProperty 
         return true;
     }
 
+    /**
+     * Collected lists take individual objects from modules with your property and combine it into a single list.
+     *
+     * @param <T> The type of object inside the lists.
+     */
     public static abstract class CollectedList<T> extends DynamicCodecBasedProperty<T, List<T>> {
         public CollectedList(String key) {
             super(key);
@@ -75,6 +80,12 @@ public abstract class DynamicCodecBasedProperty<T, A> implements ModuleProperty 
             return new ArrayList<>();
         }
     }
+
+    /**
+     * Flattened lists merely collect your property, which is a list, from all modules and flatten it into a single list.
+     *
+     * @param <T> The type of object inside the lists.
+     */
     public static abstract class FlattenedList<T> extends DynamicCodecBasedProperty<List<T>, List<T>> {
         public FlattenedList(String key) {
             super(key);
@@ -95,6 +106,17 @@ public abstract class DynamicCodecBasedProperty<T, A> implements ModuleProperty 
             return ModuleProperty.mergeList(old, toMerge, type);
         }
     }
+
+    /**
+     * Intermediate lists initially decode from the first type parameter. This is your json format representation.
+     * However, what if you want to do additional resolving, like for complex numbers({@link StatResolver})?
+     * This is where the second type parameter comes in. With a method defined in your constructor, this will
+     * convert instances of the first type parameter into the second, passing in a module instance so the data
+     * is correctly resolved and cached.
+     *
+     * @param <I> The input type, usually your raw data that has yet to be resolved
+     * @param <O> The output type, usually the refined data that was created with the inputted module instance
+     */
     public static class IntermediateList<I, O> extends FlattenedList<O> {
         protected final Codec<List<I>> codec;
         protected final BiFunction<I, ItemModule.ModuleInstance, O> converter;
