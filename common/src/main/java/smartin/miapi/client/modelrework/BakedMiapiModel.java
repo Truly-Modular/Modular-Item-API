@@ -44,7 +44,7 @@ public class BakedMiapiModel implements MiapiModel {
     @Override
     public @Nullable Matrix4f subModuleMatrix(int submoduleId) {
         Matrix4f matrix4f = new Matrix4f();
-        float zPrevention = 1e-2F;
+        float zPrevention = 8e-2F;
         matrix4f.translate(new Vector3f(-zPrevention/2, -zPrevention/2, -zPrevention/2));
         matrix4f.scale(zPrevention + 1);
         return matrix4f;
