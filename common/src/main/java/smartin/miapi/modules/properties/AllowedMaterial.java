@@ -80,7 +80,7 @@ public class AllowedMaterial implements CraftingProperty, ModuleProperty {
         if (element != null) {
             MaterialProperty.Material material = MaterialProperty.getMaterial(input);
             if (material != null) {
-                MaterialProperty.setMaterial(newModule, material.key);
+                MaterialProperty.setMaterial(newModule, material.getKey());
             }
         }
         return crafting;
@@ -97,7 +97,7 @@ public class AllowedMaterial implements CraftingProperty, ModuleProperty {
         assert material != null;
         int newCount = (int) (input.getCount() - Math.ceil(json.cost / material.getValueOfItem(input)));
         input.setCount(newCount);
-        MaterialProperty.setMaterial(newModule, material.key);
+        MaterialProperty.setMaterial(newModule, material.getKey());
         results.add(crafting);
         results.add(input);
         return results;

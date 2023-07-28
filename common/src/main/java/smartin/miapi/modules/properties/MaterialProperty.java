@@ -4,6 +4,9 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
@@ -74,11 +77,8 @@ public class MaterialProperty implements ModuleProperty {
         Miapi.registerReloadHandler(ReloadEvents.MAIN, "materials", materials, (isClient, path, data) -> {
             JsonParser parser = new JsonParser();
             JsonObject obj = parser.parse(data).getAsJsonObject();
-            String key = obj.get("key").getAsString();
-            Material material = new Material();
-            material.key = key;
-            material.rawJson = obj;
-            materials.put(key, material);
+            JsonMaterial material = new JsonMaterial(obj);
+            materials.put(material.getKey(), material);
         }, -1f);
     }
 
@@ -86,7 +86,7 @@ public class MaterialProperty implements ModuleProperty {
         Set<String> textureKeys = new HashSet<>();
         textureKeys.add("base");
         for (Material material : materials.values()) {
-            textureKeys.add(material.key);
+            textureKeys.add(material.getKey());
             JsonArray textures = material.getRawElement("textures").getAsJsonArray();
             for (JsonElement texture : textures) {
                 textureKeys.add(texture.getAsString());
@@ -114,7 +114,7 @@ public class MaterialProperty implements ModuleProperty {
     }
 
     @Nullable
-    public static Material getMaterial(ItemStack item) {
+    public static MaterialProperty.Material getMaterial(ItemStack item) {
         for (Material material : materials.values()) {
             JsonArray items = material.getRawElement("items").getAsJsonArray();
 
@@ -145,7 +145,7 @@ public class MaterialProperty implements ModuleProperty {
     }
 
     @Nullable
-    public static Material getMaterial(JsonElement element) {
+    public static MaterialProperty.Material getMaterial(JsonElement element) {
         if (element != null) {
             return materials.get(element.getAsString());
         }
@@ -153,7 +153,7 @@ public class MaterialProperty implements ModuleProperty {
     }
 
     @Nullable
-    public static Material getMaterial(ItemModule.ModuleInstance instance) {
+    public static MaterialProperty.Material getMaterial(ItemModule.ModuleInstance instance) {
         JsonElement element = instance.getProperties().get(property);
         if (element != null) {
             return materials.get(element.getAsString());
@@ -170,10 +170,25 @@ public class MaterialProperty implements ModuleProperty {
         instance.moduleData.put("properties", Miapi.gson.toJson(moduleJson));
     }
 
-    public static class Material {
+    public static class JsonMaterial implements Material {
         public String key;
         protected JsonElement rawJson;
+        public Identifier materialColorPalette = new Identifier(Miapi.MOD_ID, "textures/item/material_test.png");
 
+        public JsonMaterial(JsonObject element) {
+            rawJson = element;
+            key = element.get("key").getAsString();
+            if (element.has("color_pallet")) {
+                materialColorPalette = new Identifier(element.get("color_pallet").getAsString());
+            }
+        }
+
+        @Override
+        public String getKey() {
+            return key;
+        }
+
+        @Override
         public List<String> getGroups() {
             List<String> groups = new ArrayList<>();
             groups.add(key);
@@ -185,6 +200,17 @@ public class MaterialProperty implements ModuleProperty {
             return groups;
         }
 
+        @Override
+        public VertexConsumer getMaterialConsumer(VertexConsumerProvider provider) {
+            int txtId = 10;
+            RenderSystem.setShaderTexture(txtId, materialColorPalette);
+            RenderSystem.bindTexture(txtId);
+            int j = RenderSystem.getShaderTexture(txtId);
+            RegistryInventory.Client.testTranslucentShader.addSampler("MatColors", j);
+            return provider.getBuffer(RegistryInventory.Client.testTranslucentRenderType);
+        }
+
+        @Override
         public Map<ModuleProperty, JsonElement> materialProperties(String key) {
             JsonElement element = rawJson.getAsJsonObject().get(key);
             Map<ModuleProperty, JsonElement> propertyMap = new HashMap<>();
@@ -199,10 +225,12 @@ public class MaterialProperty implements ModuleProperty {
             return propertyMap;
         }
 
+        @Override
         public JsonElement getRawElement(String key) {
             return rawJson.getAsJsonObject().get(key);
         }
 
+        @Override
         public double getDouble(String property) {
             String[] keys = property.split("\\.");
             JsonElement jsonData = rawJson;
@@ -218,6 +246,7 @@ public class MaterialProperty implements ModuleProperty {
             return 0;
         }
 
+        @Override
         public String getData(String property) {
             String[] keys = property.split("\\.");
             JsonElement jsonData = rawJson;
@@ -233,6 +262,7 @@ public class MaterialProperty implements ModuleProperty {
             return "";
         }
 
+        @Override
         public List<String> getTextureKeys() {
             List<String> textureKeys = new ArrayList<>();
             JsonArray textures = rawJson.getAsJsonObject().getAsJsonArray("textures");
@@ -243,17 +273,13 @@ public class MaterialProperty implements ModuleProperty {
             return new ArrayList<>(textureKeys);
         }
 
+        @Override
         public int getColor() {
             long longValue = Long.parseLong(rawJson.getAsJsonObject().get("color").getAsString(), 16);
             return (int) (longValue & 0xffffffffL);
         }
 
-        public static int getColor(String color) {
-            if (color.equals("")) return ColorHelper.Argb.getArgb(255, 255, 255, 255);
-            long longValue = Long.parseLong(color, 16);
-            return (int) (longValue & 0xffffffffL);
-        }
-
+        @Override
         public double getValueOfItem(ItemStack item) {
             JsonArray items = rawJson.getAsJsonObject().getAsJsonArray("items");
 
@@ -283,5 +309,34 @@ public class MaterialProperty implements ModuleProperty {
             }
             return 0;
         }
+    }
+
+    public interface Material {
+
+        String getKey();
+
+        static int getColor(String color) {
+            if (color.equals("")) return ColorHelper.Argb.getArgb(255, 255, 255, 255);
+            long longValue = Long.parseLong(color, 16);
+            return (int) (longValue & 0xffffffffL);
+        }
+
+        List<String> getGroups();
+
+        VertexConsumer getMaterialConsumer(VertexConsumerProvider provider);
+
+        Map<ModuleProperty, JsonElement> materialProperties(String key);
+
+        JsonElement getRawElement(String key);
+
+        double getDouble(String property);
+
+        String getData(String property);
+
+        List<String> getTextureKeys();
+
+        int getColor();
+
+        double getValueOfItem(ItemStack item);
     }
 }

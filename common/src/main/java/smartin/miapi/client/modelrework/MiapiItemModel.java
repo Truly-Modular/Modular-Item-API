@@ -73,7 +73,7 @@ public class MiapiItemModel implements MiapiModel {
                     sprite.getMinU(), sprite.getMaxU(), sprite.getMinV(), sprite.getMaxV(),
                     light);
         }
-        //rootModel.render(modelType, stack, matrices, mode, tickDelta, vertexConsumers, light, overlay);
+        rootModel.render(modelType, stack, matrices, mode, tickDelta, vertexConsumers, light, overlay);
     }
 
     @Override
@@ -81,7 +81,7 @@ public class MiapiItemModel implements MiapiModel {
         return null;
     }
 
-    interface ModelSupplier {
+    public interface ModelSupplier {
         List<MiapiModel> getModels(@Nullable String key, ItemModule.ModuleInstance model);
     }
 }
