@@ -16,6 +16,7 @@ import smartin.miapi.client.model.CustomColorProvider;
 import smartin.miapi.effects.CryoStatusEffect;
 import smartin.miapi.mixin.client.ItemRendererAccessor;
 import smartin.miapi.modules.abilities.util.ItemProjectile.ItemProjectileRenderer;
+import smartin.miapi.modules.properties.MaterialProperty;
 import smartin.miapi.registries.RegistryInventory;
 
 public class MiapiClient {
@@ -25,6 +26,7 @@ public class MiapiClient {
 
     public static void init(){
         registerShaders();
+        MaterialProperty.PaletteCreators.setup();
         ClientLifecycleEvent.CLIENT_SETUP.register(MiapiClient::clientSetup);
         ClientLifecycleEvent.CLIENT_STARTED.register(MiapiClient::clientStart);
         ClientLifecycleEvent.CLIENT_LEVEL_LOAD.register(MiapiClient::clientLevelLoad);

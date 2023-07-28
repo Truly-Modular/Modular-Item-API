@@ -1,15 +1,23 @@
 package smartin.miapi.modules.properties;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.mojang.blaze3d.platform.TextureUtil;
+import com.google.common.collect.Iterators;
+import com.google.common.collect.PeekingIterator;
+import com.google.gson.*;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import com.redpxnda.nucleus.datapack.codec.MiscCodecs;
+import dev.architectury.platform.Platform;
+import dev.architectury.utils.Env;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.ShaderProgram;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.texture.NativeImage;
+import net.minecraft.client.texture.NativeImageBackedTexture;
+import net.minecraft.client.texture.TextureManager;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
@@ -25,7 +33,13 @@ import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.registries.RegistryInventory;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
+import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * This is the Property relating to materials of a Module
@@ -181,9 +195,13 @@ public class MaterialProperty implements ModuleProperty {
         public JsonMaterial(JsonObject element) {
             rawJson = element;
             key = element.get("key").getAsString();
-            if (element.has("color_palette")) {
-                materialColorPalette = new Identifier(element.get("color_palette").getAsString());
+            if (element.has("color_palette") && Platform.getEnvironment().equals(Env.CLIENT)) {
+                setupMaterialPalette(element.get("color_palette"));
             }
+        }
+
+        public void setupMaterialPalette(JsonElement json) {
+            materialColorPalette = PaletteCreators.createPaletteIdentifier(key, json);
         }
 
         @Override
@@ -311,6 +329,61 @@ public class MaterialProperty implements ModuleProperty {
                 }
             }
             return 0;
+        }
+    }
+    public static final class PaletteCreators {
+        public static void setup() {
+            var classLoading = PaletteCreators.class;
+        }
+        public static final Map<String, BiFunction<String, JsonElement, Identifier>> creators = new HashMap<>();
+        public static Identifier createPaletteIdentifier(String key, JsonElement element) {
+            Map<String, Function<JsonElement, Identifier>> mappedCreators = creators.entrySet().stream()
+                    .map(entry -> new Pair<String, Function<JsonElement, Identifier>>(entry.getKey(), jsonElement -> entry.getValue().apply(key, jsonElement)))
+                    .collect(Collectors.toMap(Pair::getFirst, Pair::getSecond));
+            Codec<Identifier> codec = MiscCodecs.functionMapCodec("type", mappedCreators).flatComapMap(
+                    MiscCodecs.FunctionHolder::apply,
+                    texture -> DataResult.error(() -> "blud, how the fuck do you expect me to turn an identifier into the function that created it? i aint doing all that")
+            );
+            return MiscCodecs.quickParse(element, codec, s -> Miapi.LOGGER.error("Failed to parse palette creator! -> " + s));
+        }
+
+        static {
+            if (Platform.getEnvironment().equals(Env.CLIENT)) {
+                creators.put("texture", (material, json) -> {
+                    if (json instanceof JsonObject object && object.has("location"))
+                        return new Identifier(object.get("location").getAsString());
+                    else if (json instanceof JsonObject)
+                        throw new JsonParseException("ModularItem API failed to parse texture sampling palette for material '" + material + "'! Missing member 'location'.");
+                    else
+                        throw new JsonParseException("ModularItem API failed to parse texture sampling palette for material '" + material + "'! Not a JSON object -> " + json);
+                });
+
+                Codec<Integer> stringToIntCodec = Codec.STRING.xmap(Integer::parseInt, String::valueOf);
+                creators.put("grayscale_map", (material, json) -> {
+                    if (json instanceof JsonObject object) {
+                        if (!object.has("colors"))
+                            throw new JsonParseException("ModularItem API failed to parse grayscale_map sampling palette for material '" + material + "'! Missing member 'colors'.");
+
+                        JsonElement element = object.get("colors");
+                        Map<Integer, Integer> colors = MiscCodecs.quickParse(
+                                element, Codec.unboundedMap(stringToIntCodec, MiscCodecs.COLOR),
+                                s -> Miapi.LOGGER.error("Failed to create material palette color map from JSON '" + element + "'! -> " + s)
+                        );
+
+                        Identifier identifier = new Identifier(Miapi.MOD_ID, "textures/generated_materials/" + material);
+                        NativeImage image = new NativeImage(256, 1, false);
+                        PeekingIterator<Map.Entry<Integer, Integer>> iter = Iterators.peekingIterator(colors.entrySet().stream().sorted(Map.Entry.comparingByKey()).iterator());
+                        while (iter.hasNext()) {
+                            var entry = iter.next();
+                            image.setColor(entry.getKey(), 0, entry.getValue());
+                        }
+
+                        MinecraftClient.getInstance().getTextureManager().registerTexture(identifier, new NativeImageBackedTexture(image));
+                        return identifier;
+                    }
+                    throw new JsonParseException("ModularItem API failed to parse grayscale_map sampling palette for material '" + material + "'! Not a JSON object -> " + json);
+                });
+            }
         }
     }
 
