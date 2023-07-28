@@ -38,10 +38,10 @@ public class BakedMiapiModel implements MiapiModel {
 
     @Override
     public void render(MatrixStack matrices, ItemStack stack, ModelTransformationMode transformationMode, float tickDelta, VertexConsumerProvider vertexConsumers, int light, int overlay) {
+        VertexConsumerProvider.Immediate immediate = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
         for (BakedModel model : models) {
             for (Direction direction : Direction.values()) {
                 if (material != null) {
-                    VertexConsumerProvider.Immediate immediate = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
                     VertexConsumer consumer = material.setupMaterialShader(immediate, RegistryInventory.Client.entityTranslucentMaterialRenderType, RegistryInventory.Client.entityTranslucentMaterialShader);
                     model.getQuads(null, direction, Random.create()).forEach(bakedQuad -> {
                         consumer.quad(matrices.peek(), bakedQuad, 1, 1, 1, light, overlay);
