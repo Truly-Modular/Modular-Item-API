@@ -181,8 +181,8 @@ public class MaterialProperty implements ModuleProperty {
         public JsonMaterial(JsonObject element) {
             rawJson = element;
             key = element.get("key").getAsString();
-            if (element.has("color_pallet")) {
-                materialColorPalette = new Identifier(element.get("color_pallet").getAsString());
+            if (element.has("color_palette")) {
+                materialColorPalette = new Identifier(element.get("color_palette").getAsString());
             }
         }
 
