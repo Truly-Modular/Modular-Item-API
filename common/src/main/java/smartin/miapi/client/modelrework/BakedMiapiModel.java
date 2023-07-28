@@ -10,6 +10,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
+import org.joml.Vector3f;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.MaterialProperty;
 
@@ -42,6 +43,10 @@ public class BakedMiapiModel implements MiapiModel {
 
     @Override
     public @Nullable Matrix4f subModuleMatrix(int submoduleId) {
-        return null;
+        Matrix4f matrix4f = new Matrix4f();
+        float zPrevention = 1e-2F;
+        matrix4f.translate(new Vector3f(-zPrevention/2, -zPrevention/2, -zPrevention/2));
+        matrix4f.scale(zPrevention + 1);
+        return matrix4f;
     }
 }
