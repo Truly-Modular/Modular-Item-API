@@ -6,6 +6,7 @@ import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import org.joml.Matrix4f;
+import smartin.miapi.item.modular.Transform;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.SlotProperty;
 
@@ -20,11 +21,12 @@ public class ModuleModel {
     public ModuleModel(ItemModule.ModuleInstance instance) {
         this.instance = instance;
         models = generateModel(null);
+        otherModels = new HashMap<>();
     }
 
     private List<Pair<Matrix4f, MiapiModel>> generateModel(String key) {
         List<Pair<Matrix4f, MiapiModel>> modelList = new ArrayList<>();
-        Matrix4f matrix4f = SlotProperty.getLocalTransformStack(instance).get(key).toMatrix();
+        Matrix4f matrix4f = Transform.toModelTransformation(SlotProperty.getLocalTransformStack(instance).get(key)).toMatrix();
         for (MiapiItemModel.ModelSupplier supplier : MiapiItemModel.modelSuppliers) {
             supplier.getModels(key, instance).forEach(model -> {
                 modelList.add(new Pair<>(new Matrix4f(matrix4f), model));
