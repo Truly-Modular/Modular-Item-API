@@ -11,16 +11,8 @@
   "mining_level": 3,
   "color": "49EAD6",
   "color_palette": {
-    "type": "grayscale_map",
-    "colors": {
-      "24": "082420",
-      "68": "0e3f36",
-      "107": "156355",
-      "150": "1e8a77",
-      "190": "2bc7ac",
-      "216": "33ebcb",
-      "255": "a4fdf0"
-    }
+    "type": "texture",
+    "location": "miapi:textures/item/material_diamond_test.png"
   },
   "textures": [
     "shiny"

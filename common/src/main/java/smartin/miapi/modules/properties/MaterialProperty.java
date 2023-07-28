@@ -3,6 +3,7 @@ package smartin.miapi.modules.properties;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.PeekingIterator;
 import com.google.gson.*;
+import com.mojang.blaze3d.platform.TextureUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
@@ -35,6 +36,7 @@ import smartin.miapi.registries.RegistryInventory;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -191,6 +193,7 @@ public class MaterialProperty implements ModuleProperty {
         public String key;
         protected JsonElement rawJson;
         public Identifier materialColorPalette = new Identifier(Miapi.MOD_ID, "textures/item/material_test.png");
+        public boolean hasSavedDebugMatTexture = false;
 
         public JsonMaterial(JsonObject element) {
             rawJson = element;
@@ -377,7 +380,14 @@ public class MaterialProperty implements ModuleProperty {
                             var entry = iter.next();
                             image.setColor(entry.getKey(), 0, entry.getValue());
                         }
+                        System.out.println(image.getColor(24, 0) + " is color");
 
+                        Path path = Path.of("miapi_test").resolve("mat_debug.png");
+                        try {
+                            image.writeTo(path);
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
                         MinecraftClient.getInstance().getTextureManager().registerTexture(identifier, new NativeImageBackedTexture(image));
                         return identifier;
                     }
