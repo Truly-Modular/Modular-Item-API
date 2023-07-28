@@ -193,7 +193,6 @@ public class MaterialProperty implements ModuleProperty {
         public String key;
         protected JsonElement rawJson;
         public Identifier materialColorPalette = new Identifier(Miapi.MOD_ID, "textures/item/material_test.png");
-        public boolean hasSavedDebugMatTexture = false;
 
         public JsonMaterial(JsonObject element) {
             rawJson = element;
@@ -226,10 +225,10 @@ public class MaterialProperty implements ModuleProperty {
 
         @Override
         public VertexConsumer setupMaterialShader(VertexConsumerProvider provider, RenderLayer layer, ShaderProgram shader) {
-            int txtId = 10;
-            RenderSystem.setShaderTexture(txtId, materialColorPalette);
-            RenderSystem.bindTexture(txtId);
-            int j = RenderSystem.getShaderTexture(txtId);
+            int id = 10;
+            RenderSystem.setShaderTexture(id, materialColorPalette);
+            RenderSystem.bindTexture(id);
+            int j = RenderSystem.getShaderTexture(id);
             shader.addSampler("MatColors", j);
             return provider.getBuffer(layer);
         }
