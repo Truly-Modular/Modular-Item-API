@@ -1,10 +1,8 @@
 package smartin.miapi.client.modelrework;
 
-import com.mojang.blaze3d.platform.TextureUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.redpxnda.nucleus.util.RenderUtil;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.texture.Sprite;
@@ -66,10 +64,10 @@ public class MiapiItemModel implements MiapiModel {
         RenderSystem.setShaderTexture(txtId, new Identifier(Miapi.MOD_ID, "textures/item/material_test.png"));
         RenderSystem.bindTexture(txtId);
         int j = RenderSystem.getShaderTexture(txtId);
-        RegistryInventory.Client.testTranslucentShader.addSampler("MatColors", j);
+        RegistryInventory.Client.translucentMaterialShader.addSampler("MatColors", j);
         for (int i = 0; i < 6; i++) {
             RenderUtil.addQuad(
-                    RenderUtil.CUBE[i], matrices, vertexConsumers.getBuffer(RegistryInventory.Client.testTranslucentRenderType),
+                    RenderUtil.CUBE[i], matrices, vertexConsumers.getBuffer(RegistryInventory.Client.translucentMaterialRenderType),
                     1f, 1f, 1f, 1f,
                     -.25f, .25f, .25f,
                     sprite.getMinU(), sprite.getMaxU(), sprite.getMinV(), sprite.getMaxV(),

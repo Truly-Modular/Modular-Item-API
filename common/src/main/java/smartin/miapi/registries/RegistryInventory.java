@@ -368,12 +368,21 @@ public class RegistryInventory {
 
     @Environment(EnvType.CLIENT)
     public static class Client {
-        public static ShaderProgram testTranslucentShader;
-        public static final RenderLayer testTranslucentRenderType = RenderLayer.of(
-                "miapi_translucent", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL, VertexFormat.DrawMode.QUADS,
+        public static ShaderProgram translucentMaterialShader;
+        public static ShaderProgram entityTranslucentMaterialShader;
+
+        public static final RenderLayer translucentMaterialRenderType = RenderLayer.of(
+                "miapi_translucent_material", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL, VertexFormat.DrawMode.QUADS,
                 0x200000, true, true,
                 RenderLayer.MultiPhaseParameters.builder()
-                        .lightmap(ENABLE_LIGHTMAP).program(new RenderPhase.ShaderProgram(() -> testTranslucentShader)).texture(MIPMAP_BLOCK_ATLAS_TEXTURE)
+                        .lightmap(ENABLE_LIGHTMAP).program(new RenderPhase.ShaderProgram(() -> translucentMaterialShader)).texture(MIPMAP_BLOCK_ATLAS_TEXTURE)
                         .transparency(TRANSLUCENT_TRANSPARENCY).target(TRANSLUCENT_TARGET).build(true));
+        public static final RenderLayer entityTranslucentMaterialRenderType = RenderLayer.of(
+                "miapi_entity_translucent_material", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL, VertexFormat.DrawMode.QUADS,
+                256, true, true,
+                RenderLayer.MultiPhaseParameters.builder()
+                        .program(new RenderPhase.ShaderProgram(() -> entityTranslucentMaterialShader)).texture(BLOCK_ATLAS_TEXTURE)
+                        .transparency(TRANSLUCENT_TRANSPARENCY).lightmap(ENABLE_LIGHTMAP).overlay(ENABLE_OVERLAY_COLOR).build(true)
+        );
     }
 }

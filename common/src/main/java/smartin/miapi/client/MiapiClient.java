@@ -57,6 +57,11 @@ public class MiapiClient {
     }
 
     public static void registerShaders() {
-        ShaderRegistry.register(new Identifier(Miapi.MOD_ID, "rendertype_color_test"), VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL, s -> RegistryInventory.Client.testTranslucentShader = s);
+        ShaderRegistry.register(
+                new Identifier(Miapi.MOD_ID, "rendertype_translucent_material"),
+                VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL, s -> RegistryInventory.Client.translucentMaterialShader = s);
+        ShaderRegistry.register(
+                new Identifier(Miapi.MOD_ID, "rendertype_entity_translucent_material"),
+                VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL, s -> RegistryInventory.Client.entityTranslucentMaterialShader = s);
     }
 }
