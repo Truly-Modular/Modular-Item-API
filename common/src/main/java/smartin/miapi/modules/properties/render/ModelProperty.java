@@ -101,7 +101,7 @@ public class ModelProperty implements ModuleProperty {
                         unbakedModel = modelCache.get(fullPath);
                     }
                 }
-                models.add(DynamicBakery.bakeModel(unbakedModel, textureGetter, ColorHelper.Argb.getArgb(255, 255, 255, 255), Transform.IDENTITY));
+                models.add(DynamicBakery.bakeModel(unbakedModel, textureGetter, ColorHelper.Argb.getArgb(255, 255, 255, 255), json.transform).optimize());
             }
         }
         return models;
