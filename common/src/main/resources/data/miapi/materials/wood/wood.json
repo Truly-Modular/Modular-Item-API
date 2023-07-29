@@ -8,6 +8,16 @@
   "flexibility": 6,
   "durability": 59,
   "color": "8B6B45",
+  "color_palette": {
+    "type": "grayscale_map",
+    "colors": {
+      "24": "281E0B",
+      "68": "493615",
+      "190": "684E1E",
+      "216": "896727",
+      "255": "E5C897"
+    }
+  },
   "mining_speed": 2,
   "mining_level": 0,
   "textures": [

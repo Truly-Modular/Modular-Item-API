@@ -38,26 +38,13 @@ public class ModularWorkBenchRenderer implements BlockEntityRenderer<ModularWork
         matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(90));
         matrices.scale(0.75f, 0.75f, 0.75f);
 
-        if (stack.getItem() instanceof ModularItem) {
-            BakedModel model = ModelProperty.getItemModel(stack);
-
-            if (model != null)
-                ItemRenderUtil.renderModel(
-                        matrices,
-                        stack, model,
-                        ModelTransformationMode.FIXED,
-                        vertexConsumers, light, 0
-                );
-        } else {
-            context.getItemRenderer().renderItem(
-                    stack,
-                    ModelTransformationMode.FIXED,
-                    light, overlay,
-                    matrices, vertexConsumers,
-                    be.getWorld(), 1
-            );
-        }
-
+        context.getItemRenderer().renderItem(
+                stack,
+                ModelTransformationMode.FIXED,
+                light, overlay,
+                matrices, vertexConsumers,
+                be.getWorld(), 1
+        );
         matrices.pop();
     }
 }

@@ -36,19 +36,15 @@ public class BakedMiapiModel implements MiapiModel {
         VertexConsumerProvider.Immediate immediate = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
         for (BakedModel model : models) {
             for (Direction direction : Direction.values()) {
-                if (material != null) {
-                    VertexConsumer consumer = material.setupMaterialShader(immediate, RegistryInventory.Client.entityTranslucentMaterialRenderType, RegistryInventory.Client.entityTranslucentMaterialShader);
-                    model.getQuads(null, direction, Random.create()).forEach(bakedQuad -> {
-                        consumer.quad(matrices.peek(), bakedQuad, 1, 1, 1, light, overlay);
-                    });
-                    immediate.draw();
-                } else {
-                    VertexConsumer consumer = immediate.getBuffer(RenderLayers.getItemLayer(stack, true));
-                    model.getQuads(null, direction, Random.create()).forEach(bakedQuad -> {
-                        consumer.quad(matrices.peek(), bakedQuad, 1, 1, 1, light, overlay);
-                    });
-                    immediate.draw();
-                }
+                VertexConsumer consumer;
+                if (material != null)
+                    consumer = material.setupMaterialShader(immediate, RegistryInventory.Client.entityTranslucentMaterialRenderType, RegistryInventory.Client.entityTranslucentMaterialShader);
+                else
+                    consumer = MaterialProperty.Material.setupMaterialShader(immediate, RegistryInventory.Client.entityTranslucentMaterialRenderType, RegistryInventory.Client.entityTranslucentMaterialShader, MaterialProperty.Material.baseColorPalette);
+                model.getQuads(null, direction, Random.create()).forEach(bakedQuad -> {
+                    consumer.quad(matrices.peek(), bakedQuad, 1, 1, 1, light, overlay);
+                });
+                immediate.draw();
             }
         }
     }

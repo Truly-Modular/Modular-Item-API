@@ -184,7 +184,7 @@ public class MaterialProperty implements ModuleProperty {
     public static class JsonMaterial implements Material {
         public String key;
         protected JsonElement rawJson;
-        public Identifier materialColorPalette = new Identifier(Miapi.MOD_ID, "textures/item/material_test.png");
+        public Identifier materialColorPalette = Material.baseColorPalette;
 
         public JsonMaterial(JsonObject element) {
             rawJson = element;
@@ -338,10 +338,6 @@ public class MaterialProperty implements ModuleProperty {
         static {
             if (Platform.getEnvironment().equals(Env.CLIENT)) {
                 interpolateFiller = (last, current, next, lX, cX, nX, placer) -> {
-                    if (last == null) {
-                        last = new Color(0, 0, 0, 255);
-                        lX = 0;
-                    }
                     for (int i = lX; i < cX; i++) {
                         float delta = (i-lX) / (float) (cX-lX);
                         placer.place(
@@ -356,27 +352,16 @@ public class MaterialProperty implements ModuleProperty {
                 };
                 fillers.put("interpolate", interpolateFiller);
                 fillers.put("current_to_last", (last, current, next, lX, cX, nX, placer) -> {
-                    if (last == null) {
-                        lX = 0;
-                    }
                     for (int i = lX; i < cX; i++) {
                         placer.place(current, i, 0);
                     }
                 });
                 fillers.put("last_to_current", (last, current, next, lX, cX, nX, placer) -> {
-                    if (last == null) {
-                        last = new Color(0, 0, 0, 255);
-                        lX = 0;
-                    }
                     for (int i = lX; i < cX; i++) {
                         placer.place(last, i, 0);
                     }
                 });
                 fillers.put("current_last_shared", (last, current, next, lX, cX, nX, placer) -> {
-                    if (last == null) {
-                        last = new Color(0, 0, 0, 255);
-                        lX = 0;
-                    }
                     for (int i = lX; i < cX; i++) {
                         float delta = (i-lX) / (float) (cX-lX);
                         Color color = delta < 0.5 ? last : current;
@@ -400,12 +385,19 @@ public class MaterialProperty implements ModuleProperty {
                             throw new JsonParseException("ModularItem API failed to parse grayscale_map sampling palette for material '" + material + "'! Missing member 'colors'.");
 
                         JsonElement element = object.get("colors");
-                        Map<Integer, Color> colors = MiscCodecs.quickParse(
+                        Map<Integer, Color> colors = new HashMap<>(MiscCodecs.quickParse(
                                 element, Codec.unboundedMap(stringToIntCodec, MiscCodecs.COLOR),
                                 s -> Miapi.LOGGER.error("Failed to create material palette color map from JSON '" + element + "'! -> " + s)
-                        );
+                        ));
                         String key = object.has("filler") ? object.get("filler").getAsString() : "interpolate";
                         FillerFunction filler = fillers.getOrDefault(key, interpolateFiller);
+
+                        Color black = new Color(0, 0, 0, 255);
+                        Color white = new Color(255, 255, 255, 255);
+                        if (!colors.containsKey(0))
+                            colors.put(0, black);
+                        if (!colors.containsKey(255))
+                            colors.put(255, white);
 
                         Identifier identifier = new Identifier(Miapi.MOD_ID, "textures/generated_materials/" + material);
                         NativeImage image = new NativeImage(256, 1, false);
@@ -413,24 +405,24 @@ public class MaterialProperty implements ModuleProperty {
 
                         List<Map.Entry<Integer, Color>> list = colors.entrySet().stream().sorted(Map.Entry.comparingByKey()).toList();
                         for (int i = 0; i < list.size(); i++) {
-                            Map.Entry<Integer, Color> last = i == 0 ? null : list.get(i-1);
+                            Map.Entry<Integer, Color> last = i == 0 ? Map.entry(0, black) : list.get(i-1);
                             Map.Entry<Integer, Color> current = list.get(i);
-                            Map.Entry<Integer, Color> next = i == list.size()-1 ? null : list.get(i+1);
+                            Map.Entry<Integer, Color> next = i == list.size()-1 ? Map.entry(255, white) : list.get(i+1);
 
                             filler.fill(
-                                    last == null ? null : last.getValue(),
+                                    last.getValue(),
                                     current.getValue(),
-                                    next == null ? null : next.getValue(),
-                                    last == null ? -1 : last.getKey(),
+                                    next.getValue(),
+                                    last.getKey(),
                                     current.getKey(),
-                                    last == null ? -1 : last.getKey(),
+                                    next.getKey(),
                                     placer
                             );
                             image.setColor(current.getKey(), 0, current.getValue().abgr());
                         }
                         image.untrack();
 
-                        Path path = Path.of("miapi_test").resolve("mat_debug.png");
+                        Path path = Path.of("miapi_dev").resolve("material_" + material + "_palette.png");
                         try {
                             image.writeTo(path);
                         } catch (IOException e) {
@@ -455,6 +447,7 @@ public class MaterialProperty implements ModuleProperty {
     }
 
     public interface Material {
+        Identifier baseColorPalette = new Identifier(Miapi.MOD_ID, "textures/item/materials/base_palette.png");
 
         String getKey();
 
@@ -467,6 +460,15 @@ public class MaterialProperty implements ModuleProperty {
         List<String> getGroups();
 
         VertexConsumer setupMaterialShader(VertexConsumerProvider provider, RenderLayer layer, ShaderProgram shader);
+
+        static VertexConsumer setupMaterialShader(VertexConsumerProvider provider, RenderLayer layer, ShaderProgram shader, Identifier texture) {
+            int id = 10;
+            RenderSystem.setShaderTexture(id, texture);
+            RenderSystem.bindTexture(id);
+            int j = RenderSystem.getShaderTexture(id);
+            shader.addSampler("MatColors", j);
+            return provider.getBuffer(layer);
+        }
 
         Map<ModuleProperty, JsonElement> materialProperties(String key);
 
