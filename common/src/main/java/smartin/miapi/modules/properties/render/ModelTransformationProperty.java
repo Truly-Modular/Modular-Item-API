@@ -13,6 +13,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.MatrixUtil;
 import org.joml.Quaternionf;
+import org.joml.Vector3f;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.model.DynamicBakedModel;
 import smartin.miapi.modules.ItemModule;
@@ -83,27 +84,11 @@ public class ModelTransformationProperty implements ModuleProperty {
     }
 
     public static void applyTransformation(ItemStack stack, ModelTransformationMode mode, MatrixStack matrices) {
-        MatrixStack.Entry entry = matrices.peek();
-        //entry.getPositionMatrix().scale((float) 1 /8);
-        if (mode == ModelTransformationMode.GUI) {
-            //MatrixUtil.scale(entry.getPositionMatrix(), 0.5f);
-        } else if (mode.isFirstPerson()) {
-            //MatrixUtil.scale(entry.getPositionMatrix(), 0.75f);
-        }
         Transformation transformation = ModelTransformationProperty.getTransformation(stack).getTransformation(mode);
         boolean leftHanded = isLeftHanded(mode);
-        float f = transformation.rotation.x();
-        float g = transformation.rotation.y();
-        float h = transformation.rotation.z();
-        if (leftHanded) {
-            g = -g;
-            h = -h;
-        }
-        int i = leftHanded ? -1 : 1;
-        matrices.translate((float) i * transformation.translation.x(), transformation.translation.y(), transformation.translation.z());
-        matrices.multiply(new Quaternionf().rotationXYZ(f * ((float) Math.PI / 180), g * ((float) Math.PI / 180), h * ((float) Math.PI / 180)));
-        matrices.scale(transformation.scale.x(), transformation.scale.y(), transformation.scale.z());
-        //entry.getPositionMatrix().scale(8);
+        matrices.translate(0.5f, 0.5f, 0.5f);
+        transformation.apply(false,matrices);
+        matrices.translate(-0.5f, -0.5f, -0.5f);
     }
 
     public static ModelTransformation getTransformation(ItemStack stack) {

@@ -16,6 +16,7 @@ import smartin.miapi.Miapi;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.cache.ModularItemCache;
+import smartin.miapi.modules.properties.render.ModelTransformationProperty;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.util.ArrayList;
@@ -59,7 +60,10 @@ public class MiapiItemModel implements MiapiModel {
     }
 
     public void render(String modelType, ItemStack stack, MatrixStack matrices, ModelTransformationMode mode, float tickDelta, VertexConsumerProvider vertexConsumers, int light, int overlay) {
+        matrices.push();
+        ModelTransformationProperty.applyTransformation(stack, mode, matrices);
         rootModel.render(modelType, stack, matrices, mode, tickDelta, vertexConsumers, light, overlay);
+        matrices.pop();
     }
 
     @Override
