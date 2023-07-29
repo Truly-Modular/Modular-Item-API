@@ -2,6 +2,7 @@ package smartin.miapi.client;
 
 import com.redpxnda.nucleus.impl.ShaderRegistry;
 import dev.architectury.event.events.client.ClientLifecycleEvent;
+import dev.architectury.event.events.client.ClientReloadShadersEvent;
 import dev.architectury.registry.client.level.entity.EntityRendererRegistry;
 import dev.architectury.registry.client.rendering.BlockEntityRendererRegistry;
 import dev.architectury.registry.menu.MenuRegistry;
@@ -16,6 +17,7 @@ import smartin.miapi.client.model.CustomColorProvider;
 import smartin.miapi.effects.CryoStatusEffect;
 import smartin.miapi.mixin.client.ItemRendererAccessor;
 import smartin.miapi.modules.abilities.util.ItemProjectile.ItemProjectileRenderer;
+import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.MaterialProperty;
 import smartin.miapi.registries.RegistryInventory;
 
@@ -24,14 +26,18 @@ public class MiapiClient {
     private MiapiClient() {
     }
 
-    public static void init(){
+    public static void init() {
         registerShaders();
         MaterialProperty.PaletteCreators.setup();
         ClientLifecycleEvent.CLIENT_SETUP.register(MiapiClient::clientSetup);
         ClientLifecycleEvent.CLIENT_STARTED.register(MiapiClient::clientStart);
         ClientLifecycleEvent.CLIENT_LEVEL_LOAD.register(MiapiClient::clientLevelLoad);
+        ClientReloadShadersEvent.EVENT.register((resourceFactory, asd) -> {
+            ModularItemCache.discardCache();
+        });
     }
-    protected static void clientSetup(MinecraftClient client){
+
+    protected static void clientSetup(MinecraftClient client) {
         SpriteLoader.setup();
     }
 
@@ -42,7 +48,7 @@ public class MiapiClient {
         CryoStatusEffect.setupOnClient();
     }
 
-    protected static void clientLevelLoad(ClientWorld clientWorld){
+    protected static void clientLevelLoad(ClientWorld clientWorld) {
         SpriteLoader.clientStart();
     }
 
