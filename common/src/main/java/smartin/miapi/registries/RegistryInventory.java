@@ -21,7 +21,6 @@ import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.RenderPhase;
 import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
-import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.entity.attribute.ClampedEntityAttribute;
@@ -369,8 +368,11 @@ public class RegistryInventory {
 
     @Environment(EnvType.CLIENT)
     public static class Client {
+        public static final Identifier customGlintTexture = new Identifier(MOD_ID, "textures/custom_glint.png");
+
         public static ShaderProgram translucentMaterialShader;
         public static ShaderProgram entityTranslucentMaterialShader;
+        public static ShaderProgram glintShader;
 
         public static final RenderLayer translucentMaterialRenderType = RenderLayer.of(
                 "miapi_translucent_material", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL, VertexFormat.DrawMode.QUADS,
@@ -386,10 +388,10 @@ public class RegistryInventory {
                         .transparency(TRANSLUCENT_TRANSPARENCY).lightmap(ENABLE_LIGHTMAP).overlay(ENABLE_OVERLAY_COLOR).build(true)
         );
         public static final RenderLayer modularItemGlint = RenderLayer.of(
-                "miapi_entity_glint_direct", VertexFormats.POSITION_TEXTURE, VertexFormat.DrawMode.QUADS,
+                "miapi_glint_direct", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL, VertexFormat.DrawMode.QUADS,
                 256, RenderLayer.MultiPhaseParameters.builder()
-                        .program(DIRECT_ENTITY_GLINT_PROGRAM).texture(new RenderPhase.Texture(ItemRenderer.ENTITY_ENCHANTMENT_GLINT, true, false))
-                        .writeMaskState(COLOR_MASK).cull(DISABLE_CULLING).depthTest(LEQUAL_DEPTH_TEST)
-                        .transparency(GLINT_TRANSPARENCY).texturing(ENTITY_GLINT_TEXTURING).build(false));
+                        .program(new RenderPhase.ShaderProgram(() -> glintShader)).texture(new RenderPhase.Texture(customGlintTexture, true, false))
+                        .writeMaskState(COLOR_MASK).cull(DISABLE_CULLING).depthTest(EQUAL_DEPTH_TEST)
+                        .transparency(GLINT_TRANSPARENCY).texturing(GLINT_TEXTURING).build(false));
     }
 }

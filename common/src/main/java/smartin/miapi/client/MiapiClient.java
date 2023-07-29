@@ -71,5 +71,8 @@ public class MiapiClient {
         ShaderRegistry.register(
                 new Identifier(Miapi.MOD_ID, "rendertype_entity_translucent_material"),
                 VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL, s -> RegistryInventory.Client.entityTranslucentMaterialShader = s);
+        ShaderRegistry.register(
+                new Identifier(Miapi.MOD_ID, "rendertype_item_glint"),
+                VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL, s -> RegistryInventory.Client.glintShader = s);
     }
 }

@@ -1,8 +1,8 @@
 package smartin.miapi.client.modelrework;
 
-import com.redpxnda.nucleus.util.RenderUtil;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.*;
+import net.minecraft.client.render.LightmapTextureManager;
+import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
@@ -32,37 +32,40 @@ public class BakedMiapiModel implements MiapiModel {
     public void render(MatrixStack matrices, ItemStack stack, ModelTransformationMode transformationMode, float tickDelta, VertexConsumerProvider vertexConsumers, int light, int overlay) {
         if (!(vertexConsumers instanceof VertexConsumerProvider.Immediate immediate)) return;
 
+        int j = 0;
         for (BakedModel model : models) {
+            if (j < models.size()-1) {
+                j++;
+                continue;
+            }
             for (Direction direction : Direction.values()) {
                 for (int i = 0; i < 2; i++) {
                     if (i == 1 && !stack.hasGlint()) continue;
                     VertexConsumer consumer;
+                    float r, g, b;
                     if (i == 0) {
+                        r = 1;
+                        g = 1;
+                        b = 1;
                         if (material != null)
                             consumer = material.setupMaterialShader(immediate, RegistryInventory.Client.entityTranslucentMaterialRenderType, RegistryInventory.Client.entityTranslucentMaterialShader);
                         else
                             consumer = MaterialProperty.Material.setupMaterialShader(immediate, RegistryInventory.Client.entityTranslucentMaterialRenderType, RegistryInventory.Client.entityTranslucentMaterialShader, MaterialProperty.Material.baseColorPalette);
                     } else {
-                        consumer = immediate.getBuffer(RenderLayer.getDirectGlint());
+                        consumer = immediate.getBuffer(RegistryInventory.Client.modularItemGlint);
+                        r = 1f;
+                        g = 1;
+                        b = 1f;
                     }
-
-                    /*if (stack.hasGlint()) {
-                        VertexConsumer c2 = immediate.getBuffer(RegistryInventory.Client.modularItemGlint);
-                        System.out.println(consumer);
-                        System.out.println("2: " + c2);
-                        if (c2 != consumer)
-                            consumer = VertexConsumers.union(c2, consumer);
-                        else
-                            System.out.println("dafuq");
-                    }*/
 
                     int lightValue = transformationMode == ModelTransformationMode.GUI ? LightmapTextureManager.MAX_LIGHT_COORDINATE : LightmapTextureManager.MAX_SKY_LIGHT_COORDINATE;
                     model.getQuads(null, direction, Random.create()).forEach(bakedQuad -> {
-                        consumer.quad(matrices.peek(), bakedQuad, 1, 1, 1, lightValue, overlay);
+                        consumer.quad(matrices.peek(), bakedQuad, r, g, b, lightValue, overlay);
                     });
                     immediate.draw();
                 }
             }
+            j++;
         }
     }
 
