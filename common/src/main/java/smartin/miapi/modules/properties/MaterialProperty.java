@@ -1,14 +1,11 @@
 package smartin.miapi.modules.properties;
 
-import com.google.common.collect.Iterators;
-import com.google.common.collect.PeekingIterator;
 import com.google.gson.*;
-import com.mojang.blaze3d.platform.TextureUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
+import com.redpxnda.nucleus.datapack.codec.InterfaceDispatcher;
 import com.redpxnda.nucleus.datapack.codec.MiscCodecs;
+import com.redpxnda.nucleus.util.Color;
 import dev.architectury.platform.Platform;
 import dev.architectury.utils.Env;
 import net.minecraft.client.MinecraftClient;
@@ -18,13 +15,13 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
-import net.minecraft.client.texture.TextureManager;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
+import net.minecraft.util.math.MathHelper;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.datapack.ReloadEvents;
@@ -35,13 +32,8 @@ import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.*;
-import java.util.function.BiFunction;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * This is the Property relating to materials of a Module
@@ -203,7 +195,7 @@ public class MaterialProperty implements ModuleProperty {
         }
 
         public void setupMaterialPalette(JsonElement json) {
-            materialColorPalette = PaletteCreators.createPaletteIdentifier(key, json);
+            materialColorPalette = PaletteCreators.paletteCreator.dispatcher().createPalette(json, key);
         }
 
         @Override
@@ -337,21 +329,62 @@ public class MaterialProperty implements ModuleProperty {
         public static void setup() {
             var classLoading = PaletteCreators.class;
         }
-        public static final Map<String, BiFunction<String, JsonElement, Identifier>> creators = new HashMap<>();
-        public static Identifier createPaletteIdentifier(String key, JsonElement element) {
-            Map<String, Function<JsonElement, Identifier>> mappedCreators = creators.entrySet().stream()
-                    .map(entry -> new Pair<String, Function<JsonElement, Identifier>>(entry.getKey(), jsonElement -> entry.getValue().apply(key, jsonElement)))
-                    .collect(Collectors.toMap(Pair::getFirst, Pair::getSecond));
-            Codec<Identifier> codec = MiscCodecs.functionMapCodec("type", mappedCreators).flatComapMap(
-                    MiscCodecs.FunctionHolder::apply,
-                    texture -> DataResult.error(() -> "blud, how the fuck do you expect me to turn an identifier into the function that created it? i aint doing all that")
-            );
-            return MiscCodecs.quickParse(element, codec, s -> Miapi.LOGGER.error("Failed to parse palette creator! -> " + s));
-        }
+        public static final Map<String, PaletteCreator> creators = new HashMap<>();
+        public static final Map<String, FillerFunction> fillers = new HashMap<>();
+        public static final InterfaceDispatcher<PaletteCreator> paletteCreator = InterfaceDispatcher.of(creators, "type");
+
+        public static FillerFunction interpolateFiller;
 
         static {
             if (Platform.getEnvironment().equals(Env.CLIENT)) {
-                creators.put("texture", (material, json) -> {
+                interpolateFiller = (last, current, next, lX, cX, nX, placer) -> {
+                    if (last == null) {
+                        last = new Color(0, 0, 0, 255);
+                        lX = 0;
+                    }
+                    for (int i = lX; i < cX; i++) {
+                        float delta = (i-lX) / (float) (cX-lX);
+                        placer.place(
+                                new Color(
+                                        MathHelper.lerp(delta, last.r, current.r),
+                                        MathHelper.lerp(delta, last.g, current.g),
+                                        MathHelper.lerp(delta, last.b, current.b),
+                                        MathHelper.lerp(delta, last.a, current.a)
+                                ), i, 0
+                        );
+                    }
+                };
+                fillers.put("interpolate", interpolateFiller);
+                fillers.put("current_to_last", (last, current, next, lX, cX, nX, placer) -> {
+                    if (last == null) {
+                        lX = 0;
+                    }
+                    for (int i = lX; i < cX; i++) {
+                        placer.place(current, i, 0);
+                    }
+                });
+                fillers.put("last_to_current", (last, current, next, lX, cX, nX, placer) -> {
+                    if (last == null) {
+                        last = new Color(0, 0, 0, 255);
+                        lX = 0;
+                    }
+                    for (int i = lX; i < cX; i++) {
+                        placer.place(last, i, 0);
+                    }
+                });
+                fillers.put("current_last_shared", (last, current, next, lX, cX, nX, placer) -> {
+                    if (last == null) {
+                        last = new Color(0, 0, 0, 255);
+                        lX = 0;
+                    }
+                    for (int i = lX; i < cX; i++) {
+                        float delta = (i-lX) / (float) (cX-lX);
+                        Color color = delta < 0.5 ? last : current;
+                        placer.place(color, i, 0);
+                    }
+                });
+
+                creators.put("texture", (json, material) -> {
                     if (json instanceof JsonObject object && object.has("location"))
                         return new Identifier(object.get("location").getAsString());
                     else if (json instanceof JsonObject)
@@ -361,25 +394,41 @@ public class MaterialProperty implements ModuleProperty {
                 });
 
                 Codec<Integer> stringToIntCodec = Codec.STRING.xmap(Integer::parseInt, String::valueOf);
-                creators.put("grayscale_map", (material, json) -> {
+                creators.put("grayscale_map", (json, material) -> {
                     if (json instanceof JsonObject object) {
                         if (!object.has("colors"))
                             throw new JsonParseException("ModularItem API failed to parse grayscale_map sampling palette for material '" + material + "'! Missing member 'colors'.");
 
                         JsonElement element = object.get("colors");
-                        Map<Integer, Integer> colors = MiscCodecs.quickParse(
+                        Map<Integer, Color> colors = MiscCodecs.quickParse(
                                 element, Codec.unboundedMap(stringToIntCodec, MiscCodecs.COLOR),
                                 s -> Miapi.LOGGER.error("Failed to create material palette color map from JSON '" + element + "'! -> " + s)
                         );
+                        String key = object.has("filler") ? object.get("filler").getAsString() : "interpolate";
+                        FillerFunction filler = fillers.getOrDefault(key, interpolateFiller);
 
                         Identifier identifier = new Identifier(Miapi.MOD_ID, "textures/generated_materials/" + material);
                         NativeImage image = new NativeImage(256, 1, false);
-                        PeekingIterator<Map.Entry<Integer, Integer>> iter = Iterators.peekingIterator(colors.entrySet().stream().sorted(Map.Entry.comparingByKey()).iterator());
-                        while (iter.hasNext()) {
-                            var entry = iter.next();
-                            image.setColor(entry.getKey(), 0, entry.getValue());
+                        PixelPlacer placer = (color, x, y) -> image.setColor(x, y, color.abgr());
+
+                        List<Map.Entry<Integer, Color>> list = colors.entrySet().stream().sorted(Map.Entry.comparingByKey()).toList();
+                        for (int i = 0; i < list.size(); i++) {
+                            Map.Entry<Integer, Color> last = i == 0 ? null : list.get(i-1);
+                            Map.Entry<Integer, Color> current = list.get(i);
+                            Map.Entry<Integer, Color> next = i == list.size()-1 ? null : list.get(i+1);
+
+                            filler.fill(
+                                    last == null ? null : last.getValue(),
+                                    current.getValue(),
+                                    next == null ? null : next.getValue(),
+                                    last == null ? -1 : last.getKey(),
+                                    current.getKey(),
+                                    last == null ? -1 : last.getKey(),
+                                    placer
+                            );
+                            image.setColor(current.getKey(), 0, current.getValue().abgr());
                         }
-                        System.out.println(image.getColor(24, 0) + " is color");
+                        image.untrack();
 
                         Path path = Path.of("miapi_test").resolve("mat_debug.png");
                         try {
@@ -394,6 +443,15 @@ public class MaterialProperty implements ModuleProperty {
                 });
             }
         }
+    }
+    public interface PaletteCreator {
+        Identifier createPalette(JsonElement element, String materialKey);
+    }
+    public interface FillerFunction {
+        void fill(Color last, Color current, Color next, int lastX, int currentX, int nextX, PixelPlacer placer);
+    }
+    public interface PixelPlacer {
+        void place(Color color, int x, int y);
     }
 
     public interface Material {

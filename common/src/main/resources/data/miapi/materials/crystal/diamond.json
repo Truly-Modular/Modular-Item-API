@@ -11,8 +11,17 @@
   "mining_level": 3,
   "color": "49EAD6",
   "color_palette": {
-    "type": "texture",
-    "location": "miapi:textures/item/material_diamond_test.png"
+    "type": "grayscale_map",
+    "colors": {
+      "24": { "r": 8, "g": 36, "b": 32 },
+      "68": { "r": 14, "g": 63, "b": 54 },
+      "107": { "r": 21, "g": 99, "b": 85 },
+      "150": { "r": 30, "g": 138, "b": 119 },
+      "190": { "r": 43, "g": 199, "b": 172 },
+      "216": { "r": 51, "g": 235, "b": 203 },
+      "255": { "r": 164, "g": 253, "b": 240 }
+    },
+    "filler": "interpolate"
   },
   "textures": [
     "shiny"
