@@ -1,11 +1,9 @@
 package smartin.miapi.client.modelrework;
 
-import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.RenderLayers;
+import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
@@ -41,8 +39,10 @@ public class BakedMiapiModel implements MiapiModel {
                     consumer = material.setupMaterialShader(immediate, RegistryInventory.Client.entityTranslucentMaterialRenderType, RegistryInventory.Client.entityTranslucentMaterialShader);
                 else
                     consumer = MaterialProperty.Material.setupMaterialShader(immediate, RegistryInventory.Client.entityTranslucentMaterialRenderType, RegistryInventory.Client.entityTranslucentMaterialShader, MaterialProperty.Material.baseColorPalette);
+
+                int lightValue = transformationMode == ModelTransformationMode.GUI ? LightmapTextureManager.MAX_LIGHT_COORDINATE : LightmapTextureManager.MAX_SKY_LIGHT_COORDINATE;
                 model.getQuads(null, direction, Random.create()).forEach(bakedQuad -> {
-                    consumer.quad(matrices.peek(), bakedQuad, 1, 1, 1, light, overlay);
+                    consumer.quad(matrices.peek(), bakedQuad, 1, 1, 1, lightValue, overlay);
                 });
                 immediate.draw();
             }
