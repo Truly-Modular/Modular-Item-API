@@ -1,9 +1,8 @@
 package smartin.miapi.client.modelrework;
 
+import com.redpxnda.nucleus.util.RenderUtil;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.LightmapTextureManager;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.*;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
@@ -31,20 +30,38 @@ public class BakedMiapiModel implements MiapiModel {
 
     @Override
     public void render(MatrixStack matrices, ItemStack stack, ModelTransformationMode transformationMode, float tickDelta, VertexConsumerProvider vertexConsumers, int light, int overlay) {
-        VertexConsumerProvider.Immediate immediate = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
+        if (!(vertexConsumers instanceof VertexConsumerProvider.Immediate immediate)) return;
+
         for (BakedModel model : models) {
             for (Direction direction : Direction.values()) {
-                VertexConsumer consumer;
-                if (material != null)
-                    consumer = material.setupMaterialShader(immediate, RegistryInventory.Client.entityTranslucentMaterialRenderType, RegistryInventory.Client.entityTranslucentMaterialShader);
-                else
-                    consumer = MaterialProperty.Material.setupMaterialShader(immediate, RegistryInventory.Client.entityTranslucentMaterialRenderType, RegistryInventory.Client.entityTranslucentMaterialShader, MaterialProperty.Material.baseColorPalette);
+                for (int i = 0; i < 2; i++) {
+                    if (i == 1 && !stack.hasGlint()) continue;
+                    VertexConsumer consumer;
+                    if (i == 0) {
+                        if (material != null)
+                            consumer = material.setupMaterialShader(immediate, RegistryInventory.Client.entityTranslucentMaterialRenderType, RegistryInventory.Client.entityTranslucentMaterialShader);
+                        else
+                            consumer = MaterialProperty.Material.setupMaterialShader(immediate, RegistryInventory.Client.entityTranslucentMaterialRenderType, RegistryInventory.Client.entityTranslucentMaterialShader, MaterialProperty.Material.baseColorPalette);
+                    } else {
+                        consumer = immediate.getBuffer(RenderLayer.getDirectGlint());
+                    }
 
-                int lightValue = transformationMode == ModelTransformationMode.GUI ? LightmapTextureManager.MAX_LIGHT_COORDINATE : LightmapTextureManager.MAX_SKY_LIGHT_COORDINATE;
-                model.getQuads(null, direction, Random.create()).forEach(bakedQuad -> {
-                    consumer.quad(matrices.peek(), bakedQuad, 1, 1, 1, lightValue, overlay);
-                });
-                immediate.draw();
+                    /*if (stack.hasGlint()) {
+                        VertexConsumer c2 = immediate.getBuffer(RegistryInventory.Client.modularItemGlint);
+                        System.out.println(consumer);
+                        System.out.println("2: " + c2);
+                        if (c2 != consumer)
+                            consumer = VertexConsumers.union(c2, consumer);
+                        else
+                            System.out.println("dafuq");
+                    }*/
+
+                    int lightValue = transformationMode == ModelTransformationMode.GUI ? LightmapTextureManager.MAX_LIGHT_COORDINATE : LightmapTextureManager.MAX_SKY_LIGHT_COORDINATE;
+                    model.getQuads(null, direction, Random.create()).forEach(bakedQuad -> {
+                        consumer.quad(matrices.peek(), bakedQuad, 1, 1, 1, lightValue, overlay);
+                    });
+                    immediate.draw();
+                }
             }
         }
     }

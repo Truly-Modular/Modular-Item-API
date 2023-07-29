@@ -21,6 +21,7 @@ import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.RenderPhase;
 import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.entity.attribute.ClampedEntityAttribute;
@@ -384,5 +385,11 @@ public class RegistryInventory {
                         .program(new RenderPhase.ShaderProgram(() -> entityTranslucentMaterialShader)).texture(BLOCK_ATLAS_TEXTURE)
                         .transparency(TRANSLUCENT_TRANSPARENCY).lightmap(ENABLE_LIGHTMAP).overlay(ENABLE_OVERLAY_COLOR).build(true)
         );
+        public static final RenderLayer modularItemGlint = RenderLayer.of(
+                "miapi_entity_glint_direct", VertexFormats.POSITION_TEXTURE, VertexFormat.DrawMode.QUADS,
+                256, RenderLayer.MultiPhaseParameters.builder()
+                        .program(DIRECT_ENTITY_GLINT_PROGRAM).texture(new RenderPhase.Texture(ItemRenderer.ENTITY_ENCHANTMENT_GLINT, true, false))
+                        .writeMaskState(COLOR_MASK).cull(DISABLE_CULLING).depthTest(LEQUAL_DEPTH_TEST)
+                        .transparency(GLINT_TRANSPARENCY).texturing(ENTITY_GLINT_TEXTURING).build(false));
     }
 }

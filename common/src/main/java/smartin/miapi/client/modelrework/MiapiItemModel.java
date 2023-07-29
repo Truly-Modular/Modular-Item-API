@@ -1,23 +1,15 @@
 package smartin.miapi.client.modelrework;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.redpxnda.nucleus.util.RenderUtil;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
-import net.minecraft.client.texture.Sprite;
-import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
-import smartin.miapi.Miapi;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.render.ModelTransformationProperty;
-import smartin.miapi.registries.RegistryInventory;
 
 import java.util.ArrayList;
 import java.util.List;
