@@ -434,7 +434,7 @@ public class MaterialProperty implements ModuleProperty {
                         try {
                             image.writeTo(path);
                         } catch (IOException e) {
-                            throw new RuntimeException(e);
+                            //throw new RuntimeException(e);
                         }
                         MinecraftClient.getInstance().getTextureManager().registerTexture(identifier, new NativeImageBackedTexture(image));
                         return identifier;
