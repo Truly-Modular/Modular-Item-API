@@ -55,7 +55,7 @@ public class BakedMiapiModel implements MiapiModel {
                         consumer = immediate.getBuffer(RegistryInventory.Client.modularItemGlint);
                         r = 1f;
                         g = 1;
-                        b = 1f;
+                        b = 1;
                     }
 
                     int lightValue = transformationMode == ModelTransformationMode.GUI ? LightmapTextureManager.MAX_LIGHT_COORDINATE : LightmapTextureManager.MAX_SKY_LIGHT_COORDINATE;
