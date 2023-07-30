@@ -1,25 +1,37 @@
 {
-  "key": "sculk",
-  "translation": "miapi.material.skulk",
-  "icon": "textures/item/iron.png",
-  "groups": [
-    "wood",
-    "metal"
-  ],
-  "hardness": 1,
-  "density": 1,
-  "flexibility": 0,
-  "durability": 3000,
-  "mining_speed": 75,
-  "mining_level": 3,
-  "color": "444444",
-  "textures": [
-    "metalic"
-  ],
-  "items": [
-    {
-      "item": "minecraft:sculk",
-      "value": 1.0
-    }
-  ]
+    "key": "sculk",
+    "translation": "miapi.material.skulk",
+    "icon": "textures/item/iron.png",
+    "groups": [
+        "wood",
+        "metal"
+    ],
+    "hardness": 1,
+    "density": 1,
+    "flexibility": 0,
+    "durability": 3000,
+    "mining_speed": 75,
+    "mining_level": 3,
+    "color": "444444",
+    "color_palette": {
+        "type": "grayscale_map",
+        "colors": {
+            "24": "0d1217",
+            "68": "111b21",
+            "107": "052a32",
+            "150": "0a5060",
+            "190": "009295",
+            "216": "034150",
+            "255": "29dfeb"
+        }
+    },
+    "textures": [
+        "metalic"
+    ],
+    "items": [
+        {
+            "item": "minecraft:sculk",
+            "value": 1.0
+        }
+    ]
 }

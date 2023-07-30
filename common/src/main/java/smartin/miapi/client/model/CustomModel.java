@@ -81,9 +81,7 @@ public class CustomModel implements UnbakedModel, BakedModel {
 
     @Override
     public void setParents(Function<Identifier, UnbakedModel> modelLoader) {
-        miapiModels.forEach(identifier -> {
-            modelLoader.apply(identifier);
-        });
+        miapiModels.forEach(modelLoader::apply);
     }
 
     @Nullable

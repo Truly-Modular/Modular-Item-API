@@ -1,23 +1,37 @@
 {
-  "key": "wood_spruce",
-  "translation": "miapi.material.wood.spruce",
-  "icon": "textures/block/spruce_planks.png",
-  "groups": ["wood"],
-  "hardness": 3,
-  "density": 1.7,
-  "flexibility": 6,
-  "durability": 59,
-  "color": "744632",
-  "mining_speed": 2,
-  "mining_level": 0,
-  "textures": [
-    "wood",
-    "rough"
-  ],
-  "items": [
-    {
-      "item": "minecraft:spruce_planks",
-      "value": 1.0
-    }
-  ]
+    "key": "wood_spruce",
+    "translation": "miapi.material.wood.spruce",
+    "icon": "textures/block/spruce_planks.png",
+    "groups": [
+        "wood"
+    ],
+    "hardness": 3,
+    "density": 1.7,
+    "flexibility": 6,
+    "durability": 59,
+    "color": "744632",
+    "color_palette": {
+        "type": "grayscale_map",
+        "colors": {
+            "24": "372514",
+            "68": "4E3A21",
+            "107": "614b2e",
+            "150": "70522e",
+            "190": "7a5a34",
+            "216": "82613a",
+            "255": "886539"
+        }
+    },
+    "mining_speed": 2,
+    "mining_level": 0,
+    "textures": [
+        "wood",
+        "rough"
+    ],
+    "items": [
+        {
+            "item": "minecraft:spruce_planks",
+            "value": 1.0
+        }
+    ]
 }

@@ -1,26 +1,39 @@
 {
-  "key": "stone",
-  "translation": "miapi.material.stone",
-  "icon": "textures/block/cobblestone.png",
-  "groups": ["stone"],
-  "hardness": 4,
-  "density": 3,
-  "flexibility": 0,
-  "durability": 131,
-  "color": "757575",
-  "mining_speed": 4,
-  "mining_level": 1,
-  "textures": [
-    "rough"
-  ],
-  "items": [
-    {
-      "item": "minecraft:cobblestone",
-      "value": 1.0
+    "key": "stone",
+    "translation": "miapi.material.stone",
+    "icon": "textures/block/cobblestone.png",
+    "groups": [
+        "stone"
+    ],
+    "hardness": 4,
+    "density": 3,
+    "flexibility": 0,
+    "durability": 131,
+    "color": "757575",
+    "color_palette": {
+        "type": "grayscale_map",
+        "colors": {
+            "24": "212121",
+            "68": "494949",
+            "107": "5a5a5a",
+            "150": "787777",
+            "190": "95918d",
+            "255": "b3b1af"
+        }
     },
-    {
-      "tag": "minecraft:base_stone_overworld",
-      "value": 1.0
-    }
-  ]
+    "mining_speed": 4,
+    "mining_level": 1,
+    "textures": [
+        "rough"
+    ],
+    "items": [
+        {
+            "item": "minecraft:cobblestone",
+            "value": 1.0
+        },
+        {
+            "tag": "minecraft:base_stone_overworld",
+            "value": 1.0
+        }
+    ]
 }

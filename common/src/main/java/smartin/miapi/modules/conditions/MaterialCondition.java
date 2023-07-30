@@ -7,7 +7,8 @@ import net.minecraft.util.math.BlockPos;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.modules.ItemModule;
-import smartin.miapi.modules.properties.MaterialProperty;
+import smartin.miapi.modules.properties.material.Material;
+import smartin.miapi.modules.properties.material.MaterialProperty;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.List;
@@ -31,7 +32,7 @@ public class MaterialCondition implements ModuleCondition {
             reasons.add(Text.translatable(Miapi.MOD_ID + ".condition.material.error"));
             return false;
         }
-        MaterialProperty.Material material1 = MaterialProperty.getMaterial(data);
+        Material material1 = MaterialProperty.getMaterial(data);
         if (material1 != null && MaterialProperty.getMaterial(data).getKey().equals(material)) {
             return true;
         }

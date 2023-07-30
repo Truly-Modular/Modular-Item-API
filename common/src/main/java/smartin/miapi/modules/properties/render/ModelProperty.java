@@ -16,21 +16,20 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
-import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.model.DynamicBakedModel;
 import smartin.miapi.client.model.DynamicBakery;
 import smartin.miapi.client.model.ModelLoadAccessor;
 import smartin.miapi.client.modelrework.BakedMiapiModel;
 import smartin.miapi.client.modelrework.MiapiItemModel;
-import smartin.miapi.client.modelrework.MiapiModel;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.item.modular.Transform;
 import smartin.miapi.item.modular.TransformMap;
 import smartin.miapi.mixin.client.ModelLoaderInterfaceAccessor;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.cache.ModularItemCache;
-import smartin.miapi.modules.properties.MaterialProperty;
+import smartin.miapi.modules.properties.material.Material;
+import smartin.miapi.modules.properties.material.MaterialProperty;
 import smartin.miapi.modules.properties.SlotProperty;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
@@ -84,9 +83,9 @@ public class ModelProperty implements ModuleProperty {
             modelJsonList.add(propertyJson);
         }
         for (ModelJson json : modelJsonList) {
-            int condition = MaterialProperty.Material.getColor(StatResolver.resolveString(json.condition, instance));
+            int condition = Material.getColor(StatResolver.resolveString(json.condition, instance));
             if (condition != 0) {
-                MaterialProperty.Material material = MaterialProperty.getMaterial(instance);
+                Material material = MaterialProperty.getMaterial(instance);
                 List<String> list = new ArrayList<>();
                 if (material != null) {
                     list.add(material.getKey());
@@ -192,10 +191,10 @@ public class ModelProperty implements ModuleProperty {
                 return new ArrayList<>();
             }
             for (ModelJson json : modelJsonList) {
-                int color = MaterialProperty.Material.getColor(StatResolver.resolveString(json.color, moduleI));
-                int condition = MaterialProperty.Material.getColor(StatResolver.resolveString(json.condition, moduleI));
+                int color = Material.getColor(StatResolver.resolveString(json.color, moduleI));
+                int condition = Material.getColor(StatResolver.resolveString(json.condition, moduleI));
                 if (condition != 0) {
-                    MaterialProperty.Material material = MaterialProperty.getMaterial(moduleI);
+                    Material material = MaterialProperty.getMaterial(moduleI);
                     List<String> list = new ArrayList<>();
                     if (material != null) {
                         list.add(material.getKey());

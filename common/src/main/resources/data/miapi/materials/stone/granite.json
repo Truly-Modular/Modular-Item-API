@@ -1,22 +1,36 @@
 {
-  "key": "stone_granite",
-  "translation": "miapi.material.stone.granite",
-  "icon": "textures/block/granite.png",
-  "groups": ["stone"],
-  "hardness": 4,
-  "density": 3,
-  "flexibility": 0,
-  "durability": 131,
-  "color": "A77663",
-  "mining_speed": 4,
-  "mining_level": 1,
-  "textures": [
-    "rough"
-  ],
-  "items": [
-    {
-      "item": "minecraft:granite",
-      "value": 1.0
-    }
-  ]
+    "key": "stone_granite",
+    "translation": "miapi.material.stone.granite",
+    "icon": "textures/block/granite.png",
+    "groups": [
+        "stone"
+    ],
+    "hardness": 4,
+    "density": 3,
+    "flexibility": 0,
+    "durability": 131,
+    "color": "A77663",
+    "color_palette": {
+        "type": "grayscale_map",
+        "colors": {
+            "24": "4d352c",
+            "68": "5f4034",
+            "107": "7f5646",
+            "150": "926251",
+            "190": "9f6b58",
+            "216": "a97764",
+            "255": "b49b91"
+        }
+    },
+    "mining_speed": 4,
+    "mining_level": 1,
+    "textures": [
+        "rough"
+    ],
+    "items": [
+        {
+            "item": "minecraft:granite",
+            "value": 1.0
+        }
+    ]
 }

@@ -9,7 +9,8 @@ import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 import smartin.miapi.modules.ItemModule;
-import smartin.miapi.modules.properties.MaterialProperty;
+import smartin.miapi.modules.properties.material.Material;
+import smartin.miapi.modules.properties.material.MaterialProperty;
 
 /**
  * This class is a colection of ColorUtilities
@@ -48,7 +49,7 @@ public class ColorUtil {
     }
 
     public static int getModuleColor(ItemModule.ModuleInstance instance) {
-        MaterialProperty.Material material = MaterialProperty.getMaterial(instance);
+        Material material = MaterialProperty.getMaterial(instance);
         if (material != null) {
             return material.getColor();
         }

@@ -10,6 +10,18 @@
   "mining_speed": 5,
   "mining_level": 0,
   "color": "A477EE",
+  "color_palette": {
+    "type": "grayscale_map",
+    "colors": {
+      "24": "54398a",
+      "68": "6f4fab",
+      "107": "8d6acc",
+      "150": "b38ef3",
+      "190": "cfa0f3",
+      "216": "fecbe6",
+      "255": "fffdd5"
+    }
+  },
   "textures": [
     "shiny"
   ],

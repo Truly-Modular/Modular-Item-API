@@ -1,22 +1,35 @@
 {
-  "key": "stone_andesite",
-  "translation": "miapi.material.stone.andesite",
-  "icon": "textures/block/andesite.png",
-  "groups": ["stone"],
-  "hardness": 4,
-  "density": 3,
-  "flexibility": 0,
-  "durability": 131,
-  "color": "9A9A9A",
-  "mining_speed": 4,
-  "mining_level": 1,
-  "textures": [
-    "rough"
-  ],
-  "items": [
-    {
-      "item": "minecraft:andesite",
-      "value": 1.0
-    }
-  ]
+    "key": "stone_andesite",
+    "translation": "miapi.material.stone.andesite",
+    "icon": "textures/block/andesite.png",
+    "groups": [
+        "stone"
+    ],
+    "hardness": 4,
+    "density": 3,
+    "flexibility": 0,
+    "durability": 131,
+    "color": "9A9A9A",
+    "color_palette": {
+        "type": "grayscale_map",
+        "colors": {
+            "24": "686868",
+            "68": "7f7f7f",
+            "107": "747474",
+            "150": "9c9c9c",
+            "190": "8a8a8e",
+            "255": "a8aa9a"
+        }
+    },
+    "mining_speed": 4,
+    "mining_level": 1,
+    "textures": [
+        "rough"
+    ],
+    "items": [
+        {
+            "item": "minecraft:andesite",
+            "value": 1.0
+        }
+    ]
 }

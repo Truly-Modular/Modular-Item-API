@@ -1,36 +1,42 @@
 {
-  "key": "bone",
-  "translation": "miapi.material.bone",
-  "icon": "textures/item/bone.png",
-  "groups": ["bone","metal"],
-  "hardness": 5,
-  "density": 3,
-  "flexibility": 0,
-  "durability": 189,
-  "color": "F9F8EA",
-  "color_palette": {
-    "type": "grayscale_map",
-    "colors": {
-      "24": "7b7e6b",
-      "68": "cbc6a5",
-      "107": "e8e5d2",
-      "150": "fffffd"
+    "key": "bone",
+    "translation": "miapi.material.bone",
+    "icon": "textures/item/bone.png",
+    "groups": [
+        "bone",
+        "metal"
+    ],
+    "hardness": 5,
+    "density": 3,
+    "flexibility": 0,
+    "durability": 189,
+    "color": "F9F8EA",
+    "color_palette": {
+        "type": "grayscale_map",
+        "colors": {
+            "24": "7A7D6A",
+            "68": "C1BD9F",
+            "107": "C7C3A5",
+            "150": "D9D6BE",
+            "190": "E5E2CF",
+            "216": "F9F8EA",
+            "255": "FCFCFA"
+        },
+        "filler": "interpolate"
     },
-    "filler": "interpolate"
-  },
-  "mining_speed": 4,
-  "mining_level": 1,
-  "textures": [
-    "rough"
-  ],
-  "items": [
-    {
-      "item": "minecraft:bone",
-      "value": 1.0
-    },
-    {
-      "item": "minecraft:bone_block",
-      "value": 4.0
-    }
-  ]
+    "mining_speed": 4,
+    "mining_level": 1,
+    "textures": [
+        "rough"
+    ],
+    "items": [
+        {
+            "item": "minecraft:bone",
+            "value": 1.0
+        },
+        {
+            "item": "minecraft:bone_block",
+            "value": 4.0
+        }
+    ]
 }

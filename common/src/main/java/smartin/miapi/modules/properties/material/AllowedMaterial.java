@@ -1,4 +1,4 @@
-package smartin.miapi.modules.properties;
+package smartin.miapi.modules.properties.material;
 
 import com.google.gson.JsonElement;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -61,7 +61,7 @@ public class AllowedMaterial implements CraftingProperty, ModuleProperty {
         ItemStack input = inventory.get(0);
         if (element != null) {
             AllowedMaterialJson json = Miapi.gson.fromJson(element, AllowedMaterialJson.class);
-            MaterialProperty.Material material = MaterialProperty.getMaterial(input);
+            Material material = MaterialProperty.getMaterial(input);
             if (material != null) {
                 boolean isAllowed = (json.allowedMaterials.stream().anyMatch(allowedMaterial ->
                         material.getGroups().contains(allowedMaterial)));
@@ -78,7 +78,7 @@ public class AllowedMaterial implements CraftingProperty, ModuleProperty {
         JsonElement element = module.getProperties().get(KEY);
         ItemStack input = inventory.get(0);
         if (element != null) {
-            MaterialProperty.Material material = MaterialProperty.getMaterial(input);
+            Material material = MaterialProperty.getMaterial(input);
             if (material != null) {
                 MaterialProperty.setMaterial(newModule, material.getKey());
             }
@@ -93,7 +93,7 @@ public class AllowedMaterial implements CraftingProperty, ModuleProperty {
         JsonElement element = module.getProperties().get(KEY);
         ItemStack input = inventory.get(0);
         AllowedMaterialJson json = Miapi.gson.fromJson(element, AllowedMaterialJson.class);
-        MaterialProperty.Material material = MaterialProperty.getMaterial(input);
+        Material material = MaterialProperty.getMaterial(input);
         assert material != null;
         int newCount = (int) (input.getCount() - Math.ceil(json.cost / material.getValueOfItem(input)));
         input.setCount(newCount);

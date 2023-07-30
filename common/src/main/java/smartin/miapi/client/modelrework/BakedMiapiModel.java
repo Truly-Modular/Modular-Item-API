@@ -1,6 +1,7 @@
 package smartin.miapi.client.modelrework;
 
 import net.minecraft.client.render.LightmapTextureManager;
+import net.minecraft.client.render.OverlayVertexConsumer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.model.BakedModel;
@@ -12,14 +13,15 @@ import net.minecraft.util.math.random.Random;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import smartin.miapi.modules.ItemModule;
-import smartin.miapi.modules.properties.MaterialProperty;
+import smartin.miapi.modules.properties.material.Material;
+import smartin.miapi.modules.properties.material.MaterialProperty;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.util.List;
 
 public class BakedMiapiModel implements MiapiModel {
     ItemModule.ModuleInstance instance;
-    MaterialProperty.Material material;
+    Material material;
     List<BakedModel> models;
 
     public BakedMiapiModel(List<BakedModel> models, ItemModule.ModuleInstance instance) {
@@ -32,31 +34,30 @@ public class BakedMiapiModel implements MiapiModel {
     public void render(MatrixStack matrices, ItemStack stack, ModelTransformationMode transformationMode, float tickDelta, VertexConsumerProvider vertexConsumers, int light, int overlay) {
         if (!(vertexConsumers instanceof VertexConsumerProvider.Immediate immediate)) return;
 
-        int j = 0;
         for (BakedModel model : models) {
-            if (j < models.size()-1) {
-                j++;
-                continue;
-            }
             for (Direction direction : Direction.values()) {
-                for (int i = 0; i < 2; i++) {
-                    if (i == 1 && !stack.hasGlint()) continue;
+                if (true) {
                     VertexConsumer consumer;
-                    float r, g, b;
-                    if (i == 0) {
-                        r = 1;
-                        g = 1;
-                        b = 1;
-                        if (material != null)
-                            consumer = material.setupMaterialShader(immediate, RegistryInventory.Client.entityTranslucentMaterialRenderType, RegistryInventory.Client.entityTranslucentMaterialShader);
-                        else
-                            consumer = MaterialProperty.Material.setupMaterialShader(immediate, RegistryInventory.Client.entityTranslucentMaterialRenderType, RegistryInventory.Client.entityTranslucentMaterialShader, MaterialProperty.Material.baseColorPalette);
-                    } else {
-                        consumer = immediate.getBuffer(RegistryInventory.Client.modularItemGlint);
-                        r = 1f;
-                        g = 1;
-                        b = 1;
-                    }
+                    if (material != null)
+                        consumer = material.setupMaterialShader(immediate, RegistryInventory.Client.entityTranslucentMaterialRenderType, RegistryInventory.Client.entityTranslucentMaterialShader);
+                    else
+                        consumer = Material.setupMaterialShader(immediate, RegistryInventory.Client.entityTranslucentMaterialRenderType, RegistryInventory.Client.entityTranslucentMaterialShader, Material.baseColorPalette);
+
+                    int lightValue = transformationMode == ModelTransformationMode.GUI ? LightmapTextureManager.MAX_LIGHT_COORDINATE : LightmapTextureManager.MAX_SKY_LIGHT_COORDINATE;
+                    model.getQuads(null, direction, Random.create()).forEach(bakedQuad -> {
+                        consumer.quad(matrices.peek(), bakedQuad, 1, 1, 1, lightValue, overlay);
+                    });
+                    immediate.draw();
+                }
+
+                if (stack.hasGlint() && instance.subModules.size() == 0) {
+                    //Miapi.LOGGER.error("drawing glint on " + instance.module.getName());
+                    VertexConsumer consumer;
+
+                    consumer = new OverlayVertexConsumer(immediate.getBuffer(RegistryInventory.Client.modularItemGlint), matrices.peek().getPositionMatrix(), matrices.peek().getNormalMatrix(), 0.0078125f);
+                    float r = 1f;
+                    float g = 1;
+                    float b = 1;
 
                     int lightValue = transformationMode == ModelTransformationMode.GUI ? LightmapTextureManager.MAX_LIGHT_COORDINATE : LightmapTextureManager.MAX_SKY_LIGHT_COORDINATE;
                     model.getQuads(null, direction, Random.create()).forEach(bakedQuad -> {
@@ -65,16 +66,11 @@ public class BakedMiapiModel implements MiapiModel {
                     immediate.draw();
                 }
             }
-            j++;
         }
     }
 
     @Override
     public @Nullable Matrix4f subModuleMatrix(int submoduleId) {
-        Matrix4f matrix4f = new Matrix4f();
-        float zPrevention = 8e-2F;
-        //matrix4f.translate(new Vector3f(-zPrevention/2, -zPrevention/2, -zPrevention/2));
-        //matrix4f.scale(zPrevention + 1);
-        return matrix4f;
+        return new Matrix4f();
     }
 }

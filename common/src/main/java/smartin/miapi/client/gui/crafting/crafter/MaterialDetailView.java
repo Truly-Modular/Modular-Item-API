@@ -8,7 +8,8 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.ColorHelper;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.*;
-import smartin.miapi.modules.properties.MaterialProperty;
+import smartin.miapi.modules.properties.material.Material;
+import smartin.miapi.modules.properties.material.MaterialProperty;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -21,7 +22,7 @@ public class MaterialDetailView extends InteractAbleWidget {
     private ItemStack itemStack;
     private Consumer<Object> back;
     private ScrollingTextWidget header;
-    private MaterialProperty.Material material;
+    private Material material;
     private Identifier texture = new Identifier(Miapi.MOD_ID, "textures/gui/crafter/material_detail_background.png");
     private float scale = 1.9f;
     public static List<Builder> infoBarBuilders = new ArrayList<>();

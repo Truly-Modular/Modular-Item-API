@@ -1,22 +1,37 @@
 {
-  "key": "lapis_lazuli",
-  "translation": "miapi.material.crystal.lapis_lazuli",
-  "icon": "textures/item/lapis_lazuli.png",
-  "groups": ["crystal","gem"],
-  "hardness": 3,
-  "density": 0.6,
-  "flexibility": 0,
-  "durability": 196,
-  "mining_speed": 4,
-  "mining_level": 0,
-  "color": "1C52A6",
-  "textures": [
-    "shiny"
-  ],
-  "items": [
-    {
-      "item": "minecraft:lapis_lazuli",
-      "value": 1.0
-    }
-  ]
+    "key": "lapis_lazuli",
+    "translation": "miapi.material.crystal.lapis_lazuli",
+    "icon": "textures/item/lapis_lazuli.png",
+    "groups": [
+        "crystal",
+        "gem"
+    ],
+    "hardness": 3,
+    "density": 0.6,
+    "flexibility": 0,
+    "durability": 196,
+    "mining_speed": 4,
+    "mining_level": 0,
+    "color": "1C52A6",
+    "color_palette": {
+        "type": "grayscale_map",
+        "colors": {
+            "24": "052463",
+            "68": "1a3d8f",
+            "107": "345ec3",
+            "150": "12408b",
+            "190": "1c53a8",
+            "216": "5a82e2",
+            "255": "7497ea"
+        }
+    },
+    "textures": [
+        "shiny"
+    ],
+    "items": [
+        {
+            "item": "minecraft:lapis_lazuli",
+            "value": 1.0
+        }
+    ]
 }

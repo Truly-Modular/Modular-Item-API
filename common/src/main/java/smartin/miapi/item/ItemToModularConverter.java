@@ -8,18 +8,12 @@ import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.registries.RegistryInventory;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class ItemToModularConverter implements ModularItemStackConverter.ModularConverter {
     public Map<String, ItemStack> regexes = new HashMap<>();
 
-    /*public static List<String> pathRegexes = new ArrayList<>();
-    static {
-        pathRegexes.add("^modular_converter\\+");
-    }*/
 
     public ItemToModularConverter() {
         Miapi.registerReloadHandler(ReloadEvents.END, "modular_converter", (isClient, path, data) -> {

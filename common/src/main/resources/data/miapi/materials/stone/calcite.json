@@ -1,22 +1,35 @@
 {
-  "key": "stone_calcite",
-  "translation": "miapi.material.stone.calcite",
-  "icon": "textures/block/calcite.png",
-  "groups": ["stone"],
-  "hardness": 4,
-  "density": 3,
-  "flexibility": 0,
-  "durability": 131,
-  "color": "EAE9E3",
-  "mining_speed": 4,
-  "mining_level": 1,
-  "textures": [
-    "stone"
-  ],
-  "items": [
-    {
-      "item": "minecraft:calcite",
-      "value": 1.0
-    }
-  ]
+    "key": "stone_calcite",
+    "translation": "miapi.material.stone.calcite",
+    "icon": "textures/block/calcite.png",
+    "groups": [
+        "stone"
+    ],
+    "hardness": 4,
+    "density": 3,
+    "flexibility": 0,
+    "durability": 131,
+    "color": "EAE9E3",
+    "color_palette": {
+        "type": "grayscale_map",
+        "colors": {
+            "24": "b3b3b3",
+            "68": "f0f5f4",
+            "107": "ffffff",
+            "150": "edece6",
+            "190": "c9c9c4",
+            "255": "d9dbd7"
+        }
+    },
+    "mining_speed": 4,
+    "mining_level": 1,
+    "textures": [
+        "stone"
+    ],
+    "items": [
+        {
+            "item": "minecraft:calcite",
+            "value": 1.0
+        }
+    ]
 }

@@ -1,22 +1,36 @@
 {
-  "key": "stone_diorite",
-  "translation": "miapi.material.stone.diorite",
-  "icon": "textures/block/diorite.png",
-  "groups": ["stone"],
-  "hardness": 4,
-  "density": 3,
-  "flexibility": 0,
-  "durability": 131,
-  "color": "CBCBCC",
-  "mining_speed": 4,
-  "mining_level": 1,
-  "textures": [
-    "rough"
-  ],
-  "items": [
-    {
-      "item": "minecraft:diorite",
-      "value": 1.0
-    }
-  ]
+    "key": "stone_diorite",
+    "translation": "miapi.material.stone.diorite",
+    "icon": "textures/block/diorite.png",
+    "groups": [
+        "stone"
+    ],
+    "hardness": 4,
+    "density": 3,
+    "flexibility": 0,
+    "durability": 131,
+    "color": "CBCBCC",
+    "color_palette": {
+        "type": "grayscale_map",
+        "colors": {
+            "24": "b7b7b7",
+            "68": "8b8b8b",
+            "107": "a4a2a2",
+            "150": "bebfc1",
+            "190": "cececf",
+            "216": "e9e9e9",
+            "255": "e9e9e9"
+        }
+    },
+    "mining_speed": 4,
+    "mining_level": 1,
+    "textures": [
+        "rough"
+    ],
+    "items": [
+        {
+            "item": "minecraft:diorite",
+            "value": 1.0
+        }
+    ]
 }

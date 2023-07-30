@@ -1,23 +1,37 @@
 {
-  "key": "wood_warped",
-  "translation": "miapi.material.wood.warped",
-  "icon": "textures/block/warped_planks.png",
-  "groups": ["wood"],
-  "hardness": 3,
-  "density": 1.7,
-  "flexibility": 6,
-  "durability": 59,
-  "color": "388180",
-  "mining_speed": 2,
-  "mining_level": 0,
-  "textures": [
-    "wood",
-    "rough"
-  ],
-  "items": [
-    {
-      "item": "minecraft:warped_planks",
-      "value": 1.0
-    }
-  ]
+    "key": "wood_warped",
+    "translation": "miapi.material.wood.warped",
+    "icon": "textures/block/warped_planks.png",
+    "groups": [
+        "wood"
+    ],
+    "hardness": 3,
+    "density": 1.7,
+    "flexibility": 6,
+    "durability": 59,
+    "color": "388180",
+    "color_palette": {
+        "type": "grayscale_map",
+        "colors": {
+            "24": "113835",
+            "68": "1e4340",
+            "107": "2e5f51",
+            "150": "1f5752",
+            "190": "398382",
+            "216": "287067",
+            "255": "3a8e8c"
+        }
+    },
+    "mining_speed": 2,
+    "mining_level": 0,
+    "textures": [
+        "wood",
+        "rough"
+    ],
+    "items": [
+        {
+            "item": "minecraft:warped_planks",
+            "value": 1.0
+        }
+    ]
 }
