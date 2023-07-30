@@ -1,7 +1,7 @@
 {
   "target": {
-    "type": "module",
-    "modules": [ "blade_sword" ]
+    "type": "modules",
+    "keys": [ "blade_sword" ]
   },
   "read": {
     "someVariable": "allowedMaterial.cost"
@@ -10,10 +10,8 @@
     {
       "merge_type": "overwrite",
       "data": {
-        "allowedMaterial": {
-          "cost": {
-            "calculate": "[someVariable]+5"
-          }
+        "allowedMaterial.cost": {
+          "calculate": "[someVariable]+5"
         }
       }
     }

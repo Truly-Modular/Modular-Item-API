@@ -25,7 +25,7 @@ import java.util.Map;
  * An ItemModule represents a Module loaded from a JSON
  */
 public class ItemModule {
-    private static final MiapiRegistry<ItemModule> moduleRegistry = MiapiRegistry.getInstance(ItemModule.class);
+    public static final MiapiRegistry<ItemModule> moduleRegistry = MiapiRegistry.getInstance(ItemModule.class);
     /**
      * The name of the module.
      */
