@@ -6,16 +6,12 @@
   "read": {
     "someVariable": "allowedMaterial.cost"
   },
-  "write": [
-    {
-      "merge_type": "overwrite",
-      "data": {
-        "allowedMaterial.cost": {
-          "calculate": "[someVariable]+5"
-        }
-      }
+  "write": {
+    "allowedMaterial.cost": {
+      "mode": "calculate",
+      "value": "[someVariable]+5"
     }
-  ],
+  },
   "remove": [
     ""
   ]

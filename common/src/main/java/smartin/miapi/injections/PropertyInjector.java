@@ -9,6 +9,7 @@ import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.util.MergeType;
+import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.util.HashMap;
@@ -17,22 +18,24 @@ import java.util.Map;
 public class PropertyInjector {
     public static final Map<String, TargetSelector> targetSelectors = new HashMap<>();
     public static final InterfaceDispatcher<TargetSelector> targetSelectionDispatcher = InterfaceDispatcher.of(targetSelectors, "type");
+    public static final Map<String, ValueResolver> valueResolvers = new HashMap<>();
+    public static final InterfaceDispatcher<ValueResolver> valueResolverDispatcher = InterfaceDispatcher.of(valueResolvers, "mode");
 
     public interface TargetSelector {
         void selectTargetFrom(JsonElement element, JsonInjector injector);
     }
     public interface JsonInjector {
-        JsonObject getReplacement(JsonObject json, Map<String, Merger> mergers);
+        JsonObject getReplacement(JsonObject json);
     }
-    public interface Merger {
-        JsonElement merge(JsonElement old, JsonElement toMerge, MergeType type);
+    public interface ValueResolver {
+        JsonElement resolve(JsonElement input, JsonElement originalTarget, Map<String, JsonElement> storedValues);
     }
 
     public static JsonInjector getInjector(JsonObject injectionJson) {
-        return (json, mergers) -> getInjectionReplacementFor(injectionJson, json, mergers);
+        return json -> getInjectionReplacementFor(injectionJson, json);
     }
 
-    public static JsonObject getInjectionReplacementFor(JsonObject injectionData, JsonObject toReplace, Map<String, Merger> mergers) {
+    public static JsonObject getInjectionReplacementFor(JsonObject injectionData, JsonObject toReplace) {
         JsonObject replacement = toReplace.deepCopy();
         Map<String, JsonElement> storedValues = new HashMap<>();
         if (injectionData.get("read") instanceof JsonObject reader) {
@@ -54,7 +57,28 @@ public class PropertyInjector {
             });
         }
 
+        if (injectionData.get("write") instanceof JsonObject outer) {
+            outer.asMap().forEach((key, element) -> {
+                if (!(element instanceof JsonObject object)) {
+                    Miapi.LOGGER.warn("Write field for PropertyInjector contains a non JSON object element: '" + element + "'");
+                    return;
+                }
+
+                TargetHolder holder = getValueFromLocator(replacement, key);
+                JsonElement targetReplacement = valueResolverDispatcher.dispatcher().resolve(object, holder.target, storedValues);
+                holder.set(targetReplacement);
+            });
+        }
+
         return replacement;
+    }
+
+    public static MergeType getMergeType(String stringRepresentation) {
+        return switch (stringRepresentation) {
+            case "smart" -> MergeType.SMART;
+            case "extend" -> MergeType.EXTEND;
+            default -> MergeType.OVERWRITE;
+        };
     }
 
     /**
@@ -75,9 +99,9 @@ public class PropertyInjector {
             if (segment.matches("\\[\\d+]$") && currentTarget instanceof JsonArray array) {
                 int pos = Integer.parseInt(segment.substring(1, segment.length() - 1));
                 if (pos >= array.size() || pos < 0) {
-                    Miapi.LOGGER.warn("Invalid path for PropertyInjector found! Token '" + segment + "'(split #" + index + ") in '" + path + "' is invalid: Array index exceeds length of array." +
+                    Miapi.LOGGER.error("Invalid path for PropertyInjector found! Token '" + segment + "'(split #" + index + ") in '" + path + "' is invalid: Array index exceeds length of array." +
                             "\nArray: " + array + "\nRoot object: " + root);
-                    targetIndex = null;
+                    throw new RuntimeException("Failed to parse PropertyInjector! See above error.");
                 } else {
                     currentTarget = array.get(pos);
                     targetIndex = pos;
@@ -86,37 +110,31 @@ public class PropertyInjector {
             } else if (currentTarget instanceof JsonObject obj) {
                 JsonElement element = obj.get(segment);
                 if (element == null) {
-                    Miapi.LOGGER.warn("Invalid path for PropertyInjector found! Token '" + segment + "'(split #" + index + ") in '" + path + " does not match any element in target object.\n" +
+                    Miapi.LOGGER.error("Invalid path for PropertyInjector found! Token '" + segment + "'(split #" + index + ") in '" + path + " does not match any element in target object.\n" +
                             "Last target object: " + obj + "\nRoot object: " + root);
-                    targetKey = null;
+                    throw new RuntimeException("Failed to parse PropertyInjector! See above error.");
                 } else {
                     currentTarget = element;
                     targetKey = segment;
                 }
                 targetIndex = null;
             } else {
-                Miapi.LOGGER.warn("Expected path end for PropertyInjector, but instead it continues!" +
+                Miapi.LOGGER.warn("Expected path end for PropertyInjector, but instead it continues! Cutting off early." +
                         "\nCurrent segment: " + segment + "\nSegment Index: " + index + "\nWhole path: " + path + "\nCurrent target object: " + currentTarget +
                         "\nRoot object: " + root);
-                targetIndex = null;
-                targetKey = null;
                 break;
             }
         }
         return new TargetHolder(currentTarget, parentObject, targetIndex, targetKey);
     }
 
-    public static class TargetHolder {
-        public final JsonElement target;
-        public final @Nullable JsonElement parent;
-        public final @Nullable Integer index;
-        public final @Nullable String key;
-
-        public TargetHolder(JsonElement target, @Nullable JsonElement parent, @Nullable Integer index, @Nullable String key) {
-            this.target = target;
-            this.parent = parent;
-            this.index = index;
-            this.key = key;
+    public record TargetHolder(JsonElement target, @Nullable JsonElement parent, @Nullable Integer index, @Nullable String key) {
+        public void set(JsonElement newValue) {
+            if (parent instanceof JsonObject object && key != null) {
+                object.add(key, newValue);
+            } else if (parent instanceof JsonArray array && index != null) {
+                array.set(index, newValue);
+            }
         }
     }
 
@@ -129,16 +147,23 @@ public class PropertyInjector {
                     ItemModule module = ItemModule.moduleRegistry.get(e.getAsString());
                     if (module == null) return;
                     JsonObject moduleJson = new JsonObject();
-                    Map<String, Merger> mergers = new HashMap<>();
-                    module.getKeyedProperties().forEach((property, value) -> {
-                        String key = RegistryInventory.moduleProperties.findKey(property);
-                        mergers.put(key, property::merge);
-                        moduleJson.add(key, value);
-                    });
+                    module.getProperties().forEach(moduleJson::add);
 
-                    JsonObject replacement = injector.getReplacement(moduleJson, mergers);
+                    JsonObject replacement = injector.getReplacement(moduleJson);
                     module.getProperties().clear();
-                    replacement.asMap().forEach(module.getProperties()::put);
+                    replacement.asMap().forEach((key, value) -> {
+                        ModuleProperty property = RegistryInventory.moduleProperties.get(key);
+                        if (property == null) return;
+
+                        try {
+                            property.load(module.getName(), value);
+                        } catch (Exception ex) {
+                            Miapi.LOGGER.error("Exception whilst loading PropertyInject injection data for a module!");
+                            throw new RuntimeException(ex);
+                        }
+
+                        module.getProperties().put(key, value);
+                    });
                 });
             }
         });
