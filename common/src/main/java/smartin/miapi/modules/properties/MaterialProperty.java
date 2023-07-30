@@ -422,12 +422,12 @@ public class MaterialProperty implements ModuleProperty {
                         }
                         image.untrack();
 
-                        /*Path path = Path.of("miapi_dev").resolve("material_" + material + "_palette.png");
+                        Path path = Path.of("miapi_dev").resolve("material_" + material + "_palette.png");
                         try {
                             image.writeTo(path);
                         } catch (IOException e) {
                             //throw new RuntimeException(e);
-                        }*/
+                        }
 
                         MinecraftClient.getInstance().getTextureManager().registerTexture(identifier, new NativeImageBackedTexture(image));
                         return identifier;
