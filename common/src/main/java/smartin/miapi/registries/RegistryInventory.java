@@ -1,6 +1,7 @@
 package smartin.miapi.registries;
 
 import com.google.common.base.Suppliers;
+import com.mojang.blaze3d.systems.RenderSystem;
 import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.platform.Platform;
 import dev.architectury.registry.CreativeTabRegistry;
@@ -16,6 +17,7 @@ import net.minecraft.block.MapColor;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.enums.Instrument;
 import net.minecraft.block.piston.PistonBehavior;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.ShaderProgram;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.RenderPhase;
@@ -36,7 +38,9 @@ import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Util;
 import net.minecraft.world.event.GameEvent;
+import org.joml.Matrix4f;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.blocks.ModularWorkBench;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
@@ -56,6 +60,9 @@ import smartin.miapi.modules.edit_options.PropertyInjectionDev;
 import smartin.miapi.modules.edit_options.skins.SkinOptions;
 import smartin.miapi.modules.properties.*;
 import smartin.miapi.modules.properties.compat.BetterCombatProperty;
+import smartin.miapi.modules.properties.material.AllowedMaterial;
+import smartin.miapi.modules.properties.material.MaterialProperties;
+import smartin.miapi.modules.properties.material.MaterialProperty;
 import smartin.miapi.modules.properties.render.*;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
@@ -113,6 +120,7 @@ public class RegistryInventory {
     public static <T> void registerMiapi(MiapiRegistry<T> rg, String id, T object) {
         rg.register(id, object);
     }
+
     public static <T> void registerMiapi(MiapiRegistry<T> rg, String id, T object, Consumer<T> onRegister) {
         rg.register(id, object);
         onRegister.accept(object);
@@ -378,20 +386,60 @@ public class RegistryInventory {
                 "miapi_translucent_material", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL, VertexFormat.DrawMode.QUADS,
                 0x200000, true, true,
                 RenderLayer.MultiPhaseParameters.builder()
-                        .lightmap(ENABLE_LIGHTMAP).program(new RenderPhase.ShaderProgram(() -> translucentMaterialShader)).texture(MIPMAP_BLOCK_ATLAS_TEXTURE)
-                        .transparency(TRANSLUCENT_TRANSPARENCY).target(TRANSLUCENT_TARGET).build(true));
+                        .lightmap(ENABLE_LIGHTMAP).program(new RenderPhase.ShaderProgram(() -> translucentMaterialShader))
+                        .texture(MIPMAP_BLOCK_ATLAS_TEXTURE)
+                        .transparency(TRANSLUCENT_TRANSPARENCY)
+                        .target(TRANSLUCENT_TARGET).build(true));
         public static final RenderLayer entityTranslucentMaterialRenderType = RenderLayer.of(
-                "miapi_entity_translucent_material", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL, VertexFormat.DrawMode.QUADS,
+                "miapi_entity_translucent_material",
+                VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL,
+                VertexFormat.DrawMode.QUADS,
                 256, true, true,
                 RenderLayer.MultiPhaseParameters.builder()
-                        .program(new RenderPhase.ShaderProgram(() -> entityTranslucentMaterialShader)).texture(BLOCK_ATLAS_TEXTURE)
-                        .transparency(TRANSLUCENT_TRANSPARENCY).lightmap(ENABLE_LIGHTMAP).overlay(ENABLE_OVERLAY_COLOR).build(true)
+                        .program(new RenderPhase.ShaderProgram(() -> entityTranslucentMaterialShader))
+                        .texture(BLOCK_ATLAS_TEXTURE)
+                        .transparency(TRANSLUCENT_TRANSPARENCY)
+                        .lightmap(ENABLE_LIGHTMAP)
+                        .overlay(ENABLE_OVERLAY_COLOR).build(true)
         );
+
+        public static final Texturing ENTITY_GLINT_TEXTURING = new Texturing("miapi_glint_direct", () -> setupGlintTexturing(0.16f), () -> RenderSystem.resetTextureMatrix());
+
         public static final RenderLayer modularItemGlint = RenderLayer.of(
-                "miapi_glint_direct", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL, VertexFormat.DrawMode.QUADS,
-                256, RenderLayer.MultiPhaseParameters.builder()
-                        .program(new RenderPhase.ShaderProgram(() -> glintShader)).texture(new RenderPhase.Texture(customGlintTexture, true, false))
-                        .writeMaskState(COLOR_MASK).cull(DISABLE_CULLING).depthTest(EQUAL_DEPTH_TEST)
-                        .transparency(GLINT_TRANSPARENCY).texturing(GLINT_TEXTURING).build(false));
+                "miapi_glint_direct",
+                VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL,
+                VertexFormat.DrawMode.QUADS,
+                256, true, true,
+                RenderLayer.MultiPhaseParameters.builder()
+                        .program(new RenderPhase.ShaderProgram(() -> {
+                            glintShader.bind();
+                            //glintShader.addSampler("CustomGlintTexture",BLOCK_ATLAS_TEXTURE);
+                            int id = 10;
+                            RenderSystem.setShaderTexture(id, RegistryInventory.Client.customGlintTexture);
+                            RenderSystem.bindTexture(id);
+                            int j = RenderSystem.getShaderTexture(id);
+                            glintShader.addSampler("CustomGlintTexture", j);
+                            var a = new RenderPhase.Texture(customGlintTexture, true, false);
+                            //glintShader.getUniformOrDefault("glintSize").set();
+                            //NativeImage.
+                            return glintShader;
+                        }))
+                        .texture(BLOCK_ATLAS_TEXTURE)
+                        .depthTest(LEQUAL_DEPTH_TEST)
+                        .transparency(GLINT_TRANSPARENCY)
+                        .lightmap(ENABLE_LIGHTMAP)
+                        .texturing(RenderLayer.ENTITY_GLINT_TEXTURING)
+                        .overlay(ENABLE_OVERLAY_COLOR).build(false));
+
+        private static void setupGlintTexturing(float scale) {
+            long l = (long)((double) Util.getMeasuringTimeMs() * MinecraftClient.getInstance().options.getGlintSpeed().getValue() * 8.0);
+            float f = (float)(l % 110000L) / 110000.0f;
+            float g = (float)(l % 30000L) / 30000.0f;
+            Matrix4f matrix4f = new Matrix4f().translation(-f, g, 0.0f);
+            matrix4f.rotateZ(0.17453292f).scale(scale);
+            RenderSystem.setTextureMatrix(matrix4f);
+        }
     }
+
+
 }

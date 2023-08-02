@@ -21,6 +21,8 @@ import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.material.PaletteCreators;
 import smartin.miapi.registries.RegistryInventory;
 
+import static smartin.miapi.registries.RegistryInventory.Client.glintShader;
+
 public class MiapiClient {
 
     private MiapiClient() {
@@ -73,6 +75,6 @@ public class MiapiClient {
                 VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL, s -> RegistryInventory.Client.entityTranslucentMaterialShader = s);
         ShaderRegistry.register(
                 new Identifier(Miapi.MOD_ID, "rendertype_item_glint"),
-                VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL, s -> RegistryInventory.Client.glintShader = s);
+                VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL, s -> glintShader = s);
     }
 }

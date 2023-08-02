@@ -1,7 +1,6 @@
 package smartin.miapi.client.modelrework;
 
 import net.minecraft.client.render.LightmapTextureManager;
-import net.minecraft.client.render.OverlayVertexConsumer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.model.BakedModel;
@@ -23,11 +22,17 @@ public class BakedMiapiModel implements MiapiModel {
     ItemModule.ModuleInstance instance;
     Material material;
     List<BakedModel> models;
+    float red;
+    float green;
+    float blue;
 
     public BakedMiapiModel(List<BakedModel> models, ItemModule.ModuleInstance instance) {
         this.models = models;
         this.instance = instance;
         material = MaterialProperty.getMaterial(instance);
+        red = (float) Math.random();
+        green = (float) Math.random();
+        blue = (float) Math.random();
     }
 
     @Override
@@ -36,32 +41,24 @@ public class BakedMiapiModel implements MiapiModel {
 
         for (BakedModel model : models) {
             for (Direction direction : Direction.values()) {
-                if (true) {
-                    VertexConsumer consumer;
-                    if (material != null)
-                        consumer = material.setupMaterialShader(immediate, RegistryInventory.Client.entityTranslucentMaterialRenderType, RegistryInventory.Client.entityTranslucentMaterialShader);
-                    else
-                        consumer = Material.setupMaterialShader(immediate, RegistryInventory.Client.entityTranslucentMaterialRenderType, RegistryInventory.Client.entityTranslucentMaterialShader, Material.baseColorPalette);
+                VertexConsumer consumer;
+                if (material != null)
+                    consumer = material.setupMaterialShader(immediate, RegistryInventory.Client.entityTranslucentMaterialRenderType, RegistryInventory.Client.entityTranslucentMaterialShader);
+                else
+                    consumer = Material.setupMaterialShader(immediate, RegistryInventory.Client.entityTranslucentMaterialRenderType, RegistryInventory.Client.entityTranslucentMaterialShader, Material.baseColorPalette);
 
-                    int lightValue = transformationMode == ModelTransformationMode.GUI ? LightmapTextureManager.MAX_LIGHT_COORDINATE : LightmapTextureManager.MAX_SKY_LIGHT_COORDINATE;
+                int lightValue = transformationMode == ModelTransformationMode.GUI ? LightmapTextureManager.MAX_LIGHT_COORDINATE : LightmapTextureManager.MAX_SKY_LIGHT_COORDINATE;
+                model.getQuads(null, direction, Random.create()).forEach(bakedQuad -> {
+                    consumer.quad(matrices.peek(), bakedQuad, red, green, blue, lightValue, overlay);
+                });
+                immediate.draw();
+
+                if (stack.hasGlint()) {
+                    VertexConsumer glintConsumer = immediate.getBuffer(RegistryInventory.Client.modularItemGlint);
+
                     model.getQuads(null, direction, Random.create()).forEach(bakedQuad -> {
-                        consumer.quad(matrices.peek(), bakedQuad, 1, 1, 1, lightValue, overlay);
-                    });
-                    immediate.draw();
-                }
-
-                if (stack.hasGlint() && instance.subModules.size() == 0) {
-                    //Miapi.LOGGER.error("drawing glint on " + instance.module.getName());
-                    VertexConsumer consumer;
-
-                    consumer = new OverlayVertexConsumer(immediate.getBuffer(RegistryInventory.Client.modularItemGlint), matrices.peek().getPositionMatrix(), matrices.peek().getNormalMatrix(), 0.0078125f);
-                    float r = 1f;
-                    float g = 1;
-                    float b = 1;
-
-                    int lightValue = transformationMode == ModelTransformationMode.GUI ? LightmapTextureManager.MAX_LIGHT_COORDINATE : LightmapTextureManager.MAX_SKY_LIGHT_COORDINATE;
-                    model.getQuads(null, direction, Random.create()).forEach(bakedQuad -> {
-                        consumer.quad(matrices.peek(), bakedQuad, r, g, b, lightValue, overlay);
+                        //red, green, blue
+                        glintConsumer.quad(matrices.peek(), bakedQuad, 1, 0, 1, lightValue, overlay);
                     });
                     immediate.draw();
                 }

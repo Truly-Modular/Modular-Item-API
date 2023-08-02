@@ -124,6 +124,10 @@ public class EnchantmentProperty implements CraftingProperty, ModuleProperty {
     }
 
     public static List<Enchantment> getAllowedList(ItemStack stack) {
+        List<Enchantment> list = (List<Enchantment>) ModularItemCache.get(stack, KEY);
+        if(list==null){
+            return Collections.EMPTY_LIST;
+        }
         return Collections.unmodifiableList((List<Enchantment>) ModularItemCache.get(stack, KEY));
     }
 
