@@ -12,6 +12,7 @@ import net.minecraft.util.math.random.Random;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.properties.GlintProperty;
 import smartin.miapi.modules.properties.material.Material;
 import smartin.miapi.modules.properties.material.MaterialProperty;
 import smartin.miapi.registries.RegistryInventory;
@@ -22,17 +23,21 @@ public class BakedMiapiModel implements MiapiModel {
     ItemModule.ModuleInstance instance;
     Material material;
     List<BakedModel> models;
+    GlintProperty.GlintSettings settings;
+    GlintProperty.GlintSettings rootSettings;
     float red;
     float green;
     float blue;
 
-    public BakedMiapiModel(List<BakedModel> models, ItemModule.ModuleInstance instance) {
+    public BakedMiapiModel(List<BakedModel> models, ItemModule.ModuleInstance instance, ItemStack stack) {
         this.models = models;
         this.instance = instance;
         material = MaterialProperty.getMaterial(instance);
-        red = (float) Math.random();
-        green = (float) Math.random();
-        blue = (float) Math.random();
+        red = (float) Math.random() + 0.5f;
+        green = (float) Math.random() + 0.5f;
+        blue = (float) Math.random() + 0.5f;
+        settings = GlintProperty.property.getGlintSettings(instance, stack);
+        rootSettings = GlintProperty.property.getGlintSettings(instance.getRoot(), stack);
     }
 
     @Override
@@ -49,16 +54,16 @@ public class BakedMiapiModel implements MiapiModel {
 
                 int lightValue = transformationMode == ModelTransformationMode.GUI ? LightmapTextureManager.MAX_LIGHT_COORDINATE : LightmapTextureManager.MAX_SKY_LIGHT_COORDINATE;
                 model.getQuads(null, direction, Random.create()).forEach(bakedQuad -> {
-                    consumer.quad(matrices.peek(), bakedQuad, red, green, blue, lightValue, overlay);
+                    consumer.quad(matrices.peek(), bakedQuad, 1, 1, 1, lightValue, overlay);
                 });
                 immediate.draw();
 
-                if (stack.hasGlint()) {
+                if (settings.shouldRender()) {
                     VertexConsumer glintConsumer = immediate.getBuffer(RegistryInventory.Client.modularItemGlint);
 
                     model.getQuads(null, direction, Random.create()).forEach(bakedQuad -> {
                         //red, green, blue
-                        glintConsumer.quad(matrices.peek(), bakedQuad, 1, 0, 1, lightValue, overlay);
+                        glintConsumer.quad(matrices.peek(), bakedQuad, settings.getR(), settings.getG(), settings.getB(), lightValue, overlay);
                     });
                     immediate.draw();
                 }

@@ -357,6 +357,7 @@ public class RegistryInventory {
             registerMiapi(moduleProperties, CraftingConditionProperty.KEY, new CraftingConditionProperty());
             registerMiapi(moduleProperties, StatRequirementProperty.KEY, new StatRequirementProperty());
             registerMiapi(moduleProperties, StatProvisionProperty.KEY, new StatProvisionProperty());
+            registerMiapi(moduleProperties, GlintProperty.KEY, new GlintProperty());
 
             //compat
             registerMiapi(moduleProperties, BetterCombatProperty.KEY, new BetterCombatProperty());
@@ -425,7 +426,7 @@ public class RegistryInventory {
                             return glintShader;
                         }))
                         .texture(BLOCK_ATLAS_TEXTURE)
-                        .depthTest(LEQUAL_DEPTH_TEST)
+                        .depthTest(EQUAL_DEPTH_TEST)
                         .transparency(GLINT_TRANSPARENCY)
                         .lightmap(ENABLE_LIGHTMAP)
                         .texturing(RenderLayer.ENTITY_GLINT_TEXTURING)

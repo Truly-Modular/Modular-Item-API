@@ -6,7 +6,6 @@ import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import org.joml.Matrix4f;
-import smartin.miapi.Miapi;
 import smartin.miapi.item.modular.Transform;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.SlotProperty;
@@ -21,11 +20,12 @@ public class ModuleModel {
     public Map<String, List<Pair<Matrix4f, MiapiModel>>> otherModels;
     public final ItemModule.ModuleInstance instance;
     public Map<Integer, ModuleModel> subModuleModels = new HashMap<>();
+    public ItemStack stack;
 
-    public ModuleModel(ItemModule.ModuleInstance instance) {
+    public ModuleModel(ItemModule.ModuleInstance instance, ItemStack stack) {
         this.instance = instance;
+        this.stack = stack;
         models = generateModel(null);
-        Miapi.LOGGER.error("model is generated");
         otherModels = new HashMap<>();
         otherModels.put("item", models);
     }
@@ -34,9 +34,8 @@ public class ModuleModel {
         List<Pair<Matrix4f, MiapiModel>> modelList = new ArrayList<>();
         Transform transform = SlotProperty.getTransformStack(instance).get(key).copy();
         Matrix4f matrix4f = Transform.toModelTransformation(transform).toMatrix();
-        Miapi.LOGGER.error(instance.module.getName() + " " + key + " " + transform.toString());
         for (MiapiItemModel.ModelSupplier supplier : MiapiItemModel.modelSuppliers) {
-            supplier.getModels(key, instance).forEach(model -> {
+            supplier.getModels(key, instance, stack).forEach(model -> {
                 modelList.add(new Pair<>(new Matrix4f(matrix4f), model));
             });
         }
@@ -46,7 +45,6 @@ public class ModuleModel {
     public void render(String modelTypeRaw, ItemStack stack, MatrixStack matrices, ModelTransformationMode mode, float tickDelta, VertexConsumerProvider vertexConsumers, int light, int overlay) {
         String modelType = modelTypeRaw == null ? "item" : modelTypeRaw;
         if (!otherModels.containsKey(modelType)) {
-            Miapi.LOGGER.error("generating model for Type " + modelType);
             otherModels.put(modelType, generateModel(modelType));
         }
         Map<Integer, Matrix4f> map = new HashMap<>();
@@ -73,9 +71,8 @@ public class ModuleModel {
             matrices.multiplyPositionMatrix(map.get(integer));
             ModuleModel subModuleModel = subModuleModels.get(integer);
             if (subModuleModel == null) {
-                subModuleModel = new ModuleModel(instance1);
+                subModuleModel = new ModuleModel(instance1, stack);
                 subModuleModels.put(integer, subModuleModel);
-                Miapi.LOGGER.error("regen Model");
             }
             subModuleModel.render(modelType, stack, matrices, mode, tickDelta, vertexConsumers, integer, overlay);
             matrices.pop();

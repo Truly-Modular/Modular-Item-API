@@ -36,25 +36,20 @@ public class SkinOptions implements EditOption {
             }
             return oldMap;
         });
-        Miapi.registerReloadHandler(ReloadEvents.END, "skins/module", (isClient, path, data) -> {
+        //Miapi.registerReloadHandler(ReloadEvents.MAIN, "synergies", maps, (isClient, path, data) -> load(data), 2);
+        Miapi.registerReloadHandler(ReloadEvents.MAIN, "skins/module", skins, (isClient, path, data) -> {
             load(data);
-        });
-        Miapi.registerReloadHandler(ReloadEvents.END, "skins/tab", (isClient, path, data) -> {
+        }, 1);
+        Miapi.registerReloadHandler(ReloadEvents.MAIN, "skins/tab", tabMap, (isClient, path, data) -> {
             loadTabData(data);
-        });
-
-        // old code below, not deleted for reference reasons- Smartin feel free to delete if you want i guess
-        /*ReloadEvents.END.subscribe((isClient -> {
-            skins.clear();
-            ReloadEvents.DATA_PACKS.forEach((path, data) -> {
-                if (path.startsWith("skins/module")) {
-                    load(data);
-                }
-                if (path.startsWith("skins/tab")) {
-                    loadTabData(data);
-                }
-            });
-        }));*/
+        }, 1);
+        ReloadEvents.END.subscribe((isClient -> {
+            int size = 0;
+            for (Map<String, Skin> skins : skins.values()) {
+                size += skins.size();
+            }
+            Miapi.LOGGER.info("Loaded " + size + " Skins");
+        }));
     }
 
     public static SkinTab getTag(String path) {

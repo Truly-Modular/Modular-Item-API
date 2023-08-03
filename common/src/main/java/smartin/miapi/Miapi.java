@@ -3,7 +3,6 @@ package smartin.miapi;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.mojang.blaze3d.systems.RenderSystem;
 import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.registry.ReloadListenerRegistry;
 import net.minecraft.nbt.NbtCompound;
@@ -25,7 +24,7 @@ import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
 import smartin.miapi.modules.cache.ModularItemCache;
-import smartin.miapi.modules.conditions.*;
+import smartin.miapi.modules.conditions.ConditionManager;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.modules.synergies.SynergyManager;
 import smartin.miapi.network.Networking;
@@ -59,8 +58,11 @@ public class Miapi {
         ReloadListenerRegistry.register(ResourceType.SERVER_DATA, new ReloadListener());
         registerReloadHandler(ReloadEvents.MAIN, "modules", RegistryInventory.modules, (isClient, path, data) -> {
             ItemModule.loadFromData(path, data);
-        },-0.5f);
-        ReloadEvents.END.subscribe((isClient)->{
+        }, -0.5f);
+        ReloadEvents.END.subscribe((isClient -> {
+            Miapi.LOGGER.info("Loaded " + RegistryInventory.modules.getFlatMap().size() + " Modules");
+        }));
+        ReloadEvents.END.subscribe((isClient) -> {
             ModularItemCache.discardCache();
         });
         PropertyResolver.propertyProviderRegistry.register("module", (moduleInstance, oldMap) -> {
@@ -134,12 +136,8 @@ public class Miapi {
         }, priority);
     }
 
-    public static void registerReloadHandler(ReloadEvents.ReloadEvent event, String location, boolean syncToClient, TriConsumer<Boolean, String, String> handler) {
-        registerReloadHandler(event, location, syncToClient, bl -> {}, handler, 0f);
-    }
-
-    public static void registerReloadHandler(ReloadEvents.ReloadEvent event, String location, TriConsumer<Boolean, String, String> handler) {
-        registerReloadHandler(event, location, true, bl -> {}, handler, 0f);
+    public static void registerReloadHandler(ReloadEvents.ReloadEvent event, String location, Consumer<Boolean> beforeLoop, TriConsumer<Boolean, String, String> handler, float priority) {
+        registerReloadHandler(event, location, true, beforeLoop, handler, priority);
     }
 
     public static void registerReloadHandler(ReloadEvents.ReloadEvent event, String location, MiapiRegistry<?> toClear, TriConsumer<Boolean, String, String> handler) {

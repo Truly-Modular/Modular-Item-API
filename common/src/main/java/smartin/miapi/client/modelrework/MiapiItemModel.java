@@ -32,7 +32,7 @@ public class MiapiItemModel implements MiapiModel {
     private MiapiItemModel(ItemStack stack) {
         this.stack = stack;
         if (stack.getItem() instanceof ModularItem) {
-            rootModel = new ModuleModel(ItemModule.getModules(stack));
+            rootModel = new ModuleModel(ItemModule.getModules(stack), stack);
         } else {
             rootModel = null;
             throw new RuntimeException("Can only make MiapiModel for Modular Items");
@@ -66,6 +66,6 @@ public class MiapiItemModel implements MiapiModel {
     }
 
     public interface ModelSupplier {
-        List<MiapiModel> getModels(@Nullable String key, ItemModule.ModuleInstance model);
+        List<MiapiModel> getModels(@Nullable String key, ItemModule.ModuleInstance model, ItemStack stack);
     }
 }

@@ -73,6 +73,9 @@ public class MaterialProperty implements ModuleProperty {
             JsonMaterial material = new JsonMaterial(obj);
             materials.put(material.getKey(), material);
         }, -1f);
+        ReloadEvents.END.subscribe((isClient -> {
+            Miapi.LOGGER.info("Loaded " + materials.size() + " Materials");
+        }));
     }
 
     public static List<String> getTextureKeys() {

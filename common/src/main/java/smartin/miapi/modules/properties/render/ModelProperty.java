@@ -57,8 +57,8 @@ public class ModelProperty implements ModuleProperty {
         generator = new ItemModelGenerator();
         ModularItemCache.setSupplier(CACHE_KEY_ITEM, (stack) -> getModelMap(stack).get("item"));
         ModularItemCache.setSupplier(CACHE_KEY_MAP, ModelProperty::generateModels);
-        MiapiItemModel.modelSuppliers.add((key, model) -> {
-            return Collections.singletonList(new BakedMiapiModel(getForModule(model), model));
+        MiapiItemModel.modelSuppliers.add((key, model, stack) -> {
+            return Collections.singletonList(new BakedMiapiModel(getForModule(model), model, stack));
         });
     }
 

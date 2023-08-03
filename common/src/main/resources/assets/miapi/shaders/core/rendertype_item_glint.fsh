@@ -26,5 +26,5 @@ void main() {
         discard;
     }
     float fade = linear_fog_fade(vertexDistance, FogStart, FogEnd) * GlintAlpha;
-    fragColor = vec4(color.rgb * fade, color.a-0.001);
+    fragColor = vec4(color.rgb * fade * 2, color.a*vertexColor.a-0.001);
 }

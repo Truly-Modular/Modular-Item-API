@@ -21,19 +21,21 @@ import java.util.function.Function;
 
 public class ModularItemCache {
     protected static Map<String, CacheObjectSupplier> supplierMap = new HashMap<>();
-    protected static Map<ItemStack, UUID> lookUpTable = new WeakHashMap<>();
+    public static final long CACHE_SIZE = 1000;
     public static final long CACHE_LIFETIME = 2;
+    public static final TimeUnit CACHE_LIFETIME_UNIT = TimeUnit.MINUTES;
     protected static final LoadingCache<UUID, Cache> cache = CacheBuilder.newBuilder()
-            .maximumSize(1000)
-            .expireAfterAccess(CACHE_LIFETIME, TimeUnit.MINUTES)
+            .maximumSize(CACHE_SIZE)
+            .expireAfterAccess(CACHE_LIFETIME, CACHE_LIFETIME_UNIT)
             .build(new CacheLoader<>() {
                 public @NotNull Cache load(@NotNull UUID key) {
                     return new Cache(key, ItemStack.EMPTY);
                 }
             });
+    protected static Map<ItemStack, UUID> lookUpTable = new WeakHashMap<>();
     protected static final LoadingCache<NbtCompound, UUID> nbtCache = CacheBuilder.newBuilder()
-            .maximumSize(1000)
-            .expireAfterAccess(CACHE_LIFETIME, TimeUnit.MINUTES)
+            .maximumSize(CACHE_SIZE)
+            .expireAfterAccess(CACHE_LIFETIME, CACHE_LIFETIME_UNIT)
             .build(new CacheLoader<>() {
                 public @NotNull UUID load(@NotNull NbtCompound key) {
                     return ModularItemCache.getMissingUUID();
@@ -121,7 +123,6 @@ public class ModularItemCache {
         public int nbtHash;
 
         public Cache(UUID uuid, ItemStack stack) {
-            Miapi.LOGGER.warn("new Cache " + stack.getTranslationKey());
             this.uuid = uuid;
             setUUIDFor(stack, uuid);
             this.stack = stack;
