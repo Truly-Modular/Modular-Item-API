@@ -1,11 +1,13 @@
 package smartin.miapi.item;
 
 import com.google.gson.reflect.TypeToken;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
 import smartin.miapi.Miapi;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.properties.EnchantmentProperty;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.util.HashMap;
@@ -38,7 +40,15 @@ public class ItemToModularConverter implements ModularItemStackConverter.Modular
                 ItemStack nextStack = entry.getValue().copy();
                 nextStack.setNbt(stack.copy().getNbt());
                 nextStack.getNbt().put("modules", entry.getValue().getNbt().get("modules"));
-                return entry.getValue().copy();
+                EnchantmentHelper.get(stack).forEach((enchantment, integer) -> {
+                    if (EnchantmentProperty.isAllowed(nextStack, enchantment)) {
+                        nextStack.addEnchantment(enchantment, integer);
+                        Miapi.LOGGER.info("adding Enchantment" + enchantment);
+                    } else {
+                        Miapi.LOGGER.info("enchantment is not allowed");
+                    }
+                });
+                return nextStack;
             }
         }
         return stack;

@@ -27,6 +27,10 @@
   ],
   "items": [
     {
+      "item": "minecraft:amethyst_shard",
+      "value": 0.25
+    },
+    {
       "item": "minecraft:amethyst_cluster",
       "value": 0.25
     },

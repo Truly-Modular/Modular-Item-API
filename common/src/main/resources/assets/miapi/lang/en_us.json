@@ -21,6 +21,7 @@
 
     "miapi.attribute.name.durability":"Durability",
     "miapi.attribute.name.resistance":"Damage Ressistance",
+    "miapi.attribute.name.back_stab":"Back Stab",
     "miapi.attribute.name.reach":"Reach",
     "miapi.attribute.name.attack_range":"Attack Range",
 
@@ -51,6 +52,8 @@
     "miapi.stat.attack_speed.description": "Attacks per Second",
     "miapi.stat.durability": "Durability",
     "miapi.stat.durability.description": "Item Durability",
+    "miapi.stat.back_stab": "Back Stab",
+    "miapi.stat.back_stab.description": "Multiplier if the Attacker is behind the Victim",
     "miapi.stat.flexibility": "Flexibility",
     "miapi.stat.flexibility.description": "The Modability of the Item\n Items with Flexibility above 0\n cant be crafted",
     "miapi.stat.healthPercent": "Vitality Drain",

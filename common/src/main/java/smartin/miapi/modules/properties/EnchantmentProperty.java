@@ -119,6 +119,7 @@ public class EnchantmentProperty implements CraftingProperty, ModuleProperty {
         getAllowedList(stack).forEach(enchantment1 -> {
             Miapi.LOGGER.error(String.valueOf(enchantment1));
         });
+        Miapi.LOGGER.warn(String.valueOf(allowed));
         return allowed;
     }
 

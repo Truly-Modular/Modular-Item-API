@@ -9,7 +9,6 @@ import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
 import smartin.miapi.Miapi;
@@ -55,6 +54,12 @@ public class StatDisplay extends InteractAbleWidget {
                 .setDefault(0)
                 .setFormat("##")
                 .setMax(2000).build());
+        addStatDisplay(AttributeSingleDisplay
+                .Builder(AttributeRegistry.BACK_STAB)
+                .setTranslationKey("back_stab")
+                .setDefault(1)
+                .setFormat("##")
+                .setMax(5).build());
         addStatDisplay(SinglePropertyStatDisplay
                 .Builder(FlexibilityProperty.property)
                 .setTranslationKey(FlexibilityProperty.KEY)
