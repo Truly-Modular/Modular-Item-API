@@ -9,7 +9,6 @@ import org.joml.Matrix4f;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.cache.ModularItemCache;
-import smartin.miapi.modules.properties.render.ModelTransformationProperty;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.util.ArrayList;
@@ -17,6 +16,7 @@ import java.util.List;
 
 public class MiapiItemModel implements MiapiModel {
     public static List<ModelSupplier> modelSuppliers = new ArrayList<>();
+    public static List<ModelTransformer> modelTransformers = new ArrayList<>();
     public final ItemStack stack;
     public final ModuleModel rootModel;
     private final static String cacheKey = "miapi_model_rework";
@@ -53,9 +53,11 @@ public class MiapiItemModel implements MiapiModel {
     }
 
     public void render(String modelType, ItemStack stack, MatrixStack matrices, ModelTransformationMode mode, float tickDelta, VertexConsumerProvider vertexConsumers, int light, int overlay) {
-        RegistryInventory.Client.glintShader.getUniformOrDefault("ModelMat").set(new Matrix4f(matrices.peek().getPositionMatrix()));
         matrices.push();
-        ModelTransformationProperty.applyTransformation(stack, mode, matrices);
+        for (ModelTransformer transformer : modelTransformers) {
+            matrices = transformer.transform(matrices, stack, mode, modelType, tickDelta);
+        }
+        RegistryInventory.Client.glintShader.getUniformOrDefault("ModelMat").set(new Matrix4f(matrices.peek().getPositionMatrix()));
         rootModel.render(modelType, stack, matrices, mode, tickDelta, vertexConsumers, light, overlay);
         matrices.pop();
     }
@@ -67,5 +69,9 @@ public class MiapiItemModel implements MiapiModel {
 
     public interface ModelSupplier {
         List<MiapiModel> getModels(@Nullable String key, ItemModule.ModuleInstance model, ItemStack stack);
+    }
+
+    public interface ModelTransformer {
+        MatrixStack transform(MatrixStack matrices, ItemStack itemStack, ModelTransformationMode mode, String modelType, float tickDelta);
     }
 }

@@ -4,20 +4,15 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.entity.ItemEntityRenderer;
-import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.render.model.json.Transformation;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.MatrixUtil;
-import org.joml.Quaternionf;
-import org.joml.Vector3f;
 import smartin.miapi.Miapi;
-import smartin.miapi.client.model.DynamicBakedModel;
-import smartin.miapi.modules.ItemModule;
+import smartin.miapi.client.modelrework.MiapiItemModel;
 import smartin.miapi.item.modular.Transform;
+import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.*;
@@ -30,56 +25,9 @@ public class ModelTransformationProperty implements ModuleProperty {
 
     public ModelTransformationProperty() {
         property = this;
-        ModelProperty.modelTransformers.add(new ModelProperty.ModelTransformer() {
-            @Override
-            public Map<String, DynamicBakedModel> bakedTransform(Map<String, DynamicBakedModel> dynamicBakedModelmap, ItemStack stack) {
-                dynamicBakedModelmap.forEach((id, dynamicBakedModel) -> {
-                    ModelTransformation transformation = ModelTransformation.NONE;
-                    for (ItemModule.ModuleInstance instance : ItemModule.createFlatList(ItemModule.getModules(stack))) {
-                        JsonElement element = instance.getProperties().get(property);
-                        if (element != null) {
-                            Map<ModelTransformationMode, Transformation> map = new HashMap<>();
-                            if (element.getAsJsonObject().has("replace")) {
-                                JsonObject replace = element.getAsJsonObject().getAsJsonObject("replace");
-                                for (ModelTransformationMode mode : ModelTransformationMode.values()) {
-                                    map.put(mode, transformation.getTransformation(mode));
-                                    for (String modeString : getStringOfMode(mode)) {
-                                        if (replace.has(modeString)) {
-                                            Transform transform = Transform.toModelTransformation(Miapi.gson.fromJson(replace.getAsJsonObject(modeString), Transform.class));
-                                            map.put(mode, transform.toTransformation());
-                                        }
-                                    }
-                                }
-                            }
-                            if (element.getAsJsonObject().has("merge")) {
-                                JsonObject replace = element.getAsJsonObject().getAsJsonObject("merge");
-                                for (ModelTransformationMode mode : ModelTransformationMode.values()) {
-                                    map.put(mode, transformation.getTransformation(mode));
-                                    for (String modeString : getStringOfMode(mode)) {
-                                        if (replace.has(modeString)) {
-                                            Transform merged = Transform.merge(new Transform(transformation.getTransformation(mode)), Miapi.gson.fromJson(replace.getAsJsonObject(modeString), Transform.class));
-                                            map.put(mode, merged.toTransformation());
-                                        }
-                                    }
-                                }
-                            }
-                            transformation = new ModelTransformation(
-                                    map.get(ModelTransformationMode.THIRD_PERSON_LEFT_HAND),
-                                    map.get(ModelTransformationMode.THIRD_PERSON_RIGHT_HAND),
-                                    map.get(ModelTransformationMode.FIRST_PERSON_LEFT_HAND),
-                                    map.get(ModelTransformationMode.FIRST_PERSON_RIGHT_HAND),
-                                    map.get(ModelTransformationMode.HEAD),
-                                    map.get(ModelTransformationMode.GUI),
-                                    map.get(ModelTransformationMode.GROUND),
-                                    map.get(ModelTransformationMode.FIXED)
-                            );
-                        }
-                    }
-                    dynamicBakedModel.setModelTransformation(transformation);
-                    dynamicBakedModelmap.put(id, dynamicBakedModel);
-                });
-                return dynamicBakedModelmap;
-            }
+        MiapiItemModel.modelTransformers.add((matrices, itemStack, mode, modelType, tickDelta) -> {
+            applyTransformation(itemStack, mode, matrices);
+            return matrices;
         });
     }
 
@@ -87,7 +35,7 @@ public class ModelTransformationProperty implements ModuleProperty {
         Transformation transformation = ModelTransformationProperty.getTransformation(stack).getTransformation(mode);
         boolean leftHanded = isLeftHanded(mode);
         matrices.translate(0.5f, 0.5f, 0.5f);
-        transformation.apply(false,matrices);
+        transformation.apply(false, matrices);
         matrices.translate(-0.5f, -0.5f, -0.5f);
     }
 
