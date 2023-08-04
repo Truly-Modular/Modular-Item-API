@@ -61,7 +61,7 @@ public class MaterialDetailView extends InteractAbleWidget {
         List<InteractAbleWidget> widgets = new ArrayList<>();
         widgets.add(new ColorWidget(this.getX(), this.getY(), this.getWidth(), spacer, material.getColor()));
         for (Builder builder : infoBarBuilders) {
-            widgets.add(new InfoBar(x + 10, y, width - 10, spacer, Text.translatable(Miapi.MOD_ID + ".material_stat." + builder.key), (float) material.getDouble(builder.key), builder.min, builder.max, builder.format));
+            widgets.add(builder.build(x,y,width,spacer,material));
         }
         ScrollList list = new ScrollList(x + 10, y + 30, width - 10, this.getHeight() - 30, widgets);
         this.addChild(list);
@@ -167,6 +167,10 @@ public class MaterialDetailView extends InteractAbleWidget {
         public Builder setFormat(String format) {
             this.format = format;
             return this;
+        }
+
+        public InteractAbleWidget build(int x,int y,int width,int spacer, Material material){
+            return new InfoBar(x + 10, y, width - 10, spacer, Text.translatable(Miapi.MOD_ID + ".material_stat." + key), (float) material.getDouble(key), min, max, format);
         }
     }
 }

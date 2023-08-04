@@ -3,8 +3,6 @@
     "translation": "miapi.material.skulk",
     "icon": "textures/item/iron.png",
     "groups": [
-        "wood",
-        "metal"
     ],
     "hardness": 1,
     "density": 1,

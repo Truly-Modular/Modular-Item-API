@@ -17,9 +17,11 @@ import java.util.stream.Collectors;
 
 
 public class ReloadListener implements ResourceReloader {
+    static long timeStart;
 
     public CompletableFuture load(ResourceManager manager, Profiler profiler, Executor executor) {
         ReloadEvents.inReload = true;
+        timeStart = System.nanoTime();
         ReloadEvents.START.fireEvent(false);
         Map<String,String> data = new HashMap<>();
         ReloadEvents.syncedPaths.forEach((modID,dataPaths)->{
@@ -51,6 +53,7 @@ public class ReloadListener implements ResourceReloader {
             dataMap.forEach(ReloadEvents.DataPackLoader::trigger);
             ReloadEvents.MAIN.fireEvent(false);
             ReloadEvents.END.fireEvent(false);
+            Miapi.LOGGER.info("Server load took "+ (double) (System.nanoTime()-timeStart) / 1000 / 1000 + " ms");
             if(Miapi.server!=null){
                 Miapi.server.getPlayerManager().getPlayerList().forEach(serverPlayerEntity -> {
                     ReloadEvents.triggerReloadOnClient(serverPlayerEntity);
