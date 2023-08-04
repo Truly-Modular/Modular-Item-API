@@ -429,6 +429,7 @@ public class RegistryInventory {
                         .depthTest(EQUAL_DEPTH_TEST)
                         .transparency(GLINT_TRANSPARENCY)
                         .lightmap(ENABLE_LIGHTMAP)
+                        .cull(DISABLE_CULLING)
                         .texturing(RenderLayer.ENTITY_GLINT_TEXTURING)
                         .overlay(ENABLE_OVERLAY_COLOR).build(false));
 

@@ -1,5 +1,6 @@
 package smartin.miapi.client.modelrework;
 
+import com.redpxnda.nucleus.util.Color;
 import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -25,17 +26,11 @@ public class BakedMiapiModel implements MiapiModel {
     List<BakedModel> models;
     GlintProperty.GlintSettings settings;
     GlintProperty.GlintSettings rootSettings;
-    float red;
-    float green;
-    float blue;
 
     public BakedMiapiModel(List<BakedModel> models, ItemModule.ModuleInstance instance, ItemStack stack) {
         this.models = models;
         this.instance = instance;
         material = MaterialProperty.getMaterial(instance);
-        red = (float) Math.random() + 0.5f;
-        green = (float) Math.random() + 0.5f;
-        blue = (float) Math.random() + 0.5f;
         settings = GlintProperty.property.getGlintSettings(instance, stack);
         rootSettings = GlintProperty.property.getGlintSettings(instance.getRoot(), stack);
     }
@@ -59,11 +54,15 @@ public class BakedMiapiModel implements MiapiModel {
                 immediate.draw();
 
                 if (settings.shouldRender()) {
+                    rootSettings.applySpeed();
+                    settings.applyAlpha();
                     VertexConsumer glintConsumer = immediate.getBuffer(RegistryInventory.Client.modularItemGlint);
+
+                    Color glintColor = settings.getColor();
 
                     model.getQuads(null, direction, Random.create()).forEach(bakedQuad -> {
                         //red, green, blue
-                        glintConsumer.quad(matrices.peek(), bakedQuad, settings.getR(), settings.getG(), settings.getB(), lightValue, overlay);
+                        glintConsumer.quad(matrices.peek(), bakedQuad, (float)glintColor.r / 255, (float)glintColor.g / 255, (float)glintColor.b / 255, lightValue, overlay);
                     });
                     immediate.draw();
                 }

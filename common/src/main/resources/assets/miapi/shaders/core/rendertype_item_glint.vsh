@@ -19,6 +19,7 @@ uniform mat4 ProjMat;
 uniform mat3 IViewRotMat;
 uniform mat4 TextureMat;
 uniform int FogShape;
+uniform float GlintSpeed;
 
 uniform vec3 Light0_Direction;
 uniform vec3 Light1_Direction;
@@ -48,5 +49,5 @@ void main() {
     // Output the final local space UVs
     localUVs.x = -asd.x * scale + 0.5;
     localUVs.y = -asd.y * scale + 0.5;
-    localUVs = (TextureMat * vec4(vec2(localUVs), 0.0, 1.0)).xy;
+    localUVs = (TextureMat * GlintSpeed * vec4(vec2(localUVs/GlintSpeed), 0.0, 1.0)).xy;
 }

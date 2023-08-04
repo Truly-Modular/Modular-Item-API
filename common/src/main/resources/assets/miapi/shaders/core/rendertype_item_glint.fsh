@@ -9,6 +9,7 @@ uniform sampler2D CustomGlintTexture;
 uniform vec4 ColorModulator;
 uniform float FogStart;
 uniform float FogEnd;
+uniform float GlintStrength;
 uniform float GlintAlpha;
 
 in float vertexDistance;
@@ -25,6 +26,6 @@ void main() {
     if (realcolor.a < 0.1) {
         discard;
     }
-    float fade = linear_fog_fade(vertexDistance, FogStart, FogEnd) * GlintAlpha;
+    float fade = linear_fog_fade(vertexDistance, FogStart, FogEnd) * GlintAlpha * GlintStrength;
     fragColor = vec4(color.rgb * fade * 2, color.a*vertexColor.a-0.001);
 }
