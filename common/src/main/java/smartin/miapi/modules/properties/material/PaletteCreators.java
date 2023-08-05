@@ -13,7 +13,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.MathHelper;
 import smartin.miapi.Miapi;
 
 import java.util.HashMap;
@@ -36,14 +35,9 @@ public final class PaletteCreators {
             interpolateFiller = (last, current, next, lX, cX, nX, placer) -> {
                 for (int i = lX; i < cX; i++) {
                     float delta = (i - lX) / (float) (cX - lX);
-                    placer.place(
-                            new Color(
-                                    MathHelper.lerp(delta, last.r, current.r),
-                                    MathHelper.lerp(delta, last.g, current.g),
-                                    MathHelper.lerp(delta, last.b, current.b),
-                                    MathHelper.lerp(delta, last.a, current.a)
-                            ), i, 0
-                    );
+                    Color col = new Color();
+                    last.lerp(delta, current, col);
+                    placer.place(col, i, 0);
                 }
             };
             fillers.put("interpolate", interpolateFiller);

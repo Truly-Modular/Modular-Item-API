@@ -67,7 +67,7 @@ public class GlintProperty implements ModuleProperty {
                         Miapi.LOGGER.error("Failed to decode using color for GlintProperty! -> " + s);
                     });
                     this.color = color;
-                    a = color.a * 2;
+                    a = color.a() * 2;
                 }
                 if (element.getAsJsonObject().has("speed")) {
                     speed = (float) StatResolver.resolveDouble(element.getAsJsonObject().get("speed"), instance);

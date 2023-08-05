@@ -62,7 +62,7 @@ public class BakedMiapiModel implements MiapiModel {
 
                     model.getQuads(null, direction, Random.create()).forEach(bakedQuad -> {
                         //red, green, blue
-                        glintConsumer.quad(matrices.peek(), bakedQuad, (float)glintColor.r / 255, (float)glintColor.g / 255, (float)glintColor.b / 255, lightValue, overlay);
+                        glintConsumer.quad(matrices.peek(), bakedQuad, (float)glintColor.r() / 255, (float)glintColor.g() / 255, (float)glintColor.b() / 255, lightValue, overlay);
                     });
                     immediate.draw();
                 }
