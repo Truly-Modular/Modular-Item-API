@@ -60,6 +60,15 @@ public class MiningLevelProperty implements ModuleProperty {
         });
     }
 
+    public int getMiningLevel(String type,ItemStack stack){
+        Map<String, Float> mergedMap = (Map<String, Float>) ModularItemCache.get(stack, KEY);
+        Float value = mergedMap.get(type);
+        if(value!=null){
+            return value.intValue();
+        }
+        return 0;
+    }
+
     public static boolean IsSuitable(ItemStack stack, BlockState state) {
         Map<String, Float> mergedMap = (Map<String, Float>) ModularItemCache.get(stack, KEY);
         for (Map.Entry<String, TagKey<Block>> entry : miningCapabilities.entrySet()) {

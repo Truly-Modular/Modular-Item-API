@@ -58,8 +58,32 @@ public class StatDisplay extends InteractAbleWidget {
                 .Builder(AttributeRegistry.BACK_STAB)
                 .setTranslationKey("back_stab")
                 .setDefault(1)
-                .setFormat("##")
+                .setFormat("##.#")
                 .setMax(5).build());
+        addStatDisplay(AttributeSingleDisplay
+                .Builder(AttributeRegistry.MINING_SPEED_PICKAXE)
+                .setTranslationKey("mining_speed.pickaxe")
+                .setDefault(1)
+                .setFormat("##.#")
+                .setMax(12).build());
+        addStatDisplay(AttributeSingleDisplay
+                .Builder(AttributeRegistry.MINING_SPEED_AXE)
+                .setTranslationKey("mining_speed.axe")
+                .setDefault(1)
+                .setFormat("##.#")
+                .setMax(12).build());
+        addStatDisplay(AttributeSingleDisplay
+                .Builder(AttributeRegistry.MINING_SPEED_SHOVEL)
+                .setTranslationKey("mining_speed.shovel")
+                .setDefault(1)
+                .setFormat("##.#")
+                .setMax(12).build());
+        addStatDisplay(AttributeSingleDisplay
+                .Builder(AttributeRegistry.MINING_SPEED_HOE)
+                .setTranslationKey("mining_speed.hoe")
+                .setDefault(1)
+                .setFormat("##.#")
+                .setMax(12).build());
         addStatDisplay(SinglePropertyStatDisplay
                 .Builder(FlexibilityProperty.property)
                 .setTranslationKey(FlexibilityProperty.KEY)

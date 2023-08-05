@@ -1,9 +1,6 @@
 package smartin.miapi.modules.properties;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.ListMultimap;
-import com.google.common.collect.Multimap;
+import com.google.common.collect.*;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.minecraft.entity.EquipmentSlot;
@@ -176,13 +173,12 @@ public class AttributeProperty implements ModuleProperty {
                 });
             });
 
-            sortMultimap(toAdding);
-            return toAdding;
+            return sortMultimap(toAdding);
         }
         return toAdding;
     }
 
-    private static void sortMultimap(Multimap<EntityAttribute, EntityAttributeModifier> multimap) {
+    private static Multimap<EntityAttribute, EntityAttributeModifier> sortMultimap(Multimap<EntityAttribute, EntityAttributeModifier> multimap) {
         Comparator<EntityAttribute> comparator = (attribute1, attribute2) -> {
             // Get the priority values for the attributes, using 0 as the default value
             float priority1 = priorityMap.getOrDefault(attribute1, 0f);
@@ -197,7 +193,7 @@ public class AttributeProperty implements ModuleProperty {
         sortedKeys.sort(comparator);
 
         // Create a new Multimap with the sorted keys
-        ListMultimap<EntityAttribute, EntityAttributeModifier> sortedMultimap = ArrayListMultimap.create();
+        Multimap<EntityAttribute, EntityAttributeModifier> sortedMultimap = LinkedListMultimap.create();
 
         // Iterate over the sorted keys and add the corresponding values to the sorted Multimap
         for (EntityAttribute attribute : sortedKeys) {
@@ -205,8 +201,9 @@ public class AttributeProperty implements ModuleProperty {
         }
 
         // Clear the original Multimap and add the sorted entries
-        multimap.clear();
-        multimap.putAll(sortedMultimap);
+        //multimap.clear();
+        //multimap.putAll(sortedMultimap);
+        return sortedMultimap;
     }
 
     public static double getActualValueFrom(Multimap<EntityAttribute, EntityAttributeModifierHolder> rawMap, EquipmentSlot slot, EntityAttribute entityAttribute, double fallback) {
