@@ -83,7 +83,8 @@
     "miapi.stat.mining.level.shovel.description": "Mining Level for Blocks like Sand",
     "miapi.stat.mining.level.hoe": "Hoe Mining Level",
     "miapi.stat.mining.level.hoe.description": "Mining Level for Blocks like Hay Bales",
-
+    "miapi.stat.durability": "Durability",
+    "miapi.stat.durability.description": "Item Durability",
 
     "miapi.material_stat.color": "Color",
     "miapi.material_stat.flexibility": "Flexibility",
