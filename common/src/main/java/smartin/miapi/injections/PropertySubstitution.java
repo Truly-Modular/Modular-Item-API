@@ -6,17 +6,21 @@ import org.jetbrains.annotations.Nullable;
 import org.mariuszgromada.math.mxparser.Expression;
 import smartin.miapi.Miapi;
 import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.properties.TagProperty;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.registries.RegistryInventory;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class PropertySubstitution {
+    public static int injectorsCount = 0;
     public static final Map<String, TargetSelector> targetSelectors = new HashMap<>();
     public static final InterfaceDispatcher<TargetSelector> targetSelectionDispatcher = InterfaceDispatcher.of(targetSelectors, "type");
     public static final Map<String, ValueResolver> valueResolvers = new HashMap<>();
@@ -215,30 +219,46 @@ public class PropertySubstitution {
         targetSelectors.put("modules", (root, injector) -> {
             if (!(root instanceof JsonObject object)) throw new JsonParseException("Failed to load Miapi module injection! Not a json object -> " + root);
 
+            List<ItemModule> modules = new ArrayList<>();
+
             if (object.get("keys") instanceof JsonArray array) {
-                array.forEach(e -> {
-                    ItemModule module = ItemModule.moduleRegistry.get(e.getAsString());
+                array.forEach(moduleKey -> {
+                    ItemModule module = ItemModule.moduleRegistry.get(moduleKey.getAsString());
                     if (module == null) return;
-                    JsonObject moduleJson = new JsonObject();
-                    module.getProperties().forEach(moduleJson::add);
-
-                    JsonObject replacement = injector.getReplacement(moduleJson);
-                    module.getProperties().clear();
-                    replacement.asMap().forEach((key, value) -> {
-                        ModuleProperty property = RegistryInventory.moduleProperties.get(key);
-                        if (property == null) return;
-
-                        try {
-                            property.load(module.getName(), value);
-                        } catch (Exception ex) {
-                            Miapi.LOGGER.error("Exception whilst loading PropertySubstitution injection data for a module!");
-                            throw new RuntimeException(ex);
-                        }
-
-                        module.getProperties().put(key, value);
-                    });
+                    modules.add(module);
                 });
             }
+            if (object.get("tags") instanceof JsonArray array) {
+                array.forEach(tag -> {
+                    modules.addAll(TagProperty.getModulesWithTag(tag.getAsString()));
+                });
+            }
+            if (object.get("regex") instanceof JsonPrimitive prim) {
+                ItemModule.moduleRegistry.getFlatMap().forEach((key, module) -> {
+                    if (key.matches(prim.getAsString())) modules.add(module);
+                });
+            }
+
+            modules.forEach(module -> {
+                JsonObject moduleJson = new JsonObject();
+                module.getProperties().forEach(moduleJson::add);
+
+                JsonObject replacement = injector.getReplacement(moduleJson);
+                module.getProperties().clear();
+                replacement.asMap().forEach((key, value) -> {
+                    ModuleProperty property = RegistryInventory.moduleProperties.get(key);
+                    if (property == null) return;
+
+                    try {
+                        property.load(module.getName(), value);
+                    } catch (Exception ex) {
+                        Miapi.LOGGER.error("Property load error whilst loading PropertySubstitution injection data for a module!");
+                        throw new RuntimeException(ex);
+                    }
+
+                    module.getProperties().put(key, value);
+                });
+            });
         });
     }
 }

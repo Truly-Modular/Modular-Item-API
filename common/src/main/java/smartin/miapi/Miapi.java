@@ -61,18 +61,19 @@ public class Miapi {
         registerReloadHandler(ReloadEvents.MAIN, "modules", RegistryInventory.modules, (isClient, path, data) -> {
             ItemModule.loadFromData(path, data);
         }, -0.5f);
-        registerReloadHandler(ReloadEvents.MAIN, "injectors", bl -> {}, (isClient, path, data) -> {
+        registerReloadHandler(ReloadEvents.MAIN, "injectors", bl -> PropertySubstitution.injectorsCount = 0, (isClient, path, data) -> {
             JsonElement element = JsonHelper.deserialize(data);
             if (element instanceof JsonObject object) {
-                System.out.println("loading json\n" + object + "\n at " + path);
                 PropertySubstitution.targetSelectionDispatcher.dispatcher().triggerTargetFrom(object.get("target"), PropertySubstitution.getInjector(object));
+                PropertySubstitution.injectorsCount++;
             } else {
                 LOGGER.warn("Found a non JSON object PropertyInjector. PropertyInjectors should be JSON objects.");
             }
         }, 1f);
-        ReloadEvents.END.subscribe((isClient -> {
+        ReloadEvents.END.subscribe(isClient -> {
+            Miapi.LOGGER.info("Loaded " + PropertySubstitution.injectorsCount + " Injectors/Property Substitutors");
             Miapi.LOGGER.info("Loaded " + RegistryInventory.modules.getFlatMap().size() + " Modules");
-        }));
+        });
         ReloadEvents.END.subscribe((isClient) -> {
             ModularItemCache.discardCache();
         });

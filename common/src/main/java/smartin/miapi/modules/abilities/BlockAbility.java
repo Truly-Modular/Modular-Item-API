@@ -34,6 +34,11 @@ public class BlockAbility extends EntityAttributeAbility {
         return multimap;
     }
 
+    /*@Override
+    public UseAction getUseAction(ItemStack itemStack) {
+        return UseAction.BLOCK;
+    }*/
+
     public static double calculate(double value){
         return (160.0 / (1 + Math.exp(-value / 50.0))) - 80.0;
     }
