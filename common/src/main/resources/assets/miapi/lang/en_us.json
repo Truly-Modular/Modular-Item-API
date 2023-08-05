@@ -75,8 +75,14 @@
     "miapi.stat.armor_pen.description": "Scales Target armor to %d percent",
     "miapi.stat.blocking": "Blocking",
     "miapi.stat.blocking.description": "Blocks %d percent of incoming Damage",
-    "miapi.stat.durability": "Durability",
-    "miapi.stat.durability.description": "Item Durability",
+    "miapi.stat.mining.level.pickaxe": "Pickaxe Mining Level",
+    "miapi.stat.mining.level.pickaxe.description": "Mining Level for Blocks like Stone",
+    "miapi.stat.mining.level.axe": "Axe Mining Level",
+    "miapi.stat.mining.level.axe.description": "Mining Level for Blocks like Wood",
+    "miapi.stat.mining.level.shovel": "Shovel Mining Level",
+    "miapi.stat.mining.level.shovel.description": "Mining Level for Blocks like Sand",
+    "miapi.stat.mining.level.hoe": "Hoe Mining Level",
+    "miapi.stat.mining.level.hoe.description": "Mining Level for Blocks like Hay Bales",
 
 
     "miapi.material_stat.color": "Color",
