@@ -1,11 +1,9 @@
 package smartin.miapi.injections;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
+import com.google.gson.*;
 import com.redpxnda.nucleus.datapack.codec.InterfaceDispatcher;
 import org.jetbrains.annotations.Nullable;
+import org.mariuszgromada.math.mxparser.Expression;
 import smartin.miapi.Miapi;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.util.MergeType;
@@ -14,15 +12,18 @@ import smartin.miapi.registries.RegistryInventory;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-public class PropertyInjector {
+public class PropertySubstitution {
     public static final Map<String, TargetSelector> targetSelectors = new HashMap<>();
     public static final InterfaceDispatcher<TargetSelector> targetSelectionDispatcher = InterfaceDispatcher.of(targetSelectors, "type");
     public static final Map<String, ValueResolver> valueResolvers = new HashMap<>();
     public static final InterfaceDispatcher<ValueResolver> valueResolverDispatcher = InterfaceDispatcher.of(valueResolvers, "mode");
 
     public interface TargetSelector {
-        void selectTargetFrom(JsonElement element, JsonInjector injector);
+        void triggerTargetFrom(JsonElement element, JsonInjector injector);
     }
     public interface JsonInjector {
         JsonObject getReplacement(JsonObject json);
@@ -49,10 +50,10 @@ public class PropertyInjector {
                 TargetHolder holder = getValueFromLocator(replacement, removeLocation.getAsString());
                 if (holder.parent instanceof JsonObject object && holder.key != null) {
                     JsonElement removed = object.remove(holder.key);
-                    if (removed == null) Miapi.LOGGER.warn("Failed to remove key '" + removeLocation + "' (object fail) for PropertyInjector!\nOriginal object: " + toReplace);
+                    if (removed == null) Miapi.LOGGER.warn("Failed to remove key '" + removeLocation + "' (object fail) for PropertySubstitution!\nOriginal object: " + toReplace);
                 } else if (holder.parent instanceof JsonArray arr) {
                     boolean bl = arr.remove(holder.target);
-                    if (!bl) Miapi.LOGGER.warn("Failed to remove key '" + removeLocation + "' (array fail) for PropertyInjector!\nOriginal object: " + toReplace);
+                    if (!bl) Miapi.LOGGER.warn("Failed to remove key '" + removeLocation + "' (array fail) for PropertySubstitution!\nOriginal object: " + toReplace);
                 }
             });
         }
@@ -60,7 +61,7 @@ public class PropertyInjector {
         if (injectionData.get("write") instanceof JsonObject outer) {
             outer.asMap().forEach((key, element) -> {
                 if (!(element instanceof JsonObject object)) {
-                    Miapi.LOGGER.warn("Write field for PropertyInjector contains a non JSON object element: '" + element + "'");
+                    Miapi.LOGGER.warn("Write field for PropertySubstitution contains a non JSON object element: '" + element + "'");
                     return;
                 }
 
@@ -99,9 +100,9 @@ public class PropertyInjector {
             if (segment.matches("\\[\\d+]$") && currentTarget instanceof JsonArray array) {
                 int pos = Integer.parseInt(segment.substring(1, segment.length() - 1));
                 if (pos >= array.size() || pos < 0) {
-                    Miapi.LOGGER.error("Invalid path for PropertyInjector found! Token '" + segment + "'(split #" + index + ") in '" + path + "' is invalid: Array index exceeds length of array." +
+                    Miapi.LOGGER.error("Invalid path for PropertySubstitution found! Token '" + segment + "'(split #" + index + ") in '" + path + "' is invalid: Array index exceeds length of array." +
                             "\nArray: " + array + "\nRoot object: " + root);
-                    throw new RuntimeException("Failed to parse PropertyInjector! See above error.");
+                    throw new RuntimeException("Failed to parse PropertySubstitution! See above error.");
                 } else {
                     currentTarget = array.get(pos);
                     targetIndex = pos;
@@ -110,16 +111,16 @@ public class PropertyInjector {
             } else if (currentTarget instanceof JsonObject obj) {
                 JsonElement element = obj.get(segment);
                 if (element == null) {
-                    Miapi.LOGGER.error("Invalid path for PropertyInjector found! Token '" + segment + "'(split #" + index + ") in '" + path + " does not match any element in target object.\n" +
+                    Miapi.LOGGER.error("Invalid path for PropertySubstitution found! Token '" + segment + "'(split #" + index + ") in '" + path + " does not match any element in target object.\n" +
                             "Last target object: " + obj + "\nRoot object: " + root);
-                    throw new RuntimeException("Failed to parse PropertyInjector! See above error.");
+                    throw new RuntimeException("Failed to parse PropertySubstitution! See above error.");
                 } else {
                     currentTarget = element;
                     targetKey = segment;
                 }
                 targetIndex = null;
             } else {
-                Miapi.LOGGER.warn("Expected path end for PropertyInjector, but instead it continues! Cutting off early." +
+                Miapi.LOGGER.warn("Expected path end for PropertySubstitution, but instead it continues! Cutting off early." +
                         "\nCurrent segment: " + segment + "\nSegment Index: " + index + "\nWhole path: " + path + "\nCurrent target object: " + currentTarget +
                         "\nRoot object: " + root);
                 break;
@@ -139,6 +140,78 @@ public class PropertyInjector {
     }
 
     static {
+        valueResolvers.put("exact", (input, originalTarget, storedValues) -> { // exact mode uses a specific inputted json element
+            if (!(input instanceof JsonObject object)) return originalTarget; // shouldn't ever return here
+            JsonElement val = object.get("value");
+            if (val == null) {
+                Miapi.LOGGER.warn("Failed to found key 'value' for exact value resolver in a PropertySubstitution! Returning original instead.");
+                return originalTarget;
+            }
+            return val;
+        });
+        valueResolvers.put("append", (input, originalTarget, storedValues) -> { // append mode adds a specific element to an array
+            if (!(input instanceof JsonObject object)) return originalTarget; // shouldn't ever return here
+            if (originalTarget instanceof JsonArray array) {
+                JsonElement val = object.get("value");
+                if (val == null) {
+                    Miapi.LOGGER.warn("Failed to found key 'value' for append value resolver in a PropertySubstitution! Returning original instead.");
+                    return originalTarget;
+                }
+
+                Consumer<JsonArray> adder;
+                if (val instanceof JsonArray valArray && !object.has("insert_as_array")) {
+                    adder = arr -> arr.addAll(valArray);
+                } else adder = arr -> arr.add(val);
+
+                JsonArray newArray = array.deepCopy();
+                adder.accept(newArray);
+                return newArray;
+            }
+            Miapi.LOGGER.warn("Target for append value resolver in a PropertySubstitution is not an array nor a string! Returning original value.");
+            return originalTarget;
+        });
+        valueResolvers.put("calculate", (input, originalTarget, storedValues) -> { // calculate mode calculates string expressions using stored variables
+            if (!(input instanceof JsonObject object)) return originalTarget; // shouldn't ever return here
+            JsonElement val = object.get("value");
+            if (!(val instanceof JsonPrimitive prim) || !prim.isString()) {
+                Miapi.LOGGER.warn("Key 'value' for calculate value resolver in a PropertySubstitution is either missing or not a string! Returning original instead.");
+                return originalTarget;
+            }
+            String expression = prim.getAsString();
+            Pattern pattern = Pattern.compile("\\[(.*?)]");
+            Matcher matcher = pattern.matcher(expression);
+            while (matcher.find()) {
+                String var = matcher.group(1);
+                JsonElement value = storedValues.get(var);
+                if (!(value instanceof JsonPrimitive)) {
+                    Miapi.LOGGER.error("Target value for stored variable '" + var + "' referenced in calulcate value resolver in a PropertySubstitution is not a JSON primitive!");
+                    throw new RuntimeException();
+                }
+                expression = expression.replace("[" + var + "]", value.getAsString());
+            }
+
+            Expression ex = new Expression(expression);
+            return new JsonPrimitive(ex.calculate());
+        });
+        valueResolvers.put("replace", (input, originalTarget, storedValues) -> { // replace mode replaces variables in strings using the stored variables
+            if (!(input instanceof JsonObject object)) return originalTarget; // shouldn't ever return here
+            JsonElement val = object.get("value");
+            if (!(val instanceof JsonPrimitive prim) || !prim.isString()) {
+                Miapi.LOGGER.warn("Key 'value' for replace value resolver in a PropertySubstitution is either missing or not a string! Returning original instead.");
+                return originalTarget;
+            }
+            String string = prim.getAsString();
+            Pattern pattern = Pattern.compile("\\[(.*?)]");
+            Matcher matcher = pattern.matcher(string);
+            while (matcher.find()) {
+                String var = matcher.group(1);
+                JsonElement value = storedValues.get(var);
+                string = string.replace("[" + var + "]", value.getAsString());
+            }
+
+            return new JsonPrimitive(string);
+        });
+
         targetSelectors.put("modules", (root, injector) -> {
             if (!(root instanceof JsonObject object)) throw new JsonParseException("Failed to load Miapi module injection! Not a json object -> " + root);
 
@@ -158,7 +231,7 @@ public class PropertyInjector {
                         try {
                             property.load(module.getName(), value);
                         } catch (Exception ex) {
-                            Miapi.LOGGER.error("Exception whilst loading PropertyInject injection data for a module!");
+                            Miapi.LOGGER.error("Exception whilst loading PropertySubstitution injection data for a module!");
                             throw new RuntimeException(ex);
                         }
 

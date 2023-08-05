@@ -9,6 +9,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.text.Text;
+import net.minecraft.util.JsonHelper;
 import org.apache.logging.log4j.util.TriConsumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +18,7 @@ import smartin.miapi.client.MiapiClient;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.datapack.ReloadListener;
 import smartin.miapi.events.property.ApplicationEvents;
+import smartin.miapi.injections.PropertySubstitution;
 import smartin.miapi.item.ItemToModularConverter;
 import smartin.miapi.item.ModularItemStackConverter;
 import smartin.miapi.item.modular.PropertyResolver;
@@ -59,6 +61,15 @@ public class Miapi {
         registerReloadHandler(ReloadEvents.MAIN, "modules", RegistryInventory.modules, (isClient, path, data) -> {
             ItemModule.loadFromData(path, data);
         }, -0.5f);
+        registerReloadHandler(ReloadEvents.MAIN, "injectors", bl -> {}, (isClient, path, data) -> {
+            JsonElement element = JsonHelper.deserialize(data);
+            if (element instanceof JsonObject object) {
+                System.out.println("loading json\n" + object + "\n at " + path);
+                PropertySubstitution.targetSelectionDispatcher.dispatcher().triggerTargetFrom(object.get("target"), PropertySubstitution.getInjector(object));
+            } else {
+                LOGGER.warn("Found a non JSON object PropertyInjector. PropertyInjectors should be JSON objects.");
+            }
+        }, 1f);
         ReloadEvents.END.subscribe((isClient -> {
             Miapi.LOGGER.info("Loaded " + RegistryInventory.modules.getFlatMap().size() + " Modules");
         }));

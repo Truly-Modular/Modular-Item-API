@@ -115,7 +115,7 @@ public final class PaletteCreators {
                         MinecraftClient.getInstance().getTextureManager().registerTexture(identifier, new NativeImageBackedTexture(image));
                         return identifier;
                     } catch (Exception e) {
-                        RuntimeException runtime = new RuntimeException("Expetion parsing Material " + material);
+                        RuntimeException runtime = new RuntimeException("Exception parsing Material " + material);
                         runtime.addSuppressed(e);
                         throw runtime;
                     }
