@@ -1,15 +1,15 @@
 package smartin.miapi.datapack;
 
-import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceReloader;
-import net.minecraft.util.Identifier;
+import net.minecraft.resource.ResourceType;
 import net.minecraft.util.profiler.Profiler;
 import smartin.miapi.Miapi;
 
 import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
@@ -24,7 +24,6 @@ public class ReloadListener implements ResourceReloader {
         timeStart = System.nanoTime();
         ReloadEvents.START.fireEvent(false);
         Map<String, String> data = new HashMap<>();
-        /*
         manager.streamResourcePacks().forEach(resourcePack -> {
             ReloadEvents.syncedPaths.keySet().forEach(nameSpace -> {
                 resourcePack.findResources(ResourceType.SERVER_DATA, nameSpace, "", (identifier, inputSupplier) -> {
@@ -41,7 +40,7 @@ public class ReloadListener implements ResourceReloader {
                 });
             });
         });
-        */
+        /*
         ReloadEvents.syncedPaths.forEach((modID, dataPaths) -> {
             dataPaths.forEach(dataPath -> {
                 Map<Identifier, List<Resource>> map = manager.findAllResources(dataPath, (fileName) -> true);
@@ -61,6 +60,7 @@ public class ReloadListener implements ResourceReloader {
                 });
             });
         });
+        */
         return CompletableFuture.completedFuture(data);
     }
 
