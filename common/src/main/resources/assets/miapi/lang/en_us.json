@@ -53,6 +53,8 @@
     "miapi.stat.tipped.description": "Applies potion effects. Scroll to see every potion effect.\n🧪: The effect applied.\n⌚: The duration.\n🗡: The amplifier.\n🎯: The entity the effect is applied to.",
     "miapi.stat.damage": "Damage",
     "miapi.stat.damage.description": "Damage. Raw Damage",
+    "miapi.stat.attack_speed": "Attack Speed",
+    "miapi.stat.attack_speed.description": "Attacks per Second",
     "miapi.stat.back_stab": "Back Stab",
     "miapi.stat.back_stab.description": "Multiplier if the Attacker is behind the Victim",
     "miapi.stat.back_stab": "Back Stab",
@@ -241,6 +243,11 @@
     "miapi.module.axe_front.name": "[translation.[material.translation]]Axe",
     "miapi.module.axe_front.description": "A front part of an axe used for cutting and stripping wood. Can also be used for combat.",
     "miapi.module.axe_front.short_description": "An axe head",
+
+    "miapi.module.axe_back": "Axe Butt",
+    "miapi.module.axe_back.name": "[translation.[material.translation]]Axe",
+    "miapi.module.axe_back.description": "A back part of an axe used for cutting and stripping wood. Can also be used for combat.",
+    "miapi.module.axe_back.short_description": "An axe Head for the other side",
 
     "miapi.module.pickaxe_front": "Pickaxe Head",
     "miapi.module.pickaxe_front.name": "[translation.[material.translation]]Pickaxe",
