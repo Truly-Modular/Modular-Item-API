@@ -60,38 +60,18 @@ public class StatDisplay extends InteractAbleWidget {
                 .setDefault(1)
                 .setFormat("##.#")
                 .setMax(5).build());
-        addStatDisplay(AttributeSingleDisplay
-                .Builder(AttributeRegistry.MINING_SPEED_PICKAXE)
-                .setTranslationKey("mining_speed.pickaxe")
-                .setDefault(1)
-                .setFormat("##.#")
-                .setMax(12).build());
         addStatDisplay(MiningLevelStatDisplay
-                .Builder("pickaxe").build());
-        addStatDisplay(AttributeSingleDisplay
-                .Builder(AttributeRegistry.MINING_SPEED_AXE)
-                .setTranslationKey("mining_speed.axe")
-                .setDefault(1)
-                .setFormat("##.#")
-                .setMax(12).build());
+                .Builder("pickaxe")
+                .setAttribute(AttributeRegistry.MINING_SPEED_PICKAXE).build());
         addStatDisplay(MiningLevelStatDisplay
-                .Builder("axe").build());
-        addStatDisplay(AttributeSingleDisplay
-                .Builder(AttributeRegistry.MINING_SPEED_SHOVEL)
-                .setTranslationKey("mining_speed.shovel")
-                .setDefault(1)
-                .setFormat("##.#")
-                .setMax(12).build());
+                .Builder("axe")
+                .setAttribute(AttributeRegistry.MINING_SPEED_AXE).build());
         addStatDisplay(MiningLevelStatDisplay
-                .Builder("shovel").build());
-        addStatDisplay(AttributeSingleDisplay
-                .Builder(AttributeRegistry.MINING_SPEED_HOE)
-                .setTranslationKey("mining_speed.hoe")
-                .setDefault(1)
-                .setFormat("##.#")
-                .setMax(12).build());
+                .Builder("shovel")
+                .setAttribute(AttributeRegistry.MINING_SPEED_SHOVEL).build());
         addStatDisplay(MiningLevelStatDisplay
-                .Builder("hoe").build());
+                .Builder("hoe")
+                .setAttribute(AttributeRegistry.MINING_SPEED_HOE).build());
         addStatDisplay(SinglePropertyStatDisplay
                 .Builder(FlexibilityProperty.property)
                 .setTranslationKey(FlexibilityProperty.KEY)

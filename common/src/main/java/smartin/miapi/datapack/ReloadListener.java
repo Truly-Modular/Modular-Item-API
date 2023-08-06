@@ -23,21 +23,38 @@ public class ReloadListener implements ResourceReloader {
         ReloadEvents.inReload = true;
         timeStart = System.nanoTime();
         ReloadEvents.START.fireEvent(false);
-        Map<String,String> data = new HashMap<>();
-        ReloadEvents.syncedPaths.forEach((modID,dataPaths)->{
-            dataPaths.forEach(dataPath->{
+        Map<String, String> data = new HashMap<>();
+        /*
+        manager.streamResourcePacks().forEach(resourcePack -> {
+            ReloadEvents.syncedPaths.keySet().forEach(nameSpace -> {
+                resourcePack.findResources(ResourceType.SERVER_DATA, nameSpace, "", (identifier, inputSupplier) -> {
+                    if (ReloadEvents.syncedPaths.get(nameSpace).stream().anyMatch(path -> identifier.getPath().startsWith(path))) {
+                        try {
+                            BufferedReader reader = new BufferedReader(new InputStreamReader(inputSupplier.get(), StandardCharsets.UTF_8));
+                            String dataString = reader.lines().collect(Collectors.joining());
+                            String fullPath = identifier.getPath();
+                            data.put(fullPath, dataString);
+                        } catch (Exception e) {
+                            Miapi.LOGGER.warn("Error Loading Resource" + identifier);
+                        }
+                    }
+                });
+            });
+        });
+        */
+        ReloadEvents.syncedPaths.forEach((modID, dataPaths) -> {
+            dataPaths.forEach(dataPath -> {
                 Map<Identifier, List<Resource>> map = manager.findAllResources(dataPath, (fileName) -> true);
                 map.forEach((identifier, resources) -> {
-                    if(identifier.getNamespace().equals(modID)){
+                    if (identifier.getNamespace().equals(modID)) {
                         resources.forEach(resource -> {
-                            try{
+                            try {
                                 BufferedReader reader = resource.getReader();
                                 String dataString = reader.lines().collect(Collectors.joining());
                                 String fullPath = identifier.getPath();
-                                data.put(fullPath,dataString);
-                            }
-                            catch (Exception e){
-                                Miapi.LOGGER.warn("Error Loading Resource"+identifier+" "+ resources);
+                                data.put(fullPath, dataString);
+                            } catch (Exception e) {
+                                Miapi.LOGGER.warn("Error Loading Resource" + identifier + " " + resources);
                             }
                         });
                     }
@@ -49,12 +66,12 @@ public class ReloadListener implements ResourceReloader {
 
     public CompletableFuture<Void> apply(Object data, ResourceManager manager, Profiler profiler, Executor executor) {
         return CompletableFuture.runAsync(() -> {
-            Map<String,String> dataMap = (Map) data;
+            Map<String, String> dataMap = (Map) data;
             dataMap.forEach(ReloadEvents.DataPackLoader::trigger);
             ReloadEvents.MAIN.fireEvent(false);
             ReloadEvents.END.fireEvent(false);
-            Miapi.LOGGER.info("Server load took "+ (double) (System.nanoTime()-timeStart) / 1000 / 1000 + " ms");
-            if(Miapi.server!=null){
+            Miapi.LOGGER.info("Server load took " + (double) (System.nanoTime() - timeStart) / 1000 / 1000 + " ms");
+            if (Miapi.server != null) {
                 Miapi.server.getPlayerManager().getPlayerList().forEach(serverPlayerEntity -> {
                     ReloadEvents.triggerReloadOnClient(serverPlayerEntity);
                 });

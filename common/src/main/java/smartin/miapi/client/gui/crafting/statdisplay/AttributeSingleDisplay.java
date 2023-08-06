@@ -51,10 +51,10 @@ public class AttributeSingleDisplay extends SingleStatDisplayDouble {
 
     public static class Builder {
         EntityAttribute attribute;
+        public EquipmentSlot slot = EquipmentSlot.MAINHAND;
         public double defaultValue = 1;
         public StatDisplay.TextGetter name;
         public StatDisplay.TextGetter hoverDescription = (stack) -> Text.empty();
-        public EquipmentSlot slot = EquipmentSlot.MAINHAND;
         public String translationKey = "";
         public Object[] descriptionArgs = new Object[]{};
         public DecimalFormat modifierFormat;
