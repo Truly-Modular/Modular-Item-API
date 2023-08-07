@@ -41,12 +41,14 @@ public class GuiOffsetProperty implements ModuleProperty {
                 }
                 //guiOffsetJson.x -= (guiOffsetJson.sizeX/2);
                 //guiOffsetJson.y -= (guiOffsetJson.sizeY/2);
-                guiOffsetJson.x = guiOffsetJson.x / 16f;
-                guiOffsetJson.y = guiOffsetJson.y / 16f;
-                guiOffsetJson.sizeX = 1 - guiOffsetJson.sizeX / 16.0f;
-                guiOffsetJson.sizeY = 1 - guiOffsetJson.sizeY / 16.0f;
+                float baseSize = 16f;
+                guiOffsetJson.x = guiOffsetJson.x / baseSize;
+                guiOffsetJson.y = guiOffsetJson.y / baseSize;
+                guiOffsetJson.sizeX = (baseSize) / (baseSize + guiOffsetJson.sizeX);
+                guiOffsetJson.sizeY = (baseSize) / (baseSize + guiOffsetJson.sizeY);
+                float zScale = (guiOffsetJson.sizeX + guiOffsetJson.sizeY) / 2;
                 matrices.translate(guiOffsetJson.x, guiOffsetJson.y, 0);
-                matrices.scale(guiOffsetJson.sizeX, guiOffsetJson.sizeY, 1);
+                matrices.scale(guiOffsetJson.sizeX, guiOffsetJson.sizeY, zScale);
 
             }
             return matrices;

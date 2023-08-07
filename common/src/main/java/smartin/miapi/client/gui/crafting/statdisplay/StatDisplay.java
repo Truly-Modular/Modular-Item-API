@@ -60,6 +60,24 @@ public class StatDisplay extends InteractAbleWidget {
                 .setDefault(1)
                 .setFormat("##.#")
                 .setMax(5).build());
+        addStatDisplay(AttributeSingleDisplay
+                .Builder(AttributeRegistry.SHIELD_BREAK)
+                .setTranslationKey("shield_break")
+                .setDefault(0)
+                .setFormat("##.#")
+                .setMax(5).build());
+        addStatDisplay(AttributeSingleDisplay
+                .Builder(AttributeRegistry.REACH)
+                .setTranslationKey("reach")
+                .setDefault(0)
+                .setFormat("##.#")
+                .setMax(2).build());
+        addStatDisplay(AttributeSingleDisplay
+                .Builder(AttributeRegistry.ATTACK_RANGE)
+                .setTranslationKey("attack_range")
+                .setDefault(0)
+                .setFormat("##.#")
+                .setMax(2).build());
         addStatDisplay(MiningLevelStatDisplay
                 .Builder("pickaxe")
                 .setAttribute(AttributeRegistry.MINING_SPEED_PICKAXE).build());

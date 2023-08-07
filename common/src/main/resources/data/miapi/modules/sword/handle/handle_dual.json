@@ -1,54 +1,42 @@
 {
-    "name": "handle_polearm",
+    "name": "handle_dual",
     "texture": {
-        "path": "miapi:models/item/sword/handle/polearm/[material.texture].json",
+        "path": "miapi:models/item/sword/handle/two_handed/[material.texture].json",
         "transform": {
-            "rotation": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0
-            },
-            "translation": {
-                "x": -4.0,
-                "y": -4.0,
-                "z": 0.0
-            },
-            "scale": {
-                "x": 1.0,
-                "y": 1.0,
-                "z": 1.0
-            }
+            "rotation": {"x": 0.0, "y": 0.0, "z": 0.0},
+            "translation": {"x": -4.0, "y": -5.0, "z": 0.0},
+            "scale": {"x": 1.0, "y": 1.0, "z": 1.0}
         }
     },
+    "allowedInSlots": [
+        "melee"
+    ],
     "enchantments": {
         "allowed": [
             "miapi:basic"
         ]
     },
-    "allowedInSlots": [
-        "melee"
-    ],
     "slots": {
         "0": {
             "allowed": [
-                "polearm_blade"
+                "sword_guard",
+                "sword_blade_small"
             ],
             "transform": {
-                "rotation": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 0.0
-                },
-                "translation": {
-                    "x": 9.0,
-                    "y": 9.0,
-                    "z": 0.0
-                },
-                "scale": {
-                    "x": 1.0,
-                    "y": 1.0,
-                    "z": 1.0
-                }
+                "rotation": {"x": 0.0, "y": 0.0, "z": 0.0},
+                "translation": {"x": 2.0, "y": 2.0, "z": 0.0},
+                "scale": {"x": 1.0, "y": 1.0, "z": 1.0}
+            }
+        },
+        "1": {
+            "allowed": [
+                "sword_guard",
+                "sword_blade_small"
+            ],
+            "transform": {
+                "rotation": {"x": 0.0, "y": 0.0, "z": 180.0},
+                "translation": {"x": 4.0, "y": 4.0, "z": 0.0},
+                "scale": {"x": 1.0, "y": 1.0, "z": 1.0}
             }
         }
     },
@@ -176,21 +164,13 @@
         ],
         "cost": 1
     },
+    "guiOffset": {
+        "x": 8,
+        "y": 8,
+        "sizeX": 12,
+        "sizeY": 12
+    },
     "attributes": [
-        {
-            "attribute": "miapi:generic.reach",
-            "value": "+1.0",
-            "operation": "+",
-            "slot": "mainhand",
-            "uuid": "AAAAAAAA-4180-4865-B01B-BCCE9785ACA3"
-        },
-        {
-            "attribute": "miapi:generic.attack_range",
-            "value": "1.0",
-            "operation": "+",
-            "slot": "mainhand",
-            "uuid": "AAAAAAAA-4180-4865-B01B-BCCE9785ACA3"
-        },
         {
             "attribute": "generic.attack_damage",
             "value": "0.0",
@@ -199,15 +179,22 @@
             "uuid": "CB3F55D3-645C-4F38-A497-9C13A33DB5CF"
         },
         {
+            "attribute": "generic.attack_damage",
+            "value": "0.5",
+            "operation": "**",
+            "slot": "mainhand",
+            "uuid": "CB3F55D3-645C-4F38-A497-9C13A33DB5CF"
+        },
+        {
             "attribute": "generic.attack_speed",
-            "value": "-2.5",
+            "value": "-2.6",
             "operation": "+",
             "slot": "mainhand",
             "uuid": "FA233E1C-4180-4865-B01B-BCCE9785ACA3"
         },
         {
             "attribute": "generic.attack_speed",
-            "value": "0.0",
+            "value": "0.10",
             "operation": "*",
             "slot": "mainhand",
             "uuid": "FA233E1C-4180-4865-B01B-BCCE9785ACA3"
@@ -227,34 +214,7 @@
             "uuid": "AAAAAAAA-4180-4865-B01B-BCCE9785ACA3"
         }
     ],
-    "guiOffset": {
-        "x": 3,
-        "y": 3,
-        "sizeX": 7,
-        "sizeY": 7
-    },
-    "abilities": [
-        "circleAttack"
-    ],
-    "circleAttack": {
-        "damage": 1.5,
-        "range": 5,
-        "minHold": 10,
-        "cooldown": 50,
-        "particles": [
-            {
-                "particle": "minecraft:sweep_attack",
-                "count": 0,
-                "rangePercent": 0.75
-            },
-            {
-                "particle": "minecraft:bubble",
-                "count": 0,
-                "rangePercent": 0.3
-            }
-        ]
-    },
     "isWeapon": true,
-    "displayName": "miapi.module.handle_polearm.name",
+    "displayName": "miapi.module.handle_long.name",
     "itemId": "miapi:modular_handle"
 }

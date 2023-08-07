@@ -37,6 +37,11 @@ public class BetterCombatProperty implements ModuleProperty {
 
     @Override
     public JsonElement merge(JsonElement old, JsonElement toMerge, MergeType type) {
+        if (type == MergeType.SMART || type == MergeType.EXTEND) {
+            return toMerge;
+        } else if (type == MergeType.OVERWRITE) {
+            return old;
+        }
         return ModuleProperty.super.merge(old, toMerge, type);
     }
 }

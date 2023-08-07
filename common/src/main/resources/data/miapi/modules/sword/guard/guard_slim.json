@@ -31,6 +31,5 @@
     "blocking": 10,
     "abilities": [
         "block"
-    ],
-    "flexibility": "-0.5"
+    ]
 }

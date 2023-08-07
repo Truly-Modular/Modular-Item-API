@@ -199,7 +199,6 @@
         ],
         "cost": 1
     },
-    "flexibility": 1,
     "attributes": [
         {
             "attribute": "generic.attack_damage",

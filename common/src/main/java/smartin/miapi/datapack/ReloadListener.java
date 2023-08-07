@@ -1,15 +1,19 @@
 package smartin.miapi.datapack;
 
+import dev.architectury.platform.Platform;
+import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceReloader;
 import net.minecraft.resource.ResourceType;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.profiler.Profiler;
 import smartin.miapi.Miapi;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
@@ -23,44 +27,48 @@ public class ReloadListener implements ResourceReloader {
         ReloadEvents.inReload = true;
         timeStart = System.nanoTime();
         ReloadEvents.START.fireEvent(false);
-        Map<String, String> data = new HashMap<>();
-        manager.streamResourcePacks().forEach(resourcePack -> {
-            ReloadEvents.syncedPaths.keySet().forEach(nameSpace -> {
-                resourcePack.findResources(ResourceType.SERVER_DATA, nameSpace, "", (identifier, inputSupplier) -> {
-                    if (ReloadEvents.syncedPaths.get(nameSpace).stream().anyMatch(path -> identifier.getPath().startsWith(path))) {
-                        try {
-                            BufferedReader reader = new BufferedReader(new InputStreamReader(inputSupplier.get(), StandardCharsets.UTF_8));
-                            String dataString = reader.lines().collect(Collectors.joining());
-                            String fullPath = identifier.getPath();
-                            data.put(fullPath, dataString);
-                        } catch (Exception e) {
-                            Miapi.LOGGER.warn("Error Loading Resource" + identifier);
-                        }
-                    }
-                });
-            });
-        });
-        /*
-        ReloadEvents.syncedPaths.forEach((modID, dataPaths) -> {
-            dataPaths.forEach(dataPath -> {
-                Map<Identifier, List<Resource>> map = manager.findAllResources(dataPath, (fileName) -> true);
-                map.forEach((identifier, resources) -> {
-                    if (identifier.getNamespace().equals(modID)) {
-                        resources.forEach(resource -> {
+        Map<String, String> data = new LinkedHashMap<>();
+
+        if(Platform.isFabric()){
+            //TODO:figure out why this does nto work on forge.
+            manager.streamResourcePacks().forEach(resourcePack -> {
+                ReloadEvents.syncedPaths.keySet().forEach(nameSpace -> {
+                    resourcePack.findResources(ResourceType.SERVER_DATA, nameSpace, "", (identifier, inputSupplier) -> {
+                        if (ReloadEvents.syncedPaths.get(nameSpace).stream().anyMatch(path -> identifier.getPath().startsWith(path))) {
                             try {
-                                BufferedReader reader = resource.getReader();
+                                BufferedReader reader = new BufferedReader(new InputStreamReader(inputSupplier.get(), StandardCharsets.UTF_8));
                                 String dataString = reader.lines().collect(Collectors.joining());
                                 String fullPath = identifier.getPath();
                                 data.put(fullPath, dataString);
                             } catch (Exception e) {
-                                Miapi.LOGGER.warn("Error Loading Resource" + identifier + " " + resources);
+                                Miapi.LOGGER.warn("Error Loading Resource" + identifier);
                             }
-                        });
-                    }
+                        }
+                    });
                 });
             });
-        });
-        */
+        }
+        else{
+            ReloadEvents.syncedPaths.forEach((modID, dataPaths) -> {
+                dataPaths.forEach(dataPath -> {
+                    Map<Identifier, List<Resource>> map = manager.findAllResources(dataPath, (fileName) -> true);
+                    map.forEach((identifier, resources) -> {
+                        if (identifier.getNamespace().equals(modID)) {
+                            resources.forEach(resource -> {
+                                try {
+                                    BufferedReader reader = resource.getReader();
+                                    String dataString = reader.lines().collect(Collectors.joining());
+                                    String fullPath = identifier.getPath();
+                                    data.put(fullPath, dataString);
+                                } catch (Exception e) {
+                                    Miapi.LOGGER.warn("Error Loading Resource" + identifier + " " + resources);
+                                }
+                            });
+                        }
+                    });
+                });
+            });
+        }
         return CompletableFuture.completedFuture(data);
     }
 

@@ -46,6 +46,7 @@ public class SlotProperty implements ModuleProperty {
         Transform mergedTransform = Transform.IDENTITY;
         while (current != null) {
             mergedTransform = Transform.merge(getLocalTransform(current), mergedTransform);
+            //mergedTransform = Transform.merge(mergedTransform,getLocalTransform(current));
             current = current.parent;
         }
         mergedTransform = Transform.merge(mergedTransform, moduleSlot.transform);
@@ -77,10 +78,11 @@ public class SlotProperty implements ModuleProperty {
                 mergedTransform.set(stack.primary, mergedTransform.get(null));
                 mergedTransform.set(null, Transform.IDENTITY);
             }
-            mergedTransform = TransformMap.merge(mergedTransform,getLocalTransformStack(current));
+            //mergedTransform = TransformMap.merge(mergedTransform,getLocalTransformStack(current));
+            mergedTransform = TransformMap.merge(getLocalTransformStack(current),mergedTransform);
             current = current.parent;
         }
-        mergedTransform = TransformMap.merge(mergedTransform, moduleSlot.getTransformStack());
+        mergedTransform = TransformMap.merge(moduleSlot.getTransformStack(),mergedTransform);
         return mergedTransform;
     }
 
