@@ -1,25 +1,20 @@
 package smartin.miapi.client.gui.crafting.crafter;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.ColorHelper;
-import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
 import smartin.miapi.craft.CraftAction;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.modules.ItemModule;
-import smartin.miapi.modules.properties.MaterialProperty;
+import smartin.miapi.modules.properties.material.Material;
+import smartin.miapi.modules.properties.material.MaterialProperty;
 import smartin.miapi.modules.properties.SlotProperty;
 
 import java.util.ArrayList;
@@ -76,7 +71,7 @@ public class ModuleCrafter extends InteractAbleWidget {
             craftView = null;
         }
         if (mode == Mode.DETAIL && !(stack.getItem() instanceof ModularItem)) {
-            MaterialProperty.Material material = MaterialProperty.getMaterial(stack);
+            Material material = MaterialProperty.getMaterial(stack);
             if (material != null) {
                 mode = Mode.MATERIAL;
             }

@@ -10,6 +10,18 @@
     "flexibility": 1,
     "durability": 200,
     "color": "E47B55",
+    "color_palette": {
+        "type": "grayscale_map",
+        "colors": {
+            "24": "6d3421",
+            "68": "8a4129",
+            "107": "9c4e31",
+            "150": "9c4529",
+            "190": "c15a36",
+            "216": "e77c56",
+            "255": "fc9982"
+        }
+    },
     "textures": [
         "metalic"
     ],

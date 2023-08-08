@@ -9,6 +9,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.text.Text;
+import net.minecraft.util.JsonHelper;
 import org.apache.logging.log4j.util.TriConsumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +18,7 @@ import smartin.miapi.client.MiapiClient;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.datapack.ReloadListener;
 import smartin.miapi.events.property.ApplicationEvents;
+import smartin.miapi.injections.PropertySubstitution;
 import smartin.miapi.item.ItemToModularConverter;
 import smartin.miapi.item.ModularItemStackConverter;
 import smartin.miapi.item.modular.PropertyResolver;
@@ -24,7 +26,7 @@ import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
 import smartin.miapi.modules.cache.ModularItemCache;
-import smartin.miapi.modules.conditions.*;
+import smartin.miapi.modules.conditions.ConditionManager;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.modules.synergies.SynergyManager;
 import smartin.miapi.network.Networking;
@@ -58,6 +60,22 @@ public class Miapi {
         ReloadListenerRegistry.register(ResourceType.SERVER_DATA, new ReloadListener());
         registerReloadHandler(ReloadEvents.MAIN, "modules", RegistryInventory.modules, (isClient, path, data) -> {
             ItemModule.loadFromData(path, data);
+        }, -0.5f);
+        registerReloadHandler(ReloadEvents.MAIN, "injectors", bl -> PropertySubstitution.injectorsCount = 0, (isClient, path, data) -> {
+            JsonElement element = JsonHelper.deserialize(data);
+            if (element instanceof JsonObject object) {
+                PropertySubstitution.targetSelectionDispatcher.dispatcher().triggerTargetFrom(object.get("target"), PropertySubstitution.getInjector(object));
+                PropertySubstitution.injectorsCount++;
+            } else {
+                LOGGER.warn("Found a non JSON object PropertyInjector. PropertyInjectors should be JSON objects.");
+            }
+        }, 1f);
+        ReloadEvents.END.subscribe(isClient -> {
+            Miapi.LOGGER.info("Loaded " + PropertySubstitution.injectorsCount + " Injectors/Property Substitutors");
+            Miapi.LOGGER.info("Loaded " + RegistryInventory.modules.getFlatMap().size() + " Modules");
+        });
+        ReloadEvents.END.subscribe((isClient) -> {
+            ModularItemCache.discardCache();
         });
         PropertyResolver.propertyProviderRegistry.register("module", (moduleInstance, oldMap) -> {
             HashMap<ModuleProperty, JsonElement> map = new HashMap<>();
@@ -130,12 +148,8 @@ public class Miapi {
         }, priority);
     }
 
-    public static void registerReloadHandler(ReloadEvents.ReloadEvent event, String location, boolean syncToClient, TriConsumer<Boolean, String, String> handler) {
-        registerReloadHandler(event, location, syncToClient, bl -> {}, handler, 0f);
-    }
-
-    public static void registerReloadHandler(ReloadEvents.ReloadEvent event, String location, TriConsumer<Boolean, String, String> handler) {
-        registerReloadHandler(event, location, true, bl -> {}, handler, 0f);
+    public static void registerReloadHandler(ReloadEvents.ReloadEvent event, String location, Consumer<Boolean> beforeLoop, TriConsumer<Boolean, String, String> handler, float priority) {
+        registerReloadHandler(event, location, true, beforeLoop, handler, priority);
     }
 
     public static void registerReloadHandler(ReloadEvents.ReloadEvent event, String location, MiapiRegistry<?> toClear, TriConsumer<Boolean, String, String> handler) {

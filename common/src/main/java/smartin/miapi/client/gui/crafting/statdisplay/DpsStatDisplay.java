@@ -13,6 +13,7 @@ public class DpsStatDisplay extends SingleStatDisplayDouble{
 
     public DpsStatDisplay() {
         super(0, 0, 80, 32, (stack)->Text.literal("DPS"), (stack)->Text.empty());
+        this.maxValue = 25;
     }
 
     @Override

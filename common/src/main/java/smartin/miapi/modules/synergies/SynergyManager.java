@@ -36,7 +36,14 @@ public class SynergyManager {
             }
             return oldMap;
         });
-        Miapi.registerReloadHandler(ReloadEvents.END, "synergies", (isClient, path, data) -> load(data));
+        Miapi.registerReloadHandler(ReloadEvents.MAIN, "synergies", maps, (isClient, path, data) -> load(data), 2);
+        ReloadEvents.END.subscribe((isClient -> {
+            int size = 0;
+            for (List<Synergy> synergies : maps.values()) {
+                size += synergies.size();
+            }
+            Miapi.LOGGER.info("Loaded " + size + " Synergies");
+        }));
     }
 
     public static void load(String data) {

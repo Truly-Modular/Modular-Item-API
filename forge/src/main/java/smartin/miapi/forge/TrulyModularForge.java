@@ -2,11 +2,9 @@ package smartin.miapi.forge;
 
 import dev.architectury.platform.forge.EventBuses;
 import net.minecraftforge.common.ForgeMod;
-import net.minecraftforge.registries.DeferredRegister;
-import smartin.miapi.Miapi;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import smartin.miapi.attributes.AttributeRegistry;
+import smartin.miapi.Miapi;
 import smartin.miapi.modules.properties.AttributeProperty;
 
 import static smartin.miapi.Miapi.MOD_ID;

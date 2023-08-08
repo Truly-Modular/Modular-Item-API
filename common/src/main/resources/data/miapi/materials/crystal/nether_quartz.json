@@ -1,25 +1,39 @@
 {
-  "key": "nether_quartz",
-  "translation": "miapi.material.crystal.nether_quartz",
-  "icon": "textures/item/quartz.png",
-  "groups": ["crystal","gem"],
-  "hardness": 5.9,
-  "density": 0.5,
-  "flexibility": 0,
-  "durability": 1,
-  "color": "F4F2EF",
-  "mining_speed": 5,
-  "mining_level": 0,
-  "textures": [
-  ],
-  "items": [
-    {
-      "item": "minecraft:quartz",
-      "value": 1.0
+    "key": "nether_quartz",
+    "translation": "miapi.material.crystal.nether_quartz",
+    "icon": "textures/item/quartz.png",
+    "groups": [
+        "crystal",
+        "gem"
+    ],
+    "hardness": 5.9,
+    "density": 0.5,
+    "flexibility": 0,
+    "durability": 1,
+    "color": "F4F2EF",
+    "color_palette": {
+        "type": "grayscale_map",
+        "colors": {
+            "24": "6f5d5a",
+            "68": "897b73",
+            "107": "b3a091",
+            "150": "b6a48e",
+            "190": "d4caba",
+            "216": "ddd4c6"
+        }
     },
-    {
-      "item": "minecraft:quartz_block",
-      "value": 4.0
-    }
-  ]
+    "mining_speed": 5,
+    "mining_level": 0,
+    "textures": [
+    ],
+    "items": [
+        {
+            "item": "minecraft:quartz",
+            "value": 1.0
+        },
+        {
+            "item": "minecraft:quartz_block",
+            "value": 4.0
+        }
+    ]
 }

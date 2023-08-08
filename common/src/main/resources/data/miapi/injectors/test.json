@@ -1,0 +1,18 @@
+{
+  "target": {
+    "type": "modules",
+    "keys": [ "blade_sword" ]
+  },
+  "read": {
+    "someVariable": "allowedMaterial.cost"
+  },
+  "write": {
+    "allowedMaterial.cost": {
+      "mode": "calculate",
+      "value": "[someVariable]+5"
+    }
+  },
+  "remove__disabled": [
+    ""
+  ]
+}

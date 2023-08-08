@@ -1,22 +1,37 @@
 {
-  "key": "flint",
-  "translation": "miapi.material.flint",
-  "icon": "textures/item/flint.png",
-  "groups": ["metal","flint"],
-  "hardness": 3.7,
-  "density": 3,
-  "flexibility": 0,
-  "durability": 90,
-  "color": "555555",
-  "mining_speed": 4,
-  "mining_level": 2,
-  "textures": [
-    "rough"
-  ],
-  "items": [
-    {
-      "item": "minecraft:flint",
-      "value": 1.0
-    }
-  ]
+    "key": "flint",
+    "translation": "miapi.material.flint",
+    "icon": "textures/item/flint.png",
+    "groups": [
+        "metal",
+        "flint"
+    ],
+    "hardness": 3.7,
+    "density": 3,
+    "flexibility": 0,
+    "durability": 90,
+    "color": "555555",
+    "color_palette": {
+        "type": "grayscale_map",
+        "colors": {
+            "24": "0e0e0e",
+            "68": "222020",
+            "107": "2e2d2d",
+            "150": "3d3c3c",
+            "190": "565656",
+            "216": "7f7f7f",
+            "255": "a8a8a8"
+        }
+    },
+    "mining_speed": 4,
+    "mining_level": 2,
+    "textures": [
+        "rough"
+    ],
+    "items": [
+        {
+            "item": "minecraft:flint",
+            "value": 1.0
+        }
+    ]
 }

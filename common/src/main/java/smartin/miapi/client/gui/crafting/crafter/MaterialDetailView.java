@@ -8,7 +8,8 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.ColorHelper;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.*;
-import smartin.miapi.modules.properties.MaterialProperty;
+import smartin.miapi.modules.properties.material.Material;
+import smartin.miapi.modules.properties.material.MaterialProperty;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -21,7 +22,7 @@ public class MaterialDetailView extends InteractAbleWidget {
     private ItemStack itemStack;
     private Consumer<Object> back;
     private ScrollingTextWidget header;
-    private MaterialProperty.Material material;
+    private Material material;
     private Identifier texture = new Identifier(Miapi.MOD_ID, "textures/gui/crafter/material_detail_background.png");
     private float scale = 1.9f;
     public static List<Builder> infoBarBuilders = new ArrayList<>();
@@ -60,7 +61,7 @@ public class MaterialDetailView extends InteractAbleWidget {
         List<InteractAbleWidget> widgets = new ArrayList<>();
         widgets.add(new ColorWidget(this.getX(), this.getY(), this.getWidth(), spacer, material.getColor()));
         for (Builder builder : infoBarBuilders) {
-            widgets.add(new InfoBar(x + 10, y, width - 10, spacer, Text.translatable(Miapi.MOD_ID + ".material_stat." + builder.key), (float) material.getDouble(builder.key), builder.min, builder.max, builder.format));
+            widgets.add(builder.build(x,y,width,spacer,material));
         }
         ScrollList list = new ScrollList(x + 10, y + 30, width - 10, this.getHeight() - 30, widgets);
         this.addChild(list);
@@ -166,6 +167,10 @@ public class MaterialDetailView extends InteractAbleWidget {
         public Builder setFormat(String format) {
             this.format = format;
             return this;
+        }
+
+        public InteractAbleWidget build(int x,int y,int width,int spacer, Material material){
+            return new InfoBar(x + 10, y, width - 10, spacer, Text.translatable(Miapi.MOD_ID + ".material_stat." + key), (float) material.getDouble(key), min, max, format);
         }
     }
 }

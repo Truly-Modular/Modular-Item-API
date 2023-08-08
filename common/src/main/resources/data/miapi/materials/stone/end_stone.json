@@ -1,22 +1,35 @@
 {
-  "key": "stone_end_stone",
-  "translation": "miapi.material.stone.end_stone",
-  "icon": "textures/block/end_stone.png",
-  "groups": ["stone"],
-  "hardness": 6,
-  "density": 4,
-  "flexibility": 0,
-  "durability": 1031,
-  "color": "EBF3B2",
-  "mining_speed": 4,
-  "mining_level": 1,
-  "textures": [
-    "rough"
-  ],
-  "items": [
-    {
-      "item": "minecraft:end_stone",
-      "value": 1.0
-    }
-  ]
+    "key": "stone_end_stone",
+    "translation": "miapi.material.stone.end_stone",
+    "icon": "textures/block/end_stone.png",
+    "groups": [
+        "stone"
+    ],
+    "hardness": 6,
+    "density": 4,
+    "flexibility": 0,
+    "durability": 1031,
+    "color": "EBF3B2",
+    "color_palette": {
+        "type": "grayscale_map",
+        "colors": {
+            "24": "c5be8b",
+            "68": "cdc68b",
+            "107": "d5da94",
+            "150": "dee6a4",
+            "190": "eef6b4",
+            "255": "f6fabd"
+        }
+    },
+    "mining_speed": 4,
+    "mining_level": 1,
+    "textures": [
+        "rough"
+    ],
+    "items": [
+        {
+            "item": "minecraft:end_stone",
+            "value": 1.0
+        }
+    ]
 }

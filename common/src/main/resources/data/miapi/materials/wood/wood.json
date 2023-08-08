@@ -8,18 +8,38 @@
   "flexibility": 6,
   "durability": 59,
   "color": "8B6B45",
+  "color_palette": {
+    "type": "grayscale_map",
+    "colors": {
+      "24": "20180A",
+      "68": "372910",
+      "107": "473614",
+      "150": "594319",
+      "190": "755821",
+      "216": "866526",
+      "255": "99722C"
+    }
+  },
   "mining_speed": 2,
   "mining_level": 0,
   "textures": [
     "wood",
     "rough"
   ],
+  "properties": {
+    "default": {
+      "healthPercent": 50
+    },
+    "armor": {
+      "armor_pen": -20
+    }
+  },
   "items": [
     {
       "item": "minecraft:stick",
       "value": 0.5
     },{
-      "tag": "minecraft:planks",
+      "tag": "minecraft:planks2",
       "value": 1.0
     }
   ]

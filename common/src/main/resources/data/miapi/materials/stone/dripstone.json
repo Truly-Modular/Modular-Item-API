@@ -1,22 +1,35 @@
 {
-  "key": "dripstone",
-  "translation": "miapi.material.stone.dripstone",
-  "icon": "textures/block/dripstone_block.png",
-  "groups": ["stone"],
-  "hardness": 4,
-  "density": 3,
-  "flexibility": 0,
-  "durability": 131,
-  "color": "907864",
-  "mining_speed": 4,
-  "mining_level": 1,
-  "textures": [
-    "rough"
-  ],
-  "items": [
-    {
-      "item": "minecraft:dripstone_block",
-      "value": 1.0
-    }
-  ]
+    "key": "dripstone",
+    "translation": "miapi.material.stone.dripstone",
+    "icon": "textures/block/dripstone_block.png",
+    "groups": [
+        "stone"
+    ],
+    "hardness": 4,
+    "density": 3,
+    "flexibility": 0,
+    "durability": 131,
+    "color": "907864",
+    "color_palette": {
+        "type": "grayscale_map",
+        "colors": {
+            "24": "634a47",
+            "68": "735450",
+            "107": "836356",
+            "150": "927965",
+            "190": "a08d71",
+            "255": "a08d71"
+        }
+    },
+    "mining_speed": 4,
+    "mining_level": 1,
+    "textures": [
+        "rough"
+    ],
+    "items": [
+        {
+            "item": "minecraft:dripstone_block",
+            "value": 1.0
+        }
+    ]
 }

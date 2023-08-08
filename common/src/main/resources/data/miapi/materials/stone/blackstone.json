@@ -1,22 +1,35 @@
 {
-  "key": "stone_blackstone",
-  "translation": "miapi.material.stone.blackstone",
-  "icon": "textures/block/blackstone.png",
-  "groups": ["stone"],
-  "hardness": 5,
-  "density": 3,
-  "flexibility": 0,
-  "durability": 156,
-  "color": "3B3846",
-  "mining_speed": 4,
-  "mining_level": 1,
-  "textures": [
-    "rough"
-  ],
-  "items": [
-    {
-      "item": "minecraft:blackstone",
-      "value": 1.0
-    }
-  ]
+    "key": "stone_blackstone",
+    "translation": "miapi.material.stone.blackstone",
+    "icon": "textures/block/blackstone.png",
+    "groups": [
+        "stone"
+    ],
+    "hardness": 5,
+    "density": 3,
+    "flexibility": 0,
+    "durability": 156,
+    "color": "3B3846",
+    "color_palette": {
+        "type": "grayscale_map",
+        "colors": {
+            "24": "160f10",
+            "68": "20131c",
+            "107": "4e4b54",
+            "150": "27221c",
+            "190": "3c3947",
+            "255": "312c36"
+        }
+    },
+    "mining_speed": 4,
+    "mining_level": 1,
+    "textures": [
+        "rough"
+    ],
+    "items": [
+        {
+            "item": "minecraft:blackstone",
+            "value": 1.0
+        }
+    ]
 }

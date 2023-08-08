@@ -11,30 +11,30 @@ import net.minecraft.client.render.model.json.JsonUnbakedModel;
 import net.minecraft.client.render.model.json.ModelOverrideList;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.SpriteIdentifier;
-import net.minecraft.item.ArrowItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.model.DynamicBakedModel;
 import smartin.miapi.client.model.DynamicBakery;
 import smartin.miapi.client.model.ModelLoadAccessor;
+import smartin.miapi.client.modelrework.BakedMiapiModel;
+import smartin.miapi.client.modelrework.MiapiItemModel;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.item.modular.Transform;
 import smartin.miapi.item.modular.TransformMap;
 import smartin.miapi.mixin.client.ModelLoaderInterfaceAccessor;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.cache.ModularItemCache;
-import smartin.miapi.modules.properties.MaterialProperty;
+import smartin.miapi.modules.properties.material.Material;
+import smartin.miapi.modules.properties.material.MaterialProperty;
 import smartin.miapi.modules.properties.SlotProperty;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 
@@ -57,10 +57,58 @@ public class ModelProperty implements ModuleProperty {
         generator = new ItemModelGenerator();
         ModularItemCache.setSupplier(CACHE_KEY_ITEM, (stack) -> getModelMap(stack).get("item"));
         ModularItemCache.setSupplier(CACHE_KEY_MAP, ModelProperty::generateModels);
+        MiapiItemModel.modelSuppliers.add((key, model, stack) -> {
+            return Collections.singletonList(new BakedMiapiModel(getForModule(model), model, stack));
+        });
+    }
+
+    List<BakedModel> getForModule(ItemModule.ModuleInstance instance) {
+        Gson gson = Miapi.gson;
+        List<ModelJson> modelJsonList = new ArrayList<>();
+        List<BakedModel> models = new ArrayList<>();
+        JsonElement data = instance.getProperties().get(property);
+        if (data == null) {
+            return new ArrayList<>();
+        }
+        if (data.isJsonArray()) {
+            JsonArray dataArray = data.getAsJsonArray();
+            for (JsonElement element : dataArray) {
+                ModelJson propertyJson = gson.fromJson(element.toString(), ModelJson.class);
+                propertyJson.repair();
+                modelJsonList.add(propertyJson);
+            }
+        } else {
+            ModelJson propertyJson = gson.fromJson(data.toString(), ModelJson.class);
+            propertyJson.repair();
+            modelJsonList.add(propertyJson);
+        }
+        for (ModelJson json : modelJsonList) {
+            int condition = Material.getColor(StatResolver.resolveString(json.condition, instance));
+            if (condition != 0) {
+                Material material = MaterialProperty.getMaterial(instance);
+                List<String> list = new ArrayList<>();
+                if (material != null) {
+                    list.add(material.getKey());
+                    list = material.getTextureKeys();
+                } else {
+                    list.add("default");
+                }
+                JsonUnbakedModel unbakedModel = null;
+                for (String str : list) {
+                    String fullPath = json.path.replace("[material.texture]", str);
+                    if (modelCache.containsKey(fullPath)) {
+                        unbakedModel = modelCache.get(fullPath);
+                    }
+                }
+                models.add(DynamicBakery.bakeModel(unbakedModel, textureGetter, ColorHelper.Argb.getArgb(255, 255, 255, 255), json.transform).optimize());
+            }
+        }
+        return models;
     }
 
     public static Map<String, BakedModel> getModelMap(ItemStack stack) {
-        return (Map<String, BakedModel>) ModularItemCache.get(stack, CACHE_KEY_MAP);
+        //return (Map<String, BakedModel>) ModularItemCache.get(stack, CACHE_KEY_MAP);
+        return new HashMap<>();
     }
 
     public static BakedModel getItemModel(ItemStack stack) {
@@ -96,7 +144,7 @@ public class ModelProperty implements ModuleProperty {
         Map<String, DynamicBakedModel> bakedModelMap = new HashMap<>();
         for (TransformedUnbakedModel unbakedModel : unbakedModels) {
             ModelBakeSettings settings = unbakedModel.transform.get().toModelBakeSettings();
-            DynamicBakedModel model = DynamicBakery.bakeModel(unbakedModel.unbakedModel, mirroredGetter, unbakedModel.color, settings);
+            DynamicBakedModel model = DynamicBakery.bakeModel(unbakedModel.unbakedModel, mirroredGetter, unbakedModel.color, unbakedModel.transform.get());
             DynamicBakedModel dynamicBakedModel = bakedModelMap.computeIfAbsent(unbakedModel.transform.primary, (key) ->
                     new DynamicBakedModel(new ArrayList<>())
             );
@@ -143,13 +191,13 @@ public class ModelProperty implements ModuleProperty {
                 return new ArrayList<>();
             }
             for (ModelJson json : modelJsonList) {
-                int color = MaterialProperty.Material.getColor(StatResolver.resolveString(json.color, moduleI));
-                int condition = MaterialProperty.Material.getColor(StatResolver.resolveString(json.condition, moduleI));
+                int color = Material.getColor(StatResolver.resolveString(json.color, moduleI));
+                int condition = Material.getColor(StatResolver.resolveString(json.condition, moduleI));
                 if (condition != 0) {
-                    MaterialProperty.Material material = MaterialProperty.getMaterial(moduleI);
+                    Material material = MaterialProperty.getMaterial(moduleI);
                     List<String> list = new ArrayList<>();
                     if (material != null) {
-                        list.add(material.key);
+                        list.add(material.getKey());
                         list = material.getTextureKeys();
                     } else {
                         list.add("default");
@@ -250,7 +298,7 @@ public class ModelProperty implements ModuleProperty {
     }
 
     protected static void loadTextureDependencies(JsonUnbakedModel model) {
-        DynamicBakery.bakeModel(model, (identifier) -> mirroredGetter.apply(identifier), 0, ModelRotation.X0_Y0);
+        DynamicBakery.bakeModel(model, (identifier) -> mirroredGetter.apply(identifier), 0, Transform.IDENTITY);
     }
 
     @Override

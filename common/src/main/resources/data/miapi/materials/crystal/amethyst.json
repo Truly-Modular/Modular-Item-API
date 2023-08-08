@@ -1,7 +1,7 @@
 {
   "key": "amethyst",
   "translation": "miapi.material.crystal.amethyst",
-  "icon": "textures/item/amethyst_cluster.png",
+  "icon": "textures/item/amethyst_shard.png",
   "groups": ["crystal","gem"],
   "hardness": 5,
   "density": 0.5,
@@ -10,10 +10,26 @@
   "mining_speed": 5,
   "mining_level": 0,
   "color": "A477EE",
+  "color_palette": {
+    "type": "grayscale_map",
+    "colors": {
+      "24": "54398a",
+      "68": "6f4fab",
+      "107": "8d6acc88",
+      "150": "b38ef388",
+      "190": "cfa0f388",
+      "216": "fecbe688",
+      "255": "fffdd588"
+    }
+  },
   "textures": [
     "shiny"
   ],
   "items": [
+    {
+      "item": "minecraft:amethyst_shard",
+      "value": 0.25
+    },
     {
       "item": "minecraft:amethyst_cluster",
       "value": 0.25

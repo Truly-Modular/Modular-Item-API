@@ -1,23 +1,37 @@
 {
-  "key": "wood_mangrove",
-  "translation": "miapi.material.wood.mangrove",
-  "icon": "textures/block/mangrove_planks.png",
-  "groups": ["wood"],
-  "hardness": 3,
-  "density": 1.7,
-  "flexibility": 6,
-  "durability": 59,
-  "color": "7D4133",
-  "mining_speed": 2,
-  "mining_level": 0,
-  "textures": [
-    "wood",
-    "rough"
-  ],
-  "items": [
-    {
-      "item": "minecraft:mangrove_planks",
-      "value": 1.0
-    }
-  ]
+    "key": "wood_mangrove",
+    "translation": "miapi.material.wood.mangrove",
+    "icon": "textures/block/mangrove_planks.png",
+    "groups": [
+        "wood"
+    ],
+    "hardness": 3,
+    "density": 1.7,
+    "flexibility": 6,
+    "durability": 59,
+    "color": "7D4133",
+    "color_palette": {
+        "type": "grayscale_map",
+        "colors": {
+            "24": "5d1c1e",
+            "68": "642423",
+            "107": "6f2a2d",
+            "150": "753136",
+            "190": "773934",
+            "216": "7f4234",
+            "255": "8b4d3a"
+        }
+    },
+    "mining_speed": 2,
+    "mining_level": 0,
+    "textures": [
+        "wood",
+        "rough"
+    ],
+    "items": [
+        {
+            "item": "minecraft:mangrove_planks",
+            "value": 1.0
+        }
+    ]
 }

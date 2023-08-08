@@ -1,26 +1,38 @@
 {
-  "key": "stone_deepslate",
-  "translation": "miapi.material.stone.deepslate",
-  "icon": "textures/block/deepslate.png",
-  "groups": ["stone"],
-  "hardness": 5,
-  "density": 3,
-  "flexibility": 0,
-  "durability": 167,
-  "color": "737373",
-  "mining_speed": 4,
-  "mining_level": 1,
-  "textures": [
-    "rough"
-  ],
-  "items": [
-    {
-      "item": "minecraft:deepslate",
-      "value": 1.0
+    "key": "stone_deepslate",
+    "translation": "miapi.material.stone.deepslate",
+    "icon": "textures/block/deepslate.png",
+    "groups": [
+        "stone"
+    ],
+    "hardness": 5,
+    "density": 3,
+    "flexibility": 0,
+    "durability": 167,
+    "color": "737373",
+    "color_palette": {
+        "type": "grayscale_map",
+        "colors": {
+            "24": "2f2f37",
+            "68": "646464",
+            "107": "797979",
+            "150": "515151",
+            "255": "3d3d43"
+        }
     },
-    {
-      "item": "minecraft:cobbled_deepslate",
-      "value": 1.0
-    }
-  ]
+    "mining_speed": 4,
+    "mining_level": 1,
+    "textures": [
+        "rough"
+    ],
+    "items": [
+        {
+            "item": "minecraft:deepslate",
+            "value": 1.0
+        },
+        {
+            "item": "minecraft:cobbled_deepslate",
+            "value": 1.0
+        }
+    ]
 }

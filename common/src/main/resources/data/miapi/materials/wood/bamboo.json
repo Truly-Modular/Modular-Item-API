@@ -1,23 +1,37 @@
 {
-  "key": "wood_bamboo",
-  "translation": "miapi.material.wood.bamboo",
-  "icon": "textures/block/bamboo_planks.png",
-  "groups": ["wood"],
-  "hardness": 2.5,
-  "density": 1.7,
-  "flexibility": 7,
-  "durability": 42,
-  "color": "C6AF4C",
-  "mining_speed": 1.9,
-  "mining_level": 0,
-  "textures": [
-    "wood",
-    "rough"
-  ],
-  "items": [
-    {
-      "item": "minecraft:bamboo_planks",
-      "value": 1.0
-    }
-  ]
+    "key": "wood_bamboo",
+    "translation": "miapi.material.wood.bamboo",
+    "icon": "textures/block/bamboo_planks.png",
+    "groups": [
+        "wood"
+    ],
+    "hardness": 2.5,
+    "density": 1.7,
+    "flexibility": 7,
+    "durability": 42,
+    "color": "C6AF4C",
+    "color_palette": {
+        "type": "grayscale_map",
+        "colors": {
+            "24": "907e3a",
+            "68": "b7ab49",
+            "107": "bba84c",
+            "150": "c2b54e",
+            "190": "d3bb50",
+            "216": "d9c25e",
+            "255": "efd97e"
+        }
+    },
+    "mining_speed": 1.9,
+    "mining_level": 0,
+    "textures": [
+        "wood",
+        "rough"
+    ],
+    "items": [
+        {
+            "item": "minecraft:bamboo_planks",
+            "value": 1.0
+        }
+    ]
 }

@@ -73,7 +73,7 @@ public class CraftAction {
     /**
      * Constructs a new instance of CraftAction from the specified packet byte buffer.
      *
-     * @param buf the packet byte buffer from which to construct the CraftAction
+     * @param buf   the packet byte buffer from which to construct the CraftAction
      * @param bench the workbench block entity to store in this CraftAction
      */
     public CraftAction(PacketByteBuf buf, @Nullable ModularWorkBenchEntity bench) {
@@ -229,7 +229,7 @@ public class CraftAction {
             return old;
         }
         //remove CacheKey so new cache gets Generated
-        craftingStack.getNbt().remove(ModularItemCache.CACHE_KEY);
+        ModularItemCache.clearUUIDFor(craftingStack);
         ItemModule.ModuleInstance oldBaseModule = ItemModule.getModules(old);
         ItemModule.ModuleInstance newBaseModule = ItemModule.ModuleInstance.fromString(oldBaseModule.toString());
         Map<Integer, ItemModule.ModuleInstance> subModuleMap = new HashMap<>();

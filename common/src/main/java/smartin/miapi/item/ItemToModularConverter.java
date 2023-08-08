@@ -1,28 +1,24 @@
 package smartin.miapi.item;
 
 import com.google.gson.reflect.TypeToken;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
 import smartin.miapi.Miapi;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.properties.EnchantmentProperty;
 import smartin.miapi.registries.RegistryInventory;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class ItemToModularConverter implements ModularItemStackConverter.ModularConverter {
     public Map<String, ItemStack> regexes = new HashMap<>();
 
-    /*public static List<String> pathRegexes = new ArrayList<>();
-    static {
-        pathRegexes.add("^modular_converter\\+");
-    }*/
 
     public ItemToModularConverter() {
-        Miapi.registerReloadHandler(ReloadEvents.END, "modular_converter", (isClient, path, data) -> {
+        Miapi.registerReloadHandler(ReloadEvents.MAIN, "modular_converter", regexes, (isClient, path, data) -> {
             Map<String, ItemModule.ModuleInstance> dataMap;
             TypeToken<Map<String, ItemModule.ModuleInstance>> token = new TypeToken<>() {
             };
@@ -34,7 +30,7 @@ public class ItemToModularConverter implements ModularItemStackConverter.Modular
                 moduleString.writeToItem(stack);
                 regexes.put(itemId, stack);
             });
-        });
+        }, 1);
     }
 
     @Override
@@ -44,7 +40,15 @@ public class ItemToModularConverter implements ModularItemStackConverter.Modular
                 ItemStack nextStack = entry.getValue().copy();
                 nextStack.setNbt(stack.copy().getNbt());
                 nextStack.getNbt().put("modules", entry.getValue().getNbt().get("modules"));
-                return entry.getValue().copy();
+                EnchantmentHelper.get(stack).forEach((enchantment, integer) -> {
+                    if (EnchantmentProperty.isAllowed(nextStack, enchantment)) {
+                        nextStack.addEnchantment(enchantment, integer);
+                        Miapi.LOGGER.info("adding Enchantment" + enchantment);
+                    } else {
+                        Miapi.LOGGER.info("enchantment is not allowed");
+                    }
+                });
+                return nextStack;
             }
         }
         return stack;

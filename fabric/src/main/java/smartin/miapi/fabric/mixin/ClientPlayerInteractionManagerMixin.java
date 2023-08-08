@@ -16,7 +16,7 @@ abstract class ClientPlayerInteractionManagerMixin {
     @ModifyConstant(
         method = "getReachDistance()F",
         require = 2, allow = 2, constant = { @Constant(floatValue = 5.0F), @Constant(floatValue = 4.5F) })
-    private float getActualReachDistance(final float reachDistance) {
+    private float miapi$getActualReachDistance(final float reachDistance) {
         if (this.client.player != null) {
             return (float) ReachEntityAttributes.getReachDistance(this.client.player, reachDistance);
         }

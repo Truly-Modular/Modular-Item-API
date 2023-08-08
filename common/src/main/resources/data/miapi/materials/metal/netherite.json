@@ -1,22 +1,36 @@
 {
-  "key": "netherite",
-  "translation": "miapi.material.netherite",
-  "icon": "textures/item/netherite_ingot.png",
-  "groups": ["metal"],
-  "hardness": 7,
-  "density": 3.8,
-  "flexibility": 3,
-  "durability": 2031,
-  "color": "695e5f",
-  "textures": [
-    "metalic"
-  ],
-  "mining_speed": 9,
-  "mining_level": 4,
-  "items": [
-    {
-      "item": "minecraft:netherite_ingot",
-      "value": 1.0
-    }
-  ]
+    "key": "netherite",
+    "translation": "miapi.material.netherite",
+    "icon": "textures/item/netherite_ingot.png",
+    "groups": [
+        "metal"
+    ],
+    "hardness": 7,
+    "density": 3.8,
+    "flexibility": 3,
+    "durability": 2031,
+    "color": "695e5f",
+    "color_palette": {
+        "type": "grayscale_map",
+        "colors": {
+            "24": "231012",
+            "68": "312727",
+            "107": "49283F",
+            "150": "6F666F",
+            "190": "50434D",
+            "216": "5C555C",
+            "255": "847A84"
+        }
+    },
+    "textures": [
+        "metalic"
+    ],
+    "mining_speed": 9,
+    "mining_level": 4,
+    "items": [
+        {
+            "item": "minecraft:netherite_ingot",
+            "value": 1.0
+        }
+    ]
 }

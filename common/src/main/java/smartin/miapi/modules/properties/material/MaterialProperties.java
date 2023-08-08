@@ -1,4 +1,4 @@
-package smartin.miapi.modules.properties;
+package smartin.miapi.modules.properties.material;
 
 import com.google.gson.JsonElement;
 import smartin.miapi.item.modular.PropertyResolver;
@@ -20,7 +20,7 @@ public class MaterialProperties implements ModuleProperty {
     public MaterialProperties() {
         property = this;
         PropertyResolver.propertyProviderRegistry.register(KEY, (moduleInstance, oldMap) -> {
-            MaterialProperty.Material material = MaterialProperty.getMaterial(oldMap.get(MaterialProperty.property));
+            Material material = MaterialProperty.getMaterial(oldMap.get(MaterialProperty.property));
             Map<ModuleProperty, JsonElement> returnMap = new HashMap<>(oldMap);
             if (material != null && oldMap.containsKey(property)) {
                 List<String> keys = new ArrayList<>();

@@ -126,6 +126,7 @@ public class ReloadEvents {
             }
         });
         Networking.registerS2CPacket(RELOAD_PACKET_ID, (buffer) -> {
+            long timeStart = System.nanoTime();
             if (inReload) {
                 Miapi.LOGGER.error("Cannot trigger a Reload during another reload");
                 return;
@@ -173,6 +174,7 @@ public class ReloadEvents {
                 DATA_PACKS.forEach(DataPackLoader::trigger);
                 ReloadEvents.MAIN.fireEvent(true);
                 ReloadEvents.END.fireEvent(true);
+                Miapi.LOGGER.info("Client load took "+ (double) (System.nanoTime()-timeStart) / 1000 / 1000+ " ms");
                 dataPackSize = Integer.MAX_VALUE;
                 inReload = false;
             });

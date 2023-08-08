@@ -1,6 +1,7 @@
 package smartin.miapi.registries;
 
 import com.google.common.base.Suppliers;
+import com.mojang.blaze3d.systems.RenderSystem;
 import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.platform.Platform;
 import dev.architectury.registry.CreativeTabRegistry;
@@ -8,12 +9,20 @@ import dev.architectury.registry.registries.Registrar;
 import dev.architectury.registry.registries.RegistrarManager;
 import dev.architectury.registry.registries.RegistrySupplier;
 import dev.architectury.utils.Env;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.MapColor;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.enums.Instrument;
 import net.minecraft.block.piston.PistonBehavior;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gl.ShaderProgram;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.RenderPhase;
+import net.minecraft.client.render.VertexFormat;
+import net.minecraft.client.render.VertexFormats;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.entity.attribute.ClampedEntityAttribute;
@@ -29,7 +38,9 @@ import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Util;
 import net.minecraft.world.event.GameEvent;
+import org.joml.Matrix4f;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.blocks.ModularWorkBench;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
@@ -49,12 +60,16 @@ import smartin.miapi.modules.edit_options.PropertyInjectionDev;
 import smartin.miapi.modules.edit_options.skins.SkinOptions;
 import smartin.miapi.modules.properties.*;
 import smartin.miapi.modules.properties.compat.BetterCombatProperty;
+import smartin.miapi.modules.properties.material.AllowedMaterial;
+import smartin.miapi.modules.properties.material.MaterialProperties;
+import smartin.miapi.modules.properties.material.MaterialProperty;
 import smartin.miapi.modules.properties.render.*;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import static net.minecraft.client.render.RenderPhase.*;
 import static smartin.miapi.Miapi.MOD_ID;
 import static smartin.miapi.attributes.AttributeRegistry.*;
 import static smartin.miapi.modules.abilities.util.ItemAbilityManager.useAbilityRegistry;
@@ -105,6 +120,7 @@ public class RegistryInventory {
     public static <T> void registerMiapi(MiapiRegistry<T> rg, String id, T object) {
         rg.register(id, object);
     }
+
     public static <T> void registerMiapi(MiapiRegistry<T> rg, String id, T object, Consumer<T> onRegister) {
         rg.register(id, object);
         onRegister.accept(object);
@@ -277,6 +293,24 @@ public class RegistryInventory {
                         new ClampedEntityAttribute("miapi.attribute.name.shield_break", 0.0, 0.0, 1024.0).setTracked(true),
                 att -> SHIELD_BREAK = att);
 
+        //projectile based
+        registerAtt("generic.projectile_damage", true, () ->
+                        new ClampedEntityAttribute("miapi.attribute.name.projectile_damage", 1.0, 0.0, 1024.0).setTracked(true),
+                att -> PROJECTILE_DAMAGE = att);
+        registerAtt("generic.projectile_speed", true, () ->
+                        new ClampedEntityAttribute("miapi.attribute.name.projectile_speed", 1.0, 0.0, 1024.0).setTracked(true),
+                att -> PROJECTILE_SPEED = att);
+        registerAtt("generic.projectile_accuracy", true, () ->
+                        new ClampedEntityAttribute("miapi.attribute.name.projectile_accuracy", 1.0, 0.0, 1024.0).setTracked(true),
+                att -> PROJECTILE_ACCURACY = att);
+        registerAtt("generic.projectile_piercing", true, () ->
+                        new ClampedEntityAttribute("miapi.attribute.name.projectile_piercing", 0.0, 0.0, 1024.0).setTracked(true),
+                att -> PROJECTILE_PIERCING = att);
+        registerAtt("generic.projectile_crit_multiplier", true, () ->
+                        new ClampedEntityAttribute("miapi.attribute.name.projectile_crit_multiplier", 0.0, 1.5, 1024.0).setTracked(true),
+                att -> PROJECTILE_CRIT_MULTIPLIER = att);
+
+
         // GAME EVENTS
         register(gameEvents, "request_crafting_stat_update", () -> new GameEvent(MOD_ID + ":crafting_stat_update", 16), ev -> statUpdateEvent = ev);
         register(gameEvents, "stat_provider_updated", () -> new GameEvent(MOD_ID + ":stat_provider_updated", 16), ev -> statProviderUpdatedEvent = ev);
@@ -341,6 +375,7 @@ public class RegistryInventory {
             registerMiapi(moduleProperties, CraftingConditionProperty.KEY, new CraftingConditionProperty());
             registerMiapi(moduleProperties, StatRequirementProperty.KEY, new StatRequirementProperty());
             registerMiapi(moduleProperties, StatProvisionProperty.KEY, new StatProvisionProperty());
+            registerMiapi(moduleProperties, GlintProperty.KEY, new GlintProperty());
 
             //compat
             registerMiapi(moduleProperties, BetterCombatProperty.KEY, new BetterCombatProperty());
@@ -357,4 +392,74 @@ public class RegistryInventory {
             registerMiapi(useAbilityRegistry, CrossbowProperty.KEY, new CrossbowAbility());
         });
     }
+
+    @Environment(EnvType.CLIENT)
+    public static class Client {
+        public static final Identifier customGlintTexture = new Identifier(MOD_ID, "textures/custom_glint.png");
+
+        public static ShaderProgram translucentMaterialShader;
+        public static ShaderProgram entityTranslucentMaterialShader;
+        public static ShaderProgram glintShader;
+
+        public static final RenderLayer translucentMaterialRenderType = RenderLayer.of(
+                "miapi_translucent_material", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL, VertexFormat.DrawMode.QUADS,
+                0x200000, true, true,
+                RenderLayer.MultiPhaseParameters.builder()
+                        .lightmap(ENABLE_LIGHTMAP).program(new RenderPhase.ShaderProgram(() -> translucentMaterialShader))
+                        .texture(MIPMAP_BLOCK_ATLAS_TEXTURE)
+                        .transparency(TRANSLUCENT_TRANSPARENCY)
+                        .target(TRANSLUCENT_TARGET).build(true));
+        public static final RenderLayer entityTranslucentMaterialRenderType = RenderLayer.of(
+                "miapi_entity_translucent_material",
+                VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL,
+                VertexFormat.DrawMode.QUADS,
+                256, true, true,
+                RenderLayer.MultiPhaseParameters.builder()
+                        .program(new RenderPhase.ShaderProgram(() -> entityTranslucentMaterialShader))
+                        .texture(BLOCK_ATLAS_TEXTURE)
+                        .transparency(TRANSLUCENT_TRANSPARENCY)
+                        .lightmap(ENABLE_LIGHTMAP)
+                        .overlay(ENABLE_OVERLAY_COLOR).build(true)
+        );
+
+        public static final Texturing ENTITY_GLINT_TEXTURING = new Texturing("miapi_glint_direct", () -> setupGlintTexturing(0.16f), () -> RenderSystem.resetTextureMatrix());
+
+        public static final RenderLayer modularItemGlint = RenderLayer.of(
+                "miapi_glint_direct",
+                VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL,
+                VertexFormat.DrawMode.QUADS,
+                256, true, true,
+                RenderLayer.MultiPhaseParameters.builder()
+                        .program(new RenderPhase.ShaderProgram(() -> {
+                            glintShader.bind();
+                            //glintShader.addSampler("CustomGlintTexture",BLOCK_ATLAS_TEXTURE);
+                            int id = 10;
+                            RenderSystem.setShaderTexture(id, RegistryInventory.Client.customGlintTexture);
+                            RenderSystem.bindTexture(id);
+                            int j = RenderSystem.getShaderTexture(id);
+                            glintShader.addSampler("CustomGlintTexture", j);
+                            var a = new RenderPhase.Texture(customGlintTexture, true, false);
+                            //glintShader.getUniformOrDefault("glintSize").set();
+                            //NativeImage.
+                            return glintShader;
+                        }))
+                        .texture(BLOCK_ATLAS_TEXTURE)
+                        .depthTest(EQUAL_DEPTH_TEST)
+                        .transparency(GLINT_TRANSPARENCY)
+                        .lightmap(ENABLE_LIGHTMAP)
+                        .cull(DISABLE_CULLING)
+                        .texturing(RenderLayer.ENTITY_GLINT_TEXTURING)
+                        .overlay(ENABLE_OVERLAY_COLOR).build(false));
+
+        private static void setupGlintTexturing(float scale) {
+            long l = (long)((double) Util.getMeasuringTimeMs() * MinecraftClient.getInstance().options.getGlintSpeed().getValue() * 8.0);
+            float f = (float)(l % 110000L) / 110000.0f;
+            float g = (float)(l % 30000L) / 30000.0f;
+            Matrix4f matrix4f = new Matrix4f().translation(-f, g, 0.0f);
+            matrix4f.rotateZ(0.17453292f).scale(scale);
+            RenderSystem.setTextureMatrix(matrix4f);
+        }
+    }
+
+
 }

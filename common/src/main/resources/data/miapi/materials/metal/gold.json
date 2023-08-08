@@ -10,6 +10,19 @@
     "flexibility": 1,
     "durability": 32,
     "color": "FFD700",
+    "color_palette": {
+        "type": "grayscale_map",
+        "colors": {
+            "24": "3E2D0E",
+            "68": "805C16",
+            "107": "D99413",
+            "150": "E6AF15",
+            "190": "E7EB56",
+            "216": "FAFC75",
+            "255": "FCFCFC"
+        },
+        "filler": "interpolate"
+    },
     "textures": [
         "metalic"
     ],

@@ -37,6 +37,13 @@ public class AttributeRegistry {
     public static EntityAttribute ARMOR_CRUSHING;
     public static EntityAttribute SHIELD_BREAK;
 
+    public static EntityAttribute PROJECTILE_SPEED;
+    public static EntityAttribute PROJECTILE_DAMAGE;
+    public static EntityAttribute PROJECTILE_ACCURACY;
+    public static EntityAttribute PROJECTILE_PIERCING;
+    public static EntityAttribute PROJECTILE_CRIT_MULTIPLIER;
+
+
 
     public static void setup() {
         MiapiEvents.LIVING_HURT.register((livingHurtEvent -> {

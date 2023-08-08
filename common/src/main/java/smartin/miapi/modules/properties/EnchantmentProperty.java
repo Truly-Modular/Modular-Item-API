@@ -30,47 +30,38 @@ import java.util.*;
 public class EnchantmentProperty implements CraftingProperty, ModuleProperty {
     public static String KEY = "enchantments";
     public static EnchantmentProperty property;
-    public static HashMap<String, Set<String>> replaceMap = new HashMap<>();
+    public static Map<String, Set<String>> replaceMap = new HashMap<>();
 
     public EnchantmentProperty() {
         property = this;
-        /*addToReplaceMap("miapi:basic", "minecraft:mending");
-        addToReplaceMap("miapi:basic", "minecraft:unbreaking");
-        addToReplaceMap("miapi:basic", "minecraft:vanishing_curse");
-        addToReplaceMap("miapi:weapon", "minecraft:fire_aspect");
-        addToReplaceMap("miapi:weapon", "minecraft:looting");
-        addToReplaceMap("miapi:weapon", "minecraft:knockback");
-        addToReplaceMap("miapi:weapon", "minecraft:smite");
-        addToReplaceMap("miapi:weapon", "minecraft:bane_of_arthropods");
-        addToReplaceMap("miapi:edged", "minecraft:sharpness");
-        addToReplaceMap("miapi:edged", "minecraft:sweeping");
-        addToReplaceMap("miapi:tool", "minecraft:efficiency");
-        addToReplaceMap("miapi:tool", "minecraft:fortune");
-        addToReplaceMap("miapi:tool", "minecraft:silk_touch");
-        addToReplaceMap("miapi:bow", "minecraft:power");
-        addToReplaceMap("miapi:bow", "minecraft:infinity");
-        addToReplaceMap("miapi:bow", "minecraft:punch");
-        addToReplaceMap("miapi:bow", "minecraft:flame");
-        addToReplaceMap("miapi:crossbow", "minecraft:quick_charge");
-        addToReplaceMap("miapi:crossbow", "minecraft:piercing");
-        addToReplaceMap("miapi:crossbow", "minecraft:multishot");
-        addToReplaceMap("miapi:armor", "minecraft:protection");
-        addToReplaceMap("miapi:armor", "minecraft:blast_protection");
-        addToReplaceMap("miapi:armor", "minecraft:projectile_protection");
-        addToReplaceMap("miapi:armor", "minecraft:fire_protection");
-        addToReplaceMap("miapi:armor", "minecraft:thorns");
-        addToReplaceMap("miapi:armor", "minecraft:binding_curse");
-        addToReplaceMap("miapi:helmet", "minecraft:aqua_affinity");
-        addToReplaceMap("miapi:helmet", "minecraft:respiration");
-        addToReplaceMap("miapi:boots", "minecraft:feather_falling");
-        addToReplaceMap("miapi:boots", "minecraft:depth_strider");
-        addToReplaceMap("miapi:boots", "minecraft:frost_walking");
-        addToReplaceMap("miapi:boots", "minecraft:soul_speed");
-        addToReplaceMap("miapi:leggings", "minecraft:swift_sneak");
-        addToReplaceMap("miapi:trident", "minecraft:riptide");
-        addToReplaceMap("miapi:trident", "minecraft:loyalty");
-        addToReplaceMap("miapi:trident", "minecraft:channeling");
-        addToReplaceMap("miapi:trident", "minecraft:impaling");*/
+        ModularItemCache.setSupplier(KEY, this::createAllowedList);
+
+        Miapi.registerReloadHandler(ReloadEvents.MAIN, "enchantment_categories",  (isClient) -> {
+            replaceMap.clear();
+            fillMapDefault();
+        }, (isClient, path, data) -> {
+            JsonObject obj = JsonHelper.deserialize(data);
+            String id = obj.getAsJsonPrimitive("id").getAsString();
+
+            if (obj.has("add")) {
+                obj.getAsJsonArray("add").forEach(element -> {
+                    addToReplaceMap(
+                            id,
+                            element.getAsJsonPrimitive().getAsString()
+                    );
+                });
+            }
+        }, 1);
+        ReloadEvents.END.subscribe((isClient -> {
+            int size = 0;
+            for (Set<String> entries : replaceMap.values()) {
+                size += entries.size();
+            }
+            Miapi.LOGGER.info("Loaded " + size + " Enchantments");
+        }));
+    }
+
+    private static void fillMapDefault() {
         addToReplaceMap("miapi:armor", EnchantmentTarget.ARMOR);
         addToReplaceMap("miapi:basic", EnchantmentTarget.BREAKABLE);
         addToReplaceMap("miapi:weapon", EnchantmentTarget.WEAPON);
@@ -84,31 +75,6 @@ public class EnchantmentProperty implements CraftingProperty, ModuleProperty {
         addToReplaceMap("miapi:leggings", EnchantmentTarget.ARMOR_LEGS);
         addToReplaceMap("miapi:boots", EnchantmentTarget.ARMOR_FEET);
         addToReplaceMap("miapi:trident", EnchantmentTarget.TRIDENT);
-
-        ModularItemCache.setSupplier(KEY, this::createAllowedList);
-
-        Miapi.registerReloadHandler(ReloadEvents.MAIN, "enchantment_categories", (isClient, path, data) -> {
-            JsonObject obj = JsonHelper.deserialize(data);
-            String id = obj.getAsJsonPrimitive("id").getAsString();
-
-            if (obj.has("add")) {
-                obj.getAsJsonArray("add").forEach(element -> {
-                    addToReplaceMap(
-                            id,
-                            element.getAsJsonPrimitive().getAsString()
-                    );
-                });
-            }
-
-            // 😭 doesn't work in non-dev cuz obfuscation
-            /*if (obj.has("addCategory"))
-                obj.getAsJsonArray("addCategory").forEach(element -> {
-                    addToReplaceMap(
-                            id,
-                            EnchantmentTarget.valueOf(element.getAsJsonPrimitive().toString().toUpperCase())
-                    );
-                });*/
-        });
     }
 
     private List<Enchantment> createAllowedList(ItemStack itemStack) {
@@ -124,6 +90,10 @@ public class EnchantmentProperty implements CraftingProperty, ModuleProperty {
     }
 
     public static List<Enchantment> getAllowedList(ItemStack stack) {
+        List<Enchantment> list = (List<Enchantment>) ModularItemCache.get(stack, KEY);
+        if (list == null) {
+            return Collections.EMPTY_LIST;
+        }
         return Collections.unmodifiableList((List<Enchantment>) ModularItemCache.get(stack, KEY));
     }
 
@@ -149,6 +119,7 @@ public class EnchantmentProperty implements CraftingProperty, ModuleProperty {
         getAllowedList(stack).forEach(enchantment1 -> {
             Miapi.LOGGER.error(String.valueOf(enchantment1));
         });
+        Miapi.LOGGER.warn(String.valueOf(allowed));
         return allowed;
     }
 

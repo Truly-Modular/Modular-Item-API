@@ -1,23 +1,37 @@
 {
-  "key": "wood_oak",
-  "translation": "miapi.material.wood.oak",
-  "icon": "textures/block/oak_planks.png",
-  "groups": ["wood"],
-  "hardness": 3,
-  "density": 1.7,
-  "flexibility": 6,
-  "durability": 59,
-  "color": "8B6B45",
-  "mining_speed": 2,
-  "mining_level": 0,
-  "textures": [
-    "wood",
-    "rough"
-  ],
-  "items": [
-    {
-      "item": "minecraft:oak_planks",
-      "value": 1.0
-    }
-  ]
+    "key": "wood_oak",
+    "translation": "miapi.material.wood.oak",
+    "icon": "textures/block/oak_planks.png",
+    "groups": [
+        "wood"
+    ],
+    "hardness": 3,
+    "density": 1.7,
+    "flexibility": 6,
+    "durability": 59,
+    "color": "8B6B45",
+    "color_palette": {
+        "type": "grayscale_map",
+        "colors": {
+            "24": "20180a",
+            "68": "281e0b",
+            "107": "372910",
+            "150": "473614",
+            "190": "594319",
+            "216": "755821",
+            "255": "896727"
+        }
+    },
+    "mining_speed": 2,
+    "mining_level": 0,
+    "textures": [
+        "wood",
+        "rough"
+    ],
+    "items": [
+        {
+            "item": "minecraft:oak_planks",
+            "value": 1.0
+        }
+    ]
 }

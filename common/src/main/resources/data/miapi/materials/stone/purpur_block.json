@@ -1,22 +1,36 @@
 {
-  "key": "stone_purpur",
-  "translation": "miapi.material.stone.purpur",
-  "icon": "textures/block/purpur_block.png",
-  "groups": ["stone"],
-  "hardness": 4,
-  "density": 3,
-  "flexibility": 0,
-  "durability": 131,
-  "color": "B084B0",
-  "mining_speed": 4,
-  "mining_level": 1,
-  "textures": [
-    "rough"
-  ],
-  "items": [
-    {
-      "item": "minecraft:purpur_block",
-      "value": 1.0
-    }
-  ]
+    "key": "stone_purpur",
+    "translation": "miapi.material.stone.purpur",
+    "icon": "textures/block/purpur_block.png",
+    "groups": [
+        "stone"
+    ],
+    "hardness": 4,
+    "density": 3,
+    "flexibility": 0,
+    "durability": 131,
+    "color": "B084B0",
+    "color_palette": {
+        "type": "grayscale_map",
+        "colors": {
+            "24": "906590",
+            "68": "9d6f9c",
+            "107": "a472a3",
+            "150": "ac7bac",
+            "190": "b286b2",
+            "216": "ba95ba",
+            "255": "c7a8c7"
+        }
+    },
+    "mining_speed": 4,
+    "mining_level": 1,
+    "textures": [
+        "rough"
+    ],
+    "items": [
+        {
+            "item": "minecraft:purpur_block",
+            "value": 1.0
+        }
+    ]
 }

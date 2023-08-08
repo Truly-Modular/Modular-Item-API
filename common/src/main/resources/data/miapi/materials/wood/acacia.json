@@ -1,23 +1,37 @@
 {
-  "key": "wood_acacia",
-  "translation": "miapi.material.wood.acacia",
-  "icon": "textures/block/acacia_planks.png",
-  "groups": ["wood"],
-  "hardness": 3,
-  "density": 1.7,
-  "flexibility": 6,
-  "durability": 59,
-  "color": "A0522D",
-  "mining_speed": 2,
-  "mining_level": 0,
-  "textures": [
-    "wood",
-    "rough"
-  ],
-  "items": [
-    {
-      "item": "minecraft:acacia_planks",
-      "value": 1.0
-    }
-  ]
+    "key": "wood_acacia",
+    "translation": "miapi.material.wood.acacia",
+    "icon": "textures/block/acacia_planks.png",
+    "groups": [
+        "wood"
+    ],
+    "hardness": 3,
+    "density": 1.7,
+    "flexibility": 6,
+    "durability": 59,
+    "color": "A0522D",
+    "color_palette": {
+        "type": "grayscale_map",
+        "colors": {
+            "24": "884728",
+            "68": "8f4c2a",
+            "107": "99502b",
+            "150": "a05630",
+            "190": "ad5d32",
+            "216": "ba6337",
+            "255": "c26d3f"
+        }
+    },
+    "mining_speed": 2,
+    "mining_level": 0,
+    "textures": [
+        "wood",
+        "rough"
+    ],
+    "items": [
+        {
+            "item": "minecraft:acacia_planks",
+            "value": 1.0
+        }
+    ]
 }

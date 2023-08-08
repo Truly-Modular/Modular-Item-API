@@ -1,26 +1,40 @@
 {
-  "key": "stone_nether_brick",
-  "translation": "miapi.material.stone.nether_brick",
-  "icon": "textures/item/nether_brick.png",
-  "groups": ["stone"],
-  "hardness": 4,
-  "density": 3,
-  "flexibility": 0,
-  "durability": 131,
-  "color": "A77663",
-  "mining_speed": 4,
-  "mining_level": 1,
-  "textures": [
-    "rough"
-  ],
-  "items": [
-    {
-      "item": "minecraft:nether_brick",
-      "value": 1.0
+    "key": "stone_nether_brick",
+    "translation": "miapi.material.stone.nether_brick",
+    "icon": "textures/item/nether_brick.png",
+    "groups": [
+        "stone"
+    ],
+    "hardness": 4,
+    "density": 3,
+    "flexibility": 0,
+    "durability": 131,
+    "color": "A77663",
+    "color_palette": {
+        "type": "grayscale_map",
+        "colors": {
+            "24": "190d10",
+            "68": "211114",
+            "107": "291519",
+            "150": "30181c",
+            "190": "44242a",
+            "216": "3e1e24",
+            "255": "38181e"
+        }
     },
-    {
-      "item": "minecraft:nether_bricks",
-      "value": 4.0
-    }
-  ]
+    "mining_speed": 4,
+    "mining_level": 1,
+    "textures": [
+        "rough"
+    ],
+    "items": [
+        {
+            "item": "minecraft:nether_brick",
+            "value": 1.0
+        },
+        {
+            "item": "minecraft:nether_bricks",
+            "value": 4.0
+        }
+    ]
 }

@@ -1,31 +1,33 @@
 {
-  "schemaVersion": 1,
-  "id": "miapi",
-  "version": "${version}",
-  "name": "Truly Modular",
-  "description": "Modular Item Api",
-  "authors": [
-    "Smartin",
-    "panda",
-    "additional Credit to",
-    "Nytifx",
-    "KawataroTB"
-  ],
-  "contact": {},
-  "license": "CC-BY-NC-4.0",
-  "icon": "icon.png",
-  "environment": "*",
-  "entrypoints": {
-    "main": [
-      "smartin.miapi.fabric.TrulyModularFabric"
-    ]
-  },
-  "mixins": [
-    "miapi.mixins.json",
-    "miapi-common.mixins.json"
-  ],
-  "depends": {
-    "fabricloader": ">=0.14.17",
-    "minecraft": ">=1.20"
-  }
+    "schemaVersion": 1,
+    "id": "miapi",
+    "version": "${version}",
+    "name": "Truly Modular",
+    "description": "Modular Item Api",
+    "authors": [
+        "Smartin",
+        "panda",
+        "additional Credit to",
+        "KawataroTB",
+        "Ace",
+        "Nytifx",
+        "Beniven"
+    ],
+    "contact": {},
+    "license": "CC-BY-NC-4.0",
+    "icon": "icon.png",
+    "environment": "*",
+    "entrypoints": {
+        "main": [
+            "smartin.miapi.fabric.TrulyModularFabric"
+        ]
+    },
+    "mixins": [
+        "miapi.mixins.json",
+        "miapi-common.mixins.json"
+    ],
+    "depends": {
+        "fabricloader": ">=0.14.17",
+        "minecraft": [">=1.20","1.20.1"]
+    }
 }

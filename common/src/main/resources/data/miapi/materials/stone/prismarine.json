@@ -1,26 +1,40 @@
 {
-  "key": "stone_prismarine",
-  "translation": "miapi.material.stone.prismarine",
-  "icon": "textures/block/prismarine.png",
-  "groups": ["stone"],
-  "hardness": 4,
-  "density": 3,
-  "flexibility": 0,
-  "durability": 131,
-  "color": "78B5A9",
-  "mining_speed": 4,
-  "mining_level": 1,
-  "textures": [
-    "rough"
-  ],
-  "items": [
-    {
-      "item": "minecraft:prismarine",
-      "value": 1.0
+    "key": "stone_prismarine",
+    "translation": "miapi.material.stone.prismarine",
+    "icon": "textures/item/prismarine_shard.png",
+    "groups": [
+        "stone"
+    ],
+    "hardness": 4,
+    "density": 3,
+    "flexibility": 0,
+    "durability": 131,
+    "color": "78B5A9",
+    "color_palette": {
+        "type": "grayscale_map",
+        "colors": {
+            "24": "2e6053",
+            "68": "33695b",
+            "107": "539882",
+            "150": "91c2ac",
+            "190": "559a8a",
+            "216": "7cb3a4",
+            "255": "a4d1c2"
+        }
     },
-    {
-      "item": "minecraft:prismarine_shard",
-      "value": 0.25
-    }
-  ]
+    "mining_speed": 4,
+    "mining_level": 1,
+    "textures": [
+        "rough"
+    ],
+    "items": [
+        {
+            "item": "minecraft:prismarine",
+            "value": 1.0
+        },
+        {
+            "item": "minecraft:prismarine_shard",
+            "value": 0.25
+        }
+    ]
 }

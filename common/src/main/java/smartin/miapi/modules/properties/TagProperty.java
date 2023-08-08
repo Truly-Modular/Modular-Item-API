@@ -44,12 +44,20 @@ public class TagProperty implements ModuleProperty {
         return tags;
     }
 
+    public static List<ItemModule> getModulesWithTag(String tag) {
+        List<ItemModule> modules = new ArrayList<>();
+        ItemModule.moduleRegistry.getFlatMap().forEach((key, module) -> {
+            if (getTags(module.getKeyedProperties()).contains(tag)) modules.add(module);
+        });
+        return modules;
+    }
+
     @Override
     public boolean load(String moduleKey, JsonElement data) throws Exception {
         data.getAsJsonArray().forEach(element -> {
             element.getAsString();
         });
-        return false;
+        return true;
     }
 
     @Override

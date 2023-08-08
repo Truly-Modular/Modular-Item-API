@@ -1,23 +1,19 @@
-package smartin.miapi.modules.properties;
+package smartin.miapi.modules.properties.material;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.google.gson.*;
+import com.redpxnda.nucleus.util.Color;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.ColorHelper;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.datapack.ReloadEvents;
-import smartin.miapi.modules.ItemModule;
 import smartin.miapi.item.modular.StatResolver;
+import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
-import smartin.miapi.registries.RegistryInventory;
 
 import java.util.*;
 
@@ -74,19 +70,19 @@ public class MaterialProperty implements ModuleProperty {
         Miapi.registerReloadHandler(ReloadEvents.MAIN, "materials", materials, (isClient, path, data) -> {
             JsonParser parser = new JsonParser();
             JsonObject obj = parser.parse(data).getAsJsonObject();
-            String key = obj.get("key").getAsString();
-            Material material = new Material();
-            material.key = key;
-            material.rawJson = obj;
-            materials.put(key, material);
+            JsonMaterial material = new JsonMaterial(obj);
+            materials.put(material.getKey(), material);
         }, -1f);
+        ReloadEvents.END.subscribe((isClient -> {
+            Miapi.LOGGER.info("Loaded " + materials.size() + " Materials");
+        }));
     }
 
     public static List<String> getTextureKeys() {
         Set<String> textureKeys = new HashSet<>();
         textureKeys.add("base");
         for (Material material : materials.values()) {
-            textureKeys.add(material.key);
+            textureKeys.add(material.getKey());
             JsonArray textures = material.getRawElement("textures").getAsJsonArray();
             for (JsonElement texture : textures) {
                 textureKeys.add(texture.getAsString());
@@ -170,118 +166,16 @@ public class MaterialProperty implements ModuleProperty {
         instance.moduleData.put("properties", Miapi.gson.toJson(moduleJson));
     }
 
-    public static class Material {
-        public String key;
-        protected JsonElement rawJson;
-
-        public List<String> getGroups() {
-            List<String> groups = new ArrayList<>();
-            groups.add(key);
-            JsonArray groupsJson = rawJson.getAsJsonObject().getAsJsonArray("groups");
-            for (JsonElement groupElement : groupsJson) {
-                String group = groupElement.getAsString();
-                groups.add(group);
-            }
-            return groups;
-        }
-
-        public Map<ModuleProperty, JsonElement> materialProperties(String key) {
-            JsonElement element = rawJson.getAsJsonObject().get(key);
-            Map<ModuleProperty, JsonElement> propertyMap = new HashMap<>();
-            if (element != null) {
-                element.getAsJsonObject().entrySet().forEach(stringJsonElementEntry -> {
-                    ModuleProperty property = RegistryInventory.moduleProperties.get(stringJsonElementEntry.getKey());
-                    if (property != null) {
-                        propertyMap.put(property, stringJsonElementEntry.getValue());
-                    }
-                });
-            }
-            return propertyMap;
-        }
-
-        public JsonElement getRawElement(String key) {
-            return rawJson.getAsJsonObject().get(key);
-        }
-
-        public double getDouble(String property) {
-            String[] keys = property.split("\\.");
-            JsonElement jsonData = rawJson;
-            for (String key : keys) {
-                jsonData = jsonData.getAsJsonObject().get(key);
-                if (jsonData == null) {
-                    break;
-                }
-            }
-            if (jsonData != null) {
-                return jsonData.getAsDouble();
-            }
-            return 0;
-        }
-
-        public String getData(String property) {
-            String[] keys = property.split("\\.");
-            JsonElement jsonData = rawJson;
-            for (String key : keys) {
-                jsonData = jsonData.getAsJsonObject().get(key);
-                if (jsonData == null) {
-                    break;
-                }
-            }
-            if (jsonData != null) {
-                return jsonData.getAsString();
-            }
-            return "";
-        }
-
-        public List<String> getTextureKeys() {
-            List<String> textureKeys = new ArrayList<>();
-            JsonArray textures = rawJson.getAsJsonObject().getAsJsonArray("textures");
-            for (JsonElement texture : textures) {
-                textureKeys.add(texture.getAsString());
-            }
-            textureKeys.add("default");
-            return new ArrayList<>(textureKeys);
-        }
-
-        public int getColor() {
-            long longValue = Long.parseLong(rawJson.getAsJsonObject().get("color").getAsString(), 16);
-            return (int) (longValue & 0xffffffffL);
-        }
-
-        public static int getColor(String color) {
-            if (color.equals("")) return ColorHelper.Argb.getArgb(255, 255, 255, 255);
-            long longValue = Long.parseLong(color, 16);
-            return (int) (longValue & 0xffffffffL);
-        }
-
-        public double getValueOfItem(ItemStack item) {
-            JsonArray items = rawJson.getAsJsonObject().getAsJsonArray("items");
-
-            for (JsonElement element : items) {
-                JsonObject itemObj = element.getAsJsonObject();
-
-                if (itemObj.has("item")) {
-                    String itemId = itemObj.get("item").getAsString();
-                    if (Registries.ITEM.getId(item.getItem()).toString().equals(itemId)) {
-                        try {
-                            return itemObj.get("value").getAsDouble();
-                        } catch (Exception surpressed) {
-                            return 1;
-                        }
-                    }
-                } else if (itemObj.has("tag")) {
-                    String tagId = itemObj.get("tag").getAsString();
-                    TagKey<Item> tag = TagKey.of(Registries.ITEM.getKey(), new Identifier(tagId));
-                    if (tag != null && item.isIn(tag)) {
-                        try {
-                            return itemObj.get("value").getAsDouble();
-                        } catch (Exception suppressed) {
-                            return 1;
-                        }
-                    }
-                }
-            }
-            return 0;
-        }
+    public interface PaletteCreator {
+        Identifier createPalette(JsonElement element, String materialKey);
     }
+
+    public interface FillerFunction {
+        void fill(Color last, Color current, Color next, int lastX, int currentX, int nextX, PixelPlacer placer);
+    }
+
+    public interface PixelPlacer {
+        void place(Color color, int x, int y);
+    }
+
 }
