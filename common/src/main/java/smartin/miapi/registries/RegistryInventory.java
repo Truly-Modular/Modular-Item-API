@@ -293,6 +293,24 @@ public class RegistryInventory {
                         new ClampedEntityAttribute("miapi.attribute.name.shield_break", 0.0, 0.0, 1024.0).setTracked(true),
                 att -> SHIELD_BREAK = att);
 
+        //projectile based
+        registerAtt("generic.projectile_damage", true, () ->
+                        new ClampedEntityAttribute("miapi.attribute.name.projectile_damage", 1.0, 0.0, 1024.0).setTracked(true),
+                att -> PROJECTILE_DAMAGE = att);
+        registerAtt("generic.projectile_speed", true, () ->
+                        new ClampedEntityAttribute("miapi.attribute.name.projectile_speed", 1.0, 0.0, 1024.0).setTracked(true),
+                att -> PROJECTILE_SPEED = att);
+        registerAtt("generic.projectile_accuracy", true, () ->
+                        new ClampedEntityAttribute("miapi.attribute.name.projectile_accuracy", 1.0, 0.0, 1024.0).setTracked(true),
+                att -> PROJECTILE_ACCURACY = att);
+        registerAtt("generic.projectile_piercing", true, () ->
+                        new ClampedEntityAttribute("miapi.attribute.name.projectile_piercing", 0.0, 0.0, 1024.0).setTracked(true),
+                att -> PROJECTILE_PIERCING = att);
+        registerAtt("generic.projectile_crit_multiplier", true, () ->
+                        new ClampedEntityAttribute("miapi.attribute.name.projectile_crit_multiplier", 0.0, 1.5, 1024.0).setTracked(true),
+                att -> PROJECTILE_CRIT_MULTIPLIER = att);
+
+
         // GAME EVENTS
         register(gameEvents, "request_crafting_stat_update", () -> new GameEvent(MOD_ID + ":crafting_stat_update", 16), ev -> statUpdateEvent = ev);
         register(gameEvents, "stat_provider_updated", () -> new GameEvent(MOD_ID + ":stat_provider_updated", 16), ev -> statProviderUpdatedEvent = ev);
