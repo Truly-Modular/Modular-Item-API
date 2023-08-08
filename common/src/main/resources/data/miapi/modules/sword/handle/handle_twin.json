@@ -1,5 +1,5 @@
 {
-    "name": "handle_dual",
+    "name": "handle_twin",
     "texture": {
         "path": "miapi:models/item/sword/handle/two_handed/[material.texture].json",
         "transform": {

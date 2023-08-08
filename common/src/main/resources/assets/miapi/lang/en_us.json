@@ -258,10 +258,10 @@
     "miapi.module.handle_short.description": "A shorter handle suitable for one-handed swords, providing improved maneuverability.",
     "miapi.module.handle_short.short_description": "A Short Handle",
 
-    "miapi.module.handle_dual": "Dual Handle",
-    "miapi.module.handle_dual.name": "[translation.[material.translation]]Dual Handle",
-    "miapi.module.handle_dual.description": "Am impractical Dual Handle for double the Blades.\n Looks cool though.",
-    "miapi.module.handle_dual.short_description": "A Dual Handle",
+    "miapi.module.handle_twin": "Twin Handle",
+    "miapi.module.handle_twin.name": "[translation.[material.translation]]Twin Handle",
+    "miapi.module.handle_twin.description": "Am impractical Twin Handle for Double the Blades.\n Looks cool though.",
+    "miapi.module.handle_twin.short_description": "A Twin Handle",
 
     "miapi.module.axe_front": "Axe Head",
     "miapi.module.axe_front.name": "[translation.[material.translation]]Axe",

@@ -307,7 +307,7 @@ public class RegistryInventory {
                         new ClampedEntityAttribute("miapi.attribute.name.projectile_piercing", 0.0, 0.0, 1024.0).setTracked(true),
                 att -> PROJECTILE_PIERCING = att);
         registerAtt("generic.projectile_crit_multiplier", true, () ->
-                        new ClampedEntityAttribute("miapi.attribute.name.projectile_crit_multiplier", 0.0, 1.5, 1024.0).setTracked(true),
+                        new ClampedEntityAttribute("miapi.attribute.name.projectile_crit_multiplier", 1.5, 0.0, 1024.0).setTracked(true),
                 att -> PROJECTILE_CRIT_MULTIPLIER = att);
 
 

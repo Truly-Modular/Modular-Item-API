@@ -1,15 +1,15 @@
 {
-    "blade_longsword": {
+    "blade_rapier": {
         "condition": {
             "type": "otherModule",
             "condition": {
                 "type": "module",
-                "module": "handle_polearm"
+                "module": "handle_twin"
             }
         },
         "properties": {
             "better_combat_config": {
-                "parent": "bettercombat:halberd"
+                "parent": "bettercombat:twin_blade"
             }
         }
     }
