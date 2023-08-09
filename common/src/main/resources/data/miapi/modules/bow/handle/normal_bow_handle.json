@@ -21,7 +21,7 @@
         }
     },
     "allowedInSlots": [
-        "bow"
+        "bow","melee"
     ],
     "slots": {
         "0": {

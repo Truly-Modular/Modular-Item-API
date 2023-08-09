@@ -12,17 +12,14 @@ import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.data.client.BlockStateVariantMap;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Vector3f;
 import smartin.miapi.Miapi;
 
-import javax.swing.*;
 import java.util.*;
 
 /**
@@ -189,7 +186,7 @@ public class DynamicBakedModel implements BakedModel {
         ModelOverrideList list = overrideModels.isEmpty() ? ModelOverrideList.EMPTY : new DynamicModelOverrides(overrideModels);
         List<BakedQuad> defaultList = bakedQuads.get(null);
         defaultList = defaultList == null ? new ArrayList<>() : defaultList;
-        BakedModel model = new BasicBakedModel(defaultList, bakedQuads, true, false, true, this.getParticleSprite(), this.modelTransformation, list);
+        BakedModel model = new BasicBakedModel(defaultList, bakedQuads, true, false, true, this.getParticleSprite(), this.modelTransformation, this.getOverrides());
         return model;
     }
 

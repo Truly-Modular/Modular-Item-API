@@ -2,8 +2,6 @@ package smartin.miapi.modules.properties;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import dev.architectury.event.events.common.LifecycleEvent;
-import dev.architectury.platform.Platform;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.EnchantmentTarget;
@@ -36,7 +34,7 @@ public class EnchantmentProperty implements CraftingProperty, ModuleProperty {
         property = this;
         ModularItemCache.setSupplier(KEY, this::createAllowedList);
 
-        Miapi.registerReloadHandler(ReloadEvents.MAIN, "enchantment_categories",  (isClient) -> {
+        Miapi.registerReloadHandler(ReloadEvents.MAIN, "enchantment_categories", (isClient) -> {
             replaceMap.clear();
             fillMapDefault();
         }, (isClient, path, data) -> {
@@ -83,7 +81,8 @@ public class EnchantmentProperty implements CraftingProperty, ModuleProperty {
             EnchantmentPropertyJson json = Miapi.gson.fromJson(element, EnchantmentPropertyJson.class);
             if (json.allowed == null) json.allowed = new ArrayList<>();
             if (json.forbidden == null) json.forbidden = new ArrayList<>();
-            return convert(json.allowed);
+            List<Enchantment> enchantmentList = convert(json.allowed);
+            return enchantmentList;
         } else {
             return new ArrayList<>();
         }
@@ -105,11 +104,10 @@ public class EnchantmentProperty implements CraftingProperty, ModuleProperty {
 
     public static void addToReplaceMap(String key, EnchantmentTarget target) {
         Set<String> list = replaceMap.getOrDefault(key, new HashSet<>());
-        LifecycleEvent.SERVER_BEFORE_START.register(server -> {
-            Registries.ENCHANTMENT.forEach(ench -> {
-                if (ench.target == target)
-                    list.add(Objects.requireNonNull(Registries.ENCHANTMENT.getId(ench)).toString());
-            });
+        Registries.ENCHANTMENT.forEach(ench -> {
+            if (ench.target == target) {
+                list.add(Objects.requireNonNull(Registries.ENCHANTMENT.getId(ench)).toString());
+            }
         });
         replaceMap.put(key, list);
     }
@@ -133,6 +131,7 @@ public class EnchantmentProperty implements CraftingProperty, ModuleProperty {
 
     public static List<Enchantment> convert(List<String> list) {
         List<String> replaceList = new ArrayList<>();
+        Map<String,Set<String>> rawMap = replaceMap;
         for (String id : list) {
             if (replaceMap.containsKey(id)) {
                 replaceList.addAll(replaceMap.get(id));
@@ -142,12 +141,12 @@ public class EnchantmentProperty implements CraftingProperty, ModuleProperty {
         }
         List<Enchantment> enchantments = new ArrayList<>();
         for (String id : replaceList) {
-            if (id.contains(":")) {
-                if (Platform.isModLoaded(id.split(":")[0])) {
-                    enchantments.add(Registries.ENCHANTMENT.get(new Identifier(id)));
-                }
-            } else {
-                enchantments.add(Registries.ENCHANTMENT.get(new Identifier(id)));
+            Enchantment enchantment = Registries.ENCHANTMENT.get(new Identifier(id));
+            if(enchantment!=null && !enchantments.contains(enchantment)){
+                enchantments.add(enchantment);
+            }
+            else{
+                Miapi.LOGGER.warn("enchantment "+id+ " not found");
             }
         }
         return enchantments;

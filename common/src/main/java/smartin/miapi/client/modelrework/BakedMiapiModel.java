@@ -1,10 +1,12 @@
 package smartin.miapi.client.modelrework;
 
 import com.redpxnda.nucleus.util.Color;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.model.BakedModel;
+import net.minecraft.client.render.model.json.ModelOverrideList;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
@@ -41,6 +43,10 @@ public class BakedMiapiModel implements MiapiModel {
 
         for (BakedModel model : models) {
             for (Direction direction : Direction.values()) {
+                if (model.getOverrides() != null && !model.getOverrides().equals(ModelOverrideList.EMPTY)) {
+                    model = model.getOverrides().apply(model, stack, MinecraftClient.getInstance().world, null, light);
+                    //Miapi.LOGGER.warn(model.getOverrides().toString());
+                }
                 VertexConsumer consumer;
                 if (material != null)
                     consumer = material.setupMaterialShader(immediate, RegistryInventory.Client.entityTranslucentMaterialRenderType, RegistryInventory.Client.entityTranslucentMaterialShader);
@@ -62,7 +68,7 @@ public class BakedMiapiModel implements MiapiModel {
 
                     model.getQuads(null, direction, Random.create()).forEach(bakedQuad -> {
                         //red, green, blue
-                        glintConsumer.quad(matrices.peek(), bakedQuad, (float)glintColor.r() / 255, (float)glintColor.g() / 255, (float)glintColor.b() / 255, lightValue, overlay);
+                        glintConsumer.quad(matrices.peek(), bakedQuad, (float) glintColor.r() / 255, (float) glintColor.g() / 255, (float) glintColor.b() / 255, lightValue, overlay);
                     });
                     immediate.draw();
                 }

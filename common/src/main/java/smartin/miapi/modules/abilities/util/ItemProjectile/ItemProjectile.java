@@ -1,18 +1,14 @@
 package smartin.miapi.modules.abilities.util.ItemProjectile;
 
+import dev.architectury.event.EventResult;
 import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LightningEntity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.*;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -23,16 +19,46 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
-import smartin.miapi.Miapi;
+import smartin.miapi.attributes.AttributeRegistry;
+import smartin.miapi.events.MiapiEvents;
+import smartin.miapi.modules.abilities.util.ItemProjectile.ArrowHitBehaviour.EntityBounceBehaviour;
+import smartin.miapi.modules.abilities.util.ItemProjectile.ArrowHitBehaviour.ProjectileHitBehaviour;
+import smartin.miapi.modules.abilities.util.WrappedSoundEvent;
+import smartin.miapi.modules.properties.AttributeProperty;
 import smartin.miapi.registries.RegistryInventory;
 
 public class ItemProjectile extends PersistentProjectileEntity {
-    private static final TrackedData<Byte> LOYALTY;
-    private static final TrackedData<Boolean> ENCHANTED;
-    private static final TrackedData<ItemStack> throwingStack;
+    private static final TrackedData<Byte> LOYALTY = DataTracker.registerData(ItemProjectile.class, TrackedDataHandlerRegistry.BYTE);
+    private static final TrackedData<Boolean> ENCHANTED = DataTracker.registerData(ItemProjectile.class, TrackedDataHandlerRegistry.BOOLEAN);
+    private static final TrackedData<ItemStack> THROWING_STACK = DataTracker.registerData(ItemProjectile.class, TrackedDataHandlerRegistry.ITEM_STACK);
+    private static final TrackedData<ItemStack> BOW_ITEM_STACK = DataTracker.registerData(ItemProjectile.class, TrackedDataHandlerRegistry.ITEM_STACK);
+    private static final TrackedData<Float> WATER_DRAG = DataTracker.registerData(ItemProjectile.class, TrackedDataHandlerRegistry.FLOAT);
     public ItemStack thrownStack = ItemStack.EMPTY;
     private boolean dealtDamage;
     public int returnTimer;
+    public float waterDrag = 0.99f;
+    public WrappedSoundEvent hitEntitySound = new WrappedSoundEvent(this.getHitSound(), 1.0f, 1.0f);
+    public WrappedSoundEvent hitGroundSound = new WrappedSoundEvent(this.getHitSound(), 1.0f, 1.0f);
+    public ProjectileHitBehaviour projectileHitBehaviour = new EntityBounceBehaviour();
+
+    static {
+        MiapiEvents.MODULAR_PROJECTILE_POST_HIT.register(listener -> {
+            ItemProjectile projectile = listener.projectile;
+            Entity victim = listener.entityHitResult.getEntity();
+            Entity owner = listener.projectile.getOwner();
+            if (projectile.getWorld() instanceof ServerWorld && projectile.getWorld().isThundering() && projectile.hasChanneling()) {
+                BlockPos blockPos = victim.getBlockPos();
+                if (projectile.getWorld().isSkyVisible(blockPos)) {
+                    LightningEntity lightningEntity = EntityType.LIGHTNING_BOLT.create(projectile.getWorld());
+                    lightningEntity.refreshPositionAfterTeleport(Vec3d.ofBottomCenter(blockPos));
+                    lightningEntity.setChanneler(owner instanceof ServerPlayerEntity ? (ServerPlayerEntity) owner : null);
+                    projectile.getWorld().spawnEntity(lightningEntity);
+                    projectile.hitEntitySound = new WrappedSoundEvent(SoundEvents.ITEM_TRIDENT_THUNDER, 5.0f, 1.0f);
+                }
+            }
+            return EventResult.pass();
+        });
+    }
 
     public ItemProjectile(EntityType<? extends Entity> entityType, World world) {
         super((EntityType<? extends PersistentProjectileEntity>) entityType, world);
@@ -43,14 +69,26 @@ public class ItemProjectile extends PersistentProjectileEntity {
         this.thrownStack = stack.copy();
         this.dataTracker.set(LOYALTY, (byte) EnchantmentHelper.getLoyalty(stack));
         this.dataTracker.set(ENCHANTED, stack.hasGlint());
-        this.dataTracker.set(throwingStack, thrownStack);
+        this.dataTracker.set(THROWING_STACK, thrownStack);
+        this.dataTracker.set(BOW_ITEM_STACK, ItemStack.EMPTY);
+        this.dataTracker.set(WATER_DRAG, waterDrag);
+    }
+
+    public void setBowItem(ItemStack bowItem) {
+        this.dataTracker.set(BOW_ITEM_STACK, bowItem.copy());
+    }
+
+    public ItemStack getBowItem() {
+        return this.dataTracker.get(BOW_ITEM_STACK);
     }
 
     protected void initDataTracker() {
         super.initDataTracker();
-        this.dataTracker.startTracking(throwingStack, ItemStack.EMPTY);
+        this.dataTracker.startTracking(THROWING_STACK, ItemStack.EMPTY);
         this.dataTracker.startTracking(LOYALTY, (byte) 0);
         this.dataTracker.startTracking(ENCHANTED, false);
+        this.dataTracker.startTracking(BOW_ITEM_STACK, ItemStack.EMPTY);
+        this.dataTracker.startTracking(WATER_DRAG, 0.99f);
     }
 
     public void tick() {
@@ -59,8 +97,8 @@ public class ItemProjectile extends PersistentProjectileEntity {
         }
 
         Entity entity = this.getOwner();
-        int i = (Byte) this.dataTracker.get(LOYALTY);
-        if (i > 0 && (this.dealtDamage || this.isNoClip()) && entity != null) {
+        int loyaltyLevel = this.dataTracker.get(LOYALTY);
+        if (loyaltyLevel > 0 && (this.dealtDamage || this.isNoClip()) && entity != null) {
             if (!this.isOwnerAlive()) {
                 if (!this.getWorld().isClient && this.pickupType == PickupPermission.ALLOWED) {
                     this.dropStack(this.asItemStack(), 0.1F);
@@ -69,14 +107,14 @@ public class ItemProjectile extends PersistentProjectileEntity {
                 this.discard();
             } else {
                 this.setNoClip(true);
-                Vec3d vec3d = entity.getEyePos().subtract(this.getPos());
-                this.setPos(this.getX(), this.getY() + vec3d.y * 0.015 * (double) i, this.getZ());
+                Vec3d targetDir = entity.getEyePos().subtract(this.getPos());
+                this.setPos(this.getX(), this.getY() + targetDir.y * 0.015 * (double) loyaltyLevel, this.getZ());
                 if (this.getWorld().isClient) {
                     this.lastRenderY = this.getY();
                 }
 
-                double d = 0.05 * (double) i;
-                this.setVelocity(this.getVelocity().multiply(0.95).add(vec3d.normalize().multiply(d)));
+                double speedAdjustment = 0.05 * (double) loyaltyLevel;
+                this.setVelocity(this.getVelocity().multiply(0.95).add(targetDir.normalize().multiply(speedAdjustment)));
                 if (this.returnTimer == 0) {
                     this.playSound(SoundEvents.ITEM_TRIDENT_RETURN, 10.0F, 1.0F);
                 }
@@ -98,7 +136,7 @@ public class ItemProjectile extends PersistentProjectileEntity {
     }
 
     public ItemStack asItemStack() {
-        return this.dataTracker.get(throwingStack).copy();
+        return this.dataTracker.get(THROWING_STACK).copy();
     }
 
     public boolean isEnchanted() {
@@ -112,46 +150,50 @@ public class ItemProjectile extends PersistentProjectileEntity {
 
     protected void onEntityHit(EntityHitResult entityHitResult) {
         Entity entity = entityHitResult.getEntity();
-        float f = 8.0F;
-        if (entity instanceof LivingEntity livingEntity) {
-            f += EnchantmentHelper.getAttackDamage(this.thrownStack, livingEntity.getGroup());
-        }
+        float damage = getProjectileDamage();
 
-        Entity entity2 = this.getOwner();
-        DamageSource damageSource = this.getDamageSources().trident(this, (Entity)(entity2 == null ? this : entity2));
+        Entity owner = this.getOwner();
+        MiapiEvents.ModularArrowHitEvent event = new MiapiEvents.ModularArrowHitEvent(entityHitResult, this, this.getDamageSources().arrow(this, owner), damage);
+        EventResult result = MiapiEvents.MODULAR_PROJECTILE_HIT.invoker().hit(event);
+        if (result.interruptsFurtherEvaluation()) {
+            return;
+        }
+        damage = event.damage;
         this.dealtDamage = true;
-        SoundEvent soundEvent = SoundEvents.ITEM_TRIDENT_HIT;
-        if (entity.damage(damageSource, f)) {
+        if (entity.damage(event.damageSource, damage)) {
             if (entity.getType() == EntityType.ENDERMAN) {
                 return;
             }
 
-            if (entity instanceof LivingEntity) {
-                LivingEntity livingEntity2 = (LivingEntity) entity;
-                if (entity2 instanceof LivingEntity) {
-                    EnchantmentHelper.onUserDamaged(livingEntity2, entity2);
-                    EnchantmentHelper.onTargetDamaged((LivingEntity) entity2, livingEntity2);
+            if (entity instanceof LivingEntity victim) {
+                if (owner instanceof LivingEntity livingOwner) {
+                    EnchantmentHelper.onUserDamaged(victim, livingOwner);
+                    EnchantmentHelper.onTargetDamaged(livingOwner, victim);
                 }
 
-                this.onHit(livingEntity2);
+                this.onHit(victim);
             }
         }
 
-        this.setVelocity(this.getVelocity().multiply(-0.01, -0.1, -0.01));
-        float g = 1.0F;
-        if (this.getWorld() instanceof ServerWorld && this.getWorld().isThundering() && this.hasChanneling()) {
-            BlockPos blockPos = entity.getBlockPos();
-            if (this.getWorld().isSkyVisible(blockPos)) {
-                LightningEntity lightningEntity = EntityType.LIGHTNING_BOLT.create(this.getWorld());
-                lightningEntity.refreshPositionAfterTeleport(Vec3d.ofBottomCenter(blockPos));
-                lightningEntity.setChanneler(entity2 instanceof ServerPlayerEntity ? (ServerPlayerEntity) entity2 : null);
-                this.getWorld().spawnEntity(lightningEntity);
-                soundEvent = SoundEvents.ITEM_TRIDENT_THUNDER;
-                g = 5.0F;
-            }
+        if (this.projectileHitBehaviour != null) {
+            projectileHitBehaviour.onHit(this, entityHitResult.getEntity(), entityHitResult);
         }
+        MiapiEvents.ModularArrowHitEvent postEvent = new MiapiEvents.ModularArrowHitEvent(event.entityHitResult, this, event.damageSource, damage);
+        EventResult postResult = MiapiEvents.MODULAR_PROJECTILE_POST_HIT.invoker().hit(postEvent);
+        if (postResult.interruptsFurtherEvaluation()) {
+            return;
+        }
+        this.playSound(this.hitEntitySound.event(), this.hitEntitySound.volume(), this.hitEntitySound.pitch());
+    }
 
-        this.playSound(soundEvent, g, 1.0F);
+    public float getProjectileDamage() {
+        float damage = (float) AttributeProperty.getActualValue(this.asItemStack(), EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_DAMAGE);
+        float speed = (float) this.getVelocity().length();
+        damage = damage * speed;
+        if (this.isCritical()) {
+            damage = (float) (damage * AttributeProperty.getActualValue(this.asItemStack(), EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_CRIT_MULTIPLIER));
+        }
+        return damage;
     }
 
     public boolean hasChanneling() {
@@ -177,7 +219,11 @@ public class ItemProjectile extends PersistentProjectileEntity {
         super.readCustomDataFromNbt(nbt);
         if (nbt.contains("ThrownItem", 10)) {
             this.thrownStack = ItemStack.fromNbt(nbt.getCompound("ThrownItem"));
-            this.dataTracker.set(throwingStack,thrownStack);
+            this.dataTracker.set(THROWING_STACK, thrownStack);
+        }
+        if (nbt.contains("BowItem", 10)) {
+            ItemStack bowItem = ItemStack.fromNbt(nbt.getCompound("BowItem"));
+            this.dataTracker.set(BOW_ITEM_STACK, bowItem);
         }
 
         this.dealtDamage = nbt.getBoolean("DealtDamage");
@@ -187,11 +233,12 @@ public class ItemProjectile extends PersistentProjectileEntity {
     public void writeCustomDataToNbt(NbtCompound nbt) {
         super.writeCustomDataToNbt(nbt);
         nbt.put("ThrownItem", this.thrownStack.writeNbt(new NbtCompound()));
+        nbt.put("BowItem", this.getBowItem().writeNbt(new NbtCompound()));
         nbt.putBoolean("DealtDamage", this.dealtDamage);
     }
 
     public void age() {
-        int i = (Byte) this.dataTracker.get(LOYALTY);
+        int i = this.dataTracker.get(LOYALTY);
         if (this.pickupType != PickupPermission.ALLOWED || i <= 0) {
             super.age();
         }
@@ -199,16 +246,10 @@ public class ItemProjectile extends PersistentProjectileEntity {
     }
 
     protected float getDragInWater() {
-        return 0.99F;
+        return waterDrag;
     }
 
     public boolean shouldRender(double cameraX, double cameraY, double cameraZ) {
         return true;
-    }
-
-    static {
-        LOYALTY = DataTracker.registerData(ItemProjectile.class, TrackedDataHandlerRegistry.BYTE);
-        ENCHANTED = DataTracker.registerData(ItemProjectile.class, TrackedDataHandlerRegistry.BOOLEAN);
-        throwingStack = DataTracker.registerData(ItemProjectile.class, TrackedDataHandlerRegistry.ITEM_STACK);
     }
 }

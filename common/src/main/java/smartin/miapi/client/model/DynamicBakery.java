@@ -5,12 +5,10 @@ import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.item.ModelPredicateProvider;
 import net.minecraft.client.item.ModelPredicateProviderRegistry;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.render.model.*;
 import net.minecraft.client.render.model.ModelRotation;
+import net.minecraft.client.render.model.*;
 import net.minecraft.client.render.model.json.*;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.SpriteIdentifier;
@@ -19,12 +17,10 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.item.modular.Transform;
-import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.render.ModelProperty;
 
 import java.util.*;
@@ -58,7 +54,7 @@ public class DynamicBakery {
             try {
                 actualModel.set(ITEM_MODEL_GENERATOR.create(ModelProperty.textureGetter, unbakedModel));
                 return DynamicBakery.bake(actualModel.get(), modelLoader, unbakedModel.getRootModel(), textureGetter, Transform.toModelTransformation(settings), new Identifier(unbakedModel.id), true, color);
-            } catch (Exception surpressed) {
+            } catch (Exception suppressed) {
 
             }
             return model;

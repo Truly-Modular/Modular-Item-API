@@ -295,7 +295,7 @@ public class RegistryInventory {
 
         //projectile based
         registerAtt("generic.projectile_damage", true, () ->
-                        new ClampedEntityAttribute("miapi.attribute.name.projectile_damage", 1.0, 0.0, 1024.0).setTracked(true),
+                        new ClampedEntityAttribute("miapi.attribute.name.projectile_damage", 2.0, 0.0, 1024.0).setTracked(true),
                 att -> PROJECTILE_DAMAGE = att);
         registerAtt("generic.projectile_speed", true, () ->
                         new ClampedEntityAttribute("miapi.attribute.name.projectile_speed", 1.0, 0.0, 1024.0).setTracked(true),

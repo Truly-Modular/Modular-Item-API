@@ -47,7 +47,7 @@ public class ModularItemCache {
     }
 
     public static Object get(ItemStack stack, String key) {
-        if (stack.getItem() instanceof ModularItem) {
+        if (!stack.isEmpty() && stack.getItem() instanceof ModularItem) {
             Cache itemCache = find(stack);
             return itemCache.get(key);
         }
@@ -94,7 +94,9 @@ public class ModularItemCache {
         }
         UUID uuid = lookUpUUId;
         try {
-            return cache.get(lookUpUUId, () -> new Cache(uuid, stack));
+            Cache itemCache = cache.get(lookUpUUId, () -> new Cache(uuid, stack));
+            //itemCache.stack = stack;
+            return itemCache;
         } catch (ExecutionException ignored) {
             UUID uuid1 = getMissingUUID();
             Cache cache1 = new Cache(uuid1, stack);
@@ -120,15 +122,11 @@ public class ModularItemCache {
         protected Map<String, Object> map = new ConcurrentHashMap<>();
         public UUID uuid;
         public ItemStack stack;
-        public int nbtHash;
 
         public Cache(UUID uuid, ItemStack stack) {
             this.uuid = uuid;
-            setUUIDFor(stack, uuid);
-            this.stack = stack;
-            if (stack.hasNbt()) {
-                nbtHash = stack.getOrCreateNbt().hashCode();
-            }
+            this.stack = stack.copy();
+            setUUIDFor(stack.copy(), uuid);
         }
 
         public void set(String key, Object object) {

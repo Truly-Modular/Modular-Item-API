@@ -9,6 +9,7 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.hit.EntityHitResult;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.modules.abilities.util.ItemProjectile.ItemProjectile;
@@ -20,6 +21,8 @@ public class MiapiEvents {
     public static Event<EntityRide> STOP_RIDING = EventFactory.createLoop();
     public static Event<BlockCraftingStatUpdate> BLOCK_STAT_UPDATE = EventFactory.createEventResult();
     public static Event<ItemCraftingStatUpdate> ITEM_STAT_UPDATE = EventFactory.createEventResult();
+    public static Event<ModularProjectileHit> MODULAR_PROJECTILE_HIT = EventFactory.createEventResult();
+    public static Event<ModularProjectileHit> MODULAR_PROJECTILE_POST_HIT = EventFactory.createEventResult();
 
     public static class LivingHurtEvent {
         public final LivingEntity livingEntity;
@@ -35,7 +38,7 @@ public class MiapiEvents {
 
         public ItemStack getCausingItemStack() {
             if (damageSource.getSource() instanceof ProjectileEntity projectile && (projectile instanceof ItemProjectile itemProjectile)) {
-                    return itemProjectile.asItemStack();
+                return itemProjectile.asItemStack();
 
             }
             if (damageSource.getAttacker() instanceof LivingEntity attacker) {
@@ -45,15 +48,36 @@ public class MiapiEvents {
         }
     }
 
+    public static class ModularArrowHitEvent {
+        public EntityHitResult entityHitResult;
+        public ItemProjectile projectile;
+        public DamageSource damageSource;
+        public float damage;
+
+        public ModularArrowHitEvent(EntityHitResult entityHitResult, ItemProjectile projectile, DamageSource damageSource, float damage) {
+            this.entityHitResult = entityHitResult;
+            this.projectile = projectile;
+            this.damageSource = damageSource;
+            this.damage = damage;
+        }
+    }
+
+    public interface ModularProjectileHit {
+        EventResult hit(ModularArrowHitEvent event);
+    }
+
     public interface LivingHurt {
         EventResult hurt(LivingHurtEvent event);
     }
+
     public interface BlockCraftingStatUpdate {
         EventResult call(ModularWorkBenchEntity bench, @Nullable PlayerEntity player);
     }
+
     public interface ItemCraftingStatUpdate {
         EventResult call(ModularWorkBenchEntity bench, Iterable<ItemStack> inventory, @Nullable PlayerEntity player);
     }
+
     public interface EntityRide {
         void ride(Entity passenger, Entity vehicle);
     }
