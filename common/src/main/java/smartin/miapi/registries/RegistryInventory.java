@@ -294,6 +294,9 @@ public class RegistryInventory {
                 att -> SHIELD_BREAK = att);
 
         //projectile based
+        registerAtt("generic.bow_draw_time", true, () ->
+                        new ClampedEntityAttribute("miapi.attribute.name.bow_draw_time", 1.0, 0.0, 1024.0).setTracked(true),
+                att -> BOW_DRAW_TIME = att);
         registerAtt("generic.projectile_damage", true, () ->
                         new ClampedEntityAttribute("miapi.attribute.name.projectile_damage", 2.0, 0.0, 1024.0).setTracked(true),
                 att -> PROJECTILE_DAMAGE = att);

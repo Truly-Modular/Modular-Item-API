@@ -1,5 +1,6 @@
 package smartin.miapi.modules.abilities;
 
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
@@ -9,15 +10,17 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
 import net.minecraft.world.World;
+import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.modules.abilities.util.ItemProjectile.ItemProjectile;
 import smartin.miapi.modules.abilities.util.ItemUseAbility;
+import smartin.miapi.modules.properties.AttributeProperty;
 
 /**
  * This Ability allows you to throw the Item in question like a Trident
  */
 public class ThrowingAbility implements ItemUseAbility {
 
-    public ThrowingAbility(){
+    public ThrowingAbility() {
     }
 
     @Override
@@ -53,13 +56,21 @@ public class ThrowingAbility implements ItemUseAbility {
                     });
 
                     ItemProjectile tridentEntity = new ItemProjectile(world, playerEntity, stack);
-                    tridentEntity.setVelocity(playerEntity, playerEntity.getPitch(), playerEntity.getYaw(), 0.0F, 2.5F + (float) 2 * 0.5F, 1.0F);
+                    float divergence = (float) AttributeProperty.getActualValue(stack, EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_ACCURACY);
+                    float speed = (float) AttributeProperty.getActualValue(stack, EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_SPEED);
+                    float damage = (float) AttributeProperty.getActualValue(stack, EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_DAMAGE);
+                    damage = damage / speed;
+                    tridentEntity.setVelocity(playerEntity, playerEntity.getPitch(), playerEntity.getYaw(), 0.0F, speed, divergence);
+                    tridentEntity.setDamage(damage);
+                    tridentEntity.setBowItem(ItemStack.EMPTY);
+                    tridentEntity.setPierceLevel((byte) (int) AttributeProperty.getActualValue(stack, EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_PIERCING));
+                    tridentEntity.setSpeedDamage(true);
+                    tridentEntity.thrownStack = stack;
                     world.spawnEntity(tridentEntity);
                     if (playerEntity.getAbilities().creativeMode) {
                         tridentEntity.pickupType = PersistentProjectileEntity.PickupPermission.CREATIVE_ONLY;
-                    }
-                    else{
-                        user.setStackInHand(user.getActiveHand(),ItemStack.EMPTY);
+                    } else {
+                        user.setStackInHand(user.getActiveHand(), ItemStack.EMPTY);
                     }
                 }
             }

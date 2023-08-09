@@ -2,7 +2,9 @@ package smartin.miapi.modules.abilities.util.ItemProjectile;
 
 import dev.architectury.event.EventResult;
 import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.*;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
@@ -11,25 +13,24 @@ import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.hit.EntityHitResult;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
-import smartin.miapi.attributes.AttributeRegistry;
+import smartin.miapi.Miapi;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.modules.abilities.util.ItemProjectile.ArrowHitBehaviour.EntityBounceBehaviour;
+import smartin.miapi.modules.abilities.util.ItemProjectile.ArrowHitBehaviour.EntityPierceBehaviour;
 import smartin.miapi.modules.abilities.util.ItemProjectile.ArrowHitBehaviour.ProjectileHitBehaviour;
 import smartin.miapi.modules.abilities.util.WrappedSoundEvent;
-import smartin.miapi.modules.properties.AttributeProperty;
 import smartin.miapi.registries.RegistryInventory;
 
 public class ItemProjectile extends PersistentProjectileEntity {
     private static final TrackedData<Byte> LOYALTY = DataTracker.registerData(ItemProjectile.class, TrackedDataHandlerRegistry.BYTE);
     private static final TrackedData<Boolean> ENCHANTED = DataTracker.registerData(ItemProjectile.class, TrackedDataHandlerRegistry.BOOLEAN);
+    private static final TrackedData<Boolean> SPEED_DAMAGE = DataTracker.registerData(ItemProjectile.class, TrackedDataHandlerRegistry.BOOLEAN);
     private static final TrackedData<ItemStack> THROWING_STACK = DataTracker.registerData(ItemProjectile.class, TrackedDataHandlerRegistry.ITEM_STACK);
     private static final TrackedData<ItemStack> BOW_ITEM_STACK = DataTracker.registerData(ItemProjectile.class, TrackedDataHandlerRegistry.ITEM_STACK);
     private static final TrackedData<Float> WATER_DRAG = DataTracker.registerData(ItemProjectile.class, TrackedDataHandlerRegistry.FLOAT);
@@ -40,25 +41,6 @@ public class ItemProjectile extends PersistentProjectileEntity {
     public WrappedSoundEvent hitEntitySound = new WrappedSoundEvent(this.getHitSound(), 1.0f, 1.0f);
     public WrappedSoundEvent hitGroundSound = new WrappedSoundEvent(this.getHitSound(), 1.0f, 1.0f);
     public ProjectileHitBehaviour projectileHitBehaviour = new EntityBounceBehaviour();
-
-    static {
-        MiapiEvents.MODULAR_PROJECTILE_POST_HIT.register(listener -> {
-            ItemProjectile projectile = listener.projectile;
-            Entity victim = listener.entityHitResult.getEntity();
-            Entity owner = listener.projectile.getOwner();
-            if (projectile.getWorld() instanceof ServerWorld && projectile.getWorld().isThundering() && projectile.hasChanneling()) {
-                BlockPos blockPos = victim.getBlockPos();
-                if (projectile.getWorld().isSkyVisible(blockPos)) {
-                    LightningEntity lightningEntity = EntityType.LIGHTNING_BOLT.create(projectile.getWorld());
-                    lightningEntity.refreshPositionAfterTeleport(Vec3d.ofBottomCenter(blockPos));
-                    lightningEntity.setChanneler(owner instanceof ServerPlayerEntity ? (ServerPlayerEntity) owner : null);
-                    projectile.getWorld().spawnEntity(lightningEntity);
-                    projectile.hitEntitySound = new WrappedSoundEvent(SoundEvents.ITEM_TRIDENT_THUNDER, 5.0f, 1.0f);
-                }
-            }
-            return EventResult.pass();
-        });
-    }
 
     public ItemProjectile(EntityType<? extends Entity> entityType, World world) {
         super((EntityType<? extends PersistentProjectileEntity>) entityType, world);
@@ -72,6 +54,7 @@ public class ItemProjectile extends PersistentProjectileEntity {
         this.dataTracker.set(THROWING_STACK, thrownStack);
         this.dataTracker.set(BOW_ITEM_STACK, ItemStack.EMPTY);
         this.dataTracker.set(WATER_DRAG, waterDrag);
+        this.dataTracker.set(SPEED_DAMAGE,false);
     }
 
     public void setBowItem(ItemStack bowItem) {
@@ -89,6 +72,15 @@ public class ItemProjectile extends PersistentProjectileEntity {
         this.dataTracker.startTracking(ENCHANTED, false);
         this.dataTracker.startTracking(BOW_ITEM_STACK, ItemStack.EMPTY);
         this.dataTracker.startTracking(WATER_DRAG, 0.99f);
+        this.dataTracker.startTracking(SPEED_DAMAGE,false);
+    }
+
+    public boolean getSpeedDamage(){
+        return this.dataTracker.get(SPEED_DAMAGE);
+    }
+
+    public void setSpeedDamage(boolean speedDamage){
+        this.dataTracker.set(SPEED_DAMAGE,speedDamage);
     }
 
     public void tick() {
@@ -151,6 +143,13 @@ public class ItemProjectile extends PersistentProjectileEntity {
     protected void onEntityHit(EntityHitResult entityHitResult) {
         Entity entity = entityHitResult.getEntity();
         float damage = getProjectileDamage();
+        if(this.getPierceLevel()>0){
+            projectileHitBehaviour = new EntityPierceBehaviour();
+            this.setPierceLevel((byte) (this.getPierceLevel()-1));
+        }
+        else{
+            projectileHitBehaviour = new EntityBounceBehaviour();
+        }
 
         Entity owner = this.getOwner();
         MiapiEvents.ModularArrowHitEvent event = new MiapiEvents.ModularArrowHitEvent(entityHitResult, this, this.getDamageSources().arrow(this, owner), damage);
@@ -159,6 +158,7 @@ public class ItemProjectile extends PersistentProjectileEntity {
             return;
         }
         damage = event.damage;
+        Miapi.LOGGER.warn("Dealing "+damage +" Damage");
         this.dealtDamage = true;
         if (entity.damage(event.damageSource, damage)) {
             if (entity.getType() == EntityType.ENDERMAN) {
@@ -187,11 +187,10 @@ public class ItemProjectile extends PersistentProjectileEntity {
     }
 
     public float getProjectileDamage() {
-        float damage = (float) AttributeProperty.getActualValue(this.asItemStack(), EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_DAMAGE);
-        float speed = (float) this.getVelocity().length();
-        damage = damage * speed;
-        if (this.isCritical()) {
-            damage = (float) (damage * AttributeProperty.getActualValue(this.asItemStack(), EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_CRIT_MULTIPLIER));
+        float damage = (float) getDamage();
+        if(this.getSpeedDamage()){
+            float speed = (float) this.getVelocity().length();
+            damage = damage * speed;
         }
         return damage;
     }
@@ -202,6 +201,10 @@ public class ItemProjectile extends PersistentProjectileEntity {
 
     protected boolean tryPickup(PlayerEntity player) {
         return super.tryPickup(player) || this.isNoClip() && this.isOwner(player) && player.getInventory().insertStack(this.asItemStack());
+    }
+
+    public void setDamageToDeal(boolean hasDamage){
+        this.dealtDamage = !hasDamage;
     }
 
     protected SoundEvent getHitSound() {

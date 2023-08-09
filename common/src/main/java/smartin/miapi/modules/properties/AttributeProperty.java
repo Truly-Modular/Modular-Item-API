@@ -1,6 +1,9 @@
 package smartin.miapi.modules.properties;
 
-import com.google.common.collect.*;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.LinkedListMultimap;
+import com.google.common.collect.Multimap;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.minecraft.entity.EquipmentSlot;
@@ -34,8 +37,13 @@ public class AttributeProperty implements ModuleProperty {
     public AttributeProperty() {
         property = this;
         ModularItemCache.setSupplier(KEY, (AttributeProperty::createAttributeCache));
-        priorityMap.put(EntityAttributes.GENERIC_ATTACK_DAMAGE, -10.0f);
-        priorityMap.put(EntityAttributes.GENERIC_ATTACK_SPEED, -9.0f);
+        priorityMap.put(EntityAttributes.GENERIC_ATTACK_DAMAGE, -12.0f);
+        priorityMap.put(EntityAttributes.GENERIC_ATTACK_SPEED, -11.0f);
+        priorityMap.put(AttributeRegistry.PROJECTILE_DAMAGE, -10.0f);
+        priorityMap.put(AttributeRegistry.PROJECTILE_CRIT_MULTIPLIER, -10.0f);
+        priorityMap.put(AttributeRegistry.PROJECTILE_SPEED, -9.0f);
+        priorityMap.put(AttributeRegistry.PROJECTILE_ACCURACY, -9.0f);
+        priorityMap.put(AttributeRegistry.PROJECTILE_PIERCING, -9.0f);
         priorityMap.put(AttributeRegistry.MINING_SPEED_AXE, -8.0f);
         priorityMap.put(AttributeRegistry.MINING_SPEED_PICKAXE, -8.0f);
         priorityMap.put(AttributeRegistry.MINING_SPEED_HOE, -8.0f);
@@ -144,7 +152,11 @@ public class AttributeProperty implements ModuleProperty {
 
             mergedOnItem.forEach((attribute, attributeModifier) -> {
                 Multimap<EntityAttribute, EntityAttributeModifier> multimap = uuidMultimapMap.computeIfAbsent(attributeModifier.getId(), (id) -> ArrayListMultimap.create());
-                multimap.put(attribute, attributeModifier);
+                if (attribute == null) {
+                    Miapi.LOGGER.warn("Attribute is null?! - this should never happen");
+                } else {
+                    multimap.put(attribute, attributeModifier);
+                }
             });
 
             uuidMultimapMap.forEach((uuid, entityAttributeEntityAttributeModifierMultimap) -> {
@@ -274,20 +286,24 @@ public class AttributeProperty implements ModuleProperty {
             double value = StatResolver.resolveDouble(attributeJson.value, instance);
             EntityAttributeModifier.Operation operation = getOperation(attributeJson.operation);
             EntityAttribute attribute = replaceMap.getOrDefault(attributeName, () -> Registries.ATTRIBUTE.get(new Identifier(attributeName))).get();
-            assert attribute != null;
-            if (attributeJson.uuid != null) {
-                UUID uuid = UUID.fromString(attributeJson.uuid);
-                // Thanks Mojang for using == and not .equals so i have to do this abomination
-                if (uuid.equals(ExampleModularItem.attackDamageUUID())) {
-                    uuid = ExampleModularItem.attackDamageUUID();
-                }
-                if (uuid.equals(ExampleModularItem.attackSpeedUUID())) {
-                    uuid = ExampleModularItem.attackSpeedUUID();
-                }
-                attributeModifiers.put(attribute, new EntityAttributeModifierHolder(new EntityAttributeModifier(uuid, attributeName, value, operation), slot, attributeJson.seperateOnItem));
+            if (attribute == null) {
+                Miapi.LOGGER.warn(String.valueOf(Registries.ATTRIBUTE.get(new Identifier(attributeName))));
+                Miapi.LOGGER.warn("Attribute is null " + attributeName + " on module " + instance.module.getName() + " this should not have happened.");
             } else {
-                // Use constructor without UUID
-                attributeModifiers.put(attribute, new EntityAttributeModifierHolder(new EntityAttributeModifier(attributeName, value, operation), slot, attributeJson.seperateOnItem));
+                if (attributeJson.uuid != null) {
+                    UUID uuid = UUID.fromString(attributeJson.uuid);
+                    // Thanks Mojang for using == and not .equals so i have to do this abomination
+                    if (uuid.equals(ExampleModularItem.attackDamageUUID())) {
+                        uuid = ExampleModularItem.attackDamageUUID();
+                    }
+                    if (uuid.equals(ExampleModularItem.attackSpeedUUID())) {
+                        uuid = ExampleModularItem.attackSpeedUUID();
+                    }
+                    attributeModifiers.put(attribute, new EntityAttributeModifierHolder(new EntityAttributeModifier(uuid, attributeName, value, operation), slot, attributeJson.seperateOnItem));
+                } else {
+                    // Use constructor without UUID
+                    attributeModifiers.put(attribute, new EntityAttributeModifierHolder(new EntityAttributeModifier(attributeName, value, operation), slot, attributeJson.seperateOnItem));
+                }
             }
         }
     }

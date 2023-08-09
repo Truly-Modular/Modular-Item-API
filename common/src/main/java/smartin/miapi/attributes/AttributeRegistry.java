@@ -3,8 +3,7 @@ package smartin.miapi.attributes;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import dev.architectury.event.EventResult;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.*;
 import net.minecraft.entity.attribute.AttributeContainer;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttribute;
@@ -12,7 +11,15 @@ import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import smartin.miapi.events.MiapiEvents;
+import smartin.miapi.modules.abilities.util.ItemProjectile.ItemProjectile;
+import smartin.miapi.modules.abilities.util.WrappedSoundEvent;
+import smartin.miapi.modules.properties.AttributeProperty;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -37,11 +44,13 @@ public class AttributeRegistry {
     public static EntityAttribute ARMOR_CRUSHING;
     public static EntityAttribute SHIELD_BREAK;
 
-    public static EntityAttribute PROJECTILE_SPEED;
+    public static EntityAttribute BOW_DRAW_TIME;
+
     public static EntityAttribute PROJECTILE_DAMAGE;
+    public static EntityAttribute PROJECTILE_CRIT_MULTIPLIER;
+    public static EntityAttribute PROJECTILE_SPEED;
     public static EntityAttribute PROJECTILE_ACCURACY;
     public static EntityAttribute PROJECTILE_PIERCING;
-    public static EntityAttribute PROJECTILE_CRIT_MULTIPLIER;
 
 
 
@@ -87,6 +96,30 @@ public class AttributeRegistry {
             }
             return EventResult.pass();
         }));
+        MiapiEvents.MODULAR_PROJECTILE_POST_HIT.register(listener -> {
+            ItemProjectile projectile = listener.projectile;
+            Entity victim = listener.entityHitResult.getEntity();
+            Entity owner = listener.projectile.getOwner();
+            if (projectile.getWorld() instanceof ServerWorld && projectile.getWorld().isThundering() && projectile.hasChanneling()) {
+                BlockPos blockPos = victim.getBlockPos();
+                if (projectile.getWorld().isSkyVisible(blockPos)) {
+                    LightningEntity lightningEntity = EntityType.LIGHTNING_BOLT.create(projectile.getWorld());
+                    lightningEntity.refreshPositionAfterTeleport(Vec3d.ofBottomCenter(blockPos));
+                    lightningEntity.setChanneler(owner instanceof ServerPlayerEntity ? (ServerPlayerEntity) owner : null);
+                    projectile.getWorld().spawnEntity(lightningEntity);
+                    projectile.hitEntitySound = new WrappedSoundEvent(SoundEvents.ITEM_TRIDENT_THUNDER, 5.0f, 1.0f);
+                }
+            }
+            return EventResult.pass();
+        });
+
+        MiapiEvents.MODULAR_PROJECTILE_HIT.register(listener -> {
+            ItemProjectile projectile = listener.projectile;
+            if(projectile.isCritical()){
+                projectile.setDamage(projectile.getDamage() * AttributeProperty.getActualValue(projectile.asItemStack(), EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_CRIT_MULTIPLIER));
+            }
+            return EventResult.pass();
+        });
     }
 
     public static double getAttribute(ItemStack stack, EntityAttribute attribute, EquipmentSlot slot, double defaultValue) {
