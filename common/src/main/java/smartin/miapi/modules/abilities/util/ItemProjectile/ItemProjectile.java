@@ -71,6 +71,7 @@ public class ItemProjectile extends PersistentProjectileEntity {
         return this.dataTracker.get(BOW_ITEM_STACK);
     }
 
+    @Override
     protected void initDataTracker() {
         super.initDataTracker();
         this.dataTracker.startTracking(THROWING_STACK, ItemStack.EMPTY);
@@ -90,6 +91,7 @@ public class ItemProjectile extends PersistentProjectileEntity {
         this.dataTracker.set(SPEED_DAMAGE, speedDamage);
     }
 
+    @Override
     public void tick() {
         if (this.inGroundTime > 4) {
             this.dealtDamage = true;
@@ -142,11 +144,13 @@ public class ItemProjectile extends PersistentProjectileEntity {
         return this.dataTracker.get(ENCHANTED);
     }
 
+    @Override
     @Nullable
     protected EntityHitResult getEntityCollision(Vec3d currentPosition, Vec3d nextPosition) {
         return this.dealtDamage ? null : super.getEntityCollision(currentPosition, nextPosition);
     }
 
+    @Override
     protected void onEntityHit(EntityHitResult entityHitResult) {
         Entity entity = entityHitResult.getEntity();
         float damage = getProjectileDamage();
@@ -204,6 +208,7 @@ public class ItemProjectile extends PersistentProjectileEntity {
         return EnchantmentHelper.hasChanneling(this.thrownStack);
     }
 
+    @Override
     protected boolean tryPickup(PlayerEntity player) {
         int slotId = this.dataTracker.get(PREFERRED_SLOT);
         boolean earlyPickup = switch (this.pickupType) {
@@ -237,10 +242,12 @@ public class ItemProjectile extends PersistentProjectileEntity {
         this.dealtDamage = !hasDamage;
     }
 
+    @Override
     protected SoundEvent getHitSound() {
         return SoundEvents.ITEM_TRIDENT_HIT_GROUND;
     }
 
+    @Override
     public void onPlayerCollision(PlayerEntity player) {
         if (this.isOwner(player) || this.getOwner() == null) {
             super.onPlayerCollision(player);
@@ -248,6 +255,7 @@ public class ItemProjectile extends PersistentProjectileEntity {
 
     }
 
+    @Override
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
         if (nbt.contains("ThrownItem", 10)) {
@@ -263,6 +271,7 @@ public class ItemProjectile extends PersistentProjectileEntity {
         this.dataTracker.set(LOYALTY, (byte) EnchantmentHelper.getLoyalty(this.thrownStack));
     }
 
+    @Override
     public void writeCustomDataToNbt(NbtCompound nbt) {
         super.writeCustomDataToNbt(nbt);
         nbt.put("ThrownItem", this.thrownStack.writeNbt(new NbtCompound()));
@@ -270,6 +279,7 @@ public class ItemProjectile extends PersistentProjectileEntity {
         nbt.putBoolean("DealtDamage", this.dealtDamage);
     }
 
+    @Override
     public void age() {
         int i = this.dataTracker.get(LOYALTY);
         if (this.pickupType != PickupPermission.ALLOWED || i <= 0) {
@@ -278,10 +288,12 @@ public class ItemProjectile extends PersistentProjectileEntity {
 
     }
 
+    @Override
     protected float getDragInWater() {
         return waterDrag;
     }
 
+    @Override
     public boolean shouldRender(double cameraX, double cameraY, double cameraZ) {
         return true;
     }
