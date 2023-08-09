@@ -221,12 +221,14 @@ public class ItemProjectile extends PersistentProjectileEntity {
     }
 
     public boolean tryInsertAtSlot(PlayerInventory inventory,ItemStack stack,int slot){
-        ItemStack inventoryStack = inventory.getStack(slot);
-        if(inventoryStack.isEmpty()){
-            return inventory.insertStack(slot, stack);
-        }
-        if(ItemStack.canCombine(inventoryStack,stack)){
-            return inventory.insertStack(slot, stack);
+        if(inventory.size()>slot && slot>0) {
+            ItemStack inventoryStack = inventory.getStack(slot);
+            if(inventoryStack.isEmpty()){
+                return inventory.insertStack(slot, stack);
+            }
+            if(ItemStack.canCombine(inventoryStack,stack)){
+                return inventory.insertStack(slot, stack);
+            }
         }
         return false;
     }
