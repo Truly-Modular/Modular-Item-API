@@ -446,8 +446,8 @@ public class ItemModule {
         private ModuleInstance deepCopy() {
             ModuleInstance copy = new ModuleInstance(this.module);
             copy.moduleData = new HashMap<>(this.moduleData);
-            this.subModules.forEach(((id, module) -> {
-                ModuleInstance subModuleCopy = module.deepCopy();
+            this.subModules.forEach(((id, subModule) -> {
+                ModuleInstance subModuleCopy = subModule.deepCopy();
                 subModuleCopy.parent = copy;
                 copy.subModules.put(id, subModuleCopy);
             }));
@@ -526,9 +526,9 @@ public class ItemModule {
         public ModuleInstance read(JsonReader in) throws IOException {
             JsonObject jsonObject = JsonParser.parseReader(in).getAsJsonObject();
             String moduleKey = jsonObject.get("module").getAsString();
-            var test = moduleRegistry;
-            ItemModule module = test.get(moduleKey);
+            ItemModule module = moduleRegistry.get(moduleKey);
             if (module == null) {
+                Miapi.LOGGER.warn("Module not found for "+moduleKey+" Key - substituting with empty module");
                 module = ItemModule.empty;
             }
             ModuleInstance moduleInstance = new ModuleInstance(module);
