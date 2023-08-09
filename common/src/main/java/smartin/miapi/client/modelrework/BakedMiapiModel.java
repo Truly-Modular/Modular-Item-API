@@ -9,6 +9,7 @@ import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.json.ModelOverrideList;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
@@ -38,14 +39,13 @@ public class BakedMiapiModel implements MiapiModel {
     }
 
     @Override
-    public void render(MatrixStack matrices, ItemStack stack, ModelTransformationMode transformationMode, float tickDelta, VertexConsumerProvider vertexConsumers, int light, int overlay) {
+    public void render(MatrixStack matrices, ItemStack stack, ModelTransformationMode transformationMode, float tickDelta, VertexConsumerProvider vertexConsumers, LivingEntity entity, int light, int overlay) {
         if (!(vertexConsumers instanceof VertexConsumerProvider.Immediate immediate)) return;
 
         for (BakedModel model : models) {
             for (Direction direction : Direction.values()) {
                 if (model.getOverrides() != null && !model.getOverrides().equals(ModelOverrideList.EMPTY)) {
-                    model = model.getOverrides().apply(model, stack, MinecraftClient.getInstance().world, null, light);
-                    //Miapi.LOGGER.warn(model.getOverrides().toString());
+                    model = model.getOverrides().apply(model, stack, MinecraftClient.getInstance().world, entity, light);
                 }
                 VertexConsumer consumer;
                 if (material != null)

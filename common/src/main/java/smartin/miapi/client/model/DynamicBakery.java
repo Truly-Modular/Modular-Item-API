@@ -164,7 +164,7 @@ public class DynamicBakery {
         return quad;
     }
 
-    static class DynamicOverrideList extends ModelOverrideList {
+    public static class DynamicOverrideList extends ModelOverrideList {
         public final DynamicBakedOverride[] dynamicOverrides;
         public final Identifier[] dynamicConditionTypes;
         public final List<ModelOverride> overrideList;

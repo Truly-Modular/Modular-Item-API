@@ -4,6 +4,7 @@ import com.mojang.datafixers.util.Pair;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import org.joml.Matrix4f;
 import smartin.miapi.item.modular.Transform;
@@ -42,7 +43,7 @@ public class ModuleModel {
         return modelList;
     }
 
-    public void render(String modelTypeRaw, ItemStack stack, MatrixStack matrices, ModelTransformationMode mode, float tickDelta, VertexConsumerProvider vertexConsumers, int light, int overlay) {
+    public void render(String modelTypeRaw, ItemStack stack, MatrixStack matrices, ModelTransformationMode mode, float tickDelta, VertexConsumerProvider vertexConsumers, LivingEntity entity, int light, int overlay) {
         String modelType = modelTypeRaw == null ? "item" : modelTypeRaw;
         if (!otherModels.containsKey(modelType)) {
             otherModels.put(modelType, generateModel(modelType));
@@ -52,7 +53,7 @@ public class ModuleModel {
         otherModels.get(modelType).forEach(matrix4fMiapiModelPair -> {
             matrices.push();
             matrices.peek().getPositionMatrix().mul(matrix4fMiapiModelPair.getFirst());
-            matrix4fMiapiModelPair.getSecond().render(matrices, stack, mode, tickDelta, vertexConsumers, light, overlay);
+            matrix4fMiapiModelPair.getSecond().render(matrices, stack, mode, tickDelta, vertexConsumers, entity, light, overlay);
             matrices.pop();
 
             //prepare for submodules
@@ -74,7 +75,7 @@ public class ModuleModel {
                 subModuleModel = new ModuleModel(instance1, stack);
                 subModuleModels.put(integer, subModuleModel);
             }
-            subModuleModel.render(modelType, stack, matrices, mode, tickDelta, vertexConsumers, integer, overlay);
+            subModuleModel.render(modelType, stack, matrices, mode, tickDelta, vertexConsumers, entity, integer, overlay);
             matrices.pop();
         });
     }

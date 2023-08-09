@@ -114,10 +114,6 @@ public class EnchantmentProperty implements CraftingProperty, ModuleProperty {
 
     public static boolean isAllowed(ItemStack stack, Enchantment enchantment) {
         boolean allowed = getAllowedList(stack).contains(enchantment);
-        getAllowedList(stack).forEach(enchantment1 -> {
-            Miapi.LOGGER.error(String.valueOf(enchantment1));
-        });
-        Miapi.LOGGER.warn(String.valueOf(allowed));
         return allowed;
     }
 
@@ -131,7 +127,6 @@ public class EnchantmentProperty implements CraftingProperty, ModuleProperty {
 
     public static List<Enchantment> convert(List<String> list) {
         List<String> replaceList = new ArrayList<>();
-        Map<String,Set<String>> rawMap = replaceMap;
         for (String id : list) {
             if (replaceMap.containsKey(id)) {
                 replaceList.addAll(replaceMap.get(id));
@@ -146,7 +141,7 @@ public class EnchantmentProperty implements CraftingProperty, ModuleProperty {
                 enchantments.add(enchantment);
             }
             else{
-                Miapi.LOGGER.warn("enchantment "+id+ " not found");
+                //Miapi.LOGGER.warn("enchantment "+id+ " not found");
             }
         }
         return enchantments;

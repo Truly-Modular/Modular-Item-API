@@ -3,6 +3,7 @@ package smartin.miapi.client.modelrework;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
@@ -44,21 +45,21 @@ public class MiapiItemModel implements MiapiModel {
     }
 
     @Override
-    public void render(MatrixStack matrices, ItemStack stack, ModelTransformationMode mode, float tickDelta, VertexConsumerProvider vertexConsumers, int light, int overlay) {
-        render(null, stack, matrices, mode, tickDelta, vertexConsumers, light, overlay);
+    public void render(MatrixStack matrices, ItemStack stack, ModelTransformationMode mode, float tickDelta, VertexConsumerProvider vertexConsumers, LivingEntity entity, int light, int overlay) {
+        render(null, stack, matrices, mode, tickDelta, vertexConsumers, entity, light, overlay);
     }
 
     public void render(String modelType, MatrixStack matrices, ModelTransformationMode mode, float tickDelta, VertexConsumerProvider vertexConsumers, int light, int overlay) {
-        render(modelType, stack, matrices, mode, tickDelta, vertexConsumers, light, overlay);
+        render(modelType, stack, matrices, mode, tickDelta, vertexConsumers, null, light, overlay);
     }
 
-    public void render(String modelType, ItemStack stack, MatrixStack matrices, ModelTransformationMode mode, float tickDelta, VertexConsumerProvider vertexConsumers, int light, int overlay) {
+    public void render(String modelType, ItemStack stack, MatrixStack matrices, ModelTransformationMode mode, float tickDelta, VertexConsumerProvider vertexConsumers, LivingEntity entity, int light, int overlay) {
         matrices.push();
         for (ModelTransformer transformer : modelTransformers) {
             matrices = transformer.transform(matrices, stack, mode, modelType, tickDelta);
         }
         RegistryInventory.Client.glintShader.getUniformOrDefault("ModelMat").set(new Matrix4f(matrices.peek().getPositionMatrix()));
-        rootModel.render(modelType, stack, matrices, mode, tickDelta, vertexConsumers, light, overlay);
+        rootModel.render(modelType, stack, matrices, mode, tickDelta, vertexConsumers, entity, light, overlay);
         matrices.pop();
     }
 
