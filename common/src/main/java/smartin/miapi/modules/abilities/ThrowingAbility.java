@@ -65,6 +65,7 @@ public class ThrowingAbility implements ItemUseAbility {
                     tridentEntity.setBowItem(ItemStack.EMPTY);
                     tridentEntity.setPierceLevel((byte) (int) AttributeProperty.getActualValue(stack, EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_PIERCING));
                     tridentEntity.setSpeedDamage(true);
+                    tridentEntity.setPreferredSlot(playerEntity.getInventory().selectedSlot);
                     tridentEntity.thrownStack = stack;
                     world.spawnEntity(tridentEntity);
                     if (playerEntity.getAbilities().creativeMode) {

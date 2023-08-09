@@ -9,6 +9,7 @@ import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -19,7 +20,6 @@ import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
-import smartin.miapi.Miapi;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.modules.abilities.util.ItemProjectile.ArrowHitBehaviour.EntityBounceBehaviour;
 import smartin.miapi.modules.abilities.util.ItemProjectile.ArrowHitBehaviour.EntityPierceBehaviour;
@@ -34,6 +34,7 @@ public class ItemProjectile extends PersistentProjectileEntity {
     private static final TrackedData<ItemStack> THROWING_STACK = DataTracker.registerData(ItemProjectile.class, TrackedDataHandlerRegistry.ITEM_STACK);
     private static final TrackedData<ItemStack> BOW_ITEM_STACK = DataTracker.registerData(ItemProjectile.class, TrackedDataHandlerRegistry.ITEM_STACK);
     private static final TrackedData<Float> WATER_DRAG = DataTracker.registerData(ItemProjectile.class, TrackedDataHandlerRegistry.FLOAT);
+    private static final TrackedData<Integer> PREFERRED_SLOT = DataTracker.registerData(ItemProjectile.class, TrackedDataHandlerRegistry.INTEGER);
     public ItemStack thrownStack = ItemStack.EMPTY;
     private boolean dealtDamage;
     public int returnTimer;
@@ -54,7 +55,12 @@ public class ItemProjectile extends PersistentProjectileEntity {
         this.dataTracker.set(THROWING_STACK, thrownStack);
         this.dataTracker.set(BOW_ITEM_STACK, ItemStack.EMPTY);
         this.dataTracker.set(WATER_DRAG, waterDrag);
-        this.dataTracker.set(SPEED_DAMAGE,false);
+        this.dataTracker.set(SPEED_DAMAGE, true);
+        this.dataTracker.set(PREFERRED_SLOT, -1);
+    }
+
+    public void setPreferredSlot(int slotID) {
+        this.dataTracker.set(PREFERRED_SLOT, slotID);
     }
 
     public void setBowItem(ItemStack bowItem) {
@@ -72,15 +78,16 @@ public class ItemProjectile extends PersistentProjectileEntity {
         this.dataTracker.startTracking(ENCHANTED, false);
         this.dataTracker.startTracking(BOW_ITEM_STACK, ItemStack.EMPTY);
         this.dataTracker.startTracking(WATER_DRAG, 0.99f);
-        this.dataTracker.startTracking(SPEED_DAMAGE,false);
+        this.dataTracker.startTracking(SPEED_DAMAGE, true);
+        this.dataTracker.startTracking(PREFERRED_SLOT, 0);
     }
 
-    public boolean getSpeedDamage(){
+    public boolean getSpeedDamage() {
         return this.dataTracker.get(SPEED_DAMAGE);
     }
 
-    public void setSpeedDamage(boolean speedDamage){
-        this.dataTracker.set(SPEED_DAMAGE,speedDamage);
+    public void setSpeedDamage(boolean speedDamage) {
+        this.dataTracker.set(SPEED_DAMAGE, speedDamage);
     }
 
     public void tick() {
@@ -143,11 +150,10 @@ public class ItemProjectile extends PersistentProjectileEntity {
     protected void onEntityHit(EntityHitResult entityHitResult) {
         Entity entity = entityHitResult.getEntity();
         float damage = getProjectileDamage();
-        if(this.getPierceLevel()>0){
+        if (this.getPierceLevel() > 0) {
             projectileHitBehaviour = new EntityPierceBehaviour();
-            this.setPierceLevel((byte) (this.getPierceLevel()-1));
-        }
-        else{
+            this.setPierceLevel((byte) (this.getPierceLevel() - 1));
+        } else {
             projectileHitBehaviour = new EntityBounceBehaviour();
         }
 
@@ -158,7 +164,6 @@ public class ItemProjectile extends PersistentProjectileEntity {
             return;
         }
         damage = event.damage;
-        Miapi.LOGGER.warn("Dealing "+damage +" Damage");
         this.dealtDamage = true;
         if (entity.damage(event.damageSource, damage)) {
             if (entity.getType() == EntityType.ENDERMAN) {
@@ -188,7 +193,7 @@ public class ItemProjectile extends PersistentProjectileEntity {
 
     public float getProjectileDamage() {
         float damage = (float) getDamage();
-        if(this.getSpeedDamage()){
+        if (this.getSpeedDamage()) {
             float speed = (float) this.getVelocity().length();
             damage = damage * speed;
         }
@@ -200,10 +205,33 @@ public class ItemProjectile extends PersistentProjectileEntity {
     }
 
     protected boolean tryPickup(PlayerEntity player) {
-        return super.tryPickup(player) || this.isNoClip() && this.isOwner(player) && player.getInventory().insertStack(this.asItemStack());
+        int slotId = this.dataTracker.get(PREFERRED_SLOT);
+        boolean earlyPickup = switch (this.pickupType) {
+            case DISALLOWED:
+                yield false;
+            case ALLOWED: {
+                player.getInventory().getStack(slotId);
+                yield tryInsertAtSlot(player.getInventory(),this.asItemStack(),slotId);
+            }
+            case CREATIVE_ONLY: {
+                yield player.getAbilities().creativeMode;
+            }
+        };
+        return earlyPickup || super.tryPickup(player) || this.isNoClip() && this.isOwner(player) && (tryInsertAtSlot(player.getInventory(),this.asItemStack(),slotId) || player.getInventory().insertStack(this.asItemStack()));
     }
 
-    public void setDamageToDeal(boolean hasDamage){
+    public boolean tryInsertAtSlot(PlayerInventory inventory,ItemStack stack,int slot){
+        ItemStack inventoryStack = inventory.getStack(slot);
+        if(inventoryStack.isEmpty()){
+            return inventory.insertStack(slot, stack);
+        }
+        if(ItemStack.canCombine(inventoryStack,stack)){
+            return inventory.insertStack(slot, stack);
+        }
+        return false;
+    }
+
+    public void setDamageToDeal(boolean hasDamage) {
         this.dealtDamage = !hasDamage;
     }
 
