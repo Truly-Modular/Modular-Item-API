@@ -26,10 +26,10 @@ import smartin.miapi.modules.properties.DisplayNameProperty;
 
 import java.util.function.Predicate;
 
-public class ExampleModularBowItem extends BowItem implements ModularItem {
+public class ModularBow extends BowItem implements ModularItem {
     public static boolean betterInfinity = true;
 
-    public ExampleModularBowItem() {
+    public ModularBow() {
         super(new Item.Settings());
         if (smartin.miapi.Environment.isClient()) {
             registerAnimations();
@@ -44,7 +44,7 @@ public class ExampleModularBowItem extends BowItem implements ModularItem {
         PlayerEntity playerEntity = (PlayerEntity) user;
         boolean consumeArrow = !playerEntity.getAbilities().creativeMode;
         ItemStack projectileStack = playerEntity.getProjectileType(bowStack);
-        if(EnchantmentHelper.getLevel(Enchantments.INFINITY, bowStack) > 0 &&(projectileStack.isEmpty() || (projectileStack.getItem() instanceof ArrowItem && projectileStack.getOrCreateNbt().isEmpty()))){
+        if (EnchantmentHelper.getLevel(Enchantments.INFINITY, bowStack) > 0 && (projectileStack.isEmpty() || (projectileStack.getItem() instanceof ArrowItem && projectileStack.getOrCreateNbt().isEmpty()))) {
             consumeArrow = false;
             projectileStack = new ItemStack(Items.ARROW);
         }
@@ -69,11 +69,12 @@ public class ExampleModularBowItem extends BowItem implements ModularItem {
             itemProjectile.setPierceLevel((byte) ((byte) (int) AttributeProperty.getActualValue(projectileStack, EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_PIERCING) + piercingLevel));
 
             float divergence = (float) AttributeProperty.getActualValue(projectileStack, EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_ACCURACY);
-            float speed = (float) AttributeProperty.getActualValue(projectileStack, EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_SPEED);
+            float speed = (float) AttributeProperty.getActualValue(projectileStack, EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_SPEED, 1.5f);
             float damage = (float) AttributeProperty.getActualValue(bowStack, EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_DAMAGE);
             divergence += (float) AttributeProperty.getActualValue(bowStack, EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_ACCURACY);
             speed += (float) AttributeProperty.getActualValue(bowStack, EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_SPEED);
             damage += (float) AttributeProperty.getActualValue(projectileStack, EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_DAMAGE);
+            speed = speed * pullProgress;
             damage = damage / speed;
             itemProjectile.setDamage(damage);
             itemProjectile.setSpeedDamage(true);
@@ -123,7 +124,7 @@ public class ExampleModularBowItem extends BowItem implements ModularItem {
     }
 
     public static float getPullProgress(int useTicks, ItemStack stack) {
-        float f = (float) ((float) useTicks / AttributeProperty.getActualValue(stack, EquipmentSlot.MAINHAND, AttributeRegistry.BOW_DRAW_TIME));
+        float f = (float) useTicks / 20.0f;
         if ((f = (f * f + f * 2.0f) / 3.0f) > 1.0f) {
             f = 1.0f;
         }

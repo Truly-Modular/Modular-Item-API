@@ -15,6 +15,7 @@ import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.hit.BlockHitResult;
@@ -99,6 +100,11 @@ public class ItemProjectile extends PersistentProjectileEntity {
         if (this.inGroundTime > 4) {
             this.setVelocity(new Vec3d(0, 0, 0));
             this.dealtDamage = true;
+        }
+
+        this.velocityDirty = true;
+        if(this.getWorld() instanceof ServerWorld){
+            this.setVelocity(this.getVelocity());
         }
 
         Entity entity = this.getOwner();

@@ -47,6 +47,22 @@
             }
         }
     },
+    "attributes": [
+        {
+            "attribute": "miapi:generic.projectile_speed",
+            "value": "([material.hardness] + [material.flexibility] ) / 9",
+            "operation": "+",
+            "slot": "mainhand",
+            "uuid": "AAAAAAAA-4180-4865-B01B-BCCE9785ACA3"
+        },
+        {
+            "attribute": "miapi:generic.durability",
+            "value": "[material.durability] / 2",
+            "operation": "+",
+            "slot": "mainhand",
+            "uuid": "AAAAAAAA-4180-4865-B01B-BCCE9785ACA3"
+        }
+    ],
     "allowedMaterial": {
         "allowedMaterials": [
             "wood",

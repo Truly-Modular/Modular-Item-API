@@ -251,7 +251,7 @@ public class AttributeProperty implements ModuleProperty {
         AttributeContainer container1 = new AttributeContainer(container);
 
         container1.addTemporaryModifiers(map);
-        if (container1.hasAttribute(entityAttribute)) {
+        if (map.containsKey(entityAttribute) && container1.hasAttribute(entityAttribute)) {
             return container1.getValue(entityAttribute);
         } else {
             return fallback;

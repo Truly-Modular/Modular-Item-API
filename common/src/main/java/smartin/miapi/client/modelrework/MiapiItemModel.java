@@ -1,5 +1,6 @@
 package smartin.miapi.client.modelrework;
 
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
@@ -54,6 +55,7 @@ public class MiapiItemModel implements MiapiModel {
     }
 
     public void render(String modelType, ItemStack stack, MatrixStack matrices, ModelTransformationMode mode, float tickDelta, VertexConsumerProvider vertexConsumers, LivingEntity entity, int light, int overlay) {
+        MinecraftClient.getInstance().world.getProfiler().push("modular_item");
         matrices.push();
         for (ModelTransformer transformer : modelTransformers) {
             matrices = transformer.transform(matrices, stack, mode, modelType, tickDelta);
@@ -61,6 +63,7 @@ public class MiapiItemModel implements MiapiModel {
         RegistryInventory.Client.glintShader.getUniformOrDefault("ModelMat").set(new Matrix4f(matrices.peek().getPositionMatrix()));
         rootModel.render(modelType, stack, matrices, mode, tickDelta, vertexConsumers, entity, light, overlay);
         matrices.pop();
+        MinecraftClient.getInstance().world.getProfiler().pop();
     }
 
     @Override

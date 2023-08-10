@@ -23,6 +23,15 @@
     "allowedInSlots": [
         "bow","melee"
     ],
+    "attributes": [
+        {
+            "attribute": "miapi:generic.durability",
+            "value": "[material.durability] / 2",
+            "operation": "+",
+            "slot": "mainhand",
+            "uuid": "AAAAAAAA-4180-4865-B01B-BCCE9785ACA3"
+        }
+    ],
     "slots": {
         "0": {
             "allowed": [

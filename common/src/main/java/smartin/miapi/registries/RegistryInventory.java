@@ -242,7 +242,7 @@ public class RegistryInventory {
         register(modularItems, "modular_hoe", ModularWeapon::new);
         register(modularItems, "modular_mattock", ModularWeapon::new);
 
-        register(modularItems, "modular_bow", ExampleModularBowItem::new);
+        register(modularItems, "modular_bow", ModularBow::new);
         register(modularItems, "modular_arrow", ModularArrow::new);
 
         register(modularItems, "modular_helmet", ModularHelmet::new);
@@ -302,7 +302,7 @@ public class RegistryInventory {
                         new ClampedEntityAttribute("miapi.attribute.name.projectile_damage", 2.0, 0.0, 1024.0).setTracked(true),
                 att -> PROJECTILE_DAMAGE = att);
         registerAtt("generic.projectile_speed", true, () ->
-                        new ClampedEntityAttribute("miapi.attribute.name.projectile_speed", 1.0, 0.0, 1024.0).setTracked(true),
+                        new ClampedEntityAttribute("miapi.attribute.name.projectile_speed", 1.5, 0.0, 1024.0).setTracked(true),
                 att -> PROJECTILE_SPEED = att);
         registerAtt("generic.projectile_accuracy", true, () ->
                         new ClampedEntityAttribute("miapi.attribute.name.projectile_accuracy", 1.0, 0.0, 1024.0).setTracked(true),

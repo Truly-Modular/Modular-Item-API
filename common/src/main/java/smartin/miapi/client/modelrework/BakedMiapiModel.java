@@ -44,6 +44,7 @@ public class BakedMiapiModel implements MiapiModel {
 
         for (BakedModel model : models) {
             for (Direction direction : Direction.values()) {
+                MinecraftClient.getInstance().world.getProfiler().push("BakedModel");
                 if (model.getOverrides() != null && !model.getOverrides().equals(ModelOverrideList.EMPTY)) {
                     model = model.getOverrides().apply(model, stack, MinecraftClient.getInstance().world, entity, light);
                 }
@@ -58,8 +59,10 @@ public class BakedMiapiModel implements MiapiModel {
                     consumer.quad(matrices.peek(), bakedQuad, 1, 1, 1, lightValue, overlay);
                 });
                 immediate.draw();
+                MinecraftClient.getInstance().world.getProfiler().pop();
 
                 if (settings.shouldRender()) {
+                    MinecraftClient.getInstance().world.getProfiler().push("Glint");
                     rootSettings.applySpeed();
                     settings.applyAlpha();
                     VertexConsumer glintConsumer = immediate.getBuffer(RegistryInventory.Client.modularItemGlint);
@@ -71,6 +74,7 @@ public class BakedMiapiModel implements MiapiModel {
                         glintConsumer.quad(matrices.peek(), bakedQuad, (float) glintColor.r() / 255, (float) glintColor.g() / 255, (float) glintColor.b() / 255, lightValue, overlay);
                     });
                     immediate.draw();
+                    MinecraftClient.getInstance().world.getProfiler().pop();
                 }
             }
         }
