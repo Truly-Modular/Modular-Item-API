@@ -243,6 +243,7 @@ public class RegistryInventory {
         register(modularItems, "modular_mattock", ModularWeapon::new);
 
         register(modularItems, "modular_bow", ExampleModularBowItem::new);
+        register(modularItems, "modular_arrow", ModularArrow::new);
 
         register(modularItems, "modular_helmet", ModularHelmet::new);
         register(modularItems, "modular_chestplate", ModularChestPlate::new);

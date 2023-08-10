@@ -62,6 +62,7 @@ public class ItemIdProperty implements CraftingProperty, ModuleProperty {
             if (item != null) {
                 ItemStack newStack = new ItemStack(item);
                 newStack.setNbt(crafting.getNbt());
+                newStack.setCount(crafting.getCount());
                 root.writeToItem(newStack);
                 return newStack;
             }

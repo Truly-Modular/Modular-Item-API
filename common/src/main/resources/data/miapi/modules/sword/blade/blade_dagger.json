@@ -95,7 +95,6 @@
             }
         }
     ],
-    "displayName": "miapi.module.blade_dagger.name",
     "crafting_condition": {
         "craftable": {
             "type": "true"
@@ -107,5 +106,6 @@
             "type": "not"
         }
     },
+    "displayName": "miapi.module.blade_dagger.name",
     "itemId": "miapi:modular_dagger"
 }

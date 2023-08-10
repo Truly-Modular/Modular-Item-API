@@ -1,6 +1,7 @@
 package smartin.miapi.modules.abilities.util.ItemProjectile;
 
 import dev.architectury.event.EventResult;
+import net.minecraft.block.BlockState;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -16,6 +17,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -42,6 +44,7 @@ public class ItemProjectile extends PersistentProjectileEntity {
     public WrappedSoundEvent hitEntitySound = new WrappedSoundEvent(this.getHitSound(), 1.0f, 1.0f);
     public WrappedSoundEvent hitGroundSound = new WrappedSoundEvent(this.getHitSound(), 1.0f, 1.0f);
     public ProjectileHitBehaviour projectileHitBehaviour = new EntityBounceBehaviour();
+    private BlockState inBlockState;
 
     public ItemProjectile(EntityType<? extends Entity> entityType, World world) {
         super((EntityType<? extends PersistentProjectileEntity>) entityType, world);
@@ -74,9 +77,9 @@ public class ItemProjectile extends PersistentProjectileEntity {
     @Override
     protected void initDataTracker() {
         super.initDataTracker();
-        this.dataTracker.startTracking(THROWING_STACK, ItemStack.EMPTY);
         this.dataTracker.startTracking(LOYALTY, (byte) 0);
         this.dataTracker.startTracking(ENCHANTED, false);
+        this.dataTracker.startTracking(THROWING_STACK, ItemStack.EMPTY);
         this.dataTracker.startTracking(BOW_ITEM_STACK, ItemStack.EMPTY);
         this.dataTracker.startTracking(WATER_DRAG, 0.99f);
         this.dataTracker.startTracking(SPEED_DAMAGE, true);
@@ -94,6 +97,7 @@ public class ItemProjectile extends PersistentProjectileEntity {
     @Override
     public void tick() {
         if (this.inGroundTime > 4) {
+            this.setVelocity(new Vec3d(0, 0, 0));
             this.dealtDamage = true;
         }
 
@@ -109,12 +113,12 @@ public class ItemProjectile extends PersistentProjectileEntity {
             } else {
                 this.setNoClip(true);
                 Vec3d targetDir = entity.getEyePos().subtract(this.getPos());
-                this.setPos(this.getX(), this.getY() + targetDir.y * 0.015 * (double) loyaltyLevel, this.getZ());
+                this.setPos(this.getX(), this.getY() + targetDir.y * 0.015 * loyaltyLevel, this.getZ());
                 if (this.getWorld().isClient) {
                     this.lastRenderY = this.getY();
                 }
 
-                double speedAdjustment = 0.05 * (double) loyaltyLevel;
+                double speedAdjustment = 0.05 * loyaltyLevel;
                 this.setVelocity(this.getVelocity().multiply(0.95).add(targetDir.normalize().multiply(speedAdjustment)));
                 if (this.returnTimer == 0) {
                     this.playSound(SoundEvents.ITEM_TRIDENT_RETURN, 10.0F, 1.0F);
@@ -195,6 +199,11 @@ public class ItemProjectile extends PersistentProjectileEntity {
         this.playSound(this.hitEntitySound.event(), this.hitEntitySound.volume(), this.hitEntitySound.pitch());
     }
 
+    @Override
+    protected void onBlockHit(BlockHitResult blockHitResult) {
+        super.onBlockHit(blockHitResult);
+    }
+
     public float getProjectileDamage() {
         float damage = (float) getDamage();
         if (this.getSpeedDamage()) {
@@ -215,22 +224,22 @@ public class ItemProjectile extends PersistentProjectileEntity {
             case DISALLOWED:
                 yield false;
             case ALLOWED: {
-                yield tryInsertAtSlot(player.getInventory(),this.asItemStack(),slotId);
+                yield tryInsertAtSlot(player.getInventory(), this.asItemStack(), slotId);
             }
             case CREATIVE_ONLY: {
                 yield player.getAbilities().creativeMode;
             }
         };
-        return earlyPickup || super.tryPickup(player) || this.isNoClip() && this.isOwner(player) && (tryInsertAtSlot(player.getInventory(),this.asItemStack(),slotId) || player.getInventory().insertStack(this.asItemStack()));
+        return earlyPickup || super.tryPickup(player) || this.isNoClip() && this.isOwner(player) && (tryInsertAtSlot(player.getInventory(), this.asItemStack(), slotId) || player.getInventory().insertStack(this.asItemStack()));
     }
 
-    public boolean tryInsertAtSlot(PlayerInventory inventory,ItemStack stack,int slot){
-        if(inventory.size()>slot && slot>0) {
+    public boolean tryInsertAtSlot(PlayerInventory inventory, ItemStack stack, int slot) {
+        if (inventory.size() > slot && slot > 0) {
             ItemStack inventoryStack = inventory.getStack(slot);
-            if(inventoryStack.isEmpty()){
+            if (inventoryStack.isEmpty()) {
                 return inventory.insertStack(slot, stack);
             }
-            if(ItemStack.canCombine(inventoryStack,stack)){
+            if (ItemStack.canCombine(inventoryStack, stack)) {
                 return inventory.insertStack(slot, stack);
             }
         }
@@ -265,6 +274,15 @@ public class ItemProjectile extends PersistentProjectileEntity {
             ItemStack bowItem = ItemStack.fromNbt(nbt.getCompound("BowItem"));
             this.dataTracker.set(BOW_ITEM_STACK, bowItem);
         }
+        if(nbt.contains("WaterDrag")){
+            this.dataTracker.set(WATER_DRAG,nbt.getFloat("WaterDrag"));
+        }
+        if(nbt.contains("SpeedDamage")){
+            this.dataTracker.set(SPEED_DAMAGE,nbt.getBoolean("SpeedDamage"));
+        }
+        if(nbt.contains("PreferredSlot")){
+            this.dataTracker.set(PREFERRED_SLOT,nbt.getInt("PreferredSlot"));
+        }
 
         this.dealtDamage = nbt.getBoolean("DealtDamage");
         this.dataTracker.set(LOYALTY, (byte) EnchantmentHelper.getLoyalty(this.thrownStack));
@@ -276,6 +294,9 @@ public class ItemProjectile extends PersistentProjectileEntity {
         nbt.put("ThrownItem", this.thrownStack.writeNbt(new NbtCompound()));
         nbt.put("BowItem", this.getBowItem().writeNbt(new NbtCompound()));
         nbt.putBoolean("DealtDamage", this.dealtDamage);
+        nbt.putFloat("WaterDrag",this.dataTracker.get(WATER_DRAG));
+        nbt.putBoolean("SpeedDamage",this.dataTracker.get(SPEED_DAMAGE));
+        nbt.putInt("PreferredSlot", this.dataTracker.get(PREFERRED_SLOT));
     }
 
     @Override

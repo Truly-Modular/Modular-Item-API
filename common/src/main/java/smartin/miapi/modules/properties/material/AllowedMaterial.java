@@ -66,7 +66,7 @@ public class AllowedMaterial implements CraftingProperty, ModuleProperty {
                 boolean isAllowed = (json.allowedMaterials.stream().anyMatch(allowedMaterial ->
                         material.getGroups().contains(allowedMaterial)));
                 if (isAllowed) {
-                    return input.getCount() * material.getValueOfItem(input) >= json.cost;
+                    return input.getCount() * material.getValueOfItem(input) >= json.cost * crafting.getCount();
                 }
             }
         }

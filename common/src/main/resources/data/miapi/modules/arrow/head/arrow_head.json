@@ -1,0 +1,34 @@
+{
+    "name": "arrow_head_normal",
+    "texture": {
+        "path": "miapi:models/item/arrow/head/normal/[material.texture].json",
+        "transform": {
+            "rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "translation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+            }
+        }
+    },
+    "allowedInSlots": [
+        "arrow_head"
+    ],
+    "allowedMaterial": {
+        "allowedMaterials": [
+            "wood",
+            "metal",
+            "flint"
+        ],
+        "cost": 0.1
+    }
+}
