@@ -215,7 +215,6 @@ public class ItemProjectile extends PersistentProjectileEntity {
             case DISALLOWED:
                 yield false;
             case ALLOWED: {
-                player.getInventory().getStack(slotId);
                 yield tryInsertAtSlot(player.getInventory(),this.asItemStack(),slotId);
             }
             case CREATIVE_ONLY: {

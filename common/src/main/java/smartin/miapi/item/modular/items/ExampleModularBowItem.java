@@ -42,9 +42,13 @@ public class ExampleModularBowItem extends BowItem implements ModularItem {
             return;
         }
         PlayerEntity playerEntity = (PlayerEntity) user;
-        boolean consumeArrow = !(playerEntity.getAbilities().creativeMode || EnchantmentHelper.getLevel(Enchantments.INFINITY, bowStack) > 0);
+        boolean consumeArrow = !playerEntity.getAbilities().creativeMode;
         ItemStack projectileStack = playerEntity.getProjectileType(bowStack);
-        if (projectileStack.isEmpty() && consumeArrow) {
+        if(EnchantmentHelper.getLevel(Enchantments.INFINITY, bowStack) > 0 &&(projectileStack.isEmpty() || (projectileStack.getItem() instanceof ArrowItem && projectileStack.getOrCreateNbt().isEmpty()))){
+            consumeArrow = false;
+            projectileStack = new ItemStack(Items.ARROW);
+        }
+        if (projectileStack.isEmpty() && consumeArrow && !betterInfinity) {
             return;
         }
         if (projectileStack.isEmpty()) {

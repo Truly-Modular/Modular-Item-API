@@ -26,7 +26,7 @@
     "attributes": [
         {
             "attribute": "miapi:generic.projectile_speed",
-            "value": "2.0",
+            "value": "3.5",
             "operation": "+",
             "slot": "mainhand",
             "uuid": "AAAAAAAA-4180-4865-B01B-BCCE9785ACA3"
