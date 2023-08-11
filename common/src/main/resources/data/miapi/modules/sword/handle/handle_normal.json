@@ -195,7 +195,14 @@
     },
     "allowedMaterial": {
         "allowedMaterials": [
-            "wood","stone","metal","crystal","rod"
+            "wood",
+            "metal",
+            "flint",
+            "bone",
+            "stone",
+            "rod",
+            "crystal",
+            "glass"
         ],
         "cost": 1
     },

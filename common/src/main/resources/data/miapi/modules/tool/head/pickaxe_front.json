@@ -73,9 +73,15 @@
     ],
     "allowedMaterial": {
         "allowedMaterials": [
-            "wood","stone","metal","crystal"
+            "wood",
+            "metal",
+            "flint",
+            "bone",
+            "stone",
+            "rod",
+            "crystal"
         ],
-        "cost": 1
+        "cost": 2
     },
     "displayName": "miapi.module.pickaxe_front.name",
     "itemId": "miapi:modular_pickaxe"

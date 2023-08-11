@@ -35,7 +35,7 @@
             "rod",
             "glass"
         ],
-        "cost": 0.1
+        "cost": 0.125
     },
     "modelTransform": {
         "replace": {

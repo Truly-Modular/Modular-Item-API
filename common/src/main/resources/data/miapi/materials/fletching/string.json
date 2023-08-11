@@ -1,17 +1,15 @@
 {
-    "key": "twisting_vine",
-    "translation": "miapi.material.twisting_vine",
-    "icon": "textures/item/twisting_vines.png",
+    "key": "feather",
+    "translation": "miapi.material.feather",
+    "icon": "textures/item/feather.png",
     "groups": [
-        "fabric",
-        "rope",
         "fletching"
     ],
     "hardness": 1,
     "density": 1,
     "flexibility": 7,
     "durability": 150,
-    "color": "9A6C48",
+    "color": "635C50",
     "color_palette": {
         "type": "grayscale_map",
         "colors": {
@@ -32,7 +30,7 @@
     ],
     "items": [
         {
-            "item": "minecraft:twisting_vines",
+            "item": "minecraft:feather",
             "value": 1.0
         }
     ]

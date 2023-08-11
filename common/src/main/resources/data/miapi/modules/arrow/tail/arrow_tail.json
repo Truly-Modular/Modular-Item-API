@@ -25,10 +25,8 @@
     ],
     "allowedMaterial": {
         "allowedMaterials": [
-            "wood",
-            "metal",
-            "flint"
+            "fletching"
         ],
-        "cost": 0.1
+        "cost": 0.25
     }
 }

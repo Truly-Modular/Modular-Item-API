@@ -27,8 +27,12 @@
         "allowedMaterials": [
             "wood",
             "metal",
-            "flint"
+            "flint",
+            "bone",
+            "stone",
+            "crystal",
+            "glass"
         ],
-        "cost": 0.1
+        "cost": 0.25
     }
 }

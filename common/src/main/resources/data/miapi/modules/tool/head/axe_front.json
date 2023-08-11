@@ -55,11 +55,14 @@
     "allowedMaterial": {
         "allowedMaterials": [
             "wood",
-            "stone",
             "metal",
+            "flint",
+            "bone",
+            "stone",
+            "rod",
             "crystal"
         ],
-        "cost": 1
+        "cost": 2
     },
     "mining_level": {
         "axe": "[material.mining_level]"

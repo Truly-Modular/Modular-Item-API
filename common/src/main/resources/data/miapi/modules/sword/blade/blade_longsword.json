@@ -34,9 +34,15 @@
     ],
     "allowedMaterial": {
         "allowedMaterials": [
-            "wood","stone","metal","crystal"
+            "wood",
+            "metal",
+            "flint",
+            "bone",
+            "stone",
+            "crystal",
+            "glass"
         ],
-        "cost": 1
+        "cost": 2
     },
     "attributes": [
         {

@@ -1,26 +1,27 @@
 {
     "key": "weeping_vine",
     "translation": "miapi.material.weeping_vine",
-    "icon": "textures/item/weeping_vine.png",
+    "icon": "textures/item/weeping_vines.png",
     "groups": [
         "fabric",
-        "rope"
+        "rope",
+        "fletching"
     ],
     "hardness": 1,
     "density": 1,
     "flexibility": 7,
     "durability": 150,
-    "color": "F9F8EA",
+    "color": "4A913C",
     "color_palette": {
         "type": "grayscale_map",
         "colors": {
-            "24": "7A7D6A",
-            "68": "C1BD9F",
-            "107": "C7C3A5",
-            "150": "D9D6BE",
-            "190": "E5E2CF",
-            "216": "F9F8EA",
-            "255": "FCFCFA"
+            "24": "082420",
+            "68": "0e3f36",
+            "107": "156355",
+            "150": "1e8a77",
+            "190": "2bc7ac",
+            "216": "33ebcb",
+            "255": "a4fdf0"
         },
         "filler": "interpolate"
     },
@@ -31,7 +32,7 @@
     ],
     "items": [
         {
-            "item": "minecraft:weeping_vine",
+            "item": "minecraft:weeping_vines",
             "value": 1.0
         }
     ]

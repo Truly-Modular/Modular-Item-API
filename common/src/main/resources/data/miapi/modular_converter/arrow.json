@@ -1,0 +1,26 @@
+{
+    "minecraft:arrow": {
+        "module": "arrow_shaft_normal",
+        "moduleData": {
+            "properties": "{\"material\":\"wood\"}"
+        },
+        "subModules": {
+            "0": {
+                "module": "arrow_head_normal",
+                "moduleData": {
+                    "properties": "{\"material\":\"flint\"}"
+                },
+                "subModules": {
+                }
+            },
+            "1": {
+                "module": "arrow_tail_normal",
+                "moduleData": {
+                    "properties": "{\"material\":\"feather\"}"
+                },
+                "subModules": {
+                }
+            }
+        }
+    }
+}

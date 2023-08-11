@@ -1,0 +1,25 @@
+{
+    "minecraft:bow": {
+        "module": "bow_handle",
+        "moduleData": {
+            "properties": "{\"material\":\"wood\"}"
+        },
+        "subModules": {
+            "0": {
+                "module": "bow_arms_normal",
+                "moduleData": {
+                    "properties": "{\"material\":\"wood\"}"
+                },
+                "subModules": {
+                    "0": {
+                        "module": "bow_string_normal",
+                        "moduleData": {
+                            "properties": "{\"material\":\"string\"}"
+                        },
+                        "subModules": {}
+                    }
+                }
+            }
+        }
+    }
+}

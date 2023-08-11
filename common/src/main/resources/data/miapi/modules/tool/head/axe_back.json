@@ -31,11 +31,14 @@
     "allowedMaterial": {
         "allowedMaterials": [
             "wood",
-            "stone",
             "metal",
+            "flint",
+            "bone",
+            "stone",
+            "rod",
             "crystal"
         ],
-        "cost": 1
+        "cost": 2
     },
     "better_combat_config": {
         "parent": "bettercombat:double_axe"

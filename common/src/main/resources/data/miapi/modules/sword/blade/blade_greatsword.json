@@ -32,11 +32,14 @@
     "allowedMaterial": {
         "allowedMaterials": [
             "wood",
-            "stone",
             "metal",
-            "crystal"
+            "flint",
+            "bone",
+            "stone",
+            "crystal",
+            "glass"
         ],
-        "cost": 1
+        "cost": 3
     },
     "better_combat_config": {
         "parent": "bettercombat:claymore"

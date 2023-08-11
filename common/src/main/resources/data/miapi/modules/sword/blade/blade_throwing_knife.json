@@ -28,7 +28,13 @@
         ]
     },
     "allowedInSlots": [
-        "sword_blade_small"
+        "wood",
+        "metal",
+        "flint",
+        "bone",
+        "stone",
+        "crystal",
+        "glass"
     ],
     "better_combat_config": {
         "parent": "bettercombat:dagger"

@@ -20,8 +20,16 @@
         "block"
     ],
     "allowedMaterial": {
-        "allowedMaterials": ["wood","stone","metal","crystal"],
-        "cost": 1
+        "allowedMaterials": [
+            "wood",
+            "metal",
+            "flint",
+            "bone",
+            "stone",
+            "crystal",
+            "glass"
+        ],
+        "cost": 2
     },
     "attributes": [
         {

@@ -27,7 +27,13 @@
         ]
     },
     "allowedInSlots": [
-        "sword_blade"
+        "wood",
+        "metal",
+        "flint",
+        "bone",
+        "stone",
+        "crystal",
+        "glass"
     ],
     "better_combat_config": {
         "parent": "bettercombat:rapier"
