@@ -2,9 +2,7 @@ package smartin.miapi.client.modelrework;
 
 import com.redpxnda.nucleus.util.Color;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.LightmapTextureManager;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.*;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.json.ModelOverrideList;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
@@ -49,10 +47,12 @@ public class BakedMiapiModel implements MiapiModel {
                     model = model.getOverrides().apply(model, stack, MinecraftClient.getInstance().world, entity, light);
                 }
                 VertexConsumer consumer;
-                if (material != null)
-                    consumer = material.setupMaterialShader(immediate, RegistryInventory.Client.entityTranslucentMaterialRenderType, RegistryInventory.Client.entityTranslucentMaterialShader);
-                else
-                    consumer = Material.setupMaterialShader(immediate, RegistryInventory.Client.entityTranslucentMaterialRenderType, RegistryInventory.Client.entityTranslucentMaterialShader, Material.baseColorPalette);
+                if (material != null){
+                    consumer = material.setupMaterialShader(vertexConsumers, RegistryInventory.Client.entityTranslucentMaterialRenderType, RegistryInventory.Client.entityTranslucentMaterialShader);
+                }
+                else{
+                    consumer = Material.setupMaterialShader(vertexConsumers, RegistryInventory.Client.entityTranslucentMaterialRenderType, RegistryInventory.Client.entityTranslucentMaterialShader, Material.baseColorPalette);
+                }
 
                 int lightValue = transformationMode == ModelTransformationMode.GUI ? LightmapTextureManager.MAX_LIGHT_COORDINATE : LightmapTextureManager.MAX_SKY_LIGHT_COORDINATE;
                 model.getQuads(null, direction, Random.create()).forEach(bakedQuad -> {

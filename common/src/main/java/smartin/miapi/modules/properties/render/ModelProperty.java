@@ -103,7 +103,9 @@ public class ModelProperty implements ModuleProperty {
                     }
                 }
                 DynamicBakedModel model = DynamicBakery.bakeModel(unbakedModel, textureGetter, ColorHelper.Argb.getArgb(255, 255, 255, 255), json.transform);
-                models.add(model.optimize());
+                if (model != null) {
+                    models.add(model.optimize());
+                }
             }
         }
         return models;
