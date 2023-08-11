@@ -1,0 +1,37 @@
+{
+    "key": "light_gray_glass",
+    "translation": "miapi.material.light_gray_glass",
+    "icon": "textures/block/light_gray_stained_glass.png",
+    "groups": [
+        "glass"
+    ],
+    "hardness": 4.8,
+    "density": 1,
+    "flexibility": 0,
+    "durability": 50,
+    "color": "999999",
+    "color_palette": {
+        "type": "grayscale_map",
+        "colors": {
+            "0": "999999FF",
+            "24": "999999FF",
+            "68": "999999FF",
+            "107": "99999966",
+            "150": "99999966",
+            "190": "9999999B",
+            "216": "99999966",
+            "255": "99999966"
+        },
+        "filler": "interpolate"
+    },
+    "mining_speed": 4,
+    "mining_level": 0,
+    "textures": [
+    ],
+    "items": [
+        {
+            "item": "minecraft:light_gray_stained_glass",
+            "value": 1.0
+        }
+    ]
+}

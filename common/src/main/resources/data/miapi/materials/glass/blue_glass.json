@@ -1,0 +1,37 @@
+{
+    "key": "blue_glass",
+    "translation": "miapi.material.blue_glass",
+    "icon": "textures/block/gray_stained_glass.png",
+    "groups": [
+        "glass"
+    ],
+    "hardness": 4.8,
+    "density": 1,
+    "flexibility": 0,
+    "durability": 50,
+    "color": "334CB2",
+    "color_palette": {
+        "type": "grayscale_map",
+        "colors": {
+            "0": "334CB2FF",
+            "24": "334CB2FF",
+            "68": "334CB2FF",
+            "107": "334CB266",
+            "150": "334CB266",
+            "190": "334CB29B",
+            "216": "334CB266",
+            "255": "334CB266"
+        },
+        "filler": "interpolate"
+    },
+    "mining_speed": 4,
+    "mining_level": 0,
+    "textures": [
+    ],
+    "items": [
+        {
+            "item": "minecraft:blue_stained_glass",
+            "value": 1.0
+        }
+    ]
+}

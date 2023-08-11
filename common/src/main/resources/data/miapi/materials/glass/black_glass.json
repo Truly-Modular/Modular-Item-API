@@ -1,0 +1,37 @@
+{
+    "key": "black_glass",
+    "translation": "miapi.material.black_glass",
+    "icon": "textures/block/black_stained_glass.png",
+    "groups": [
+        "glass"
+    ],
+    "hardness": 4.8,
+    "density": 1,
+    "flexibility": 0,
+    "durability": 50,
+    "color": "191919",
+    "color_palette": {
+        "type": "grayscale_map",
+        "colors": {
+            "0": "191919FF",
+            "24": "191919FF",
+            "68": "191919FF",
+            "107": "19191966",
+            "150": "19191966",
+            "190": "1919199B",
+            "216": "19191966",
+            "255": "19191966"
+        },
+        "filler": "interpolate"
+    },
+    "mining_speed": 4,
+    "mining_level": 0,
+    "textures": [
+    ],
+    "items": [
+        {
+            "item": "minecraft:black_stained_glass",
+            "value": 1.0
+        }
+    ]
+}

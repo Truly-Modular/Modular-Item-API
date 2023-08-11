@@ -1,0 +1,37 @@
+{
+    "key": "tinted_glass",
+    "translation": "miapi.material.glass",
+    "icon": "textures/block/tinted_glass.png",
+    "groups": [
+        "glass"
+    ],
+    "hardness": 4.8,
+    "density": 1,
+    "flexibility": 0,
+    "durability": 50,
+    "color": "CDE7E6",
+    "color_palette": {
+        "type": "grayscale_map",
+        "colors": {
+            "0": "628B92FF",
+            "24": "628B92FF",
+            "68": "CDE7E6FF",
+            "107": "CDE7E600",
+            "150": "CDE7E600",
+            "190": "CDE7E633",
+            "216": "628B9200",
+            "255": "CDE7E611"
+        },
+        "filler": "interpolate"
+    },
+    "mining_speed": 4,
+    "mining_level": 0,
+    "textures": [
+    ],
+    "items": [
+        {
+            "item": "minecraft:tinted_glass",
+            "value": 1.0
+        }
+    ]
+}

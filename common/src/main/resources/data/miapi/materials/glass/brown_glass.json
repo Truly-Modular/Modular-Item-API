@@ -1,0 +1,37 @@
+{
+    "key": "brown_glass",
+    "translation": "miapi.material.brown_glass",
+    "icon": "textures/block/brown_stained_glass.png",
+    "groups": [
+        "glass"
+    ],
+    "hardness": 4.8,
+    "density": 1,
+    "flexibility": 0,
+    "durability": 50,
+    "color": "664C33",
+    "color_palette": {
+        "type": "grayscale_map",
+        "colors": {
+            "0": "664C33FF",
+            "24": "664C33FF",
+            "68": "664C33FF",
+            "107": "664C3366",
+            "150": "664C3366",
+            "190": "664C339B",
+            "216": "664C3366",
+            "255": "664C3366"
+        },
+        "filler": "interpolate"
+    },
+    "mining_speed": 4,
+    "mining_level": 0,
+    "textures": [
+    ],
+    "items": [
+        {
+            "item": "minecraft:brown_stained_glass",
+            "value": 1.0
+        }
+    ]
+}

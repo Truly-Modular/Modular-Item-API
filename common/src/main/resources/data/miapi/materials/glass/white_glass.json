@@ -1,0 +1,37 @@
+{
+    "key": "white_glass",
+    "translation": "miapi.material.white_glass",
+    "icon": "textures/block/white_stained_glass.png",
+    "groups": [
+        "glass"
+    ],
+    "hardness": 4.8,
+    "density": 1,
+    "flexibility": 0,
+    "durability": 50,
+    "color": "FFFFFF",
+    "color_palette": {
+        "type": "grayscale_map",
+        "colors": {
+            "0": "FFFFFFFF",
+            "24": "FFFFFFFF",
+            "68": "FFFFFFFF",
+            "107": "FFFFFF66",
+            "150": "FFFFFF66",
+            "190": "FFFFFF9B",
+            "216": "FFFFFF66",
+            "255": "FFFFFF66"
+        },
+        "filler": "interpolate"
+    },
+    "mining_speed": 4,
+    "mining_level": 0,
+    "textures": [
+    ],
+    "items": [
+        {
+            "item": "minecraft:white_stained_glass",
+            "value": 1.0
+        }
+    ]
+}

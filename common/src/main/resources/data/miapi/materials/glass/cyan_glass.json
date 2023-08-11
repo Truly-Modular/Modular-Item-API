@@ -1,0 +1,37 @@
+{
+    "key": "cyan_glass",
+    "translation": "miapi.material.cyan_glass",
+    "icon": "textures/block/cyan_stained_glass.png",
+    "groups": [
+        "glass"
+    ],
+    "hardness": 4.8,
+    "density": 1,
+    "flexibility": 0,
+    "durability": 50,
+    "color": "4C7F99",
+    "color_palette": {
+        "type": "grayscale_map",
+        "colors": {
+            "0": "4C7F99FF",
+            "24": "4C7F99FF",
+            "68": "4C7F99FF",
+            "107": "4C7F9966",
+            "150": "4C7F9966",
+            "190": "4C7F999B",
+            "216": "4C7F9966",
+            "255": "4C7F9966"
+        },
+        "filler": "interpolate"
+    },
+    "mining_speed": 4,
+    "mining_level": 0,
+    "textures": [
+    ],
+    "items": [
+        {
+            "item": "minecraft:cyan_stained_glass",
+            "value": 1.0
+        }
+    ]
+}

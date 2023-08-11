@@ -1,0 +1,37 @@
+{
+    "key": "light_blue_glass",
+    "translation": "miapi.material.light_blue_glass",
+    "icon": "textures/block/light_blue_stained_glass.png",
+    "groups": [
+        "glass"
+    ],
+    "hardness": 4.8,
+    "density": 1,
+    "flexibility": 0,
+    "durability": 50,
+    "color": "6699D8",
+    "color_palette": {
+        "type": "grayscale_map",
+        "colors": {
+            "0": "6699D8FF",
+            "24": "6699D8FF",
+            "68": "6699D8FF",
+            "107": "6699D866",
+            "150": "6699D866",
+            "190": "6699D89B",
+            "216": "6699D866",
+            "255": "6699D866"
+        },
+        "filler": "interpolate"
+    },
+    "mining_speed": 4,
+    "mining_level": 0,
+    "textures": [
+    ],
+    "items": [
+        {
+            "item": "minecraft:light_blue_stained_glass",
+            "value": 1.0
+        }
+    ]
+}

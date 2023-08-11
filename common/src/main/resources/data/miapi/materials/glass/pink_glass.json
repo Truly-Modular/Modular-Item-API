@@ -1,0 +1,37 @@
+{
+    "key": "pink_glass",
+    "translation": "miapi.material.pink_glass",
+    "icon": "textures/block/pink_stained_glass.png",
+    "groups": [
+        "glass"
+    ],
+    "hardness": 4.8,
+    "density": 1,
+    "flexibility": 0,
+    "durability": 50,
+    "color": "F27FA5",
+    "color_palette": {
+        "type": "grayscale_map",
+        "colors": {
+            "0": "F27FA5FF",
+            "24": "F27FA5FF",
+            "68": "F27FA5FF",
+            "107": "F27FA566",
+            "150": "F27FA566",
+            "190": "F27FA59B",
+            "216": "F27FA566",
+            "255": "F27FA566"
+        },
+        "filler": "interpolate"
+    },
+    "mining_speed": 4,
+    "mining_level": 0,
+    "textures": [
+    ],
+    "items": [
+        {
+            "item": "minecraft:pink_stained_glass",
+            "value": 1.0
+        }
+    ]
+}

@@ -1,0 +1,37 @@
+{
+    "key": "purple_glass",
+    "translation": "miapi.material.purple_glass",
+    "icon": "textures/block/purple_stained_glass.png",
+    "groups": [
+        "glass"
+    ],
+    "hardness": 4.8,
+    "density": 1,
+    "flexibility": 0,
+    "durability": 50,
+    "color": "7F3FB2",
+    "color_palette": {
+        "type": "grayscale_map",
+        "colors": {
+            "0": "7F3FB2FF",
+            "24": "7F3FB2FF",
+            "68": "7F3FB2FF",
+            "107": "7F3FB266",
+            "150": "7F3FB266",
+            "190": "7F3FB29B",
+            "216": "7F3FB266",
+            "255": "7F3FB266"
+        },
+        "filler": "interpolate"
+    },
+    "mining_speed": 4,
+    "mining_level": 0,
+    "textures": [
+    ],
+    "items": [
+        {
+            "item": "minecraft:purple_stained_glass",
+            "value": 1.0
+        }
+    ]
+}

@@ -1,0 +1,37 @@
+{
+    "key": "lime_glass",
+    "translation": "miapi.material.lime_glass",
+    "icon": "textures/block/lime_stained_glass.png",
+    "groups": [
+        "glass"
+    ],
+    "hardness": 4.8,
+    "density": 1,
+    "flexibility": 0,
+    "durability": 50,
+    "color": "7FCC19",
+    "color_palette": {
+        "type": "grayscale_map",
+        "colors": {
+            "0": "7FCC19FF",
+            "24": "7FCC19FF",
+            "68": "7FCC19FF",
+            "107": "7FCC1966",
+            "150": "7FCC1966",
+            "190": "7FCC199B",
+            "216": "7FCC1966",
+            "255": "7FCC1966"
+        },
+        "filler": "interpolate"
+    },
+    "mining_speed": 4,
+    "mining_level": 0,
+    "textures": [
+    ],
+    "items": [
+        {
+            "item": "minecraft:lime_stained_glass",
+            "value": 1.0
+        }
+    ]
+}

@@ -1,0 +1,37 @@
+{
+    "key": "orange_glass",
+    "translation": "miapi.material.orange_glass",
+    "icon": "textures/block/orange_stained_glass.png",
+    "groups": [
+        "glass"
+    ],
+    "hardness": 4.8,
+    "density": 1,
+    "flexibility": 0,
+    "durability": 50,
+    "color": "D87F33",
+    "color_palette": {
+        "type": "grayscale_map",
+        "colors": {
+            "0": "D87F33FF",
+            "24": "D87F33FF",
+            "68": "D87F33FF",
+            "107": "D87F3366",
+            "150": "D87F3366",
+            "190": "D87F339B",
+            "216": "D87F3366",
+            "255": "D87F3366"
+        },
+        "filler": "interpolate"
+    },
+    "mining_speed": 4,
+    "mining_level": 0,
+    "textures": [
+    ],
+    "items": [
+        {
+            "item": "minecraft:orange_stained_glass",
+            "value": 1.0
+        }
+    ]
+}

@@ -49,10 +49,12 @@ public class JsonMaterial implements Material {
     public List<String> getGroups() {
         List<String> groups = new ArrayList<>();
         groups.add(key);
-        JsonArray groupsJson = rawJson.getAsJsonObject().getAsJsonArray("groups");
-        for (JsonElement groupElement : groupsJson) {
-            String group = groupElement.getAsString();
-            groups.add(group);
+        if(rawJson.getAsJsonObject().has("groups")){
+            JsonArray groupsJson = rawJson.getAsJsonObject().getAsJsonArray("groups");
+            for (JsonElement groupElement : groupsJson) {
+                String group = groupElement.getAsString();
+                groups.add(group);
+            }
         }
         return groups;
     }
@@ -122,9 +124,11 @@ public class JsonMaterial implements Material {
     @Override
     public List<String> getTextureKeys() {
         List<String> textureKeys = new ArrayList<>();
-        JsonArray textures = rawJson.getAsJsonObject().getAsJsonArray("textures");
-        for (JsonElement texture : textures) {
-            textureKeys.add(texture.getAsString());
+        if(rawJson.getAsJsonObject().has("textures")){
+            JsonArray textures = rawJson.getAsJsonObject().getAsJsonArray("textures");
+            for (JsonElement texture : textures) {
+                textureKeys.add(texture.getAsString());
+            }
         }
         textureKeys.add("default");
         return new ArrayList<>(textureKeys);

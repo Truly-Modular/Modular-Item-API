@@ -1,0 +1,37 @@
+{
+    "key": "green_glass",
+    "translation": "miapi.material.green_glass",
+    "icon": "textures/block/green_stained_glass.png",
+    "groups": [
+        "glass"
+    ],
+    "hardness": 4.8,
+    "density": 1,
+    "flexibility": 0,
+    "durability": 50,
+    "color": "667F33",
+    "color_palette": {
+        "type": "grayscale_map",
+        "colors": {
+            "0": "667F33FF",
+            "24": "667F33FF",
+            "68": "667F33FF",
+            "107": "667F3366",
+            "150": "667F3366",
+            "190": "667F339B",
+            "216": "667F3366",
+            "255": "667F3366"
+        },
+        "filler": "interpolate"
+    },
+    "mining_speed": 4,
+    "mining_level": 0,
+    "textures": [
+    ],
+    "items": [
+        {
+            "item": "minecraft:green_stained_glass",
+            "value": 1.0
+        }
+    ]
+}

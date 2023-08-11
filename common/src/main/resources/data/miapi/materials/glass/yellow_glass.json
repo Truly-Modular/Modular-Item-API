@@ -1,0 +1,37 @@
+{
+    "key": "yellow_glass",
+    "translation": "miapi.material.yellow_glass",
+    "icon": "textures/block/yellow_stained_glass.png",
+    "groups": [
+        "glass"
+    ],
+    "hardness": 4.8,
+    "density": 1,
+    "flexibility": 0,
+    "durability": 50,
+    "color": "E5E533",
+    "color_palette": {
+        "type": "grayscale_map",
+        "colors": {
+            "0": "E5E533FF",
+            "24": "E5E533FF",
+            "68": "E5E533FF",
+            "107": "E5E53366",
+            "150": "E5E53366",
+            "190": "E5E5339B",
+            "216": "E5E53366",
+            "255": "E5E53366"
+        },
+        "filler": "interpolate"
+    },
+    "mining_speed": 4,
+    "mining_level": 0,
+    "textures": [
+    ],
+    "items": [
+        {
+            "item": "minecraft:yellow_stained_glass",
+            "value": 1.0
+        }
+    ]
+}

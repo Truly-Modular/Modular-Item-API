@@ -1,0 +1,37 @@
+{
+    "key": "red_glass",
+    "translation": "miapi.material.red_glass",
+    "icon": "textures/block/red_stained_glass.png",
+    "groups": [
+        "glass"
+    ],
+    "hardness": 4.8,
+    "density": 1,
+    "flexibility": 0,
+    "durability": 50,
+    "color": "993333",
+    "color_palette": {
+        "type": "grayscale_map",
+        "colors": {
+            "0": "993333FF",
+            "24": "993333FF",
+            "68": "993333FF",
+            "107": "99333366",
+            "150": "99333366",
+            "190": "9933339B",
+            "216": "99333366",
+            "255": "99333366"
+        },
+        "filler": "interpolate"
+    },
+    "mining_speed": 4,
+    "mining_level": 0,
+    "textures": [
+    ],
+    "items": [
+        {
+            "item": "minecraft:red_stained_glass",
+            "value": 1.0
+        }
+    ]
+}
