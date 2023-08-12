@@ -1,7 +1,7 @@
 {
   "target": {
     "type": "modules",
-    "keys": [ "blade_sword" ]
+    "keys__disabled": [ "blade_sword" ]
   },
   "read": {
     "someVariable": "allowedMaterial.cost"

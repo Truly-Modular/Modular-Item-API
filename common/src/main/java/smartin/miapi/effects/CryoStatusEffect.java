@@ -1,5 +1,6 @@
 package smartin.miapi.effects;
 
+import com.redpxnda.nucleus.event.ClientEvents;
 import com.redpxnda.nucleus.event.MiscEvents;
 import com.redpxnda.nucleus.registry.effect.RenderingMobEffect;
 import com.redpxnda.nucleus.util.RenderUtil;
@@ -73,7 +74,7 @@ public class CryoStatusEffect extends RenderingMobEffect {
             if (player.hasStatusEffect(RegistryInventory.cryoStatusEffect)) return EventResult.interruptFalse();
             return EventResult.pass();
         });
-        MiscEvents.MODIFY_CAMERA_MOTION.register((mc, motion) -> {
+        ClientEvents.MODIFY_CAMERA_MOTION.register((mc, motion) -> {
             if (mc.player != null && mc.player.hasStatusEffect(RegistryInventory.cryoStatusEffect) && (motion.x != 0 || motion.y != 0)) {
                 int amplifier =  mc.player.getStatusEffect(RegistryInventory.cryoStatusEffect).getAmplifier();
                 motion.normalize();
