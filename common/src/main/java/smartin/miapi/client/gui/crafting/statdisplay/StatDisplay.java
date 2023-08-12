@@ -81,28 +81,27 @@ public class StatDisplay extends InteractAbleWidget {
         addStatDisplay(AttributeSingleDisplay
                 .Builder(AttributeRegistry.PROJECTILE_DAMAGE)
                 .setTranslationKey("projectile_damage")
-                .setFormat("##.#")
+                .setFormat("##.##")
                 .setMax(10).build());
         addStatDisplay(AttributeSingleDisplay
                 .Builder(AttributeRegistry.PROJECTILE_SPEED)
                 .setTranslationKey("projectile_speed")
-                .setFormat("##.#")
-                .setDefault(0.0)
+                .setFormat("##.##")
                 .setMax(10).build());
         addStatDisplay(AttributeSingleDisplay
                 .Builder(AttributeRegistry.PROJECTILE_ACCURACY)
                 .setTranslationKey("projectile_accuracy")
-                .setFormat("##.#")
+                .setFormat("##.##")
                 .setMax(10).build());
         addStatDisplay(AttributeSingleDisplay
                 .Builder(AttributeRegistry.PROJECTILE_PIERCING)
                 .setTranslationKey("projectile_piercing")
-                .setFormat("##.#")
+                .setFormat("##.##")
                 .setMax(10).build());
         addStatDisplay(AttributeSingleDisplay
                 .Builder(AttributeRegistry.PROJECTILE_CRIT_MULTIPLIER)
                 .setTranslationKey("projectile_crit_multiplier")
-                .setFormat("##.#")
+                .setFormat("##.##")
                 .setMax(10).build());
         addStatDisplay(MiningLevelStatDisplay
                 .Builder("pickaxe")

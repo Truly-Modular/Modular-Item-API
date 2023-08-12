@@ -14,6 +14,7 @@ import smartin.miapi.Miapi;
 import smartin.miapi.blocks.ModularWorkBenchRenderer;
 import smartin.miapi.client.gui.crafting.CraftingGUI;
 import smartin.miapi.client.model.CustomColorProvider;
+import smartin.miapi.client.model.ModularModelPredicateProvider;
 import smartin.miapi.effects.CryoStatusEffect;
 import smartin.miapi.mixin.client.ItemRendererAccessor;
 import smartin.miapi.modules.abilities.util.ItemProjectile.ItemProjectileRenderer;
@@ -37,6 +38,12 @@ public class MiapiClient {
         ClientReloadShadersEvent.EVENT.register((resourceFactory, asd) -> {
             ModularItemCache.discardCache();
         });
+        RegistryInventory.modularItems.addCallback((item -> {
+            ModularModelPredicateProvider.registerModelOverride(item, new Identifier(Miapi.MOD_ID, "durability"), (stack, world, entity, seed) -> {
+                return stack.isDamageable() && stack.getDamage() > 0 ? (stack.getMaxDamage() / stack.getDamage()) : 1.0f;
+            });
+            ModularModelPredicateProvider.registerModelOverride(item, new Identifier(Miapi.MOD_ID, "damaged"), (stack, world, entity, seed) -> stack.isDamaged() ? 1.0F : 0.0F);
+        }));
     }
 
     protected static void clientSetup(MinecraftClient client) {

@@ -9,6 +9,7 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
@@ -21,8 +22,12 @@ public class MiapiEvents {
     public static Event<EntityRide> STOP_RIDING = EventFactory.createLoop();
     public static Event<BlockCraftingStatUpdate> BLOCK_STAT_UPDATE = EventFactory.createEventResult();
     public static Event<ItemCraftingStatUpdate> ITEM_STAT_UPDATE = EventFactory.createEventResult();
-    public static Event<ModularProjectileHit> MODULAR_PROJECTILE_HIT = EventFactory.createEventResult();
-    public static Event<ModularProjectileHit> MODULAR_PROJECTILE_POST_HIT = EventFactory.createEventResult();
+    public static Event<ModularProjectileEntityHit> MODULAR_PROJECTILE_ENTITY_HIT = EventFactory.createEventResult();
+    public static Event<ModularProjectileEntityHit> MODULAR_PROJECTILE_ENTITY_POST_HIT = EventFactory.createEventResult();
+    public static Event<ModularProjectileBlockHit> MODULAR_PROJECTILE_BLOCK_HIT = EventFactory.createEventResult();
+    public static Event<ModularProjectileTick> MODULAR_PROJECTILE_TICK = EventFactory.createEventResult();
+    public static Event<ModularBowShot> MODULAR_BOW_SHOT = EventFactory.createEventResult();
+    public static Event<ModularBowShot> MODULAR_BOW_POST_SHOT = EventFactory.createEventResult();
 
     public static class LivingHurtEvent {
         public final LivingEntity livingEntity;
@@ -48,13 +53,13 @@ public class MiapiEvents {
         }
     }
 
-    public static class ModularArrowHitEvent {
+    public static class ModularProjectileEntityHitEvent {
         public EntityHitResult entityHitResult;
         public ItemProjectile projectile;
         public DamageSource damageSource;
         public float damage;
 
-        public ModularArrowHitEvent(EntityHitResult entityHitResult, ItemProjectile projectile, DamageSource damageSource, float damage) {
+        public ModularProjectileEntityHitEvent(EntityHitResult entityHitResult, ItemProjectile projectile, DamageSource damageSource, float damage) {
             this.entityHitResult = entityHitResult;
             this.projectile = projectile;
             this.damageSource = damageSource;
@@ -62,8 +67,42 @@ public class MiapiEvents {
         }
     }
 
-    public interface ModularProjectileHit {
-        EventResult hit(ModularArrowHitEvent event);
+    public static class ModularProjectileBlockHitEvent {
+        public BlockHitResult blockHitResult;
+        public ItemProjectile projectile;
+
+        public ModularProjectileBlockHitEvent(BlockHitResult blockHitResult, ItemProjectile projectile) {
+            this.blockHitResult = blockHitResult;
+            this.projectile = projectile;
+        }
+    }
+
+    public static class ModularBowShotEvent {
+        public ItemProjectile projectile;
+        public ItemStack bowStack;
+        public LivingEntity shooter;
+
+        public ModularBowShotEvent(ItemProjectile projectile, ItemStack bowStack, LivingEntity shooter) {
+            this.projectile = projectile;
+            this.bowStack = bowStack;
+            this.shooter = shooter;
+        }
+    }
+
+    public interface ModularProjectileBlockHit {
+        EventResult hit(ModularProjectileBlockHitEvent event);
+    }
+
+    public interface ModularProjectileTick {
+        EventResult tick(ItemProjectile event);
+    }
+
+    public interface ModularBowShot {
+        EventResult call(ModularBowShotEvent event);
+    }
+
+    public interface ModularProjectileEntityHit {
+        EventResult hit(ModularProjectileEntityHitEvent event);
     }
 
     public interface LivingHurt {

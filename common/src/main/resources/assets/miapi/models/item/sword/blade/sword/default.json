@@ -2,5 +2,20 @@
   "parent": "item/generated",
   "textures": {
     "layer0": "miapi:item/sword/blade/blade_sword"
-  }
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "miapi:damaged": 1
+      },
+      "model": "miapi:item/sword/blade/sword/damaged_default"
+    },
+    {
+      "predicate": {
+        "miapi:damaged": 1,
+        "miapi:durability": 0.30
+      },
+      "model": "miapi:item/sword/blade/sword/damaged_default"
+    }
+  ]
 }

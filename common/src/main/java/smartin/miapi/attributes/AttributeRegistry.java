@@ -96,7 +96,7 @@ public class AttributeRegistry {
             }
             return EventResult.pass();
         }));
-        MiapiEvents.MODULAR_PROJECTILE_POST_HIT.register(listener -> {
+        MiapiEvents.MODULAR_PROJECTILE_ENTITY_POST_HIT.register(listener -> {
             ItemProjectile projectile = listener.projectile;
             Entity victim = listener.entityHitResult.getEntity();
             Entity owner = listener.projectile.getOwner();
@@ -113,7 +113,7 @@ public class AttributeRegistry {
             return EventResult.pass();
         });
 
-        MiapiEvents.MODULAR_PROJECTILE_HIT.register(listener -> {
+        MiapiEvents.MODULAR_PROJECTILE_ENTITY_HIT.register(listener -> {
             ItemProjectile projectile = listener.projectile;
             if(projectile.isCritical()){
                 projectile.setDamage(projectile.getDamage() * AttributeProperty.getActualValue(projectile.asItemStack(), EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_CRIT_MULTIPLIER));

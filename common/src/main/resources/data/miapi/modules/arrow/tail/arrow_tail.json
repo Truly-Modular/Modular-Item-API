@@ -28,5 +28,21 @@
             "fletching"
         ],
         "cost": 0.25
-    }
+    },
+    "attributes": [
+        {
+            "attribute": "miapi:generic.projectile_speed",
+            "value": "( - [material.density] ) / 9",
+            "operation": "+",
+            "slot": "mainhand",
+            "uuid": "AAAAAAAA-4180-4865-B01B-BCCE9785ACA3"
+        },
+        {
+            "attribute": "miapi:generic.projectile_accuracy",
+            "value": "[material.flexibility]/3",
+            "operation": "+",
+            "slot": "mainhand",
+            "uuid": "AAAAAAAA-4180-4865-B01B-BCCE9785ACA3"
+        }
+    ]
 }

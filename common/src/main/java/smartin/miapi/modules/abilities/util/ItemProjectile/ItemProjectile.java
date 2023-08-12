@@ -97,13 +97,16 @@ public class ItemProjectile extends PersistentProjectileEntity {
 
     @Override
     public void tick() {
+        if(MiapiEvents.MODULAR_PROJECTILE_TICK.invoker().tick(this).interruptsFurtherEvaluation()){
+            return;
+        }
         if (this.inGroundTime > 4) {
             this.setVelocity(new Vec3d(0, 0, 0));
             this.dealtDamage = true;
         }
 
         this.velocityDirty = true;
-        if(this.getWorld() instanceof ServerWorld){
+        if (this.getWorld() instanceof ServerWorld) {
             this.setVelocity(this.getVelocity());
         }
 
@@ -172,8 +175,8 @@ public class ItemProjectile extends PersistentProjectileEntity {
         }
 
         Entity owner = this.getOwner();
-        MiapiEvents.ModularArrowHitEvent event = new MiapiEvents.ModularArrowHitEvent(entityHitResult, this, this.getDamageSources().arrow(this, owner), damage);
-        EventResult result = MiapiEvents.MODULAR_PROJECTILE_HIT.invoker().hit(event);
+        MiapiEvents.ModularProjectileEntityHitEvent event = new MiapiEvents.ModularProjectileEntityHitEvent(entityHitResult, this, this.getDamageSources().arrow(this, owner), damage);
+        EventResult result = MiapiEvents.MODULAR_PROJECTILE_ENTITY_HIT.invoker().hit(event);
         if (result.interruptsFurtherEvaluation()) {
             return;
         }
@@ -197,8 +200,8 @@ public class ItemProjectile extends PersistentProjectileEntity {
         if (this.projectileHitBehaviour != null) {
             projectileHitBehaviour.onHit(this, entityHitResult.getEntity(), entityHitResult);
         }
-        MiapiEvents.ModularArrowHitEvent postEvent = new MiapiEvents.ModularArrowHitEvent(event.entityHitResult, this, event.damageSource, damage);
-        EventResult postResult = MiapiEvents.MODULAR_PROJECTILE_POST_HIT.invoker().hit(postEvent);
+        MiapiEvents.ModularProjectileEntityHitEvent postEvent = new MiapiEvents.ModularProjectileEntityHitEvent(event.entityHitResult, this, event.damageSource, damage);
+        EventResult postResult = MiapiEvents.MODULAR_PROJECTILE_ENTITY_POST_HIT.invoker().hit(postEvent);
         if (postResult.interruptsFurtherEvaluation()) {
             return;
         }
@@ -207,6 +210,9 @@ public class ItemProjectile extends PersistentProjectileEntity {
 
     @Override
     protected void onBlockHit(BlockHitResult blockHitResult) {
+        if(MiapiEvents.MODULAR_PROJECTILE_BLOCK_HIT.invoker().hit(new MiapiEvents.ModularProjectileBlockHitEvent(blockHitResult,this)).interruptsFurtherEvaluation()){
+            return;
+        }
         super.onBlockHit(blockHitResult);
     }
 
@@ -280,14 +286,14 @@ public class ItemProjectile extends PersistentProjectileEntity {
             ItemStack bowItem = ItemStack.fromNbt(nbt.getCompound("BowItem"));
             this.dataTracker.set(BOW_ITEM_STACK, bowItem);
         }
-        if(nbt.contains("WaterDrag")){
-            this.dataTracker.set(WATER_DRAG,nbt.getFloat("WaterDrag"));
+        if (nbt.contains("WaterDrag")) {
+            this.dataTracker.set(WATER_DRAG, nbt.getFloat("WaterDrag"));
         }
-        if(nbt.contains("SpeedDamage")){
-            this.dataTracker.set(SPEED_DAMAGE,nbt.getBoolean("SpeedDamage"));
+        if (nbt.contains("SpeedDamage")) {
+            this.dataTracker.set(SPEED_DAMAGE, nbt.getBoolean("SpeedDamage"));
         }
-        if(nbt.contains("PreferredSlot")){
-            this.dataTracker.set(PREFERRED_SLOT,nbt.getInt("PreferredSlot"));
+        if (nbt.contains("PreferredSlot")) {
+            this.dataTracker.set(PREFERRED_SLOT, nbt.getInt("PreferredSlot"));
         }
 
         this.dealtDamage = nbt.getBoolean("DealtDamage");
@@ -300,8 +306,8 @@ public class ItemProjectile extends PersistentProjectileEntity {
         nbt.put("ThrownItem", this.thrownStack.writeNbt(new NbtCompound()));
         nbt.put("BowItem", this.getBowItem().writeNbt(new NbtCompound()));
         nbt.putBoolean("DealtDamage", this.dealtDamage);
-        nbt.putFloat("WaterDrag",this.dataTracker.get(WATER_DRAG));
-        nbt.putBoolean("SpeedDamage",this.dataTracker.get(SPEED_DAMAGE));
+        nbt.putFloat("WaterDrag", this.dataTracker.get(WATER_DRAG));
+        nbt.putBoolean("SpeedDamage", this.dataTracker.get(SPEED_DAMAGE));
         nbt.putInt("PreferredSlot", this.dataTracker.get(PREFERRED_SLOT));
     }
 

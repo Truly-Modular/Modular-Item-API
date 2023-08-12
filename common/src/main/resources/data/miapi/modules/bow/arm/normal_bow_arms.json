@@ -56,6 +56,13 @@
             "uuid": "AAAAAAAA-4180-4865-B01B-BCCE9785ACA3"
         },
         {
+            "attribute": "miapi:generic.bow_draw_time",
+            "value": "[material.hardness]/3 +1 ",
+            "operation": "+",
+            "slot": "mainhand",
+            "uuid": "AAAAAAAA-4180-4865-B01B-BCCE9785ACA3"
+        },
+        {
             "attribute": "miapi:generic.durability",
             "value": "[material.durability] / 2",
             "operation": "+",
