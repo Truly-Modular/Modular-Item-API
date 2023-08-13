@@ -24,11 +24,11 @@ import java.util.List;
 public class BakedMiapiModel implements MiapiModel {
     ItemModule.ModuleInstance instance;
     Material material;
-    List<BakedModel> models;
+    List<ModelHolder> models;
     GlintProperty.GlintSettings settings;
     GlintProperty.GlintSettings rootSettings;
 
-    public BakedMiapiModel(List<BakedModel> models, ItemModule.ModuleInstance instance, ItemStack stack) {
+    public BakedMiapiModel(List<ModelHolder> models, ItemModule.ModuleInstance instance, ItemStack stack) {
         this.models = models;
         this.instance = instance;
         material = MaterialProperty.getMaterial(instance);
@@ -40,17 +40,20 @@ public class BakedMiapiModel implements MiapiModel {
     public void render(MatrixStack matrices, ItemStack stack, ModelTransformationMode transformationMode, float tickDelta, VertexConsumerProvider vertexConsumers, LivingEntity entity, int light, int overlay) {
         if (!(vertexConsumers instanceof VertexConsumerProvider.Immediate immediate)) return;
 
-        for (BakedModel model : models) {
+        for (ModelHolder modelholder : models) {
+            BakedModel model = modelholder.model;
+            Matrix4f modelMatrix = modelholder.matrix4f;
+            matrices.push();
+            matrices.multiplyPositionMatrix(modelMatrix);
             for (Direction direction : Direction.values()) {
                 MinecraftClient.getInstance().world.getProfiler().push("BakedModel");
                 if (model.getOverrides() != null && !model.getOverrides().equals(ModelOverrideList.EMPTY)) {
                     model = model.getOverrides().apply(model, stack, MinecraftClient.getInstance().world, entity, light);
                 }
                 VertexConsumer consumer;
-                if (material != null){
+                if (material != null) {
                     consumer = material.setupMaterialShader(vertexConsumers, RegistryInventory.Client.entityTranslucentMaterialRenderType, RegistryInventory.Client.entityTranslucentMaterialShader);
-                }
-                else{
+                } else {
                     consumer = Material.setupMaterialShader(vertexConsumers, RegistryInventory.Client.entityTranslucentMaterialRenderType, RegistryInventory.Client.entityTranslucentMaterialShader, Material.baseColorPalette);
                 }
 
@@ -77,7 +80,12 @@ public class BakedMiapiModel implements MiapiModel {
                     MinecraftClient.getInstance().world.getProfiler().pop();
                 }
             }
+            matrices.pop();
         }
+    }
+
+    public record ModelHolder(BakedModel model, Matrix4f matrix4f) {
+
     }
 
     @Override

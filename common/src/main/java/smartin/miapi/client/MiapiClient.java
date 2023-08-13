@@ -39,8 +39,8 @@ public class MiapiClient {
             ModularItemCache.discardCache();
         });
         RegistryInventory.modularItems.addCallback((item -> {
-            ModularModelPredicateProvider.registerModelOverride(item, new Identifier(Miapi.MOD_ID, "durability"), (stack, world, entity, seed) -> {
-                return stack.isDamageable() && stack.getDamage() > 0 ? (stack.getMaxDamage() / stack.getDamage()) : 1.0f;
+            ModularModelPredicateProvider.registerModelOverride(item, new Identifier(Miapi.MOD_ID, "damage"), (stack, world, entity, seed) -> {
+                return stack.isDamageable() && stack.getDamage() > 0 ? ((float) stack.getDamage() / stack.getMaxDamage()) : 0.0f;
             });
             ModularModelPredicateProvider.registerModelOverride(item, new Identifier(Miapi.MOD_ID, "damaged"), (stack, world, entity, seed) -> stack.isDamaged() ? 1.0F : 0.0F);
         }));

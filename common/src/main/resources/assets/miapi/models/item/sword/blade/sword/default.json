@@ -8,12 +8,12 @@
       "predicate": {
         "miapi:damaged": 1
       },
-      "model": "miapi:item/sword/blade/sword/damaged_default"
+      "model": "miapi:item/sword/blade/sword/undamaged_default"
     },
     {
       "predicate": {
         "miapi:damaged": 1,
-        "miapi:durability": 0.30
+        "miapi:damage": 0.30
       },
       "model": "miapi:item/sword/blade/sword/damaged_default"
     }

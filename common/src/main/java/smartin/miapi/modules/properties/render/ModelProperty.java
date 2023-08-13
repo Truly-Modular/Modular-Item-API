@@ -18,6 +18,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
+import org.joml.Matrix4f;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.model.DynamicBakedModel;
 import smartin.miapi.client.model.DynamicBakery;
@@ -64,10 +65,10 @@ public class ModelProperty implements ModuleProperty {
         });
     }
 
-    List<BakedModel> getForModule(ItemModule.ModuleInstance instance) {
+    List<BakedMiapiModel.ModelHolder> getForModule(ItemModule.ModuleInstance instance) {
         Gson gson = Miapi.gson;
         List<ModelJson> modelJsonList = new ArrayList<>();
-        List<BakedModel> models = new ArrayList<>();
+        List<BakedMiapiModel.ModelHolder> models = new ArrayList<>();
         JsonElement data = instance.getProperties().get(property);
         if (data == null) {
             return new ArrayList<>();
@@ -102,9 +103,10 @@ public class ModelProperty implements ModuleProperty {
                         unbakedModel = modelCache.get(fullPath);
                     }
                 }
-                DynamicBakedModel model = DynamicBakery.bakeModel(unbakedModel, textureGetter, ColorHelper.Argb.getArgb(255, 255, 255, 255), json.transform);
+                DynamicBakedModel model = DynamicBakery.bakeModel(unbakedModel, textureGetter, ColorHelper.Argb.getArgb(255, 255, 255, 255), Transform.IDENTITY);
                 if (model != null) {
-                    models.add(model.optimize());
+                    Matrix4f matrix4f = Transform.toModelTransformation(json.transform).toMatrix();
+                    models.add(new BakedMiapiModel.ModelHolder(model.optimize(),matrix4f));
                 }
             }
         }
