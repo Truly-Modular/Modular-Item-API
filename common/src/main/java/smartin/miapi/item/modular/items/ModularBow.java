@@ -19,6 +19,7 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.client.model.ModularModelPredicateProvider;
+import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.modules.abilities.util.ItemProjectile.ItemProjectile;
@@ -28,7 +29,6 @@ import smartin.miapi.modules.properties.DisplayNameProperty;
 import java.util.function.Predicate;
 
 public class ModularBow extends BowItem implements ModularItem {
-    public static boolean betterInfinity = true;
     public static Predicate<ItemStack> projectile = BOW_PROJECTILES;
 
     public ModularBow() {
@@ -50,7 +50,7 @@ public class ModularBow extends BowItem implements ModularItem {
             consumeArrow = false;
             projectileStack = new ItemStack(Items.ARROW);
         }
-        if (projectileStack.isEmpty() && consumeArrow && !betterInfinity) {
+        if (projectileStack.isEmpty() && consumeArrow && !MiapiConfig.getBetterInfinity()) {
             return;
         }
         if (projectileStack.isEmpty()) {
@@ -125,7 +125,7 @@ public class ModularBow extends BowItem implements ModularItem {
 
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-        if (betterInfinity) {
+        if (MiapiConfig.getBetterInfinity()) {
             ItemStack itemStack = user.getStackInHand(hand);
             boolean bl = !user.getProjectileType(itemStack).isEmpty();
             int infinityLevel = EnchantmentHelper.getLevel(Enchantments.INFINITY, itemStack);

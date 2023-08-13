@@ -5,9 +5,11 @@ import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.item.ArrowItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.text.Text;
 import net.minecraft.world.World;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.modules.abilities.util.ItemProjectile.ItemProjectile;
+import smartin.miapi.modules.properties.DisplayNameProperty;
 
 public class ModularArrow extends ArrowItem implements ModularItem {
     public ModularArrow() {
@@ -19,5 +21,11 @@ public class ModularArrow extends ArrowItem implements ModularItem {
         stack = stack.copy();
         stack.setCount(1);
         return new ItemProjectile(world, shooter, stack);
+    }
+
+
+    @Override
+    public Text getName(ItemStack stack) {
+        return DisplayNameProperty.getDisplayText(stack);
     }
 }

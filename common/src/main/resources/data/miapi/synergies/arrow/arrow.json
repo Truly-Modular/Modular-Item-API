@@ -1,0 +1,27 @@
+{
+    "arrow_shaft_normal": {
+        "condition": {
+            "type": "and",
+            "conditions": [
+                {
+                    "type": "otherModule",
+                    "condition": {
+                        "type": "module",
+                        "module": "arrow_head_normal"
+                    }
+                },
+                {
+                    "type": "otherModule",
+                    "condition": {
+                        "type": "module",
+                        "module": "arrow_tail_normal"
+                    }
+                }
+            ]
+        },
+        "properties": {
+            "displayName": "miapi.modular_arrow_working",
+            "itemId": "miapi:modular_arrow"
+        }
+    }
+}

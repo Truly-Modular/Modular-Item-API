@@ -6,6 +6,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import org.jetbrains.annotations.Nullable;
+import smartin.miapi.Miapi;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
@@ -29,6 +30,7 @@ public class AndCondition implements ModuleCondition {
         boolean isAllowed = true;
         for (ModuleCondition condition : conditions) {
             if (!condition.isAllowed(moduleInstance, tablePos, player, propertyMap, reasons)) {
+                Miapi.LOGGER.warn("condition is false " + moduleInstance.module);
                 isAllowed = false;
             }
         }

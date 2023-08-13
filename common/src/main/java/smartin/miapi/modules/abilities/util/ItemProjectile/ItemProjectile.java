@@ -23,6 +23,7 @@ import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
+import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.modules.abilities.util.ItemProjectile.ArrowHitBehaviour.EntityBounceBehaviour;
 import smartin.miapi.modules.abilities.util.ItemProjectile.ArrowHitBehaviour.EntityPierceBehaviour;
@@ -97,11 +98,15 @@ public class ItemProjectile extends PersistentProjectileEntity {
 
     @Override
     public void tick() {
-        if(MiapiEvents.MODULAR_PROJECTILE_TICK.invoker().tick(this).interruptsFurtherEvaluation()){
+        if (MiapiEvents.MODULAR_PROJECTILE_TICK.invoker().tick(this).interruptsFurtherEvaluation()) {
             return;
         }
         if (this.inGroundTime > 4) {
             this.setVelocity(new Vec3d(0, 0, 0));
+            this.dealtDamage = true;
+        }
+        if (this.getBlockPos().getY() < this.getWorld().getBottomY() - 50 && MiapiConfig.getBetterLoyalty()) {
+            //loyalty in void
             this.dealtDamage = true;
         }
 
@@ -210,7 +215,7 @@ public class ItemProjectile extends PersistentProjectileEntity {
 
     @Override
     protected void onBlockHit(BlockHitResult blockHitResult) {
-        if(MiapiEvents.MODULAR_PROJECTILE_BLOCK_HIT.invoker().hit(new MiapiEvents.ModularProjectileBlockHitEvent(blockHitResult,this)).interruptsFurtherEvaluation()){
+        if (MiapiEvents.MODULAR_PROJECTILE_BLOCK_HIT.invoker().hit(new MiapiEvents.ModularProjectileBlockHitEvent(blockHitResult, this)).interruptsFurtherEvaluation()) {
             return;
         }
         super.onBlockHit(blockHitResult);
