@@ -51,10 +51,11 @@ public class BakedMiapiModel implements MiapiModel {
                     model = model.getOverrides().apply(model, stack, MinecraftClient.getInstance().world, entity, light);
                 }
                 VertexConsumer consumer;
-                if (material != null) {
+                if (material != null && modelholder.materialColor()) {
                     consumer = material.setupMaterialShader(vertexConsumers, RegistryInventory.Client.entityTranslucentMaterialRenderType, RegistryInventory.Client.entityTranslucentMaterialShader);
                 } else {
-                    consumer = Material.setupMaterialShader(vertexConsumers, RegistryInventory.Client.entityTranslucentMaterialRenderType, RegistryInventory.Client.entityTranslucentMaterialShader, Material.baseColorPalette);
+                    consumer = vertexConsumers.getBuffer(RenderLayers.getItemLayer(stack,true));
+                    //consumer = Material.setupMaterialShader(vertexConsumers, RegistryInventory.Client.entityTranslucentMaterialRenderType, RegistryInventory.Client.entityTranslucentMaterialShader, Material.baseColorPalette);
                 }
 
                 int lightValue = transformationMode == ModelTransformationMode.GUI ? LightmapTextureManager.MAX_LIGHT_COORDINATE : LightmapTextureManager.MAX_SKY_LIGHT_COORDINATE;
@@ -84,7 +85,7 @@ public class BakedMiapiModel implements MiapiModel {
         }
     }
 
-    public record ModelHolder(BakedModel model, Matrix4f matrix4f) {
+    public record ModelHolder(BakedModel model, Matrix4f matrix4f, boolean materialColor) {
 
     }
 

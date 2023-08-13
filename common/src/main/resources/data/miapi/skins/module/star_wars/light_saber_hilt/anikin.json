@@ -5,7 +5,7 @@
         "texture": [
             {
                 "path": "miapi:skin/star_wars/lightsaber_hilt/anakin.json",
-                "color": "[material.color]",
+                "material_color": false,
                 "transform": {
                     "rotation": {
                         "x": 0.0,

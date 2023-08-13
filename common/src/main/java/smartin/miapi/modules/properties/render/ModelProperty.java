@@ -106,7 +106,7 @@ public class ModelProperty implements ModuleProperty {
                 DynamicBakedModel model = DynamicBakery.bakeModel(unbakedModel, textureGetter, ColorHelper.Argb.getArgb(255, 255, 255, 255), Transform.IDENTITY);
                 if (model != null) {
                     Matrix4f matrix4f = Transform.toModelTransformation(json.transform).toMatrix();
-                    models.add(new BakedMiapiModel.ModelHolder(model.optimize(),matrix4f));
+                    models.add(new BakedMiapiModel.ModelHolder(model.optimize(),matrix4f,json.material_color));
                 }
             }
         }
@@ -198,7 +198,7 @@ public class ModelProperty implements ModuleProperty {
                 return new ArrayList<>();
             }
             for (ModelJson json : modelJsonList) {
-                int color = Material.getColor(StatResolver.resolveString(json.color, moduleI));
+                int color = 0;
                 int condition = Material.getColor(StatResolver.resolveString(json.condition, moduleI));
                 if (condition != 0) {
                     Material material = MaterialProperty.getMaterial(moduleI);
@@ -347,7 +347,7 @@ public class ModelProperty implements ModuleProperty {
         public String path;
         public Transform transform = Transform.IDENTITY;
         public String condition = "1";
-        public String color = "[material.color]";
+        public boolean material_color = true;
 
         public void repair() {
             //this shouldn't be necessary as the values should be loaded from the class but anyways
