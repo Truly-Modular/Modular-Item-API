@@ -1,6 +1,6 @@
 {
     "key": "vine",
-    "translation": "miapi.material.vine",
+    "translation": "miapi.material.fabric.vine",
     "icon": "textures/block/vine.png",
     "groups": [
         "fabric",

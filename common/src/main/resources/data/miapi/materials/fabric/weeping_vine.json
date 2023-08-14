@@ -1,6 +1,6 @@
 {
     "key": "weeping_vine",
-    "translation": "miapi.material.weeping_vine",
+    "translation": "miapi.material.fabric.weeping_vine",
     "icon": "textures/item/weeping_vines.png",
     "groups": [
         "fabric",

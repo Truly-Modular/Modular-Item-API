@@ -47,6 +47,7 @@ public class ItemToModularConverter implements ModularItemStackConverter.Modular
                         Miapi.LOGGER.info("enchantment is not allowed");
                     }
                 });
+                nextStack.setCount(stack.getCount());
                 return nextStack;
             }
         }

@@ -141,7 +141,6 @@
 
     "miapi.material.flint": "Flint ",
 
-
     "miapi.material.bone": "Bone ",
 
     "miapi.material.crystal.amethyst": "Amethyst ",
@@ -149,6 +148,36 @@
     "miapi.material.crystal.emerald": "Emerald ",
     "miapi.material.crystal.lapis_lazuli": "Lapis ",
     "miapi.material.crystal.nether_quartz": "Quartz ",
+
+    "miapi.material.glass": "Glass ",
+    "miapi.material.glass.black": "Black Glass ",
+    "miapi.material.glass.blue": "Blue Glass ",
+    "miapi.material.glass.cyan": "Cyan Glass ",
+    "miapi.material.glass.gray": "Gray Glass ",
+    "miapi.material.glass.green": "Green Glass ",
+    "miapi.material.glass.light_blue": "Light Blue Glass ",
+    "miapi.material.glass.light_gray": "Light Gray Glass ",
+    "miapi.material.glass.lime": "Lime Glass ",
+    "miapi.material.glass.magenta": "Magenta Glass ",
+    "miapi.material.glass.orange": "Orange Glass ",
+    "miapi.material.glass.pink": "Pink Glass ",
+    "miapi.material.glass.purple": "Purple Glass ",
+    "miapi.material.glass.red": "Red Glass ",
+    "miapi.material.glass.tinted": "Tinted Glass ",
+    "miapi.material.glass.white": "White Glass ",
+    "miapi.material.glass.yellow": "Yellow Glass ",
+
+    "miapi.material.feather" : "Feather ",
+
+    "miapi.material.string" : "String ",
+
+    "miapi.material.kelp" : "Kelp ",
+    "miapi.material.fabric.leather" : "Leather ",
+    "miapi.material.fabric.rabbit_hide" : "Rabbit Hide ",
+    "miapi.material.fabric.phantom_membrane" : "Phantom Membrane ",
+    "miapi.material.fabric.vine" : "Vine ",
+    "miapi.material.fabric.twisting_vine" : "Twisting Vine ",
+    "miapi.material.fabric.weeping_vine" : "Weeping Vine ",
 
     "miapi.material.metal.copper": "Copper ",
     "miapi.material.metal.gold": "Golden ",
@@ -319,7 +348,7 @@
     "miapi.module.arrow_tail_normal.description": "Fletching of an arrow, Impacts the flight characteristics of an Arrow",
     "miapi.module.arrow_tail_normal.short_description": "Fletching of an arrow.",
 
-    "miapi.modular_arrow":"Modular Arrow",
+    "miapi.modular_arrow":"[translation.[material.translation]]Arrow",
 
     "miapi.module.bow_handle_normal": "Bow Handle",
     "miapi.module.bow_handle_normal.name": "[translation.[material.translation]]Bow Parts",

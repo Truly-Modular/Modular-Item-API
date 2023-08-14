@@ -31,7 +31,7 @@
     "items": [
         {
             "item": "minecraft:flint",
-            "value": 1.0
+            "value": 0.5
         }
     ]
 }

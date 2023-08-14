@@ -55,7 +55,7 @@ public class EnchantmentProperty implements CraftingProperty, ModuleProperty {
             for (Set<String> entries : replaceMap.values()) {
                 size += entries.size();
             }
-            Miapi.LOGGER.info("Loaded " + size + " Enchantments");
+            Miapi.LOGGER.info("Found " + size + " Enchantments");
         }));
     }
 

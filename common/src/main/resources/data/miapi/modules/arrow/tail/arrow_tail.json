@@ -27,7 +27,7 @@
         "allowedMaterials": [
             "fletching"
         ],
-        "cost": 0.25
+        "cost": 0.125
     },
     "tag": [
         "arrow_tail"

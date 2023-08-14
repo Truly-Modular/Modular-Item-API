@@ -1,23 +1,12 @@
 {
-    "arrow_shaft_normal": {
+    "type": "tag",
+    "arrow_head": {
         "condition": {
-            "type": "and",
-            "conditions": [
-                {
-                    "type": "otherModule",
-                    "condition": {
-                        "type": "tag",
-                        "tag": "arrow_head"
-                    }
-                },
-                {
-                    "type": "otherModule",
-                    "condition": {
-                        "type": "tag",
-                        "tag": "arrow_tail"
-                    }
-                }
-            ]
+            "type": "otherModule",
+            "condition": {
+                "type": "tag",
+                "tag": "arrow_tail"
+            }
         },
         "properties": {
             "displayName": "miapi.modular_arrow",

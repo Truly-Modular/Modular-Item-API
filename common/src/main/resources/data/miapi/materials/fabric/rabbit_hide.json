@@ -1,6 +1,6 @@
 {
     "key": "rabbit_hide",
-    "translation": "miapi.material.rabbit_hide",
+    "translation": "miapi.material.fabric.rabbit_hide",
     "icon": "textures/item/rabbit_hide.png",
     "groups": [
         "fabric"

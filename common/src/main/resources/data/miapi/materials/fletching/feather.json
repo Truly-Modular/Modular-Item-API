@@ -29,7 +29,7 @@
     "items": [
         {
             "item": "minecraft:feather",
-            "value": 1.0
+            "value": 0.5
         }
     ]
 }

@@ -1,6 +1,6 @@
 {
     "key": "twisting_vine",
-    "translation": "miapi.material.twisting_vine",
+    "translation": "miapi.material.fabric.twisting_vine",
     "icon": "textures/item/twisting_vines.png",
     "groups": [
         "fabric",
