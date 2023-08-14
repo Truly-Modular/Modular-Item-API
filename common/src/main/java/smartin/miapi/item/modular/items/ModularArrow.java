@@ -17,6 +17,7 @@ public class ModularArrow extends ArrowItem implements ModularItem {
         //ItemTags.ARROWS
     }
 
+    @Override
     public PersistentProjectileEntity createArrow(World world, ItemStack stack, LivingEntity shooter) {
         stack = stack.copy();
         stack.setCount(1);

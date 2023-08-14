@@ -187,7 +187,7 @@ public class EnchantmentProperty implements CraftingProperty, ModuleProperty {
     }
 
     @Override
-    public boolean shouldExecuteOnCraft(ItemModule.ModuleInstance module) {
+    public boolean shouldExecuteOnCraft(ItemModule.ModuleInstance module, ItemModule.ModuleInstance root, ItemStack stack) {
         return true;
     }
 

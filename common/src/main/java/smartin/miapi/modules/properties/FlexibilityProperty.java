@@ -1,6 +1,5 @@
 package smartin.miapi.modules.properties;
 
-import com.google.gson.JsonElement;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
@@ -9,11 +8,9 @@ import smartin.miapi.Miapi;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.util.CraftingProperty;
-import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.SimpleDoubleProperty;
 
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Flexibility is a optional tool to limit items to be somewhat reasonable
@@ -43,8 +40,8 @@ public class FlexibilityProperty extends SimpleDoubleProperty implements Craftin
     }
 
     @Override
-    public boolean shouldExecuteOnCraft(ItemModule.ModuleInstance module) {
-        return ItemModule.getMergedProperty(module.getRoot(),this)!=null;
+    public boolean shouldExecuteOnCraft(ItemModule.ModuleInstance module, ItemModule.ModuleInstance root, ItemStack stack) {
+        return ItemModule.getMergedProperty(root,this)!=null;
     }
 
 

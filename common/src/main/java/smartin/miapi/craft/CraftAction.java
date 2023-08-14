@@ -168,14 +168,16 @@ public class CraftAction {
      * @param instance the module instance to set.
      */
     protected void updateItem(ItemStack stack, ItemModule.ModuleInstance instance) {
-        while (instance.parent != null) {
-            instance = instance.parent;
-        }
-        if (!stack.isEmpty()) {
-            if (!stack.hasNbt()) {
-                stack.setNbt(new NbtCompound());
+        if(instance != null){
+            while (instance.parent != null) {
+                instance = instance.parent;
             }
-            instance.writeToItem(stack);
+            if (!stack.isEmpty()) {
+                if (!stack.hasNbt()) {
+                    stack.setNbt(new NbtCompound());
+                }
+                instance.writeToItem(stack);
+            }
         }
     }
 
@@ -321,6 +323,9 @@ public class CraftAction {
         }
 
         ItemModule.ModuleInstance newInstance = parsingInstance;
+        if(newInstance == null){
+            parsingInstance = new ItemModule.ModuleInstance(ItemModule.empty);
+        }
         if (parsingInstance != null) {
             AtomicInteger integer = new AtomicInteger(inventoryOffset);
             AtomicInteger counter = new AtomicInteger(0);
@@ -328,7 +333,7 @@ public class CraftAction {
             List<CraftingProperty> sortedProperties =
                     RegistryInventory.moduleProperties.getFlatMap().values().stream()
                             .filter(property -> property instanceof CraftingProperty)
-                            .filter(property -> ((CraftingProperty) property).shouldExecuteOnCraft(newInstance))
+                            .filter(property -> ((CraftingProperty) property).shouldExecuteOnCraft(newInstance,ItemModule.getModules(crafted),crafted))
                             .map(property -> (CraftingProperty) property)
                             .sorted(Comparator.comparingDouble(CraftingProperty::getPriority))
                             .toList();
