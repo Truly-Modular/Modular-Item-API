@@ -1,6 +1,6 @@
 {
     "minecraft:bow": {
-        "module": "bow_handle",
+        "module": "bow_handle_normal",
         "moduleData": {
             "properties": "{\"material\":\"wood\"}"
         },

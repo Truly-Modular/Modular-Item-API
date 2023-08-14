@@ -23,6 +23,10 @@
     "allowedInSlots": [
         "melee"
     ],
+    "tag": [
+        "two_handed_handle",
+        "normal_handle"
+    ],
     "enchantments": {
         "allowed": [
             "miapi:basic"

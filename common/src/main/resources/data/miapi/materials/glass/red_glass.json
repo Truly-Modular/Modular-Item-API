@@ -1,6 +1,6 @@
 {
-    "key": "red_glass",
-    "translation": "miapi.material.red_glass",
+    "key": "glass_red",
+    "translation": "miapi.material.glass.red",
     "icon": "textures/block/red_stained_glass.png",
     "groups": [
         "glass"

@@ -6,30 +6,25 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandler;
-import net.minecraft.screen.ScreenHandlerListener;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.ColorHelper;
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
 import smartin.miapi.Miapi;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.client.gui.*;
-import smartin.miapi.client.gui.HoverDescription;
 import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
 import smartin.miapi.craft.CraftAction;
 import smartin.miapi.modules.ItemModule;
-import smartin.miapi.modules.properties.util.CraftingProperty;
 import smartin.miapi.modules.properties.SlotProperty;
+import smartin.miapi.modules.properties.util.CraftingProperty;
 import smartin.miapi.network.Networking;
 
 import java.util.ArrayList;
@@ -129,8 +124,11 @@ public class CraftView extends InteractAbleWidget {
             setBuffers();
             if (action.canPerform()) {
                 isClosed = true;
-                Networking.sendC2S(packetId, action.toPacket(Networking.createBuffer()));
-                newStack.accept(action.getPreview());
+                ItemStack craftedStack = action.getPreview();
+                if (!ItemStack.areEqual(stack, craftedStack)) {
+                    Networking.sendC2S(packetId, action.toPacket(Networking.createBuffer()));
+                    newStack.accept(craftedStack);
+                }
             }
         });
         addChild(craftButton);
@@ -139,7 +137,7 @@ public class CraftView extends InteractAbleWidget {
             /*if (currentSlots.stream().anyMatch(slot1 -> slot1.id == slotId)) {
                     update();
                 }*/
-            if(slotId!=36){
+            if (slotId != 36) {
                 update();
             }
         }));
@@ -148,12 +146,17 @@ public class CraftView extends InteractAbleWidget {
     private void update() {
         try {
             if (!isClosed) {
-                preview.accept(action.getPreview());
+                ItemStack previewStack = action.getPreview();
+                preview.accept(previewStack);
                 setBuffers();
                 Pair<Map<CraftingProperty, Boolean>, Boolean> canPerform = action.fullCanPerform();
                 craftButton.isEnabled = canPerform.getSecond();
 
                 warnings.clear();
+                if (ItemStack.areEqual(previewStack, originalStack)) {
+                    warnings.add(Text.translatable(Miapi.MOD_ID + ".craft.result_equal_warning"));
+                    craftButton.isEnabled = false;
+                }
                 canPerform.getFirst().forEach((property, result) -> {
                     if (!result) {
                         Text warning = property.getWarning();
@@ -220,8 +223,9 @@ public class CraftView extends InteractAbleWidget {
         }
         //only preview on inventory change?
         // Add the initial GUI to the screen
-        if (!craftingGuis.isEmpty())
+        if (!craftingGuis.isEmpty()) {
             addGui(craftingGuis.get(currentGuiIndex));
+        }
         super.render(drawContext, mouseX, mouseY, delta);
     }
 

@@ -1,6 +1,6 @@
 {
-    "key": "light_gray_glass",
-    "translation": "miapi.material.light_gray_glass",
+    "key": "glass_light_gray",
+    "translation": "miapi.material.glass.light_gray",
     "icon": "textures/block/light_gray_stained_glass.png",
     "groups": [
         "glass"

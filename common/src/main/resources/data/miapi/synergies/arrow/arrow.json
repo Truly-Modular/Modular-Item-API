@@ -6,21 +6,21 @@
                 {
                     "type": "otherModule",
                     "condition": {
-                        "type": "module",
-                        "module": "arrow_head_normal"
+                        "type": "tag",
+                        "tag": "arrow_head"
                     }
                 },
                 {
                     "type": "otherModule",
                     "condition": {
-                        "type": "module",
-                        "module": "arrow_tail_normal"
+                        "type": "tag",
+                        "tag": "arrow_tail"
                     }
                 }
             ]
         },
         "properties": {
-            "displayName": "miapi.modular_arrow_working",
+            "displayName": "miapi.modular_arrow",
             "itemId": "miapi:modular_arrow"
         }
     }

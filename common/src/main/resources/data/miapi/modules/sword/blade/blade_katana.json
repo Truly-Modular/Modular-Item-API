@@ -26,6 +26,11 @@
             "miapi:weapon"
         ]
     },
+    "tag": [
+        "blade",
+        "polearm_glaive",
+        "one_handed_sword"
+    ],
     "allowedInSlots": [
         "sword_blade_large"
     ],

@@ -28,6 +28,9 @@
     "allowedInSlots": [
         "melee"
     ],
+    "tag": [
+        "polearm_handle"
+    ],
     "slots": {
         "0": {
             "allowed": [

@@ -16,6 +16,10 @@
             "miapi:basic"
         ]
     },
+    "tag": [
+        "two_handed_handle",
+        "long_handle"
+    ],
     "slots": {
         "0": {
             "allowed": [

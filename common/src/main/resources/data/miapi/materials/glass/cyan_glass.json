@@ -1,6 +1,6 @@
 {
-    "key": "cyan_glass",
-    "translation": "miapi.material.cyan_glass",
+    "key": "glass_cyan",
+    "translation": "miapi.material.glass.cyan",
     "icon": "textures/block/cyan_stained_glass.png",
     "groups": [
         "glass"

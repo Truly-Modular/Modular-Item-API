@@ -29,6 +29,10 @@
             "miapi:weapon"
         ]
     },
+    "tag": [
+        "blade",
+        "polearm_spear"
+    ],
     "allowedInSlots": [
         "sword_blade_small"
     ],

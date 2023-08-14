@@ -1,6 +1,6 @@
 {
   "key": "iron",
-  "translation": "miapi.material.iron",
+  "translation": "miapi.material.metal.iron",
   "icon": "textures/item/iron_ingot.png",
   "groups": ["metal"],
   "hardness": 5,

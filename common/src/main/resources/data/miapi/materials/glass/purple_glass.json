@@ -1,6 +1,6 @@
 {
-    "key": "purple_glass",
-    "translation": "miapi.material.purple_glass",
+    "key": "glass_purple",
+    "translation": "miapi.material.glass.purple",
     "icon": "textures/block/purple_stained_glass.png",
     "groups": [
         "glass"

@@ -1,0 +1,15 @@
+{
+    "bow_arms_normal": {
+        "condition": {
+            "type": "otherModule",
+            "condition": {
+                "type": "tag",
+                "tag": "bow_string"
+            }
+        },
+        "properties": {
+            "displayName": "miapi.module.bow_arms_normal.name",
+            "itemId": "miapi:modular_bow"
+        }
+    }
+}

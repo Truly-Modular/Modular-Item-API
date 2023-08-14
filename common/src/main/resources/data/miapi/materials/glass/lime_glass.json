@@ -1,6 +1,6 @@
 {
-    "key": "lime_glass",
-    "translation": "miapi.material.lime_glass",
+    "key": "glass_lime",
+    "translation": "miapi.material.glass.lime",
     "icon": "textures/block/lime_stained_glass.png",
     "groups": [
         "glass"

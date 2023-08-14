@@ -1,6 +1,6 @@
 {
-    "key": "green_glass",
-    "translation": "miapi.material.green_glass",
+    "key": "glass_green",
+    "translation": "miapi.material.glass.green",
     "icon": "textures/block/green_stained_glass.png",
     "groups": [
         "glass"

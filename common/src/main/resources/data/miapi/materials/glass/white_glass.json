@@ -1,6 +1,6 @@
 {
-    "key": "white_glass",
-    "translation": "miapi.material.white_glass",
+    "key": "glass_white",
+    "translation": "miapi.material.glass.white",
     "icon": "textures/block/white_stained_glass.png",
     "groups": [
         "glass"

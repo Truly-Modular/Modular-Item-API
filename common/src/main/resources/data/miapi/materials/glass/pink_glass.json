@@ -1,6 +1,6 @@
 {
-    "key": "pink_glass",
-    "translation": "miapi.material.pink_glass",
+    "key": "glass_pink",
+    "translation": "miapi.material.glass.pink",
     "icon": "textures/block/pink_stained_glass.png",
     "groups": [
         "glass"

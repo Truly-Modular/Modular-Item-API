@@ -39,6 +39,10 @@
     "better_combat_config": {
         "parent": "bettercombat:dagger"
     },
+    "tag": [
+        "blade",
+        "polearm_spear"
+    ],
     "allowedMaterial": {
         "allowedMaterials": [
             "wood","stone","metal","crystal"

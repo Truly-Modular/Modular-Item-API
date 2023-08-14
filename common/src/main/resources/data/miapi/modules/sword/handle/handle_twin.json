@@ -16,6 +16,9 @@
             "miapi:basic"
         ]
     },
+    "tag": [
+        "twin_handle"
+    ],
     "slots": {
         "0": {
             "allowed": [

@@ -23,6 +23,9 @@
     "allowedInSlots": [
         "arrow_head"
     ],
+    "tag":  [
+        "arrow_head"
+    ],
     "attributes": [
         {
             "attribute": "miapi:generic.projectile_speed",

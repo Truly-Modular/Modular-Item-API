@@ -26,6 +26,11 @@
             "miapi:weapon"
         ]
     },
+    "tag": [
+        "blade",
+        "polearm_halberd",
+        "one_handed_sword"
+    ],
     "better_combat_config": {
         "parent": "bettercombat:claymore"
     },

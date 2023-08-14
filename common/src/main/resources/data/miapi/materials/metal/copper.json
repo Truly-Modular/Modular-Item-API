@@ -1,6 +1,6 @@
 {
     "key": "copper",
-    "translation": "miapi.material.copper",
+    "translation": "miapi.material.metal.copper",
     "groups": [
         "metal"
     ],

@@ -1,10 +1,11 @@
 {
-    "blade_longsword": {
+    "type": "tag",
+    "one_handed_sword": {
         "condition": {
             "type": "otherModule",
             "condition": {
-                "type": "module",
-                "module": "handle_short"
+                "type": "tag",
+                "tag": "one_handed_handle"
             }
         },
         "properties": {

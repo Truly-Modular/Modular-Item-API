@@ -1,15 +1,16 @@
 {
-    "blade_dagger": {
+    "type": "tag",
+    "polearm_glaive": {
         "condition": {
             "type": "otherModule",
             "condition": {
-                "type": "module",
-                "module": "handle_twin"
+                "type": "tag",
+                "tag": "polearm_handle"
             }
         },
         "properties": {
             "better_combat_config": {
-                "parent": "bettercombat:twin_blade"
+                "parent": "bettercombat:glaive"
             }
         }
     }

@@ -1,6 +1,6 @@
 {
-    "key": "magenta_glass",
-    "translation": "miapi.material.magenta_glass",
+    "key": "glass_magenta",
+    "translation": "miapi.material.glass.magenta",
     "icon": "textures/block/magenta_stained_glass.png",
     "groups": [
         "glass"

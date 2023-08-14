@@ -35,6 +35,10 @@
         "crystal",
         "glass"
     ],
+    "tag": [
+        "blade",
+        "polearm_halberd"
+    ],
     "better_combat_config": {
         "parent": "bettercombat:rapier"
     },

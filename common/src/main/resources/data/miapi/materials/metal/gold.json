@@ -1,6 +1,6 @@
 {
     "key": "gold",
-    "translation": "miapi.material.gold",
+    "translation": "miapi.material.metal.gold",
     "groups": [
         "metal"
     ],

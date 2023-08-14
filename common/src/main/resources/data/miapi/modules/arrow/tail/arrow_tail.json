@@ -29,6 +29,9 @@
         ],
         "cost": 0.25
     },
+    "tag": [
+        "arrow_tail"
+    ],
     "attributes": [
         {
             "attribute": "miapi:generic.projectile_speed",

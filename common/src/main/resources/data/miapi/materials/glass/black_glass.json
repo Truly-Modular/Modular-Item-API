@@ -1,6 +1,6 @@
 {
-    "key": "black_glass",
-    "translation": "miapi.material.black_glass",
+    "key": "glass_black",
+    "translation": "miapi.material.glass.black",
     "icon": "textures/block/black_stained_glass.png",
     "groups": [
         "glass"

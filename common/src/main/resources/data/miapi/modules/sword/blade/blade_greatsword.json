@@ -29,6 +29,11 @@
     "allowedInSlots": [
         "sword_blade_large"
     ],
+    "tag": [
+        "blade",
+        "polearm_glaive",
+        "one_handed_sword"
+    ],
     "allowedMaterial": {
         "allowedMaterials": [
             "wood",

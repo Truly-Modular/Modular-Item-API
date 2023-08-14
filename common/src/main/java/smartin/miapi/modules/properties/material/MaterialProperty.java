@@ -71,6 +71,9 @@ public class MaterialProperty implements ModuleProperty {
             JsonParser parser = new JsonParser();
             JsonObject obj = parser.parse(data).getAsJsonObject();
             JsonMaterial material = new JsonMaterial(obj);
+            if (materials.containsKey(material.getKey())) {
+                Miapi.LOGGER.warn("Overwriting Materials isnt supported yet and may cause issues. Material from  " + path + " is overwriting " + material.getKey());
+            }
             materials.put(material.getKey(), material);
         }, -1f);
         ReloadEvents.END.subscribe((isClient -> {

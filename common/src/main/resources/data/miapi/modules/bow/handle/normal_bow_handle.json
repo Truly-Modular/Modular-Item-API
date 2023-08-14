@@ -1,5 +1,5 @@
 {
-    "name": "bow_handle",
+    "name": "bow_handle_normal",
     "texture": {
         "path": "miapi:models/item/bow/handle/normal/[material.texture].json",
         "transform": {
@@ -186,5 +186,6 @@
         ],
         "cost": 1
     },
-    "displayName": "miapi.module.bow_handle.name"
+    "displayName": "miapi.module.bow_handle_normal.name",
+    "itemId": "miapi:modular_bow_part"
 }

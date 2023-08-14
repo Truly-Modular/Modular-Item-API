@@ -11,6 +11,9 @@
     "allowedInSlots": [
         "melee"
     ],
+    "tag": [
+        "one_handed_handle"
+    ],
     "slots": {
         "0": {
             "allowed": [

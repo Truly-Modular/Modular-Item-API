@@ -1,15 +1,16 @@
 {
-    "blade_dagger": {
+    "type": "tag",
+    "blade": {
         "condition": {
             "type": "otherModule",
             "condition": {
-                "type": "module",
-                "module": "handle_polearm"
+                "type": "tag",
+                "tag": "twin_handle"
             }
         },
         "properties": {
             "better_combat_config": {
-                "parent": "bettercombat:spear"
+                "parent": "bettercombat:twin_blade"
             }
         }
     }

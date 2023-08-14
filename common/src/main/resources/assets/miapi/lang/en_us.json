@@ -11,6 +11,7 @@
     "miapi.ui.craft.warning.material":"Insufficient Material",
     "miapi.ui.craft.warning.crafting_stat":"Crafting Stat Requirement Unmet",
     "miapi.ui.craft.warning.flexibility":"Flexibility cannot go bellow 0",
+    "miapi.ui.craft.result_equal_warning":"Crafting does not change the Item.",
 
     "miapi.skin.name.": "Default Skin",
     "miapi.skin.name.star_wars": "",
@@ -149,10 +150,10 @@
     "miapi.material.crystal.lapis_lazuli": "Lapis ",
     "miapi.material.crystal.nether_quartz": "Quartz ",
 
-    "miapi.material.copper": "Copper ",
-    "miapi.material.gold": "Golden ",
-    "miapi.material.iron": "Iron ",
-    "miapi.material.netherite": "Netherite ",
+    "miapi.material.metal.copper": "Copper ",
+    "miapi.material.metal.gold": "Golden ",
+    "miapi.material.metal.iron": "Iron ",
+    "miapi.material.metal.netherite": "Netherite ",
 
     "block.miapi.modular_work_bench": "Modular Workbench",
 
@@ -302,6 +303,38 @@
     "miapi.module.blade_spear.name": "[translation.[material.translation]]Spear",
     "miapi.module.blade_spear.description": "A front part of a spear used to stab people.",
     "miapi.module.blade_spear.short_description": "A short head of Spear",
+
+    "miapi.module.arrow_head_normal": "Arrow Head",
+    "miapi.module.arrow_head_normal.name": "[translation.[material.translation]]Arrow Head",
+    "miapi.module.arrow_head_normal.description": "The Front piece of an arrow, determins how an Arrow Impacts a Target.",
+    "miapi.module.arrow_head_normal.short_description": "The Head of an Arrow.",
+
+    "miapi.module.arrow_shaft_normal": "Arrow Shaft",
+    "miapi.module.arrow_shaft_normal.name": "[translation.[material.translation]]Arrow Shaft",
+    "miapi.module.arrow_shaft_normal.description": "Shaft of an arrow, determins weight speed and impact of an Arrow",
+    "miapi.module.arrow_shaft_normal.short_description": "The Shaft of an Arrow.",
+
+    "miapi.module.arrow_tail_normal": "Arrow Fletching",
+    "miapi.module.arrow_tail_normal.name": "[translation.[material.translation]]Arrow Fletching",
+    "miapi.module.arrow_tail_normal.description": "Fletching of an arrow, Impacts the flight characteristics of an Arrow",
+    "miapi.module.arrow_tail_normal.short_description": "Fletching of an arrow.",
+
+    "miapi.modular_arrow":"Modular Arrow",
+
+    "miapi.module.bow_handle_normal": "Bow Handle",
+    "miapi.module.bow_handle_normal.name": "[translation.[material.translation]]Bow Parts",
+    "miapi.module.bow_handle_normal.description": "The Handle of a Bow.",
+    "miapi.module.bow_handle_normal.short_description": "The Handle of a Bow.",
+
+    "miapi.module.bow_arms_normal": "Bow Arms",
+    "miapi.module.bow_arms_normal.name": "[translation.[material.translation]]Bow",
+    "miapi.module.bow_arms_normal.description": "The Arms of a Bow, impacts the draw behaviour of the Bow",
+    "miapi.module.bow_arms_normal.short_description": "The Arms of a Bow",
+
+    "miapi.module.bow_string_normal": "Bow String",
+    "miapi.module.bow_string_normal.name": "[translation.[material.translation]]Bow String",
+    "miapi.module.bow_string_normal.description": "String of a Bow",
+    "miapi.module.bow_string_normal.short_description": "String of a Bow.",
 
     "miapi.module.mattock.name": "[translation.[material.translation]]Mattock"
 }

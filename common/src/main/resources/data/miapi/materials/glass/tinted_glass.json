@@ -1,6 +1,6 @@
 {
-    "key": "tinted_glass",
-    "translation": "miapi.material.glass",
+    "key": "glass_tinted",
+    "translation": "miapi.material.glass.tinted",
     "icon": "textures/block/tinted_glass.png",
     "groups": [
         "glass"

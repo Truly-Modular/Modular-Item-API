@@ -1,6 +1,6 @@
 {
-    "key": "yellow_glass",
-    "translation": "miapi.material.yellow_glass",
+    "key": "glass_yellow",
+    "translation": "miapi.material.glass.yellow",
     "icon": "textures/block/yellow_stained_glass.png",
     "groups": [
         "glass"
