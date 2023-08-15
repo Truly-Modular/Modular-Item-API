@@ -20,6 +20,10 @@
             }
         }
     },
+    "guiOffset": {
+        "sizeX": 2,
+        "sizeY": 2
+    },
     "enchantments": {
         "allowed": [
             "miapi:edged",

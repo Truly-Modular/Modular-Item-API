@@ -80,8 +80,8 @@
         }
     ],
     "guiOffset": {
-        "sizeX": 3,
-        "sizeY": 3
+        "sizeX": 6,
+        "sizeY": 6
     },
     "displayName": "miapi.module.blade_greatsword.name",
     "abilities": [
