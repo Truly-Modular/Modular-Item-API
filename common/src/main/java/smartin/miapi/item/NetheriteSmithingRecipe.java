@@ -14,7 +14,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
-import smartin.miapi.Miapi;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.material.Material;
@@ -49,7 +48,6 @@ public class NetheriteSmithingRecipe implements SmithingRecipe {
             ItemModule.ModuleInstance instance = ItemModule.getModules(stack);
             return instance.allSubModules().stream().anyMatch(module -> {
                 Material material = MaterialProperty.getMaterial(module);
-                Miapi.LOGGER.warn(material.getKey());
                 return material.getKey().equals(startMaterial);
             });
         }
