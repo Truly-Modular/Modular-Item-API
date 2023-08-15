@@ -99,6 +99,10 @@
     "abilities": [
         "throw"
     ],
+    "guiOffset": {
+        "sizeX": -7,
+        "sizeY": -7
+    },
     "better_combat_config": {
         "parent": "bettercombat:spear"
     },

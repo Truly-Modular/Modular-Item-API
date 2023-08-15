@@ -240,8 +240,8 @@
     "guiOffset": {
         "x": 3,
         "y": 3,
-        "sizeX": 7,
-        "sizeY": 7
+        "sizeX": 13,
+        "sizeY": 13
     },
     "abilities": [
         "circleAttack"
