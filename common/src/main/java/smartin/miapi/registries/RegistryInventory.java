@@ -32,6 +32,7 @@ import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
+import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.screen.ScreenHandlerType;
@@ -50,6 +51,7 @@ import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
 import smartin.miapi.craft.stat.CraftingStat;
 import smartin.miapi.craft.stat.SimpleCraftingStat;
 import smartin.miapi.effects.CryoStatusEffect;
+import smartin.miapi.item.NetheriteSmithingRecipe;
 import smartin.miapi.item.modular.items.*;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.abilities.*;
@@ -88,6 +90,7 @@ public class RegistryInventory {
     public static final Registrar<StatusEffect> statusEffects = registrar.get().get(RegistryKeys.STATUS_EFFECT);
     public static final Registrar<ItemGroup> tab = registrar.get().get(RegistryKeys.ITEM_GROUP);
     public static final Registrar<GameEvent> gameEvents = registrar.get().get(RegistryKeys.GAME_EVENT);
+    public static final Registrar<RecipeSerializer<?>> RECIPE_SERIALIZERS = registrar.get().get(RegistryKeys.RECIPE_SERIALIZER);
     public static final MiapiRegistry<ModuleProperty> moduleProperties = MiapiRegistry.getInstance(ModuleProperty.class);
     public static final MiapiRegistry<ItemModule> modules = MiapiRegistry.getInstance(ItemModule.class);
     public static final MiapiRegistry<EditOption> editOptions = MiapiRegistry.getInstance(EditOption.class);
@@ -158,6 +161,7 @@ public class RegistryInventory {
     public static StatusEffect cryoStatusEffect;
     public static GameEvent statProviderUpdatedEvent;
     public static SimpleCraftingStat exampleCraftingStat;
+    public static RecipeSerializer serializer;
     public static RegistrySupplier<EntityType<ItemProjectile>> itemProjectileType = (RegistrySupplier) registerAndSupply(entityTypes, "thrown_item", () ->
             EntityType.Builder.create(ItemProjectile::new, SpawnGroup.MISC).setDimensions(0.5F, 0.5F).maxTrackingRange(4).trackingTickInterval(20).build("miapi:thrown_item"));
 
@@ -184,6 +188,9 @@ public class RegistryInventory {
         /*register(entityTypes, "thrown_item", () ->
                 EntityType.Builder.create(ItemProjectile::new, SpawnGroup.MISC).setDimensions(0.5F, 0.5F).maxTrackingRange(4).trackingTickInterval(20).build("miapi:thrown_item"),
                 type -> itemProjectileType = (EntityType<ItemProjectile>) type);*/
+
+        register(RECIPE_SERIALIZERS,"smithing", NetheriteSmithingRecipe.Serializer::new, i -> serializer = i);
+
 
         //BLOCK
         register(blocks, "modular_work_bench", () -> new ModularWorkBench(
@@ -458,9 +465,9 @@ public class RegistryInventory {
                         .overlay(ENABLE_OVERLAY_COLOR).build(false));
 
         private static void setupGlintTexturing(float scale) {
-            long l = (long)((double) Util.getMeasuringTimeMs() * MinecraftClient.getInstance().options.getGlintSpeed().getValue() * 8.0);
-            float f = (float)(l % 110000L) / 110000.0f;
-            float g = (float)(l % 30000L) / 30000.0f;
+            long l = (long) ((double) Util.getMeasuringTimeMs() * MinecraftClient.getInstance().options.getGlintSpeed().getValue() * 8.0);
+            float f = (float) (l % 110000L) / 110000.0f;
+            float g = (float) (l % 30000L) / 30000.0f;
             Matrix4f matrix4f = new Matrix4f().translation(-f, g, 0.0f);
             matrix4f.rotateZ(0.17453292f).scale(scale);
             RenderSystem.setTextureMatrix(matrix4f);

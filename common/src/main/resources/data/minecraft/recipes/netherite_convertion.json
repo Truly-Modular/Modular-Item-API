@@ -1,0 +1,11 @@
+{
+    "type": "miapi:smithing",
+    "template": {
+        "item": "minecraft:netherite_upgrade_smithing_template"
+    },
+    "addition": {
+        "item": "minecraft:netherite_ingot"
+    },
+    "base": "diamond",
+    "result": "netherite"
+}
