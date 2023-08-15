@@ -134,13 +134,20 @@ public class ModularItemCache {
         }
 
         public Object get(String key) {
-            return map.computeIfAbsent(key, (id) -> {
-                CacheObjectSupplier supplier = supplierMap.get(id);
+            if(map.containsKey(key)){
+                return map.get(key);
+            }
+            else{
+                CacheObjectSupplier supplier = supplierMap.get(key);
                 if (supplier != null) {
-                    return supplier.apply(stack);
+                    Object cached = supplier.apply(stack);
+                    if(cached!=null){
+                        map.put(key,cached);
+                    }
+                    return cached;
                 }
-                return null;
-            });
+            }
+            return null;
         }
     }
 }

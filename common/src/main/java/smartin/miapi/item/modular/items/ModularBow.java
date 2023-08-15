@@ -140,7 +140,7 @@ public class ModularBow extends BowItem implements ModularItem {
     }
 
     public static float getPullProgress(int useTicks, ItemStack stack) {
-        float f = (float) ((float) useTicks / 20.0f);
+        float f = ((float) useTicks / 20.0f);
         if ((f = (f * f + f * 2.0f) / 3.0f) > 1.0f) {
             f = 1.0f;
         }

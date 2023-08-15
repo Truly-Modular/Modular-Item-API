@@ -12,7 +12,7 @@ public class Environment {
             Environment.class.getDeclaredMethod("isClientPrivate");
             return true;
         } catch (NoSuchMethodException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
             return false;
         }
     }

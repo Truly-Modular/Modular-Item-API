@@ -16,20 +16,27 @@ import java.io.StringReader;
 
 public class BetterCombatHelper {
     public static void setup() {
-        ModularItemCache.setSupplier(BetterCombatProperty.KEY, BetterCombatHelper::getContainer);
-    }
-
-    private static net.bettercombat.api.WeaponAttributes getContainer(ItemStack stack) {
-        return container(ItemModule.getMergedProperty(stack, BetterCombatProperty.property));
+        ModularItemCache.setSupplier(BetterCombatProperty.KEY, BetterCombatHelper:: getAttributesContainer);
     }
 
     private static float getAttackRange(ItemStack stack) {
-        AttributeProperty.getAttributeModifiersRaw(stack);
-        double rangeSave = AttributeProperty.getActualValueFrom(AttributeProperty.getAttributeModifiersRaw(stack), EquipmentSlot.MAINHAND, AttributeRegistry.ATTACK_RANGE, 0) + 2.5f;
-        return (float) rangeSave;
+        return (float) (AttributeProperty.getActualValueFrom(AttributeProperty.getAttributeModifiersRaw(stack), EquipmentSlot.MAINHAND, AttributeRegistry.ATTACK_RANGE, 0) + 2.5f);
+        //return (float) 3.0;
     }
 
-    public static net.bettercombat.api.WeaponAttributes container(JsonElement data) {
+    private static net.bettercombat.api.WeaponAttributes getAttributesContainer(ItemStack stack) {
+        if (stack.getItem() instanceof ModularItem) {
+            net.bettercombat.api.WeaponAttributes attributes = container(ItemModule.getMergedProperty(stack, BetterCombatProperty.property));
+            if (attributes != null) {
+                attributes = new net.bettercombat.api.WeaponAttributes(getAttackRange(stack), attributes.pose(), attributes.offHandPose(), attributes.isTwoHanded(), attributes.category(), attributes.attacks());
+            }
+            return attributes;
+        } else {
+            return null;
+        }
+    }
+
+    private static net.bettercombat.api.WeaponAttributes container(JsonElement data) {
         if (data == null) {
             return null;
         }
@@ -40,14 +47,6 @@ public class BetterCombatHelper {
     }
 
     public static net.bettercombat.api.WeaponAttributes getAttributes(ItemStack stack) {
-        if (stack.getItem() instanceof ModularItem) {
-            net.bettercombat.api.WeaponAttributes attributes = (net.bettercombat.api.WeaponAttributes) ModularItemCache.get(stack, BetterCombatProperty.KEY);
-            if (attributes != null) {
-                attributes = new net.bettercombat.api.WeaponAttributes(getAttackRange(stack), attributes.pose(), attributes.offHandPose(), attributes.isTwoHanded(), attributes.category(), attributes.attacks());
-            }
-            return attributes;
-        } else {
-            return null;
-        }
+        return (net.bettercombat.api.WeaponAttributes) ModularItemCache.get(stack, BetterCombatProperty.KEY);
     }
 }

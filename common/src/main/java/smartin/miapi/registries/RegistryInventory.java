@@ -50,7 +50,6 @@ import smartin.miapi.client.MiapiClient;
 import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
 import smartin.miapi.craft.stat.CraftingStat;
 import smartin.miapi.craft.stat.SimpleCraftingStat;
-import smartin.miapi.effects.CryoStatusEffect;
 import smartin.miapi.item.NetheriteSmithingRecipe;
 import smartin.miapi.item.modular.items.*;
 import smartin.miapi.modules.ItemModule;
@@ -260,7 +259,7 @@ public class RegistryInventory {
         register(modularItems, "modular_boots", ModularBoots::new);
 
         //STATUS EFFECTS
-        register(statusEffects, "cryo", CryoStatusEffect::new, eff -> cryoStatusEffect = eff);
+        //register(statusEffects, "cryo", CryoStatusEffect::new, eff -> cryoStatusEffect = eff);
 
         //ATTRIBUTE
         registerAtt("generic.durability", false, () ->
