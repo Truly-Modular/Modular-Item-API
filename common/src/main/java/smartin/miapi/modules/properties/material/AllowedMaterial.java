@@ -95,7 +95,7 @@ public class AllowedMaterial implements CraftingProperty, ModuleProperty {
         AllowedMaterialJson json = Miapi.gson.fromJson(element, AllowedMaterialJson.class);
         Material material = MaterialProperty.getMaterial(input);
         assert material != null;
-        int newCount = (int) (input.getCount() - Math.ceil(json.cost / material.getValueOfItem(input)));
+        int newCount = (int) (input.getCount() - Math.ceil(json.cost * crafting.getCount() / material.getValueOfItem(input)));
         input.setCount(newCount);
         MaterialProperty.setMaterial(newModule, material.getKey());
         results.add(crafting);

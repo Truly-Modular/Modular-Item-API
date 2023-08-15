@@ -6,12 +6,15 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.item.ItemStack;
+import org.joml.Matrix4f;
 import org.joml.Vector3f;
+import org.joml.Vector4f;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.model.DynamicBakedModel;
 import smartin.miapi.client.modelrework.MiapiItemModel;
 import smartin.miapi.item.modular.Transform;
 import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.properties.SlotProperty;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.Map;
@@ -33,10 +36,16 @@ public class GuiOffsetProperty implements ModuleProperty {
                     JsonElement element = instance.getProperties().get(property);
                     if (element != null) {
                         GuiOffsetJson add = Miapi.gson.fromJson(element, GuiOffsetJson.class);
-                        guiOffsetJson.x += add.x;
-                        guiOffsetJson.y += add.y;
-                        guiOffsetJson.sizeX += add.sizeX;
-                        guiOffsetJson.sizeY += add.sizeY;
+                        Transform transform = SlotProperty.getLocalTransformStack(instance).get(modelType);
+                        Matrix4f matrix4f = transform.toMatrix();
+                        Vector4f offsetPos = new Vector4f(add.x,add.y,0,0);
+                        offsetPos = offsetPos.mul(matrix4f);
+                        guiOffsetJson.x += offsetPos.x();
+                        guiOffsetJson.y += offsetPos.y();
+                        Vector4f sizeVec = new Vector4f(add.sizeX,add.sizeY,0,0);
+                        sizeVec = sizeVec.mul(matrix4f);
+                        guiOffsetJson.sizeX += sizeVec.x();
+                        guiOffsetJson.sizeY += sizeVec.y();
                     }
                 }
                 //guiOffsetJson.x -= (guiOffsetJson.sizeX/2);

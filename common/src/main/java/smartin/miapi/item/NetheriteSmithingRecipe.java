@@ -12,6 +12,7 @@ import net.minecraft.recipe.SmithingRecipe;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
+import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
 import smartin.miapi.Miapi;
 import smartin.miapi.item.modular.ModularItem;
@@ -82,8 +83,20 @@ public class NetheriteSmithingRecipe implements SmithingRecipe {
     }
 
     @Override
+    public DefaultedList<ItemStack> getRemainder(Inventory inventory) {
+        DefaultedList<ItemStack> defaultedList = DefaultedList.ofSize(inventory.size(), ItemStack.EMPTY);
+        for (int i = 0; i < defaultedList.size(); ++i) {
+            Item item = inventory.getStack(i).getItem();
+            //if (!item.hasRecipeRemainder()) continue;
+            //defaultedList.set(i, inventory.getStack(i).copy());
+        }
+        //defaultedList.set(1, ItemStack.EMPTY);
+        return defaultedList;
+    }
+
+    @Override
     public ItemStack getOutput(DynamicRegistryManager registryManager) {
-        return new ItemStack(RegistryInventory.modularItem);
+        return ItemStack.EMPTY;
     }
 
     @Override

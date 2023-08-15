@@ -1,29 +1,32 @@
 {
-  "required": true,
-  "minVersion": "0.8",
-  "package": "smartin.miapi.mixin",
-  "compatibilityLevel": "JAVA_17",
-  "mixins": [
-    "BCWeaponRegistryMixin",
-    "EnchantmentHelperMixin",
-    "EnchantmentMixin",
-    "EntityMixin",
-    "InventoryValidationMixin",
-    "ItemStackMixin",
-    "LivingEntityAccessor",
-    "LivingEntityMixin",
-    "LootContextTypesAccessor"
-  ],
-  "client": [
-    "client.ArmorFeatureRendererMixin",
-    "client.ItemRendererAccessor",
-    "client.ItemRendererMixin",
-    "client.ModelLoaderAccessor",
-    "client.ModelLoaderInterfaceAccessor",
-    "client.ModelLoaderMixin",
-    "client.ModelPredicateProviderRegistryAccessor"
-  ],
-  "injectors": {
-    "defaultRequire": 1
+    "required": true,
+    "minVersion": "0.8",
+    "package": "smartin.miapi.mixin",
+    "compatibilityLevel": "JAVA_17",
+    "mixins": [
+        "BCWeaponRegistryMixin",
+        "EnchantmentHelperMixin",
+        "EnchantmentMixin",
+        "EntityMixin",
+        "ForgingScreenHandlerAccessor",
+        "InventoryValidationMixin",
+        "ItemStackMixin",
+        "LivingEntityAccessor",
+        "LivingEntityMixin",
+        "LootContextTypesAccessor",
+        "SmithingScreenHandlerAccessor",
+        "SmithingScreenHandlerMixin"
+    ],
+    "client": [
+        "client.ArmorFeatureRendererMixin",
+        "client.ItemRendererAccessor",
+        "client.ItemRendererMixin",
+        "client.ModelLoaderAccessor",
+        "client.ModelLoaderInterfaceAccessor",
+        "client.ModelLoaderMixin",
+        "client.ModelPredicateProviderRegistryAccessor"
+    ],
+    "injectors": {
+        "defaultRequire": 1
   }
 }

@@ -182,8 +182,8 @@
     "guiOffset": {
         "x": 6,
         "y": 6,
-        "sizeX": 12,
-        "sizeY": 12
+        "sizeX": 11,
+        "sizeY": 11
     },
     "attributes": [
         {
