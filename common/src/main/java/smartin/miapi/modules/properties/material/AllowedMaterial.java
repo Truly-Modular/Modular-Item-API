@@ -10,6 +10,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.Vec2f;
 import smartin.miapi.Miapi;
@@ -24,14 +25,19 @@ import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.util.CraftingProperty;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * This property manages the allowed Materials for a module
  */
 public class AllowedMaterial implements CraftingProperty, ModuleProperty {
     public static final String KEY = "allowedMaterial";
+    public double materialCostClient = 0.0f;
+    public double materialRequirementClient = 0.0f;
 
     public List<Vec2f> getSlotPositions() {
         List<Vec2f> test = new ArrayList<>();
@@ -62,12 +68,16 @@ public class AllowedMaterial implements CraftingProperty, ModuleProperty {
         if (element != null) {
             AllowedMaterialJson json = Miapi.gson.fromJson(element, AllowedMaterialJson.class);
             Material material = MaterialProperty.getMaterial(input);
+            materialRequirementClient = json.cost * crafting.getCount();
             if (material != null) {
                 boolean isAllowed = (json.allowedMaterials.stream().anyMatch(allowedMaterial ->
                         material.getGroups().contains(allowedMaterial)));
+                materialCostClient = input.getCount() * material.getValueOfItem(input);
                 if (isAllowed) {
-                    return input.getCount() * material.getValueOfItem(input) >= json.cost * crafting.getCount();
+                    return materialCostClient >= materialRequirementClient;
                 }
+            } else {
+                materialCostClient = 0.0f;
             }
         }
         return false;
@@ -109,7 +119,7 @@ public class AllowedMaterial implements CraftingProperty, ModuleProperty {
     }
 
     @Environment(EnvType.CLIENT)
-    static class MaterialCraftingWidget extends InteractAbleWidget {
+    class MaterialCraftingWidget extends InteractAbleWidget {
         private final int startX;
         private final int startY;
         private Identifier texture = new Identifier(Miapi.MOD_ID, "textures/gui/crafter/material_background.png");
@@ -117,19 +127,11 @@ public class AllowedMaterial implements CraftingProperty, ModuleProperty {
         private TransformableWidget headerHolder;
         private ScrollingTextWidget header;
         private MultiLineTextWidget description;
+        private ScrollingTextWidget costDescr;
+        private DecimalFormat modifierFormat = Util.make(new DecimalFormat("##.##"), (decimalFormat) -> {
+            decimalFormat.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ROOT));
+        });
 
-        /**
-         * This is a Widget build to support Children and parse the events down to them.
-         * Best use in conjunction with the ParentHandledScreen as it also handles Children correct,
-         * unlike the base vanilla classes.
-         * If you choose to handle some Events yourself and want to support Children yourself, you need to call the correct
-         * super method or handle the children yourself
-         *
-         * @param x      the X Position
-         * @param y      the y Position
-         * @param width  the width
-         * @param height the height
-         */
         public MaterialCraftingWidget(int x, int y, int width, int height, CraftAction action) {
             super(x, y, width, height, Text.literal("Test"));
             startX = x + 5;
@@ -149,7 +151,11 @@ public class AllowedMaterial implements CraftingProperty, ModuleProperty {
             header = new ScrollingTextWidget((int) ((this.getX() + 5) / headerScale), (int) (this.getY() / headerScale), (int) ((this.width - 10) / headerScale), displayText, ColorHelper.Argb.getArgb(255, 255, 255, 255));
             headerHolder.addChild(header);
             description = new MultiLineTextWidget(x + 5, y + 30, width - 10, height - 40, descriptionText);
+            costDescr = new ScrollingTextWidget(x + this.width - 80, y + this.height - 8, 78, Text.empty());
+            costDescr.setOrientation(ScrollingTextWidget.Orientation.RIGHT);
+            costDescr.textColor = ColorHelper.Argb.getArgb(255, 225, 225, 225);
             addChild(description);
+            addChild(costDescr);
         }
 
         public void render(DrawContext drawContext, int mouseX, int mouseY, float delta) {
@@ -158,6 +164,15 @@ public class AllowedMaterial implements CraftingProperty, ModuleProperty {
 
             int textureSize = 30;
             int textureOffset = 0;
+
+            if (materialCostClient < materialRequirementClient) {
+                costDescr.textColor = ColorHelper.Argb.getArgb(255, 225, 225, 125);
+            }
+            else{
+                costDescr.textColor = ColorHelper.Argb.getArgb(255, 125, 225, 125);
+            }
+
+            costDescr.setText(Text.literal(modifierFormat.format(materialCostClient) + "/" + modifierFormat.format(materialRequirementClient)));
 
             drawContext.drawTexture(texture, getX(), getY(), 0, textureOffset, 0, this.width, this.height, this.width, this.height);
 
