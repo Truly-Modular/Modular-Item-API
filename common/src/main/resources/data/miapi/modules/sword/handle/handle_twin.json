@@ -132,8 +132,8 @@
             },
             "head": {
                 "rotation": {
-                    "x": 90,
-                    "y": 90,
+                    "x": 0,
+                    "y": 180,
                     "z": 0
                 },
                 "translation": {
@@ -151,6 +151,11 @@
                 "rotation": {
                     "x": 0,
                     "y": 180,
+                    "z": 0
+                },
+                "translation": {
+                    "x": -5,
+                    "y": 5,
                     "z": 0
                 },
                 "scale": {

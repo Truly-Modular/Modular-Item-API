@@ -63,7 +63,10 @@ public class MaterialSmithingRecipe implements SmithingRecipe {
             ItemModule.ModuleInstance instance = ItemModule.getModules(stack);
             return instance.allSubModules().stream().anyMatch(module -> {
                 Material material = MaterialProperty.getMaterial(module);
-                return material.getKey().equals(startMaterial);
+                if(material!=null){
+                    return material.getKey().equals(startMaterial);
+                }
+                return false;
             });
         }
         return false;
