@@ -20,7 +20,10 @@ import smartin.miapi.modules.properties.material.Material;
 import smartin.miapi.modules.properties.material.MaterialProperty;
 import smartin.miapi.registries.RegistryInventory;
 
-public class NetheriteSmithingRecipe implements SmithingRecipe {
+/**
+ * Custom Smithing recipe to replace Materials within a Modular item
+ */
+public class MaterialSmithingRecipe implements SmithingRecipe {
 
     final String startMaterial;
     final String resultMaterial;
@@ -28,7 +31,7 @@ public class NetheriteSmithingRecipe implements SmithingRecipe {
     final Ingredient addition;
     final Identifier id;
 
-    public NetheriteSmithingRecipe(Identifier id, Ingredient template, String base, Ingredient addition, String resultMaterial) {
+    public MaterialSmithingRecipe(Identifier id, Ingredient template, String base, Ingredient addition, String resultMaterial) {
         this.startMaterial = base;
         this.resultMaterial = resultMaterial;
         smithingTemplate = template;
@@ -36,12 +39,24 @@ public class NetheriteSmithingRecipe implements SmithingRecipe {
         this.id = id;
     }
 
+    /**
+     * Checks against the smithingTemplate of {@link MaterialSmithingRecipe#smithingTemplate}
+     *
+     * @param stack the stack to be tested
+     * @return if the stack parses the ingredient
+     */
     @Override
     public boolean testTemplate(ItemStack stack) {
         Item netherIteUpgradeTemplate = Items.NETHERITE_UPGRADE_SMITHING_TEMPLATE;
         return stack.getItem().equals(netherIteUpgradeTemplate);
     }
 
+    /**
+     * Checks if the Item to be modified and replaced contains the required materials {@link MaterialSmithingRecipe#startMaterial}
+     *
+     * @param stack the stack to be tested
+     * @return if the stack has the material
+     */
     @Override
     public boolean testBase(ItemStack stack) {
         if (stack.getItem() instanceof ModularItem) {
@@ -54,16 +69,36 @@ public class NetheriteSmithingRecipe implements SmithingRecipe {
         return false;
     }
 
+    /**
+     * if the Material to be added is the correct ingrediant {@link MaterialSmithingRecipe#addition}
+     *
+     * @param stack the stack to be tested
+     * @return if the stack is of the right ingredient
+     */
     @Override
     public boolean testAddition(ItemStack stack) {
         return addition.test(stack);
     }
 
+    /**
+     * Checks if the inventory contains all the required items to be crafted
+     *
+     * @param inventory the input inventory
+     * @param world     the input world
+     * @return
+     */
     @Override
     public boolean matches(Inventory inventory, World world) {
         return testTemplate(inventory.getStack(0)) && testBase(inventory.getStack(1)) && addition.test(inventory.getStack(2));
     }
 
+    /**
+     * executes the craft action. does not change the inventory.
+     *
+     * @param inventory       the input inventory
+     * @param registryManager
+     * @return the crafted stack
+     */
     @Override
     public ItemStack craft(Inventory inventory, DynamicRegistryManager registryManager) {
         ItemStack old = inventory.getStack(1).copy();
@@ -80,6 +115,14 @@ public class NetheriteSmithingRecipe implements SmithingRecipe {
         return old;
     }
 
+    /**
+     * Not used by vanilla.
+     * This is meant to change the inventory and adjust the inputs.
+     * But Mojang decided that Smithing recipes dont need to be able to do that.
+     *
+     * @param inventory the input inventory
+     * @return
+     */
     @Override
     public DefaultedList<ItemStack> getRemainder(Inventory inventory) {
         DefaultedList<ItemStack> defaultedList = DefaultedList.ofSize(inventory.size(), ItemStack.EMPTY);
@@ -92,11 +135,22 @@ public class NetheriteSmithingRecipe implements SmithingRecipe {
         return defaultedList;
     }
 
+    /**
+     * Returns a preview output without context.
+     *
+     * @param registryManager
+     * @return an empty itemstack since we dont know
+     */
     @Override
     public ItemStack getOutput(DynamicRegistryManager registryManager) {
         return ItemStack.EMPTY;
     }
 
+    /**
+     * The Id of the recipe
+     *
+     * @return
+     */
     @Override
     public Identifier getId() {
         return id;
@@ -108,27 +162,27 @@ public class NetheriteSmithingRecipe implements SmithingRecipe {
     }
 
     public static class Serializer
-            implements RecipeSerializer<NetheriteSmithingRecipe> {
+            implements RecipeSerializer<MaterialSmithingRecipe> {
         @Override
-        public NetheriteSmithingRecipe read(Identifier identifier, JsonObject jsonObject) {
+        public MaterialSmithingRecipe read(Identifier identifier, JsonObject jsonObject) {
             Ingredient template = Ingredient.fromJson(JsonHelper.getElement(jsonObject, "template"));
             Ingredient addition = Ingredient.fromJson(JsonHelper.getElement(jsonObject, "addition"));
             String base = jsonObject.get("base").getAsString();
             String result = jsonObject.get("result").getAsString();
-            return new NetheriteSmithingRecipe(identifier, template, base, addition, result);
+            return new MaterialSmithingRecipe(identifier, template, base, addition, result);
         }
 
         @Override
-        public NetheriteSmithingRecipe read(Identifier identifier, PacketByteBuf packetByteBuf) {
+        public MaterialSmithingRecipe read(Identifier identifier, PacketByteBuf packetByteBuf) {
             Ingredient template = Ingredient.fromPacket(packetByteBuf);
             Ingredient addition = Ingredient.fromPacket(packetByteBuf);
             String base = packetByteBuf.readString();
             String result = packetByteBuf.readString();
-            return new NetheriteSmithingRecipe(identifier, template, base, addition, result);
+            return new MaterialSmithingRecipe(identifier, template, base, addition, result);
         }
 
         @Override
-        public void write(PacketByteBuf packetByteBuf, NetheriteSmithingRecipe smithingTransformRecipe) {
+        public void write(PacketByteBuf packetByteBuf, MaterialSmithingRecipe smithingTransformRecipe) {
             smithingTransformRecipe.smithingTemplate.write(packetByteBuf);
             smithingTransformRecipe.addition.write(packetByteBuf);
             packetByteBuf.writeString(smithingTransformRecipe.startMaterial);

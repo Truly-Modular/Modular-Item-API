@@ -8,8 +8,11 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import smartin.miapi.item.NetheriteSmithingRecipe;
+import smartin.miapi.item.MaterialSmithingRecipe;
 
+/**
+ * Since mojang doesnt allow Smithingrecipes to adjust the output items and miapi allows for stack smithing we need to adjust its output.
+ */
 @Mixin(SmithingScreenHandler.class)
 public abstract class SmithingScreenHandlerMixin {
 
@@ -20,9 +23,9 @@ public abstract class SmithingScreenHandlerMixin {
             remap = true,
             require = -1)
     private void miapi$adjustSmithingOutput(PlayerEntity player, ItemStack stack, CallbackInfo ci) {
-        if(((SmithingScreenHandlerAccessor)this).currentRecipe() instanceof NetheriteSmithingRecipe){
-            Inventory inventory = ((ForgingScreenHandlerAccessor)this).getInput();
-            inventory.setStack(1,ItemStack.EMPTY);
+        if (((SmithingScreenHandlerAccessor) this).currentRecipe() instanceof MaterialSmithingRecipe) {
+            Inventory inventory = ((ForgingScreenHandlerAccessor) this).getInput();
+            inventory.setStack(1, ItemStack.EMPTY);
         }
     }
 }

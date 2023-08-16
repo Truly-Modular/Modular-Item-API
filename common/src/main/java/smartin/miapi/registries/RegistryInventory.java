@@ -50,7 +50,8 @@ import smartin.miapi.client.MiapiClient;
 import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
 import smartin.miapi.craft.stat.CraftingStat;
 import smartin.miapi.craft.stat.SimpleCraftingStat;
-import smartin.miapi.item.NetheriteSmithingRecipe;
+import smartin.miapi.effects.CryoStatusEffect;
+import smartin.miapi.item.MaterialSmithingRecipe;
 import smartin.miapi.item.modular.items.*;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.abilities.*;
@@ -188,7 +189,7 @@ public class RegistryInventory {
                 EntityType.Builder.create(ItemProjectile::new, SpawnGroup.MISC).setDimensions(0.5F, 0.5F).maxTrackingRange(4).trackingTickInterval(20).build("miapi:thrown_item"),
                 type -> itemProjectileType = (EntityType<ItemProjectile>) type);*/
 
-        register(RECIPE_SERIALIZERS,"smithing", NetheriteSmithingRecipe.Serializer::new, i -> serializer = i);
+        register(RECIPE_SERIALIZERS,"smithing", MaterialSmithingRecipe.Serializer::new, i -> serializer = i);
 
 
         //BLOCK
@@ -259,7 +260,7 @@ public class RegistryInventory {
         register(modularItems, "modular_boots", ModularBoots::new);
 
         //STATUS EFFECTS
-        //register(statusEffects, "cryo", CryoStatusEffect::new, eff -> cryoStatusEffect = eff);
+        register(statusEffects, "cryo", CryoStatusEffect::new, eff -> cryoStatusEffect = eff);
 
         //ATTRIBUTE
         registerAtt("generic.durability", false, () ->
@@ -462,6 +463,12 @@ public class RegistryInventory {
                         .cull(DISABLE_CULLING)
                         .texturing(RenderLayer.ENTITY_GLINT_TEXTURING)
                         .overlay(ENABLE_OVERLAY_COLOR).build(false));
+
+        public static final RenderLayer TRANSLUCENT_NO_CULL = RenderLayer.of(
+                "miapi_translucent_no_cull", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL, VertexFormat.DrawMode.QUADS,
+                0x200000, true, true, RenderLayer.MultiPhaseParameters.builder()
+                        .lightmap(ENABLE_LIGHTMAP).program(TRANSLUCENT_PROGRAM).texture(MIPMAP_BLOCK_ATLAS_TEXTURE).transparency(TRANSLUCENT_TRANSPARENCY)
+                        .target(TRANSLUCENT_TARGET).cull(DISABLE_CULLING).build(true));
 
         private static void setupGlintTexturing(float scale) {
             long l = (long) ((double) Util.getMeasuringTimeMs() * MinecraftClient.getInstance().options.getGlintSpeed().getValue() * 8.0);

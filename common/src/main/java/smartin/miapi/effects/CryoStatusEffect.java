@@ -11,7 +11,8 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.render.*;
+import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.Window;
@@ -32,17 +33,8 @@ import net.minecraft.util.math.Box;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.registries.RegistryInventory;
 
-import static net.minecraft.client.render.RenderPhase.*;
-
 public class CryoStatusEffect extends RenderingMobEffect {
     protected static final Identifier ICE_LOCATION = new Identifier("block/ice");
-
-    @Environment(EnvType.CLIENT)
-    protected static final RenderLayer TRANSLUCENT_NO_CULL = RenderLayer.of(
-                    "miapi_translucent_no_cull", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL, VertexFormat.DrawMode.QUADS,
-                    0x200000, true, true, RenderLayer.MultiPhaseParameters.builder()
-                    .lightmap(ENABLE_LIGHTMAP).program(TRANSLUCENT_PROGRAM).texture(MIPMAP_BLOCK_ATLAS_TEXTURE).transparency(TRANSLUCENT_TRANSPARENCY)
-                    .target(TRANSLUCENT_TARGET).cull(DISABLE_CULLING).build(true));
 
     public CryoStatusEffect() {
         super(StatusEffectCategory.HARMFUL, 1160409);
@@ -108,7 +100,7 @@ public class CryoStatusEffect extends RenderingMobEffect {
     public void renderPost(StatusEffectInstance instance, LivingEntity entity, float entityYaw, float partialTick, MatrixStack matrixStack, VertexConsumerProvider multiBufferSource, int packedLight) {
         if (entity.equals(MinecraftClient.getInstance().player) && MinecraftClient.getInstance().options.getPerspective().isFirstPerson()) return;
         Sprite sprite = MinecraftClient.getInstance().getSpriteAtlas(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE).apply(ICE_LOCATION);
-        VertexConsumer vc = multiBufferSource.getBuffer(TRANSLUCENT_NO_CULL);
+        VertexConsumer vc = multiBufferSource.getBuffer(RegistryInventory.Client.TRANSLUCENT_NO_CULL);
         matrixStack.push();
 
         Box bb = entity.getBoundingBox().offset(entity.getPos().negate());
