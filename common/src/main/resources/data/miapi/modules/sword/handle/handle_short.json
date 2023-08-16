@@ -63,9 +63,9 @@
             },
             "thirdperson_lefthand": {
                 "rotation": {
-                    "x": 0,
-                    "y": 90,
-                    "z": -55
+                    "x": -90,
+                    "y": -90,
+                    "z": -45
                 },
                 "translation": {
                     "x": 0,
@@ -97,9 +97,9 @@
             },
             "firstperson_lefthand": {
                 "rotation": {
-                    "x": 0,
-                    "y": 90,
-                    "z": -25
+                    "x": -90,
+                    "y": -90,
+                    "z": -65
                 },
                 "translation": {
                     "x": 1.13,
@@ -131,8 +131,8 @@
             },
             "head": {
                 "rotation": {
-                    "x": 0,
-                    "y": 180,
+                    "x": 90,
+                    "y": 90,
                     "z": 0
                 },
                 "translation": {
