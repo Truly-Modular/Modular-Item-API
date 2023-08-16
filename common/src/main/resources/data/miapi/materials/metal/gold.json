@@ -30,8 +30,8 @@
     "mining_level": 1,
     "items": [
         {
-            "tag": "forge:obsidian",
-            "value": 0.5
+            "item": "minecraft:gold_nugget",
+            "value": 0.11112
         },
         {
             "item": "minecraft:gold_ingot",

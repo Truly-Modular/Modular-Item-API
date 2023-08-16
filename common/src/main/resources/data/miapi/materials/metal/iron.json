@@ -17,6 +17,10 @@
     {
       "item": "minecraft:iron_ingot",
       "value": 1.0
+    },
+    {
+      "item": "minecraft:iron_nugget",
+      "value": 0.11112
     }
   ]
 }
