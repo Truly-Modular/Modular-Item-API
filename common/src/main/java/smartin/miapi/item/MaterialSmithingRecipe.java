@@ -63,7 +63,7 @@ public class MaterialSmithingRecipe implements SmithingRecipe {
             ItemModule.ModuleInstance instance = ItemModule.getModules(stack);
             return instance.allSubModules().stream().anyMatch(module -> {
                 Material material = MaterialProperty.getMaterial(module);
-                if(material!=null){
+                if (material != null) {
                     return material.getKey().equals(startMaterial);
                 }
                 return false;
@@ -109,8 +109,9 @@ public class MaterialSmithingRecipe implements SmithingRecipe {
             ItemModule.ModuleInstance instance = ItemModule.getModules(old).copy();
             instance.allSubModules().forEach(module -> {
                 Material material = MaterialProperty.getMaterial(module);
-                if (material.getKey().equals(startMaterial)) {
-                    MaterialProperty.setMaterial(module, resultMaterial);
+                if (material != null && material.getKey().equals(startMaterial)) {
+                        MaterialProperty.setMaterial(module, resultMaterial);
+
                 }
             });
             instance.writeToItem(old);

@@ -38,6 +38,7 @@ public class AllowedMaterial implements CraftingProperty, ModuleProperty {
     public static final String KEY = "allowedMaterial";
     public double materialCostClient = 0.0f;
     public double materialRequirementClient = 0.0f;
+    public boolean wrongMaterial = false;
 
     public List<Vec2f> getSlotPositions() {
         List<Vec2f> test = new ArrayList<>();
@@ -57,6 +58,9 @@ public class AllowedMaterial implements CraftingProperty, ModuleProperty {
     }
 
     public Text getWarning() {
+        if(wrongMaterial){
+            return Text.translatable(Miapi.MOD_ID + ".ui.craft.warning.material.wrong");
+        }
         return Text.translatable(Miapi.MOD_ID + ".ui.craft.warning.material");
     }
 
@@ -73,12 +77,17 @@ public class AllowedMaterial implements CraftingProperty, ModuleProperty {
                 boolean isAllowed = (json.allowedMaterials.stream().anyMatch(allowedMaterial ->
                         material.getGroups().contains(allowedMaterial)));
                 materialCostClient = input.getCount() * material.getValueOfItem(input);
+                wrongMaterial = !isAllowed;
                 if (isAllowed) {
                     return materialCostClient >= materialRequirementClient;
                 }
             } else {
+                wrongMaterial = false;
                 materialCostClient = 0.0f;
             }
+        }
+        else{
+            wrongMaterial = false;
         }
         return false;
     }
@@ -90,7 +99,12 @@ public class AllowedMaterial implements CraftingProperty, ModuleProperty {
         if (element != null) {
             Material material = MaterialProperty.getMaterial(input);
             if (material != null) {
-                MaterialProperty.setMaterial(newModule, material.getKey());
+                AllowedMaterialJson json = Miapi.gson.fromJson(element, AllowedMaterialJson.class);
+                boolean isAllowed = (json.allowedMaterials.stream().anyMatch(allowedMaterial ->
+                        material.getGroups().contains(allowedMaterial)));
+                if (isAllowed) {
+                    MaterialProperty.setMaterial(newModule, material.getKey());
+                }
             }
         }
         return crafting;
@@ -167,8 +181,7 @@ public class AllowedMaterial implements CraftingProperty, ModuleProperty {
 
             if (materialCostClient < materialRequirementClient) {
                 costDescr.textColor = ColorHelper.Argb.getArgb(255, 225, 225, 125);
-            }
-            else{
+            } else {
                 costDescr.textColor = ColorHelper.Argb.getArgb(255, 125, 225, 125);
             }
 

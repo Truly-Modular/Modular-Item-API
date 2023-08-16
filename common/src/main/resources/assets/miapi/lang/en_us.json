@@ -9,6 +9,7 @@
     "miapi.ui.replace.header": "Select a new Module:",
     "miapi.ui.craft.warning":"Cant Craft:",
     "miapi.ui.craft.warning.material":"Insufficient Material",
+    "miapi.ui.craft.warning.material.wrong":"Wrong Material",
     "miapi.ui.craft.warning.crafting_stat":"Crafting Stat Requirement Unmet",
     "miapi.ui.craft.warning.flexibility":"Flexibility cannot go bellow 0",
     "miapi.ui.craft.result_equal_warning":"Crafting does not change the Item.",

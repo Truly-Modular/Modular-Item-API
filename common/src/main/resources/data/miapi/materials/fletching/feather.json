@@ -13,12 +13,8 @@
     "color_palette": {
         "type": "grayscale_map",
         "colors": {
-            "24": "6f5d5a",
-            "68": "897b73",
-            "107": "b3a091",
-            "150": "b6a48e",
-            "190": "d4caba",
-            "216": "ddd4c6"
+            "0": "878787",
+            "255": "F4F4F4"
         }
     },
     "mining_speed": 0,

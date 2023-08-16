@@ -9,19 +9,13 @@
     "density": 1,
     "flexibility": 7,
     "durability": 150,
-    "color": "635C50",
+    "color": "F4F2EF",
     "color_palette": {
         "type": "grayscale_map",
         "colors": {
-            "24": "082420",
-            "68": "0e3f36",
-            "107": "156355",
-            "150": "1e8a77",
-            "190": "2bc7ac",
-            "216": "33ebcb",
-            "255": "a4fdf0"
-        },
-        "filler": "interpolate"
+            "0": "000000",
+            "255": "FFFFFF"
+        }
     },
     "mining_speed": 0,
     "mining_level": 0,
