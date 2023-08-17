@@ -2,6 +2,7 @@ package smartin.miapi.client;
 
 import com.redpxnda.nucleus.impl.ShaderRegistry;
 import dev.architectury.event.events.client.ClientLifecycleEvent;
+import dev.architectury.event.events.client.ClientPlayerEvent;
 import dev.architectury.event.events.client.ClientReloadShadersEvent;
 import dev.architectury.registry.client.level.entity.EntityRendererRegistry;
 import dev.architectury.registry.client.rendering.BlockEntityRendererRegistry;
@@ -17,6 +18,7 @@ import smartin.miapi.client.model.CustomColorProvider;
 import smartin.miapi.client.model.ModularModelPredicateProvider;
 import smartin.miapi.effects.CryoStatusEffect;
 import smartin.miapi.mixin.client.ItemRendererAccessor;
+import smartin.miapi.modules.MiapiPermissions;
 import smartin.miapi.modules.abilities.util.ItemProjectile.ItemProjectileRenderer;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.material.PaletteCreators;
@@ -35,6 +37,9 @@ public class MiapiClient {
         ClientLifecycleEvent.CLIENT_SETUP.register(MiapiClient::clientSetup);
         ClientLifecycleEvent.CLIENT_STARTED.register(MiapiClient::clientStart);
         ClientLifecycleEvent.CLIENT_LEVEL_LOAD.register(MiapiClient::clientLevelLoad);
+        ClientPlayerEvent.CLIENT_PLAYER_JOIN.register(player -> {
+            MiapiPermissions.getPerms(player);
+        });
         ClientReloadShadersEvent.EVENT.register((resourceFactory, asd) -> {
             ModularItemCache.discardCache();
         });

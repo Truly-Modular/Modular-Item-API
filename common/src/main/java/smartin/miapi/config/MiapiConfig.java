@@ -1,5 +1,7 @@
 package smartin.miapi.config;
 
+import dev.architectury.platform.Platform;
+
 public class MiapiConfig {
 
     public static boolean getBetterInfinity(){
@@ -7,6 +9,9 @@ public class MiapiConfig {
     }
     public static boolean getBetterLoyalty(){
         return true;
+    }
+    public static boolean isDevelopment(){
+        return Platform.isDevelopmentEnvironment();
     }
 
 }

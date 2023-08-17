@@ -138,7 +138,7 @@ public class ReloadEvents {
                     Thread.sleep(100);
                 } catch (InterruptedException e) {
                 }
-                if (counterinit > 20) {
+                if (counterinit > 200) {
                     throw new RuntimeException("Miapi waited 2 Minutes and still could not establish a Connection with the server and is unable to force disconnect");
                 }
             }

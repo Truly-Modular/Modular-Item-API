@@ -76,10 +76,13 @@ public class AllowedMaterial implements CraftingProperty, ModuleProperty {
             if (material != null) {
                 boolean isAllowed = (json.allowedMaterials.stream().anyMatch(allowedMaterial ->
                         material.getGroups().contains(allowedMaterial)));
-                materialCostClient = input.getCount() * material.getValueOfItem(input);
                 wrongMaterial = !isAllowed;
                 if (isAllowed) {
+                    materialCostClient = input.getCount() * material.getValueOfItem(input);
                     return materialCostClient >= materialRequirementClient;
+                }
+                else{
+                    materialCostClient = 0.0f;
                 }
             } else {
                 wrongMaterial = false;
@@ -134,22 +137,18 @@ public class AllowedMaterial implements CraftingProperty, ModuleProperty {
 
     @Environment(EnvType.CLIENT)
     class MaterialCraftingWidget extends InteractAbleWidget {
-        private final int startX;
-        private final int startY;
-        private Identifier texture = new Identifier(Miapi.MOD_ID, "textures/gui/crafter/material_background.png");
-        private CraftAction action;
-        private TransformableWidget headerHolder;
-        private ScrollingTextWidget header;
-        private MultiLineTextWidget description;
-        private ScrollingTextWidget costDescr;
-        private DecimalFormat modifierFormat = Util.make(new DecimalFormat("##.##"), (decimalFormat) -> {
+        private final Identifier texture = new Identifier(Miapi.MOD_ID, "textures/gui/crafter/material_background.png");
+        private final CraftAction action;
+        private final TransformableWidget headerHolder;
+        private final ScrollingTextWidget header;
+        private final MultiLineTextWidget description;
+        private final ScrollingTextWidget costDescr;
+        private final DecimalFormat modifierFormat = Util.make(new DecimalFormat("##.##"), (decimalFormat) -> {
             decimalFormat.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ROOT));
         });
 
         public MaterialCraftingWidget(int x, int y, int width, int height, CraftAction action) {
             super(x, y, width, height, Text.literal("Test"));
-            startX = x + 5;
-            startY = y + 5;
             this.action = action;
 
             ItemModule.ModuleInstance moduleInstance = new ItemModule.ModuleInstance(action.toAdd);

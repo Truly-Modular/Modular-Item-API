@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.architectury.event.events.common.LifecycleEvent;
+import dev.architectury.event.events.common.PlayerEvent;
 import dev.architectury.registry.ReloadListenerRegistry;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.resource.ResourceType;
@@ -24,6 +25,7 @@ import smartin.miapi.item.ModularItemStackConverter;
 import smartin.miapi.item.modular.PropertyResolver;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.MiapiPermissions;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.conditions.ConditionManager;
@@ -70,6 +72,9 @@ public class Miapi {
                 LOGGER.warn("Found a non JSON object PropertyInjector. PropertyInjectors should be JSON objects.");
             }
         }, 1f);
+        PlayerEvent.PLAYER_JOIN.register(player -> {
+            MiapiPermissions.getPerms(player);
+        });
         ReloadEvents.END.subscribe(isClient -> {
             Miapi.LOGGER.info("Loaded " + PropertySubstitution.injectorsCount + " Injectors/Property Substitutors");
             Miapi.LOGGER.info("Loaded " + RegistryInventory.modules.getFlatMap().size() + " Modules");

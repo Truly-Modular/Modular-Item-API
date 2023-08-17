@@ -189,7 +189,7 @@ public class RegistryInventory {
                 EntityType.Builder.create(ItemProjectile::new, SpawnGroup.MISC).setDimensions(0.5F, 0.5F).maxTrackingRange(4).trackingTickInterval(20).build("miapi:thrown_item"),
                 type -> itemProjectileType = (EntityType<ItemProjectile>) type);*/
 
-        register(RECIPE_SERIALIZERS,"smithing", MaterialSmithingRecipe.Serializer::new, i -> serializer = i);
+        register(RECIPE_SERIALIZERS, "smithing", MaterialSmithingRecipe.Serializer::new, i -> serializer = i);
 
 
         //BLOCK
@@ -344,6 +344,7 @@ public class RegistryInventory {
             registerMiapi(moduleConditionRegistry, "module", new ModuleTypeCondition());
             registerMiapi(moduleConditionRegistry, "material", new MaterialCondition());
             registerMiapi(moduleConditionRegistry, "tag", new TagCondition());
+            registerMiapi(moduleConditionRegistry, "miapi_perm", new MiapiPerm());
 
             //MODULEPROPERTIES
             try {
@@ -389,6 +390,7 @@ public class RegistryInventory {
             registerMiapi(moduleProperties, StatRequirementProperty.KEY, new StatRequirementProperty());
             registerMiapi(moduleProperties, StatProvisionProperty.KEY, new StatProvisionProperty());
             registerMiapi(moduleProperties, GlintProperty.KEY, new GlintProperty());
+            registerMiapi(moduleProperties, ItemModelProperty.KEY, new ItemModelProperty());
 
             //compat
             registerMiapi(moduleProperties, BetterCombatProperty.KEY, new BetterCombatProperty());

@@ -9,6 +9,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.item.*;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
@@ -125,9 +126,14 @@ public class ModularBow extends BowItem implements ModularItem {
 
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+        //BOW_PROJECTILE
         if (MiapiConfig.getBetterInfinity()) {
             ItemStack itemStack = user.getStackInHand(hand);
-            boolean bl = !user.getProjectileType(itemStack).isEmpty();
+            ItemStack projectileStack = user.getProjectileType(itemStack);
+            NbtCompound compound = itemStack.getOrCreateNbt();
+            compound = compound.getCompound("BOW_PROJECTILE");
+            projectileStack.writeNbt(compound);
+            boolean bl = !projectileStack.isEmpty();
             int infinityLevel = EnchantmentHelper.getLevel(Enchantments.INFINITY, itemStack);
             if (user.getAbilities().creativeMode || bl || infinityLevel > 0) {
                 user.setCurrentHand(hand);

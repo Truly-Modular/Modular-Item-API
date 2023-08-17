@@ -104,10 +104,12 @@
     ],
     "crafting_condition": {
         "craftable": {
-            "type": "true"
+            "type": "miapi_perm",
+            "perms": ["user"]
         },
         "visible": {
-            "type": "true"
+            "type": "miapi_perm",
+            "perms": ["user"]
         },
         "on_craft": {
             "type": "not"
