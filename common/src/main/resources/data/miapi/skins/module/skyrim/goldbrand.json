@@ -30,6 +30,10 @@
             "sizeY": 5
         }
     },
+    "condition": {
+        "type": "miapi_perm",
+        "perms": ["supporter"]
+    },
     "texture": {
         "texture": "miapi:textures/skin/skyrim/goldbrand.png",
         "color": "004489",

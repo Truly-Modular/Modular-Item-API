@@ -25,5 +25,9 @@
                 }
             }
         ]
+    },
+    "condition": {
+        "type": "miapi_perm",
+        "perms": ["supporter"]
     }
 }
