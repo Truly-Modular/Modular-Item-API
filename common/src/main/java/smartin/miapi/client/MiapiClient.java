@@ -19,7 +19,7 @@ import smartin.miapi.client.model.ModularModelPredicateProvider;
 import smartin.miapi.effects.CryoStatusEffect;
 import smartin.miapi.mixin.client.ItemRendererAccessor;
 import smartin.miapi.modules.MiapiPermissions;
-import smartin.miapi.modules.abilities.util.ItemProjectile.ItemProjectileRenderer;
+import smartin.miapi.item.modular.items.ItemProjectile.ItemProjectileRenderer;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.material.PaletteCreators;
 import smartin.miapi.registries.RegistryInventory;

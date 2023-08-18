@@ -1,4 +1,4 @@
-package smartin.miapi.modules.abilities.util.ItemProjectile;
+package smartin.miapi.item.modular.items.ItemProjectile;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.OverlayTexture;

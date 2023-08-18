@@ -1,10 +1,11 @@
-package smartin.miapi.modules.abilities.util.ItemProjectile;
+package smartin.miapi.item.modular.items.ItemProjectile;
 
 import dev.architectury.event.EventResult;
 import net.minecraft.block.BlockState;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -20,15 +21,18 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
+import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.events.MiapiProjectileEvents;
-import smartin.miapi.modules.abilities.util.ItemProjectile.ArrowHitBehaviour.EntityBounceBehaviour;
-import smartin.miapi.modules.abilities.util.ItemProjectile.ArrowHitBehaviour.EntityPierceBehaviour;
-import smartin.miapi.modules.abilities.util.ItemProjectile.ArrowHitBehaviour.ProjectileHitBehaviour;
+import smartin.miapi.item.modular.items.ItemProjectile.ArrowHitBehaviour.EntityBounceBehaviour;
+import smartin.miapi.item.modular.items.ItemProjectile.ArrowHitBehaviour.EntityPierceBehaviour;
+import smartin.miapi.item.modular.items.ItemProjectile.ArrowHitBehaviour.ProjectileHitBehaviour;
 import smartin.miapi.modules.abilities.util.WrappedSoundEvent;
+import smartin.miapi.modules.properties.AttributeProperty;
 import smartin.miapi.registries.RegistryInventory;
 
 public class ItemProjectile extends PersistentProjectileEntity {
@@ -62,6 +66,9 @@ public class ItemProjectile extends PersistentProjectileEntity {
         this.dataTracker.set(WATER_DRAG, waterDrag);
         this.dataTracker.set(SPEED_DAMAGE, true);
         this.dataTracker.set(PREFERRED_SLOT, -1);
+        if(getBowItem().isEmpty()){
+            setBowItem(owner.getActiveItem());
+        }
         MiapiProjectileEvents.MODULAR_PROJECTILE_DATA_TRACKER_SET.invoker().dataTracker(new MiapiProjectileEvents.ItemProjectileDataTrackerEvent(this, this.getDataTracker()));
     }
 
@@ -168,6 +175,19 @@ public class ItemProjectile extends PersistentProjectileEntity {
     @Nullable
     protected EntityHitResult getEntityCollision(Vec3d currentPosition, Vec3d nextPosition) {
         return this.dealtDamage ? null : super.getEntityCollision(currentPosition, nextPosition);
+    }
+
+    @Override
+    public void setVelocity(Entity shooter, float pitch, float yaw, float roll, float speed, float divergence) {
+        //TODO:
+        speed += (float) AttributeProperty.getActualValue(this.asItemStack(), EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_SPEED, 1.5f);
+        //use custom speed and accuracy attributes
+        float f = -MathHelper.sin(yaw * ((float)Math.PI / 180)) * MathHelper.cos(pitch * ((float)Math.PI / 180));
+        float g = -MathHelper.sin((pitch + roll) * ((float)Math.PI / 180));
+        float h = MathHelper.cos(yaw * ((float)Math.PI / 180)) * MathHelper.cos(pitch * ((float)Math.PI / 180));
+        this.setVelocity(f, g, h, speed, divergence);
+        Vec3d vec3d = shooter.getVelocity();
+        this.setVelocity(this.getVelocity().add(vec3d.x, shooter.isOnGround() ? 0.0 : vec3d.y, vec3d.z));
     }
 
     @Override

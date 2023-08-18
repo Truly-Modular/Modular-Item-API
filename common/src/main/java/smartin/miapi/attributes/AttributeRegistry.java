@@ -18,7 +18,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.events.MiapiProjectileEvents;
-import smartin.miapi.modules.abilities.util.ItemProjectile.ItemProjectile;
+import smartin.miapi.item.modular.items.ItemProjectile.ItemProjectile;
 import smartin.miapi.modules.abilities.util.WrappedSoundEvent;
 import smartin.miapi.modules.properties.AttributeProperty;
 

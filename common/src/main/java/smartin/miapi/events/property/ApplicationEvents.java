@@ -1,8 +1,6 @@
 package smartin.miapi.events.property;
 
 import com.mojang.datafixers.util.Pair;
-import com.mojang.serialization.Codec;
-import com.redpxnda.nucleus.datapack.codec.AutoCodec;
 import dev.architectury.event.Event;
 import dev.architectury.event.EventResult;
 import dev.architectury.event.events.common.*;
@@ -18,7 +16,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
-import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
@@ -26,7 +23,7 @@ import org.apache.logging.log4j.util.TriConsumer;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.events.MiapiEvents;
-import smartin.miapi.modules.abilities.util.ItemProjectile.ItemProjectile;
+import smartin.miapi.item.modular.items.ItemProjectile.ItemProjectile;
 import smartin.miapi.modules.abilities.util.ItemUseAbility;
 import smartin.miapi.modules.properties.PlaySoundProperty;
 

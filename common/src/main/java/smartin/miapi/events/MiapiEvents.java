@@ -11,7 +11,7 @@ import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
-import smartin.miapi.modules.abilities.util.ItemProjectile.ItemProjectile;
+import smartin.miapi.item.modular.items.ItemProjectile.ItemProjectile;
 
 public class MiapiEvents {
     public static Event<LivingHurt> LIVING_HURT = EventFactory.createEventResult();

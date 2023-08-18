@@ -55,7 +55,7 @@ import smartin.miapi.item.MaterialSmithingRecipe;
 import smartin.miapi.item.modular.items.*;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.abilities.*;
-import smartin.miapi.modules.abilities.util.ItemProjectile.ItemProjectile;
+import smartin.miapi.item.modular.items.ItemProjectile.ItemProjectile;
 import smartin.miapi.modules.conditions.*;
 import smartin.miapi.modules.edit_options.EditOption;
 import smartin.miapi.modules.edit_options.PropertyInjectionDev;

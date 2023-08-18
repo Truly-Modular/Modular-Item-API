@@ -1,8 +1,8 @@
-package smartin.miapi.modules.abilities.util.ItemProjectile.ArrowHitBehaviour;
+package smartin.miapi.item.modular.items.ItemProjectile.ArrowHitBehaviour;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.util.hit.EntityHitResult;
-import smartin.miapi.modules.abilities.util.ItemProjectile.ItemProjectile;
+import smartin.miapi.item.modular.items.ItemProjectile.ItemProjectile;
 
 public class ProjectileLoyaltyBehaviour implements ProjectileHitBehaviour{
     @Override
