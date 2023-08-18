@@ -260,6 +260,9 @@ public class ItemProjectile extends PersistentProjectileEntity {
     @Override
     protected boolean tryPickup(PlayerEntity player) {
         int slotId = this.dataTracker.get(PREFERRED_SLOT);
+        if(MiapiProjectileEvents.MODULAR_PROJECTILE_PICK_UP.invoker().pickup(player,this).interruptsFurtherEvaluation()){
+            return false;
+        }
         boolean earlyPickup = switch (this.pickupType) {
             case DISALLOWED:
                 yield false;

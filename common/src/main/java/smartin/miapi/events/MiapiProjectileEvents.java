@@ -6,6 +6,7 @@ import dev.architectury.event.EventResult;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -22,6 +23,7 @@ public final class MiapiProjectileEvents {
     public static final Event<ItemProjectileCompound> MODULAR_PROJECTILE_NBT_READ = EventFactory.createEventResult();
     public static final Event<ItemProjectileDataTracker> MODULAR_PROJECTILE_DATA_TRACKER_INIT = EventFactory.createEventResult();
     public static final Event<ItemProjectileDataTracker> MODULAR_PROJECTILE_DATA_TRACKER_SET = EventFactory.createEventResult();
+    public static final Event<PlayerPickupEvent> MODULAR_PROJECTILE_PICK_UP = EventFactory.createEventResult();
 
     public static final Event<ModularBowShot> MODULAR_BOW_SHOT = EventFactory.createEventResult();
     public static final Event<ModularBowShot> MODULAR_BOW_POST_SHOT = EventFactory.createEventResult();
@@ -70,6 +72,10 @@ public final class MiapiProjectileEvents {
 
     public interface ItemProjectileCompound {
         EventResult nbtEvent(ItemProjectileCompoundEvent event);
+    }
+
+    public interface PlayerPickupEvent {
+        EventResult pickup(PlayerEntity entity, ItemProjectile projectile);
     }
 
     public interface ItemProjectileDataTracker {
