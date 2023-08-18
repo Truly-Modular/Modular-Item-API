@@ -69,7 +69,7 @@ public class ItemProjectile extends PersistentProjectileEntity {
         if (getBowItem().isEmpty()) {
             setBowItem(owner.getActiveItem());
         }
-        MiapiProjectileEvents.MODULAR_PROJECTILE_DATA_TRACKER_SET.invoker().dataTracker(new MiapiProjectileEvents.ItemProjectileDataTrackerEvent(this, this.getDataTracker()));
+        MiapiProjectileEvents.MODULAR_PROJECTILE_DATA_TRACKER_SET.invoker().dataTracker(this, this.getDataTracker());
     }
 
     public void setPreferredSlot(int slotID) {
@@ -94,7 +94,7 @@ public class ItemProjectile extends PersistentProjectileEntity {
         this.dataTracker.startTracking(WATER_DRAG, 0.99f);
         this.dataTracker.startTracking(SPEED_DAMAGE, true);
         this.dataTracker.startTracking(PREFERRED_SLOT, 0);
-        MiapiProjectileEvents.MODULAR_PROJECTILE_DATA_TRACKER_INIT.invoker().dataTracker(new MiapiProjectileEvents.ItemProjectileDataTrackerEvent(this, this.getDataTracker()));
+        MiapiProjectileEvents.MODULAR_PROJECTILE_DATA_TRACKER_INIT.invoker().dataTracker(this, this.getDataTracker());
     }
 
     public boolean getSpeedDamage() {
@@ -329,7 +329,7 @@ public class ItemProjectile extends PersistentProjectileEntity {
 
         this.dealtDamage = nbt.getBoolean("DealtDamage");
         this.dataTracker.set(LOYALTY, (byte) EnchantmentHelper.getLoyalty(this.thrownStack));
-        MiapiProjectileEvents.MODULAR_PROJECTILE_NBT_READ.invoker().nbtEvent(new MiapiProjectileEvents.ItemProjectileCompoundEvent(this, nbt));
+        MiapiProjectileEvents.MODULAR_PROJECTILE_NBT_READ.invoker().nbtEvent(this, nbt);
     }
 
     @Override
@@ -341,7 +341,7 @@ public class ItemProjectile extends PersistentProjectileEntity {
         nbt.putFloat("WaterDrag", this.dataTracker.get(WATER_DRAG));
         nbt.putBoolean("SpeedDamage", this.dataTracker.get(SPEED_DAMAGE));
         nbt.putInt("PreferredSlot", this.dataTracker.get(PREFERRED_SLOT));
-        MiapiProjectileEvents.MODULAR_PROJECTILE_NBT_WRITE.invoker().nbtEvent(new MiapiProjectileEvents.ItemProjectileCompoundEvent(this, nbt));
+        MiapiProjectileEvents.MODULAR_PROJECTILE_NBT_WRITE.invoker().nbtEvent(this, nbt);
     }
 
     @Override

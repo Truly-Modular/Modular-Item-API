@@ -64,14 +64,8 @@ public final class MiapiProjectileEvents {
         }
     }
 
-    public record ItemProjectileCompoundEvent (ItemProjectile projectile, NbtCompound nbtCompound) {
-    }
-
-    public record ItemProjectileDataTrackerEvent (ItemProjectile projectile, DataTracker nbtCompound) {
-    }
-
     public interface ItemProjectileCompound {
-        EventResult nbtEvent(ItemProjectileCompoundEvent event);
+        EventResult nbtEvent(ItemProjectile projectile, NbtCompound nbtCompound);
     }
 
     public interface PlayerPickupEvent {
@@ -79,7 +73,7 @@ public final class MiapiProjectileEvents {
     }
 
     public interface ItemProjectileDataTracker {
-        EventResult dataTracker(ItemProjectileDataTrackerEvent event);
+        EventResult dataTracker(ItemProjectile projectile, DataTracker nbtCompound);
     }
 
     public interface ModularProjectileBlockHit {
