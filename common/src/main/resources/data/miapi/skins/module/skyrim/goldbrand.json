@@ -32,7 +32,7 @@
     },
     "condition": {
         "type": "miapi_perm",
-        "perms": ["supporter"]
+        "perms": ["supporter","skyrim","goldbrand"]
     },
     "texture": {
         "texture": "miapi:textures/skin/skyrim/goldbrand.png",

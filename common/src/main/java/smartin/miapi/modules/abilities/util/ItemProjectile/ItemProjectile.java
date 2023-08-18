@@ -24,7 +24,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.config.MiapiConfig;
-import smartin.miapi.events.MiapiEvents;
+import smartin.miapi.events.MiapiProjectileEvents;
 import smartin.miapi.modules.abilities.util.ItemProjectile.ArrowHitBehaviour.EntityBounceBehaviour;
 import smartin.miapi.modules.abilities.util.ItemProjectile.ArrowHitBehaviour.EntityPierceBehaviour;
 import smartin.miapi.modules.abilities.util.ItemProjectile.ArrowHitBehaviour.ProjectileHitBehaviour;
@@ -62,6 +62,7 @@ public class ItemProjectile extends PersistentProjectileEntity {
         this.dataTracker.set(WATER_DRAG, waterDrag);
         this.dataTracker.set(SPEED_DAMAGE, true);
         this.dataTracker.set(PREFERRED_SLOT, -1);
+        MiapiProjectileEvents.MODULAR_PROJECTILE_DATA_TRACKER_SET.invoker().dataTracker(new MiapiProjectileEvents.ItemProjectileDataTrackerEvent(this, this.getDataTracker()));
     }
 
     public void setPreferredSlot(int slotID) {
@@ -86,6 +87,7 @@ public class ItemProjectile extends PersistentProjectileEntity {
         this.dataTracker.startTracking(WATER_DRAG, 0.99f);
         this.dataTracker.startTracking(SPEED_DAMAGE, true);
         this.dataTracker.startTracking(PREFERRED_SLOT, 0);
+        MiapiProjectileEvents.MODULAR_PROJECTILE_DATA_TRACKER_INIT.invoker().dataTracker(new MiapiProjectileEvents.ItemProjectileDataTrackerEvent(this, this.getDataTracker()));
     }
 
     public boolean getSpeedDamage() {
@@ -98,7 +100,7 @@ public class ItemProjectile extends PersistentProjectileEntity {
 
     @Override
     public void tick() {
-        if (MiapiEvents.MODULAR_PROJECTILE_TICK.invoker().tick(this).interruptsFurtherEvaluation()) {
+        if (MiapiProjectileEvents.MODULAR_PROJECTILE_TICK.invoker().tick(this).interruptsFurtherEvaluation()) {
             return;
         }
         if (this.inGroundTime > 4) {
@@ -180,8 +182,8 @@ public class ItemProjectile extends PersistentProjectileEntity {
         }
 
         Entity owner = this.getOwner();
-        MiapiEvents.ModularProjectileEntityHitEvent event = new MiapiEvents.ModularProjectileEntityHitEvent(entityHitResult, this, this.getDamageSources().arrow(this, owner), damage);
-        EventResult result = MiapiEvents.MODULAR_PROJECTILE_ENTITY_HIT.invoker().hit(event);
+        MiapiProjectileEvents.ModularProjectileEntityHitEvent event = new MiapiProjectileEvents.ModularProjectileEntityHitEvent(entityHitResult, this, this.getDamageSources().arrow(this, owner), damage);
+        EventResult result = MiapiProjectileEvents.MODULAR_PROJECTILE_ENTITY_HIT.invoker().hit(event);
         if (result.interruptsFurtherEvaluation()) {
             return;
         }
@@ -205,8 +207,8 @@ public class ItemProjectile extends PersistentProjectileEntity {
         if (this.projectileHitBehaviour != null) {
             projectileHitBehaviour.onHit(this, entityHitResult.getEntity(), entityHitResult);
         }
-        MiapiEvents.ModularProjectileEntityHitEvent postEvent = new MiapiEvents.ModularProjectileEntityHitEvent(event.entityHitResult, this, event.damageSource, damage);
-        EventResult postResult = MiapiEvents.MODULAR_PROJECTILE_ENTITY_POST_HIT.invoker().hit(postEvent);
+        MiapiProjectileEvents.ModularProjectileEntityHitEvent postEvent = new MiapiProjectileEvents.ModularProjectileEntityHitEvent(event.entityHitResult, this, event.damageSource, damage);
+        EventResult postResult = MiapiProjectileEvents.MODULAR_PROJECTILE_ENTITY_POST_HIT.invoker().hit(postEvent);
         if (postResult.interruptsFurtherEvaluation()) {
             return;
         }
@@ -215,7 +217,7 @@ public class ItemProjectile extends PersistentProjectileEntity {
 
     @Override
     protected void onBlockHit(BlockHitResult blockHitResult) {
-        if (MiapiEvents.MODULAR_PROJECTILE_BLOCK_HIT.invoker().hit(new MiapiEvents.ModularProjectileBlockHitEvent(blockHitResult, this)).interruptsFurtherEvaluation()) {
+        if (MiapiProjectileEvents.MODULAR_PROJECTILE_BLOCK_HIT.invoker().hit(new MiapiProjectileEvents.ModularProjectileBlockHitEvent(blockHitResult, this)).interruptsFurtherEvaluation()) {
             return;
         }
         super.onBlockHit(blockHitResult);
@@ -303,6 +305,7 @@ public class ItemProjectile extends PersistentProjectileEntity {
 
         this.dealtDamage = nbt.getBoolean("DealtDamage");
         this.dataTracker.set(LOYALTY, (byte) EnchantmentHelper.getLoyalty(this.thrownStack));
+        MiapiProjectileEvents.MODULAR_PROJECTILE_NBT_READ.invoker().nbtEvent(new MiapiProjectileEvents.ItemProjectileCompoundEvent(this, nbt));
     }
 
     @Override
@@ -314,6 +317,7 @@ public class ItemProjectile extends PersistentProjectileEntity {
         nbt.putFloat("WaterDrag", this.dataTracker.get(WATER_DRAG));
         nbt.putBoolean("SpeedDamage", this.dataTracker.get(SPEED_DAMAGE));
         nbt.putInt("PreferredSlot", this.dataTracker.get(PREFERRED_SLOT));
+        MiapiProjectileEvents.MODULAR_PROJECTILE_NBT_WRITE.invoker().nbtEvent(new MiapiProjectileEvents.ItemProjectileCompoundEvent(this, nbt));
     }
 
     @Override

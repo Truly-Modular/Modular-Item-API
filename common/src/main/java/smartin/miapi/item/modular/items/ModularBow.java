@@ -21,7 +21,7 @@ import net.minecraft.world.World;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.client.model.ModularModelPredicateProvider;
 import smartin.miapi.config.MiapiConfig;
-import smartin.miapi.events.MiapiEvents;
+import smartin.miapi.events.MiapiProjectileEvents;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.modules.abilities.util.ItemProjectile.ItemProjectile;
 import smartin.miapi.modules.properties.AttributeProperty;
@@ -98,19 +98,19 @@ public class ModularBow extends BowItem implements ModularItem {
             if (!consumeArrow || (projectileStack.isOf(Items.SPECTRAL_ARROW) || projectileStack.isOf(Items.TIPPED_ARROW))) {
                 itemProjectile.pickupType = PersistentProjectileEntity.PickupPermission.CREATIVE_ONLY;
             }
-            MiapiEvents.ModularBowShotEvent event = new MiapiEvents.ModularBowShotEvent(itemProjectile, bowStack, playerEntity);
-            if (MiapiEvents.MODULAR_BOW_SHOT.invoker().call(event).interruptsFurtherEvaluation()) {
+            MiapiProjectileEvents.ModularBowShotEvent event = new MiapiProjectileEvents.ModularBowShotEvent(itemProjectile, bowStack, playerEntity);
+            if (MiapiProjectileEvents.MODULAR_BOW_SHOT.invoker().call(event).interruptsFurtherEvaluation()) {
                 return;
             }
             itemProjectile = event.projectile;
 
             world.spawnEntity(itemProjectile);
 
-            MiapiEvents.ModularBowShotEvent postEvent = new MiapiEvents.ModularBowShotEvent(itemProjectile, bowStack, playerEntity);
+            MiapiProjectileEvents.ModularBowShotEvent postEvent = new MiapiProjectileEvents.ModularBowShotEvent(itemProjectile, bowStack, playerEntity);
             postEvent.bowStack = bowStack;
             postEvent.shooter = playerEntity;
             postEvent.projectile = itemProjectile;
-            if (MiapiEvents.MODULAR_BOW_SHOT.invoker().call(postEvent).interruptsFurtherEvaluation()) {
+            if (MiapiProjectileEvents.MODULAR_BOW_SHOT.invoker().call(postEvent).interruptsFurtherEvaluation()) {
                 return;
             }
         }

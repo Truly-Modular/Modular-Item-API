@@ -28,6 +28,6 @@
     },
     "condition": {
         "type": "miapi_perm",
-        "perms": ["supporter"]
+        "perms": ["supporter","star_wars","anakin","lightsaber_hilt"]
     }
 }
