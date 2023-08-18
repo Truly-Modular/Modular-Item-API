@@ -66,7 +66,7 @@ public class ItemProjectile extends PersistentProjectileEntity {
         this.dataTracker.set(WATER_DRAG, waterDrag);
         this.dataTracker.set(SPEED_DAMAGE, true);
         this.dataTracker.set(PREFERRED_SLOT, -1);
-        if(getBowItem().isEmpty()){
+        if (getBowItem().isEmpty()) {
             setBowItem(owner.getActiveItem());
         }
         MiapiProjectileEvents.MODULAR_PROJECTILE_DATA_TRACKER_SET.invoker().dataTracker(new MiapiProjectileEvents.ItemProjectileDataTrackerEvent(this, this.getDataTracker()));
@@ -179,12 +179,13 @@ public class ItemProjectile extends PersistentProjectileEntity {
 
     @Override
     public void setVelocity(Entity shooter, float pitch, float yaw, float roll, float speed, float divergence) {
-        //TODO:
-        speed += (float) AttributeProperty.getActualValue(this.asItemStack(), EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_SPEED, 1.5f);
-        //use custom speed and accuracy attributes
-        float f = -MathHelper.sin(yaw * ((float)Math.PI / 180)) * MathHelper.cos(pitch * ((float)Math.PI / 180));
-        float g = -MathHelper.sin((pitch + roll) * ((float)Math.PI / 180));
-        float h = MathHelper.cos(yaw * ((float)Math.PI / 180)) * MathHelper.cos(pitch * ((float)Math.PI / 180));
+        ItemStack projectileStack = this.asItemStack();
+        speed += (float) AttributeProperty.getActualValue(projectileStack, EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_SPEED);
+        speed = (float) Math.max(0.1, speed + AttributeProperty.getActualValue(projectileStack, EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_SPEED));
+        divergence *= (float) Math.pow(12.0, -AttributeProperty.getActualValue(projectileStack, EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_ACCURACY));
+        float f = -MathHelper.sin(yaw * ((float) Math.PI / 180)) * MathHelper.cos(pitch * ((float) Math.PI / 180));
+        float g = -MathHelper.sin((pitch + roll) * ((float) Math.PI / 180));
+        float h = MathHelper.cos(yaw * ((float) Math.PI / 180)) * MathHelper.cos(pitch * ((float) Math.PI / 180));
         this.setVelocity(f, g, h, speed, divergence);
         Vec3d vec3d = shooter.getVelocity();
         this.setVelocity(this.getVelocity().add(vec3d.x, shooter.isOnGround() ? 0.0 : vec3d.y, vec3d.z));

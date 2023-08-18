@@ -305,16 +305,16 @@ public class RegistryInventory {
 
         //projectile based
         registerAtt("generic.bow_draw_time", true, () ->
-                        new ClampedEntityAttribute("miapi.attribute.name.bow_draw_time", 1.0, -1024.0, 1024.0).setTracked(true),
+                        new ClampedEntityAttribute("miapi.attribute.name.bow_draw_time", 20.0, 1.0, 1024.0).setTracked(true),
                 att -> BOW_DRAW_TIME = att);
         registerAtt("generic.projectile_damage", true, () ->
-                        new ClampedEntityAttribute("miapi.attribute.name.projectile_damage", 2.0, 0.0, 1024.0).setTracked(true),
+                        new ClampedEntityAttribute("miapi.attribute.name.projectile_damage", 0.0, -1024.0, 1024.0).setTracked(true),
                 att -> PROJECTILE_DAMAGE = att);
         registerAtt("generic.projectile_speed", true, () ->
-                        new ClampedEntityAttribute("miapi.attribute.name.projectile_speed", 1.5, 0.0, 1024.0).setTracked(true),
+                        new ClampedEntityAttribute("miapi.attribute.name.projectile_speed", 0.0, -1024.0, 1024.0).setTracked(true),
                 att -> PROJECTILE_SPEED = att);
         registerAtt("generic.projectile_accuracy", true, () ->
-                        new ClampedEntityAttribute("miapi.attribute.name.projectile_accuracy", 1.0, -1024.0, 1024.0).setTracked(true),
+                        new ClampedEntityAttribute("miapi.attribute.name.projectile_accuracy", 0.0, -1024.0, 1024.0).setTracked(true),
                 att -> PROJECTILE_ACCURACY = att);
         registerAtt("generic.projectile_piercing", true, () ->
                         new ClampedEntityAttribute("miapi.attribute.name.projectile_piercing", 0.0, 0.0, 1024.0).setTracked(true),

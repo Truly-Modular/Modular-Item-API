@@ -50,14 +50,14 @@
     "attributes": [
         {
             "attribute": "miapi:generic.projectile_speed",
-            "value": "([material.hardness] + [material.flexibility] ) / 9",
+            "value": "([material.hardness] + [material.flexibility] ) / 9 - 1 ",
             "operation": "+",
             "slot": "mainhand",
             "uuid": "AAAAAAAA-4180-4865-B01B-BCCE9785ACA3"
         },
         {
             "attribute": "miapi:generic.bow_draw_time",
-            "value": "[material.hardness]/3 +1 ",
+            "value": "([material.hardness]/3 - 1) * 30",
             "operation": "+",
             "slot": "mainhand",
             "uuid": "AAAAAAAA-4180-4865-B01B-BCCE9785ACA3"

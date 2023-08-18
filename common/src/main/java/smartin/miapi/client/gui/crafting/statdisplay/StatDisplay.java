@@ -82,16 +82,19 @@ public class StatDisplay extends InteractAbleWidget {
                 .Builder(AttributeRegistry.PROJECTILE_DAMAGE)
                 .setTranslationKey("projectile_damage")
                 .setFormat("##.##")
+                .setDefault(0)
                 .setMax(10).build());
         addStatDisplay(AttributeSingleDisplay
                 .Builder(AttributeRegistry.PROJECTILE_SPEED)
                 .setTranslationKey("projectile_speed")
                 .setFormat("##.##")
+                .setDefault(0)
                 .setMax(10).build());
         addStatDisplay(AttributeSingleDisplay
                 .Builder(AttributeRegistry.PROJECTILE_ACCURACY)
                 .setTranslationKey("projectile_accuracy")
                 .setFormat("##.##")
+                .setDefault(0)
                 .setMax(10).build());
         addStatDisplay(AttributeSingleDisplay
                 .Builder(AttributeRegistry.PROJECTILE_PIERCING)
