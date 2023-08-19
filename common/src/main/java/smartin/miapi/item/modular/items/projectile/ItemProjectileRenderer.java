@@ -1,4 +1,4 @@
-package smartin.miapi.item.modular.items.ItemProjectile;
+package smartin.miapi.item.modular.items.projectile;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.OverlayTexture;
@@ -12,19 +12,19 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
 
-public class ItemProjectileRenderer extends EntityRenderer<ItemProjectile> {
+public class ItemProjectileRenderer extends EntityRenderer<ItemProjectileEntity> {
 
     public ItemProjectileRenderer(EntityRendererFactory.Context ctx) {
         super(ctx);
     }
 
     @Override
-    public Identifier getTexture(ItemProjectile entity) {
+    public Identifier getTexture(ItemProjectileEntity entity) {
         return null;
     }
 
     @Override
-    public void render(ItemProjectile entity, float yaw, float tickDelta, MatrixStack matrixStack, VertexConsumerProvider vertexConsumers, int light) {
+    public void render(ItemProjectileEntity entity, float yaw, float tickDelta, MatrixStack matrixStack, VertexConsumerProvider vertexConsumers, int light) {
         ItemStack itemStack = entity.asItemStack();
         if (itemStack != null && !itemStack.isEmpty()) {
             matrixStack.push();

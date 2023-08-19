@@ -18,7 +18,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.events.MiapiProjectileEvents;
-import smartin.miapi.item.modular.items.ItemProjectile.ItemProjectile;
+import smartin.miapi.item.modular.items.projectile.ItemProjectileEntity;
 import smartin.miapi.modules.abilities.util.WrappedSoundEvent;
 import smartin.miapi.modules.properties.AttributeProperty;
 
@@ -98,7 +98,7 @@ public class AttributeRegistry {
             return EventResult.pass();
         }));
         MiapiProjectileEvents.MODULAR_PROJECTILE_ENTITY_POST_HIT.register(listener -> {
-            ItemProjectile projectile = listener.projectile;
+            ItemProjectileEntity projectile = listener.projectile;
             Entity victim = listener.entityHitResult.getEntity();
             Entity owner = listener.projectile.getOwner();
             if (projectile.getWorld() instanceof ServerWorld && projectile.getWorld().isThundering() && projectile.hasChanneling()) {
@@ -115,7 +115,7 @@ public class AttributeRegistry {
         });
 
         MiapiProjectileEvents.MODULAR_PROJECTILE_ENTITY_HIT.register(listener -> {
-            ItemProjectile projectile = listener.projectile;
+            ItemProjectileEntity projectile = listener.projectile;
             if(projectile.isCritical()){
                 projectile.setDamage(projectile.getDamage() * AttributeProperty.getActualValue(projectile.asItemStack(), EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_CRIT_MULTIPLIER));
             }

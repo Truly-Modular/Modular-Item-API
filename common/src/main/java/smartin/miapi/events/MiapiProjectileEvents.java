@@ -12,7 +12,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
-import smartin.miapi.item.modular.items.ItemProjectile.ItemProjectile;
+import smartin.miapi.item.modular.items.projectile.ItemProjectileEntity;
 
 public final class MiapiProjectileEvents {
     public static final Event<ModularProjectileEntityHit> MODULAR_PROJECTILE_ENTITY_HIT = EventFactory.createEventResult();
@@ -30,11 +30,11 @@ public final class MiapiProjectileEvents {
 
     public static class ModularProjectileEntityHitEvent {
         public EntityHitResult entityHitResult;
-        public ItemProjectile projectile;
+        public ItemProjectileEntity projectile;
         public DamageSource damageSource;
         public float damage;
 
-        public ModularProjectileEntityHitEvent(EntityHitResult entityHitResult, ItemProjectile projectile, DamageSource damageSource, float damage) {
+        public ModularProjectileEntityHitEvent(EntityHitResult entityHitResult, ItemProjectileEntity projectile, DamageSource damageSource, float damage) {
             this.entityHitResult = entityHitResult;
             this.projectile = projectile;
             this.damageSource = damageSource;
@@ -44,9 +44,9 @@ public final class MiapiProjectileEvents {
 
     public static class ModularProjectileBlockHitEvent {
         public BlockHitResult blockHitResult;
-        public ItemProjectile projectile;
+        public ItemProjectileEntity projectile;
 
-        public ModularProjectileBlockHitEvent(BlockHitResult blockHitResult, ItemProjectile projectile) {
+        public ModularProjectileBlockHitEvent(BlockHitResult blockHitResult, ItemProjectileEntity projectile) {
             this.blockHitResult = blockHitResult;
             this.projectile = projectile;
         }
@@ -65,15 +65,15 @@ public final class MiapiProjectileEvents {
     }
 
     public interface ItemProjectileCompound {
-        EventResult nbtEvent(ItemProjectile projectile, NbtCompound nbtCompound);
+        EventResult nbtEvent(ItemProjectileEntity projectile, NbtCompound nbtCompound);
     }
 
     public interface PlayerPickupEvent {
-        EventResult pickup(PlayerEntity entity, ItemProjectile projectile);
+        EventResult pickup(PlayerEntity entity, ItemProjectileEntity projectile);
     }
 
     public interface ItemProjectileDataTracker {
-        EventResult dataTracker(ItemProjectile projectile, DataTracker nbtCompound);
+        EventResult dataTracker(ItemProjectileEntity projectile, DataTracker nbtCompound);
     }
 
     public interface ModularProjectileBlockHit {
@@ -81,7 +81,7 @@ public final class MiapiProjectileEvents {
     }
 
     public interface ModularProjectileTick {
-        EventResult tick(ItemProjectile event);
+        EventResult tick(ItemProjectileEntity event);
     }
 
     public interface ModularBowShot {

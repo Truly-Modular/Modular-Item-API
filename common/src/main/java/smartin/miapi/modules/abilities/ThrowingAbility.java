@@ -11,7 +11,7 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
 import net.minecraft.world.World;
 import smartin.miapi.attributes.AttributeRegistry;
-import smartin.miapi.item.modular.items.ItemProjectile.ItemProjectile;
+import smartin.miapi.item.modular.items.projectile.ItemProjectileEntity;
 import smartin.miapi.modules.abilities.util.ItemUseAbility;
 import smartin.miapi.modules.properties.AttributeProperty;
 
@@ -55,7 +55,7 @@ public class ThrowingAbility implements ItemUseAbility {
                         p.sendToolBreakStatus(user.getActiveHand());
                     });
 
-                    ItemProjectile tridentEntity = new ItemProjectile(world, playerEntity, stack);
+                    ItemProjectileEntity tridentEntity = new ItemProjectileEntity(world, playerEntity, stack);
                     float divergence = (float) AttributeProperty.getActualValue(stack, EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_ACCURACY);
                     float speed = (float) AttributeProperty.getActualValue(stack, EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_SPEED);
                     float damage = (float) AttributeProperty.getActualValue(stack, EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_DAMAGE);

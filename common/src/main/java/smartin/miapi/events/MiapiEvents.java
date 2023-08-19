@@ -11,7 +11,7 @@ import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
-import smartin.miapi.item.modular.items.ItemProjectile.ItemProjectile;
+import smartin.miapi.item.modular.items.projectile.ItemProjectileEntity;
 
 public class MiapiEvents {
     public static Event<LivingHurt> LIVING_HURT = EventFactory.createEventResult();
@@ -34,7 +34,7 @@ public class MiapiEvents {
         }
 
         public ItemStack getCausingItemStack() {
-            if (damageSource.getSource() instanceof ProjectileEntity projectile && (projectile instanceof ItemProjectile itemProjectile)) {
+            if (damageSource.getSource() instanceof ProjectileEntity projectile && (projectile instanceof ItemProjectileEntity itemProjectile)) {
                 return itemProjectile.asItemStack();
 
             }

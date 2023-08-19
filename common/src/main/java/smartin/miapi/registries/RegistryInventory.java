@@ -55,7 +55,7 @@ import smartin.miapi.item.MaterialSmithingRecipe;
 import smartin.miapi.item.modular.items.*;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.abilities.*;
-import smartin.miapi.item.modular.items.ItemProjectile.ItemProjectile;
+import smartin.miapi.item.modular.items.projectile.ItemProjectileEntity;
 import smartin.miapi.modules.conditions.*;
 import smartin.miapi.modules.edit_options.EditOption;
 import smartin.miapi.modules.edit_options.PropertyInjectionDev;
@@ -162,8 +162,8 @@ public class RegistryInventory {
     public static GameEvent statProviderUpdatedEvent;
     public static SimpleCraftingStat exampleCraftingStat;
     public static RecipeSerializer serializer;
-    public static RegistrySupplier<EntityType<ItemProjectile>> itemProjectileType = (RegistrySupplier) registerAndSupply(entityTypes, "thrown_item", () ->
-            EntityType.Builder.create(ItemProjectile::new, SpawnGroup.MISC).setDimensions(0.5F, 0.5F).maxTrackingRange(4).trackingTickInterval(20).build("miapi:thrown_item"));
+    public static RegistrySupplier<EntityType<ItemProjectileEntity>> itemProjectileType = (RegistrySupplier) registerAndSupply(entityTypes, "thrown_item", () ->
+            EntityType.Builder.create(ItemProjectileEntity::new, SpawnGroup.MISC).setDimensions(0.5F, 0.5F).maxTrackingRange(4).trackingTickInterval(20).build("miapi:thrown_item"));
 
     static {
         itemProjectileType.listen(e -> {

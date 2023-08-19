@@ -1,4 +1,4 @@
-package smartin.miapi.item.modular.items.ItemProjectile;
+package smartin.miapi.item.modular.items.projectile;
 
 import dev.architectury.event.EventResult;
 import net.minecraft.block.BlockState;
@@ -28,21 +28,21 @@ import org.jetbrains.annotations.Nullable;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.events.MiapiProjectileEvents;
-import smartin.miapi.item.modular.items.ItemProjectile.ArrowHitBehaviour.EntityBounceBehaviour;
-import smartin.miapi.item.modular.items.ItemProjectile.ArrowHitBehaviour.EntityPierceBehaviour;
-import smartin.miapi.item.modular.items.ItemProjectile.ArrowHitBehaviour.ProjectileHitBehaviour;
+import smartin.miapi.item.modular.items.projectile.arrowhitbehaviours.EntityBounceBehaviour;
+import smartin.miapi.item.modular.items.projectile.arrowhitbehaviours.EntityPierceBehaviour;
+import smartin.miapi.item.modular.items.projectile.arrowhitbehaviours.ProjectileHitBehaviour;
 import smartin.miapi.modules.abilities.util.WrappedSoundEvent;
 import smartin.miapi.modules.properties.AttributeProperty;
 import smartin.miapi.registries.RegistryInventory;
 
-public class ItemProjectile extends PersistentProjectileEntity {
-    private static final TrackedData<Byte> LOYALTY = DataTracker.registerData(ItemProjectile.class, TrackedDataHandlerRegistry.BYTE);
-    private static final TrackedData<Boolean> ENCHANTED = DataTracker.registerData(ItemProjectile.class, TrackedDataHandlerRegistry.BOOLEAN);
-    private static final TrackedData<Boolean> SPEED_DAMAGE = DataTracker.registerData(ItemProjectile.class, TrackedDataHandlerRegistry.BOOLEAN);
-    private static final TrackedData<ItemStack> THROWING_STACK = DataTracker.registerData(ItemProjectile.class, TrackedDataHandlerRegistry.ITEM_STACK);
-    private static final TrackedData<ItemStack> BOW_ITEM_STACK = DataTracker.registerData(ItemProjectile.class, TrackedDataHandlerRegistry.ITEM_STACK);
-    private static final TrackedData<Float> WATER_DRAG = DataTracker.registerData(ItemProjectile.class, TrackedDataHandlerRegistry.FLOAT);
-    private static final TrackedData<Integer> PREFERRED_SLOT = DataTracker.registerData(ItemProjectile.class, TrackedDataHandlerRegistry.INTEGER);
+public class ItemProjectileEntity extends PersistentProjectileEntity {
+    private static final TrackedData<Byte> LOYALTY = DataTracker.registerData(ItemProjectileEntity.class, TrackedDataHandlerRegistry.BYTE);
+    private static final TrackedData<Boolean> ENCHANTED = DataTracker.registerData(ItemProjectileEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+    private static final TrackedData<Boolean> SPEED_DAMAGE = DataTracker.registerData(ItemProjectileEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+    private static final TrackedData<ItemStack> THROWING_STACK = DataTracker.registerData(ItemProjectileEntity.class, TrackedDataHandlerRegistry.ITEM_STACK);
+    private static final TrackedData<ItemStack> BOW_ITEM_STACK = DataTracker.registerData(ItemProjectileEntity.class, TrackedDataHandlerRegistry.ITEM_STACK);
+    private static final TrackedData<Float> WATER_DRAG = DataTracker.registerData(ItemProjectileEntity.class, TrackedDataHandlerRegistry.FLOAT);
+    private static final TrackedData<Integer> PREFERRED_SLOT = DataTracker.registerData(ItemProjectileEntity.class, TrackedDataHandlerRegistry.INTEGER);
     public ItemStack thrownStack = ItemStack.EMPTY;
     private boolean dealtDamage;
     public int returnTimer;
@@ -52,11 +52,11 @@ public class ItemProjectile extends PersistentProjectileEntity {
     public ProjectileHitBehaviour projectileHitBehaviour = new EntityBounceBehaviour();
     private BlockState inBlockState;
 
-    public ItemProjectile(EntityType<? extends Entity> entityType, World world) {
+    public ItemProjectileEntity(EntityType<? extends Entity> entityType, World world) {
         super((EntityType<? extends PersistentProjectileEntity>) entityType, world);
     }
 
-    public ItemProjectile(World world, LivingEntity owner, ItemStack stack) {
+    public ItemProjectileEntity(World world, LivingEntity owner, ItemStack stack) {
         super(RegistryInventory.itemProjectileType.get(), owner, world);
         this.thrownStack = stack.copy();
         this.dataTracker.set(LOYALTY, (byte) EnchantmentHelper.getLoyalty(stack));
@@ -165,10 +165,6 @@ public class ItemProjectile extends PersistentProjectileEntity {
 
     public ItemStack asItemStack() {
         return this.dataTracker.get(THROWING_STACK).copy();
-    }
-
-    public boolean isEnchanted() {
-        return this.dataTracker.get(ENCHANTED);
     }
 
     @Override
@@ -361,5 +357,10 @@ public class ItemProjectile extends PersistentProjectileEntity {
     @Override
     public boolean shouldRender(double cameraX, double cameraY, double cameraZ) {
         return true;
+    }
+
+    @Override
+    public boolean equals(Object other){
+        return super.equals(other);
     }
 }

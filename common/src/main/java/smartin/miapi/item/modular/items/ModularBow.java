@@ -18,13 +18,12 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
-import smartin.miapi.Miapi;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.client.model.ModularModelPredicateProvider;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.events.MiapiProjectileEvents;
 import smartin.miapi.item.modular.ModularItem;
-import smartin.miapi.item.modular.items.ItemProjectile.ItemProjectile;
+import smartin.miapi.item.modular.items.projectile.ItemProjectileEntity;
 import smartin.miapi.modules.properties.AttributeProperty;
 import smartin.miapi.modules.properties.DisplayNameProperty;
 
@@ -69,7 +68,7 @@ public class ModularBow extends BowItem implements ModularItem {
             ItemStack projectileStackConsumed = projectileStack.copy();
             projectileStackConsumed.setCount(1);
             PersistentProjectileEntity itemProjectile = arrowItem.createArrow(world, projectileStackConsumed, playerEntity);
-            if (itemProjectile instanceof ItemProjectile modularProjectile) {
+            if (itemProjectile instanceof ItemProjectileEntity modularProjectile) {
                 modularProjectile.setSpeedDamage(true);
             }
             //ItemProjectile itemProjectile = new ItemProjectile(world, playerEntity, projectileStackConsumed);
@@ -78,8 +77,6 @@ public class ModularBow extends BowItem implements ModularItem {
             float divergence = (float) Math.pow(12.0, -AttributeProperty.getActualValue(bowStack, EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_ACCURACY));
             float speed = (float) Math.max(0.1,AttributeProperty.getActualValue(bowStack, EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_SPEED) + 3.0);
             float damage = (float) AttributeProperty.getActualValue(bowStack, EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_DAMAGE) / speed;
-            Miapi.LOGGER.warn("Divergence "+divergence);
-            Miapi.LOGGER.warn("Speed "+speed);
             itemProjectile.setDamage(damage + itemProjectile.getDamage());
             itemProjectile.setVelocity(playerEntity, playerEntity.getPitch(), playerEntity.getYaw(), 0.0f, pullProgress * speed, divergence);
             if (pullProgress == 1.0f) {

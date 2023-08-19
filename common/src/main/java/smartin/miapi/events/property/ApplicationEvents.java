@@ -23,7 +23,7 @@ import org.apache.logging.log4j.util.TriConsumer;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.events.MiapiEvents;
-import smartin.miapi.item.modular.items.ItemProjectile.ItemProjectile;
+import smartin.miapi.item.modular.items.projectile.ItemProjectileEntity;
 import smartin.miapi.modules.abilities.util.ItemUseAbility;
 import smartin.miapi.modules.properties.PlaySoundProperty;
 
@@ -290,7 +290,7 @@ public class ApplicationEvents {
         registerEntityDataReader("legs", entity -> entity instanceof LivingEntity living ? living.getEquippedStack(EquipmentSlot.LEGS) : null);
         registerEntityDataReader("feet", entity -> entity instanceof LivingEntity living ? living.getEquippedStack(EquipmentSlot.FEET) : null);
         registerEntityDataReader("projectile", entity -> {
-            if (entity instanceof ProjectileEntity projectile && projectile instanceof ItemProjectile itemProjectile)
+            if (entity instanceof ProjectileEntity projectile && projectile instanceof ItemProjectileEntity itemProjectile)
                 return itemProjectile.asItemStack();
             return null;
         });

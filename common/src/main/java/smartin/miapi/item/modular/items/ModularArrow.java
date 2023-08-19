@@ -8,7 +8,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.world.World;
 import smartin.miapi.item.modular.ModularItem;
-import smartin.miapi.item.modular.items.ItemProjectile.ItemProjectile;
+import smartin.miapi.item.modular.items.projectile.ItemProjectileEntity;
 import smartin.miapi.modules.properties.DisplayNameProperty;
 
 public class ModularArrow extends ArrowItem implements ModularItem {
@@ -21,7 +21,7 @@ public class ModularArrow extends ArrowItem implements ModularItem {
     public PersistentProjectileEntity createArrow(World world, ItemStack stack, LivingEntity shooter) {
         stack = stack.copy();
         stack.setCount(1);
-        return new ItemProjectile(world, shooter, stack);
+        return new ItemProjectileEntity(world, shooter, stack);
     }
 
 
