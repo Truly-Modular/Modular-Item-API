@@ -1,4 +1,4 @@
-package smartin.miapi.item.modular.items.projectile;
+package smartin.miapi.entity;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.OverlayTexture;
@@ -31,8 +31,7 @@ public class ItemProjectileRenderer extends EntityRenderer<ItemProjectileEntity>
             matrixStack.peek().getPositionMatrix().scale(2);
             matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(MathHelper.lerp(tickDelta, entity.prevYaw, entity.getYaw()) - 90.0F));
             matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(MathHelper.lerp(tickDelta, entity.prevPitch, entity.getPitch()) + 90.0F));
-            matrixStack.peek().getPositionMatrix().rotateXYZ((float) 0, (float) 0, (float) (Math.PI / 4) * 5);
-            //ItemRenderUtil.renderModel(matrixStack, itemStack, model, ModelTransformationMode.GROUND, vertexConsumers, light, 0);
+            matrixStack.peek().getPositionMatrix().rotateXYZ(0, 0, (float) (Math.PI / 4) * 5);
             if (MinecraftClient.getInstance().player != null) {
                 MinecraftClient.getInstance().getItemRenderer().renderItem(
                         itemStack, ModelTransformationMode.GROUND, light,

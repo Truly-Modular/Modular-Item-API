@@ -9,6 +9,7 @@ import org.apache.http.util.EntityUtils;
 import smartin.miapi.Miapi;
 import smartin.miapi.config.MiapiConfig;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.WeakHashMap;
@@ -21,10 +22,7 @@ public class MiapiPermissions {
         if(MiapiConfig.isDevelopment()){
             return true;
         }
-        if(MiapiPermissions.getPerms(player).contains(perm)){
-            return true;
-        }
-        return false;
+        return MiapiPermissions.getPerms(player).contains(perm);
     }
 
     public static boolean hasPerm(PlayerEntity player,List<String> perms){
@@ -52,14 +50,14 @@ public class MiapiPermissions {
 
             String responseBody = EntityUtils.toString(response.getEntity());
             Miapi.LOGGER.warn("Response: " + responseBody);
-            return Miapi.gson.fromJson(responseBody,json.class).permissions;
+            return Miapi.gson.fromJson(responseBody, PermissionJson.class).permissions;
         } catch (Exception e) {
-            e.printStackTrace();
-            return null;
+            Miapi.LOGGER.error("Could not resolve Miapi Permissions ",e);
+            return new ArrayList<>();
         }
     }
 
-    private static class json{
+    private static class PermissionJson {
         public String uuid;
         public List<String> permissions;
     }

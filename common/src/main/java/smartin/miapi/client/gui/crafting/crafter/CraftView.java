@@ -46,9 +46,9 @@ public class CraftView extends InteractAbleWidget {
     String packetId;
     Inventory linkedInventory;
     CraftAction action;
-    CraftButton craftButton;
-    SimpleButton previousButton;
-    SimpleButton nextButton;
+    CraftButton<Object> craftButton;
+    SimpleButton<Object> previousButton;
+    SimpleButton<Object> nextButton;
     List<CraftingProperty> craftingProperties = new ArrayList<>();
     List<InteractAbleWidget> craftingGuis = new ArrayList<>();
     int inventoryOffset;

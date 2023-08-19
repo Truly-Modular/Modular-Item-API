@@ -81,8 +81,7 @@ public class EnchantmentProperty implements CraftingProperty, ModuleProperty {
             EnchantmentPropertyJson json = Miapi.gson.fromJson(element, EnchantmentPropertyJson.class);
             if (json.allowed == null) json.allowed = new ArrayList<>();
             if (json.forbidden == null) json.forbidden = new ArrayList<>();
-            List<Enchantment> enchantmentList = convert(json.allowed);
-            return enchantmentList;
+            return convert(json.allowed);
         } else {
             return new ArrayList<>();
         }
@@ -91,9 +90,9 @@ public class EnchantmentProperty implements CraftingProperty, ModuleProperty {
     public static List<Enchantment> getAllowedList(ItemStack stack) {
         List<Enchantment> list = (List<Enchantment>) ModularItemCache.get(stack, KEY);
         if (list == null) {
-            return Collections.EMPTY_LIST;
+            return Collections.emptyList();
         }
-        return Collections.unmodifiableList((List<Enchantment>) ModularItemCache.get(stack, KEY));
+        return Collections.unmodifiableList(list);
     }
 
     public static void addToReplaceMap(String key, String enchant) {
@@ -113,8 +112,7 @@ public class EnchantmentProperty implements CraftingProperty, ModuleProperty {
     }
 
     public static boolean isAllowed(ItemStack stack, Enchantment enchantment) {
-        boolean allowed = getAllowedList(stack).contains(enchantment);
-        return allowed;
+        return getAllowedList(stack).contains(enchantment);
     }
 
     @Override
@@ -139,9 +137,6 @@ public class EnchantmentProperty implements CraftingProperty, ModuleProperty {
             Enchantment enchantment = Registries.ENCHANTMENT.get(new Identifier(id));
             if(enchantment!=null && !enchantments.contains(enchantment)){
                 enchantments.add(enchantment);
-            }
-            else{
-                //Miapi.LOGGER.warn("enchantment "+id+ " not found");
             }
         }
         return enchantments;

@@ -147,6 +147,7 @@ public class CraftingScreenHandler extends ScreenHandler {
         return !playerInventory.player.getWorld().isClient;
     }
 
+    @Override
     public void sendContentUpdates() {
         super.sendContentUpdates();
         if (blockEntity == null && delegate.get(0) == 1) {
@@ -208,6 +209,7 @@ public class CraftingScreenHandler extends ScreenHandler {
         return true;
     }
 
+    @Override
     public void onClosed(PlayerEntity player) {
         super.onClosed(player);
         this.context.run((world, pos) -> {
@@ -281,7 +283,7 @@ public class CraftingScreenHandler extends ScreenHandler {
 
     @Override
     protected void dropInventory(PlayerEntity player, Inventory inventory) {
-        if (!player.isAlive() || player instanceof ServerPlayerEntity && ((ServerPlayerEntity)player).isDisconnected()) {
+        if (!player.isAlive() || player instanceof ServerPlayerEntity  serverPlayerEntity&& serverPlayerEntity.isDisconnected()) {
             for (int i = 0; i < inventory.size(); ++i) {
                 if (i == 0) continue;
                 player.dropItem(inventory.removeStack(i), false);
@@ -290,9 +292,9 @@ public class CraftingScreenHandler extends ScreenHandler {
         }
         for (int i = 0; i < inventory.size(); ++i) {
             if (i == 0) continue;
-            PlayerInventory playerInventory = player.getInventory();
-            if (!(playerInventory.player instanceof ServerPlayerEntity)) continue;
-            playerInventory.offerOrDrop(inventory.removeStack(i));
+            PlayerInventory currentPlayerInv = player.getInventory();
+            if (!(currentPlayerInv.player instanceof ServerPlayerEntity)) continue;
+            currentPlayerInv.offerOrDrop(inventory.removeStack(i));
         }
     }
 
@@ -343,11 +345,6 @@ public class CraftingScreenHandler extends ScreenHandler {
     public static class PlayerInventorySlot extends Slot {
         public PlayerInventorySlot(PlayerInventory inventory, int index, int x, int y) {
             super(inventory, index, x, y);
-        }
-
-        @Override
-        public void setStack(ItemStack stack) {
-            super.setStack(stack);
         }
     }
 }

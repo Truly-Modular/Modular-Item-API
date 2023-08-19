@@ -37,11 +37,11 @@ public class IntegerStatBar extends InteractAbleWidget {
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        int maxSteps = Math.max(this.maxSteps,Math.max(this.primaryValue,this.secondaryValue));
+        int newMaxSteps = Math.max(this.maxSteps,Math.max(this.primaryValue,this.secondaryValue));
 
-        int stepWidth = (int) ((double) (width - gapWidth * (maxSteps - 1)) / maxSteps);
+        int stepWidth = (int) ((double) (width - gapWidth * (newMaxSteps - 1)) / newMaxSteps);
 
-        for (int i = 0; i < maxSteps; i++) {
+        for (int i = 0; i < newMaxSteps; i++) {
             int segmentX = getX() + (stepWidth + gapWidth) * i;
             int segmentEndX = segmentX + stepWidth;
 

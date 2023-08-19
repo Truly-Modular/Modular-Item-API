@@ -105,18 +105,18 @@ public class Miapi {
             }
             return map;
         });
-        ModularItemCache.setSupplier(ItemModule.moduleKey, itemStack -> {
+        ModularItemCache.setSupplier(ItemModule.MODULE_KEY, itemStack -> {
             NbtCompound tag = itemStack.getOrCreateNbt();
             try {
-                String modulesString = tag.getString(ItemModule.moduleKey);
+                String modulesString = tag.getString(ItemModule.MODULE_KEY);
                 Gson gson = new Gson();
                 return gson.fromJson(modulesString, ItemModule.ModuleInstance.class);
             } catch (Exception e) {
-                e.printStackTrace();
+                Miapi.LOGGER.error("could not resolve Modules",e);
                 return null;
             }
         });
-        ModularItemCache.setSupplier(ItemModule.propertyKey, itemStack -> ItemModule.getUnmergedProperties((ItemModule.ModuleInstance) ModularItemCache.get(itemStack, ItemModule.moduleKey)));
+        ModularItemCache.setSupplier(ItemModule.PROPERTY_KEY, itemStack -> ItemModule.getUnmergedProperties((ItemModule.ModuleInstance) ModularItemCache.get(itemStack, ItemModule.MODULE_KEY)));
         StatResolver.registerResolver("translation", new StatResolver.Resolver() {
             @Override
             public double resolveDouble(String data, ItemModule.ModuleInstance instance) {

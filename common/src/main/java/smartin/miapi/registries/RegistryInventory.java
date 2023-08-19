@@ -55,7 +55,7 @@ import smartin.miapi.item.MaterialSmithingRecipe;
 import smartin.miapi.item.modular.items.*;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.abilities.*;
-import smartin.miapi.item.modular.items.projectile.ItemProjectileEntity;
+import smartin.miapi.entity.ItemProjectileEntity;
 import smartin.miapi.modules.conditions.*;
 import smartin.miapi.modules.edit_options.EditOption;
 import smartin.miapi.modules.edit_options.PropertyInjectionDev;
@@ -186,7 +186,7 @@ public class RegistryInventory {
         //ENTITY
         // commented out because RegistrySupplier is needed
         /*register(entityTypes, "thrown_item", () ->
-                EntityType.Builder.create(ItemProjectile::new, SpawnGroup.MISC).setDimensions(0.5F, 0.5F).maxTrackingRange(4).trackingTickInterval(20).build("miapi:thrown_item"),
+                EntityType.builder.create(ItemProjectile::new, SpawnGroup.MISC).setDimensions(0.5F, 0.5F).maxTrackingRange(4).trackingTickInterval(20).build("miapi:thrown_item"),
                 type -> itemProjectileType = (EntityType<ItemProjectile>) type);*/
 
         register(RECIPE_SERIALIZERS, "smithing", MaterialSmithingRecipe.Serializer::new, i -> serializer = i);
@@ -213,7 +213,7 @@ public class RegistryInventory {
 
         /*register(blocks, "example_stat_provider", () ->
                 new StatProvidingBlock(AbstractBlock.Settings.create(), StatProvidingBlockEntity.Example::new), b -> exampleStatProviderBlock = b);
-        register(blockEntities, "example_stat_provider", () -> BlockEntityType.Builder.create(
+        register(blockEntities, "example_stat_provider", () -> BlockEntityType.builder.create(
                 StatProvidingBlockEntity.Example::new, exampleStatProviderBlock
         ).build(null), be -> {
             exampleStatProviderBlockEntityType = (BlockEntityType<StatProvidingBlockEntity>) be;

@@ -12,22 +12,19 @@ public class Environment {
             Environment.class.getDeclaredMethod("isClientPrivate");
             return true;
         } catch (NoSuchMethodException e) {
-            //e.printStackTrace();
             return false;
         }
     }
 
     @net.fabricmc.api.Environment(EnvType.CLIENT)
     protected static void isClientPrivate(){
+        //This function exist to check if this is the client
     }
 
     public static boolean isClientServer(){
         if(!isClient()){
             return false;
         }
-        if(Miapi.server==null){
-            return false;
-        }
-        return true;
+        return Miapi.server==null;
     }
 }

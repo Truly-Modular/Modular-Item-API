@@ -1,7 +1,6 @@
 package smartin.miapi.client.gui.crafting.statdisplay;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.datafixers.util.Pair;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -13,7 +12,6 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.ColorHelper;
-import org.jetbrains.annotations.Nullable;
 import smartin.miapi.client.gui.HoverDescription;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.ScrollingTextWidget;
@@ -25,8 +23,6 @@ import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
-import java.util.function.Function;
 
 @Environment(EnvType.CLIENT)
 public abstract class MultiComponentStatDisplay extends InteractAbleWidget implements SingleStatDisplay, Drawable {
@@ -42,7 +38,7 @@ public abstract class MultiComponentStatDisplay extends InteractAbleWidget imple
     public List<ComponentHolder> components = new ArrayList<>();
     public int maxScrollPositon;
 
-    public MultiComponentStatDisplay(int x, int y, int width, int height, StatDisplay.TextGetter title, StatDisplay.MultiTextGetter hover) {
+    protected MultiComponentStatDisplay(int x, int y, int width, int height, StatDisplay.TextGetter title, StatDisplay.MultiTextGetter hover) {
         super(x, y, width, height, Text.empty());
         this.title = title;
         this.hover = hover;

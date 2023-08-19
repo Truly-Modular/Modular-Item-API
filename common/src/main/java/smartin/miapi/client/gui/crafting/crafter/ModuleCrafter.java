@@ -41,7 +41,6 @@ public class ModuleCrafter extends InteractAbleWidget {
     public ModuleCrafter(int x, int y, int width, int height, Consumer<SlotProperty.ModuleSlot> selected, Consumer<ItemStack> craftedItem, Inventory linkedInventory, Consumer<Slot> addSlot, Consumer<Slot> removeSlot) {
         super(x, y, width, height, Text.empty());
         this.linkedInventory = linkedInventory;
-        ;
         this.preview = craftedItem;
         this.removeSlot = removeSlot;
         this.addSlot = addSlot;
@@ -122,13 +121,11 @@ public class ModuleCrafter extends InteractAbleWidget {
             }
             case REPLACE -> {
                 this.children.clear();
-                ReplaceView view = new ReplaceView(this.getX(), this.getY(), this.width, this.height, slot, (instance) -> {
-                    setSelectedSlot(instance);
-                }, (module -> {
-                    this.module = module;
+                ReplaceView view = new ReplaceView(this.getX(), this.getY(), this.width, this.height, slot, this::setSelectedSlot, (itemModule -> {
+                    this.module = itemModule;
                     setMode(Mode.CRAFT);
-                }), (module -> {
-                    CraftAction action = new CraftAction(stack, slot, module, null, handler.blockEntity, new PacketByteBuf[0]);
+                }), (itemModule -> {
+                    CraftAction action = new CraftAction(stack, slot, itemModule, null, handler.blockEntity, new PacketByteBuf[0]);
                     action.linkInventory(linkedInventory, 1);
                     preview.accept(action.getPreview());
                 }));
@@ -147,7 +144,6 @@ public class ModuleCrafter extends InteractAbleWidget {
 
     @Override
     public void render(DrawContext drawContext, int mouseX, int mouseY, float delta) {
-        //drawSquareBorder(matrices, x, y, width, height, 1, ColorHelper.Argb.getArgb(255, 0, 255, 0));
         super.render(drawContext, mouseX, mouseY, delta);
     }
 

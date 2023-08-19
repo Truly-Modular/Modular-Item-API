@@ -12,7 +12,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
-import smartin.miapi.item.modular.items.projectile.ItemProjectileEntity;
+import smartin.miapi.entity.ItemProjectileEntity;
 
 public final class MiapiProjectileEvents {
     public static final Event<ModularProjectileEntityHit> MODULAR_PROJECTILE_ENTITY_HIT = EventFactory.createEventResult();

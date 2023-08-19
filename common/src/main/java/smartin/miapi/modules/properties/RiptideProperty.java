@@ -49,6 +49,6 @@ public class RiptideProperty implements ModuleProperty {
         public boolean needsWater = false;
         public boolean allowLava = false;
         public boolean needRiptideEnchant = true;
-        public double RiptideStrength = 3;
+        public double riptideStrength = 3;
     }
 }

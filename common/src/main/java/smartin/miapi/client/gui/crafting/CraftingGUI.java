@@ -7,8 +7,6 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.ScreenHandlerProvider;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.screen.ScreenHandlerListener;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.joml.Matrix4f;
@@ -66,7 +64,7 @@ public class CraftingGUI extends ParentHandledScreen<CraftingScreenHandler> impl
         transformableWidget.addChild(moduleCrafter);
 
         slotDisplay = new SlotDisplay(stack, (this.width - this.backgroundWidth) / 2 + 8, (this.height - this.backgroundHeight) / 2 + 8 + 132 - 24, 74 + 24, 98, (selected) -> {
-            //moduleCrafter.setSelectedSlot(selected);
+
         });
         slotDisplay.setItem(getItem());
         this.addChild(slotDisplay);
@@ -112,9 +110,7 @@ public class CraftingGUI extends ParentHandledScreen<CraftingScreenHandler> impl
         slotDisplay.setItem(stack);
         ItemStack converted = ModularItemStackConverter.getModularVersion(stack);
 
-        //setItem(handler.inventory.getStack(0));
         baseSlot.inSlot = ItemModule.getModules(converted);
-        //baseSlot.allowed = AllowedSlots.getAllowedSlots(baseSlot.inSlot.module);
         SlotProperty.ModuleSlot current = baseSlot;
         if (baseSlot.inSlot.module.equals(ItemModule.empty)) {
             current = null;

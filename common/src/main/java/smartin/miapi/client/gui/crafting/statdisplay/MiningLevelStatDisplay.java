@@ -158,7 +158,7 @@ public class MiningLevelStatDisplay extends InteractAbleWidget implements Single
         textWidget.render(drawContext, mouseX, mouseY, delta);
     }
 
-    public static Builder Builder(String type) {
+    public static Builder builder(String type) {
         return new Builder(type);
     }
 

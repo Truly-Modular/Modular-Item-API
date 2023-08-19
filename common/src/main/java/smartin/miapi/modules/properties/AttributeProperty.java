@@ -213,8 +213,6 @@ public class AttributeProperty implements ModuleProperty {
         }
 
         // Clear the original Multimap and add the sorted entries
-        //multimap.clear();
-        //multimap.putAll(sortedMultimap);
         return sortedMultimap;
     }
 

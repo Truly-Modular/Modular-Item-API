@@ -22,7 +22,7 @@ public class EquipmentSlotProperty implements ModuleProperty {
 
     @Override
     public boolean load(String moduleKey, JsonElement data) throws Exception {
-        String name = data.getAsString();
+        data.getAsString();
         return true;
     }
 

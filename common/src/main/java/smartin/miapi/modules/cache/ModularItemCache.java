@@ -94,9 +94,7 @@ public class ModularItemCache {
         }
         UUID uuid = lookUpUUId;
         try {
-            Cache itemCache = cache.get(lookUpUUId, () -> new Cache(uuid, stack));
-            //itemCache.stack = stack;
-            return itemCache;
+            return cache.get(lookUpUUId, () -> new Cache(uuid, stack));
         } catch (ExecutionException ignored) {
             UUID uuid1 = getMissingUUID();
             Cache cache1 = new Cache(uuid1, stack);

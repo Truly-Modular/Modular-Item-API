@@ -98,11 +98,11 @@ public class PotionEffectProperty extends DynamicCodecBasedProperty.Intermediate
                 else {
                     LootCondition condition = manager.getElement(LootDataType.PREDICATES, effect.predicate.get());
                     if (condition != null) {
-                        LootContextParameterSet.Builder builder = new LootContextParameterSet.Builder(world)
+                        LootContextParameterSet.builder builder = new LootContextParameterSet.builder(world)
                                 .add(LootContextParameters.THIS_ENTITY, ability.user()) // THIS_ENTITY is whomever the effect is applied to
                                 .add(LootContextParameters.ORIGIN, ability.user().getPos())
                                 .add(LootContextParameters.TOOL, ability.stack());
-                        if (condition.test(new LootContext.Builder(builder.build(PropAppOld.Ability.LOOT_CONTEXT)).build(null)))
+                        if (condition.test(new LootContext.builder(builder.build(PropAppOld.Ability.LOOT_CONTEXT)).build(null)))
                             ability.user().addStatusEffect(effect.creator.get());
                     } else
                         Miapi.LOGGER.warn("Found null predicate during PotionEffectProperty application.");

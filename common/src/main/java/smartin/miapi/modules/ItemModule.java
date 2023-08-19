@@ -37,11 +37,11 @@ public class ItemModule {
     /**
      * The key for the properties in the Cache.
      */
-    public static final String moduleKey = "modules";
+    public static final String MODULE_KEY = "modules";
     /**
      * The key for the raw properties in the Cache.
      */
-    public static final String propertyKey = "rawProperties";
+    public static final String PROPERTY_KEY = "rawProperties";
     /**
      * An empty ItemModule instance.
      */
@@ -93,7 +93,7 @@ public class ItemModule {
      */
     public static void loadFromData(String path, String moduleJsonString) {
         JsonObject moduleJson = Miapi.gson.fromJson(moduleJsonString, JsonObject.class);
-        if (!path.startsWith("modules")) {
+        if (!path.startsWith(MODULE_KEY)) {
             return;
         }
 
@@ -170,10 +170,9 @@ public class ItemModule {
      * @return the module instance associated with the given ItemStack
      */
     public static ItemModule.ModuleInstance getModules(ItemStack stack) {
-        ItemModule.ModuleInstance moduleInstance = (ItemModule.ModuleInstance) ModularItemCache.get(stack, moduleKey);
+        ItemModule.ModuleInstance moduleInstance = (ItemModule.ModuleInstance) ModularItemCache.get(stack, MODULE_KEY);
         if (moduleInstance == null || moduleInstance.module == null) {
-            //TODO:figure out why this is triggered
-            //Miapi.LOGGER.warn("Item has Invalid Module setup - treating it like it has no modules");
+            Miapi.LOGGER.warn("Item has Invalid Module setup - treating it like it has no modules");
             return new ItemModule.ModuleInstance(new ItemModule("empty", new HashMap<>()));
         }
         return moduleInstance;

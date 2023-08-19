@@ -5,7 +5,6 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.text.Text;
-import smartin.miapi.Miapi;
 
 /**
  * This Widget is an Extention of the {@link TextFieldWidget}
@@ -21,8 +20,9 @@ public class ClickAbleTextWidget extends TextFieldWidget {
         return super.isMouseOver(mouseX, mouseY);
     }
 
+    @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (mouseX >= (double) this.getX() && mouseX < (double) (this.getX() + this.width) && mouseY >= (double) this.getY() && mouseY < (double) (this.getY() + this.height)) {
+        if (mouseX >= this.getX() && mouseX < (this.getX() + this.width) && mouseY >= this.getY() && mouseY < (this.getY() + this.height)) {
             setFocused(true);
             if (MinecraftClient.getInstance().currentScreen instanceof HandledScreen<?> screen) {
                 screen.setFocused(this);
@@ -37,6 +37,7 @@ public class ClickAbleTextWidget extends TextFieldWidget {
         return super.mouseClicked(mouseX, mouseY, button);
     }
 
+    @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (isActive() && isFocused()) {
             super.keyPressed(keyCode, scanCode, modifiers);

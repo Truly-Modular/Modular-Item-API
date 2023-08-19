@@ -7,7 +7,7 @@ public class ConditionManager {
     public static MiapiRegistry<ModuleCondition> moduleConditionRegistry = MiapiRegistry.getInstance(ModuleCondition.class);
 
     public static void setup() {
-
+        //no setup is required at the moment
     }
 
     public static ModuleCondition get(JsonElement element) {

@@ -36,7 +36,7 @@ public class AttackUtil {
         List<LivingEntity> entities = world.getNonSpectatingEntities(LivingEntity.class, target.getBoundingBox().expand(1.0, 0.25, 1.0).expand(sweepingRange * 2,1,sweepingRange * 2));
 
         for (LivingEntity entity : entities) {
-            if (entity != player && entity != target && !player.isTeammate(entity) && !(entity instanceof ArmorStandEntity && ((ArmorStandEntity) entity).isMarker()) && player.squaredDistanceTo(entity) < sweepingRange * sweepingRange) {
+            if (entity != player && entity != target && !player.isTeammate(entity) && !(entity instanceof ArmorStandEntity armorStandEntity && armorStandEntity.isMarker()) && player.squaredDistanceTo(entity) < sweepingRange * sweepingRange) {
                 entity.takeKnockback(0.4, MathHelper.sin(player.getYaw() * 0.017453292F), -MathHelper.cos(player.getYaw() * 0.017453292F));
                 entity.damage(player.getDamageSources().playerAttack(player), sweepingDamage);
             }

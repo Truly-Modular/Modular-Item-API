@@ -13,9 +13,10 @@ import java.util.function.Predicate;
  */
 public class CrossbowProperty implements ModuleProperty {
     public static final String KEY = "Crossbow";
+    public static CrossbowProperty property;
 
     public CrossbowProperty() {
-
+        property = this;
     }
 
     public static CrossbowAbilityConfig getConfig(ItemStack itemStack) {

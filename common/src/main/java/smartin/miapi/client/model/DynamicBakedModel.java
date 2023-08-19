@@ -183,7 +183,6 @@ public class DynamicBakedModel implements BakedModel {
             BakedModel model = new BasicBakedModel(defaultList, directionBakedQuadHashMap, true, false, true, this.getParticleSprite(), this.modelTransformation, ModelOverrideList.EMPTY);
             overrideModels.put(conditionHolder, model);
         }));
-        ModelOverrideList list = overrideModels.isEmpty() ? ModelOverrideList.EMPTY : new DynamicModelOverrides(overrideModels);
         List<BakedQuad> defaultList = bakedQuads.get(null);
         defaultList = defaultList == null ? new ArrayList<>() : defaultList;
         BakedModel model = new BasicBakedModel(defaultList, bakedQuads, true, false, true, this.getParticleSprite(), this.modelTransformation, this.getOverrides());
@@ -219,24 +218,6 @@ public class DynamicBakedModel implements BakedModel {
     }
 
     private List<BakedQuad> cleanUp(List<BakedQuad> quads) {
-        List<MutableQuad> cleanedList = new ArrayList<>();
-
-        for (int i = 0; i < quads.size(); i++) {
-            BakedQuad bakedQuad = quads.get(i);
-            cleanedList = new MutableQuad(bakedQuad).cutListWithQuad(cleanedList);
-        }
-
-
-        return new ArrayList<>(cleanedList.stream().map(MutableQuad::write).toList());
-    }
-
-
-    private boolean quadCompare(BakedQuad a, BakedQuad b) {
-        if (a.getVertexData().length == b.getVertexData().length) {
-            if (Arrays.equals(a.getVertexData(), b.getVertexData())) {
-                return true;
-            }
-        }
-        return false;
+        return quads;
     }
 }

@@ -37,7 +37,6 @@ public class ImmolateProperty extends DynamicCodecBasedProperty.IntermediateList
     }
 
     public void onEntityEvent(ApplicationEvent<?, ?, ?> event, ItemStack stack, Entity entity, Holder holder, Object... originals) {
-        //System.out.println(event.name + " the event");
         if (!(entity.getWorld() instanceof ServerWorld) || !event.equals(holder.event)) return;
 
         Entity target = ApplicationEvents.getEntityForTarget(holder.target, entity, event, originals);

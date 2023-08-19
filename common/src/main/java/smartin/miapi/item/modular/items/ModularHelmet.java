@@ -10,6 +10,7 @@ public class ModularHelmet extends ArmorItem implements ModularItem {
         super(new ModularArmorMaterial(), Type.HELMET, new Settings());
     }
 
+    @Override
     public Text getName(ItemStack stack) {
         return DisplayNameProperty.getDisplayText(stack);
     }

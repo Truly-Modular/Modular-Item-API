@@ -8,7 +8,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.world.World;
 import smartin.miapi.item.modular.ModularItem;
-import smartin.miapi.item.modular.items.projectile.ItemProjectileEntity;
+import smartin.miapi.entity.ItemProjectileEntity;
 import smartin.miapi.modules.properties.DisplayNameProperty;
 
 public class ModularArrow extends ArrowItem implements ModularItem {

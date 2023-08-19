@@ -24,10 +24,7 @@ public class ParentCondition implements ModuleCondition {
 
     @Override
     public boolean isAllowed(ItemModule.ModuleInstance moduleInstance, @Nullable BlockPos tablePos, @Nullable PlayerEntity player, Map<ModuleProperty, JsonElement> propertyMap, List<Text> reasons) {
-        if (moduleInstance.parent != null && condition.isAllowed(moduleInstance.parent, tablePos, player, moduleInstance.parent.module.getKeyedProperties(), reasons)) {
-            return true;
-        }
-        return false;
+        return moduleInstance != null && moduleInstance.parent != null && condition.isAllowed(moduleInstance.parent, tablePos, player, moduleInstance.parent.module.getKeyedProperties(), reasons);
     }
 
     @Override

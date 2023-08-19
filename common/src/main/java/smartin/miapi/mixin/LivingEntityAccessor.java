@@ -9,10 +9,4 @@ public interface LivingEntityAccessor {
 
     @Accessor("attacking")
     void attacking(LivingEntity attacking);
-
-    /*
-    @Invoker("damageArmor")
-    void damageArmor(DamageSource source, float amount);
-
-     */
 }

@@ -11,7 +11,7 @@ import java.util.List;
 public abstract class NetworkingImpl{
     protected static final List<EventListener> listeners = new ArrayList<>();
 
-    public NetworkingImpl(){
+    protected NetworkingImpl(){
     }
 
     public abstract void sendPacketToServer(String identifier,PacketByteBuf buffer);

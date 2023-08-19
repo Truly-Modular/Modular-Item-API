@@ -1,4 +1,4 @@
-package smartin.miapi.item.modular.items.projectile;
+package smartin.miapi.entity;
 
 import dev.architectury.event.EventResult;
 import net.minecraft.block.BlockState;
@@ -28,9 +28,9 @@ import org.jetbrains.annotations.Nullable;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.events.MiapiProjectileEvents;
-import smartin.miapi.item.modular.items.projectile.arrowhitbehaviours.EntityBounceBehaviour;
-import smartin.miapi.item.modular.items.projectile.arrowhitbehaviours.EntityPierceBehaviour;
-import smartin.miapi.item.modular.items.projectile.arrowhitbehaviours.ProjectileHitBehaviour;
+import smartin.miapi.entity.arrowhitbehaviours.EntityBounceBehaviour;
+import smartin.miapi.entity.arrowhitbehaviours.EntityPierceBehaviour;
+import smartin.miapi.entity.arrowhitbehaviours.ProjectileHitBehaviour;
 import smartin.miapi.modules.abilities.util.WrappedSoundEvent;
 import smartin.miapi.modules.properties.AttributeProperty;
 import smartin.miapi.registries.RegistryInventory;

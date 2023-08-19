@@ -4,18 +4,13 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.tooltip.HoveredTooltipPositioner;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.client.gui.tooltip.TooltipPositioner;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.StringVisitable;
-import net.minecraft.text.Style;
 import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.Identifier;
 import org.joml.Vector2i;
 import org.joml.Vector2ic;
-import smartin.miapi.Miapi;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -103,6 +98,10 @@ public class HoverDescription extends InteractAbleWidget {
 
     public static class AbsoluteTooltipPositioner implements TooltipPositioner {
         public static final AbsoluteTooltipPositioner INSTANCE = new AbsoluteTooltipPositioner();
+
+        protected AbsoluteTooltipPositioner(){
+
+        }
 
         @Override
         public Vector2ic getPosition(int screenWidth, int screenHeight, int x, int y, int width, int height) {

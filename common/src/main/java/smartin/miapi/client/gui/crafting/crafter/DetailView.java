@@ -276,10 +276,10 @@ public class DetailView extends InteractAbleWidget {
         private final SimpleButton editButton;
         private final SimpleButton replaceButton;
         private int textColor = ColorHelper.Argb.getArgb(255, 255, 255, 255);
-        private static final int lineSpacing = 2;
-        private static final int buttonSpacing = 3;
-        private static final int minSize = 30;
-        private static final int HeaderSize = 11;
+        private static final int LINE_SPACING = 2;
+        private static final int BUTTON_SPACING = 3;
+        private static final int MIN_SIZE = 30;
+        private static final int HEADER_SIZE = 11;
 
         public ModuleDetail(int x, int y, int width, SlotProperty.ModuleSlot slot) {
             super(x, y, width, 10, Text.empty());
@@ -296,7 +296,7 @@ public class DetailView extends InteractAbleWidget {
             Text displayText = StatResolver.translateAndResolve(Miapi.MOD_ID + ".module." + moduleInstance.module.getName() + ".description", moduleInstance);
             description = new MultiLineTextWidget(x, y, width - 4, height, displayText);
             description.maxLineLength = this.width - 4;
-            description.spacer = lineSpacing;
+            description.spacer = LINE_SPACING;
             description.setText(displayText);
             String[] rawLines = displayText.getString().split("\n");
             for (String line : rawLines) {
@@ -310,17 +310,17 @@ public class DetailView extends InteractAbleWidget {
                 //idk why but if i remove the lambda it causes a npe
                 replace.accept(moduleSlot);
             }));
-            this.height = Math.max(minSize, lines.size() * (fontSize + lineSpacing) + buttonSpacing * 2 + Math.max(replaceButton.getHeight(), editButton.getHeight()) + buttonSpacing * 2 + HeaderSize);
-            this.height = Math.max(minSize, description.getHeight() + buttonSpacing * 2 + Math.max(replaceButton.getHeight(), editButton.getHeight()) + buttonSpacing * 2 + HeaderSize);
+            this.height = Math.max(MIN_SIZE, lines.size() * (fontSize + LINE_SPACING) + BUTTON_SPACING * 2 + Math.max(replaceButton.getHeight(), editButton.getHeight()) + BUTTON_SPACING * 2 + HEADER_SIZE);
+            this.height = Math.max(MIN_SIZE, description.getHeight() + BUTTON_SPACING * 2 + Math.max(replaceButton.getHeight(), editButton.getHeight()) + BUTTON_SPACING * 2 + HEADER_SIZE);
             addChild(editButton);
             addChild(replaceButton);
         }
 
         public void render(DrawContext drawContext, int mouseX, int mouseY, float delta) {
-            editButton.setX(this.getX() + buttonSpacing);
-            editButton.setY(this.getY() + this.getHeight() - editButton.getHeight() - buttonSpacing);
-            replaceButton.setX(this.getX() + this.getWidth() - replaceButton.getWidth() - buttonSpacing);
-            replaceButton.setY(this.getY() + this.getHeight() - replaceButton.getHeight() - buttonSpacing);
+            editButton.setX(this.getX() + BUTTON_SPACING);
+            editButton.setY(this.getY() + this.getHeight() - editButton.getHeight() - BUTTON_SPACING);
+            replaceButton.setX(this.getX() + this.getWidth() - replaceButton.getWidth() - BUTTON_SPACING);
+            replaceButton.setY(this.getY() + this.getHeight() - replaceButton.getHeight() - BUTTON_SPACING);
 
             drawContext.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
             RenderSystem.enableBlend();
@@ -329,13 +329,13 @@ public class DetailView extends InteractAbleWidget {
 
             drawTextureWithEdge(drawContext, texture, this.getX(), this.getY(), this.width, this.height, 156, 100, 5);
 
-            headerText.setX(this.getX() + buttonSpacing);
-            headerText.setY(this.getY() + buttonSpacing);
-            headerText.setWidth(this.width - 2 * buttonSpacing);
+            headerText.setX(this.getX() + BUTTON_SPACING);
+            headerText.setY(this.getY() + BUTTON_SPACING);
+            headerText.setWidth(this.width - 2 * BUTTON_SPACING);
 
             headerText.render(drawContext, mouseX, mouseY, delta);
 
-            int y = 4 + this.getY() + lineSpacing * 2 + HeaderSize; // the starting y position for the first line
+            int y = 4 + this.getY() + LINE_SPACING * 2 + HEADER_SIZE; // the starting y position for the first line
             description.setX(this.getX() + 2);
             description.setY(y);
             for (ScrollingTextWidget line : lines) {

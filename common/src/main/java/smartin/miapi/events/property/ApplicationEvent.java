@@ -46,7 +46,7 @@ public abstract class ApplicationEvent<I, L, A> {
      */
     @SuppressWarnings("unchecked")
     @SafeVarargs
-    public ApplicationEvent(String name, I... invokerGetter) {
+    protected ApplicationEvent(String name, I... invokerGetter) {
         invokerClass = (Class<I>) invokerGetter.getClass().getComponentType();
         allEvents.put(name.toLowerCase().replaceAll("[.-]", "_"), this);
         this.name = name;
@@ -123,8 +123,8 @@ public abstract class ApplicationEvent<I, L, A> {
      * @param <T> the interface for the invoker and listeners
      * @param <A> the additional data type
      */
-    public static abstract class Dynamic<T, A> extends ApplicationEvent<T, T, A> {
-        public Dynamic(String name, T... invokerGetter) {
+    public abstract static class Dynamic<T, A> extends ApplicationEvent<T, T, A> {
+        protected Dynamic(String name, T... invokerGetter) {
             super(name, invokerGetter);
         }
 

@@ -5,7 +5,6 @@ import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.CrossbowUser;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.FireworkRocketEntity;
@@ -40,9 +39,9 @@ import java.util.function.Predicate;
 public class CrossbowAbility implements ItemUseAbility {
     private boolean charged = false;
     private boolean loaded = false;
+    private static final String PROJECTILE_KEY = "ChargedProjectiles";
 
     public CrossbowAbility() {
-        CrossbowItem item;
     }
 
     @Override
@@ -89,7 +88,6 @@ public class CrossbowAbility implements ItemUseAbility {
             setCharged(itemStack, false);
             return TypedActionResult.consume(itemStack);
         } else if (!getProjectile(config.ammoPredicate, user).isEmpty()) {
-            //TODO:not use this check somehow?
             if (!isCharged(itemStack)) {
                 this.charged = false;
                 this.loaded = false;
@@ -142,7 +140,7 @@ public class CrossbowAbility implements ItemUseAbility {
         Miapi.LOGGER.warn("trying to load Projectile");
         int i = EnchantmentHelper.getLevel(Enchantments.MULTISHOT, projectile);
         int j = i == 0 ? 1 : 3;
-        boolean bl = shooter instanceof PlayerEntity && ((PlayerEntity) shooter).getAbilities().creativeMode;
+        boolean bl = shooter instanceof PlayerEntity playerEntity && playerEntity.getAbilities().creativeMode;
         ItemStack itemStack = shooter.getProjectileType(projectile);
         ItemStack itemStack2 = itemStack.copy();
 
@@ -173,8 +171,8 @@ public class CrossbowAbility implements ItemUseAbility {
             ItemStack itemStack;
             if (!bl && !creative && !simulated) {
                 itemStack = projectile.split(1);
-                if (projectile.isEmpty() && shooter instanceof PlayerEntity) {
-                    ((PlayerEntity) shooter).getInventory().removeOne(projectile);
+                if (projectile.isEmpty() && shooter instanceof PlayerEntity player) {
+                    player.getInventory().removeOne(projectile);
                 }
             } else {
                 itemStack = projectile.copy();
@@ -198,8 +196,8 @@ public class CrossbowAbility implements ItemUseAbility {
     private static void putProjectile(ItemStack crossbow, ItemStack projectile) {
         NbtCompound nbtCompound = crossbow.getOrCreateNbt();
         NbtList nbtList;
-        if (nbtCompound.contains("ChargedProjectiles", 9)) {
-            nbtList = nbtCompound.getList("ChargedProjectiles", 10);
+        if (nbtCompound.contains(PROJECTILE_KEY, 9)) {
+            nbtList = nbtCompound.getList(PROJECTILE_KEY, 10);
         } else {
             nbtList = new NbtList();
         }
@@ -207,14 +205,14 @@ public class CrossbowAbility implements ItemUseAbility {
         NbtCompound nbtCompound2 = new NbtCompound();
         projectile.writeNbt(nbtCompound2);
         nbtList.add(nbtCompound2);
-        nbtCompound.put("ChargedProjectiles", nbtList);
+        nbtCompound.put(PROJECTILE_KEY, nbtList);
     }
 
     private static List<ItemStack> getProjectiles(ItemStack crossbow) {
         List<ItemStack> list = Lists.newArrayList();
         NbtCompound nbtCompound = crossbow.getNbt();
-        if (nbtCompound != null && nbtCompound.contains("ChargedProjectiles", 9)) {
-            NbtList nbtList = nbtCompound.getList("ChargedProjectiles", 10);
+        if (nbtCompound != null && nbtCompound.contains(PROJECTILE_KEY, 9)) {
+            NbtList nbtList = nbtCompound.getList(PROJECTILE_KEY, 10);
             if (nbtList != null) {
                 for (int i = 0; i < nbtList.size(); ++i) {
                     NbtCompound nbtCompound2 = nbtList.getCompound(i);
@@ -229,9 +227,9 @@ public class CrossbowAbility implements ItemUseAbility {
     private static void clearProjectiles(ItemStack crossbow) {
         NbtCompound nbtCompound = crossbow.getNbt();
         if (nbtCompound != null) {
-            NbtList nbtList = nbtCompound.getList("ChargedProjectiles", 9);
+            NbtList nbtList = nbtCompound.getList(PROJECTILE_KEY, 9);
             nbtList.clear();
-            nbtCompound.put("ChargedProjectiles", nbtList);
+            nbtCompound.put(PROJECTILE_KEY, nbtList);
         }
 
     }
@@ -245,7 +243,7 @@ public class CrossbowAbility implements ItemUseAbility {
     private static void shoot(World world, LivingEntity shooter, Hand hand, ItemStack crossbow, ItemStack projectile, float soundPitch, boolean creative, float speed, float divergence, float simulated) {
         if (!world.isClient) {
             boolean bl = projectile.isOf(Items.FIREWORK_ROCKET);
-            Object projectileEntity;
+            ProjectileEntity projectileEntity;
             if (bl) {
                 projectileEntity = new FireworkRocketEntity(world, projectile, shooter, shooter.getX(), shooter.getEyeY() - 0.15000000596046448, shooter.getZ(), true);
             } else {
@@ -255,22 +253,21 @@ public class CrossbowAbility implements ItemUseAbility {
                 }
             }
 
-            if (shooter instanceof CrossbowUser) {
-                CrossbowUser crossbowUser = (CrossbowUser) shooter;
-                crossbowUser.shoot(crossbowUser.getTarget(), crossbow, (ProjectileEntity) projectileEntity, simulated);
+            if (shooter instanceof CrossbowUser crossbowUser) {
+                crossbowUser.shoot(crossbowUser.getTarget(), crossbow, projectileEntity, simulated);
             } else {
                 Vec3d vec3d = shooter.getOppositeRotationVector(1.0F);
-                Quaternionf quaternionf = (new Quaternionf()).setAngleAxis((double) (simulated * 0.017453292F), vec3d.x, vec3d.y, vec3d.z);
+                Quaternionf quaternionf = (new Quaternionf()).setAngleAxis((simulated * 0.017453292F), vec3d.x, vec3d.y, vec3d.z);
                 Vec3d vec3d2 = shooter.getRotationVec(1.0F);
                 Vector3f vector3f = vec3d2.toVector3f().rotate(quaternionf);
-                ((ProjectileEntity) projectileEntity).setVelocity((double) vector3f.x(), (double) vector3f.y(), (double) vector3f.z(), speed, divergence);
+                projectileEntity.setVelocity(vector3f.x(), vector3f.y(), vector3f.z(), speed, divergence);
             }
 
             crossbow.damage(bl ? 3 : 1, shooter, (e) -> {
                 e.sendToolBreakStatus(hand);
             });
-            world.spawnEntity((Entity) projectileEntity);
-            world.playSound((PlayerEntity) null, shooter.getX(), shooter.getY(), shooter.getZ(), SoundEvents.ITEM_CROSSBOW_SHOOT, SoundCategory.PLAYERS, 1.0F, soundPitch);
+            world.spawnEntity(projectileEntity);
+            world.playSound(null, shooter.getX(), shooter.getY(), shooter.getZ(), SoundEvents.ITEM_CROSSBOW_SHOOT, SoundCategory.PLAYERS, 1.0F, soundPitch);
         }
     }
 
@@ -296,8 +293,8 @@ public class CrossbowAbility implements ItemUseAbility {
         float[] fs = getSoundPitches(entity.getRandom());
 
         for (int i = 0; i < list.size(); ++i) {
-            ItemStack itemStack = (ItemStack) list.get(i);
-            boolean bl = entity instanceof PlayerEntity && ((PlayerEntity) entity).getAbilities().creativeMode;
+            ItemStack itemStack = list.get(i);
+            boolean bl = entity instanceof PlayerEntity playerEntity && playerEntity.getAbilities().creativeMode;
             if (!itemStack.isEmpty()) {
                 if (i == 0) {
                     shoot(world, entity, hand, stack, itemStack, fs[i], bl, speed, divergence, 0.0F);

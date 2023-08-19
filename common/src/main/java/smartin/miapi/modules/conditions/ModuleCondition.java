@@ -27,7 +27,7 @@ public interface ModuleCondition {
 
         @Override
         public void write(JsonWriter jsonWriter, ModuleCondition moduleCondition) throws IOException {
-
+            //This should never need to write
         }
 
         @Override

@@ -117,7 +117,6 @@ public class CraftAction {
 
         buf.writeInt(packetByteBuffs.length);
         for (PacketByteBuf packetByteBuf : packetByteBuffs) {
-            //buf.writeBytes(packetByteBuf);
             buf.writeByteArray(packetByteBuf.array());
         }
 

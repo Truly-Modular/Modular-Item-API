@@ -36,10 +36,10 @@ public class MiapiPerm implements ModuleCondition {
 
     @Override
     public ModuleCondition load(JsonElement element) {
-        List<String> perms = new ArrayList<>();
+        List<String> permList = new ArrayList<>();
         element.getAsJsonObject().get("perms").getAsJsonArray().forEach(element1 -> {
-            perms.add(element1.getAsString());
+            permList.add(element1.getAsString());
         });
-        return new MiapiPerm(perms);
+        return new MiapiPerm(permList);
     }
 }

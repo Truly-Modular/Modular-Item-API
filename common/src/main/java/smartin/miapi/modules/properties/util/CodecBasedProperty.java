@@ -21,7 +21,7 @@ public abstract class CodecBasedProperty<T> implements ModuleProperty {
     private final String key;
     protected final Codec<T> codec;
 
-    public CodecBasedProperty(String key, Codec<T> codec) {
+    protected CodecBasedProperty(String key, Codec<T> codec) {
         this.key = key;
         this.codec = codec;
 
@@ -41,7 +41,7 @@ public abstract class CodecBasedProperty<T> implements ModuleProperty {
 
     public T createCache(ItemStack stack) {
         JsonElement element = ItemModule.getMergedProperty(stack, this);
-        if(element == null){
+        if (element == null) {
             return null;
         }
         return codec.parse(JsonOps.INSTANCE, element).getOrThrow(false, s -> {

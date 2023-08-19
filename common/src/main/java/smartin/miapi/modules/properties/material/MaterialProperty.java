@@ -165,7 +165,7 @@ public class MaterialProperty implements ModuleProperty {
             return "{material:empty}";
         });
         JsonObject moduleJson = Miapi.gson.fromJson(propertyString, JsonObject.class);
-        moduleJson.addProperty("material", material);
+        moduleJson.addProperty(KEY, material);
         instance.moduleData.put("properties", Miapi.gson.toJson(moduleJson));
     }
 

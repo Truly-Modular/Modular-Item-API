@@ -24,7 +24,6 @@ public class ItemMiapiModel implements MiapiModel {
     @Override
     public void render(MatrixStack matrices, ItemStack stack, ModelTransformationMode transformationMode, float tickDelta, VertexConsumerProvider vertexConsumers, LivingEntity entity, int light, int overlay) {
         matrices.push();
-        //Miapi.LOGGER.warn("rendering ItemModel");
         matrices.multiplyPositionMatrix(matrix4f);
         ItemStack modelStack = stackSupplier.get();
         MinecraftClient.getInstance().getItemRenderer().renderItem(modelStack,transformationMode,light,overlay,matrices,vertexConsumers,MinecraftClient.getInstance().world, 0);

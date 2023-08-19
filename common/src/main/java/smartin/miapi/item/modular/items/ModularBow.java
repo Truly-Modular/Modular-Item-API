@@ -23,7 +23,7 @@ import smartin.miapi.client.model.ModularModelPredicateProvider;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.events.MiapiProjectileEvents;
 import smartin.miapi.item.modular.ModularItem;
-import smartin.miapi.item.modular.items.projectile.ItemProjectileEntity;
+import smartin.miapi.entity.ItemProjectileEntity;
 import smartin.miapi.modules.properties.AttributeProperty;
 import smartin.miapi.modules.properties.DisplayNameProperty;
 
@@ -71,7 +71,6 @@ public class ModularBow extends BowItem implements ModularItem {
             if (itemProjectile instanceof ItemProjectileEntity modularProjectile) {
                 modularProjectile.setSpeedDamage(true);
             }
-            //ItemProjectile itemProjectile = new ItemProjectile(world, playerEntity, projectileStackConsumed);
             itemProjectile.setPierceLevel((byte) ((byte) (int) AttributeProperty.getActualValue(projectileStack, EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_PIERCING) + piercingLevel));
 
             float divergence = (float) Math.pow(12.0, -AttributeProperty.getActualValue(bowStack, EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_ACCURACY));
@@ -83,7 +82,7 @@ public class ModularBow extends BowItem implements ModularItem {
                 itemProjectile.setCritical(true);
             }
             if (powerLevel > 0) {
-                itemProjectile.setDamage(itemProjectile.getDamage() + (double) powerLevel * 0.5 + 0.5);
+                itemProjectile.setDamage(itemProjectile.getDamage() + powerLevel * 0.5 + 0.5);
             }
             if (punchLevel > 0) {
                 itemProjectile.setPunch(punchLevel);

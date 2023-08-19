@@ -21,23 +21,28 @@ public class ModularWeapon extends Item implements ModularItem {
         super(new Settings().fireproof().maxCount(1).maxDamage(500).rarity(Rarity.COMMON));
     }
 
+    @Override
     public boolean canMine(BlockState state, World world, BlockPos pos, PlayerEntity miner) {
         return MiningLevelProperty.canMine(state, world, pos, miner);
     }
 
+    @Override
     public float getMiningSpeedMultiplier(ItemStack stack, BlockState state) {
         return MiningLevelProperty.getMiningSpeedMultiplier(stack, state);
     }
 
+    @Override
     public int getItemBarStep(ItemStack stack) {
         return Math.round(13.0F - (float)stack.getDamage() * 13.0F / ModularItem.getDurability(stack));
     }
 
+    @Override
     public int getItemBarColor(ItemStack stack) {
         float f = Math.max(0.0F, ((float) ModularItem.getDurability(stack) - (float)stack.getDamage()) / ModularItem.getDurability(stack));
         return MathHelper.hsvToRgb(f / 3.0F, 1.0F, 1.0F);
     }
 
+    @Override
     public boolean postHit(ItemStack stack, LivingEntity target, LivingEntity attacker) {
         if(ToolOrWeaponProperty.isWeapon(stack)){
             stack.damage(1,attacker, (e) -> {
@@ -52,6 +57,7 @@ public class ModularWeapon extends Item implements ModularItem {
         return true;
     }
 
+    @Override
     public boolean postMine(ItemStack stack, World world, BlockState state, BlockPos pos, LivingEntity miner) {
         if (!world.isClient && state.getHardness(world, pos) != 0.0F) {
             if(ToolOrWeaponProperty.isWeapon(stack)){
@@ -69,15 +75,17 @@ public class ModularWeapon extends Item implements ModularItem {
         return true;
     }
 
-
+    @Override
     public Text getName(ItemStack stack) {
         return DisplayNameProperty.getDisplayText(stack);
     }
 
+    @Override
     public UseAction getUseAction(ItemStack stack) {
         return ItemAbilityManager.getUseAction(stack);
     }
 
+    @Override
     public int getMaxUseTime(ItemStack stack) {
         return ItemAbilityManager.getMaxUseTime(stack);
     }
@@ -97,19 +105,23 @@ public class ModularWeapon extends Item implements ModularItem {
         return ItemAbilityManager.finishUsing(stack, world, user);
     }
 
+    @Override
     public void usageTick(World world, LivingEntity user, ItemStack stack, int remainingUseTicks) {
         ItemAbilityManager.usageTick(world, user, stack, remainingUseTicks);
     }
 
+    @Override
     public boolean isUsedOnRelease(ItemStack stack) {
         //TODO;
         return true;
     }
 
+    @Override
     public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
         return ItemAbilityManager.useOnEntity(stack, user, entity, hand);
     }
 
+    @Override
     public ActionResult useOnBlock(ItemUsageContext context) {
         return ItemAbilityManager.useOnBlock(context);
     }

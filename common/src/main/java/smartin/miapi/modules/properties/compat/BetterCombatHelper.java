@@ -21,7 +21,6 @@ public class BetterCombatHelper {
 
     private static float getAttackRange(ItemStack stack) {
         return (float) (AttributeProperty.getActualValueFrom(AttributeProperty.getAttributeModifiersRaw(stack), EquipmentSlot.MAINHAND, AttributeRegistry.ATTACK_RANGE, 0) + 2.5f);
-        //return (float) 3.0;
     }
 
     private static net.bettercombat.api.WeaponAttributes getAttributesContainer(ItemStack stack) {
@@ -42,8 +41,7 @@ public class BetterCombatHelper {
         }
         String jsonString = data.toString();
         JsonReader jsonReader = new JsonReader(new StringReader(jsonString));
-        net.bettercombat.api.WeaponAttributes attributes = net.bettercombat.logic.WeaponRegistry.resolveAttributes(new Identifier(Miapi.MOD_ID, "modular_item"), net.bettercombat.api.WeaponAttributesHelper.decode(jsonReader));
-        return attributes;
+        return net.bettercombat.logic.WeaponRegistry.resolveAttributes(new Identifier(Miapi.MOD_ID, "modular_item"), net.bettercombat.api.WeaponAttributesHelper.decode(jsonReader));
     }
 
     public static net.bettercombat.api.WeaponAttributes getAttributes(ItemStack stack) {

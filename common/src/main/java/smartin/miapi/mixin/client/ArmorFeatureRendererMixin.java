@@ -14,6 +14,7 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -25,7 +26,7 @@ import java.util.Arrays;
 
 @Mixin(value = ArmorFeatureRenderer.class, priority = 700)
 public abstract class ArmorFeatureRendererMixin<T extends LivingEntity, M extends BipedEntityModel<T>, A extends BipedEntityModel<T>> extends FeatureRenderer<T, M> {
-    public ArmorFeatureRendererMixin(FeatureRendererContext<T, M> context) {
+    protected ArmorFeatureRendererMixin(FeatureRendererContext<T, M> context) {
         super(context);
     }
 
@@ -42,6 +43,7 @@ public abstract class ArmorFeatureRendererMixin<T extends LivingEntity, M extend
         }
     }
 
+    @Unique
     private void renderPieces(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, EquipmentSlot armorSlot, ItemStack itemStack, T entity) {
         Arrays.stream(modelParts).forEach(partId -> {
             A armorModel = getArmor(armorSlot);
@@ -61,7 +63,7 @@ public abstract class ArmorFeatureRendererMixin<T extends LivingEntity, M extend
 
     private static final String[] modelParts = {"head", "hat", "left_arm", "right_arm", "left_leg", "right_leg", "body"};
 
-    private static ModelPart getModelPart(BipedEntityModel model, String name) {
+    private static ModelPart getModelPart(BipedEntityModel<?> model, String name) {
         return switch (name) {
             case "head" -> model.head;
             case "hat" -> model.hat;

@@ -20,10 +20,6 @@ import smartin.miapi.modules.properties.BlockProperty;
  */
 public class BlockAbility extends EntityAttributeAbility {
 
-    public BlockAbility() {
-
-    }
-
     @Override
     protected Multimap<EntityAttribute, EntityAttributeModifier> getAttributes(ItemStack itemStack) {
         Multimap<EntityAttribute, EntityAttributeModifier> multimap = ArrayListMultimap.create();
@@ -33,11 +29,6 @@ public class BlockAbility extends EntityAttributeAbility {
         multimap.put(AttributeRegistry.DAMAGE_RESISTANCE, new EntityAttributeModifier("test", value, EntityAttributeModifier.Operation.ADDITION));
         return multimap;
     }
-
-    /*@Override
-    public UseAction getUseAction(ItemStack itemStack) {
-        return UseAction.BLOCK;
-    }*/
 
     public static double calculate(double value){
         return (160.0 / (1 + Math.exp(-value / 50.0))) - 80.0;

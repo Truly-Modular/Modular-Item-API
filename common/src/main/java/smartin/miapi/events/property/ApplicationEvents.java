@@ -23,7 +23,7 @@ import org.apache.logging.log4j.util.TriConsumer;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.events.MiapiEvents;
-import smartin.miapi.item.modular.items.projectile.ItemProjectileEntity;
+import smartin.miapi.entity.ItemProjectileEntity;
 import smartin.miapi.modules.abilities.util.ItemUseAbility;
 import smartin.miapi.modules.properties.PlaySoundProperty;
 
@@ -137,7 +137,7 @@ public class ApplicationEvents {
 
     public static void setup() {
         /*// Nucleus's autocodec override for ApplicationEvents - now baked into the ApplicationEvent via annotation
-        AutoCodec.addInherit(ApplicationEvent.class, () -> ApplicationEvent.codec);*/
+        */
 
         // ENTITY EVENTS
         registerEntityEvent((listener, stackGetter) -> {
@@ -300,12 +300,12 @@ public class ApplicationEvents {
         // ENTITY REDIRECTORS
         registerEntityRedirector("attacker", entity -> entity instanceof LivingEntity living ? living.getAttacker() : null);
         registerEntityRedirector("attacking", entity -> entity instanceof LivingEntity living ? living.getAttacking() : null);
-        registerEntityRedirector("vehicle", entity -> entity.getVehicle());
-        registerEntityRedirector("root_vehicle", entity -> entity.getRootVehicle());
-        registerEntityRedirector("main_passenger", entity -> entity.getFirstPassenger());
+        registerEntityRedirector("vehicle", Entity::getVehicle);
+        registerEntityRedirector("root_vehicle", Entity::getRootVehicle);
+        registerEntityRedirector("main_passenger", Entity::getFirstPassenger);
     }
 
-    public static ApplicationEvent.Dynamic<EntityInvoker, StackGetterHolder<?>> ENTITY_RELATED = new ApplicationEvent.Dynamic<>("entity_event") {
+    public static final ApplicationEvent.Dynamic<EntityInvoker, StackGetterHolder<?>> ENTITY_RELATED = new ApplicationEvent.Dynamic<>("entity_event") {
         @Override
         protected boolean canCall(Object[] params, StackGetterHolder<?> additionalData) {
             return true;

@@ -11,6 +11,7 @@ public class ModularBoots extends ArmorItem implements ModularItem {
         super(new ModularArmorMaterial(),Type.BOOTS,new Settings());
     }
 
+    @Override
     public Text getName(ItemStack stack) {
         return DisplayNameProperty.getDisplayText(stack);
     }

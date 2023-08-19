@@ -1,8 +1,8 @@
-package smartin.miapi.item.modular.items.projectile.arrowhitbehaviours;
+package smartin.miapi.entity.arrowhitbehaviours;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.util.hit.EntityHitResult;
-import smartin.miapi.item.modular.items.projectile.ItemProjectileEntity;
+import smartin.miapi.entity.ItemProjectileEntity;
 
 /**
  * This Behaviour is for determining what happens to the Projectile After it nbtEvent an Entity.

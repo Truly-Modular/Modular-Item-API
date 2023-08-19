@@ -26,10 +26,6 @@ import smartin.miapi.modules.properties.EquipmentSlotProperty;
 @Mixin(LivingEntity.class)
 abstract class LivingEntityMixin {
 
-    //LivingEntityMixin(final EntityType<?> type, final World world) {
-    //    super(type, world);
-    //}
-
     @Inject(method = "<init>(Lnet/minecraft/entity/EntityType;Lnet/minecraft/world/World;)V", at = @At("TAIL"), cancellable = false)
     private void miapi$constructor(EntityType entityType, World world, CallbackInfo ci) {
         LivingEntity entity = (LivingEntity) (Object) this;

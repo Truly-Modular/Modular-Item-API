@@ -185,13 +185,13 @@ public class PropertySubstitution {
             Pattern pattern = Pattern.compile("\\[(.*?)]");
             Matcher matcher = pattern.matcher(expression);
             while (matcher.find()) {
-                String var = matcher.group(1);
-                JsonElement value = storedValues.get(var);
+                String targetVariable = matcher.group(1);
+                JsonElement value = storedValues.get(targetVariable);
                 if (!(value instanceof JsonPrimitive)) {
-                    Miapi.LOGGER.error("Target value for stored variable '" + var + "' referenced in calulcate value resolver in a PropertySubstitution is not a JSON primitive!");
+                    Miapi.LOGGER.error("Target value for stored variable '" + targetVariable + "' referenced in calulcate value resolver in a PropertySubstitution is not a JSON primitive!");
                     throw new RuntimeException();
                 }
-                expression = expression.replace("[" + var + "]", value.getAsString());
+                expression = expression.replace("[" + targetVariable + "]", value.getAsString());
             }
 
             Expression ex = new Expression(expression);
@@ -208,9 +208,9 @@ public class PropertySubstitution {
             Pattern pattern = Pattern.compile("\\[(.*?)]");
             Matcher matcher = pattern.matcher(string);
             while (matcher.find()) {
-                String var = matcher.group(1);
-                JsonElement value = storedValues.get(var);
-                string = string.replace("[" + var + "]", value.getAsString());
+                String targetVar = matcher.group(1);
+                JsonElement value = storedValues.get(targetVar);
+                string = string.replace("[" + targetVar + "]", value.getAsString());
             }
 
             return new JsonPrimitive(string);

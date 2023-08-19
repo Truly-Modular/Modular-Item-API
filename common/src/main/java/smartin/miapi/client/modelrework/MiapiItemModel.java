@@ -21,14 +21,14 @@ public class MiapiItemModel implements MiapiModel {
     public static List<ModelTransformer> modelTransformers = new ArrayList<>();
     public final ItemStack stack;
     public final ModuleModel rootModel;
-    private final static String cacheKey = "miapi_model_rework";
+    private final static String CACHE_KEY = "miapi_model_rework";
 
     static {
-        ModularItemCache.setSupplier(cacheKey, (MiapiItemModel::new));
+        ModularItemCache.setSupplier(CACHE_KEY, (MiapiItemModel::new));
     }
 
     public static MiapiItemModel getItemModel(ItemStack stack) {
-        return (MiapiItemModel) ModularItemCache.get(stack, cacheKey);
+        return (MiapiItemModel) ModularItemCache.get(stack, CACHE_KEY);
     }
 
     private MiapiItemModel(ItemStack stack) {

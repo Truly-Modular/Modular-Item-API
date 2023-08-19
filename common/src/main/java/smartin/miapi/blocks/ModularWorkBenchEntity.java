@@ -5,6 +5,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.network.listener.ClientPlayPacketListener;
@@ -13,12 +14,9 @@ import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.PropertyDelegate;
 import net.minecraft.screen.ScreenHandler;
-import net.minecraft.screen.ScreenHandlerListener;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
-
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.event.BlockPositionSource;
 import net.minecraft.world.event.GameEvent;
@@ -182,11 +180,11 @@ public class ModularWorkBenchEntity extends BlockEntity implements NamedScreenHa
         EventResult result = MiapiEvents.ITEM_STAT_UPDATE.invoker().call(this, inventory, player);
         if (result.interruptsFurtherEvaluation()) return;
         itemStats.clear();
-        inventory.forEach(stack -> {
-            CraftingStat.StatMap<?> stats = StatProvisionProperty.property.get(stack);
+        inventory.forEach(itemStack -> {
+            CraftingStat.StatMap<?> stats = StatProvisionProperty.property.get(itemStack);
             if (stats == null) {
-                if (player != null && stack.getItem() instanceof StatProvidingItem item)
-                    stats = item.getStats(this, player, stack);
+                if (player != null && itemStack.getItem() instanceof StatProvidingItem item)
+                    stats = item.getStats(this, player, itemStack);
                 else return;
             }
             stats.forEach((stat, inst) -> setItemStat((CraftingStat<Object>) stat, inst)); // casting here weirdly because uh java is weird
@@ -211,7 +209,7 @@ public class ModularWorkBenchEntity extends BlockEntity implements NamedScreenHa
     public ScreenHandler createMenu(int syncId, PlayerInventory playerInventory, PlayerEntity player) {
         updateBlockStats(player);
         CraftingScreenHandler handler = new CraftingScreenHandler(syncId, playerInventory, this, propertyDelegate);
-        handler.addListener(new SimpleScreenHandlerListener((h, slotId, stack) -> {
+        handler.addListener(new SimpleScreenHandlerListener((h, slotId, itemStack) -> {
             long currentWorldTime;
             if (
                     hasWorld() && !world.isClient &&

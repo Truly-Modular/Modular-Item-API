@@ -8,13 +8,10 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -64,7 +61,7 @@ public abstract class ItemStackMixin {
     public void miapi$injectIsSuitable(BlockState state, CallbackInfoReturnable<Boolean> cir) {
         ItemStack stack = (ItemStack) (Object) this;
         if (stack.getItem() instanceof ModularItem) {
-            cir.setReturnValue(MiningLevelProperty.IsSuitable(stack, state));
+            cir.setReturnValue(MiningLevelProperty.isSuitable(stack, state));
         }
     }
 }

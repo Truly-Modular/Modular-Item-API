@@ -46,7 +46,7 @@ public abstract class InteractAbleWidget extends ClickableWidget implements Draw
      *               These for Params above are used to create feedback on isMouseOver() by default
      * @param title  the Title of the Widget
      */
-    public InteractAbleWidget(int x, int y, int width, int height, Text title) {
+    protected InteractAbleWidget(int x, int y, int width, int height, Text title) {
         super(x, y, width, height, title);
     }
 
@@ -66,7 +66,6 @@ public abstract class InteractAbleWidget extends ClickableWidget implements Draw
      * @param color       color of the border
      */
     public static void drawSquareBorder(DrawContext drawContext, int x, int y, int width, int height, int borderWidth, int color) {
-        //TODO:reimplement this
         //Top
         drawContext.fill(x, y, x + width, y + borderWidth, color);
         //Bottom
@@ -166,8 +165,8 @@ public abstract class InteractAbleWidget extends ClickableWidget implements Draw
 
     public List<InteractAbleWidget> getHoverElements() {
         List<InteractAbleWidget> allHoverElements = new ArrayList<>(hoverElements);
-        children().forEach(children -> {
-            if (children instanceof InteractAbleWidget widget) {
+        children().forEach(currentChildren -> {
+            if (currentChildren instanceof InteractAbleWidget widget) {
                 allHoverElements.addAll(widget.getHoverElements());
             }
         });
@@ -394,8 +393,8 @@ public abstract class InteractAbleWidget extends ClickableWidget implements Draw
      *                    This is needed for animations and co
      */
     public void renderHover(DrawContext drawContext, int mouseX, int mouseY, float delta) {
-        hoverElements.forEach(hoverElements -> {
-            hoverElements.render(drawContext, mouseX, mouseY, delta);
+        hoverElements.forEach(widget -> {
+            widget.render(drawContext, mouseX, mouseY, delta);
         });
         children().forEach(element -> {
             if (element instanceof InteractAbleWidget widget) {

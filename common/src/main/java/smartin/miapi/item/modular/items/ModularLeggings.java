@@ -11,6 +11,7 @@ public class ModularLeggings extends ArmorItem implements ModularItem {
         super(new ModularArmorMaterial(),Type.LEGGINGS,new Settings());
     }
 
+    @Override
     public Text getName(ItemStack stack) {
         return DisplayNameProperty.getDisplayText(stack);
     }

@@ -4,7 +4,6 @@ import com.google.gson.JsonElement;
 import com.mojang.serialization.JsonOps;
 import com.redpxnda.nucleus.datapack.codec.MiscCodecs;
 import com.redpxnda.nucleus.util.Color;
-import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Util;
 import smartin.miapi.Miapi;
@@ -38,7 +37,6 @@ public class GlintProperty implements ModuleProperty {
 
     static GlintSettings getStatic(ItemModule.ModuleInstance instance, ItemStack stack) {
         if (true) {
-            ItemRenderer renderer;
             return glintSettingsMap.get("rainbow").get(instance, stack);
         }
         JsonElement element = instance.getProperties().get(property);
@@ -56,24 +54,23 @@ public class GlintProperty implements ModuleProperty {
         public Color color;
         public float a = 1;
         public float speed = 1;
-        public boolean shouldRender;
+        public boolean shouldRenderGlint;
 
         public JsonGlintSettings(ItemModule.ModuleInstance instance, ItemStack stack) {
-            shouldRender = stack.hasGlint();
+            shouldRenderGlint = stack.hasGlint();
             JsonElement element = instance.getProperties().get(property);
             if (element != null) {
                 if (element.getAsJsonObject().has("color")) {
-                    Color color = MiscCodecs.COLOR.parse(JsonOps.INSTANCE, element.getAsJsonObject().get("color")).getOrThrow(false, s -> {
+                    this.color = MiscCodecs.COLOR.parse(JsonOps.INSTANCE, element.getAsJsonObject().get("color")).getOrThrow(false, s -> {
                         Miapi.LOGGER.error("Failed to decode using color for GlintProperty! -> " + s);
                     });
-                    this.color = color;
                     a = color.a() * 2;
                 }
                 if (element.getAsJsonObject().has("speed")) {
                     speed = (float) StatResolver.resolveDouble(element.getAsJsonObject().get("speed"), instance);
                 }
                 if (element.getAsJsonObject().has("should_render")) {
-                    shouldRender = element.getAsJsonObject().get("should_render").getAsBoolean();
+                    shouldRenderGlint = element.getAsJsonObject().get("should_render").getAsBoolean();
                 }
             }
         }
@@ -105,7 +102,7 @@ public class GlintProperty implements ModuleProperty {
         }
 
         public boolean shouldRender() {
-            return shouldRender;
+            return shouldRenderGlint;
         }
     }
 
@@ -115,14 +112,14 @@ public class GlintProperty implements ModuleProperty {
         public float speed = 1;
         public float rainbowSpeed = 1;
         public float strength = 1;
-        public boolean shouldRender;
+        public boolean shouldRenderGlint;
         int colorCount = 3;
 
         @Override
         public GlintSettings get(ItemModule.ModuleInstance instance, ItemStack stack) {
             JsonElement element = instance.getProperties().get(property);
             RainbowGlintSettings rainbowGlintSettings = new RainbowGlintSettings();
-            rainbowGlintSettings.shouldRender = stack.hasGlint();
+            rainbowGlintSettings.shouldRenderGlint = stack.hasGlint();
             if (element != null) {
                 if (element.getAsJsonObject().has("rainbowSpeed")) {
                     rainbowGlintSettings.rainbowSpeed = (float) StatResolver.resolveDouble(element.getAsJsonObject().get("rainbowSpeed"), instance);
@@ -134,7 +131,7 @@ public class GlintProperty implements ModuleProperty {
                     rainbowGlintSettings.strength = (float) StatResolver.resolveDouble(element.getAsJsonObject().get("strength"), instance);
                 }
                 if (element.getAsJsonObject().has("should_render")) {
-                    rainbowGlintSettings.shouldRender = element.getAsJsonObject().get("should_render").getAsBoolean();
+                    rainbowGlintSettings.shouldRenderGlint = element.getAsJsonObject().get("should_render").getAsBoolean();
                 }
             }
             return rainbowGlintSettings;
@@ -163,7 +160,7 @@ public class GlintProperty implements ModuleProperty {
 
         @Override
         public boolean shouldRender() {
-            return shouldRender;
+            return shouldRenderGlint;
         }
     }
 

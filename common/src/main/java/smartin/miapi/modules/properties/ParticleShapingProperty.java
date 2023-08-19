@@ -47,10 +47,10 @@ public class ParticleShapingProperty extends CodecBasedProperty<List<ParticleSha
                     if (manager != null) {
                         LootCondition condition = manager.getElement(LootDataType.PREDICATES, holder.predicate.get());
                         if (condition != null) {
-                            LootContextParameterSet.Builder builder = new LootContextParameterSet.Builder(world)
+                            LootContextParameterSet.builder builder = new LootContextParameterSet.builder(world)
                                     .add(LootContextParameters.THIS_ENTITY, entity)
                                     .add(LootContextParameters.ORIGIN, entity.getPos());
-                            if (!condition.test(new LootContext.Builder(builder.build(LootContextTypes.SELECTOR)).build(null))) continue;
+                            if (!condition.test(new LootContext.builder(builder.build(LootContextTypes.SELECTOR)).build(null))) continue;
                         } else
                             Miapi.LOGGER.warn("Found null predicate during ParticleShapingProperty shaping.");
                     }
@@ -85,7 +85,7 @@ public class ParticleShapingProperty extends CodecBasedProperty<List<ParticleSha
     }
 
     public static class Holder {
-       /* private static final Codec<ValueTester<PropAppOld.Ability>> abConditions = new ValueTester.Builder<PropAppOld.Ability>()
+       /* private static final Codec<ValueTester<PropAppOld.Ability>> abConditions = new ValueTester.builder<PropAppOld.Ability>()
                 .add("name", Codec.STRING, (ab, name) -> {
                     if (name.equals("$all")) return true;
                     ItemUseAbility ability = ItemAbilityManager.useAbilityRegistry.get(name);

@@ -138,7 +138,6 @@ public class AllowedMaterial implements CraftingProperty, ModuleProperty {
     @Environment(EnvType.CLIENT)
     class MaterialCraftingWidget extends InteractAbleWidget {
         private final Identifier texture = new Identifier(Miapi.MOD_ID, "textures/gui/crafter/material_background.png");
-        private final CraftAction action;
         private final TransformableWidget headerHolder;
         private final ScrollingTextWidget header;
         private final MultiLineTextWidget description;
@@ -149,7 +148,6 @@ public class AllowedMaterial implements CraftingProperty, ModuleProperty {
 
         public MaterialCraftingWidget(int x, int y, int width, int height, CraftAction action) {
             super(x, y, width, height, Text.literal("Test"));
-            this.action = action;
 
             ItemModule.ModuleInstance moduleInstance = new ItemModule.ModuleInstance(action.toAdd);
             Text displayText = StatResolver.translateAndResolve(Miapi.MOD_ID + ".module." + moduleInstance.module.getName(), moduleInstance);
@@ -172,10 +170,8 @@ public class AllowedMaterial implements CraftingProperty, ModuleProperty {
         }
 
         public void render(DrawContext drawContext, int mouseX, int mouseY, float delta) {
-            //RenderSystem.enableBlend();
             RenderSystem.enableDepthTest();
 
-            int textureSize = 30;
             int textureOffset = 0;
 
             if (materialCostClient < materialRequirementClient) {
@@ -188,7 +184,6 @@ public class AllowedMaterial implements CraftingProperty, ModuleProperty {
 
             drawContext.drawTexture(texture, getX(), getY(), 0, textureOffset, 0, this.width, this.height, this.width, this.height);
 
-            //drawSquareBorder(matrices, x, y - 30, width, height, 4, ColorHelper.Argb.getArgb(255, 255, 255, 255));
             super.render(drawContext, mouseX, mouseY, delta);
         }
     }

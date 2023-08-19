@@ -48,8 +48,6 @@ public class GuiOffsetProperty implements ModuleProperty {
                         guiOffsetJson.sizeY += sizeVec.y();
                     }
                 }
-                //guiOffsetJson.x -= (guiOffsetJson.sizeX/2);
-                //guiOffsetJson.y -= (guiOffsetJson.sizeY/2);
                 float baseSize = 16f;
                 guiOffsetJson.x = guiOffsetJson.x / baseSize;
                 guiOffsetJson.y = guiOffsetJson.y / baseSize;

@@ -38,85 +38,85 @@ public class StatDisplay extends InteractAbleWidget {
                 stk -> statTranslation("tipped"))
                 .withLimitedDescSize(350).withArrowsInTitle());
         addStatDisplay(AttributeSingleDisplay
-                .Builder(EntityAttributes.GENERIC_ATTACK_DAMAGE)
+                .builder(EntityAttributes.GENERIC_ATTACK_DAMAGE)
                 .setTranslationKey("damage")
                 .setDefault(1)
                 .setMax(13.0).build());
         addStatDisplay(AttributeSingleDisplay
-                .Builder(EntityAttributes.GENERIC_ATTACK_SPEED)
+                .builder(EntityAttributes.GENERIC_ATTACK_SPEED)
                 .setTranslationKey("attack_speed")
                 .setDefault(4)
                 .setMax(4.0).build());
         addStatDisplay(new DpsStatDisplay());
         addStatDisplay(AttributeSingleDisplay
-                .Builder(AttributeRegistry.ITEM_DURABILITY)
+                .builder(AttributeRegistry.ITEM_DURABILITY)
                 .setTranslationKey("durability")
                 .setDefault(0)
                 .setFormat("##")
                 .setMax(2000).build());
         addStatDisplay(AttributeSingleDisplay
-                .Builder(AttributeRegistry.BACK_STAB)
+                .builder(AttributeRegistry.BACK_STAB)
                 .setTranslationKey("back_stab")
                 .setDefault(1)
                 .setFormat("##.#")
                 .setMax(5).build());
         addStatDisplay(AttributeSingleDisplay
-                .Builder(AttributeRegistry.SHIELD_BREAK)
+                .builder(AttributeRegistry.SHIELD_BREAK)
                 .setTranslationKey("shield_break")
                 .setDefault(0)
                 .setFormat("##.#")
                 .setMax(5).build());
         addStatDisplay(AttributeSingleDisplay
-                .Builder(AttributeRegistry.REACH)
+                .builder(AttributeRegistry.REACH)
                 .setTranslationKey("reach")
                 .setDefault(0)
                 .setFormat("##.#")
                 .setMax(2).build());
         addStatDisplay(AttributeSingleDisplay
-                .Builder(AttributeRegistry.ATTACK_RANGE)
+                .builder(AttributeRegistry.ATTACK_RANGE)
                 .setTranslationKey("attack_range")
                 .setDefault(0)
                 .setFormat("##.#")
                 .setMax(2).build());
         addStatDisplay(AttributeSingleDisplay
-                .Builder(AttributeRegistry.PROJECTILE_DAMAGE)
+                .builder(AttributeRegistry.PROJECTILE_DAMAGE)
                 .setTranslationKey("projectile_damage")
                 .setFormat("##.##")
                 .setDefault(0)
                 .setMax(10).build());
         addStatDisplay(AttributeSingleDisplay
-                .Builder(AttributeRegistry.PROJECTILE_SPEED)
+                .builder(AttributeRegistry.PROJECTILE_SPEED)
                 .setTranslationKey("projectile_speed")
                 .setFormat("##.##")
                 .setDefault(0)
                 .setMax(10).build());
         addStatDisplay(AttributeSingleDisplay
-                .Builder(AttributeRegistry.PROJECTILE_ACCURACY)
+                .builder(AttributeRegistry.PROJECTILE_ACCURACY)
                 .setTranslationKey("projectile_accuracy")
                 .setFormat("##.##")
                 .setDefault(0)
                 .setMax(10).build());
         addStatDisplay(AttributeSingleDisplay
-                .Builder(AttributeRegistry.PROJECTILE_PIERCING)
+                .builder(AttributeRegistry.PROJECTILE_PIERCING)
                 .setTranslationKey("projectile_piercing")
                 .setFormat("##.##")
                 .setMax(10).build());
         addStatDisplay(AttributeSingleDisplay
-                .Builder(AttributeRegistry.PROJECTILE_CRIT_MULTIPLIER)
+                .builder(AttributeRegistry.PROJECTILE_CRIT_MULTIPLIER)
                 .setTranslationKey("projectile_crit_multiplier")
                 .setFormat("##.##")
                 .setMax(10).build());
         addStatDisplay(MiningLevelStatDisplay
-                .Builder("pickaxe")
+                .builder("pickaxe")
                 .setAttribute(AttributeRegistry.MINING_SPEED_PICKAXE).build());
         addStatDisplay(MiningLevelStatDisplay
-                .Builder("axe")
+                .builder("axe")
                 .setAttribute(AttributeRegistry.MINING_SPEED_AXE).build());
         addStatDisplay(MiningLevelStatDisplay
-                .Builder("shovel")
+                .builder("shovel")
                 .setAttribute(AttributeRegistry.MINING_SPEED_SHOVEL).build());
         addStatDisplay(MiningLevelStatDisplay
-                .Builder("hoe")
+                .builder("hoe")
                 .setAttribute(AttributeRegistry.MINING_SPEED_HOE).build());
         addStatDisplay(SinglePropertyStatDisplay
                 .Builder(FlexibilityProperty.property)

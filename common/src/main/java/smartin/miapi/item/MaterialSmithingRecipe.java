@@ -12,7 +12,6 @@ import net.minecraft.recipe.SmithingRecipe;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.modules.ItemModule;
@@ -117,26 +116,6 @@ public class MaterialSmithingRecipe implements SmithingRecipe {
             instance.writeToItem(old);
         }
         return old;
-    }
-
-    /**
-     * Not used by vanilla.
-     * This is meant to change the inventory and adjust the inputs.
-     * But Mojang decided that Smithing recipes dont need to be able to do that.
-     *
-     * @param inventory the input inventory
-     * @return
-     */
-    @Override
-    public DefaultedList<ItemStack> getRemainder(Inventory inventory) {
-        DefaultedList<ItemStack> defaultedList = DefaultedList.ofSize(inventory.size(), ItemStack.EMPTY);
-        for (int i = 0; i < defaultedList.size(); ++i) {
-            Item item = inventory.getStack(i).getItem();
-            //if (!item.hasRecipeRemainder()) continue;
-            //defaultedList.set(i, inventory.getStack(i).copy());
-        }
-        //defaultedList.set(1, ItemStack.EMPTY);
-        return defaultedList;
     }
 
     /**

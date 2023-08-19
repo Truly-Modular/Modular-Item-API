@@ -41,8 +41,7 @@ public class CraftingConditionProperty implements ModuleProperty, CraftingProper
         if (element != null) {
             ItemModule.ModuleInstance instance = slot == null ? null : slot.parent;
             CraftingConditionJson conditionJson = new CraftingConditionJson(element);
-            boolean asd = conditionJson.getCraftAble().isAllowed(instance, pos, entity, module.getKeyedProperties(), reasons);
-            return asd;
+            return conditionJson.getCraftAble().isAllowed(instance, pos, entity, module.getKeyedProperties(), reasons);
         }
         return true;
     }
@@ -97,12 +96,12 @@ public class CraftingConditionProperty implements ModuleProperty, CraftingProper
     public static class CraftingConditionJson {
         public ModuleCondition visible;
         public ModuleCondition craftAble;
-        public ModuleCondition on_craft;
+        public ModuleCondition onCraft;
 
         public CraftingConditionJson(JsonElement element) {
             visible = ConditionManager.get(element.getAsJsonObject().get("visible"));
             craftAble = ConditionManager.get(element.getAsJsonObject().get("craftable"));
-            on_craft = ConditionManager.get(element.getAsJsonObject().get("on_craft"));
+            onCraft = ConditionManager.get(element.getAsJsonObject().get("on_craft"));
         }
 
         public ModuleCondition getVisible() {

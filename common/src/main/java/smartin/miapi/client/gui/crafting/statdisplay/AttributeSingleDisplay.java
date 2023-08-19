@@ -39,13 +39,10 @@ public class AttributeSingleDisplay extends SingleStatDisplayDouble {
         if (original.getAttributeModifiers(slot).containsKey(attribute)) {
             return true;
         }
-        if (compareTo.getAttributeModifiers(slot).containsKey(attribute)) {
-            return true;
-        }
-        return false;
+        return compareTo.getAttributeModifiers(slot).containsKey(attribute);
     }
 
-    public static Builder Builder(EntityAttribute attribute) {
+    public static Builder builder(EntityAttribute attribute) {
         return new Builder(attribute);
     }
 

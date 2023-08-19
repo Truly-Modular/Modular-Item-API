@@ -93,8 +93,8 @@ public class JsonMaterial implements Material {
     public double getDouble(String property) {
         String[] keys = property.split("\\.");
         JsonElement jsonData = rawJson;
-        for (String key : keys) {
-            jsonData = jsonData.getAsJsonObject().get(key);
+        for (String k : keys) {
+            jsonData = jsonData.getAsJsonObject().get(k);
             if (jsonData == null) {
                 break;
             }

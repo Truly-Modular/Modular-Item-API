@@ -29,9 +29,6 @@ public class CustomModel implements UnbakedModel, BakedModel {
 
     private CustomModelOverrides overrides;
 
-    public CustomModel() {
-    }
-
     @Override
     public ModelOverrideList getOverrides() {
         return overrides;
