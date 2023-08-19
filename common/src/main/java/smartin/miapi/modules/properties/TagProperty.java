@@ -54,9 +54,7 @@ public class TagProperty implements ModuleProperty {
 
     @Override
     public boolean load(String moduleKey, JsonElement data) throws Exception {
-        data.getAsJsonArray().forEach(element -> {
-            element.getAsString();
-        });
+        data.getAsJsonArray().forEach(JsonElement::getAsString);
         return true;
     }
 

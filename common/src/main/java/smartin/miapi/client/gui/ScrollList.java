@@ -2,13 +2,11 @@ package smartin.miapi.client.gui;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.ColorHelper;
 import org.joml.Matrix4f;
-import org.joml.Vector2d;
 import org.joml.Vector4f;
 
 import java.util.List;
@@ -141,9 +139,8 @@ public class ScrollList extends InteractAbleWidget {
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (widgets != null) {
-            Vector2d mousePos = getScaledMouseCoords(); //todo mouse coords
             for (InteractAbleWidget widget : widgets) {
-                if (/*widget.isMouseOver(mousePos.x, mousePos.y) && */widget.keyPressed(keyCode, scanCode, modifiers))
+                if (widget.keyPressed(keyCode, scanCode, modifiers))
                     return true;
             }
         }
@@ -153,9 +150,8 @@ public class ScrollList extends InteractAbleWidget {
     @Override
     public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
         if (widgets != null) {
-            Vector2d mousePos = getScaledMouseCoords(); //todo mouse coords
             for (InteractAbleWidget widget : widgets) {
-                if (/*widget.isMouseOver(mousePos.x, mousePos.y) && */widget.keyReleased(keyCode, scanCode, modifiers))
+                if (widget.keyReleased(keyCode, scanCode, modifiers))
                     return true;
             }
         }

@@ -8,16 +8,13 @@ import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.model.ModelBakeSettings;
 import net.minecraft.client.render.model.json.Transformation;
 import net.minecraft.util.math.AffineTransformation;
-import net.minecraft.util.math.MathHelper;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
-import smartin.miapi.Miapi;
 
 import java.io.IOException;
 
@@ -102,12 +99,10 @@ public class Transform {
         Matrix4f scaleMatrix = new Matrix4f().scale(scale);
 
         // Combine the matrices
-        Matrix4f transformationMatrix = new Matrix4f()
+        return new Matrix4f()
                 .mul(translationMatrix)
                 .mul(rotationMatrix)
                 .mul(scaleMatrix);
-
-        return transformationMatrix;
     }
 
     public static Transform fromMatrix(Matrix4f matrix) {
@@ -179,9 +174,7 @@ public class Transform {
      */
     public static Transform toModelTransformation(Transform transformation) {
         Transform transform = repair(transformation);
-        //TODO:enable this and change all jsons
         transform.translation.mul(1.0f / 16.0f);
-        //transform.translation.multiplyComponentwise(transform.scale.getX(), transform.scale.getY(), transform.scale.getZ());
         return transform;
     }
 
@@ -215,7 +208,6 @@ public class Transform {
             Vector4f position = new Vector4f(x, y, z, 1.0f);
 
             // Apply the transformation to the position
-            //this.translation.mul(1/16);
             Vector4f transformedPosition = this.toMatrix().transform(position);
 
 

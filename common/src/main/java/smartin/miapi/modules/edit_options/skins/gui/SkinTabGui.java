@@ -2,7 +2,6 @@ package smartin.miapi.modules.edit_options.skins.gui;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.Drawable;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
@@ -17,7 +16,7 @@ import smartin.miapi.modules.edit_options.skins.SkinTab;
 import java.util.*;
 
 class SkinTabGui extends InteractAbleWidget implements SkinGui.SortAble {
-    Identifier arrow_texture = new Identifier(Miapi.MOD_ID, "textures/gui/skin/arrow.png");
+    Identifier arrowTexture = new Identifier(Miapi.MOD_ID, "textures/gui/skin/arrow.png");
     boolean isOpen = true;
     List<SkinGui.SortAble> fullList = new ArrayList<>();
     List<SkinGui.SortAble> currentList;
@@ -26,12 +25,12 @@ class SkinTabGui extends InteractAbleWidget implements SkinGui.SortAble {
     int spacing = 10;
     int realHeight = 14;
     public SkinTabGui parent;
-    static final int sizeY = 14;
+    static final int SIZE_Y = 14;
     final boolean isRoot;
     final SkinTab tabInfo;
 
     public SkinTabGui(SkinGui skinGui, int x, int y, int width, String currentTab, Map<String, Skin> mapsToDo) {
-        super(x, y, width, sizeY, Text.empty());
+        super(x, y, width, SIZE_Y, Text.empty());
         this.tabInfo = SkinOptions.getTag(currentTab);
         height = realHeight;
         isRoot = currentTab.isBlank();
@@ -119,11 +118,11 @@ class SkinTabGui extends InteractAbleWidget implements SkinGui.SortAble {
             RenderSystem.enableBlend();
             RenderSystem.defaultBlendFunc();
             RenderSystem.enableDepthTest();
-            RenderSystem.setShaderTexture(0, arrow_texture);
+            RenderSystem.setShaderTexture(0, arrowTexture);
             int offset = isOpen ? 10 : 0;
             int hover = isOpen ? tabInfo.header.ySize() * 2 : 0;
             hover = this.isMouseOverReal(mouseX, mouseY) ? tabInfo.header.ySize() : hover;
-            drawTextureWithEdge(drawContext, arrow_texture, getX(), getY() + 2, offset, 0, 10, 10, 10, 10, 20, 10, 3);
+            drawTextureWithEdge(drawContext, arrowTexture, getX(), getY() + 2, offset, 0, 10, 10, 10, 10, 20, 10, 3);
             //Header
             RenderSystem.setShaderTexture(0, tabInfo.header.texture());
             drawTextureWithEdgeAndScale(drawContext, tabInfo.header.texture(), getX(), getY(), 0, hover, tabInfo.header.xSize(), tabInfo.header.ySize(), this.width, realHeight, tabInfo.header.xSize(), tabInfo.header.ySize() * 3, tabInfo.header.borderSize(), tabInfo.header.scale());

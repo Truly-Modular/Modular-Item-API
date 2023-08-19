@@ -20,14 +20,14 @@ class SkinButton extends InteractAbleWidget implements SkinGui.SortAble {
     Skin skin;
     String sortAble;
     ScrollingTextWidget textWidget;
-    static final int sizeY = 16;
+    static final int SIZE_Y = 16;
     public boolean isEnabled = true;
     public boolean isAllowed = true;
     public List<Text> reasons = new ArrayList<>();
 
 
     public SkinButton(SkinGui skinGui, int x, int y, int width, String skinPath, Skin skin) {
-        super(x, y, width, sizeY, Text.empty());
+        super(x, y, width, SIZE_Y, Text.empty());
         this.skinGui = skinGui;
         this.skinPath = skinPath;
         this.skin = skin;
@@ -53,7 +53,7 @@ class SkinButton extends InteractAbleWidget implements SkinGui.SortAble {
         } else {
             hover = skinGui.currentSkin().equals(skinPath) ? skin.textureOptions.ySize() * 2 : hover;
         }
-        drawTextureWithEdge(drawContext, skin.textureOptions.texture(), getX(), getY(), 0, hover, 100, sizeY, this.width, height, skin.textureOptions.xSize(), skin.textureOptions.ySize() * 3, skin.textureOptions.borderSize());
+        drawTextureWithEdge(drawContext, skin.textureOptions.texture(), getX(), getY(), 0, hover, 100, SIZE_Y, this.width, height, skin.textureOptions.xSize(), skin.textureOptions.ySize() * 3, skin.textureOptions.borderSize());
         textWidget.setY(this.getY() + 3);
         textWidget.render(drawContext, mouseX, mouseY, delta);
         children().forEach(element -> {

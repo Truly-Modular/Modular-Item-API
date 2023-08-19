@@ -50,7 +50,7 @@ public abstract class SimpleDoubleProperty implements ModuleProperty {
             if (element != null) {
                 hasFlexibility = true;
                 Operation operation = new Operation(element, moduleInstance);
-                switch (operation.operation) {
+                switch (operation.attributeOperation) {
                     case ADDITION -> addition.add(operation.solve());
                     case MULTIPLY_BASE -> multiplyBase.add(operation.solve());
                     case MULTIPLY_TOTAL -> multiplyTotal.add(operation.solve());
@@ -100,17 +100,17 @@ public abstract class SimpleDoubleProperty implements ModuleProperty {
     }
 
     private static class Operation {
-        public EntityAttributeModifier.Operation operation;
+        public EntityAttributeModifier.Operation attributeOperation;
         public String value;
         public ItemModule.ModuleInstance instance;
 
         public Operation(JsonElement toLoad, ItemModule.ModuleInstance instance) {
             if (toLoad.isJsonObject()) {
                 JsonObject object = toLoad.getAsJsonObject();
-                this.operation = getOperation(object.get("operation").getAsString());
+                this.attributeOperation = getOperation(object.get("operation").getAsString());
                 this.value = object.get("value").getAsString();
             } else {
-                operation = EntityAttributeModifier.Operation.ADDITION;
+                attributeOperation = EntityAttributeModifier.Operation.ADDITION;
                 try {
                     value = Double.toString(toLoad.getAsDouble());
                 } catch (Exception surpressed) {

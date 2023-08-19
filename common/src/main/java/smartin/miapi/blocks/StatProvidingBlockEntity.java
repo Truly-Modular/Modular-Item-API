@@ -3,7 +3,6 @@ package smartin.miapi.blocks;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -11,14 +10,13 @@ import net.minecraft.world.event.BlockPositionSource;
 import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.event.PositionSource;
 import net.minecraft.world.event.listener.GameEventListener;
-import org.jetbrains.annotations.Nullable;
 import smartin.miapi.craft.stat.CraftingStat;
 import smartin.miapi.registries.RegistryInventory;
 
 public abstract class StatProvidingBlockEntity extends BlockEntity implements GameEventListener {
     protected BlockPositionSource blockPositionSource;
 
-    public StatProvidingBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+    protected StatProvidingBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
     }
 

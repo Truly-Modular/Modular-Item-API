@@ -13,10 +13,6 @@ import java.util.Map;
 
 public class TrueCondition implements ModuleCondition {
 
-    public TrueCondition() {
-
-    }
-
     @Override
     public boolean isAllowed(ItemModule.ModuleInstance moduleInstance, @Nullable BlockPos tablePos, @Nullable PlayerEntity player, Map<ModuleProperty, JsonElement> propertyMap, List<Text> reasons) {
         return true;

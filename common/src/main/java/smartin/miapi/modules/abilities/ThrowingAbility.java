@@ -20,9 +20,6 @@ import smartin.miapi.modules.properties.AttributeProperty;
  */
 public class ThrowingAbility implements ItemUseAbility {
 
-    public ThrowingAbility() {
-    }
-
     @Override
     public boolean allowedOnItem(ItemStack itemStack, World world, PlayerEntity player, Hand hand) {
         return true;

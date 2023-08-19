@@ -34,7 +34,7 @@ public abstract class SingleStatDisplayDouble extends InteractAbleWidget impleme
     public StatDisplay.TextGetter hover;
     public HoverDescription hoverDescription;
 
-    public SingleStatDisplayDouble(int x, int y, int width, int height, StatDisplay.TextGetter title, StatDisplay.TextGetter hover) {
+    protected SingleStatDisplayDouble(int x, int y, int width, int height, StatDisplay.TextGetter title, StatDisplay.TextGetter hover) {
         super(x, y, width, height, Text.empty());
         text = title;
         this.hover = hover;

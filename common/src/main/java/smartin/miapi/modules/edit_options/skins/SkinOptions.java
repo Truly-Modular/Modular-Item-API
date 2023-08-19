@@ -36,7 +36,6 @@ public class SkinOptions implements EditOption {
             }
             return oldMap;
         });
-        //Miapi.registerReloadHandler(ReloadEvents.MAIN, "synergies", maps, (isClient, path, data) -> load(data), 2);
         Miapi.registerReloadHandler(ReloadEvents.MAIN, "skins/module", skins, (isClient, path, data) -> {
             load(data);
         }, 1);
@@ -45,8 +44,8 @@ public class SkinOptions implements EditOption {
         }, 1);
         ReloadEvents.END.subscribe((isClient -> {
             int size = 0;
-            for (Map<String, Skin> skins : skins.values()) {
-                size += skins.size();
+            for (Map<String, Skin> skinMap : skins.values()) {
+                size += skinMap.size();
             }
             Miapi.LOGGER.info("Loaded " + size + " Skins");
         }));

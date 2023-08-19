@@ -119,21 +119,21 @@ public class StatDisplay extends InteractAbleWidget {
                 .builder("hoe")
                 .setAttribute(AttributeRegistry.MINING_SPEED_HOE).build());
         addStatDisplay(SinglePropertyStatDisplay
-                .Builder(FlexibilityProperty.property)
+                .builder(FlexibilityProperty.property)
                 .setTranslationKey(FlexibilityProperty.KEY)
                 .setMax(10)
                 .build());
         addStatDisplay(SinglePropertyStatDisplay
-                .Builder(HealthPercentDamage.property)
+                .builder(HealthPercentDamage.property)
                 .setMax(50)
                 .setTranslationKey(HealthPercentDamage.KEY).build());
         addStatDisplay(SinglePropertyStatDisplay
-                .Builder(ArmorPenProperty.property)
+                .builder(ArmorPenProperty.property)
                 .setMin(-20)
                 .setMax(50)
                 .setTranslationKey(ArmorPenProperty.KEY).build());
         addStatDisplay(SinglePropertyStatDisplay
-                .Builder(BlockProperty.property)
+                .builder(BlockProperty.property)
                 .setMax(50)
                 .setTranslationKey(BlockProperty.KEY).build());
     }

@@ -32,7 +32,7 @@ public class SinglePropertyStatDisplay extends SingleStatDisplayDouble {
         return property.getValueSafeRaw(stack);
     }
 
-    public static Builder Builder(SimpleDoubleProperty property) {
+    public static Builder builder(SimpleDoubleProperty property) {
         return new Builder(property);
     }
 
