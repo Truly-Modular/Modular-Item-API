@@ -48,7 +48,7 @@ public class MiapiConfig extends Config {
     }
 
     public static boolean isDevelopment() {
-        return Platform.isDevelopmentEnvironment();
+        return OtherConfigGroup.developmentMode.getValue();
     }
 
 }
