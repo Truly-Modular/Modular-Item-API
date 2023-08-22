@@ -28,7 +28,7 @@ public class ItemMiapiModel implements MiapiModel {
         ItemStack modelStack = stackSupplier.get();
         MinecraftClient.getInstance().getItemRenderer().renderItem(
                 modelStack,
-                transformationMode,
+                ModelTransformationMode.FIXED,
                 light,
                 overlay,
                 matrices,
