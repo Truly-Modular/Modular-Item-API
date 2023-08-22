@@ -391,6 +391,8 @@ public class RegistryInventory {
             registerMiapi(moduleProperties, StatProvisionProperty.KEY, new StatProvisionProperty());
             registerMiapi(moduleProperties, GlintProperty.KEY, new GlintProperty());
             registerMiapi(moduleProperties, ItemModelProperty.KEY, new ItemModelProperty());
+            registerMiapi(moduleProperties, EnderpearlProperty.KEY, new EnderpearlProperty());
+            registerMiapi(moduleProperties, TeleportTarget.KEY, new TeleportTarget());
 
             //compat
             registerMiapi(moduleProperties, BetterCombatProperty.KEY, new BetterCombatProperty());

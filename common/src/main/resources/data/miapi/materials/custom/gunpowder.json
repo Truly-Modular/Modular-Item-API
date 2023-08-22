@@ -1,0 +1,11 @@
+{
+    "key": "gunpowder",
+    "translation": "miapi.material.custom.gunpowder",
+    "icon": "textures/item/gunpowder.png",
+    "items": [
+        {
+            "item": "minecraft:gunpowder",
+            "value": 1.0
+        }
+    ]
+}

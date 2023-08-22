@@ -1,0 +1,11 @@
+{
+    "key": "copper_rod",
+    "translation": "miapi.material.custom.copper_rod",
+    "icon": "textures/item/copper_rod.png",
+    "items": [
+        {
+            "item": "minecraft:copper_rod",
+            "value": 1.0
+        }
+    ]
+}

@@ -1,0 +1,32 @@
+{
+    "arrow_head_custom": {
+        "condition": {
+            "type": "material",
+            "material": "chorus_fruit"
+        },
+        "properties": {
+            "teleport_target": true,
+            "item_model": [{
+                "type": "item",
+                "model": "minecraft:chorus_fruit",
+                "transform": {
+                    "rotation": {
+                        "x": 0.0,
+                        "y": 0.0,
+                        "z": 0.0
+                    },
+                    "translation": {
+                        "x": 0.5,
+                        "y": 0.5,
+                        "z": 0.5
+                    },
+                    "scale": {
+                        "x": 0.5,
+                        "y": 0.5,
+                        "z": 0.5
+                    }
+                }
+            }]
+        }
+    }
+}

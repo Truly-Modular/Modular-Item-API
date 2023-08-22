@@ -1,0 +1,11 @@
+{
+    "key": "tnt",
+    "translation": "miapi.material.custom.tnt",
+    "icon": "textures/item/tnt.png",
+    "items": [
+        {
+            "item": "minecraft:tnt",
+            "value": 1.0
+        }
+    ]
+}

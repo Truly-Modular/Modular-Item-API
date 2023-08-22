@@ -22,6 +22,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Position;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
@@ -55,6 +56,13 @@ public class ItemProjectileEntity extends PersistentProjectileEntity {
         super((EntityType<? extends PersistentProjectileEntity>) entityType, world);
     }
 
+    public ItemProjectileEntity(World world, Position position, ItemStack itemStack) {
+        super(RegistryInventory.itemProjectileType.get(),position.getX(),position.getY(),position.getZ(), world);
+        this.thrownStack = itemStack.copy();
+        this.dataTracker.set(LOYALTY, (byte) EnchantmentHelper.getLoyalty(itemStack));
+        this.dataTracker.set(ENCHANTED, itemStack.hasGlint());
+    }
+
     public ItemProjectileEntity(World world, LivingEntity owner, ItemStack stack) {
         super(RegistryInventory.itemProjectileType.get(), owner, world);
         this.thrownStack = stack.copy();
@@ -65,7 +73,7 @@ public class ItemProjectileEntity extends PersistentProjectileEntity {
         this.dataTracker.set(WATER_DRAG, waterDrag);
         this.dataTracker.set(SPEED_DAMAGE, true);
         this.dataTracker.set(PREFERRED_SLOT, -1);
-        if (getBowItem().isEmpty()) {
+        if (getBowItem().isEmpty() && owner != null) {
             setBowItem(owner.getActiveItem());
         }
         MiapiProjectileEvents.MODULAR_PROJECTILE_DATA_TRACKER_SET.invoker().dataTracker(this, this.getDataTracker());

@@ -1,0 +1,11 @@
+{
+    "key": "slime_ball",
+    "translation": "miapi.material.custom.slime_ball",
+    "icon": "textures/item/slime_ball.png",
+    "items": [
+        {
+            "item": "minecraft:slime_ball",
+            "value": 1.0
+        }
+    ]
+}

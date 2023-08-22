@@ -1,5 +1,5 @@
 {
-    "name": "arrow_tail_normal",
+    "name": "arrow_fletching_normal",
     "texture": {
         "path": "miapi:models/item/arrow/tail/normal/[material.texture].json",
         "transform": {

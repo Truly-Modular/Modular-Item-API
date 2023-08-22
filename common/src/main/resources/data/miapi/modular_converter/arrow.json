@@ -14,7 +14,7 @@
                 }
             },
             "1": {
-                "module": "arrow_tail_normal",
+                "module": "arrow_fletching_normal",
                 "moduleData": {
                     "properties": "{\"material\":\"feather\"}"
                 },

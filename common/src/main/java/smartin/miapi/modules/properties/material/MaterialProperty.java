@@ -1,6 +1,9 @@
 package smartin.miapi.modules.properties.material;
 
-import com.google.gson.*;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.redpxnda.nucleus.util.Color;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -86,9 +89,12 @@ public class MaterialProperty implements ModuleProperty {
         textureKeys.add("base");
         for (Material material : materials.values()) {
             textureKeys.add(material.getKey());
-            JsonArray textures = material.getRawElement("textures").getAsJsonArray();
-            for (JsonElement texture : textures) {
-                textureKeys.add(texture.getAsString());
+            JsonElement textureJson = material.getRawElement("textures");
+            if(textureJson != null){
+                JsonArray textures = material.getRawElement("textures").getAsJsonArray();
+                for (JsonElement texture : textures) {
+                    textureKeys.add(texture.getAsString());
+                }
             }
         }
         return new ArrayList<>(textureKeys);

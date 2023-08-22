@@ -1,0 +1,11 @@
+{
+    "key": "ender_pearl",
+    "translation": "miapi.material.custom.ender_pearl",
+    "icon": "textures/item/ender_pearl.png",
+    "items": [
+        {
+            "item": "minecraft:ender_pearl",
+            "value": 1.0
+        }
+    ]
+}

@@ -1,0 +1,11 @@
+{
+    "key": "egg",
+    "translation": "miapi.material.custom.egg",
+    "icon": "textures/item/egg.png",
+    "items": [
+        {
+            "item": "minecraft:egg",
+            "value": 1.0
+        }
+    ]
+}

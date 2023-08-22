@@ -2,7 +2,7 @@
     "name": "arrow_head_custom",
     "item_model": [{
         "type": "item",
-        "model": "minecraft:ender_pearl",
+        "model": "minecraft:barrier",
         "transform": {
             "rotation": {
                 "x": 0.0,
@@ -30,14 +30,14 @@
     "attributes": [
         {
             "attribute": "miapi:generic.projectile_speed",
-            "value": "( - [material.density] ) / 10",
+            "value": " - 1",
             "operation": "+",
             "slot": "mainhand",
             "uuid": "AAAAAAAA-4180-4865-B01B-BCCE9785ACA3"
         },
         {
             "attribute": "miapi:generic.projectile_crit_multiplier",
-            "value": "[material.hardness] / (3.7) - 1",
+            "value": "-0.5",
             "operation": "+",
             "slot": "mainhand",
             "uuid": "AAAAAAAA-4180-4865-B01B-BCCE9785ACA3"
@@ -45,13 +45,10 @@
     ],
     "allowedMaterial": {
         "allowedMaterials": [
-            "wood",
-            "metal",
-            "flint",
-            "bone",
-            "stone",
-            "crystal",
-            "glass"
+            "ender_pearl",
+            "chorus_fruit",
+            "tnt",
+            "gunpowder"
         ],
         "cost": 1.0
     }

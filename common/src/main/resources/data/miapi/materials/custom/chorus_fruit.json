@@ -1,0 +1,11 @@
+{
+    "key": "chorus_fruit",
+    "translation": "miapi.material.custom.chorus_fruit",
+    "icon": "textures/item/chorus_fruit.png",
+    "items": [
+        {
+            "item": "minecraft:chorus_fruit",
+            "value": 1.0
+        }
+    ]
+}
