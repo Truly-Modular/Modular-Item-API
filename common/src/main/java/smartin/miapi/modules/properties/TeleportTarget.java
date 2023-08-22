@@ -6,7 +6,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.EndermiteEntity;
-import net.minecraft.item.ChorusFruitItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.particle.ParticleTypes;
@@ -27,8 +26,8 @@ public class TeleportTarget implements ModuleProperty {
         property = this;
         MiapiProjectileEvents.MODULAR_PROJECTILE_ENTITY_HIT.register(event -> {
             ItemStack itemStack = new ItemStack(Items.CHORUS_FRUIT);
-            ChorusFruitItem chorusFruitItem;
-            if (event.entityHitResult.getEntity() instanceof LivingEntity livingEntity) {
+            JsonElement element = ItemModule.getMergedProperty(event.projectile.asItemStack(),property);
+            if (element != null && element.getAsBoolean() &&  event.entityHitResult.getEntity() instanceof LivingEntity livingEntity) {
                 Items.CHORUS_FRUIT.finishUsing(itemStack, event.projectile.getWorld(), livingEntity);
                 if(!event.projectile.getWorld().isClient()){
                     event.projectile.discard();

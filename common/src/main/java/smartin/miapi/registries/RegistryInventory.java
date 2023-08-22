@@ -393,6 +393,7 @@ public class RegistryInventory {
             registerMiapi(moduleProperties, ItemModelProperty.KEY, new ItemModelProperty());
             registerMiapi(moduleProperties, EnderpearlProperty.KEY, new EnderpearlProperty());
             registerMiapi(moduleProperties, TeleportTarget.KEY, new TeleportTarget());
+            registerMiapi(moduleProperties, ExplosionProperty.KEY, new ExplosionProperty());
 
             //compat
             registerMiapi(moduleProperties, BetterCombatProperty.KEY, new BetterCombatProperty());
