@@ -326,35 +326,30 @@ public class CraftAction {
             parsingInstance = parsingInstance.subModules.get(slotId.get(i));
         }
 
-        ItemModule.ModuleInstance newInstance = parsingInstance;
-        if(newInstance == null){
-            parsingInstance = new ItemModule.ModuleInstance(ItemModule.empty);
-        }
-        if (parsingInstance != null) {
-            AtomicInteger integer = new AtomicInteger(inventoryOffset);
-            AtomicInteger counter = new AtomicInteger(0);
+        AtomicInteger integer = new AtomicInteger(inventoryOffset);
+        AtomicInteger counter = new AtomicInteger(0);
 
-            List<CraftingProperty> sortedProperties =
-                    RegistryInventory.moduleProperties.getFlatMap().values().stream()
-                            .filter(CraftingProperty.class::isInstance)
-                            .filter(property -> ((CraftingProperty) property).shouldExecuteOnCraft(newInstance,ItemModule.getModules(crafted),crafted))
-                            .map(CraftingProperty.class::cast)
-                            .sorted(Comparator.comparingDouble(CraftingProperty::getPriority))
-                            .toList();
-            for (CraftingProperty craftingProperty : sortedProperties) {
-                List<ItemStack> itemStacks = new ArrayList<>();
-                int startPos = integer.get();
-                int endPos = startPos + craftingProperty.getSlotPositions().size();
-                for (int i = startPos; i < endPos; i++) {
-                    itemStacks.add(linkedInventory.getStack(i));
-                }
-                PacketByteBuf buf = Networking.createBuffer();
-                if (packetByteBuffs != null && packetByteBuffs.length > counter.get()) {
-                    buf = packetByteBuffs[counter.getAndAdd(1)];
-                }
-                propertyConsumer.accept(craftingProperty, newInstance, itemStacks, startPos, endPos, buf);
-                integer.set(endPos);
+        ItemModule.ModuleInstance newInstance = parsingInstance;
+        List<CraftingProperty> sortedProperties =
+                RegistryInventory.moduleProperties.getFlatMap().values().stream()
+                        .filter(CraftingProperty.class::isInstance)
+                        .filter(property -> ((CraftingProperty) property).shouldExecuteOnCraft(newInstance,ItemModule.getModules(crafted),crafted))
+                        .map(CraftingProperty.class::cast)
+                        .sorted(Comparator.comparingDouble(CraftingProperty::getPriority))
+                        .toList();
+        for (CraftingProperty craftingProperty : sortedProperties) {
+            List<ItemStack> itemStacks = new ArrayList<>();
+            int startPos = integer.get();
+            int endPos = startPos + craftingProperty.getSlotPositions().size();
+            for (int i = startPos; i < endPos; i++) {
+                itemStacks.add(linkedInventory.getStack(i));
             }
+            PacketByteBuf buf = Networking.createBuffer();
+            if (packetByteBuffs != null && packetByteBuffs.length > counter.get()) {
+                buf = packetByteBuffs[counter.getAndAdd(1)];
+            }
+            propertyConsumer.accept(craftingProperty, newInstance, itemStacks, startPos, endPos, buf);
+            integer.set(endPos);
         }
     }
 

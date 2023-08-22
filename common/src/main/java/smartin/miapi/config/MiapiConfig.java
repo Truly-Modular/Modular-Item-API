@@ -49,17 +49,4 @@ public class MiapiConfig extends Config {
             super(of(betterInfinity,betterLoyalty), "enchants");
         }
     }
-
-    public static boolean getBetterInfinity() {
-        return EnchantmentGroup.betterInfinity.getValue();
-    }
-
-    public static boolean getBetterLoyalty() {
-        return EnchantmentGroup.betterLoyalty.getValue();
-    }
-
-    public static boolean isDevelopment() {
-        return OtherConfigGroup.developmentMode.getValue();
-    }
-
 }

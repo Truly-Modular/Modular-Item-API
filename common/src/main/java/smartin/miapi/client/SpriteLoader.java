@@ -29,29 +29,29 @@ public class SpriteLoader {
     public static void clientStart() {
         preLoadTexturePaths.add("skin");
         preLoadTexturePaths.add("gui");
-        /*
-        doesnt actually preload the textures
-                preLoadTexturePaths.forEach(preLoadTexturePath -> {
+
+        preLoadTexturePaths.forEach(preLoadTexturePath -> {
             Map<Identifier, Resource> rawTextures = MinecraftClient.getInstance().getResourceManager().findResources("textures/" + preLoadTexturePath, (identifier ->
             {
                 return identifier.getNamespace().equals(Miapi.MOD_ID) && identifier.toString().endsWith(".png");
             }));
+            //net.minecraft.client.texture.SpriteLoader.fromAtlas(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE).load(null);
             rawTextures.forEach((id, rawTexture) -> {
                 Miapi.LOGGER.info("loading texture" + id);
                 RenderSystem.setShaderTexture(0, id);
+                net.minecraft.client.texture.SpriteLoader.load(id,rawTexture);
             });
         });
-         */
-        MinecraftClient.getInstance().getResourceManager().findAllResources("models", (identifier -> identifier.getNamespace().equals(Miapi.MOD_ID))).forEach((identifier, resources) -> {
-            miapiModels.add(identifier);
-        });
+        MinecraftClient.getInstance().getResourceManager().findAllResources(
+                "models",
+                (identifier -> identifier.getNamespace().equals(Miapi.MOD_ID))).forEach((identifier, resources) -> miapiModels.add(identifier));
     }
 
     protected static void onTextureStitch(SpriteAtlasTexture atlas, Consumer<Identifier> spriteAdder) {
         if (SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE.equals(atlas.getId())) {
-            Map<Identifier, Resource> map = MinecraftClient.getInstance().getResourceManager().findResources("textures/item", s -> {
-                return s.getNamespace().equals(Miapi.MOD_ID);
-            });
+            Map<Identifier, Resource> map = MinecraftClient.getInstance().getResourceManager().findResources(
+                    "textures/item",
+                    s -> s.getNamespace().equals(Miapi.MOD_ID));
             map.forEach((identifier, resource) -> {
                 String string = identifier.toString().replace("textures/", "").replace(".png", "");
                 spriteAdder.accept(new Identifier(string));

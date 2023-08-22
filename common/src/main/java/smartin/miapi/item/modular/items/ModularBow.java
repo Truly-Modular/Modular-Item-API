@@ -51,7 +51,7 @@ public class ModularBow extends BowItem implements ModularItem {
             consumeArrow = false;
             projectileStack = new ItemStack(Items.ARROW);
         }
-        if (projectileStack.isEmpty() && consumeArrow && !MiapiConfig.getBetterInfinity()) {
+        if (projectileStack.isEmpty() && consumeArrow && !MiapiConfig.EnchantmentGroup.betterInfinity.getValue()) {
             return;
         }
         if (projectileStack.isEmpty()) {
@@ -123,7 +123,7 @@ public class ModularBow extends BowItem implements ModularItem {
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         //BOW_PROJECTILE
-        if (MiapiConfig.getBetterInfinity()) {
+        if (MiapiConfig.EnchantmentGroup.betterInfinity.getValue()) {
             ItemStack itemStack = user.getStackInHand(hand);
             ItemStack projectileStack = user.getProjectileType(itemStack);
             NbtCompound compound = itemStack.getOrCreateNbt();

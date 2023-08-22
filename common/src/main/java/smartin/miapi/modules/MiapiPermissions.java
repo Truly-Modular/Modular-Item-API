@@ -19,7 +19,7 @@ public class MiapiPermissions {
     static WeakHashMap<PlayerEntity,List<String>> playerPerms = new WeakHashMap<>();
 
     public static boolean hasPerm(PlayerEntity player,String perm){
-        if(MiapiConfig.isDevelopment()){
+        if(MiapiConfig.OtherConfigGroup.developmentMode.getValue()){
             return true;
         }
         return MiapiPermissions.getPerms(player).contains(perm);

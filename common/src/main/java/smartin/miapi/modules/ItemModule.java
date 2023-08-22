@@ -8,6 +8,7 @@ import com.google.gson.stream.JsonWriter;
 import net.minecraft.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
+import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.PropertyResolver;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.util.MergeType;
@@ -154,7 +155,6 @@ public class ItemModule {
             try {
                 return property.load(moduleKey, data);
             } catch (Exception e) {
-                e.printStackTrace();
                 RuntimeException exception = new RuntimeException("Failure during moduleLoad, Error in Module " + moduleKey + " with property " + key + " with data " + data + " with error " + e.getLocalizedMessage());
                 exception.addSuppressed(e);
                 throw exception;
@@ -170,12 +170,16 @@ public class ItemModule {
      * @return the module instance associated with the given ItemStack
      */
     public static ItemModule.ModuleInstance getModules(ItemStack stack) {
-        ItemModule.ModuleInstance moduleInstance = (ItemModule.ModuleInstance) ModularItemCache.get(stack, MODULE_KEY);
-        if (moduleInstance == null || moduleInstance.module == null) {
-            Miapi.LOGGER.warn("Item has Invalid Module setup - treating it like it has no modules");
-            return new ItemModule.ModuleInstance(new ItemModule("empty", new HashMap<>()));
+        if (stack.getItem() instanceof ModularItem) {
+            ItemModule.ModuleInstance moduleInstance = (ItemModule.ModuleInstance) ModularItemCache.get(stack, MODULE_KEY);
+            if (moduleInstance == null || moduleInstance.module == null) {
+                IllegalArgumentException exception = new IllegalArgumentException("Item has Invalid Module setup - treating it like it has no modules");
+                Miapi.LOGGER.warn("Item has Invalid Module setup - treating it like it has no modules", exception);
+                return new ItemModule.ModuleInstance(new ItemModule("empty", new HashMap<>()));
+            }
+            return moduleInstance;
         }
-        return moduleInstance;
+        return new ItemModule.ModuleInstance(new ItemModule("empty", new HashMap<>()));
     }
 
     /**
@@ -527,7 +531,7 @@ public class ItemModule {
             String moduleKey = jsonObject.get("module").getAsString();
             ItemModule module = moduleRegistry.get(moduleKey);
             if (module == null) {
-                Miapi.LOGGER.warn("Module not found for "+moduleKey+" Key - substituting with empty module");
+                Miapi.LOGGER.warn("Module not found for " + moduleKey + " Key - substituting with empty module");
                 module = ItemModule.empty;
             }
             ModuleInstance moduleInstance = new ModuleInstance(module);
