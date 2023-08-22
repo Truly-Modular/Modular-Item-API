@@ -19,7 +19,6 @@ public class ModularArrow extends ArrowItem implements ModularItem {
     public ModularArrow() {
         super(new Item.Settings().maxCount(64));
         DispenserBlock.registerBehavior(this, new ProjectileDispenserBehavior(){
-
             @Override
             protected ProjectileEntity createProjectile(World world, Position position, ItemStack stack) {
                 ItemStack itemStack = stack.copy();
@@ -27,7 +26,6 @@ public class ModularArrow extends ArrowItem implements ModularItem {
                 ItemProjectileEntity arrowEntity = new ItemProjectileEntity(world,position,stack);
                 arrowEntity.setPos( position.getX(), position.getY(), position.getZ());
                 arrowEntity.pickupType = PersistentProjectileEntity.PickupPermission.ALLOWED;
-                world.spawnEntity(arrowEntity);
                 return arrowEntity;
             }
         });

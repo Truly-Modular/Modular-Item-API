@@ -59,6 +59,7 @@ public class ItemProjectileEntity extends PersistentProjectileEntity {
     public ItemProjectileEntity(World world, Position position, ItemStack itemStack) {
         super(RegistryInventory.itemProjectileType.get(),position.getX(),position.getY(),position.getZ(), world);
         this.thrownStack = itemStack.copy();
+        this.dataTracker.set(THROWING_STACK, thrownStack);
         this.dataTracker.set(LOYALTY, (byte) EnchantmentHelper.getLoyalty(itemStack));
         this.dataTracker.set(ENCHANTED, itemStack.hasGlint());
     }

@@ -68,7 +68,7 @@
     "miapi.stat.flexibility.description": "The Modability of the Item\n Items with Flexibility below 0\n cant be crafted",
     "miapi.stat.healthPercent": "Vitality Drain",
     "miapi.stat.healthPercent.description": "Deals %d percentage health Damage",
-    "miapi.stat.armor_pen": "Armor Penetration",
+    "miapi.stat.armor_pen": "Armor Pierce",
     "miapi.stat.armor_pen.description": "Scales Target armor to %d percent",
     "miapi.stat.shield_break": "Shield Break",
     "miapi.stat.shield_break.description": "Time an attack disables a Victims Shield in seconds",

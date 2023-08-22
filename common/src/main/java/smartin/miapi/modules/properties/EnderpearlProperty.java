@@ -4,7 +4,6 @@ import com.google.gson.JsonElement;
 import dev.architectury.event.EventResult;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.EndermiteEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleTypes;
@@ -25,7 +24,7 @@ public class EnderpearlProperty implements ModuleProperty {
         property = this;
         MiapiProjectileEvents.MODULAR_PROJECTILE_ENTITY_HIT.register(event -> {
             if (isEnderPearl(event.projectile)) {
-                if (event.projectile.getOwner() instanceof LivingEntity && onCollision(event.projectile, event.entityHitResult)) {
+                if (onCollision(event.projectile, event.entityHitResult)) {
                     return EventResult.interruptTrue();
                 }
             }
@@ -33,7 +32,7 @@ public class EnderpearlProperty implements ModuleProperty {
         });
         MiapiProjectileEvents.MODULAR_PROJECTILE_BLOCK_HIT.register(event -> {
             if (isEnderPearl(event.projectile)) {
-                if (event.projectile.getOwner() instanceof LivingEntity && onCollision(event.projectile, event.blockHitResult)) {
+                if (onCollision(event.projectile, event.blockHitResult)) {
                     return EventResult.interruptTrue();
                 }
             }
