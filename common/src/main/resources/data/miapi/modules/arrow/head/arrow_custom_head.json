@@ -1,0 +1,58 @@
+{
+    "name": "arrow_head_custom",
+    "item_model": [{
+        "type": "item",
+        "model": "minecraft:ender_pearl",
+        "transform": {
+            "rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "translation": {
+                "x": 0.5,
+                "y": 0.5,
+                "z": 0.5
+            },
+            "scale": {
+                "x": 0.5,
+                "y": 0.5,
+                "z": 0.5
+            }
+        }
+    }],
+    "allowedInSlots": [
+        "arrow_head"
+    ],
+    "tag":  [
+        "arrow_head"
+    ],
+    "attributes": [
+        {
+            "attribute": "miapi:generic.projectile_speed",
+            "value": "( - [material.density] ) / 10",
+            "operation": "+",
+            "slot": "mainhand",
+            "uuid": "AAAAAAAA-4180-4865-B01B-BCCE9785ACA3"
+        },
+        {
+            "attribute": "miapi:generic.projectile_crit_multiplier",
+            "value": "[material.hardness] / (3.7) - 1",
+            "operation": "+",
+            "slot": "mainhand",
+            "uuid": "AAAAAAAA-4180-4865-B01B-BCCE9785ACA3"
+        }
+    ],
+    "allowedMaterial": {
+        "allowedMaterials": [
+            "wood",
+            "metal",
+            "flint",
+            "bone",
+            "stone",
+            "crystal",
+            "glass"
+        ],
+        "cost": 1.0
+    }
+}

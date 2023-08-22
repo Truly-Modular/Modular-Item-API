@@ -26,7 +26,15 @@ public class ItemMiapiModel implements MiapiModel {
         matrices.push();
         matrices.multiplyPositionMatrix(matrix4f);
         ItemStack modelStack = stackSupplier.get();
-        MinecraftClient.getInstance().getItemRenderer().renderItem(modelStack,transformationMode,light,overlay,matrices,vertexConsumers,MinecraftClient.getInstance().world, 0);
+        MinecraftClient.getInstance().getItemRenderer().renderItem(
+                modelStack,
+                transformationMode,
+                light,
+                overlay,
+                matrices,
+                vertexConsumers,
+                MinecraftClient.getInstance().world,
+                0);
         matrices.pop();
     }
 

@@ -75,7 +75,7 @@ public class ModuleModel {
                 subModuleModel = new ModuleModel(instance1, stack);
                 subModuleModels.put(integer, subModuleModel);
             }
-            subModuleModel.render(modelType, stack, matrices, mode, tickDelta, vertexConsumers, entity, integer, overlay);
+            subModuleModel.render(modelType, stack, matrices, mode, tickDelta, vertexConsumers, entity, light, overlay);
             matrices.pop();
         });
     }

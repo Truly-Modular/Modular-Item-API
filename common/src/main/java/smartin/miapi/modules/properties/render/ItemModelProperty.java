@@ -3,6 +3,8 @@ package smartin.miapi.modules.properties.render;
 import com.google.gson.JsonElement;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.Registries;
+import net.minecraft.util.Identifier;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.modelrework.ItemMiapiModel;
 import smartin.miapi.client.modelrework.MiapiItemModel;
@@ -32,6 +34,9 @@ public class ItemModelProperty implements ModuleProperty {
                             if(!itemCompound.isEmpty()){
                                 return ItemStack.fromNbt(stack.getOrCreateNbt().getCompound(modelJson.model));
                             }
+                        }
+                        if("item".equals(modelJson.type)){
+                            return new ItemStack(Registries.ITEM.get(new Identifier(modelJson.model)));
                         }
                         return ItemStack.EMPTY;
                     });
