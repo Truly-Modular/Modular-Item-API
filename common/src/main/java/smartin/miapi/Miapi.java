@@ -38,6 +38,7 @@ import smartin.miapi.registries.RegistryInventory;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 public class Miapi {
@@ -55,14 +56,10 @@ public class Miapi {
         ItemAbilityManager.setup();
         AttributeRegistry.setup();
         ConditionManager.setup();
-        LifecycleEvent.SERVER_BEFORE_START.register(minecraftServer -> {
-            server = minecraftServer;
-            LOGGER.info("Server before started");
-        });
+        LifecycleEvent.SERVER_BEFORE_START.register(minecraftServer -> server = minecraftServer);
         ReloadListenerRegistry.register(ResourceType.SERVER_DATA, new ReloadListener());
-        registerReloadHandler(ReloadEvents.MAIN, "modules", RegistryInventory.modules, (isClient, path, data) -> {
-            ItemModule.loadFromData(path, data);
-        }, -0.5f);
+        registerReloadHandler(ReloadEvents.MAIN, "modules", RegistryInventory.modules,
+                (isClient, path, data) -> ItemModule.loadFromData(path, data), -0.5f);
         registerReloadHandler(ReloadEvents.MAIN, "injectors", bl -> PropertySubstitution.injectorsCount = 0, (isClient, path, data) -> {
             JsonElement element = JsonHelper.deserialize(data);
             if (element instanceof JsonObject object) {
@@ -72,21 +69,16 @@ public class Miapi {
                 LOGGER.warn("Found a non JSON object PropertyInjector. PropertyInjectors should be JSON objects.");
             }
         }, 1f);
-        PlayerEvent.PLAYER_JOIN.register(player -> {
-            MiapiPermissions.getPerms(player);
-        });
         ReloadEvents.END.subscribe(isClient -> {
             Miapi.LOGGER.info("Loaded " + PropertySubstitution.injectorsCount + " Injectors/Property Substitutors");
             Miapi.LOGGER.info("Loaded " + RegistryInventory.modules.getFlatMap().size() + " Modules");
         });
-        ReloadEvents.END.subscribe((isClient) -> {
-            ModularItemCache.discardCache();
-        });
+        ReloadEvents.END.subscribe((isClient) -> ModularItemCache.discardCache());
+        PlayerEvent.PLAYER_JOIN.register(MiapiPermissions::getPerms);
         PropertyResolver.propertyProviderRegistry.register("module", (moduleInstance, oldMap) -> {
             HashMap<ModuleProperty, JsonElement> map = new HashMap<>();
-            moduleInstance.module.getProperties().forEach((key, jsonData) -> {
-                map.put(RegistryInventory.moduleProperties.get(key), jsonData);
-            });
+            moduleInstance.module.getProperties().forEach((key, jsonData) ->
+                    map.put(RegistryInventory.moduleProperties.get(key), jsonData));
             return map;
         });
         PropertyResolver.propertyProviderRegistry.register("moduleData", (moduleInstance, oldMap) -> {
@@ -109,14 +101,14 @@ public class Miapi {
             NbtCompound tag = itemStack.getOrCreateNbt();
             try {
                 String modulesString = tag.getString(ItemModule.MODULE_KEY);
-                Gson gson = new Gson();
-                return gson.fromJson(modulesString, ItemModule.ModuleInstance.class);
+                return Miapi.gson.fromJson(modulesString, ItemModule.ModuleInstance.class);
             } catch (Exception e) {
                 Miapi.LOGGER.error("could not resolve Modules",e);
                 return null;
             }
         });
-        ModularItemCache.setSupplier(ItemModule.PROPERTY_KEY, itemStack -> ItemModule.getUnmergedProperties((ItemModule.ModuleInstance) ModularItemCache.get(itemStack, ItemModule.MODULE_KEY)));
+        ModularItemCache.setSupplier(ItemModule.PROPERTY_KEY,
+                itemStack -> ItemModule.getUnmergedProperties((ItemModule.ModuleInstance) Objects.requireNonNull(ModularItemCache.get(itemStack, ItemModule.MODULE_KEY))));
         StatResolver.registerResolver("translation", new StatResolver.Resolver() {
             @Override
             public double resolveDouble(String data, ItemModule.ModuleInstance instance) {
@@ -141,7 +133,13 @@ public class Miapi {
         networkingImplementation.setupServer();
     }
 
-    public static void registerReloadHandler(ReloadEvents.ReloadEvent event, String location, boolean syncToClient, Consumer<Boolean> beforeLoop, TriConsumer<Boolean, String, String> handler, float priority) {
+    public static void registerReloadHandler(
+            ReloadEvents.ReloadEvent event,
+            String location,
+            boolean syncToClient,
+            Consumer<Boolean> beforeLoop,
+            TriConsumer<Boolean, String, String> handler,
+            float priority) {
         if (syncToClient)
             ReloadEvents.registerDataPackPathToSync(MOD_ID, location);
         event.subscribe(isClient -> {
@@ -153,23 +151,42 @@ public class Miapi {
         }, priority);
     }
 
-    public static void registerReloadHandler(ReloadEvents.ReloadEvent event, String location, Consumer<Boolean> beforeLoop, TriConsumer<Boolean, String, String> handler, float priority) {
+    public static void registerReloadHandler(
+            ReloadEvents.ReloadEvent event,
+            String location,
+            Consumer<Boolean> beforeLoop,
+            TriConsumer<Boolean, String, String> handler,
+            float priority) {
         registerReloadHandler(event, location, true, beforeLoop, handler, priority);
     }
 
-    public static void registerReloadHandler(ReloadEvents.ReloadEvent event, String location, MiapiRegistry<?> toClear, TriConsumer<Boolean, String, String> handler) {
+    public static void registerReloadHandler(
+            ReloadEvents.ReloadEvent event,
+            String location, MiapiRegistry<?> toClear,
+            TriConsumer<Boolean, String, String> handler) {
         registerReloadHandler(event, location, true, bl -> toClear.clear(), handler, 0f);
     }
 
-    public static void registerReloadHandler(ReloadEvents.ReloadEvent event, String location, MiapiRegistry<?> toClear, TriConsumer<Boolean, String, String> handler, float prio) {
+    public static void registerReloadHandler(
+            ReloadEvents.ReloadEvent event,
+            String location, MiapiRegistry<?> toClear,
+            TriConsumer<Boolean, String, String> handler,
+            float prio) {
         registerReloadHandler(event, location, true, bl -> toClear.clear(), handler, prio);
     }
 
-    public static void registerReloadHandler(ReloadEvents.ReloadEvent event, String location, Map<?, ?> toClear, TriConsumer<Boolean, String, String> handler) {
+    public static void registerReloadHandler(
+            ReloadEvents.ReloadEvent event,
+            String location, Map<?, ?> toClear,
+            TriConsumer<Boolean, String, String> handler) {
         registerReloadHandler(event, location, true, bl -> toClear.clear(), handler, 0f);
     }
 
-    public static void registerReloadHandler(ReloadEvents.ReloadEvent event, String location, Map<?, ?> toClear, TriConsumer<Boolean, String, String> handler, float prio) {
+    public static void registerReloadHandler(
+            ReloadEvents.ReloadEvent event,
+            String location, Map<?, ?> toClear,
+            TriConsumer<Boolean, String, String> handler,
+            float prio) {
         registerReloadHandler(event, location, true, bl -> toClear.clear(), handler, prio);
     }
 }

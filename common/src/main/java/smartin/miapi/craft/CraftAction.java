@@ -52,7 +52,13 @@ public class CraftAction {
      * @param bench           the workbench block entity (null on client)
      * @param packetByteBuffs the packet byte buffers associated with the action
      */
-    public CraftAction(ItemStack old, SlotProperty.ModuleSlot slot, @Nullable ItemModule toAdd, PlayerEntity player, ModularWorkBenchEntity bench, PacketByteBuf[] packetByteBuffs) {
+    public CraftAction(
+            ItemStack old,
+            SlotProperty.ModuleSlot slot,
+            @Nullable ItemModule toAdd,
+            PlayerEntity player,
+            ModularWorkBenchEntity bench,
+            PacketByteBuf[] packetByteBuffs) {
         this.old = ModularItemStackConverter.getModularVersion(old);
         this.toAdd = toAdd;
         ItemModule.ModuleInstance instance = slot.parent;
@@ -224,7 +230,7 @@ public class CraftAction {
     private ItemStack craft() {
         ItemStack craftingStack = old.copy();
 
-        if (!old.hasNbt() || !old.getNbt().contains("modules")) {
+        if (!old.hasNbt() || !old.getOrCreateNbt().contains("modules")) {
             Miapi.LOGGER.error("old Item has no Modules - something went very wrong");
             return old;
         }
@@ -284,9 +290,8 @@ public class CraftAction {
      */
     public ItemStack getPreview() {
         AtomicReference<ItemStack> craftingStack = new AtomicReference<>(craft());
-        forEachCraftingProperty(craftingStack.get(), (guiCraftingProperty, module, inventory, start, end, buffer) -> {
-            craftingStack.set(guiCraftingProperty.preview(old, craftingStack.get(), player, blockEntity, module, toAdd, inventory, buffer));
-        });
+        forEachCraftingProperty(craftingStack.get(), (guiCraftingProperty, module, inventory, start, end, buffer) ->
+                craftingStack.set(guiCraftingProperty.preview(old, craftingStack.get(), player, blockEntity, module, toAdd, inventory, buffer)));
         ItemModule.ModuleInstance parsingInstance = ItemModule.getModules(craftingStack.get());
         for (int i = slotId.size() - 1; i >= 0; i--) {
             parsingInstance = parsingInstance.subModules.get(slotId.get(i));
@@ -331,9 +336,9 @@ public class CraftAction {
 
             List<CraftingProperty> sortedProperties =
                     RegistryInventory.moduleProperties.getFlatMap().values().stream()
-                            .filter(property -> property instanceof CraftingProperty)
+                            .filter(CraftingProperty.class::isInstance)
                             .filter(property -> ((CraftingProperty) property).shouldExecuteOnCraft(newInstance,ItemModule.getModules(crafted),crafted))
-                            .map(property -> (CraftingProperty) property)
+                            .map(CraftingProperty.class::cast)
                             .sorted(Comparator.comparingDouble(CraftingProperty::getPriority))
                             .toList();
             for (CraftingProperty craftingProperty : sortedProperties) {
@@ -365,6 +370,7 @@ public class CraftAction {
         if (Miapi.server != null) {
             return Miapi.server.getPlayerManager().getPlayer(uuid);
         } else if (MinecraftClient.getInstance() != null) {
+            assert MinecraftClient.getInstance().world != null;
             return MinecraftClient.getInstance().world.getPlayerByUuid(uuid);
         }
         return null;

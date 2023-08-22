@@ -48,7 +48,6 @@ public class ItemProjectileEntity extends PersistentProjectileEntity {
     public int returnTimer;
     public float waterDrag = 0.99f;
     public WrappedSoundEvent hitEntitySound = new WrappedSoundEvent(this.getHitSound(), 1.0f, 1.0f);
-    public WrappedSoundEvent hitGroundSound = new WrappedSoundEvent(this.getHitSound(), 1.0f, 1.0f);
     public ProjectileHitBehaviour projectileHitBehaviour = new EntityBounceBehaviour();
     private BlockState inBlockState;
 
@@ -199,7 +198,12 @@ public class ItemProjectileEntity extends PersistentProjectileEntity {
         }
 
         Entity owner = this.getOwner();
-        MiapiProjectileEvents.ModularProjectileEntityHitEvent event = new MiapiProjectileEvents.ModularProjectileEntityHitEvent(entityHitResult, this, this.getDamageSources().arrow(this, owner), damage);
+        MiapiProjectileEvents.ModularProjectileEntityHitEvent event =
+                new MiapiProjectileEvents.ModularProjectileEntityHitEvent(
+                        entityHitResult,
+                        this,
+                        this.getDamageSources().arrow(this, owner),
+                        damage);
         EventResult result = MiapiProjectileEvents.MODULAR_PROJECTILE_ENTITY_HIT.invoker().hit(event);
         if (result.interruptsFurtherEvaluation()) {
             return;
@@ -224,7 +228,12 @@ public class ItemProjectileEntity extends PersistentProjectileEntity {
         if (this.projectileHitBehaviour != null) {
             projectileHitBehaviour.onHit(this, entityHitResult.getEntity(), entityHitResult);
         }
-        MiapiProjectileEvents.ModularProjectileEntityHitEvent postEvent = new MiapiProjectileEvents.ModularProjectileEntityHitEvent(event.entityHitResult, this, event.damageSource, damage);
+        MiapiProjectileEvents.ModularProjectileEntityHitEvent postEvent =
+                new MiapiProjectileEvents.ModularProjectileEntityHitEvent(
+                        event.entityHitResult,
+                        this,
+                        event.damageSource,
+                        damage);
         EventResult postResult = MiapiProjectileEvents.MODULAR_PROJECTILE_ENTITY_POST_HIT.invoker().hit(postEvent);
         if (postResult.interruptsFurtherEvaluation()) {
             return;
@@ -234,7 +243,8 @@ public class ItemProjectileEntity extends PersistentProjectileEntity {
 
     @Override
     protected void onBlockHit(BlockHitResult blockHitResult) {
-        if (MiapiProjectileEvents.MODULAR_PROJECTILE_BLOCK_HIT.invoker().hit(new MiapiProjectileEvents.ModularProjectileBlockHitEvent(blockHitResult, this)).interruptsFurtherEvaluation()) {
+        if (MiapiProjectileEvents.MODULAR_PROJECTILE_BLOCK_HIT.invoker().hit(
+                new MiapiProjectileEvents.ModularProjectileBlockHitEvent(blockHitResult, this)).interruptsFurtherEvaluation()) {
             return;
         }
         super.onBlockHit(blockHitResult);
@@ -269,7 +279,11 @@ public class ItemProjectileEntity extends PersistentProjectileEntity {
                 yield player.getAbilities().creativeMode;
             }
         };
-        return earlyPickup || super.tryPickup(player) || this.isNoClip() && this.isOwner(player) && (tryInsertAtSlot(player.getInventory(), this.asItemStack(), slotId) || player.getInventory().insertStack(this.asItemStack()));
+        return
+                earlyPickup ||
+                super.tryPickup(player) ||
+                this.isNoClip() && this.isOwner(player) &&
+                        (tryInsertAtSlot(player.getInventory(), this.asItemStack(), slotId) || player.getInventory().insertStack(this.asItemStack()));
     }
 
     public boolean tryInsertAtSlot(PlayerInventory inventory, ItemStack stack, int slot) {

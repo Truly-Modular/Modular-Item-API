@@ -90,7 +90,17 @@ public interface CraftingStat<T> {
      * @param buf       the writen buffer from {@link CraftingProperty#writeCraftingBuffer(PacketByteBuf, InteractAbleWidget)}
      * @return if the crafting can happen
      */
-    default boolean canCraft(T instance, T expected, ItemStack old, ItemStack crafting, @Nullable ModularWorkBenchEntity bench, PlayerEntity player, ItemModule.ModuleInstance newModule, ItemModule module, List<ItemStack> inventory, PacketByteBuf buf) {
+    default boolean canCraft(
+            T instance,
+            T expected,
+            ItemStack old,
+            ItemStack crafting,
+            @Nullable ModularWorkBenchEntity bench,
+            PlayerEntity player,
+            ItemModule.ModuleInstance newModule,
+            ItemModule module,
+            List<ItemStack> inventory,
+            PacketByteBuf buf) {
         return instance.equals(expected);
     }
 
@@ -118,7 +128,7 @@ public interface CraftingStat<T> {
      * @param bench   the workbench block entity (null on client)
      * @param old     the old stat instance
      * @param toMerge the stat instance being added on
-     * @return
+     * @return the merged result
      */
     T merge(@Nullable ModularWorkBenchEntity bench, T old, T toMerge);
 
@@ -127,9 +137,7 @@ public interface CraftingStat<T> {
     class StatMap<T> extends HashMap<CraftingStat<T>, T> {
         public static <T> void forEach(StatMap<?> map, BiConsumer<CraftingStat<T>, T> consumer) {
             if (map == null) return;
-            map.forEach((k, v) -> {
-                consumer.accept((CraftingStat<T>) k, (T) v);
-            });
+            map.forEach((k, v) -> consumer.accept((CraftingStat<T>) k, (T) v));
         }
 
         public <E> E get(CraftingStat<E> key) {

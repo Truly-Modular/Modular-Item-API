@@ -46,7 +46,17 @@ public class SimpleCraftingStat implements CraftingStat<Double> {
     }
 
     @Override
-    public boolean canCraft(Double instance, Double expected, ItemStack old, ItemStack crafting, @Nullable ModularWorkBenchEntity bench, PlayerEntity player, ItemModule.ModuleInstance newModule, ItemModule module, List<ItemStack> inventory, PacketByteBuf buf) {
+    public boolean canCraft(
+            Double instance,
+            Double expected,
+            ItemStack old,
+            ItemStack crafting,
+            @Nullable ModularWorkBenchEntity bench,
+            PlayerEntity player,
+            ItemModule.ModuleInstance newModule,
+            ItemModule module,
+            List<ItemStack> inventory,
+            PacketByteBuf buf) {
         return instance >= expected;
     }
 
