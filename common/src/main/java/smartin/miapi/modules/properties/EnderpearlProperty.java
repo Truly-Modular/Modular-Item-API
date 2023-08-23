@@ -16,6 +16,9 @@ import smartin.miapi.events.MiapiProjectileEvents;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
+/**
+ * This property gives a projectile ender pearl behaviour
+ */
 public class EnderpearlProperty implements ModuleProperty {
     public static final String KEY = "is_enderpearl";
     public static EnderpearlProperty property;

@@ -8,10 +8,10 @@ import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.item.ItemStack;
-import smartin.miapi.Miapi;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.modules.properties.util.SimpleDoubleProperty;
 
+import java.util.Objects;
 import java.util.WeakHashMap;
 
 /**
@@ -64,9 +64,6 @@ public class ArmorPenProperty extends SimpleDoubleProperty {
     @Override
     public double getValueSafe(ItemStack stack) {
         Double value = getValueRaw(stack);
-        if (value != null) {
-            return valueRemap(value);
-        }
-        return valueRemap(0);
+        return valueRemap(Objects.requireNonNullElse(value, 0.0));
     }
 }

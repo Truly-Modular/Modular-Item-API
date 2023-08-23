@@ -9,6 +9,9 @@ import smartin.miapi.entity.ItemProjectileEntity;
 import smartin.miapi.events.MiapiProjectileEvents;
 import smartin.miapi.modules.properties.util.CodecBasedProperty;
 
+/**
+ * This property is exploding projectiles on impact
+ */
 public class ExplosionProperty extends CodecBasedProperty<ExplosionProperty.ExplosionInfo> {
     public static final String KEY = "explosion_projectile";
     public static final Codec<ExplosionInfo> codec = AutoCodec.of(ExplosionInfo.class).codec();
@@ -39,9 +42,16 @@ public class ExplosionProperty extends CodecBasedProperty<ExplosionProperty.Expl
         });
     }
 
+    /**
+     * Explode things
+     *
+     * @param info       Info about the Explosion
+     * @param projectile the projectile that is exploding
+     * @param result     hitresult / the contact point of the explosion
+     */
     private void explode(ExplosionInfo info, ItemProjectileEntity projectile, HitResult result) {
         World.ExplosionSourceType explosionSourceType = World.ExplosionSourceType.TNT;
-        if(!info.destroyBlocks){
+        if (!info.destroyBlocks) {
             explosionSourceType = World.ExplosionSourceType.NONE;
         }
         projectile.getWorld().createExplosion(projectile, result.getPos().getX(), result.getPos().getY(), result.getPos().getZ(), info.strength, explosionSourceType);
