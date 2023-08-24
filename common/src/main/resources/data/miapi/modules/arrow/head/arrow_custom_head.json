@@ -48,7 +48,8 @@
             "ender_pearl",
             "chorus_fruit",
             "tnt",
-            "gunpowder"
+            "gunpowder",
+            "potion"
         ],
         "cost": 1.0
     }

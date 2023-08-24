@@ -20,12 +20,6 @@
             }
         }
     },
-    "item_model": [
-        {
-            "type": "item_nbt",
-            "model": "BOW_PROJECTILE"
-        }
-    ],
     "allowedInSlots": [
         "bow_string"
     ],

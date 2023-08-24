@@ -28,14 +28,14 @@ public class ItemModelProperty implements ModuleProperty {
             if (element != null) {
                 element.getAsJsonArray().forEach(element1 -> {
                     ModelJson modelJson = Miapi.gson.fromJson(element1, ModelJson.class);
-                    Supplier<ItemStack> stackSupplier = (()->{
+                    Supplier<ItemStack> stackSupplier = (() -> {
                         if ("item_nbt".equals(modelJson.type)) {
                             NbtCompound itemCompound = stack.getOrCreateNbt().getCompound(modelJson.model);
-                            if(!itemCompound.isEmpty()){
-                                return ItemStack.fromNbt(stack.getOrCreateNbt().getCompound(modelJson.model));
+                            if (!itemCompound.isEmpty()) {
+                                return ItemStack.fromNbt(itemCompound);
                             }
                         }
-                        if("item".equals(modelJson.type)){
+                        if ("item".equals(modelJson.type)) {
                             return new ItemStack(Registries.ITEM.get(new Identifier(modelJson.model)));
                         }
                         return ItemStack.EMPTY;

@@ -58,7 +58,7 @@ public class AllowedMaterial implements CraftingProperty, ModuleProperty {
     }
 
     public Text getWarning() {
-        if(wrongMaterial){
+        if (wrongMaterial) {
             return Text.translatable(Miapi.MOD_ID + ".ui.craft.warning.material.wrong");
         }
         return Text.translatable(Miapi.MOD_ID + ".ui.craft.warning.material");
@@ -80,16 +80,14 @@ public class AllowedMaterial implements CraftingProperty, ModuleProperty {
                 if (isAllowed) {
                     materialCostClient = input.getCount() * material.getValueOfItem(input);
                     return materialCostClient >= materialRequirementClient;
-                }
-                else{
+                } else {
                     materialCostClient = 0.0f;
                 }
             } else {
                 wrongMaterial = false;
                 materialCostClient = 0.0f;
             }
-        }
-        else{
+        } else {
             wrongMaterial = false;
         }
         return false;
@@ -99,6 +97,7 @@ public class AllowedMaterial implements CraftingProperty, ModuleProperty {
     public ItemStack preview(ItemStack old, ItemStack crafting, PlayerEntity player, ModularWorkBenchEntity bench, ItemModule.ModuleInstance newModule, ItemModule module, List<ItemStack> inventory, PacketByteBuf buf) {
         JsonElement element = module.getProperties().get(KEY);
         ItemStack input = inventory.get(0);
+        ItemStack inputCopy = input.copy();
         if (element != null) {
             Material material = MaterialProperty.getMaterial(input);
             if (material != null) {
@@ -110,6 +109,7 @@ public class AllowedMaterial implements CraftingProperty, ModuleProperty {
                 }
             }
         }
+        crafting = MaterialInscribeProperty.inscribe(crafting, inputCopy);
         return crafting;
     }
 
@@ -119,12 +119,14 @@ public class AllowedMaterial implements CraftingProperty, ModuleProperty {
         List<ItemStack> results = new ArrayList<>();
         JsonElement element = module.getProperties().get(KEY);
         ItemStack input = inventory.get(0);
+        ItemStack inputCopy = input.copy();
         AllowedMaterialJson json = Miapi.gson.fromJson(element, AllowedMaterialJson.class);
         Material material = MaterialProperty.getMaterial(input);
         assert material != null;
         int newCount = (int) (input.getCount() - Math.ceil(json.cost * crafting.getCount() / material.getValueOfItem(input)));
         input.setCount(newCount);
         MaterialProperty.setMaterial(newModule, material.getKey());
+        crafting = MaterialInscribeProperty.inscribe(crafting, inputCopy);
         results.add(crafting);
         results.add(input);
         return results;

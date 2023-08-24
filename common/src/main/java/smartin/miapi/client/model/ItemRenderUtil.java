@@ -12,10 +12,9 @@ import net.minecraft.client.render.model.BakedQuad;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.Direction;
+import smartin.miapi.client.modelrework.MiapiItemModel;
 import smartin.miapi.mixin.client.ItemRendererAccessor;
 
-import java.util.Iterator;
 import java.util.List;
 
 import static net.minecraft.client.render.item.ItemRenderer.getDirectItemGlintConsumer;
@@ -34,11 +33,7 @@ public class ItemRenderUtil {
     public static void renderModel(MatrixStack matrices, ItemStack stack, BakedModel model, ModelTransformationMode renderMode, VertexConsumerProvider vertexConsumers, RenderLayer renderLayer, int light, int overlay) {
         VertexConsumer vertexConsumer = getDirectItemGlintConsumer(vertexConsumers, renderLayer, true, stack.hasGlint());
         model.getTransformation().getTransformation(renderMode).apply(true, matrices);
-        matrices.translate(-0.5, -0.5, -0.5);
-        for (Direction direction : Direction.values()) {
-            renderBakedItemQuads(matrices, vertexConsumer, model.getQuads(null, direction, null), stack, light, overlay);
-        }
-        renderBakedItemQuads(matrices, vertexConsumer, model.getQuads(null, null, null), stack, light, overlay);
+        MiapiItemModel.getItemModel(stack).render(matrices, renderMode, 0, vertexConsumers, light, overlay);
     }
 
     private static void renderBakedItemQuads(MatrixStack matrices, VertexConsumer vertices, List<BakedQuad> quads, ItemStack stack, int light, int overlay) {

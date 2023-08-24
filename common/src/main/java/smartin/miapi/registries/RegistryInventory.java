@@ -63,6 +63,7 @@ import smartin.miapi.modules.edit_options.skins.SkinOptions;
 import smartin.miapi.modules.properties.*;
 import smartin.miapi.modules.properties.compat.BetterCombatProperty;
 import smartin.miapi.modules.properties.material.AllowedMaterial;
+import smartin.miapi.modules.properties.material.MaterialInscribeProperty;
 import smartin.miapi.modules.properties.material.MaterialProperties;
 import smartin.miapi.modules.properties.material.MaterialProperty;
 import smartin.miapi.modules.properties.render.*;
@@ -394,6 +395,8 @@ public class RegistryInventory {
             registerMiapi(moduleProperties, EnderpearlProperty.KEY, new EnderpearlProperty());
             registerMiapi(moduleProperties, TeleportTarget.KEY, new TeleportTarget());
             registerMiapi(moduleProperties, ExplosionProperty.KEY, new ExplosionProperty());
+            registerMiapi(moduleProperties, MaterialInscribeProperty.KEY, new MaterialInscribeProperty());
+            registerMiapi(moduleProperties, ProjectileTriggerProperty.KEY, new ProjectileTriggerProperty());
 
             //compat
             registerMiapi(moduleProperties, BetterCombatProperty.KEY, new BetterCombatProperty());

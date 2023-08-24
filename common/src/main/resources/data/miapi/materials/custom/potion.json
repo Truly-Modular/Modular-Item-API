@@ -1,0 +1,15 @@
+{
+    "key": "potion",
+    "translation": "miapi.material.custom.potion",
+    "icon": "textures/item/potion.png",
+    "items": [
+        {
+            "item": "minecraft:splash_potion",
+            "value": 1.0
+        },
+        {
+            "item": "minecraft:lingering_potion",
+            "value": 1.0
+        }
+    ]
+}
