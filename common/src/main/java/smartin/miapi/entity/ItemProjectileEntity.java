@@ -57,7 +57,7 @@ public class ItemProjectileEntity extends PersistentProjectileEntity {
     }
 
     public ItemProjectileEntity(World world, Position position, ItemStack itemStack) {
-        super(RegistryInventory.itemProjectileType.get(),position.getX(),position.getY(),position.getZ(), world);
+        super(RegistryInventory.itemProjectileType.get(), position.getX(), position.getY(), position.getZ(), world);
         this.thrownStack = itemStack.copy();
         this.dataTracker.set(THROWING_STACK, thrownStack);
         this.dataTracker.set(LOYALTY, (byte) EnchantmentHelper.getLoyalty(itemStack));
@@ -123,7 +123,7 @@ public class ItemProjectileEntity extends PersistentProjectileEntity {
             this.setVelocity(new Vec3d(0, 0, 0));
             this.dealtDamage = true;
         }
-        if (this.getBlockPos().getY() < this.getWorld().getBottomY() - 50 &&  MiapiConfig.EnchantmentGroup.betterLoyalty.getValue()) {
+        if (this.getBlockPos().getY() < this.getWorld().getBottomY() - 50 && MiapiConfig.EnchantmentGroup.betterLoyalty.getValue()) {
             //loyalty in void
             this.dealtDamage = true;
         }
@@ -278,7 +278,7 @@ public class ItemProjectileEntity extends PersistentProjectileEntity {
     @Override
     protected boolean tryPickup(PlayerEntity player) {
         int slotId = this.dataTracker.get(PREFERRED_SLOT);
-        if(MiapiProjectileEvents.MODULAR_PROJECTILE_PICK_UP.invoker().pickup(player,this).interruptsFurtherEvaluation()){
+        if (MiapiProjectileEvents.MODULAR_PROJECTILE_PICK_UP.invoker().pickup(player, this).interruptsFurtherEvaluation()) {
             return false;
         }
         boolean earlyPickup = switch (this.pickupType) {
@@ -293,9 +293,9 @@ public class ItemProjectileEntity extends PersistentProjectileEntity {
         };
         return
                 earlyPickup ||
-                super.tryPickup(player) ||
-                this.isNoClip() && this.isOwner(player) &&
-                        (tryInsertAtSlot(player.getInventory(), this.asItemStack(), slotId) || player.getInventory().insertStack(this.asItemStack()));
+                        super.tryPickup(player) ||
+                        this.isNoClip() && this.isOwner(player) &&
+                                (tryInsertAtSlot(player.getInventory(), this.asItemStack(), slotId) || player.getInventory().insertStack(this.asItemStack()));
     }
 
     public boolean tryInsertAtSlot(PlayerInventory inventory, ItemStack stack, int slot) {
@@ -386,7 +386,7 @@ public class ItemProjectileEntity extends PersistentProjectileEntity {
     }
 
     @Override
-    public boolean equals(Object other){
+    public boolean equals(Object other) {
         return super.equals(other);
     }
 }
