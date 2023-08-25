@@ -1,0 +1,44 @@
+{
+    "arrow_head_custom": {
+        "condition": {
+            "type": "material",
+            "material": "ice"
+        },
+        "properties": {
+            "item_model": [{
+                "type": "item",
+                "model": "minecraft:packed_ice",
+                "transform": {
+                    "rotation": {
+                        "x": 0.0,
+                        "y": 0.0,
+                        "z": 0.0
+                    },
+                    "translation": {
+                        "x": 0.5,
+                        "y": 0.5,
+                        "z": 0.5
+                    },
+                    "scale": {
+                        "x": 0.5,
+                        "y": 0.5,
+                        "z": 0.5
+                    }
+                }
+            }],
+            "applyPotionEffects": [
+                {
+                    "event": "hurt",
+                    "item": "source.projectile",
+                    "applyTo": "victim",
+                    "duration": 50,
+                    "amplifier": 2,
+                    "effect": "miapi:cryo",
+                    "target_description": {
+                        "translate": "miapi.application_target.description.hurt_victim"
+                    }
+                }
+            ]
+        }
+    }
+}

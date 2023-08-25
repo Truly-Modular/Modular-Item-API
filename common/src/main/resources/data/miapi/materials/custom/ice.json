@@ -1,0 +1,11 @@
+{
+    "key": "ice",
+    "translation": "miapi.material.custom.ice",
+    "icon": "textures/item/ice.png",
+    "items": [
+        {
+            "item": "minecraft:ice",
+            "value": 1.0
+        }
+    ]
+}

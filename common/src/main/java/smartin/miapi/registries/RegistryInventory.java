@@ -397,6 +397,7 @@ public class RegistryInventory {
             registerMiapi(moduleProperties, ExplosionProperty.KEY, new ExplosionProperty());
             registerMiapi(moduleProperties, MaterialInscribeProperty.KEY, new MaterialInscribeProperty());
             registerMiapi(moduleProperties, ProjectileTriggerProperty.KEY, new ProjectileTriggerProperty());
+            registerMiapi(moduleProperties, ChannelingProperty.KEY, new ChannelingProperty());
 
             //compat
             registerMiapi(moduleProperties, BetterCombatProperty.KEY, new BetterCombatProperty());

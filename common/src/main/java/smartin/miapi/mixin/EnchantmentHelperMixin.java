@@ -10,6 +10,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import smartin.miapi.item.modular.ModularItem;
+import smartin.miapi.modules.properties.ChannelingProperty;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,6 +49,15 @@ public class EnchantmentHelperMixin {
                 }
             }
             cir.setReturnValue(enchantments);
+        }
+    }
+
+    @Inject(method = "Lnet/minecraft/enchantment/EnchantmentHelper;hasChanneling(Lnet/minecraft/item/ItemStack;)Z", at = @At("HEAD"), cancellable = true)
+    private static void miapi$modifyChannelling(ItemStack stack, CallbackInfoReturnable<Boolean> cir) {
+        if (stack.getItem() instanceof ModularItem) {
+            if (ChannelingProperty.hasChanneling(stack)) {
+                cir.setReturnValue(true);
+            }
         }
     }
 }

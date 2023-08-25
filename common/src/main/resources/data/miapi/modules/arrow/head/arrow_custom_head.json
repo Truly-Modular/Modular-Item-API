@@ -30,7 +30,7 @@
     "attributes": [
         {
             "attribute": "miapi:generic.projectile_speed",
-            "value": " - 1",
+            "value": " - 0.2",
             "operation": "+",
             "slot": "mainhand",
             "uuid": "AAAAAAAA-4180-4865-B01B-BCCE9785ACA3"
@@ -49,7 +49,11 @@
             "chorus_fruit",
             "tnt",
             "gunpowder",
-            "potion"
+            "potion",
+            "lightning_rod",
+            "egg",
+            "slime_ball",
+            "ice"
         ],
         "cost": 1.0
     }

@@ -294,6 +294,11 @@ public class ApplicationEvents {
                 return itemProjectile.asItemStack();
             return null;
         });
+        registerEntityDataReader("bow", entity -> {
+            if (entity instanceof ProjectileEntity projectile && projectile instanceof ItemProjectileEntity itemProjectile)
+                return itemProjectile.getBowItem();
+            return null;
+        });
         registerEntityDataReader("using", entity -> entity instanceof LivingEntity living ? living.getActiveItem() : null);
         registerEntityDataReader("dropped", entity -> entity instanceof ItemEntity item ? item.getStack() : null);
 

@@ -1,0 +1,32 @@
+{
+    "arrow_head_custom": {
+        "condition": {
+            "type": "material",
+            "material": "lightning_rod"
+        },
+        "properties": {
+            "channeling": true,
+            "item_model": [{
+                "type": "item",
+                "model": "minecraft:lightning_rod",
+                "transform": {
+                    "rotation": {
+                        "x": 0.0,
+                        "y": 0.0,
+                        "z": 135.0
+                    },
+                    "translation": {
+                        "x": 0.56,
+                        "y": 0.56,
+                        "z": 0.5
+                    },
+                    "scale": {
+                        "x": 0.6,
+                        "y": 0.6,
+                        "z": 0.6
+                    }
+                }
+            }]
+        }
+    }
+}

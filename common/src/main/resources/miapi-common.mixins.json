@@ -5,6 +5,7 @@
     "compatibilityLevel": "JAVA_17",
     "mixins": [
         "BCWeaponRegistryMixin",
+        "DispenserBlockAccessor",
         "EnchantmentHelperMixin",
         "EnchantmentMixin",
         "EntityMixin",
@@ -14,6 +15,8 @@
         "LivingEntityAccessor",
         "LivingEntityMixin",
         "LootContextTypesAccessor",
+        "ProjectileDispenserBehaviorAccessor",
+        "ProjectileEntityAccessor",
         "SmithingScreenHandlerAccessor",
         "SmithingScreenHandlerMixin",
         "ThrowablePotionItemAccessor"

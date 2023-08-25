@@ -1,10 +1,10 @@
 {
-    "key": "copper_rod",
+    "key": "lightning_rod",
     "translation": "miapi.material.custom.copper_rod",
     "icon": "textures/item/copper_rod.png",
     "items": [
         {
-            "item": "minecraft:copper_rod",
+            "item": "minecraft:lightning_rod",
             "value": 1.0
         }
     ]
