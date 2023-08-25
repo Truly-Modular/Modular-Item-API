@@ -16,7 +16,6 @@ import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.hit.BlockHitResult;
@@ -28,11 +27,12 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.config.MiapiConfig;
-import smartin.miapi.events.MiapiProjectileEvents;
 import smartin.miapi.entity.arrowhitbehaviours.EntityBounceBehaviour;
 import smartin.miapi.entity.arrowhitbehaviours.EntityPierceBehaviour;
 import smartin.miapi.entity.arrowhitbehaviours.ProjectileHitBehaviour;
+import smartin.miapi.events.MiapiProjectileEvents;
 import smartin.miapi.modules.abilities.util.WrappedSoundEvent;
+import smartin.miapi.modules.properties.AirDragProperty;
 import smartin.miapi.modules.properties.AttributeProperty;
 import smartin.miapi.registries.RegistryInventory;
 
@@ -42,7 +42,7 @@ public class ItemProjectileEntity extends PersistentProjectileEntity {
     private static final TrackedData<Boolean> SPEED_DAMAGE = DataTracker.registerData(ItemProjectileEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private static final TrackedData<ItemStack> THROWING_STACK = DataTracker.registerData(ItemProjectileEntity.class, TrackedDataHandlerRegistry.ITEM_STACK);
     private static final TrackedData<ItemStack> BOW_ITEM_STACK = DataTracker.registerData(ItemProjectileEntity.class, TrackedDataHandlerRegistry.ITEM_STACK);
-    private static final TrackedData<Float> WATER_DRAG = DataTracker.registerData(ItemProjectileEntity.class, TrackedDataHandlerRegistry.FLOAT);
+    public static final TrackedData<Float> WATER_DRAG = DataTracker.registerData(ItemProjectileEntity.class, TrackedDataHandlerRegistry.FLOAT);
     private static final TrackedData<Integer> PREFERRED_SLOT = DataTracker.registerData(ItemProjectileEntity.class, TrackedDataHandlerRegistry.INTEGER);
     public ItemStack thrownStack = ItemStack.EMPTY;
     private boolean dealtDamage;
@@ -115,6 +115,7 @@ public class ItemProjectileEntity extends PersistentProjectileEntity {
 
     @Override
     public void tick() {
+        ItemStack asItem = asItemStack();
         if (MiapiProjectileEvents.MODULAR_PROJECTILE_TICK.invoker().tick(this).interruptsFurtherEvaluation()) {
             return;
         }
@@ -125,11 +126,6 @@ public class ItemProjectileEntity extends PersistentProjectileEntity {
         if (this.getBlockPos().getY() < this.getWorld().getBottomY() - 50 &&  MiapiConfig.EnchantmentGroup.betterLoyalty.getValue()) {
             //loyalty in void
             this.dealtDamage = true;
-        }
-
-        this.velocityDirty = true;
-        if (this.getWorld() instanceof ServerWorld) {
-            this.setVelocity(this.getVelocity());
         }
 
         Entity entity = this.getOwner();
@@ -158,6 +154,13 @@ public class ItemProjectileEntity extends PersistentProjectileEntity {
                 ++this.returnTimer;
             }
         }
+
+        Vec3d vec3d = this.getVelocity();
+        float m = (float) AirDragProperty.property.getValueSafe(asItem);
+        if (this.isTouchingWater()) {
+            m = 1.0f;
+        }
+        this.setVelocity(vec3d.multiply(m));
 
         super.tick();
     }

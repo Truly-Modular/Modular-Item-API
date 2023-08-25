@@ -136,6 +136,14 @@ public class StatDisplay extends InteractAbleWidget {
                 .builder(BlockProperty.property)
                 .setMax(50)
                 .setTranslationKey(BlockProperty.KEY).build());
+        addStatDisplay(SinglePropertyStatDisplay
+                .builder(AirDragProperty.property)
+                .setMax(1)
+                .setTranslationKey(AirDragProperty.KEY).build());
+        addStatDisplay(SinglePropertyStatDisplay
+                .builder(WaterDragProperty.property)
+                .setMax(1)
+                .setTranslationKey(WaterDragProperty.KEY).build());
     }
 
     public StatDisplay(int x, int y, int width, int height) {

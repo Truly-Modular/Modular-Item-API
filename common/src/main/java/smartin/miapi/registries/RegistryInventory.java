@@ -398,6 +398,8 @@ public class RegistryInventory {
             registerMiapi(moduleProperties, MaterialInscribeProperty.KEY, new MaterialInscribeProperty());
             registerMiapi(moduleProperties, ProjectileTriggerProperty.KEY, new ProjectileTriggerProperty());
             registerMiapi(moduleProperties, ChannelingProperty.KEY, new ChannelingProperty());
+            registerMiapi(moduleProperties, AirDragProperty.KEY, new AirDragProperty());
+            registerMiapi(moduleProperties, WaterDragProperty.KEY, new WaterDragProperty());
 
             //compat
             registerMiapi(moduleProperties, BetterCombatProperty.KEY, new BetterCombatProperty());

@@ -30,13 +30,15 @@
         ],
         "cost": 0.11110
     },
+    "water_drag": "0.99",
+    "air_drag": "0.85",
     "tag": [
         "arrow_tail"
     ],
     "attributes": [
         {
             "attribute": "miapi:generic.projectile_speed",
-            "value": "( - [material.density] ) / 1",
+            "value": "( - [material.density] ) / 1 * 0 ",
             "operation": "+",
             "slot": "mainhand",
             "uuid": "AAAAAAAA-4180-4865-B01B-BCCE9785ACA3"
