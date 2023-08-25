@@ -51,8 +51,6 @@
             "gunpowder",
             "potion",
             "lightning_rod",
-            "egg",
-            "slime_ball",
             "ice"
         ],
         "cost": 1.0
