@@ -20,7 +20,7 @@
             }
         }
     },
-    "water_drag": "0.8",
+    "water_drag": "0.6",
     "air_drag": "1.0",
     "allowedInSlots": [
         "arrow_tail"

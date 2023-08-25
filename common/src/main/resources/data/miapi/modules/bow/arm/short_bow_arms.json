@@ -1,7 +1,7 @@
 {
-    "name": "bow_arms_normal",
+    "name": "bow_arms_short",
     "texture": {
-        "path": "miapi:models/item/bow/arms/normal/[material.texture].json",
+        "path": "miapi:models/item/bow/arms/short/[material.texture].json",
         "transform": {
             "rotation": {
                 "x": 0.0,
@@ -54,14 +54,14 @@
     "attributes": [
         {
             "attribute": "miapi:generic.projectile_speed",
-            "value": "([material.hardness] + [material.flexibility] ) / 9 - 1 ",
+            "value": "(([material.hardness] + [material.flexibility] ) / 9 - 1)*0.7 ",
             "operation": "+",
             "slot": "mainhand",
             "uuid": "AAAAAAAA-4180-4865-B01B-BCCE9785ACA3"
         },
         {
             "attribute": "miapi:generic.bow_draw_time",
-            "value": "([material.hardness]/3 - 1) * 20",
+            "value": "([material.hardness]/3 - 1) * 15",
             "operation": "+",
             "slot": "mainhand",
             "uuid": "AAAAAAAA-4180-4865-B01B-BCCE9785ACA3"

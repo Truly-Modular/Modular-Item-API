@@ -1,0 +1,33 @@
+{
+    "bow_string_normal": {
+        "condition": {
+            "type": "otherModule",
+            "condition": {
+                "type": "tag",
+                "tag": "string_long"
+            }
+        },
+        "properties": {
+            "texture": {
+                "path": "miapi:models/item/bow/string/large/[material.texture].json",
+                "transform": {
+                    "rotation": {
+                        "x": 0.0,
+                        "y": 0.0,
+                        "z": 0.0
+                    },
+                    "translation": {
+                        "x": -5.0,
+                        "y": -11.0,
+                        "z": 0.0
+                    },
+                    "scale": {
+                        "x": 2.0,
+                        "y": 2.0,
+                        "z": 1.0
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,7 +1,7 @@
 {
-    "name": "bow_arms_normal",
+    "name": "bow_arms_long",
     "texture": {
-        "path": "miapi:models/item/bow/arms/normal/[material.texture].json",
+        "path": "miapi:models/item/bow/arms/long/[material.texture].json",
         "transform": {
             "rotation": {
                 "x": 0.0,
@@ -9,13 +9,13 @@
                 "z": 0.0
             },
             "translation": {
-                "x": 0.0,
-                "y": 0.0,
+                "x": -5.0,
+                "y": -11.0,
                 "z": 0.0
             },
             "scale": {
-                "x": 1.0,
-                "y": 1.0,
+                "x": 2.0,
+                "y": 2.0,
                 "z": 1.0
             }
         }
@@ -25,7 +25,7 @@
     ],
     "tag": [
         "bow_arms",
-        "string_normal"
+        "string_long"
     ],
     "slots": {
         "0": {
@@ -54,14 +54,14 @@
     "attributes": [
         {
             "attribute": "miapi:generic.projectile_speed",
-            "value": "([material.hardness] + [material.flexibility] ) / 9 - 1 ",
+            "value": "(([material.hardness] + [material.flexibility] ) / 9 - 1 ) * 2",
             "operation": "+",
             "slot": "mainhand",
             "uuid": "AAAAAAAA-4180-4865-B01B-BCCE9785ACA3"
         },
         {
             "attribute": "miapi:generic.bow_draw_time",
-            "value": "([material.hardness]/3 - 1) * 20",
+            "value": "([material.hardness]/3 - 1) * 40",
             "operation": "+",
             "slot": "mainhand",
             "uuid": "AAAAAAAA-4180-4865-B01B-BCCE9785ACA3"
@@ -72,8 +72,21 @@
             "operation": "+",
             "slot": "mainhand",
             "uuid": "AAAAAAAA-4180-4865-B01B-BCCE9785ACA3"
+        },
+        {
+            "attribute": "miapi:generic.projectile_accuracy",
+            "value": "-0.5",
+            "operation": "+",
+            "slot": "mainhand",
+            "uuid": "AAAAAAAA-4180-4865-B01B-BCCE9785ACA3"
         }
     ],
+    "guiOffset": {
+        "x": 0,
+        "y": 5,
+        "sizeX": 8,
+        "sizeY": 8
+    },
     "allowedMaterial": {
         "allowedMaterials": [
             "wood",

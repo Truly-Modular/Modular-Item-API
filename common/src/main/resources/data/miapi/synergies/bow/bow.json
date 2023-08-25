@@ -1,5 +1,6 @@
 {
-    "bow_arms_normal": {
+    "type": "tag",
+    "bow_arms": {
         "condition": {
             "type": "otherModule",
             "condition": {
