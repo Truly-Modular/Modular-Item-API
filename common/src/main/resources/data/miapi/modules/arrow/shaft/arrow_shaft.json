@@ -24,6 +24,7 @@
         "arrow_shaft",
         "melee"
     ],
+    "is_arrow": true,
     "allowedMaterial": {
         "allowedMaterials": [
             "wood",

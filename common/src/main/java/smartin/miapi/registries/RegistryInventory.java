@@ -400,6 +400,7 @@ public class RegistryInventory {
             registerMiapi(moduleProperties, ChannelingProperty.KEY, new ChannelingProperty());
             registerMiapi(moduleProperties, AirDragProperty.KEY, new AirDragProperty());
             registerMiapi(moduleProperties, WaterDragProperty.KEY, new WaterDragProperty());
+            registerMiapi(moduleProperties, ArrowProperty.KEY, new ArrowProperty());
 
             //compat
             registerMiapi(moduleProperties, BetterCombatProperty.KEY, new BetterCombatProperty());

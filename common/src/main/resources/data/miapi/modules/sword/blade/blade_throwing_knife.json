@@ -28,13 +28,7 @@
         ]
     },
     "allowedInSlots": [
-        "wood",
-        "metal",
-        "flint",
-        "bone",
-        "stone",
-        "crystal",
-        "glass"
+        "sword_blade_small"
     ],
     "better_combat_config": {
         "parent": "bettercombat:dagger"
@@ -45,7 +39,13 @@
     ],
     "allowedMaterial": {
         "allowedMaterials": [
-            "wood","stone","metal","crystal"
+            "wood",
+            "metal",
+            "flint",
+            "bone",
+            "stone",
+            "crystal",
+            "glass"
         ],
         "cost": 1
     },
@@ -87,7 +87,7 @@
         },
         {
             "attribute": "miapi:generic.projectile_speed",
-            "value": "2.0",
+            "value": "1.3",
             "operation": "+",
             "slot": "mainhand",
             "uuid": "AAAAAAAA-4180-4865-B01B-BCCE9785ACA3"
