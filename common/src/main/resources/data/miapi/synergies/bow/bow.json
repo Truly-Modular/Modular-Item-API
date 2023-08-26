@@ -2,15 +2,18 @@
     "type": "tag",
     "bow_arms": {
         "condition": {
-            "type": "otherModule",
+            "type": "not",
             "condition": {
-                "type": "tag",
-                "tag": "bow_string"
+                "type": "otherModule",
+                "condition": {
+                    "type": "tag",
+                    "tag": "bow_string"
+                }
             }
         },
         "properties": {
-            "displayName": "miapi.module.bow_arms_normal.name",
-            "itemId": "miapi:modular_bow"
+            "displayName": "miapi.module.bow_handle_normal.name",
+            "itemId": "miapi:modular_bow_part"
         }
     }
 }

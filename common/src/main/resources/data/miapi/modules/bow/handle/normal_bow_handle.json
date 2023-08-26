@@ -174,6 +174,12 @@
             }
         }
     },
+    "enchantments": {
+        "allowed": [
+            "miapi:basic",
+            "miapi:bow"
+        ]
+    },
     "allowedMaterial": {
         "allowedMaterials": [
             "wood",

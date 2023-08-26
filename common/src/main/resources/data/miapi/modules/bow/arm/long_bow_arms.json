@@ -95,5 +95,7 @@
             "bone"
         ],
         "cost": 2
-    }
+    },
+    "displayName": "miapi.module.bow_arms_long.name",
+    "itemId": "miapi:modular_bow"
 }

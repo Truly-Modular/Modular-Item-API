@@ -1,6 +1,6 @@
 {
     "key": "lightning_rod",
-    "translation": "miapi.material.custom.copper_rod",
+    "translation": "miapi.material.custom.lightning_rod",
     "icon": "textures/item/copper_rod.png",
     "items": [
         {
