@@ -6,27 +6,27 @@
         },
         "properties": {
             "channeling": true,
-            "item_model": [{
-                "type": "item",
-                "model": "minecraft:lightning_rod",
+            "texture": {
+                "path": "miapi:models/item/arrow/head/normal/lightning_rod.json",
+                "material_color": false,
                 "transform": {
                     "rotation": {
                         "x": 0.0,
                         "y": 0.0,
-                        "z": 135.0
+                        "z": 0.0
                     },
                     "translation": {
-                        "x": 0.56,
-                        "y": 0.56,
-                        "z": 0.5
+                        "x": -0.01,
+                        "y": -0.01,
+                        "z": 0.0
                     },
                     "scale": {
-                        "x": 0.6,
-                        "y": 0.6,
-                        "z": 0.6
+                        "x": 1.0,
+                        "y": 1.0,
+                        "z": 1.0
                     }
                 }
-            }]
+            }
         }
     }
 }

@@ -1,26 +1,5 @@
 {
     "name": "arrow_head_custom",
-    "item_model": [{
-        "type": "item",
-        "model": "minecraft:barrier",
-        "transform": {
-            "rotation": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0
-            },
-            "translation": {
-                "x": 0.5,
-                "y": 0.5,
-                "z": 0.5
-            },
-            "scale": {
-                "x": 0.5,
-                "y": 0.5,
-                "z": 0.5
-            }
-        }
-    }],
     "allowedInSlots": [
         "arrow_head"
     ],

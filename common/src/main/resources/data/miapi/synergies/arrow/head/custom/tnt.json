@@ -9,9 +9,9 @@
                 "destroyBlocks": true,
                 "strength": 4.0
             },
-            "item_model": [{
-                "type": "item",
-                "model": "minecraft:tnt",
+            "texture": {
+                "path": "miapi:models/item/arrow/head/normal/tnt.json",
+                "material_color": false,
                 "transform": {
                     "rotation": {
                         "x": 0.0,
@@ -19,17 +19,17 @@
                         "z": 0.0
                     },
                     "translation": {
-                        "x": 0.5,
-                        "y": 0.5,
-                        "z": 0.5
+                        "x": -0.01,
+                        "y": -0.01,
+                        "z": 0.0
                     },
                     "scale": {
-                        "x": 0.5,
-                        "y": 0.5,
-                        "z": 0.5
+                        "x": 1.0,
+                        "y": 1.0,
+                        "z": 1.0
                     }
                 }
-            }]
+            }
         }
     }
 }
