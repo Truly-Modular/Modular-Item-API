@@ -21,6 +21,9 @@
     "entrypoints": {
         "main": [
             "smartin.miapi.fabric.TrulyModularFabric"
+        ],
+        "modmenu": [
+            "smartin.miapi.fabric.ModMenuIntegration"
         ]
     },
     "mixins": [
@@ -29,6 +32,9 @@
     ],
     "depends": {
         "fabricloader": ">=0.14.17",
-        "minecraft": [">=1.20","1.20.1"]
+        "minecraft": [
+            ">=1.20",
+            "1.20.1"
+        ]
     }
 }

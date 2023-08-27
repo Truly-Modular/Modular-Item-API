@@ -23,6 +23,8 @@ public class MiapiConfig extends Config {
         super(List.of(otherGroup,enchantmentGroup),
                 new File(Platform.getConfigFolder().toString(),"miapi.json"),
                 "miapi_server");
+        if(Platform.isModLoaded("cloth_config")){
+        }
         this.saveConfigToFile();
     }
 

@@ -26,6 +26,8 @@ dependencies {
 
     forgeRuntimeLibrary(include('org.mariuszgromada.math:MathParser.org-mXparser:4.4.2'))
 
+    modImplementation("me.shedaniel.cloth:cloth-config-forge:${rootProject.cloth_config_version}")
+
     //forgeRuntimeLibrary(include("dev.kosmx.player-anim:player-animation-lib-forge:0.4.2"
     //modApi include("curse.maven:bettercombat-639842:4357578")
 
