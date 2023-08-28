@@ -7,6 +7,7 @@ import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.config.oro_config.screen.ConfigScreen;
 
 public class ModMenuIntegration implements ModMenuApi {
+    @Override
     public ConfigScreenFactory<?> getModConfigScreenFactory() {
         return screen -> new ConfigScreen(MiapiConfig.getInstance()) {
         }.createScreen(MinecraftClient.getInstance().currentScreen);

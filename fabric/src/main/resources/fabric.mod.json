@@ -6,15 +6,20 @@
     "description": "Modular Item Api",
     "authors": [
         "Smartin",
-        "panda",
-        "additional Credit to",
+        "Panda"
+    ],
+    "contributors": [
         "KawataroTB",
         "Ace",
         "Nytifx",
         "Beniven",
         "Repeat"
     ],
-    "contact": {},
+    "contact": {
+        "homepage": "https://github.com/Truly-Modular/Modular-Item-API",
+        "issues": "https://github.com/Truly-Modular/Modular-Item-API/issues",
+        "sources": "https://github.com/Truly-Modular/Modular-Item-API"
+    },
     "license": "CC-BY-NC-4.0",
     "icon": "icon.png",
     "environment": "*",
