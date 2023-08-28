@@ -21,9 +21,9 @@ import net.minecraft.world.World;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.client.model.ModularModelPredicateProvider;
 import smartin.miapi.config.MiapiConfig;
+import smartin.miapi.entity.ItemProjectileEntity;
 import smartin.miapi.events.MiapiProjectileEvents;
 import smartin.miapi.item.modular.ModularItem;
-import smartin.miapi.entity.ItemProjectileEntity;
 import smartin.miapi.modules.properties.AttributeProperty;
 import smartin.miapi.modules.properties.DisplayNameProperty;
 

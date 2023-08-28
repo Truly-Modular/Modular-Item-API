@@ -62,6 +62,7 @@ public class ItemProjectileEntity extends PersistentProjectileEntity {
         this.dataTracker.set(THROWING_STACK, thrownStack);
         this.dataTracker.set(LOYALTY, (byte) EnchantmentHelper.getLoyalty(itemStack));
         this.dataTracker.set(ENCHANTED, itemStack.hasGlint());
+        setup();
     }
 
     public ItemProjectileEntity(World world, LivingEntity owner, ItemStack stack) {
@@ -77,7 +78,13 @@ public class ItemProjectileEntity extends PersistentProjectileEntity {
         if (getBowItem().isEmpty() && owner != null) {
             setBowItem(owner.getActiveItem());
         }
+        setup();
         MiapiProjectileEvents.MODULAR_PROJECTILE_DATA_TRACKER_SET.invoker().dataTracker(this, this.getDataTracker());
+    }
+
+    private void setup(){
+        ItemStack projectileStack = this.asItemStack();
+        this.setDamage(AttributeProperty.getActualValue(projectileStack,EquipmentSlot.MAINHAND,AttributeRegistry.PROJECTILE_DAMAGE));
     }
 
     public void setPreferredSlot(int slotID) {
@@ -265,7 +272,7 @@ public class ItemProjectileEntity extends PersistentProjectileEntity {
         float damage = (float) getDamage();
         if (this.getSpeedDamage()) {
             float speed = (float) this.getVelocity().length();
-            damage = damage * speed;
+            damage = MathHelper.ceil(MathHelper.clamp((double)speed * damage, 0.0, 2.147483647E9));
         }
         return damage;
     }

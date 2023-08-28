@@ -16,9 +16,9 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import smartin.miapi.entity.ItemProjectileEntity;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.events.MiapiProjectileEvents;
-import smartin.miapi.entity.ItemProjectileEntity;
 import smartin.miapi.modules.abilities.util.WrappedSoundEvent;
 import smartin.miapi.modules.properties.AttributeProperty;
 
@@ -52,7 +52,6 @@ public class AttributeRegistry {
     public static EntityAttribute PROJECTILE_SPEED;
     public static EntityAttribute PROJECTILE_ACCURACY;
     public static EntityAttribute PROJECTILE_PIERCING;
-
 
 
     public static void setup() {
@@ -116,7 +115,7 @@ public class AttributeRegistry {
 
         MiapiProjectileEvents.MODULAR_PROJECTILE_ENTITY_HIT.register(listener -> {
             ItemProjectileEntity projectile = listener.projectile;
-            if(projectile.isCritical()){
+            if (projectile.isCritical()) {
                 projectile.setDamage(projectile.getDamage() * AttributeProperty.getActualValue(projectile.asItemStack(), EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_CRIT_MULTIPLIER));
             }
             return EventResult.pass();

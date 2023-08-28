@@ -28,6 +28,13 @@
     ],
     "attributes": [
         {
+            "attribute": "miapi:generic.projectile_damage",
+            "value": "2",
+            "operation": "+",
+            "slot": "mainhand",
+            "uuid": "AAAAAAAA-4180-4865-B01B-BCCE9785ACA3"
+        },
+        {
             "attribute": "miapi:generic.projectile_speed",
             "value": "( - [material.density] ) / 10",
             "operation": "+",
