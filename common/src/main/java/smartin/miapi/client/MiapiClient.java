@@ -22,6 +22,7 @@ import smartin.miapi.modules.MiapiPermissions;
 import smartin.miapi.entity.ItemProjectileRenderer;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.material.PaletteCreators;
+import smartin.miapi.modules.properties.render.ColorProviders.ColorProvider;
 import smartin.miapi.registries.RegistryInventory;
 
 import static smartin.miapi.registries.RegistryInventory.Client.glintShader;
@@ -34,6 +35,7 @@ public class MiapiClient {
     public static void init() {
         registerShaders();
         PaletteCreators.setup();
+        ColorProvider.setup();
         ClientLifecycleEvent.CLIENT_SETUP.register(MiapiClient::clientSetup);
         ClientLifecycleEvent.CLIENT_STARTED.register(MiapiClient::clientStart);
         ClientLifecycleEvent.CLIENT_LEVEL_LOAD.register(MiapiClient::clientLevelLoad);

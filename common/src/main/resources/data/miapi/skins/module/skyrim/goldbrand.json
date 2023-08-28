@@ -5,7 +5,7 @@
         "texture": [
             {
                 "path": "miapi:skin/goldbrand.json",
-                "material_color": false,
+                "color_provider": "model",
                 "transform": {
                     "rotation": {
                         "x": 0.0,

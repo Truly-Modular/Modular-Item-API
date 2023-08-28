@@ -8,7 +8,7 @@
             "is_enderpearl": true,
             "texture": {
                 "path": "miapi:models/item/arrow/head/normal/ender_pearl.json",
-                "material_color": false,
+                "color_provider": "model",
                 "transform": {
                     "rotation": {
                         "x": 0.0,

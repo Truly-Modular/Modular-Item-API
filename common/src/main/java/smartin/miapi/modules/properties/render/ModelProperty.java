@@ -34,6 +34,7 @@ import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.SlotProperty;
 import smartin.miapi.modules.properties.material.Material;
 import smartin.miapi.modules.properties.material.MaterialProperty;
+import smartin.miapi.modules.properties.render.ColorProviders.ColorProvider;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.io.FileNotFoundException;
@@ -61,11 +62,11 @@ public class ModelProperty implements ModuleProperty {
         ModularItemCache.setSupplier(CACHE_KEY_ITEM, (stack) -> getModelMap(stack).get("item"));
         ModularItemCache.setSupplier(CACHE_KEY_MAP, ModelProperty::generateModels);
         MiapiItemModel.modelSuppliers.add((key, model, stack) -> {
-            return Collections.singletonList(new BakedMiapiModel(getForModule(model), model, stack));
+            return Collections.singletonList(new BakedMiapiModel(getForModule(model, stack), model, stack));
         });
     }
 
-    List<BakedMiapiModel.ModelHolder> getForModule(ItemModule.ModuleInstance instance) {
+    List<BakedMiapiModel.ModelHolder> getForModule(ItemModule.ModuleInstance instance, ItemStack itemStack) {
         Gson gson = Miapi.gson;
         List<ModelJson> modelJsonList = new ArrayList<>();
         List<BakedMiapiModel.ModelHolder> models = new ArrayList<>();
@@ -106,7 +107,11 @@ public class ModelProperty implements ModuleProperty {
                 DynamicBakedModel model = DynamicBakery.bakeModel(unbakedModel, textureGetter, ColorHelper.Argb.getArgb(255, 255, 255, 255), Transform.IDENTITY);
                 if (model != null) {
                     Matrix4f matrix4f = Transform.toModelTransformation(json.transform).toMatrix();
-                    models.add(new BakedMiapiModel.ModelHolder(model.optimize(),matrix4f,json.material_color));
+                    ColorProvider colorProvider = ColorProvider.getProvider(json.color_provider, itemStack, instance);
+                    if (colorProvider == null) {
+                        throw new RuntimeException("colorProvider is null");
+                    }
+                    models.add(new BakedMiapiModel.ModelHolder(model.optimize(), matrix4f, colorProvider));
                 }
             }
         }
@@ -347,7 +352,7 @@ public class ModelProperty implements ModuleProperty {
         public String path;
         public Transform transform = Transform.IDENTITY;
         public String condition = "1";
-        public boolean material_color = true;
+        public String color_provider = "material";
 
         public void repair() {
             //this shouldn't be necessary as the values should be loaded from the class but anyways

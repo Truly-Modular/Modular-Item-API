@@ -17,6 +17,7 @@ import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.GlintProperty;
 import smartin.miapi.modules.properties.material.Material;
 import smartin.miapi.modules.properties.material.MaterialProperty;
+import smartin.miapi.modules.properties.render.ColorProviders.ColorProvider;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.util.List;
@@ -50,13 +51,7 @@ public class BakedMiapiModel implements MiapiModel {
                 if (model.getOverrides() != null && !model.getOverrides().equals(ModelOverrideList.EMPTY)) {
                     model = model.getOverrides().apply(model, stack, MinecraftClient.getInstance().world, entity, light);
                 }
-                VertexConsumer consumer;
-                if (material != null && modelholder.materialColor()) {
-                    consumer = material.setupMaterialShader(vertexConsumers, RegistryInventory.Client.entityTranslucentMaterialRenderType, RegistryInventory.Client.entityTranslucentMaterialShader);
-                } else {
-                    consumer = vertexConsumers.getBuffer(RenderLayers.getItemLayer(stack,true));
-                    //consumer = Material.setupMaterialShader(vertexConsumers, RegistryInventory.Client.entityTranslucentMaterialRenderType, RegistryInventory.Client.entityTranslucentMaterialShader, Material.baseColorPalette);
-                }
+                VertexConsumer consumer = modelholder.colorProvider.getConsumer(vertexConsumers);
 
                 int lightValue = transformationMode == ModelTransformationMode.GUI ? LightmapTextureManager.MAX_LIGHT_COORDINATE : LightmapTextureManager.MAX_SKY_LIGHT_COORDINATE;
                 model.getQuads(null, direction, Random.create()).forEach(bakedQuad -> {
@@ -85,7 +80,7 @@ public class BakedMiapiModel implements MiapiModel {
         }
     }
 
-    public record ModelHolder(BakedModel model, Matrix4f matrix4f, boolean materialColor) {
+    public record ModelHolder(BakedModel model, Matrix4f matrix4f, ColorProvider colorProvider) {
 
     }
 

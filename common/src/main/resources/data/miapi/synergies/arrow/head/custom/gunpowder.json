@@ -11,7 +11,7 @@
             },
             "texture": {
                 "path": "miapi:models/item/arrow/head/normal/gunpowder.json",
-                "material_color": false,
+                "color_provider": "model",
                 "transform": {
                     "rotation": {
                         "x": 0.0,

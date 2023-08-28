@@ -7,7 +7,7 @@
         "properties": {
             "texture": {
                 "path": "miapi:models/item/arrow/head/normal/ice.json",
-                "material_color": false,
+                "color_provider": "model",
                 "transform": {
                     "rotation": {
                         "x": 0.0,
