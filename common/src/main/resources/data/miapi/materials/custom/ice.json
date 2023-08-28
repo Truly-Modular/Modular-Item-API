@@ -1,7 +1,7 @@
 {
     "key": "ice",
     "translation": "miapi.material.custom.ice",
-    "icon": "textures/item/ice.png",
+    "icon": "miapi:textures/item/arrow/head/custom/ice.png",
     "items": [
         {
             "item": "minecraft:ice",

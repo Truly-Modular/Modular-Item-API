@@ -37,13 +37,13 @@ import smartin.miapi.modules.properties.AttributeProperty;
 import smartin.miapi.registries.RegistryInventory;
 
 public class ItemProjectileEntity extends PersistentProjectileEntity {
-    private static final TrackedData<Byte> LOYALTY = DataTracker.registerData(ItemProjectileEntity.class, TrackedDataHandlerRegistry.BYTE);
-    private static final TrackedData<Boolean> ENCHANTED = DataTracker.registerData(ItemProjectileEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
-    private static final TrackedData<Boolean> SPEED_DAMAGE = DataTracker.registerData(ItemProjectileEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
-    private static final TrackedData<ItemStack> THROWING_STACK = DataTracker.registerData(ItemProjectileEntity.class, TrackedDataHandlerRegistry.ITEM_STACK);
-    private static final TrackedData<ItemStack> BOW_ITEM_STACK = DataTracker.registerData(ItemProjectileEntity.class, TrackedDataHandlerRegistry.ITEM_STACK);
+    public static final TrackedData<Byte> LOYALTY = DataTracker.registerData(ItemProjectileEntity.class, TrackedDataHandlerRegistry.BYTE);
+    public static final TrackedData<Boolean> ENCHANTED = DataTracker.registerData(ItemProjectileEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+    public static final TrackedData<Boolean> SPEED_DAMAGE = DataTracker.registerData(ItemProjectileEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+    public static final TrackedData<ItemStack> THROWING_STACK = DataTracker.registerData(ItemProjectileEntity.class, TrackedDataHandlerRegistry.ITEM_STACK);
+    public static final TrackedData<ItemStack> BOW_ITEM_STACK = DataTracker.registerData(ItemProjectileEntity.class, TrackedDataHandlerRegistry.ITEM_STACK);
     public static final TrackedData<Float> WATER_DRAG = DataTracker.registerData(ItemProjectileEntity.class, TrackedDataHandlerRegistry.FLOAT);
-    private static final TrackedData<Integer> PREFERRED_SLOT = DataTracker.registerData(ItemProjectileEntity.class, TrackedDataHandlerRegistry.INTEGER);
+    public static final TrackedData<Integer> PREFERRED_SLOT = DataTracker.registerData(ItemProjectileEntity.class, TrackedDataHandlerRegistry.INTEGER);
     public ItemStack thrownStack = ItemStack.EMPTY;
     private boolean dealtDamage;
     public int returnTimer;
@@ -187,7 +187,6 @@ public class ItemProjectileEntity extends PersistentProjectileEntity {
     @Override
     public void setVelocity(Entity shooter, float pitch, float yaw, float roll, float speed, float divergence) {
         ItemStack projectileStack = this.asItemStack();
-        speed += (float) AttributeProperty.getActualValue(projectileStack, EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_SPEED);
         speed = (float) Math.max(0.1, speed + AttributeProperty.getActualValue(projectileStack, EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_SPEED));
         divergence *= (float) Math.pow(12.0, -AttributeProperty.getActualValue(projectileStack, EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_ACCURACY));
         float f = -MathHelper.sin(yaw * ((float) Math.PI / 180)) * MathHelper.cos(pitch * ((float) Math.PI / 180));

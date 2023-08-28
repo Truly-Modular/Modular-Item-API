@@ -17,7 +17,7 @@ import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.GlintProperty;
 import smartin.miapi.modules.properties.material.Material;
 import smartin.miapi.modules.properties.material.MaterialProperty;
-import smartin.miapi.modules.properties.render.ColorProviders.ColorProvider;
+import smartin.miapi.modules.properties.render.colorproviders.ColorProvider;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.util.List;

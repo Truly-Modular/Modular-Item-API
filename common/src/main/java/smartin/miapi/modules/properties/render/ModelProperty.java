@@ -34,7 +34,7 @@ import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.SlotProperty;
 import smartin.miapi.modules.properties.material.Material;
 import smartin.miapi.modules.properties.material.MaterialProperty;
-import smartin.miapi.modules.properties.render.ColorProviders.ColorProvider;
+import smartin.miapi.modules.properties.render.colorproviders.ColorProvider;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.io.FileNotFoundException;

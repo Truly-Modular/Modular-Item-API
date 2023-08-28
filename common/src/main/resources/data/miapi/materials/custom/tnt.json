@@ -1,7 +1,7 @@
 {
     "key": "tnt",
     "translation": "miapi.material.custom.tnt",
-    "icon": "textures/item/tnt.png",
+    "icon": "miapi:textures/item/arrow/head/custom/tnt.png",
     "items": [
         {
             "item": "minecraft:tnt",

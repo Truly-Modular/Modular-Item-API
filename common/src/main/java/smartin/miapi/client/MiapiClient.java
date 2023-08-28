@@ -22,7 +22,7 @@ import smartin.miapi.modules.MiapiPermissions;
 import smartin.miapi.entity.ItemProjectileRenderer;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.material.PaletteCreators;
-import smartin.miapi.modules.properties.render.ColorProviders.ColorProvider;
+import smartin.miapi.modules.properties.render.colorproviders.ColorProvider;
 import smartin.miapi.registries.RegistryInventory;
 
 import static smartin.miapi.registries.RegistryInventory.Client.glintShader;

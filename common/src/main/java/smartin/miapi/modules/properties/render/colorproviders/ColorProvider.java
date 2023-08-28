@@ -1,4 +1,4 @@
-package smartin.miapi.modules.properties.render.ColorProviders;
+package smartin.miapi.modules.properties.render.colorproviders;
 
 import net.minecraft.client.render.RenderLayers;
 import net.minecraft.client.render.VertexConsumer;
@@ -19,6 +19,7 @@ public interface ColorProvider {
     static void setup() {
         colorProviders.put("material", new MaterialColorProvider());
         colorProviders.put("model", new ModelColorProvider());
+
     }
 
     static ColorProvider getProvider(String type, ItemStack itemStack, ItemModule.ModuleInstance moduleInstance) {

@@ -4,6 +4,7 @@ import com.google.gson.JsonElement;
 import dev.architectury.event.EventResult;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.LivingEntity;
+import smartin.miapi.entity.ItemProjectileEntity;
 import smartin.miapi.entity.arrowhitbehaviours.EntityStickBehaviour;
 import smartin.miapi.events.MiapiProjectileEvents;
 import smartin.miapi.modules.ItemModule;
@@ -19,6 +20,20 @@ public class ArrowProperty implements ModuleProperty {
 
     public ArrowProperty() {
         property = this;
+        MiapiProjectileEvents.MODULAR_PROJECTILE_DATA_TRACKER_SET.register((projectile, nbtCompound) -> {
+            JsonElement element = ItemModule.getMergedProperty(projectile.asItemStack(), property);
+            if (element != null && !element.getAsBoolean()) {
+                nbtCompound.set(ItemProjectileEntity.SPEED_DAMAGE, false);
+            }
+            return EventResult.pass();
+        });
+        MiapiProjectileEvents.MODULAR_PROJECTILE_DATA_TRACKER_INIT.register((projectile, nbtCompound) -> {
+            JsonElement element = ItemModule.getMergedProperty(projectile.asItemStack(), property);
+            if (element != null && !element.getAsBoolean()) {
+                nbtCompound.set(ItemProjectileEntity.SPEED_DAMAGE, false);
+            }
+            return EventResult.pass();
+        });
         MiapiProjectileEvents.MODULAR_PROJECTILE_ENTITY_HIT.register(event -> {
             JsonElement element = ItemModule.getMergedProperty(event.projectile.asItemStack(), property);
             if (element != null && element.getAsBoolean() && event.entityHitResult.getEntity() instanceof LivingEntity livingEntity) {
