@@ -15,6 +15,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.ColorHelper;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.registries.RegistryInventory;
 
@@ -49,7 +50,7 @@ public class JsonMaterial implements Material {
     public List<String> getGroups() {
         List<String> groups = new ArrayList<>();
         groups.add(key);
-        if(rawJson.getAsJsonObject().has("groups")){
+        if (rawJson.getAsJsonObject().has("groups")) {
             JsonArray groupsJson = rawJson.getAsJsonObject().getAsJsonArray("groups");
             for (JsonElement groupElement : groupsJson) {
                 String group = groupElement.getAsString();
@@ -124,7 +125,7 @@ public class JsonMaterial implements Material {
     @Override
     public List<String> getTextureKeys() {
         List<String> textureKeys = new ArrayList<>();
-        if(rawJson.getAsJsonObject().has("textures")){
+        if (rawJson.getAsJsonObject().has("textures")) {
             JsonArray textures = rawJson.getAsJsonObject().getAsJsonArray("textures");
             for (JsonElement texture : textures) {
                 textureKeys.add(texture.getAsString());
@@ -136,8 +137,11 @@ public class JsonMaterial implements Material {
 
     @Override
     public int getColor() {
-        long longValue = Long.parseLong(rawJson.getAsJsonObject().get("color").getAsString(), 16);
-        return (int) (longValue & 0xffffffffL);
+        if (rawJson.getAsJsonObject().get("color") != null) {
+            long longValue = Long.parseLong(rawJson.getAsJsonObject().get("color").getAsString(), 16);
+            return (int) (longValue & 0xffffffffL);
+        }
+        return ColorHelper.Argb.getArgb(255, 255, 255, 255);
     }
 
     @Override
