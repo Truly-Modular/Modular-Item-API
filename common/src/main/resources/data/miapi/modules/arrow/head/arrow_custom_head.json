@@ -35,7 +35,8 @@
             "chorus_fruit",
             "tnt",
             "gunpowder",
-            "potion",
+            "splash_potion",
+            "lingering_potion",
             "lightning_rod",
             "ice"
         ],

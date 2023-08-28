@@ -1,9 +1,11 @@
 package smartin.miapi.modules.properties.render.colorproviders;
 
+import com.redpxnda.nucleus.util.Color;
 import net.minecraft.client.render.RenderLayers;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.item.ItemStack;
+import net.minecraft.potion.PotionUtil;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.material.Material;
 import smartin.miapi.modules.properties.material.MaterialProperty;
@@ -19,11 +21,15 @@ public interface ColorProvider {
     static void setup() {
         colorProviders.put("material", new MaterialColorProvider());
         colorProviders.put("model", new ModelColorProvider());
-
+        colorProviders.put("potion", new PotionColorProvider());
     }
 
     static ColorProvider getProvider(String type, ItemStack itemStack, ItemModule.ModuleInstance moduleInstance) {
         return colorProviders.getOrDefault(type, colorProviders.get("material")).getInstance(itemStack, moduleInstance);
+    }
+
+    default Color getVertexColor() {
+        return Color.WHITE;
     }
 
     VertexConsumer getConsumer(VertexConsumerProvider vertexConsumers);
@@ -73,6 +79,35 @@ public interface ColorProvider {
         @Override
         public ColorProvider getInstance(ItemStack stack, ItemModule.ModuleInstance instance) {
             return new ModelColorProvider(stack);
+        }
+    }
+
+    class PotionColorProvider implements ColorProvider {
+        Color potioncolor;
+        ItemStack stack;
+
+        public PotionColorProvider() {
+
+        }
+
+        public PotionColorProvider(ItemStack stack) {
+            potioncolor = new Color(PotionUtil.getColor(stack));
+            this.stack = stack;
+        }
+
+        @Override
+        public Color getVertexColor() {
+            return potioncolor;
+        }
+
+        @Override
+        public VertexConsumer getConsumer(VertexConsumerProvider vertexConsumers) {
+            return vertexConsumers.getBuffer(RenderLayers.getItemLayer(stack, true));
+        }
+
+        @Override
+        public ColorProvider getInstance(ItemStack stack, ItemModule.ModuleInstance instance) {
+            return new PotionColorProvider(stack);
         }
     }
 }

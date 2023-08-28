@@ -52,10 +52,11 @@ public class BakedMiapiModel implements MiapiModel {
                     model = model.getOverrides().apply(model, stack, MinecraftClient.getInstance().world, entity, light);
                 }
                 VertexConsumer consumer = modelholder.colorProvider.getConsumer(vertexConsumers);
+                Color color = modelholder.colorProvider.getVertexColor();
 
                 int lightValue = transformationMode == ModelTransformationMode.GUI ? LightmapTextureManager.MAX_LIGHT_COORDINATE : LightmapTextureManager.MAX_SKY_LIGHT_COORDINATE;
                 model.getQuads(null, direction, Random.create()).forEach(bakedQuad -> {
-                    consumer.quad(matrices.peek(), bakedQuad, 1, 1, 1, lightValue, overlay);
+                    consumer.quad(matrices.peek(), bakedQuad, color.redAsFloat(), color.greenAsFloat(), color.blueAsFloat(), lightValue, overlay);
                 });
                 immediate.draw();
                 MinecraftClient.getInstance().world.getProfiler().pop();

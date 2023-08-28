@@ -1,4 +1,7 @@
 {
+    "config.miapi_server": "Server Config",
+    "config.miapi_server.other": "Development",
+    "config.miapi_server.enchants": "Enchantments",
     "miapi.ui.craft.back": "Back",
     "miapi.ui.back": "Back",
     "miapi.ui.craft": "Craft",
@@ -194,7 +197,8 @@
     "miapi.material.custom.ender_pearl": "Ender Pearl ",
     "miapi.material.custom.gunpowder": "Gunpowder ",
     "miapi.material.custom.ice": "Ice ",
-    "miapi.material.custom.potion": "Potion ",
+    "miapi.material.custom.splash_potion": "Splash Potion ",
+    "miapi.material.custom.lingering_potion": "Lingering Potion ",
     "miapi.material.custom.tnt": "TNT ",
 
     "block.miapi.modular_work_bench": "Modular Workbench",

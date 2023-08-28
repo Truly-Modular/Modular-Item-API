@@ -25,6 +25,7 @@ public class MaterialInscribeProperty implements ModuleProperty {
             materialStack = materialStack.copy();
             materialStack.setCount(1);
             compound.put(element.getAsString(), materialStack.writeNbt(new NbtCompound()));
+            compound.copyFrom(materialStack.getOrCreateNbt());
             raw.setNbt(compound);
         }
         return raw;

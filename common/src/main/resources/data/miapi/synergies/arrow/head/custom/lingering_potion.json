@@ -1,0 +1,56 @@
+{
+    "arrow_head_custom": {
+        "condition": {
+            "type": "material",
+            "material": "lingering_potion"
+        },
+        "properties": {
+            "inscribe_on_craft": "POTION",
+            "replace_projectile": "POTION",
+            "texture": [
+                {
+                    "path": "miapi:models/item/arrow/head/normal/lingering_potion.json",
+                    "color_provider": "model",
+                    "transform": {
+                        "rotation": {
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        },
+                        "translation": {
+                            "x": -0.01,
+                            "y": -0.01,
+                            "z": 0.0
+                        },
+                        "scale": {
+                            "x": 1.0,
+                            "y": 1.0,
+                            "z": 1.0
+                        }
+                    }
+                },
+                {
+                    "path": "miapi:models/item/arrow/head/normal/potion_overlay.json",
+                    "color_provider": "potion",
+                    "transform": {
+                        "rotation": {
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        },
+                        "translation": {
+                            "x": -0.01,
+                            "y": -0.01,
+                            "z": 0.0
+                        },
+                        "scale": {
+                            "x": 1.0,
+                            "y": 1.0,
+                            "z": 1.0
+                        }
+                    }
+                }
+            ]
+        }
+    }
+}

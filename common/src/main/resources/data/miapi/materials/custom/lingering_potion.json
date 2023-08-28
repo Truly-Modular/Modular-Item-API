@@ -1,0 +1,11 @@
+{
+    "key": "lingering_potion",
+    "translation": "miapi.material.custom.lingering_potion",
+    "icon": "textures/item/potion.png",
+    "items": [
+        {
+            "item": "minecraft:lingering_potion",
+            "value": 1.0
+        }
+    ]
+}
