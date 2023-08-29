@@ -1,10 +1,10 @@
 {
-    "pickaxe_back": {
+    "pickaxe_front": {
         "condition": {
             "type": "otherModule",
             "condition": {
                 "type": "module",
-                "module": "pickaxe_front"
+                "module": "pickaxe_back"
             }
         },
         "properties": {
@@ -14,14 +14,14 @@
             "attributes": [
                 {
                     "attribute": "miapi:generic.mining_speed.pickaxe",
-                    "value": "0",
+                    "value": "[material.mining_speed]/2",
                     "operation": "+",
                     "slot": "mainhand",
                     "uuid": "AA233E1C-4180-4865-B01B-BCCE9785ACA4"
                 },
                 {
                     "attribute": "miapi:generic.durability",
-                    "value": "[material.durability]* 0.5",
+                    "value": "[material.durability]* 0.25",
                     "operation": "+",
                     "slot": "mainhand",
                     "uuid": "AAAAAAAA-4180-4865-B01B-BCCE9785ACA3"

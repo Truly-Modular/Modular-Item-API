@@ -92,6 +92,7 @@
     "abilities": [
         "throw"
     ],
+    "water_drag": "0.95",
     "guiOffset": {
         "sizeX": -7,
         "sizeY": -7

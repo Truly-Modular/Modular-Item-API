@@ -37,6 +37,7 @@
         "blade",
         "polearm_spear"
     ],
+    "water_drag": "0.89",
     "allowedMaterial": {
         "allowedMaterials": [
             "wood",

@@ -94,7 +94,7 @@ public abstract class SimpleDoubleProperty implements ModuleProperty {
         try {
             data.getAsDouble();
         } catch (Exception e) {
-            StatResolver.resolveDouble(data.getAsString(), new ItemModule.ModuleInstance(ItemModule.empty));
+            //StatResolver.resolveDouble(data.getAsString(), new ItemModule.ModuleInstance(ItemModule.empty));
         }
         return true;
     }
