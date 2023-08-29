@@ -2,6 +2,7 @@
     "type": "minecraft:block",
     "pools": [
         {
+            "bonus_rolls": 0.0,
             "rolls": 1,
             "entries": [
                 {
@@ -15,5 +16,6 @@
                 }
             ]
         }
-    ]
+    ],
+    "random_sequence": "miapi:blocks/modular_work_bench"
 }

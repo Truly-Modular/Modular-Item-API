@@ -199,7 +199,7 @@ public class RegistryInventory {
                         mapColor(MapColor.IRON_GRAY).
                         instrument(Instrument.IRON_XYLOPHONE).
                         requiresTool().
-                        strength(2.0F, 6.0F).
+                        strength(2.5F, 6.0F).
                         sounds(BlockSoundGroup.METAL).
                         nonOpaque().
                         pistonBehavior(PistonBehavior.IGNORE)), b -> modularWorkBench = b);
