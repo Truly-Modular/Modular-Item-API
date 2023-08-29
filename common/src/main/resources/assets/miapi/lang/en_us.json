@@ -245,6 +245,16 @@
     "miapi.module.blade_throwing_knife.description": "A small and lightweight knife designed for throwing with accuracy.",
     "miapi.module.blade_throwing_knife.short_description": "A Throwing Knife blade head.",
 
+    "miapi.module.blade_sickle": "Sickle Blade",
+    "miapi.module.blade_sickle.name": "[translation.[material.translation]]Sickle",
+    "miapi.module.blade_sickle.description": "A small Sickle head. There might be some symbolism.",
+    "miapi.module.blade_sickle.short_description": "A Sickle Blade.",
+
+    "miapi.module.blade_scythe": "Scythe Blade",
+    "miapi.module.blade_scythe.name": "[translation.[material.translation]]Scythe",
+    "miapi.module.blade_scythe.description": "A long Scythe head. Usually used to cut grass or People down",
+    "miapi.module.blade_scythe.short_description": "A Scythe Blade, a mixture between Tool and Weapon",
+
     "miapi.module.guard_katana": "Katana Guard",
     "miapi.module.guard_katana.name": "[translation.[material.translation]]Katana Guard",
     "miapi.module.guard_katana.description": "A guard specifically designed for use with a katana sword.",
@@ -349,6 +359,11 @@
     "miapi.module.blade_spear.name": "[translation.[material.translation]]Spear",
     "miapi.module.blade_spear.description": "A front part of a spear used to stab people.",
     "miapi.module.blade_spear.short_description": "A short head of Spear",
+
+    "miapi.module.blade_trident": "Trident Head",
+    "miapi.module.blade_trident.name": "[translation.[material.translation]]Trident",
+    "miapi.module.blade_trident.description": "A Trident Head, sometimes also called a Fork.",
+    "miapi.module.blade_trident.short_description": "Stabbing part of a Trident",
 
     "miapi.module.arrow_head_normal": "Arrow Head",
     "miapi.module.arrow_head_normal.name": "[translation.[material.translation]]Arrow Head",

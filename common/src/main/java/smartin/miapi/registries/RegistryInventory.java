@@ -243,6 +243,9 @@ public class RegistryInventory {
         register(modularItems, "modular_throwing_knife", ModularWeapon::new);
         register(modularItems, "modular_rapier", ModularWeapon::new);
         register(modularItems, "modular_longsword", ModularWeapon::new);
+        register(modularItems, "modular_trident", ModularWeapon::new);
+        register(modularItems, "modular_scythe", ModularWeapon::new);
+        register(modularItems, "modular_sickle", ModularWeapon::new);
 
         register(modularItems, "modular_shovel", ModularWeapon::new);
         register(modularItems, "modular_pickaxe", ModularWeapon::new);
