@@ -91,14 +91,14 @@
         },
         {
             "attribute": "generic.attack_damage",
-            "value": "8",
+            "value": "floor((([material.hardness]-3.4)*2.3)^(1/3))+7 - floor([material.density]/4)*2",
             "operation": "+",
             "slot": "mainhand",
             "uuid": "CB3F55D3-645C-4F38-A497-9C13A33DB5CF"
         },
         {
             "attribute": "generic.attack_speed",
-            "value": "+0.5",
+            "value": "( ( ceil( ( [material.mining_speed]-6 ) ^ (1/5) -0.5 ) )/10 ) - 0.1",
             "operation": "+",
             "slot": "mainhand",
             "uuid": "FA233E1C-4180-4865-B01B-BCCE9785ACA3"
