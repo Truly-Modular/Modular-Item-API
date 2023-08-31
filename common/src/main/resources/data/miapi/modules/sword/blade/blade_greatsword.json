@@ -90,7 +90,7 @@
     "heavyAttack": {
         "damage": 2,
         "sweeping": 3,
-        "range": 7,
+        "range": 5,
         "minHold": 15,
         "cooldown": 60
     },

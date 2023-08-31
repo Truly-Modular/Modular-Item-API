@@ -1,0 +1,39 @@
+{
+    "path": "buster",
+    "module": "blade_greatsword",
+    "properties": {
+        "texture": {
+            "path": "miapi:models/item/sword/blade/buster/[material.texture].json",
+            "transform": {
+                "rotation": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "translation": {
+                    "x": -10.0,
+                    "y": -10.0,
+                    "z": 0.01
+                },
+                "scale": {
+                    "x": 4,
+                    "y": 4,
+                    "z": 1
+                }
+            }
+        },
+        "guiOffset": {
+            "sizeX": 40,
+            "sizeY": 40
+        }
+    },
+    "condition": {
+        "type": "miapi_perm",
+        "perms": ["supporter","skyrim","goldbrand"]
+    },
+    "texture": {
+        "color": "004489",
+        "scale": 0,
+        "borderSize": 0
+    }
+}
