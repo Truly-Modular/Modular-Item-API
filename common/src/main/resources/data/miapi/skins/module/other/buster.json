@@ -29,7 +29,7 @@
     },
     "condition": {
         "type": "miapi_perm",
-        "perms": ["supporter","skyrim","goldbrand"]
+        "perms": ["user","supporter","buster"]
     },
     "texture": {
         "color": "004489",
