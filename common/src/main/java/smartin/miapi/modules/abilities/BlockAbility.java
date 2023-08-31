@@ -13,20 +13,23 @@ import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.modules.abilities.util.EntityAttributeAbility;
 import smartin.miapi.modules.properties.BlockProperty;
 
+import java.util.UUID;
+
 /**
  * This Ability is a lesser form of the Block of a Shield.
  * it only blocks a percentage of the Damage, defined by the value of {@link BlockProperty}
  * transforms the Value of {@link BlockProperty} with {@link BlockAbility#calculate(double)} to the actual damage resistance and slowdown percentages
  */
 public class BlockAbility extends EntityAttributeAbility {
+    UUID attributeUUID = UUID.fromString("3e91990e-4774-11ee-be56-0242ac120002");
 
     @Override
     protected Multimap<EntityAttribute, EntityAttributeModifier> getAttributes(ItemStack itemStack) {
         Multimap<EntityAttribute, EntityAttributeModifier> multimap = ArrayListMultimap.create();
         double value = BlockProperty.property.getValueSafe(itemStack);
         value = calculate(value);
-        multimap.put(EntityAttributes.GENERIC_MOVEMENT_SPEED, new EntityAttributeModifier("test", -value / 100, EntityAttributeModifier.Operation.MULTIPLY_TOTAL));
-        multimap.put(AttributeRegistry.DAMAGE_RESISTANCE, new EntityAttributeModifier("test", value, EntityAttributeModifier.Operation.ADDITION));
+        multimap.put(EntityAttributes.GENERIC_MOVEMENT_SPEED, new EntityAttributeModifier(attributeUUID,"miapi-block", -value / 100, EntityAttributeModifier.Operation.MULTIPLY_TOTAL));
+        multimap.put(AttributeRegistry.DAMAGE_RESISTANCE, new EntityAttributeModifier(attributeUUID,"miapi-block", value, EntityAttributeModifier.Operation.ADDITION));
         return multimap;
     }
 

@@ -7,29 +7,23 @@
         "rope",
         "fletching"
     ],
-    "hardness": 1,
-    "density": 1,
-    "flexibility": 7,
-    "durability": 150,
-    "color": "9A6C48",
+    "hardness": 0.7,
+    "density": 0.5,
+    "flexibility": 7.5,
+    "durability": 50,
+    "color": "14B283",
     "color_palette": {
         "type": "grayscale_map",
         "colors": {
-            "24": "082420",
-            "68": "0e3f36",
-            "107": "156355",
-            "150": "1e8a77",
-            "190": "2bc7ac",
-            "216": "33ebcb",
-            "255": "a4fdf0"
+            "24": "16605A",
+            "150": "167D84",
+            "190": "119983",
+            "255": "14B283"
         },
         "filler": "interpolate"
     },
     "mining_speed": 0,
     "mining_level": 0,
-    "textures": [
-        "rough"
-    ],
     "items": [
         {
             "item": "minecraft:twisting_vines",

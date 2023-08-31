@@ -5,29 +5,23 @@
     "groups": [
         "fabric"
     ],
-    "hardness": 1,
-    "density": 1,
-    "flexibility": 7,
-    "durability": 150,
-    "color": "8CBA51",
+    "hardness": 2,
+    "density": 1.5,
+    "flexibility": 6.8,
+    "durability": 250,
+    "color": "D9D6BE",
     "color_palette": {
         "type": "grayscale_map",
         "colors": {
-            "24": "082420",
-            "68": "0e3f36",
-            "107": "156355",
-            "150": "1e8a77",
-            "190": "2bc7ac",
-            "216": "33ebcb",
-            "255": "a4fdf0"
+            "24": "6E506B",
+            "68": "7D617A",
+            "107": "938A78",
+            "255": "D9D6BE"
         },
         "filler": "interpolate"
     },
     "mining_speed": 0,
     "mining_level": 0,
-    "textures": [
-        "rough"
-    ],
     "items": [
         {
             "item": "minecraft:phantom_membrane",

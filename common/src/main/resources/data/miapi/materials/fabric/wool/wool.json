@@ -5,9 +5,9 @@
     "groups": [
         "fabric"
     ],
-    "hardness": 1,
-    "density": 1,
-    "flexibility": 7,
+    "hardness": 0.5,
+    "density": 2,
+    "flexibility": 5,
     "durability": 150,
     "color": "635C50",
     "color_palette": {

@@ -5,29 +5,22 @@
     "groups": [
         "fabric"
     ],
-    "hardness": 1,
-    "density": 1,
-    "flexibility": 7,
+    "hardness": 3,
+    "density": 1.5,
+    "flexibility": 5,
     "durability": 150,
-    "color": "B3B3B3",
+    "color": "D46A42",
     "color_palette": {
         "type": "grayscale_map",
         "colors": {
-            "24": "082420",
-            "68": "0e3f36",
-            "107": "156355",
-            "150": "1e8a77",
-            "190": "2bc7ac",
-            "216": "33ebcb",
-            "255": "a4fdf0"
+            "24": "3C1C10",
+            "68": "532716",
+            "255": "D46A42"
         },
         "filler": "interpolate"
     },
     "mining_speed": 0,
     "mining_level": 0,
-    "textures": [
-        "rough"
-    ],
     "items": [
         {
             "item": "minecraft:leather",
