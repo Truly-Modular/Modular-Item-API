@@ -157,6 +157,10 @@ public class CraftView extends InteractAbleWidget {
                     warnings.add(Text.translatable(Miapi.MOD_ID + ".ui.craft.result_equal_warning"));
                     craftButton.isEnabled = false;
                 }
+                if(previewStack.getDamage() > previewStack.getMaxDamage()){
+                    warnings.add(Text.translatable(Miapi.MOD_ID + ".ui.craft.warning.durability_negative"));
+                    craftButton.isEnabled = false;
+                }
                 canPerform.getFirst().forEach((property, result) -> {
                     if (!result) {
                         Text warning = property.getWarning();
