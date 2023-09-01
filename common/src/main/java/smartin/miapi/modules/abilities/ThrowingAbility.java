@@ -5,6 +5,8 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
@@ -69,6 +71,7 @@ public class ThrowingAbility implements ItemUseAbility {
                     tridentEntity.setPreferredSlot(playerEntity.getInventory().selectedSlot);
                     tridentEntity.thrownStack = stack;
                     world.spawnEntity(tridentEntity);
+                    world.playSoundFromEntity(null, user, SoundEvents.ITEM_TRIDENT_THROW, SoundCategory.PLAYERS, 1.0f, 1.0f);
                     if (playerEntity.getAbilities().creativeMode) {
                         tridentEntity.pickupType = PersistentProjectileEntity.PickupPermission.CREATIVE_ONLY;
                     } else {
