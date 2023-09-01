@@ -58,15 +58,19 @@ public class ItemProjectileEntity extends PersistentProjectileEntity {
 
     public ItemProjectileEntity(World world, Position position, ItemStack itemStack) {
         super(RegistryInventory.itemProjectileType.get(), position.getX(), position.getY(), position.getZ(), world);
-        this.thrownStack = itemStack.copy();
+        ItemStack stack = itemStack.copy();
+        stack.setCount(1);
+        this.thrownStack = stack;
         this.dataTracker.set(THROWING_STACK, thrownStack);
-        this.dataTracker.set(LOYALTY, (byte) EnchantmentHelper.getLoyalty(itemStack));
-        this.dataTracker.set(ENCHANTED, itemStack.hasGlint());
+        this.dataTracker.set(LOYALTY, (byte) EnchantmentHelper.getLoyalty(stack));
+        this.dataTracker.set(ENCHANTED, stack.hasGlint());
         setup();
     }
 
-    public ItemProjectileEntity(World world, LivingEntity owner, ItemStack stack) {
+    public ItemProjectileEntity(World world, LivingEntity owner, ItemStack itemStack) {
         super(RegistryInventory.itemProjectileType.get(), owner, world);
+        ItemStack stack = itemStack.copy();
+        stack.setCount(1);
         this.thrownStack = stack.copy();
         this.dataTracker.set(LOYALTY, (byte) EnchantmentHelper.getLoyalty(stack));
         this.dataTracker.set(ENCHANTED, stack.hasGlint());

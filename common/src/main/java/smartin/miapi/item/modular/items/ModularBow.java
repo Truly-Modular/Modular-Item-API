@@ -53,8 +53,11 @@ public class ModularBow extends BowItem implements ModularItem {
         boolean consumeArrow = !playerEntity.getAbilities().creativeMode;
         ItemStack projectileStack = playerEntity.getProjectileType(bowStack);
         if (EnchantmentHelper.getLevel(Enchantments.INFINITY, bowStack) > 0 && (projectileStack.isEmpty() || (projectileStack.getItem() instanceof ArrowItem && projectileStack.getOrCreateNbt().isEmpty()))) {
-            consumeArrow = false;
-            projectileStack = new ItemStack(Items.ARROW);
+            if(projectileStack.isEmpty() || projectileStack.getItem() == Items.ARROW){
+                consumeArrow = false;
+                projectileStack = new ItemStack(Items.ARROW);
+                projectileStack.setCount(1);
+            }
         }
         if (projectileStack.isEmpty() && consumeArrow && !MiapiConfig.EnchantmentGroup.betterInfinity.getValue()) {
             return;
@@ -72,7 +75,7 @@ public class ModularBow extends BowItem implements ModularItem {
             int piercingLevel = EnchantmentHelper.getLevel(Enchantments.PIERCING, bowStack);
             ItemStack projectileStackConsumed = projectileStack.copy();
             projectileStackConsumed.setCount(1);
-            PersistentProjectileEntity itemProjectile = arrowItem.createArrow(world, projectileStackConsumed, playerEntity);
+            PersistentProjectileEntity itemProjectile = arrowItem.createArrow(world, projectileStack, playerEntity);
             if (itemProjectile instanceof ItemProjectileEntity modularProjectile) {
                 modularProjectile.setSpeedDamage(true);
             }
@@ -96,8 +99,11 @@ public class ModularBow extends BowItem implements ModularItem {
                 itemProjectile.setOnFireFor(100);
             }
             bowStack.damage(1, playerEntity, p -> p.sendToolBreakStatus(playerEntity.getActiveHand()));
-            if (!consumeArrow || (projectileStack.isOf(Items.SPECTRAL_ARROW) || projectileStack.isOf(Items.TIPPED_ARROW))) {
+            if (!consumeArrow) {
                 itemProjectile.pickupType = PersistentProjectileEntity.PickupPermission.CREATIVE_ONLY;
+            }
+            else{
+                itemProjectile.pickupType = PersistentProjectileEntity.PickupPermission.ALLOWED;
             }
             MiapiProjectileEvents.ModularBowShotEvent event = new MiapiProjectileEvents.ModularBowShotEvent(itemProjectile, bowStack, playerEntity);
             if (MiapiProjectileEvents.MODULAR_BOW_SHOT.invoker().call(event).interruptsFurtherEvaluation()) {
