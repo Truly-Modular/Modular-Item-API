@@ -88,8 +88,16 @@
         }
     ],
     "abilities": [
-        "throw"
+        "riptide",
+        "throw",
+        "riptide"
     ],
+    "riptide": {
+        "needsWater": true,
+        "allowLava": false,
+        "needRiptideEnchant" : true,
+        "riptideStrength" : 3
+    },
     "guiOffset": {
         "sizeX": -6,
         "sizeY": -6

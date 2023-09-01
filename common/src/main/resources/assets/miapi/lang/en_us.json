@@ -19,6 +19,7 @@
 
     "miapi.skin.name.": "Default Skin",
     "miapi.skin.name.star_wars": "",
+    "miapi.skin.name.buster": "Ducks Buster Sword",
     "miapi.skin.name.skyrim": "",
     "miapi.skin.name.goldbrand": "",
 
@@ -104,7 +105,7 @@
     "miapi.stat.water_drag":"Water Drag",
     "miapi.stat.water_drag.description":"How fast the arrow slows underwater, higher is better",
     "miapi.stat.air_drag":"Air Drag",
-    "miapi.stat.air_drag.description":"How fast the arrow slows underwater, higher is better",
+    "miapi.stat.air_drag.description":"How fast the arrow slows in air, higher is better",
 
     "miapi.material_stat.color": "Color",
     "miapi.material_stat.flexibility": "Flexibility",

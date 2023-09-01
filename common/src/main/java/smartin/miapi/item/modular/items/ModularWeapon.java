@@ -43,6 +43,16 @@ public class ModularWeapon extends Item implements ModularItem {
     }
 
     @Override
+    public boolean isEnchantable(ItemStack itemStack){
+        return true;
+    }
+
+    @Override
+    public int getEnchantability() {
+        return 1;
+    }
+
+    @Override
     public boolean postHit(ItemStack stack, LivingEntity target, LivingEntity attacker) {
         if(ToolOrWeaponProperty.isWeapon(stack)){
             stack.damage(1,attacker, (e) -> {

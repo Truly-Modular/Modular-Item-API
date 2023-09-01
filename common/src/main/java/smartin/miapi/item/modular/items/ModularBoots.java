@@ -16,4 +16,9 @@ public class ModularBoots extends ArmorItem implements ModularItem {
         return DisplayNameProperty.getDisplayText(stack);
     }
 
+    @Override
+    public boolean isEnchantable(ItemStack itemStack){
+        return true;
+    }
+
 }
