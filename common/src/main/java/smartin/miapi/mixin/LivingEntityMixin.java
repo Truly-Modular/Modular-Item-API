@@ -48,11 +48,12 @@ abstract class LivingEntityMixin {
     private static void miapi$addAttributes(CallbackInfoReturnable<DefaultAttributeContainer.Builder> cir) {
         DefaultAttributeContainer.Builder builder = cir.getReturnValue();
         if (builder != null) {
-            AttributeRegistry.entityAttributeMap.forEach((id,attribute)->{
+            AttributeRegistry.entityAttributeMap.forEach((id, attribute) -> {
                 builder.add(attribute);
             });
         }
     }
+
 
     private float storedValue;
     private DamageSource storedDamageSource;

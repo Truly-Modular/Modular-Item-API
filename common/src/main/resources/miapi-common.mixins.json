@@ -5,6 +5,8 @@
     "compatibilityLevel": "JAVA_17",
     "mixins": [
         "BCWeaponRegistryMixin",
+        "DefaultAttributeContainerAccessor",
+        "DefaultAttributeRegistryMixin",
         "DispenserBlockAccessor",
         "EnchantmentHelperMixin",
         "EnchantmentMixin",
