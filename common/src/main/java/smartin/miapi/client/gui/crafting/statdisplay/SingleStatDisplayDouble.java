@@ -148,7 +148,17 @@ public abstract class SingleStatDisplayDouble extends InteractAbleWidget impleme
         textWidget.render(drawContext, mouseX, mouseY, delta);
     }
 
+    @Override
+    public void renderHover(DrawContext drawContext, int mouseX, int mouseY, float delta) {
+        if (isMouseOver(mouseX, mouseY)) {
+            Text text1 = this.hover.resolve(compareTo);
+            if(!text1.getString().isEmpty()){
+                drawContext.drawTooltip(MinecraftClient.getInstance().textRenderer, this.hover.resolve(compareTo), mouseX, mouseY);
+            }
+        }
+    }
+
     public InteractAbleWidget getHoverWidget() {
-        return hoverDescription;
+        return null;
     }
 }

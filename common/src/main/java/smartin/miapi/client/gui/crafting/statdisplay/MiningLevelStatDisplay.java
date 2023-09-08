@@ -108,7 +108,7 @@ public class MiningLevelStatDisplay extends InteractAbleWidget implements Single
 
     @Override
     public InteractAbleWidget getHoverWidget() {
-        return hoverDescription;
+        return null ;
     }
 
     @Override
@@ -172,6 +172,16 @@ public class MiningLevelStatDisplay extends InteractAbleWidget implements Single
         statBar.render(drawContext, mouseX, mouseY, delta);
         integerStatBar.render(drawContext, mouseX, mouseY, delta);
         textWidget.render(drawContext, mouseX, mouseY, delta);
+    }
+
+    @Override
+    public void renderHover(DrawContext drawContext, int mouseX, int mouseY, float delta) {
+        if (isMouseOver(mouseX, mouseY)) {
+            Text text1 = this.hover.resolve(compareTo);
+            if(!text1.getString().isEmpty()){
+                drawContext.drawTooltip(MinecraftClient.getInstance().textRenderer, this.hover.resolve(compareTo), mouseX, mouseY);
+            }
+        }
     }
 
     public static Builder builder(String type) {

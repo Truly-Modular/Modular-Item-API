@@ -20,6 +20,7 @@ import smartin.miapi.client.gui.SimpleScreenHandlerListener;
 import smartin.miapi.client.gui.TransformableWidget;
 import smartin.miapi.client.gui.crafting.crafter.ModuleCrafter;
 import smartin.miapi.client.gui.crafting.slotdisplay.SlotDisplay;
+import smartin.miapi.client.gui.crafting.slotdisplay.SmithDisplay;
 import smartin.miapi.client.gui.crafting.statdisplay.StatDisplay;
 import smartin.miapi.item.ModularItemStackConverter;
 import smartin.miapi.modules.ItemModule;
@@ -38,6 +39,7 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
     private ModuleCrafter moduleCrafter;
     private StatDisplay statDisplay;
     private SlotDisplay slotDisplay;
+    private SmithDisplay smithDisplay;
     private SlotProperty.ModuleSlot baseSlot;
     @Nullable
     public SlotProperty.ModuleSlot slot;
@@ -66,6 +68,7 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
     public void previewStack(ItemStack itemStack) {
         slotDisplay.setItem(itemStack);
         statDisplay.setCompareTo(itemStack);
+        smithDisplay.setPreview(itemStack);
     }
 
     public void selectEditOption(EditOption editOption) {
@@ -87,6 +90,7 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
         }, (item) -> {
             slotDisplay.setItem(item);
             statDisplay.setCompareTo(item);
+            smithDisplay.setPreview(item);
         }, handler.inventory,
                 handler::addSlotByClient, handler::removeSlotByClient);
         moduleCrafter.setPacketIdentifier(handler.packetID);
@@ -97,6 +101,8 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
         });
         slotDisplay.setItem(getItem());
         this.addChild(slotDisplay);
+        smithDisplay = new SmithDisplay(centerX + 140, centerY + 117, 55, 70);
+        this.addChild(smithDisplay);
         statDisplay = new StatDisplay(centerX + 213, centerY + 30, 160, 95);
         this.addChild(statDisplay);
 
@@ -146,6 +152,9 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
             slotDisplay.setBaseSlot(current);
             slotDisplay.select(current);
             slotDisplay.setItem(converted);
+        }
+        if(smithDisplay != null){
+            smithDisplay.setPreview(converted);
         }
         if (moduleCrafter != null) {
             moduleCrafter.setBaseSlot(current);
