@@ -1,6 +1,7 @@
 package smartin.miapi.client.gui.crafting.statdisplay;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.attribute.EntityAttribute;
@@ -12,6 +13,7 @@ import net.minecraft.util.math.ColorHelper;
 import smartin.miapi.Miapi;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.client.gui.*;
+import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.modules.properties.MiningLevelProperty;
 
 import java.text.DecimalFormat;
@@ -20,7 +22,7 @@ import java.util.List;
 import java.util.Locale;
 
 public class MiningLevelStatDisplay extends InteractAbleWidget implements SingleStatDisplay {
-    public Identifier texture = new Identifier("textures/gui/container/inventory.png");
+    public Identifier texture = new Identifier(Miapi.MOD_ID, "textures/block/gui/crafter/background.png");
     public ItemStack original = ItemStack.EMPTY;
     public ItemStack compareTo = ItemStack.EMPTY;
     public StatBar statBar;
@@ -42,9 +44,11 @@ public class MiningLevelStatDisplay extends InteractAbleWidget implements Single
     EntityAttribute attribute;
     double defaultValue;
     EquipmentSlot slot;
+    int red = MiapiConfig.ColorGroup.red.getValue().intValue();
+    int green = MiapiConfig.ColorGroup.green.getValue().intValue();
 
     public MiningLevelStatDisplay(String type, StatDisplay.TextGetter title, StatDisplay.TextGetter hover) {
-        super(0, 0, 80, 32, Text.empty());
+        super(0, 0, 76, 19, Text.empty());
         this.type = type;
         text = title;
         this.hover = hover;
@@ -61,7 +65,7 @@ public class MiningLevelStatDisplay extends InteractAbleWidget implements Single
         hoverDescription = new HoverDescription(getX(), getY(), List.of());
         integerStatBar = new IntegerStatBar(0, 0, width, 1);
         integerStatBar.setGapWidth(2);
-        integerStatBar.setHeight(10);
+        integerStatBar.setHeight(1);
         integerStatBar.setMaxSteps(maxValueInt);
     }
 
@@ -88,6 +92,20 @@ public class MiningLevelStatDisplay extends InteractAbleWidget implements Single
         return getAltValue(original) > 0 || getAltValue(compareTo) > 0;
     }
 
+    public int getHeightDesired() {
+        return 19;
+    }
+
+    public int getWidthDesired() {
+        int textWidth = MinecraftClient.getInstance().textRenderer.getWidth(this.text.resolve(original).getString());
+        int numberWidth = MinecraftClient.getInstance().textRenderer.getWidth(compareValue.getText().getString());
+        int size = 1;
+        if (textWidth + numberWidth > 76-6) {
+            size = 2;
+        }
+        return 76 * size;
+    }
+
     @Override
     public InteractAbleWidget getHoverWidget() {
         return hoverDescription;
@@ -97,62 +115,60 @@ public class MiningLevelStatDisplay extends InteractAbleWidget implements Single
     public void render(DrawContext drawContext, int mouseX, int mouseY, float delta) {
         double oldValue = getValue(original);
         double compareToValue = getValue(compareTo);
-        int oldMining = getAltValue(original);
-        int compareMining = getAltValue(compareTo);
 
         double min = Math.min(minValue, Math.min(oldValue, compareToValue));
         double max = Math.max(maxValue, Math.max(oldValue, compareToValue));
 
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
 
-        drawTextureWithEdge(drawContext, texture, getX(), getY(), 0, 166, 120, 32, width, height, 256, 256, 2);
+        drawTextureWithEdge(drawContext, texture, getX(), getY(), 339, 6, 51, 19, width, height, 512, 512, 2);
 
-        textWidget.setX(this.getX() + 5);
-        textWidget.setY(this.getY() + 4);
+        textWidget.setX(this.getX() + 3);
+        textWidget.setY(this.getY() + 3);
         textWidget.setWidth(this.width - 8);
 
-        statBar.setX(this.getX() + 5);
-        statBar.setY(this.getY() + 22);
-        statBar.setWidth(this.width - 10);
-        statBar.setHeight(2);
-        integerStatBar.setX(this.getX() + 5);
-        integerStatBar.setY(this.getY() + 25);
-        integerStatBar.setWidth(this.width - 10);
-        integerStatBar.setHeight(2);
-        String centerText = "";
+        int oldMining = getAltValue(original);
+        int compareMining = getAltValue(compareTo);
+        statBar.setX(this.getX() + 2);
+        statBar.setY(this.getY() + 12);
+        statBar.setWidth(this.width - 4);
+        statBar.setHeight(1);
+        integerStatBar.setX(this.getX() + 2);
+        integerStatBar.setY(this.getY() + 15);
+        integerStatBar.setWidth(this.width - 4);
+        integerStatBar.setHeight(1);
         if (oldMining < compareMining) {
             integerStatBar.setPrimary(oldMining, ColorHelper.Argb.getArgb(255, 255, 255, 255));
-            integerStatBar.setSecondary(compareMining, ColorHelper.Argb.getArgb(255, 0, 255, 0));
+            integerStatBar.setSecondary(compareMining, green);
         } else {
             integerStatBar.setPrimary(compareMining, ColorHelper.Argb.getArgb(255, 255, 255, 255));
-            integerStatBar.setSecondary(oldMining, ColorHelper.Argb.getArgb(255, 255, 0, 0));
+            integerStatBar.setSecondary(oldMining, red);
         }
         if (oldValue < compareToValue) {
             statBar.setPrimary((oldValue - min) / (max - min), ColorHelper.Argb.getArgb(255, 255, 255, 255));
-            statBar.setSecondary((compareToValue - min) / (max - min), ColorHelper.Argb.getArgb(255, 0, 255, 0));
+            statBar.setSecondary((compareToValue - min) / (max - min), green);
             compareValue.textColor = ColorHelper.Argb.getArgb(255, 0, 255, 0);
         } else {
             statBar.setPrimary((compareToValue - min) / (max - min), ColorHelper.Argb.getArgb(255, 255, 255, 255));
-            statBar.setSecondary((oldValue - min) / (max - min), ColorHelper.Argb.getArgb(255, 255, 0, 0));
-            compareValue.textColor = ColorHelper.Argb.getArgb(255, 255, 0, 0);
+            statBar.setSecondary((oldValue - min) / (max - min), red);
+            compareValue.textColor = green;
         }
         if (oldValue == compareToValue) {
-            compareValue.textColor = ColorHelper.Argb.getArgb(0, 255, 0, 0);
+            currentValue.setX(this.getX() - 3);
+            currentValue.setY(this.getY() + 3);
+            currentValue.setWidth(this.getWidth());
+            currentValue.setText(Text.literal(modifierFormat.format(oldValue)));
+            currentValue.setOrientation(ScrollingTextWidget.Orientation.RIGHT);
+            compareValue.textColor = red;
+            currentValue.render(drawContext, mouseX, mouseY, delta);
         } else {
-            compareValue.setX(this.getX() + 5);
-            compareValue.setY(this.getY() + 13);
+            compareValue.setX(this.getX() - 3);
+            compareValue.setY(this.getY() + 3);
+            compareValue.setWidth(this.getWidth());
+            compareValue.setOrientation(ScrollingTextWidget.Orientation.RIGHT);
             compareValue.setText(Text.of(modifierFormat.format(compareToValue)));
             compareValue.render(drawContext, mouseX, mouseY, delta);
-            centerText = "→";
         }
-        currentValue.setX(this.getX() + 5);
-        currentValue.setY(this.getY() + 13);
-        currentValue.setText(Text.literal(modifierFormat.format(oldValue)));
-        currentValue.render(drawContext, mouseX, mouseY, delta);
-        centerValue.setX(this.getX() + 5);
-        centerValue.setY(this.getY() + 13);
-        centerValue.setText(Text.literal(centerText));
-        centerValue.render(drawContext, mouseX, mouseY, delta);
         statBar.render(drawContext, mouseX, mouseY, delta);
         integerStatBar.render(drawContext, mouseX, mouseY, delta);
         textWidget.render(drawContext, mouseX, mouseY, delta);

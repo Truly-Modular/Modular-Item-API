@@ -3,20 +3,27 @@ package smartin.miapi.client.gui.crafting.crafter;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Element;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandler;
+import net.minecraft.screen.slot.Slot;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
+import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
+import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.client.gui.*;
 import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.edit_options.EditOption;
+import smartin.miapi.modules.properties.SlotProperty;
 import smartin.miapi.network.Networking;
 import smartin.miapi.registries.RegistryInventory;
 
@@ -31,15 +38,23 @@ import java.util.function.Consumer;
 public class EditView extends InteractAbleWidget {
     ItemStack stack;
     ItemModule.ModuleInstance instance;
-    Consumer<ItemStack> preview;
+    Consumer<ItemStack> previewConsumer;
     Consumer<Object> back;
     List<Element> defaultChildren = new ArrayList<>();
+    EditOption.EditContext editContext;
+    EditOption current;
+    SlotProperty.ModuleSlot slot;
+    static List<Slot> currentSlots = new ArrayList<>();
 
-    public EditView(int x, int y, int width, int height, ItemStack stack, ItemModule.ModuleInstance instance, Consumer<ItemStack> preview, Consumer<Object> back) {
+    public EditView(int x, int y, int width, int height, ItemStack stack, @Nullable SlotProperty.ModuleSlot slot, Consumer<ItemStack> preview, Consumer<Object> back) {
         super(x, y, width, height, Text.empty());
-        this.preview = preview;
+        this.previewConsumer = preview;
         this.stack = stack;
-        this.instance = instance;
+        this.slot = slot;
+        if (slot != null) {
+            this.instance = slot.inSlot;
+        }
+        clearSlots();
         this.back = back;
         float headerScale = 1.5f;
         TransformableWidget headerHolder = new TransformableWidget(x, y, width, height, headerScale);
@@ -53,15 +68,80 @@ public class EditView extends InteractAbleWidget {
         list.children().clear();
         defaultChildren.add(new SimpleButton<>(this.getX() + 2, this.getY() + this.height - 10, 40, 12, Text.translatable(Miapi.MOD_ID + ".ui.back"), stack, back));
         ArrayList<InteractAbleWidget> toList = new ArrayList<>();
+        editContext = new EditOption.EditContext() {
+            @Override
+            public void craft(PacketByteBuf packetByteBuf) {
+            }
 
+            @Override
+            public void preview(PacketByteBuf preview) {
+
+            }
+
+            @Override
+            public SlotProperty.ModuleSlot getSlot() {
+                return slot;
+            }
+
+            @Override
+            public ItemStack getItemstack() {
+                return stack;
+            }
+
+            @Override
+            public @Nullable ItemModule.ModuleInstance getInstance() {
+                return instance;
+            }
+
+            @Override
+            public @Nullable PlayerEntity getPlayer() {
+                return MinecraftClient.getInstance().player;
+            }
+
+            @Override
+            public @Nullable ModularWorkBenchEntity getWorkbench() {
+                if (MinecraftClient.getInstance().player.currentScreenHandler instanceof CraftingScreenHandler craftingScreenHandler) {
+                    return craftingScreenHandler.blockEntity;
+                }
+                return null;
+            }
+
+            @Override
+            public Inventory getLinkedInventory() {
+                if (MinecraftClient.getInstance().player.currentScreenHandler instanceof CraftingScreenHandler craftingScreenHandler) {
+                    return craftingScreenHandler.inventory;
+                }
+                return null;
+            }
+
+            @Override
+            public CraftingScreenHandler getScreenHandler() {
+                if (MinecraftClient.getInstance().player.currentScreenHandler instanceof CraftingScreenHandler craftingScreenHandler) {
+                    return craftingScreenHandler;
+                }
+                return null;
+            }
+        };
         RegistryInventory.editOptions.getFlatMap().forEach((s, editOption) -> {
-            if (editOption.isVisible(stack, instance.copy())) {
-                toList.add(new SlotButton(0, 0, this.width, 15, s, editOption, instance.copy()));
+            if (editOption.isVisible(editContext)) {
+                ItemModule.ModuleInstance moduleInstance = null;
+                if (instance != null) {
+                    moduleInstance = instance.copy();
+                }
+                toList.add(new SlotButton(0, 0, this.width, 15, s, editOption, moduleInstance));
             }
         });
 
         list.setList(toList);
         setDefaultChildren();
+    }
+
+    public void clearSlots() {
+        currentSlots.forEach(slot1 -> {
+            if (MinecraftClient.getInstance().player.currentScreenHandler instanceof CraftingScreenHandler handler) {
+                handler.removeSlotByClient(slot1);
+            }
+        });
     }
 
     private void setDefaultChildren() {
@@ -70,28 +150,100 @@ public class EditView extends InteractAbleWidget {
     }
 
     public void setEditOption(EditOption option) {
-        Consumer<PacketByteBuf> craftBuffer = (packetByteBuf) -> {
-            ScreenHandler screenHandler = Miapi.server.getPlayerManager().getPlayerList().get(0).currentScreenHandler;
-            if (screenHandler instanceof CraftingScreenHandler screenHandler1) {
-                ItemModule.ModuleInstance toCrafter = instance;
-                PacketByteBuf buf = Networking.createBuffer();
-                buf.writeString(RegistryInventory.editOptions.findKey(option));
-                List<Integer> position = new ArrayList<>();
-                toCrafter.calculatePosition(position);
-                int[] positionArray = position.stream()
-                        .mapToInt(Integer::intValue)
-                        .toArray();
-                buf.writeIntArray(positionArray);
-                buf.writeBytes(packetByteBuf.copy());
-                back.accept(null);
-                Networking.sendC2S(screenHandler1.editPacketID, buf);
+        editContext = new EditOption.EditContext() {
+            @Override
+            public void craft(PacketByteBuf packetByteBuf) {
+                ScreenHandler screenHandler = Miapi.server.getPlayerManager().getPlayerList().get(0).currentScreenHandler;
+                if (screenHandler instanceof CraftingScreenHandler screenHandler1) {
+                    ItemModule.ModuleInstance toCrafter = instance;
+                    PacketByteBuf buf = Networking.createBuffer();
+                    buf.writeString(RegistryInventory.editOptions.findKey(option));
+                    List<Integer> position = new ArrayList<>();
+                    if (toCrafter != null) {
+                        toCrafter.calculatePosition(position);
+                    } else {
+                        if (slot.parent != null) {
+                            slot.parent.calculatePosition(position);
+                            position.add(slot.id);
+                        }
+                    }
+                    int[] positionArray = position.stream()
+                            .mapToInt(Integer::intValue)
+                            .toArray();
+                    buf.writeIntArray(positionArray);
+                    buf.writeBytes(packetByteBuf.copy());
+                    Networking.sendC2S(screenHandler1.editPacketID, buf);
+                }
+                preview(packetByteBuf);
+            }
+
+            @Override
+            public void preview(PacketByteBuf preview) {
+                previewConsumer.accept(option.preview(preview, this));
+            }
+
+            @Override
+            public SlotProperty.ModuleSlot getSlot() {
+                return slot;
+            }
+
+            @Override
+            public ItemStack getItemstack() {
+                return stack;
+            }
+
+            @Override
+            public @Nullable ItemModule.ModuleInstance getInstance() {
+                return instance;
+            }
+
+            @Override
+            public @Nullable PlayerEntity getPlayer() {
+                return MinecraftClient.getInstance().player;
+            }
+
+            @Override
+            public @Nullable ModularWorkBenchEntity getWorkbench() {
+                if (MinecraftClient.getInstance().player.currentScreenHandler instanceof CraftingScreenHandler craftingScreenHandler) {
+                    return craftingScreenHandler.blockEntity;
+                }
+                return null;
+            }
+
+            @Override
+            public CraftingScreenHandler getScreenHandler() {
+                if (MinecraftClient.getInstance().player.currentScreenHandler instanceof CraftingScreenHandler craftingScreenHandler) {
+                    return craftingScreenHandler;
+                }
+                return null;
+            }
+
+            @Override
+            public Inventory getLinkedInventory() {
+                if (MinecraftClient.getInstance().player.currentScreenHandler instanceof CraftingScreenHandler craftingScreenHandler) {
+                    return craftingScreenHandler.inventory;
+                }
+                return null;
+            }
+
+            @Override
+            public void addSlot(Slot slot) {
+                if (MinecraftClient.getInstance().player.currentScreenHandler instanceof CraftingScreenHandler craftingScreenHandler) {
+                    craftingScreenHandler.addSlotByClient(slot);
+                    currentSlots.add(slot);
+                }
+            }
+
+            @Override
+            public void removeSlot(Slot slot) {
+                if (MinecraftClient.getInstance().player.currentScreenHandler instanceof CraftingScreenHandler craftingScreenHandler) {
+                    craftingScreenHandler.removeSlotByClient(slot);
+                    currentSlots.remove(slot);
+                }
             }
         };
-        Consumer<PacketByteBuf> previewBuffer = (packetByteBuf) -> preview.accept(option.execute(packetByteBuf, stack, instance.copy()));
         this.children().clear();
-        this.addChild(option.getGui(getX(), getY(), width, height, stack, instance, craftBuffer, previewBuffer, (objects) -> {
-            setDefaultChildren();
-        }));
+        this.addChild(option.getGui(getX(), getY(), width, height, editContext));
     }
 
     class SlotButton extends InteractAbleWidget {
@@ -126,8 +278,8 @@ public class EditView extends InteractAbleWidget {
         @Override
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
             if (isMouseOver(mouseX, mouseY) && (button == 0)) {
-                    setEditOption(option);
-                    return true;
+                setEditOption(option);
+                return true;
 
             }
             return super.mouseClicked(mouseX, mouseY, button);

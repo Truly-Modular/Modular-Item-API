@@ -17,6 +17,7 @@ import smartin.miapi.client.gui.ClickAbleTextWidget;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.ScrollingTextWidget;
 import smartin.miapi.client.gui.SimpleButton;
+import smartin.miapi.client.gui.rework.CraftingScreen;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.util.ModuleProperty;
@@ -26,35 +27,41 @@ import smartin.miapi.registries.RegistryInventory;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public class PropertyInjectionDev implements EditOption {
     @Override
-    public ItemStack execute(PacketByteBuf buffer, ItemStack stack, ItemModule.ModuleInstance moduleInstance) {
+    public ItemStack preview(PacketByteBuf buffer, EditContext context) {
         String raw = buffer.readString();
-        moduleInstance.moduleData.put("properties", raw);
-        ItemStack stack1 = stack.copy();
-        moduleInstance.getRoot().writeToItem(stack1);
+        assert context.getInstance() != null;
+        context.getInstance().moduleData.put("properties", raw);
+        ItemStack stack1 = context.getItemstack().copy();
+        context.getInstance().getRoot().writeToItem(stack1);
         ModularItemCache.discardCache();
         return stack1;
     }
 
     @Override
-    public boolean isVisible(ItemStack stack, ItemModule.ModuleInstance instance) {
-        return Platform.isDevelopmentEnvironment();
+    public boolean isVisible(EditContext context) {
+        return Platform.isDevelopmentEnvironment() && context.getInstance() != null;
     }
 
     @Environment(EnvType.CLIENT)
     @Override
-    public InteractAbleWidget getGui(int x, int y, int width, int height, ItemStack stack, ItemModule.ModuleInstance instance, Consumer<PacketByteBuf> craft, Consumer<PacketByteBuf> preview, Consumer<Objects> back) {
-        return new EditDevView(x, y, width, height, stack, instance, craft, back);
+    public InteractAbleWidget getGui(int x, int y, int width, int height, EditContext context) {
+        return new EditDevView(x, y, width, height, context.getItemstack(), context.getInstance(), context::craft);
+    }
+
+    @Override
+    public InteractAbleWidget getIconGui(int x, int y, int width, int height, Consumer<EditOption> select, Supplier<EditOption> getSelected) {
+        return new EditOptionIcon(x, y, width, height, select, getSelected, CraftingScreen.BACKGROUND_TEXTURE, 339, 25 + 28 * 2, 512, 512, this);
     }
 
     @Environment(EnvType.CLIENT)
     public static class EditDevView extends InteractAbleWidget {
 
-        public EditDevView(int x, int y, int width, int height, ItemStack stack, ItemModule.ModuleInstance moduleInstance, Consumer<PacketByteBuf> craft, Consumer<Objects> back) {
+        public EditDevView(int x, int y, int width, int height, ItemStack stack, ItemModule.ModuleInstance moduleInstance, Consumer<PacketByteBuf> craft) {
             super(x, y, width, height, Text.empty());
-            SimpleButton<Objects> backButton = new SimpleButton<>(this.getX() + 10, this.getY() + this.height - 10, 40, 10, Text.translatable(Miapi.MOD_ID+".ui.back"), null, back);
             MutableText text = Text.literal(moduleInstance.moduleData.get("properties")).copy();
             TextFieldWidget textFieldWidget = new ClickAbleTextWidget(MinecraftClient.getInstance().textRenderer, x + 5, y + 10, this.width - 10, 20, text);
             textFieldWidget.setMaxLength(Integer.MAX_VALUE);
@@ -63,7 +70,7 @@ public class PropertyInjectionDev implements EditOption {
             ScrollingTextWidget error = new ScrollingTextWidget(x + 5, y + 40, this.width - 10, Text.empty(), ColorHelper.Argb.getArgb(255, 255, 0, 0));
             addChild(error);
 
-            SimpleButton<Objects> craftButton = new SimpleButton<>(this.getX() + this.width - 50, this.getY() + this.height - 10, 40, 10, Text.literal("Apply"), null, (a) -> {
+            SimpleButton<Objects> craftButton = new SimpleButton<>(this.getX() + this.width - 41, this.getY() + this.height - 11, 40, 10, Text.literal("Apply"), null, (a) -> {
                 String raw = textFieldWidget.getText();
                 try {
                     boolean success = true;
@@ -97,8 +104,6 @@ public class PropertyInjectionDev implements EditOption {
                     all.printStackTrace();
                 }
             });
-
-            addChild(backButton);
             addChild(textFieldWidget);
             addChild(craftButton);
         }

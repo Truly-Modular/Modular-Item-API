@@ -149,7 +149,7 @@ public class SlotProperty implements ModuleProperty {
 
     @Nullable
     public static ModuleSlot getSlotIn(ItemModule.ModuleInstance instance) {
-        if (instance.parent != null) {
+        if (instance != null && instance.parent != null) {
             Map<Integer, ModuleSlot> slots = getSlots(instance.parent);
             ModuleSlot slot = slots.values().stream().filter(moduleSlot -> {
                 if (moduleSlot.inSlot == null) return false;

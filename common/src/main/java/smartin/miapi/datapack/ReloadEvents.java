@@ -116,7 +116,7 @@ public class ReloadEvents {
     private static void clientSetup() {
         Map<String, String> dataTemp = new HashMap<>();
         Networking.registerS2CPacket(RELOAD_DATA_PACKET_ID, (buffer) -> {
-            //make this execute on main thread maybe
+            //make this previewStack on main thread maybe
             String key = buffer.readString();
             String data = buffer.readString();
             dataTemp.put(key, data);

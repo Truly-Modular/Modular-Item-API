@@ -19,6 +19,7 @@ import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.MultiLineTextWidget;
 import smartin.miapi.client.gui.ScrollingTextWidget;
 import smartin.miapi.client.gui.TransformableWidget;
+import smartin.miapi.client.gui.rework.CraftingScreen;
 import smartin.miapi.craft.CraftAction;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ItemModule;
@@ -39,10 +40,11 @@ public class AllowedMaterial implements CraftingProperty, ModuleProperty {
     public double materialCostClient = 0.0f;
     public double materialRequirementClient = 0.0f;
     public boolean wrongMaterial = false;
+    public int slotHeight = 130;
 
     public List<Vec2f> getSlotPositions() {
         List<Vec2f> test = new ArrayList<>();
-        test.add(new Vec2f(160, 130));
+        test.add(new Vec2f(110, slotHeight));
         return test;
     }
 
@@ -149,7 +151,8 @@ public class AllowedMaterial implements CraftingProperty, ModuleProperty {
         });
 
         public MaterialCraftingWidget(int x, int y, int width, int height, CraftAction action) {
-            super(x, y, width, height, Text.literal("Test"));
+            super(x, y, width, height, Text.empty());
+            slotHeight = height + 12;
 
             ItemModule.ModuleInstance moduleInstance = new ItemModule.ModuleInstance(action.toAdd);
             Text displayText = StatResolver.translateAndResolve(Miapi.MOD_ID + ".module." + moduleInstance.module.getName(), moduleInstance);
@@ -161,11 +164,11 @@ public class AllowedMaterial implements CraftingProperty, ModuleProperty {
             addChild(headerHolder);
 
 
-            header = new ScrollingTextWidget((int) ((this.getX() + 5) / headerScale), (int) (this.getY() / headerScale), (int) ((this.width - 10) / headerScale), displayText, ColorHelper.Argb.getArgb(255, 255, 255, 255));
+            header = new ScrollingTextWidget((int) ((this.getX() + 5) / headerScale), (int) (this.getY() / headerScale) + 2, (int) ((this.width - 10) / headerScale), displayText, ColorHelper.Argb.getArgb(255, 255, 255, 255));
             headerHolder.addChild(header);
             description = new MultiLineTextWidget(x + 5, y + 30, width - 10, height - 40, descriptionText);
-            costDescr = new ScrollingTextWidget(x + this.width - 80, y + this.height - 8, 78, Text.empty());
-            costDescr.setOrientation(ScrollingTextWidget.Orientation.RIGHT);
+            costDescr = new ScrollingTextWidget(x + 71, y + this.height - 8, 78, Text.empty());
+            //costDescr.setOrientation(ScrollingTextWidget.Orientation.RIGHT);
             costDescr.textColor = ColorHelper.Argb.getArgb(255, 225, 225, 225);
             addChild(description);
             addChild(costDescr);
@@ -184,7 +187,11 @@ public class AllowedMaterial implements CraftingProperty, ModuleProperty {
 
             costDescr.setText(Text.literal(modifierFormat.format(materialCostClient) + "/" + modifierFormat.format(materialRequirementClient)));
 
-            drawContext.drawTexture(texture, getX(), getY(), 0, textureOffset, 0, this.width, this.height, this.width, this.height);
+            costDescr.setY(this.getY() + slotHeight + 10);
+
+            drawTextureWithEdge(drawContext, CraftingScreen.BACKGROUND_TEXTURE, getX(), getY(), 368, 138, 26, 26, getWidth(), getHeight(), 512, 512, 5);
+
+            drawTextureWithEdge(drawContext, CraftingScreen.BACKGROUND_TEXTURE, getX() + 50, getY() + slotHeight - 3, 367 - 28, 137, 28, 28, 20, 20, 512, 512, 5);
 
             super.render(drawContext, mouseX, mouseY, delta);
         }

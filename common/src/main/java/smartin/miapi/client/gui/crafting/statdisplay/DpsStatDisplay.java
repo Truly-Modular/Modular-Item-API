@@ -12,7 +12,7 @@ import smartin.miapi.attributes.AttributeRegistry;
 public class DpsStatDisplay extends SingleStatDisplayDouble{
 
     public DpsStatDisplay() {
-        super(0, 0, 80, 32, (stack)->Text.literal("DPS"), (stack)->Text.empty());
+        super(0, 0, 51, 19, (stack)->Text.literal("DPS"), (stack)->Text.empty());
         this.maxValue = 25;
     }
 

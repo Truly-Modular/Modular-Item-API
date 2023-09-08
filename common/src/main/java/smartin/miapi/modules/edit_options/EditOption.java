@@ -2,36 +2,83 @@ package smartin.miapi.modules.edit_options;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.screen.slot.Slot;
+import org.jetbrains.annotations.Nullable;
+import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.client.gui.InteractAbleWidget;
+import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
 import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.properties.SlotProperty;
 import smartin.miapi.registries.RegistryInventory;
 
-import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * Edits allow you to edit a Module on an Itemstack.
  * EditOptions need to be registered at {@link RegistryInventory#editOptions}
  */
 public interface EditOption {
+    /**
+     * Executed for previewStack
+     * @param buffer
+     * @param editContext
+     * @return
+     */
+    ItemStack preview(PacketByteBuf buffer, EditContext editContext);
 
     /**
-     * This is the Logic that actually executes the Edit.
-     * The Buffer is the on parsed into by the consumers of the {@link EditOption#getGui(int, int, int, int, ItemStack, ItemModule.ModuleInstance, Consumer, Consumer, Consumer)}
-     *
-     * @param buffer   the Buffer with the detail of the Edit
-     * @param stack    the ItemStack pre-edit
-     * @param instance the Selected ModuleInstance
-     * @return the new ItemStack after the Edit
+     * Executed on the server for actual CraftAction, use this for stat increments and non result related stuff like ingredient consumption
+     * @param buf
+     * @param editContext
+     * @return
      */
-    ItemStack execute(PacketByteBuf buffer, ItemStack stack, ItemModule.ModuleInstance instance);
+    default ItemStack execute(PacketByteBuf buf, EditContext editContext) {
+        return preview(buf, editContext);
+    }
 
-    boolean isVisible(ItemStack stack, ItemModule.ModuleInstance instance);
+    boolean isVisible(EditContext editContext);
 
     @Environment(EnvType.CLIENT)
-    InteractAbleWidget getGui(int x, int y, int width, int height,ItemStack stack, ItemModule.ModuleInstance instance, Consumer<PacketByteBuf> craft, Consumer<PacketByteBuf> preview, Consumer<Objects> back);
+    InteractAbleWidget getGui(int x, int y, int width, int height, EditContext editContext);
 
+    @Environment(EnvType.CLIENT)
+    InteractAbleWidget getIconGui(int x, int y, int width, int height, Consumer<EditOption> select, Supplier<EditOption> getSelected);
 
+    interface EditContext {
+        void craft(PacketByteBuf craftBuffer);
+
+        void preview(PacketByteBuf preview);
+
+        SlotProperty.ModuleSlot getSlot();
+
+        ItemStack getItemstack();
+
+        @Nullable
+        ItemModule.ModuleInstance getInstance();
+
+        @Nullable
+        PlayerEntity getPlayer();
+
+        @Nullable
+        ModularWorkBenchEntity getWorkbench();
+
+        Inventory getLinkedInventory();
+
+        CraftingScreenHandler getScreenHandler();
+
+        @Environment(EnvType.CLIENT)
+        default void addSlot(Slot slot){
+
+        }
+
+        @Environment(EnvType.CLIENT)
+        default void removeSlot(Slot slot){
+
+        }
+    }
 }

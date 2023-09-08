@@ -54,7 +54,6 @@ class SkinTabGui extends InteractAbleWidget implements SkinGui.SortAble {
         Map<String, Map<String, Skin>> toDoMap = new HashMap<>();
         for (Map.Entry<String, Skin> entry : mapsToDo.entrySet()) {
             String skinPath = entry.getKey();
-            Miapi.LOGGER.error("skin " + skinPath);
             String[] pathParts = skinPath.split("/");
 
             // Check if the current path is under the current tab

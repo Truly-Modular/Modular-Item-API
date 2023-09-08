@@ -11,11 +11,11 @@ public interface SingleStatDisplay {
     boolean shouldRender(ItemStack original, ItemStack compareTo);
 
     default int getHeightDesired() {
-        return 32;
+        return 19;
     }
 
     default int getWidthDesired() {
-        return 80;
+        return 51;
     }
 
     InteractAbleWidget getHoverWidget();

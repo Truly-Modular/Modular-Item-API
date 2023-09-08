@@ -417,11 +417,12 @@ public class ItemModule {
         public ModuleInstance getPosition(List<Integer> position) {
             if (!position.isEmpty()) {
                 int pos = position.remove(0);
-                Miapi.LOGGER.error("accesing slot n#" + pos);
-                return subModules.get(pos).getPosition(position);
-            } else {
-                return this;
+                ModuleInstance subModule = subModules.get(pos);
+                if(subModule!=null){
+                    return subModule.getPosition(position);
+                }
             }
+            return this;
         }
 
         /**

@@ -13,13 +13,13 @@ import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.Identifier;
 import smartin.miapi.Miapi;
 import smartin.miapi.blocks.ModularWorkBenchRenderer;
-import smartin.miapi.client.gui.crafting.CraftingGUI;
+import smartin.miapi.client.gui.rework.CraftingScreen;
 import smartin.miapi.client.model.CustomColorProvider;
 import smartin.miapi.client.model.ModularModelPredicateProvider;
 import smartin.miapi.effects.CryoStatusEffect;
+import smartin.miapi.entity.ItemProjectileRenderer;
 import smartin.miapi.mixin.client.ItemRendererAccessor;
 import smartin.miapi.modules.MiapiPermissions;
-import smartin.miapi.entity.ItemProjectileRenderer;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.material.PaletteCreators;
 import smartin.miapi.modules.properties.render.colorproviders.ColorProvider;
@@ -69,7 +69,7 @@ public class MiapiClient {
     }
 
     public static void registerScreenHandler() {
-        MenuRegistry.registerScreenFactory(RegistryInventory.craftingScreenHandler, CraftingGUI::new);
+        MenuRegistry.registerScreenFactory(RegistryInventory.craftingScreenHandler, CraftingScreen::new);
     }
 
     public static void registerEntityRenderer() {

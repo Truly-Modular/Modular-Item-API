@@ -2,9 +2,12 @@ package smartin.miapi.client.gui;
 
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
+import smartin.miapi.Miapi;
 
 public class IntegerStatBar extends InteractAbleWidget {
+    public Identifier texture = new Identifier(Miapi.MOD_ID, "textures/block/gui/crafter/background.png");
     int primaryValue = 0;
     int secondaryValue = 0;
     int maxSteps = 1;
@@ -12,6 +15,7 @@ public class IntegerStatBar extends InteractAbleWidget {
     int secondaryColor = 1;
     int offColor = ColorHelper.Argb.getArgb(255,0,0,0);
     int gapWidth = 1;
+    int shadowSize = 1;
 
     public IntegerStatBar(int x, int y, int width, int height) {
         super(x, y, width, height, Text.empty());
@@ -53,5 +57,6 @@ public class IntegerStatBar extends InteractAbleWidget {
                 context.fill(segmentX, getY(), segmentEndX, height + getY(), offColor);
             }
         }
+        drawTextureWithEdge(context, texture, getX(), getY()+height, 339, 4, 7, 1, getWidth(), shadowSize, 512, 512, 1);
     }
 }

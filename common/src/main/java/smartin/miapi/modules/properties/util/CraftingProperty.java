@@ -92,7 +92,7 @@ public interface CraftingProperty {
     }
 
     /**
-     * to create a preview even if the conditions are not met
+     * to create a previewStack even if the conditions are not met
      *
      * @param old       the old Itemstack
      * @param crafting  the newly Crafted Itemstack
@@ -102,7 +102,7 @@ public interface CraftingProperty {
      * @param module    the new Module
      * @param inventory Linked Inventory, length of {@link #getSlotPositions()}
      * @param buf       the writen buffer from {@link #writeCraftingBuffer(PacketByteBuf, InteractAbleWidget)}
-     * @return the preview Itemstack
+     * @return the previewStack Itemstack
      */
     ItemStack preview(ItemStack old, ItemStack crafting, PlayerEntity player, ModularWorkBenchEntity bench, @Nullable ItemModule.ModuleInstance newModule, ItemModule module, List<ItemStack> inventory, PacketByteBuf buf);
 

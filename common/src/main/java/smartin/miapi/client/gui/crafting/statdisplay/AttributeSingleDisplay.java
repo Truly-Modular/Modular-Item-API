@@ -21,7 +21,7 @@ public class AttributeSingleDisplay extends SingleStatDisplayDouble {
     double defaultValue;
 
     private AttributeSingleDisplay(EntityAttribute attribute, EquipmentSlot slot, StatDisplay.TextGetter text, StatDisplay.TextGetter hover, double defaultValue, DecimalFormat modifierFormat) {
-        super(0, 0, 80, 32, text, hover);
+        super(0, 0, 51, 19, text, hover);
         this.slot = slot;
         this.attribute = attribute;
         this.defaultValue = defaultValue;
@@ -57,6 +57,7 @@ public class AttributeSingleDisplay extends SingleStatDisplayDouble {
         public DecimalFormat modifierFormat;
         public double min = 0;
         public double max = 100;
+        public boolean inverse = false;
 
         private Builder(EntityAttribute attribute) {
             this.attribute = attribute;
@@ -97,6 +98,11 @@ public class AttributeSingleDisplay extends SingleStatDisplayDouble {
             return this;
         }
 
+        public Builder inverseNumber(boolean inverse) {
+            this.inverse = inverse;
+            return this;
+        }
+
         public Builder setSlot(EquipmentSlot slot) {
             this.slot = slot;
             return this;
@@ -132,6 +138,7 @@ public class AttributeSingleDisplay extends SingleStatDisplayDouble {
             AttributeSingleDisplay display = new AttributeSingleDisplay(attribute, slot, name, hoverDescription, defaultValue, modifierFormat);
             display.minValue = min;
             display.maxValue = max;
+            display.setInverse(inverse);
             return display;
         }
     }

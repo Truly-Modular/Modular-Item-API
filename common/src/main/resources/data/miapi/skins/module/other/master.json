@@ -1,0 +1,39 @@
+{
+    "path": "master",
+    "module": "blade_longsword",
+    "properties": {
+        "texture": {
+            "path": "miapi:models/item/sword/blade/longsword/master/[material.texture].json",
+            "transform": {
+                "rotation": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "translation": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                }
+            }
+        },
+        "guiOffset": {
+            "sizeX": 2,
+            "sizeY": 2
+        }
+    },
+    "condition": {
+        "type": "miapi_perm",
+        "perms": ["user","supporter","master","zelda"]
+    },
+    "texture": {
+        "color": "FFFFFF",
+        "scale": 0,
+        "borderSize": 0
+    }
+}

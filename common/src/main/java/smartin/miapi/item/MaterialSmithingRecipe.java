@@ -119,7 +119,7 @@ public class MaterialSmithingRecipe implements SmithingRecipe {
     }
 
     /**
-     * Returns a preview output without context.
+     * Returns a previewStack output without context.
      *
      * @param registryManager
      * @return an empty itemstack since we dont know

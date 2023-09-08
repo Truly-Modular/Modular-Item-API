@@ -17,7 +17,7 @@ public class SinglePropertyStatDisplay extends SingleStatDisplayDouble {
     protected SimpleDoubleProperty property;
 
     protected SinglePropertyStatDisplay(StatDisplay.TextGetter title, StatDisplay.TextGetter hover, SimpleDoubleProperty property) {
-        super(0, 0, 80, 32, title, hover);
+        super(0, 0, 51, 19, title, hover);
         this.property = property;
     }
 

@@ -251,7 +251,7 @@ public class SlotDisplay extends InteractAbleWidget {
                 textureOffset = 10;
             }
 
-            drawTexture(drawContext, ButtonTexture, getX(), getY(), 0, textureOffset, 0, this.width, this.height, textureSize, 10);
+            //drawTexture(drawContext, ButtonTexture, getX(), getY(), 0, textureOffset, 0, this.width, this.height, textureSize, 10);
         }
     }
 }

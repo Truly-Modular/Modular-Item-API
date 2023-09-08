@@ -6,9 +6,8 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
-import smartin.miapi.Miapi;
+import smartin.miapi.client.gui.rework.CraftingScreen;
 
 import java.util.function.Consumer;
 
@@ -19,7 +18,6 @@ import java.util.function.Consumer;
  */
 @Environment(EnvType.CLIENT)
 public class SimpleButton<T> extends InteractAbleWidget {
-    private final Identifier texture = new Identifier(Miapi.MOD_ID, "textures/gui/crafter/button.png");
     private T toCallback;
     private Consumer<T> callback;
     public boolean isEnabled = true;
@@ -92,8 +90,8 @@ public class SimpleButton<T> extends InteractAbleWidget {
      * @param delta       The time since the last tick.
      */
     public void renderButton(DrawContext drawContext, int mouseX, int mouseY, float delta) {
-        RenderSystem.setShader(GameRenderer::getPositionProgram);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
+        RenderSystem.setShader(GameRenderer::getRenderTypeTranslucentProgram);
         int offset = 0;
         if (this.isMouseOver(mouseX, mouseY)) {
             offset = 10;
@@ -101,6 +99,6 @@ public class SimpleButton<T> extends InteractAbleWidget {
         if (!isEnabled) {
             offset = 20;
         }
-        drawTextureWithEdge(drawContext, texture, getX(), getY(), offset, 0, 10, 10, this.width, height, 30, 10, 3);
+        drawTextureWithEdge(drawContext, CraftingScreen.BACKGROUND_TEXTURE, getX(), getY(), 339 + offset, 165, 10, 10, getWidth(), getHeight(), 512, 512, 3);
     }
 }

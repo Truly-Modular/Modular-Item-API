@@ -283,10 +283,10 @@ public class CraftAction {
     }
 
     /**
-     * Returns an {@link ItemStack} representing a preview of the item that would be crafted
+     * Returns an {@link ItemStack} representing a previewStack of the item that would be crafted
      * using the current configuration of the crafting GUI.
      *
-     * @return An {@link ItemStack} representing a preview of the item that would be crafted.
+     * @return An {@link ItemStack} representing a previewStack of the item that would be crafted.
      */
     public ItemStack getPreview() {
         AtomicReference<ItemStack> craftingStack = new AtomicReference<>(craft());

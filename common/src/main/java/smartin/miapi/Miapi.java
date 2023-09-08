@@ -44,6 +44,7 @@ import java.util.function.Consumer;
 public class Miapi {
     public static final String MOD_ID = "miapi";
     public static final Logger LOGGER = LoggerFactory.getLogger("ModularItem API");
+    public static final Logger DEBUG_LOGGER = LoggerFactory.getLogger("miapi debug");
     public static NetworkingImplCommon networkingImplementation;
     public static MinecraftServer server;
     public static Gson gson = new Gson();

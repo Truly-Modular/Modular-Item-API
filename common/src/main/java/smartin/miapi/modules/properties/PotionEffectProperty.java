@@ -16,12 +16,14 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.loot.LootDataType;
 import net.minecraft.loot.LootManager;
 import net.minecraft.loot.condition.LootCondition;
-import net.minecraft.loot.context.*;
+import net.minecraft.loot.context.LootContext;
+import net.minecraft.loot.context.LootContextParameterSet;
+import net.minecraft.loot.context.LootContextParameters;
+import net.minecraft.loot.context.LootContextType;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
-import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.events.property.ApplicationEvent;
@@ -34,7 +36,9 @@ import smartin.miapi.modules.properties.util.DynamicCodecBasedProperty;
 import smartin.miapi.modules.properties.util.MergeType;
 
 import java.text.DecimalFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 public class PotionEffectProperty extends DynamicCodecBasedProperty.IntermediateList<PotionEffectProperty.Raw, PotionEffectProperty.Holder> implements ComponentDescriptionable<PotionEffectProperty.Holder> {
     public static LootContextType LOOT_CONTEXT =
@@ -160,17 +164,19 @@ public class PotionEffectProperty extends DynamicCodecBasedProperty.Intermediate
                 .append(Text.translatable("key.keyboard.left.control").formatted(ctrl ? Formatting.WHITE : Formatting.GRAY))
                 .append(Text.literal("]").formatted(Formatting.DARK_GRAY)));
         if (ctrl) {
-            holder.forEach(h -> {
-                text.add(
-                        Text.translatable(Miapi.MOD_ID + ".stat.tipped.description.effect",
-                                Text.translatable(h.effect.getTranslationKey())
-                                    .append(Text.literal(" " + (h.actualAmplifier+1)))
-                                    .styled(s -> s.withColor(h.effect.getColor())),
-                                Text.literal(decimalFormat.format(h.actualDuration/20d)),
-                                h.target_description
-                        )
-                );
-            });
+            if(holder!=null){
+                holder.forEach(h -> {
+                    text.add(
+                            Text.translatable(Miapi.MOD_ID + ".stat.tipped.description.effect",
+                                    Text.translatable(h.effect.getTranslationKey())
+                                            .append(Text.literal(" " + (h.actualAmplifier+1)))
+                                            .styled(s -> s.withColor(h.effect.getColor())),
+                                    Text.literal(decimalFormat.format(h.actualDuration/20d)),
+                                    h.target_description
+                            )
+                    );
+                });
+            }
         }
 
         return text;

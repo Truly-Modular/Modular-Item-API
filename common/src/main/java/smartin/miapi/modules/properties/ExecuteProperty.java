@@ -22,7 +22,7 @@ import static smartin.miapi.item.modular.StatResolver.DoubleFromStat;
 import static smartin.miapi.item.modular.StatResolver.IntegerFromStat;
 
 public class ExecuteProperty extends DynamicCodecBasedProperty.IntermediateList<ExecuteProperty.Raw, ExecuteProperty.Holder> {
-    public static final String KEY = "execute";
+    public static final String KEY = "previewStack";
     public static ExecuteProperty property;
     public static Codec<List<Raw>> codec = AutoCodec.of(Raw.class).codec().listOf();
 

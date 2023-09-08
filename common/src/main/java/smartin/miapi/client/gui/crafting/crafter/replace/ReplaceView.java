@@ -1,4 +1,4 @@
-package smartin.miapi.client.gui.crafting.crafter;
+package smartin.miapi.client.gui.crafting.crafter.replace;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
@@ -9,8 +9,8 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
 import smartin.miapi.Miapi;
-import smartin.miapi.client.MiapiClient;
 import smartin.miapi.client.gui.*;
+import smartin.miapi.client.gui.rework.CraftingScreen;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.AllowedSlots;
@@ -34,17 +34,17 @@ public class ReplaceView extends InteractAbleWidget {
         super(x, y, width, height, Text.empty());
         this.craft = craft;
         this.preview = preview;
-        float headerScale = 1.5f;
+        float headerScale = 1.0f;
         TransformableWidget headerHolder = new TransformableWidget(x, y, width, height, headerScale);
         addChild(headerHolder);
 
 
-        ScrollingTextWidget header = new ScrollingTextWidget((int) ((this.getX() + 5) / headerScale), (int) (this.getY() / headerScale), (int) ((this.width - 10) / headerScale), Text.translatable(Miapi.MOD_ID + ".ui.replace.header"), ColorHelper.Argb.getArgb(255, 255, 255, 255));
+        ScrollingTextWidget header = new ScrollingTextWidget((int) ((this.getX() + 5) / headerScale), (int) (this.getY() / headerScale)+3, (int) ((this.width - 10) / headerScale), Text.translatable(Miapi.MOD_ID + ".ui.replace.header"), ColorHelper.Argb.getArgb(255, 255, 255, 255));
         headerHolder.addChild(header);
-        ScrollList list = new ScrollList(x, y + 16, width, height - 28, new ArrayList<>());
+        ScrollList list = new ScrollList(x, y + 14, width, height - 16, new ArrayList<>());
         addChild(list);
         list.children().clear();
-        addChild(new SimpleButton<>(this.getX() + 2, this.getY() + this.height - 10, 40, 12, Text.translatable(Miapi.MOD_ID + ".ui.back"), slot, back::accept));
+        addChild(new SimpleButton<>(this.getX() + 2, this.getY() + this.height - 13, 40, 12, Text.translatable(Miapi.MOD_ID + ".ui.back"), slot, back::accept));
         ArrayList<InteractAbleWidget> toList = new ArrayList<>();
         toList.add(new SlotButton(0, 0, this.width, 15, null));
         AllowedSlots.allowedIn(slot).forEach(module -> {
@@ -99,7 +99,7 @@ public class ReplaceView extends InteractAbleWidget {
             if(!isAllowed){
                 hoverOffset = 28;
             }
-            drawTextureWithEdge(drawContext, texture, this.getX(), this.getY(), 0, hoverOffset, 140, 14, this.getWidth(), this.getHeight(), 140, 42, 2);
+            drawTextureWithEdge(drawContext, CraftingScreen.BACKGROUND_TEXTURE, getX(), getY(), 405, 54+hoverOffset, 108, 14, getWidth(), getHeight(), 512, 512, 3);
             textWidget.setX(this.getX() + 2);
             textWidget.setY(this.getY() + 3);
 

@@ -68,7 +68,7 @@ public class TransformableWidget extends InteractAbleWidget {
      * @param mouseX current X Position of the Mouse
      * @param mouseY current Y Position of the Mouse
      * @param button the Number of the Button
-     * @return if this consumes the Click, if you execute an action return true, if not return false
+     * @return if this consumes the Click, if you previewStack an action return true, if not return false
      */
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
@@ -85,7 +85,7 @@ public class TransformableWidget extends InteractAbleWidget {
      * @param mouseX current X Position of the Mouse
      * @param mouseY current Y Position of the Mouse
      * @param button the Number of the Button
-     * @return if this consumes the Click, if you execute an action return true, if not return false
+     * @return if this consumes the Click, if you previewStack an action return true, if not return false
      */
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
@@ -105,7 +105,7 @@ public class TransformableWidget extends InteractAbleWidget {
      * @param button the Number of the Button
      * @param deltaX the Distance dragged X
      * @param deltaY the Distance dragged Y
-     * @return if this consumes the action, if you execute an action return true, if not return false
+     * @return if this consumes the action, if you previewStack an action return true, if not return false
      */
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
@@ -122,7 +122,7 @@ public class TransformableWidget extends InteractAbleWidget {
      * @param mouseX current X Position of the Mouse
      * @param mouseY current Y Position of the Mouse
      * @param amount the amount scrolled since the last time this was called
-     * @return if this consumes the action, if you execute an action return true, if not return false
+     * @return if this consumes the action, if you previewStack an action return true, if not return false
      */
 
     @Override

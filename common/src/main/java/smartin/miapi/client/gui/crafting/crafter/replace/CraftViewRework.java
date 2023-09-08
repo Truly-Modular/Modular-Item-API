@@ -1,4 +1,4 @@
-package smartin.miapi.client.gui.crafting.crafter;
+package smartin.miapi.client.gui.crafting.crafter.replace;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.datafixers.util.Pair;
@@ -6,10 +6,9 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.screen.ScreenHandler;
+import net.minecraft.screen.ScreenHandlerListener;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
@@ -18,11 +17,10 @@ import net.minecraft.util.Identifier;
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
 import smartin.miapi.Miapi;
-import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.client.gui.*;
-import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
 import smartin.miapi.craft.CraftAction;
 import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.edit_options.EditOption;
 import smartin.miapi.modules.properties.SlotProperty;
 import smartin.miapi.modules.properties.util.CraftingProperty;
 import smartin.miapi.network.Networking;
@@ -38,65 +36,52 @@ import java.util.function.Consumer;
  * Its manages the replacing of a module with a new Module
  */
 @Environment(EnvType.CLIENT)
-public class CraftView extends InteractAbleWidget {
-    ItemStack compareStack;
-    ItemStack originalStack;
-    SlotProperty.ModuleSlot slotToChange;
-    ItemModule replacingModule;
-    String packetId;
-    Inventory linkedInventory;
-    CraftAction action;
-    CraftButton<Object> craftButton;
-    SimpleButton<Object> previousButton;
-    SimpleButton<Object> nextButton;
-    List<CraftingProperty> craftingProperties = new ArrayList<>();
-    List<InteractAbleWidget> craftingGuis = new ArrayList<>();
-    int inventoryOffset;
+public class CraftViewRework extends InteractAbleWidget {
     public static List<Slot> currentSlots = new ArrayList<>();
     private int currentGuiIndex = 0;
-    Matrix4f currentMatrix = new Matrix4f();
-    Consumer<Slot> removeSlot;
-    Consumer<Slot> addSlot;
-    Consumer<ItemStack> preview;
     int backgroundWidth = 278;
     int backgroundHeight = 221;
     List<Text> warnings = new ArrayList<>();
     boolean firstRender = true;
     boolean isClosed = false;
+    EditOption.EditContext editContext;
+    CraftAction action;
+    List<CraftingProperty> craftingProperties = new ArrayList<>();
+    List<InteractAbleWidget> craftingGuis = new ArrayList<>();
+    SimpleButton<Object> previousButton;
+    SimpleButton<Object> nextButton;
+    CraftButton<Object> craftButton;
+    Matrix4f currentMatrix = new Matrix4f();
+    ScreenHandlerListener listener = new SimpleScreenHandlerListener((h, slotId, itemStack) -> {
+        if (slotId != 36) {
+            update();
+        }
+    });
 
-    public CraftView(int x, int y, int width, int height, String packetId, ItemModule module, ItemStack stack, Inventory inventory, int offset, SlotProperty.ModuleSlot slot, Consumer<SlotProperty.ModuleSlot> back, Consumer<ItemStack> newStack, Consumer<Slot> addSlot, Consumer<Slot> removeSlot, ScreenHandler handler) {
+    public CraftViewRework(int x, int y, int width, int height, int offset, ItemModule module, EditOption.EditContext editContext, Consumer<SlotProperty.ModuleSlot> back) {
         super(x, y, width, height, Text.empty());
-        compareStack = stack;
-        this.preview = newStack;
-        linkedInventory = inventory;
-        inventoryOffset = offset;
-        originalStack = stack;
-        slotToChange = slot;
-        this.packetId = packetId;
-        replacingModule = module;
-        this.addSlot = addSlot;
-        this.removeSlot = removeSlot;
-
-        ModularWorkBenchEntity bench = null;
-        if (handler instanceof CraftingScreenHandler csh) bench = csh.blockEntity;
-
-        action = new CraftAction(originalStack, slotToChange, module, MinecraftClient.getInstance().player, bench, null);
-        action.linkInventory(inventory, offset);
-        compareStack = action.getPreview();
-        action.forEachCraftingProperty(compareStack, ((craftingProperty, moduleInstance, itemStacks, invStart, invEnd, buf) -> {
+        this.editContext = editContext;
+        if (module == null) {
+            module = ItemModule.empty;
+        }
+        action = new CraftAction(editContext.getItemstack(), editContext.getSlot(), module, editContext.getPlayer(), editContext.getWorkbench(), new PacketByteBuf[0]);
+        action.setItem(editContext.getLinkedInventory().getStack(0));
+        action.linkInventory(editContext.getLinkedInventory(), offset);
+        ItemStack test = action.getPreview();
+        action.forEachCraftingProperty(test, ((craftingProperty, moduleInstance, itemStacks, invStart, invEnd, buf) -> {
             InteractAbleWidget guiScreen = craftingProperty.createGui(this.getX(), this.getY(), this.width, this.height - 30, action);
             if (guiScreen != null) {
                 craftingGuis.add(guiScreen);
                 craftingProperties.add(craftingProperty);
             }
         }));
-        addChild(new SimpleButton<>(this.getX() + 10, this.getY() + this.height - 10, 40, 12, Text.translatable(Miapi.MOD_ID + ".ui.back"), slot, (moduleSlot) -> {
+        addChild(new SimpleButton<>(this.getX() + 2, this.getY() + this.height - 14, 40, 12, Text.translatable(Miapi.MOD_ID + ".ui.back"), null, (moduleSlot) -> {
             isClosed = true;
-            back.accept(moduleSlot);
+            back.accept(null);
         }));
 
         if (craftingGuis.size() > 1) {
-            previousButton = new PageButton<>(this.getX() + this.width - 10, this.getY(), 10, 12, true, null, (callback) -> {
+            previousButton = new CraftView.PageButton<>(this.getX() + this.width - 10, this.getY(), 10, 12, true, null, (callback) -> {
                 if (currentGuiIndex > 0) {
                     removeChild(craftingGuis.get(currentGuiIndex));
                     currentGuiIndex--;
@@ -107,7 +92,7 @@ public class CraftView extends InteractAbleWidget {
                     nextButton.isEnabled = true;
                 }
             });
-            nextButton = new PageButton<>(this.getX() + 10, this.getY(), 10, 12, false, null, (callback) -> {
+            nextButton = new CraftView.PageButton<>(this.getX() + 10, this.getY(), 10, 12, false, null, (callback) -> {
                 if (currentGuiIndex < craftingGuis.size() - 1) {
                     removeChild(craftingGuis.get(currentGuiIndex));
                     currentGuiIndex++;
@@ -120,44 +105,38 @@ public class CraftView extends InteractAbleWidget {
             });
         }
 
-        craftButton = new CraftButton<>(this.getX() + this.width - 50, this.getY() + this.height - 10, 40, 12, Text.translatable(Miapi.MOD_ID + ".ui.craft"), null, (callback) -> {
+        craftButton = new CraftButton<>(this.getX() + this.width - 42, this.getY() + this.height - 14, 40, 12, Text.translatable(Miapi.MOD_ID + ".ui.craft"), null, (callback) -> {
             setBuffers();
             if (action.canPerform()) {
                 isClosed = true;
                 ItemStack craftedStack = action.getPreview();
-                if (!ItemStack.areEqual(stack, craftedStack)) {
-                    Networking.sendC2S(packetId, action.toPacket(Networking.createBuffer()));
-                    newStack.accept(craftedStack);
+                if (!ItemStack.areEqual(editContext.getItemstack(), craftedStack)) {
+                    editContext.craft(action.toPacket(Networking.createBuffer()));
                 }
+                editContext.getScreenHandler().removeListener(listener);
             }
         });
         addChild(craftButton);
 
-        handler.addListener(new SimpleScreenHandlerListener((h, slotId, itemStack) -> {
-            /*if (currentSlots.stream().anyMatch(slot1 -> slot1.id == slotId)) {
-                    update();
-                }*/
-            if (slotId != 36) {
-                update();
-            }
-        }));
+        editContext.getScreenHandler().addListener(listener);
     }
 
     private void update() {
         try {
             if (!isClosed) {
                 ItemStack previewStack = action.getPreview();
-                preview.accept(previewStack);
+                setBuffers();
+                editContext.preview(action.toPacket(Networking.createBuffer()));
                 setBuffers();
                 Pair<Map<CraftingProperty, Boolean>, Boolean> canPerform = action.fullCanPerform();
                 craftButton.isEnabled = canPerform.getSecond();
 
                 warnings.clear();
-                if (ItemStack.areEqual(previewStack, originalStack)) {
+                if (ItemStack.areEqual(previewStack, editContext.getItemstack())) {
                     warnings.add(Text.translatable(Miapi.MOD_ID + ".ui.craft.result_equal_warning"));
                     craftButton.isEnabled = false;
                 }
-                if(previewStack.getDamage() > previewStack.getMaxDamage()){
+                if (previewStack.getDamage() > previewStack.getMaxDamage()) {
                     warnings.add(Text.translatable(Miapi.MOD_ID + ".ui.craft.warning.durability_negative"));
                     craftButton.isEnabled = false;
                 }
@@ -170,7 +149,7 @@ public class CraftView extends InteractAbleWidget {
                 });
             }
         } catch (Exception e) {
-
+            Miapi.LOGGER.error("surpressed", e);
         }
     }
 
@@ -179,7 +158,7 @@ public class CraftView extends InteractAbleWidget {
             if (slot instanceof MutableSlot mutableSlot) {
                 mutableSlot.setEnabled(true);
             }
-            removeSlot.accept(slot);
+            editContext.removeSlot(slot);
         });
     }
 
@@ -190,28 +169,26 @@ public class CraftView extends InteractAbleWidget {
         widget.setX(this.getX());
         widget.setY(this.getY());
         widget.setWidth(this.width);
-        widget.setHeight(this.height - 30);
+        widget.setHeight(this.height);
         currentSlots.forEach(slot -> {
             if (slot instanceof MutableSlot mutableSlot) {
                 mutableSlot.setEnabled(false);
             }
         });
         CraftingProperty property = craftingProperties.get(craftingGuis.indexOf(widget));
-        action.forEachCraftingProperty(compareStack, (craftingProperty, module, inventory, start, end, buffer) -> {
+        action.forEachCraftingProperty(action.getPreview().copy(), (craftingProperty, module, inventory, start, end, buffer) -> {
             if (craftingProperty.equals(property)) {
                 AtomicInteger counter = new AtomicInteger(0);
                 property.getSlotPositions().forEach(vec2f -> {
-                    //int guiX = (MinecraftClient.getInstance().currentScreen.width - backgroundWidth) / 2; // X-coordinate of the top-left corner
-                    //int guiY = (MinecraftClient.getInstance().currentScreen.height - backgroundHeight) / 2;
                     int guiX = widget.getX() + (int) vec2f.x;
                     int guiY = widget.getY() + (int) vec2f.y;
                     Matrix4f inverse = new Matrix4f(currentMatrix);
                     Vector4f vector4f = TransformableWidget.transFormMousePos(guiX, guiY, inverse);
                     guiX = (int) (vector4f.x() - (MinecraftClient.getInstance().currentScreen.width - backgroundWidth) / 2); // X-coordinate of the top-left corner
                     guiY = (int) (vector4f.y() - (MinecraftClient.getInstance().currentScreen.height - backgroundHeight) / 2);
-                    Slot slot = new MutableSlot(linkedInventory, start + counter.getAndAdd(1), guiX, guiY);
+                    Slot slot = new MutableSlot(editContext.getLinkedInventory(), start + counter.getAndAdd(1), guiX, guiY);
                     currentSlots.add(slot);
-                    addSlot.accept(slot);
+                    editContext.addSlot(slot);
                 });
             }
         });
@@ -225,7 +202,7 @@ public class CraftView extends InteractAbleWidget {
             update();
             firstRender = false;
         }
-        //only preview on inventory change?
+        //only previewStack on inventory change?
         // Add the initial GUI to the screen
         if (!craftingGuis.isEmpty()) {
             addGui(craftingGuis.get(currentGuiIndex));
@@ -233,14 +210,9 @@ public class CraftView extends InteractAbleWidget {
         super.render(drawContext, mouseX, mouseY, delta);
     }
 
-    public void linkInventory(Inventory inventory, int offset) {
-        this.linkedInventory = inventory;
-        this.inventoryOffset = offset;
-    }
-
     public void setBuffers() {
         List<PacketByteBuf> buffers = new ArrayList<>();
-        action.forEachCraftingProperty(compareStack, ((craftingProperty, moduleInstance, itemStacks, invStart, invEnd, buf) -> {
+        action.forEachCraftingProperty(editContext.getItemstack(), ((craftingProperty, moduleInstance, itemStacks, invStart, invEnd, buf) -> {
             PacketByteBuf buf1 = Networking.createBuffer();
             int index = craftingProperties.indexOf(craftingProperty);
             if (index >= 0) {
@@ -249,10 +221,6 @@ public class CraftView extends InteractAbleWidget {
             buffers.add(buf1);
         }));
         action.setBuffer(buffers.toArray(new PacketByteBuf[0]));
-    }
-
-    public ItemStack compareStack() {
-        return compareStack;
     }
 
     public static class PageButton<T> extends SimpleButton<T> {

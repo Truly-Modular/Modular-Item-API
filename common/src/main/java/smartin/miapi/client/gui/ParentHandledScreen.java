@@ -60,7 +60,7 @@ public abstract class ParentHandledScreen<T extends ScreenHandler> extends Handl
      */
     @Override
     public void mouseMoved(double mouseX, double mouseY) {
-        for (Element child : this.children()) {
+        for (Element child : this.children().stream().toList()) {
             if (child.isMouseOver(mouseX, mouseY)) {
                 child.mouseMoved(mouseX, mouseY);
             }
@@ -74,11 +74,11 @@ public abstract class ParentHandledScreen<T extends ScreenHandler> extends Handl
      * @param mouseX current X Position of the Mouse
      * @param mouseY current Y Position of the Mouse
      * @param button the Number of the Button
-     * @return if this consumes the Click, if you execute an action return true, if not return false
+     * @return if this consumes the Click, if you previewStack an action return true, if not return false
      */
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        for (Element child : this.children()) {
+        for (Element child : this.children().stream().toList()) {
             if (child.isMouseOver(mouseX, mouseY) && child.mouseClicked(mouseX, mouseY, button)) {
                 return true;
             }
@@ -90,11 +90,11 @@ public abstract class ParentHandledScreen<T extends ScreenHandler> extends Handl
      * @param mouseX current X Position of the Mouse
      * @param mouseY current Y Position of the Mouse
      * @param button the Number of the Button
-     * @return if this consumes the Click, if you execute an action return true, if not return false
+     * @return if this consumes the Click, if you previewStack an action return true, if not return false
      */
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        for (Element child : this.children()) {
+        for (Element child : this.children().stream().toList()) {
             if (child.isMouseOver(mouseX, mouseY) && child.mouseReleased(mouseX, mouseY, button)) {
                 return true;
             }
@@ -108,11 +108,11 @@ public abstract class ParentHandledScreen<T extends ScreenHandler> extends Handl
      * @param button the Number of the Button
      * @param deltaX the Distance dragged X
      * @param deltaY the Distance dragged Y
-     * @return if this consumes the action, if you execute an action return true, if not return false
+     * @return if this consumes the action, if you previewStack an action return true, if not return false
      */
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
-        for (Element child : this.children()) {
+        for (Element child : this.children().stream().toList()) {
             if (child.isMouseOver(mouseX, mouseY) && child.mouseDragged(mouseX, mouseY, button, deltaX, deltaY)) {
                 return true;
             }
@@ -124,11 +124,11 @@ public abstract class ParentHandledScreen<T extends ScreenHandler> extends Handl
      * @param mouseX current X Position of the Mouse
      * @param mouseY current Y Position of the Mouse
      * @param amount the amount scrolled since the last time this was called
-     * @return if this consumes the action, if you execute an action return true, if not return false
+     * @return if this consumes the action, if you previewStack an action return true, if not return false
      */
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
-        for (Element child : this.children()) {
+        for (Element child : this.children().stream().toList()) {
             if (child.isMouseOver(mouseX, mouseY) && child.mouseScrolled(mouseX, mouseY, amount)) {
                 return true;
             }
@@ -140,11 +140,11 @@ public abstract class ParentHandledScreen<T extends ScreenHandler> extends Handl
      * @param keyCode   the keyCode of the pressed Key
      * @param scanCode  the scanCode of the pressed Key
      * @param modifiers if addition buttons like ctrl or alt where held down
-     * @return if this consumes the action, if you execute an action return true, if not return false
+     * @return if this consumes the action, if you previewStack an action return true, if not return false
      */
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        for (Element child : this.children()) {
+        for (Element child : this.children().stream().toList()) {
             if (child.keyPressed(keyCode, scanCode, modifiers)) {
                 return true;
             }
@@ -156,11 +156,11 @@ public abstract class ParentHandledScreen<T extends ScreenHandler> extends Handl
      * @param keyCode   the keyCode of the released Key
      * @param scanCode  the scanCode of the released Key
      * @param modifiers if addition buttons like ctrl or alt where held down
-     * @return if this consumes the action, if you execute an action return true, if not return false
+     * @return if this consumes the action, if you previewStack an action return true, if not return false
      */
     @Override
     public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
-        for (Element child : this.children()) {
+        for (Element child : this.children().stream().toList()) {
             if (child.keyReleased(keyCode, scanCode, modifiers)) {
                 return true;
             }
@@ -171,11 +171,11 @@ public abstract class ParentHandledScreen<T extends ScreenHandler> extends Handl
     /**
      * @param chr       the Character typed
      * @param modifiers if keys like ctrl or alt where held down
-     * @return if this consumes the action, if you execute an action return true, if not return false
+     * @return if this consumes the action, if you previewStack an action return true, if not return false
      */
     @Override
     public boolean charTyped(char chr, int modifiers) {
-        for (Element child : this.children()) {
+        for (Element child : this.children().stream().toList()) {
             if (child.charTyped(chr, modifiers)) {
                 return true;
             }
@@ -209,12 +209,12 @@ public abstract class ParentHandledScreen<T extends ScreenHandler> extends Handl
      */
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        super.render(context, mouseX, mouseY, delta);
         children().forEach(element -> {
             if (element instanceof Drawable drawable) {
                 drawable.render(context, mouseX, mouseY, delta);
             }
         });
+        super.render(context, mouseX, mouseY, delta);
     }
 
     public void renderHover(DrawContext context, int mouseX, int mouseY, float delta) {

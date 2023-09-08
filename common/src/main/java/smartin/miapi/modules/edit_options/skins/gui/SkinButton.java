@@ -53,8 +53,11 @@ class SkinButton extends InteractAbleWidget implements SkinGui.SortAble {
         } else {
             hover = skinGui.currentSkin().equals(skinPath) ? skin.textureOptions.ySize() * 2 : hover;
         }
+        if(isMouseOver(mouseX,mouseY)){
+            hover = skin.textureOptions.ySize();
+        }
         drawTextureWithEdge(drawContext, skin.textureOptions.texture(), getX(), getY(), 0, hover, 100, SIZE_Y, this.width, height, skin.textureOptions.xSize(), skin.textureOptions.ySize() * 3, skin.textureOptions.borderSize());
-        textWidget.setY(this.getY() + 3);
+        textWidget.setY(this.getY() + 4);
         textWidget.render(drawContext, mouseX, mouseY, delta);
         children().forEach(element -> {
             if (element instanceof Drawable drawable) {

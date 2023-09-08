@@ -22,6 +22,8 @@ import smartin.miapi.craft.CraftAction;
 import smartin.miapi.item.ModularItemStackConverter;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.edit_options.EditOption;
+import smartin.miapi.modules.properties.AllowedSlots;
+import smartin.miapi.modules.properties.SlotProperty;
 import smartin.miapi.network.Networking;
 import smartin.miapi.registries.RegistryInventory;
 
@@ -42,6 +44,7 @@ public class CraftingScreenHandler extends ScreenHandler {
     public final String editPacketID;
     public final String packetIDSlotAdd;
     public final String packetIDSlotRemove;
+    public CraftingScreenHandler craftingScreenHandler;
 
     /**
      * Constructs a new CraftingScreenHandler instance with the specified sync ID and player inventory.
@@ -51,9 +54,12 @@ public class CraftingScreenHandler extends ScreenHandler {
      */
     public CraftingScreenHandler(int syncId, PlayerInventory playerInventory) {
         this(syncId, playerInventory, null, ScreenHandlerContext.EMPTY, new ArrayPropertyDelegate(7));
+        craftingScreenHandler = this;
     }
+
     public CraftingScreenHandler(int syncId, PlayerInventory playerInventory, ModularWorkBenchEntity benchEntity, PropertyDelegate delegate) {
         this(syncId, playerInventory, benchEntity, ScreenHandlerContext.EMPTY, delegate);
+        craftingScreenHandler = this;
     }
 
     /**
@@ -68,6 +74,7 @@ public class CraftingScreenHandler extends ScreenHandler {
      */
     public CraftingScreenHandler(int syncId, PlayerInventory playerInventory, @Nullable ModularWorkBenchEntity benchEntity, ScreenHandlerContext context, PropertyDelegate delegate) {
         super(RegistryInventory.craftingScreenHandler, syncId);
+        craftingScreenHandler = this;
         packetID = Miapi.MOD_ID + PACKET_ID + playerInventory.player.getUuidAsString() + "_" + syncId;
         editPacketID = Miapi.MOD_ID + PACKET_ID + "_edit_" + playerInventory.player.getUuidAsString() + "_" + syncId;
         packetIDSlotAdd = Miapi.MOD_ID + PACKET_ID + "_" + playerInventory.player.getUuidAsString() + "_" + syncId + "_slotAdd";
@@ -111,8 +118,75 @@ public class CraftingScreenHandler extends ScreenHandler {
                 for (int value : intArray) {
                     position.add(value);
                 }
-                stack = option.execute(buffer, stack, root.getPosition(position).copy());
-                inventory.setStack(0, stack);
+                ItemModule.ModuleInstance current = root.getPosition(position).copy();
+
+                SlotProperty.ModuleSlot slot = SlotProperty.getSlotIn(current);
+                if (slot == null && current != null && current.module != null) {
+                    slot = new SlotProperty.ModuleSlot(AllowedSlots.getAllowedSlots(current.module));
+                }
+
+                assert option != null;
+                SlotProperty.ModuleSlot finalSlot = slot;
+                EditOption.EditContext editContext = new EditOption.EditContext() {
+                    @Override
+                    public void craft(PacketByteBuf craftBuffer) {
+
+                    }
+
+                    @Override
+                    public void preview(PacketByteBuf preview) {
+
+                    }
+
+                    @Override
+                    public SlotProperty.ModuleSlot getSlot() {
+                        return finalSlot;
+                    }
+
+                    @Override
+                    public ItemStack getItemstack() {
+                        return stack;
+                    }
+
+                    @Override
+                    public @Nullable ItemModule.ModuleInstance getInstance() {
+                        return current;
+                    }
+
+                    @Override
+                    public @Nullable PlayerEntity getPlayer() {
+                        return player;
+                    }
+
+                    @Override
+                    public @Nullable ModularWorkBenchEntity getWorkbench() {
+                        return blockEntity;
+                    }
+
+                    @Override
+                    public Inventory getLinkedInventory() {
+                        return inventory;
+                    }
+
+                    @Override
+                    public CraftingScreenHandler getScreenHandler() {
+                        return craftingScreenHandler;
+                    }
+                };
+                if (option.isVisible(editContext)) {
+                    ItemStack editedStack = option.execute(buffer, editContext);
+                    inventory.setStack(0, editedStack);
+                    if (blockEntity != null) {
+                        blockEntity.setItem(editedStack);
+                        blockEntity.saveAndSync();
+                    }
+                    inventory.markDirty();
+                    this.onContentChanged(inventory);
+                } else {
+                    Miapi.LOGGER.warn("ERROR - Couldn`t verify craft action from client " + player.getUuidAsString() + " " + player.getDisplayName().getString() + " This might be a bug or somebody is trying to exploit");
+                    Miapi.DEBUG_LOGGER.warn(String.valueOf(current));
+                    Miapi.DEBUG_LOGGER.warn(position.toString());
+                }
             });
         }
         this.context = context;
@@ -126,20 +200,25 @@ public class CraftingScreenHandler extends ScreenHandler {
         if (blockEntity != null) {
             this.setItem(blockEntity.getItem());
         }
-        int i = 18 * 2 + 1;
-        int offset = 30 + 4 * 18;
+        int yOffset = 2 * 18 + 2 + 12 - 20 + 102 - 1;
+        int xOffset = 30 + 2 * 18 + 138 + 7 + 2;
         for (int j = 0; j < 3; ++j) {
             for (int k = 0; k < 9; ++k) {
-                this.addSlot(new PlayerInventorySlot(playerInventory, k + j * 9 + 9, 8 + k * 18 + offset, 103 + j * 18 + i));
+                this.addSlot(new PlayerInventorySlot(playerInventory, k + j * 9 + 9, k * 18 + xOffset, j * 18 + yOffset));
             }
         }
 
         for (int j = 0; j < 9; ++j) {
-            this.addSlot(new PlayerInventorySlot(playerInventory, j, 8 + j * 18 + offset, 161 + i));
+            this.addSlot(new PlayerInventorySlot(playerInventory, j, j * 18 + xOffset, 3 * 18 + 4 + yOffset));
         }
 
-        this.addSlot(new ModifyingSlot(inventory, 0, 112, 118, blockEntity));
+        this.addSlot(new ModifyingSlot(inventory, 0, 112 - 61, 118 + 71, blockEntity));
 
+        for (int i = 0; i < 4; i++) {
+            int offset = i < 2 ? 0 : 1;
+            this.addSlot(new PlayerInventorySlot(playerInventory, 39 - i, 69 + i * 18 - offset, 118 + 71));
+        }
+        this.addSlot(new PlayerInventorySlot(playerInventory, 40, 112 - 61 + 5 * 18, 118 + 71));
         this.addProperties(delegate);
     }
 
@@ -250,7 +329,7 @@ public class CraftingScreenHandler extends ScreenHandler {
         if (slot != null && slot.hasStack()) {
             ItemStack itemStack2 = slot.getStack();
             itemStack = itemStack2.copy();
-            if (index >= 36 ) {
+            if (index >= 36) {
                 //case 1: tool slot to player
                 slot.onTakeItem(player, itemStack2);
                 if (!this.insertItem(itemStack2, 0, 36, true)) {
@@ -283,7 +362,7 @@ public class CraftingScreenHandler extends ScreenHandler {
 
     @Override
     protected void dropInventory(PlayerEntity player, Inventory inventory) {
-        if (!player.isAlive() || player instanceof ServerPlayerEntity  serverPlayerEntity&& serverPlayerEntity.isDisconnected()) {
+        if (!player.isAlive() || player instanceof ServerPlayerEntity serverPlayerEntity && serverPlayerEntity.isDisconnected()) {
             for (int i = 0; i < inventory.size(); ++i) {
                 if (i == 0) continue;
                 player.dropItem(inventory.removeStack(i), false);
@@ -342,6 +421,7 @@ public class CraftingScreenHandler extends ScreenHandler {
             return stack;
         }
     }
+
     public static class PlayerInventorySlot extends Slot {
         public PlayerInventorySlot(PlayerInventory inventory, int index, int x, int y) {
             super(inventory, index, x, y);

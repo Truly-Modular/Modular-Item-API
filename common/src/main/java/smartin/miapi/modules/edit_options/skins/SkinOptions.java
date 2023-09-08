@@ -7,16 +7,18 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.InteractAbleWidget;
+import smartin.miapi.client.gui.rework.CraftingScreen;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.item.modular.PropertyResolver;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.edit_options.EditOption;
+import smartin.miapi.modules.edit_options.EditOptionIcon;
 import smartin.miapi.modules.edit_options.skins.gui.SkinGui;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public class SkinOptions implements EditOption {
 
@@ -73,21 +75,26 @@ public class SkinOptions implements EditOption {
     }
 
     @Override
-    public ItemStack execute(PacketByteBuf buffer, ItemStack stack, ItemModule.ModuleInstance instance) {
+    public ItemStack preview(PacketByteBuf buffer, EditContext context) {
         String skin = buffer.readString();
-        instance.moduleData.put("skin", skin);
-        instance.getRoot().writeToItem(stack);
-        return stack;
+        context.getInstance().moduleData.put("skin", skin);
+        context.getInstance().getRoot().writeToItem(context.getItemstack());
+        return context.getItemstack();
     }
 
     @Override
-    public boolean isVisible(ItemStack stack, ItemModule.ModuleInstance instance) {
-        return true;
+    public boolean isVisible(EditContext context) {
+        return context.getInstance() != null && skins.get(context.getInstance().module) != null;
     }
 
     @Environment(EnvType.CLIENT)
     @Override
-    public InteractAbleWidget getGui(int x, int y, int width, int height, ItemStack stack, ItemModule.ModuleInstance instance, Consumer<PacketByteBuf> craft, Consumer<PacketByteBuf> preview, Consumer<Objects> back) {
-        return new SkinGui(x, y, width, height, stack, instance, craft, preview, back);
+    public InteractAbleWidget getGui(int x, int y, int width, int height, EditContext context) {
+        return new SkinGui(x, y, width, height, context.getItemstack(), context.getInstance(), context::craft, context::preview);
+    }
+
+    @Override
+    public InteractAbleWidget getIconGui(int x, int y, int width, int height, Consumer<EditOption> select, Supplier<EditOption> getSelected) {
+        return new EditOptionIcon(x, y, width, height, select, getSelected, CraftingScreen.BACKGROUND_TEXTURE, 339 + 32, 25 + 28 * 2, 512, 512, this);
     }
 }

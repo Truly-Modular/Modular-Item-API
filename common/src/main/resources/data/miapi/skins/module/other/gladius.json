@@ -28,7 +28,7 @@
         "perms": ["user","supporter","gladius"]
     },
     "texture": {
-        "color": "004489",
+        "color": "FFFFFF",
         "scale": 0,
         "borderSize": 0
     }

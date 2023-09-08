@@ -10,9 +10,12 @@ import net.minecraft.screen.slot.Slot;
 import net.minecraft.text.Text;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
+import smartin.miapi.client.gui.crafting.crafter.replace.CraftView;
+import smartin.miapi.client.gui.crafting.crafter.replace.ReplaceView;
 import smartin.miapi.craft.CraftAction;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.edit_options.EditOption;
 import smartin.miapi.modules.properties.material.Material;
 import smartin.miapi.modules.properties.material.MaterialProperty;
 import smartin.miapi.modules.properties.SlotProperty;
@@ -26,20 +29,25 @@ import java.util.function.Consumer;
  */
 @Environment(EnvType.CLIENT)
 public class ModuleCrafter extends InteractAbleWidget {
-    private ItemStack stack;
-    private ItemModule module;
-    private SlotProperty.ModuleSlot slot;
+    public ItemStack stack;
+    public ItemModule module;
+    public SlotProperty.ModuleSlot slot;
     private final Consumer<ItemStack> preview;
     private SlotProperty.ModuleSlot baseSlot = new SlotProperty.ModuleSlot(new ArrayList<>());
     private String paketIdentifier;
     private Inventory linkedInventory;
     CraftView craftView;
+    EditView editView;
     Consumer<Slot> removeSlot;
     Consumer<Slot> addSlot;
     public CraftingScreenHandler handler;
+    EditOption editOption;
+    Consumer<SlotProperty.ModuleSlot> selected;
+    public EditOption.EditContext editContext;
 
     public ModuleCrafter(int x, int y, int width, int height, Consumer<SlotProperty.ModuleSlot> selected, Consumer<ItemStack> craftedItem, Inventory linkedInventory, Consumer<Slot> addSlot, Consumer<Slot> removeSlot) {
         super(x, y, width, height, Text.empty());
+        this.selected = selected;
         this.linkedInventory = linkedInventory;
         this.preview = craftedItem;
         this.removeSlot = removeSlot;
@@ -64,10 +72,23 @@ public class ModuleCrafter extends InteractAbleWidget {
         paketIdentifier = identifier;
     }
 
+    public void setEditMode(EditOption editOption, EditOption.EditContext editContext) {
+        if(editOption == null){
+        }
+        else{
+            this.editOption = editOption;
+            this.editContext = editContext;
+            this.setMode(Mode.EDIT);
+        }
+    }
+
     public void setMode(Mode mode) {
         if (craftView != null) {
             craftView.closeSlot();
             craftView = null;
+        }
+        if(mode != Mode.EDIT && editView != null){
+            editView.clearSlots();
         }
         if (mode == Mode.DETAIL && !(stack.getItem() instanceof ModularItem)) {
             Material material = MaterialProperty.getMaterial(stack);
@@ -80,8 +101,7 @@ public class ModuleCrafter extends InteractAbleWidget {
                 this.children().clear();
                 DetailView detailView = new DetailView(this.getX(), this.getY(), this.width, this.height, this.baseSlot, this.slot,
                         toEdit -> {
-                            this.slot = toEdit;
-                            setMode(Mode.EDIT);
+                            selected.accept(toEdit);
                         },
                         toReplace -> {
                             if (toReplace == null) {
@@ -96,6 +116,10 @@ public class ModuleCrafter extends InteractAbleWidget {
                 this.children.add(detailView);
             }
             case CRAFT -> {
+                ItemModule replaceModule = module;
+                if(module == null){
+                    module = ItemModule.empty;
+                }
                 craftView = new CraftView(this.getX(), this.getY(), this.width, this.height, paketIdentifier, module, stack, linkedInventory, 1, slot, (backSlot) -> {
                     slot = backSlot;
                     setMode(Mode.REPLACE);
@@ -106,18 +130,16 @@ public class ModuleCrafter extends InteractAbleWidget {
                 this.addChild(craftView);
             }
             case EDIT -> {
-                if (this.slot != null) {
-                    ItemModule.ModuleInstance instance = slot.inSlot;
-                    if (instance != null) {
-                        EditView view = new EditView(this.getX(), this.getY(), this.width, this.height, stack, instance, (previewItem) -> {
-                            preview.accept(previewItem);
-                        }, (object) -> {
-                            setMode(Mode.DETAIL);
-                        });
-                        this.children().clear();
-                        this.addChild(view);
-                    }
+                editView = new EditView(this.getX(), this.getY(), this.width, this.height, stack, slot, (previewItem) -> {
+                    preview.accept(previewItem);
+                }, (object) -> {
+                    setMode(Mode.DETAIL);
+                });
+                if (editOption != null) {
+                    editView.setEditOption(editOption);
                 }
+                this.children().clear();
+                this.addChild(editView);
             }
             case REPLACE -> {
                 this.children.clear();

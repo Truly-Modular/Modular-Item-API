@@ -17,6 +17,7 @@ import net.minecraft.util.math.ColorHelper;
 import org.joml.Vector2d;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -31,6 +32,7 @@ public abstract class InteractAbleWidget extends ClickableWidget implements Draw
     protected final List<InteractAbleWidget> hoverElements = new ArrayList<>();
     public boolean debug = false;
     public static boolean globalDebug = false;
+    public int randomColor = ColorHelper.Argb.getArgb(180, (int) (Math.random()*255), (int) (Math.random()*255), (int) (Math.random()*255));
 
     /**
      * This is a Widget build to support Children and parse the events down to them.
@@ -223,7 +225,7 @@ public abstract class InteractAbleWidget extends ClickableWidget implements Draw
      * @param mouseX current X Position of the Mouse
      * @param mouseY current Y Position of the Mouse
      * @param button the Number of the Button
-     * @return if this consumes the Click, if you execute an action return true, if not return false
+     * @return if this consumes the Click, if you previewStack an action return true, if not return false
      */
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
@@ -239,7 +241,7 @@ public abstract class InteractAbleWidget extends ClickableWidget implements Draw
      * @param mouseX current X Position of the Mouse
      * @param mouseY current Y Position of the Mouse
      * @param button the Number of the Button
-     * @return if this consumes the Click, if you execute an action return true, if not return false
+     * @return if this consumes the Click, if you previewStack an action return true, if not return false
      */
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
@@ -257,7 +259,7 @@ public abstract class InteractAbleWidget extends ClickableWidget implements Draw
      * @param button the Number of the Button
      * @param deltaX the Distance dragged X
      * @param deltaY the Distance dragged Y
-     * @return if this consumes the action, if you execute an action return true, if not return false
+     * @return if this consumes the action, if you previewStack an action return true, if not return false
      */
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
@@ -273,7 +275,7 @@ public abstract class InteractAbleWidget extends ClickableWidget implements Draw
      * @param mouseX current X Position of the Mouse
      * @param mouseY current Y Position of the Mouse
      * @param amount the amount scrolled since the last time this was called
-     * @return if this consumes the action, if you execute an action return true, if not return false
+     * @return if this consumes the action, if you previewStack an action return true, if not return false
      */
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
@@ -289,7 +291,7 @@ public abstract class InteractAbleWidget extends ClickableWidget implements Draw
      * @param keyCode   the keyCode of the pressed Key
      * @param scanCode  the scanCode of the pressed Key
      * @param modifiers if addition buttons like ctrl or alt where held down
-     * @return if this consumes the action, if you execute an action return true, if not return false
+     * @return if this consumes the action, if you previewStack an action return true, if not return false
      */
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
@@ -305,7 +307,7 @@ public abstract class InteractAbleWidget extends ClickableWidget implements Draw
      * @param keyCode   the keyCode of the released Key
      * @param scanCode  the scanCode of the released Key
      * @param modifiers if addition buttons like ctrl or alt where held down
-     * @return if this consumes the action, if you execute an action return true, if not return false
+     * @return if this consumes the action, if you previewStack an action return true, if not return false
      */
     @Override
     public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
@@ -320,7 +322,7 @@ public abstract class InteractAbleWidget extends ClickableWidget implements Draw
     /**
      * @param chr       the Character typed
      * @param modifiers if keys like ctrl or alt where held down
-     * @return if this consumes the action, if you execute an action return true, if not return false
+     * @return if this consumes the action, if you previewStack an action return true, if not return false
      */
     @Override
     public boolean charTyped(char chr, int modifiers) {
@@ -372,10 +374,13 @@ public abstract class InteractAbleWidget extends ClickableWidget implements Draw
     @Override
     public void render(DrawContext drawContext, int mouseX, int mouseY, float delta) {
         if (debug || globalDebug)
-            drawSquareBorder(drawContext, getX(), getY(), getWidth(), getHeight(), 2, ColorHelper.Argb.getArgb(255, 255, 0, 0));
+            drawSquareBorder(drawContext, getX(), getY(), getWidth(), getHeight(), 1, randomColor);
 
         RenderSystem.setShader(GameRenderer::getPositionProgram);
-        for (Element element : children()) {
+        List<Element> reverse = new ArrayList<>(children());
+        Collections.reverse(reverse);
+
+        for (Element element : reverse) {
             if (element instanceof Drawable drawable) {
                 drawable.render(drawContext, mouseX, mouseY, delta);
             }

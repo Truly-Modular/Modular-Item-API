@@ -59,6 +59,7 @@ import smartin.miapi.modules.abilities.*;
 import smartin.miapi.modules.conditions.*;
 import smartin.miapi.modules.edit_options.EditOption;
 import smartin.miapi.modules.edit_options.PropertyInjectionDev;
+import smartin.miapi.modules.edit_options.ReplaceOption;
 import smartin.miapi.modules.edit_options.skins.SkinOptions;
 import smartin.miapi.modules.properties.*;
 import smartin.miapi.modules.properties.compat.BetterCombatProperty;
@@ -334,6 +335,7 @@ public class RegistryInventory {
 
         LifecycleEvent.SETUP.register(() -> {
             //EDITPROPERTIES
+            registerMiapi(editOptions, "replace", new ReplaceOption());
             registerMiapi(editOptions, "dev", new PropertyInjectionDev());
             registerMiapi(editOptions, "skin", new SkinOptions());
 

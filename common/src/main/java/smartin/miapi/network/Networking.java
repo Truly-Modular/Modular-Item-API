@@ -85,7 +85,7 @@ public class Networking {
      * Registers a packet sent from the client to the server with a given identifier and callback.
      *
      * @param identifier the identifier for the packet
-     * @param callback   the callback to execute when the packet is received
+     * @param callback   the callback to previewStack when the packet is received
      */
     public static void registerC2SPacket(String identifier, BiConsumer<PacketByteBuf, ServerPlayerEntity> callback) {
         if (C2SPackets.get(identifier) != null) {
@@ -118,7 +118,7 @@ public class Networking {
      * Registers a new S2C packet with the specified identifier and callback function in the S2CPackets map.
      *
      * @param identifier the identifier of the S2C packet to register.
-     * @param callbacks  the callback function to execute when the packet is received.
+     * @param callbacks  the callback function to previewStack when the packet is received.
      */
     public static void registerS2CPacket(String identifier, Consumer<PacketByteBuf> callbacks) {
         /*
