@@ -1,4 +1,4 @@
-package smartin.miapi.client.gui.rework;
+package smartin.miapi.client.gui.crafting;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
@@ -18,10 +18,9 @@ import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.ParentHandledScreen;
 import smartin.miapi.client.gui.SimpleScreenHandlerListener;
 import smartin.miapi.client.gui.TransformableWidget;
-import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
 import smartin.miapi.client.gui.crafting.crafter.ModuleCrafter;
 import smartin.miapi.client.gui.crafting.slotdisplay.SlotDisplay;
-import smartin.miapi.client.gui.rework.stat.StatDisplay;
+import smartin.miapi.client.gui.crafting.statdisplay.StatDisplay;
 import smartin.miapi.item.ModularItemStackConverter;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.edit_options.EditOption;

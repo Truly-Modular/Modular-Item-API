@@ -17,7 +17,7 @@ import smartin.miapi.client.gui.ClickAbleTextWidget;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.ScrollingTextWidget;
 import smartin.miapi.client.gui.SimpleButton;
-import smartin.miapi.client.gui.rework.CraftingScreen;
+import smartin.miapi.client.gui.crafting.CraftingScreen;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.util.ModuleProperty;

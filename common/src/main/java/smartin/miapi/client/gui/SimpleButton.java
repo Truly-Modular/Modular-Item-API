@@ -7,7 +7,7 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.ColorHelper;
-import smartin.miapi.client.gui.rework.CraftingScreen;
+import smartin.miapi.client.gui.crafting.CraftingScreen;
 
 import java.util.function.Consumer;
 

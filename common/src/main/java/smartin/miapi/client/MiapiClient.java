@@ -13,7 +13,7 @@ import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.Identifier;
 import smartin.miapi.Miapi;
 import smartin.miapi.blocks.ModularWorkBenchRenderer;
-import smartin.miapi.client.gui.rework.CraftingScreen;
+import smartin.miapi.client.gui.crafting.CraftingScreen;
 import smartin.miapi.client.model.CustomColorProvider;
 import smartin.miapi.client.model.ModularModelPredicateProvider;
 import smartin.miapi.effects.CryoStatusEffect;

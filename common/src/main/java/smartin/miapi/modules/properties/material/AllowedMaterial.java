@@ -19,7 +19,7 @@ import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.MultiLineTextWidget;
 import smartin.miapi.client.gui.ScrollingTextWidget;
 import smartin.miapi.client.gui.TransformableWidget;
-import smartin.miapi.client.gui.rework.CraftingScreen;
+import smartin.miapi.client.gui.crafting.CraftingScreen;
 import smartin.miapi.craft.CraftAction;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ItemModule;

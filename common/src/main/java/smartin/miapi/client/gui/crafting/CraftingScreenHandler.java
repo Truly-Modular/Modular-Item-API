@@ -1,18 +1,20 @@
 package smartin.miapi.client.gui.crafting;
 
+import com.mojang.datafixers.util.Pair;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.screen.ArrayPropertyDelegate;
-import net.minecraft.screen.PropertyDelegate;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.screen.ScreenHandlerContext;
+import net.minecraft.screen.*;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
@@ -30,6 +32,9 @@ import smartin.miapi.registries.RegistryInventory;
 import java.util.ArrayList;
 import java.util.List;
 
+import static net.minecraft.screen.PlayerScreenHandler.BLOCK_ATLAS_TEXTURE;
+import static net.minecraft.screen.PlayerScreenHandler.EMPTY_OFFHAND_ARMOR_SLOT;
+
 /**
  * This is the screen handler class for miapis default Crafting Screen.
  */
@@ -45,6 +50,9 @@ public class CraftingScreenHandler extends ScreenHandler {
     public final String packetIDSlotAdd;
     public final String packetIDSlotRemove;
     public CraftingScreenHandler craftingScreenHandler;
+
+    static final Identifier[] EMPTY_ARMOR_SLOT_TEXTURES = new Identifier[]{PlayerScreenHandler.EMPTY_BOOTS_SLOT_TEXTURE, PlayerScreenHandler.EMPTY_LEGGINGS_SLOT_TEXTURE, PlayerScreenHandler.EMPTY_CHESTPLATE_SLOT_TEXTURE, PlayerScreenHandler.EMPTY_HELMET_SLOT_TEXTURE};
+    private static final EquipmentSlot[] EQUIPMENT_SLOT_ORDER = new EquipmentSlot[]{EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET};
 
     /**
      * Constructs a new CraftingScreenHandler instance with the specified sync ID and player inventory.
@@ -213,12 +221,55 @@ public class CraftingScreenHandler extends ScreenHandler {
         }
 
         this.addSlot(new ModifyingSlot(inventory, 0, 112 - 61, 118 + 71, blockEntity));
-
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 4; ++i) {
+            final EquipmentSlot equipmentSlot = EQUIPMENT_SLOT_ORDER[i];
             int offset = i < 2 ? 0 : 1;
-            this.addSlot(new PlayerInventorySlot(playerInventory, 39 - i, 69 + i * 18 - offset, 118 + 71));
+            this.addSlot(new Slot(playerInventory, 39 - i, 69 + i * 18 - offset, 118 + 71) {
+
+                @Override
+                public void setStack(ItemStack stack) {
+                    //PlayerScreenHandler.onEquipStack(owner, equipmentSlot, stack, this.getStack());
+                    super.setStack(stack);
+                }
+
+                @Override
+                public int getMaxItemCount() {
+                    return 1;
+                }
+
+                @Override
+                public boolean canInsert(ItemStack stack) {
+                    return equipmentSlot == MobEntity.getPreferredEquipmentSlot(stack);
+                }
+
+                @Override
+                public boolean canTakeItems(PlayerEntity playerEntity) {
+                    ItemStack itemStack = this.getStack();
+                    if (!itemStack.isEmpty() && !playerEntity.isCreative() && EnchantmentHelper.hasBindingCurse(itemStack)) {
+                        return false;
+                    }
+                    return super.canTakeItems(playerEntity);
+                }
+
+                @Override
+                public Pair<Identifier, Identifier> getBackgroundSprite() {
+                    return Pair.of(BLOCK_ATLAS_TEXTURE, EMPTY_ARMOR_SLOT_TEXTURES[equipmentSlot.getEntitySlotId()]);
+                }
+            });
         }
-        this.addSlot(new PlayerInventorySlot(playerInventory, 40, 112 - 61 + 5 * 18, 118 + 71));
+        this.addSlot(new Slot(playerInventory, 40, 111 - 61 + 5 * 18, 118 + 71){
+
+            @Override
+            public void setStack(ItemStack stack) {
+                //PlayerScreenHandler.onEquipStack(owner, EquipmentSlot.OFFHAND, stack, this.getStack());
+                super.setStack(stack);
+            }
+
+            @Override
+            public Pair<Identifier, Identifier> getBackgroundSprite() {
+                return Pair.of(BLOCK_ATLAS_TEXTURE, EMPTY_OFFHAND_ARMOR_SLOT);
+            }
+        });
         this.addProperties(delegate);
     }
 

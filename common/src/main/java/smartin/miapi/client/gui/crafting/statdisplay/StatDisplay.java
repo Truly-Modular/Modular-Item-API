@@ -17,6 +17,7 @@ import smartin.miapi.client.gui.BoxList;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.ScrollList;
 import smartin.miapi.client.gui.TransformableWidget;
+import smartin.miapi.client.gui.crafting.statdisplay.*;
 import smartin.miapi.modules.properties.*;
 
 import java.util.ArrayList;
@@ -144,16 +145,24 @@ public class StatDisplay extends InteractAbleWidget {
                 .builder(WaterDragProperty.property)
                 .setMax(1)
                 .setTranslationKey(WaterDragProperty.KEY).build());
+        addStatDisplay(AttributeSingleDisplay
+                .builder(AttributeRegistry.BOW_DRAW_TIME)
+                .setMax(30)
+                .setMin(1)
+                .setDefault(20)
+                .setTranslationKey("bow_draw_time")
+                .inverseNumber(true)
+                .setFormat("##.##").build());
     }
 
     public StatDisplay(int x, int y, int width, int height) {
         super(x, y, width, height, Text.empty());
         transformableWidget = new TransformableWidget(x, y, width, height, Text.empty());
-        boxList = new BoxList(0, 0, width * 2, height * 2, Text.empty(), new ArrayList<>());
-        ScrollList list = new ScrollList(x * 2, y * 2, width * 2, height * 2, List.of(boxList));
+        boxList = new BoxList(x , y, width, height, Text.empty(), new ArrayList<>());
+        ScrollList list = new ScrollList(x , y , width, height, List.of(boxList));
         transformableWidget.addChild(list);
         transformableWidget.rawProjection = new Matrix4f();
-        transformableWidget.rawProjection.scale(0.5f, 0.5f, 0.5f);
+        //transformableWidget.rawProjection.scale(0.5f, 0.5f, 0.5f);
         addChild(transformableWidget);
         hoverText = new TransformableWidget(x, y, width, height, Text.empty());
         hoverText.rawProjection = new Matrix4f().scale(0.667f, 0.667f, 0.667f);
@@ -178,7 +187,7 @@ public class StatDisplay extends InteractAbleWidget {
             }
         }
         if (hoverDisplay != null && isMouseOver(mouseX, mouseY)) {
-            float scale = 0.667f;
+            float scale = 1.0f;
             hoverDisplay.setX((int) ((mouseX + 5) * (1 / scale)));
             hoverDisplay.setY((int) ((mouseY - hoverDisplay.getHeight() / 2 * scale) * (1 / scale)));
             hoverText.renderWidget(hoverDisplay, drawContext, mouseX, mouseY, delta);
@@ -203,7 +212,7 @@ public class StatDisplay extends InteractAbleWidget {
 
             }
         }
-        boxList.setWidgets(widgets, 1);
+        boxList.setWidgets(widgets, 0);
     }
 
     public interface StatWidgetSupplier {
