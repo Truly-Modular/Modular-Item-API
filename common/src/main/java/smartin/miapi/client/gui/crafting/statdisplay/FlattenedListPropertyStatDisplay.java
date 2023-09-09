@@ -3,7 +3,6 @@ package smartin.miapi.client.gui.crafting.statdisplay;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.item.ItemStack;
-import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import smartin.miapi.modules.properties.util.ComponentDescriptionable;
@@ -37,7 +36,7 @@ public class FlattenedListPropertyStatDisplay<T> extends MultiComponentStatDispl
     public <A extends DynamicCodecBasedProperty.FlattenedList<T> & ComponentDescriptionable<T>> FlattenedListPropertyStatDisplay(
             A property, StatDisplay.TextGetter title
     ) {
-        this(property, 0, 0, 160, 32, title);
+        this(property, 0, 0, 130, 32, title);
     }
 
     public <A extends DynamicCodecBasedProperty.FlattenedList<T> & ComponentDescriptionable<T>> FlattenedListPropertyStatDisplay(

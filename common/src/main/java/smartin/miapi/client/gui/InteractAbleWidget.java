@@ -8,6 +8,7 @@ import net.minecraft.client.Mouse;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.Element;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.render.GameRenderer;
@@ -31,7 +32,7 @@ public abstract class InteractAbleWidget extends ClickableWidget implements Draw
     protected final List<Element> children = new ArrayList<>();
     protected final List<InteractAbleWidget> hoverElements = new ArrayList<>();
     public boolean debug = false;
-    public static boolean globalDebug = false;
+    public static boolean globalDebug = true;
     public int randomColor = ColorHelper.Argb.getArgb(180, (int) (Math.random()*255), (int) (Math.random()*255), (int) (Math.random()*255));
 
     /**
@@ -68,14 +69,15 @@ public abstract class InteractAbleWidget extends ClickableWidget implements Draw
      * @param color       color of the border
      */
     public static void drawSquareBorder(DrawContext drawContext, int x, int y, int width, int height, int borderWidth, int color) {
+        if (!Screen.hasAltDown()) return;
         //Top
-        drawContext.fill(x, y, x + width, y + borderWidth, color);
+        drawContext.fill(x, y, x + width, y + borderWidth, 100, color);
         //Bottom
-        drawContext.fill(x, y + height, x + width, y + height - borderWidth, color);
+        drawContext.fill(x, y + height, x + width, y + height - borderWidth, 100, color);
         //Left
-        drawContext.fill(x, y, x + borderWidth, y + height, color);
+        drawContext.fill(x, y, x + borderWidth, y + height, 100, color);
         //Right
-        drawContext.fill(x + width, y, x + width - borderWidth, y + height, color);
+        drawContext.fill(x + width, y, x + width - borderWidth, y + height, 100, color);
     }
 
     /**

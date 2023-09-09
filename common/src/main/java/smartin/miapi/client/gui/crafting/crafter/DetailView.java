@@ -43,7 +43,7 @@ public class DetailView extends InteractAbleWidget {
     }
 
     public List<InteractAbleWidget> getButtons(SlotProperty.ModuleSlot slot, List<InteractAbleWidget> buttons, int level) {
-        buttons.add(new SlotButton(0, 0, 50, 18, slot, level));
+        buttons.add(new SlotButton(0, 0, 50, 22, slot, level));
         if (slot.inSlot != null) {
             SlotProperty.getSlots(slot.inSlot).forEach((id, childSlot) -> {
                 getButtons(childSlot, buttons, level + 1);
@@ -107,15 +107,15 @@ public class DetailView extends InteractAbleWidget {
             if (isSelected()) {
                 hoverOffset = 2;
             }
-            drawTextureWithEdge(drawContext, CraftingScreen.BACKGROUND_TEXTURE, getX() - 6 + level * 6, getY(), 404, 18 * hoverOffset, 108, 18, getWidth() - level * 6 + 6, 18, 512, 512, 4);
-            int nameStart = getX() + 5 + level * 6;
+            drawTextureWithEdge(drawContext, CraftingScreen.BACKGROUND_TEXTURE, getX() + (level-1) * 2, getY(), 404, 18 * hoverOffset, 108, 18, getWidth() - (level-1) * 2, getHeight(), 512, 512, 4);
+            int nameStart = getX() + 5 + (level-1) * 2;
             if (textureIcon != null) {
-                nameStart += 16;
-                drawContext.drawTexture(textureIcon, this.getX() + 4 + level * 6, this.getY()+1, 0, 0, 16, 16, 16, 16);
+                nameStart += 17;
+                drawContext.drawTexture(textureIcon, this.getX() + 5 + (level-1) * 2, this.getY()+3, 0, 0, 16, 16, 16, 16);
             }
 
             moduleName.setX(nameStart);
-            moduleName.setY(this.getY() + 5);
+            moduleName.setY(this.getY() + 7);
             moduleName.setWidth(this.getWidth() + getX() - nameStart - 4);
             moduleName.render(drawContext, mouseX, mouseY, delta);
         }

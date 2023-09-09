@@ -82,7 +82,7 @@ public class ScrollList extends InteractAbleWidget {
 
         needsScrollbar = totalHeight > height;
 
-        int startY = this.getY() + 1 - this.scrollAmount;
+        int startY = this.getY() - this.scrollAmount;
 
         for (ClickableWidget widget : this.widgets) {
             if (startY + widget.getHeight() >= this.getY() && startY <= this.getY() + this.height - 1) {
@@ -113,23 +113,14 @@ public class ScrollList extends InteractAbleWidget {
     }
 
     public void renderScrollbarBackground(DrawContext drawContext, int mouseX, int mouseY, float delta, int barX, int barWidth) {
-        int offsetAlt = 0;
-        if (altDesign) {
-            offsetAlt = 28;
-        }
+        int offsetAlt = altDesign ? 28 : 0;
         drawTextureWithEdge(drawContext, CraftingScreen.BACKGROUND_TEXTURE, barX, getY(), 498 - offsetAlt, 96, 14, 15, barWidth, getHeight(), 512, 512, 3);
     }
 
     public void renderScrollbarClickAble(DrawContext drawContext, int mouseX, int mouseY, float delta, int barX, int barWidth, float percent) {
-        int height = (int) ((this.getHeight() - 17) * percent) + 1 + getY();
-        int offset = 0;
-        if (!needsScrollbar) {
-            offset = 16;
-        }
-        int offsetAlt = 0;
-        if (altDesign) {
-            offsetAlt = 28;
-        }
+        int height = (int) ((this.getHeight() - 17) * percent) + (altDesign ? percent >= 1 ? 2 : 0 : 1) + getY();
+        int offset = needsScrollbar ? 0 : 15;
+        int offsetAlt = altDesign ? 28 : 0;
         drawTextureWithEdge(drawContext, CraftingScreen.BACKGROUND_TEXTURE, barX, height, 498 - 14 - offsetAlt, 96 + offset, 14, 15, barWidth, 15, 512, 512, 3);
     }
 

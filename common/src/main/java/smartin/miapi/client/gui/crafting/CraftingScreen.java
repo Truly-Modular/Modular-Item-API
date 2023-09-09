@@ -103,7 +103,7 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
         this.addChild(slotDisplay);
         smithDisplay = new SmithDisplay(centerX + 140, centerY + 117, 55, 70);
         this.addChild(smithDisplay);
-        statDisplay = new StatDisplay(centerX + 213, centerY + 30, 160, 95);
+        statDisplay = new StatDisplay(centerX + 213, centerY + 30, 161, 95);
         this.addChild(statDisplay);
 
         super.init();

@@ -102,12 +102,12 @@ public abstract class MultiComponentStatDisplay extends InteractAbleWidget imple
 
     @Override
     public int getHeightDesired() {
-        return 32;
+        return 100;
     }
 
     @Override
     public int getWidthDesired() {
-        return 160;
+        return 130;
     }
 
     public InteractAbleWidget getHoverWidget() {
