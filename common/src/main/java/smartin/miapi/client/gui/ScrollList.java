@@ -5,9 +5,9 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.text.Text;
-import net.minecraft.util.math.ColorHelper;
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
+import smartin.miapi.client.gui.crafting.CraftingScreen;
 
 import java.util.List;
 
@@ -24,6 +24,10 @@ public class ScrollList extends InteractAbleWidget {
     private int maxScrollAmount;
     public boolean saveMode = true;
     boolean needsScrollbar = false;
+    public boolean alwaysEnableScrollbar = false;
+    int barWidth = 8;
+    boolean scrollbarDragged = false;
+    public boolean altDesign = false;
 
     /**
      * Constructs a new ScrollList with the given x and y coordinates, width, height,
@@ -84,8 +88,8 @@ public class ScrollList extends InteractAbleWidget {
             if (startY + widget.getHeight() >= this.getY() && startY <= this.getY() + this.height - 1) {
                 widget.setY(startY);
                 widget.setX(this.getX());
-                if (needsScrollbar) {
-                    widget.setWidth(this.width - 5);
+                if (showScrollbar()) {
+                    widget.setWidth(this.width - barWidth);
                 } else {
                     widget.setWidth(this.width);
                 }
@@ -100,13 +104,37 @@ public class ScrollList extends InteractAbleWidget {
             startY += widget.getHeight();
         }
 
-        if (needsScrollbar) {
-            int barHeight = Math.max(10, this.height * this.height / (this.maxScrollAmount + this.height));
-            int barY = this.getY() + 1 + (int) ((this.height - barHeight - 2) * (float) this.scrollAmount / this.maxScrollAmount);
-            int barX = this.getX() + this.width - 5;
-            drawContext.fill(barX, getY(), barX + 5, this.getY() + this.height, 0xFFCCCCCC);
-            drawContext.fill(barX, barY, barX + 5, barY + barHeight, ColorHelper.Argb.getArgb(255, 50, 50, 50));
+        if (showScrollbar()) {
+            int barX = this.getX() + this.width - barWidth;
+            float percentage = (float) this.scrollAmount / (float) maxScrollAmount;
+            renderScrollbarBackground(drawContext, mouseX, mouseY, delta, barX, barWidth);
+            renderScrollbarClickAble(drawContext, mouseX, mouseY, delta, barX, barWidth, percentage);
         }
+    }
+
+    public void renderScrollbarBackground(DrawContext drawContext, int mouseX, int mouseY, float delta, int barX, int barWidth) {
+        int offsetAlt = 0;
+        if (altDesign) {
+            offsetAlt = 28;
+        }
+        drawTextureWithEdge(drawContext, CraftingScreen.BACKGROUND_TEXTURE, barX, getY(), 498 - offsetAlt, 96, 14, 15, barWidth, getHeight(), 512, 512, 3);
+    }
+
+    public void renderScrollbarClickAble(DrawContext drawContext, int mouseX, int mouseY, float delta, int barX, int barWidth, float percent) {
+        int height = (int) ((this.getHeight() - 17) * percent) + 1 + getY();
+        int offset = 0;
+        if (!needsScrollbar) {
+            offset = 16;
+        }
+        int offsetAlt = 0;
+        if (altDesign) {
+            offsetAlt = 28;
+        }
+        drawTextureWithEdge(drawContext, CraftingScreen.BACKGROUND_TEXTURE, barX, height, 498 - 14 - offsetAlt, 96 + offset, 14, 15, barWidth, 15, 512, 512, 3);
+    }
+
+    private boolean showScrollbar() {
+        return needsScrollbar || alwaysEnableScrollbar;
     }
 
     @Override
@@ -166,10 +194,11 @@ public class ScrollList extends InteractAbleWidget {
             }
 
             boolean clicked = false;
-            if (needsScrollbar) {
+            if (showScrollbar()) {
                 if (isMouseOver(mouseX, mouseY)) {
-                    if (mouseY > this.getX() + this.width - 5 && mouseY < this.getX() + this.width) {
-                        //TODO:drag motion?
+                    if (mouseX > this.getX() + this.width - barWidth && mouseX < this.getX() + this.width) {
+                        scrollbarDragged = true;
+                        return true;
                     }
                 }
             }
@@ -187,9 +216,35 @@ public class ScrollList extends InteractAbleWidget {
     }
 
     @Override
+    public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
+        if (mouseX > this.getX() + this.width - barWidth && mouseX < this.getX() + this.width) {
+            if (mouseY < (double) this.getY()) {
+                this.scrollAmount = 0;
+                return true;
+            } else if (mouseY > (double) (this.getY() + this.height)) {
+                this.scrollAmount = maxScrollAmount;
+                return true;
+            } else {
+                double i = Math.min(1, Math.max(0, (mouseY - getY()) / (getHeight() - 10)));
+                this.scrollAmount = (int) (i * maxScrollAmount);
+                return true;
+            }
+        }
+        return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
+    }
+
+    @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
         if (this.widgets == null) {
             return false;
+        }
+        if (showScrollbar()) {
+            if (isMouseOver(mouseX, mouseY)) {
+                if (mouseX > this.getX() + this.width - barWidth && mouseX < this.getX() + this.width) {
+                    scrollbarDragged = false;
+                    return true;
+                }
+            }
         }
 
         boolean released = false;

@@ -17,7 +17,6 @@ import smartin.miapi.client.gui.BoxList;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.ScrollList;
 import smartin.miapi.client.gui.TransformableWidget;
-import smartin.miapi.client.gui.crafting.statdisplay.*;
 import smartin.miapi.modules.properties.*;
 
 import java.util.ArrayList;
@@ -160,6 +159,8 @@ public class StatDisplay extends InteractAbleWidget {
         transformableWidget = new TransformableWidget(x, y, width, height, Text.empty());
         boxList = new BoxList(x , y, width, height, Text.empty(), new ArrayList<>());
         ScrollList list = new ScrollList(x , y , width, height, List.of(boxList));
+        list.altDesign = true;
+        list.alwaysEnableScrollbar = true;
         transformableWidget.addChild(list);
         transformableWidget.rawProjection = new Matrix4f();
         //transformableWidget.rawProjection.scale(0.5f, 0.5f, 0.5f);

@@ -39,6 +39,7 @@ public class MiapiPermissions {
             return playerPerms.get(player);
         }
         List<String> perms = getPerms(player.getUuid());
+        perms.add("user");
         playerPerms.put(player,perms);
         return perms;
     }
