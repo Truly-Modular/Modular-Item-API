@@ -19,7 +19,7 @@ import smartin.miapi.client.MiapiClient;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.datapack.ReloadListener;
 import smartin.miapi.events.property.ApplicationEvents;
-import smartin.miapi.injections.PropertySubstitution;
+import smartin.miapi.injectors.PropertySubstitution;
 import smartin.miapi.item.ItemToModularConverter;
 import smartin.miapi.item.ModularItemStackConverter;
 import smartin.miapi.item.modular.PropertyResolver;

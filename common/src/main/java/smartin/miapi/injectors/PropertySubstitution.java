@@ -1,4 +1,4 @@
-package smartin.miapi.injections;
+package smartin.miapi.injectors;
 
 import com.google.gson.*;
 import com.redpxnda.nucleus.datapack.codec.InterfaceDispatcher;
@@ -236,6 +236,13 @@ public class PropertySubstitution {
             if (object.get("regex") instanceof JsonPrimitive prim) {
                 ItemModule.moduleRegistry.getFlatMap().forEach((key, module) -> {
                     if (key.matches(prim.getAsString())) modules.add(module);
+                });
+            }
+            if (object.get("blacklist") instanceof JsonArray array) {
+                array.forEach(moduleKey -> {
+                    ItemModule module = ItemModule.moduleRegistry.get(moduleKey.getAsString());
+                    if (module == null) return;
+                    modules.remove(module);
                 });
             }
 
