@@ -52,7 +52,17 @@ public class ModuleCrafter extends InteractAbleWidget {
         this.preview = craftedItem;
         this.removeSlot = removeSlot;
         this.addSlot = addSlot;
-        CraftView.currentSlots.forEach(removeSlot::accept);
+        CraftView.currentSlots.forEach(removeSlot);
+    }
+
+    public ModuleCrafter(int x, int y, int width, int height, ModuleCrafter other) {
+        super(x, y, width, height, Text.empty());
+        this.selected = other.selected;
+        this.linkedInventory = other.linkedInventory;
+        this.preview = other.preview;
+        this.removeSlot = other.removeSlot;
+        this.addSlot = other.addSlot;
+        CraftView.currentSlots.forEach(removeSlot);
     }
 
     public void setItem(ItemStack stack) {

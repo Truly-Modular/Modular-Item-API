@@ -40,6 +40,7 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
     private StatDisplay statDisplay;
     private SlotDisplay slotDisplay;
     private SmithDisplay smithDisplay;
+    private ViewMinimizeButton minimizer;
     private SlotProperty.ModuleSlot baseSlot;
     @Nullable
     public SlotProperty.ModuleSlot slot;
@@ -72,6 +73,7 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
     }
 
     public void selectEditOption(EditOption editOption) {
+        System.out.println("yes, edit option selection was called:");
         this.editOption = editOption;
         moduleCrafter.setSelectedSlot(slot);
         moduleCrafter.setEditMode(editOption, get(editOption));
@@ -85,9 +87,7 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
         int centerX = (this.width - this.backgroundWidth) / 2;
         int centerY = (this.height - this.backgroundHeight) / 2;
 
-        moduleCrafter = new ModuleCrafter(centerX + 51, centerY + 22, 144, 89, (selectedSlot) -> {
-            selectSlot(selectedSlot);
-        }, (item) -> {
+        moduleCrafter = new ModuleCrafter(centerX + 51, centerY + 22, 144, 89, this::selectSlot, (item) -> {
             slotDisplay.setItem(item);
             statDisplay.setCompareTo(item);
             smithDisplay.setPreview(item);
@@ -105,6 +105,22 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
         this.addChild(smithDisplay);
         statDisplay = new StatDisplay(centerX + 213, centerY + 30, 161, 95);
         this.addChild(statDisplay);
+
+        minimizer = new ViewMinimizeButton(centerX+180, centerY+188, 18, 18,
+                () -> moduleCrafter, crafter -> {
+                    moduleCrafter = crafter;
+                    moduleCrafter.handler = handler;
+                    moduleCrafter.setPacketIdentifier(handler.packetID);
+                    System.out.println("wassup");
+                    EditOption op = getEditOption();
+                    updateItem(getItem());
+                    selectEditOption(op);
+                },
+                () -> slotDisplay,
+                () -> smithDisplay,
+                this::remove,
+                this::addChild);
+        this.addChild(minimizer);
 
         super.init();
         playerInventoryTitleX = -1000;

@@ -32,7 +32,7 @@ public abstract class InteractAbleWidget extends ClickableWidget implements Draw
     protected final List<Element> children = new ArrayList<>();
     protected final List<InteractAbleWidget> hoverElements = new ArrayList<>();
     public boolean debug = false;
-    public static boolean globalDebug = false;
+    public static boolean globalDebug = true; // todo disable
     public int randomColor = ColorHelper.Argb.getArgb(180, (int) (Math.random()*255), (int) (Math.random()*255), (int) (Math.random()*255));
 
     /**
@@ -69,7 +69,6 @@ public abstract class InteractAbleWidget extends ClickableWidget implements Draw
      * @param color       color of the border
      */
     public static void drawSquareBorder(DrawContext drawContext, int x, int y, int width, int height, int borderWidth, int color) {
-        if (!Screen.hasAltDown()) return;
         //Top
         drawContext.fill(x, y, x + width, y + borderWidth, 100, color);
         //Bottom
@@ -375,7 +374,7 @@ public abstract class InteractAbleWidget extends ClickableWidget implements Draw
      */
     @Override
     public void render(DrawContext drawContext, int mouseX, int mouseY, float delta) {
-        if (debug || globalDebug)
+        if ((debug || globalDebug) && Screen.hasAltDown())
             drawSquareBorder(drawContext, getX(), getY(), getWidth(), getHeight(), 1, randomColor);
 
         RenderSystem.setShader(GameRenderer::getPositionProgram);

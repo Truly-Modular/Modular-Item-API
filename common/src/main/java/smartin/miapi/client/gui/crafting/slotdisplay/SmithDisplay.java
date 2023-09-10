@@ -1,5 +1,7 @@
 package smartin.miapi.client.gui.crafting.slotdisplay;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
@@ -14,6 +16,7 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Quaternionf;
 import smartin.miapi.client.gui.InteractAbleWidget;
 
+@Environment(EnvType.CLIENT)
 public class SmithDisplay extends InteractAbleWidget {
     public static final Quaternionf ARMOR_STAND_ROTATION = new Quaternionf().rotationXYZ(0.43633232f, 0.0f, (float) Math.PI);
     @Nullable
