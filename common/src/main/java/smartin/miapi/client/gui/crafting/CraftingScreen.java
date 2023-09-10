@@ -106,16 +106,17 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
         statDisplay = new StatDisplay(centerX + 213, centerY + 30, 161, 95);
         this.addChild(statDisplay);
 
-        minimizer = new ViewMinimizeButton(centerX+180, centerY+188, 18, 18,
+        minimizer = new ViewMinimizeButton(centerX + 180, centerY + 188, 18, 18,
                 () -> moduleCrafter, crafter -> {
-                    moduleCrafter = crafter;
-                    moduleCrafter.handler = handler;
-                    moduleCrafter.setPacketIdentifier(handler.packetID);
-                    System.out.println("wassup");
-                    EditOption op = getEditOption();
-                    updateItem(getItem());
-                    selectEditOption(op);
-                },
+            removeChild(moduleCrafter);
+            moduleCrafter = crafter;
+            moduleCrafter.handler = handler;
+            moduleCrafter.setPacketIdentifier(handler.packetID);
+            addChild(moduleCrafter);
+            EditOption op = getEditOption();
+            updateItem(getItem());
+            selectEditOption(op);
+        },
                 () -> slotDisplay,
                 () -> smithDisplay,
                 this::remove,
@@ -169,7 +170,7 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
             slotDisplay.select(current);
             slotDisplay.setItem(converted);
         }
-        if(smithDisplay != null){
+        if (smithDisplay != null) {
             smithDisplay.setPreview(converted);
         }
         if (moduleCrafter != null) {
