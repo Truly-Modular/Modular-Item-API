@@ -8,8 +8,11 @@ import com.redpxnda.nucleus.codec.InterfaceDispatcher;
 import com.redpxnda.nucleus.codec.MiscCodecs;
 import com.redpxnda.nucleus.util.Color;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.resource.metadata.AnimationResourceMetadata;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
+import net.minecraft.client.texture.SpriteContents;
+import net.minecraft.client.texture.SpriteDimensions;
 import net.minecraft.util.Identifier;
 import smartin.miapi.Miapi;
 
@@ -104,8 +107,13 @@ public class PaletteCreators {
                         image.setColor(current.getKey(), 0, current.getValue().abgr());
                     }
                     image.untrack();
-                    //MiapiClient.materialAtlasManager.
-                    MinecraftClient.getInstance().getTextureManager().registerTexture(identifier, new NativeImageBackedTexture(image));
+
+                    /*
+                    Smartin, this is the sprite contents object you would need to somehow get to the afterReload method. do that however you want
+                     */
+                    new SpriteContents(identifier, new SpriteDimensions(256, 1), image, AnimationResourceMetadata.EMPTY);
+
+                    MinecraftClient.getInstance().getTextureManager().registerTexture(identifier, new NativeImageBackedTexture(image)); // normal code, will remove after full atlas impl
                     return identifier;
                 } catch (Exception e) {
                     RuntimeException runtime = new RuntimeException("Exception parsing Material " + material);
