@@ -10,6 +10,7 @@ import dev.architectury.registry.menu.MenuRegistry;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.resource.ReloadableResourceManagerImpl;
 import net.minecraft.util.Identifier;
 import smartin.miapi.Miapi;
 import smartin.miapi.blocks.ModularWorkBenchRenderer;
@@ -29,6 +30,7 @@ import smartin.miapi.registries.RegistryInventory;
 import static smartin.miapi.registries.RegistryInventory.Client.glintShader;
 
 public class MiapiClient {
+    public static MaterialAtlasManager materialAtlasManager;
 
     private MiapiClient() {
     }
@@ -60,6 +62,10 @@ public class MiapiClient {
     }
 
     protected static void clientStart(MinecraftClient client) {
+        MinecraftClient mc = MinecraftClient.getInstance();
+        materialAtlasManager = new MaterialAtlasManager(mc.getTextureManager());
+        ((ReloadableResourceManagerImpl) mc.getResourceManager()).registerReloader(materialAtlasManager);
+
         RegistryInventory.addCallback(RegistryInventory.modularItems, item -> {
             ((ItemRendererAccessor) client.getItemRenderer()).color().register(new CustomColorProvider(), item);
         });

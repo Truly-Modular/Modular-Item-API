@@ -53,7 +53,7 @@ public class PaletteCreators {
 
         creators.put("texture", (json, material) -> {
             if (json instanceof JsonObject object && object.has("location"))
-                return new Identifier(object.get("location").getAsString());
+                return new Identifier(object.get("location").getAsString()).withPrefixedPath("textures/miapi_materials/").withSuffixedPath(".png");
             else if (json instanceof JsonObject)
                 throw new JsonParseException("ModularItem API failed to parse texture sampling palette for material '" + material + "'! Missing member 'location'.");
             else
@@ -82,7 +82,7 @@ public class PaletteCreators {
                     if (!colors.containsKey(255))
                         colors.put(255, white);
 
-                    Identifier identifier = new Identifier(Miapi.MOD_ID, "textures/generated_materials/" + material);
+                    Identifier identifier = new Identifier(Miapi.MOD_ID, "textures/miapi_materials/" + material);
                     NativeImage image = new NativeImage(256, 1, false);
                     PixelPlacer placer = (color, x, y) -> image.setColor(x, y, color.abgr());
 
@@ -104,6 +104,7 @@ public class PaletteCreators {
                         image.setColor(current.getKey(), 0, current.getValue().abgr());
                     }
                     image.untrack();
+                    //MiapiClient.materialAtlasManager.
                     MinecraftClient.getInstance().getTextureManager().registerTexture(identifier, new NativeImageBackedTexture(image));
                     return identifier;
                 } catch (Exception e) {

@@ -1,2 +1,4 @@
 accessWidener   v2  named
 accessible field net/minecraft/client/gui/screen/ingame/HandledScreens PROVIDERS Ljava/util/Map;
+
+#accessible field net/minecraft/client/texture/TextureManager textures Ljava/util/Map; # was used for testing
