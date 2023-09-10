@@ -5,7 +5,7 @@ import com.google.common.collect.HashBiMap;
 import com.google.common.reflect.AbstractInvocationHandler;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
-import com.redpxnda.nucleus.datapack.codec.AutoCodec;
+import com.redpxnda.nucleus.codec.AutoCodec;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.modules.properties.util.ModuleProperty;

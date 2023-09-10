@@ -2,19 +2,10 @@ package smartin.miapi.modules.properties;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
-import com.mojang.datafixers.util.Pair;
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
-import com.redpxnda.nucleus.datapack.codec.ValueTester;
-import net.minecraft.util.Identifier;
-import smartin.miapi.modules.ItemModule;
-import smartin.miapi.modules.abilities.util.ItemAbilityManager;
-import smartin.miapi.modules.abilities.util.ItemUseAbility;
 import smartin.miapi.modules.properties.util.CodecBasedProperty;
 import smartin.miapi.modules.properties.util.MergeType;
 
 import java.util.List;
-import java.util.Optional;
 
 //todo finish new morphing system and add to this
 public class ParticleShapingProperty extends CodecBasedProperty<List<ParticleShapingProperty.Holder>> {

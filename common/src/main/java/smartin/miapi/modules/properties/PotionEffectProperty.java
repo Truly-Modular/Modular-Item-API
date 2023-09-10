@@ -4,7 +4,7 @@ import com.google.gson.JsonElement;
 import com.mojang.datafixers.util.Either;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
-import com.redpxnda.nucleus.datapack.codec.AutoCodec;
+import com.redpxnda.nucleus.codec.AutoCodec;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.Screen;

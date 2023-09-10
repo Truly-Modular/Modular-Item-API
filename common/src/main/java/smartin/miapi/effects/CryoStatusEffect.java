@@ -3,7 +3,7 @@ package smartin.miapi.effects;
 import com.redpxnda.nucleus.event.ClientEvents;
 import com.redpxnda.nucleus.event.MiscEvents;
 import com.redpxnda.nucleus.registry.effect.RenderingMobEffect;
-import com.redpxnda.nucleus.util.RenderUtil;
+import com.redpxnda.nucleus.client.Rendering;
 import dev.architectury.event.CompoundEventResult;
 import dev.architectury.event.EventResult;
 import net.fabricmc.api.EnvType;
@@ -134,8 +134,8 @@ public class CryoStatusEffect extends RenderingMobEffect {
                             (side == 4 && !isBack) ||
                             (side == 5 && !isFront)
                         ) continue;
-                        RenderUtil.addQuad(
-                                RenderUtil.CUBE[side], matrixStack, vc,
+                        Rendering.addQuad(
+                                Rendering.CUBE[side], matrixStack, vc,
                                 1f, 1f, 1f, 0.5f,
                                 -0.5f, 0.5f, 0.5f,
                                 sprite.getMinU(), sprite.getMaxU(),

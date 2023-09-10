@@ -2,9 +2,8 @@ package smartin.miapi.modules.properties;
 
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
-import com.redpxnda.nucleus.datapack.codec.AutoCodec;
+import com.redpxnda.nucleus.codec.AutoCodec;
 import com.redpxnda.nucleus.math.MathUtil;
-import net.minecraft.enchantment.ProtectionEnchantment;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
@@ -19,7 +18,6 @@ import smartin.miapi.modules.properties.util.DynamicCodecBasedProperty;
 import java.util.List;
 
 import static smartin.miapi.item.modular.StatResolver.DoubleFromStat;
-import static smartin.miapi.item.modular.StatResolver.IntegerFromStat;
 
 public class ExecuteProperty extends DynamicCodecBasedProperty.IntermediateList<ExecuteProperty.Raw, ExecuteProperty.Holder> {
     public static final String KEY = "previewStack";

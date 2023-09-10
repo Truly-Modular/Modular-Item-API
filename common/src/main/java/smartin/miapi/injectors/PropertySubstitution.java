@@ -1,7 +1,7 @@
 package smartin.miapi.injectors;
 
 import com.google.gson.*;
-import com.redpxnda.nucleus.datapack.codec.InterfaceDispatcher;
+import com.redpxnda.nucleus.codec.InterfaceDispatcher;
 import org.jetbrains.annotations.Nullable;
 import org.mariuszgromada.math.mxparser.Expression;
 import smartin.miapi.Miapi;

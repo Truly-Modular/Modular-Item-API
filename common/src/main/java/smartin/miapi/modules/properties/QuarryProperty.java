@@ -2,8 +2,7 @@ package smartin.miapi.modules.properties;
 
 import com.google.gson.JsonElement;
 import com.mojang.serialization.Codec;
-import com.redpxnda.nucleus.datapack.codec.AutoCodec;
-import smartin.miapi.modules.ItemModule;
+import com.redpxnda.nucleus.codec.AutoCodec;
 import smartin.miapi.modules.properties.util.CodecBasedProperty;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;

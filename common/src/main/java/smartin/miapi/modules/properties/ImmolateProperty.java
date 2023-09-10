@@ -2,7 +2,7 @@ package smartin.miapi.modules.properties;
 
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
-import com.redpxnda.nucleus.datapack.codec.AutoCodec;
+import com.redpxnda.nucleus.codec.AutoCodec;
 import com.redpxnda.nucleus.math.MathUtil;
 import net.minecraft.enchantment.ProtectionEnchantment;
 import net.minecraft.entity.Entity;

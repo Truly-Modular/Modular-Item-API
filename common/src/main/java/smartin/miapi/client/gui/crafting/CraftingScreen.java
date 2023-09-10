@@ -1,6 +1,7 @@
 package smartin.miapi.client.gui.crafting;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.redpxnda.nucleus.math.InterpolateMode;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.ScreenHandlerProvider;
@@ -11,6 +12,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Util;
+import net.minecraft.util.math.MathHelper;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
@@ -33,14 +36,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> implements ScreenHandlerProvider<CraftingScreenHandler> {
-
     public static final Identifier BACKGROUND_TEXTURE = new Identifier(Miapi.MOD_ID, "textures/block/gui/crafter/background.png");
+    public static final InterpolateMode EASE_IN = new InterpolateMode.EaseIn(5);
+    public static final InterpolateMode EASE_OUT = new InterpolateMode.EaseOut(5);
     private ItemStack stack;
     private ModuleCrafter moduleCrafter;
     private StatDisplay statDisplay;
     private SlotDisplay slotDisplay;
     private SmithDisplay smithDisplay;
-    private ViewMinimizeButton minimizer;
+    private MinimizeButton minimizer;
     private SlotProperty.ModuleSlot baseSlot;
     @Nullable
     public SlotProperty.ModuleSlot slot;
@@ -73,7 +77,6 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
     }
 
     public void selectEditOption(EditOption editOption) {
-        System.out.println("yes, edit option selection was called:");
         this.editOption = editOption;
         moduleCrafter.setSelectedSlot(slot);
         moduleCrafter.setEditMode(editOption, get(editOption));
@@ -106,21 +109,7 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
         statDisplay = new StatDisplay(centerX + 213, centerY + 30, 161, 95);
         this.addChild(statDisplay);
 
-        minimizer = new ViewMinimizeButton(centerX + 180, centerY + 188, 18, 18,
-                () -> moduleCrafter, crafter -> {
-            removeChild(moduleCrafter);
-            moduleCrafter = crafter;
-            moduleCrafter.handler = handler;
-            moduleCrafter.setPacketIdentifier(handler.packetID);
-            addChild(moduleCrafter);
-            EditOption op = getEditOption();
-            updateItem(getItem());
-            selectEditOption(op);
-        },
-                () -> slotDisplay,
-                () -> smithDisplay,
-                this::remove,
-                this::addChild);
+        minimizer = new MinimizeButton(centerX + 178, centerY + 188, 18, 18, this::minimizeView, this::maximizeView);
         this.addChild(minimizer);
 
         super.init();
@@ -142,6 +131,31 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
 
         addChild(new EditOptionIcon(moduleCrafter.getX() - 36, moduleCrafter.getY() + 4, 32, 28, this::selectEditOption, this::getEditOption, BACKGROUND_TEXTURE, 339, 25, 512, 512, null));
 
+    }
+
+    public void minimizeView() {
+        remove(moduleCrafter);
+        moduleCrafter = new ModuleCrafter(moduleCrafter.getX(), moduleCrafter.getY(), moduleCrafter.getWidth(), moduleCrafter.getHeight() + 72, moduleCrafter);
+        moduleCrafter.handler = handler;
+        moduleCrafter.setPacketIdentifier(handler.packetID);
+        addChild(moduleCrafter);
+        EditOption op = getEditOption();
+        updateItem(getItem());
+        selectEditOption(op);
+        remove(slotDisplay);
+        remove(smithDisplay);
+    }
+    public void maximizeView() {
+        remove(moduleCrafter);
+        moduleCrafter = new ModuleCrafter(moduleCrafter.getX(), moduleCrafter.getY(), moduleCrafter.getWidth(), moduleCrafter.getHeight() - 72, moduleCrafter);
+        moduleCrafter.handler = handler;
+        moduleCrafter.setPacketIdentifier(handler.packetID);
+        addChild(moduleCrafter);
+        EditOption op = getEditOption();
+        updateItem(getItem());
+        selectEditOption(op);
+        addChild(slotDisplay);
+        addChild(smithDisplay);
     }
 
     public ItemStack getItem() {
@@ -295,6 +309,29 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
         int j = (this.height - this.backgroundHeight) / 2;
         //(Identifier texture, int x, int y, int width, int height, float u, float v, int regionWidth, int regionHeight, int textureWidth, int textureHeight)
         drawContext.drawTexture(BACKGROUND_TEXTURE, i + 43, j + 14, 338, 199, 0.0f, 0.0f, 338, 199, 512, 512);
+        long timeSinceMod = Util.getMeasuringTimeMs()-minimizer.getLastChangeTime();
+        if (minimizer.isEnabled() || timeSinceMod < 1000) {
+            float progress = MathHelper.clamp(timeSinceMod/1000f, 0, 1);
+            int start;
+            int end;
+            InterpolateMode interp;
+            if (minimizer.isEnabled()) {
+                start = 206;
+                end = 111;
+                interp = EASE_OUT;
+            } else {
+                start = 111;
+                end = 206;
+                interp = EASE_IN;
+            }
+
+            int pos = (int) interp.interpolate(progress, start, end);
+            boolean disableScissor = minimizer.isEnabled() ? pos > end : pos < end;
+            if (disableScissor) drawContext.enableScissor(i+42, j+110, i+204, j+187);
+            drawContext.drawTexture(BACKGROUND_TEXTURE, i + 43, j + pos, 160, 95, 0, 199, 160, 95, 512, 512);
+            if (disableScissor) drawContext.disableScissor();
+            //InteractAbleWidget.drawSquareBorder(drawContext, i + 43, j + 111, 160, 77, 1, Color.RED.argb());
+        }
         super.render(drawContext, mouseX, mouseY, delta);
         this.drawMouseoverTooltip(drawContext, mouseX, mouseY);
         this.renderHover(drawContext, mouseX, mouseY, delta);

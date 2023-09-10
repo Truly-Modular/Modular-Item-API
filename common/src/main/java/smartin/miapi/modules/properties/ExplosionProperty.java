@@ -1,7 +1,7 @@
 package smartin.miapi.modules.properties;
 
 import com.mojang.serialization.Codec;
-import com.redpxnda.nucleus.datapack.codec.AutoCodec;
+import com.redpxnda.nucleus.codec.AutoCodec;
 import dev.architectury.event.EventResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.world.World;

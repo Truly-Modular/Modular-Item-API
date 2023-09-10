@@ -4,23 +4,18 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
-import com.redpxnda.nucleus.datapack.codec.AutoCodec;
+import com.redpxnda.nucleus.codec.AutoCodec;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import smartin.miapi.events.property.ApplicationEvent;
 import smartin.miapi.events.property.ApplicationEvents;
-import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.util.CodecBasedProperty;
 import smartin.miapi.modules.properties.util.MergeType;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class PlaySoundProperty extends CodecBasedProperty<List<PlaySoundProperty.Holder>> {
     public static final String KEY = "playSounds";
