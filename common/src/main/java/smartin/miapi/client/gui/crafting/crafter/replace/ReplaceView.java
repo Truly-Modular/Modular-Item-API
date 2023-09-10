@@ -44,7 +44,6 @@ public class ReplaceView extends InteractAbleWidget {
         ScrollList list = new ScrollList(x, y + 14, width, height - 16, new ArrayList<>());
         addChild(list);
         list.children().clear();
-        addChild(new SimpleButton<>(this.getX() + 2, this.getY() + this.height - 13, 40, 12, Text.translatable(Miapi.MOD_ID + ".ui.back"), slot, back::accept));
         ArrayList<InteractAbleWidget> toList = new ArrayList<>();
         toList.add(new SlotButton(0, 0, this.width, 15, null));
         AllowedSlots.allowedIn(slot).forEach(module -> {
@@ -99,7 +98,7 @@ public class ReplaceView extends InteractAbleWidget {
             if(!isAllowed){
                 hoverOffset = 28;
             }
-            drawTextureWithEdge(drawContext, CraftingScreen.BACKGROUND_TEXTURE, getX(), getY(), 405, 54+hoverOffset, 108, 14, getWidth(), getHeight(), 512, 512, 3);
+            drawTextureWithEdge(drawContext, CraftingScreen.BACKGROUND_TEXTURE, getX(), getY(), 404, 54+hoverOffset, 108, 14, getWidth(), getHeight(), 512, 512, 3);
             textWidget.setX(this.getX() + 2);
             textWidget.setY(this.getY() + 3);
 
