@@ -1,7 +1,10 @@
 {
     "key": "wood_warped",
     "translation": "miapi.material.wood.warped",
-    "icon": "textures/block/warped_planks.png",
+    "icon": {
+        "type": "item",
+        "item": "minecraft:warped_planks"
+    },
     "groups": [
         "wood"
     ],

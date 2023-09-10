@@ -1,7 +1,10 @@
 {
     "key": "wood_bamboo",
     "translation": "miapi.material.wood.bamboo",
-    "icon": "textures/block/bamboo_planks.png",
+    "icon": {
+        "type": "item",
+        "item": "minecraft:bamboo_planks"
+    },
     "groups": [
         "wood"
     ],

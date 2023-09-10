@@ -1,7 +1,10 @@
 {
     "key": "stone_blackstone",
     "translation": "miapi.material.stone.blackstone",
-    "icon": "textures/block/blackstone.png",
+    "icon": {
+        "type": "item",
+        "item": "minecraft:blackstone"
+    },
     "groups": [
         "stone"
     ],

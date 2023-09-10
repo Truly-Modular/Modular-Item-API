@@ -1,7 +1,10 @@
 {
     "key": "stone_diorite",
     "translation": "miapi.material.stone.diorite",
-    "icon": "textures/block/diorite.png",
+    "icon": {
+        "type": "item",
+        "item": "minecraft:diorite"
+    },
     "groups": [
         "stone"
     ],

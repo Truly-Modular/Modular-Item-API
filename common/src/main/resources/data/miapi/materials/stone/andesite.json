@@ -1,7 +1,10 @@
 {
     "key": "stone_andesite",
     "translation": "miapi.material.stone.andesite",
-    "icon": "textures/block/andesite.png",
+    "icon": {
+        "type": "item",
+        "item": "minecraft:andesite"
+    },
     "groups": [
         "stone"
     ],

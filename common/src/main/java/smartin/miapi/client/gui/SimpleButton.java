@@ -74,6 +74,7 @@ public class SimpleButton<T> extends InteractAbleWidget {
      */
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (isMouseOver(mouseX, mouseY) && (isEnabled)) {
+            playClickedSound();
             callback.accept(toCallback);
             return true;
 

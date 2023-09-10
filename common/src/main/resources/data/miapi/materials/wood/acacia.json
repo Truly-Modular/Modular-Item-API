@@ -1,7 +1,10 @@
 {
     "key": "wood_acacia",
     "translation": "miapi.material.wood.acacia",
-    "icon": "textures/block/acacia_planks.png",
+    "icon": {
+        "type": "item",
+        "item": "minecraft:acacia_planks"
+    },
     "groups": [
         "wood"
     ],

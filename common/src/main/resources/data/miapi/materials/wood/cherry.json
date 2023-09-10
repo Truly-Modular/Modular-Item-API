@@ -1,7 +1,10 @@
 {
     "key": "wood_cherry",
     "translation": "miapi.material.wood.cherry",
-    "icon": "textures/block/cherry_planks.png",
+    "icon": {
+        "type": "item",
+        "item": "minecraft:cherry_planks"
+    },
     "groups": [
         "wood"
     ],

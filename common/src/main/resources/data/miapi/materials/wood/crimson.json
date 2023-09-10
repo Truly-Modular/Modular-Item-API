@@ -1,7 +1,10 @@
 {
     "key": "wood_crimson",
     "translation": "miapi.material.wood.crimson",
-    "icon": "textures/block/crimson_planks.png",
+    "icon": {
+        "type": "item",
+        "item": "minecraft:crimson_planks"
+    },
     "groups": [
         "wood"
     ],

@@ -1,7 +1,10 @@
 {
     "key": "stone_deepslate",
     "translation": "miapi.material.stone.deepslate",
-    "icon": "textures/block/deepslate.png",
+    "icon": {
+        "type": "item",
+        "item": "minecraft:deepslate"
+    },
     "groups": [
         "stone"
     ],

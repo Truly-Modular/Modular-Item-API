@@ -1,7 +1,10 @@
 {
     "key": "wood_jungle",
     "translation": "miapi.material.wood.jungle",
-    "icon": "textures/block/jungle_planks.png",
+    "icon": {
+        "type": "item",
+        "item": "minecraft:jungle_planks"
+    },
     "groups": [
         "wood"
     ],

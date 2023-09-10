@@ -1,7 +1,10 @@
 {
     "key": "stone_purpur",
     "translation": "miapi.material.stone.purpur",
-    "icon": "textures/block/purpur_block.png",
+    "icon": {
+        "type": "item",
+        "item": "minecraft:purpur_block"
+    },
     "groups": [
         "stone"
     ],

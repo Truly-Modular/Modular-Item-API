@@ -1,7 +1,10 @@
 {
     "key": "stone_granite",
     "translation": "miapi.material.stone.granite",
-    "icon": "textures/block/granite.png",
+    "icon": {
+        "type": "item",
+        "item": "minecraft:granite"
+    },
     "groups": [
         "stone"
     ],

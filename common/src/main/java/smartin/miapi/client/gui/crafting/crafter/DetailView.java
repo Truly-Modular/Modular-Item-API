@@ -128,6 +128,7 @@ public class DetailView extends InteractAbleWidget {
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
             if (button == 0) {
                 if (isMouseOver(mouseX, mouseY)) {
+                    playClickedSound();
                     select(slot);
                 }
             }

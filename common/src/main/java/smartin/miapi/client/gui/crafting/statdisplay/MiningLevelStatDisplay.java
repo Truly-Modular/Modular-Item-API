@@ -1,6 +1,8 @@
 package smartin.miapi.client.gui.crafting.statdisplay;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.entity.EquipmentSlot;
@@ -13,6 +15,7 @@ import net.minecraft.util.math.ColorHelper;
 import smartin.miapi.Miapi;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.client.gui.*;
+import smartin.miapi.client.gui.crafting.CraftingScreen;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.modules.properties.MiningLevelProperty;
 
@@ -21,8 +24,9 @@ import java.text.DecimalFormatSymbols;
 import java.util.List;
 import java.util.Locale;
 
+@Environment(EnvType.CLIENT)
 public class MiningLevelStatDisplay extends InteractAbleWidget implements SingleStatDisplay {
-    public Identifier texture = new Identifier(Miapi.MOD_ID, "textures/block/gui/crafter/background.png");
+    public Identifier texture = CraftingScreen.BACKGROUND_TEXTURE;
     public ItemStack original = ItemStack.EMPTY;
     public ItemStack compareTo = ItemStack.EMPTY;
     public StatBar statBar;

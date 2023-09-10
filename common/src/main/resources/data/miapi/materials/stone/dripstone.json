@@ -1,7 +1,10 @@
 {
     "key": "dripstone",
     "translation": "miapi.material.stone.dripstone",
-    "icon": "textures/block/dripstone_block.png",
+    "icon": {
+        "type": "item",
+        "item": "minecraft:dripstone_block"
+    },
     "groups": [
         "stone"
     ],

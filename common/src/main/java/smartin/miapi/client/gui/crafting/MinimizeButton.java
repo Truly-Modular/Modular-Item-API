@@ -23,6 +23,7 @@ public class MinimizeButton extends InteractAbleWidget {
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (isMouseOver(mouseX, mouseY)) {
+            playClickedSound();
             if (isEnabled) minimize();
             else maximize();
             return true;

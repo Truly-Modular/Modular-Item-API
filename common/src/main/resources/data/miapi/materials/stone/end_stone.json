@@ -1,7 +1,10 @@
 {
     "key": "stone_end_stone",
     "translation": "miapi.material.stone.end_stone",
-    "icon": "textures/block/end_stone.png",
+    "icon": {
+        "type": "item",
+        "item": "minecraft:end_stone"
+    },
     "groups": [
         "stone"
     ],

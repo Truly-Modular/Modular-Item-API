@@ -1,7 +1,10 @@
 {
     "key": "red_sandstone",
     "translation": "miapi.material.stone.red_sandstone",
-    "icon": "textures/block/red_sandstone.png",
+    "icon": {
+        "type": "item",
+        "item": "minecraft:red_sandstone"
+    },
     "groups": [
         "stone"
     ],

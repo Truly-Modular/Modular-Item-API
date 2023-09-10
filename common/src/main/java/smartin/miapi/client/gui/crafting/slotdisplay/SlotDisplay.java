@@ -230,6 +230,7 @@ public class SlotDisplay extends InteractAbleWidget {
 
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
             if (this.isMouseOver(mouseX, mouseY)) {
+                playClickedSound();
                 setSelected(this.instance);
                 return true;
             }

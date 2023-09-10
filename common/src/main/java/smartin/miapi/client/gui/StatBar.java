@@ -6,14 +6,14 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
-import smartin.miapi.Miapi;
+import smartin.miapi.client.gui.crafting.CraftingScreen;
 
 /**
  * A complex utility to render a bar with 3 parts in different colors
  */
 @Environment(EnvType.CLIENT)
 public class StatBar extends InteractAbleWidget {
-    public Identifier texture = new Identifier(Miapi.MOD_ID, "textures/block/gui/crafter/background.png");
+    public Identifier texture = CraftingScreen.BACKGROUND_TEXTURE;
 
     double primaryPercent = 0;
     double secondaryPercent = 0;

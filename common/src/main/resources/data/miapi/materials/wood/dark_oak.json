@@ -1,7 +1,10 @@
 {
     "key": "wood_dark_oak",
     "translation": "miapi.material.wood.dark_oak",
-    "icon": "textures/block/dark_oak_planks.png",
+    "icon": {
+        "type": "item",
+        "item": "minecraft:dark_oak_planks"
+    },
     "groups": [
         "wood"
     ],

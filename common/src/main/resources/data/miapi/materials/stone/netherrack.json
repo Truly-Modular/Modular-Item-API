@@ -1,7 +1,10 @@
 {
     "key": "stone_netherrack",
     "translation": "miapi.material.stone.netherrack",
-    "icon": "textures/block/netherrack.png",
+    "icon": {
+        "type": "item",
+        "item": "minecraft:netherrack"
+    },
     "groups": [
         "stone"
     ],

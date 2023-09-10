@@ -1,7 +1,10 @@
 {
     "key": "stone_calcite",
     "translation": "miapi.material.stone.calcite",
-    "icon": "textures/block/calcite.png",
+    "icon": {
+        "type": "item",
+        "item": "minecraft:calcite"
+    },
     "groups": [
         "stone"
     ],

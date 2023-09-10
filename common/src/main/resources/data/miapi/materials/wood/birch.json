@@ -1,7 +1,10 @@
 {
     "key": "wood_birch",
     "translation": "miapi.material.wood.birch",
-    "icon": "textures/block/birch_planks.png",
+    "icon": {
+        "type": "item",
+        "item": "minecraft:birch_planks"
+    },
     "groups": [
         "wood"
     ],

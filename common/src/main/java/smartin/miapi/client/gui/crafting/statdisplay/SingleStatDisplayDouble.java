@@ -11,11 +11,11 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.ColorHelper;
-import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.HoverDescription;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.ScrollingTextWidget;
 import smartin.miapi.client.gui.StatBar;
+import smartin.miapi.client.gui.crafting.CraftingScreen;
 import smartin.miapi.config.MiapiConfig;
 
 import java.text.DecimalFormat;
@@ -25,7 +25,7 @@ import java.util.Locale;
 
 @Environment(EnvType.CLIENT)
 public abstract class SingleStatDisplayDouble extends InteractAbleWidget implements SingleStatDisplay, Drawable {
-    public Identifier texture = new Identifier(Miapi.MOD_ID, "textures/block/gui/crafter/background.png");
+    public Identifier texture = CraftingScreen.BACKGROUND_TEXTURE;
     public ItemStack original = ItemStack.EMPTY;
     public ItemStack compareTo = ItemStack.EMPTY;
     public StatBar statBar;

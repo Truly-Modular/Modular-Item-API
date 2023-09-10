@@ -1,7 +1,10 @@
 {
     "key": "wood_oak",
     "translation": "miapi.material.wood.oak",
-    "icon": "textures/block/oak_planks.png",
+    "icon": {
+        "type": "item",
+        "item": "minecraft:oak_planks"
+    },
     "groups": [
         "wood"
     ],

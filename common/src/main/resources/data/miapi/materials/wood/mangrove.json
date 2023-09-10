@@ -1,7 +1,10 @@
 {
     "key": "wood_mangrove",
     "translation": "miapi.material.wood.mangrove",
-    "icon": "textures/block/mangrove_planks.png",
+    "icon": {
+        "type": "item",
+        "item": "minecraft:mangrove_planks"
+    },
     "groups": [
         "wood"
     ],

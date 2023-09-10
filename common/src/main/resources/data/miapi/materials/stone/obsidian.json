@@ -1,7 +1,10 @@
 {
     "key": "stone_obsidian",
     "translation": "miapi.material.stone.obsidian",
-    "icon": "textures/block/obsidian.png",
+    "icon": {
+        "type": "item",
+        "item": "minecraft:obsidian"
+    },
     "groups": [
         "stone"
     ],

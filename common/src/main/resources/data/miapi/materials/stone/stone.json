@@ -1,7 +1,10 @@
 {
     "key": "stone",
     "translation": "miapi.material.stone",
-    "icon": "textures/block/cobblestone.png",
+    "icon": {
+        "type": "item",
+        "item": "minecraft:cobblestone"
+    },
     "groups": [
         "stone"
     ],

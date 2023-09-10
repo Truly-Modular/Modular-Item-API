@@ -1,7 +1,10 @@
 {
     "key": "wood_spruce",
     "translation": "miapi.material.wood.spruce",
-    "icon": "textures/block/spruce_planks.png",
+    "icon": {
+        "type": "item",
+        "item": "minecraft:spruce_planks"
+    },
     "groups": [
         "wood"
     ],

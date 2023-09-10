@@ -129,6 +129,7 @@ public class ReplaceView extends InteractAbleWidget {
         @Override
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
             if (isMouseOver(mouseX, mouseY) && (button == 0) && isAllowed) {
+                playClickedSound();
                 craft.accept(module);
                 return true;
 
