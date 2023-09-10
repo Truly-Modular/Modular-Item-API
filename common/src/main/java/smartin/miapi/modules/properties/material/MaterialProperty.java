@@ -4,7 +4,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.redpxnda.nucleus.util.Color;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
@@ -174,17 +173,4 @@ public class MaterialProperty implements ModuleProperty {
         moduleJson.addProperty(KEY, material);
         instance.moduleData.put("properties", Miapi.gson.toJson(moduleJson));
     }
-
-    public interface PaletteCreator {
-        Identifier createPalette(JsonElement element, String materialKey);
-    }
-
-    public interface FillerFunction {
-        void fill(Color last, Color current, Color next, int lastX, int currentX, int nextX, PixelPlacer placer);
-    }
-
-    public interface PixelPlacer {
-        void place(Color color, int x, int y);
-    }
-
 }

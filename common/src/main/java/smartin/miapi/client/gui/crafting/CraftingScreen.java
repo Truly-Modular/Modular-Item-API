@@ -1,7 +1,6 @@
 package smartin.miapi.client.gui.crafting;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.redpxnda.nucleus.math.InterpolateMode;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.ScreenHandlerProvider;
@@ -12,8 +11,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Util;
-import net.minecraft.util.math.MathHelper;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
@@ -37,8 +34,8 @@ import java.util.List;
 
 public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> implements ScreenHandlerProvider<CraftingScreenHandler> {
     public static final Identifier BACKGROUND_TEXTURE = new Identifier(Miapi.MOD_ID, "textures/block/gui/crafter/background.png");
-    public static final InterpolateMode EASE_IN = new InterpolateMode.EaseIn(5);
-    public static final InterpolateMode EASE_OUT = new InterpolateMode.EaseOut(5);
+    /*public static final InterpolateMode EASE_IN = new InterpolateMode.EaseIn(5);
+    public static final InterpolateMode EASE_OUT = new InterpolateMode.EaseOut(5);*/
     private ItemStack stack;
     private ModuleCrafter moduleCrafter;
     private StatDisplay statDisplay;
@@ -309,9 +306,10 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
         int j = (this.height - this.backgroundHeight) / 2;
         //(Identifier texture, int x, int y, int width, int height, float u, float v, int regionWidth, int regionHeight, int textureWidth, int textureHeight)
         drawContext.drawTexture(BACKGROUND_TEXTURE, i + 43, j + 14, 338, 199, 0.0f, 0.0f, 338, 199, 512, 512);
-        long timeSinceMod = Util.getMeasuringTimeMs()-minimizer.getLastChangeTime();
-        if (minimizer.isEnabled() || timeSinceMod < 1000) {
-            float progress = MathHelper.clamp(timeSinceMod/1000f, 0, 1);
+
+        // long timeSinceMod = Util.getMeasuringTimeMs()-minimizer.getLastChangeTime();
+        if (minimizer.isEnabled()/* || timeSinceMod < 1000*/) {
+            /*float progress = MathHelper.clamp(timeSinceMod/1000f, 0, 1);
             int start;
             int end;
             InterpolateMode interp;
@@ -330,7 +328,9 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
             if (disableScissor) drawContext.enableScissor(i+42, j+110, i+204, j+187);
             drawContext.drawTexture(BACKGROUND_TEXTURE, i + 43, j + pos, 160, 95, 0, 199, 160, 95, 512, 512);
             if (disableScissor) drawContext.disableScissor();
-            //InteractAbleWidget.drawSquareBorder(drawContext, i + 43, j + 111, 160, 77, 1, Color.RED.argb());
+            //InteractAbleWidget.drawSquareBorder(drawContext, i + 43, j + 111, 160, 77, 1, Color.RED.argb());*/
+
+            drawContext.drawTexture(BACKGROUND_TEXTURE, i + 43, j + 111, 160, 95, 0, 199, 160, 95, 512, 512);
         }
         super.render(drawContext, mouseX, mouseY, delta);
         this.drawMouseoverTooltip(drawContext, mouseX, mouseY);

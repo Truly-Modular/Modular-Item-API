@@ -1,7 +1,10 @@
 {
   "key": "wood",
   "translation": "miapi.material.wood",
-  "icon": "textures/block/oak_planks.png",
+  "icon": {
+    "type": "item",
+    "item": "minecraft:oak_planks"
+  },
   "groups": ["wood"],
   "hardness": 3,
   "density": 1.7,

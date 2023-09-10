@@ -3,10 +3,14 @@ package smartin.miapi.modules.properties.material;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import com.mojang.blaze3d.systems.RenderSystem;
 import dev.architectury.platform.Platform;
 import dev.architectury.utils.Env;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.gl.ShaderProgram;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -16,6 +20,7 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
+import org.jetbrains.annotations.Nullable;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.registries.RegistryInventory;
 
@@ -28,12 +33,19 @@ public class JsonMaterial implements Material {
     public String key;
     protected JsonElement rawJson;
     public Identifier materialColorPalette = Material.baseColorPalette;
+    public @Nullable MaterialIcons.MaterialIcon icon = null;
 
     public JsonMaterial(JsonObject element) {
         rawJson = element;
         key = element.get("key").getAsString();
         if (element.has("color_palette") && Platform.getEnvironment().equals(Env.CLIENT)) {
             setupMaterialPalette(element.get("color_palette"));
+        }
+        if (element.has("icon") && Platform.getEnvironment().equals(Env.CLIENT)) {
+            JsonElement emnt = element.get("icon");
+            if (emnt instanceof JsonPrimitive primitive && primitive.isString())
+                icon = new MaterialIcons.TextureMaterialIcon(new Identifier(primitive.getAsString()));
+            else icon = MaterialIcons.getMaterialIcon(key, emnt);
         }
     }
 
@@ -60,6 +72,18 @@ public class JsonMaterial implements Material {
         return groups;
     }
 
+    @Environment(EnvType.CLIENT)
+    public int renderIcon(DrawContext drawContext, int x, int y) {
+        if (icon == null) return 0;
+        return icon.render(drawContext, x, y);
+    }
+
+    @Environment(EnvType.CLIENT)
+    public boolean hasIcon() {
+        return icon != null;
+    }
+
+    @Environment(EnvType.CLIENT)
     @Override
     public VertexConsumer setupMaterialShader(VertexConsumerProvider provider, RenderLayer layer, ShaderProgram shader) {
         int id = 10;

@@ -2,7 +2,10 @@ package smartin.miapi.modules.properties.material;
 
 import com.google.gson.JsonElement;
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.gl.ShaderProgram;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -28,8 +31,10 @@ public interface Material {
 
     List<String> getGroups();
 
+    @Environment(EnvType.CLIENT)
     VertexConsumer setupMaterialShader(VertexConsumerProvider provider, RenderLayer layer, ShaderProgram shader);
 
+    @Environment(EnvType.CLIENT)
     static VertexConsumer setupMaterialShader(VertexConsumerProvider provider, RenderLayer layer, ShaderProgram shader, Identifier texture) {
         int id = 10;
         RenderSystem.setShaderTexture(id, texture);
@@ -37,6 +42,22 @@ public interface Material {
         int j = RenderSystem.getShaderTexture(id);
         shader.addSampler("MatColors", j);
         return provider.getBuffer(layer);
+    }
+
+    /**
+     * @param drawContext a DrawContext that can be used to draw shtuff
+     * @param x x pos of the icon
+     * @param y y pos of the icon
+     * @return how much to offset the text rendering by
+     */
+    @Environment(EnvType.CLIENT)
+    default int renderIcon(DrawContext drawContext, int x, int y) {
+        return 0;
+    }
+
+    @Environment(EnvType.CLIENT)
+    default boolean hasIcon() {
+        return false;
     }
 
     Map<ModuleProperty, JsonElement> materialProperties(String key);

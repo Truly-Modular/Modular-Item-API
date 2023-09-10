@@ -4,7 +4,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.InteractAbleWidget;
@@ -14,6 +13,8 @@ import smartin.miapi.client.gui.crafting.CraftingScreen;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.SlotProperty;
+import smartin.miapi.modules.properties.material.Material;
+import smartin.miapi.modules.properties.material.MaterialProperty;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -65,11 +66,11 @@ public class DetailView extends InteractAbleWidget {
     }
 
     class SlotButton extends InteractAbleWidget {
-        private final Identifier textureIcon;
         private final List<SlotButton> subSlots = new ArrayList<>();
         private final ScrollingTextWidget moduleName;
         private final ScrollingTextWidget materialName;
         private final SlotProperty.ModuleSlot slot;
+        private final Material material;
         private final int level;
         private boolean isOpened = false;
         private boolean isSelected = false;
@@ -84,12 +85,7 @@ public class DetailView extends InteractAbleWidget {
                 moduleInstance = new ItemModule.ModuleInstance(ItemModule.empty);
             }
             Text materialNameText = StatResolver.translateAndResolve("[translation.[material.translation]]", moduleInstance);
-            String path = StatResolver.resolveString("[material.icon]", moduleInstance);
-            if (path.isEmpty()) {
-                textureIcon = new Identifier(Miapi.MOD_ID, "textures/missing.png");
-            } else {
-                textureIcon = new Identifier(path);
-            }
+            material = MaterialProperty.getMaterial(moduleInstance);
 
             Text displayText = StatResolver.translateAndResolve(Miapi.MOD_ID + ".module." + moduleInstance.module.getName(), moduleInstance);
             moduleName = new ScrollingTextWidget(this.getX() + 10, this.getY(), this.width - 20, displayText, ColorHelper.Argb.getArgb(255, 255, 255, 255));
@@ -109,9 +105,8 @@ public class DetailView extends InteractAbleWidget {
             }
             drawTextureWithEdge(drawContext, CraftingScreen.BACKGROUND_TEXTURE, getX() + (level-1) * 2, getY(), 404, 18 * hoverOffset, 108, 18, getWidth() - (level-1) * 2, getHeight(), 512, 512, 4);
             int nameStart = getX() + 5 + (level-1) * 2;
-            if (textureIcon != null) {
-                nameStart += 17;
-                drawContext.drawTexture(textureIcon, this.getX() + 5 + (level-1) * 2, this.getY()+3, 0, 0, 16, 16, 16, 16);
+            if (material.hasIcon()) {
+                nameStart += 1 + material.renderIcon(drawContext, this.getX() + 5 + (level-1) * 2, this.getY()+3);
             }
 
             moduleName.setX(nameStart);

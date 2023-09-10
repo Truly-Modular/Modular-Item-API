@@ -21,6 +21,7 @@ import smartin.miapi.entity.ItemProjectileRenderer;
 import smartin.miapi.mixin.client.ItemRendererAccessor;
 import smartin.miapi.modules.MiapiPermissions;
 import smartin.miapi.modules.cache.ModularItemCache;
+import smartin.miapi.modules.properties.material.MaterialIcons;
 import smartin.miapi.modules.properties.material.PaletteCreators;
 import smartin.miapi.modules.properties.render.colorproviders.ColorProvider;
 import smartin.miapi.registries.RegistryInventory;
@@ -35,6 +36,7 @@ public class MiapiClient {
     public static void init() {
         registerShaders();
         PaletteCreators.setup();
+        MaterialIcons.setup();
         ColorProvider.setup();
         ClientLifecycleEvent.CLIENT_SETUP.register(MiapiClient::clientSetup);
         ClientLifecycleEvent.CLIENT_STARTED.register(MiapiClient::clientStart);
