@@ -105,7 +105,7 @@ public class DetailView extends InteractAbleWidget {
             }
             drawTextureWithEdge(drawContext, CraftingScreen.BACKGROUND_TEXTURE, getX() + (level-1) * 2, getY(), 404, 18 * hoverOffset, 108, 18, getWidth() - (level-1) * 2, getHeight(), 512, 512, 4);
             int nameStart = getX() + 5 + (level-1) * 2;
-            if (material.hasIcon()) {
+            if (material != null && material.hasIcon()) {
                 nameStart += 1 + material.renderIcon(drawContext, this.getX() + 5 + (level-1) * 2, this.getY()+3);
             }
 
