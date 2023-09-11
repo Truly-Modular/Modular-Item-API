@@ -23,6 +23,8 @@ import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.RenderPhase;
 import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.texture.SpriteAtlasTexture;
+import net.minecraft.client.texture.atlas.AtlasLoader;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.entity.attribute.ClampedEntityAttribute;
@@ -46,6 +48,7 @@ import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.blocks.ModularWorkBench;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.blocks.StatProvidingBlockEntity;
+import smartin.miapi.client.MaterialAtlasManager;
 import smartin.miapi.client.MiapiClient;
 import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
 import smartin.miapi.craft.stat.CraftingStat;
@@ -473,7 +476,7 @@ public class RegistryInventory {
                             //NativeImage.
                             return glintShader;
                         }))
-                        .texture(BLOCK_ATLAS_TEXTURE)
+                        .texture(Textures.create().add(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE,false,false).add(MaterialAtlasManager.MATERIAL_ID,false,false).build())
                         .depthTest(EQUAL_DEPTH_TEST)
                         .transparency(GLINT_TRANSPARENCY)
                         .lightmap(ENABLE_LIGHTMAP)
