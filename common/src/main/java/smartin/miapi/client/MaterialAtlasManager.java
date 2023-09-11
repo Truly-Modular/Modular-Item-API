@@ -9,6 +9,7 @@ import net.minecraft.resource.ResourceReloader;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.profiler.Profiler;
 import smartin.miapi.Miapi;
+import smartin.miapi.modules.properties.material.Material;
 import smartin.miapi.modules.properties.material.MaterialProperty;
 
 import java.util.ArrayList;
@@ -38,6 +39,7 @@ public class MaterialAtlasManager extends SpriteAtlasHolder {
                 this.afterReload((SpriteLoader.StitchResult) stitchResult, applyProfiler);
             }, applyExecutor);
         } catch (Exception e) {
+            Miapi.LOGGER.error("Error During TextureStitch", e);
             return CompletableFuture.runAsync(() -> {
                 SpriteLoader.StitchResult stitchResult;
                 afterReload(null, applyProfiler);
@@ -47,15 +49,18 @@ public class MaterialAtlasManager extends SpriteAtlasHolder {
 
     @Override
     public void afterReload(SpriteLoader.StitchResult invalidResult, Profiler profiler) {
-        Miapi.LOGGER.error(" RELOADING MATERIAL ATLAS");
         List<SpriteContents> materialSprites = new ArrayList<>();
         if (invalidResult != null) {
-            atlas.upload(invalidResult);
+            try{
+                atlas.upload(invalidResult);
+            }catch (Exception e){
+                Miapi.DEBUG_LOGGER.error("EXCEPTION ",e);
+            }
         }
 
         //PaletteCreators.paletteCreator.dispatcher().createPalette(json, key);
-        MaterialProperty.materials.forEach(((s, material) -> {
-
+        for (String s : MaterialProperty.materials.keySet()) {
+            Material material = MaterialProperty.materials.get(s);
             Identifier materialIdentifier = new Identifier(Miapi.MOD_ID, "textures/miapi_materials/" + s);
             if (invalidResult != null && atlas.getSprite(materialIdentifier).equals(invalidResult.missing())) {
                 //Sprite sprite = material.
@@ -63,19 +68,20 @@ public class MaterialAtlasManager extends SpriteAtlasHolder {
                 if (contents != null) {
                     materialSprites.add(material.generateSpriteContents());
                 } else {
-                    Miapi.LOGGER.error("Material could not generate a Sprite "+material.getKey());
+                    Miapi.LOGGER.error("Material could not generate a Sprite " + material.getKey());
                 }
             } else {
                 Sprite sprite = atlas.getSprite(materialIdentifier);
                 materialSprites.add(sprite.getContents());
             }
-        }));
+        }
         Executor executor = newSingleThreadExecutor();
         int shortMax = 32766;
-        int width = (int) (Math.floor((double) materialSprites.size() /shortMax)*256);
+        int width = (int) (Math.floor((double) materialSprites.size() / shortMax) * 256);
         int height = materialSprites.size() % shortMax;
         SpriteLoader spriteLoader = new SpriteLoader(MATERIAL_ID, 256, width, height);
         SpriteLoader.StitchResult stitchResult = spriteLoader.stitch(materialSprites, 0, executor);
+        Miapi.LOGGER.error("AtlasSize " + stitchResult.height() + " " + stitchResult.width());
         profiler.startTick();
         profiler.push("upload");
         this.atlas.upload(stitchResult);
