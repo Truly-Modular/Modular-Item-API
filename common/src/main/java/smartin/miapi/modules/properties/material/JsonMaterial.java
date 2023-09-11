@@ -74,8 +74,12 @@ public class JsonMaterial implements Material {
     }
 
     @Override
+    @Nullable
     public SpriteContents generateSpriteContents() {
-        return PaletteCreators.paletteCreator.dispatcher().contents(rawJson, key);
+        if(rawJson.getAsJsonObject().has("color_palette")){
+            return PaletteCreators.paletteCreator.dispatcher().contents(rawJson.getAsJsonObject().get("color_palette"), key);
+        }
+        return null;
     }
 
     @Environment(EnvType.CLIENT)

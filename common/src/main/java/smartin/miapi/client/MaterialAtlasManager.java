@@ -29,7 +29,6 @@ public class MaterialAtlasManager extends SpriteAtlasHolder {
         super(textureManager, new Identifier(MOD_ID, "textures/atlas/materials.png"), MATERIAL_ID);
     }
 
-    /*
     public CompletableFuture<Void> reload(ResourceReloader.Synchronizer synchronizer, ResourceManager manager, Profiler prepareProfiler, Profiler applyProfiler, Executor prepareExecutor, Executor applyExecutor) {
         try {
             CompletableFuture var10000 = SpriteLoader.fromAtlas(this.atlas).load(manager, this.sourcePath, 0, prepareExecutor).thenCompose(SpriteLoader.StitchResult::whenComplete);
@@ -58,7 +57,12 @@ public class MaterialAtlasManager extends SpriteAtlasHolder {
             Identifier materialIdentifier = new Identifier(Miapi.MOD_ID, "textures/miapi_materials/" + s);
             if (invalidResult != null && atlas.getSprite(materialIdentifier).equals(invalidResult.missing())) {
                 //Sprite sprite = material.
-                materialSprites.add(material.generateSpriteContents());
+                SpriteContents contents = material.generateSpriteContents();
+                if (contents != null) {
+                    materialSprites.add(material.generateSpriteContents());
+                } else {
+                    Miapi.LOGGER.error("Material could not generate a Sprite "+material.getKey());
+                }
             } else {
                 Sprite sprite = atlas.getSprite(materialIdentifier);
                 materialSprites.add(sprite.getContents());
@@ -73,8 +77,6 @@ public class MaterialAtlasManager extends SpriteAtlasHolder {
         profiler.pop();
         profiler.endTick();
     }
-
-     */
 
     public Sprite getMaterialSprite(Identifier id) {
         return getSprite(id);
