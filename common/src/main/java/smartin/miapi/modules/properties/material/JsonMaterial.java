@@ -14,6 +14,7 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.texture.SpriteContents;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
@@ -70,6 +71,11 @@ public class JsonMaterial implements Material {
             }
         }
         return groups;
+    }
+
+    @Override
+    public SpriteContents generateSpriteContents() {
+        return PaletteCreators.paletteCreator.dispatcher().contents(rawJson, key);
     }
 
     @Environment(EnvType.CLIENT)

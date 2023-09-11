@@ -9,10 +9,7 @@ import com.redpxnda.nucleus.codec.MiscCodecs;
 import com.redpxnda.nucleus.util.Color;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.resource.metadata.AnimationResourceMetadata;
-import net.minecraft.client.texture.NativeImage;
-import net.minecraft.client.texture.NativeImageBackedTexture;
-import net.minecraft.client.texture.SpriteContents;
-import net.minecraft.client.texture.SpriteDimensions;
+import net.minecraft.client.texture.*;
 import net.minecraft.util.Identifier;
 import smartin.miapi.Miapi;
 
@@ -54,87 +51,153 @@ public class PaletteCreators {
             }
         });
 
-        creators.put("texture", (json, material) -> {
-            if (json instanceof JsonObject object && object.has("location"))
-                return new Identifier(object.get("location").getAsString()).withPrefixedPath("textures/miapi_materials/").withSuffixedPath(".png");
-            else if (json instanceof JsonObject)
-                throw new JsonParseException("ModularItem API failed to parse texture sampling palette for material '" + material + "'! Missing member 'location'.");
-            else
-                throw new JsonParseException("ModularItem API failed to parse texture sampling palette for material '" + material + "'! Not a JSON object -> " + json);
+        creators.put("texture", new PaletteCreator() {
+            @Override
+            public Identifier createPalette(JsonElement json, String material) {
+                if (json instanceof JsonObject object && object.has("location"))
+                    return new Identifier(object.get("location").getAsString()).withPrefixedPath("textures/miapi_materials/").withSuffixedPath(".png");
+                else if (json instanceof JsonObject)
+                    throw new JsonParseException("ModularItem API failed to parse texture sampling palette for material '" + material + "'! Missing member 'location'.");
+                else
+                    throw new JsonParseException("ModularItem API failed to parse texture sampling palette for material '" + material + "'! Not a JSON object -> " + json);
+            }
+
+            @Override
+            public SpriteContents contents(JsonElement element, String materialKey) {
+                //TODO
+                return null;
+            }
         });
 
         Codec<Integer> stringToIntCodec = Codec.STRING.xmap(Integer::parseInt, String::valueOf);
-        creators.put("grayscale_map", (json, material) -> {
-            if (json instanceof JsonObject object) {
-                try {
-                    if (!object.has("colors"))
-                        throw new JsonParseException("ModularItem API failed to parse grayscale_map sampling palette for material '" + material + "'! Missing member 'colors'.");
+        creators.put("grayscale_map", new PaletteCreator() {
+            @Override
+            public Identifier createPalette(JsonElement json, String material) {
+                if (json instanceof JsonObject object) {
+                    try {
+                        if (!object.has("colors"))
+                            throw new JsonParseException("ModularItem API failed to parse grayscale_map sampling palette for material '" + material + "'! Missing member 'colors'.");
 
-                    JsonElement element = object.get("colors");
-                    Map<Integer, Color> colors = new HashMap<>(MiscCodecs.quickParse(
-                            element, Codec.unboundedMap(stringToIntCodec, MiscCodecs.COLOR),
-                            s -> Miapi.LOGGER.error("Failed to create material palette color map from JSON '" + element + "'! -> " + s)
-                    ));
-                    String key = object.has("filler") ? object.get("filler").getAsString() : "interpolate";
-                    FillerFunction filler = fillers.getOrDefault(key, interpolateFiller);
+                        JsonElement element = object.get("colors");
+                        Map<Integer, Color> colors = new HashMap<>(MiscCodecs.quickParse(
+                                element, Codec.unboundedMap(stringToIntCodec, MiscCodecs.COLOR),
+                                s -> Miapi.LOGGER.error("Failed to create material palette color map from JSON '" + element + "'! -> " + s)
+                        ));
+                        String key = object.has("filler") ? object.get("filler").getAsString() : "interpolate";
+                        FillerFunction filler = fillers.getOrDefault(key, interpolateFiller);
 
-                    Color black = new Color(0, 0, 0, 255);
-                    Color white = new Color(255, 255, 255, 255);
-                    if (!colors.containsKey(0))
-                        colors.put(0, black);
-                    if (!colors.containsKey(255))
-                        colors.put(255, white);
+                        Color black = new Color(0, 0, 0, 255);
+                        Color white = new Color(255, 255, 255, 255);
+                        if (!colors.containsKey(0))
+                            colors.put(0, black);
+                        if (!colors.containsKey(255))
+                            colors.put(255, white);
 
-                    Identifier identifier = new Identifier(Miapi.MOD_ID, "textures/miapi_materials/" + material);
-                    NativeImage image = new NativeImage(256, 1, false);
-                    PixelPlacer placer = (color, x, y) -> image.setColor(x, y, color.abgr());
+                        Identifier identifier = new Identifier(Miapi.MOD_ID, "textures/miapi_materials/" + material);
+                        NativeImage image = new NativeImage(256, 1, false);
+                        PixelPlacer placer = (color, x, y) -> image.setColor(x, y, color.abgr());
 
-                    List<Map.Entry<Integer, Color>> list = colors.entrySet().stream().sorted(Map.Entry.comparingByKey()).toList();
-                    for (int i = 0; i < list.size(); i++) {
-                        Map.Entry<Integer, Color> last = i == 0 ? Map.entry(0, black) : list.get(i - 1);
-                        Map.Entry<Integer, Color> current = list.get(i);
-                        Map.Entry<Integer, Color> next = i == list.size() - 1 ? Map.entry(255, white) : list.get(i + 1);
+                        List<Map.Entry<Integer, Color>> list = colors.entrySet().stream().sorted(Map.Entry.comparingByKey()).toList();
+                        for (int i = 0; i < list.size(); i++) {
+                            Map.Entry<Integer, Color> last = i == 0 ? Map.entry(0, black) : list.get(i - 1);
+                            Map.Entry<Integer, Color> current = list.get(i);
+                            Map.Entry<Integer, Color> next = i == list.size() - 1 ? Map.entry(255, white) : list.get(i + 1);
 
-                        filler.fill(
-                                last.getValue(),
-                                current.getValue(),
-                                next.getValue(),
-                                last.getKey(),
-                                current.getKey(),
-                                next.getKey(),
-                                placer
-                        );
-                        image.setColor(current.getKey(), 0, current.getValue().abgr());
-                    }
-                    image.untrack();
+                            filler.fill(
+                                    last.getValue(),
+                                    current.getValue(),
+                                    next.getValue(),
+                                    last.getKey(),
+                                    current.getKey(),
+                                    next.getKey(),
+                                    placer
+                            );
+                            image.setColor(current.getKey(), 0, current.getValue().abgr());
+                        }
+                        image.untrack();
 
                     /*
                     Smartin, this is the sprite contents object you would need to somehow get to the afterReload method. do that however you want
                      */
-                    new SpriteContents(identifier, new SpriteDimensions(256, 1), image, AnimationResourceMetadata.EMPTY);
+                        SpriteContents spritecontents = new SpriteContents(identifier, new SpriteDimensions(256, 1), image, AnimationResourceMetadata.EMPTY);
 
-                    MinecraftClient.getInstance().getTextureManager().registerTexture(identifier, new NativeImageBackedTexture(image)); // normal code, will remove after full atlas impl
-                    return identifier;
-                } catch (Exception e) {
-                    RuntimeException runtime = new RuntimeException("Exception parsing Material " + material);
-                    runtime.addSuppressed(e);
-                    throw runtime;
+                        MinecraftClient.getInstance().getTextureManager().registerTexture(identifier, new NativeImageBackedTexture(image)); // normal code, will remove after full atlas impl
+                        return identifier;
+                    } catch (Exception e) {
+                        RuntimeException runtime = new RuntimeException("Exception parsing Material " + material);
+                        runtime.addSuppressed(e);
+                        throw runtime;
+                    }
+
                 }
-
-                /*Path path = Path.of("miapi_dev").resolve("material_" + material + "_palette.png");
-                try {
-                    image.writeTo(path);
-                } catch (IOException e) {
-                    //throw new RuntimeException(e);
-                }*/
-
+                throw new JsonParseException("ModularItem API failed to parse grayscale_map sampling palette for material '" + material + "'! Not a JSON object -> " + json);
             }
-            throw new JsonParseException("ModularItem API failed to parse grayscale_map sampling palette for material '" + material + "'! Not a JSON object -> " + json);
+
+            @Override
+            public SpriteContents contents(JsonElement json, String material) {
+                if (json instanceof JsonObject object) {
+                    try {
+                        if (!object.has("colors"))
+                            throw new JsonParseException("ModularItem API failed to parse grayscale_map sampling palette for material '" + material + "'! Missing member 'colors'.");
+
+                        JsonElement element = object.get("colors");
+                        Map<Integer, Color> colors = new HashMap<>(MiscCodecs.quickParse(
+                                element, Codec.unboundedMap(stringToIntCodec, MiscCodecs.COLOR),
+                                s -> Miapi.LOGGER.error("Failed to create material palette color map from JSON '" + element + "'! -> " + s)
+                        ));
+                        String key = object.has("filler") ? object.get("filler").getAsString() : "interpolate";
+                        FillerFunction filler = fillers.getOrDefault(key, interpolateFiller);
+
+                        Color black = new Color(0, 0, 0, 255);
+                        Color white = new Color(255, 255, 255, 255);
+                        if (!colors.containsKey(0))
+                            colors.put(0, black);
+                        if (!colors.containsKey(255))
+                            colors.put(255, white);
+
+                        Identifier identifier = new Identifier(Miapi.MOD_ID, "textures/miapi_materials/" + material);
+                        NativeImage image = new NativeImage(256, 1, false);
+                        PixelPlacer placer = (color, x, y) -> image.setColor(x, y, color.abgr());
+
+                        List<Map.Entry<Integer, Color>> list = colors.entrySet().stream().sorted(Map.Entry.comparingByKey()).toList();
+                        for (int i = 0; i < list.size(); i++) {
+                            Map.Entry<Integer, Color> last = i == 0 ? Map.entry(0, black) : list.get(i - 1);
+                            Map.Entry<Integer, Color> current = list.get(i);
+                            Map.Entry<Integer, Color> next = i == list.size() - 1 ? Map.entry(255, white) : list.get(i + 1);
+
+                            filler.fill(
+                                    last.getValue(),
+                                    current.getValue(),
+                                    next.getValue(),
+                                    last.getKey(),
+                                    current.getKey(),
+                                    next.getKey(),
+                                    placer
+                            );
+                            image.setColor(current.getKey(), 0, current.getValue().abgr());
+                        }
+                        image.untrack();
+
+                    /*
+                    Smartin, this is the sprite contents object you would need to somehow get to the afterReload method. do that however you want
+                     */
+                        return new SpriteContents(identifier, new SpriteDimensions(256, 1), image, AnimationResourceMetadata.EMPTY);
+                    } catch (Exception e) {
+                        RuntimeException runtime = new RuntimeException("Exception parsing Material " + material);
+                        runtime.addSuppressed(e);
+                        throw runtime;
+                    }
+
+                }
+                throw new JsonParseException("ModularItem API failed to parse grayscale_map sampling palette for material '" + material + "'! Not a JSON object -> " + json);
+            }
         });
     }
 
     public interface PaletteCreator {
         Identifier createPalette(JsonElement element, String materialKey);
+
+        SpriteContents contents(JsonElement element, String materialKey);
     }
 
     public interface FillerFunction {

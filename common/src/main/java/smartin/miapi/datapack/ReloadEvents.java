@@ -149,15 +149,9 @@ public class ReloadEvents {
             DATA_PACKS.clear();
             MinecraftClient.getInstance().execute(() -> {
                 ReloadEvents.START.fireEvent(true);
-                while (DATA_PACKS.size() != dataPackSize) {
-                    try {
-                        Thread.sleep(10);
-                    } catch (InterruptedException e) {
-                    }
-                }
                 try {
                     int counter = 0;
-                    while (DATA_PACKS.size() != dataPackSize || counter == -1) {
+                    while (DATA_PACKS.size() != dataPackSize && counter != -1) {
                         counter++;
                         Thread.sleep(10);
                         /*
@@ -171,10 +165,15 @@ public class ReloadEvents {
                 } catch (InterruptedException e) {
                     MinecraftClient.getInstance().disconnect();
                 }
+                try {
+                    Thread.sleep(10);
+                } catch (InterruptedException e) {
+                    //throw new RuntimeException(e);
+                }
                 DATA_PACKS.forEach(DataPackLoader::trigger);
                 ReloadEvents.MAIN.fireEvent(true);
                 ReloadEvents.END.fireEvent(true);
-                Miapi.LOGGER.info("Client load took "+ (double) (System.nanoTime()-timeStart) / 1000 / 1000+ " ms");
+                Miapi.LOGGER.info("Client load took " + (double) (System.nanoTime() - timeStart) / 1000 / 1000 + " ms");
                 dataPackSize = Integer.MAX_VALUE;
                 inReload = false;
             });

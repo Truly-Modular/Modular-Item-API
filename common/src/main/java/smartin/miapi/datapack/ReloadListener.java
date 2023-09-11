@@ -29,12 +29,16 @@ public class ReloadListener implements ResourceReloader {
         ReloadEvents.START.fireEvent(false);
         Map<String, String> data = new LinkedHashMap<>();
 
-        if(Platform.isFabric()){
+        if (Platform.isFabric() && false) {
             //TODO:figure out why this does nto work on forge.
             manager.streamResourcePacks().forEach(resourcePack -> {
+                Miapi.DEBUG_LOGGER.error("loaded " + resourcePack.getName() + " DataPack");
                 ReloadEvents.syncedPaths.keySet().forEach(nameSpace -> {
+                    Miapi.DEBUG_LOGGER.warn("checking Namespace " + nameSpace);
                     resourcePack.findResources(ResourceType.SERVER_DATA, nameSpace, "", (identifier, inputSupplier) -> {
+                        Miapi.DEBUG_LOGGER.warn("checking " + identifier);
                         if (ReloadEvents.syncedPaths.get(nameSpace).stream().anyMatch(path -> identifier.getPath().startsWith(path))) {
+                            Miapi.DEBUG_LOGGER.warn("Loading " + identifier);
                             try {
                                 BufferedReader reader = new BufferedReader(new InputStreamReader(inputSupplier.get(), StandardCharsets.UTF_8));
                                 String dataString = reader.lines().collect(Collectors.joining());
@@ -47,8 +51,7 @@ public class ReloadListener implements ResourceReloader {
                     });
                 });
             });
-        }
-        else{
+        } else {
             ReloadEvents.syncedPaths.forEach((modID, dataPaths) -> {
                 dataPaths.forEach(dataPath -> {
                     Map<Identifier, List<Resource>> map = manager.findAllResources(dataPath, (fileName) -> true);
