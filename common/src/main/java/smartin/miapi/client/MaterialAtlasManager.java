@@ -69,7 +69,7 @@ public class MaterialAtlasManager extends SpriteAtlasHolder {
             }
         }));
         Executor executor = newSingleThreadExecutor();
-        SpriteLoader spriteLoader = new SpriteLoader(MATERIAL_ID, 256, 256, MaterialProperty.materials.size());
+        SpriteLoader spriteLoader = new SpriteLoader(MATERIAL_ID, 256, 256, materialSprites.size());
         SpriteLoader.StitchResult stitchResult = spriteLoader.stitch(materialSprites, 0, executor);
         profiler.startTick();
         profiler.push("upload");
