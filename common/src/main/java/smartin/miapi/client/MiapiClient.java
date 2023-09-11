@@ -58,14 +58,20 @@ public class MiapiClient {
     }
 
     protected static void clientSetup(MinecraftClient client) {
+        Miapi.DEBUG_LOGGER.error("CLIENT SETUP");
+        MinecraftClient mc = MinecraftClient.getInstance();
+        mc.getTextureManager();
+        //materialAtlasManager = new MaterialAtlasManager(mc.getTextureManager());
+        //((ReloadableResourceManagerImpl) mc.getResourceManager()).registerReloader(materialAtlasManager);
         SpriteLoader.setup();
     }
 
     protected static void clientStart(MinecraftClient client) {
+        Miapi.DEBUG_LOGGER.error("CLIENT START");
         MinecraftClient mc = MinecraftClient.getInstance();
+        mc.getTextureManager();
         materialAtlasManager = new MaterialAtlasManager(mc.getTextureManager());
         ((ReloadableResourceManagerImpl) mc.getResourceManager()).registerReloader(materialAtlasManager);
-
         RegistryInventory.addCallback(RegistryInventory.modularItems, item -> {
             ((ItemRendererAccessor) client.getItemRenderer()).color().register(new CustomColorProvider(), item);
         });

@@ -30,6 +30,7 @@ public class MaterialAtlasManager extends SpriteAtlasHolder {
     }
 
     public CompletableFuture<Void> reload(ResourceReloader.Synchronizer synchronizer, ResourceManager manager, Profiler prepareProfiler, Profiler applyProfiler, Executor prepareExecutor, Executor applyExecutor) {
+        Miapi.DEBUG_LOGGER.error("RELOAD MATERIALATLAS");
         try {
             CompletableFuture var10000 = SpriteLoader.fromAtlas(this.atlas).load(manager, this.sourcePath, 0, prepareExecutor).thenCompose(SpriteLoader.StitchResult::whenComplete);
             Objects.requireNonNull(synchronizer);
@@ -46,6 +47,7 @@ public class MaterialAtlasManager extends SpriteAtlasHolder {
 
     @Override
     public void afterReload(SpriteLoader.StitchResult invalidResult, Profiler profiler) {
+        Miapi.LOGGER.error(" RELOADING MATERIAL ATLAS");
         List<SpriteContents> materialSprites = new ArrayList<>();
         if (invalidResult != null) {
             atlas.upload(invalidResult);
@@ -69,7 +71,10 @@ public class MaterialAtlasManager extends SpriteAtlasHolder {
             }
         }));
         Executor executor = newSingleThreadExecutor();
-        SpriteLoader spriteLoader = new SpriteLoader(MATERIAL_ID, 256, 256, materialSprites.size());
+        int shortMax = 32766;
+        int width = (int) (Math.floor((double) materialSprites.size() /shortMax)*256);
+        int height = materialSprites.size() % shortMax;
+        SpriteLoader spriteLoader = new SpriteLoader(MATERIAL_ID, 256, width, height);
         SpriteLoader.StitchResult stitchResult = spriteLoader.stitch(materialSprites, 0, executor);
         profiler.startTick();
         profiler.push("upload");
