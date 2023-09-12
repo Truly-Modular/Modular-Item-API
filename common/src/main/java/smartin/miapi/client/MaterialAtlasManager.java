@@ -24,10 +24,11 @@ import static smartin.miapi.Miapi.MOD_ID;
 @Environment(value = EnvType.CLIENT)
 public class MaterialAtlasManager extends SpriteAtlasHolder {
     public static final Identifier MATERIAL_ID = new Identifier(MOD_ID, "miapi_materials");
+    public static final Identifier MATERIAL_ATLAS_ID = new Identifier(MOD_ID, "textures/atlas/materials.png");
     private Identifier sourcePath = new Identifier(MOD_ID, "miapi_materials");
 
     public MaterialAtlasManager(TextureManager textureManager) {
-        super(textureManager, new Identifier(MOD_ID, "textures/atlas/materials.png"), MATERIAL_ID);
+        super(textureManager, MATERIAL_ATLAS_ID, MATERIAL_ID);
     }
 
     public CompletableFuture<Void> reload(ResourceReloader.Synchronizer synchronizer, ResourceManager manager, Profiler prepareProfiler, Profiler applyProfiler, Executor prepareExecutor, Executor applyExecutor) {

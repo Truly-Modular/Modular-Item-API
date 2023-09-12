@@ -448,7 +448,7 @@ public class RegistryInventory {
                 256, true, true,
                 RenderLayer.MultiPhaseParameters.builder()
                         .program(new RenderPhase.ShaderProgram(() -> entityTranslucentMaterialShader))
-                        .texture(Textures.create().add(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE,false,false).add(MaterialAtlasManager.MATERIAL_ID,false,false).build())
+                        .texture(Textures.create().add(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE,false,false).add(MaterialAtlasManager.MATERIAL_ATLAS_ID,false,false).build())
                         .transparency(TRANSLUCENT_TRANSPARENCY)
                         .lightmap(ENABLE_LIGHTMAP)
                         .overlay(ENABLE_OVERLAY_COLOR).build(true)
