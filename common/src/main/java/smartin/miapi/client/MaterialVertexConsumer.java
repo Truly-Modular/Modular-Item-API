@@ -41,7 +41,7 @@ public class MaterialVertexConsumer implements VertexConsumer {
 
     @Override
     public VertexConsumer light(int u, int v) {
-        return null;
+        return delegate.light(u,v);
     }
 
     @Override
