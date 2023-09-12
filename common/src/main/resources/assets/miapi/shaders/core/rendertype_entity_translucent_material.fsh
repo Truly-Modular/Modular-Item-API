@@ -4,7 +4,7 @@
 #moj_import <miapi_grayscale_to_palette.glsl>
 
 uniform sampler2D Sampler0;
-uniform sampler2D MatColors;
+uniform sampler2D Sampler1;
 
 uniform vec4 ColorModulator;
 uniform float FogStart;
@@ -21,7 +21,7 @@ out vec4 fragColor;
 
 void main() {
     vec4 grayscaleColor = texture(Sampler0, texCoord0);
-    vec4 color = get_palette_color(MatColors, grayscaleColor) * vertexColor * ColorModulator;
+    vec4 color = get_palette_color(Sampler1, texCoord1, grayscaleColor) * vertexColor * ColorModulator;
 
     if (color.a < 0.1) {
         discard;

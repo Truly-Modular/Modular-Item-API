@@ -24,7 +24,6 @@ import net.minecraft.client.render.RenderPhase;
 import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.texture.SpriteAtlasTexture;
-import net.minecraft.client.texture.atlas.AtlasLoader;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.entity.attribute.ClampedEntityAttribute;
@@ -430,18 +429,18 @@ public class RegistryInventory {
     public static class Client {
         public static final Identifier customGlintTexture = new Identifier(MOD_ID, "textures/custom_glint.png");
 
-        public static ShaderProgram translucentMaterialShader;
+        //public static ShaderProgram translucentMaterialShader;
         public static ShaderProgram entityTranslucentMaterialShader;
         public static ShaderProgram glintShader;
 
-        public static final RenderLayer translucentMaterialRenderType = RenderLayer.of(
+        /*public static final RenderLayer translucentMaterialRenderType = RenderLayer.of(
                 "miapi_translucent_material", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL, VertexFormat.DrawMode.QUADS,
                 0x200000, true, true,
                 RenderLayer.MultiPhaseParameters.builder()
                         .lightmap(ENABLE_LIGHTMAP).program(new RenderPhase.ShaderProgram(() -> translucentMaterialShader))
                         .texture(MIPMAP_BLOCK_ATLAS_TEXTURE)
                         .transparency(TRANSLUCENT_TRANSPARENCY)
-                        .target(TRANSLUCENT_TARGET).build(true));
+                        .target(TRANSLUCENT_TARGET).build(true));*/
         public static final RenderLayer entityTranslucentMaterialRenderType = RenderLayer.of(
                 "miapi_entity_translucent_material",
                 VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL,
@@ -449,7 +448,7 @@ public class RegistryInventory {
                 256, true, true,
                 RenderLayer.MultiPhaseParameters.builder()
                         .program(new RenderPhase.ShaderProgram(() -> entityTranslucentMaterialShader))
-                        .texture(BLOCK_ATLAS_TEXTURE)
+                        .texture(Textures.create().add(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE,false,false).add(MaterialAtlasManager.MATERIAL_ID,false,false).build())
                         .transparency(TRANSLUCENT_TRANSPARENCY)
                         .lightmap(ENABLE_LIGHTMAP)
                         .overlay(ENABLE_OVERLAY_COLOR).build(true)
