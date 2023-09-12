@@ -4,16 +4,11 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import com.mojang.blaze3d.systems.RenderSystem;
 import dev.architectury.platform.Platform;
 import dev.architectury.utils.Env;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gl.ShaderProgram;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.texture.SpriteContents;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -39,19 +34,15 @@ public class JsonMaterial implements Material {
     public JsonMaterial(JsonObject element) {
         rawJson = element;
         key = element.get("key").getAsString();
-        if (element.has("color_palette") && Platform.getEnvironment().equals(Env.CLIENT)) {
+        /*if (element.has("color_palette") && Platform.getEnvironment().equals(Env.CLIENT)) {
             setupMaterialPalette(element.get("color_palette"));
-        }
+        }*/
         if (element.has("icon") && Platform.getEnvironment().equals(Env.CLIENT)) {
             JsonElement emnt = element.get("icon");
             if (emnt instanceof JsonPrimitive primitive && primitive.isString())
                 icon = new MaterialIcons.TextureMaterialIcon(new Identifier(primitive.getAsString()));
             else icon = MaterialIcons.getMaterialIcon(key, emnt);
         }
-    }
-
-    public void setupMaterialPalette(JsonElement json) {
-        materialColorPalette = PaletteCreators.paletteCreator.dispatcher().createPalette(json, key);
     }
 
     @Override
@@ -73,13 +64,23 @@ public class JsonMaterial implements Material {
         return groups;
     }
 
+    @Environment(EnvType.CLIENT)
     @Override
     @Nullable
     public SpriteContents generateSpriteContents() {
-        if(rawJson.getAsJsonObject().has("color_palette")){
-            return PaletteCreators.paletteCreator.dispatcher().contents(rawJson.getAsJsonObject().get("color_palette"), key);
+        if (rawJson.getAsJsonObject().has("color_palette")) {
+            SpriteContents contents = PaletteCreators.paletteCreator.dispatcher().generateSprite(rawJson.getAsJsonObject().get("color_palette"), key);
+            materialColorPalette = contents.getId();
+            return contents;
         }
         return null;
+    }
+
+    @Environment(EnvType.CLIENT)
+    @Override
+    @Nullable
+    public Identifier getSpriteId() {
+        return materialColorPalette;
     }
 
     @Environment(EnvType.CLIENT)
@@ -93,7 +94,7 @@ public class JsonMaterial implements Material {
         return icon != null;
     }
 
-    @Environment(EnvType.CLIENT)
+    /*@Environment(EnvType.CLIENT)
     @Override
     public VertexConsumer setupMaterialShader(VertexConsumerProvider provider, RenderLayer layer, ShaderProgram shader) {
         int id = 10;
@@ -102,7 +103,7 @@ public class JsonMaterial implements Material {
         int j = RenderSystem.getShaderTexture(id);
         shader.addSampler("MatColors", j);
         return provider.getBuffer(layer);
-    }
+    }*/
 
     @Override
     public Map<ModuleProperty, JsonElement> materialProperties(String key) {

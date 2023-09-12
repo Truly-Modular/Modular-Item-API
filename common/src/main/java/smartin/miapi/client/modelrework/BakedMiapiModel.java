@@ -58,7 +58,7 @@ public class BakedMiapiModel implements MiapiModel {
                 model.getQuads(null, direction, Random.create()).forEach(bakedQuad -> {
                     consumer.quad(matrices.peek(), bakedQuad, color.redAsFloat(), color.greenAsFloat(), color.blueAsFloat(), lightValue, overlay);
                 });
-                immediate.draw();
+                immediate.draw(); // todo draw calls....
                 MinecraftClient.getInstance().world.getProfiler().pop();
 
                 if (settings.shouldRender()) {

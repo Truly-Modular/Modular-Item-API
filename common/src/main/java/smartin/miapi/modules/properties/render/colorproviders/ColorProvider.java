@@ -1,11 +1,14 @@
 package smartin.miapi.modules.properties.render.colorproviders;
 
 import com.redpxnda.nucleus.util.Color;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.render.RenderLayers;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionUtil;
+import smartin.miapi.client.MaterialVertexConsumer;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.material.Material;
 import smartin.miapi.modules.properties.material.MaterialProperty;
@@ -32,6 +35,7 @@ public interface ColorProvider {
         return Color.WHITE;
     }
 
+    @Environment(EnvType.CLIENT)
     VertexConsumer getConsumer(VertexConsumerProvider vertexConsumers);
 
     ColorProvider getInstance(ItemStack stack, ItemModule.ModuleInstance instance);
@@ -46,9 +50,10 @@ public interface ColorProvider {
             this.material = material;
         }
 
+        @Environment(EnvType.CLIENT)
         @Override
         public VertexConsumer getConsumer(VertexConsumerProvider vertexConsumers) {
-            return material.setupMaterialShader(vertexConsumers, RegistryInventory.Client.entityTranslucentMaterialRenderType, RegistryInventory.Client.entityTranslucentMaterialShader);
+            return new MaterialVertexConsumer(vertexConsumers.getBuffer(RegistryInventory.Client.entityTranslucentMaterialRenderType), material);
         }
 
         @Override
@@ -71,6 +76,7 @@ public interface ColorProvider {
             this.stack = stack;
         }
 
+        @Environment(EnvType.CLIENT)
         @Override
         public VertexConsumer getConsumer(VertexConsumerProvider vertexConsumers) {
             return vertexConsumers.getBuffer(RenderLayers.getItemLayer(stack, true));
@@ -100,6 +106,7 @@ public interface ColorProvider {
             return potioncolor;
         }
 
+        @Environment(EnvType.CLIENT)
         @Override
         public VertexConsumer getConsumer(VertexConsumerProvider vertexConsumers) {
             return vertexConsumers.getBuffer(RenderLayers.getItemLayer(stack, true));
