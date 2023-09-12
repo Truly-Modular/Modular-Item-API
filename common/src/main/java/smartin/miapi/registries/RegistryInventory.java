@@ -447,11 +447,20 @@ public class RegistryInventory {
                 VertexFormat.DrawMode.QUADS,
                 256, true, true,
                 RenderLayer.MultiPhaseParameters.builder()
-                        .program(new RenderPhase.ShaderProgram(() -> entityTranslucentMaterialShader))
-                        .texture(Textures.create().add(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE,false,false).add(MaterialAtlasManager.MATERIAL_ATLAS_ID,false,false).build())
+                        .program(new RenderPhase.ShaderProgram(() -> {
+                            int id = 10;
+                            RenderSystem.setShaderTexture(id, MaterialAtlasManager.MATERIAL_ATLAS_ID);
+                            RenderSystem.bindTexture(id);
+                            int j = RenderSystem.getShaderTexture(id);
+                            entityTranslucentMaterialShader.addSampler("MaterialAtlas", j);
+                            //entityTranslucentMaterialShader.getUniform("materialUV").set(0, 3);
+                            //entityTranslucentMaterialShader.getUniformOrDefault("materialUV").set(0,5);
+                            return entityTranslucentMaterialShader;
+                        }))
+                        .texture(Textures.create().add(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, false, false).add(MaterialAtlasManager.MATERIAL_ATLAS_ID, false, false).build())
                         .transparency(TRANSLUCENT_TRANSPARENCY)
-                        .lightmap(ENABLE_LIGHTMAP)
-                        .overlay(ENABLE_OVERLAY_COLOR).build(true)
+                        .overlay(DISABLE_OVERLAY_COLOR)
+                        .lightmap(ENABLE_LIGHTMAP).build(true)
         );
 
         public static final Texturing ENTITY_GLINT_TEXTURING = new Texturing("miapi_glint_direct", () -> setupGlintTexturing(0.16f), () -> RenderSystem.resetTextureMatrix());
@@ -475,7 +484,7 @@ public class RegistryInventory {
                             //NativeImage.
                             return glintShader;
                         }))
-                        .texture(Textures.create().add(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE,false,false).add(MaterialAtlasManager.MATERIAL_ID,false,false).build())
+                        .texture(Textures.create().add(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, false, false).add(MaterialAtlasManager.MATERIAL_ID, false, false).build())
                         .depthTest(EQUAL_DEPTH_TEST)
                         .transparency(GLINT_TRANSPARENCY)
                         .lightmap(ENABLE_LIGHTMAP)

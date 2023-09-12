@@ -8,6 +8,7 @@ import net.minecraft.nbt.NbtCompound;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
+import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.item.modular.ModularItem;
 
 import java.util.HashMap;
@@ -47,7 +48,7 @@ public class ModularItemCache {
     }
 
     public static Object get(ItemStack stack, String key) {
-        if (!stack.isEmpty() && stack.getItem() instanceof ModularItem) {
+        if (!ReloadEvents.inReload && !stack.isEmpty() && stack.getItem() instanceof ModularItem) {
             Cache itemCache = find(stack);
             return itemCache.get(key);
         }
@@ -132,15 +133,14 @@ public class ModularItemCache {
         }
 
         public Object get(String key) {
-            if(map.containsKey(key)){
+            if (map.containsKey(key)) {
                 return map.get(key);
-            }
-            else{
+            } else {
                 CacheObjectSupplier supplier = supplierMap.get(key);
                 if (supplier != null) {
                     Object cached = supplier.apply(stack);
-                    if(cached!=null){
-                        map.put(key,cached);
+                    if (cached != null) {
+                        map.put(key, cached);
                     }
                     return cached;
                 }
