@@ -447,7 +447,7 @@ public class RegistryInventory {
                 VertexFormat.DrawMode.QUADS,
                 256, true, true,
                 RenderLayer.MultiPhaseParameters.builder()
-                        .program(new RenderPhase.ShaderProgram(() -> {
+                        /*.program(new RenderPhase.ShaderProgram(() -> {
                             int id = 10;
                             RenderSystem.setShaderTexture(id, MaterialAtlasManager.MATERIAL_ATLAS_ID);
                             RenderSystem.bindTexture(id);
@@ -456,7 +456,8 @@ public class RegistryInventory {
                             //entityTranslucentMaterialShader.getUniform("materialUV").set(0, 3);
                             //entityTranslucentMaterialShader.getUniformOrDefault("materialUV").set(0,5);
                             return entityTranslucentMaterialShader;
-                        }))
+                        }))*/
+                        .program(new RenderPhase.ShaderProgram(() -> entityTranslucentMaterialShader))
                         .texture(Textures.create().add(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, false, false).add(MaterialAtlasManager.MATERIAL_ATLAS_ID, false, false).build())
                         .transparency(TRANSLUCENT_TRANSPARENCY)
                         .overlay(DISABLE_OVERLAY_COLOR)

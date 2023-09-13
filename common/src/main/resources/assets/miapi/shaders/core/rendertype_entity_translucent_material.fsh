@@ -24,13 +24,21 @@ in vec4 normal;
 out vec4 fragColor;
 
 void main() {
-    vec2 textureSize = textureSize(MaterialAtlas, 0);
+    /*vec2 textureSize = textureSize(MaterialAtlas, 0);
     vec4 grayscaleColor = texture(Sampler0, texCoord0);
     vec2 paleteCoord = texCoord1;
     paleteCoord.x = (materialUV.x + grayscaleColor.r*255) / textureSize.x;
     paleteCoord.y =  (materialUV.y+5) / textureSize.y;
     vec4 color = texture(MaterialAtlas, paleteCoord) * ColorModulator;
     if (grayscaleColor.a < 0.1) {
+        discard;
+    }
+    fragColor = linear_fog(color, vertexDistance, FogStart, FogEnd, FogColor);*/
+
+    vec4 grayscaleColor = texture(Sampler0, texCoord0);
+    vec4 color = get_palette_color(Sampler1, texCoord1/*vec2(0.0, 0.0)*/, grayscaleColor)/* * vertexColor * ColorModulator*/;
+
+    if (color.a < 0.1) {
         discard;
     }
     fragColor = linear_fog(color, vertexDistance, FogStart, FogEnd, FogColor);
