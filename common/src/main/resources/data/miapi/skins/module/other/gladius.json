@@ -3,7 +3,7 @@
     "module": "blade_longsword",
     "properties": {
         "texture": {
-            "path": "miapi:models/item/sword/blade/gladius/[material.texture].json",
+            "path": "miapi:models/item/sword/blade/longsword/gladius/[material.texture].json",
             "transform": {
                 "rotation": {
                     "x": 0.0,

@@ -3,7 +3,7 @@
     "module": "blade_greatsword",
     "properties": {
         "texture": {
-            "path": "miapi:models/item/sword/blade/buster/[material.texture].json",
+            "path": "miapi:models/item/sword/blade/greatsword/buster/[material.texture].json",
             "transform": {
                 "rotation": {
                     "x": 0.0,

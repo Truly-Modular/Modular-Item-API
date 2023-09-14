@@ -1,6 +1,6 @@
 {
   "parent": "item/generated",
   "textures": {
-    "layer0": "miapi:item/sword/blade/blade_throwing_knife"
+    "layer0": "miapi:item/sword/blade/throwing_knife/blade_throwing_knife"
   }
 }

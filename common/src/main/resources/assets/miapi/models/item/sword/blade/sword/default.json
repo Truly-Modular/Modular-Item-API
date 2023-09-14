@@ -1,7 +1,7 @@
 {
   "parent": "item/generated",
   "textures": {
-    "layer0": "miapi:item/sword/blade/blade_sword"
+    "layer0": "miapi:item/sword/blade/sword/blade_sword"
   },
   "overrides": [
     {

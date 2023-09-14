@@ -1,6 +1,6 @@
 {
   "parent": "item/generated",
   "textures": {
-    "layer0": "miapi:item/sword/blade/blade_master"
+    "layer0": "miapi:item/sword/blade/longsword/blade_master"
   }
 }
