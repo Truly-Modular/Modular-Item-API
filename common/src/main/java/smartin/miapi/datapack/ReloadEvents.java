@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * A utility class that handles event-based reloading of data packs and caches.
@@ -45,7 +46,7 @@ public class ReloadEvents {
     /**
      * A map that stores the paths of data packs to be synced.
      */
-    public static final Map<String, String> DATA_PACKS = new HashMap<>();
+    public static final Map<String, String> DATA_PACKS = new ConcurrentHashMap<>();
 
     /**
      * A map that stores the paths of data packs that have been synced.
@@ -85,6 +86,8 @@ public class ReloadEvents {
      * This int counts the reloads, on reload start it gets increased, on reload end it decreases. if its 0 no reload is happening
      */
     private static int reloadCounter = 0;
+
+    private static long clientReloadTimeStart = 0;
 
     public static void setup() {
         if (Environment.isClient()) {
@@ -146,7 +149,7 @@ public class ReloadEvents {
             }
         });
         Networking.registerS2CPacket(RELOAD_PACKET_ID, (buffer) -> {
-            long timeStart = System.nanoTime();
+            clientReloadTimeStart = System.nanoTime();
             if (inReload) {
                 Miapi.LOGGER.error("Cannot trigger a Reload during another reload");
                 return;
@@ -191,10 +194,15 @@ public class ReloadEvents {
                 } catch (InterruptedException e) {
                     MinecraftClient.getInstance().disconnect();
                 }
-                DATA_PACKS.forEach(DataPackLoader::trigger);
+                try {
+                    Thread.sleep(20);
+                } catch (InterruptedException e) {
+                }
+                Map<String, String> dataPacks = new HashMap<>(DATA_PACKS);
+                dataPacks.forEach(DataPackLoader::trigger);
                 ReloadEvents.MAIN.fireEvent(true);
                 ReloadEvents.END.fireEvent(true);
-                Miapi.LOGGER.info("Client load took " + (double) (System.nanoTime() - timeStart) / 1000 / 1000 + " ms");
+                Miapi.LOGGER.info("Client load took " + (double) (System.nanoTime() - clientReloadTimeStart) / 1000 / 1000 + " ms");
                 dataPackSize = Integer.MAX_VALUE;
                 inReload = false;
             });
@@ -267,7 +275,11 @@ public class ReloadEvents {
         public void fireEvent(boolean isClient) {
             mainListeners.entrySet().stream()
                     .sorted(Map.Entry.comparingByValue()).forEach(eventListenerFloatEntry -> {
-                        eventListenerFloatEntry.getKey().onEvent(isClient);
+                        try {
+                            eventListenerFloatEntry.getKey().onEvent(isClient);
+                        } catch (Exception e) {
+                            Miapi.LOGGER.error("Exception during reload", e);
+                        }
                     });
         }
     }
@@ -309,7 +321,11 @@ public class ReloadEvents {
          */
         public static void trigger(String path, String data) {
             for (EventListener listener : listeners) {
-                listener.onEvent(path, data);
+                try {
+                    listener.onEvent(path, data);
+                } catch (Exception e) {
+                    Miapi.LOGGER.error("Exception during reload", e);
+                }
             }
         }
 
