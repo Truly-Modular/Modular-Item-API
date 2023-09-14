@@ -18,6 +18,7 @@ import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.ScrollingTextWidget;
 import smartin.miapi.client.gui.SimpleButton;
 import smartin.miapi.client.gui.crafting.CraftingScreen;
+import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.util.ModuleProperty;
@@ -43,7 +44,7 @@ public class PropertyInjectionDev implements EditOption {
 
     @Override
     public boolean isVisible(EditContext context) {
-        return Platform.isDevelopmentEnvironment() && context.getInstance() != null;
+        return MiapiConfig.OtherConfigGroup.developmentMode.getValue() && context.getInstance() != null;
     }
 
     @Environment(EnvType.CLIENT)
