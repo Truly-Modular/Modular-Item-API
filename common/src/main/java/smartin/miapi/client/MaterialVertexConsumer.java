@@ -3,12 +3,8 @@ package smartin.miapi.client;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.render.model.BakedQuad;
 import net.minecraft.client.texture.Sprite;
-import net.minecraft.client.util.math.MatrixStack;
-import smartin.miapi.Miapi;
 import smartin.miapi.modules.properties.material.Material;
-import smartin.miapi.registries.RegistryInventory;
 
 @Environment(EnvType.CLIENT)
 public class MaterialVertexConsumer implements VertexConsumer {
@@ -21,8 +17,8 @@ public class MaterialVertexConsumer implements VertexConsumer {
         Sprite sprite = MiapiClient.materialAtlasManager.getMaterialSprite(material.getSpriteId());
         if (sprite != null) {
             //Miapi.LOGGER.error(material.getKey() + " " + sprite.getY());
-            this.x = sprite.getX();
-            this.y = sprite.getY();
+            this.x = Float.floatToIntBits(sprite.getMinU());
+            this.y = Float.floatToIntBits(sprite.getMinV());
         } else {
             this.x = 0;
             this.y = 0;
@@ -31,10 +27,10 @@ public class MaterialVertexConsumer implements VertexConsumer {
         //RegistryInventory.Client.entityTranslucentMaterialShader.markUniformsDirty();
     }
 
-    @Override
+    /*@Override
     public void quad(MatrixStack.Entry matrixEntry, BakedQuad quad, float red, float green, float blue, int light, int overlay) {
         this.quad(matrixEntry, quad, new float[]{1.0F, 1.0F, 1.0F, 1.0F}, x, y, blue, new int[]{light, light, light, light}, x + y * (2 ^ 16) * 0, false);
-    }
+    }*/
 
     @Override
     public VertexConsumer vertex(double x, double y, double z) {

@@ -5,20 +5,17 @@
 
 uniform sampler2D Sampler0;
 uniform sampler2D Sampler1;
-uniform sampler2D MaterialAtlas;
 
 uniform vec4 ColorModulator;
 uniform float FogStart;
 uniform float FogEnd;
 uniform vec4 FogColor;
-uniform vec2 materialUV;
 
 in float vertexDistance;
-in vec3 position;
 in vec4 vertexColor;
+in vec4 lightMapColor;
 in vec2 texCoord0;
-in vec2 texCoord1;
-in vec2 UV2;
+in vec2 overlayCoord;
 in vec4 normal;
 
 out vec4 fragColor;
@@ -36,10 +33,14 @@ void main() {
     fragColor = linear_fog(color, vertexDistance, FogStart, FogEnd, FogColor);*/
 
     vec4 grayscaleColor = texture(Sampler0, texCoord0);
-    vec4 color = get_palette_color(Sampler1, texCoord1/*vec2(0.0, 0.0)*/, grayscaleColor)/* * vertexColor * ColorModulator*/;
+    vec4 color = get_palette_color(Sampler1, overlayCoord/*vec2(0.0, 0.0)*/, grayscaleColor)/* * vertexColor * ColorModulator*/;
 
     if (color.a < 0.1) {
         discard;
     }
+
+    color *= vertexColor * ColorModulator;
+    color *= lightMapColor;
+
     fragColor = linear_fog(color, vertexDistance, FogStart, FogEnd, FogColor);
 }
