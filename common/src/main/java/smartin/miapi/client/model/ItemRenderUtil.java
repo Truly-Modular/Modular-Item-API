@@ -12,6 +12,7 @@ import net.minecraft.client.render.model.BakedQuad;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
+import smartin.miapi.client.modelrework.ItemMiapiModel;
 import smartin.miapi.client.modelrework.MiapiItemModel;
 import smartin.miapi.mixin.client.ItemRendererAccessor;
 
@@ -33,7 +34,10 @@ public class ItemRenderUtil {
     public static void renderModel(MatrixStack matrices, ItemStack stack, BakedModel model, ModelTransformationMode renderMode, VertexConsumerProvider vertexConsumers, RenderLayer renderLayer, int light, int overlay) {
         VertexConsumer vertexConsumer = getDirectItemGlintConsumer(vertexConsumers, renderLayer, true, stack.hasGlint());
         model.getTransformation().getTransformation(renderMode).apply(true, matrices);
-        MiapiItemModel.getItemModel(stack).render(matrices, renderMode, 0, vertexConsumers, light, overlay);
+        MiapiItemModel itemModel = MiapiItemModel.getItemModel(stack);
+        if(itemModel != null){
+            MiapiItemModel.getItemModel(stack).render(matrices, renderMode, 0, vertexConsumers, light, overlay);
+        }
     }
 
     private static void renderBakedItemQuads(MatrixStack matrices, VertexConsumer vertices, List<BakedQuad> quads, ItemStack stack, int light, int overlay) {

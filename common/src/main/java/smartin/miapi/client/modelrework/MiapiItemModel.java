@@ -8,6 +8,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
+import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.cache.ModularItemCache;
@@ -55,6 +56,7 @@ public class MiapiItemModel implements MiapiModel {
     }
 
     public void render(String modelType, ItemStack stack, MatrixStack matrices, ModelTransformationMode mode, float tickDelta, VertexConsumerProvider vertexConsumers, LivingEntity entity, int light, int overlay) {
+        if(ReloadEvents.isInReload()) return;
         MinecraftClient.getInstance().world.getProfiler().push("modular_item");
         matrices.push();
         for (ModelTransformer transformer : modelTransformers) {

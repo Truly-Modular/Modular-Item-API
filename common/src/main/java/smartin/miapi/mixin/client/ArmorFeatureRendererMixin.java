@@ -54,12 +54,14 @@ public abstract class ArmorFeatureRendererMixin<T extends LivingEntity, M extend
             //(this.getContextModel()).setAttributes(armorModel);
             if (true) {
                 MiapiItemModel model1 = MiapiItemModel.getItemModel(itemStack);
-                MatrixStack matrixStack = new MatrixStack();
-                matrixStack.multiplyPositionMatrix(matrices.peek().getPositionMatrix());
-                matrixStack.push();
-                getModelPart(armorModel, partId).rotate(matrixStack);
-                model1.render(partId,matrices,ModelTransformationMode.HEAD,0,vertexConsumers,light,OverlayTexture.DEFAULT_UV);
-                matrixStack.pop();
+                if(model1 != null){
+                    MatrixStack matrixStack = new MatrixStack();
+                    matrixStack.multiplyPositionMatrix(matrices.peek().getPositionMatrix());
+                    matrixStack.push();
+                    getModelPart(armorModel, partId).rotate(matrixStack);
+                    model1.render(partId,matrices,ModelTransformationMode.HEAD,0,vertexConsumers,light,OverlayTexture.DEFAULT_UV);
+                    matrixStack.pop();
+                }
             }
         });
     }

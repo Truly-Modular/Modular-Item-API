@@ -80,6 +80,12 @@ public class ReloadEvents {
     /**
      * Sets up the class by registering the server-to-client reload packet and subscribing to the data pack loader.
      */
+
+    /**
+     * This int counts the reloads, on reload start it gets increased, on reload end it decreases. if its 0 no reload is happening
+     */
+    private static int reloadCounter = 0;
+
     public static void setup() {
         if (Environment.isClient()) {
             clientSetup();
@@ -97,6 +103,13 @@ public class ReloadEvents {
         //scedule join?
         PlayerEvent.PLAYER_JOIN.register((ReloadEvents::triggerReloadOnClient));
 
+        START.subscribe(isClient -> {
+            reloadCounter++;
+        });
+        END.subscribe(isClient -> {
+            reloadCounter--;
+        });
+
         DataPackLoader.subscribe(DATA_PACKS::put);
 
     }
@@ -111,6 +124,13 @@ public class ReloadEvents {
         PacketByteBuf buf = Networking.createBuffer();
         buf.writeInt(DATA_PACKS.size());
         Networking.sendS2C(RELOAD_PACKET_ID, entity, buf);
+    }
+
+    /**
+     * returns true if a reload is ongoing
+     */
+    public static boolean isInReload() {
+        return reloadCounter != 0;
     }
 
     private static void clientSetup() {
@@ -174,7 +194,7 @@ public class ReloadEvents {
                 DATA_PACKS.forEach(DataPackLoader::trigger);
                 ReloadEvents.MAIN.fireEvent(true);
                 ReloadEvents.END.fireEvent(true);
-                Miapi.LOGGER.info("Client load took "+ (double) (System.nanoTime()-timeStart) / 1000 / 1000+ " ms");
+                Miapi.LOGGER.info("Client load took " + (double) (System.nanoTime() - timeStart) / 1000 / 1000 + " ms");
                 dataPackSize = Integer.MAX_VALUE;
                 inReload = false;
             });

@@ -1,5 +1,6 @@
 package smartin.miapi.item.modular.items;
 
+import dev.architectury.event.events.common.ExplosionEvent;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -40,7 +41,7 @@ public class ModularBow extends BowItem implements ModularItem {
     }
 
     @Override
-    public boolean isEnchantable(ItemStack itemStack){
+    public boolean isEnchantable(ItemStack itemStack) {
         return true;
     }
 
@@ -53,7 +54,7 @@ public class ModularBow extends BowItem implements ModularItem {
         boolean consumeArrow = !playerEntity.getAbilities().creativeMode;
         ItemStack projectileStack = playerEntity.getProjectileType(bowStack);
         if (EnchantmentHelper.getLevel(Enchantments.INFINITY, bowStack) > 0 && (projectileStack.isEmpty() || (projectileStack.getItem() instanceof ArrowItem && projectileStack.getOrCreateNbt().isEmpty()))) {
-            if(projectileStack.isEmpty() || projectileStack.getItem() == Items.ARROW){
+            if (projectileStack.isEmpty() || projectileStack.getItem() == Items.ARROW) {
                 consumeArrow = false;
                 projectileStack = new ItemStack(Items.ARROW);
                 projectileStack.setCount(1);
@@ -82,7 +83,7 @@ public class ModularBow extends BowItem implements ModularItem {
             itemProjectile.setPierceLevel((byte) ((byte) (int) AttributeProperty.getActualValue(projectileStack, EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_PIERCING) + piercingLevel));
 
             float divergence = (float) Math.pow(12.0, -AttributeProperty.getActualValue(bowStack, EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_ACCURACY));
-            float speed = (float) Math.max(0.1,AttributeProperty.getActualValue(bowStack, EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_SPEED) + 3.0);
+            float speed = (float) Math.max(0.1, AttributeProperty.getActualValue(bowStack, EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_SPEED) + 3.0);
             float damage = (float) AttributeProperty.getActualValue(bowStack, EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_DAMAGE) / speed;
             itemProjectile.setDamage(damage + itemProjectile.getDamage());
             itemProjectile.setVelocity(playerEntity, playerEntity.getPitch(), playerEntity.getYaw(), 0.0f, pullProgress * speed, divergence);
@@ -101,8 +102,7 @@ public class ModularBow extends BowItem implements ModularItem {
             bowStack.damage(1, playerEntity, p -> p.sendToolBreakStatus(playerEntity.getActiveHand()));
             if (!consumeArrow) {
                 itemProjectile.pickupType = PersistentProjectileEntity.PickupPermission.CREATIVE_ONLY;
-            }
-            else{
+            } else {
                 itemProjectile.pickupType = PersistentProjectileEntity.PickupPermission.ALLOWED;
             }
             MiapiProjectileEvents.ModularBowShotEvent event = new MiapiProjectileEvents.ModularBowShotEvent(itemProjectile, bowStack, playerEntity);
@@ -153,7 +153,7 @@ public class ModularBow extends BowItem implements ModularItem {
     }
 
     public static float getPullProgress(int useTicks, ItemStack stack) {
-        float f = (float) ((float) useTicks / AttributeProperty.getActualValue(stack,EquipmentSlot.MAINHAND,AttributeRegistry.BOW_DRAW_TIME));
+        float f = (float) ((float) useTicks / AttributeProperty.getActualValue(stack, EquipmentSlot.MAINHAND, AttributeRegistry.BOW_DRAW_TIME));
         if ((f = (f * f + f * 2.0f) / 3.0f) > 1.0f) {
             f = 1.0f;
         }
