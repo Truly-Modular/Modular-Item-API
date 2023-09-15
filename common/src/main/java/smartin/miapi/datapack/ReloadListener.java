@@ -29,7 +29,7 @@ public class ReloadListener implements ResourceReloader {
         ReloadEvents.START.fireEvent(false);
         Map<String, String> data = new LinkedHashMap<>();
 
-        if(Platform.isFabric()){
+        if(Platform.isFabric() && false){
             //TODO:figure out why this does nto work on forge.
             manager.streamResourcePacks().forEach(resourcePack -> {
                 ReloadEvents.syncedPaths.keySet().forEach(nameSpace -> {
