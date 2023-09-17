@@ -17,8 +17,8 @@ public class MaterialVertexConsumer implements VertexConsumer {
         Sprite sprite = MiapiClient.materialAtlasManager.getMaterialSprite(material.getSpriteId());
         if (sprite != null) {
             //Miapi.LOGGER.error(material.getKey() + " " + sprite.getY());
-            this.x = Float.floatToIntBits(sprite.getMinU());
-            this.y = Float.floatToIntBits(sprite.getMinV());
+            this.x = sprite.getX();
+            this.y = sprite.getY();
         } else {
             this.x = 0;
             this.y = 0;
@@ -39,7 +39,7 @@ public class MaterialVertexConsumer implements VertexConsumer {
 
     @Override
     public VertexConsumer color(int red, int green, int blue, int alpha) {
-        return delegate.color(x, y, blue, alpha);
+        return delegate.color(red, green, blue, alpha);
     }
 
     @Override

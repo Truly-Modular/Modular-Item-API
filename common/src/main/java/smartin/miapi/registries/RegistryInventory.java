@@ -448,7 +448,7 @@ public class RegistryInventory {
                 256, true, true,
                 RenderLayer.MultiPhaseParameters.builder()
                         /*.program(new RenderPhase.ShaderProgram(() -> {
-                            int id = 10;
+                            int id = 10*//*MinecraftClient.getInstance().getTextureManager().getTexture(MaterialAtlasManager.MATERIAL_ATLAS_ID).getGlId()*//*;
                             RenderSystem.setShaderTexture(id, MaterialAtlasManager.MATERIAL_ATLAS_ID);
                             RenderSystem.bindTexture(id);
                             int j = RenderSystem.getShaderTexture(id);
