@@ -25,7 +25,6 @@ import static smartin.miapi.Miapi.MOD_ID;
 public class MaterialAtlasManager extends SpriteAtlasHolder {
     public static final Identifier MATERIAL_ID = new Identifier(MOD_ID, "miapi_materials");
     public static final Identifier MATERIAL_ATLAS_ID = new Identifier(MOD_ID, "textures/atlas/materials.png");
-    private Identifier sourcePath = new Identifier(MOD_ID, "miapi_materials");
 
     public MaterialAtlasManager(TextureManager textureManager) {
         super(textureManager, MATERIAL_ATLAS_ID, MATERIAL_ID);
@@ -34,7 +33,7 @@ public class MaterialAtlasManager extends SpriteAtlasHolder {
     public CompletableFuture<Void> reload(ResourceReloader.Synchronizer synchronizer, ResourceManager manager, Profiler prepareProfiler, Profiler applyProfiler, Executor prepareExecutor, Executor applyExecutor) {
         Miapi.DEBUG_LOGGER.error("RELOAD MATERIALATLAS");
         try {
-            CompletableFuture var10000 = SpriteLoader.fromAtlas(this.atlas).load(manager, this.sourcePath, 0, prepareExecutor).thenCompose(SpriteLoader.StitchResult::whenComplete);
+            CompletableFuture var10000 = SpriteLoader.fromAtlas(this.atlas).load(manager, MATERIAL_ID, 0, prepareExecutor).thenCompose(SpriteLoader.StitchResult::whenComplete);
             Objects.requireNonNull(synchronizer);
             return var10000.thenCompose(synchronizer::whenPrepared).thenAcceptAsync((stitchResult) -> {
                 this.afterReload((SpriteLoader.StitchResult) stitchResult, applyProfiler);
@@ -69,7 +68,7 @@ public class MaterialAtlasManager extends SpriteAtlasHolder {
                 if (contents != null) {
                     materialSprites.add(material.generateSpriteContents());
                 } else {
-                    Miapi.LOGGER.error("Material could not generate a Sprite " + material.getKey());
+                    //Miapi.LOGGER.error("Material could not generate a Sprite " + material.getKey());
                 }
             } else {
                 Sprite sprite = atlas.getSprite(materialIdentifier);
@@ -82,7 +81,7 @@ public class MaterialAtlasManager extends SpriteAtlasHolder {
         int height = materialSprites.size() % shortMax;
         SpriteLoader spriteLoader = new SpriteLoader(MATERIAL_ID, 256, width, height);
         SpriteLoader.StitchResult stitchResult = spriteLoader.stitch(materialSprites, 0, executor);
-        Miapi.LOGGER.error("AtlasSize " + stitchResult.height() + " " + stitchResult.width());
+        //Miapi.LOGGER.error("AtlasSize " + stitchResult.height() + " " + stitchResult.width());
         profiler.startTick();
         profiler.push("upload");
         this.atlas.upload(stitchResult);

@@ -52,19 +52,9 @@ public class PaletteCreators {
             }
         });
 
-        /*@Override
-            public Identifier createPalette(JsonElement json, String material) {
-                if (json instanceof JsonObject object && object.has("location"))
-                    return new Identifier(object.get("location").getAsString()).withPrefixedPath("textures/miapi_materials/").withSuffixedPath(".png");
-                else if (json instanceof JsonObject)
-                    throw new JsonParseException("ModularItem API failed to parse texture sampling palette for material '" + material + "'! Missing member 'location'.");
-                else
-                    throw new JsonParseException("ModularItem API failed to parse texture sampling palette for material '" + material + "'! Not a JSON object -> " + json);
-            }*/
-        creators.put("texture", (element, materialKey) -> {
-            //TODO
+        /*creators.put("texture", (element, materialKey) -> {
             return null;
-        });
+        });*/
 
         Codec<Integer> stringToIntCodec = Codec.STRING.xmap(Integer::parseInt, String::valueOf);
         creators.put("grayscale_map", (json, material) -> {
