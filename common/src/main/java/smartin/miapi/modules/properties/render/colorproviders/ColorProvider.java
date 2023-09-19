@@ -53,7 +53,7 @@ public interface ColorProvider {
         @Environment(EnvType.CLIENT)
         @Override
         public VertexConsumer getConsumer(VertexConsumerProvider vertexConsumers) {
-            return new MaterialVertexConsumer(vertexConsumers.getBuffer(RegistryInventory.Client.entityTranslucentMaterialRenderType), material);
+            return material.getVertexConsumer(vertexConsumers);
         }
 
         @Override

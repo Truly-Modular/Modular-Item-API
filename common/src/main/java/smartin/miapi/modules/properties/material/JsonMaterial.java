@@ -9,6 +9,7 @@ import dev.architectury.utils.Env;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.texture.SpriteContents;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -17,6 +18,7 @@ import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
 import org.jetbrains.annotations.Nullable;
+import smartin.miapi.client.MaterialVertexConsumer;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.registries.RegistryInventory;
 
@@ -30,6 +32,8 @@ public class JsonMaterial implements Material {
     protected JsonElement rawJson;
     public Identifier materialColorPalette = Material.baseColorPalette;
     public @Nullable MaterialIcons.MaterialIcon icon = null;
+    @Environment(EnvType.CLIENT)
+    MaterialVertexConsumer vertexConsumer = null;
 
     public JsonMaterial(JsonObject element) {
         rawJson = element;
@@ -62,6 +66,18 @@ public class JsonMaterial implements Material {
             }
         }
         return groups;
+    }
+
+    @Environment(EnvType.CLIENT)
+    @Override
+    public MaterialVertexConsumer getVertexConsumer(VertexConsumerProvider vertexConsumers){
+        if(vertexConsumer == null){
+            vertexConsumer = new MaterialVertexConsumer(vertexConsumers.getBuffer(RegistryInventory.Client.entityTranslucentMaterialRenderType), this);
+        }
+        else{
+            vertexConsumer.delegate = vertexConsumers.getBuffer(RegistryInventory.Client.entityTranslucentMaterialRenderType);
+        }
+        return vertexConsumer;
     }
 
     @Environment(EnvType.CLIENT)

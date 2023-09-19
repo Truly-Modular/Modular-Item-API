@@ -8,7 +8,7 @@ import smartin.miapi.modules.properties.material.Material;
 
 @Environment(EnvType.CLIENT)
 public class MaterialVertexConsumer implements VertexConsumer {
-    protected final VertexConsumer delegate;
+    public VertexConsumer delegate;
     protected final int x;
     protected final int y;
 

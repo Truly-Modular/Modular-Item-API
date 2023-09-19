@@ -4,13 +4,17 @@ import com.google.gson.JsonElement;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.VertexConsumers;
 import net.minecraft.client.texture.SpriteContents;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
+import smartin.miapi.client.MaterialVertexConsumer;
 import smartin.miapi.modules.properties.util.ModuleProperty;
+import smartin.miapi.registries.RegistryInventory;
 
 import java.util.List;
 import java.util.Map;
@@ -39,6 +43,11 @@ public interface Material {
     @Environment(EnvType.CLIENT)
     @Nullable
     void setSpriteId(Identifier identifier);
+
+    @Environment(EnvType.CLIENT)
+    default MaterialVertexConsumer getVertexConsumer(VertexConsumerProvider vertexConsumers){
+        return new MaterialVertexConsumer(vertexConsumers.getBuffer(RegistryInventory.Client.entityTranslucentMaterialRenderType), this);
+    }
 
     /*@Environment(EnvType.CLIENT)
     VertexConsumer setupMaterialShader(VertexConsumerProvider provider, RenderLayer layer, ShaderProgram shader);
