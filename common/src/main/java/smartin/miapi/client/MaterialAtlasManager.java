@@ -37,11 +37,7 @@ public class MaterialAtlasManager extends SpriteAtlasHolder {
     }
 
     public CompletableFuture<Void> reload(ResourceReloader.Synchronizer synchronizer, ResourceManager manager, Profiler prepareProfiler, Profiler applyProfiler, Executor prepareExecutor, Executor applyExecutor) {
-        Miapi.DEBUG_LOGGER.error("RELOAD MATERIALATLAS");
         try {
-            manager.findResources("textures/miapi_materials", (id) -> true).forEach((identifier, resource) -> {
-                Miapi.DEBUG_LOGGER.warn(identifier.toString());
-            });
             CompletableFuture var10000 = SpriteLoader.fromAtlas(this.atlas).load(manager, MATERIAL_ID, 0, prepareExecutor).thenCompose(SpriteLoader.StitchResult::whenComplete);
             Objects.requireNonNull(synchronizer);
             return var10000.thenCompose(synchronizer::whenPrepared).thenAcceptAsync((stitchResult) -> {
@@ -61,51 +57,45 @@ public class MaterialAtlasManager extends SpriteAtlasHolder {
         List<SpriteContents> materialSprites = new ArrayList<>();
         if (invalidResult != null) {
             try {
-                invalidResult.regions().forEach((identifier, sprite) -> {
-                    Miapi.LOGGER.error("old Atlas " + identifier.toString());
-                });
                 atlas.upload(invalidResult);
             } catch (Exception e) {
-                Miapi.DEBUG_LOGGER.error("EXCEPTION ", e);
             }
         }
 
         try {
             Sprite sprite = atlas.getSprite(BASE_MATERIAL_ID);
-            Identifier identifier = new Identifier(sprite.getContents().getId().toString().replace(":",":textures/")+".png");
+            Identifier identifier = new Identifier(sprite.getContents().getId().toString().replace(":", ":textures/") + ".png");
             Resource resource = MinecraftClient.getInstance().getResourceManager().getResourceOrThrow(identifier);
-            SpriteContents contents = SpriteLoader.load(sprite.getContents().getId(),resource);
+            SpriteContents contents = SpriteLoader.load(sprite.getContents().getId(), resource);
             materialSprites.add(contents);
         } catch (FileNotFoundException e) {
-            Miapi.LOGGER.error("PRE ERROR",e);
+            Miapi.LOGGER.error("Error during MaterialAtlasStitching", e);
         }
         for (String s : MaterialProperty.materials.keySet()) {
             Material material = MaterialProperty.materials.get(s);
             Identifier materialIdentifier = new Identifier(Miapi.MOD_ID, "miapi_materials/" + s);
             if (invalidResult != null && atlas.getSprite(materialIdentifier).equals(invalidResult.missing())) {
-                //Sprite sprite = material.
                 SpriteContents contents = material.generateSpriteContents();
                 if (contents != null) {
-                    Miapi.LOGGER.error("generate " + materialIdentifier.toString());
                     materialSprites.add(material.generateSpriteContents());
                     material.setSpriteId(materialIdentifier);
                 } else {
-                    Miapi.LOGGER.error("missing " + materialIdentifier.toString());
                     material.setSpriteId(BASE_MATERIAL_ID);
                 }
             } else {
                 Sprite sprite = atlas.getSprite(materialIdentifier);
                 Miapi.LOGGER.error(sprite.getContents().getHeight() + " " + sprite.getContents().getWidth());
                 try {
-                    Identifier identifier = new Identifier(sprite.getContents().getId().toString().replace(":",":textures/")+".png");
+                    Identifier identifier = new Identifier(sprite.getContents().getId().toString().replace(":", ":textures/") + ".png");
                     Resource resource = MinecraftClient.getInstance().getResourceManager().getResourceOrThrow(identifier);
-                    SpriteContents contents = SpriteLoader.load(sprite.getContents().getId(),resource);
+                    SpriteContents contents = SpriteLoader.load(sprite.getContents().getId(), resource);
+                    if (contents.getWidth() < 255) {
+                        Miapi.LOGGER.error("Material manual Image not correctly sized for material " + materialIdentifier);
+                    }
                     materialSprites.add(contents);
                     material.setSpriteId(materialIdentifier);
-                    Miapi.LOGGER.error("found " + materialIdentifier);
                 } catch (FileNotFoundException e) {
-                    Miapi.LOGGER.error("found ERROR",e);
-                    //throw new RuntimeException(e);
+                    Miapi.LOGGER.error("Error during MaterialAtlasStitching", e);
                 }
             }
         }
@@ -115,7 +105,6 @@ public class MaterialAtlasManager extends SpriteAtlasHolder {
         int height = materialSprites.size() % shortMax;
         SpriteLoader spriteLoader = new SpriteLoader(MATERIAL_ID, 256, width, height);
         SpriteLoader.StitchResult stitchResult = spriteLoader.stitch(materialSprites, 0, executor);
-        Miapi.LOGGER.error("AtlasSize " + stitchResult.height() + " " + stitchResult.width());
         profiler.startTick();
         profiler.push("upload");
         this.atlas.upload(stitchResult);
