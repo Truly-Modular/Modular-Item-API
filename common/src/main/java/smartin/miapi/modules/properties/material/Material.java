@@ -36,6 +36,10 @@ public interface Material {
     @Nullable
     Identifier getSpriteId();
 
+    @Environment(EnvType.CLIENT)
+    @Nullable
+    void setSpriteId(Identifier identifier);
+
     /*@Environment(EnvType.CLIENT)
     VertexConsumer setupMaterialShader(VertexConsumerProvider provider, RenderLayer layer, ShaderProgram shader);
 

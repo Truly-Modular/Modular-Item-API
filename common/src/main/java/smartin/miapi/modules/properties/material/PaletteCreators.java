@@ -78,7 +78,7 @@ public class PaletteCreators {
                     if (!colors.containsKey(255))
                         colors.put(255, white);
 
-                    Identifier identifier = new Identifier(Miapi.MOD_ID, "textures/miapi_materials/" + material);
+                    Identifier identifier = new Identifier(Miapi.MOD_ID, "miapi_materials/" + material);
                     NativeImage image = new NativeImage(256, 1, false);
                     PixelPlacer placer = (color, x, y) -> image.setColor(x, y, color.abgr());
 

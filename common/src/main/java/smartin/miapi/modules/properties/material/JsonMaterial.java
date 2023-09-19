@@ -84,6 +84,13 @@ public class JsonMaterial implements Material {
     }
 
     @Environment(EnvType.CLIENT)
+    @Override
+    @Nullable
+    public void setSpriteId(Identifier identifier) {
+        materialColorPalette = identifier;
+    }
+
+    @Environment(EnvType.CLIENT)
     public int renderIcon(DrawContext drawContext, int x, int y) {
         if (icon == null) return 0;
         return icon.render(drawContext, x, y);
