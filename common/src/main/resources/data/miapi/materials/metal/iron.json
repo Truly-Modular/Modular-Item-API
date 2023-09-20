@@ -8,6 +8,19 @@
   "flexibility": 1,
   "durability": 250,
   "color": "FCFCFC",
+  "color_palette": {
+    "type": "grayscale_map",
+    "colors": {
+      "24": "181818",
+      "68": "444444",
+      "107": "6b6b6b",
+      "150": "969696",
+      "190": "bebebe",
+      "216": "d8d8d8",
+      "255": "ffffff"
+    },
+    "filler": "interpolate"
+  },
   "textures": [
     "metalic"
   ],

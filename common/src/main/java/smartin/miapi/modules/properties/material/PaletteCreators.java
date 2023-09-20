@@ -7,9 +7,10 @@ import com.mojang.serialization.Codec;
 import com.redpxnda.nucleus.codec.InterfaceDispatcher;
 import com.redpxnda.nucleus.codec.MiscCodecs;
 import com.redpxnda.nucleus.util.Color;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.resource.metadata.AnimationResourceMetadata;
 import net.minecraft.client.texture.NativeImage;
-import net.minecraft.client.texture.NativeImageBackedTexture;
+import net.minecraft.client.texture.SpriteContents;
+import net.minecraft.client.texture.SpriteDimensions;
 import net.minecraft.util.Identifier;
 import smartin.miapi.Miapi;
 
@@ -51,14 +52,9 @@ public class PaletteCreators {
             }
         });
 
-        creators.put("texture", (json, material) -> {
-            if (json instanceof JsonObject object && object.has("location"))
-                return new Identifier(object.get("location").getAsString());
-            else if (json instanceof JsonObject)
-                throw new JsonParseException("ModularItem API failed to parse texture sampling palette for material '" + material + "'! Missing member 'location'.");
-            else
-                throw new JsonParseException("ModularItem API failed to parse texture sampling palette for material '" + material + "'! Not a JSON object -> " + json);
-        });
+        /*creators.put("texture", (element, materialKey) -> {
+            return null;
+        });*/
 
         Codec<Integer> stringToIntCodec = Codec.STRING.xmap(Integer::parseInt, String::valueOf);
         creators.put("grayscale_map", (json, material) -> {
@@ -82,7 +78,7 @@ public class PaletteCreators {
                     if (!colors.containsKey(255))
                         colors.put(255, white);
 
-                    Identifier identifier = new Identifier(Miapi.MOD_ID, "textures/generated_materials/" + material);
+                    Identifier identifier = new Identifier(Miapi.MOD_ID, "miapi_materials/" + material);
                     NativeImage image = new NativeImage(256, 1, false);
                     PixelPlacer placer = (color, x, y) -> image.setColor(x, y, color.abgr());
 
@@ -104,20 +100,13 @@ public class PaletteCreators {
                         image.setColor(current.getKey(), 0, current.getValue().abgr());
                     }
                     image.untrack();
-                    MinecraftClient.getInstance().getTextureManager().registerTexture(identifier, new NativeImageBackedTexture(image));
-                    return identifier;
+
+                    return new SpriteContents(identifier, new SpriteDimensions(256, 1), image, AnimationResourceMetadata.EMPTY);
                 } catch (Exception e) {
                     RuntimeException runtime = new RuntimeException("Exception parsing Material " + material);
                     runtime.addSuppressed(e);
                     throw runtime;
                 }
-
-                /*Path path = Path.of("miapi_dev").resolve("material_" + material + "_palette.png");
-                try {
-                    image.writeTo(path);
-                } catch (IOException e) {
-                    //throw new RuntimeException(e);
-                }*/
 
             }
             throw new JsonParseException("ModularItem API failed to parse grayscale_map sampling palette for material '" + material + "'! Not a JSON object -> " + json);
@@ -125,7 +114,7 @@ public class PaletteCreators {
     }
 
     public interface PaletteCreator {
-        Identifier createPalette(JsonElement element, String materialKey);
+        SpriteContents generateSprite(JsonElement element, String materialKey);
     }
 
     public interface FillerFunction {

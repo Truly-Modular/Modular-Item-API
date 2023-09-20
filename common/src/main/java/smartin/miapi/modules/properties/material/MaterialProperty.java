@@ -4,13 +4,18 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.tag.TagKey;
+import net.minecraft.resource.ResourceReloader;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
+import smartin.miapi.client.MaterialAtlasManager;
+import smartin.miapi.client.MiapiClient;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ItemModule;
@@ -18,6 +23,11 @@ import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+
+import static java.util.concurrent.Executors.newSingleThreadExecutor;
 
 /**
  * This is the Property relating to materials of a Module
@@ -78,9 +88,36 @@ public class MaterialProperty implements ModuleProperty {
             }
             materials.put(material.getKey(), material);
         }, -1f);
+        ReloadEvents.END.subscribe((isClient) -> {
+            if (isClient) {
+                MinecraftClient.getInstance().execute(() -> {
+                    Executor prepare = new CurrentThreadExecutor();
+                    Executor done = new CurrentThreadExecutor();
+                    Thread thread = Thread.currentThread();
+                    RenderSystem.assertOnRenderThread();
+                    ResourceReloader resourceReloader;
+                    MinecraftClient.getInstance().getTextureManager();
+                    ResourceReloader.Synchronizer synchronizer = new ResourceReloader.Synchronizer() {
+                        @Override
+                        public <T> CompletableFuture<T> whenPrepared(T preparedObject) {
+                            return CompletableFuture.completedFuture(preparedObject);
+                        }
+                    };
+
+                    MiapiClient.materialAtlasManager.reload(synchronizer, MinecraftClient.getInstance().getResourceManager(), MinecraftClient.getInstance().getProfiler(), MinecraftClient.getInstance().getProfiler(), prepare, done);
+                });
+
+            }
+        }, 1);
         ReloadEvents.END.subscribe((isClient -> {
             Miapi.LOGGER.info("Loaded " + materials.size() + " Materials");
         }));
+    }
+
+    public class CurrentThreadExecutor implements Executor {
+        public void execute(Runnable r) {
+            r.run();
+        }
     }
 
     public static List<String> getTextureKeys() {
@@ -89,7 +126,7 @@ public class MaterialProperty implements ModuleProperty {
         for (Material material : materials.values()) {
             textureKeys.add(material.getKey());
             JsonElement textureJson = material.getRawElement("textures");
-            if(textureJson != null){
+            if (textureJson != null) {
                 JsonArray textures = material.getRawElement("textures").getAsJsonArray();
                 for (JsonElement texture : textures) {
                     textureKeys.add(texture.getAsString());

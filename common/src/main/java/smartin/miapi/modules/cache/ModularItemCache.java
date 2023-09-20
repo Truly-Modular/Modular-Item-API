@@ -48,7 +48,7 @@ public class ModularItemCache {
     }
 
     public static Object get(ItemStack stack, String key) {
-        if (!stack.isEmpty() && stack.getItem() instanceof ModularItem) {
+        if (!ReloadEvents.inReload && !stack.isEmpty() && stack.getItem() instanceof ModularItem) {
             Cache itemCache = find(stack);
             return itemCache.get(key);
         }

@@ -19,6 +19,7 @@ public class ItemToModularConverter implements ModularItemStackConverter.Modular
 
     public ItemToModularConverter() {
         Miapi.registerReloadHandler(ReloadEvents.MAIN, "modular_converter", regexes, (isClient, path, data) -> {
+            Miapi.DEBUG_LOGGER.warn("loading modular converter from " + path);
             Map<String, ItemModule.ModuleInstance> dataMap;
             TypeToken<Map<String, ItemModule.ModuleInstance>> token = new TypeToken<>() {
             };
@@ -31,6 +32,10 @@ public class ItemToModularConverter implements ModularItemStackConverter.Modular
                 regexes.put(itemId, stack);
             });
         }, 1);
+
+        ReloadEvents.END.subscribe((isClient -> {
+            Miapi.LOGGER.info("Loaded " + regexes.size() + " Modular Converters");
+        }));
     }
 
     @Override

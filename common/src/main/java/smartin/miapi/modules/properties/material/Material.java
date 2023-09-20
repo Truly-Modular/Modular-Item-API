@@ -1,25 +1,26 @@
 package smartin.miapi.modules.properties.material;
 
 import com.google.gson.JsonElement;
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gl.ShaderProgram;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.VertexConsumers;
+import net.minecraft.client.texture.SpriteContents;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
+import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
+import smartin.miapi.client.MaterialVertexConsumer;
 import smartin.miapi.modules.properties.util.ModuleProperty;
+import smartin.miapi.registries.RegistryInventory;
 
 import java.util.List;
 import java.util.Map;
 
 public interface Material {
-    Identifier baseColorPalette = new Identifier(Miapi.MOD_ID, "textures/item/materials/base_palette.png");
+    Identifier baseColorPalette = new Identifier(Miapi.MOD_ID, "textures/miapi_materials/base_palette.png");
 
     String getKey();
 
@@ -32,6 +33,23 @@ public interface Material {
     List<String> getGroups();
 
     @Environment(EnvType.CLIENT)
+    @Nullable
+    SpriteContents generateSpriteContents();
+
+    @Environment(EnvType.CLIENT)
+    @Nullable
+    Identifier getSpriteId();
+
+    @Environment(EnvType.CLIENT)
+    @Nullable
+    void setSpriteId(Identifier identifier);
+
+    @Environment(EnvType.CLIENT)
+    default MaterialVertexConsumer getVertexConsumer(VertexConsumerProvider vertexConsumers){
+        return new MaterialVertexConsumer(vertexConsumers.getBuffer(RegistryInventory.Client.entityTranslucentMaterialRenderType), this);
+    }
+
+    /*@Environment(EnvType.CLIENT)
     VertexConsumer setupMaterialShader(VertexConsumerProvider provider, RenderLayer layer, ShaderProgram shader);
 
     @Environment(EnvType.CLIENT)
@@ -42,7 +60,7 @@ public interface Material {
         int j = RenderSystem.getShaderTexture(id);
         shader.addSampler("MatColors", j);
         return provider.getBuffer(layer);
-    }
+    }*/
 
     /**
      * @param drawContext a DrawContext that can be used to draw shtuff

@@ -10,6 +10,7 @@ import dev.architectury.registry.menu.MenuRegistry;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.resource.ReloadableResourceManagerImpl;
 import net.minecraft.util.Identifier;
 import smartin.miapi.Miapi;
 import smartin.miapi.blocks.ModularWorkBenchRenderer;
@@ -29,6 +30,7 @@ import smartin.miapi.registries.RegistryInventory;
 import static smartin.miapi.registries.RegistryInventory.Client.glintShader;
 
 public class MiapiClient {
+    public static MaterialAtlasManager materialAtlasManager;
 
     private MiapiClient() {
     }
@@ -41,12 +43,8 @@ public class MiapiClient {
         ClientLifecycleEvent.CLIENT_SETUP.register(MiapiClient::clientSetup);
         ClientLifecycleEvent.CLIENT_STARTED.register(MiapiClient::clientStart);
         ClientLifecycleEvent.CLIENT_LEVEL_LOAD.register(MiapiClient::clientLevelLoad);
-        ClientPlayerEvent.CLIENT_PLAYER_JOIN.register(player -> {
-            MiapiPermissions.getPerms(player);
-        });
-        ClientReloadShadersEvent.EVENT.register((resourceFactory, asd) -> {
-            ModularItemCache.discardCache();
-        });
+        ClientPlayerEvent.CLIENT_PLAYER_JOIN.register(MiapiPermissions::getPerms);
+        ClientReloadShadersEvent.EVENT.register((resourceFactory, asd) -> ModularItemCache.discardCache());
         RegistryInventory.modularItems.addCallback((item -> {
             ModularModelPredicateProvider.registerModelOverride(item, new Identifier(Miapi.MOD_ID, "damage"), (stack, world, entity, seed) -> {
                 return stack.isDamageable() && stack.getDamage() > 0 ? ((float) stack.getDamage() / stack.getMaxDamage()) : 0.0f;
@@ -56,10 +54,20 @@ public class MiapiClient {
     }
 
     protected static void clientSetup(MinecraftClient client) {
+        Miapi.DEBUG_LOGGER.error("CLIENT SETUP");
+        MinecraftClient mc = MinecraftClient.getInstance();
+        mc.getTextureManager();
+        //materialAtlasManager = new MaterialAtlasManager(mc.getTextureManager());
+        //((ReloadableResourceManagerImpl) mc.getResourceManager()).registerReloader(materialAtlasManager);
         SpriteLoader.setup();
     }
 
     protected static void clientStart(MinecraftClient client) {
+        Miapi.DEBUG_LOGGER.error("CLIENT START");
+        MinecraftClient mc = MinecraftClient.getInstance();
+        mc.getTextureManager();
+        materialAtlasManager = new MaterialAtlasManager(mc.getTextureManager());
+        ((ReloadableResourceManagerImpl) mc.getResourceManager()).registerReloader(materialAtlasManager);
         RegistryInventory.addCallback(RegistryInventory.modularItems, item -> {
             ((ItemRendererAccessor) client.getItemRenderer()).color().register(new CustomColorProvider(), item);
         });
@@ -83,9 +91,9 @@ public class MiapiClient {
     }
 
     public static void registerShaders() {
-        ShaderRegistry.register(
+        /*ShaderRegistry.register(
                 new Identifier(Miapi.MOD_ID, "rendertype_translucent_material"),
-                VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL, s -> RegistryInventory.Client.translucentMaterialShader = s);
+                VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL, s -> RegistryInventory.Client.translucentMaterialShader = s);*/
         ShaderRegistry.register(
                 new Identifier(Miapi.MOD_ID, "rendertype_entity_translucent_material"),
                 VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL, s -> RegistryInventory.Client.entityTranslucentMaterialShader = s);

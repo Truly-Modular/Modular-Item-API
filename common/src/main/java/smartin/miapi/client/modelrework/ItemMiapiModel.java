@@ -8,6 +8,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
+import smartin.miapi.datapack.ReloadEvents;
 
 import java.util.function.Supplier;
 
@@ -23,6 +24,7 @@ public class ItemMiapiModel implements MiapiModel {
 
     @Override
     public void render(MatrixStack matrices, ItemStack stack, ModelTransformationMode transformationMode, float tickDelta, VertexConsumerProvider vertexConsumers, LivingEntity entity, int light, int overlay) {
+        if(ReloadEvents.inReload) return;
         matrices.push();
         matrices.multiplyPositionMatrix(matrix4f);
         ItemStack modelStack = stackSupplier.get();

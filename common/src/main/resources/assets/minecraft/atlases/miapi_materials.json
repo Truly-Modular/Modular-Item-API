@@ -1,0 +1,9 @@
+{
+    "sources": [
+        {
+            "type": "directory",
+            "source": "miapi_materials",
+            "prefix": "miapi_materials/"
+        }
+    ]
+}

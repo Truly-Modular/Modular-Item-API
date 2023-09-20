@@ -2,6 +2,7 @@ plugins {
     id "com.github.johnrengelman.shadow" version "7.1.2"
 }
 repositories {
+    mavenCentral()
     maven { url 'https://maven.kosmx.dev/' }
     maven { url 'https://maven.shedaniel.me/' }
     maven { url 'https://maven.fabricmc.net/' }
@@ -52,7 +53,8 @@ dependencies {
         exclude(module: "fabric-api")
     }
 
-    implementation(include('org.mariuszgromada.math:MathParser.org-mXparser:4.4.2'))
+    implementation "org.mariuszgromada.math:MathParser.org-mXparser:${rootProject.mathparser_version}"
+    implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: "${rootProject.appache_httpclient_version}"
 
     modApi(include("com.github.RedPxnda.Nucleus:nucleus-fabric:${rootProject.nucleus_version}"))
 

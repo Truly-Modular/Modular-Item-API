@@ -17,23 +17,23 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class SynergyManager {
-    public static Map<ItemModule, List<Synergy>> maps = new HashMap<>();
+    public static Map<ItemModule, List<Synergy>> maps = new ConcurrentHashMap<>();
 
     public static void setup() {
         PropertyResolver.propertyProviderRegistry.register("synergies", (moduleInstance, oldMap) -> {
             if (moduleInstance != null) {
-                maps.forEach((itemModule, synergies) -> {
-                    if (moduleInstance.module.equals(itemModule)) {
-                        synergies.forEach(synergy -> {
-                            List<Text> error = new ArrayList<>();
-                            if (synergy.condition.isAllowed(moduleInstance, null, null, oldMap, error)) {
-                                oldMap.putAll(synergy.properties);
-                            }
-                        });
-                    }
-                });
+                List<Synergy> synergies = maps.get(moduleInstance.module);
+                if(synergies!=null){
+                    synergies.forEach(synergy -> {
+                        List<Text> error = new ArrayList<>();
+                        if (synergy.condition.isAllowed(moduleInstance, null, null, oldMap, error)) {
+                            oldMap.putAll(synergy.properties);
+                        }
+                    });
+                }
             }
             return oldMap;
         });

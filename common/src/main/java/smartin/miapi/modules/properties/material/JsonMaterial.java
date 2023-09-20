@@ -4,16 +4,13 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import com.mojang.blaze3d.systems.RenderSystem;
 import dev.architectury.platform.Platform;
 import dev.architectury.utils.Env;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gl.ShaderProgram;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.texture.SpriteContents;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
@@ -21,6 +18,7 @@ import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
 import org.jetbrains.annotations.Nullable;
+import smartin.miapi.client.MaterialVertexConsumer;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.registries.RegistryInventory;
 
@@ -34,23 +32,21 @@ public class JsonMaterial implements Material {
     protected JsonElement rawJson;
     public Identifier materialColorPalette = Material.baseColorPalette;
     public @Nullable MaterialIcons.MaterialIcon icon = null;
+    @Environment(EnvType.CLIENT)
+    MaterialVertexConsumer vertexConsumer = null;
 
     public JsonMaterial(JsonObject element) {
         rawJson = element;
         key = element.get("key").getAsString();
-        if (element.has("color_palette") && Platform.getEnvironment().equals(Env.CLIENT)) {
+        /*if (element.has("color_palette") && Platform.getEnvironment().equals(Env.CLIENT)) {
             setupMaterialPalette(element.get("color_palette"));
-        }
+        }*/
         if (element.has("icon") && Platform.getEnvironment().equals(Env.CLIENT)) {
             JsonElement emnt = element.get("icon");
             if (emnt instanceof JsonPrimitive primitive && primitive.isString())
                 icon = new MaterialIcons.TextureMaterialIcon(new Identifier(primitive.getAsString()));
             else icon = MaterialIcons.getMaterialIcon(key, emnt);
         }
-    }
-
-    public void setupMaterialPalette(JsonElement json) {
-        materialColorPalette = PaletteCreators.paletteCreator.dispatcher().createPalette(json, key);
     }
 
     @Override
@@ -73,6 +69,44 @@ public class JsonMaterial implements Material {
     }
 
     @Environment(EnvType.CLIENT)
+    @Override
+    public MaterialVertexConsumer getVertexConsumer(VertexConsumerProvider vertexConsumers){
+        if(vertexConsumer == null){
+            vertexConsumer = new MaterialVertexConsumer(vertexConsumers.getBuffer(RegistryInventory.Client.entityTranslucentMaterialRenderType), this);
+        }
+        else{
+            vertexConsumer.delegate = vertexConsumers.getBuffer(RegistryInventory.Client.entityTranslucentMaterialRenderType);
+        }
+        return vertexConsumer;
+    }
+
+    @Environment(EnvType.CLIENT)
+    @Override
+    @Nullable
+    public SpriteContents generateSpriteContents() {
+        if (rawJson.getAsJsonObject().has("color_palette")) {
+            SpriteContents contents = PaletteCreators.paletteCreator.dispatcher().generateSprite(rawJson.getAsJsonObject().get("color_palette"), key);
+            materialColorPalette = contents.getId();
+            return contents;
+        }
+        return null;
+    }
+
+    @Environment(EnvType.CLIENT)
+    @Override
+    @Nullable
+    public Identifier getSpriteId() {
+        return materialColorPalette;
+    }
+
+    @Environment(EnvType.CLIENT)
+    @Override
+    @Nullable
+    public void setSpriteId(Identifier identifier) {
+        materialColorPalette = identifier;
+    }
+
+    @Environment(EnvType.CLIENT)
     public int renderIcon(DrawContext drawContext, int x, int y) {
         if (icon == null) return 0;
         return icon.render(drawContext, x, y);
@@ -83,7 +117,7 @@ public class JsonMaterial implements Material {
         return icon != null;
     }
 
-    @Environment(EnvType.CLIENT)
+    /*@Environment(EnvType.CLIENT)
     @Override
     public VertexConsumer setupMaterialShader(VertexConsumerProvider provider, RenderLayer layer, ShaderProgram shader) {
         int id = 10;
@@ -92,7 +126,7 @@ public class JsonMaterial implements Material {
         int j = RenderSystem.getShaderTexture(id);
         shader.addSampler("MatColors", j);
         return provider.getBuffer(layer);
-    }
+    }*/
 
     @Override
     public Map<ModuleProperty, JsonElement> materialProperties(String key) {
