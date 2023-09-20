@@ -52,6 +52,7 @@ public class PropertyInjectionDev implements EditOption {
         return new EditDevView(x, y, width, height, context.getItemstack(), context.getInstance(), context::craft);
     }
 
+    @Environment(EnvType.CLIENT)
     @Override
     public InteractAbleWidget getIconGui(int x, int y, int width, int height, Consumer<EditOption> select, Supplier<EditOption> getSelected) {
         return new EditOptionIcon(x, y, width, height, select, getSelected, CraftingScreen.BACKGROUND_TEXTURE, 339, 25 + 28 * 2, 512, 512, this);

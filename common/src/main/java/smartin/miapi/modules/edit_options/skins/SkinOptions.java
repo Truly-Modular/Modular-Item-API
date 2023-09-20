@@ -93,6 +93,7 @@ public class SkinOptions implements EditOption {
         return new SkinGui(x, y, width, height, context.getItemstack(), context.getInstance(), context::craft, context::preview);
     }
 
+    @Environment(EnvType.CLIENT)
     @Override
     public InteractAbleWidget getIconGui(int x, int y, int width, int height, Consumer<EditOption> select, Supplier<EditOption> getSelected) {
         return new EditOptionIcon(x, y, width, height, select, getSelected, CraftingScreen.BACKGROUND_TEXTURE, 339 + 32, 25 + 28 * 2, 512, 512, this);

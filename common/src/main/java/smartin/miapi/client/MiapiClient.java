@@ -43,12 +43,8 @@ public class MiapiClient {
         ClientLifecycleEvent.CLIENT_SETUP.register(MiapiClient::clientSetup);
         ClientLifecycleEvent.CLIENT_STARTED.register(MiapiClient::clientStart);
         ClientLifecycleEvent.CLIENT_LEVEL_LOAD.register(MiapiClient::clientLevelLoad);
-        ClientPlayerEvent.CLIENT_PLAYER_JOIN.register(player -> {
-            MiapiPermissions.getPerms(player);
-        });
-        ClientReloadShadersEvent.EVENT.register((resourceFactory, asd) -> {
-            ModularItemCache.discardCache();
-        });
+        ClientPlayerEvent.CLIENT_PLAYER_JOIN.register(MiapiPermissions::getPerms);
+        ClientReloadShadersEvent.EVENT.register((resourceFactory, asd) -> ModularItemCache.discardCache());
         RegistryInventory.modularItems.addCallback((item -> {
             ModularModelPredicateProvider.registerModelOverride(item, new Identifier(Miapi.MOD_ID, "damage"), (stack, world, entity, seed) -> {
                 return stack.isDamageable() && stack.getDamage() > 0 ? ((float) stack.getDamage() / stack.getMaxDamage()) : 0.0f;

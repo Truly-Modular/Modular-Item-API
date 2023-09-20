@@ -153,7 +153,7 @@ public class EditView extends InteractAbleWidget {
         editContext = new EditOption.EditContext() {
             @Override
             public void craft(PacketByteBuf packetByteBuf) {
-                ScreenHandler screenHandler = Miapi.server.getPlayerManager().getPlayerList().get(0).currentScreenHandler;
+                ScreenHandler screenHandler = this.getScreenHandler();
                 if (screenHandler instanceof CraftingScreenHandler screenHandler1) {
                     ItemModule.ModuleInstance toCrafter = instance;
                     PacketByteBuf buf = Networking.createBuffer();

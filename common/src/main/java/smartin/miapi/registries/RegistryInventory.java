@@ -337,6 +337,7 @@ public class RegistryInventory {
 
         LifecycleEvent.SETUP.register(() -> {
             //EDITPROPERTIES
+
             registerMiapi(editOptions, "replace", new ReplaceOption());
             registerMiapi(editOptions, "dev", new PropertyInjectionDev());
             registerMiapi(editOptions, "skin", new SkinOptions());

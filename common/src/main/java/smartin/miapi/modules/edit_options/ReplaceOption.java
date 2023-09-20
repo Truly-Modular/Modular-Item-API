@@ -1,5 +1,7 @@
 package smartin.miapi.modules.edit_options;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import smartin.miapi.Miapi;
@@ -38,11 +40,13 @@ public class ReplaceOption implements EditOption {
         return editContext.getSlot() != null;
     }
 
+    @Environment(EnvType.CLIENT)
     @Override
     public InteractAbleWidget getGui(int x, int y, int width, int height, EditContext editContext) {
         return new CraftEditOption(x, y, width, height, editContext);
     }
 
+    @Environment(EnvType.CLIENT)
     @Override
     public InteractAbleWidget getIconGui(int x, int y, int width, int height, Consumer<EditOption> select, Supplier<EditOption> getSelected) {
         return new EditOptionIcon(x, y, width, height, select, getSelected, CraftingScreen.BACKGROUND_TEXTURE, 339 + 32, 25, 512, 512, this);

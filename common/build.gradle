@@ -1,4 +1,5 @@
 repositories {
+    mavenCentral()
     maven { url 'https://maven.kosmx.dev/' }
     maven { url 'https://maven.shedaniel.me/' }
     maven { url 'https://maven.fabricmc.net/' }
@@ -28,7 +29,8 @@ dependencies {
 
     modApi("com.github.RedPxnda.Nucleus:nucleus:${rootProject.nucleus_version}")
 
-    implementation('org.mariuszgromada.math:MathParser.org-mXparser:4.4.2')
+    implementation "org.mariuszgromada.math:MathParser.org-mXparser:${rootProject.mathparser_version}"
+    implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: "${rootProject.appache_httpclient_version}"
     modImplementation 'dev.kosmx.player-anim:player-animation-lib:1.0.2-rc1+1.20'
     modApi "curse.maven:bettercombat-639842:4597949"
 
