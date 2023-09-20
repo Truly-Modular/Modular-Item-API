@@ -53,7 +53,7 @@ dependencies {
         exclude(module: "fabric-api")
     }
 
-    implementation "org.mariuszgromada.math:MathParser.org-mXparser:${rootProject.mathparser_version}"
+    implementation(include("org.mariuszgromada.math:MathParser.org-mXparser:${rootProject.mathparser_version}"))
 
     modApi(include("com.github.RedPxnda.Nucleus:nucleus-fabric:${rootProject.nucleus_version}"))
 

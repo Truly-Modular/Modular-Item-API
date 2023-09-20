@@ -21,6 +21,7 @@
         "sources": "https://github.com/Truly-Modular/Modular-Item-API"
     },
     "license": "CC-BY-NC-4.0",
+    "accessWidener" : "miapi.accesswidener",
     "icon": "icon.png",
     "environment": "*",
     "entrypoints": {
