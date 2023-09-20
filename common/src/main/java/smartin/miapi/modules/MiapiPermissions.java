@@ -1,59 +1,60 @@
 package smartin.miapi.modules;
 
 import net.minecraft.entity.player.PlayerEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
 import smartin.miapi.Miapi;
 import smartin.miapi.config.MiapiConfig;
 
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.WeakHashMap;
 
 public class MiapiPermissions {
-    static HttpClient httpClient = HttpClients.createDefault();
-    static WeakHashMap<PlayerEntity,List<String>> playerPerms = new WeakHashMap<>();
+    static HttpClient httpClient = HttpClient.newHttpClient();
+    static WeakHashMap<PlayerEntity, List<String>> playerPerms = new WeakHashMap<>();
 
-    public static boolean hasPerm(PlayerEntity player,String perm){
-        if(MiapiConfig.OtherConfigGroup.developmentMode.getValue()){
+    public static boolean hasPerm(PlayerEntity player, String perm) {
+        if (MiapiConfig.OtherConfigGroup.developmentMode.getValue()) {
             return true;
         }
         return MiapiPermissions.getPerms(player).contains(perm);
     }
 
-    public static boolean hasPerm(PlayerEntity player,List<String> perms){
-        for(String perm:perms){
-            if(hasPerm(player,perm)){
+    public static boolean hasPerm(PlayerEntity player, List<String> perms) {
+        for (String perm : perms) {
+            if (hasPerm(player, perm)) {
                 return true;
             }
         }
         return false;
     }
 
-    public static List<String> getPerms(PlayerEntity player){
-        if(playerPerms.containsKey(player)){
+    public static List<String> getPerms(PlayerEntity player) {
+        if (playerPerms.containsKey(player)) {
             return playerPerms.get(player);
         }
         List<String> perms = getPerms(player.getUuid());
         perms.add("user");
-        playerPerms.put(player,perms);
+        playerPerms.put(player, perms);
         return perms;
     }
 
-    public static List<String> getPerms(UUID playerUUID){
-        HttpGet httpGet = new HttpGet("http://trulymodular.duckdns.org:3000/perms/"+playerUUID.toString());
+    public static List<String> getPerms(UUID playerUUID) {
+        HttpRequest.Builder builder = HttpRequest.newBuilder(URI.create("http://trulymodular.duckdns.org:3000/perms/" + playerUUID.toString()));
+        builder.GET();
+        URI uri = URI.create("http://trulymodular.duckdns.org:3000/perms/" + playerUUID.toString());
+        builder.uri(uri);
+        HttpRequest request = builder.build();
         try {
-            HttpResponse response = httpClient.execute(httpGet);
-
-            String responseBody = EntityUtils.toString(response.getEntity());
-            Miapi.LOGGER.warn("Response: " + responseBody);
-            return Miapi.gson.fromJson(responseBody, PermissionJson.class).permissions;
-        } catch (Exception e) {
-            Miapi.LOGGER.error("Could not resolve Miapi Permissions ",e);
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            PermissionJson perms = Miapi.gson.fromJson(response.body(), PermissionJson.class);
+            return perms.permissions;
+        } catch (Exception suppressed) {
+            Miapi.LOGGER.warn("Miapi Exception during GetPermission", suppressed);
             return new ArrayList<>();
         }
     }

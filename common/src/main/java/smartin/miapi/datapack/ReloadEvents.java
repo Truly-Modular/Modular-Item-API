@@ -196,7 +196,7 @@ public class ReloadEvents {
                 DATA_PACKS.forEach(DataPackLoader::trigger);
                 ReloadEvents.MAIN.fireEvent(true);
                 ReloadEvents.END.fireEvent(true);
-                Miapi.LOGGER.info("Client load took " + (double) (System.nanoTime() - timeStart) / 1000 / 1000 + " ms");
+                Miapi.LOGGER.info("Client load took " + (double) (System.nanoTime() - clientReloadTimeStart) / 1000 / 1000 + " ms");
                 dataPackSize = Integer.MAX_VALUE;
                 inReload = false;
             });

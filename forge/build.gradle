@@ -25,7 +25,6 @@ dependencies {
     modApi "dev.architectury:architectury-forge:${rootProject.architectury_version}"
 
     forgeRuntimeLibrary(include("org.mariuszgromada.math:MathParser.org-mXparser:${rootProject.mathparser_version}"))
-    forgeRuntimeLibrary(include(group: 'org.apache.httpcomponents', name: 'httpclient', version: "${rootProject.appache_httpclient_version}"))
 
     modImplementation("me.shedaniel.cloth:cloth-config-forge:${rootProject.cloth_config_version}")
 
