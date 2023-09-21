@@ -2,6 +2,7 @@ package smartin.miapi.config;
 
 import dev.architectury.platform.Platform;
 import net.minecraft.util.math.ColorHelper;
+import net.minecraft.world.WanderingTraderManager;
 import smartin.miapi.config.oro_config.BooleanConfigItem;
 import smartin.miapi.config.oro_config.Config;
 import smartin.miapi.config.oro_config.ConfigItemGroup;
@@ -13,10 +14,7 @@ import java.util.List;
 import static org.spongepowered.include.com.google.common.collect.ImmutableList.of;
 
 public class MiapiConfig extends Config {
-    public static EnchantmentGroup enchantmentGroup = new EnchantmentGroup();
-    public static OtherConfigGroup otherGroup = new OtherConfigGroup();
     public static ServerConfig serverConfig = new ServerConfig();
-    public static ColorGroup colorConfig = new ColorGroup();
     public static ClientConfig clientConfig = new ClientConfig();
     protected static MiapiConfig INSTANCE = new MiapiConfig();
 
@@ -34,11 +32,7 @@ public class MiapiConfig extends Config {
     }
 
     public static class ClientConfig extends ConfigItemGroup {
-        public static BooleanConfigItem developmentMode = new BooleanConfigItem(
-                "server",
-                Platform.isDevelopmentEnvironment(),
-                "Client Side config");
-
+        public static ColorGroup colorConfig = new ColorGroup();
         protected ClientConfig() {
             super(of(colorConfig), "client");
         }
@@ -60,6 +54,8 @@ public class MiapiConfig extends Config {
     }
 
     public static class ServerConfig extends ConfigItemGroup {
+        public static EnchantmentGroup enchantmentGroup = new EnchantmentGroup();
+        public static OtherConfigGroup otherGroup = new OtherConfigGroup();
         protected ServerConfig() {
             super(of(otherGroup, enchantmentGroup), "server");
         }

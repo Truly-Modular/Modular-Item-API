@@ -1,0 +1,39 @@
+{
+    "key": "stone_magma",
+    "translation": "miapi.material.stone.magma",
+    "icon": {
+        "type": "item",
+        "item": "minecraft:magma_block"
+    },
+    "groups": [
+        "stone"
+    ],
+    "hardness": 3,
+    "density": 2,
+    "flexibility": 0,
+    "durability": 37,
+    "color": "642828",
+    "color_palette": {
+        "type": "grayscale_map",
+        "colors": {
+            "24": "411616",
+            "68": "572121",
+            "107": "501b1b",
+            "150": "652828",
+            "190": "723232",
+            "216": "854242",
+            "255": "511515"
+        }
+    },
+    "mining_speed": 2.5,
+    "mining_level": 0,
+    "textures": [
+        "rough"
+    ],
+    "items": [
+        {
+            "item": "minecraft:magma_block",
+            "value": 1.0
+        }
+    ]
+}
