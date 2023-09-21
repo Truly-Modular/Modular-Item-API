@@ -1,0 +1,39 @@
+{
+    "key": "sculk",
+    "translation": "miapi.material.stone.sculk",
+    "icon": {
+        "type": "item",
+        "item": "minecraft:sculk"
+    },
+    "groups": [
+        "stone"
+    ],
+    "hardness": 3,
+    "density": 1.8,
+    "flexibility": 0,
+    "durability": 111,
+    "color": "E0D8AE",
+    "color_palette": {
+        "type": "grayscale_map",
+        "colors": {
+            "24": "c6ae71",
+            "68": "d1ba8a",
+            "107": "d5c496",
+            "150": "DAD2a3",
+            "190": "e3dbb0",
+            "216": "e7e4bb",
+            "255": "edebcb"
+        }
+    },
+    "mining_speed": 3.8,
+    "mining_level": 1,
+    "textures": [
+        "rough"
+    ],
+    "items": [
+        {
+            "item": "minecraft:sculk",
+            "value": 1.0
+        }
+    ]
+}
