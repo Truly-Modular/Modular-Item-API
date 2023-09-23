@@ -463,6 +463,7 @@ public class RegistryInventory {
                         .texture(Textures.create().add(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, false, false).add(MaterialAtlasManager.MATERIAL_ATLAS_ID, false, false).build())
                         .transparency(TRANSLUCENT_TRANSPARENCY)
                         .overlay(DISABLE_OVERLAY_COLOR)
+                        .depthTest(LEQUAL_DEPTH_TEST)
                         .lightmap(ENABLE_LIGHTMAP).build(true)
         );
 

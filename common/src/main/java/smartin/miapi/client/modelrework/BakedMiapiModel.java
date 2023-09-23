@@ -58,7 +58,6 @@ public class BakedMiapiModel implements MiapiModel {
                 model.getQuads(null, direction, Random.create()).forEach(bakedQuad -> {
                     consumer.quad(matrices.peek(), bakedQuad, color.redAsFloat(), color.greenAsFloat(), color.blueAsFloat(), lightValue, overlay);
                 });
-                immediate.draw(); // todo draw calls....
                 MinecraftClient.getInstance().world.getProfiler().pop();
 
                 if (settings.shouldRender()) {
@@ -73,7 +72,6 @@ public class BakedMiapiModel implements MiapiModel {
                         //red, green, blue
                         glintConsumer.quad(matrices.peek(), bakedQuad, (float) glintColor.r() / 255, (float) glintColor.g() / 255, (float) glintColor.b() / 255, lightValue, overlay);
                     });
-                    immediate.draw();
                     MinecraftClient.getInstance().world.getProfiler().pop();
                 }
             }
