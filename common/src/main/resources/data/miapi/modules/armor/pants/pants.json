@@ -1,19 +1,77 @@
 {
-    "name": "helmet_base",
+    "name": "pants_base",
     "allowedInSlots": [
-        "melee",
-        "helmet"
+        "leggings",
+        "melee"
     ],
     "slots": {
         "0": {
             "allowed": [
-                "helmet_plate"
+                "belt"
             ],
             "transform": {
-                "rotation": {"x": 0.0, "y": 0.0, "z": 0.0},
-                "translation": {"x": 0.0, "y": -3.5, "z": 0.0},
-                "scale": {"x": 1.25, "y": 1.5, "z": 1.25},
-                "origin": "head"
+                "rotation": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 180.0
+                },
+                "translation": {
+                    "x": 0.0,
+                    "y": 9.5,
+                    "z": 0.0
+                },
+                "scale": {
+                    "x": 1.125,
+                    "y": 1.125,
+                    "z": 1.25
+                },
+                "origin": "body"
+            }
+        },
+        "1": {
+            "allowed": [
+                "leg_left"
+            ],
+            "transform": {
+                "rotation": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 180.0
+                },
+                "translation": {
+                    "x": 0.0,
+                    "y": 4.5,
+                    "z": 0.0
+                },
+                "scale": {
+                    "x": 1.20,
+                    "y": 1.0,
+                    "z": 1.20
+                },
+                "origin": "left_leg"
+            }
+        },
+        "2": {
+            "allowed": [
+                "leg_right"
+            ],
+            "transform": {
+                "rotation": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 180.0
+                },
+                "translation": {
+                    "x": 0.0,
+                    "y": 4.5,
+                    "z": 0.0
+                },
+                "scale": {
+                    "x": 1.20,
+                    "y": 1.0,
+                    "z": 1.20
+                },
+                "origin": "right_leg"
             }
         }
     },
@@ -152,17 +210,71 @@
             }
         }
     },
-    "displayName": "[material.key] Helmet",
-    "itemId": "miapi:modular_helmet",
-    "equipmentSlot": "helmet",
+    "displayName": "[material.key] Leggings",
+    "itemId": "miapi:modular_leggings",
+    "equipmentSlot": "legs",
     "modelMerge": [
         {
-            "from": "head",
+            "from": "right_leg",
             "to": "item",
             "transform": {
-                "rotation": {"x": 0.0, "y": 0.0, "z": 0.0},
-                "translation": {"x": 0.0, "y": 1.4, "z": 0.0},
-                "scale": {"x": 1.0, "y": 1.0, "z": 1.0}
+                "rotation": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "translation": {
+                    "x": 18.0,
+                    "y": 2.5,
+                    "z": -10.0
+                },
+                "scale": {
+                    "x": 1.0,
+                    "y": 1.0,
+                    "z": 1.0
+                }
+            }
+        },
+        {
+            "from": "right_leg",
+            "to": "item",
+            "transform": {
+                "rotation": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "translation": {
+                    "x": 14.0,
+                    "y": 2.5,
+                    "z": -10.0
+                },
+                "scale": {
+                    "x": 1.0,
+                    "y": 1.0,
+                    "z": 1.0
+                }
+            }
+        },
+        {
+            "from": "body",
+            "to": "item",
+            "transform": {
+                "rotation": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "translation": {
+                    "x": 16.0,
+                    "y": -3.5,
+                    "z": -10.0
+                },
+                "scale": {
+                    "x": 1.0,
+                    "y": 1.0,
+                    "z": 1.0
+                }
             }
         }
     ]

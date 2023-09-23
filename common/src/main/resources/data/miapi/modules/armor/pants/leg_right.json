@@ -1,34 +1,61 @@
 {
     "name": "leg_right",
-    "texture": {
-        "path": "miapi:models/item/armor/leg_right/base/[material.texture].json",
-        "transform": {
-            "rotation": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0
-            },
-            "translation": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0
-            },
-            "scale": {
-                "x": 1.0,
-                "y": 1.0,
-                "z": 1.0
-            },
-            "origin": "right_leg"
+    "texture": [
+        {
+            "path": "miapi:models/item/armor/leg_right/base/[material.texture].json",
+            "transform": {
+                "rotation": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "translation": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "scale": {
+                    "x": 1.0,
+                    "y": 1.0,
+                    "z": 1.0
+                },
+                "origin": "right_leg"
+            }
+        },
+        {
+            "path": "miapi:models/item/armor/icon/leg_right/base/[material.texture].json",
+            "transform": {
+                "rotation": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "translation": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "scale": {
+                    "x": 1.0,
+                    "y": 1.0,
+                    "z": 1.0
+                },
+                "origin": "item"
+            }
         }
-    },
+    ],
     "allowedInSlots": [
         "leg_right"
     ],
     "allowedMaterial": {
         "allowedMaterials": [
-            "leather",
+            "wood",
             "metal",
-            "crystal"
+            "flint",
+            "bone",
+            "stone",
+            "crystal",
+            "glass"
         ],
         "cost": 2
     }

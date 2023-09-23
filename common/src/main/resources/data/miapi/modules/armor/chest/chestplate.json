@@ -1,31 +1,34 @@
 {
     "name": "chest_base",
-    "texture": {
-        "path": "miapi:models/item/armor/chest/base/[material.texture].json",
-        "transform": {
-            "rotation": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 180.0
-            },
-            "translation": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0
-            },
-            "scale": {
-                "x": 1.25,
-                "y": 1.6,
-                "z": 1.5
-            },
-            "origin": "body"
-        }
-    },
     "allowedInSlots": [
-        "chest"
+        "chest",
+        "melee"
     ],
     "slots": {
         "0": {
+            "allowed": [
+                "chest_front"
+            ],
+            "transform": {
+                "rotation": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 180.0
+                },
+                "translation": {
+                    "x": 0.0,
+                    "y": 5.5,
+                    "z": 0.0
+                },
+                "scale": {
+                    "x": 1.25,
+                    "y": 1.6,
+                    "z": 1.5
+                },
+                "origin": "body"
+            }
+        },
+        "1": {
             "allowed": [
                 "arm_left"
             ],
@@ -33,12 +36,12 @@
                 "rotation": {
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 180.0
                 },
                 "translation": {
-                    "x": -11.0,
-                    "y": -12.0,
-                    "z": 12.0
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0
                 },
                 "scale": {
                     "x": 1.5,
@@ -48,7 +51,7 @@
                 "origin": "left_arm"
             }
         },
-        "1": {
+        "2": {
             "allowed": [
                 "arm_right"
             ],
@@ -56,12 +59,12 @@
                 "rotation": {
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 180.0
                 },
                 "translation": {
-                    "x": -13.0,
-                    "y": -12.0,
-                    "z": 12.0
+                    "x": -1.0,
+                    "y": 0.0,
+                    "z": 0.0
                 },
                 "scale": {
                     "x": 1.5,
@@ -93,9 +96,9 @@
             },
             "thirdperson_lefthand": {
                 "rotation": {
-                    "x": 0,
-                    "y": 90,
-                    "z": -55
+                    "x": -90,
+                    "y": -90,
+                    "z": -45
                 },
                 "translation": {
                     "x": 0,
@@ -127,9 +130,9 @@
             },
             "firstperson_lefthand": {
                 "rotation": {
-                    "x": 0,
-                    "y": 90,
-                    "z": -25
+                    "x": -90,
+                    "y": -90,
+                    "z": -65
                 },
                 "translation": {
                     "x": 1.13,
@@ -140,6 +143,23 @@
                     "x": 0.68,
                     "y": 0.68,
                     "z": 0.68
+                }
+            },
+            "gui": {
+                "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0
+                },
+                "translation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0
+                },
+                "scale": {
+                    "x": 1.0,
+                    "y": 1.0,
+                    "z": 1.0
                 }
             },
             "ground": {
@@ -154,26 +174,9 @@
                     "z": 0
                 },
                 "scale": {
-                    "x": 1,
-                    "y": 1,
-                    "z": 1
-                }
-            },
-            "gui": {
-                "rotation": {
-                    "x": 210,
-                    "y": 30,
-                    "z": 0
-                },
-                "translation": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 0.0
-                },
-                "scale": {
-                    "x": 1.3,
-                    "y": 1.3,
-                    "z": 1.3
+                    "x": 0.5,
+                    "y": 0.5,
+                    "z": 0.5
                 }
             },
             "head": {
@@ -184,13 +187,13 @@
                 },
                 "translation": {
                     "x": 0,
-                    "y": 0.0,
-                    "z": 0.0
+                    "y": 0,
+                    "z": 0
                 },
                 "scale": {
-                    "x": 1.0,
-                    "y": 1.0,
-                    "z": 1.0
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
                 }
             },
             "fixed": {
@@ -206,14 +209,6 @@
                 }
             }
         }
-    },
-    "allowedMaterial": {
-        "allowedMaterials": [
-            "leather",
-            "metal",
-            "crystal"
-        ],
-        "cost": 7
     },
     "displayName": "[material.key] ChestPlate",
     "itemId": "miapi:modular_chestplate",

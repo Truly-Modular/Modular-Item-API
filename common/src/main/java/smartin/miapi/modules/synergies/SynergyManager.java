@@ -69,10 +69,14 @@ public class SynergyManager {
         });
     }
 
-    public static void loadSynergy(ItemModule property,JsonObject entryData){
+    public static void loadSynergy(ItemModule itemModule,JsonObject entryData){
+        if(itemModule == null){
+            Miapi.LOGGER.warn("ItemModule is null?");
+            return;
+        }
         Synergy synergy = new Synergy();
         synergy.condition = ConditionManager.get(entryData.get("condition"));
-        List<Synergy> synergies = maps.computeIfAbsent(property, (module) -> {
+        List<Synergy> synergies = maps.computeIfAbsent(itemModule, (module) -> {
             return new ArrayList<>();
         });
         synergies.add(synergy);

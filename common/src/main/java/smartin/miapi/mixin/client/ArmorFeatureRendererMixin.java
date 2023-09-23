@@ -26,7 +26,9 @@ import java.util.Arrays;
 
 @Mixin(value = ArmorFeatureRenderer.class, priority = 700)
 public abstract class ArmorFeatureRendererMixin<T extends LivingEntity, M extends BipedEntityModel<T>, A extends BipedEntityModel<T>> extends FeatureRenderer<T, M> {
-    @Shadow @Final private A outerModel;
+    @Shadow
+    @Final
+    private A outerModel;
 
     protected ArmorFeatureRendererMixin(FeatureRendererContext<T, M> context) {
         super(context);
@@ -54,12 +56,12 @@ public abstract class ArmorFeatureRendererMixin<T extends LivingEntity, M extend
             //(this.getContextModel()).setAttributes(armorModel);
             if (true) {
                 MiapiItemModel model1 = MiapiItemModel.getItemModel(itemStack);
-                if(model1 != null){
+                if (model1 != null) {
                     MatrixStack matrixStack = new MatrixStack();
                     matrixStack.multiplyPositionMatrix(matrices.peek().getPositionMatrix());
                     matrixStack.push();
                     getModelPart(armorModel, partId).rotate(matrixStack);
-                    model1.render(partId,matrices,ModelTransformationMode.HEAD,0,vertexConsumers,light,OverlayTexture.DEFAULT_UV);
+                    model1.render(partId, matrixStack, ModelTransformationMode.HEAD, 0, vertexConsumers, light, OverlayTexture.DEFAULT_UV);
                     matrixStack.pop();
                 }
             }

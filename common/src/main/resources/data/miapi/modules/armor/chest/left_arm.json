@@ -1,8 +1,8 @@
 {
-    "name": "right_arm",
+    "name": "left_arm",
     "texture": [
         {
-            "path": "miapi:models/item/armor/arm_right/base/[material.texture].json",
+            "path": "miapi:models/item/armor/arm_left/base/[material.texture].json",
             "transform": {
                 "rotation": {
                     "x": 0.0,
@@ -19,11 +19,11 @@
                     "y": 1.0,
                     "z": 1.0
                 },
-                "origin": "right_arm"
+                "origin": "left_arm"
             }
         },
         {
-            "path": "miapi:models/item/armor/icon/arm_right/base/[material.texture].json",
+            "path": "miapi:models/item/armor/icon/arm_left/base/[material.texture].json",
             "transform": {
                 "rotation": {
                     "x": 0.0,
@@ -45,7 +45,7 @@
         }
     ],
     "allowedInSlots": [
-        "arm_right"
+        "arm_left"
     ],
     "allowedMaterial": {
         "allowedMaterials": [

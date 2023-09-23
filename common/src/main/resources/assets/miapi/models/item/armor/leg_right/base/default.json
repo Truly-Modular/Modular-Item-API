@@ -1,8 +1,7 @@
 {
 	"credit": "Made with Blockbench",
 	"textures": {
-		"0": "miapi:item/armor/iron_layer_2",
-		"particle": "miapi:item/armor/iron_layer_2"
+		"1": "miapi:item/armor/default"
 	},
 	"elements": [
 		{
@@ -10,12 +9,12 @@
 			"from": [-2, -4, -2],
 			"to": [2, 5, 2],
 			"faces": {
-				"north": {"uv": [0, 10, 1, 14.5], "texture": "#0"},
-				"east": {"uv": [1, 10, 2, 14.5], "texture": "#0"},
-				"south": {"uv": [2, 10, 3, 14.5], "texture": "#0"},
-				"west": {"uv": [3, 10, 4, 14.5], "texture": "#0"},
-				"up": {"uv": [1, 8, 2, 10], "texture": "#0"},
-				"down": {"uv": [3, 8, 4, 10], "texture": "#0"}
+				"north": {"uv": [0, 10.25, 1, 12.5], "texture": "#1"},
+				"east": {"uv": [1, 10.25, 2, 12.5], "texture": "#1"},
+				"south": {"uv": [2, 10.25, 3, 12.5], "texture": "#1"},
+				"west": {"uv": [3, 10.25, 4, 12.5], "texture": "#1"},
+				"up": {"uv": [1, 9.25, 2, 10.25], "texture": "#1"},
+				"down": {"uv": [3, 9.25, 4, 10.25], "texture": "#1"}
 			}
 		},
 		{
@@ -23,12 +22,12 @@
 			"from": [-2, -4, 2],
 			"to": [2, 5, -2],
 			"faces": {
-				"north": {"uv": [0, 10, 1, 14.5], "texture": "#0"},
-				"east": {"uv": [1, 10, 2, 14.5], "texture": "#0"},
-				"south": {"uv": [2, 10, 3, 14.5], "texture": "#0"},
-				"west": {"uv": [3, 10, 4, 14.5], "texture": "#0"},
-				"up": {"uv": [1, 8, 2, 10], "texture": "#0"},
-				"down": {"uv": [3, 8, 4, 10], "texture": "#0"}
+				"north": {"uv": [0, 10.25, 1, 12.5], "texture": "#1"},
+				"east": {"uv": [1, 10.5, 2, 12.5], "texture": "#1"},
+				"south": {"uv": [2, 10.25, 3, 12.5], "texture": "#1"},
+				"west": {"uv": [3, 10.25, 4, 12.5], "texture": "#1"},
+				"up": {"uv": [1, 9.25, 2, 10.25], "texture": "#1"},
+				"down": {"uv": [3, 9.25, 4, 10.25], "texture": "#1"}
 			}
 		}
 	]

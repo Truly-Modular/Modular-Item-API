@@ -1,19 +1,54 @@
 {
-    "name": "helmet_base",
+    "name": "boot",
     "allowedInSlots": [
         "melee",
-        "helmet"
+        "boots"
     ],
     "slots": {
         "0": {
             "allowed": [
-                "helmet_plate"
+                "boot_left"
             ],
             "transform": {
-                "rotation": {"x": 0.0, "y": 0.0, "z": 0.0},
-                "translation": {"x": 0.0, "y": -3.5, "z": 0.0},
-                "scale": {"x": 1.25, "y": 1.5, "z": 1.25},
-                "origin": "head"
+                "rotation": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 180.0
+                },
+                "translation": {
+                    "x": 0.0,
+                    "y": 9.5,
+                    "z": 0.0
+                },
+                "scale": {
+                    "x": 1.4,
+                    "y": 1.20,
+                    "z": 1.4
+                },
+                "origin": "left_leg"
+            }
+        },
+        "1": {
+            "allowed": [
+                "boot_right"
+            ],
+            "transform": {
+                "rotation": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 180.0
+                },
+                "translation": {
+                    "x": 0.0,
+                    "y": 9.5,
+                    "z": 0.0
+                },
+                "scale": {
+                    "x": 1.4,
+                    "y": 1.20,
+                    "z": 1.4
+                },
+                "origin": "right_leg"
             }
         }
     },
@@ -152,18 +187,7 @@
             }
         }
     },
-    "displayName": "[material.key] Helmet",
-    "itemId": "miapi:modular_helmet",
-    "equipmentSlot": "helmet",
-    "modelMerge": [
-        {
-            "from": "head",
-            "to": "item",
-            "transform": {
-                "rotation": {"x": 0.0, "y": 0.0, "z": 0.0},
-                "translation": {"x": 0.0, "y": 1.4, "z": 0.0},
-                "scale": {"x": 1.0, "y": 1.0, "z": 1.0}
-            }
-        }
-    ]
+    "displayName": "[material.key] Boots",
+    "itemId": "miapi:modular_boots",
+    "equipmentSlot": "boots"
 }

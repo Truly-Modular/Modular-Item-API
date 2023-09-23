@@ -62,11 +62,11 @@ public class ModelProperty implements ModuleProperty {
         ModularItemCache.setSupplier(CACHE_KEY_ITEM, (stack) -> getModelMap(stack).get("item"));
         ModularItemCache.setSupplier(CACHE_KEY_MAP, ModelProperty::generateModels);
         MiapiItemModel.modelSuppliers.add((key, model, stack) -> {
-            return Collections.singletonList(new BakedMiapiModel(getForModule(model, stack), model, stack));
+            return Collections.singletonList(new BakedMiapiModel(getForModule(model, key, stack), model, stack));
         });
     }
 
-    List<BakedMiapiModel.ModelHolder> getForModule(ItemModule.ModuleInstance instance, ItemStack itemStack) {
+    List<BakedMiapiModel.ModelHolder> getForModule(ItemModule.ModuleInstance instance, String key, ItemStack itemStack) {
         Gson gson = Miapi.gson;
         List<ModelJson> modelJsonList = new ArrayList<>();
         List<BakedMiapiModel.ModelHolder> models = new ArrayList<>();
@@ -88,30 +88,35 @@ public class ModelProperty implements ModuleProperty {
         }
         for (ModelJson json : modelJsonList) {
             int condition = Material.getColor(StatResolver.resolveString(json.condition, instance));
-            if (condition != 0) {
-                Material material = MaterialProperty.getMaterial(instance);
-                List<String> list = new ArrayList<>();
-                if (material != null) {
-                    list.add(material.getKey());
-                    list = material.getTextureKeys();
-                } else {
-                    list.add("default");
-                }
-                JsonUnbakedModel unbakedModel = null;
-                for (String str : list) {
-                    String fullPath = json.path.replace("[material.texture]", str);
-                    if (modelCache.containsKey(fullPath)) {
-                        unbakedModel = modelCache.get(fullPath);
+            if (json.transform.origin != null) {
+                Miapi.LOGGER.warn(json.transform.origin);
+            }
+            if (json.transform.origin == null || json.transform.origin.equals(key) || (json.transform.origin.equals("item") && key == null)) {
+                if (condition != 0) {
+                    Material material = MaterialProperty.getMaterial(instance);
+                    List<String> list = new ArrayList<>();
+                    if (material != null) {
+                        list.add(material.getKey());
+                        list = material.getTextureKeys();
+                    } else {
+                        list.add("default");
                     }
-                }
-                DynamicBakedModel model = DynamicBakery.bakeModel(unbakedModel, textureGetter, ColorHelper.Argb.getArgb(255, 255, 255, 255), Transform.IDENTITY);
-                if (model != null) {
-                    Matrix4f matrix4f = Transform.toModelTransformation(json.transform).toMatrix();
-                    ColorProvider colorProvider = ColorProvider.getProvider(json.color_provider, itemStack, instance);
-                    if (colorProvider == null) {
-                        throw new RuntimeException("colorProvider is null");
+                    JsonUnbakedModel unbakedModel = null;
+                    for (String str : list) {
+                        String fullPath = json.path.replace("[material.texture]", str);
+                        if (modelCache.containsKey(fullPath)) {
+                            unbakedModel = modelCache.get(fullPath);
+                        }
                     }
-                    models.add(new BakedMiapiModel.ModelHolder(model.optimize(), matrix4f, colorProvider));
+                    DynamicBakedModel model = DynamicBakery.bakeModel(unbakedModel, textureGetter, ColorHelper.Argb.getArgb(255, 255, 255, 255), Transform.IDENTITY);
+                    if (model != null) {
+                        Matrix4f matrix4f = Transform.toModelTransformation(json.transform).toMatrix();
+                        ColorProvider colorProvider = ColorProvider.getProvider(json.color_provider, itemStack, instance);
+                        if (colorProvider == null) {
+                            throw new RuntimeException("colorProvider is null");
+                        }
+                        models.add(new BakedMiapiModel.ModelHolder(model.optimize(), matrix4f, colorProvider));
+                    }
                 }
             }
         }

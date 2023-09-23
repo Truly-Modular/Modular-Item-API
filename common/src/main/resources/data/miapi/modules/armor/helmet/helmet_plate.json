@@ -1,0 +1,40 @@
+{
+    "name": "helmet_plate",
+    "texture": [
+        {
+            "path": "miapi:models/item/armor/helmet/base/[material.texture].json",
+            "transform": {
+                "rotation": {"x": 0.0, "y": 0.0, "z": 0.0},
+                "translation": {"x": 0.0, "y": 0.0, "z": 0.0},
+                "scale": {"x": 1.0, "y": 1.0, "z": 1.0},
+                "origin": "head"
+            }
+        },
+        {
+            "path": "miapi:models/item/armor/icon/helmet/base/[material.texture].json",
+            "transform": {
+                "rotation": {"x": 0.0, "y": 0.0, "z": 0.0},
+                "translation": {"x": 0.0, "y": 0.0, "z": 0.0},
+                "scale": {"x": 1.0, "y": 1.0, "z": 1.0},
+                "origin": "item"
+            }
+        }
+    ],
+    "allowedInSlots": [
+        "helmet_plate"
+    ],
+    "slots": {
+    },
+    "allowedMaterial": {
+        "allowedMaterials": [
+            "wood",
+            "metal",
+            "flint",
+            "bone",
+            "stone",
+            "crystal",
+            "glass"
+        ],
+        "cost": 5
+    }
+}

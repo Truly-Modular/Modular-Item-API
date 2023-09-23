@@ -31,6 +31,7 @@ public class SpriteLoader {
         preLoadTexturePaths.add("gui");
 
         preLoadTexturePaths.forEach(preLoadTexturePath -> {
+            /*
             Map<Identifier, Resource> rawTextures = MinecraftClient.getInstance().getResourceManager().findResources("textures/" + preLoadTexturePath, (identifier ->
             {
                 return identifier.getNamespace().equals(Miapi.MOD_ID) && identifier.toString().endsWith(".png");
@@ -41,6 +42,7 @@ public class SpriteLoader {
                 RenderSystem.setShaderTexture(0, id);
                 net.minecraft.client.texture.SpriteLoader.load(id,rawTexture);
             });
+             */
         });
         MinecraftClient.getInstance().getResourceManager().findAllResources(
                 "models",
