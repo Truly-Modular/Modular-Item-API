@@ -88,9 +88,6 @@ public class ModelProperty implements ModuleProperty {
         }
         for (ModelJson json : modelJsonList) {
             int condition = Material.getColor(StatResolver.resolveString(json.condition, instance));
-            if (json.transform.origin != null) {
-                Miapi.LOGGER.warn(json.transform.origin);
-            }
             if (json.transform.origin == null || json.transform.origin.equals(key) || (json.transform.origin.equals("item") && key == null)) {
                 if (condition != 0) {
                     Material material = MaterialProperty.getMaterial(instance);
@@ -106,6 +103,7 @@ public class ModelProperty implements ModuleProperty {
                         String fullPath = json.path.replace("[material.texture]", str);
                         if (modelCache.containsKey(fullPath)) {
                             unbakedModel = modelCache.get(fullPath);
+                            break;
                         }
                     }
                     DynamicBakedModel model = DynamicBakery.bakeModel(unbakedModel, textureGetter, ColorHelper.Argb.getArgb(255, 255, 255, 255), Transform.IDENTITY);
@@ -310,7 +308,6 @@ public class ModelProperty implements ModuleProperty {
                 throw new RuntimeException(fileNotFoundException);
             }
         }
-        MaterialProperty.getTextureKeys();
         return models;
     }
 

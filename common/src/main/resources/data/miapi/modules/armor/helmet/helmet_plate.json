@@ -2,7 +2,7 @@
     "name": "helmet_plate",
     "texture": [
         {
-            "path": "miapi:models/item/armor/helmet/base/[material.texture].json",
+            "path": "miapi:models/item/armor/model/helmet/base/[material.texture].json",
             "transform": {
                 "rotation": {"x": 0.0, "y": 0.0, "z": 0.0},
                 "translation": {"x": 0.0, "y": 0.0, "z": 0.0},

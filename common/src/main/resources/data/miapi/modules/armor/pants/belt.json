@@ -2,7 +2,7 @@
     "name": "belt_base",
     "texture": [
         {
-            "path": "miapi:models/item/armor/belt/base/[material.texture].json",
+            "path": "miapi:models/item/armor/model/belt/base/[material.texture].json",
             "transform": {
                 "rotation": {
                     "x": 0.0,

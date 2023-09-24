@@ -2,7 +2,7 @@
     "name": "leg_left",
     "texture": [
         {
-            "path": "miapi:models/item/armor/leg_left/base/[material.texture].json",
+            "path": "miapi:models/item/armor/model/leg_left/base/[material.texture].json",
             "transform": {
                 "rotation": {
                     "x": 0.0,

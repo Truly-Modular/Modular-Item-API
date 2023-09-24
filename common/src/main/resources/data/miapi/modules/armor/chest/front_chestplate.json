@@ -2,7 +2,7 @@
     "name": "front_chestplate",
     "texture": [
         {
-            "path": "miapi:models/item/armor/chest/base/[material.texture].json",
+            "path": "miapi:models/item/armor/model/chest/base/[material.texture].json",
             "transform": {
                 "rotation": {
                     "x": 0.0,

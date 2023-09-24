@@ -2,7 +2,7 @@
     "name": "right_arm",
     "texture": [
         {
-            "path": "miapi:models/item/armor/arm_right/base/[material.texture].json",
+            "path": "miapi:models/item/armor/model/arm_right/base/[material.texture].json",
             "transform": {
                 "rotation": {
                     "x": 0.0,

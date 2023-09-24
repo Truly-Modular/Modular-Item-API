@@ -2,7 +2,7 @@
     "name": "boot_right",
     "texture": [
         {
-            "path": "miapi:models/item/armor/boot_right/base/[material.texture].json",
+            "path": "miapi:models/item/armor/model/boot_right/base/[material.texture].json",
             "transform": {
                 "rotation": {
                     "x": 0.0,
