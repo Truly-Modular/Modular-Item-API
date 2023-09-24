@@ -58,5 +58,6 @@
             "glass"
         ],
         "cost": 3
-    }
+    },
+    "displayName": "miapi.module.belt_base.name"
 }

@@ -210,7 +210,7 @@
             }
         }
     },
-    "displayName": "[material.key] ChestPlate",
+    "displayName": "miapi.module.chest_base.name",
     "itemId": "miapi:modular_chestplate",
     "equipmentSlot": "chest",
     "modelMerge": [

@@ -210,7 +210,7 @@
             }
         }
     },
-    "displayName": "[material.key] Leggings",
+    "displayName": "miapi.module.pants_base.name",
     "itemId": "miapi:modular_leggings",
     "equipmentSlot": "legs",
     "modelMerge": [

@@ -58,5 +58,6 @@
             "glass"
         ],
         "cost": 2
-    }
+    },
+    "displayName": "miapi.module.boot_left.name"
 }

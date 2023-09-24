@@ -187,7 +187,7 @@
             }
         }
     },
-    "displayName": "[material.key] Boots",
+    "displayName": "miapi.module.boot.name",
     "itemId": "miapi:modular_boots",
     "equipmentSlot": "boots"
 }

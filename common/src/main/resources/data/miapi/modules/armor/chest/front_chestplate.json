@@ -60,5 +60,6 @@
             "glass"
         ],
         "cost": 7
-    }
+    },
+    "displayName": "miapi.module.front_chestplate.name"
 }

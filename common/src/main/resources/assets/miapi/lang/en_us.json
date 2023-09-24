@@ -432,5 +432,72 @@
     "miapi.module.bow_string_normal.description": "String of a Bow",
     "miapi.module.bow_string_normal.short_description": "String of a Bow.",
 
+
+    "miapi.module.boot_left": "Left Boot",
+    "miapi.module.boot_left.name": "[translation.[material.translation]]Left Boot",
+    "miapi.module.boot_left.description": "The left Boot protecting your left foot",
+    "miapi.module.boot_left.short_description": "The left Boot protecting your left foot",
+
+    "miapi.module.boot_right": "Right Boot",
+    "miapi.module.boot_right.name": "[translation.[material.translation]]Right Boot",
+    "miapi.module.boot_right.description": "The right Boot protecting your right foot",
+    "miapi.module.boot_right.short_description": "The right Boot protecting your right foot",
+
+    "miapi.module.boot": "Socks",
+    "miapi.module.boot.name": "Socks",
+    "miapi.module.boot.description": "Socks to keep your shoes on",
+    "miapi.module.boot.short_description": "Socks to keep your shoes on.",
+
+    "miapi.module.leg_left": "Left Pants",
+    "miapi.module.leg_left.name": "[translation.[material.translation]]Left Pants",
+    "miapi.module.leg_left.description": "The left Pant protecting your left leg",
+    "miapi.module.leg_left.short_description": "The left Pant protecting your left leg",
+
+    "miapi.module.leg_right": "Right Pants",
+    "miapi.module.leg_right.name": "[translation.[material.translation]]Right Pants",
+    "miapi.module.leg_right.description": "The right Pant protecting your right leg",
+    "miapi.module.leg_right.short_description": "The right Pant protecting your right leg",
+
+    "miapi.module.belt_base": "Belt",
+    "miapi.module.belt_base.name": "[translation.[material.translation]]Belt",
+    "miapi.module.belt_base.description": "A piece to protect your underbelly and keep your pants high",
+    "miapi.module.belt_base.short_description": "A piece to protect your underbelly and keep your pants high",
+
+    "miapi.module.pants_base": "Underpants",
+    "miapi.module.pants_base.name": "Underpants",
+    "miapi.module.pants_base.description": "Underpants to keep your pants on",
+    "miapi.module.pants_base.short_description": "Underpants to keep your pants on",
+
+    "miapi.module.arm_left": "Left Arm Protector",
+    "miapi.module.arm_left.name": "[translation.[material.translation]]Left Arm Protector",
+    "miapi.module.arm_left.description": "A piece of armor to protect your left arm",
+    "miapi.module.arm_left.short_description": "A piece of armor to protect your left arm",
+
+    "miapi.module.arm_right": "Right Arm Protector",
+    "miapi.module.arm_right.name": "[translation.[material.translation]]Right Arm Protector",
+    "miapi.module.arm_right.description": "A piece of armor to protect your right arm",
+    "miapi.module.arm_right.short_description": "A piece of armor to protect your right arm",
+
+    "miapi.module.front_chestplate": "Chestplate",
+    "miapi.module.front_chestplate.name": "[translation.[material.translation]]Chestplate",
+    "miapi.module.front_chestplate.description": "A piece of armor to protect your chest",
+    "miapi.module.front_chestplate.short_description": "A piece of armor to protect your chest",
+
+    "miapi.module.chest_base": "Undershirt",
+    "miapi.module.chest_base.name": "Undershirt",
+    "miapi.module.chest_base.description": "Undershirt to hold your armor up",
+    "miapi.module.chest_base.short_description": "Undershirt to hold your armor up",
+
+    "miapi.module.helmet_plate": "Helmet",
+    "miapi.module.helmet_plate.name": "[translation.[material.translation]]Helmet",
+    "miapi.module.helmet_plate.description": "A platted helmet to protect your head",
+    "miapi.module.helmet_plate.short_description": "A platted helmet to protect your head",
+
+
+    "miapi.module.helmet_base": "Underhelmet",
+    "miapi.module.helmet_base.name": "Underhelmet",
+    "miapi.module.helmet_base.description": "a small piece on your head to hold the helmet",
+    "miapi.module.helmet_base.short_description": "a small piece on your head to hold the helmet",
+
     "miapi.module.mattock.name": "[translation.[material.translation]]Mattock"
 }

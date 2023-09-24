@@ -36,5 +36,6 @@
             "glass"
         ],
         "cost": 5
-    }
+    },
+    "displayName": "miapi.module.helmet_plate.name"
 }

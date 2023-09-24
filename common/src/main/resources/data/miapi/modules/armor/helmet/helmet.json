@@ -152,7 +152,7 @@
             }
         }
     },
-    "displayName": "[material.key] Helmet",
+    "displayName": "miapi.module.helmet_base.name",
     "itemId": "miapi:modular_helmet",
     "equipmentSlot": "helmet",
     "modelMerge": [
