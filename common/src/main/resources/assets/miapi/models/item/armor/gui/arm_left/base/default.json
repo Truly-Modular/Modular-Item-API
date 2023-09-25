@@ -1,6 +1,6 @@
 {
 	"parent": "item/generated",
 	"textures": {
-		"layer0": "miapi:item/armor/icon/arm_left/default"
+		"layer0": "miapi:item/armor/gui/arm_left/default"
 	}
 }

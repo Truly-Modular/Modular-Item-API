@@ -1,6 +1,6 @@
 {
 	"parent": "item/generated",
 	"textures": {
-		"layer0": "miapi:item/armor/icon/helmet/default"
+		"layer0": "miapi:item/armor/gui/helmet/default"
 	}
 }
