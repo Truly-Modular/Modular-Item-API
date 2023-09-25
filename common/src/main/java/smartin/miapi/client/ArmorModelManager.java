@@ -19,24 +19,38 @@ public class ArmorModelManager {
     public static List<ArmorPartProvider> partProviders = new ArrayList<>();
 
     static {
-        partProviders.add(new ArmorPartProvider() {
-            @Override
-            public List<ArmorPart> getParts(EquipmentSlot equipmentSlot, LivingEntity livingEntity, BipedEntityModel<?> model, EntityModel entityModel) {
-                List<ArmorPart> parts = new ArrayList<>();
-                for (String key : modelParts) {
-                    parts.add(new ArmorPart() {
-                        @Override
-                        public String apply(MatrixStack matrixStack, EquipmentSlot equipmentSlot, LivingEntity livingEntity, BipedEntityModel<?> model, EntityModel entityModel) {
-                            entityModel.copyStateTo(model);
-                            ModelPart part = getModelPart(model, key);
-                            part.rotate(matrixStack);
-                            return key;
-                        }
-                    });
-                }
-                return parts;
+        partProviders.add(new ModelPartProvider());
+    }
+
+    public static final class ModelPartProvider implements ArmorPartProvider {
+
+        private static final String[] modelParts = {"head", "hat", "left_arm", "right_arm", "left_leg", "right_leg", "body"};
+
+        @Override
+        public List<ArmorPart> getParts(EquipmentSlot equipmentSlot, LivingEntity livingEntity, BipedEntityModel<?> model, EntityModel entityModel) {
+            List<ArmorPart> parts = new ArrayList<>();
+            for (String key : modelParts) {
+                parts.add((matrixStack, equipmentSlot1, livingEntity1, model1, entityModel1) -> {
+                    entityModel1.copyStateTo(model1);
+                    ModelPart part = getModelPart(model1, key);
+                    part.rotate(matrixStack);
+                    return key;
+                });
             }
-        });
+            return parts;
+        }
+
+        private static ModelPart getModelPart(BipedEntityModel<?> model, String name) {
+            return switch (name) {
+                case "head" -> model.head;
+                case "hat" -> model.hat;
+                case "left_arm" -> model.leftArm;
+                case "right_arm" -> model.rightArm;
+                case "left_leg" -> model.leftLeg;
+                case "right_leg" -> model.rightLeg;
+                default -> model.body;
+            };
+        }
     }
 
     public static void renderArmorPiece(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, EquipmentSlot armorSlot, ItemStack itemStack, LivingEntity entity, BipedEntityModel outerModel, EntityModel entityModel) {
@@ -45,10 +59,9 @@ public class ArmorModelManager {
             armorParts.forEach(armorPart -> {
                 matrices.push();
                 String key = armorPart.apply(matrices, armorSlot, entity, outerModel, entityModel);
-                MiapiItemModel model1 = MiapiItemModel.getItemModel(itemStack);
-                int lightreplace = (int) Long.parseLong("0F000F0", 16);
-                if (model1 != null) {
-                    model1.render(key, matrices, ModelTransformationMode.HEAD, 0, vertexConsumers, lightreplace, OverlayTexture.DEFAULT_UV);
+                MiapiItemModel miapiItemModel = MiapiItemModel.getItemModel(itemStack);
+                if (miapiItemModel != null) {
+                    miapiItemModel.render(key, matrices, ModelTransformationMode.HEAD, 0, vertexConsumers, light, OverlayTexture.DEFAULT_UV);
                 }
                 matrices.pop();
             });
@@ -61,19 +74,5 @@ public class ArmorModelManager {
 
     public interface ArmorPart {
         String apply(MatrixStack matrixStack, EquipmentSlot equipmentSlot, LivingEntity livingEntity, BipedEntityModel<?> model, EntityModel entityModel);
-    }
-
-    private static final String[] modelParts = {"head", "hat", "left_arm", "right_arm", "left_leg", "right_leg", "body"};
-
-    private static ModelPart getModelPart(BipedEntityModel<?> model, String name) {
-        return switch (name) {
-            case "head" -> model.head;
-            case "hat" -> model.hat;
-            case "left_arm" -> model.leftArm;
-            case "right_arm" -> model.rightArm;
-            case "left_leg" -> model.leftLeg;
-            case "right_leg" -> model.rightLeg;
-            default -> model.body;
-        };
     }
 }
