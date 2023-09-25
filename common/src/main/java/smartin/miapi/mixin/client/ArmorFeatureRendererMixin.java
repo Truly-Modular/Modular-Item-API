@@ -13,6 +13,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ToolMaterials;
 import net.minecraft.world.chunk.light.LightingProvider;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -21,6 +22,7 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import smartin.miapi.client.ArmorModelManager;
 import smartin.miapi.client.modelrework.MiapiItemModel;
 import smartin.miapi.item.modular.ModularItem;
 
@@ -42,28 +44,14 @@ public abstract class ArmorFeatureRendererMixin<T extends LivingEntity, M extend
         if (itemStack.getItem() instanceof ModularItem) {
             // Invert the light direction doesnt work
             int invertedLight = light;
-            renderPieces(matrices, vertexConsumers, invertedLight, armorSlot, itemStack, entity,model);
+            renderPieces(matrices, vertexConsumers, invertedLight, armorSlot, itemStack, entity, model);
             ci.cancel();
         }
     }
 
     @Unique
     private void renderPieces(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, EquipmentSlot armorSlot, ItemStack itemStack, T entity, A outerModel) {
-        Arrays.stream(modelParts).forEach(partId -> {
-            if (true) {
-                this.getContextModel().copyBipedStateTo(outerModel);
-                MiapiItemModel model1 = MiapiItemModel.getItemModel(itemStack);
-                if (model1 != null) {
-                    MatrixStack matrixStack = new MatrixStack();
-                    matrixStack.multiplyPositionMatrix(matrices.peek().getPositionMatrix());
-                    matrixStack.push();
-                    getModelPart(outerModel, partId).rotate(matrixStack);
-                    int lightreplace = (int) Long.parseLong("0F000F0", 16);
-                    model1.render(partId, matrixStack, ModelTransformationMode.HEAD, 0, vertexConsumers, lightreplace , OverlayTexture.DEFAULT_UV);
-                    matrixStack.pop();
-                }
-            }
-        });
+        ArmorModelManager.renderArmorPiece(matrices, vertexConsumers, light, armorSlot, itemStack, entity, outerModel, this.getContextModel());
     }
 
     private static final String[] modelParts = {"head", "hat", "left_arm", "right_arm", "left_leg", "right_leg", "body"};

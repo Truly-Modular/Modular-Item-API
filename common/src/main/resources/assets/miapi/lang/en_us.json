@@ -434,12 +434,12 @@
 
 
     "miapi.module.boot_left": "Left Boot",
-    "miapi.module.boot_left.name": "[translation.[material.translation]]Left Boot",
+    "miapi.module.boot_left.name": "[translation.[material.translation]]Boots",
     "miapi.module.boot_left.description": "The left Boot protecting your left foot",
     "miapi.module.boot_left.short_description": "The left Boot protecting your left foot",
 
     "miapi.module.boot_right": "Right Boot",
-    "miapi.module.boot_right.name": "[translation.[material.translation]]Right Boot",
+    "miapi.module.boot_right.name": "[translation.[material.translation]]Boots",
     "miapi.module.boot_right.description": "The right Boot protecting your right foot",
     "miapi.module.boot_right.short_description": "The right Boot protecting your right foot",
 
@@ -459,7 +459,7 @@
     "miapi.module.leg_right.short_description": "The right Pant protecting your right leg",
 
     "miapi.module.belt_base": "Belt",
-    "miapi.module.belt_base.name": "[translation.[material.translation]]Belt",
+    "miapi.module.belt_base.name": "[translation.[material.translation]]Leggings",
     "miapi.module.belt_base.description": "A piece to protect your underbelly and keep your pants high",
     "miapi.module.belt_base.short_description": "A piece to protect your underbelly and keep your pants high",
 
@@ -492,7 +492,6 @@
     "miapi.module.helmet_plate.name": "[translation.[material.translation]]Helmet",
     "miapi.module.helmet_plate.description": "A platted helmet to protect your head",
     "miapi.module.helmet_plate.short_description": "A platted helmet to protect your head",
-
 
     "miapi.module.helmet_base": "Underhelmet",
     "miapi.module.helmet_base.name": "Underhelmet",
