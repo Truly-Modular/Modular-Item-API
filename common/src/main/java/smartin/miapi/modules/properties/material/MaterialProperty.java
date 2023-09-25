@@ -6,9 +6,9 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
+import net.minecraft.item.*;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.resource.ResourceReloader;
 import net.minecraft.util.Identifier;
@@ -26,6 +26,7 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
+import java.util.stream.Collectors;
 
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
 
@@ -87,6 +88,35 @@ public class MaterialProperty implements ModuleProperty {
                 Miapi.LOGGER.warn("Overwriting Materials isnt supported yet and may cause issues. Material from  " + path + " is overwriting " + material.getKey());
             }
             materials.put(material.getKey(), material);
+        }, -2f);
+        ReloadEvents.MAIN.subscribe((isClient) -> {
+            Registries.ITEM.stream()
+                    .filter(ToolItem.class::isInstance)
+                    .map(item -> ((ToolItem) item).getMaterial())
+                    .collect(Collectors.toSet())
+                    .stream()
+                    .filter(toolMaterial -> toolMaterial.getRepairIngredient().getMatchingStacks().length > 0)
+                    .filter(toolMaterial -> Arrays.stream(toolMaterial.getRepairIngredient().getMatchingStacks()).allMatch(itemStack -> getMaterial(itemStack) == null))
+                    .collect(Collectors.toSet()).forEach(toolMaterial -> {
+                        GeneratedMaterial generatedMaterial = new GeneratedMaterial(toolMaterial, isClient);
+                        materials.put(generatedMaterial.getKey(), generatedMaterial);
+                        Miapi.DEBUG_LOGGER.info("generated Material " + generatedMaterial.getKey());
+                    });
+            //Registries.ITEM.stream().filter(item -> item.isIn)
+            Registries.ITEM.stream().filter(item -> item.getDefaultStack().isIn(ItemTags.PLANKS)).forEach(item -> {
+                if (getMaterial(item.getDefaultStack()) == null) {
+                    GeneratedMaterial generatedMaterial = new GeneratedMaterial(ToolMaterials.WOOD, isClient, item.getDefaultStack());
+                    materials.put(generatedMaterial.getKey(), generatedMaterial);
+                    Miapi.DEBUG_LOGGER.info("generated Material " + generatedMaterial.getKey());
+                }
+            });
+            Registries.ITEM.stream().filter(item -> item.getDefaultStack().isIn(ItemTags.STONE_TOOL_MATERIALS)).forEach(item -> {
+                if (getMaterial(item.getDefaultStack()) == null) {
+                    GeneratedMaterial generatedMaterial = new GeneratedMaterial(ToolMaterials.STONE, isClient, item.getDefaultStack());
+                    materials.put(generatedMaterial.getKey(), generatedMaterial);
+                    Miapi.DEBUG_LOGGER.info("generated Material " + generatedMaterial.getKey());
+                }
+            });
         }, -1f);
         ReloadEvents.END.subscribe((isClient) -> {
             if (isClient) {
