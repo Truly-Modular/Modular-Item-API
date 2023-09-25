@@ -11,7 +11,7 @@
             }
         },
         {
-            "path": "miapi:models/item/armor/icon/helmet/base/[material.texture].json",
+            "path": "miapi:models/item/armor/gui/helmet/base/[material.texture].json",
             "transform": {
                 "rotation": {"x": 0.0, "y": 0.0, "z": 0.0},
                 "translation": {"x": 0.0, "y": 0.0, "z": 0.0},

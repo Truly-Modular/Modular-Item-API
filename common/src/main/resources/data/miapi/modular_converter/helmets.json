@@ -1,0 +1,57 @@
+{
+    "minecraft:iron_helmet": {
+        "module": "helmet_base",
+        "subModules": {
+            "0": {
+                "module": "helmet_plate",
+                "moduleData": {
+                    "properties": "{\"material\":\"iron\"}"
+                }
+            }
+        }
+    },
+    "minecraft:golden_helmet": {
+        "module": "helmet_base",
+        "subModules": {
+            "0": {
+                "module": "helmet_plate",
+                "moduleData": {
+                    "properties": "{\"material\":\"gold\"}"
+                }
+            }
+        }
+    },
+    "minecraft:diamond_helmet": {
+        "module": "helmet_base",
+        "subModules": {
+            "0": {
+                "module": "helmet_plate",
+                "moduleData": {
+                    "properties": "{\"material\":\"diamond\"}"
+                }
+            }
+        }
+    },
+    "minecraft:netherite_helmet": {
+        "module": "helmet_base",
+        "subModules": {
+            "0": {
+                "module": "helmet_plate",
+                "moduleData": {
+                    "properties": "{\"material\":\"netherite\"}"
+                }
+            }
+        }
+    },
+    "minecraft:leather_helmet": {
+        "module": "helmet_base",
+        "subModules": {
+            "0": {
+                "module": "helmet_plate",
+                "moduleData": {
+                    "properties": "{\"material\":\"leather\"}"
+                }
+            }
+        }
+    }
+}

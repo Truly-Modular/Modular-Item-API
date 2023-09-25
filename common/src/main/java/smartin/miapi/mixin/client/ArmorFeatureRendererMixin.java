@@ -2,6 +2,7 @@ package smartin.miapi.mixin.client;
 
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.OverlayTexture;
+import net.minecraft.client.render.RenderPhase;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.feature.ArmorFeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
@@ -12,6 +13,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.world.chunk.light.LightingProvider;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -26,9 +28,6 @@ import java.util.Arrays;
 
 @Mixin(value = ArmorFeatureRenderer.class, priority = 700)
 public abstract class ArmorFeatureRendererMixin<T extends LivingEntity, M extends BipedEntityModel<T>, A extends BipedEntityModel<T>> extends FeatureRenderer<T, M> {
-    @Shadow
-    @Final
-    private A outerModel;
 
     protected ArmorFeatureRendererMixin(FeatureRendererContext<T, M> context) {
         super(context);
@@ -43,25 +42,24 @@ public abstract class ArmorFeatureRendererMixin<T extends LivingEntity, M extend
         if (itemStack.getItem() instanceof ModularItem) {
             // Invert the light direction doesnt work
             int invertedLight = light;
-            renderPieces(matrices, vertexConsumers, invertedLight, armorSlot, itemStack, entity);
+            renderPieces(matrices, vertexConsumers, invertedLight, armorSlot, itemStack, entity,model);
             ci.cancel();
         }
     }
 
     @Unique
-    private void renderPieces(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, EquipmentSlot armorSlot, ItemStack itemStack, T entity) {
+    private void renderPieces(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, EquipmentSlot armorSlot, ItemStack itemStack, T entity, A outerModel) {
         Arrays.stream(modelParts).forEach(partId -> {
-            A armorModel = getModel(armorSlot);
-            //TODO:make sure this works
-            //(this.getContextModel()).setAttributes(armorModel);
             if (true) {
+                this.getContextModel().copyBipedStateTo(outerModel);
                 MiapiItemModel model1 = MiapiItemModel.getItemModel(itemStack);
                 if (model1 != null) {
                     MatrixStack matrixStack = new MatrixStack();
                     matrixStack.multiplyPositionMatrix(matrices.peek().getPositionMatrix());
                     matrixStack.push();
-                    getModelPart(armorModel, partId).rotate(matrixStack);
-                    model1.render(partId, matrixStack, ModelTransformationMode.HEAD, 0, vertexConsumers, light, OverlayTexture.DEFAULT_UV);
+                    getModelPart(outerModel, partId).rotate(matrixStack);
+                    int lightreplace = (int) Long.parseLong("0F000F0", 16);
+                    model1.render(partId, matrixStack, ModelTransformationMode.HEAD, 0, vertexConsumers, lightreplace , OverlayTexture.DEFAULT_UV);
                     matrixStack.pop();
                 }
             }

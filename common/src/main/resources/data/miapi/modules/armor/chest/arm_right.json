@@ -23,7 +23,7 @@
             }
         },
         {
-            "path": "miapi:models/item/armor/icon/arm_right/base/[material.texture].json",
+            "path": "miapi:models/item/armor/gui/arm_right/base/[material.texture].json",
             "transform": {
                 "rotation": {
                     "x": 0.0,

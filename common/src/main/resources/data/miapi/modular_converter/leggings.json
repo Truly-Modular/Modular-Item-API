@@ -1,0 +1,132 @@
+{
+    "minecraft:iron_leggings": {
+        "module": "pants_base",
+        "subModules": {
+            "0": {
+                "module": "belt_base",
+                "moduleData": {
+                    "properties": "{\"material\":\"iron\"}"
+                },
+                "subModules": {}
+            },
+            "1": {
+                "module": "leg_left",
+                "moduleData": {
+                    "properties": "{\"material\":\"iron\"}"
+                },
+                "subModules": {}
+            },
+            "2": {
+                "module": "leg_right",
+                "moduleData": {
+                    "properties": "{\"material\":\"iron\"}"
+                },
+                "subModules": {}
+            }
+        }
+    },
+    "minecraft:golden_leggings": {
+        "module": "pants_base",
+        "subModules": {
+            "0": {
+                "module": "belt_base",
+                "moduleData": {
+                    "properties": "{\"material\":\"gold\"}"
+                },
+                "subModules": {}
+            },
+            "1": {
+                "module": "leg_left",
+                "moduleData": {
+                    "properties": "{\"material\":\"gold\"}"
+                },
+                "subModules": {}
+            },
+            "2": {
+                "module": "leg_right",
+                "moduleData": {
+                    "properties": "{\"material\":\"gold\"}"
+                },
+                "subModules": {}
+            }
+        }
+    },
+    "minecraft:diamond_leggings": {
+        "module": "pants_base",
+        "subModules": {
+            "0": {
+                "module": "belt_base",
+                "moduleData": {
+                    "properties": "{\"material\":\"diamond\"}"
+                },
+                "subModules": {}
+            },
+            "1": {
+                "module": "leg_left",
+                "moduleData": {
+                    "properties": "{\"material\":\"diamond\"}"
+                },
+                "subModules": {}
+            },
+            "2": {
+                "module": "leg_right",
+                "moduleData": {
+                    "properties": "{\"material\":\"diamond\"}"
+                },
+                "subModules": {}
+            }
+        }
+    },
+    "minecraft:netherite_leggings": {
+        "module": "pants_base",
+        "subModules": {
+            "0": {
+                "module": "belt_base",
+                "moduleData": {
+                    "properties": "{\"material\":\"netherite\"}"
+                },
+                "subModules": {}
+            },
+            "1": {
+                "module": "leg_left",
+                "moduleData": {
+                    "properties": "{\"material\":\"netherite\"}"
+                },
+                "subModules": {}
+            },
+            "2": {
+                "module": "leg_right",
+                "moduleData": {
+                    "properties": "{\"material\":\"netherite\"}"
+                },
+                "subModules": {}
+            }
+        }
+    },
+    "minecraft:leather_leggings": {
+        "module": "pants_base",
+        "subModules": {
+            "0": {
+                "module": "belt_base",
+                "moduleData": {
+                    "properties": "{\"material\":\"leather\"}"
+                },
+                "subModules": {}
+            },
+            "1": {
+                "module": "leg_left",
+                "moduleData": {
+                    "properties": "{\"material\":\"leather\"}"
+                },
+                "subModules": {}
+            },
+            "2": {
+                "module": "leg_right",
+                "moduleData": {
+                    "properties": "{\"material\":\"leather\"}"
+                },
+                "subModules": {}
+            }
+        }
+    }
+}
