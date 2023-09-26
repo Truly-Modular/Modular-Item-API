@@ -28,7 +28,7 @@ public class GeneratedMaterial implements Material {
     public final ItemStack mainIngredient;
     public final String key;
     public final List<String> groups = new ArrayList<>();
-    public final Map<String, Float> materialStats = new HashMap<>();
+    public final Map<String, Double> materialStats = new HashMap<>();
     public final Map<String, String> materialStatsString = new HashMap<>();
     public JsonObject jsonObject;
     @Environment(EnvType.CLIENT)
@@ -61,12 +61,12 @@ public class GeneratedMaterial implements Material {
         if (groups.isEmpty()) {
             groups.add("crystal");
         }
-        materialStats.put("hardness", toolMaterial.getAttackDamage());
-        materialStats.put("density", toolMaterial.getAttackDamage() - toolMaterial.getMiningLevel());
-        materialStats.put("flexibility", toolMaterial.getAttackDamage() - toolMaterial.getMiningSpeedMultiplier() / 2);
-        materialStats.put("durability", (float) toolMaterial.getDurability());
-        materialStats.put("mining_level", (float) toolMaterial.getMiningLevel());
-        materialStats.put("mining_speed", toolMaterial.getMiningSpeedMultiplier());
+        materialStats.put("hardness", (double) toolMaterial.getAttackDamage());
+        materialStats.put("density", (double) (toolMaterial.getAttackDamage() - toolMaterial.getMiningLevel()));
+        materialStats.put("flexibility", (double) (toolMaterial.getAttackDamage() - toolMaterial.getMiningSpeedMultiplier() / 2));
+        materialStats.put("durability", (double) toolMaterial.getDurability());
+        materialStats.put("mining_level", (double) toolMaterial.getMiningLevel());
+        materialStats.put("mining_speed", (double) toolMaterial.getMiningSpeedMultiplier());
         materialStatsString.put("translation", mainIngredient.getItem().getTranslationKey());
         Identifier itemId = Registries.ITEM.getId(mainIngredient.getItem());
         StringBuilder builder = new StringBuilder();
@@ -80,10 +80,18 @@ public class GeneratedMaterial implements Material {
         builder.append("]");
         builder.append("}");
         jsonObject = Miapi.gson.fromJson(builder.toString(), JsonObject.class);
-        Miapi.DEBUG_LOGGER.warn(Miapi.gson.toJson(jsonObject));
         if (isClient) {
             clientSetup();
         }
+    }
+
+    public void copyStatsFrom(Material other){
+        materialStats.put("hardness", other.getDouble("hardness"));
+        materialStats.put("density", other.getDouble("density"));
+        materialStats.put("flexibility", other.getDouble("flexibility"));
+        materialStats.put("durability", other.getDouble("durability"));
+        materialStats.put("mining_level", other.getDouble("mining_level"));
+        materialStats.put("mining_speed", other.getDouble("mining_speed"));
     }
 
     @Environment(EnvType.CLIENT)

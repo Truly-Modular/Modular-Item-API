@@ -101,17 +101,18 @@ public class MaterialProperty implements ModuleProperty {
                         GeneratedMaterial generatedMaterial = new GeneratedMaterial(toolMaterial, isClient);
                         materials.put(generatedMaterial.getKey(), generatedMaterial);
                     });
-            //Registries.ITEM.stream().filter(item -> item.isIn)
             Registries.ITEM.stream().filter(item -> item.getDefaultStack().isIn(ItemTags.PLANKS)).forEach(item -> {
                 if (getMaterial(item.getDefaultStack()) == null) {
                     GeneratedMaterial generatedMaterial = new GeneratedMaterial(ToolMaterials.WOOD, isClient, item.getDefaultStack());
                     materials.put(generatedMaterial.getKey(), generatedMaterial);
+                    generatedMaterial.copyStatsFrom(materials.get("wood"));
                 }
             });
             Registries.ITEM.stream().filter(item -> item.getDefaultStack().isIn(ItemTags.STONE_TOOL_MATERIALS)).forEach(item -> {
                 if (getMaterial(item.getDefaultStack()) == null) {
                     GeneratedMaterial generatedMaterial = new GeneratedMaterial(ToolMaterials.STONE, isClient, item.getDefaultStack());
                     materials.put(generatedMaterial.getKey(), generatedMaterial);
+                    generatedMaterial.copyStatsFrom(materials.get("stone"));
                 }
             });
         }, -1f);
