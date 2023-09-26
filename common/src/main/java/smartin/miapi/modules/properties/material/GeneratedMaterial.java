@@ -5,22 +5,20 @@ import com.google.gson.JsonObject;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.item.ItemRenderer;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.model.BakedModel;
-import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.SpriteContents;
-import net.minecraft.client.texture.atlas.AtlasLoader;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ToolMaterial;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.util.Identifier;
+import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.mixin.client.SpriteContentsAccessor;
 import smartin.miapi.modules.properties.material.palette.EmptyMaterialPalette;
 import smartin.miapi.modules.properties.material.palette.MaterialPalette;
 import smartin.miapi.modules.properties.material.palette.MaterialPaletteFromTexture;
-import smartin.miapi.modules.properties.material.palette.PaletteCreators;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.*;
@@ -35,6 +33,7 @@ public class GeneratedMaterial implements Material {
     public JsonObject jsonObject;
     @Environment(EnvType.CLIENT)
     public MaterialPalette materialPalette;
+    public @Nullable MaterialIcons.MaterialIcon icon;
 
     public GeneratedMaterial(ToolMaterial toolMaterial, boolean isClient) {
         this(toolMaterial, isClient, toolMaterial.getRepairIngredient().getMatchingStacks()[0]);
@@ -68,7 +67,7 @@ public class GeneratedMaterial implements Material {
         materialStats.put("durability", (float) toolMaterial.getDurability());
         materialStats.put("mining_level", (float) toolMaterial.getMiningLevel());
         materialStats.put("mining_speed", toolMaterial.getMiningSpeedMultiplier());
-        materialStatsString.put("translation_key", mainIngredient.getItem().getTranslationKey());
+        materialStatsString.put("translation", mainIngredient.getItem().getTranslationKey());
         Identifier itemId = Registries.ITEM.getId(mainIngredient.getItem());
         StringBuilder builder = new StringBuilder();
         builder.append("{");
@@ -88,15 +87,29 @@ public class GeneratedMaterial implements Material {
     }
 
     @Environment(EnvType.CLIENT)
+    public boolean hasIcon() {
+        return true;
+    }
+
+    @Environment(EnvType.CLIENT)
+    public int renderIcon(DrawContext drawContext, int x, int y) {
+        if (icon == null) return 0;
+        return icon.render(drawContext, x, y);
+    }
+
+    @Environment(EnvType.CLIENT)
     private void clientSetup() {
-        Miapi.DEBUG_LOGGER.warn("CLEINTSEUTP");
+        Identifier itemId = Registries.ITEM.getId(mainIngredient.getItem());
+        StringBuilder iconBuilder = new StringBuilder();
+        iconBuilder.append("{");
+        iconBuilder.append("\"type\": \"").append("item").append("\",");
+        iconBuilder.append("\"item\": \"").append(itemId).append("\"");
+        iconBuilder.append("}");
+        icon = MaterialIcons.getMaterialIcon(key, Miapi.gson.fromJson(iconBuilder.toString(), JsonObject.class));
         try {
-            Miapi.DEBUG_LOGGER.warn("CLEINTSEUTP");
             BakedModel itemModel = MinecraftClient.getInstance().getItemRenderer().getModel(mainIngredient, MinecraftClient.getInstance().world, null, 0);
             SpriteContents contents = itemModel.getParticleSprite().getContents();
             materialPalette = new MaterialPaletteFromTexture(this, ((SpriteContentsAccessor) contents).getImage());
-            Miapi.DEBUG_LOGGER.warn("PALETTE DONE "+materialPalette);
-            return;
         } catch (Exception e) {
             Miapi.DEBUG_LOGGER.warn("Error during palette creation", e);
             materialPalette = new EmptyMaterialPalette(this);
@@ -138,7 +151,7 @@ public class GeneratedMaterial implements Material {
 
     @Override
     public String getData(String property) {
-        return "";
+        return materialStatsString.get(property);
     }
 
     @Override
