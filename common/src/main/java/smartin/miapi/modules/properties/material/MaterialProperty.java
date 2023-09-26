@@ -156,7 +156,7 @@ public class MaterialProperty implements ModuleProperty {
         for (Material material : materials.values()) {
             textureKeys.add(material.getKey());
             JsonElement textureJson = material.getRawElement("textures");
-            if (textureJson != null) {
+            if (textureJson != null && textureJson.isJsonArray()) {
                 JsonArray textures = material.getRawElement("textures").getAsJsonArray();
                 for (JsonElement texture : textures) {
                     textureKeys.add(texture.getAsString());
@@ -187,27 +187,29 @@ public class MaterialProperty implements ModuleProperty {
     @Nullable
     public static Material getMaterial(ItemStack item) {
         for (Material material : materials.values()) {
-            JsonArray items = material.getRawElement("items").getAsJsonArray();
+            if (material.getRawElement("items") != null && material.getRawElement("items").isJsonArray()) {
+                JsonArray items = material.getRawElement("items").getAsJsonArray();
 
-            for (JsonElement element : items) {
-                JsonObject itemObj = element.getAsJsonObject();
+                for (JsonElement element : items) {
+                    JsonObject itemObj = element.getAsJsonObject();
 
-                if (itemObj.has("item")) {
-                    String itemId = itemObj.get("item").getAsString();
-                    if (Registries.ITEM.getId(item.getItem()).toString().equals(itemId)) {
-                        return material;
+                    if (itemObj.has("item")) {
+                        String itemId = itemObj.get("item").getAsString();
+                        if (Registries.ITEM.getId(item.getItem()).toString().equals(itemId)) {
+                            return material;
+                        }
                     }
                 }
-            }
 
-            for (JsonElement element : items) {
-                JsonObject itemObj = element.getAsJsonObject();
+                for (JsonElement element : items) {
+                    JsonObject itemObj = element.getAsJsonObject();
 
-                if (itemObj.has("tag")) {
-                    String tagId = itemObj.get("tag").getAsString();
-                    TagKey<Item> tag = TagKey.of(Registries.ITEM.getKey(), new Identifier(tagId));
-                    if (tag != null && item.isIn(tag)) {
-                        return material;
+                    if (itemObj.has("tag")) {
+                        String tagId = itemObj.get("tag").getAsString();
+                        TagKey<Item> tag = TagKey.of(Registries.ITEM.getKey(), new Identifier(tagId));
+                        if (tag != null && item.isIn(tag)) {
+                            return material;
+                        }
                     }
                 }
             }

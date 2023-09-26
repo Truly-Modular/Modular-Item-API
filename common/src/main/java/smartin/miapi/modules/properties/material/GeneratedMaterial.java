@@ -4,12 +4,22 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.item.ItemRenderer;
+import net.minecraft.client.render.model.BakedModel;
+import net.minecraft.client.texture.NativeImage;
+import net.minecraft.client.texture.SpriteContents;
+import net.minecraft.client.texture.atlas.AtlasLoader;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ToolMaterial;
+import net.minecraft.registry.Registries;
 import net.minecraft.registry.tag.ItemTags;
+import net.minecraft.util.Identifier;
 import smartin.miapi.Miapi;
+import smartin.miapi.mixin.client.SpriteContentsAccessor;
 import smartin.miapi.modules.properties.material.palette.EmptyMaterialPalette;
 import smartin.miapi.modules.properties.material.palette.MaterialPalette;
+import smartin.miapi.modules.properties.material.palette.MaterialPaletteFromTexture;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.*;
@@ -20,6 +30,9 @@ public class GeneratedMaterial implements Material {
     public final String key;
     public final List<String> groups = new ArrayList<>();
     public final Map<String, Float> materialStats = new HashMap<>();
+    public final Map<String, String> materialStatsString = new HashMap<>();
+    public final JsonObject jsonObject = new JsonObject();
+
     @Environment(EnvType.CLIENT)
 
     public GeneratedMaterial(ToolMaterial toolMaterial, boolean isClient) {
@@ -54,13 +67,23 @@ public class GeneratedMaterial implements Material {
         materialStats.put("durability", (float) toolMaterial.getDurability());
         materialStats.put("mining_level", (float) toolMaterial.getMiningLevel());
         materialStats.put("mining_speed", toolMaterial.getMiningSpeedMultiplier());
-        if(isClient){
+        materialStatsString.put("translation_key", mainIngredient.getItem().getTranslationKey());
+        Identifier itemId = Registries.ITEM.getId(mainIngredient.getItem());
+        jsonObject.add("items", Miapi.gson.toJsonTree(
+                "[" +
+                        "        {" +
+                        "            \"item\": \"" + itemId + "\"," +
+                        "            \"value\": 1.0" +
+                        "        }" +
+                        "    ]"));
+        Miapi.DEBUG_LOGGER.warn(Miapi.gson.toJson(jsonObject));
+        if (isClient) {
             clientSetup();
         }
     }
 
     @Environment(EnvType.CLIENT)
-    private void clientSetup(){
+    private void clientSetup() {
 
     }
 
@@ -76,6 +99,15 @@ public class GeneratedMaterial implements Material {
 
     @Override
     public MaterialPalette getPalette() {
+        try {
+            BakedModel itemModel = MinecraftClient.getInstance().getItemRenderer().getModel(mainIngredient, MinecraftClient.getInstance().world, null, 0);
+            SpriteContents contents = itemModel.getParticleSprite().getContents();
+            return new MaterialPaletteFromTexture(this, ((SpriteContentsAccessor) contents).getImage());
+        } catch (Exception e) {
+            Miapi.DEBUG_LOGGER.warn("Error during palette creation", e);
+        }
+
+
         return new EmptyMaterialPalette(this); // TODO set this up to actually do shit
     }
 
@@ -86,7 +118,7 @@ public class GeneratedMaterial implements Material {
 
     @Override
     public JsonElement getRawElement(String key) {
-        return new JsonObject();
+        return jsonObject.get(key);
     }
 
     @Override
