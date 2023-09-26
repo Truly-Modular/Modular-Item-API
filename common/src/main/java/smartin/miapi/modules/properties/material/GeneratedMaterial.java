@@ -10,10 +10,12 @@ import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.texture.SpriteContents;
 import net.minecraft.item.*;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
+import smartin.miapi.mixin.MiningToolItemAccessor;
 import smartin.miapi.mixin.client.SpriteContentsAccessor;
 import smartin.miapi.modules.properties.material.palette.EmptyMaterialPalette;
 import smartin.miapi.modules.properties.material.palette.MaterialPalette;
@@ -85,12 +87,20 @@ public class GeneratedMaterial implements Material {
         }
     }
 
-    public boolean assignStats() {
-        List<Item> toolMaterials = Registries.ITEM.stream().filter(item -> toolMaterial.equals(((SwordItem) item).getMaterial())).collect(Collectors.toList());
-        Optional<Item> swordItem = toolMaterials.stream().filter(item -> item instanceof SwordItem).findFirst();
-        Optional<Item> axeItem = toolMaterials.stream().filter(item -> item instanceof AxeItem).findFirst();
+    public boolean assignStats(List<ToolItem> toolItems) {
+        List<Item> toolMaterials = toolItems.stream()
+                .filter(material -> toolMaterial.equals(material.getMaterial()))
+                .collect(Collectors.toList());
+        Optional<Item> swordItem = toolMaterials.stream().filter(SwordItem.class::isInstance).findFirst();
+        Optional<Item> axeItem = toolMaterials.stream().filter(AxeItem.class::isInstance).findFirst();
+        Optional<Item> pickAxeItem = toolMaterials.stream().filter(PickaxeItem.class::isInstance).findFirst();
+        Optional<Item> shovelItem = toolMaterials.stream().filter(ShovelItem.class::isInstance).findFirst();
+        Optional<Item> hoeItem = toolMaterials.stream().filter(HoeItem.class::isInstance).findFirst();
+        if(axeItem.isEmpty()){
+            axeItem = toolMaterials.stream().filter( MiningToolItem.class::isInstance).filter(miningTool -> ((MiningToolItemAccessor)miningTool).getEffectiveBlocks().equals(BlockTags.AXE_MINEABLE)).findFirst();
+        }
         if (swordItem.isPresent() && axeItem.isPresent()) {
-            if (swordItem.get() instanceof SwordItem swordItem1 && axeItem.get() instanceof AxeItem axeItem1) {
+            if (swordItem.get() instanceof SwordItem swordItem1 && axeItem.get() instanceof MiningToolItem axeItem1) {
                 materialStats.put("hardness", (double) swordItem1.getAttackDamage());
 
                 double firstPart = Math.floor(Math.pow((swordItem1.getAttackDamage() - 3.4) * 2.3, 1.0 / 3.0)) + 7;

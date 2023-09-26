@@ -90,19 +90,22 @@ public class MaterialProperty implements ModuleProperty {
             materials.put(material.getKey(), material);
         }, -2f);
         ReloadEvents.MAIN.subscribe((isClient) -> {
-            Registries.ITEM.stream()
+            List<ToolItem> toolItems = Registries.ITEM.stream()
                     .filter(ToolItem.class::isInstance)
-                    .map(item -> ((ToolItem) item).getMaterial())
+                    .map(ToolItem.class::cast)
+                    .toList();
+            toolItems.stream()
+                    .map(toolItem -> toolItem.getMaterial())
                     .collect(Collectors.toSet())
                     .stream()
                     .filter(toolMaterial -> toolMaterial.getRepairIngredient().getMatchingStacks().length > 0)
                     .filter(toolMaterial -> Arrays.stream(toolMaterial.getRepairIngredient().getMatchingStacks()).allMatch(itemStack -> getMaterial(itemStack) == null))
                     .collect(Collectors.toSet()).forEach(toolMaterial -> {
                         GeneratedMaterial generatedMaterial = new GeneratedMaterial(toolMaterial, isClient);
-                        if (generatedMaterial.assignStats()) {
+                        if (generatedMaterial.assignStats(toolItems)) {
                             materials.put(generatedMaterial.getKey(), generatedMaterial);
                         } else {
-                            Miapi.LOGGER.warn("Coudlnt correctly setup material for " + generatedMaterial.mainIngredient.getItem());
+                            Miapi.LOGGER.warn("Couldn't correctly setup material for " + generatedMaterial.mainIngredient.getItem());
                         }
                     });
             Registries.ITEM.stream().filter(item -> item.getDefaultStack().isIn(ItemTags.PLANKS)).forEach(item -> {

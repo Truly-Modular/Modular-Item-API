@@ -1,39 +1,40 @@
 {
-  "required": true,
-  "minVersion": "0.8",
-  "package": "smartin.miapi.mixin",
-  "compatibilityLevel": "JAVA_17",
-  "mixins": [
-    "BCWeaponRegistryMixin",
-    "DefaultAttributeContainerAccessor",
-    "DefaultAttributeRegistryMixin",
-    "DispenserBlockAccessor",
-    "EnchantmentHelperMixin",
-    "EnchantmentMixin",
-    "EntityMixin",
-    "ForgingScreenHandlerAccessor",
-    "InventoryValidationMixin",
-    "ItemStackMixin",
-    "LivingEntityAccessor",
-    "LivingEntityMixin",
-    "LootContextTypesAccessor",
-    "ProjectileDispenserBehaviorAccessor",
-    "ProjectileEntityAccessor",
-    "SmithingScreenHandlerAccessor",
-    "SmithingScreenHandlerMixin",
-    "ThrowablePotionItemAccessor"
-  ],
-  "client": [
-    "client.ArmorFeatureRendererMixin",
-    "client.ItemRendererAccessor",
-    "client.ItemRendererMixin",
-    "client.ModelLoaderAccessor",
-    "client.ModelLoaderInterfaceAccessor",
-    "client.ModelLoaderMixin",
-    "client.ModelPredicateProviderRegistryAccessor",
-    "client.SpriteContentsAccessor"
-  ],
-  "injectors": {
-    "defaultRequire": 1
+    "required": true,
+    "minVersion": "0.8",
+    "package": "smartin.miapi.mixin",
+    "compatibilityLevel": "JAVA_17",
+    "mixins": [
+        "BCWeaponRegistryMixin",
+        "DefaultAttributeContainerAccessor",
+        "DefaultAttributeRegistryMixin",
+        "DispenserBlockAccessor",
+        "EnchantmentHelperMixin",
+        "EnchantmentMixin",
+        "EntityMixin",
+        "ForgingScreenHandlerAccessor",
+        "InventoryValidationMixin",
+        "ItemStackMixin",
+        "LivingEntityAccessor",
+        "LivingEntityMixin",
+        "LootContextTypesAccessor",
+        "MiningToolItemAccessor",
+        "ProjectileDispenserBehaviorAccessor",
+        "ProjectileEntityAccessor",
+        "SmithingScreenHandlerAccessor",
+        "SmithingScreenHandlerMixin",
+        "ThrowablePotionItemAccessor"
+    ],
+    "client": [
+        "client.ArmorFeatureRendererMixin",
+        "client.ItemRendererAccessor",
+        "client.ItemRendererMixin",
+        "client.ModelLoaderAccessor",
+        "client.ModelLoaderInterfaceAccessor",
+        "client.ModelLoaderMixin",
+        "client.ModelPredicateProviderRegistryAccessor",
+        "client.SpriteContentsAccessor"
+    ],
+    "injectors": {
+        "defaultRequire": 1
   }
 }
