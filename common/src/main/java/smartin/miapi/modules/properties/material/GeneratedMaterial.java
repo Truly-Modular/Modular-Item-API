@@ -20,6 +20,7 @@ import smartin.miapi.mixin.client.SpriteContentsAccessor;
 import smartin.miapi.modules.properties.material.palette.EmptyMaterialPalette;
 import smartin.miapi.modules.properties.material.palette.MaterialPalette;
 import smartin.miapi.modules.properties.material.palette.MaterialPaletteFromTexture;
+import smartin.miapi.modules.properties.material.palette.PaletteCreators;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.*;
@@ -31,9 +32,9 @@ public class GeneratedMaterial implements Material {
     public final List<String> groups = new ArrayList<>();
     public final Map<String, Float> materialStats = new HashMap<>();
     public final Map<String, String> materialStatsString = new HashMap<>();
-    public final JsonObject jsonObject = new JsonObject();
-
+    public JsonObject jsonObject;
     @Environment(EnvType.CLIENT)
+    public MaterialPalette materialPalette;
 
     public GeneratedMaterial(ToolMaterial toolMaterial, boolean isClient) {
         this(toolMaterial, isClient, toolMaterial.getRepairIngredient().getMatchingStacks()[0]);
@@ -43,7 +44,7 @@ public class GeneratedMaterial implements Material {
         this.toolMaterial = toolMaterial;
         mainIngredient = itemStack;
         Arrays.stream(toolMaterial.getRepairIngredient().getMatchingStacks()).forEach(stack -> {
-            Miapi.DEBUG_LOGGER.info("found item " + stack.getItem());
+            Miapi.DEBUG_LOGGER.info("found item " + stack.getItem() + " " + isClient);
         });
         key = "generated_" + mainIngredient.getItem().getTranslationKey();
         if (mainIngredient.getItem().getTranslationKey().contains("ingot")) {
@@ -69,13 +70,17 @@ public class GeneratedMaterial implements Material {
         materialStats.put("mining_speed", toolMaterial.getMiningSpeedMultiplier());
         materialStatsString.put("translation_key", mainIngredient.getItem().getTranslationKey());
         Identifier itemId = Registries.ITEM.getId(mainIngredient.getItem());
-        jsonObject.add("items", Miapi.gson.toJsonTree(
-                "[" +
-                        "        {" +
-                        "            \"item\": \"" + itemId + "\"," +
-                        "            \"value\": 1.0" +
-                        "        }" +
-                        "    ]"));
+        StringBuilder builder = new StringBuilder();
+        builder.append("{");
+        builder.append("\"items\":");
+        builder.append("[");
+        builder.append("{");
+        builder.append("\"item\": \"").append(itemId).append("\",");
+        builder.append("\"value\": 1.0");
+        builder.append("}");
+        builder.append("]");
+        builder.append("}");
+        jsonObject = Miapi.gson.fromJson(builder.toString(), JsonObject.class);
         Miapi.DEBUG_LOGGER.warn(Miapi.gson.toJson(jsonObject));
         if (isClient) {
             clientSetup();
@@ -84,7 +89,18 @@ public class GeneratedMaterial implements Material {
 
     @Environment(EnvType.CLIENT)
     private void clientSetup() {
-
+        Miapi.DEBUG_LOGGER.warn("CLEINTSEUTP");
+        try {
+            Miapi.DEBUG_LOGGER.warn("CLEINTSEUTP");
+            BakedModel itemModel = MinecraftClient.getInstance().getItemRenderer().getModel(mainIngredient, MinecraftClient.getInstance().world, null, 0);
+            SpriteContents contents = itemModel.getParticleSprite().getContents();
+            materialPalette = new MaterialPaletteFromTexture(this, ((SpriteContentsAccessor) contents).getImage());
+            Miapi.DEBUG_LOGGER.warn("PALETTE DONE "+materialPalette);
+            return;
+        } catch (Exception e) {
+            Miapi.DEBUG_LOGGER.warn("Error during palette creation", e);
+            materialPalette = new EmptyMaterialPalette(this);
+        }
     }
 
     @Override
@@ -99,16 +115,7 @@ public class GeneratedMaterial implements Material {
 
     @Override
     public MaterialPalette getPalette() {
-        try {
-            BakedModel itemModel = MinecraftClient.getInstance().getItemRenderer().getModel(mainIngredient, MinecraftClient.getInstance().world, null, 0);
-            SpriteContents contents = itemModel.getParticleSprite().getContents();
-            return new MaterialPaletteFromTexture(this, ((SpriteContentsAccessor) contents).getImage());
-        } catch (Exception e) {
-            Miapi.DEBUG_LOGGER.warn("Error during palette creation", e);
-        }
-
-
-        return new EmptyMaterialPalette(this); // TODO set this up to actually do shit
+        return materialPalette;
     }
 
     @Override
@@ -136,7 +143,9 @@ public class GeneratedMaterial implements Material {
 
     @Override
     public List<String> getTextureKeys() {
-        return new ArrayList<>();
+        List<String> keys = new ArrayList<>(this.groups);
+        keys.add("default");
+        return keys;
     }
 
     @Override

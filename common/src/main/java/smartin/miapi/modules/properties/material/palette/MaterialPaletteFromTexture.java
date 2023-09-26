@@ -1,11 +1,14 @@
 package smartin.miapi.modules.properties.material.palette;
 
 import com.redpxnda.nucleus.util.Color;
+import net.minecraft.client.resource.metadata.AnimationResourceMetadata;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.SpriteContents;
+import net.minecraft.client.texture.SpriteDimensions;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
 import org.jetbrains.annotations.Nullable;
+import smartin.miapi.Miapi;
 import smartin.miapi.modules.properties.material.Material;
 
 import java.util.Arrays;
@@ -20,6 +23,7 @@ public class MaterialPaletteFromTexture extends SimpleMaterialPalette {
     public MaterialPaletteFromTexture(Material material, NativeImage img) {
         super(material);
         this.image = img;
+        this.setSpriteId(new Identifier(Miapi.MOD_ID, "miapi_materials/" + material.getKey()));
     }
 
     @Override
@@ -29,21 +33,22 @@ public class MaterialPaletteFromTexture extends SimpleMaterialPalette {
                 .filter(color -> color.a() > 0)
                 .sorted((a, b) -> (int) (a.toFloatVecNoDiv().length() - b.toFloatVecNoDiv().length())).collect(Collectors.toList());
 
+
         PaletteCreators.FillerFunction filler = PaletteCreators.fillers.getOrDefault("interpolation", PaletteCreators.interpolateFiller);
 
         Map<Integer, Color> colors = new HashMap<>();
 
         for (int i = 0; i < pixels.size(); i++) {
-            colors.put(i / pixels.size() * 250 + 3, pixels.get(i));
+            colors.put((int)((float)i / (float)pixels.size() * 255.0), pixels.get(i));
         }
 
         if (!colors.containsKey(0))
-            colors.put(0, Color.BLACK);
+            colors.put(0, colors.get(0));
         if (!colors.containsKey(255))
-            colors.put(255, Color.WHITE);
+            colors.put(255, colors.get(colors.size()-1));
 
-        NativeImage image = new NativeImage(256, 1, false);
-        PaletteCreators.PixelPlacer placer = (color, x, y) -> image.setColor(x, y, color.abgr());
+        NativeImage nativeImage = new NativeImage(256, 1, false);
+        PaletteCreators.PixelPlacer placer = (color, x, y) -> nativeImage.setColor(x, y, color.abgr());
 
         List<Map.Entry<Integer, Color>> list = colors.entrySet().stream().sorted(Map.Entry.comparingByKey()).toList();
         for (int i = 0; i < list.size(); i++) {
@@ -60,10 +65,10 @@ public class MaterialPaletteFromTexture extends SimpleMaterialPalette {
                     next.getKey(),
                     placer
             );
-            image.setColor(current.getKey(), 0, current.getValue().abgr());
+            nativeImage.setColor(current.getKey(), 0, current.getValue().abgr());
         }
-        image.untrack();
-        return null;
+        nativeImage.untrack();
+        return new SpriteContents(id, new SpriteDimensions(256, 1), nativeImage, AnimationResourceMetadata.EMPTY);
     }
 
     public int[] getPixelArray() {

@@ -100,21 +100,18 @@ public class MaterialProperty implements ModuleProperty {
                     .collect(Collectors.toSet()).forEach(toolMaterial -> {
                         GeneratedMaterial generatedMaterial = new GeneratedMaterial(toolMaterial, isClient);
                         materials.put(generatedMaterial.getKey(), generatedMaterial);
-                        Miapi.DEBUG_LOGGER.info("generated Material " + generatedMaterial.getKey());
                     });
             //Registries.ITEM.stream().filter(item -> item.isIn)
             Registries.ITEM.stream().filter(item -> item.getDefaultStack().isIn(ItemTags.PLANKS)).forEach(item -> {
                 if (getMaterial(item.getDefaultStack()) == null) {
                     GeneratedMaterial generatedMaterial = new GeneratedMaterial(ToolMaterials.WOOD, isClient, item.getDefaultStack());
                     materials.put(generatedMaterial.getKey(), generatedMaterial);
-                    Miapi.DEBUG_LOGGER.info("generated Material " + generatedMaterial.getKey());
                 }
             });
             Registries.ITEM.stream().filter(item -> item.getDefaultStack().isIn(ItemTags.STONE_TOOL_MATERIALS)).forEach(item -> {
                 if (getMaterial(item.getDefaultStack()) == null) {
                     GeneratedMaterial generatedMaterial = new GeneratedMaterial(ToolMaterials.STONE, isClient, item.getDefaultStack());
                     materials.put(generatedMaterial.getKey(), generatedMaterial);
-                    Miapi.DEBUG_LOGGER.info("generated Material " + generatedMaterial.getKey());
                 }
             });
         }, -1f);
@@ -123,9 +120,7 @@ public class MaterialProperty implements ModuleProperty {
                 MinecraftClient.getInstance().execute(() -> {
                     Executor prepare = new CurrentThreadExecutor();
                     Executor done = new CurrentThreadExecutor();
-                    Thread thread = Thread.currentThread();
                     RenderSystem.assertOnRenderThread();
-                    ResourceReloader resourceReloader;
                     MinecraftClient.getInstance().getTextureManager();
                     ResourceReloader.Synchronizer synchronizer = new ResourceReloader.Synchronizer() {
                         @Override

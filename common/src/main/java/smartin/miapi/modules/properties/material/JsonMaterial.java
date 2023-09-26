@@ -80,18 +80,6 @@ public class JsonMaterial implements Material {
         return palette;
     }
 
-    /*@Environment(EnvType.CLIENT)
-    @Override
-    public MaterialVertexConsumer getVertexConsumer(VertexConsumerProvider vertexConsumers, ItemStack stack, ItemModule.ModuleInstance moduleInstance, ModelTransformationMode mode) {
-        if(vertexConsumer == null) {
-            vertexConsumer = new MaterialVertexConsumer(vertexConsumers.getBuffer(RegistryInventory.Client.entityTranslucentMaterialRenderType), this);
-        }
-        else {
-            vertexConsumer.delegate = vertexConsumers.getBuffer(RegistryInventory.Client.entityTranslucentMaterialRenderType);
-        }
-        return vertexConsumer;
-    }*/
-
     @Environment(EnvType.CLIENT)
     public int renderIcon(DrawContext drawContext, int x, int y) {
         if (icon == null) return 0;
@@ -102,17 +90,6 @@ public class JsonMaterial implements Material {
     public boolean hasIcon() {
         return icon != null;
     }
-
-    /*@Environment(EnvType.CLIENT)
-    @Override
-    public VertexConsumer setupMaterialShader(VertexConsumerProvider provider, RenderLayer layer, ShaderProgram shader) {
-        int id = 10;
-        RenderSystem.setShaderTexture(id, materialColorPalette);
-        RenderSystem.bindTexture(id);
-        int j = RenderSystem.getShaderTexture(id);
-        shader.addSampler("MatColors", j);
-        return provider.getBuffer(layer);
-    }*/
 
     @Override
     public Map<ModuleProperty, JsonElement> materialProperties(String key) {
