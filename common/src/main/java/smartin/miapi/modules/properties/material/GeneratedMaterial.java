@@ -10,6 +10,7 @@ import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.texture.SpriteContents;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ToolMaterial;
+import net.minecraft.item.ToolMaterials;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.util.Identifier;
@@ -61,6 +62,8 @@ public class GeneratedMaterial implements Material {
         if (groups.isEmpty()) {
             groups.add("crystal");
         }
+        //TODO:generate those sensible ig?
+        //maybe scan all items assosiaated with the toolmaterial to get somewhat valid stats?
         materialStats.put("hardness", (double) toolMaterial.getAttackDamage());
         materialStats.put("density", (double) (toolMaterial.getAttackDamage() - toolMaterial.getMiningLevel()));
         materialStats.put("flexibility", (double) (toolMaterial.getAttackDamage() - toolMaterial.getMiningSpeedMultiplier() / 2));
