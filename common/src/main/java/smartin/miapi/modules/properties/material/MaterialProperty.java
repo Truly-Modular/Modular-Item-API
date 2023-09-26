@@ -99,7 +99,11 @@ public class MaterialProperty implements ModuleProperty {
                     .filter(toolMaterial -> Arrays.stream(toolMaterial.getRepairIngredient().getMatchingStacks()).allMatch(itemStack -> getMaterial(itemStack) == null))
                     .collect(Collectors.toSet()).forEach(toolMaterial -> {
                         GeneratedMaterial generatedMaterial = new GeneratedMaterial(toolMaterial, isClient);
-                        materials.put(generatedMaterial.getKey(), generatedMaterial);
+                        if (generatedMaterial.assignStats()) {
+                            materials.put(generatedMaterial.getKey(), generatedMaterial);
+                        } else {
+                            Miapi.LOGGER.warn("Coudlnt correctly setup material for " + generatedMaterial.mainIngredient.getItem());
+                        }
                     });
             Registries.ITEM.stream().filter(item -> item.getDefaultStack().isIn(ItemTags.PLANKS)).forEach(item -> {
                 if (getMaterial(item.getDefaultStack()) == null) {

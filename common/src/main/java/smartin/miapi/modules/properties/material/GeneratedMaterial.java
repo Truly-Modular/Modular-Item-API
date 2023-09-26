@@ -8,9 +8,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.texture.SpriteContents;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ToolMaterial;
-import net.minecraft.item.ToolMaterials;
+import net.minecraft.item.*;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.util.Identifier;
@@ -23,6 +21,7 @@ import smartin.miapi.modules.properties.material.palette.MaterialPaletteFromText
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class GeneratedMaterial implements Material {
     public final ToolMaterial toolMaterial;
@@ -35,6 +34,7 @@ public class GeneratedMaterial implements Material {
     @Environment(EnvType.CLIENT)
     public MaterialPalette materialPalette;
     public @Nullable MaterialIcons.MaterialIcon icon;
+    public boolean statAssignentsuccess = true;
 
     public GeneratedMaterial(ToolMaterial toolMaterial, boolean isClient) {
         this(toolMaterial, isClient, toolMaterial.getRepairIngredient().getMatchingStacks()[0]);
@@ -64,9 +64,6 @@ public class GeneratedMaterial implements Material {
         }
         //TODO:generate those sensible ig?
         //maybe scan all items assosiaated with the toolmaterial to get somewhat valid stats?
-        materialStats.put("hardness", (double) toolMaterial.getAttackDamage());
-        materialStats.put("density", (double) (toolMaterial.getAttackDamage() - toolMaterial.getMiningLevel()));
-        materialStats.put("flexibility", (double) (toolMaterial.getAttackDamage() - toolMaterial.getMiningSpeedMultiplier() / 2));
         materialStats.put("durability", (double) toolMaterial.getDurability());
         materialStats.put("mining_level", (double) toolMaterial.getMiningLevel());
         materialStats.put("mining_speed", (double) toolMaterial.getMiningSpeedMultiplier());
@@ -88,7 +85,25 @@ public class GeneratedMaterial implements Material {
         }
     }
 
-    public void copyStatsFrom(Material other){
+    public boolean assignStats() {
+        List<Item> toolMaterials = Registries.ITEM.stream().filter(item -> toolMaterial.equals(((SwordItem) item).getMaterial())).collect(Collectors.toList());
+        Optional<Item> swordItem = toolMaterials.stream().filter(item -> item instanceof SwordItem).findFirst();
+        Optional<Item> axeItem = toolMaterials.stream().filter(item -> item instanceof AxeItem).findFirst();
+        if (swordItem.isPresent() && axeItem.isPresent()) {
+            if (swordItem.get() instanceof SwordItem swordItem1 && axeItem.get() instanceof AxeItem axeItem1) {
+                materialStats.put("hardness", (double) swordItem1.getAttackDamage());
+
+                double firstPart = Math.floor(Math.pow((swordItem1.getAttackDamage() - 3.4) * 2.3, 1.0 / 3.0)) + 7;
+
+                materialStats.put("density", ((axeItem1.getAttackDamage() - firstPart) / 2.0) * 4.0);
+                materialStats.put("flexibility", (double) (toolMaterial.getMiningSpeedMultiplier() / 4));
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void copyStatsFrom(Material other) {
         materialStats.put("hardness", other.getDouble("hardness"));
         materialStats.put("density", other.getDouble("density"));
         materialStats.put("flexibility", other.getDouble("flexibility"));
