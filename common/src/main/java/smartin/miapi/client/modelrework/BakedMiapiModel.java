@@ -51,7 +51,7 @@ public class BakedMiapiModel implements MiapiModel {
                 if (model.getOverrides() != null && !model.getOverrides().equals(ModelOverrideList.EMPTY)) {
                     model = model.getOverrides().apply(model, stack, MinecraftClient.getInstance().world, entity, light);
                 }
-                VertexConsumer consumer = modelholder.colorProvider.getConsumer(vertexConsumers);
+                VertexConsumer consumer = modelholder.colorProvider.getConsumer(vertexConsumers, stack, instance, transformationMode);
                 Color color = modelholder.colorProvider.getVertexColor();
 
                 int lightValue = transformationMode == ModelTransformationMode.GUI ? LightmapTextureManager.MAX_LIGHT_COORDINATE : LightmapTextureManager.MAX_SKY_LIGHT_COORDINATE;

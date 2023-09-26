@@ -9,8 +9,6 @@ import dev.architectury.utils.Env;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.texture.SpriteContents;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
@@ -18,7 +16,9 @@ import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
 import org.jetbrains.annotations.Nullable;
-import smartin.miapi.client.MaterialVertexConsumer;
+import smartin.miapi.modules.properties.material.palette.EmptyMaterialPalette;
+import smartin.miapi.modules.properties.material.palette.MaterialPalette;
+import smartin.miapi.modules.properties.material.palette.PaletteCreators;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.registries.RegistryInventory;
 
@@ -30,10 +30,8 @@ import java.util.Map;
 public class JsonMaterial implements Material {
     public String key;
     protected JsonElement rawJson;
-    public Identifier materialColorPalette = Material.baseColorPalette;
+    @Environment(EnvType.CLIENT) protected MaterialPalette palette;
     public @Nullable MaterialIcons.MaterialIcon icon = null;
-    @Environment(EnvType.CLIENT)
-    MaterialVertexConsumer vertexConsumer = null;
 
     public JsonMaterial(JsonObject element) {
         rawJson = element;
@@ -46,6 +44,14 @@ public class JsonMaterial implements Material {
             if (emnt instanceof JsonPrimitive primitive && primitive.isString())
                 icon = new MaterialIcons.TextureMaterialIcon(new Identifier(primitive.getAsString()));
             else icon = MaterialIcons.getMaterialIcon(key, emnt);
+        }
+
+        if (Platform.getEnvironment() == Env.CLIENT) {
+            if (element.has("color_palette")) {
+                palette = PaletteCreators.paletteCreator.dispatcher().createPalette(element.get("color_palette"), this);
+            } else {
+                palette = new EmptyMaterialPalette(this);
+            }
         }
     }
 
@@ -70,41 +76,21 @@ public class JsonMaterial implements Material {
 
     @Environment(EnvType.CLIENT)
     @Override
-    public MaterialVertexConsumer getVertexConsumer(VertexConsumerProvider vertexConsumers){
-        if(vertexConsumer == null){
+    public MaterialPalette getPalette() {
+        return palette;
+    }
+
+    /*@Environment(EnvType.CLIENT)
+    @Override
+    public MaterialVertexConsumer getVertexConsumer(VertexConsumerProvider vertexConsumers, ItemStack stack, ItemModule.ModuleInstance moduleInstance, ModelTransformationMode mode) {
+        if(vertexConsumer == null) {
             vertexConsumer = new MaterialVertexConsumer(vertexConsumers.getBuffer(RegistryInventory.Client.entityTranslucentMaterialRenderType), this);
         }
-        else{
+        else {
             vertexConsumer.delegate = vertexConsumers.getBuffer(RegistryInventory.Client.entityTranslucentMaterialRenderType);
         }
         return vertexConsumer;
-    }
-
-    @Environment(EnvType.CLIENT)
-    @Override
-    @Nullable
-    public SpriteContents generateSpriteContents() {
-        if (rawJson.getAsJsonObject().has("color_palette")) {
-            SpriteContents contents = PaletteCreators.paletteCreator.dispatcher().generateSprite(rawJson.getAsJsonObject().get("color_palette"), key);
-            materialColorPalette = contents.getId();
-            return contents;
-        }
-        return null;
-    }
-
-    @Environment(EnvType.CLIENT)
-    @Override
-    @Nullable
-    public Identifier getSpriteId() {
-        return materialColorPalette;
-    }
-
-    @Environment(EnvType.CLIENT)
-    @Override
-    @Nullable
-    public void setSpriteId(Identifier identifier) {
-        materialColorPalette = identifier;
-    }
+    }*/
 
     @Environment(EnvType.CLIENT)
     public int renderIcon(DrawContext drawContext, int x, int y) {
@@ -194,7 +180,7 @@ public class JsonMaterial implements Material {
     }
 
     @Override
-    public int getColor() {
+    public int getColor() { // TODO getPalette().getPaletteAverageColor() ?
         if (rawJson.getAsJsonObject().get("color") != null) {
             long longValue = Long.parseLong(rawJson.getAsJsonObject().get("color").getAsString(), 16);
             return (int) (longValue & 0xffffffffL);

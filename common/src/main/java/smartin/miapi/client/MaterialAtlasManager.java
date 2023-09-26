@@ -1,6 +1,5 @@
 package smartin.miapi.client;
 
-import com.sun.jna.platform.unix.solaris.LibKstat;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -14,7 +13,6 @@ import net.minecraft.util.profiler.Profiler;
 import smartin.miapi.Miapi;
 import smartin.miapi.modules.properties.material.Material;
 import smartin.miapi.modules.properties.material.MaterialProperty;
-import smartin.miapi.modules.properties.material.PaletteCreators;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -30,7 +28,7 @@ import static smartin.miapi.Miapi.MOD_ID;
 public class MaterialAtlasManager extends SpriteAtlasHolder {
     public static final Identifier MATERIAL_ID = new Identifier("miapi_materials");
     public static final Identifier MATERIAL_ATLAS_ID = new Identifier(MOD_ID, "textures/atlas/materials.png");
-    public static final Identifier BASE_MATERIAL_ID = new Identifier(Miapi.MOD_ID, "miapi_materials/base_palette");
+    public static final Identifier BASE_MATERIAL_ID = new Identifier(MOD_ID, "miapi_materials/base_palette");
 
     public MaterialAtlasManager(TextureManager textureManager) {
         super(textureManager, MATERIAL_ATLAS_ID, MATERIAL_ID);
@@ -75,12 +73,12 @@ public class MaterialAtlasManager extends SpriteAtlasHolder {
             Material material = MaterialProperty.materials.get(s);
             Identifier materialIdentifier = new Identifier(Miapi.MOD_ID, "miapi_materials/" + s);
             if (invalidResult != null && atlas.getSprite(materialIdentifier).equals(invalidResult.missing())) {
-                SpriteContents contents = material.generateSpriteContents();
+                SpriteContents contents = material.getPalette().generateSpriteContents(materialIdentifier);
                 if (contents != null) {
-                    materialSprites.add(material.generateSpriteContents());
-                    material.setSpriteId(materialIdentifier);
+                    materialSprites.add(contents);
+                    material.getPalette().setSpriteId(materialIdentifier);
                 } else {
-                    material.setSpriteId(BASE_MATERIAL_ID);
+                    material.getPalette().setSpriteId(BASE_MATERIAL_ID);
                 }
             } else {
                 Sprite sprite = atlas.getSprite(materialIdentifier);
@@ -93,7 +91,7 @@ public class MaterialAtlasManager extends SpriteAtlasHolder {
                         Miapi.LOGGER.error("Material manual Image not correctly sized for material " + materialIdentifier);
                     }
                     materialSprites.add(contents);
-                    material.setSpriteId(materialIdentifier);
+                    material.getPalette().setSpriteId(materialIdentifier);
                 } catch (FileNotFoundException e) {
                     Miapi.LOGGER.error("Error during MaterialAtlasStitching", e);
                 }

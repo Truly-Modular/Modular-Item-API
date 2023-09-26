@@ -6,13 +6,12 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.render.RenderLayers;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionUtil;
-import smartin.miapi.client.MaterialVertexConsumer;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.material.Material;
 import smartin.miapi.modules.properties.material.MaterialProperty;
-import smartin.miapi.registries.RegistryInventory;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -36,7 +35,7 @@ public interface ColorProvider {
     }
 
     @Environment(EnvType.CLIENT)
-    VertexConsumer getConsumer(VertexConsumerProvider vertexConsumers);
+    VertexConsumer getConsumer(VertexConsumerProvider vertexConsumers, ItemStack stack, ItemModule.ModuleInstance moduleInstance, ModelTransformationMode mode);
 
     ColorProvider getInstance(ItemStack stack, ItemModule.ModuleInstance instance);
 
@@ -52,8 +51,8 @@ public interface ColorProvider {
 
         @Environment(EnvType.CLIENT)
         @Override
-        public VertexConsumer getConsumer(VertexConsumerProvider vertexConsumers) {
-            return material.getVertexConsumer(vertexConsumers);
+        public VertexConsumer getConsumer(VertexConsumerProvider vertexConsumers, ItemStack stack, ItemModule.ModuleInstance moduleInstance, ModelTransformationMode mode) {
+            return material.getVertexConsumer(vertexConsumers, stack, moduleInstance, mode);
         }
 
         @Override
@@ -67,18 +66,18 @@ public interface ColorProvider {
     }
 
     class ModelColorProvider implements ColorProvider {
-        ItemStack stack = ItemStack.EMPTY;
+//        ItemStack stack = ItemStack.EMPTY;
 
         public ModelColorProvider() {
         }
 
         public ModelColorProvider(ItemStack stack) {
-            this.stack = stack;
+//            this.stack = stack;
         }
 
         @Environment(EnvType.CLIENT)
         @Override
-        public VertexConsumer getConsumer(VertexConsumerProvider vertexConsumers) {
+        public VertexConsumer getConsumer(VertexConsumerProvider vertexConsumers, ItemStack stack, ItemModule.ModuleInstance moduleInstance, ModelTransformationMode mode) {
             return vertexConsumers.getBuffer(RenderLayers.getItemLayer(stack, true));
         }
 
@@ -90,7 +89,6 @@ public interface ColorProvider {
 
     class PotionColorProvider implements ColorProvider {
         Color potioncolor;
-        ItemStack stack;
 
         public PotionColorProvider() {
 
@@ -98,7 +96,6 @@ public interface ColorProvider {
 
         public PotionColorProvider(ItemStack stack) {
             potioncolor = new Color(PotionUtil.getColor(stack));
-            this.stack = stack;
         }
 
         @Override
@@ -108,7 +105,7 @@ public interface ColorProvider {
 
         @Environment(EnvType.CLIENT)
         @Override
-        public VertexConsumer getConsumer(VertexConsumerProvider vertexConsumers) {
+        public VertexConsumer getConsumer(VertexConsumerProvider vertexConsumers, ItemStack stack, ItemModule.ModuleInstance moduleInstance, ModelTransformationMode mode) {
             return vertexConsumers.getBuffer(RenderLayers.getItemLayer(stack, true));
         }
 

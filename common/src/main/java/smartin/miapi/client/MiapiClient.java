@@ -23,7 +23,7 @@ import smartin.miapi.mixin.client.ItemRendererAccessor;
 import smartin.miapi.modules.MiapiPermissions;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.material.MaterialIcons;
-import smartin.miapi.modules.properties.material.PaletteCreators;
+import smartin.miapi.modules.properties.material.palette.PaletteCreators;
 import smartin.miapi.modules.properties.render.colorproviders.ColorProvider;
 import smartin.miapi.registries.RegistryInventory;
 

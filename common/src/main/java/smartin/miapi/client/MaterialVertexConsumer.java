@@ -14,7 +14,7 @@ public class MaterialVertexConsumer implements VertexConsumer {
 
     public MaterialVertexConsumer(VertexConsumer delegate, Material material) {
         this.delegate = delegate;
-        Sprite sprite = MiapiClient.materialAtlasManager.getMaterialSprite(material.getSpriteId());
+        Sprite sprite = MiapiClient.materialAtlasManager.getMaterialSprite(material.getPalette().getSpriteId());
         if(sprite == null){
             sprite = MiapiClient.materialAtlasManager.getMaterialSprite(MaterialAtlasManager.BASE_MATERIAL_ID);
         }

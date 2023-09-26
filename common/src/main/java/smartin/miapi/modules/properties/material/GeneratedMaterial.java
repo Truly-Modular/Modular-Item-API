@@ -4,14 +4,12 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.texture.*;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ToolMaterial;
 import net.minecraft.registry.tag.ItemTags;
-import net.minecraft.util.Identifier;
-import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
+import smartin.miapi.modules.properties.material.palette.EmptyMaterialPalette;
+import smartin.miapi.modules.properties.material.palette.MaterialPalette;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.*;
@@ -23,7 +21,6 @@ public class GeneratedMaterial implements Material {
     public final List<String> groups = new ArrayList<>();
     public final Map<String, Float> materialStats = new HashMap<>();
     @Environment(EnvType.CLIENT)
-    private Identifier spriteID;
 
     public GeneratedMaterial(ToolMaterial toolMaterial, boolean isClient) {
         this(toolMaterial, isClient, toolMaterial.getRepairIngredient().getMatchingStacks()[0]);
@@ -78,20 +75,8 @@ public class GeneratedMaterial implements Material {
     }
 
     @Override
-    public @Nullable SpriteContents generateSpriteContents() {
-        Sprite sprite = null;
-        //SpriteLoader.fromAtlas(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE).
-        return null;
-    }
-
-    @Override
-    public @Nullable Identifier getSpriteId() {
-        return spriteID;
-    }
-
-    @Override
-    public @Nullable void setSpriteId(Identifier identifier) {
-        spriteID = identifier;
+    public MaterialPalette getPalette() {
+        return new EmptyMaterialPalette(this); // TODO set this up to actually do shit
     }
 
     @Override
