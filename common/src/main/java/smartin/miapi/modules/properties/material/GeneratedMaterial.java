@@ -212,13 +212,20 @@ public class GeneratedMaterial implements Material {
         return stringA.substring(end - result + 1, result);
     }
 
-    public void copyStatsFrom(Material other) {
+    public void copyStatsFrom(Material other, boolean isClient) {
         materialStats.put("hardness", other.getDouble("hardness"));
         materialStats.put("density", other.getDouble("density"));
         materialStats.put("flexibility", other.getDouble("flexibility"));
         materialStats.put("durability", other.getDouble("durability"));
         materialStats.put("mining_level", other.getDouble("mining_level"));
         materialStats.put("mining_speed", other.getDouble("mining_speed"));
+        String materialTranslation = Text.translatable(mainIngredient.getTranslationKey()).getString();
+        String translationKey = "miapi.material.generated." + mainIngredient.getItem().getTranslationKey();
+        if(!materialTranslation.endsWith(" ")){
+            materialTranslation += " ";
+        }
+        FakeTranslation.translations.put(translationKey, materialTranslation);
+        materialStatsString.put("translation", translationKey);
     }
 
     @Environment(EnvType.CLIENT)
