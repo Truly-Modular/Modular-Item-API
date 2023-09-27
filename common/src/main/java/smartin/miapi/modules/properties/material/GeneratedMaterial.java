@@ -36,7 +36,6 @@ public class GeneratedMaterial implements Material {
     @Environment(EnvType.CLIENT)
     public MaterialPalette materialPalette;
     public @Nullable MaterialIcons.MaterialIcon icon;
-    public boolean statAssignentsuccess = true;
 
     public GeneratedMaterial(ToolMaterial toolMaterial, boolean isClient) {
         this(toolMaterial, isClient, toolMaterial.getRepairIngredient().getMatchingStacks()[0]);
@@ -96,8 +95,8 @@ public class GeneratedMaterial implements Material {
         Optional<Item> pickAxeItem = toolMaterials.stream().filter(PickaxeItem.class::isInstance).findFirst();
         Optional<Item> shovelItem = toolMaterials.stream().filter(ShovelItem.class::isInstance).findFirst();
         Optional<Item> hoeItem = toolMaterials.stream().filter(HoeItem.class::isInstance).findFirst();
-        if(axeItem.isEmpty()){
-            axeItem = toolMaterials.stream().filter( MiningToolItem.class::isInstance).filter(miningTool -> ((MiningToolItemAccessor)miningTool).getEffectiveBlocks().equals(BlockTags.AXE_MINEABLE)).findFirst();
+        if (axeItem.isEmpty()) {
+            axeItem = toolMaterials.stream().filter(MiningToolItem.class::isInstance).filter(miningTool -> ((MiningToolItemAccessor) miningTool).getEffectiveBlocks().equals(BlockTags.AXE_MINEABLE)).findFirst();
         }
         if (swordItem.isPresent() && axeItem.isPresent()) {
             if (swordItem.get() instanceof SwordItem swordItem1 && axeItem.get() instanceof MiningToolItem axeItem1) {
@@ -143,9 +142,11 @@ public class GeneratedMaterial implements Material {
         iconBuilder.append("}");
         icon = MaterialIcons.getMaterialIcon(key, Miapi.gson.fromJson(iconBuilder.toString(), JsonObject.class));
         try {
-            BakedModel itemModel = MinecraftClient.getInstance().getItemRenderer().getModel(mainIngredient, MinecraftClient.getInstance().world, null, 0);
-            SpriteContents contents = itemModel.getParticleSprite().getContents();
-            materialPalette = new MaterialPaletteFromTexture(this, ((SpriteContentsAccessor) contents).getImage());
+            materialPalette = new MaterialPaletteFromTexture(this,()->{
+                BakedModel itemModel = MinecraftClient.getInstance().getItemRenderer().getModel(mainIngredient, MinecraftClient.getInstance().world, null, 0);
+                SpriteContents contents = itemModel.getParticleSprite().getContents();
+                return ((SpriteContentsAccessor) contents).getImage();
+            });
         } catch (Exception e) {
             Miapi.DEBUG_LOGGER.warn("Error during palette creation", e);
             materialPalette = new EmptyMaterialPalette(this);

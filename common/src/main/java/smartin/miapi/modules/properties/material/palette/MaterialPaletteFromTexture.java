@@ -11,27 +11,25 @@ import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.modules.properties.material.Material;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.*;
+import java.util.function.Supplier;
 
 public class MaterialPaletteFromTexture extends SimpleMaterialPalette {
-    NativeImage image;
+    Supplier<NativeImage> imageSupplier;
 
-    public MaterialPaletteFromTexture(Material material, NativeImage img) {
+    public MaterialPaletteFromTexture(Material material, Supplier<NativeImage> img) {
         super(material);
-        this.image = img;
+        this.imageSupplier = img;
         this.setSpriteId(new Identifier(Miapi.MOD_ID, "miapi_materials/" + material.getKey()));
     }
 
     @Override
     public @Nullable SpriteContents generateSpriteContents(Identifier id) {
         List<Color> pixels = Arrays.stream(getPixelArray())
-                .mapToObj(colorInt -> new Color(colorInt))
+                .mapToObj(Color::new)
                 .filter(color -> color.a() > 0)
-                .sorted((a, b) -> (int) (a.toFloatVecNoDiv().length() - b.toFloatVecNoDiv().length())).collect(Collectors.toList());
+                .sorted(Comparator.comparingDouble(a -> a.toFloatVecNoDiv().length()))
+                .toList();
 
 
         PaletteCreators.FillerFunction filler = PaletteCreators.fillers.getOrDefault("interpolation", PaletteCreators.interpolateFiller);
@@ -72,6 +70,7 @@ public class MaterialPaletteFromTexture extends SimpleMaterialPalette {
     }
 
     public int[] getPixelArray() {
+        NativeImage image = imageSupplier.get();
         if (image.getFormat() != NativeImage.Format.RGBA) {
             throw new UnsupportedOperationException("can only call makePixelArray for RGBA images.");
         } else {
