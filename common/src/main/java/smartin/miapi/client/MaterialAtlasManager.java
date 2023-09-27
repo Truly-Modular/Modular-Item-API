@@ -74,11 +74,16 @@ public class MaterialAtlasManager extends SpriteAtlasHolder {
             Material material = MaterialProperty.materials.get(s);
             Identifier materialIdentifier = new Identifier(Miapi.MOD_ID, "miapi_materials/" + s);
             if (invalidResult != null && atlas.getSprite(materialIdentifier).equals(invalidResult.missing())) {
-                SpriteContents contents = material.getPalette().generateSpriteContents(materialIdentifier);
-                if (contents != null) {
-                    materialSprites.add(contents);
-                    material.getPalette().setSpriteId(materialIdentifier);
-                } else {
+                try {
+                    SpriteContents contents = material.getPalette().generateSpriteContents(materialIdentifier);
+                    if (contents != null) {
+                        materialSprites.add(contents);
+                        material.getPalette().setSpriteId(materialIdentifier);
+                    } else {
+                        material.getPalette().setSpriteId(BASE_MATERIAL_ID);
+                    }
+                } catch (Exception e) {
+                    Miapi.LOGGER.error("Couldnt generate MaterialPalette for " + s + " ",e);
                     material.getPalette().setSpriteId(BASE_MATERIAL_ID);
                 }
             } else {

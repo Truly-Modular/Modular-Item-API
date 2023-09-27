@@ -5,6 +5,7 @@ import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import smartin.miapi.Miapi;
+import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.modules.properties.AttributeProperty;
 
 import static smartin.miapi.Miapi.MOD_ID;
@@ -17,8 +18,14 @@ public class TrulyModularForge {
         Miapi.init();
 
         //ATTRIBUTE REPLACEMENT
+        AttributeRegistry.REACH = ForgeMod.BLOCK_REACH.get();
+        AttributeRegistry.ATTACK_RANGE = ForgeMod.ENTITY_REACH.get();
         AttributeProperty.replaceMap.put("miapi:generic.reach", ForgeMod.BLOCK_REACH);
         AttributeProperty.replaceMap.put("miapi:generic.attack_range", ForgeMod.ENTITY_REACH);
+        AttributeProperty.replaceMap.put("forge:block_reach", ForgeMod.BLOCK_REACH);
+        AttributeProperty.replaceMap.put("forge:entity_reach", ForgeMod.ENTITY_REACH);
+        AttributeProperty.replaceMap.put("reach-entity-attributes:reach", ForgeMod.BLOCK_REACH);
+        AttributeProperty.replaceMap.put("reach-entity-attributes:attack_range", ForgeMod.ENTITY_REACH);
         //AttributeRegistry.ATTACK_RANGE = ForgeMod.ENTITY_REACH.get();
         //AttributeProperty.priorityMap.put(ForgeMod.BLOCK_REACH, -7.0f);
         //AttributeProperty.priorityMap.put(ForgeMod.ENTITY_REACH, -7.0f);

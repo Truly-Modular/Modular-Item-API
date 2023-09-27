@@ -17,6 +17,12 @@ repositories {
             includeGroup 'maven.modrinth'
         }
     }
+    maven {
+        url "https://maven.jamieswhiteshirt.com/libs-release"
+        content {
+            includeGroup "com.jamieswhiteshirt"
+        }
+    }
 }
 architectury {
     platformSetupLoomIde()
@@ -52,6 +58,7 @@ dependencies {
     modApi("com.terraformersmc:modmenu:${rootProject.modmenu_version}") {
         exclude(module: "fabric-api")
     }
+    include modImplementation("com.jamieswhiteshirt:reach-entity-attributes:$rootProject.fabric_reach_range_version")
 
     implementation(include("org.mariuszgromada.math:MathParser.org-mXparser:${rootProject.mathparser_version}"))
 

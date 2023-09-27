@@ -1,7 +1,9 @@
 package smartin.miapi.fabric;
 
+import com.jamieswhiteshirt.reachentityattributes.ReachEntityAttributes;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
+import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.registry.Registries;
@@ -29,7 +31,14 @@ public class TrulyModularFabric implements ModInitializer {
         }
 
         //ATTRIBUTE REPLACEMENT
+        AttributeRegistry.ATTACK_RANGE = ReachEntityAttributes.ATTACK_RANGE;
+        AttributeRegistry.REACH = ReachEntityAttributes.REACH;
+
+        AttributeProperty.replaceMap.put("miapi:generic.reach", () -> AttributeRegistry.REACH);
+        AttributeProperty.replaceMap.put("miapi:generic.attack_range", () -> AttributeRegistry.ATTACK_RANGE);
         AttributeProperty.replaceMap.put("forge:block_reach", () -> AttributeRegistry.REACH);
         AttributeProperty.replaceMap.put("forge:entity_reach", () -> AttributeRegistry.ATTACK_RANGE);
+        AttributeProperty.replaceMap.put("reach-entity-attributes:reach", () -> AttributeRegistry.REACH);
+        AttributeProperty.replaceMap.put("reach-entity-attributes:attack_range", () -> AttributeRegistry.ATTACK_RANGE);
     }
 }

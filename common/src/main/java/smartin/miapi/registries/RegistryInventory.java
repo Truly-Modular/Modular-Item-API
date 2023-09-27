@@ -275,14 +275,6 @@ public class RegistryInventory {
                         new ClampedEntityAttribute("miapi.attribute.name.durability", 1.0, 1.0, 16777216).setTracked(true),
                 att -> ITEM_DURABILITY = att);
 
-        // reach
-        registerAtt("generic.reach", true, () ->
-                        new ClampedEntityAttribute("miapi.attribute.name.reach", 0.0, -1024.0, 1024.0).setTracked(true),
-                att -> REACH = att);
-        registerAtt("generic.attack_range", true, () ->
-                        new ClampedEntityAttribute("miapi.attribute.name.attack_range", 0.0, -1024.0, 1024.0).setTracked(true),
-                att -> ATTACK_RANGE = att);
-
         // mining
         registerAtt("generic.mining_speed.pickaxe", false, () ->
                         new ClampedEntityAttribute("miapi.attribute.name.mining_speed.pickaxe", 0.0, 0.0, 1024.0).setTracked(true),

@@ -5,7 +5,6 @@ import com.google.gson.JsonObject;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.texture.SpriteContents;
@@ -135,7 +134,7 @@ public class GeneratedMaterial implements Material {
         int highest = 0;
         String longestCommonSubstring = materialName;
         for (String itemName : itemNames) {
-            String commonString = LCSubStr(itemName, materialName);
+            String commonString = longestSubsString(itemName, materialName);
             if (commonString.length() > 3) {
                 if (map.containsKey(commonString)) {
                     map.put(commonString, map.get(commonString) + 1);
@@ -151,64 +150,69 @@ public class GeneratedMaterial implements Material {
         return longestCommonSubstring;
     }
 
-    static String LCSubStr(String stringA, String stringB) {
+    static String longestSubsString(String stringA, String stringB) {
         // Find length of both the Strings.
+        try{
+            if (stringB.length() > stringA.length()) {
+                String buffer = stringA;
+                stringA = stringB;
+                stringB = buffer;
+            }
+            int m = stringA.length();
+            int n = stringB.length();
 
-        if (stringB.length() > stringA.length()) {
-            String buffer = stringA;
-            stringA = stringB;
-            stringB = buffer;
-        }
-        int m = stringA.length();
-        int n = stringB.length();
+            // Variable to store length of longest
+            // common subString.
+            int result = 0;
 
-        // Variable to store length of longest
-        // common subString.
-        int result = 0;
+            // Variable to store ending point of
+            // longest common subString in X.
+            int end = 0;
 
-        // Variable to store ending point of
-        // longest common subString in X.
-        int end = 0;
+            // Matrix to store result of two
+            // consecutive rows at a time.
+            int len[][] = new int[2][m];
 
-        // Matrix to store result of two
-        // consecutive rows at a time.
-        int len[][] = new int[2][m];
+            // Variable to represent which row of
+            // matrix is current row.
+            int currRow = 0;
 
-        // Variable to represent which row of
-        // matrix is current row.
-        int currRow = 0;
-
-        // For a particular value of i and j,
-        // len[currRow][j] stores length of longest
-        // common subString in String X[0..i] and Y[0..j].
-        for (int i = 0; i < m; i++) {
-            for (int j = 0; j < n; j++) {
-                if (i == 0 || j == 0) {
-                    len[currRow][j] = 0;
-                } else if (stringA.charAt(i - 1) == stringB.charAt(j - 1)) {
-                    len[currRow][j] = len[1 - currRow][j - 1] + 1;
-                    if (len[currRow][j] > result) {
-                        result = len[currRow][j];
-                        end = i - 1;
+            // For a particular value of i and j,
+            // len[currRow][j] stores length of longest
+            // common subString in String X[0..i] and Y[0..j].
+            for (int i = 0; i < m; i++) {
+                for (int j = 0; j < n; j++) {
+                    if (i == 0 || j == 0) {
+                        len[currRow][j] = 0;
+                    } else if (stringA.charAt(i - 1) == stringB.charAt(j - 1)) {
+                        len[currRow][j] = len[1 - currRow][j - 1] + 1;
+                        if (len[currRow][j] > result) {
+                            result = len[currRow][j];
+                            end = i - 1;
+                        }
+                    } else {
+                        len[currRow][j] = 0;
                     }
-                } else {
-                    len[currRow][j] = 0;
                 }
+
+                // Make current row as previous row and
+                // previous row as new current row.
+                currRow = 1 - currRow;
             }
 
-            // Make current row as previous row and
-            // previous row as new current row.
-            currRow = 1 - currRow;
-        }
+            // If there is no common subString, print -1.
+            if (result == 0) {
+                return "";
+            }
 
-        // If there is no common subString, print -1.
-        if (result == 0) {
+            // Longest common subString is from index
+            // end - result + 1 to index end in X.
+            return stringA.substring(end - result + 1, result);
+        }
+        catch (Exception e){
+            Miapi.LOGGER.warn("Exception during string comparison");
             return "";
         }
-
-        // Longest common subString is from index
-        // end - result + 1 to index end in X.
-        return stringA.substring(end - result + 1, result);
     }
 
     public void copyStatsFrom(Material other, boolean isClient) {
