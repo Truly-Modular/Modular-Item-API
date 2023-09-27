@@ -17,6 +17,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
+import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.mixin.MiningToolItemAccessor;
 import smartin.miapi.mixin.client.SpriteContentsAccessor;
 import smartin.miapi.modules.properties.material.palette.EmptyMaterialPalette;
@@ -108,9 +109,10 @@ public class GeneratedMaterial implements Material {
 
                 materialStats.put("density", ((axeItem1.getAttackDamage() - firstPart) / 2.0) * 4.0);
                 materialStats.put("flexibility", (double) (toolMaterial.getMiningSpeedMultiplier() / 4));
-                if(isClient){
+                if (isClient) {
                     generateTranslation(toolMaterials);
                 }
+                MiapiEvents.GENERATED_MATERIAL.invoker().generated(this, mainIngredient, toolMaterials, isClient);
                 return true;
             }
         }
@@ -123,7 +125,7 @@ public class GeneratedMaterial implements Material {
         String materialName = Text.translatable(mainIngredient.getTranslationKey()).getString();
         String translationKey = "miapi.material.generated." + mainIngredient.getItem().getTranslationKey();
         String materialTranslation = findCommonSubstring(names, materialName);
-        if(!materialTranslation.endsWith(" ")){
+        if (!materialTranslation.endsWith(" ")) {
             materialTranslation += " ";
         }
         FakeTranslation.translations.put(translationKey, materialTranslation);
@@ -155,7 +157,7 @@ public class GeneratedMaterial implements Material {
     static String LCSubStr(String stringA, String stringB) {
         // Find length of both the Strings.
 
-        if(stringB.length()>stringA.length()){
+        if (stringB.length() > stringA.length()) {
             String buffer = stringA;
             stringA = stringB;
             stringB = buffer;
@@ -219,10 +221,10 @@ public class GeneratedMaterial implements Material {
         materialStats.put("durability", other.getDouble("durability"));
         materialStats.put("mining_level", other.getDouble("mining_level"));
         materialStats.put("mining_speed", other.getDouble("mining_speed"));
-        if(isClient){
+        if (isClient) {
             String materialTranslation = Text.translatable(mainIngredient.getTranslationKey()).getString();
             String translationKey = "miapi.material.generated." + mainIngredient.getItem().getTranslationKey();
-            if(!materialTranslation.endsWith(" ")){
+            if (!materialTranslation.endsWith(" ")) {
                 materialTranslation += " ";
             }
             FakeTranslation.translations.put(translationKey, materialTranslation);

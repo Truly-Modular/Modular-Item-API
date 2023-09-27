@@ -14,6 +14,7 @@ import net.minecraft.util.JsonHelper;
 import org.apache.logging.log4j.util.TriConsumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import smartin.arsenal.GenerateModularConverters;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.client.MiapiClient;
 import smartin.miapi.datapack.ReloadEvents;
@@ -50,6 +51,7 @@ public class Miapi {
     public static Gson gson = new Gson();
 
     public static void init() {
+        GenerateModularConverters.setup();
         setupNetworking();
         ApplicationEvents.setup();
         RegistryInventory.setup();
