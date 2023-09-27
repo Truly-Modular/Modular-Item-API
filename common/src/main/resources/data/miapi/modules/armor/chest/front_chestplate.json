@@ -47,11 +47,33 @@
     "allowedInSlots": [
         "chest_front"
     ],
-    "slots": {
-    },
+    "attributes": [
+        {
+            "attribute": "minecraft:generic.armor",
+            "value": "([material.hardness] + 2 - ceil([material.flexibility]/4))/8*6",
+            "operation": "+",
+            "slot": "chest",
+            "uuid": "AAAAAAAA-4180-4865-B01B-BCCE9785ACA3"
+        },
+        {
+            "attribute": "minecraft:generic.armor_toughness",
+            "value": "((((([material.mining_level]-2)/(abs([material.mining_level]-2))))/(2))+0.5) * ([material.mining_level]-1)",
+            "operation": "+",
+            "slot": "chest",
+            "uuid": "AAAAAAAA-4180-4865-B01B-BCCE9785ACA3"
+        },
+        {
+            "attribute": "minecraft:generic.knockback_resistance",
+            "value": "((((([material.mining_level]-3)/(abs([material.mining_level]-3))))/(2))+0.5) * ([material.mining_level]-3) / 10",
+            "operation": "+",
+            "slot": "chest",
+            "uuid": "AAAAAAAA-4180-4865-B01B-BCCE9785ACA3"
+        }
+    ],
     "allowedMaterial": {
         "allowedMaterials": [
             "wood",
+            "fabric",
             "metal",
             "flint",
             "bone",
@@ -59,7 +81,7 @@
             "crystal",
             "glass"
         ],
-        "cost": 7
+        "cost": 6
     },
     "displayName": "miapi.module.front_chestplate.name"
 }

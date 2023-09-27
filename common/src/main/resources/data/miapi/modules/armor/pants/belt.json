@@ -50,6 +50,7 @@
     "allowedMaterial": {
         "allowedMaterials": [
             "wood",
+            "fabric",
             "metal",
             "flint",
             "bone",
@@ -59,5 +60,28 @@
         ],
         "cost": 3
     },
+    "attributes": [
+        {
+            "attribute": "minecraft:generic.armor",
+            "value": "(([material.hardness]-ceil((([material.hardness])/(6.5)))+ceil((([material.hardness])/(4.5)))-1)/(7))*3",
+            "operation": "+",
+            "slot": "legs",
+            "uuid": "AAAAAAAA-4180-4865-B01B-BCCE9785ACA3"
+        },
+        {
+            "attribute": "minecraft:generic.armor_toughness",
+            "value": "((((([material.mining_level]-2)/(abs([material.mining_level]-2))))/(2))+0.5) * ([material.mining_level]-1)",
+            "operation": "+",
+            "slot": "legs",
+            "uuid": "AAAAAAAA-4180-4865-B01B-BCCE9785ACA3"
+        },
+        {
+            "attribute": "minecraft:generic.knockback_resistance",
+            "value": "((((([material.mining_level]-3)/(abs([material.mining_level]-3))))/(2))+0.5) * ([material.mining_level]-3) / 10",
+            "operation": "+",
+            "slot": "legs",
+            "uuid": "AAAAAAAA-4180-4865-B01B-BCCE9785ACA3"
+        }
+    ],
     "displayName": "miapi.module.belt_base.name"
 }

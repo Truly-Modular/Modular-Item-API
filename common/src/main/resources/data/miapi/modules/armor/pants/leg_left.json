@@ -47,9 +47,19 @@
     "allowedInSlots": [
         "leg_left"
     ],
+    "attributes": [
+        {
+            "attribute": "minecraft:generic.armor",
+            "value": "(([material.hardness]-ceil((([material.hardness])/(6.5)))+ceil((([material.hardness])/(4.5)))-1)/(7))*2",
+            "operation": "+",
+            "slot": "legs",
+            "uuid": "AAAAAAAA-4180-4865-B01B-BCCE9785ACA3"
+        }
+    ],
     "allowedMaterial": {
         "allowedMaterials": [
             "wood",
+            "fabric",
             "metal",
             "flint",
             "bone",

@@ -37,6 +37,9 @@ public class AttributeProperty implements ModuleProperty {
     public AttributeProperty() {
         property = this;
         ModularItemCache.setSupplier(KEY, (AttributeProperty::createAttributeCache));
+        priorityMap.put(EntityAttributes.GENERIC_ARMOR, -15.0f);
+        priorityMap.put(EntityAttributes.GENERIC_ARMOR_TOUGHNESS, -14.0f);
+        priorityMap.put(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, -13.0f);
         priorityMap.put(EntityAttributes.GENERIC_ATTACK_DAMAGE, -12.0f);
         priorityMap.put(EntityAttributes.GENERIC_ATTACK_SPEED, -11.0f);
         priorityMap.put(AttributeRegistry.PROJECTILE_DAMAGE, -10.0f);

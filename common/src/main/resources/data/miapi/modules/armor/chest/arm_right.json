@@ -47,9 +47,19 @@
     "allowedInSlots": [
         "arm_right"
     ],
+    "attributes": [
+        {
+            "attribute": "minecraft:generic.armor",
+            "value": "([material.hardness] + 2 - ceil([material.flexibility]/4))/8",
+            "operation": "+",
+            "slot": "chest",
+            "uuid": "AAAAAAAA-4180-4865-B01B-BCCE9785ACA3"
+        }
+    ],
     "allowedMaterial": {
         "allowedMaterials": [
             "wood",
+            "fabric",
             "metal",
             "flint",
             "bone",
