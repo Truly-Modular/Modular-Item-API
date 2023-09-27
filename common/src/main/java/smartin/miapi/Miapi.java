@@ -14,6 +14,7 @@ import net.minecraft.util.JsonHelper;
 import org.apache.logging.log4j.util.TriConsumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import smartin.armory.GenerateArmorModularConverter;
 import smartin.arsenal.GenerateModularConverters;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.client.MiapiClient;
@@ -52,6 +53,7 @@ public class Miapi {
 
     public static void init() {
         GenerateModularConverters.setup();
+        GenerateArmorModularConverter.setup();
         setupNetworking();
         ApplicationEvents.setup();
         RegistryInventory.setup();
@@ -106,7 +108,7 @@ public class Miapi {
                 String modulesString = tag.getString(ItemModule.MODULE_KEY);
                 return Miapi.gson.fromJson(modulesString, ItemModule.ModuleInstance.class);
             } catch (Exception e) {
-                Miapi.LOGGER.error("could not resolve Modules",e);
+                Miapi.LOGGER.error("could not resolve Modules", e);
                 return null;
             }
         });

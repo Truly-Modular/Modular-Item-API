@@ -95,9 +95,6 @@ public class GeneratedMaterial implements Material {
                 .collect(Collectors.toList());
         Optional<Item> swordItem = toolMaterials.stream().filter(SwordItem.class::isInstance).findFirst();
         Optional<Item> axeItem = toolMaterials.stream().filter(AxeItem.class::isInstance).findFirst();
-        Optional<Item> pickAxeItem = toolMaterials.stream().filter(PickaxeItem.class::isInstance).findFirst();
-        Optional<Item> shovelItem = toolMaterials.stream().filter(ShovelItem.class::isInstance).findFirst();
-        Optional<Item> hoeItem = toolMaterials.stream().filter(HoeItem.class::isInstance).findFirst();
         if (axeItem.isEmpty()) {
             axeItem = toolMaterials.stream().filter(MiningToolItem.class::isInstance).filter(miningTool -> ((MiningToolItemAccessor) miningTool).getEffectiveBlocks().equals(BlockTags.AXE_MINEABLE)).findFirst();
         }
