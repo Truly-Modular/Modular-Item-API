@@ -219,13 +219,15 @@ public class GeneratedMaterial implements Material {
         materialStats.put("durability", other.getDouble("durability"));
         materialStats.put("mining_level", other.getDouble("mining_level"));
         materialStats.put("mining_speed", other.getDouble("mining_speed"));
-        String materialTranslation = Text.translatable(mainIngredient.getTranslationKey()).getString();
-        String translationKey = "miapi.material.generated." + mainIngredient.getItem().getTranslationKey();
-        if(!materialTranslation.endsWith(" ")){
-            materialTranslation += " ";
+        if(isClient){
+            String materialTranslation = Text.translatable(mainIngredient.getTranslationKey()).getString();
+            String translationKey = "miapi.material.generated." + mainIngredient.getItem().getTranslationKey();
+            if(!materialTranslation.endsWith(" ")){
+                materialTranslation += " ";
+            }
+            FakeTranslation.translations.put(translationKey, materialTranslation);
+            materialStatsString.put("translation", translationKey);
         }
-        FakeTranslation.translations.put(translationKey, materialTranslation);
-        materialStatsString.put("translation", translationKey);
     }
 
     @Environment(EnvType.CLIENT)
