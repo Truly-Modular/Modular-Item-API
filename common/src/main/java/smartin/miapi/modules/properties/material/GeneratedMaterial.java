@@ -47,9 +47,6 @@ public class GeneratedMaterial implements Material {
     public GeneratedMaterial(ToolMaterial toolMaterial, boolean isClient, ItemStack itemStack) {
         this.toolMaterial = toolMaterial;
         mainIngredient = itemStack;
-        Arrays.stream(toolMaterial.getRepairIngredient().getMatchingStacks()).forEach(stack -> {
-            Miapi.DEBUG_LOGGER.info("found item " + stack.getItem() + " " + isClient);
-        });
         key = "generated_" + mainIngredient.getItem().getTranslationKey();
         if (mainIngredient.getItem().getTranslationKey().contains("ingot")) {
             groups.add("metal");
@@ -260,7 +257,7 @@ public class GeneratedMaterial implements Material {
                 return ((SpriteContentsAccessor) contents).getImage();
             });
         } catch (Exception e) {
-            Miapi.DEBUG_LOGGER.warn("Error during palette creation", e);
+            Miapi.LOGGER.warn("Error during palette creation", e);
             materialPalette = new EmptyMaterialPalette(this);
         }
     }

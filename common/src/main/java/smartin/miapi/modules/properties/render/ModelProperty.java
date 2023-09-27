@@ -3,23 +3,30 @@ package smartin.miapi.modules.properties.render;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.model.ModelData;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.ModelBakeSettings;
 import net.minecraft.client.render.model.ModelLoader;
+import net.minecraft.client.render.model.UnbakedModel;
 import net.minecraft.client.render.model.json.ItemModelGenerator;
 import net.minecraft.client.render.model.json.JsonUnbakedModel;
 import net.minecraft.client.render.model.json.ModelOverrideList;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.item.ItemStack;
+import net.minecraft.resource.Resource;
+import net.minecraft.resource.metadata.ResourceMetadataReader;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 import org.joml.Matrix4f;
 import smartin.miapi.Miapi;
+import smartin.miapi.client.gui.crafting.crafter.ModuleCrafter;
 import smartin.miapi.client.model.DynamicBakedModel;
 import smartin.miapi.client.model.DynamicBakery;
 import smartin.miapi.client.model.ModelLoadAccessor;
@@ -38,6 +45,7 @@ import smartin.miapi.modules.properties.render.colorproviders.ColorProvider;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
@@ -48,7 +56,7 @@ public class ModelProperty implements ModuleProperty {
     public static ModuleProperty property;
     private static final String CACHE_KEY_MAP = Miapi.MOD_ID + ":modelMap";
     private static final String CACHE_KEY_ITEM = Miapi.MOD_ID + ":itemModelodel";
-    public static final Map<String, JsonUnbakedModel> modelCache = new HashMap<>();
+    public static final Map<String, UnbakedModelHolder> modelCache = new HashMap<>();
     public static final String KEY = "texture";
     public static final List<ModelTransformer> modelTransformers = new ArrayList<>();
     public static Function<SpriteIdentifier, Sprite> textureGetter;
@@ -98,7 +106,7 @@ public class ModelProperty implements ModuleProperty {
                     } else {
                         list.add("default");
                     }
-                    JsonUnbakedModel unbakedModel = null;
+                    UnbakedModelHolder unbakedModel = null;
                     for (String str : list) {
                         String fullPath = json.path.replace("[material.texture]", str);
                         if (modelCache.containsKey(fullPath)) {
@@ -106,10 +114,12 @@ public class ModelProperty implements ModuleProperty {
                             break;
                         }
                     }
-                    DynamicBakedModel model = DynamicBakery.bakeModel(unbakedModel, textureGetter, ColorHelper.Argb.getArgb(255, 255, 255, 255), Transform.IDENTITY);
+                    DynamicBakedModel model = DynamicBakery.bakeModel(unbakedModel.model, textureGetter, ColorHelper.Argb.getArgb(255, 255, 255, 255), Transform.IDENTITY);
                     if (model != null) {
                         Matrix4f matrix4f = Transform.toModelTransformation(json.transform).toMatrix();
-                        ColorProvider colorProvider = ColorProvider.getProvider(json.color_provider, itemStack, instance);
+                        String colorProviderId = unbakedModel.modelData.colorProvider != null ?
+                                unbakedModel.modelData.colorProvider : json.color_provider;
+                        ColorProvider colorProvider = ColorProvider.getProvider(colorProviderId, itemStack, instance);
                         if (colorProvider == null) {
                             throw new RuntimeException("colorProvider is null");
                         }
@@ -221,7 +231,7 @@ public class ModelProperty implements ModuleProperty {
                     for (String str : list) {
                         String fullPath = json.path.replace("[material.texture]", str);
                         if (modelCache.containsKey(fullPath)) {
-                            unbakedModel = modelCache.get(fullPath);
+                            unbakedModel = modelCache.get(fullPath).model;
                         }
                     }
                     assert unbakedModel != null;
@@ -247,7 +257,7 @@ public class ModelProperty implements ModuleProperty {
 
     protected static JsonUnbakedModel loadModelFromFilePath(String filePath2) throws FileNotFoundException {
         if (modelCache.containsKey(filePath2)) {
-            return modelCache.get(filePath2);
+            return modelCache.get(filePath2).model;
         }
         if (!filePath2.endsWith(".json")) {
             filePath2 += ".json";
@@ -266,8 +276,9 @@ public class ModelProperty implements ModuleProperty {
         if (filePath2.contains("item/") && !filePath2.contains("models/")) {
             filePath2 = filePath2.replace("item/", "models/item/");
         }
-        modelCache.put(filePath2, model);
-        modelCache.put(modelId.toString(), model);
+        UnbakedModelHolder holder = new UnbakedModelHolder(model, fromPath(ModelLoader.MODELS_FINDER.toResourcePath(modelId)));
+        modelCache.put(filePath2, holder);
+        modelCache.put(modelId.toString(), holder);
         model.getOverrides().forEach(modelOverride -> {
             try {
                 loadModelFromFilePath(modelOverride.getModelId().toString());
@@ -277,6 +288,17 @@ public class ModelProperty implements ModuleProperty {
         });
         loadTextureDependencies(model);
         return model;
+    }
+
+    public static ModelData fromPath(Identifier identifier) {
+        try {
+            Optional<Resource> resource = MinecraftClient.getInstance().getResourceManager().getResource(identifier);
+            if (resource.isPresent()) {
+                return resource.get().getMetadata().decode(new ModelDecoder()).orElse(ModelDecoder.EMPTY());
+            }
+        } catch (IOException ignored) {
+        }
+        return ModelDecoder.EMPTY();
     }
 
     protected static Map<String, JsonUnbakedModel> loadModelsByPath(String filePath) {
@@ -363,5 +385,32 @@ public class ModelProperty implements ModuleProperty {
             }
             transform = Transform.repair(transform);
         }
+    }
+
+    static class ModelDecoder implements ResourceMetadataReader<ModelData> {
+
+        public static ModelData EMPTY() {
+            return new ModelData(null);
+        }
+
+        @Override
+        public String getKey() {
+            return "miapi_model_data";
+        }
+
+        @Override
+        public ModelData fromJson(JsonObject json) {
+            String data = null;
+            if (json.has("modelProvider")) {
+                data = json.get("modelProvider").getAsString();
+            }
+            return new ModelData(data);
+        }
+    }
+
+    public record ModelData(String colorProvider) {
+    }
+
+    public record UnbakedModelHolder(JsonUnbakedModel model, ModelData modelData) {
     }
 }

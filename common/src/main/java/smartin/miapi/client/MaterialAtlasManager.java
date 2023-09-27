@@ -83,7 +83,7 @@ public class MaterialAtlasManager extends SpriteAtlasHolder {
                         material.getPalette().setSpriteId(BASE_MATERIAL_ID);
                     }
                 } catch (Exception e) {
-                    Miapi.LOGGER.error("Couldnt generate MaterialPalette for " + s + " ",e);
+                    Miapi.LOGGER.error("Could not generate MaterialPalette for " + s + " ",e);
                     material.getPalette().setSpriteId(BASE_MATERIAL_ID);
                 }
             } else {

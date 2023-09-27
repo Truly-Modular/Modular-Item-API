@@ -54,7 +54,6 @@ public class MiapiClient {
     }
 
     protected static void clientSetup(MinecraftClient client) {
-        Miapi.DEBUG_LOGGER.error("CLIENT SETUP");
         MinecraftClient mc = MinecraftClient.getInstance();
         mc.getTextureManager();
         //materialAtlasManager = new MaterialAtlasManager(mc.getTextureManager());
@@ -63,7 +62,6 @@ public class MiapiClient {
     }
 
     protected static void clientStart(MinecraftClient client) {
-        Miapi.DEBUG_LOGGER.error("CLIENT START");
         MinecraftClient mc = MinecraftClient.getInstance();
         mc.getTextureManager();
         materialAtlasManager = new MaterialAtlasManager(mc.getTextureManager());

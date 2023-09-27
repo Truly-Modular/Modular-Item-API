@@ -109,7 +109,7 @@ public class DynamicBakery {
     public static List<BakedQuad> rotate(BakedQuad quad, Transform transform) {
         int[] rotatedData = transform.rotateVertexData(quad.getVertexData());
 
-        for(int i = 0;i<4;i++){
+        for (int i = 0; i < 4; i++) {
             //rotatedData[4 + 8 * i] = Float.floatToIntBits(Float.intBitsToFloat(rotatedData[4 + 8 * i]) + Float.intBitsToFloat(rotatedData[4]) - Float.intBitsToFloat(rotatedData[4 + 8 * 3]));
         }
         //rotatedData[5] = rotatedData[4]+100;
@@ -183,7 +183,7 @@ public class DynamicBakery {
 
             for (int j = overrides.size() - 1; j >= 0; --j) {
                 ModelOverride modelOverride = overrides.get(j);
-                JsonUnbakedModel model = ModelProperty.modelCache.get(modelOverride.getModelId().toString());
+                JsonUnbakedModel model = ModelProperty.modelCache.get(modelOverride.getModelId().toString()).model();
                 DynamicBakedModel bakedModel = bakeModel(model, textureGetter, color, Transform.IDENTITY);
                 assert bakedModel != null;
                 bakedModel = (DynamicBakedModel) ColorUtil.recolorModel(bakedModel, color);
