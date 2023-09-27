@@ -22,7 +22,8 @@
         "ProjectileEntityAccessor",
         "SmithingScreenHandlerAccessor",
         "SmithingScreenHandlerMixin",
-        "ThrowablePotionItemAccessor"
+        "ThrowablePotionItemAccessor",
+        "client.TextMixin"
     ],
     "client": [
         "client.ArmorFeatureRendererMixin",

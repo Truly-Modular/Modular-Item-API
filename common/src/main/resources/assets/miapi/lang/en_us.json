@@ -490,8 +490,8 @@
 
     "miapi.module.helmet_plate": "Helmet",
     "miapi.module.helmet_plate.name": "[translation.[material.translation]]Helmet",
-    "miapi.module.helmet_plate.description": "A platted helmet to protect your head",
-    "miapi.module.helmet_plate.short_description": "A platted helmet to protect your head",
+    "miapi.module.helmet_plate.description": "A plated helmet to protect your head",
+    "miapi.module.helmet_plate.short_description": "A plated helmet to protect your head",
 
     "miapi.module.helmet_base": "Underhelmet",
     "miapi.module.helmet_base.name": "Underhelmet",
