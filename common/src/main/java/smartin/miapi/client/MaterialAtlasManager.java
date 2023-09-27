@@ -88,7 +88,6 @@ public class MaterialAtlasManager extends SpriteAtlasHolder {
                 }
             } else {
                 Sprite sprite = atlas.getSprite(materialIdentifier);
-                Miapi.LOGGER.error(sprite.getContents().getHeight() + " " + sprite.getContents().getWidth());
                 try {
                     Identifier identifier = new Identifier(sprite.getContents().getId().toString().replace(":", ":textures/") + ".png");
                     Resource resource = MinecraftClient.getInstance().getResourceManager().getResourceOrThrow(identifier);

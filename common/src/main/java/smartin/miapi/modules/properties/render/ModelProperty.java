@@ -403,6 +403,10 @@ public class ModelProperty implements ModuleProperty {
             String data = null;
             if (json.has("modelProvider")) {
                 data = json.get("modelProvider").getAsString();
+                if (!ColorProvider.colorProviders.containsKey(data)) {
+                    Miapi.LOGGER.error("Color Provider " + data + " does not exist");
+                    data = null;
+                }
             }
             return new ModelData(data);
         }
