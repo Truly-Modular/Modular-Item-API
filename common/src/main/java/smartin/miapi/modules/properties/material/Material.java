@@ -19,10 +19,12 @@ import java.util.List;
 import java.util.Map;
 
 public interface Material {
+    @Environment(EnvType.CLIENT)
     Identifier DEFAULT_COLOR_PALETTE = new Identifier(Miapi.MOD_ID, "miapi_materials/base_palette");
 
     String getKey();
 
+    @Environment(EnvType.CLIENT)
     static int getColor(String color) {
         if (color.equals("")) return ColorHelper.Argb.getArgb(255, 255, 255, 255);
         long longValue = Long.parseLong(color, 16);
@@ -64,8 +66,10 @@ public interface Material {
 
     String getData(String property);
 
+    @Environment(EnvType.CLIENT)
     List<String> getTextureKeys();
 
+    @Environment(EnvType.CLIENT)
     int getColor();
 
     double getValueOfItem(ItemStack item);

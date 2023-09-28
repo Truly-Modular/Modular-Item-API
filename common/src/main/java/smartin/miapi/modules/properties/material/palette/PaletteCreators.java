@@ -3,11 +3,14 @@ package smartin.miapi.modules.properties.material.palette;
 import com.google.gson.JsonElement;
 import com.redpxnda.nucleus.codec.InterfaceDispatcher;
 import com.redpxnda.nucleus.util.Color;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import smartin.miapi.modules.properties.material.Material;
 
 import java.util.HashMap;
 import java.util.Map;
 
+@Environment(EnvType.CLIENT)
 public class PaletteCreators {
     public static final Map<String, PaletteCreator> creators = new HashMap<>();
     public static final Map<String, FillerFunction> fillers = new HashMap<>();

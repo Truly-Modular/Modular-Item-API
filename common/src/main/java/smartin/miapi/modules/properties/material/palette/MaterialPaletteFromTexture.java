@@ -1,6 +1,8 @@
 package smartin.miapi.modules.properties.material.palette;
 
 import com.redpxnda.nucleus.util.Color;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.resource.metadata.AnimationResourceMetadata;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.SpriteContents;
@@ -14,6 +16,7 @@ import smartin.miapi.modules.properties.material.Material;
 import java.util.*;
 import java.util.function.Supplier;
 
+@Environment(EnvType.CLIENT)
 public class MaterialPaletteFromTexture extends SimpleMaterialPalette {
     Supplier<NativeImage> imageSupplier;
 

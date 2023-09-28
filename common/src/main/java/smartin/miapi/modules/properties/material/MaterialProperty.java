@@ -83,7 +83,7 @@ public class MaterialProperty implements ModuleProperty {
         Miapi.registerReloadHandler(ReloadEvents.MAIN, "materials", materials, (isClient, path, data) -> {
             JsonParser parser = new JsonParser();
             JsonObject obj = parser.parse(data).getAsJsonObject();
-            JsonMaterial material = new JsonMaterial(obj);
+            JsonMaterial material = new JsonMaterial(obj, isClient);
             if (materials.containsKey(material.getKey())) {
                 Miapi.LOGGER.warn("Overwriting Materials isnt supported yet and may cause issues. Material from  " + path + " is overwriting " + material.getKey());
             }

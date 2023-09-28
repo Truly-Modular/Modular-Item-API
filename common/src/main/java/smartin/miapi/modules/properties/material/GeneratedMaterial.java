@@ -2,6 +2,8 @@ package smartin.miapi.modules.properties.material;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import dev.architectury.platform.Platform;
+import dev.architectury.utils.Env;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -38,7 +40,9 @@ public class GeneratedMaterial implements Material {
     public JsonObject jsonObject;
     @Environment(EnvType.CLIENT)
     public MaterialPalette materialPalette;
-    public @Nullable MaterialIcons.MaterialIcon icon;
+    @Nullable
+    @Environment(EnvType.CLIENT)
+    public MaterialIcons.MaterialIcon icon;
 
     public GeneratedMaterial(ToolMaterial toolMaterial, boolean isClient) {
         this(toolMaterial, isClient, toolMaterial.getRepairIngredient().getMatchingStacks()[0]);
@@ -80,7 +84,7 @@ public class GeneratedMaterial implements Material {
         builder.append("]");
         builder.append("}");
         jsonObject = Miapi.gson.fromJson(builder.toString(), JsonObject.class);
-        if (isClient) {
+        if (isClient && Platform.getEnvironment() == Env.CLIENT) {
             clientSetup();
         }
     }
@@ -112,6 +116,7 @@ public class GeneratedMaterial implements Material {
         return false;
     }
 
+    @Environment(EnvType.CLIENT)
     public void generateTranslation(List<Item> items) {
         List<String> names = new ArrayList<>();
         items.forEach(item -> names.add(Text.translatable(item.getTranslationKey()).getString()));
@@ -125,7 +130,7 @@ public class GeneratedMaterial implements Material {
         materialStatsString.put("translation", translationKey);
     }
 
-    public static String findCommonSubstring(List<String> itemNames, String materialName) {
+    static String findCommonSubstring(List<String> itemNames, String materialName) {
         Map<String, Integer> map = new HashMap<>();
         map.put(materialName, 1);
         int highest = 0;
@@ -272,6 +277,7 @@ public class GeneratedMaterial implements Material {
         return groups;
     }
 
+    @Environment(EnvType.CLIENT)
     @Override
     public MaterialPalette getPalette() {
         return materialPalette;
@@ -300,6 +306,7 @@ public class GeneratedMaterial implements Material {
         return materialStatsString.get(property);
     }
 
+    @Environment(EnvType.CLIENT)
     @Override
     public List<String> getTextureKeys() {
         List<String> keys = new ArrayList<>(this.groups);

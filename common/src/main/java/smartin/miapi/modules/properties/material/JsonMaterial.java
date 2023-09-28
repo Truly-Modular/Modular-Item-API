@@ -16,9 +16,6 @@ import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
 import org.jetbrains.annotations.Nullable;
-import smartin.miapi.modules.properties.material.palette.EmptyMaterialPalette;
-import smartin.miapi.modules.properties.material.palette.MaterialPalette;
-import smartin.miapi.modules.properties.material.palette.PaletteCreators;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.registries.RegistryInventory;
 
@@ -30,28 +27,34 @@ import java.util.Map;
 public class JsonMaterial implements Material {
     public String key;
     protected JsonElement rawJson;
-    @Environment(EnvType.CLIENT) protected MaterialPalette palette;
-    public @Nullable MaterialIcons.MaterialIcon icon = null;
+    @Nullable
+    @Environment(EnvType.CLIENT)
+    public MaterialIcons.MaterialIcon icon;
+    @Environment(EnvType.CLIENT)
+    protected smartin.miapi.modules.properties.material.palette.MaterialPalette palette;
 
-    public JsonMaterial(JsonObject element) {
+    public JsonMaterial(JsonObject element, boolean client) {
         rawJson = element;
         key = element.get("key").getAsString();
-        /*if (element.has("color_palette") && Platform.getEnvironment().equals(Env.CLIENT)) {
-            setupMaterialPalette(element.get("color_palette"));
-        }*/
-        if (element.has("icon") && Platform.getEnvironment().equals(Env.CLIENT)) {
+
+        if (client && Platform.getEnvironment() == Env.CLIENT) {
+            clientSetup(element);
+        }
+    }
+
+    @Environment(EnvType.CLIENT)
+    public void clientSetup(JsonObject element){
+        if (element.has("icon") ) {
             JsonElement emnt = element.get("icon");
             if (emnt instanceof JsonPrimitive primitive && primitive.isString())
                 icon = new MaterialIcons.TextureMaterialIcon(new Identifier(primitive.getAsString()));
             else icon = MaterialIcons.getMaterialIcon(key, emnt);
         }
 
-        if (Platform.getEnvironment() == Env.CLIENT) {
-            if (element.has("color_palette")) {
-                palette = PaletteCreators.paletteCreator.dispatcher().createPalette(element.get("color_palette"), this);
-            } else {
-                palette = new EmptyMaterialPalette(this);
-            }
+        if (element.has("color_palette")) {
+            palette = smartin.miapi.modules.properties.material.palette.PaletteCreators.paletteCreator.dispatcher().createPalette(element.get("color_palette"), this);
+        } else {
+            palette = new smartin.miapi.modules.properties.material.palette.EmptyMaterialPalette(this);
         }
     }
 
@@ -76,7 +79,7 @@ public class JsonMaterial implements Material {
 
     @Environment(EnvType.CLIENT)
     @Override
-    public MaterialPalette getPalette() {
+    public smartin.miapi.modules.properties.material.palette.MaterialPalette getPalette() {
         return palette;
     }
 
@@ -143,6 +146,7 @@ public class JsonMaterial implements Material {
         return "";
     }
 
+    @Environment(EnvType.CLIENT)
     @Override
     public List<String> getTextureKeys() {
         List<String> textureKeys = new ArrayList<>();
@@ -156,6 +160,7 @@ public class JsonMaterial implements Material {
         return new ArrayList<>(textureKeys);
     }
 
+    @Environment(EnvType.CLIENT)
     @Override
     public int getColor() { // TODO getPalette().getPaletteAverageColor() ?
         if (rawJson.getAsJsonObject().get("color") != null) {

@@ -34,6 +34,7 @@ import smartin.miapi.Miapi;
 import java.util.HashMap;
 import java.util.Map;
 
+@Environment(EnvType.CLIENT)
 public class MaterialIcons {
     public static final Map<String, MaterialIconCreator> iconCreators = new HashMap<>();
     private static final InterfaceDispatcher<MaterialIconCreator> dispatcher = InterfaceDispatcher.of(iconCreators, "type");
