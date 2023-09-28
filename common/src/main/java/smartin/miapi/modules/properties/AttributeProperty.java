@@ -1,11 +1,9 @@
 package smartin.miapi.modules.properties;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.LinkedListMultimap;
-import com.google.common.collect.Multimap;
+import com.google.common.collect.*;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.mojang.serialization.RecordBuilder;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.attribute.*;
 import net.minecraft.item.ItemStack;
@@ -37,6 +35,7 @@ public class AttributeProperty implements ModuleProperty {
     public AttributeProperty() {
         property = this;
         ModularItemCache.setSupplier(KEY, (AttributeProperty::createAttributeCache));
+        ModularItemCache.setSupplier(KEY + "_unmodifieable", (AttributeProperty::equipmentSlotMultimapMapGenerate));
         priorityMap.put(EntityAttributes.GENERIC_ARMOR, -15.0f);
         priorityMap.put(EntityAttributes.GENERIC_ARMOR_TOUGHNESS, -14.0f);
         priorityMap.put(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, -13.0f);
@@ -127,6 +126,18 @@ public class AttributeProperty implements ModuleProperty {
 
     public static Multimap<EntityAttribute, EntityAttributeModifierHolder> getAttributeModifiersRaw(ItemStack itemStack) {
         return (Multimap<EntityAttribute, EntityAttributeModifierHolder>) ModularItemCache.get(itemStack, KEY);
+    }
+
+    private static Map<EquipmentSlot, Multimap<EntityAttribute, EntityAttributeModifier>> equipmentSlotMultimapMapGenerate(ItemStack itemStack) {
+        Map<EquipmentSlot, Multimap<EntityAttribute, EntityAttributeModifier>> map = new HashMap<>();
+        Arrays.stream(EquipmentSlot.values()).forEach(equipmentSlot -> {
+            map.put(equipmentSlot, Multimaps.unmodifiableMultimap(getAttributeModifiersForSlot(itemStack, equipmentSlot, ArrayListMultimap.create())));
+        });
+        return map;
+    }
+
+    public static Map<EquipmentSlot, Multimap<EntityAttribute, EntityAttributeModifier>> equipmentSlotMultimapMap(ItemStack itemStack){
+        return (Map<EquipmentSlot, Multimap<EntityAttribute, EntityAttributeModifier>>) ModularItemCache.get(itemStack,KEY + "_unmodifieable");
     }
 
     public static Multimap<EntityAttribute, EntityAttributeModifier> getAttributeModifiersForSlot(ItemStack itemStack, EquipmentSlot slot, Multimap<EntityAttribute, EntityAttributeModifier> toAdding) {

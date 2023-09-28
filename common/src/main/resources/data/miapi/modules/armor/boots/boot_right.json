@@ -66,21 +66,21 @@
             "value": "((floor((([material.hardness])/(2)))-floor((([material.density])/(4))))/(2))",
             "operation": "+",
             "slot": "feet",
-            "uuid": "AAAAAAAA-4180-4865-B01B-BCCE9785ACA3"
+            "uuid": "AAAAAAAA-B180-4865-B01B-BCCE9785ACA3"
         },
         {
             "attribute": "minecraft:generic.armor_toughness",
             "value": "(((((([material.mining_level]-2)/(abs([material.mining_level]-2))))/(2))+0.5) * ([material.mining_level]-1))/2",
             "operation": "+",
             "slot": "feet",
-            "uuid": "AAAAAAAA-4180-4865-B01B-BCCE9785ACA3"
+            "uuid": "AAAAAAAA-B180-4865-B01B-BCCE9785ACA3"
         },
         {
             "attribute": "minecraft:generic.knockback_resistance",
             "value": "(((((([material.mining_level]-3)/(abs([material.mining_level]-3))))/(2))+0.5) * ([material.mining_level]-3) / 10) /2",
             "operation": "+",
             "slot": "feet",
-            "uuid": "AAAAAAAA-4180-4865-B01B-BCCE9785ACA3"
+            "uuid": "AAAAAAAA-B180-4865-B01B-BCCE9785ACA3"
         }
     ],
     "durability": "[material.durability]* 0.5"

@@ -12,12 +12,15 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 import smartin.miapi.item.modular.ModularItem;
+import smartin.miapi.modules.properties.AttributeProperty;
 import smartin.miapi.modules.properties.MiningLevelProperty;
 
 import java.util.List;
@@ -26,6 +29,9 @@ import static smartin.miapi.modules.properties.AttributeProperty.getAttributeMod
 
 @Mixin(ItemStack.class)
 public abstract class ItemStackMixin {
+
+    @Shadow
+    public abstract ItemStack setCustomName(@Nullable Text name);
 
     //@Inject(method = "foo()V", at = @At(value = "INVOKE", item = "La/b/c/Something;doSomething()V", shift = At.Shift.AFTER))
     @Inject(
@@ -46,8 +52,7 @@ public abstract class ItemStackMixin {
         ItemStack stack = (ItemStack) (Object) this;
 
         if (stack.getItem() instanceof ModularItem) {
-            Multimap<EntityAttribute, EntityAttributeModifier> multimap = Multimaps.unmodifiableMultimap(getAttributeModifiersForSlot(stack, slot, ArrayListMultimap.create()));
-            cir.setReturnValue(multimap);
+            cir.setReturnValue(AttributeProperty.equipmentSlotMultimapMap(stack).get(slot));
         }
     }
 
