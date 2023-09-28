@@ -49,12 +49,6 @@ public class StatDisplay extends InteractAbleWidget {
                 .setMax(4.0).build());
         addStatDisplay(new DpsStatDisplay());
         addStatDisplay(AttributeSingleDisplay
-                .builder(AttributeRegistry.ITEM_DURABILITY)
-                .setTranslationKey("durability")
-                .setDefault(0)
-                .setFormat("##")
-                .setMax(2000).build());
-        addStatDisplay(AttributeSingleDisplay
                 .builder(AttributeRegistry.BACK_STAB)
                 .setTranslationKey("back_stab")
                 .setDefault(1)
@@ -152,6 +146,12 @@ public class StatDisplay extends InteractAbleWidget {
                 .setTranslationKey("bow_draw_time")
                 .inverseNumber(true)
                 .setFormat("##.##").build());
+
+        addStatDisplay(SinglePropertyStatDisplay
+                .builder(DurabilityProperty.property)
+                .setMax(2000)
+                .setFormat("##")
+                .setTranslationKey(DurabilityProperty.KEY).build());
     }
 
     public StatDisplay(int x, int y, int width, int height) {

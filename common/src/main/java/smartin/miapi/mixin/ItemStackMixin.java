@@ -2,6 +2,7 @@ package smartin.miapi.mixin;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.Multimaps;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.EquipmentSlot;
@@ -45,7 +46,8 @@ public abstract class ItemStackMixin {
         ItemStack stack = (ItemStack) (Object) this;
 
         if (stack.getItem() instanceof ModularItem) {
-            cir.setReturnValue(getAttributeModifiersForSlot(stack, slot, ArrayListMultimap.create()));
+            Multimap<EntityAttribute, EntityAttributeModifier> multimap = Multimaps.unmodifiableMultimap(getAttributeModifiersForSlot(stack, slot, ArrayListMultimap.create()));
+            cir.setReturnValue(multimap);
         }
     }
 

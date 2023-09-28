@@ -56,6 +56,7 @@
             "uuid": "AAAAAAAA-4180-4865-B01B-BCCE9785ACA3"
         }
     ],
+    "durability": "[material.durability] / 8",
     "allowedMaterial": {
         "allowedMaterials": [
             "wood",

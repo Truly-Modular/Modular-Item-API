@@ -92,7 +92,7 @@ public abstract class SimpleDoubleProperty implements ModuleProperty {
     @Override
     public boolean load(String moduleKey, JsonElement data) throws Exception {
         try {
-            data.getAsDouble();
+            //data.getAsDouble();
         } catch (Exception e) {
             //StatResolver.resolveDouble(data.getAsString(), new ItemModule.ModuleInstance(ItemModule.empty));
         }

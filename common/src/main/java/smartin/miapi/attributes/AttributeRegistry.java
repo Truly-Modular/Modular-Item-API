@@ -30,8 +30,6 @@ import java.util.Map;
 public class AttributeRegistry {
     public static Map<String, EntityAttribute> entityAttributeMap = new HashMap<>();
 
-    public static EntityAttribute ITEM_DURABILITY;
-
     public static EntityAttribute REACH;
     public static EntityAttribute ATTACK_RANGE;
 

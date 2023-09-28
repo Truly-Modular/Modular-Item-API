@@ -271,9 +271,6 @@ public class RegistryInventory {
         register(statusEffects, "cryo", CryoStatusEffect::new, eff -> cryoStatusEffect = eff);
 
         //ATTRIBUTE
-        registerAtt("generic.durability", false, () ->
-                        new ClampedEntityAttribute("miapi.attribute.name.durability", 1.0, 1.0, 16777216).setTracked(true),
-                att -> ITEM_DURABILITY = att);
 
         // mining
         registerAtt("generic.mining_speed.pickaxe", false, () ->
@@ -402,6 +399,7 @@ public class RegistryInventory {
             registerMiapi(moduleProperties, AirDragProperty.KEY, new AirDragProperty());
             registerMiapi(moduleProperties, WaterDragProperty.KEY, new WaterDragProperty());
             registerMiapi(moduleProperties, ArrowProperty.KEY, new ArrowProperty());
+            registerMiapi(moduleProperties, DurabilityProperty.KEY, new DurabilityProperty());
 
             //compat
             registerMiapi(moduleProperties, BetterCombatProperty.KEY, new BetterCombatProperty());

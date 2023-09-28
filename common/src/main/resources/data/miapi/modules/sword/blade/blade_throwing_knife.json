@@ -73,13 +73,6 @@
             "uuid": "FA233E1C-4180-4865-B01B-BCCE9785ACA3"
         },
         {
-            "attribute": "miapi:generic.durability",
-            "value": "[material.durability]* 0.25",
-            "operation": "+",
-            "slot": "mainhand",
-            "uuid": "AAAAAAAA-4180-4865-B01B-BCCE9785ACA3"
-        },
-        {
             "attribute": "miapi:generic.projectile_damage",
             "value": "[material.hardness]*0.5 + [material.flexibility]*0.4",
             "operation": "+",
@@ -101,6 +94,7 @@
             "uuid": "AAAAAAAA-4180-4865-B01B-BCCE9785ACA3"
         }
     ],
+    "durability": "[material.durability]* 0.25",
     "abilities": [
         "throw"
     ],

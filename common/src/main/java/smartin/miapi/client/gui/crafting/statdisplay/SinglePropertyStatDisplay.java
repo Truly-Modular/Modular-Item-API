@@ -110,6 +110,7 @@ public class SinglePropertyStatDisplay extends SingleStatDisplayDouble {
             SinglePropertyStatDisplay display = new SinglePropertyStatDisplay(name, hoverDescription, property);
             display.maxValue = max;
             display.minValue = min;
+            display.modifierFormat = modifierFormat;
             return display;
         }
     }

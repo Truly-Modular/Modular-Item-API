@@ -86,6 +86,7 @@
             "uuid": "AAAAAAAA-4180-4865-B01B-BCCE9785ACA3"
         }
     ],
+    "durability": "[material.durability]* 0.25",
     "better_combat_config": {
         "parent": "bettercombat:dagger"
     },
@@ -105,11 +106,15 @@
     "crafting_condition": {
         "craftable": {
             "type": "miapi_perm",
-            "perms": ["user"]
+            "perms": [
+                "user"
+            ]
         },
         "visible": {
             "type": "miapi_perm",
-            "perms": ["user"]
+            "perms": [
+                "user"
+            ]
         },
         "on_craft": {
             "type": "not"

@@ -83,13 +83,6 @@
             "uuid": "AAAAAAAA-4180-4865-B01B-BCCE9785ACA3"
         },
         {
-            "attribute": "miapi:generic.durability",
-            "value": "[material.durability]* 0.5",
-            "operation": "+",
-            "slot": "mainhand",
-            "uuid": "AAAAAAAA-4180-4865-B01B-BCCE9785ACA3"
-        },
-        {
             "attribute": "generic.attack_damage",
             "value": "floor((([material.hardness]-3.4)*2.3)^(1/3))+7 - floor([material.density]/4)*2",
             "operation": "+",
@@ -104,6 +97,7 @@
             "uuid": "FA233E1C-4180-4865-B01B-BCCE9785ACA3"
         }
     ],
+    "durability": "[material.durability]* 0.5",
     "displayName": "miapi.module.axe_front.name",
     "itemId": "miapi:modular_axe"
 }
