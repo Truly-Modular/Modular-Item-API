@@ -188,6 +188,13 @@
         }
     },
     "displayName": "miapi.module.boot.name",
+    "enchantments": {
+        "allowed": [
+            "miapi:basic",
+            "miapi:armor",
+            "miapi:boots"
+        ]
+    },
     "itemId": "miapi:modular_boots",
     "equipmentSlot": "boots"
 }

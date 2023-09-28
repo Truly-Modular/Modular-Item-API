@@ -21,6 +21,16 @@ public class ModularCrossbow extends CrossbowItem {
         super(new Item.Settings().maxCount(1));
     }
 
+    @Override
+    public boolean isEnchantable(ItemStack itemStack){
+        return true;
+    }
+
+    @Override
+    public int getEnchantability() {
+        return 1;
+    }
+
     public void onStoppedUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
         int i = this.getMaxUseTime(stack) - remainingUseTicks;
         float f = getPullProgress(i, stack);

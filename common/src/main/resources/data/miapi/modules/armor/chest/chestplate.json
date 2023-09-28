@@ -213,6 +213,13 @@
     "displayName": "miapi.module.chest_base.name",
     "itemId": "miapi:modular_chestplate",
     "equipmentSlot": "chest",
+    "enchantments": {
+        "allowed": [
+            "miapi:basic",
+            "miapi:armor",
+            "miapi:chestplate"
+        ]
+    },
     "modelMerge": [
         {
             "from": "right_arm",

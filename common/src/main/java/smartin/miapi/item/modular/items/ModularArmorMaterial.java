@@ -9,7 +9,7 @@ import net.minecraft.util.Identifier;
 public class ModularArmorMaterial implements ArmorMaterial {
     @Override
     public int getDurability(ArmorItem.Type type) {
-        return 0;
+        return 50;
     }
 
     @Override

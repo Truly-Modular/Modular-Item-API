@@ -41,8 +41,13 @@ public class ModularBow extends BowItem implements ModularItem {
     }
 
     @Override
-    public boolean isEnchantable(ItemStack itemStack) {
+    public boolean isEnchantable(ItemStack itemStack){
         return true;
+    }
+
+    @Override
+    public int getEnchantability() {
+        return 1;
     }
 
     @Override

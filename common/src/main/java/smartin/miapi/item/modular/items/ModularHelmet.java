@@ -14,4 +14,14 @@ public class ModularHelmet extends ArmorItem implements ModularItem {
     public Text getName(ItemStack stack) {
         return DisplayNameProperty.getDisplayText(stack);
     }
+
+    @Override
+    public boolean isEnchantable(ItemStack itemStack){
+        return true;
+    }
+
+    @Override
+    public int getEnchantability() {
+        return 1;
+    }
 }

@@ -17,6 +17,13 @@
             }
         }
     },
+    "enchantments": {
+        "allowed": [
+            "miapi:basic",
+            "miapi:armor",
+            "miapi:helmet"
+        ]
+    },
     "modelTransform": {
         "replace": {
             "thirdperson_righthand": {
