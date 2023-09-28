@@ -3,19 +3,15 @@ package smartin.miapi.modules.properties.material;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
-import dev.architectury.platform.Platform;
-import dev.architectury.utils.Env;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.DrawContext;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ToolMaterial;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.ColorHelper;
-import org.jetbrains.annotations.Nullable;
+import smartin.miapi.modules.properties.material.palette.MaterialPalette;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.registries.RegistryInventory;
 
@@ -27,35 +23,15 @@ import java.util.Map;
 public class JsonMaterial implements Material {
     public String key;
     protected JsonElement rawJson;
-    @Nullable
-    @Environment(EnvType.CLIENT)
-    public MaterialIcons.MaterialIcon icon;
-    @Environment(EnvType.CLIENT)
-    protected smartin.miapi.modules.properties.material.palette.MaterialPalette palette;
 
-    public JsonMaterial(JsonObject element, boolean client) {
+    public JsonMaterial(JsonObject element) {
         rawJson = element;
         key = element.get("key").getAsString();
-
-        if (client && Platform.getEnvironment() == Env.CLIENT) {
-            clientSetup(element);
-        }
     }
 
     @Environment(EnvType.CLIENT)
-    public void clientSetup(JsonObject element){
-        if (element.has("icon") ) {
-            JsonElement emnt = element.get("icon");
-            if (emnt instanceof JsonPrimitive primitive && primitive.isString())
-                icon = new MaterialIcons.TextureMaterialIcon(new Identifier(primitive.getAsString()));
-            else icon = MaterialIcons.getMaterialIcon(key, emnt);
-        }
-
-        if (element.has("color_palette")) {
-            palette = smartin.miapi.modules.properties.material.palette.PaletteCreators.paletteCreator.dispatcher().createPalette(element.get("color_palette"), this);
-        } else {
-            palette = new smartin.miapi.modules.properties.material.palette.EmptyMaterialPalette(this);
-        }
+    public static JsonMaterial getClient(JsonObject element) {
+        return new ClientJsonMaterial(element);
     }
 
     @Override
@@ -75,23 +51,6 @@ public class JsonMaterial implements Material {
             }
         }
         return groups;
-    }
-
-    @Environment(EnvType.CLIENT)
-    @Override
-    public smartin.miapi.modules.properties.material.palette.MaterialPalette getPalette() {
-        return palette;
-    }
-
-    @Environment(EnvType.CLIENT)
-    public int renderIcon(DrawContext drawContext, int x, int y) {
-        if (icon == null) return 0;
-        return icon.render(drawContext, x, y);
-    }
-
-    @Environment(EnvType.CLIENT)
-    public boolean hasIcon() {
-        return icon != null;
     }
 
     @Override
@@ -146,28 +105,19 @@ public class JsonMaterial implements Material {
         return "";
     }
 
-    @Environment(EnvType.CLIENT)
     @Override
     public List<String> getTextureKeys() {
-        List<String> textureKeys = new ArrayList<>();
-        if (rawJson.getAsJsonObject().has("textures")) {
-            JsonArray textures = rawJson.getAsJsonObject().getAsJsonArray("textures");
-            for (JsonElement texture : textures) {
-                textureKeys.add(texture.getAsString());
-            }
-        }
-        textureKeys.add("default");
-        return new ArrayList<>(textureKeys);
+        return null;
     }
 
-    @Environment(EnvType.CLIENT)
     @Override
-    public int getColor() { // TODO getPalette().getPaletteAverageColor() ?
-        if (rawJson.getAsJsonObject().get("color") != null) {
-            long longValue = Long.parseLong(rawJson.getAsJsonObject().get("color").getAsString(), 16);
-            return (int) (longValue & 0xffffffffL);
-        }
-        return ColorHelper.Argb.getArgb(255, 255, 255, 255);
+    public int getColor() {
+        return 0;
+    }
+
+    @Override
+    public MaterialPalette getPalette() {
+        return null;
     }
 
     @Override

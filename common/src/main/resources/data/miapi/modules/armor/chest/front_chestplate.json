@@ -53,14 +53,14 @@
             "value": "([material.hardness] + 2 - ceil([material.flexibility]/4))/8*6",
             "operation": "+",
             "slot": "chest",
-            "uuid": "AAAAAAAA-4180-4865-B01B-BCCE9785ACA3"
+            "uuid": "AAAAAAAA-C180-4865-B01B-BCCE9785ACA3"
         },
         {
             "attribute": "minecraft:generic.armor_toughness",
             "value": "((((([material.mining_level]-2)/(abs([material.mining_level]-2))))/(2))+0.5) * ([material.mining_level]-1)",
             "operation": "+",
             "slot": "chest",
-            "uuid": "AAAAAAAA-4180-4865-B01B-BCCE9785ACA3"
+            "uuid": "AAAAAAAA-C180-4865-B01B-BCCE9785ACA3"
         },
         {
             "attribute": "minecraft:generic.knockback_resistance",
