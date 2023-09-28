@@ -16,7 +16,7 @@ public interface TextMixin {
             at = @At(value = "HEAD"),
             cancellable = true
     )
-    private static void miapi$jsonUnbakedModels(String key, CallbackInfoReturnable<MutableText> cir) {
+    private static void miapi$FakeTranslation(String key, CallbackInfoReturnable<MutableText> cir) {
         if (FakeTranslation.translations.containsKey(key)) {
             cir.setReturnValue(Text.literal(FakeTranslation.translations.get(key)));
         }

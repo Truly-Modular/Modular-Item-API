@@ -22,8 +22,7 @@
         "ProjectileEntityAccessor",
         "SmithingScreenHandlerAccessor",
         "SmithingScreenHandlerMixin",
-        "ThrowablePotionItemAccessor",
-        "client.TextMixin"
+        "ThrowablePotionItemAccessor"
     ],
     "client": [
         "client.ArmorFeatureRendererMixin",
@@ -33,7 +32,8 @@
         "client.ModelLoaderInterfaceAccessor",
         "client.ModelLoaderMixin",
         "client.ModelPredicateProviderRegistryAccessor",
-        "client.SpriteContentsAccessor"
+        "client.SpriteContentsAccessor",
+        "client.TextMixin"
     ],
     "injectors": {
         "defaultRequire": 1

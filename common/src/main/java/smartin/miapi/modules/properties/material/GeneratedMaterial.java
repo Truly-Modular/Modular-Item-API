@@ -225,14 +225,19 @@ public class GeneratedMaterial implements Material {
         materialStats.put("mining_level", other.getDouble("mining_level"));
         materialStats.put("mining_speed", other.getDouble("mining_speed"));
         if (isClient) {
-            String materialTranslation = Text.translatable(mainIngredient.getTranslationKey()).getString();
-            String translationKey = "miapi.material.generated." + mainIngredient.getItem().getTranslationKey();
-            if (!materialTranslation.endsWith(" ")) {
-                materialTranslation += " ";
-            }
-            FakeTranslation.translations.put(translationKey, materialTranslation);
-            materialStatsString.put("translation", translationKey);
+            addFakeTranslationForCopy();
         }
+    }
+
+    @Environment(EnvType.CLIENT)
+    public void addFakeTranslationForCopy(){
+        String materialTranslation = Text.translatable(mainIngredient.getTranslationKey()).getString();
+        String translationKey = "miapi.material.generated." + mainIngredient.getItem().getTranslationKey();
+        if (!materialTranslation.endsWith(" ")) {
+            materialTranslation += " ";
+        }
+        FakeTranslation.translations.put(translationKey, materialTranslation);
+        materialStatsString.put("translation", translationKey);
     }
 
     @Environment(EnvType.CLIENT)
@@ -277,8 +282,8 @@ public class GeneratedMaterial implements Material {
         return groups;
     }
 
-    @Environment(EnvType.CLIENT)
     @Override
+    @Environment(EnvType.CLIENT)
     public MaterialPalette getPalette() {
         return materialPalette;
     }
@@ -306,8 +311,8 @@ public class GeneratedMaterial implements Material {
         return materialStatsString.get(property);
     }
 
-    @Environment(EnvType.CLIENT)
     @Override
+    @Environment(EnvType.CLIENT)
     public List<String> getTextureKeys() {
         List<String> keys = new ArrayList<>(this.groups);
         keys.add("default");
@@ -315,6 +320,7 @@ public class GeneratedMaterial implements Material {
     }
 
     @Override
+    @Environment(EnvType.CLIENT)
     public int getColor() {
         return 0;
     }
