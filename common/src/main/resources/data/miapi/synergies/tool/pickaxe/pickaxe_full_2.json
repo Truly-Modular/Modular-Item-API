@@ -18,15 +18,9 @@
                     "operation": "+",
                     "slot": "mainhand",
                     "uuid": "AA233E1C-4180-4865-B01B-BCCE9785ACA4"
-                },
-                {
-                    "attribute": "miapi:generic.durability",
-                    "value": "[material.durability]* 0.25",
-                    "operation": "+",
-                    "slot": "mainhand",
-                    "uuid": "AAAAAAAA-4180-4865-B01B-BCCE9785ACA3"
                 }
-            ]
+            ],
+            "durability": "[material.durability]* 0.25"
         }
     }
 }
