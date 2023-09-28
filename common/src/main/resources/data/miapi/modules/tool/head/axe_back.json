@@ -46,6 +46,9 @@
     "mining_level": {
         "axe": "[material.mining_level]-1"
     },
+    "guiOffset": {
+        "x": -1
+    },
     "attributes": [
         {
             "attribute": "miapi:generic.mining_speed.axe",
@@ -56,7 +59,7 @@
         },
         {
             "attribute": "generic.attack_damage",
-            "value": "8",
+            "value": "floor((([material.hardness]-3.4)*2.3)^(1/3))+7 - floor([material.density]/4)*2 - 1",
             "operation": "+",
             "slot": "mainhand",
             "uuid": "CB3F55D3-645C-4F38-A497-9C13A33DB5CF"
