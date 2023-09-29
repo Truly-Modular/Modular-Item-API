@@ -12,17 +12,21 @@ import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.modules.ItemModule;
 
-@Environment(EnvType.CLIENT)
 public interface MaterialPalette {
+    @Environment(EnvType.CLIENT)
     @Nullable
     SpriteContents generateSpriteContents(Identifier id);
 
+    @Environment(EnvType.CLIENT)
     @Nullable
     Identifier getSpriteId();
 
+    @Environment(EnvType.CLIENT)
     void setSpriteId(Identifier id);
 
+    @Environment(EnvType.CLIENT)
     Color getPaletteAverageColor();
 
+    @Environment(EnvType.CLIENT)
     VertexConsumer getVertexConsumer(VertexConsumerProvider vertexConsumers, ItemStack stack, ItemModule.ModuleInstance moduleInstance, ModelTransformationMode mode);
 }

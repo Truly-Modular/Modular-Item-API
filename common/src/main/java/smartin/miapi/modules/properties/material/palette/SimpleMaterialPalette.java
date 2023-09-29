@@ -12,7 +12,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
 import org.jetbrains.annotations.Nullable;
-import smartin.miapi.client.MaterialAtlasManager;
 import smartin.miapi.client.MaterialVertexConsumer;
 import smartin.miapi.client.MiapiClient;
 import smartin.miapi.mixin.client.SpriteContentsAccessor;
@@ -23,10 +22,9 @@ import smartin.miapi.registries.RegistryInventory;
 import java.util.ArrayList;
 import java.util.List;
 
-@Environment(EnvType.CLIENT)
 public abstract class SimpleMaterialPalette implements MaterialPalette {
     protected final Material material;
-    protected Identifier paletteSpriteId = MaterialAtlasManager.BASE_MATERIAL_ID;
+    protected Identifier paletteSpriteId = Material.BASE_PALETTE_ID;
     protected MaterialVertexConsumer cachedVertexConsumer;
     protected Color paletteAverageColor;
 
@@ -34,18 +32,22 @@ public abstract class SimpleMaterialPalette implements MaterialPalette {
         this.material = material;
     }
 
+    @Environment(EnvType.CLIENT)
     @Nullable
     public abstract SpriteContents generateSpriteContents(Identifier id);
 
+    @Environment(EnvType.CLIENT)
     @Nullable
     public Identifier getSpriteId() {
         return paletteSpriteId;
     }
 
+    @Environment(EnvType.CLIENT)
     public void setSpriteId(Identifier id) {
         paletteSpriteId = id;
     }
 
+    @Environment(EnvType.CLIENT)
     public Color getPaletteAverageColor() {
         if (paletteAverageColor == null) {
             NativeImage img = ((SpriteContentsAccessor) MiapiClient.materialAtlasManager.getMaterialSprite(paletteSpriteId).getContents()).getImage();
@@ -82,6 +84,7 @@ public abstract class SimpleMaterialPalette implements MaterialPalette {
         return paletteAverageColor;
     }
 
+    @Environment(EnvType.CLIENT)
     public VertexConsumer getVertexConsumer(VertexConsumerProvider vertexConsumers, ItemStack stack, ItemModule.ModuleInstance moduleInstance, ModelTransformationMode mode) {
         if (cachedVertexConsumer == null) {
             cachedVertexConsumer = new MaterialVertexConsumer(vertexConsumers.getBuffer(RegistryInventory.Client.entityTranslucentMaterialRenderType), material);

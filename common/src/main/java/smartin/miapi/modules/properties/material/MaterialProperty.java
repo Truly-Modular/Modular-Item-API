@@ -6,7 +6,10 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.item.*;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.ToolItem;
+import net.minecraft.item.ToolMaterials;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.registry.tag.TagKey;
@@ -14,7 +17,6 @@ import net.minecraft.resource.ResourceReloader;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
-import smartin.miapi.client.MaterialAtlasManager;
 import smartin.miapi.client.MiapiClient;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.item.modular.StatResolver;
@@ -25,10 +27,7 @@ import smartin.miapi.modules.properties.util.ModuleProperty;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
 import java.util.stream.Collectors;
-
-import static java.util.concurrent.Executors.newSingleThreadExecutor;
 
 /**
  * This is the Property relating to materials of a Module
@@ -83,13 +82,7 @@ public class MaterialProperty implements ModuleProperty {
         Miapi.registerReloadHandler(ReloadEvents.MAIN, "materials", materials, (isClient, path, data) -> {
             JsonParser parser = new JsonParser();
             JsonObject obj = parser.parse(data).getAsJsonObject();
-            JsonMaterial material;
-            if(isClient){
-                material = JsonMaterial.getClient(obj);
-            }
-            else{
-                material = new JsonMaterial(obj);
-            }
+            JsonMaterial material = new JsonMaterial(obj);
             if (materials.containsKey(material.getKey())) {
                 Miapi.LOGGER.warn("Overwriting Materials isnt supported yet and may cause issues. Material from  " + path + " is overwriting " + material.getKey());
             }
@@ -107,13 +100,7 @@ public class MaterialProperty implements ModuleProperty {
                     .filter(toolMaterial -> toolMaterial.getRepairIngredient().getMatchingStacks().length > 0)
                     .filter(toolMaterial -> Arrays.stream(toolMaterial.getRepairIngredient().getMatchingStacks()).allMatch(itemStack -> getMaterial(itemStack) == null))
                     .collect(Collectors.toSet()).forEach(toolMaterial -> {
-                        GeneratedMaterial generatedMaterial;
-                        if(isClient){
-                            generatedMaterial = GeneratedMaterial.getClient(toolMaterial);
-                        }
-                        else{
-                            generatedMaterial = new GeneratedMaterial(toolMaterial);
-                        }
+                        GeneratedMaterial generatedMaterial = new GeneratedMaterial(toolMaterial);
                         if (generatedMaterial.assignStats(toolItems)) {
                             materials.put(generatedMaterial.getKey(), generatedMaterial);
                         } else {
@@ -122,26 +109,14 @@ public class MaterialProperty implements ModuleProperty {
                     });
             Registries.ITEM.stream().filter(item -> item.getDefaultStack().isIn(ItemTags.PLANKS)).forEach(item -> {
                 if (getMaterial(item.getDefaultStack()) == null) {
-                    GeneratedMaterial generatedMaterial;
-                    if(isClient){
-                        generatedMaterial = GeneratedMaterial.getClient(ToolMaterials.WOOD, item.getDefaultStack());
-                    }
-                    else{
-                        generatedMaterial = new GeneratedMaterial(ToolMaterials.WOOD, item.getDefaultStack());
-                    }
+                    GeneratedMaterial generatedMaterial = new GeneratedMaterial(ToolMaterials.WOOD, item.getDefaultStack());
                     materials.put(generatedMaterial.getKey(), generatedMaterial);
                     generatedMaterial.copyStatsFrom(materials.get("wood"));
                 }
             });
             Registries.ITEM.stream().filter(item -> item.getDefaultStack().isIn(ItemTags.STONE_TOOL_MATERIALS)).forEach(item -> {
                 if (getMaterial(item.getDefaultStack()) == null) {
-                    GeneratedMaterial generatedMaterial;
-                    if(isClient){
-                        generatedMaterial = GeneratedMaterial.getClient(ToolMaterials.STONE, item.getDefaultStack());
-                    }
-                    else{
-                        generatedMaterial = new GeneratedMaterial(ToolMaterials.STONE, item.getDefaultStack());
-                    }
+                    GeneratedMaterial generatedMaterial = new GeneratedMaterial(ToolMaterials.STONE, item.getDefaultStack());
                     materials.put(generatedMaterial.getKey(), generatedMaterial);
                     generatedMaterial.copyStatsFrom(materials.get("stone"));
                 }

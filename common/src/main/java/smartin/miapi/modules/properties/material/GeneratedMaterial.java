@@ -6,10 +6,7 @@ import dev.architectury.platform.Platform;
 import dev.architectury.utils.Env;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.render.model.BakedModel;
-import net.minecraft.client.texture.SpriteContents;
 import net.minecraft.item.*;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.tag.BlockTags;
@@ -20,8 +17,6 @@ import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.mixin.MiningToolItemAccessor;
-import smartin.miapi.mixin.client.SpriteContentsAccessor;
-import smartin.miapi.modules.properties.material.palette.EmptyMaterialPalette;
 import smartin.miapi.modules.properties.material.palette.MaterialPalette;
 import smartin.miapi.modules.properties.material.palette.MaterialPaletteFromTexture;
 import smartin.miapi.modules.properties.util.ModuleProperty;
@@ -38,19 +33,12 @@ public class GeneratedMaterial implements Material {
     public final Map<String, Double> materialStats = new HashMap<>();
     public final Map<String, String> materialStatsString = new HashMap<>();
     public JsonObject jsonObject;
+    protected MaterialPalette palette;
+    @Nullable
+    public MaterialIcons.MaterialIcon icon;
 
     public GeneratedMaterial(ToolMaterial toolMaterial) {
         this(toolMaterial, toolMaterial.getRepairIngredient().getMatchingStacks()[0]);
-    }
-
-    @Environment(EnvType.CLIENT)
-    public static GeneratedMaterial getClient(ToolMaterial toolMaterial) {
-        return new ClientGeneratedMaterial(toolMaterial);
-    }
-
-    @Environment(EnvType.CLIENT)
-    public static GeneratedMaterial getClient(ToolMaterial toolMaterial, ItemStack itemStack) {
-        return new ClientGeneratedMaterial(toolMaterial, itemStack);
     }
 
     public GeneratedMaterial(ToolMaterial toolMaterial, ItemStack itemStack) {
@@ -89,6 +77,20 @@ public class GeneratedMaterial implements Material {
         builder.append("]");
         builder.append("}");
         jsonObject = Miapi.gson.fromJson(builder.toString(), JsonObject.class);
+
+        if (Platform.getEnvironment() == Env.CLIENT) clientSetup();
+    }
+
+    @Environment(EnvType.CLIENT)
+    private void clientSetup() {
+        Identifier itemId = Registries.ITEM.getId(mainIngredient.getItem());
+        StringBuilder iconBuilder = new StringBuilder();
+        iconBuilder.append("{");
+        iconBuilder.append("\"type\": \"").append("item").append("\",");
+        iconBuilder.append("\"item\": \"").append(itemId).append("\"");
+        iconBuilder.append("}");
+        icon = MaterialIcons.getMaterialIcon(key, Miapi.gson.fromJson(iconBuilder.toString(), JsonObject.class));
+        palette = MaterialPaletteFromTexture.forGeneratedMaterial(this, mainIngredient);
     }
 
     public boolean assignStats(List<ToolItem> toolItems) {
@@ -108,7 +110,8 @@ public class GeneratedMaterial implements Material {
 
                 materialStats.put("density", ((axeItem1.getAttackDamage() - firstPart) / 2.0) * 4.0);
                 materialStats.put("flexibility", (double) (toolMaterial.getMiningSpeedMultiplier() / 4));
-                MiapiEvents.GENERATED_MATERIAL.invoker().generated(this, mainIngredient, toolMaterials, false);
+                if (Platform.getEnvironment() == Env.CLIENT) generateTranslation(toolMaterials);
+                MiapiEvents.GENERATED_MATERIAL.invoker().generated(this, mainIngredient, toolMaterials, true);
                 return true;
             }
         }
@@ -222,6 +225,29 @@ public class GeneratedMaterial implements Material {
         materialStats.put("durability", other.getDouble("durability"));
         materialStats.put("mining_level", other.getDouble("mining_level"));
         materialStats.put("mining_speed", other.getDouble("mining_speed"));
+        if (Platform.getEnvironment() == Env.CLIENT) addFakeTranslationForCopy();
+    }
+
+    @Environment(EnvType.CLIENT)
+    public void addFakeTranslationForCopy() {
+        String materialTranslation = Text.translatable(mainIngredient.getTranslationKey()).getString();
+        String translationKey = "miapi.material.generated." + mainIngredient.getItem().getTranslationKey();
+        if (!materialTranslation.endsWith(" ")) {
+            materialTranslation += " ";
+        }
+        FakeTranslation.translations.put(translationKey, materialTranslation);
+        materialStatsString.put("translation", translationKey);
+    }
+
+    @Environment(EnvType.CLIENT)
+    public boolean hasIcon() {
+        return icon != null;
+    }
+
+    @Environment(EnvType.CLIENT)
+    public int renderIcon(DrawContext drawContext, int x, int y) {
+        if (icon == null) return 0;
+        return icon.render(drawContext, x, y);
     }
 
     @Override
@@ -260,17 +286,15 @@ public class GeneratedMaterial implements Material {
 
     @Override
     public List<String> getTextureKeys() {
-        return null;
+        List<String> keys = new ArrayList<>(this.groups);
+        keys.add("default");
+        return keys;
     }
 
-    @Override
-    public int getColor() {
-        return 0;
-    }
-
+    @Environment(EnvType.CLIENT)
     @Override
     public MaterialPalette getPalette() {
-        return null;
+        return palette;
     }
 
     @Override

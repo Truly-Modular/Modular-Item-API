@@ -3,22 +3,39 @@ package smartin.miapi.modules.properties.material.palette;
 import com.redpxnda.nucleus.util.Color;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.resource.metadata.AnimationResourceMetadata;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.SpriteContents;
 import net.minecraft.client.texture.SpriteDimensions;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
+import smartin.miapi.mixin.client.SpriteContentsAccessor;
 import smartin.miapi.modules.properties.material.Material;
 
 import java.util.*;
 import java.util.function.Supplier;
 
-@Environment(EnvType.CLIENT)
 public class MaterialPaletteFromTexture extends SimpleMaterialPalette {
     Supplier<NativeImage> imageSupplier;
+
+    @Environment(EnvType.CLIENT)
+    public static MaterialPalette forGeneratedMaterial(Material material, ItemStack mainIngredient) {
+        try {
+            return new MaterialPaletteFromTexture(material, () -> {
+                BakedModel itemModel = MinecraftClient.getInstance().getItemRenderer().getModel(mainIngredient, MinecraftClient.getInstance().world, null, 0);
+                SpriteContents contents = itemModel.getParticleSprite().getContents();
+                return ((SpriteContentsAccessor) contents).getImage();
+            });
+        } catch (Exception e) {
+            Miapi.LOGGER.warn("Error during palette creation", e);
+            return new EmptyMaterialPalette(material);
+        }
+    }
 
     public MaterialPaletteFromTexture(Material material, Supplier<NativeImage> img) {
         super(material);
@@ -26,6 +43,7 @@ public class MaterialPaletteFromTexture extends SimpleMaterialPalette {
         this.setSpriteId(new Identifier(Miapi.MOD_ID, "miapi_materials/" + material.getKey()));
     }
 
+    @Environment(EnvType.CLIENT)
     @Override
     public @Nullable SpriteContents generateSpriteContents(Identifier id) {
         List<Color> pixels = Arrays.stream(getPixelArray())
@@ -72,6 +90,7 @@ public class MaterialPaletteFromTexture extends SimpleMaterialPalette {
         return new SpriteContents(id, new SpriteDimensions(256, 1), nativeImage, AnimationResourceMetadata.EMPTY);
     }
 
+    @Environment(EnvType.CLIENT)
     public int[] getPixelArray() {
         NativeImage image = imageSupplier.get();
         if (image.getFormat() != NativeImage.Format.RGBA) {

@@ -10,7 +10,6 @@ import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
-import smartin.miapi.Miapi;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.material.palette.MaterialPalette;
 import smartin.miapi.modules.properties.util.ModuleProperty;
@@ -18,9 +17,10 @@ import smartin.miapi.modules.properties.util.ModuleProperty;
 import java.util.List;
 import java.util.Map;
 
+import static smartin.miapi.Miapi.MOD_ID;
+
 public interface Material {
-    @Environment(EnvType.CLIENT)
-    Identifier DEFAULT_COLOR_PALETTE = new Identifier(Miapi.MOD_ID, "miapi_materials/base_palette");
+    Identifier BASE_PALETTE_ID = new Identifier(MOD_ID, "miapi_materials/base_palette");
 
     String getKey();
 
@@ -70,7 +70,9 @@ public interface Material {
     List<String> getTextureKeys();
 
     @Environment(EnvType.CLIENT)
-    int getColor();
+    default int getColor() {
+        return getPalette().getPaletteAverageColor().argb();
+    }
 
     double getValueOfItem(ItemStack item);
 }
