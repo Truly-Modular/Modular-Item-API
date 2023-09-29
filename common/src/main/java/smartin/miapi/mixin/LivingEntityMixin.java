@@ -19,6 +19,7 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import smartin.miapi.attributes.AttributeRegistry;
+import smartin.miapi.attributes.ElytraAttributes;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.modules.properties.EquipmentSlotProperty;
@@ -26,7 +27,7 @@ import smartin.miapi.modules.properties.EquipmentSlotProperty;
 @Mixin(LivingEntity.class)
 abstract class LivingEntityMixin {
 
-    @Inject(method = "<init>(Lnet/minecraft/entity/EntityType;Lnet/minecraft/world/World;)V", at = @At("TAIL"), cancellable = false)
+    @Inject(method = "<init>(Lnet/minecraft/entity/EntityType;Lnet/minecraft/world/World;)V", at = @At("TAIL"))
     private void miapi$constructor(EntityType entityType, World world, CallbackInfo ci) {
         LivingEntity entity = (LivingEntity) (Object) this;
         Multimap<EntityAttribute, EntityAttributeModifier> map = HashMultimap.create();
@@ -79,6 +80,12 @@ abstract class LivingEntityMixin {
     @ModifyVariable(method = "damage", at = @At(value = "HEAD"), ordinal = 0)
     private float miapi$damageEventValue(float value) {
         return storedValue;
+    }
+
+    @Inject(method = "tick", at = @At(value = "TAIL"))
+    private void miapi$adjustElytraSpeed(CallbackInfo ci) {
+        LivingEntity livingEntity = (LivingEntity) (Object) this;
+        ElytraAttributes.movementUpdate(livingEntity);
     }
 
     @ModifyVariable(method = "damage", at = @At(value = "HEAD"), ordinal = 0)

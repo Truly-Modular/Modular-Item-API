@@ -320,6 +320,16 @@ public class RegistryInventory {
                         new ClampedEntityAttribute("miapi.attribute.name.projectile_crit_multiplier", 1.5, 0.0, 1024.0).setTracked(true),
                 att -> PROJECTILE_CRIT_MULTIPLIER = att);
 
+        registerAtt("generic.elytra_turn_efficiency", true, () ->
+                        new ClampedEntityAttribute("miapi.attribute.name.elytra_turn_efficiency", 0.0, -1024.0, 100.0).setTracked(true),
+                att -> ELYTRA_TURN_EFFICIENCY= att);
+        registerAtt("generic.elytra_glide_efficiency", true, () ->
+                        new ClampedEntityAttribute("miapi.attribute.name.elytra_glide_efficiency", 0.0, -1024.0, 100.0).setTracked(true),
+                att -> ELYTRA_GLIDE_EFFICIENCY = att);
+        registerAtt("generic.elytra_rocket_efficiency", true, () ->
+                        new ClampedEntityAttribute("miapi.attribute.name.elytra_rocket_efficiency", 1.0, 0.0, 1024.0).setTracked(true),
+                att -> ELYTRA_ROCKET_EFFICIENCY = att);
+
 
         // GAME EVENTS
         register(gameEvents, "request_crafting_stat_update", () -> new GameEvent(MOD_ID + ":crafting_stat_update", 16), ev -> statUpdateEvent = ev);

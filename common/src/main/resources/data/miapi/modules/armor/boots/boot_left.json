@@ -81,6 +81,20 @@
             "operation": "+",
             "slot": "feet",
             "uuid": "AAAAAAAA-B180-4865-B01B-BCCE9785ACA3"
+        },
+        {
+            "attribute": "miapi:generic.elytra_turn_efficiency",
+            "value": "-1000",
+            "operation": "+",
+            "slot": "head",
+            "uuid": "AAAAAAAA-B180-4865-B01B-BCCE9785ACA3"
+        },
+        {
+            "attribute": "miapi:generic.elytra_glide_efficiency",
+            "value": "-1000",
+            "operation": "+",
+            "slot": "head",
+            "uuid": "AAAAAAAA-B180-4865-B01B-BCCE9785ACA3"
         }
     ],
     "durability": "[material.durability]* 0.5",
