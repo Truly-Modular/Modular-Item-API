@@ -51,6 +51,10 @@ public class AttributeRegistry {
     public static EntityAttribute PROJECTILE_ACCURACY;
     public static EntityAttribute PROJECTILE_PIERCING;
 
+    public static EntityAttribute ELYTRA_TURN_EFFICIENCY;
+    public static EntityAttribute ELYTRA_GLIDE_EFFICIENCY;
+    public static EntityAttribute ELYTRA_ROCKET_EFFICIENCY;
+
 
     public static void setup() {
         MiapiEvents.LIVING_HURT.register((livingHurtEvent -> {

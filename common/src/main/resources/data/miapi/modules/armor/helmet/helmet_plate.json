@@ -44,6 +44,20 @@
             "operation": "+",
             "slot": "head",
             "uuid": "AAAAAAAA-1180-4865-B01B-BCCE9785ACA3"
+        },
+        {
+            "attribute": "miapi:generic.elytra_turn_efficiency",
+            "value": "100",
+            "operation": "+",
+            "slot": "head",
+            "uuid": "AAAAAAAA-1180-4865-B01B-BCCE9785ACA3"
+        },
+        {
+            "attribute": "miapi:generic.elytra_glide_efficiency",
+            "value": "100",
+            "operation": "+",
+            "slot": "head",
+            "uuid": "AAAAAAAA-1180-4865-B01B-BCCE9785ACA3"
         }
     ],
     "durability": "[material.durability]",

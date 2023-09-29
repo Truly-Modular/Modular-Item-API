@@ -11,6 +11,7 @@
         "EnchantmentHelperMixin",
         "EnchantmentMixin",
         "EntityMixin",
+        "FireworkRocketEntityMixin",
         "ForgingScreenHandlerAccessor",
         "InventoryValidationMixin",
         "ItemStackMixin",

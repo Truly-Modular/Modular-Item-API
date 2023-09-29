@@ -81,6 +81,13 @@
             "operation": "+",
             "slot": "legs",
             "uuid": "AAAAAAAA-2180-4865-B01B-BCCE9785ACA3"
+        },
+        {
+            "attribute": "miapi:generic.elytra_rocket_efficiency",
+            "value": "300",
+            "operation": "*",
+            "slot": "legs",
+            "seperateOnItem": false
         }
     ],
     "durability": "[material.durability] / 7 * 3",
