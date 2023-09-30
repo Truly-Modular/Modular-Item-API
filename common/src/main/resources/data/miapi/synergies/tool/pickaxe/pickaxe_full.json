@@ -16,8 +16,7 @@
                     "attribute": "miapi:generic.mining_speed.pickaxe",
                     "value": "[material.mining_speed]/2",
                     "operation": "+",
-                    "slot": "mainhand",
-                    "uuid": "AA233E1C-4180-4865-B01B-BCCE9785ACA4"
+                    "slot": "mainhand"
                 }
             ],
             "durability": "[material.durability]* 0.75"

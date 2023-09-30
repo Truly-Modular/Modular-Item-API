@@ -93,17 +93,20 @@ public class ItemModule {
      * @param moduleJsonString the JSON string to load from
      */
     public static void loadFromData(String path, String moduleJsonString) {
-        JsonObject moduleJson = Miapi.gson.fromJson(moduleJsonString, JsonObject.class);
-        if (!path.startsWith(MODULE_KEY)) {
-            return;
+        try {
+            JsonObject moduleJson = Miapi.gson.fromJson(moduleJsonString, JsonObject.class);
+            if (!path.startsWith(MODULE_KEY)) {
+                return;
+            }
+            String name = moduleJson.get("name").getAsString();
+            Map<String, JsonElement> moduleProperties = new HashMap<>();
+
+            processModuleJsonElement(moduleJson, moduleProperties, name, path, moduleJsonString);
+
+            moduleRegistry.register(name, new ItemModule(name, moduleProperties));
+        } catch (Exception e) {
+            Miapi.LOGGER.warn("Could not load Module " + path, e);
         }
-
-        String name = moduleJson.get("name").getAsString();
-        Map<String, JsonElement> moduleProperties = new HashMap<>();
-
-        processModuleJsonElement(moduleJson, moduleProperties, name, path, moduleJsonString);
-
-        moduleRegistry.register(name, new ItemModule(name, moduleProperties));
     }
 
     /**
@@ -418,7 +421,7 @@ public class ItemModule {
             if (!position.isEmpty()) {
                 int pos = position.remove(0);
                 ModuleInstance subModule = subModules.get(pos);
-                if(subModule!=null){
+                if (subModule != null) {
                     return subModule.getPosition(position);
                 }
             }

@@ -5,14 +5,17 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.widget.ClickableWidget;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.Registries;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
 import smartin.miapi.Miapi;
 import smartin.miapi.attributes.AttributeRegistry;
+import smartin.miapi.client.MiapiClient;
 import smartin.miapi.client.gui.BoxList;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.ScrollList;
@@ -32,7 +35,8 @@ public class StatDisplay extends InteractAbleWidget {
     private ItemStack original = ItemStack.EMPTY;
     private ItemStack compareTo = ItemStack.EMPTY;
 
-    static {
+    public static void setup() {
+        statDisplays.clear();
         addStatDisplay(new FlattenedListPropertyStatDisplay<>(
                 PotionEffectProperty.property,
                 stk -> statTranslation("tipped"))
@@ -152,13 +156,20 @@ public class StatDisplay extends InteractAbleWidget {
                 .setMax(2000)
                 .setFormat("##")
                 .setTranslationKey(DurabilityProperty.KEY).build());
+
+        Registries.ATTRIBUTE.forEach(entityAttribute -> {
+            if (!AttributeSingleDisplay.attributesWithDisplay.contains(entityAttribute)) {
+                addStatDisplay(AttributeSingleDisplay
+                        .builder(entityAttribute).build());
+            }
+        });
     }
 
     public StatDisplay(int x, int y, int width, int height) {
         super(x, y, width, height, Text.empty());
         transformableWidget = new TransformableWidget(x, y, width, height, Text.empty());
-        boxList = new BoxList(x , y, width, height, Text.empty(), new ArrayList<>());
-        ScrollList list = new ScrollList(x , y , width, height, List.of(boxList));
+        boxList = new BoxList(x, y, width, height, Text.empty(), new ArrayList<>());
+        ScrollList list = new ScrollList(x, y, width, height, List.of(boxList));
         list.altDesign = true;
         list.alwaysEnableScrollbar = true;
         transformableWidget.addChild(list);

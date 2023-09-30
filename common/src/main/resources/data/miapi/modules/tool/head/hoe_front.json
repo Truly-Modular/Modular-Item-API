@@ -60,8 +60,7 @@
             "attribute": "miapi:generic.mining_speed.hoe",
             "value": "[material.mining_speed] * 0.75",
             "operation": "+",
-            "slot": "mainhand",
-            "uuid": "AA233E1C-4180-4865-B01B-BCCE9785ACA4"
+            "slot": "mainhand"
         }
     ],
     "durability": "[material.durability]* 0.5",

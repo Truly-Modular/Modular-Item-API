@@ -65,29 +65,26 @@
             "attribute": "minecraft:generic.armor",
             "value": "(([material.hardness]-ceil((([material.hardness])/(6.5)))+ceil((([material.hardness])/(4.5)))-1)/(7))*3",
             "operation": "+",
-            "slot": "legs",
-            "uuid": "AAAAAAAA-2180-4865-B01B-BCCE9785ACA3"
+            "slot": "legs"
         },
         {
             "attribute": "minecraft:generic.armor_toughness",
             "value": "((((([material.mining_level]-2)/(abs([material.mining_level]-2))))/(2))+0.5) * ([material.mining_level]-1)",
             "operation": "+",
-            "slot": "legs",
-            "uuid": "AAAAAAAA-2180-4865-B01B-BCCE9785ACA3"
+            "slot": "legs"
         },
         {
             "attribute": "minecraft:generic.knockback_resistance",
             "value": "((((([material.mining_level]-3)/(abs([material.mining_level]-3))))/(2))+0.5) * ([material.mining_level]-3) / 10",
             "operation": "+",
-            "slot": "legs",
-            "uuid": "AAAAAAAA-2180-4865-B01B-BCCE9785ACA3"
+            "slot": "legs"
         },
         {
             "attribute": "miapi:generic.elytra_rocket_efficiency",
-            "value": "300",
+            "value": "3",
             "operation": "*",
             "slot": "legs",
-            "seperateOnItem": false
+            "seperateOnItem": true
         }
     ],
     "durability": "[material.durability] / 7 * 3",

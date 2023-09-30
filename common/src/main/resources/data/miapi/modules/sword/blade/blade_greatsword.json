@@ -68,8 +68,7 @@
             "attribute": "miapi:generic.shield_break",
             "value": "2",
             "operation": "+",
-            "slot": "mainhand",
-            "uuid": "AAAAAAAA-4180-4865-B01B-BCCE9785ACA3"
+            "slot": "mainhand"
         }
     ],
     "durability": "[material.durability]* 0.25",

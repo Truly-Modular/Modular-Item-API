@@ -9,19 +9,24 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Util;
 import smartin.miapi.Miapi;
 import smartin.miapi.attributes.AttributeRegistry;
+import smartin.miapi.modules.properties.AttributeProperty;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.util.HashSet;
 import java.util.Locale;
+import java.util.Set;
 
 @Environment(EnvType.CLIENT)
 public class AttributeSingleDisplay extends SingleStatDisplayDouble {
+    public static Set<EntityAttribute> attributesWithDisplay = new HashSet<>();
     final EntityAttribute attribute;
     final EquipmentSlot slot;
     double defaultValue;
 
     private AttributeSingleDisplay(EntityAttribute attribute, EquipmentSlot slot, StatDisplay.TextGetter text, StatDisplay.TextGetter hover, double defaultValue, DecimalFormat modifierFormat) {
         super(0, 0, 51, 19, text, hover);
+        attributesWithDisplay.add(attribute);
         this.slot = slot;
         this.attribute = attribute;
         this.defaultValue = defaultValue;
@@ -30,12 +35,37 @@ public class AttributeSingleDisplay extends SingleStatDisplayDouble {
 
     @Override
     public double getValue(ItemStack stack) {
+        if (slot == null) {
+            double value = 0;
+            for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
+                if (inverse) {
+                    value = Math.min(value, AttributeRegistry.getAttribute(stack, attribute, equipmentSlot, defaultValue));
+                } else {
+                    value = Math.max(value, AttributeRegistry.getAttribute(stack, attribute, equipmentSlot, defaultValue));
+                }
+            }
+            return value;
+        }
         return AttributeRegistry.getAttribute(stack, attribute, slot, defaultValue);
     }
 
     @Override
     public boolean shouldRender(ItemStack original, ItemStack compareTo) {
         super.shouldRender(original, compareTo);
+        if (slot == null) {
+            for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
+                if (
+                        original.getAttributeModifiers(equipmentSlot).containsKey(attribute) &&
+                                AttributeProperty.getActualValue(original, equipmentSlot, attribute) != attribute.getDefaultValue()) {
+                    return true;
+                }
+                if (compareTo.getAttributeModifiers(equipmentSlot).containsKey(attribute) &&
+                        AttributeProperty.getActualValue(compareTo, equipmentSlot, attribute) != attribute.getDefaultValue()) {
+                    return true;
+                }
+            }
+            return false;
+        }
         if (original.getAttributeModifiers(slot).containsKey(attribute)) {
             return true;
         }
@@ -48,7 +78,7 @@ public class AttributeSingleDisplay extends SingleStatDisplayDouble {
 
     public static class Builder {
         EntityAttribute attribute;
-        public EquipmentSlot slot = EquipmentSlot.MAINHAND;
+        public EquipmentSlot slot;
         public double defaultValue = 1;
         public StatDisplay.TextGetter name;
         public StatDisplay.TextGetter hoverDescription = (stack) -> Text.empty();
@@ -61,17 +91,21 @@ public class AttributeSingleDisplay extends SingleStatDisplayDouble {
 
         private Builder(EntityAttribute attribute) {
             this.attribute = attribute;
+            name = (itemStack) -> Text.translatable(attribute.getTranslationKey());
             modifierFormat = Util.make(new DecimalFormat("##.##"), (decimalFormat) -> {
                 decimalFormat.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ROOT));
             });
+            defaultValue = attribute.getDefaultValue();
+            max = Math.min(2048, attribute.clamp(Double.MAX_VALUE));
+            min = Math.max(-2048, attribute.clamp(Double.MIN_VALUE));
         }
 
-        public Builder setMax(double maxValue){
+        public Builder setMax(double maxValue) {
             max = maxValue;
             return this;
         }
 
-        public Builder setMin(double minValue){
+        public Builder setMin(double minValue) {
             min = minValue;
             return this;
         }

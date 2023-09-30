@@ -54,8 +54,7 @@
             "attribute": "miapi:generic.mining_speed.axe",
             "value": "[material.mining_speed]* 0.5",
             "operation": "+",
-            "slot": "mainhand",
-            "uuid": "AA233E1C-4180-4865-B01B-BCCE9785ACA4"
+            "slot": "mainhand"
         },
         {
             "attribute": "generic.attack_damage",

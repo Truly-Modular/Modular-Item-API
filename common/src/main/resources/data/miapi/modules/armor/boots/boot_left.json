@@ -65,36 +65,31 @@
             "attribute": "minecraft:generic.armor",
             "value": "((floor((([material.hardness])/(2)))-floor((([material.density])/(4))))/(2))",
             "operation": "+",
-            "slot": "feet",
-            "uuid": "AAAAAAAA-B180-4865-B01B-BCCE9785ACA3"
+            "slot": "feet"
         },
         {
             "attribute": "minecraft:generic.armor_toughness",
             "value": "(((((([material.mining_level]-2)/(abs([material.mining_level]-2))))/(2))+0.5) * ([material.mining_level]-1))/2",
             "operation": "+",
-            "slot": "feet",
-            "uuid": "AAAAAAAA-B180-4865-B01B-BCCE9785ACA3"
+            "slot": "feet"
         },
         {
             "attribute": "minecraft:generic.knockback_resistance",
             "value": "(((((([material.mining_level]-3)/(abs([material.mining_level]-3))))/(2))+0.5) * ([material.mining_level]-3) / 10) /2",
             "operation": "+",
-            "slot": "feet",
-            "uuid": "AAAAAAAA-B180-4865-B01B-BCCE9785ACA3"
+            "slot": "feet"
         },
         {
             "attribute": "miapi:generic.elytra_turn_efficiency",
             "value": "-1000",
             "operation": "+",
-            "slot": "head",
-            "uuid": "AAAAAAAA-B180-4865-B01B-BCCE9785ACA3"
+            "slot": "feet"
         },
         {
             "attribute": "miapi:generic.elytra_glide_efficiency",
             "value": "-1000",
             "operation": "+",
-            "slot": "head",
-            "uuid": "AAAAAAAA-B180-4865-B01B-BCCE9785ACA3"
+            "slot": "feet"
         }
     ],
     "durability": "[material.durability]* 0.5",

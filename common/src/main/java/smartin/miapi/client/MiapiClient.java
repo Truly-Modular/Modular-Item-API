@@ -15,6 +15,7 @@ import net.minecraft.util.Identifier;
 import smartin.miapi.Miapi;
 import smartin.miapi.blocks.ModularWorkBenchRenderer;
 import smartin.miapi.client.gui.crafting.CraftingScreen;
+import smartin.miapi.client.gui.crafting.statdisplay.StatDisplay;
 import smartin.miapi.client.model.CustomColorProvider;
 import smartin.miapi.client.model.ModularModelPredicateProvider;
 import smartin.miapi.effects.CryoStatusEffect;
@@ -63,6 +64,8 @@ public class MiapiClient {
 
     protected static void clientStart(MinecraftClient client) {
         MinecraftClient mc = MinecraftClient.getInstance();
+        //Load StatDisplayClass
+        StatDisplay.setup();
         mc.getTextureManager();
         materialAtlasManager = new MaterialAtlasManager(mc.getTextureManager());
         ((ReloadableResourceManagerImpl) mc.getResourceManager()).registerReloader(materialAtlasManager);

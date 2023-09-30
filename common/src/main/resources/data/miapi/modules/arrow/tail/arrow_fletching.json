@@ -39,15 +39,13 @@
             "attribute": "miapi:generic.projectile_speed",
             "value": "( - [material.density] ) / 1",
             "operation": "+",
-            "slot": "mainhand",
-            "uuid": "AAAAAAAA-4180-4865-B01B-BCCE9785ACA3"
+            "slot": "mainhand"
         },
         {
             "attribute": "miapi:generic.projectile_accuracy",
             "value": "[material.flexibility]/7 - 1",
             "operation": "+",
-            "slot": "mainhand",
-            "uuid": "AAAAAAAA-4180-4865-B01B-BCCE9785ACA3"
+            "slot": "mainhand"
         }
     ]
 }

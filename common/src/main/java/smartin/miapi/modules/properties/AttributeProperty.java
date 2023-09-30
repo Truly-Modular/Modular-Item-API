@@ -136,8 +136,8 @@ public class AttributeProperty implements ModuleProperty {
         return map;
     }
 
-    public static Map<EquipmentSlot, Multimap<EntityAttribute, EntityAttributeModifier>> equipmentSlotMultimapMap(ItemStack itemStack){
-        return (Map<EquipmentSlot, Multimap<EntityAttribute, EntityAttributeModifier>>) ModularItemCache.get(itemStack,KEY + "_unmodifieable");
+    public static Map<EquipmentSlot, Multimap<EntityAttribute, EntityAttributeModifier>> equipmentSlotMultimapMap(ItemStack itemStack) {
+        return (Map<EquipmentSlot, Multimap<EntityAttribute, EntityAttributeModifier>>) ModularItemCache.get(itemStack, KEY + "_unmodifieable");
     }
 
     public static Multimap<EntityAttribute, EntityAttributeModifier> getAttributeModifiersForSlot(ItemStack itemStack, EquipmentSlot slot, Multimap<EntityAttribute, EntityAttributeModifier> toAdding) {
@@ -277,13 +277,14 @@ public class AttributeProperty implements ModuleProperty {
     private static Multimap<EntityAttribute, EntityAttributeModifierHolder> createAttributeCache(ItemStack itemStack) {
         ItemModule.ModuleInstance rootInstance = ItemModule.getModules(itemStack);
         Multimap<EntityAttribute, EntityAttributeModifierHolder> attributeModifiers = ArrayListMultimap.create();
+        UUID defaultUUID = UUID.randomUUID();
         for (ItemModule.ModuleInstance instance : rootInstance.allSubModules()) {
-            getAttributeModifiers(instance, attributeModifiers);
+            getAttributeModifiers(defaultUUID, instance, attributeModifiers);
         }
         return attributeModifiers;
     }
 
-    public static void getAttributeModifiers(ItemModule.ModuleInstance instance, Multimap<EntityAttribute, EntityAttributeModifierHolder> attributeModifiers) {
+    public static void getAttributeModifiers(UUID defaultUUID, ItemModule.ModuleInstance instance, Multimap<EntityAttribute, EntityAttributeModifierHolder> attributeModifiers) {
         JsonElement element = instance.getProperties().get(property);
         if (element == null) {
             return;
@@ -302,6 +303,10 @@ public class AttributeProperty implements ModuleProperty {
                 Miapi.LOGGER.warn(String.valueOf(Registries.ATTRIBUTE.get(new Identifier(attributeName))));
                 Miapi.LOGGER.warn("Attribute is null " + attributeName + " on module " + instance.module.getName() + " this should not have happened.");
             } else {
+                if(attributeJson.uuid == null && !attributeJson.seperateOnItem){
+                    attributeJson.uuid = defaultUUID.toString();
+                }
+
                 if (attributeJson.uuid != null) {
                     UUID uuid = UUID.fromString(attributeJson.uuid);
                     // Thanks Mojang for using == and not .equals so i have to do this abomination

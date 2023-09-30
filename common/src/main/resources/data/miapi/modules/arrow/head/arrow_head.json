@@ -31,22 +31,19 @@
             "attribute": "miapi:generic.projectile_damage",
             "value": "2",
             "operation": "+",
-            "slot": "mainhand",
-            "uuid": "AAAAAAAA-4180-4865-B01B-BCCE9785ACA3"
+            "slot": "mainhand"
         },
         {
             "attribute": "miapi:generic.projectile_speed",
             "value": "( - [material.density] ) / 10",
             "operation": "+",
-            "slot": "mainhand",
-            "uuid": "AAAAAAAA-4180-4865-B01B-BCCE9785ACA3"
+            "slot": "mainhand"
         },
         {
             "attribute": "miapi:generic.projectile_crit_multiplier",
             "value": "[material.hardness] / (3.7) - 1",
             "operation": "+",
-            "slot": "mainhand",
-            "uuid": "AAAAAAAA-4180-4865-B01B-BCCE9785ACA3"
+            "slot": "mainhand"
         }
     ],
     "allowedMaterial": {
