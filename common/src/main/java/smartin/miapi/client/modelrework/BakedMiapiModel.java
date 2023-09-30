@@ -54,9 +54,8 @@ public class BakedMiapiModel implements MiapiModel {
                 VertexConsumer consumer = modelholder.colorProvider.getConsumer(vertexConsumers, stack, instance, transformationMode);
                 Color color = modelholder.colorProvider.getVertexColor();
 
-                int lightValue = transformationMode == ModelTransformationMode.GUI ? LightmapTextureManager.MAX_LIGHT_COORDINATE : LightmapTextureManager.MAX_SKY_LIGHT_COORDINATE;
                 model.getQuads(null, direction, Random.create()).forEach(bakedQuad -> {
-                    consumer.quad(matrices.peek(), bakedQuad, color.redAsFloat(), color.greenAsFloat(), color.blueAsFloat(), lightValue, overlay);
+                    consumer.quad(matrices.peek(), bakedQuad, color.redAsFloat(), color.greenAsFloat(), color.blueAsFloat(), light, overlay);
                 });
                 MinecraftClient.getInstance().world.getProfiler().pop();
 
@@ -70,7 +69,7 @@ public class BakedMiapiModel implements MiapiModel {
 
                     model.getQuads(null, direction, Random.create()).forEach(bakedQuad -> {
                         //red, green, blue
-                        glintConsumer.quad(matrices.peek(), bakedQuad, (float) glintColor.r() / 255, (float) glintColor.g() / 255, (float) glintColor.b() / 255, lightValue, overlay);
+                        glintConsumer.quad(matrices.peek(), bakedQuad, (float) glintColor.r() / 255, (float) glintColor.g() / 255, (float) glintColor.b() / 255, light, overlay);
                     });
                     MinecraftClient.getInstance().world.getProfiler().pop();
                 }

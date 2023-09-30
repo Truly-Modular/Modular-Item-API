@@ -177,7 +177,6 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
             current = null;
         }
         if (slotDisplay != null) {
-            slotDisplay.setBaseSlot(current);
             slotDisplay.select(current);
             slotDisplay.setItem(converted);
         }
