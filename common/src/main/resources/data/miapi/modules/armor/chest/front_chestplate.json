@@ -2,7 +2,7 @@
     "name": "front_chestplate",
     "texture": [
         {
-            "path": "miapi:models/item/armor/model/chest/base/[material.texture].json",
+            "path": "miapi:models/item/armor/model/chest_front/base/[material.texture].json",
             "transform": {
                 "rotation": {
                     "x": 0.0,
@@ -50,24 +50,24 @@
     "attributes": [
         {
             "attribute": "minecraft:generic.armor",
-            "value": "([material.hardness] + 2 - ceil([material.flexibility]/4))/8*6",
+            "value": "([material.hardness] + 2 - ceil([material.flexibility]/4))/8*3",
             "operation": "+",
             "slot": "chest"
         },
         {
             "attribute": "minecraft:generic.armor_toughness",
-            "value": "((((([material.mining_level]-2)/(abs([material.mining_level]-2))))/(2))+0.5) * ([material.mining_level]-1)",
+            "value": "((((([material.mining_level]-2)/(abs([material.mining_level]-2))))/(2))+0.5) * ([material.mining_level]-1) / 2",
             "operation": "+",
             "slot": "chest"
         },
         {
             "attribute": "minecraft:generic.knockback_resistance",
-            "value": "((((([material.mining_level]-3)/(abs([material.mining_level]-3))))/(2))+0.5) * ([material.mining_level]-3) / 10",
+            "value": "((((([material.mining_level]-3)/(abs([material.mining_level]-3))))/(2))+0.5) * ([material.mining_level]-3) / 20",
             "operation": "+",
             "slot": "chest"
         }
     ],
-    "durability": "[material.durability] / 7 * 6",
+    "durability": "[material.durability] / 7 * 3",
     "allowedMaterial": {
         "allowedMaterials": [
             "wood",
@@ -79,7 +79,7 @@
             "crystal",
             "glass"
         ],
-        "cost": 6
+        "cost": 3
     },
     "displayName": "miapi.module.front_chestplate.name"
 }

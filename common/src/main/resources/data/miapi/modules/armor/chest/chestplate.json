@@ -30,6 +30,29 @@
         },
         "1": {
             "allowed": [
+                "chest_back"
+            ],
+            "transform": {
+                "rotation": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 180.0
+                },
+                "translation": {
+                    "x": 0.0,
+                    "y": 5.0,
+                    "z": 0.0
+                },
+                "scale": {
+                    "x": 1.25,
+                    "y": 1.55,
+                    "z": 1.5
+                },
+                "origin": "body"
+            }
+        },
+        "2": {
+            "allowed": [
                 "arm_left"
             ],
             "transform": {
@@ -40,18 +63,18 @@
                 },
                 "translation": {
                     "x": 1.0,
-                    "y": 0.0,
+                    "y": -0.75,
                     "z": 0.0
                 },
                 "scale": {
                     "x": 1.5,
-                    "y": 1.5,
+                    "y": 1.1125,
                     "z": 1.5
                 },
                 "origin": "left_arm"
             }
         },
-        "2": {
+        "3": {
             "allowed": [
                 "arm_right"
             ],
@@ -63,12 +86,12 @@
                 },
                 "translation": {
                     "x": -1.0,
-                    "y": 0.0,
+                    "y": -0.75,
                     "z": 0.0
                 },
                 "scale": {
                     "x": 1.5,
-                    "y": 1.5,
+                    "y": 1.1125,
                     "z": 1.5
                 },
                 "origin": "right_arm"

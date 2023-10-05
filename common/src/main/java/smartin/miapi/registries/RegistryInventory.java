@@ -267,6 +267,8 @@ public class RegistryInventory {
         register(modularItems, "modular_leggings", ModularLeggings::new);
         register(modularItems, "modular_boots", ModularBoots::new);
 
+        register(modularItems, "modular_elytra", ModularElytraItem::getInstance);
+
         //STATUS EFFECTS
         register(statusEffects, "cryo", CryoStatusEffect::new, eff -> cryoStatusEffect = eff);
 
@@ -410,6 +412,7 @@ public class RegistryInventory {
             registerMiapi(moduleProperties, WaterDragProperty.KEY, new WaterDragProperty());
             registerMiapi(moduleProperties, ArrowProperty.KEY, new ArrowProperty());
             registerMiapi(moduleProperties, DurabilityProperty.KEY, new DurabilityProperty());
+            registerMiapi(moduleProperties, IsElytraProperty.KEY, new IsElytraProperty());
 
             //compat
             registerMiapi(moduleProperties, BetterCombatProperty.KEY, new BetterCombatProperty());

@@ -1,0 +1,16 @@
+{
+    "type": "tag",
+    "wing_left": {
+        "condition": {
+            "type": "otherModule",
+            "condition": {
+                "type": "tag",
+                "tag": "wing_right"
+            }
+        },
+        "properties": {
+            "displayName": "miapi.modular_elytra",
+            "itemId": "miapi:modular_elytra"
+        }
+    }
+}

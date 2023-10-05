@@ -27,15 +27,17 @@ public abstract class ArmorFeatureRendererMixin<T extends LivingEntity, M extend
     @Inject(method = "renderArmor", at = @At("HEAD"), cancellable = true)
     void miapi$renderArmorInject(MatrixStack matrices, VertexConsumerProvider vertexConsumers, T entity, EquipmentSlot armorSlot, int light, A model, CallbackInfo ci) {
         ItemStack itemStack = entity.getEquippedStack(armorSlot);
+        ArmorFeatureRenderer renderer = (ArmorFeatureRenderer) (Object) this;
+
         if (itemStack.getItem() instanceof ModularItem) {
-            renderPieces(matrices, vertexConsumers, light, armorSlot, itemStack, entity, model);
+            renderPieces(matrices, vertexConsumers, light, armorSlot, itemStack, entity, model, ((FeatureRendererAccessor) renderer).getContext());
             ci.cancel();
         }
     }
 
     @Unique
-    private void renderPieces(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, EquipmentSlot armorSlot, ItemStack itemStack, T entity, A outerModel) {
+    private void renderPieces(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, EquipmentSlot armorSlot, ItemStack itemStack, T entity, A outerModel, FeatureRendererContext context) {
         this.getContextModel().copyBipedStateTo(outerModel);
-        ArmorModelManager.renderArmorPiece(matrices, vertexConsumers, light, armorSlot, itemStack, entity, outerModel, this.getContextModel());
+        ArmorModelManager.renderArmorPiece(matrices, vertexConsumers, light, armorSlot, itemStack, entity, outerModel, this.getContextModel(),context);
     }
 }

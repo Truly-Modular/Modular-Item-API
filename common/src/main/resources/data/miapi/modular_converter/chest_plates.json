@@ -10,13 +10,20 @@
                 "subModules": {}
             },
             "1": {
-                "module": "arm_left",
+                "module": "back_chestplate",
                 "moduleData": {
                     "properties": "{\"material\":\"iron\"}"
                 },
                 "subModules": {}
             },
             "2": {
+                "module": "arm_left",
+                "moduleData": {
+                    "properties": "{\"material\":\"iron\"}"
+                },
+                "subModules": {}
+            },
+            "3": {
                 "module": "arm_right",
                 "moduleData": {
                     "properties": "{\"material\":\"iron\"}"
@@ -36,13 +43,20 @@
                 "subModules": {}
             },
             "1": {
-                "module": "arm_left",
+                "module": "back_chestplate",
                 "moduleData": {
                     "properties": "{\"material\":\"gold\"}"
                 },
                 "subModules": {}
             },
             "2": {
+                "module": "arm_left",
+                "moduleData": {
+                    "properties": "{\"material\":\"gold\"}"
+                },
+                "subModules": {}
+            },
+            "3": {
                 "module": "arm_right",
                 "moduleData": {
                     "properties": "{\"material\":\"gold\"}"
@@ -62,13 +76,20 @@
                 "subModules": {}
             },
             "1": {
-                "module": "arm_left",
+                "module": "back_chestplate",
                 "moduleData": {
                     "properties": "{\"material\":\"diamond\"}"
                 },
                 "subModules": {}
             },
             "2": {
+                "module": "arm_left",
+                "moduleData": {
+                    "properties": "{\"material\":\"diamond\"}"
+                },
+                "subModules": {}
+            },
+            "3": {
                 "module": "arm_right",
                 "moduleData": {
                     "properties": "{\"material\":\"diamond\"}"
@@ -88,13 +109,20 @@
                 "subModules": {}
             },
             "1": {
-                "module": "arm_left",
+                "module": "back_chestplate",
                 "moduleData": {
                     "properties": "{\"material\":\"netherite\"}"
                 },
                 "subModules": {}
             },
             "2": {
+                "module": "arm_left",
+                "moduleData": {
+                    "properties": "{\"material\":\"netherite\"}"
+                },
+                "subModules": {}
+            },
+            "3": {
                 "module": "arm_right",
                 "moduleData": {
                     "properties": "{\"material\":\"netherite\"}"
@@ -114,13 +142,20 @@
                 "subModules": {}
             },
             "1": {
-                "module": "arm_left",
+                "module": "back_chestplate",
                 "moduleData": {
                     "properties": "{\"material\":\"leather\"}"
                 },
                 "subModules": {}
             },
             "2": {
+                "module": "arm_left",
+                "moduleData": {
+                    "properties": "{\"material\":\"leather\"}"
+                },
+                "subModules": {}
+            },
+            "3": {
                 "module": "arm_right",
                 "moduleData": {
                     "properties": "{\"material\":\"leather\"}"

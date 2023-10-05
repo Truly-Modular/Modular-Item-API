@@ -486,6 +486,11 @@
     "miapi.module.front_chestplate.description": "A piece of armor to protect your chest",
     "miapi.module.front_chestplate.short_description": "A piece of armor to protect your chest",
 
+    "miapi.module.back_chestplate": "Backplate",
+    "miapi.module.back_chestplate.name": "[translation.[material.translation]]Backplate",
+    "miapi.module.back_chestplate.description": "A piece of armor to protect your back",
+    "miapi.module.back_chestplate.short_description": "A piece of armor to protect your back",
+
     "miapi.module.chest_base": "Undershirt",
     "miapi.module.chest_base.name": "Undershirt",
     "miapi.module.chest_base.description": "Undershirt to hold your armor up",
@@ -500,6 +505,54 @@
     "miapi.module.helmet_base.name": "Underhelmet",
     "miapi.module.helmet_base.description": "a small piece on your head to hold the helmet",
     "miapi.module.helmet_base.short_description": "a small piece on your head to hold the helmet",
+
+    "miapi.module.wing_boot_left": "Left Flap",
+    "miapi.module.wing_boot_left.name": "[translation.[material.translation]]Flaps",
+    "miapi.module.wing_boot_left.description": "A flap on your left foot to have better turning",
+    "miapi.module.wing_boot_left.short_description": "A flap on your left foot to have better turning",
+
+    "miapi.module.wing_boot_right": "Right Flap",
+    "miapi.module.wing_boot_right.name": "[translation.[material.translation]]Flaps",
+    "miapi.module.wing_boot_right.description": "A flap on your right foot to have better turning",
+    "miapi.module.wing_boot_right.short_description": "A flap on your right foot to have better turning",
+
+    "miapi.module.wing_arm_left": "Left Arm Winglet",
+    "miapi.module.wing_arm_left.name": "[translation.[material.translation]]Left Arm Winglet",
+    "miapi.module.wing_arm_left.description": "A small wing to stabilise flight",
+    "miapi.module.wing_arm_left.short_description": "A small wing to stabilise flight",
+
+    "miapi.module.wing_arm_right": "Right Arm Winglet",
+    "miapi.module.wing_arm_right.name": "[translation.[material.translation]]Right Arm Winglet",
+    "miapi.module.wing_arm_right.description": "A small wing to stabilise flight",
+    "miapi.module.wing_arm_right.short_description": "A small wing to stabilise flight",
+
+    "miapi.module.back_elytra": "Elytra Attachtment",
+    "miapi.module.back_elytra.name": "Elytra Attachtment",
+    "miapi.module.back_elytra.description": "A Attachment for Wings to enable flight",
+    "miapi.module.back_elytra.short_description": "A Attachment for Wings to enable flight",
+
+    "miapi.module.wing_left": "Left Wing",
+    "miapi.module.wing_left.name": "[translation.[material.translation]]Left Wing",
+    "miapi.module.wing_left.description": "A left wing to enable Flight",
+    "miapi.module.wing_left.short_description": "A left wing to enable Flight",
+
+    "miapi.module.wing_right": "Right Wing",
+    "miapi.module.wing_right.name": "[translation.[material.translation]]Right Arm Wing",
+    "miapi.module.wing_right.description": "A right wing to enable Flight",
+    "miapi.module.wing_right.short_description": "A right wing to enable Flight",
+
+    "miapi.module.wing_leg_left": "Left Panels",
+    "miapi.module.wing_leg_left.name": "[translation.[material.translation]]Left Panels",
+    "miapi.module.wing_leg_left.description": "A Large Panel to stabilise gliding with Wings",
+    "miapi.module.wing_leg_left.short_description": "A Large Panel to stabilise gliding with Wings",
+
+    "miapi.module.wing_leg_right": "Right Panels",
+    "miapi.module.wing_leg_right.name": "[translation.[material.translation]]Right Panels",
+    "miapi.module.wing_leg_right.description": "A Large Panel to stabilise gliding with Wings",
+    "miapi.module.wing_leg_right.short_description": "A Large Panel to stabilise gliding with Wings",
+
+    "miapi.modular_elytra": "[translation.[material.translation]]Elytra",
+    "miapi:armored_elytra": "[translation.[material.translation]]Armored Elytra",
 
     "miapi.module.mattock.name": "[translation.[material.translation]]Mattock"
 }

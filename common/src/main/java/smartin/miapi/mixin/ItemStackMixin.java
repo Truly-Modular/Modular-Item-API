@@ -1,8 +1,6 @@
 package smartin.miapi.mixin;
 
-import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
-import com.google.common.collect.Multimaps;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.EquipmentSlot;
@@ -12,7 +10,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
-import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -25,13 +22,10 @@ import smartin.miapi.modules.properties.MiningLevelProperty;
 
 import java.util.List;
 
-import static smartin.miapi.modules.properties.AttributeProperty.getAttributeModifiersForSlot;
-
 @Mixin(ItemStack.class)
 public abstract class ItemStackMixin {
-
     @Shadow
-    public abstract ItemStack setCustomName(@Nullable Text name);
+    public abstract ItemStack split(int amount);
 
     //@Inject(method = "foo()V", at = @At(value = "INVOKE", item = "La/b/c/Something;doSomething()V", shift = At.Shift.AFTER))
     @Inject(

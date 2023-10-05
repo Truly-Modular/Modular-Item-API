@@ -1,0 +1,60 @@
+{
+	"credit": "Made with Blockbench",
+	"textures": {
+		"1": "miapi:item/armor/wingsuit/default"
+	},
+	"elements": [
+		{
+			"name": "Outer",
+			"from": [-2, -8, -2],
+			"to": [2, 2, 2],
+			"faces": {
+				"north": {"uv": [8, 5.5, 7, 8], "texture": "#1"},
+				"east": {"uv": [7, 5.5, 6, 8], "texture": "#1"},
+				"south": {"uv": [10, 5.5, 9, 8], "texture": "#1"},
+				"west": {"uv": [9, 5.5, 8, 8], "texture": "#1"},
+				"up": {"uv": [8, 4.5, 7, 5.5], "texture": "#1"},
+				"down": {"uv": [9, 4.5, 10, 5.5], "texture": "#1"}
+			}
+		},
+		{
+			"name": "inner",
+			"from": [-2, -7, 2],
+			"to": [2, 2, -2],
+			"faces": {
+				"north": {"uv": [6, 5.5, 7, 8], "texture": "#1"},
+				"east": {"uv": [7, 5.5, 8, 8], "texture": "#1"},
+				"south": {"uv": [8, 5.5, 9, 8], "texture": "#1"},
+				"west": {"uv": [9, 5.5, 10, 8], "texture": "#1"},
+				"up": {"uv": [7, 4.5, 8, 5.5], "texture": "#1"},
+				"down": {"uv": [9, 4.5, 10, 5.5], "texture": "#1"}
+			}
+		},
+		{
+			"name": "wing",
+			"from": [-9, -8, 0],
+			"to": [-2, 2, 1],
+			"faces": {
+				"north": {"uv": [10.5, 5.5, 12.25, 8], "texture": "#1"},
+				"east": {"uv": [10.25, 5.5, 10.5, 8], "texture": "#1"},
+				"south": {"uv": [12.5, 5.5, 14.25, 8], "texture": "#1"},
+				"west": {"uv": [12.25, 5.5, 12.5, 8], "texture": "#1"},
+				"up": {"uv": [12.25, 5.25, 10.5, 5.5], "texture": "#1"},
+				"down": {"uv": [10.5, 8, 12.25, 8.25], "texture": "#1"}
+			}
+		},
+		{
+			"name": "wing_inner",
+			"from": [-9, -8, 1],
+			"to": [-2, 2, 0],
+			"faces": {
+				"north": {"uv": [12.5, 5.5, 14.25, 8], "texture": "#1"},
+				"east": {"uv": [12.25, 5.5, 12.5, 8], "texture": "#1"},
+				"south": {"uv": [12.25, 5.5, 10.5, 8], "texture": "#1"},
+				"west": {"uv": [10.25, 5.5, 10.5, 8], "texture": "#1"},
+				"up": {"uv": [12.25, 5.25, 10.5, 5.5], "texture": "#1"},
+				"down": {"uv": [10.5, 8, 12.25, 8.25], "texture": "#1"}
+			}
+		}
+	]
+}

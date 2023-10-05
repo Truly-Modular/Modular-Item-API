@@ -27,8 +27,13 @@
     ],
     "client": [
         "client.ArmorFeatureRendererMixin",
+        "client.ElytraEntityModelAccessor",
+        "client.ElytraFeatureRendererAccessor",
+        "client.FeatureRendererAccessor",
         "client.ItemRendererAccessor",
         "client.ItemRendererMixin",
+        "client.LivingEntityRendererAccessor",
+        "client.LivingEntityRendererMixin",
         "client.ModelLoaderAccessor",
         "client.ModelLoaderInterfaceAccessor",
         "client.ModelLoaderMixin",

@@ -1,0 +1,71 @@
+{
+    "name": "wing_leg_left",
+    "texture": [
+        {
+            "path": "miapi:models/item/armor/model/leg_left/wing/[material.texture].json",
+            "transform": {
+                "rotation": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "translation": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "scale": {
+                    "x": 1.0,
+                    "y": 1.0,
+                    "z": 1.0
+                },
+                "origin": "left_leg"
+            }
+        },
+        {
+            "path": "miapi:models/item/armor/gui/leg_left/base/[material.texture].json",
+            "transform": {
+                "rotation": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "translation": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "scale": {
+                    "x": 1.0,
+                    "y": 1.0,
+                    "z": 1.0
+                },
+                "origin": "item"
+            }
+        }
+    ],
+    "allowedInSlots": [
+        "leg_left"
+    ],
+    "attributes": [
+        {
+            "attribute": "minecraft:generic.armor",
+            "value": "(([material.hardness]-ceil((([material.hardness])/(6.5)))+ceil((([material.hardness])/(4.5)))-1)/(14))",
+            "operation": "+",
+            "slot": "legs"
+        },
+        {
+            "attribute": "miapi:generic.elytra_glide_efficiency",
+            "value": "5+[material.flexibility]*3-[material.density]*2",
+            "operation": "+",
+            "slot": "legs"
+        }
+    ],
+    "durability": "[material.durability] / 7 * 2",
+    "allowedMaterial": {
+        "allowedMaterials": [
+            "fabric"
+        ],
+        "cost": 4
+    }
+}

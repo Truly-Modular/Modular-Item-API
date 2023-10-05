@@ -1,0 +1,39 @@
+{
+    "name": "wing_right",
+    "texture": [
+        {
+            "path": "miapi:models/item/armor/model/wing_right/wing/[material.texture].json",
+            "transform": {
+                "rotation": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "translation": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "scale": {
+                    "x": 1.0,
+                    "y": 1.0,
+                    "z": 1.0
+                },
+                "origin": "right_wing"
+            }
+        }
+    ],
+    "tag": [
+        "wing_right"
+    ],
+    "allowedInSlots": [
+        "wing_right"
+    ],
+    "durability": "[material.durability] / 8",
+    "allowedMaterial": {
+        "allowedMaterials": [
+            "fabric"
+        ],
+        "cost": 2
+    }
+}

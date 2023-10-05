@@ -1,0 +1,72 @@
+{
+    "name": "wing_boot_left",
+    "texture": [
+        {
+            "path": "miapi:models/item/armor/model/boot_left/wing/[material.texture].json",
+            "transform": {
+                "rotation": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "translation": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "scale": {
+                    "x": 1.0,
+                    "y": 1.0,
+                    "z": 1.0
+                },
+                "origin": "left_leg"
+            }
+        },
+        {
+            "path": "miapi:models/item/armor/gui/boot_left/base/[material.texture].json",
+            "transform": {
+                "rotation": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "translation": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "scale": {
+                    "x": 1.0,
+                    "y": 1.0,
+                    "z": 1.0
+                },
+                "origin": "item"
+            }
+        }
+    ],
+    "allowedInSlots": [
+        "boot_left"
+    ],
+    "allowedMaterial": {
+        "allowedMaterials": [
+            "fabric"
+        ],
+        "cost": 3
+    },
+    "attributes": [
+        {
+            "attribute": "minecraft:generic.armor",
+            "value": "((floor((([material.hardness])/(2)))-floor((([material.density])/(4))))/(4))",
+            "operation": "+",
+            "slot": "feet"
+        },
+        {
+            "attribute": "miapi:generic.elytra_turn_efficiency",
+            "value": "floor(12+[material.flexibility]*2-[material.density])/2",
+            "operation": "+",
+            "slot": "feet"
+        }
+    ],
+    "durability": "[material.durability]* 0.5",
+    "displayName": "miapi.module.boot_left.name"
+}

@@ -3,7 +3,6 @@ package smartin.miapi.blocks;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
-import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
@@ -11,9 +10,7 @@ import net.minecraft.item.RangedWeaponItem;
 import net.minecraft.item.SwordItem;
 import net.minecraft.item.ToolItem;
 import net.minecraft.util.math.RotationAxis;
-import smartin.miapi.client.model.ItemRenderUtil;
 import smartin.miapi.item.modular.ModularItem;
-import smartin.miapi.modules.properties.render.ModelProperty;
 
 public class ModularWorkBenchRenderer implements BlockEntityRenderer<ModularWorkBenchEntity> {
     private final BlockEntityRendererFactory.Context context;

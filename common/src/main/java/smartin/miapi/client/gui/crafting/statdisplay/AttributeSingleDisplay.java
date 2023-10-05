@@ -38,10 +38,12 @@ public class AttributeSingleDisplay extends SingleStatDisplayDouble {
         if (slot == null) {
             double value = 0;
             for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
-                if (inverse) {
-                    value = Math.min(value, AttributeRegistry.getAttribute(stack, attribute, equipmentSlot, defaultValue));
-                } else {
-                    value = Math.max(value, AttributeRegistry.getAttribute(stack, attribute, equipmentSlot, defaultValue));
+                if(stack.getAttributeModifiers(equipmentSlot).containsKey(attribute)){
+                    if (inverse) {
+                        value = Math.min(value, AttributeRegistry.getAttribute(stack, attribute, equipmentSlot, defaultValue));
+                    } else {
+                        value = Math.max(value, AttributeRegistry.getAttribute(stack, attribute, equipmentSlot, defaultValue));
+                    }
                 }
             }
             return value;
