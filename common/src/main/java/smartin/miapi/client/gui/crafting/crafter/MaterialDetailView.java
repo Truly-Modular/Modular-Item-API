@@ -24,7 +24,7 @@ public class MaterialDetailView extends InteractAbleWidget {
     private ScrollingTextWidget header;
     private Material material;
     private Identifier texture = new Identifier(Miapi.MOD_ID, "textures/gui/crafter/material_detail_background.png");
-    private float scale = 1.9f;
+    private float scale = 1.5f;
     public static List<Builder> infoBarBuilders = new ArrayList<>();
 
     static {
@@ -63,7 +63,7 @@ public class MaterialDetailView extends InteractAbleWidget {
         for (Builder builder : infoBarBuilders) {
             widgets.add(builder.build(x,y,width,spacer,material));
         }
-        ScrollList list = new ScrollList(x + 10, y + 30, width - 10, this.getHeight() - 30, widgets);
+        ScrollList list = new ScrollList(x + 10, y + 27, width - 10, this.getHeight() - 27, widgets);
         this.addChild(list);
     }
 
@@ -106,9 +106,9 @@ public class MaterialDetailView extends InteractAbleWidget {
     public static class InfoBar extends InteractAbleWidget {
         public StatBar statBar;
         public ScrollingTextWidget textWidget;
-        public static int textWidth = 70;
-        public static int barWitdh = 60;
-        public static int spacer = 2;
+        public static int textWidth = 65;
+        public static int barWitdh = 35;
+        public static int spacer = 1;
         public ScrollingTextWidget valueHolder;
 
         public InfoBar(int x, int y, int width, int height, Text text, float value, float min, float max) {

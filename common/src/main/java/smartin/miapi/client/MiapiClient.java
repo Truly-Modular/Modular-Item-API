@@ -65,7 +65,6 @@ public class MiapiClient {
     protected static void clientStart(MinecraftClient client) {
         MinecraftClient mc = MinecraftClient.getInstance();
         //Load StatDisplayClass
-        StatDisplay.setup();
         mc.getTextureManager();
         materialAtlasManager = new MaterialAtlasManager(mc.getTextureManager());
         ((ReloadableResourceManagerImpl) mc.getResourceManager()).registerReloader(materialAtlasManager);
@@ -76,6 +75,7 @@ public class MiapiClient {
     }
 
     protected static void clientLevelLoad(ClientWorld clientWorld) {
+        StatDisplay.setup();
         SpriteLoader.clientStart();
     }
 

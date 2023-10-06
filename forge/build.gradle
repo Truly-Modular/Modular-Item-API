@@ -36,7 +36,7 @@ dependencies {
 
     modApi(include("com.github.RedPxnda.Nucleus:nucleus-forge:${rootProject.nucleus_version}"))
 
-    forgeRuntimeLibrary("top.theillusivec4.caelus:caelus-forge:${rootProject.caelus_forge_version}")
+    //forgeRuntimeLibrary("top.theillusivec4.caelus:caelus-forge:${rootProject.caelus_forge_version}")
     modApi("top.theillusivec4.caelus:caelus-forge:${rootProject.caelus_forge_version}")
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
