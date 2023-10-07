@@ -1,7 +1,6 @@
 package smartin.miapi.events;
 
-import dev.architectury.event.Event;
-import dev.architectury.event.EventFactory;
+import com.redpxnda.nucleus.event.PrioritizedEvent;
 import dev.architectury.event.EventResult;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -18,13 +17,13 @@ import smartin.miapi.modules.properties.material.GeneratedMaterial;
 import java.util.List;
 
 public class MiapiEvents {
-    public static Event<LivingHurt> LIVING_HURT = EventFactory.createEventResult();
-    public static Event<LivingHurt> LIVING_HURT_AFTER = EventFactory.createEventResult();
-    public static Event<EntityRide> START_RIDING = EventFactory.createLoop(); // only fires on successful rides, and is not cancellable (if I wanted to make it cancellable, i would add mixinextras)
-    public static Event<EntityRide> STOP_RIDING = EventFactory.createLoop();
-    public static Event<BlockCraftingStatUpdate> BLOCK_STAT_UPDATE = EventFactory.createEventResult();
-    public static Event<ItemCraftingStatUpdate> ITEM_STAT_UPDATE = EventFactory.createEventResult();
-    public static Event<GeneratedMaterialEvent> GENERATED_MATERIAL = EventFactory.createEventResult();
+    public static PrioritizedEvent<LivingHurt> LIVING_HURT = PrioritizedEvent.createEventResult();
+    public static PrioritizedEvent<LivingHurt> LIVING_HURT_AFTER = PrioritizedEvent.createEventResult();
+    public static PrioritizedEvent<EntityRide> START_RIDING = PrioritizedEvent.createLoop(); // only fires on successful rides, and is not cancellable (if I wanted to make it cancellable, i would add mixinextras)
+    public static PrioritizedEvent<EntityRide> STOP_RIDING = PrioritizedEvent.createLoop();
+    public static PrioritizedEvent<BlockCraftingStatUpdate> BLOCK_STAT_UPDATE = PrioritizedEvent.createEventResult();
+    public static PrioritizedEvent<ItemCraftingStatUpdate> ITEM_STAT_UPDATE = PrioritizedEvent.createEventResult();
+    public static PrioritizedEvent<GeneratedMaterialEvent> GENERATED_MATERIAL = PrioritizedEvent.createEventResult();
 
     public static class LivingHurtEvent {
         public final LivingEntity livingEntity;

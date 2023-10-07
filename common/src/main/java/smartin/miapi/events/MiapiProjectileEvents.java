@@ -1,7 +1,6 @@
 package smartin.miapi.events;
 
-import dev.architectury.event.Event;
-import dev.architectury.event.EventFactory;
+import com.redpxnda.nucleus.event.PrioritizedEvent;
 import dev.architectury.event.EventResult;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
@@ -15,18 +14,18 @@ import net.minecraft.util.hit.EntityHitResult;
 import smartin.miapi.entity.ItemProjectileEntity;
 
 public final class MiapiProjectileEvents {
-    public static final Event<ModularProjectileEntityHit> MODULAR_PROJECTILE_ENTITY_HIT = EventFactory.createEventResult();
-    public static final Event<ModularProjectileEntityHit> MODULAR_PROJECTILE_ENTITY_POST_HIT = EventFactory.createEventResult();
-    public static final Event<ModularProjectileBlockHit> MODULAR_PROJECTILE_BLOCK_HIT = EventFactory.createEventResult();
-    public static final Event<ModularProjectileTick> MODULAR_PROJECTILE_TICK = EventFactory.createEventResult();
-    public static final Event<ItemProjectileCompound> MODULAR_PROJECTILE_NBT_WRITE = EventFactory.createEventResult();
-    public static final Event<ItemProjectileCompound> MODULAR_PROJECTILE_NBT_READ = EventFactory.createEventResult();
-    public static final Event<ItemProjectileDataTracker> MODULAR_PROJECTILE_DATA_TRACKER_INIT = EventFactory.createEventResult();
-    public static final Event<ItemProjectileDataTracker> MODULAR_PROJECTILE_DATA_TRACKER_SET = EventFactory.createEventResult();
-    public static final Event<PlayerPickupEvent> MODULAR_PROJECTILE_PICK_UP = EventFactory.createEventResult();
+    public static final PrioritizedEvent<ModularProjectileEntityHit> MODULAR_PROJECTILE_ENTITY_HIT = PrioritizedEvent.createEventResult();
+    public static final PrioritizedEvent<ModularProjectileEntityHit> MODULAR_PROJECTILE_ENTITY_POST_HIT = PrioritizedEvent.createEventResult();
+    public static final PrioritizedEvent<ModularProjectileBlockHit> MODULAR_PROJECTILE_BLOCK_HIT = PrioritizedEvent.createEventResult();
+    public static final PrioritizedEvent<ModularProjectileTick> MODULAR_PROJECTILE_TICK = PrioritizedEvent.createEventResult();
+    public static final PrioritizedEvent<ItemProjectileCompound> MODULAR_PROJECTILE_NBT_WRITE = PrioritizedEvent.createEventResult();
+    public static final PrioritizedEvent<ItemProjectileCompound> MODULAR_PROJECTILE_NBT_READ = PrioritizedEvent.createEventResult();
+    public static final PrioritizedEvent<ItemProjectileDataTracker> MODULAR_PROJECTILE_DATA_TRACKER_INIT = PrioritizedEvent.createEventResult();
+    public static final PrioritizedEvent<ItemProjectileDataTracker> MODULAR_PROJECTILE_DATA_TRACKER_SET = PrioritizedEvent.createEventResult();
+    public static final PrioritizedEvent<PlayerPickupEvent> MODULAR_PROJECTILE_PICK_UP = PrioritizedEvent.createEventResult();
 
-    public static final Event<ModularBowShot> MODULAR_BOW_SHOT = EventFactory.createEventResult();
-    public static final Event<ModularBowShot> MODULAR_BOW_POST_SHOT = EventFactory.createEventResult();
+    public static final PrioritizedEvent<ModularBowShot> MODULAR_BOW_SHOT = PrioritizedEvent.createEventResult();
+    public static final PrioritizedEvent<ModularBowShot> MODULAR_BOW_POST_SHOT = PrioritizedEvent.createEventResult();
 
     public static class ModularProjectileEntityHitEvent {
         public EntityHitResult entityHitResult;
