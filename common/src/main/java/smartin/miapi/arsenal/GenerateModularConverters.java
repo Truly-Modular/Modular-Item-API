@@ -1,4 +1,4 @@
-package smartin.arsenal;
+package smartin.miapi.arsenal;
 
 import dev.architectury.event.EventResult;
 import net.minecraft.item.*;
@@ -16,9 +16,9 @@ import java.util.Map;
 import java.util.Optional;
 
 public class GenerateModularConverters {
-    public static Map<Item, Converter> modularItem = new HashMap();
+    public Map<Item, Converter> modularItem = new HashMap();
 
-    public static void setup() {
+    public GenerateModularConverters() {
         ReloadEvents.START.subscribe(isClient -> {
             modularItem.clear();
         });
@@ -47,7 +47,7 @@ public class GenerateModularConverters {
         ItemStack convert(ItemStack raw);
     }
 
-    protected static void addSwordItem(Material material, Item item) {
+    protected void addSwordItem(Material material, Item item) {
         modularItem.put(item,(stack)->{
             ItemStack modularItem = new ItemStack(RegistryInventory.modularItem);
             String swordData = new StringBuilder()
@@ -89,7 +89,7 @@ public class GenerateModularConverters {
         });
     }
 
-    protected static void addAxeItem(Material material, Item item) {
+    protected void addAxeItem(Material material, Item item) {
         modularItem.put(item,(stack)->{
             ItemStack modularItem = new ItemStack(RegistryInventory.modularItem);
             String swordData = "{\n" +
@@ -123,7 +123,7 @@ public class GenerateModularConverters {
         });
     }
 
-    protected static void addPickAxeItem(Material material, Item item) {
+    protected void addPickAxeItem(Material material, Item item) {
         modularItem.put(item,(stack)->{
             ItemStack modularItem = new ItemStack(RegistryInventory.modularItem);
             String swordData = "{\n" +
@@ -157,7 +157,7 @@ public class GenerateModularConverters {
         });
     }
 
-    protected static void addShovelItem(Material material, Item item) {
+    protected void addShovelItem(Material material, Item item) {
         modularItem.put(item,(stack)->{
             ItemStack modularItem = new ItemStack(RegistryInventory.modularItem);
             String swordData = "{\n" +
@@ -183,7 +183,7 @@ public class GenerateModularConverters {
         });
     }
 
-    protected static void addHoeItem(Material material, Item item) {
+    protected void addHoeItem(Material material, Item item) {
         modularItem.put(item,(stack)->{
             ItemStack modularItem = new ItemStack(RegistryInventory.modularItem);
             String swordData = "{\n" +

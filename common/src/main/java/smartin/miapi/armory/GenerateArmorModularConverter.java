@@ -1,7 +1,10 @@
-package smartin.armory;
+package smartin.miapi.armory;
 
 import dev.architectury.event.EventResult;
-import net.minecraft.item.*;
+import net.minecraft.item.ArmorItem;
+import net.minecraft.item.ArmorMaterial;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.events.MiapiEvents;
@@ -14,10 +17,10 @@ import smartin.miapi.registries.RegistryInventory;
 import java.util.*;
 
 public class GenerateArmorModularConverter {
-    public static Map<Item, Converter> modularItem = new HashMap();
-    public static Map<ArmorMaterial, List<ArmorItem>> armorItems = new HashMap<>();
+    public Map<Item, Converter> modularItem = new HashMap<>();
+    public Map<ArmorMaterial, List<ArmorItem>> armorItems = new HashMap<>();
 
-    public static void setup() {
+    public GenerateArmorModularConverter() {
         ReloadEvents.START.subscribe(isClient -> {
             modularItem.clear();
             armorItems.clear();
@@ -57,7 +60,7 @@ public class GenerateArmorModularConverter {
         ItemStack convert(ItemStack raw);
     }
 
-    protected static void addHelmetItem(Material material, Item item) {
+    protected void addHelmetItem(Material material, Item item) {
         modularItem.put(item, (stack) -> {
             ItemStack modularItem = new ItemStack(RegistryInventory.modularItem);
             String swordData = "{\n" +
@@ -79,7 +82,7 @@ public class GenerateArmorModularConverter {
         });
     }
 
-    protected static void addChestPlateItem(Material material, Item item) {
+    protected void addChestPlateItem(Material material, Item item) {
         modularItem.put(item, (stack) -> {
             ItemStack modularItem = new ItemStack(RegistryInventory.modularItem);
             String swordData = "{\n" +
@@ -116,7 +119,7 @@ public class GenerateArmorModularConverter {
         });
     }
 
-    protected static void addLeggingsItem(Material material, Item item) {
+    protected void addLeggingsItem(Material material, Item item) {
         modularItem.put(item, (stack) -> {
             ItemStack modularItem = new ItemStack(RegistryInventory.modularItem);
             String swordData = "{\n" +
@@ -153,7 +156,7 @@ public class GenerateArmorModularConverter {
         });
     }
 
-    protected static void addShoesItem(Material material, Item item) {
+    protected void addShoesItem(Material material, Item item) {
         modularItem.put(item, (stack) -> {
             ItemStack modularItem = new ItemStack(RegistryInventory.modularItem);
             String swordData = "{\n" +

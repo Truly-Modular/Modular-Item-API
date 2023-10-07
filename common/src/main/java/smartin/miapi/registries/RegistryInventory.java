@@ -43,8 +43,8 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.world.event.GameEvent;
 import org.joml.Matrix4f;
-import smartin.armory.GenerateArmorModularConverter;
-import smartin.arsenal.GenerateModularConverters;
+import smartin.miapi.armory.GenerateArmorModularConverter;
+import smartin.miapi.arsenal.GenerateModularConverters;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.blocks.ModularWorkBench;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
@@ -237,7 +237,11 @@ public class RegistryInventory {
                     });
                 }));
         //ITEM
-        register(modularItems, "modular_item", ExampleModularItem::new, i -> modularItem = i);
+        register(modularItems, "modular_item", ExampleModularItem::new, i -> {
+            modularItem = i;
+            new GenerateArmorModularConverter();
+            new GenerateModularConverters();
+        });
         register(modularItems, "modular_handle", ModularWeapon::new);
         register(modularItems, "modular_sword", ModularWeapon::new);
         register(modularItems, "modular_katana", ModularWeapon::new);
@@ -339,10 +343,9 @@ public class RegistryInventory {
         register(gameEvents, "request_crafting_stat_update", () -> new GameEvent(MOD_ID + ":crafting_stat_update", 16), ev -> statUpdateEvent = ev);
         register(gameEvents, "stat_provider_updated", () -> new GameEvent(MOD_ID + ":stat_provider_updated", 16), ev -> statProviderUpdatedEvent = ev);
 
+
         LifecycleEvent.SETUP.register(() -> {
             //EDITPROPERTIES
-            GenerateModularConverters.setup();
-            GenerateArmorModularConverter.setup();
 
             registerMiapi(editOptions, "replace", new ReplaceOption());
             registerMiapi(editOptions, "dev", new PropertyInjectionDev());
