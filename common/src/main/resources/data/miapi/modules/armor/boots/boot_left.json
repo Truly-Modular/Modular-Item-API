@@ -83,18 +83,6 @@
             "value": "(((((([material.mining_level]-3)/(abs([material.mining_level]-3))))/(2))+0.5) * ([material.mining_level]-3) / 10) /2",
             "operation": "+",
             "slot": "feet"
-        },
-        {
-            "attribute": "miapi:generic.elytra_turn_efficiency",
-            "value": "-1000",
-            "operation": "+",
-            "slot": "feet"
-        },
-        {
-            "attribute": "miapi:generic.elytra_glide_efficiency",
-            "value": "-1000",
-            "operation": "+",
-            "slot": "feet"
         }
     ],
     "durability": "[material.durability]* 0.5",
