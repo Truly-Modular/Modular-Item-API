@@ -1,0 +1,39 @@
+{
+    "chest_base": {
+        "condition": {
+            "type": "and",
+            "conditions": [
+                {
+                    "type": "not",
+                    "condition": {
+                        "type": "otherModule",
+                        "condition": {
+                            "type": "tag",
+                            "tag": "background_icon"
+                        }
+                    }
+                },
+                {
+                    "type": "otherModule",
+                    "condition": {
+                        "type": "tag",
+                        "tag": "background_icon_alt"
+                    }
+                }
+            ]
+        },
+        "properties": {
+            "texture": [
+                {
+                    "path": "miapi:models/item/armor/gui/background/chest/base_alt/[material.texture].json",
+                    "transform": {
+                        "rotation": {"x": 0.0, "y": 0.0, "z": 0.0},
+                        "translation": {"x": 0.0, "y": 0.0, "z": -0.1},
+                        "scale": {"x": 1.0, "y": 1.0, "z": 1.0},
+                        "origin": "item"
+                    }
+                }
+            ]
+        }
+    }
+}

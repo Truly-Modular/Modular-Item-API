@@ -1,5 +1,5 @@
 {
-    "name": "boot",
+    "name": "boot_base",
     "allowedInSlots": [
         "melee",
         "boots"

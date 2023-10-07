@@ -23,7 +23,7 @@
             }
         },
         {
-            "path": "miapi:models/item/armor/gui/leg_left/base/[material.texture].json",
+            "path": "miapi:models/item/armor/gui/base/leg_left/base/[material.texture].json",
             "transform": {
                 "rotation": {
                     "x": 0.0,
@@ -43,6 +43,11 @@
                 "origin": "item"
             }
         }
+    ],
+    "tag": [
+        "background_icon",
+        "armor",
+        "leg"
     ],
     "allowedInSlots": [
         "leg_left"

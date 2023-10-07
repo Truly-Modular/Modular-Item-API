@@ -23,7 +23,7 @@
             }
         },
         {
-            "path": "miapi:models/item/armor/gui/arm_left/base/[material.texture].json",
+            "path": "miapi:models/item/armor/gui/wingsuit/arm_left/base/[material.texture].json",
             "transform": {
                 "rotation": {
                     "x": 0.0,
@@ -54,6 +54,11 @@
             "operation": "+",
             "slot": "chest"
         }
+    ],
+    "tag": [
+        "background_icon_alt",
+        "armor",
+        "arm"
     ],
     "durability": "[material.durability] / 8",
     "allowedMaterial": {

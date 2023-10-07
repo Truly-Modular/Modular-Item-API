@@ -1,6 +1,6 @@
 {
     "minecraft:iron_boots": {
-        "module": "boot",
+        "module": "boot_base",
         "subModules": {
             "0": {
                 "module": "boot_left",
@@ -19,7 +19,7 @@
         }
     },
     "minecraft:golden_boots": {
-        "module": "boot",
+        "module": "boot_base",
         "subModules": {
             "0": {
                 "module": "boot_left",
@@ -38,7 +38,7 @@
         }
     },
     "minecraft:diamond_boots": {
-        "module": "boot",
+        "module": "boot_base",
         "subModules": {
             "0": {
                 "module": "boot_left",
@@ -76,7 +76,7 @@
         }
     },
     "minecraft:leather_boots": {
-        "module": "boot",
+        "module": "boot_base",
         "subModules": {
             "0": {
                 "module": "boot_left",

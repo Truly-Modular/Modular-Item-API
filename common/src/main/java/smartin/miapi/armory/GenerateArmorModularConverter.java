@@ -160,7 +160,7 @@ public class GenerateArmorModularConverter {
         modularItem.put(item, (stack) -> {
             ItemStack modularItem = new ItemStack(RegistryInventory.modularItem);
             String swordData = "{\n" +
-                    "        \"module\": \"boot\",\n" +
+                    "        \"module\": \"boot_base\",\n" +
                     "        \"subModules\": {\n" +
                     "            \"0\": {\n" +
                     "                \"module\": \"boot_left\",\n" +

@@ -23,7 +23,7 @@
             }
         },
         {
-            "path": "miapi:models/item/armor/gui/leg_right/base/[material.texture].json",
+            "path": "miapi:models/item/armor/gui/wingsuit/leg_right/base/[material.texture].json",
             "transform": {
                 "rotation": {
                     "x": 0.0,

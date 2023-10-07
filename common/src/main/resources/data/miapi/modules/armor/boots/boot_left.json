@@ -23,7 +23,7 @@
             }
         },
         {
-            "path": "miapi:models/item/armor/gui/boot_left/base/[material.texture].json",
+            "path": "miapi:models/item/armor/gui/base/boot_left/base/[material.texture].json",
             "transform": {
                 "rotation": {
                     "x": 0.0,
@@ -43,6 +43,11 @@
                 "origin": "item"
             }
         }
+    ],
+    "tag": [
+        "background_icon",
+        "armor",
+        "boot"
     ],
     "allowedInSlots": [
         "boot_left"

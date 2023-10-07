@@ -23,7 +23,7 @@
             }
         },
         {
-            "path": "miapi:models/item/armor/gui/arm_left/base/[material.texture].json",
+            "path": "miapi:models/item/armor/gui/wingsuit/arm_left/base/[material.texture].json",
             "transform": {
                 "rotation": {
                     "x": 0.0,
@@ -46,6 +46,11 @@
     ],
     "allowedInSlots": [
         "arm_left"
+    ],
+    "tag": [
+        "background_icon_alt",
+        "armor",
+        "arm"
     ],
     "isElytra": true,
     "attributes": [
