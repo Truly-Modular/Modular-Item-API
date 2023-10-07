@@ -1,0 +1,11 @@
+{
+    "key": "elytra",
+    "translation": "miapi.material.custom.elytra",
+    "icon": "textures/item/elytra.png",
+    "items": [
+        {
+            "item": "minecraft:elytra",
+            "value": 1.0
+        }
+    ]
+}

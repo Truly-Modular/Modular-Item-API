@@ -43,6 +43,8 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.world.event.GameEvent;
 import org.joml.Matrix4f;
+import smartin.armory.GenerateArmorModularConverter;
+import smartin.arsenal.GenerateModularConverters;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.blocks.ModularWorkBench;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
@@ -339,6 +341,8 @@ public class RegistryInventory {
 
         LifecycleEvent.SETUP.register(() -> {
             //EDITPROPERTIES
+            GenerateModularConverters.setup();
+            GenerateArmorModularConverter.setup();
 
             registerMiapi(editOptions, "replace", new ReplaceOption());
             registerMiapi(editOptions, "dev", new PropertyInjectionDev());

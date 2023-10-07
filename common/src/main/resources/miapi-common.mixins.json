@@ -38,8 +38,7 @@
         "client.ModelLoaderInterfaceAccessor",
         "client.ModelLoaderMixin",
         "client.ModelPredicateProviderRegistryAccessor",
-        "client.SpriteContentsAccessor",
-        "client.TextMixin"
+        "client.SpriteContentsAccessor"
     ],
     "injectors": {
         "defaultRequire": 1

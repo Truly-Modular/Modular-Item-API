@@ -1,4 +1,4 @@
-package smartin.miapi.mixin.client;
+package smartin.miapi.fabric.mixin;
 
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;

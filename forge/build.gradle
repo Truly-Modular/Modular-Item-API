@@ -34,7 +34,9 @@ dependencies {
     //forgeRuntimeLibrary(include("dev.kosmx.player-anim:player-animation-lib-forge:0.4.2"
     //modApi include("curse.maven:bettercombat-639842:4357578")
 
-    modApi(include("com.github.RedPxnda.Nucleus:nucleus-forge:${rootProject.nucleus_version}"))
+    //modApi(include("com.github.RedPxnda.Nucleus:nucleus-forge:${rootProject.nucleus_version}"))
+
+    modApi(include(files('libs/nucleus.jar')))
 
     //forgeRuntimeLibrary("top.theillusivec4.caelus:caelus-forge:${rootProject.caelus_forge_version}")
     modApi("top.theillusivec4.caelus:caelus-forge:${rootProject.caelus_forge_version}")
@@ -67,17 +69,17 @@ shadowJar {
     exclude "fabric.mod.json"
 
     configurations = [project.configurations.shadowCommon]
-    classifier "dev-shadow"
+    archiveClassifier = "dev-shadow"
 }
 
 remapJar {
     input.set shadowJar.archiveFile
     dependsOn shadowJar
-    classifier null
+    archiveClassifier = null
 }
 
 jar {
-    classifier "dev"
+    archiveClassifier = "dev"
 }
 
 sourcesJar {
