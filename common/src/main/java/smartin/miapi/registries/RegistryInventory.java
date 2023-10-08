@@ -419,7 +419,6 @@ public class RegistryInventory {
             registerMiapi(moduleProperties, WaterDragProperty.KEY, new WaterDragProperty());
             registerMiapi(moduleProperties, ArrowProperty.KEY, new ArrowProperty());
             registerMiapi(moduleProperties, DurabilityProperty.KEY, new DurabilityProperty());
-            registerMiapi(moduleProperties, IsElytraProperty.KEY, new IsElytraProperty());
 
             //compat
             registerMiapi(moduleProperties, BetterCombatProperty.KEY, new BetterCombatProperty());

@@ -1,13 +1,7 @@
 package smartin.miapi.modules.properties;
 
-import com.google.gson.JsonElement;
 import net.minecraft.item.ItemStack;
-import smartin.miapi.modules.ItemModule;
-import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.util.BooleanProperty;
-import smartin.miapi.modules.properties.util.ModuleProperty;
-
-import java.net.http.HttpResponse;
 
 /**
  * This Property allows to designate the Item as Tool or Weapon,
@@ -18,11 +12,11 @@ public class ToolOrWeaponProperty extends BooleanProperty {
     public static ToolOrWeaponProperty property;
 
     public ToolOrWeaponProperty() {
-        super(KEY);
+        super(KEY, false);
         property = this;
     }
 
     public static boolean isWeapon(ItemStack stack) {
-        return isTrue(stack);
+        return property.isTrue(stack);
     }
 }

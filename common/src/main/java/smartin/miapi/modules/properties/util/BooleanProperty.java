@@ -2,31 +2,40 @@ package smartin.miapi.modules.properties.util;
 
 import com.google.gson.JsonElement;
 import net.minecraft.item.ItemStack;
+import smartin.miapi.Miapi;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.cache.ModularItemCache;
 
-import java.util.Objects;
-
 public class BooleanProperty implements ModuleProperty {
-    private static String KEY;
-    public static BooleanProperty property;
+    private final String KEY_PRIVATE;
+    public BooleanProperty property;
+    private final boolean defaultValueSaved;
 
-    protected BooleanProperty(String id) {
-        ModularItemCache.setSupplier(id, (BooleanProperty::isTruePrivate));
-        KEY = id;
+    protected BooleanProperty(String id, boolean defaultValue) {
+        KEY_PRIVATE = id;
+        defaultValueSaved = defaultValue;
         property = this;
+        ModularItemCache.setSupplier(KEY_PRIVATE, stack -> property.isTruePrivate(stack));
     }
 
-    private static boolean isTruePrivate(ItemStack stack) {
+    private Boolean isTruePrivate(ItemStack stack) {
         JsonElement element = ItemModule.getMergedProperty(stack, property);
         if (element != null) {
-            return element.getAsBoolean();
+            try {
+                return element.getAsBoolean();
+            } catch (Exception e) {
+                Miapi.LOGGER.warn("Error during PropertyResolve ", e);
+            }
         }
-        return false;
+        return defaultValueSaved;
     }
 
-    public static boolean isTrue(ItemStack stack) {
-        return (boolean) ModularItemCache.get(stack, KEY);
+    public boolean isTrue(ItemStack stack) {
+        Boolean value = (Boolean) ModularItemCache.get(stack, KEY_PRIVATE);
+        if (value != null) {
+            return value.booleanValue();
+        }
+        return defaultValueSaved;
     }
 
     @Override
@@ -37,7 +46,7 @@ public class BooleanProperty implements ModuleProperty {
 
     @Override
     public JsonElement merge(JsonElement old, JsonElement toMerge, MergeType type) {
-        if (Objects.requireNonNull(type) == MergeType.SMART || type == MergeType.EXTEND) {
+        if (type == MergeType.SMART || type == MergeType.EXTEND) {
             return old;
         } else if (type == MergeType.OVERWRITE) {
             return toMerge;
