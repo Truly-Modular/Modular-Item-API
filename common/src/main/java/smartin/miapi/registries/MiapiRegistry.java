@@ -17,17 +17,17 @@ public class MiapiRegistry<T> {
     /**
      * The map of entries stored in this registry, indexed by name.
      */
-    protected final Map<String, T> entries = new HashMap<>();
+    protected final Map<String, T> entries = new LinkedHashMap<>();
     /**
      * The map of all MiapiRegistry instances, indexed by class type.
      */
-    protected static final Map<Class<?>, MiapiRegistry<?>> REGISTRY_MAP = new HashMap<>();
+    protected static final Map<Class<?>, MiapiRegistry<?>> REGISTRY_MAP = new LinkedHashMap<>();
     /**
      * The list of callbacks to invoke when new entries are added to the registry.
      */
     protected final List<Consumer<T>> callbacks = new ArrayList<>();
 
-    protected final Map<String, Supplier<T>> suppliers = new HashMap<>();
+    protected final Map<String, Supplier<T>> suppliers = new LinkedHashMap<>();
 
     /**
      * Protected constructor to prevent direct instantiation of the registry.

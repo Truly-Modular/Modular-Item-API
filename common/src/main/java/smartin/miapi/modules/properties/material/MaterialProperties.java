@@ -22,11 +22,21 @@ public class MaterialProperties implements ModuleProperty {
         PropertyResolver.propertyProviderRegistry.register(KEY, (moduleInstance, oldMap) -> {
             Material material = MaterialProperty.getMaterial(oldMap.get(MaterialProperty.property));
             Map<ModuleProperty, JsonElement> returnMap = new HashMap<>(oldMap);
-            if (material != null && oldMap.containsKey(property)) {
+            if (material != null) {
                 List<String> keys = new ArrayList<>();
-                for (JsonElement element : oldMap.get(property).getAsJsonArray()) {
-                    keys.add(element.getAsString());
-                    returnMap = PropertyResolver.merge(oldMap, material.materialProperties(element.getAsString()), MergeType.SMART);
+                if (oldMap.containsKey(property)) {
+                    for (JsonElement element : oldMap.get(property).getAsJsonArray()) {
+                        keys.add(element.getAsString());
+                    }
+                }
+                if(keys.isEmpty()){
+                    keys.add("default");
+                }
+                for (String key : keys) {
+                    Map<ModuleProperty, JsonElement> materialProperties = material.materialProperties(key);
+                    if(!materialProperties.isEmpty()){
+                        returnMap = PropertyResolver.merge(oldMap, materialProperties, MergeType.SMART);
+                    }
                 }
             }
             return returnMap;

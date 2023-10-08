@@ -74,15 +74,18 @@ public class JsonMaterial implements Material {
 
     @Override
     public Map<ModuleProperty, JsonElement> materialProperties(String key) {
-        JsonElement element = rawJson.getAsJsonObject().get(key);
         Map<ModuleProperty, JsonElement> propertyMap = new HashMap<>();
-        if (element != null) {
-            element.getAsJsonObject().entrySet().forEach(stringJsonElementEntry -> {
-                ModuleProperty property = RegistryInventory.moduleProperties.get(stringJsonElementEntry.getKey());
-                if (property != null) {
-                    propertyMap.put(property, stringJsonElementEntry.getValue());
-                }
-            });
+        JsonElement propertyElement = rawJson.getAsJsonObject().get("properties");
+        if (propertyElement != null) {
+            JsonElement element = propertyElement.getAsJsonObject().get(key);
+            if (element != null) {
+                element.getAsJsonObject().entrySet().forEach(stringJsonElementEntry -> {
+                    ModuleProperty property = RegistryInventory.moduleProperties.get(stringJsonElementEntry.getKey());
+                    if (property != null) {
+                        propertyMap.put(property, stringJsonElementEntry.getValue());
+                    }
+                });
+            }
         }
         return propertyMap;
     }

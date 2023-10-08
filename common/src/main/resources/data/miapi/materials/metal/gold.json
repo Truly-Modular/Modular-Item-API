@@ -23,6 +23,14 @@
         },
         "filler": "interpolate"
     },
+    "properties": {
+        "default": {
+            "durability": {
+                "operation": "**",
+                "value": "0.65"
+            }
+        }
+    },
     "textures": [
         "metalic"
     ],

@@ -24,6 +24,14 @@
         },
         "filler": "interpolate"
     },
+    "properties": {
+        "default": {
+            "durability": {
+                "operation": "**",
+                "value": "0.5"
+            }
+        }
+    },
     "mining_speed": 4,
     "mining_level": 0,
     "textures": [

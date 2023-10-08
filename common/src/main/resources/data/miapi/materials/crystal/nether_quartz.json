@@ -22,6 +22,14 @@
             "216": "ddd4c6"
         }
     },
+    "properties": {
+        "default": {
+            "durability": {
+                "operation": "**",
+                "value": "0.6"
+            }
+        }
+    },
     "mining_speed": 5,
     "mining_level": 0,
     "textures": [
