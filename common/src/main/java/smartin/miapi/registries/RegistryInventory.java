@@ -56,6 +56,7 @@ import smartin.miapi.craft.stat.CraftingStat;
 import smartin.miapi.craft.stat.SimpleCraftingStat;
 import smartin.miapi.effects.CryoStatusEffect;
 import smartin.miapi.entity.ItemProjectileEntity;
+import smartin.miapi.events.property.PropertyAction;
 import smartin.miapi.item.MaterialSmithingRecipe;
 import smartin.miapi.item.modular.items.*;
 import smartin.miapi.modules.ItemModule;
@@ -96,11 +97,12 @@ public class RegistryInventory {
     public static final Registrar<StatusEffect> statusEffects = registrar.get().get(RegistryKeys.STATUS_EFFECT);
     public static final Registrar<ItemGroup> tab = registrar.get().get(RegistryKeys.ITEM_GROUP);
     public static final Registrar<GameEvent> gameEvents = registrar.get().get(RegistryKeys.GAME_EVENT);
-    public static final Registrar<RecipeSerializer<?>> RECIPE_SERIALIZERS = registrar.get().get(RegistryKeys.RECIPE_SERIALIZER);
+    public static final Registrar<RecipeSerializer<?>> recipeSerializers = registrar.get().get(RegistryKeys.RECIPE_SERIALIZER);
     public static final MiapiRegistry<ModuleProperty> moduleProperties = MiapiRegistry.getInstance(ModuleProperty.class);
     public static final MiapiRegistry<ItemModule> modules = MiapiRegistry.getInstance(ItemModule.class);
     public static final MiapiRegistry<EditOption> editOptions = MiapiRegistry.getInstance(EditOption.class);
     public static final MiapiRegistry<CraftingStat> craftingStats = MiapiRegistry.getInstance(CraftingStat.class);
+    public static final MiapiRegistry<PropertyAction> propertyActions = MiapiRegistry.getInstance(PropertyAction.class);
 
     public static <T> RegistrySupplier<T> registerAndSupply(Registrar<T> rg, Identifier id, Supplier<T> object) {
         return rg.register(id, object);
@@ -159,7 +161,7 @@ public class RegistryInventory {
     }
 
     public static Block modularWorkBench;
-    public static Block exampleStatProviderBlock;
+    //public static Block exampleStatProviderBlock;
     public static BlockEntityType<ModularWorkBenchEntity> modularWorkBenchEntityType;
     public static BlockEntityType<StatProvidingBlockEntity> exampleStatProviderBlockEntityType;
     public static Item modularItem;
@@ -195,7 +197,7 @@ public class RegistryInventory {
                 EntityType.builder.create(ItemProjectile::new, SpawnGroup.MISC).setDimensions(0.5F, 0.5F).maxTrackingRange(4).trackingTickInterval(20).build("miapi:thrown_item"),
                 type -> itemProjectileType = (EntityType<ItemProjectile>) type);*/
 
-        register(RECIPE_SERIALIZERS, "smithing", MaterialSmithingRecipe.Serializer::new, i -> serializer = i);
+        register(recipeSerializers, "smithing", MaterialSmithingRecipe.Serializer::new, i -> serializer = i);
 
 
         //BLOCK
