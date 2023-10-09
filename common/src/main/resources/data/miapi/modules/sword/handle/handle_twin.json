@@ -16,6 +16,10 @@
             "miapi:basic"
         ]
     },
+    "materialProperty": [
+        "default",
+        "handheld"
+    ],
     "tag": [
         "twin_handle"
     ],

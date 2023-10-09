@@ -20,6 +20,12 @@
             }
         }
     },
+    "materialProperty": [
+        "default",
+        "handheld",
+        "tool",
+        "head"
+    ],
     "allowedInSlots": [
         "tool_head_back"
     ],

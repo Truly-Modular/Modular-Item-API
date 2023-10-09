@@ -5,7 +5,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.widget.ClickableWidget;
-import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
@@ -15,7 +14,6 @@ import org.joml.Matrix4f;
 import org.joml.Vector4f;
 import smartin.miapi.Miapi;
 import smartin.miapi.attributes.AttributeRegistry;
-import smartin.miapi.client.MiapiClient;
 import smartin.miapi.client.gui.BoxList;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.ScrollList;
@@ -156,6 +154,18 @@ public class StatDisplay extends InteractAbleWidget {
                 .setMax(2000)
                 .setFormat("##")
                 .setTranslationKey(DurabilityProperty.KEY).build());
+        addStatDisplay(SinglePropertyStatDisplay
+                .builder(FracturingProperty.property)
+                .setMax(50)
+                .setTranslationKey(FracturingProperty.KEY).build());
+        addStatDisplay(SinglePropertyStatDisplay
+                .builder(FortuneProperty.property)
+                .setMax(5)
+                .setTranslationKey(FortuneProperty.KEY).build());
+        addStatDisplay(SinglePropertyStatDisplay
+                .builder(MendingProperty.property)
+                .setMax(1)
+                .setTranslationKey(MendingProperty.KEY).build());
 
         Registries.ATTRIBUTE.forEach(entityAttribute -> {
             if (!AttributeSingleDisplay.attributesWithDisplay.contains(entityAttribute)) {

@@ -20,6 +20,11 @@
             }
         }
     },
+    "materialProperty": [
+        "default",
+        "handheld",
+        "bow"
+    ],
     "allowedInSlots": [
         "bow","melee"
     ],

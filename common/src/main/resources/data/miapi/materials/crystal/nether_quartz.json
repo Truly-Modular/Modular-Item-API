@@ -27,7 +27,8 @@
             "durability": {
                 "operation": "**",
                 "value": "0.6"
-            }
+            },
+            "fracturing": "5"
         }
     },
     "mining_speed": 5,

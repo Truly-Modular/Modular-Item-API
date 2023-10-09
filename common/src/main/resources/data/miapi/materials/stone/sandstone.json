@@ -35,7 +35,8 @@
             "durability": {
                 "operation": "**",
                 "value": "0.85"
-            }
+            },
+            "fracturing": "5"
         }
     },
     "items": [

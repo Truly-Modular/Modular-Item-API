@@ -20,6 +20,10 @@
             }
         }
     },
+    "materialProperty": [
+        "default",
+        "arrow"
+    ],
     "allowedInSlots": [
         "arrow_tail"
     ],

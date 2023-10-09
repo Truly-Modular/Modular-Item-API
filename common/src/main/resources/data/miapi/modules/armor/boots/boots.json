@@ -52,6 +52,11 @@
             }
         }
     },
+    "materialProperty": [
+        "default",
+        "armor",
+        "boot"
+    ],
     "modelTransform": {
         "replace": {
             "thirdperson_righthand": {

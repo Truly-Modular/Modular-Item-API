@@ -20,6 +20,10 @@
         "two_handed_handle",
         "long_handle"
     ],
+    "materialProperty": [
+        "default",
+        "handheld"
+    ],
     "slots": {
         "0": {
             "allowed": [

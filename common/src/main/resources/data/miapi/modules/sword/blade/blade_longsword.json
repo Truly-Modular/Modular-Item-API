@@ -20,6 +20,12 @@
             }
         }
     },
+    "materialProperty": [
+        "default",
+        "handheld",
+        "blade",
+        "head"
+    ],
     "guiOffset": {
         "sizeX": 2,
         "sizeY": 2

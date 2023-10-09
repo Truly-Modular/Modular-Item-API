@@ -44,6 +44,12 @@
             }
         }
     ],
+    "materialProperty": [
+        "default",
+        "armor",
+        "wing",
+        "chest"
+    ],
     "allowedInSlots": [
         "arm_right"
     ],

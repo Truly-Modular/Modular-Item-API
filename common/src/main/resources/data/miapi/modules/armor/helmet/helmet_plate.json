@@ -20,6 +20,11 @@
             }
         }
     ],
+    "materialProperty": [
+        "default",
+        "armor",
+        "helmet"
+    ],
     "tag": [
         "background_icon",
         "armor",

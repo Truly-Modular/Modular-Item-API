@@ -44,6 +44,11 @@
             }
         }
     ],
+    "materialProperty": [
+        "default",
+        "armor",
+        "pants"
+    ],
     "tag": [
         "background_icon",
         "armor",

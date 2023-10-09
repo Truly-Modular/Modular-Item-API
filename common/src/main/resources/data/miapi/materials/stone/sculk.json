@@ -25,6 +25,11 @@
             "255": "edebcb"
         }
     },
+    "properties": {
+        "default": {
+            "mending": "1"
+        }
+    },
     "mining_speed": 3.8,
     "mining_level": 1,
     "textures": [

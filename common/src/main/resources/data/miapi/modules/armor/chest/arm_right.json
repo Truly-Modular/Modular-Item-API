@@ -44,6 +44,11 @@
             }
         }
     ],
+    "materialProperty": [
+        "default",
+        "armor",
+        "chest"
+    ],
     "tag": [
         "background_icon_alt",
         "armor",

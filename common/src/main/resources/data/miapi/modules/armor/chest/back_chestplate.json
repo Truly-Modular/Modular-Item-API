@@ -23,6 +23,11 @@
             }
         }
     ],
+    "materialProperty": [
+        "default",
+        "armor",
+        "chest"
+    ],
     "allowedInSlots": [
         "chest_back"
     ],

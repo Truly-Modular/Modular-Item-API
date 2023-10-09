@@ -23,6 +23,12 @@
             }
         }
     ],
+    "materialProperty": [
+        "default",
+        "handheld",
+        "blade",
+        "head"
+    ],
     "enchantments": {
         "allowed": [
             "miapi:edged",

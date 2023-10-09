@@ -51,6 +51,12 @@
             }
         }
     },
+    "materialProperty": [
+        "default",
+        "armor",
+        "wing",
+        "chest"
+    ],
     "texture": [
         {
             "path": "miapi:models/item/armor/gui/wingsuit/elytra_base/base/[material.texture].json",

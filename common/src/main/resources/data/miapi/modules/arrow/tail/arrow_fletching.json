@@ -20,6 +20,10 @@
             }
         }
     },
+    "materialProperty": [
+        "default",
+        "arrow"
+    ],
     "water_drag": "0.6",
     "air_drag": "1.0",
     "allowedInSlots": [

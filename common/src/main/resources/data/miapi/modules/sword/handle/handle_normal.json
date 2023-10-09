@@ -20,6 +20,10 @@
             }
         }
     },
+    "materialProperty": [
+        "default",
+        "handheld"
+    ],
     "allowedInSlots": [
         "melee"
     ],

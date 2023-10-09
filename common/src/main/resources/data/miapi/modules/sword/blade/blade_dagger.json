@@ -77,6 +77,11 @@
             "uuid": "CB3F55D3-645C-4F38-A497-9C13A33DB5CF"
         }
     ],
+    "materialProperty": [
+        "default",
+        "blade",
+        "head"
+    ],
     "durability": "[material.durability]* 0.25",
     "better_combat_config": {
         "parent": "bettercombat:dagger"

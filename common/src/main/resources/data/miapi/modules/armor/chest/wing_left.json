@@ -21,8 +21,7 @@
                 },
                 "origin": "left_wing"
             }
-        }
-    ,
+        },
         {
             "path": "miapi:models/item/armor/gui/wingsuit/elytra_left/base/[material.texture].json",
             "transform": {
@@ -44,6 +43,12 @@
                 "origin": "item"
             }
         }
+    ],
+    "materialProperty": [
+        "default",
+        "armor",
+        "wing",
+        "chest"
     ],
     "tag": [
         "wing_left"

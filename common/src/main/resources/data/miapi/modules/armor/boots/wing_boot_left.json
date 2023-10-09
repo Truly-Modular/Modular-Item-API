@@ -44,6 +44,12 @@
             }
         }
     ],
+    "materialProperty": [
+        "default",
+        "armor",
+        "wing",
+        "boot"
+    ],
     "allowedInSlots": [
         "boot_left"
     ],

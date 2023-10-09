@@ -9,6 +9,10 @@
     "allowedInSlots": ["sword_pommel"],
     "slots": {
     },
+    "materialProperty": [
+        "default",
+        "handheld"
+    ],
     "durability": "[material.durability]* 0.25",
     "allowedMaterial": {
         "allowedMaterials": [

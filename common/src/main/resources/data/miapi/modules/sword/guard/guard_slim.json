@@ -15,6 +15,10 @@
             }
         }
     },
+    "materialProperty": [
+        "default",
+        "handheld"
+    ],
     "allowedMaterial": {
         "allowedMaterials": [
             "wood",

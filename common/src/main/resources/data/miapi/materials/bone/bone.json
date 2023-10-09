@@ -24,6 +24,11 @@
         },
         "filler": "interpolate"
     },
+    "properties": {
+        "head": {
+            "fracturing": "20"
+        }
+    },
     "mining_speed": 4,
     "mining_level": 1,
     "textures": [

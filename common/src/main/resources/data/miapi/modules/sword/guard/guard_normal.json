@@ -15,6 +15,10 @@
             }
         }
     },
+    "materialProperty": [
+        "default",
+        "handheld"
+    ],
     "durability": "[material.durability]* 0.25",
     "allowedMaterial": {
         "allowedMaterials": [

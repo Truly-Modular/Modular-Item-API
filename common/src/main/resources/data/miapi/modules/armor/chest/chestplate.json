@@ -98,6 +98,11 @@
             }
         }
     },
+    "materialProperty": [
+        "default",
+        "armor",
+        "chest"
+    ],
     "modelTransform": {
         "replace": {
             "thirdperson_righthand": {

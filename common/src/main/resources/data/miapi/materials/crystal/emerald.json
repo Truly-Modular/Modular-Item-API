@@ -22,6 +22,11 @@
       "255": "41f384"
     }
   },
+  "properties": {
+    "default": {
+      "fortune": "1"
+    }
+  },
   "textures": [
     "shiny"
   ],

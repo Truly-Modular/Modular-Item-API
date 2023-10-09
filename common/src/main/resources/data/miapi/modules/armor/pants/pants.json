@@ -75,6 +75,11 @@
             }
         }
     },
+    "materialProperty": [
+        "default",
+        "armor",
+        "pants"
+    ],
     "enchantments": {
         "allowed": [
             "miapi:basic",

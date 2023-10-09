@@ -44,6 +44,11 @@
             }
         }
     ],
+    "materialProperty": [
+        "default",
+        "armor",
+        "boot"
+    ],
     "tag": [
         "background_icon",
         "armor",

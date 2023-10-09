@@ -20,6 +20,10 @@
             }
         }
     },
+    "materialProperty": [
+        "default",
+        "handheld"
+    ],
     "enchantments": {
         "allowed": [
             "miapi:basic"

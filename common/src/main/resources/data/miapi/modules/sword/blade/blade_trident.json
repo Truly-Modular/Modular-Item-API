@@ -31,6 +31,12 @@
     "allowedInSlots": [
         "polearm_blade"
     ],
+    "materialProperty": [
+        "default",
+        "handheld",
+        "blade",
+        "head"
+    ],
     "allowedMaterial": {
         "allowedMaterials": [
             "wood",

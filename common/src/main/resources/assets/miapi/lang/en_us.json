@@ -116,6 +116,12 @@
     "miapi.stat.air_drag.description":"How fast the arrow slows in air, higher is better",
     "miapi.stat.bow_draw_time":"\uD83C\uDFF9 Draw Time",
     "miapi.stat.bow_draw_time.description":"Bow Draw time, lower is better",
+    "miapi.stat.fracturing":"Fracturing",
+    "miapi.stat.fracturing.description":"Fracturing increases Damage the lower the durability of the Item is",
+    "miapi.stat.fortune":"Fortune",
+    "miapi.stat.fortune.description":"Fortune level of the Item",
+    "miapi.stat.mending":"Mending",
+    "miapi.stat.mending.description":"Mending level of the Item",
 
     "miapi.material_stat.color": "Color",
     "miapi.material_stat.flexibility": "Flexibility",
