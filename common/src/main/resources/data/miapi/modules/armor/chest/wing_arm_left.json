@@ -58,7 +58,6 @@
         "armor",
         "arm"
     ],
-    "isElytra": true,
     "attributes": [
         {
             "attribute": "minecraft:generic.armor",
