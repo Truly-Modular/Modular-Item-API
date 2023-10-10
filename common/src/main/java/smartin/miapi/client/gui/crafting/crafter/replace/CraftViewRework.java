@@ -65,7 +65,7 @@ public class CraftViewRework extends InteractAbleWidget {
             module = ItemModule.empty;
         }
         action = new CraftAction(editContext.getItemstack(), editContext.getSlot(), module, editContext.getPlayer(), editContext.getWorkbench(), new PacketByteBuf[0]);
-        action.setItem(editContext.getLinkedInventory().getStack(0));
+        action.setItem(editContext.getItemstack());
         action.linkInventory(editContext.getLinkedInventory(), offset);
         ItemStack test = action.getPreview();
         action.forEachCraftingProperty(test, ((craftingProperty, moduleInstance, itemStacks, invStart, invEnd, buf) -> {

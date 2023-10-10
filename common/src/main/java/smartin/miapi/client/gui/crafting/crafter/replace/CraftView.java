@@ -64,7 +64,17 @@ public class CraftView extends InteractAbleWidget {
     boolean firstRender = true;
     boolean isClosed = false;
 
-    public CraftView(int x, int y, int width, int height, String packetId, ItemModule module, ItemStack stack, Inventory inventory, int offset, SlotProperty.ModuleSlot slot, Consumer<SlotProperty.ModuleSlot> back, Consumer<ItemStack> newStack, Consumer<Slot> addSlot, Consumer<Slot> removeSlot, ScreenHandler handler) {
+    public CraftView(int x, int y, int width, int height, String packetId,
+                     ItemModule module,
+                     ItemStack stack,
+                     Inventory inventory,
+                     int offset,
+                     SlotProperty.ModuleSlot slot,
+                     Consumer<SlotProperty.ModuleSlot> back,
+                     Consumer<ItemStack> newStack,
+                     Consumer<Slot> addSlot,
+                     Consumer<Slot> removeSlot,
+                     ScreenHandler handler) {
         super(x, y, width, height, Text.empty());
         compareStack = stack;
         this.preview = newStack;

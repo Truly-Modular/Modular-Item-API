@@ -61,6 +61,7 @@ import smartin.miapi.item.modular.items.*;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.abilities.*;
 import smartin.miapi.modules.conditions.*;
+import smartin.miapi.modules.edit_options.CreateItemOption.CreateItemOption;
 import smartin.miapi.modules.edit_options.EditOption;
 import smartin.miapi.modules.edit_options.PropertyInjectionDev;
 import smartin.miapi.modules.edit_options.ReplaceOption;
@@ -330,7 +331,7 @@ public class RegistryInventory {
 
         registerAtt("generic.elytra_turn_efficiency", true, () ->
                         new ClampedEntityAttribute("miapi.attribute.name.elytra_turn_efficiency", 0.0, -1024.0, 100.0).setTracked(true),
-                att -> ELYTRA_TURN_EFFICIENCY= att);
+                att -> ELYTRA_TURN_EFFICIENCY = att);
         registerAtt("generic.elytra_glide_efficiency", true, () ->
                         new ClampedEntityAttribute("miapi.attribute.name.elytra_glide_efficiency", 0.0, -1024.0, 100.0).setTracked(true),
                 att -> ELYTRA_GLIDE_EFFICIENCY = att);
@@ -350,6 +351,7 @@ public class RegistryInventory {
             registerMiapi(editOptions, "replace", new ReplaceOption());
             registerMiapi(editOptions, "dev", new PropertyInjectionDev());
             registerMiapi(editOptions, "skin", new SkinOptions());
+            registerMiapi(editOptions, "create", new CreateItemOption());
 
             //CONDITIONS
             registerMiapi(moduleConditionRegistry, "true", new TrueCondition());

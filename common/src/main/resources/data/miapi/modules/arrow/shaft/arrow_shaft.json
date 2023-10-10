@@ -25,8 +25,7 @@
         "arrow"
     ],
     "allowedInSlots": [
-        "arrow_shaft",
-        "melee"
+        "arrow_shaft"
     ],
     "is_arrow": true,
     "allowedMaterial": {
@@ -226,6 +225,6 @@
             }
         }
     },
-    "displayName": "miapi.module.arrow_shaft_default.name",
+    "displayName": "miapi.module.arrow_shaft_normal.name",
     "itemId": "miapi:modular_arrow_part"
 }

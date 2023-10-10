@@ -26,7 +26,7 @@
         "bow"
     ],
     "allowedInSlots": [
-        "bow","melee"
+        "bow"
     ],
     "durability": "[material.durability]* 0.5",
     "slots": {

@@ -27,6 +27,15 @@
     "miapi.skin.name.skyrim": "",
     "miapi.skin.name.goldbrand": "",
 
+    "miapi.create_item.arrow_one": "Arrow (1)",
+    "miapi.create_item.arrow_stack": "Arrow (64)",
+    "miapi.create_item.boots": "Boots",
+    "miapi.create_item.pants": "Pants",
+    "miapi.create_item.chestplate": "Chestplate",
+    "miapi.create_item.helmet": "Helmet",
+    "miapi.create_item.sword": "Sword",
+    "miapi.create_item.bow": "Bow",
+
     "effect.miapi.cryo": "Cryo",
 
     "miapi.attribute.name.durability":"Durability",
@@ -452,10 +461,10 @@
     "miapi.module.boot_right.description": "The right Boot protecting your right foot",
     "miapi.module.boot_right.short_description": "The right Boot protecting your right foot",
 
-    "miapi.module.boot": "Socks",
-    "miapi.module.boot.name": "Socks",
-    "miapi.module.boot.description": "Socks to keep your shoes on",
-    "miapi.module.boot.short_description": "Socks to keep your shoes on.",
+    "miapi.module.boot_base": "Socks",
+    "miapi.module.boot_base.name": "Socks",
+    "miapi.module.boot_base.description": "Socks to keep your shoes on",
+    "miapi.module.boot_base.short_description": "Socks to keep your shoes on.",
 
     "miapi.module.leg_left": "Left Pants",
     "miapi.module.leg_left.name": "[translation.[material.translation]]Left Pants",

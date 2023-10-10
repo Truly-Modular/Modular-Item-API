@@ -162,7 +162,7 @@ public class EditView extends InteractAbleWidget {
                     if (toCrafter != null) {
                         toCrafter.calculatePosition(position);
                     } else {
-                        if (slot.parent != null) {
+                        if (slot != null && slot.parent != null) {
                             slot.parent.calculatePosition(position);
                             position.add(slot.id);
                         }

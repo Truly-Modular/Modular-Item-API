@@ -2,7 +2,6 @@ package smartin.miapi.config;
 
 import dev.architectury.platform.Platform;
 import net.minecraft.util.math.ColorHelper;
-import net.minecraft.world.WanderingTraderManager;
 import smartin.miapi.config.oro_config.BooleanConfigItem;
 import smartin.miapi.config.oro_config.Config;
 import smartin.miapi.config.oro_config.ConfigItemGroup;
