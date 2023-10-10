@@ -35,6 +35,7 @@
     "miapi.create_item.helmet": "Helmet",
     "miapi.create_item.sword": "Sword",
     "miapi.create_item.bow": "Bow",
+    "miapi.create_item.tool": "Tool",
 
     "effect.miapi.cryo": "Cryo",
 
