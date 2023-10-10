@@ -26,6 +26,7 @@ import smartin.miapi.item.ModularItemStackConverter;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.edit_options.EditOption;
 import smartin.miapi.modules.edit_options.EditOptionIcon;
+import smartin.miapi.modules.properties.AllowedSlots;
 import smartin.miapi.modules.properties.SlotProperty;
 import smartin.miapi.registries.RegistryInventory;
 
@@ -172,6 +173,7 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
         ItemStack converted = ModularItemStackConverter.getModularVersion(stack);
 
         baseSlot.inSlot = ItemModule.getModules(converted);
+        baseSlot.allowed = AllowedSlots.getAllowedSlots(baseSlot.inSlot.module);
         SlotProperty.ModuleSlot current = baseSlot;
         if (baseSlot.inSlot.module.equals(ItemModule.empty)) {
             current = null;

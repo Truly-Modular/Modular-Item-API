@@ -1,7 +1,6 @@
 {
     "name": "helmet_base",
     "allowedInSlots": [
-        "melee",
         "helmet"
     ],
     "slots": {

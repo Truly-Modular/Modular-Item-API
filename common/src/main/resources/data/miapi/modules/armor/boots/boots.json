@@ -1,7 +1,6 @@
 {
     "name": "boot_base",
     "allowedInSlots": [
-        "melee",
         "boots"
     ],
     "slots": {
