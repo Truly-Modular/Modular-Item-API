@@ -5,10 +5,7 @@ import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.RangedWeaponItem;
-import net.minecraft.item.SwordItem;
-import net.minecraft.item.ToolItem;
+import net.minecraft.item.*;
 import net.minecraft.util.math.RotationAxis;
 import smartin.miapi.item.modular.ModularItem;
 
@@ -25,12 +22,17 @@ public class ModularWorkBenchRenderer implements BlockEntityRenderer<ModularWork
         if (stack.isEmpty()) return;
 
         matrices.push();
-        matrices.translate(8/16f, 11.5/16f, 8/16f);
+        matrices.translate(8 / 16f, 11.5 / 16f, 8 / 16f);
         float rotAmnt = be.getCachedState().get(ModularWorkBench.FACING).asRotation();
-        if (stack.getItem() instanceof ModularItem || stack.getItem() instanceof ToolItem || stack.getItem() instanceof SwordItem || stack.getItem() instanceof RangedWeaponItem)
-            rotAmnt-=45;
+        if (!(stack.getItem() instanceof Equipment) && (
+                        stack.getItem() instanceof ModularItem ||
+                        stack.getItem() instanceof ToolItem ||
+                        stack.getItem() instanceof SwordItem ||
+                        stack.getItem() instanceof ArrowItem ||
+                        stack.getItem() instanceof RangedWeaponItem))
+            rotAmnt -= 45;
         else
-            rotAmnt-=90;
+            rotAmnt -= 90;
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(rotAmnt));
         matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(90));
         matrices.scale(0.75f, 0.75f, 0.75f);
