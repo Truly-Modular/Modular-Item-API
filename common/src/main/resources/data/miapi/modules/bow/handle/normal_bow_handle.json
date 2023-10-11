@@ -57,36 +57,36 @@
         "replace": {
             "thirdperson_righthand": {
                 "rotation": {
-                    "x": 0,
-                    "y": -90,
-                    "z": 55
+                    "x": -80,
+                    "y": 260,
+                    "z": -40
                 },
                 "translation": {
-                    "x": 0,
-                    "y": 4.0,
-                    "z": 0.5
+                    "x": -1,
+                    "y": -2,
+                    "z": 2.5
                 },
                 "scale": {
-                    "x": 0.85,
-                    "y": 0.85,
-                    "z": 0.85
+                    "x": 0.9,
+                    "y": 0.9,
+                    "z": 0.9
                 }
             },
             "thirdperson_lefthand": {
                 "rotation": {
-                    "x": 0,
-                    "y": 90,
-                    "z": -55
+                    "x": -170,
+                    "y": -280,
+                    "z": 40
                 },
                 "translation": {
-                    "x": 0,
-                    "y": 4.0,
-                    "z": 0.5
+                    "x": -1,
+                    "y": -2,
+                    "z": 2.5
                 },
                 "scale": {
-                    "x": 0.85,
-                    "y": 0.85,
-                    "z": 0.85
+                    "x": 0.9,
+                    "y": 0.9,
+                    "z": 0.9
                 }
             },
             "firstperson_righthand": {
@@ -108,7 +108,7 @@
             },
             "firstperson_lefthand": {
                 "rotation": {
-                    "x": 0,
+                    "x": -90,
                     "y": 90,
                     "z": -25
                 },
@@ -122,53 +122,8 @@
                     "y": 0.68,
                     "z": 0.68
                 }
-            },
-            "ground": {
-                "rotation": {
-                    "x": 0,
-                    "y": 0,
-                    "z": 0
-                },
-                "translation": {
-                    "x": 0,
-                    "y": 2,
-                    "z": 0
-                },
-                "scale": {
-                    "x": 0.5,
-                    "y": 0.5,
-                    "z": 0.5
-                }
-            },
-            "head": {
-                "rotation": {
-                    "x": 0,
-                    "y": 180,
-                    "z": 0
-                },
-                "translation": {
-                    "x": 0,
-                    "y": 13,
-                    "z": 7
-                },
-                "scale": {
-                    "x": 1,
-                    "y": 1,
-                    "z": 1
-                }
-            },
-            "fixed": {
-                "rotation": {
-                    "x": 0,
-                    "y": 180,
-                    "z": 0
-                },
-                "scale": {
-                    "x": 1,
-                    "y": 1,
-                    "z": 1
-                }
             }
+
         }
     },
     "enchantments": {
