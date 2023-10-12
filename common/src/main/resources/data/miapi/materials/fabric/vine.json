@@ -1,7 +1,10 @@
 {
     "key": "vine",
     "translation": "miapi.material.fabric.vine",
-    "icon": "textures/block/vine.png",
+    "icon": {
+        "type": "item",
+        "item": "minecraft:vine"
+    },
     "groups": [
         "fabric",
         "rope",

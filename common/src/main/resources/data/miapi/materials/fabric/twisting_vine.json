@@ -1,7 +1,10 @@
 {
     "key": "twisting_vine",
     "translation": "miapi.material.fabric.twisting_vine",
-    "icon": "textures/item/twisting_vines.png",
+    "icon": {
+        "type": "item",
+        "item": "minecraft:twisting_vines"
+    },
     "groups": [
         "fabric",
         "rope",

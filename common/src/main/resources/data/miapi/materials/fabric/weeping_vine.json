@@ -1,7 +1,10 @@
 {
     "key": "weeping_vine",
     "translation": "miapi.material.fabric.weeping_vine",
-    "icon": "textures/item/weeping_vines.png",
+    "icon": {
+        "type": "item",
+        "item": "minecraft:weeping_vines"
+    },
     "groups": [
         "fabric",
         "rope",
