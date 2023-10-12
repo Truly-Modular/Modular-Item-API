@@ -75,7 +75,7 @@ public class Miapi {
             Miapi.LOGGER.info("Loaded " + RegistryInventory.modules.getFlatMap().size() + " Modules");
         });
         ReloadEvents.END.subscribe((isClient) -> ModularItemCache.discardCache());
-        PlayerEvent.PLAYER_JOIN.register(MiapiPermissions::getPerms);
+        PlayerEvent.PLAYER_JOIN.register((player -> new Thread(()-> MiapiPermissions.getPerms(player)).start()));
         PropertyResolver.propertyProviderRegistry.register("module", (moduleInstance, oldMap) -> {
             HashMap<ModuleProperty, JsonElement> map = new HashMap<>();
             moduleInstance.module.getProperties().forEach((key, jsonData) ->

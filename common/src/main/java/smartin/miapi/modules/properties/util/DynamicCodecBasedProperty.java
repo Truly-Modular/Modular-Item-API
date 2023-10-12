@@ -4,6 +4,7 @@ import com.google.gson.JsonElement;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 import net.minecraft.item.ItemStack;
+import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ItemModule;
@@ -49,6 +50,7 @@ public abstract class DynamicCodecBasedProperty<T, A> implements ModuleProperty 
                 Miapi.LOGGER.error("Failed to deserialize module data for DynamicCodecBasedProperty! -> {}", s));
     }
 
+    @Nullable
     public A get(ItemStack itemStack) {
         return (A) ModularItemCache.get(itemStack, key);
     }

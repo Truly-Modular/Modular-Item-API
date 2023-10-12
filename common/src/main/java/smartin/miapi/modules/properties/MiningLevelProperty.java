@@ -73,16 +73,18 @@ public class MiningLevelProperty implements ModuleProperty {
 
     public static boolean isSuitable(ItemStack stack, BlockState state) {
         Map<String, Float> mergedMap = (Map<String, Float>) ModularItemCache.get(stack, KEY);
-        for (Map.Entry<String, TagKey<Block>> entry : miningCapabilities.entrySet()) {
-            if (state.isIn(entry.getValue())) {
-                Float level = mergedMap.get(entry.getKey());
-                if (level != null) {
-                    for (Map.Entry<TagKey<Block>, Integer> miningLevelEntry : miningLevels.entrySet()) {
-                        if (state.isIn(miningLevelEntry.getKey())) {
-                            return miningLevelEntry.getValue() <= level;
+        if(mergedMap!=null){
+            for (Map.Entry<String, TagKey<Block>> entry : miningCapabilities.entrySet()) {
+                if (state.isIn(entry.getValue())) {
+                    Float level = mergedMap.get(entry.getKey());
+                    if (level != null) {
+                        for (Map.Entry<TagKey<Block>, Integer> miningLevelEntry : miningLevels.entrySet()) {
+                            if (state.isIn(miningLevelEntry.getKey())) {
+                                return miningLevelEntry.getValue() <= level;
+                            }
                         }
+                        return true;
                     }
-                    return true;
                 }
             }
         }

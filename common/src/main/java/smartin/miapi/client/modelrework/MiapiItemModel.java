@@ -28,6 +28,7 @@ public class MiapiItemModel implements MiapiModel {
         ModularItemCache.setSupplier(CACHE_KEY, (MiapiItemModel::new));
     }
 
+    @Nullable
     public static MiapiItemModel getItemModel(ItemStack stack) {
         return (MiapiItemModel) ModularItemCache.get(stack, CACHE_KEY);
     }

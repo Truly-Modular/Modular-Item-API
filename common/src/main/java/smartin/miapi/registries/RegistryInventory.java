@@ -505,10 +505,10 @@ public class RegistryInventory {
                             return glintShader;
                         }))
                         .texture(Textures.create().add(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, false, false).add(MaterialAtlasManager.MATERIAL_ID, false, false).build())
-                        .depthTest(EQUAL_DEPTH_TEST)
+                        .depthTest(LEQUAL_DEPTH_TEST)
                         .transparency(GLINT_TRANSPARENCY)
                         .lightmap(ENABLE_LIGHTMAP)
-                        .cull(DISABLE_CULLING)
+                        //.cull(DISABLE_CULLING)
                         .texturing(RenderLayer.ENTITY_GLINT_TEXTURING)
                         .overlay(ENABLE_OVERLAY_COLOR).build(false));
 

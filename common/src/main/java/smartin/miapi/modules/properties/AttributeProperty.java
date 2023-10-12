@@ -126,7 +126,11 @@ public class AttributeProperty implements ModuleProperty {
     }
 
     public static Multimap<EntityAttribute, EntityAttributeModifierHolder> getAttributeModifiersRaw(ItemStack itemStack) {
-        return (Multimap<EntityAttribute, EntityAttributeModifierHolder>) ModularItemCache.get(itemStack, KEY);
+        Multimap<EntityAttribute, EntityAttributeModifierHolder> multimap = (Multimap<EntityAttribute, EntityAttributeModifierHolder>) ModularItemCache.get(itemStack, KEY);
+        if(multimap==null){
+            return ArrayListMultimap.create();
+        }
+        return multimap;
     }
 
     private static Map<EquipmentSlot, Multimap<EntityAttribute, EntityAttributeModifier>> equipmentSlotMultimapMapGenerate(ItemStack itemStack) {
@@ -138,7 +142,11 @@ public class AttributeProperty implements ModuleProperty {
     }
 
     public static Map<EquipmentSlot, Multimap<EntityAttribute, EntityAttributeModifier>> equipmentSlotMultimapMap(ItemStack itemStack) {
-        return (Map<EquipmentSlot, Multimap<EntityAttribute, EntityAttributeModifier>>) ModularItemCache.get(itemStack, KEY + "_unmodifieable");
+        Map<EquipmentSlot, Multimap<EntityAttribute, EntityAttributeModifier>> map = (Map<EquipmentSlot, Multimap<EntityAttribute, EntityAttributeModifier>>) ModularItemCache.get(itemStack, KEY + "_unmodifieable");
+        if(map==null){
+            return new EnumMap<>(EquipmentSlot.class);
+        }
+        return map;
     }
 
     public static Multimap<EntityAttribute, EntityAttributeModifier> getAttributeModifiersForSlot(ItemStack itemStack, EquipmentSlot slot, Multimap<EntityAttribute, EntityAttributeModifier> toAdding) {
@@ -305,7 +313,7 @@ public class AttributeProperty implements ModuleProperty {
                 Miapi.LOGGER.warn("Attribute is null " + attributeName + " on module " + instance.module.getName() + " this should not have happened.");
             } else {
                 if (attributeJson.uuid == null && !attributeJson.seperateOnItem) {
-                    attributeJson.uuid = defaultUUID.toString();
+                    attributeJson.uuid = getUUIDforSlot(slot).toString();
                 }
 
                 if (attributeJson.uuid != null) {

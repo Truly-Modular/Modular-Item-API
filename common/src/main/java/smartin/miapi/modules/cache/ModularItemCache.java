@@ -47,6 +47,7 @@ public class ModularItemCache {
         supplierMap.put(key, supplier);
     }
 
+    @Nullable
     public static Object get(ItemStack stack, String key) {
         if (!ReloadEvents.inReload && !stack.isEmpty() && stack.getItem() instanceof ModularItem) {
             Cache itemCache = find(stack);
