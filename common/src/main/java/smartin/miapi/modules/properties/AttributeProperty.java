@@ -3,7 +3,6 @@ package smartin.miapi.modules.properties;
 import com.google.common.collect.*;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.mojang.serialization.RecordBuilder;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.attribute.*;
 import net.minecraft.item.ItemStack;
@@ -19,6 +18,8 @@ import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.*;
 import java.util.function.Supplier;
 
@@ -303,7 +304,7 @@ public class AttributeProperty implements ModuleProperty {
                 Miapi.LOGGER.warn(String.valueOf(Registries.ATTRIBUTE.get(new Identifier(attributeName))));
                 Miapi.LOGGER.warn("Attribute is null " + attributeName + " on module " + instance.module.getName() + " this should not have happened.");
             } else {
-                if(attributeJson.uuid == null && !attributeJson.seperateOnItem){
+                if (attributeJson.uuid == null && !attributeJson.seperateOnItem) {
                     attributeJson.uuid = defaultUUID.toString();
                 }
 
@@ -322,6 +323,37 @@ public class AttributeProperty implements ModuleProperty {
                     attributeModifiers.put(attribute, new EntityAttributeModifierHolder(new EntityAttributeModifier(attributeName, value, operation), slot, attributeJson.seperateOnItem));
                 }
             }
+        }
+    }
+
+    public static UUID getUUIDforSlot(EquipmentSlot equipmentSlot) {
+        String slotidString = equipmentSlot.getName() + "-" + equipmentSlot.getEntitySlotId() + "-" + equipmentSlot.getArmorStandSlotId();
+        try {
+            // Create a MessageDigest instance with the desired hashing algorithm (e.g., MD5 or SHA-1).
+            MessageDigest md = MessageDigest.getInstance("MD5");
+
+            // Update the digest with the bytes of the input string.
+            md.update(slotidString.getBytes());
+
+            // Get the hash bytes and convert them to a long.
+            byte[] hashBytes = md.digest();
+            long mostSigBits = 0;
+            long leastSigBits = 0;
+
+            for (int i = 0; i < 8; i++) {
+                mostSigBits = (mostSigBits << 8) | (hashBytes[i] & 0xff);
+            }
+
+            for (int i = 8; i < 16; i++) {
+                leastSigBits = (leastSigBits << 8) | (hashBytes[i] & 0xff);
+            }
+
+            // Create a UUID using the most and least significant bits.
+            return new UUID(mostSigBits, leastSigBits);
+
+        } catch (NoSuchAlgorithmException e) {
+            Miapi.LOGGER.warn("could not setup UUID generator");
+            return UUID.fromString("d3b89c4c-68ff-11ee-8c99-0242ac120002");
         }
     }
 
