@@ -65,7 +65,7 @@
         "armor",
         "arm"
     ],
-    "durability": "[material.durability] / 8",
+    "durability": "[material.durability] / 8 / 3.8",
     "allowedMaterial": {
         "allowedMaterials": [
             "wood",

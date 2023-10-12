@@ -77,7 +77,7 @@
             "slot": "mainhand"
         }
     ],
-    "durability": "[material.durability]* 0.25",
+    "durability": "[material.durability]* 0.6",
     "guiOffset": {
         "sizeX": 6,
         "sizeY": 6

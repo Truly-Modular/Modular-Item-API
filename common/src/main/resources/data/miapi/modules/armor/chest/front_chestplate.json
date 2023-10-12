@@ -77,7 +77,7 @@
             "slot": "chest"
         }
     ],
-    "durability": "[material.durability] / 7 * 3",
+    "durability": "[material.durability] / 7 * 3 / 3.8",
     "allowedMaterial": {
         "allowedMaterials": [
             "wood",

@@ -90,5 +90,5 @@
             "slot": "feet"
         }
     ],
-    "durability": "[material.durability]* 0.5"
+    "durability": "[material.durability]* 0.5 / 4.2"
 }

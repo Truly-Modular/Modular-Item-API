@@ -90,6 +90,6 @@
             "slot": "legs"
         }
     ],
-    "durability": "[material.durability] / 7 * 3",
+    "durability": "[material.durability] / 7 * 3 / 3.7",
     "displayName": "miapi.module.belt_base.name"
 }

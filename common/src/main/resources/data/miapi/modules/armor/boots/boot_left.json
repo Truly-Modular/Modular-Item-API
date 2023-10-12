@@ -90,6 +90,6 @@
             "slot": "feet"
         }
     ],
-    "durability": "[material.durability]* 0.5",
+    "durability": "[material.durability]* 0.5 / 4.2",
     "displayName": "miapi.module.boot_left.name"
 }

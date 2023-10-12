@@ -53,7 +53,7 @@
             "slot": "head"
         }
     ],
-    "durability": "[material.durability]",
+    "durability": "[material.durability] / 5",
     "allowedMaterial": {
         "allowedMaterials": [
             "wood",

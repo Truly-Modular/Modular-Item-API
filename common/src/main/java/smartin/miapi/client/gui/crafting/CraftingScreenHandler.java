@@ -400,21 +400,20 @@ public class CraftingScreenHandler extends ScreenHandler {
                 slot.markDirty();
             } else {
                 //PlayerInv
-                if ((slots.get(36).getStack().isEmpty() || slots.get(36).getStack().getItem().equals(itemStack2.getItem())) && !this.insertItem(itemStack2, 36, 37, true)) {
-                    return ItemStack.EMPTY;
-                } else {
-                    for (Slot slot1 : mutableSlots) {
-                        if (slot1.id >= 36) {
-                            if (!this.insertItem(itemStack2, slot1.id, slot1.id + 1, true)) {
-                                return ItemStack.EMPTY;
-                            }
+                for (Slot slot1 : mutableSlots) {
+                    if (slot1.id >= 36) {
+                        if (!this.insertItem(itemStack2, slot1.id, slot1.id + 1, true)) {
+                            return ItemStack.EMPTY;
                         }
                     }
+                }
+                if ((slots.get(36).getStack().isEmpty() || slots.get(36).getStack().getItem().equals(itemStack2.getItem())) && !this.insertItem(itemStack2, 36, 37, true)) {
+                    return ItemStack.EMPTY;
                 }
                 slot.markDirty();
             }
         }
-        return itemStack;
+        return ItemStack.EMPTY;
     }
 
     @Override

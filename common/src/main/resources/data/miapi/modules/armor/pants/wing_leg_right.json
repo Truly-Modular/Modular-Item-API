@@ -67,7 +67,7 @@
             "slot": "legs"
         }
     ],
-    "durability": "[material.durability] / 7 * 2",
+    "durability": "[material.durability] / 7 * 2 / 3.7",
     "allowedMaterial": {
         "allowedMaterials": [
             "fabric"
