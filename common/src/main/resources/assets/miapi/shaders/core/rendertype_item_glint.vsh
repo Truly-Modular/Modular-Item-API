@@ -47,7 +47,7 @@ void main() {
     float scale = 0.0078125f * 100;
 
     // Output the final local space UVs
-    localUVs.x = -asd.x * scale + 0.5;
-    localUVs.y = -asd.y * scale + 0.5;
-    localUVs = (TextureMat * GlintSpeed * vec4(vec2(localUVs/GlintSpeed), 0.0, 1.0)).xy;
+    localUVs.x = -asd.x * scale * 2.0 + 0.5;
+    localUVs.y = -asd.y * scale * 2.0 + 0.5;
+    localUVs = (TextureMat * (GlintSpeed) * vec4(vec2(localUVs/(GlintSpeed)), 0.0, 1.0)).xy;
 }

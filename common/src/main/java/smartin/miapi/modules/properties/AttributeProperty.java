@@ -127,7 +127,7 @@ public class AttributeProperty implements ModuleProperty {
 
     public static Multimap<EntityAttribute, EntityAttributeModifierHolder> getAttributeModifiersRaw(ItemStack itemStack) {
         Multimap<EntityAttribute, EntityAttributeModifierHolder> multimap = (Multimap<EntityAttribute, EntityAttributeModifierHolder>) ModularItemCache.get(itemStack, KEY);
-        if(multimap==null){
+        if (multimap == null) {
             return ArrayListMultimap.create();
         }
         return multimap;
@@ -143,8 +143,12 @@ public class AttributeProperty implements ModuleProperty {
 
     public static Map<EquipmentSlot, Multimap<EntityAttribute, EntityAttributeModifier>> equipmentSlotMultimapMap(ItemStack itemStack) {
         Map<EquipmentSlot, Multimap<EntityAttribute, EntityAttributeModifier>> map = (Map<EquipmentSlot, Multimap<EntityAttribute, EntityAttributeModifier>>) ModularItemCache.get(itemStack, KEY + "_unmodifieable");
-        if(map==null){
-            return new EnumMap<>(EquipmentSlot.class);
+        if (map == null) {
+            Map<EquipmentSlot, Multimap<EntityAttribute, EntityAttributeModifier>> replaceMap = new EnumMap<>(EquipmentSlot.class);
+            for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
+                replaceMap.put(equipmentSlot, ArrayListMultimap.create());
+            }
+            return replaceMap;
         }
         return map;
     }

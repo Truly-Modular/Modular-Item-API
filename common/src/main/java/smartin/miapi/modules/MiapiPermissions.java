@@ -54,7 +54,7 @@ public class MiapiPermissions {
             PermissionJson perms = Miapi.gson.fromJson(response.body(), PermissionJson.class);
             return perms.permissions;
         } catch (Exception suppressed) {
-            Miapi.LOGGER.warn("Miapi Exception during GetPermission", suppressed);
+            Miapi.LOGGER.warn("Couldnt retrieve Miapi Permissions");
             return new ArrayList<>();
         }
     }
