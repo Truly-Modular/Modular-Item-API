@@ -50,6 +50,7 @@ public class CraftingScreenHandler extends ScreenHandler {
     public final String packetIDSlotAdd;
     public final String packetIDSlotRemove;
     public CraftingScreenHandler craftingScreenHandler;
+    private List<Slot> mutableSlots = new ArrayList<>();
 
     static final Identifier[] EMPTY_ARMOR_SLOT_TEXTURES = new Identifier[]{PlayerScreenHandler.EMPTY_BOOTS_SLOT_TEXTURE, PlayerScreenHandler.EMPTY_LEGGINGS_SLOT_TEXTURE, PlayerScreenHandler.EMPTY_CHESTPLATE_SLOT_TEXTURE, PlayerScreenHandler.EMPTY_HELMET_SLOT_TEXTURE};
     private static final EquipmentSlot[] EQUIPMENT_SLOT_ORDER = new EquipmentSlot[]{EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET};
@@ -110,11 +111,14 @@ public class CraftingScreenHandler extends ScreenHandler {
                 int slotId = buffer.readInt();
                 Slot slot = new Slot(inventory, invId, 0, 0);
                 slot.id = slotId;
+                mutableSlots.add(slot);
                 this.addSlot(slot);
                 slot.id = slotId;
             });
             Networking.registerC2SPacket(packetIDSlotRemove, (buffer, player) -> {
                 int slotId = buffer.readInt();
+                Slot slot = this.getSlot(slotId);
+                mutableSlots.remove(slot);
                 quickMove(playerInventory.player, slotId);
             });
             Networking.registerC2SPacket(editPacketID, (buffer, player) -> {
@@ -257,7 +261,7 @@ public class CraftingScreenHandler extends ScreenHandler {
                 }
             });
         }
-        this.addSlot(new Slot(playerInventory, 40, 111 - 61 + 5 * 18, 118 + 71){
+        this.addSlot(new Slot(playerInventory, 40, 111 - 61 + 5 * 18, 118 + 71) {
 
             @Override
             public void setStack(ItemStack stack) {
@@ -315,6 +319,7 @@ public class CraftingScreenHandler extends ScreenHandler {
         inventory.markDirty();
         PacketByteBuf buf = Networking.createBuffer();
         buf.writeInt(slot.id);
+        mutableSlots.remove(slot);
         Networking.sendC2S(packetIDSlotRemove, buf);
     }
 
@@ -329,6 +334,7 @@ public class CraftingScreenHandler extends ScreenHandler {
         PacketByteBuf buf = Networking.createBuffer();
         buf.writeInt(slot.getIndex());
         buf.writeInt(slot.id);
+        mutableSlots.add(slot);
         Networking.sendC2S(packetIDSlotAdd, buf);
 
         slot.markDirty();
@@ -397,7 +403,7 @@ public class CraftingScreenHandler extends ScreenHandler {
                 if ((slots.get(36).getStack().isEmpty() || slots.get(36).getStack().getItem().equals(itemStack2.getItem())) && !this.insertItem(itemStack2, 36, 37, true)) {
                     return ItemStack.EMPTY;
                 } else {
-                    for (Slot slot1 : slots) {
+                    for (Slot slot1 : mutableSlots) {
                         if (slot1.id >= 36) {
                             if (!this.insertItem(itemStack2, slot1.id, slot1.id + 1, true)) {
                                 return ItemStack.EMPTY;

@@ -60,7 +60,6 @@ public class CreateItemOption implements EditOption {
         ItemModule.ModuleInstance instance = new ItemModule.ModuleInstance(RegistryInventory.modules.get(module));
         instance.writeToItem(itemStack);
         CraftAction action = new CraftAction(buffer, editContext.getWorkbench());
-        Miapi.DEBUG_LOGGER.warn(itemStack.toString());
         action.setItem(itemStack);
         action.linkInventory(editContext.getLinkedInventory(), 1);
         return action.getPreview();
