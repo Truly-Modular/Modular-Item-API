@@ -39,6 +39,8 @@
 
     "effect.miapi.cryo": "Cryo",
 
+    "miapi.tab.name": "Truly Modular",
+
     "miapi.attribute.name.durability":"Durability",
     "miapi.attribute.name.resistance":"Damage Ressistance",
     "miapi.attribute.name.shield_break":"Shield Break",
@@ -432,17 +434,17 @@
     "miapi.module.bow_arms_normal.short_description": "The Arms of a Bow",
 
     "miapi.module.bow_arms_long": "Long Bow Arms",
-    "miapi.module.bow_arms_long.name": "Long [translation.[material.translation]]Bow",
+    "miapi.module.bow_arms_long.name": "[translation.[material.translation]]Longbow",
     "miapi.module.bow_arms_long.description": "Long Bow, the most powerfull bow, sacrificing accuracy for raw power",
     "miapi.module.bow_arms_long.short_description": "Long Bow Arms",
 
     "miapi.module.bow_arms_recurve": "Recurve Bow Arms",
-    "miapi.module.bow_arms_recurve.name": "Recurve [translation.[material.translation]]Bow",
+    "miapi.module.bow_arms_recurve.name": "[translation.[material.translation]]Recurvebow",
     "miapi.module.bow_arms_recurve.description": "Recurve Bow arms, aimed to provide a balance between power and accuracy",
     "miapi.module.bow_arms_recurve.short_description": "Recurved Bow arms",
 
     "miapi.module.bow_arms_short": "Short Bow Arms",
-    "miapi.module.bow_arms_short.name": "Short [translation.[material.translation]]Bow",
+    "miapi.module.bow_arms_short.name": "[translation.[material.translation]]Shortbow",
     "miapi.module.bow_arms_short.description": "Short arms, quick draw time, but not that powerfull",
     "miapi.module.bow_arms_short.short_description": "Short Arms for Bow",
 

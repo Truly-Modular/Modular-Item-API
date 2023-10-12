@@ -54,7 +54,9 @@ public class ExplosionProperty extends CodecBasedProperty<ExplosionProperty.Expl
         if (!info.destroyBlocks) {
             explosionSourceType = World.ExplosionSourceType.NONE;
         }
-        projectile.getWorld().createExplosion(projectile, result.getPos().getX(), result.getPos().getY(), result.getPos().getZ(), info.strength, explosionSourceType);
+        if(!projectile.getWorld().isClient()){
+            projectile.getWorld().createExplosion(projectile, result.getPos().getX(), result.getPos().getY(), result.getPos().getZ(), info.strength, explosionSourceType);
+        }
     }
 
     public static class ExplosionInfo {

@@ -57,7 +57,7 @@
         }
     },
     "minecraft:netherite_boots": {
-        "module": "boot",
+        "module": "boot_base",
         "subModules": {
             "0": {
                 "module": "boot_left",

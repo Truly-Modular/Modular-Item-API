@@ -88,16 +88,9 @@
     "durability": "[material.durability] / 7 * 3",
     "allowedMaterial": {
         "allowedMaterials": [
-            "wood",
-            "fabric",
-            "metal",
-            "flint",
-            "bone",
-            "stone",
-            "crystal",
-            "glass"
+            "elytra"
         ],
-        "cost": 3
+        "cost": 1
     },
     "displayName": "miapi.module.back_elytra.name"
 }

@@ -56,7 +56,7 @@
     "allowedInSlots": [
         "wing_left"
     ],
-    "durability": "[material.durability] / 8",
+    "durability": "[material.durability] / 2",
     "allowedMaterial": {
         "allowedMaterials": [
             "fabric"

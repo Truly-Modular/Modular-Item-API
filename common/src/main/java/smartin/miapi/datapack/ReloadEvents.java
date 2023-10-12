@@ -49,6 +49,11 @@ public class ReloadEvents {
     public static final Map<String, String> DATA_PACKS = new ConcurrentHashMap<>();
 
     /**
+     * Reloading Datapack.
+     */
+    public static final Map<String, String> RELOADING_DATA_PACKS = new ConcurrentHashMap<>();
+
+    /**
      * A map that stores the paths of data packs that have been synced.
      */
     public static Map<String, List<String>> syncedPaths = new HashMap<>();
@@ -95,12 +100,20 @@ public class ReloadEvents {
         }
 
         Networking.registerC2SPacket(RELOAD_PACKET_ID, ((buf, serverPlayerEntity) -> {
-            SERVER_DATA_PACKS.forEach((key, data) -> {
+            boolean allowHandshake = buf.readBoolean();
+            if (!allowHandshake) {
+                Miapi.LOGGER.warn("Client " + serverPlayerEntity.getUuid() + " rejected reload? this should never happen");
+                return;
+            }
+            HashMap<String, String> staticData = new HashMap<>(SERVER_DATA_PACKS);
+            Thread workerThread = new Thread(() -> staticData.forEach((key, data) -> {
                 PacketByteBuf buffer = Networking.createBuffer();
                 buffer.writeString(key);
                 buffer.writeString(data);
                 Networking.sendS2C(RELOAD_DATA_PACKET_ID, serverPlayerEntity, buffer);
-            });
+            }));
+            workerThread.setName("miapi-handshake-thread");
+            workerThread.start();
         }));
 
         //scedule join?
@@ -113,7 +126,12 @@ public class ReloadEvents {
             reloadCounter--;
         });
 
-        DataPackLoader.subscribe(DATA_PACKS::put);
+        DataPackLoader.subscribe((dataPack -> {
+            synchronized (DATA_PACKS) {
+                DATA_PACKS.clear();
+                DATA_PACKS.putAll(dataPack);
+            }
+        }));
 
     }
 
@@ -144,12 +162,13 @@ public class ReloadEvents {
             String data = buffer.readString();
             dataTemp.put(key, data);
             if (dataTemp.size() == dataPackSize) {
-                DATA_PACKS.clear();
-                DATA_PACKS.putAll(dataTemp);
+                synchronized (DATA_PACKS) {
+                    DATA_PACKS.clear();
+                    DATA_PACKS.putAll(dataTemp);
+                }
             }
         });
         Networking.registerS2CPacket(RELOAD_PACKET_ID, (buffer) -> {
-            clientReloadTimeStart = System.nanoTime();
             if (inReload) {
                 Miapi.LOGGER.error("Cannot trigger a Reload during another reload");
                 return;
@@ -167,10 +186,13 @@ public class ReloadEvents {
             }
             inReload = true;
             dataPackSize = buffer.readInt();
-            PacketByteBuf buf = Networking.createBuffer();
-            buf.writeBoolean(true);
-            DATA_PACKS.clear();
             MinecraftClient.getInstance().execute(() -> {
+                clientReloadTimeStart = System.nanoTime();
+                PacketByteBuf buf = Networking.createBuffer();
+                buf.writeBoolean(true);
+                DATA_PACKS.clear();
+                dataTemp.clear();
+                Networking.sendC2S(RELOAD_PACKET_ID, buf);
                 ReloadEvents.START.fireEvent(true);
                 try {
                     int counter = 0;
@@ -193,14 +215,13 @@ public class ReloadEvents {
                 } catch (InterruptedException e) {
                     //throw new RuntimeException(e);
                 }
-                DATA_PACKS.forEach(DataPackLoader::trigger);
+                DataPackLoader.trigger(new ConcurrentHashMap<>(DATA_PACKS));
                 ReloadEvents.MAIN.fireEvent(true);
                 ReloadEvents.END.fireEvent(true);
                 Miapi.LOGGER.info("Client load took " + (double) (System.nanoTime() - clientReloadTimeStart) / 1000 / 1000 + " ms");
                 dataPackSize = Integer.MAX_VALUE;
                 inReload = false;
             });
-            Networking.sendC2S(RELOAD_PACKET_ID, buf);
         });
     }
 
@@ -307,16 +328,15 @@ public class ReloadEvents {
         }
 
         /**
-         * Notifies all registered event listeners that a datapack entry has been reloaded.
+         * Notifies all registered event listeners that a datapack has been reloaded.
          * This method is not intended to be called manually, and is called automatically by the system.
          *
-         * @param path the path of the reloaded datapack entry
-         * @param data the data of the reloaded datapack entry
+         * @param dataPack the datapack in a <Path,Data> map
          */
-        public static void trigger(String path, String data) {
+        public static void trigger(Map<String, String> dataPack) {
             for (EventListener listener : listeners) {
                 try {
-                    listener.onEvent(path, data);
+                    listener.onEvent(dataPack);
                 } catch (Exception e) {
                     Miapi.LOGGER.error("Exception during reload", e);
                 }
@@ -330,10 +350,9 @@ public class ReloadEvents {
             /**
              * Called when a datapack is reloaded.
              *
-             * @param path the path of the reloaded datapack entry
-             * @param data the data of the reloaded datapack entry
+             * @param dataPack the datapack in a <Path,Data> map
              */
-            void onEvent(String path, String data);
+            void onEvent(Map<String, String> dataPack);
         }
     }
 }

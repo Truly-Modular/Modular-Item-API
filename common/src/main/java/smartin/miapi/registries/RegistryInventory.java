@@ -233,7 +233,7 @@ public class RegistryInventory {
         // CREATIVE TAB
         register(tab, "miapi_tab", () -> CreativeTabRegistry.create
                 (b -> {
-                    b.displayName(Text.translatable("tab.miapi"));
+                    b.displayName(Text.translatable("miapi.tab.name"));
                     b.icon(() -> new ItemStack(modularWorkBench));
                     b.entries((displayContext, entries) -> {
                         entries.add(modularWorkBench);

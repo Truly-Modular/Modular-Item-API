@@ -79,7 +79,7 @@ public class ReloadListener implements ResourceReloader {
     public CompletableFuture<Void> apply(Object data, ResourceManager manager, Profiler profiler, Executor executor) {
         return CompletableFuture.runAsync(() -> {
             Map<String, String> dataMap = (Map) data;
-            dataMap.forEach(ReloadEvents.DataPackLoader::trigger);
+            ReloadEvents.DataPackLoader.trigger(dataMap);
             ReloadEvents.MAIN.fireEvent(false);
             ReloadEvents.END.fireEvent(false);
             Miapi.LOGGER.info("Server load took " + (double) (System.nanoTime() - timeStart) / 1000 / 1000 + " ms");

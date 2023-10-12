@@ -77,6 +77,7 @@ public class CraftViewRework extends InteractAbleWidget {
         }));
         addChild(new SimpleButton<>(this.getX() + 2, this.getY() + this.height - 14, 40, 12, Text.translatable(Miapi.MOD_ID + ".ui.back"), null, (moduleSlot) -> {
             isClosed = true;
+            closeSlot();
             back.accept(null);
         }));
 
