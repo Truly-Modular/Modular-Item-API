@@ -1,0 +1,34 @@
+{
+	"credit": "Made with Blockbench",
+	"textures": {
+		"1": "miapi:item/armor/fabric"
+	},
+	"elements": [
+		{
+			"name": "outer",
+			"from": [-4, -3, -2],
+			"to": [4, 2, 2],
+			"faces": {
+				"north": {"uv": [5, 12, 7, 13.25], "texture": "#1"},
+				"east": {"uv": [4, 12, 5, 13.25], "texture": "#1"},
+				"south": {"uv": [8, 12, 10, 13.25], "texture": "#1"},
+				"west": {"uv": [7, 12, 8, 13.25], "texture": "#1"},
+				"up": {"uv": [5, 11, 7, 12], "texture": "#1"},
+				"down": {"uv": [8, 11, 10, 12], "texture": "#1"}
+			}
+		},
+		{
+			"name": "inner",
+			"from": [-4, -3, 2],
+			"to": [4, 2, -2],
+			"faces": {
+				"north": {"uv": [5, 12, 7, 13.25], "texture": "#1"},
+				"east": {"uv": [4, 12, 5, 13.25], "texture": "#1"},
+				"south": {"uv": [8, 12, 10, 13.25], "texture": "#1"},
+				"west": {"uv": [7, 12, 8, 13.25], "texture": "#1"},
+				"up": {"uv": [5, 11, 7, 12], "texture": "#1"},
+				"down": {"uv": [8, 11, 10, 12], "texture": "#1"}
+			}
+		}
+	]
+}

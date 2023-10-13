@@ -26,7 +26,7 @@
     "mining_speed": 0,
     "mining_level": 0,
     "textures": [
-        "rough"
+        "fabric"
     ],
     "items": [
         {

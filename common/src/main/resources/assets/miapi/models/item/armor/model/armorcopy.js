@@ -3,7 +3,8 @@ const path = require('path')
 
 const sourceFolder = './' // Replace with the path to your source folder
 const searchString = 'default' // Replace with the string you want to replace
-const replaceString = 'stone_magma' // Replace with the string you want to use as a replacement
+const replaceString = 'bright' // Replace with the string you want to use as a replacement
+const requiredPath = `base`
 
 function processFolder(folderPath) {
 	const files = fs.readdirSync(folderPath)
@@ -14,7 +15,7 @@ function processFolder(folderPath) {
 
 		if (stats.isDirectory()) {
 			processFolder(filePath) // Recursive call for subfolders
-		} else if (file === 'default.json') {
+		} else if (file === 'default.json' && filePath.includes(requiredPath)) {
 			console.log('found json')
 			// Process JSON files named "default.json"
 			const data = fs.readFileSync(filePath, 'utf8')

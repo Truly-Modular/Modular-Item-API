@@ -24,7 +24,7 @@
     "filler": "interpolate"
   },
   "textures": [
-    "shiny"
+    "bright"
   ],
   "items": [
     {

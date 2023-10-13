@@ -132,28 +132,40 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
     }
 
     public void minimizeView() {
+        EditOption op = getEditOption();
         remove(moduleCrafter);
+        SlotProperty.ModuleSlot slot1 = moduleCrafter.slot;
+        editHolder.children().clear();
         moduleCrafter = new ModuleCrafter(moduleCrafter.getX(), moduleCrafter.getY(), moduleCrafter.getWidth(), moduleCrafter.getHeight() + 72, moduleCrafter);
         moduleCrafter.handler = handler;
         moduleCrafter.setPacketIdentifier(handler.packetID);
         addChild(moduleCrafter);
-        EditOption op = getEditOption();
         updateItem(getItem());
-        selectEditOption(op);
+        moduleCrafter.setSelectedSlot(slot1);
+        updateEditOptions();
         remove(slotDisplay);
         remove(smithDisplay);
+        selectSlot(slot1);
+        updateEditOptions();
+        selectEditOption(op);
     }
     public void maximizeView() {
+        EditOption op = getEditOption();
         remove(moduleCrafter);
+        SlotProperty.ModuleSlot slot1 = moduleCrafter.slot;
+        editHolder.children().clear();
         moduleCrafter = new ModuleCrafter(moduleCrafter.getX(), moduleCrafter.getY(), moduleCrafter.getWidth(), moduleCrafter.getHeight() - 72, moduleCrafter);
         moduleCrafter.handler = handler;
         moduleCrafter.setPacketIdentifier(handler.packetID);
         addChild(moduleCrafter);
-        EditOption op = getEditOption();
         updateItem(getItem());
-        selectEditOption(op);
+        moduleCrafter.setSelectedSlot(slot1);
+        updateEditOptions();
         addChild(slotDisplay);
         addChild(smithDisplay);
+        selectSlot(slot1);
+        updateEditOptions();
+        selectEditOption(op);
     }
 
     public ItemStack getItem() {

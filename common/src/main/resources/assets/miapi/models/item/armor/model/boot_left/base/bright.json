@@ -1,0 +1,32 @@
+{
+	"credit": "Made with Blockbench",
+	"textures": {
+		"1": "miapi:item/armor/bright"
+	},
+	"elements": [
+		{
+			"from": [-2, -3, -2],
+			"to": [2, 3, 2],
+			"faces": {
+				"north": {"uv": [2, 14.5, 1, 16], "texture": "#1"},
+				"east": {"uv": [3, 14.5, 2, 16], "texture": "#1"},
+				"south": {"uv": [4, 14.5, 3, 16], "texture": "#1"},
+				"west": {"uv": [1, 14.5, 0, 16], "texture": "#1"},
+				"up": {"uv": [2, 13.5, 3, 14.5], "texture": "#1"},
+				"down": {"uv": [1, 13.5, 0, 14.5], "texture": "#1"}
+			}
+		},
+		{
+			"from": [2, -3, -2],
+			"to": [-2, 3, 2],
+			"faces": {
+				"north": {"uv": [0, 14.5, 1, 16], "texture": "#1"},
+				"east": {"uv": [1, 14.5, 2, 16], "texture": "#1"},
+				"south": {"uv": [3, 14.5, 4, 16], "texture": "#1"},
+				"west": {"uv": [2, 14.5, 3, 16], "texture": "#1"},
+				"up": {"uv": [2, 13.5, 3, 14.5], "texture": "#1"},
+				"down": {"uv": [0, 13.5, 1, 14.5], "texture": "#1"}
+			}
+		}
+	]
+}
