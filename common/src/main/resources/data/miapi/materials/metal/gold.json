@@ -29,6 +29,9 @@
                 "operation": "**",
                 "value": "0.65"
             }
+        },
+        "armor": {
+            "isPiglinGold": true
         }
     },
     "textures": [

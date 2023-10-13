@@ -19,6 +19,8 @@
         "LivingEntityMixin",
         "LootContextTypesAccessor",
         "MiningToolItemAccessor",
+        "PiglinBrainMixin",
+        "PowderSnowBlockMixin",
         "ProjectileDispenserBehaviorAccessor",
         "ProjectileEntityAccessor",
         "SmithingScreenHandlerAccessor",

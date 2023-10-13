@@ -1,0 +1,6 @@
+{
+	"parent": "item/generated",
+	"textures": {
+		"layer0": "miapi:item/armor/gui/base/arm_right/netherite"
+	}
+}

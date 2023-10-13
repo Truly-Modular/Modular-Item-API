@@ -131,6 +131,7 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
 
     }
 
+    //could be the same as maximizeView()
     public void minimizeView() {
         EditOption op = getEditOption();
         remove(moduleCrafter);

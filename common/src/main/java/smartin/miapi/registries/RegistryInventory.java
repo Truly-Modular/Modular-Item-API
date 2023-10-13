@@ -426,6 +426,8 @@ public class RegistryInventory {
             registerMiapi(moduleProperties, FracturingProperty.KEY, new FracturingProperty());
             registerMiapi(moduleProperties, FortuneProperty.KEY, new FortuneProperty());
             registerMiapi(moduleProperties, MendingProperty.KEY, new MendingProperty());
+            registerMiapi(moduleProperties, IsPiglinGold.KEY, new IsPiglinGold());
+            registerMiapi(moduleProperties, CanWalkOnSnow.KEY, new CanWalkOnSnow());
 
             //compat
             registerMiapi(moduleProperties, BetterCombatProperty.KEY, new BetterCombatProperty());

@@ -22,6 +22,11 @@
     "textures": [
         "fabric"
     ],
+    "properties": {
+        "boot": {
+            "canWalkOnSnow": true
+        }
+    },
     "mining_speed": 0,
     "mining_level": 0,
     "items": [
