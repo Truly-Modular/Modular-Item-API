@@ -302,7 +302,7 @@ public class RegistryInventory {
                         new ClampedEntityAttribute("miapi.attribute.name.resistance", 0.0, 0.0, 100).setTracked(true),
                 att -> DAMAGE_RESISTANCE = att);
         registerAtt("generic.back_stab", true, () ->
-                        new ClampedEntityAttribute("miapi.attribute.name.back_stab", 0.0, 0.0, 1024.0).setTracked(true),
+                        new ClampedEntityAttribute("miapi.attribute.name.back_stab", 1.0, 0.0, 1024.0).setTracked(true),
                 att -> BACK_STAB = att);
         registerAtt("generic.armor_crushing", true, () ->
                         new ClampedEntityAttribute("miapi.attribute.name.armor_crushing", 0.0, 0.0, 1024.0).setTracked(true),
@@ -507,7 +507,7 @@ public class RegistryInventory {
                             return glintShader;
                         }))
                         .texture(Textures.create().add(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, false, false).add(MaterialAtlasManager.MATERIAL_ID, false, false).build())
-                        .depthTest(LEQUAL_DEPTH_TEST)
+                        .depthTest(EQUAL_DEPTH_TEST)
                         .transparency(GLINT_TRANSPARENCY)
                         .lightmap(ENABLE_LIGHTMAP)
                         //.cull(DISABLE_CULLING)

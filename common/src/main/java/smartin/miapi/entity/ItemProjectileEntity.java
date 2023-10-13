@@ -11,7 +11,6 @@ import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -86,9 +85,9 @@ public class ItemProjectileEntity extends PersistentProjectileEntity {
         MiapiProjectileEvents.MODULAR_PROJECTILE_DATA_TRACKER_SET.invoker().dataTracker(this, this.getDataTracker());
     }
 
-    private void setup(){
+    private void setup() {
         ItemStack projectileStack = this.asItemStack();
-        this.setDamage(AttributeProperty.getActualValue(projectileStack,EquipmentSlot.MAINHAND,AttributeRegistry.PROJECTILE_DAMAGE));
+        this.setDamage(AttributeProperty.getActualValue(projectileStack, EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_DAMAGE));
     }
 
     public void setPreferredSlot(int slotID) {
@@ -276,7 +275,7 @@ public class ItemProjectileEntity extends PersistentProjectileEntity {
         float damage = (float) getDamage();
         if (this.getSpeedDamage()) {
             float speed = (float) this.getVelocity().length();
-            damage = MathHelper.ceil(MathHelper.clamp((double)speed * damage, 0.0, 2.147483647E9));
+            damage = MathHelper.ceil(MathHelper.clamp((double) speed * damage, 0.0, 2.147483647E9));
         }
         return damage;
     }
@@ -291,34 +290,28 @@ public class ItemProjectileEntity extends PersistentProjectileEntity {
         if (MiapiProjectileEvents.MODULAR_PROJECTILE_PICK_UP.invoker().pickup(player, this).interruptsFurtherEvaluation()) {
             return false;
         }
-        boolean earlyPickup = switch (this.pickupType) {
-            case DISALLOWED:
-                yield false;
-            case ALLOWED: {
-                yield tryInsertAtSlot(player.getInventory(), this.asItemStack(), slotId);
+        switch (this.pickupType) {
+            case DISALLOWED -> {
+                return false;
             }
-            case CREATIVE_ONLY: {
-                yield player.getAbilities().creativeMode;
+            case CREATIVE_ONLY -> {
+                return player.getAbilities().creativeMode;
             }
-        };
-        return
-                earlyPickup ||
-                        super.tryPickup(player) ||
-                        this.isNoClip() && this.isOwner(player) &&
-                                (tryInsertAtSlot(player.getInventory(), this.asItemStack(), slotId) || player.getInventory().insertStack(this.asItemStack()));
-    }
-
-    public boolean tryInsertAtSlot(PlayerInventory inventory, ItemStack stack, int slot) {
-        if (inventory.size() > slot && slot > 0) {
-            ItemStack inventoryStack = inventory.getStack(slot);
-            if (inventoryStack.isEmpty()) {
-                return inventory.insertStack(slot, stack);
+            case ALLOWED -> {
+                boolean hasLoyalty = this.dataTracker.get(LOYALTY) > 0;
+                if (hasLoyalty && getOwner() != null && !isOwner(player)) {
+                    return false;
+                }
+                if (slotId >= 0 && player.getInventory().getStack(slotId).isEmpty()) {
+                    return player.getInventory().insertStack(slotId, this.asItemStack());
+                } else {
+                    return player.getInventory().insertStack(this.asItemStack());
+                }
             }
-            if (ItemStack.canCombine(inventoryStack, stack)) {
-                return inventory.insertStack(slot, stack);
+            default -> {
+                return super.tryPickup(player) || this.isNoClip() && this.isOwner(player) && player.getInventory().insertStack(this.asItemStack());
             }
         }
-        return false;
     }
 
     public void setDamageToDeal(boolean hasDamage) {
@@ -332,10 +325,14 @@ public class ItemProjectileEntity extends PersistentProjectileEntity {
 
     @Override
     public void onPlayerCollision(PlayerEntity player) {
-        if (this.isOwner(player) || this.getOwner() == null) {
-            super.onPlayerCollision(player);
+        super.onPlayerCollision(player);
+        /*
+        if (this.dataTracker.get(LOYALTY).intValue() > 0) {
+            if (this.isOwner(player) || this.getOwner() == null) {
+                super.onPlayerCollision(player);
+            }
         }
-
+         */
     }
 
     @Override

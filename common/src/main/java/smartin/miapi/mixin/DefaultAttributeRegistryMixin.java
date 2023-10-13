@@ -23,7 +23,7 @@ public class DefaultAttributeRegistryMixin {
         });
         if (builder != null) {
             AttributeRegistry.entityAttributeMap.forEach((id, attribute) -> {
-                builder.add(attribute);
+                builder.add(attribute, attribute.getDefaultValue());
             });
         }
         cir.setReturnValue(builder.build());
