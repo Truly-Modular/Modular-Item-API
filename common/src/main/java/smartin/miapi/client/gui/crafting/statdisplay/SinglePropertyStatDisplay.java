@@ -6,7 +6,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Util;
 import smartin.miapi.Miapi;
-import smartin.miapi.modules.properties.util.SimpleDoubleProperty;
+import smartin.miapi.modules.properties.util.DoubleProperty;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -14,9 +14,9 @@ import java.util.Locale;
 
 @Environment(EnvType.CLIENT)
 public class SinglePropertyStatDisplay extends SingleStatDisplayDouble {
-    protected SimpleDoubleProperty property;
+    protected DoubleProperty property;
 
-    protected SinglePropertyStatDisplay(StatDisplay.TextGetter title, StatDisplay.TextGetter hover, SimpleDoubleProperty property) {
+    protected SinglePropertyStatDisplay(StatDisplay.TextGetter title, StatDisplay.TextGetter hover, DoubleProperty property) {
         super(0, 0, 51, 19, title, hover);
         this.property = property;
     }
@@ -32,12 +32,12 @@ public class SinglePropertyStatDisplay extends SingleStatDisplayDouble {
         return property.getValueSafeRaw(stack);
     }
 
-    public static Builder builder(SimpleDoubleProperty property) {
+    public static Builder builder(DoubleProperty property) {
         return new Builder(property);
     }
 
     public static class Builder {
-        SimpleDoubleProperty property;
+        DoubleProperty property;
         public StatDisplay.TextGetter name;
         public StatDisplay.TextGetter hoverDescription = (stack) -> Text.empty();
         public String translationKey = "";
@@ -46,7 +46,7 @@ public class SinglePropertyStatDisplay extends SingleStatDisplayDouble {
         public double min = 0;
         public double max = 100;
 
-        private Builder(SimpleDoubleProperty property) {
+        private Builder(DoubleProperty property) {
             this.property = property;
             modifierFormat = Util.make(new DecimalFormat("##.##"), (decimalFormat) -> {
                 decimalFormat.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ROOT));

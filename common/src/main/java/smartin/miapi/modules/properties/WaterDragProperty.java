@@ -4,9 +4,9 @@ import dev.architectury.event.EventResult;
 import net.minecraft.item.ItemStack;
 import smartin.miapi.entity.ItemProjectileEntity;
 import smartin.miapi.events.MiapiProjectileEvents;
-import smartin.miapi.modules.properties.util.SimpleDoubleProperty;
+import smartin.miapi.modules.properties.util.DoubleProperty;
 
-public class WaterDragProperty extends SimpleDoubleProperty {
+public class WaterDragProperty extends DoubleProperty {
     public static String KEY = "water_drag";
     public static WaterDragProperty property;
 

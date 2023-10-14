@@ -1,13 +1,13 @@
 package smartin.miapi.modules.properties;
 
 import net.minecraft.item.ItemStack;
-import smartin.miapi.modules.properties.util.BooleanProperty;
+import smartin.miapi.modules.properties.util.ComplexBooleanProperty;
 
 /**
  * This Property allows to designate the Item as Tool or Weapon,
  * mainly affecting durability calculations
  */
-public class ToolOrWeaponProperty extends BooleanProperty {
+public class ToolOrWeaponProperty extends ComplexBooleanProperty {
     public static final String KEY = "isWeapon";
     public static ToolOrWeaponProperty property;
 

@@ -1,9 +1,9 @@
 package smartin.miapi.modules.properties;
 
 import net.minecraft.item.ItemStack;
-import smartin.miapi.modules.properties.util.SimpleDoubleProperty;
+import smartin.miapi.modules.properties.util.DoubleProperty;
 
-public class DurabilityProperty extends SimpleDoubleProperty {
+public class DurabilityProperty extends DoubleProperty {
     public static final String KEY = "durability";
     public static DurabilityProperty property;
 

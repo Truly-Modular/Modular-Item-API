@@ -35,6 +35,10 @@
         {
             "item": "minecraft:bamboo_planks",
             "value": 1.0
+        },
+        {
+            "item": "minecraft:bamboo",
+            "value": 0.2222
         }
     ]
 }

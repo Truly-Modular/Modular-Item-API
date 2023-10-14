@@ -8,7 +8,7 @@ import smartin.miapi.Miapi;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.util.CraftingProperty;
-import smartin.miapi.modules.properties.util.SimpleDoubleProperty;
+import smartin.miapi.modules.properties.util.DoubleProperty;
 
 import java.util.List;
 
@@ -16,9 +16,9 @@ import java.util.List;
  * Flexibility is a optional tool to limit items to be somewhat reasonable
  *
  */
-public class FlexibilityProperty extends SimpleDoubleProperty implements CraftingProperty {
+public class FlexibilityProperty extends DoubleProperty implements CraftingProperty {
     public static final String KEY = "flexibility";
-    public static SimpleDoubleProperty property;
+    public static DoubleProperty property;
 
     public FlexibilityProperty() {
         super(KEY);

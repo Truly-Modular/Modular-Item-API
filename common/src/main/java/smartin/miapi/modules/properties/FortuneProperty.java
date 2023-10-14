@@ -4,9 +4,9 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.item.ItemStack;
 import smartin.miapi.item.FakeEnchantment;
-import smartin.miapi.modules.properties.util.SimpleDoubleProperty;
+import smartin.miapi.modules.properties.util.DoubleProperty;
 
-public class FortuneProperty extends SimpleDoubleProperty {
+public class FortuneProperty extends DoubleProperty {
     public static final String KEY = "fortune";
     public static FortuneProperty property;
 

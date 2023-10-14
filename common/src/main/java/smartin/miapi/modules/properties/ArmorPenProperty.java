@@ -9,7 +9,7 @@ import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.item.ItemStack;
 import smartin.miapi.events.MiapiEvents;
-import smartin.miapi.modules.properties.util.SimpleDoubleProperty;
+import smartin.miapi.modules.properties.util.DoubleProperty;
 
 import java.util.Objects;
 import java.util.WeakHashMap;
@@ -17,7 +17,7 @@ import java.util.WeakHashMap;
 /**
  * This property allows for armor penetration, so weapons can igonre some armor
  */
-public class ArmorPenProperty extends SimpleDoubleProperty {
+public class ArmorPenProperty extends DoubleProperty {
     public static final String KEY = "armor_pen";
     public static ArmorPenProperty property;
     private static WeakHashMap<LivingEntity, Multimap<EntityAttribute, EntityAttributeModifier>> cache = new WeakHashMap<>();

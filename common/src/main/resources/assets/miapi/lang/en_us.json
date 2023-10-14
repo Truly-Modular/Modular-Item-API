@@ -127,7 +127,7 @@
     "miapi.stat.air_drag":"\uD83D\uDCA8\uD83D\uDD31 Drag",
     "miapi.stat.air_drag.description":"How fast the arrow slows in air, higher is better",
     "miapi.stat.bow_draw_time":"\uD83C\uDFF9 Draw Time",
-    "miapi.stat.bow_draw_time.description":"Bow Draw time, lower is better",
+    "miapi.stat.bow_draw_time.description":"Bow Draw time, lower is better, is in ticks, 20 = 1 seconde",
     "miapi.stat.fracturing":"Fracturing",
     "miapi.stat.fracturing.description":"Fracturing increases Damage the lower the durability of the Item is",
     "miapi.stat.fortune":"Fortune",

@@ -2,12 +2,12 @@ package smartin.miapi.modules.properties;
 
 import net.minecraft.item.ItemStack;
 import smartin.miapi.modules.properties.util.ModuleProperty;
-import smartin.miapi.modules.properties.util.SimpleDoubleProperty;
+import smartin.miapi.modules.properties.util.DoubleProperty;
 
 /**
  * This property controls {@link smartin.miapi.modules.abilities.BlockAbility}
  */
-public class BlockProperty extends SimpleDoubleProperty implements ModuleProperty {
+public class BlockProperty extends DoubleProperty implements ModuleProperty {
     public static final String KEY = "blocking";
     public static BlockProperty property;
 

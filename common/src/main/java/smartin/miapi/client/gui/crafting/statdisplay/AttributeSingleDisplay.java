@@ -36,17 +36,25 @@ public class AttributeSingleDisplay extends SingleStatDisplayDouble {
     @Override
     public double getValue(ItemStack stack) {
         if (slot == null) {
-            double value = 0;
+            Double value = null;
             for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
-                if(stack.getAttributeModifiers(equipmentSlot).containsKey(attribute)){
+                if (stack.getAttributeModifiers(equipmentSlot).containsKey(attribute)) {
                     if (inverse) {
-                        value = Math.min(value, AttributeRegistry.getAttribute(stack, attribute, equipmentSlot, defaultValue));
+                        if (value != null) {
+                            value = Math.min(value, AttributeRegistry.getAttribute(stack, attribute, equipmentSlot, defaultValue));
+                        } else {
+                            value = AttributeRegistry.getAttribute(stack, attribute, equipmentSlot, defaultValue);
+                        }
                     } else {
-                        value = Math.max(value, AttributeRegistry.getAttribute(stack, attribute, equipmentSlot, defaultValue));
+                        if (value != null) {
+                            value = Math.max(value, AttributeRegistry.getAttribute(stack, attribute, equipmentSlot, defaultValue));
+                        } else {
+                            value = AttributeRegistry.getAttribute(stack, attribute, equipmentSlot, defaultValue);
+                        }
                     }
                 }
             }
-            return value;
+            return value != null ? value : 0;
         }
         return AttributeRegistry.getAttribute(stack, attribute, slot, defaultValue);
     }

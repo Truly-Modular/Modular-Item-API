@@ -6,12 +6,12 @@ import smartin.miapi.Miapi;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.cache.ModularItemCache;
 
-public class BooleanProperty implements ModuleProperty {
+public class SimpleBooleanProperty implements ModuleProperty {
     private final String KEY_PRIVATE;
-    public BooleanProperty property;
+    public SimpleBooleanProperty property;
     private final boolean defaultValueSaved;
 
-    protected BooleanProperty(String id, boolean defaultValue) {
+    protected SimpleBooleanProperty(String id, boolean defaultValue) {
         KEY_PRIVATE = id;
         defaultValueSaved = defaultValue;
         property = this;

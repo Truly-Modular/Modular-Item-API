@@ -1,9 +1,9 @@
 package smartin.miapi.modules.properties;
 
 import net.minecraft.item.ItemStack;
-import smartin.miapi.modules.properties.util.SimpleDoubleProperty;
+import smartin.miapi.modules.properties.util.DoubleProperty;
 
-public class AirDragProperty extends SimpleDoubleProperty {
+public class AirDragProperty extends DoubleProperty {
     public static String KEY = "air_drag";
     public static AirDragProperty property;
 

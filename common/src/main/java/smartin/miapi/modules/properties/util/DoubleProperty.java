@@ -6,20 +6,18 @@ import com.google.gson.JsonObject;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
-import smartin.miapi.Miapi;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.cache.ModularItemCache;
-import smartin.miapi.modules.properties.DurabilityProperty;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class SimpleDoubleProperty implements ModuleProperty {
+public abstract class DoubleProperty implements ModuleProperty {
     public ModuleProperty property;
     protected String privateKey;
 
-    protected SimpleDoubleProperty(String key) {
+    protected DoubleProperty(String key) {
         property = this;
         privateKey = key;
         ModularItemCache.setSupplier(key, (itemstack) -> createValue(itemstack, property));
@@ -143,7 +141,15 @@ public abstract class SimpleDoubleProperty implements ModuleProperty {
                 try {
                     value = Double.toString(toLoad.getAsDouble());
                 } catch (Exception surpressed) {
-                    value = toLoad.getAsString();
+                    try {
+                        if (toLoad.getAsBoolean()) {
+                            value = "1.0";
+                        } else {
+                            value = "0";
+                        }
+                    } catch (Exception surrpresed) {
+                        value = toLoad.getAsString();
+                    }
                 }
             }
             this.instance = instance;

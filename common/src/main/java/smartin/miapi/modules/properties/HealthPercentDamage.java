@@ -5,12 +5,12 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import smartin.miapi.events.MiapiEvents;
-import smartin.miapi.modules.properties.util.SimpleDoubleProperty;
+import smartin.miapi.modules.properties.util.DoubleProperty;
 
 /**
  * This Property allows currentHealthpercent damage ontop of already dealt damage
  */
-public class HealthPercentDamage extends SimpleDoubleProperty {
+public class HealthPercentDamage extends DoubleProperty {
     public static final String KEY = "healthPercent";
     public static HealthPercentDamage property;
 

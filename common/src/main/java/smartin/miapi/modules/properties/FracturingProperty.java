@@ -4,12 +4,12 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.item.ItemStack;
-import smartin.miapi.modules.properties.util.SimpleDoubleProperty;
+import smartin.miapi.modules.properties.util.DoubleProperty;
 
 import java.util.ArrayList;
 import java.util.UUID;
 
-public class FracturingProperty extends SimpleDoubleProperty {
+public class FracturingProperty extends DoubleProperty {
     public static final String KEY = "fracturing";
     public static FracturingProperty property;
 
