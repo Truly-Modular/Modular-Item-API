@@ -18,7 +18,7 @@ import smartin.miapi.modules.properties.ToolOrWeaponProperty;
 
 public class ModularWeapon extends Item implements ModularItem {
     public ModularWeapon() {
-        super(new Settings().fireproof().maxCount(1).maxDamage(500).rarity(Rarity.COMMON));
+        super(new Settings().maxCount(1).maxDamage(500).rarity(Rarity.COMMON));
     }
 
     @Override

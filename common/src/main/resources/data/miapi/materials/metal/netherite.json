@@ -21,6 +21,11 @@
             "255": "847A84"
         }
     },
+    "properties": {
+        "default": {
+            "fireProof": true
+        }
+    },
     "textures": [
         "netherite",
         "metalic"

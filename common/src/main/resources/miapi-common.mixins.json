@@ -14,6 +14,7 @@
         "FireworkRocketEntityMixin",
         "ForgingScreenHandlerAccessor",
         "InventoryValidationMixin",
+        "ItemEntityMixin",
         "ItemStackMixin",
         "LivingEntityAccessor",
         "LivingEntityMixin",
