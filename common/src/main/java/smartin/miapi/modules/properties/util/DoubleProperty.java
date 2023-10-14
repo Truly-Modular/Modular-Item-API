@@ -138,18 +138,16 @@ public abstract class DoubleProperty implements ModuleProperty {
                 this.value = object.get("value").getAsString();
             } else {
                 attributeOperation = EntityAttributeModifier.Operation.ADDITION;
-                try {
-                    value = Double.toString(toLoad.getAsDouble());
-                } catch (Exception surpressed) {
-                    try {
-                        if (toLoad.getAsBoolean()) {
-                            value = "1.0";
-                        } else {
-                            value = "0";
-                        }
-                    } catch (Exception surrpresed) {
-                        value = toLoad.getAsString();
+                if (toLoad.getAsJsonPrimitive().isBoolean()) {
+                    if (toLoad.getAsBoolean()) {
+                        value = "1.0";
+                    } else {
+                        value = "0";
                     }
+                } else if (toLoad.getAsJsonPrimitive().isNumber()) {
+                    value = Double.toString(toLoad.getAsDouble());
+                } else {
+                    value = toLoad.getAsString();
                 }
             }
             this.instance = instance;
