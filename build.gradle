@@ -16,9 +16,15 @@ forgix {
     mergedJarName = "Truly-Modular-miapi-${rootProject.mod_version}-${rootProject.minecraft_version}.jar"
 }
 
-tasks.register('buildMerged') {
-    dependsOn(':forge:build', ':fabric:build')
+tasks.register('clean-builds') {
+    dependsOn(':forge:clean',':fabric:clean')
+    doLast {
+        println "Cleaned previous build"
+    }
+}
 
+tasks.register('buildMerged') {
+    dependsOn('clean-builds',':fabric:build', ':forge:build')
     doLast {
         println "Build completed"
     }
