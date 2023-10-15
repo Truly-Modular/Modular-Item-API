@@ -15,9 +15,11 @@ import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.AllowedSlots;
 import smartin.miapi.modules.properties.CraftingConditionProperty;
+import smartin.miapi.modules.properties.PriorityProperty;
 import smartin.miapi.modules.properties.SlotProperty;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -39,14 +41,16 @@ public class ReplaceView extends InteractAbleWidget {
         addChild(headerHolder);
 
 
-        ScrollingTextWidget header = new ScrollingTextWidget((int) ((this.getX() + 5) / headerScale), (int) (this.getY() / headerScale)+3, (int) ((this.width - 10) / headerScale), Text.translatable(Miapi.MOD_ID + ".ui.replace.header"), ColorHelper.Argb.getArgb(255, 255, 255, 255));
+        ScrollingTextWidget header = new ScrollingTextWidget((int) ((this.getX() + 5) / headerScale), (int) (this.getY() / headerScale) + 3, (int) ((this.width - 10) / headerScale), Text.translatable(Miapi.MOD_ID + ".ui.replace.header"), ColorHelper.Argb.getArgb(255, 255, 255, 255));
         headerHolder.addChild(header);
         ScrollList list = new ScrollList(x, y + 14, width, height - 16, new ArrayList<>());
         addChild(list);
         list.children().clear();
         ArrayList<InteractAbleWidget> toList = new ArrayList<>();
         toList.add(new SlotButton(0, 0, this.width, 15, null));
-        AllowedSlots.allowedIn(slot).forEach(module -> {
+        AllowedSlots.allowedIn(slot).stream()
+                .sorted(Comparator.comparingDouble(PriorityProperty::getFor))
+                .forEach(module -> {
             if (CraftingConditionProperty.isVisible(slot, module, MinecraftClient.getInstance().player, null)) {
                 toList.add(new SlotButton(0, 0, this.width, 15, module));
             }
@@ -95,10 +99,10 @@ public class ReplaceView extends InteractAbleWidget {
             if (isMouseOver(mouseX, mouseY)) {
                 hoverOffset = 14;
             }
-            if(!isAllowed){
+            if (!isAllowed) {
                 hoverOffset = 28;
             }
-            drawTextureWithEdge(drawContext, CraftingScreen.BACKGROUND_TEXTURE, getX(), getY(), 404, 54+hoverOffset, 108, 14, getWidth(), getHeight(), 512, 512, 3);
+            drawTextureWithEdge(drawContext, CraftingScreen.BACKGROUND_TEXTURE, getX(), getY(), 404, 54 + hoverOffset, 108, 14, getWidth(), getHeight(), 512, 512, 3);
             textWidget.setX(this.getX() + 2);
             textWidget.setY(this.getY() + 3);
 

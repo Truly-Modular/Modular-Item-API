@@ -102,13 +102,13 @@ public abstract class DoubleProperty implements ModuleProperty {
         }
     }
 
-    public Double getValueForModule(ItemStack itemStack, ModuleProperty property, ItemModule.ModuleInstance moduleInstance) {
+    public Double getValueForModule(ItemModule.ModuleInstance moduleInstance) {
         double value = 0;
         boolean hasValue = false;
         List<Double> addition = new ArrayList<>();
         List<Double> multiplyBase = new ArrayList<>();
         List<Double> multiplyTotal = new ArrayList<>();
-        JsonElement element = moduleInstance.getProperties().get(property);
+        JsonElement element = moduleInstance.getProperties().get(this);
         if (element != null) {
             if (element.isJsonArray()) {
                 for (JsonElement innerElement : element.getAsJsonArray()) {

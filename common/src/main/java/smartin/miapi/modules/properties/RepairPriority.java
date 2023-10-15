@@ -40,14 +40,14 @@ public class RepairPriority extends DoubleProperty {
         double lowest = Double.MAX_VALUE;
         List<Material> materials = new ArrayList<>();
         for (ItemModule.ModuleInstance moduleInstance : ItemModule.getModules(itemStack).allSubModules()) {
-            Double value = getValueForModule(itemStack, this, moduleInstance);
+            Double value = getValueForModule(moduleInstance);
             Material material = MaterialProperty.getMaterial(moduleInstance);
             if (value != null && material != null && lowest > value) {
                 lowest = value;
             }
         }
         for (ItemModule.ModuleInstance moduleInstance : ItemModule.getModules(itemStack).allSubModules()) {
-            Double value = getValueForModule(itemStack, this, moduleInstance);
+            Double value = getValueForModule(moduleInstance);
             Material material = MaterialProperty.getMaterial(moduleInstance);
             if (value != null && material != null && Math.abs(lowest - value) < 0.001) {
                 materials.add(material);

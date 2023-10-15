@@ -23,6 +23,7 @@
             }
         }
     ],
+    "priority": 2,
     "repairPriority": -1,
     "enchantments": {
         "allowed": [

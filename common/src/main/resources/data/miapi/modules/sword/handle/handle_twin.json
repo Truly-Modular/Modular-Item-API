@@ -20,6 +20,7 @@
         "default",
         "handheld"
     ],
+    "priority": 4,
     "repairPriority": 0,
     "tag": [
         "twin_handle"

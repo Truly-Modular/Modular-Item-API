@@ -6,6 +6,7 @@
     "tag":  [
         "arrow_head"
     ],
+    "priority": 1,
     "attributes": [
         {
             "attribute": "miapi:generic.projectile_damage",

@@ -20,6 +20,7 @@
             }
         }
     },
+    "priority": 4,
     "materialProperty": [
         "default",
         "handheld",

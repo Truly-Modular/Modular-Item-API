@@ -20,6 +20,7 @@
         "two_handed_handle",
         "long_handle"
     ],
+    "priority": 2,
     "repairPriority": 0,
     "materialProperty": [
         "default",

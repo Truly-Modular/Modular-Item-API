@@ -20,6 +20,7 @@
             }
         }
     },
+    "priority": 5,
     "repairPriority": 0,
     "materialProperty": [
         "default",

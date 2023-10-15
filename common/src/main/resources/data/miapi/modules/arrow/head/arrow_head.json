@@ -24,6 +24,7 @@
         "default",
         "arrow"
     ],
+    "priority": 0,
     "allowedInSlots": [
         "arrow_head"
     ],

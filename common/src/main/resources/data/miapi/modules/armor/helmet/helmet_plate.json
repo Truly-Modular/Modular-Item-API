@@ -25,6 +25,7 @@
         "armor",
         "helmet"
     ],
+    "priority": 0,
     "repairPriority": 0,
     "tag": [
         "background_icon",

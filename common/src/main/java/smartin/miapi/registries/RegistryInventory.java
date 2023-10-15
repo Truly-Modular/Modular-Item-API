@@ -430,6 +430,7 @@ public class RegistryInventory {
             registerMiapi(moduleProperties, CanWalkOnSnow.KEY, new CanWalkOnSnow());
             registerMiapi(moduleProperties, FireProof.KEY, new FireProof());
             registerMiapi(moduleProperties, RepairPriority.KEY, new RepairPriority());
+            registerMiapi(moduleProperties, PriorityProperty.KEY, new PriorityProperty());
 
             //compat
             registerMiapi(moduleProperties, BetterCombatProperty.KEY, new BetterCombatProperty());

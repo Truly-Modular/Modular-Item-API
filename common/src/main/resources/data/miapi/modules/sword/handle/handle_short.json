@@ -18,6 +18,7 @@
         "default",
         "handheld"
     ],
+    "priority": 0,
     "repairPriority": 0,
     "slots": {
         "0": {
