@@ -22,7 +22,7 @@ public class StatProvidingItem extends Item {
     }
 
     /**
-     * A method used to get the crafting stat -> stat instance map.
+     * A method used to getRaw the crafting stat -> stat instance map.
      * You MUST return a fully wildcarded map, otherwise severe issues may arise.
      *
      * @param bench             the modular workbench block entity these stats are being sent to

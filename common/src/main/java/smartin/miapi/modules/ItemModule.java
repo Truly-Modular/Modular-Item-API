@@ -169,12 +169,12 @@ public class ItemModule {
     /**
      * Gets the root module instance associated with the given ItemStack.
      *
-     * @param stack the ItemStack to get the module instance from
+     * @param stack the ItemStack to getRaw the module instance from
      * @return the module instance associated with the given ItemStack
      */
     public static ItemModule.ModuleInstance getModules(ItemStack stack) {
         if (stack.getItem() instanceof ModularItem) {
-            ItemModule.ModuleInstance moduleInstance = (ItemModule.ModuleInstance) ModularItemCache.get(stack, MODULE_KEY);
+            ItemModule.ModuleInstance moduleInstance = (ItemModule.ModuleInstance) ModularItemCache.getRaw(stack, MODULE_KEY);
             if (moduleInstance == null || moduleInstance.module == null) {
                 IllegalArgumentException exception = new IllegalArgumentException("Item has Invalid Module setup - treating it like it has no modules");
                 Miapi.LOGGER.warn("Item has Invalid Module setup - treating it like it has no modules", exception);
@@ -188,7 +188,7 @@ public class ItemModule {
     /**
      * Gets a map of unmerged module properties for the given module instance.
      *
-     * @param modules the module instance to get the unmerged module properties from
+     * @param modules the module instance to getRaw the unmerged module properties from
      * @return a map of unmerged module properties
      */
     public static Map<ItemModule, List<JsonElement>> getUnmergedProperties(ItemModule.ModuleInstance modules) {

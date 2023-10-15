@@ -23,6 +23,7 @@
             }
         }
     ],
+    "repairPriority": -1,
     "enchantments": {
         "allowed": [
             "miapi:trident"

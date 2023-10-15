@@ -31,11 +31,7 @@ public class SimpleBooleanProperty implements ModuleProperty {
     }
 
     public boolean isTrue(ItemStack stack) {
-        Boolean value = (Boolean) ModularItemCache.get(stack, KEY_PRIVATE);
-        if (value != null) {
-            return value.booleanValue();
-        }
-        return defaultValueSaved;
+        return ModularItemCache.get(stack, KEY_PRIVATE, defaultValueSaved);
     }
 
     @Override

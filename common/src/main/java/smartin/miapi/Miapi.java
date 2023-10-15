@@ -38,7 +38,6 @@ import smartin.miapi.registries.RegistryInventory;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.function.Consumer;
 
 public class Miapi {
@@ -75,7 +74,7 @@ public class Miapi {
             Miapi.LOGGER.info("Loaded " + RegistryInventory.modules.getFlatMap().size() + " Modules");
         });
         ReloadEvents.END.subscribe((isClient) -> ModularItemCache.discardCache());
-        PlayerEvent.PLAYER_JOIN.register((player -> new Thread(()-> MiapiPermissions.getPerms(player)).start()));
+        PlayerEvent.PLAYER_JOIN.register((player -> new Thread(() -> MiapiPermissions.getPerms(player)).start()));
         PropertyResolver.propertyProviderRegistry.register("module", (moduleInstance, oldMap) -> {
             HashMap<ModuleProperty, JsonElement> map = new HashMap<>();
             moduleInstance.module.getProperties().forEach((key, jsonData) ->
@@ -109,7 +108,8 @@ public class Miapi {
             }
         });
         ModularItemCache.setSupplier(ItemModule.PROPERTY_KEY,
-                itemStack -> ItemModule.getUnmergedProperties((ItemModule.ModuleInstance) Objects.requireNonNull(ModularItemCache.get(itemStack, ItemModule.MODULE_KEY))));
+                itemStack -> ItemModule.getUnmergedProperties(
+                        ModularItemCache.get(itemStack, ItemModule.MODULE_KEY, new ItemModule.ModuleInstance(ItemModule.empty))));
         StatResolver.registerResolver("translation", new StatResolver.Resolver() {
             @Override
             public double resolveDouble(String data, ItemModule.ModuleInstance instance) {

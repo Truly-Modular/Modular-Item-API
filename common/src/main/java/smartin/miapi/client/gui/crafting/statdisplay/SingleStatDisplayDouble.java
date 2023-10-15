@@ -36,14 +36,14 @@ public abstract class SingleStatDisplayDouble extends InteractAbleWidget impleme
     public double maxValue = 100;
     public double minValue = 0;
     public DecimalFormat modifierFormat;
-    public StatDisplay.TextGetter text;
-    public StatDisplay.TextGetter hover;
+    public StatListWidget.TextGetter text;
+    public StatListWidget.TextGetter hover;
     public HoverDescription hoverDescription;
     int red = MiapiConfig.ColorGroup.red.getValue().intValue();
     int green = MiapiConfig.ColorGroup.green.getValue().intValue();
     public boolean inverse = false;
 
-    protected SingleStatDisplayDouble(int x, int y, int width, int height, StatDisplay.TextGetter title, StatDisplay.TextGetter hover) {
+    protected SingleStatDisplayDouble(int x, int y, int width, int height, StatListWidget.TextGetter title, StatListWidget.TextGetter hover) {
         super(x, y, width, height, Text.empty());
         text = title;
         this.hover = hover;

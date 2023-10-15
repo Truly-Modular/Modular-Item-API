@@ -33,6 +33,7 @@
         "blade",
         "polearm_spear"
     ],
+    "repairPriority": -1,
     "allowedInSlots": [
         "sword_blade_small"
     ],

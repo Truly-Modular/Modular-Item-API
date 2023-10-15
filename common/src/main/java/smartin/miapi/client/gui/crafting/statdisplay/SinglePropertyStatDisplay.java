@@ -16,7 +16,7 @@ import java.util.Locale;
 public class SinglePropertyStatDisplay extends SingleStatDisplayDouble {
     protected DoubleProperty property;
 
-    protected SinglePropertyStatDisplay(StatDisplay.TextGetter title, StatDisplay.TextGetter hover, DoubleProperty property) {
+    protected SinglePropertyStatDisplay(StatListWidget.TextGetter title, StatListWidget.TextGetter hover, DoubleProperty property) {
         super(0, 0, 51, 19, title, hover);
         this.property = property;
     }
@@ -38,8 +38,8 @@ public class SinglePropertyStatDisplay extends SingleStatDisplayDouble {
 
     public static class Builder {
         DoubleProperty property;
-        public StatDisplay.TextGetter name;
-        public StatDisplay.TextGetter hoverDescription = (stack) -> Text.empty();
+        public StatListWidget.TextGetter name;
+        public StatListWidget.TextGetter hoverDescription = (stack) -> Text.empty();
         public String translationKey = "";
         public Object[] descriptionArgs = new Object[]{};
         public DecimalFormat modifierFormat;
@@ -68,7 +68,7 @@ public class SinglePropertyStatDisplay extends SingleStatDisplayDouble {
             return this;
         }
 
-        public Builder setName(StatDisplay.TextGetter name) {
+        public Builder setName(StatListWidget.TextGetter name) {
             this.name = name;
             return this;
         }
@@ -85,7 +85,7 @@ public class SinglePropertyStatDisplay extends SingleStatDisplayDouble {
             return this;
         }
 
-        public Builder setHoverDescription(StatDisplay.TextGetter hoverDescription) {
+        public Builder setHoverDescription(StatListWidget.TextGetter hoverDescription) {
             this.hoverDescription = hoverDescription;
             return this;
         }

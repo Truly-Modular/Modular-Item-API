@@ -167,15 +167,15 @@ public interface CraftingStat<T> {
                 StatMap<?> stats = new StatMap<>();
                 MapLike<T> map = ops.getMap(input).getOrThrow(false, s -> Miapi.LOGGER.error("Failed to create map in StatMapCodec! -> {}", s));
                 map.entries().forEach(p -> {
-                    String str = ops.getStringValue(p.getFirst()).getOrThrow(false, s -> Miapi.LOGGER.error("Failed to get string in StatMapCodec! -> {}", s));
+                    String str = ops.getStringValue(p.getFirst()).getOrThrow(false, s -> Miapi.LOGGER.error("Failed to getRaw string in StatMapCodec! -> {}", s));
                     CraftingStat stat = RegistryInventory.craftingStats.get(str);
                     T element = p.getSecond();
                     if (stat != null) {
                         if (element instanceof JsonElement json)
                             stats.set(stat, stat.createFromJson(json, modules));
                         else if (element instanceof NbtElement nbt)
-                            stats.set(stat, stat.createFromNbt(nbt)); // nbt doesn't get the modules cuz nbt is usually for syncing not parsing
-                        else // hardcoding this codec nbt and json probably isn't the best thing to do, but smartin would prob get mad if I forced the use of codecs in crafting stats
+                            stats.set(stat, stat.createFromNbt(nbt)); // nbt doesn't getRaw the modules cuz nbt is usually for syncing not parsing
+                        else // hardcoding this codec nbt and json probably isn't the best thing to do, but smartin would prob getRaw mad if I forced the use of codecs in crafting stats
                             Miapi.LOGGER.warn("Only Json and Nbt deserialization is supported with the StatMapCodec!");
                     } // I could warn if the stat id is invalid, but optional compat is a thing and spamming console with invalid id warns is obnoxious af
                 });

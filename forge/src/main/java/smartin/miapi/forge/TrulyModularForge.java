@@ -21,15 +21,15 @@ public class TrulyModularForge {
         Miapi.init();
 
         //ATTRIBUTE REPLACEMENT
-        //AttributeRegistry.REACH = ForgeMod.BLOCK_REACH.get();
-        //AttributeRegistry.ATTACK_RANGE = ForgeMod.ENTITY_REACH.get();
+        //AttributeRegistry.REACH = ForgeMod.BLOCK_REACH.getRaw();
+        //AttributeRegistry.ATTACK_RANGE = ForgeMod.ENTITY_REACH.getRaw();
         AttributeProperty.replaceMap.put("miapi:generic.reach", ForgeMod.BLOCK_REACH);
         AttributeProperty.replaceMap.put("miapi:generic.attack_range", ForgeMod.ENTITY_REACH);
         AttributeProperty.replaceMap.put("forge:block_reach", ForgeMod.BLOCK_REACH);
         AttributeProperty.replaceMap.put("forge:entity_reach", ForgeMod.ENTITY_REACH);
         AttributeProperty.replaceMap.put("reach-entity-attributes:reach", ForgeMod.BLOCK_REACH);
         AttributeProperty.replaceMap.put("reach-entity-attributes:attack_range", ForgeMod.ENTITY_REACH);
-        //AttributeRegistry.ATTACK_RANGE = ForgeMod.ENTITY_REACH.get();
+        //AttributeRegistry.ATTACK_RANGE = ForgeMod.ENTITY_REACH.getRaw();
         //AttributeProperty.priorityMap.put(ForgeMod.BLOCK_REACH, -7.0f);
         //AttributeProperty.priorityMap.put(ForgeMod.ENTITY_REACH, -7.0f);
     }

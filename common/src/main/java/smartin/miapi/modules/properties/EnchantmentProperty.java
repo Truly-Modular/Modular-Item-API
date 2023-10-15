@@ -88,11 +88,7 @@ public class EnchantmentProperty implements CraftingProperty, ModuleProperty {
     }
 
     public static List<Enchantment> getAllowedList(ItemStack stack) {
-        List<Enchantment> list = (List<Enchantment>) ModularItemCache.get(stack, KEY);
-        if (list == null) {
-            return Collections.emptyList();
-        }
-        return Collections.unmodifiableList(list);
+        return ModularItemCache.get(stack, KEY, Collections.emptyList());
     }
 
     public static void addToReplaceMap(String key, String enchant) {

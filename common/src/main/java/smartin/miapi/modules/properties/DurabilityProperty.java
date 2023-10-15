@@ -23,6 +23,6 @@ public class DurabilityProperty extends DoubleProperty {
 
     @Override
     public double getValueSafe(ItemStack stack) {
-        return (int) Math.max(1, getValueSafeRaw(stack));
+        return (int) Math.max(1, Math.round(getValueSafeRaw(stack)));
     }
 }

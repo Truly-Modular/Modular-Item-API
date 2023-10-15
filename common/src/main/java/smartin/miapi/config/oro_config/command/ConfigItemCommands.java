@@ -114,7 +114,7 @@ public final class ConfigItemCommands {
     /**
      * Gets the config builder for the config item
      *
-     * @param configItem The config item to get the builder for
+     * @param configItem The config item to getRaw the builder for
      * @param <T>        The type of the config item's value
      * @param <C>        The type for the config item
      * @return

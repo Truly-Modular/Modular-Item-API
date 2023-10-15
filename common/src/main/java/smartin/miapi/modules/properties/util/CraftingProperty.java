@@ -16,7 +16,7 @@ import java.util.List;
 
 /**
  * This is an abstract Class for Crafting properties.
- * They get called during craft actions.
+ * They getRaw called during craft actions.
  */
 public interface CraftingProperty {
     /**

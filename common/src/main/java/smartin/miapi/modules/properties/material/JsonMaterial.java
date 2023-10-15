@@ -143,8 +143,8 @@ public class JsonMaterial implements Material {
     /*@Environment(EnvType.CLIENT)
     @Override
     public int getColor() {
-        if (rawJson.getAsJsonObject().get("color") != null) {
-            long longValue = Long.parseLong(rawJson.getAsJsonObject().get("color").getAsString(), 16);
+        if (rawJson.getAsJsonObject().getRaw("color") != null) {
+            long longValue = Long.parseLong(rawJson.getAsJsonObject().getRaw("color").getAsString(), 16);
             return (int) (longValue & 0xffffffffL);
         }
         return ColorHelper.Argb.getArgb(255, 255, 255, 255);

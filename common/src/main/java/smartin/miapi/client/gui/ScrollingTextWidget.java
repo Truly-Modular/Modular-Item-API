@@ -81,7 +81,7 @@ public class ScrollingTextWidget extends InteractAbleWidget implements Drawable,
     }
 
     /**
-     * get the current Text
+     * getRaw the current Text
      *
      * @return the Text of the Widget
      */

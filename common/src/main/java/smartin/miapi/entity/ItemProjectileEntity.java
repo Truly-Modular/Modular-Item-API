@@ -327,7 +327,7 @@ public class ItemProjectileEntity extends PersistentProjectileEntity {
     public void onPlayerCollision(PlayerEntity player) {
         super.onPlayerCollision(player);
         /*
-        if (this.dataTracker.get(LOYALTY).intValue() > 0) {
+        if (this.dataTracker.getRaw(LOYALTY).intValue() > 0) {
             if (this.isOwner(player) || this.getOwner() == null) {
                 super.onPlayerCollision(player);
             }

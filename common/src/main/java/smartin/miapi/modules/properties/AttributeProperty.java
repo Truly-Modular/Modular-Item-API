@@ -126,11 +126,8 @@ public class AttributeProperty implements ModuleProperty {
     }
 
     public static Multimap<EntityAttribute, EntityAttributeModifierHolder> getAttributeModifiersRaw(ItemStack itemStack) {
-        Multimap<EntityAttribute, EntityAttributeModifierHolder> multimap = (Multimap<EntityAttribute, EntityAttributeModifierHolder>) ModularItemCache.get(itemStack, KEY);
-        if (multimap == null) {
-            return ArrayListMultimap.create();
-        }
-        return multimap;
+        Multimap<EntityAttribute, EntityAttributeModifierHolder> multimap = ArrayListMultimap.create();
+        return ModularItemCache.get(itemStack, KEY, multimap);
     }
 
     private static Map<EquipmentSlot, Multimap<EntityAttribute, EntityAttributeModifier>> equipmentSlotMultimapMapGenerate(ItemStack itemStack) {
@@ -142,15 +139,8 @@ public class AttributeProperty implements ModuleProperty {
     }
 
     public static Map<EquipmentSlot, Multimap<EntityAttribute, EntityAttributeModifier>> equipmentSlotMultimapMap(ItemStack itemStack) {
-        Map<EquipmentSlot, Multimap<EntityAttribute, EntityAttributeModifier>> map = (Map<EquipmentSlot, Multimap<EntityAttribute, EntityAttributeModifier>>) ModularItemCache.get(itemStack, KEY + "_unmodifieable");
-        if (map == null) {
-            Map<EquipmentSlot, Multimap<EntityAttribute, EntityAttributeModifier>> replaceMap = new EnumMap<>(EquipmentSlot.class);
-            for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
-                replaceMap.put(equipmentSlot, ArrayListMultimap.create());
-            }
-            return replaceMap;
-        }
-        return map;
+        Map<EquipmentSlot, Multimap<EntityAttribute, EntityAttributeModifier>> replaceMap = new EnumMap<>(EquipmentSlot.class);
+        return ModularItemCache.get(itemStack, KEY + "_unmodifieable",replaceMap);
     }
 
     public static Multimap<EntityAttribute, EntityAttributeModifier> getAttributeModifiersForSlot(ItemStack itemStack, EquipmentSlot slot, Multimap<EntityAttribute, EntityAttributeModifier> toAdding) {

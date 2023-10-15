@@ -1,6 +1,5 @@
 package smartin.miapi.item.modular.items;
 
-import dev.architectury.event.events.common.ExplosionEvent;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -27,6 +26,7 @@ import smartin.miapi.events.MiapiProjectileEvents;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.modules.properties.AttributeProperty;
 import smartin.miapi.modules.properties.DisplayNameProperty;
+import smartin.miapi.modules.properties.RepairPriority;
 
 import java.util.function.Predicate;
 
@@ -48,6 +48,11 @@ public class ModularBow extends BowItem implements ModularItem {
     @Override
     public int getEnchantability() {
         return 1;
+    }
+
+    @Override
+    public boolean canRepair(ItemStack stack, ItemStack ingredient) {
+        return RepairPriority.getRepairValue(stack, ingredient) > 0;
     }
 
     @Override

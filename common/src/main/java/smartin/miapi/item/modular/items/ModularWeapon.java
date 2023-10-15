@@ -14,6 +14,7 @@ import smartin.miapi.modules.abilities.util.ItemAbilityManager;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.modules.properties.DisplayNameProperty;
 import smartin.miapi.modules.properties.MiningLevelProperty;
+import smartin.miapi.modules.properties.RepairPriority;
 import smartin.miapi.modules.properties.ToolOrWeaponProperty;
 
 public class ModularWeapon extends Item implements ModularItem {
@@ -33,18 +34,23 @@ public class ModularWeapon extends Item implements ModularItem {
 
     @Override
     public int getItemBarStep(ItemStack stack) {
-        return Math.round(13.0F - (float)stack.getDamage() * 13.0F / ModularItem.getDurability(stack));
+        return Math.round(13.0F - (float) stack.getDamage() * 13.0F / ModularItem.getDurability(stack));
     }
 
     @Override
     public int getItemBarColor(ItemStack stack) {
-        float f = Math.max(0.0F, ((float) ModularItem.getDurability(stack) - (float)stack.getDamage()) / ModularItem.getDurability(stack));
+        float f = Math.max(0.0F, ((float) ModularItem.getDurability(stack) - (float) stack.getDamage()) / ModularItem.getDurability(stack));
         return MathHelper.hsvToRgb(f / 3.0F, 1.0F, 1.0F);
     }
 
     @Override
-    public boolean isEnchantable(ItemStack itemStack){
+    public boolean isEnchantable(ItemStack itemStack) {
         return true;
+    }
+
+    @Override
+    public boolean canRepair(ItemStack stack, ItemStack ingredient) {
+        return RepairPriority.getRepairValue(stack, ingredient) > 0;
     }
 
     @Override
@@ -54,12 +60,11 @@ public class ModularWeapon extends Item implements ModularItem {
 
     @Override
     public boolean postHit(ItemStack stack, LivingEntity target, LivingEntity attacker) {
-        if(ToolOrWeaponProperty.isWeapon(stack)){
-            stack.damage(1,attacker, (e) -> {
+        if (ToolOrWeaponProperty.isWeapon(stack)) {
+            stack.damage(1, attacker, (e) -> {
                 e.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND);
             });
-        }
-        else {
+        } else {
             stack.damage(2, attacker, (e) -> {
                 e.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND);
             });
@@ -70,12 +75,11 @@ public class ModularWeapon extends Item implements ModularItem {
     @Override
     public boolean postMine(ItemStack stack, World world, BlockState state, BlockPos pos, LivingEntity miner) {
         if (!world.isClient && state.getHardness(world, pos) != 0.0F) {
-            if(ToolOrWeaponProperty.isWeapon(stack)){
+            if (ToolOrWeaponProperty.isWeapon(stack)) {
                 stack.damage(2, miner, (e) -> {
                     e.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND);
                 });
-            }
-            else {
+            } else {
                 stack.damage(1, miner, (e) -> {
                     e.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND);
                 });

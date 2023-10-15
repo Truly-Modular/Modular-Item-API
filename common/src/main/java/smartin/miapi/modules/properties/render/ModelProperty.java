@@ -130,13 +130,13 @@ public class ModelProperty implements ModuleProperty {
     }
 
     public static Map<String, BakedModel> getModelMap(ItemStack stack) {
-        //return (Map<String, BakedModel>) ModularItemCache.get(stack, CACHE_KEY_MAP);
+        //return (Map<String, BakedModel>) ModularItemCache.getRaw(stack, CACHE_KEY_MAP);
         return new HashMap<>();
     }
 
     @Nullable
     public static BakedModel getItemModel(ItemStack stack) {
-        return (BakedModel) ModularItemCache.get(stack, CACHE_KEY_ITEM);
+        return (BakedModel) ModularItemCache.getRaw(stack, CACHE_KEY_ITEM);
     }
 
     protected static Map<String, BakedModel> generateModels(ItemStack itemStack) {

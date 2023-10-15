@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Environment(EnvType.CLIENT)
-public class StatDisplay extends InteractAbleWidget {
+public class StatListWidget extends InteractAbleWidget {
     private static final List<InteractAbleWidget> statDisplays = new ArrayList<>();
     private static final List<StatWidgetSupplier> statWidgetSupplier = new ArrayList<>();
     private final BoxList boxList;
@@ -175,7 +175,7 @@ public class StatDisplay extends InteractAbleWidget {
         });
     }
 
-    public StatDisplay(int x, int y, int width, int height) {
+    public StatListWidget(int x, int y, int width, int height) {
         super(x, y, width, height, Text.empty());
         transformableWidget = new TransformableWidget(x, y, width, height, Text.empty());
         boxList = new BoxList(x, y, width, height, Text.empty(), new ArrayList<>());

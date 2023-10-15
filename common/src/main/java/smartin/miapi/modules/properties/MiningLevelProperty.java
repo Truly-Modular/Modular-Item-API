@@ -60,31 +60,27 @@ public class MiningLevelProperty implements ModuleProperty {
         });
     }
 
-    public static int getMiningLevel(String type,ItemStack stack){
-        Map<String, Float> mergedMap = (Map<String, Float>) ModularItemCache.get(stack, KEY);
-        if(mergedMap!=null){
-            Float value = mergedMap.get(type);
-            if(value!=null){
-                return value.intValue();
-            }
+    public static int getMiningLevel(String type, ItemStack stack) {
+        Map<String, Float> mergedMap = ModularItemCache.get(stack, KEY, new HashMap<>());
+        Float value = mergedMap.get(type);
+        if (value != null) {
+            return value.intValue();
         }
         return 0;
     }
 
     public static boolean isSuitable(ItemStack stack, BlockState state) {
-        Map<String, Float> mergedMap = (Map<String, Float>) ModularItemCache.get(stack, KEY);
-        if(mergedMap!=null){
-            for (Map.Entry<String, TagKey<Block>> entry : miningCapabilities.entrySet()) {
-                if (state.isIn(entry.getValue())) {
-                    Float level = mergedMap.get(entry.getKey());
-                    if (level != null) {
-                        for (Map.Entry<TagKey<Block>, Integer> miningLevelEntry : miningLevels.entrySet()) {
-                            if (state.isIn(miningLevelEntry.getKey())) {
-                                return miningLevelEntry.getValue() <= level;
-                            }
+        Map<String, Float> mergedMap = ModularItemCache.get(stack, KEY, new HashMap<>());
+        for (Map.Entry<String, TagKey<Block>> entry : miningCapabilities.entrySet()) {
+            if (state.isIn(entry.getValue())) {
+                Float level = mergedMap.get(entry.getKey());
+                if (level != null) {
+                    for (Map.Entry<TagKey<Block>, Integer> miningLevelEntry : miningLevels.entrySet()) {
+                        if (state.isIn(miningLevelEntry.getKey())) {
+                            return miningLevelEntry.getValue() <= level;
                         }
-                        return true;
                     }
+                    return true;
                 }
             }
         }

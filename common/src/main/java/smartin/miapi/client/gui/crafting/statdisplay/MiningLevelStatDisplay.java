@@ -40,8 +40,8 @@ public class MiningLevelStatDisplay extends InteractAbleWidget implements Single
     public int maxValueInt = 4;
     public int minValueInt = 0;
     public DecimalFormat modifierFormat;
-    public StatDisplay.TextGetter text;
-    public StatDisplay.TextGetter hover;
+    public StatListWidget.TextGetter text;
+    public StatListWidget.TextGetter hover;
     public HoverDescription hoverDescription;
     public IntegerStatBar integerStatBar;
     public String type;
@@ -51,7 +51,7 @@ public class MiningLevelStatDisplay extends InteractAbleWidget implements Single
     int red = MiapiConfig.ColorGroup.red.getValue().intValue();
     int green = MiapiConfig.ColorGroup.green.getValue().intValue();
 
-    public MiningLevelStatDisplay(String type, StatDisplay.TextGetter title, StatDisplay.TextGetter hover) {
+    public MiningLevelStatDisplay(String type, StatListWidget.TextGetter title, StatListWidget.TextGetter hover) {
         super(0, 0, 76, 19, Text.empty());
         this.type = type;
         text = title;
@@ -193,8 +193,8 @@ public class MiningLevelStatDisplay extends InteractAbleWidget implements Single
     }
 
     public static class Builder {
-        public StatDisplay.TextGetter name;
-        public StatDisplay.TextGetter hoverDescription = (stack) -> Text.empty();
+        public StatListWidget.TextGetter name;
+        public StatListWidget.TextGetter hoverDescription = (stack) -> Text.empty();
         EntityAttribute attribute;
         public EquipmentSlot slot = EquipmentSlot.MAINHAND;
         public double defaultValue = 1;
@@ -231,7 +231,7 @@ public class MiningLevelStatDisplay extends InteractAbleWidget implements Single
             return this;
         }
 
-        public Builder setName(StatDisplay.TextGetter name) {
+        public Builder setName(StatListWidget.TextGetter name) {
             this.name = name;
             return this;
         }
@@ -248,7 +248,7 @@ public class MiningLevelStatDisplay extends InteractAbleWidget implements Single
             return this;
         }
 
-        public Builder setHoverDescription(StatDisplay.TextGetter hoverDescription) {
+        public Builder setHoverDescription(StatListWidget.TextGetter hoverDescription) {
             this.hoverDescription = hoverDescription;
             return this;
         }

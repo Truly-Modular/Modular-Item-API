@@ -61,7 +61,7 @@ public class GeneratedMaterial implements Material {
             groups.add("crystal");
         }
         //TODO:generate those sensible ig?
-        //maybe scan all items assosiaated with the toolmaterial to get somewhat valid stats?
+        //maybe scan all items assosiaated with the toolmaterial to getRaw somewhat valid stats?
         materialStats.put("durability", (double) toolMaterial.getDurability());
         materialStats.put("mining_level", (double) toolMaterial.getMiningLevel());
         materialStats.put("mining_speed", (double) toolMaterial.getMiningSpeedMultiplier());

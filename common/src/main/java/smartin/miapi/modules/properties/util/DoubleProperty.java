@@ -102,27 +102,68 @@ public abstract class DoubleProperty implements ModuleProperty {
         }
     }
 
+    public Double getValueForModule(ItemStack itemStack, ModuleProperty property, ItemModule.ModuleInstance moduleInstance) {
+        double value = 0;
+        boolean hasValue = false;
+        List<Double> addition = new ArrayList<>();
+        List<Double> multiplyBase = new ArrayList<>();
+        List<Double> multiplyTotal = new ArrayList<>();
+        JsonElement element = moduleInstance.getProperties().get(property);
+        if (element != null) {
+            if (element.isJsonArray()) {
+                for (JsonElement innerElement : element.getAsJsonArray()) {
+                    hasValue = true;
+                    Operation operation = new Operation(innerElement, moduleInstance);
+                    switch (operation.attributeOperation) {
+                        case ADDITION -> addition.add(operation.solve());
+                        case MULTIPLY_BASE -> multiplyBase.add(operation.solve());
+                        case MULTIPLY_TOTAL -> multiplyTotal.add(operation.solve());
+                    }
+                }
+            } else {
+                hasValue = true;
+                Operation operation = new Operation(element, moduleInstance);
+                switch (operation.attributeOperation) {
+                    case ADDITION -> addition.add(operation.solve());
+                    case MULTIPLY_BASE -> multiplyBase.add(operation.solve());
+                    case MULTIPLY_TOTAL -> multiplyTotal.add(operation.solve());
+                }
+            }
+        }
+        for (Double currentValue : addition) {
+            value += currentValue;
+        }
+        double multiplier = 1.0;
+        for (Double currentValue : multiplyBase) {
+            multiplier += currentValue;
+        }
+        value = value * multiplier;
+        for (Double currentValue : multiplyTotal) {
+            value = currentValue * value;
+        }
+        if (hasValue) {
+            return value;
+        } else {
+            return null;
+        }
+    }
+
     public boolean hasValue(ItemStack itemStack) {
         return getValueRaw(itemStack) != null;
     }
 
     @Nullable
     public Double getValueRaw(ItemStack itemStack) {
-        return (Double) ModularItemCache.get(itemStack, privateKey);
+        return (Double) ModularItemCache.getRaw(itemStack, privateKey);
     }
 
     public double getValueSafeRaw(ItemStack itemStack) {
-        Double value = getValueRaw(itemStack);
-        return value == null ? 0 : value;
+        return ModularItemCache.get(itemStack, privateKey, Double.valueOf(0));
     }
 
     @Override
     public boolean load(String moduleKey, JsonElement data) throws Exception {
-        try {
-            //data.getAsDouble();
-        } catch (Exception e) {
-            //StatResolver.resolveDouble(data.getAsString(), new ItemModule.ModuleInstance(ItemModule.empty));
-        }
+        new Operation(data, new ItemModule.ModuleInstance(ItemModule.empty));
         return true;
     }
 

@@ -21,7 +21,7 @@ import smartin.miapi.client.gui.TransformableWidget;
 import smartin.miapi.client.gui.crafting.crafter.ModuleCrafter;
 import smartin.miapi.client.gui.crafting.slotdisplay.SlotDisplay;
 import smartin.miapi.client.gui.crafting.slotdisplay.SmithDisplay;
-import smartin.miapi.client.gui.crafting.statdisplay.StatDisplay;
+import smartin.miapi.client.gui.crafting.statdisplay.StatListWidget;
 import smartin.miapi.item.ModularItemStackConverter;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.edit_options.EditOption;
@@ -39,7 +39,7 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
     public static final InterpolateMode EASE_OUT = new InterpolateMode.EaseOut(5);*/
     private ItemStack stack;
     private ModuleCrafter moduleCrafter;
-    private StatDisplay statDisplay;
+    private StatListWidget statDisplay;
     private SlotDisplay slotDisplay;
     private SmithDisplay smithDisplay;
     private MinimizeButton minimizer;
@@ -104,7 +104,7 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
         this.addChild(slotDisplay);
         smithDisplay = new SmithDisplay(centerX + 140, centerY + 117, 55, 70);
         this.addChild(smithDisplay);
-        statDisplay = new StatDisplay(centerX + 213, centerY + 30, 161, 95);
+        statDisplay = new StatListWidget(centerX + 213, centerY + 30, 161, 95);
         this.addChild(statDisplay);
 
         minimizer = new MinimizeButton(centerX + 178, centerY + 188, 18, 18, this::minimizeView, this::maximizeView);

@@ -37,6 +37,6 @@ public class PropertyActionManager {
     }
 
     public static ActionListeningProperty.EventMap getListeners(ItemStack stack) {
-        return (ActionListeningProperty.EventMap) ModularItemCache.get(stack, cacheKey);
+        return (ActionListeningProperty.EventMap) ModularItemCache.getRaw(stack, cacheKey);
     }
 }

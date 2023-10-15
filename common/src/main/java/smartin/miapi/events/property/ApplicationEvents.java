@@ -38,11 +38,11 @@ import java.util.function.Function;
  * {@link #entityEvents}: A list containing every entity related event. This is used so that listeners
  * can easily listen to and handle every entity related event at the same time.
  * <p></p>
- * {@link #entityDataReaders}: A registry representing ways to get items out of entities.
+ * {@link #entityDataReaders}: A registry representing ways to getRaw items out of entities.
  * By default, you can check entities' offhands, mainhands, armor slots, or active using item. This is
- * also used to get the itemstack in modular projectile entities, or the itemstack in dropped ItemEntities.
+ * also used to getRaw the itemstack in modular projectile entities, or the itemstack in dropped ItemEntities.
  * <p></p>
- * {@link #entityRedirectors}: A registry representing ways to get other entities from
+ * {@link #entityRedirectors}: A registry representing ways to getRaw other entities from
  * an inputted one. By default, you can the entity's attacker, or the entity's victim.
  * <p></p>
  * {@link #entityTargetFillers}: A list containing directions allowing for additional "target" selection

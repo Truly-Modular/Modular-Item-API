@@ -11,10 +11,7 @@ import smartin.miapi.Miapi;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.item.modular.ModularItem;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
-import java.util.WeakHashMap;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -30,7 +27,7 @@ public class ModularItemCache {
             .expireAfterAccess(CACHE_LIFETIME, CACHE_LIFETIME_UNIT)
             .build(new CacheLoader<>() {
                 public @NotNull Cache load(@NotNull UUID key) {
-                    return new Cache(key, ItemStack.EMPTY);
+                    return new Cache(key, net.minecraft.item.ItemStack.EMPTY);
                 }
             });
     protected static Map<ItemStack, UUID> lookUpTable = new WeakHashMap<>();
@@ -48,12 +45,24 @@ public class ModularItemCache {
     }
 
     @Nullable
-    public static Object get(ItemStack stack, String key) {
+    public static Object getRaw(ItemStack stack, String key) {
         if (!ReloadEvents.inReload && !stack.isEmpty() && stack.getItem() instanceof ModularItem) {
             Cache itemCache = find(stack);
             return itemCache.get(key);
         }
         return null;
+    }
+
+    public static <T> T get(ItemStack stack, String key, T fallback) {
+        if (!ReloadEvents.inReload && !stack.isEmpty() && stack.getItem() instanceof ModularItem) {
+            Cache itemCache = find(stack);
+            T object = (T) itemCache.get(key);
+            if (object == null) {
+                return fallback;
+            }
+            return object;
+        }
+        return fallback;
     }
 
     public static void discardCache() {

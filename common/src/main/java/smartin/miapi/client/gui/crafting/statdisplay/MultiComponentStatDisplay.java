@@ -29,8 +29,8 @@ public abstract class MultiComponentStatDisplay extends InteractAbleWidget imple
     public Identifier texture = new Identifier("textures/gui/container/inventory.png");
     public ScrollingTextWidget textWidget;
     public DecimalFormat modifierFormat;
-    public StatDisplay.TextGetter title;
-    public StatDisplay.MultiTextGetter hover;
+    public StatListWidget.TextGetter title;
+    public StatListWidget.MultiTextGetter hover;
     public HoverDescription hoverDescription;
     public int scrollPosition;
     protected ItemStack original = ItemStack.EMPTY;
@@ -38,7 +38,7 @@ public abstract class MultiComponentStatDisplay extends InteractAbleWidget imple
     public List<ComponentHolder> components = new ArrayList<>();
     public int maxScrollPositon;
 
-    protected MultiComponentStatDisplay(int x, int y, int width, int height, StatDisplay.TextGetter title, StatDisplay.MultiTextGetter hover) {
+    protected MultiComponentStatDisplay(int x, int y, int width, int height, StatListWidget.TextGetter title, StatListWidget.MultiTextGetter hover) {
         super(x, y, width, height, Text.empty());
         this.title = title;
         this.hover = hover;

@@ -6,7 +6,7 @@ todo basic documentation on this for addon devs
 vec4 get_palette_color(sampler2D palette, vec2 pos, vec4 grayscale) {
 //    ivec2 size = textureSize(palette, 0); // for testing
 
-    /* get uv for specific palette pixel:
+    /* getRaw uv for specific palette pixel:
     - x-coord: starting x (pos.x) plus grayscale amount
     - y-coord: starting y (pos.y), since all of every palettes' pixels are at the same y
     */

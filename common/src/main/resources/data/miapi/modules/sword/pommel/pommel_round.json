@@ -13,6 +13,7 @@
         "default",
         "handheld"
     ],
+    "repairPriority": 0,
     "durability": "[material.durability]* 0.25",
     "allowedMaterial": {
         "allowedMaterials": [

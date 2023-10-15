@@ -5,6 +5,7 @@ import com.google.gson.stream.JsonReader;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
+import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.item.modular.ModularItem;
@@ -44,7 +45,8 @@ public class BetterCombatHelper {
         return net.bettercombat.logic.WeaponRegistry.resolveAttributes(new Identifier(Miapi.MOD_ID, "modular_item"), net.bettercombat.api.WeaponAttributesHelper.decode(jsonReader));
     }
 
+    @Nullable
     public static net.bettercombat.api.WeaponAttributes getAttributes(ItemStack stack) {
-        return (net.bettercombat.api.WeaponAttributes) ModularItemCache.get(stack, BetterCombatProperty.KEY);
+        return (net.bettercombat.api.WeaponAttributes) ModularItemCache.getRaw(stack, BetterCombatProperty.KEY);
     }
 }

@@ -44,6 +44,7 @@
             }
         }
     ],
+    "repairPriority": 0,
     "materialProperty": [
         "default",
         "armor",

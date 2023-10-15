@@ -111,8 +111,8 @@ public class Config {
      * Gets a the value at path
      *
      * @param path  The path to search
-     * @param clazz The class of the type to get
-     * @param <T>   The type to get
+     * @param clazz The class of the type to getRaw
+     * @param <T>   The type to getRaw
      * @return The value if it exists
      */
     @SuppressWarnings("unchecked")

@@ -26,17 +26,17 @@ public class ParticleShapingProperty extends CodecBasedProperty<List<ParticleSha
             ItemStack stack = event.stackGetter.apply(instance);
             if (stack == null) stack = entity.getMainHandStack();
 
-            List<Holder> holders = property.get(stack);
+            List<Holder> holders = property.getRaw(stack);
             if (holders == null) return;
 
             for (Holder holder : holders) {
                 if (!holder.event.equals(event)) continue;
 
-                if (instance instanceof PropAppOld.Ability ability && holder.abilityConditions.isPresent() && !holder.abilityConditions.get().test(ability)) continue; // used to check ability name and time
+                if (instance instanceof PropAppOld.Ability ability && holder.abilityConditions.isPresent() && !holder.abilityConditions.getRaw().test(ability)) continue; // used to check ability name and time
                 if (holder.predicate.isPresent()) {
                     LootManager manager = world.getServer().getLootManager();
                     if (manager != null) {
-                        LootCondition condition = manager.getElement(LootDataType.PREDICATES, holder.predicate.get());
+                        LootCondition condition = manager.getElement(LootDataType.PREDICATES, holder.predicate.getRaw());
                         if (condition != null) {
                             LootContextParameterSet.builder builder = new LootContextParameterSet.builder(world)
                                     .add(LootContextParameters.THIS_ENTITY, entity)
@@ -79,7 +79,7 @@ public class ParticleShapingProperty extends CodecBasedProperty<List<ParticleSha
        /* private static final Codec<ValueTester<PropAppOld.Ability>> abConditions = new ValueTester.builder<PropAppOld.Ability>()
                 .add("name", Codec.STRING, (ab, name) -> {
                     if (name.equals("$all")) return true;
-                    ItemUseAbility ability = ItemAbilityManager.useAbilityRegistry.get(name);
+                    ItemUseAbility ability = ItemAbilityManager.useAbilityRegistry.getRaw(name);
                     if (ability == null) return false;
                     return ability.equals(ab.ability());
                 }, "$all")

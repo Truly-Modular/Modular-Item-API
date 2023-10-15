@@ -19,6 +19,7 @@
         "default",
         "handheld"
     ],
+    "repairPriority": 0,
     "blocking": 40,
     "abilities": [
         "block"

@@ -30,7 +30,7 @@ public class MiapiItemModel implements MiapiModel {
 
     @Nullable
     public static MiapiItemModel getItemModel(ItemStack stack) {
-        return (MiapiItemModel) ModularItemCache.get(stack, CACHE_KEY);
+        return (MiapiItemModel) ModularItemCache.getRaw(stack, CACHE_KEY);
     }
 
     private MiapiItemModel(ItemStack stack) {

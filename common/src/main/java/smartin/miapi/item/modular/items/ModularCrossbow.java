@@ -10,6 +10,7 @@ import net.minecraft.nbt.NbtList;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.world.World;
+import smartin.miapi.modules.properties.RepairPriority;
 
 import java.util.function.Predicate;
 
@@ -29,6 +30,11 @@ public class ModularCrossbow extends CrossbowItem {
     @Override
     public int getEnchantability() {
         return 1;
+    }
+
+    @Override
+    public boolean canRepair(ItemStack stack, ItemStack ingredient) {
+        return RepairPriority.getRepairValue(stack, ingredient) > 0;
     }
 
     public void onStoppedUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {

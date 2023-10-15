@@ -26,6 +26,7 @@
         "blade",
         "head"
     ],
+    "repairPriority": -1,
     "guiOffset": {
         "sizeX": 2,
         "sizeY": 2

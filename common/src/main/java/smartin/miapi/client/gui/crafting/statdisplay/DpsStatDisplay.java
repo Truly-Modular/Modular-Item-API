@@ -9,17 +9,24 @@ import net.minecraft.text.Text;
 import smartin.miapi.attributes.AttributeRegistry;
 
 @Environment(EnvType.CLIENT)
-public class DpsStatDisplay extends SingleStatDisplayDouble{
+public class DpsStatDisplay extends SingleStatDisplayDouble {
 
     public DpsStatDisplay() {
-        super(0, 0, 51, 19, (stack)->Text.literal("DPS"), (stack)->Text.empty());
+        super(0, 0, 51, 19, (stack) -> Text.literal("DPS"), (stack) -> Text.empty());
         this.maxValue = 25;
     }
 
     @Override
     public boolean shouldRender(ItemStack original, ItemStack compareTo) {
-        super.shouldRender(original,compareTo);
-        return true;
+        if (hasAttackDamage(original) || hasAttackDamage(compareTo)) {
+            super.shouldRender(original, compareTo);
+            return true;
+        }
+        return false;
+    }
+
+    private boolean hasAttackDamage(ItemStack itemStack) {
+        return itemStack.getAttributeModifiers(EquipmentSlot.MAINHAND).containsKey(EntityAttributes.GENERIC_ATTACK_DAMAGE);
     }
 
     @Override

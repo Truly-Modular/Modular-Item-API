@@ -87,27 +87,27 @@ public class PotionEffectProperty extends DynamicCodecBasedProperty.Intermediate
     /*public static void onAbility(AppEventOld<PropAppOld.Ability> event, PropAppOld.Ability ability) {
         if (ability.world().isClient) return;
 
-        List<PotionEffectProperty.StatusEffectData> potionEffects = property.get(ability.stack());
+        List<PotionEffectProperty.StatusEffectData> potionEffects = property.getRaw(ability.stack());
         LootManager manager = ability.user().getServer() == null ? null : ability.user().getServer().getLootManager();
         if (potionEffects != null) {
             for (StatusEffectData effect : potionEffects) {
                 if (!effect.event.equals(event)) continue;
 
-                if (effect.ability.isPresent() && !effect.ability.get().equals(ability.ability())) continue;
-                if (ability.remainingUseTicks() != null && effect.time.isPresent() && !effect.time.get().test(ability.useTime()))
+                if (effect.ability.isPresent() && !effect.ability.getRaw().equals(ability.ability())) continue;
+                if (ability.remainingUseTicks() != null && effect.time.isPresent() && !effect.time.getRaw().test(ability.useTime()))
                     continue;
 
                 if (manager == null || effect.predicate.isEmpty() || !(ability.world() instanceof ServerWorld world))
-                    ability.user().addStatusEffect(effect.creator.get());
+                    ability.user().addStatusEffect(effect.creator.getRaw());
                 else {
-                    LootCondition condition = manager.getElement(LootDataType.PREDICATES, effect.predicate.get());
+                    LootCondition condition = manager.getElement(LootDataType.PREDICATES, effect.predicate.getRaw());
                     if (condition != null) {
                         LootContextParameterSet.builder builder = new LootContextParameterSet.builder(world)
                                 .add(LootContextParameters.THIS_ENTITY, ability.user()) // THIS_ENTITY is whomever the effect is applied to
                                 .add(LootContextParameters.ORIGIN, ability.user().getPos())
                                 .add(LootContextParameters.TOOL, ability.stack());
                         if (condition.test(new LootContext.builder(builder.build(PropAppOld.Ability.LOOT_CONTEXT)).build(null)))
-                            ability.user().addStatusEffect(effect.creator.get());
+                            ability.user().addStatusEffect(effect.creator.getRaw());
                     } else
                         Miapi.LOGGER.warn("Found null predicate during PotionEffectProperty application.");
                 }

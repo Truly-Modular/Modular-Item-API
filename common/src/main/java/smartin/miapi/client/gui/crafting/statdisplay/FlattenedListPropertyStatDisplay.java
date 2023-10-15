@@ -34,7 +34,7 @@ public class FlattenedListPropertyStatDisplay<T> extends MultiComponentStatDispl
     public boolean placeArrowTitles = false;
 
     public <A extends DynamicCodecBasedProperty.FlattenedList<T> & ComponentDescriptionable<T>> FlattenedListPropertyStatDisplay(
-            A property, StatDisplay.TextGetter title
+            A property, StatListWidget.TextGetter title
     ) {
         this(property, 0, 0, 130, 32, title);
     }
@@ -42,7 +42,7 @@ public class FlattenedListPropertyStatDisplay<T> extends MultiComponentStatDispl
     public <A extends DynamicCodecBasedProperty.FlattenedList<T> & ComponentDescriptionable<T>> FlattenedListPropertyStatDisplay(
             A property,
             int x, int y, int width, int height,
-            StatDisplay.TextGetter title
+            StatListWidget.TextGetter title
     ) {
         super(x, y, width, height, title, null);
         this.hover = stack -> property.getLongDescriptionFor(property.get(stack), getScrollPosition());
