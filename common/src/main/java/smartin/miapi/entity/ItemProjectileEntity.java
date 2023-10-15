@@ -24,6 +24,7 @@ import net.minecraft.util.math.Position;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
+import smartin.miapi.Miapi;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.entity.arrowhitbehaviours.EntityBounceBehaviour;
@@ -231,7 +232,7 @@ public class ItemProjectileEntity extends PersistentProjectileEntity {
         }
         damage = event.damage;
         this.dealtDamage = true;
-        if (entity.damage(event.damageSource, damage)) {
+        if (entity.damage(event.damageSource, (float) Math.ceil(damage))) {
             if (entity.getType() == EntityType.ENDERMAN) {
                 return;
             }
@@ -275,8 +276,9 @@ public class ItemProjectileEntity extends PersistentProjectileEntity {
         float damage = (float) getDamage();
         if (this.getSpeedDamage()) {
             float speed = (float) this.getVelocity().length();
-            damage = MathHelper.ceil(MathHelper.clamp((double) speed * damage, 0.0, 2.147483647E9));
+            damage = (float) MathHelper.clamp((double) speed * damage, 0.0, 2.147483647E9);
         }
+        Miapi.DEBUG_LOGGER.warn("Projectile Damage (arrow) " + getDamage() + " speed " + this.getVelocity().length());
         return damage;
     }
 

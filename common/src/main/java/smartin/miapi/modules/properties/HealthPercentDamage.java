@@ -37,7 +37,7 @@ public class HealthPercentDamage extends DoubleProperty {
     public Double getValue(ItemStack stack) {
         Double value = property.getValueRaw(stack);
         if (value == null) {
-            return 0.0;
+            return null;
         }
         return ((200) / (1 + Math.exp(-Math.sqrt(value) / 50))) - 100;
     }

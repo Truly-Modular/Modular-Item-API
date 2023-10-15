@@ -18,6 +18,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
+import smartin.miapi.Miapi;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.client.model.ModularModelPredicateProvider;
 import smartin.miapi.config.MiapiConfig;
@@ -41,7 +42,7 @@ public class ModularBow extends BowItem implements ModularItem {
     }
 
     @Override
-    public boolean isEnchantable(ItemStack itemStack){
+    public boolean isEnchantable(ItemStack itemStack) {
         return true;
     }
 
@@ -99,6 +100,7 @@ public class ModularBow extends BowItem implements ModularItem {
             itemProjectile.setVelocity(playerEntity, playerEntity.getPitch(), playerEntity.getYaw(), 0.0f, pullProgress * speed, divergence);
             if (pullProgress == 1.0f) {
                 itemProjectile.setCritical(true);
+                itemProjectile.isCritical();
             }
             if (powerLevel > 0) {
                 itemProjectile.setDamage(itemProjectile.getDamage() + powerLevel * 0.5 + 0.5);
@@ -120,6 +122,8 @@ public class ModularBow extends BowItem implements ModularItem {
                 return;
             }
             itemProjectile = event.projectile;
+
+            Miapi.DEBUG_LOGGER.warn("Projectile Damage (bow) " + itemProjectile.getDamage() + " speed " + itemProjectile.getVelocity().length());
 
             world.spawnEntity(itemProjectile);
 

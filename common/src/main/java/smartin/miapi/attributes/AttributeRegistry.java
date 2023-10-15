@@ -16,7 +16,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-import oshi.software.os.unix.aix.AixOSFileStore;
+import smartin.miapi.Miapi;
 import smartin.miapi.entity.ItemProjectileEntity;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.events.MiapiProjectileEvents;
@@ -119,14 +119,15 @@ public class AttributeRegistry {
         MiapiProjectileEvents.MODULAR_PROJECTILE_ENTITY_HIT.register(listener -> {
             ItemProjectileEntity projectile = listener.projectile;
             if (projectile.isCritical()) {
-                projectile.setDamage(projectile.getDamage() * AttributeProperty.getActualValue(projectile.asItemStack(), EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_CRIT_MULTIPLIER));
+                listener.damage = (float) (listener.damage * AttributeProperty.getActualValue(projectile.asItemStack(), EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_CRIT_MULTIPLIER));
+                Miapi.DEBUG_LOGGER.warn("criticalArrow " + projectile.getDamage() + " speed " + projectile.getVelocity().length());
             }
             return EventResult.pass();
         });
     }
 
     public static double getAttribute(ItemStack stack, EntityAttribute attribute, EquipmentSlot slot, double defaultValue) {
-        if(!stack.getAttributeModifiers(slot).containsKey(attribute)){
+        if (!stack.getAttributeModifiers(slot).containsKey(attribute)) {
             return attribute.getDefaultValue();
         }
         Collection<EntityAttributeModifier> attributes = stack.getAttributeModifiers(slot).get(attribute);

@@ -39,13 +39,13 @@
         },
         {
             "attribute": "miapi:generic.projectile_speed",
-            "value": "( - [material.density] ) / 10",
+            "value": "( - [material.density] ) / 10 + 0.3",
             "operation": "+",
             "slot": "mainhand"
         },
         {
             "attribute": "miapi:generic.projectile_crit_multiplier",
-            "value": "[material.hardness] / (3.7) - 1",
+            "value": "([material.hardness] / (3.7) - 1)*0.25",
             "operation": "+",
             "slot": "mainhand"
         }

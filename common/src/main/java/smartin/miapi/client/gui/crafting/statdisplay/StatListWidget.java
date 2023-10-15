@@ -85,6 +85,7 @@ public class StatListWidget extends InteractAbleWidget {
                 .setTranslationKey("projectile_speed")
                 .setFormat("##.##")
                 .setDefault(0)
+                .setMin(-3)
                 .setMax(10).build());
         addStatDisplay(AttributeSingleDisplay
                 .builder(AttributeRegistry.PROJECTILE_ACCURACY)
@@ -167,6 +168,11 @@ public class StatListWidget extends InteractAbleWidget {
                 .setMax(1)
                 .setTranslationKey(MendingProperty.KEY).build());
 
+        AttributeSingleDisplay.attributesWithDisplay.add(AttributeRegistry.MINING_SPEED_AXE);
+        AttributeSingleDisplay.attributesWithDisplay.add(AttributeRegistry.MINING_SPEED_PICKAXE);
+        AttributeSingleDisplay.attributesWithDisplay.add(AttributeRegistry.MINING_SPEED_HOE);
+        AttributeSingleDisplay.attributesWithDisplay.add(AttributeRegistry.MINING_SPEED_SHOVEL);
+        AttributeSingleDisplay.attributesWithDisplay.add(AttributeRegistry.ARMOR_CRUSHING);
         Registries.ATTRIBUTE.forEach(entityAttribute -> {
             if (!AttributeSingleDisplay.attributesWithDisplay.contains(entityAttribute)) {
                 addStatDisplay(AttributeSingleDisplay
