@@ -3,6 +3,7 @@ package smartin.miapi.modules.properties;
 import com.mojang.serialization.Codec;
 import com.redpxnda.nucleus.codec.AutoCodec;
 import dev.architectury.event.EventResult;
+import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.world.World;
 import smartin.miapi.entity.ItemProjectileEntity;
@@ -51,11 +52,15 @@ public class ExplosionProperty extends CodecBasedProperty<ExplosionProperty.Expl
      */
     private void explode(ExplosionInfo info, ItemProjectileEntity projectile, HitResult result) {
         World.ExplosionSourceType explosionSourceType = World.ExplosionSourceType.TNT;
+        PersistentProjectileEntity entity;
         if (!info.destroyBlocks) {
             explosionSourceType = World.ExplosionSourceType.NONE;
         }
-        if(!projectile.getWorld().isClient()){
-            projectile.getWorld().createExplosion(projectile, result.getPos().getX(), result.getPos().getY(), result.getPos().getZ(), info.strength, explosionSourceType);
+        if (!projectile.getWorld().isClient()) {
+            double x = result.getPos().getX() - projectile.getVelocity().getX() / 60;
+            double y = result.getPos().getY() - projectile.getVelocity().getY() / 60;
+            double z = result.getPos().getZ() - projectile.getVelocity().getZ() / 60;
+            projectile.getWorld().createExplosion(projectile, x, y, z, info.strength, explosionSourceType);
         }
     }
 

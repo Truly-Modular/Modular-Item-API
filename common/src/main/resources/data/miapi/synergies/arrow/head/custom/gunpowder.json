@@ -7,7 +7,7 @@
         "properties": {
             "explosion_projectile": {
                 "destroyBlocks": false,
-                "strength": 2
+                "strength": 1.4
             },
             "texture": {
                 "path": "miapi:models/item/arrow/head/normal/gunpowder.json",

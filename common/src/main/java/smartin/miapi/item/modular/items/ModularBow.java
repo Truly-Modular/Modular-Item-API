@@ -18,7 +18,6 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
-import smartin.miapi.Miapi;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.client.model.ModularModelPredicateProvider;
 import smartin.miapi.config.MiapiConfig;
@@ -122,8 +121,6 @@ public class ModularBow extends BowItem implements ModularItem {
                 return;
             }
             itemProjectile = event.projectile;
-
-            Miapi.DEBUG_LOGGER.warn("Projectile Damage (bow) " + itemProjectile.getDamage() + " speed " + itemProjectile.getVelocity().length());
 
             world.spawnEntity(itemProjectile);
 

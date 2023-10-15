@@ -1,7 +1,6 @@
 package smartin.miapi.modules.properties;
 
 import net.minecraft.item.ItemStack;
-import smartin.miapi.Miapi;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.material.Material;
@@ -28,10 +27,8 @@ public class RepairPriority extends DoubleProperty {
     public static double getRepairValue(ItemStack tool, ItemStack material) {
         double highestValue = 0;
         for (Material material1 : property.getRepairMaterials(tool)) {
-            Miapi.DEBUG_LOGGER.warn("checking material " + material1.getKey());
             highestValue = Math.max(highestValue, material1.getValueOfItem(material));
         }
-        Miapi.DEBUG_LOGGER.warn("checking " + tool.getTranslationKey() + " try with" + material.getTranslationKey() + " value " + highestValue);
         return highestValue;
     }
 

@@ -7,7 +7,7 @@
         "properties": {
             "explosion_projectile": {
                 "destroyBlocks": true,
-                "strength": 4.0
+                "strength": 2.1
             },
             "texture": {
                 "path": "miapi:models/item/arrow/head/normal/tnt.json",

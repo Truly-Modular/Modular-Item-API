@@ -30,7 +30,7 @@
     ],
     "items": [
         {
-            "item": "minecraft:wool",
+            "item": "minecraft:white_wool",
             "value": 1.0
         }
     ]
