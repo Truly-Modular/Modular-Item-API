@@ -61,7 +61,7 @@
     "attributes": [
         {
             "attribute": "miapi:generic.projectile_speed",
-            "value": "(([material.hardness] + [material.flexibility] ) / 9 - 1)*1.0 + 1.2 ",
+            "value": "(([material.hardness]*2 + [material.flexibility] ) / 9 - 1 ) * 1.2 ",
             "operation": "+",
             "slot": "mainhand"
         },
@@ -78,7 +78,8 @@
             "wood",
             "metal",
             "flint",
-            "bone"
+            "bone",
+            "netherite"
         ],
         "cost": 2
     },

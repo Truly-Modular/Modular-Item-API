@@ -167,6 +167,10 @@ public class StatListWidget extends InteractAbleWidget {
                 .builder(MendingProperty.property)
                 .setMax(1)
                 .setTranslationKey(MendingProperty.KEY).build());
+        addStatDisplay(SinglePropertyStatDisplay
+                .builder(ImmolateProperty.property)
+                .setMax(4)
+                .setTranslationKey(ImmolateProperty.KEY).build());
 
         AttributeSingleDisplay.attributesWithDisplay.add(AttributeRegistry.MINING_SPEED_AXE);
         AttributeSingleDisplay.attributesWithDisplay.add(AttributeRegistry.MINING_SPEED_PICKAXE);

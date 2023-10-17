@@ -97,7 +97,7 @@ public class Transform {
 
         // Create the scale matrix
         Matrix4f scaleMatrix = new Matrix4f().scale(scale);
-
+        
         // Combine the matrices
         return new Matrix4f()
                 .mul(translationMatrix)

@@ -27,6 +27,11 @@
     "textures": [
         "emissive"
     ],
+    "properties": {
+        "default": {
+            "immolate": "3"
+        }
+    },
     "items": [
         {
             "item": "minecraft:blaze_rod",

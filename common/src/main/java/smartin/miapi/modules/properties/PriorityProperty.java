@@ -20,7 +20,7 @@ public class PriorityProperty extends DoubleProperty {
     }
 
     public static double getFor(ItemModule module) {
-        return property.getValueForModule(new ItemModule.ModuleInstance(module));
+        return property.getValueForModule(new ItemModule.ModuleInstance(module),0.0);
     }
 
     @Override

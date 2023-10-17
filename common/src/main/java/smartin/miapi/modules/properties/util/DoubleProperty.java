@@ -3,6 +3,7 @@ package smartin.miapi.modules.properties.util;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
@@ -102,7 +103,7 @@ public abstract class DoubleProperty implements ModuleProperty {
         }
     }
 
-    public Double getValueForModule(ItemModule.ModuleInstance moduleInstance) {
+    public Double getValueForModule(ItemModule.ModuleInstance moduleInstance, @Nullable Double fallback) {
         double value = 0;
         boolean hasValue = false;
         List<Double> addition = new ArrayList<>();
@@ -144,12 +145,40 @@ public abstract class DoubleProperty implements ModuleProperty {
         if (hasValue) {
             return value;
         } else {
-            return null;
+            return fallback;
         }
     }
 
     public boolean hasValue(ItemStack itemStack) {
         return getValueRaw(itemStack) != null;
+    }
+
+    /**
+     * for curious support
+     */
+    public double getForEntityNonHand(LivingEntity living) {
+        List<ItemStack> itemsNotInSecondIterable = new ArrayList<>();
+        for (ItemStack item : living.getItemsEquipped()) {
+            boolean found = false;
+            for (ItemStack secondItem : living.getHandItems()) {
+                if (item.equals(secondItem)) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                itemsNotInSecondIterable.add(item);
+            }
+        }
+        return getForItems(itemsNotInSecondIterable);
+    }
+
+    public double getForItems(Iterable<ItemStack> itemStacks) {
+        double mergedValue = 0;
+        for (ItemStack armorItem : itemStacks) {
+            mergedValue += getValueSafe(armorItem);
+        }
+        return mergedValue;
     }
 
     @Nullable

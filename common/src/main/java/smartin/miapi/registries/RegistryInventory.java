@@ -390,7 +390,7 @@ public class RegistryInventory {
             //registerMiapi(moduleProperties, ParticleShapingProperty.KEY, new ParticleShapingProperty());
             registerMiapi(moduleProperties, PlaySoundProperty.KEY, new PlaySoundProperty());
             registerMiapi(moduleProperties, ExecuteProperty.KEY, new ExecuteProperty());
-            registerMiapi(moduleProperties, ImmolateProperty.KEY, new ImmolateProperty());
+            registerMiapi(moduleProperties, ImmolatePropertyOLD.KEY, new ImmolatePropertyOLD());
             registerMiapi(moduleProperties, DisplayNameProperty.KEY, new DisplayNameProperty());
             registerMiapi(moduleProperties, ItemIdProperty.KEY, new ItemIdProperty());
             registerMiapi(moduleProperties, EquipmentSlotProperty.KEY, new EquipmentSlotProperty());
@@ -431,6 +431,7 @@ public class RegistryInventory {
             registerMiapi(moduleProperties, FireProof.KEY, new FireProof());
             registerMiapi(moduleProperties, RepairPriority.KEY, new RepairPriority());
             registerMiapi(moduleProperties, PriorityProperty.KEY, new PriorityProperty());
+            registerMiapi(moduleProperties, ImmolateProperty.KEY, new ImmolateProperty());
 
             //compat
             registerMiapi(moduleProperties, BetterCombatProperty.KEY, new BetterCombatProperty());

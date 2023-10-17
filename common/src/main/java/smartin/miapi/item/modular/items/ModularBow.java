@@ -18,6 +18,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
+import smartin.miapi.Miapi;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.client.model.ModularModelPredicateProvider;
 import smartin.miapi.config.MiapiConfig;
@@ -34,7 +35,7 @@ public class ModularBow extends BowItem implements ModularItem {
     public static Predicate<ItemStack> projectile = BOW_PROJECTILES;
 
     public ModularBow() {
-        super(new Item.Settings().maxCount(1));
+        super(new Item.Settings().maxCount(1).maxDamage(50));
         if (smartin.miapi.Environment.isClient()) {
             registerAnimations();
         }
@@ -111,6 +112,7 @@ public class ModularBow extends BowItem implements ModularItem {
                 itemProjectile.setOnFireFor(100);
             }
             bowStack.damage(1, playerEntity, p -> p.sendToolBreakStatus(playerEntity.getActiveHand()));
+            Miapi.DEBUG_LOGGER.warn("damage bow");
             if (!consumeArrow) {
                 itemProjectile.pickupType = PersistentProjectileEntity.PickupPermission.CREATIVE_ONLY;
             } else {

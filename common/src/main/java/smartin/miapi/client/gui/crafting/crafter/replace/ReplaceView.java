@@ -111,6 +111,7 @@ public class ReplaceView extends InteractAbleWidget {
             if (isMouseOver(mouseX, mouseY) && !isAllowed && hoverDescription != null) {
                 hoverDescription.render(drawContext, mouseX, mouseY, delta);
             }
+
         }
 
         public void renderHover(DrawContext drawContext, int mouseX, int mouseY, float delta) {

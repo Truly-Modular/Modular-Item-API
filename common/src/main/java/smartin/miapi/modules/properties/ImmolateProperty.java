@@ -1,71 +1,102 @@
 package smartin.miapi.modules.properties;
 
-import com.mojang.datafixers.util.Pair;
-import com.mojang.serialization.Codec;
-import com.redpxnda.nucleus.codec.AutoCodec;
 import com.redpxnda.nucleus.math.MathUtil;
+import dev.architectury.event.EventResult;
+import dev.architectury.event.events.common.BlockEvent;
+import dev.architectury.event.events.common.PlayerEvent;
+import dev.architectury.event.events.common.TickEvent;
+import net.minecraft.enchantment.Enchantments;
 import net.minecraft.enchantment.ProtectionEnchantment;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.server.world.ServerWorld;
-import smartin.miapi.events.property.ApplicationEvent;
-import smartin.miapi.events.property.ApplicationEvents;
-import smartin.miapi.modules.ItemModule;
-import smartin.miapi.modules.properties.util.DynamicCodecBasedProperty;
+import smartin.miapi.events.MiapiProjectileEvents;
+import smartin.miapi.item.FakeEnchantment;
+import smartin.miapi.item.modular.Transform;
+import smartin.miapi.modules.properties.util.DoubleProperty;
 
-import java.util.List;
-
-import static smartin.miapi.item.modular.StatResolver.*;
-
-public class ImmolateProperty extends DynamicCodecBasedProperty.IntermediateList<ImmolateProperty.Raw, ImmolateProperty.Holder> {
+public class ImmolateProperty extends DoubleProperty {
     public static final String KEY = "immolate";
     public static ImmolateProperty property;
-    public static Codec<List<Raw>> codec = AutoCodec.of(Raw.class).codec().listOf();
+
 
     public ImmolateProperty() {
-        super(KEY, codec, Raw::refine);
+        super(KEY);
         property = this;
-
-        ApplicationEvents.ENTITY_RELATED.startListening(
-                (event, entity, stack, data, originals) -> onEntityEvent(event, stack, entity, (Holder) data, originals),
-                ApplicationEvents.StackGetterHolder.ofMulti(
-                        property::get,
-                        list -> list.stream().map(h -> Pair.of(h.item, h)).toList()
-                )
-        );
+        FakeEnchantment.addTransformer(Enchantments.FIRE_PROTECTION, (stack, level) -> {
+            int toLevel = (int) Math.ceil(getValueSafe(stack) / 4) + level;
+            return Math.min(toLevel + level, Math.max(4, level));
+        });
+        TickEvent.PLAYER_POST.register(player -> {
+            if (player.age % 250 == 0) {
+                double strength = getForItems(player.getItemsEquipped());
+                if (strength > 0) {
+                    double chance = Math.min(1, strength * 0.05 + 0.05);
+                    if (MathUtil.random(0d, 1d) < chance) {
+                        double ticksExtention = strength * 2;
+                        int fireTicks = (int) Math.ceil(MathUtil.random(50 + ticksExtention, 80 + ticksExtention * 1.5));
+                        setOnFireFor(player, fireTicks);
+                    }
+                }
+            }
+        });
+        PlayerEvent.ATTACK_ENTITY.register((player, level, target, hand, result) -> {
+            double strength = getForItems(player.getHandItems());
+            if (strength > 0) {
+                double chance = Math.min(1, strength * 0.05 + 0.2);
+                if (MathUtil.random(0d, 1d) < chance) {
+                    double ticksExtention = strength * 2;
+                    int fireTicks = (int) Math.ceil(MathUtil.random(50 + ticksExtention, 80 + ticksExtention * 1.5));
+                    setOnFireFor(player, fireTicks);
+                }
+                if (!target.isFireImmune()) {
+                    double ticksExtention = strength * 2;
+                    int fireTicks = (int) Math.ceil(MathUtil.random(50 + ticksExtention, 80 + ticksExtention * 1.5));
+                    setOnFireFor(target, fireTicks);
+                }
+            }
+            return EventResult.pass();
+        });
+        BlockEvent.BREAK.register(((level, pos, state, player, xp) -> {
+            double strength = getForItems(player.getHandItems());
+            if (strength > 0) {
+                double chance = Math.min(1, strength * 0.05 + 0.2);
+                if (MathUtil.random(0d, 1d) < chance) {
+                    double ticksExtention = strength * 2;
+                    int fireTicks = (int) Math.ceil(MathUtil.random(50 + ticksExtention, 80 + ticksExtention * 1.5));
+                    setOnFireFor(player, fireTicks);
+                }
+            }
+            return EventResult.pass();
+        }));
+        Transform transform;
+        MiapiProjectileEvents.MODULAR_PROJECTILE_ENTITY_HIT.register((modularProjectileEntityHitEvent) -> {
+            double strength = getValueSafe(modularProjectileEntityHitEvent.projectile.asItemStack());
+            ItemStack bowItem = modularProjectileEntityHitEvent.projectile.getBowItem();
+            if (bowItem != null && !bowItem.isEmpty()) {
+                strength += getValueSafe(modularProjectileEntityHitEvent.projectile.getBowItem());
+            }
+            double chance = Math.min(1, strength * 0.1 + 0.4);
+            if (MathUtil.random(0d, 1d) < chance) {
+                Entity entity = modularProjectileEntityHitEvent.entityHitResult.getEntity();
+                if (entity instanceof LivingEntity living && !living.isFireImmune()) {
+                    double ticksExtention = strength * 2;
+                    int fireTicks = (int) Math.ceil(MathUtil.random(50 + ticksExtention, 80 + ticksExtention * 1.5));
+                    setOnFireFor(living, fireTicks);
+                }
+            }
+            return EventResult.pass();
+        });
     }
 
-    public void onEntityEvent(ApplicationEvent<?, ?, ?> event, ItemStack stack, Entity entity, Holder holder, Object... originals) {
-        if (!(entity.getWorld() instanceof ServerWorld) || !event.equals(holder.event)) return;
-
-        Entity target = ApplicationEvents.getEntityForTarget(holder.target, entity, event, originals);
-        if (target == null) return;
-
-        if (MathUtil.random(0d, 1d) < holder.actualChance)
-            setOnFireFor(target, holder.actualDuration);
+    @Override
+    public Double getValue(ItemStack stack) {
+        return getValueRaw(stack);
     }
 
-    public static class Raw {
-        public @AutoCodec.Optional DoubleFromStat chance = new DoubleFromStat(1);
-        public @AutoCodec.Optional IntegerFromStat duration = new IntegerFromStat(20);
-        public String item;
-        public ApplicationEvent<?, ?, ?> event;
-        public @AutoCodec.Optional String target = "this";
-
-        public Holder refine(ItemModule.ModuleInstance modules) {
-            Holder h = new Holder();
-            h.item = item;
-            h.event = event;
-            h.target = target;
-            h.actualChance = chance.evaluate(modules);
-            h.actualDuration = duration.evaluate(modules);
-            return h;
-        }
-    }
-    public static class Holder extends Raw {
-        public double actualChance;
-        public int actualDuration;
+    @Override
+    public double getValueSafe(ItemStack stack) {
+        return getValueSafeRaw(stack);
     }
 
     public static void setOnFireFor(Entity entity, int ticks) {

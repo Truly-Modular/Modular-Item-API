@@ -31,6 +31,11 @@
         "stone_magma",
         "rough"
     ],
+    "properties": {
+        "default": {
+            "immolate": "1"
+        }
+    },
     "items": [
         {
             "item": "minecraft:magma_block",

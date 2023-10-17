@@ -348,7 +348,12 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
         }
         super.render(drawContext, mouseX, mouseY, delta);
         this.drawMouseoverTooltip(drawContext, mouseX, mouseY);
-        this.renderHover(drawContext, mouseX, mouseY, delta);
+        drawContext.getMatrices().push();
+        drawContext.getMatrices().translate(0.0F, 0.0F, 400.0F);
+        drawContext.draw(() -> {
+            this.renderHover(drawContext, mouseX, mouseY, delta);
+        });
+        drawContext.getMatrices().pop();
     }
 
     @Override
