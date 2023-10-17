@@ -3,6 +3,7 @@ package smartin.miapi;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.redpxnda.nucleus.Nucleus;
 import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.event.events.common.PlayerEvent;
 import dev.architectury.registry.ReloadListenerRegistry;
@@ -126,6 +127,8 @@ public class Miapi {
             MiapiClient.init();
         }
         SynergyManager.setup();
+
+        Nucleus.addAddonNamespace("miapi");
     }
 
     protected static void setupNetworking() {

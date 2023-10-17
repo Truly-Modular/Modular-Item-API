@@ -45,7 +45,7 @@ public interface ItemUseAbility {
 
     /**
      * Handles the usage of the item in the specified world by the specified player and hand.
-     * This is called every tick the item is beeing used.
+     * This is called when the item is first used, so the moment the user right clicks.
      *
      * @param world The world in which the item is being used.
      * @param user  The player using the item.

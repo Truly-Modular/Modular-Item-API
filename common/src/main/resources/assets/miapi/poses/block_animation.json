@@ -1,0 +1,17 @@
+{
+  "name": "miapi:block",
+  "frames": [
+    {
+      "usedArm": {
+        "position": [0, 0, 0],
+        "rotation": [-40, -30, 0],
+        "scale": [1, 1, 1]
+      },
+      "fpUsedArm": {
+        "position": [0, 0.1, 0],
+        "rotation": [-90, 15, 90],
+        "scale": [1, 1, 1]
+      }
+    }
+  ]
+}
