@@ -2,12 +2,16 @@ package smartin.miapi.modules.abilities;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
+import com.redpxnda.nucleus.pose.ServerPoseFacet;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Hand;
+import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.modules.abilities.util.EntityAttributeAbility;
@@ -45,5 +49,46 @@ public class BlockAbility extends EntityAttributeAbility {
     @Override
     public int getMaxUseTime(ItemStack itemStack) {
         return 20 * 60 * 60;
+    }
+
+    @Override
+    public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+        setAnimation(user, hand);
+        return super.use(world, user, hand);
+    }
+
+    @Override
+    public ItemStack finishUsing(ItemStack stack, World world, LivingEntity user) {
+        resetAnimation(user);
+        return super.finishUsing(stack, world, user);
+    }
+
+    @Override
+    public void onStoppedUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
+        resetAnimation(user);
+        super.onStoppedUsing(stack, world, user, remainingUseTicks);
+    }
+
+    @Override
+    public void onStoppedHolding(ItemStack stack, World world, LivingEntity user) {
+        resetAnimation(user);
+        super.onStoppedHolding(stack, world, user);
+    }
+
+    public void setAnimation(PlayerEntity p, Hand hand) {
+        if (p instanceof ServerPlayerEntity player) {
+            ServerPoseFacet facet = ServerPoseFacet.KEY.get(player);
+            if (facet != null) {
+                facet.set("miapi:block", player, hand);
+            }
+        }
+    }
+
+    public void resetAnimation(LivingEntity entity) {
+        if (entity instanceof ServerPlayerEntity player) {
+            ServerPoseFacet facet = ServerPoseFacet.KEY.get(player);
+            if (facet != null)
+                facet.reset(player);
+        }
     }
 }
