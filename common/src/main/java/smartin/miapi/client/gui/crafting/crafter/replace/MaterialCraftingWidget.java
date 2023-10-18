@@ -16,7 +16,7 @@ import smartin.miapi.client.gui.crafting.CraftingScreen;
 import smartin.miapi.craft.CraftAction;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ItemModule;
-import smartin.miapi.modules.properties.material.AllowedMaterial;
+import smartin.miapi.modules.material.AllowedMaterial;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;

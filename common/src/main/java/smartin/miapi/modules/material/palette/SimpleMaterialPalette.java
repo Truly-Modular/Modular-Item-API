@@ -1,4 +1,4 @@
-package smartin.miapi.modules.properties.material.palette;
+package smartin.miapi.modules.material.palette;
 
 import com.redpxnda.nucleus.util.Color;
 import net.fabricmc.api.EnvType;
@@ -16,7 +16,7 @@ import smartin.miapi.client.MaterialVertexConsumer;
 import smartin.miapi.client.MiapiClient;
 import smartin.miapi.mixin.client.SpriteContentsAccessor;
 import smartin.miapi.modules.ItemModule;
-import smartin.miapi.modules.properties.material.Material;
+import smartin.miapi.modules.material.Material;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.util.ArrayList;

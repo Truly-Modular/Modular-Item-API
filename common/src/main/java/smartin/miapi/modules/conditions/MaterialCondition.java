@@ -7,8 +7,8 @@ import net.minecraft.util.math.BlockPos;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.modules.ItemModule;
-import smartin.miapi.modules.properties.material.Material;
-import smartin.miapi.modules.properties.material.MaterialProperty;
+import smartin.miapi.modules.material.Material;
+import smartin.miapi.modules.material.MaterialProperty;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.List;

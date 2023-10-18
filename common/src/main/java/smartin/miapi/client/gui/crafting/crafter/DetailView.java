@@ -13,8 +13,8 @@ import smartin.miapi.client.gui.crafting.CraftingScreen;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.SlotProperty;
-import smartin.miapi.modules.properties.material.Material;
-import smartin.miapi.modules.properties.material.MaterialProperty;
+import smartin.miapi.modules.material.Material;
+import smartin.miapi.modules.material.MaterialProperty;
 
 import java.util.ArrayList;
 import java.util.HashMap;

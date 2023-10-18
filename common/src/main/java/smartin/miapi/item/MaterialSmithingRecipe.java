@@ -15,8 +15,8 @@ import net.minecraft.util.JsonHelper;
 import net.minecraft.world.World;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.modules.ItemModule;
-import smartin.miapi.modules.properties.material.Material;
-import smartin.miapi.modules.properties.material.MaterialProperty;
+import smartin.miapi.modules.material.Material;
+import smartin.miapi.modules.material.MaterialProperty;
 import smartin.miapi.registries.RegistryInventory;
 
 /**

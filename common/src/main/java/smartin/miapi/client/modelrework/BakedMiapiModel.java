@@ -15,8 +15,8 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.GlintProperty;
-import smartin.miapi.modules.properties.material.Material;
-import smartin.miapi.modules.properties.material.MaterialProperty;
+import smartin.miapi.modules.material.Material;
+import smartin.miapi.modules.material.MaterialProperty;
 import smartin.miapi.modules.properties.render.colorproviders.ColorProvider;
 import smartin.miapi.registries.RegistryInventory;
 

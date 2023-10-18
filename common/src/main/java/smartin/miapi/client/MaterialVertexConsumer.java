@@ -4,7 +4,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.texture.Sprite;
-import smartin.miapi.modules.properties.material.Material;
+import smartin.miapi.modules.material.Material;
 
 @Environment(EnvType.CLIENT)
 public class MaterialVertexConsumer implements VertexConsumer {

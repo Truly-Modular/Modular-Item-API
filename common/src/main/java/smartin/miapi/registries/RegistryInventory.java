@@ -69,10 +69,10 @@ import smartin.miapi.modules.edit_options.ReplaceOption;
 import smartin.miapi.modules.edit_options.skins.SkinOptions;
 import smartin.miapi.modules.properties.*;
 import smartin.miapi.modules.properties.compat.BetterCombatProperty;
-import smartin.miapi.modules.properties.material.AllowedMaterial;
-import smartin.miapi.modules.properties.material.MaterialInscribeProperty;
-import smartin.miapi.modules.properties.material.MaterialProperties;
-import smartin.miapi.modules.properties.material.MaterialProperty;
+import smartin.miapi.modules.material.AllowedMaterial;
+import smartin.miapi.modules.material.MaterialInscribeProperty;
+import smartin.miapi.modules.material.MaterialProperties;
+import smartin.miapi.modules.material.MaterialProperty;
 import smartin.miapi.modules.properties.render.*;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 

@@ -1,4 +1,4 @@
-package smartin.miapi.modules.properties.material;
+package smartin.miapi.modules.material;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -15,9 +15,9 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
-import smartin.miapi.modules.properties.material.palette.EmptyMaterialPalette;
-import smartin.miapi.modules.properties.material.palette.MaterialPalette;
-import smartin.miapi.modules.properties.material.palette.PaletteCreators;
+import smartin.miapi.modules.material.palette.EmptyMaterialPalette;
+import smartin.miapi.modules.material.palette.MaterialPalette;
+import smartin.miapi.modules.material.palette.PaletteCreators;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.registries.RegistryInventory;
 
@@ -140,15 +140,15 @@ public class JsonMaterial implements Material {
         return new ArrayList<>(textureKeys);
     }
 
-    /*@Environment(EnvType.CLIENT)
+    @Environment(EnvType.CLIENT)
     @Override
     public int getColor() {
-        if (rawJson.getAsJsonObject().getRaw("color") != null) {
-            long longValue = Long.parseLong(rawJson.getAsJsonObject().getRaw("color").getAsString(), 16);
+        if (rawJson.getAsJsonObject().get("color") != null) {
+            long longValue = Long.parseLong(rawJson.getAsJsonObject().get("color").getAsString(), 16);
             return (int) (longValue & 0xffffffffL);
         }
-        return ColorHelper.Argb.getArgb(255, 255, 255, 255);
-    }*/
+        return getPalette().getPaletteAverageColor().argb();
+    }
 
     @Environment(EnvType.CLIENT)
     @Override

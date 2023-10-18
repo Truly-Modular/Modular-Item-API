@@ -1,4 +1,4 @@
-package smartin.miapi.modules.properties.material.palette;
+package smartin.miapi.modules.material.palette;
 
 import com.redpxnda.nucleus.util.Color;
 import net.fabricmc.api.EnvType;
@@ -15,7 +15,7 @@ import net.minecraft.util.math.ColorHelper;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.mixin.client.SpriteContentsAccessor;
-import smartin.miapi.modules.properties.material.Material;
+import smartin.miapi.modules.material.Material;
 
 import java.util.*;
 import java.util.function.Supplier;

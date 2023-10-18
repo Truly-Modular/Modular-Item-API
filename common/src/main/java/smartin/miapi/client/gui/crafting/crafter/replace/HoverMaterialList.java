@@ -9,9 +9,9 @@ import net.minecraft.util.math.ColorHelper;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.crafting.CraftingScreen;
 import smartin.miapi.modules.ItemModule;
-import smartin.miapi.modules.properties.material.AllowedMaterial;
-import smartin.miapi.modules.properties.material.Material;
-import smartin.miapi.modules.properties.material.MaterialProperty;
+import smartin.miapi.modules.material.AllowedMaterial;
+import smartin.miapi.modules.material.Material;
+import smartin.miapi.modules.material.MaterialProperty;
 
 import java.util.LinkedHashMap;
 import java.util.List;

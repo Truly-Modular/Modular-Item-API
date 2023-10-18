@@ -1,4 +1,4 @@
-package smartin.miapi.modules.properties.material.palette;
+package smartin.miapi.modules.material.palette;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -15,7 +15,7 @@ import net.minecraft.client.texture.SpriteDimensions;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
-import smartin.miapi.modules.properties.material.Material;
+import smartin.miapi.modules.material.Material;
 
 import java.util.HashMap;
 import java.util.List;

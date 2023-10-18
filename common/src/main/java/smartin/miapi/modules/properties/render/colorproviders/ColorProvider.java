@@ -10,8 +10,8 @@ import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionUtil;
 import smartin.miapi.modules.ItemModule;
-import smartin.miapi.modules.properties.material.Material;
-import smartin.miapi.modules.properties.material.MaterialProperty;
+import smartin.miapi.modules.material.Material;
+import smartin.miapi.modules.material.MaterialProperty;
 
 import java.util.HashMap;
 import java.util.Map;

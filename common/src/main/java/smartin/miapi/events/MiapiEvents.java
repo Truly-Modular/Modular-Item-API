@@ -12,7 +12,7 @@ import net.minecraft.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.entity.ItemProjectileEntity;
-import smartin.miapi.modules.properties.material.GeneratedMaterial;
+import smartin.miapi.modules.material.GeneratedMaterial;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package smartin.miapi.modules.properties.material;
+package smartin.miapi.modules.material;
 
 import com.google.gson.JsonElement;
 import smartin.miapi.item.modular.PropertyResolver;

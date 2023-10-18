@@ -3,8 +3,8 @@ package smartin.miapi.modules.properties;
 import net.minecraft.item.ItemStack;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.cache.ModularItemCache;
-import smartin.miapi.modules.properties.material.Material;
-import smartin.miapi.modules.properties.material.MaterialProperty;
+import smartin.miapi.modules.material.Material;
+import smartin.miapi.modules.material.MaterialProperty;
 import smartin.miapi.modules.properties.util.DoubleProperty;
 
 import java.util.ArrayList;

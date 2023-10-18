@@ -10,8 +10,8 @@ import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.item.ModularItemStackConverter;
 import smartin.miapi.modules.ItemModule;
-import smartin.miapi.modules.properties.material.GeneratedMaterial;
-import smartin.miapi.modules.properties.material.Material;
+import smartin.miapi.modules.material.GeneratedMaterial;
+import smartin.miapi.modules.material.Material;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.util.*;

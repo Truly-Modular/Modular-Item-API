@@ -1,4 +1,4 @@
-package smartin.miapi.modules.properties.material.palette;
+package smartin.miapi.modules.material.palette;
 
 import com.redpxnda.nucleus.util.Color;
 import net.fabricmc.api.EnvType;

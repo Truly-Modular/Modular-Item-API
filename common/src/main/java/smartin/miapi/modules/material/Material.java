@@ -1,4 +1,4 @@
-package smartin.miapi.modules.properties.material;
+package smartin.miapi.modules.material;
 
 import com.google.gson.JsonElement;
 import net.fabricmc.api.EnvType;
@@ -11,7 +11,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
 import smartin.miapi.modules.ItemModule;
-import smartin.miapi.modules.properties.material.palette.MaterialPalette;
+import smartin.miapi.modules.material.palette.MaterialPalette;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.List;

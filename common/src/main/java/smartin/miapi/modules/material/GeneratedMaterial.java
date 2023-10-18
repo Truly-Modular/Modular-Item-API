@@ -1,4 +1,4 @@
-package smartin.miapi.modules.properties.material;
+package smartin.miapi.modules.material;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -17,8 +17,8 @@ import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.mixin.MiningToolItemAccessor;
-import smartin.miapi.modules.properties.material.palette.MaterialPalette;
-import smartin.miapi.modules.properties.material.palette.MaterialPaletteFromTexture;
+import smartin.miapi.modules.material.palette.MaterialPalette;
+import smartin.miapi.modules.material.palette.MaterialPaletteFromTexture;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.registries.FakeTranslation;
 
