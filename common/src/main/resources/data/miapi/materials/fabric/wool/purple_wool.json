@@ -1,0 +1,35 @@
+{
+    "key": "wool_purple",
+    "translation": "miapi.material.fabric.wool.purple",
+    "icon": {
+        "type": "item",
+        "item": "minecraft:purple_wool"
+    },
+    "groups": [
+        "fabric"
+    ],
+    "hardness": 0.5,
+    "density": 2,
+    "flexibility": 5,
+    "durability": 150,
+    "color": "9542CB",
+    "color_palette": {
+        "type": "grayscale_map",
+        "colors": {
+            "24": "431566",
+            "255": "9542CB"
+        },
+        "filler": "interpolate"
+    },
+    "mining_speed": 0,
+    "mining_level": 0,
+    "textures": [
+        "fabric"
+    ],
+    "items": [
+        {
+            "item": "minecraft:purple_wool",
+            "value": 1.0
+        }
+    ]
+}

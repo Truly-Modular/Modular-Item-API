@@ -1,7 +1,10 @@
 {
-    "key": "wool",
-    "translation": "miapi.material.wool",
-    "icon": "textures/item/wool.png",
+    "key": "wool_white",
+    "translation": "miapi.material.fabric.wool.white",
+    "icon": {
+        "type": "item",
+        "item": "minecraft:white_wool"
+    },
     "groups": [
         "fabric"
     ],
@@ -13,13 +16,8 @@
     "color_palette": {
         "type": "grayscale_map",
         "colors": {
-            "24": "082420",
-            "68": "0e3f36",
-            "107": "156355",
-            "150": "1e8a77",
-            "190": "2bc7ac",
-            "216": "33ebcb",
-            "255": "a4fdf0"
+            "24": "85898A",
+            "255": "F7F7F7"
         },
         "filler": "interpolate"
     },

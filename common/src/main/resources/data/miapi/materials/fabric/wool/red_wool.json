@@ -1,0 +1,35 @@
+{
+    "key": "wool_red",
+    "translation": "miapi.material.fabric.wool.red",
+    "icon": {
+        "type": "item",
+        "item": "minecraft:red_wool"
+    },
+    "groups": [
+        "fabric"
+    ],
+    "hardness": 0.5,
+    "density": 2,
+    "flexibility": 5,
+    "durability": 150,
+    "color": "B6332B",
+    "color_palette": {
+        "type": "grayscale_map",
+        "colors": {
+            "24": "671916",
+            "255": "B6332B"
+        },
+        "filler": "interpolate"
+    },
+    "mining_speed": 0,
+    "mining_level": 0,
+    "textures": [
+        "fabric"
+    ],
+    "items": [
+        {
+            "item": "minecraft:red_wool",
+            "value": 1.0
+        }
+    ]
+}

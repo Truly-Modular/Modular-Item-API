@@ -1,7 +1,10 @@
 {
     "key": "glass_light_blue",
     "translation": "miapi.material.glass.light_blue",
-    "icon": "textures/block/light_blue_stained_glass.png",
+    "icon": {
+        "type": "item",
+        "item": "minecraft:light_blue_stained_glass"
+    },
     "groups": [
         "glass"
     ],

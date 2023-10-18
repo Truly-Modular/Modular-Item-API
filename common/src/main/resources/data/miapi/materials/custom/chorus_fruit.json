@@ -2,6 +2,7 @@
     "key": "chorus_fruit",
     "translation": "miapi.material.custom.chorus_fruit",
     "icon": "textures/item/chorus_fruit.png",
+    "color": "8C668B",
     "items": [
         {
             "item": "minecraft:chorus_fruit",

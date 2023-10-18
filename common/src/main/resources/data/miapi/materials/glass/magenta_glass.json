@@ -1,7 +1,10 @@
 {
     "key": "glass_magenta",
     "translation": "miapi.material.glass.magenta",
-    "icon": "textures/block/magenta_stained_glass.png",
+    "icon": {
+        "type": "item",
+        "item": "minecraft:magenta_stained_glass"
+    },
     "groups": [
         "glass"
     ],

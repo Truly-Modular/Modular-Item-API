@@ -2,6 +2,7 @@
     "key": "elytra",
     "translation": "miapi.material.custom.elytra",
     "icon": "textures/item/elytra.png",
+    "color": "BF5935",
     "items": [
         {
             "item": "minecraft:elytra",

@@ -1,0 +1,35 @@
+{
+    "key": "wool_black",
+    "translation": "miapi.material.fabric.wool.black",
+    "icon": {
+        "type": "item",
+        "item": "minecraft:black_wool"
+    },
+    "groups": [
+        "fabric"
+    ],
+    "hardness": 0.5,
+    "density": 2,
+    "flexibility": 5,
+    "durability": 150,
+    "color": "252528",
+    "color_palette": {
+        "type": "grayscale_map",
+        "colors": {
+            "24": "0A0C0E",
+            "255": "252528"
+        },
+        "filler": "interpolate"
+    },
+    "mining_speed": 0,
+    "mining_level": 0,
+    "textures": [
+        "fabric"
+    ],
+    "items": [
+        {
+            "item": "minecraft:black_wool",
+            "value": 1.0
+        }
+    ]
+}

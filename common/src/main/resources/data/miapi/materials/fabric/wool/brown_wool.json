@@ -1,0 +1,35 @@
+{
+    "key": "wool_brown",
+    "translation": "miapi.material.fabric.wool.brown",
+    "icon": {
+        "type": "item",
+        "item": "minecraft:brown_wool"
+    },
+    "groups": [
+        "fabric"
+    ],
+    "hardness": 0.5,
+    "density": 2,
+    "flexibility": 5,
+    "durability": 150,
+    "color": "815331",
+    "color_palette": {
+        "type": "grayscale_map",
+        "colors": {
+            "24": "402815",
+            "255": "815331"
+        },
+        "filler": "interpolate"
+    },
+    "mining_speed": 0,
+    "mining_level": 0,
+    "textures": [
+        "fabric"
+    ],
+    "items": [
+        {
+            "item": "minecraft:brown_wool",
+            "value": 1.0
+        }
+    ]
+}

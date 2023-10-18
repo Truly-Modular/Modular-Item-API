@@ -1,0 +1,35 @@
+{
+    "key": "wool_lime",
+    "translation": "miapi.material.fabric.wool.lime",
+    "icon": {
+        "type": "item",
+        "item": "minecraft:lime_wool"
+    },
+    "groups": [
+        "fabric"
+    ],
+    "hardness": 0.5,
+    "density": 2,
+    "flexibility": 5,
+    "durability": 150,
+    "color": "84CA26",
+    "color_palette": {
+        "type": "grayscale_map",
+        "colors": {
+            "24": "3E6E0F",
+            "255": "84CA26"
+        },
+        "filler": "interpolate"
+    },
+    "mining_speed": 0,
+    "mining_level": 0,
+    "textures": [
+        "fabric"
+    ],
+    "items": [
+        {
+            "item": "minecraft:lime_wool",
+            "value": 1.0
+        }
+    ]
+}

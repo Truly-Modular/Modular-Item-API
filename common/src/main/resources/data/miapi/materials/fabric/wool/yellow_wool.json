@@ -1,0 +1,35 @@
+{
+    "key": "wool_yellow",
+    "translation": "miapi.material.fabric.wool.yellow",
+    "icon": {
+        "type": "item",
+        "item": "minecraft:yellow_wool"
+    },
+    "groups": [
+        "fabric"
+    ],
+    "hardness": 0.5,
+    "density": 2,
+    "flexibility": 5,
+    "durability": 150,
+    "color": "FBD43A",
+    "color_palette": {
+        "type": "grayscale_map",
+        "colors": {
+            "24": "9E7813",
+            "255": "FBD43A"
+        },
+        "filler": "interpolate"
+    },
+    "mining_speed": 0,
+    "mining_level": 0,
+    "textures": [
+        "fabric"
+    ],
+    "items": [
+        {
+            "item": "minecraft:yellow_wool",
+            "value": 1.0
+        }
+    ]
+}

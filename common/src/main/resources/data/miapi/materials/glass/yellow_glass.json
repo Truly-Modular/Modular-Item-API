@@ -1,7 +1,10 @@
 {
     "key": "glass_yellow",
     "translation": "miapi.material.glass.yellow",
-    "icon": "textures/block/yellow_stained_glass.png",
+    "icon": {
+        "type": "item",
+        "item": "minecraft:yellow_stained_glass"
+    },
     "groups": [
         "glass"
     ],

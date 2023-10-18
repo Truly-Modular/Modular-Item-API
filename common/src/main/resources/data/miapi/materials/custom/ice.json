@@ -2,6 +2,7 @@
     "key": "ice",
     "translation": "miapi.material.custom.ice",
     "icon": "miapi:textures/item/arrow/head/custom/ice.png",
+    "color": "86A4DE",
     "items": [
         {
             "item": "minecraft:ice",

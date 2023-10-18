@@ -1,7 +1,10 @@
 {
     "key": "glass_pink",
     "translation": "miapi.material.glass.pink",
-    "icon": "textures/block/pink_stained_glass.png",
+    "icon": {
+        "type": "item",
+        "item": "minecraft:pink_stained_glass"
+    },
     "groups": [
         "glass"
     ],

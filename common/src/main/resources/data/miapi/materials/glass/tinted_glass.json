@@ -1,7 +1,10 @@
 {
     "key": "glass_tinted",
     "translation": "miapi.material.glass.tinted",
-    "icon": "textures/block/tinted_glass.png",
+    "icon": {
+        "type": "item",
+        "item": "minecraft:tinted_glass"
+    },
     "groups": [
         "glass"
     ],
@@ -9,7 +12,7 @@
     "density": 1,
     "flexibility": 0,
     "durability": 50,
-    "color": "CDE7E6",
+    "color": "191919",
     "color_palette": {
         "type": "grayscale_map",
         "colors": {

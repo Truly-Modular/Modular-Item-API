@@ -1,7 +1,10 @@
 {
     "key": "glass",
     "translation": "miapi.material.glass",
-    "icon": "textures/block/glass.png",
+    "icon": {
+        "type": "item",
+        "item": "minecraft:glass"
+    },
     "groups": [
         "glass"
     ],

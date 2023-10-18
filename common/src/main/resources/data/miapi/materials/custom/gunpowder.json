@@ -2,6 +2,7 @@
     "key": "gunpowder",
     "translation": "miapi.material.custom.gunpowder",
     "icon": "textures/item/gunpowder.png",
+    "color": "717171",
     "items": [
         {
             "item": "minecraft:gunpowder",

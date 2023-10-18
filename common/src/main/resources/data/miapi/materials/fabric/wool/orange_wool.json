@@ -1,0 +1,35 @@
+{
+    "key": "wool_orange",
+    "translation": "miapi.material.fabric.wool.orange",
+    "icon": {
+        "type": "item",
+        "item": "minecraft:orange_wool"
+    },
+    "groups": [
+        "fabric"
+    ],
+    "hardness": 0.5,
+    "density": 2,
+    "flexibility": 5,
+    "durability": 150,
+    "color": "F6912A",
+    "color_palette": {
+        "type": "grayscale_map",
+        "colors": {
+            "24": "934103",
+            "255": "F6912A"
+        },
+        "filler": "interpolate"
+    },
+    "mining_speed": 0,
+    "mining_level": 0,
+    "textures": [
+        "fabric"
+    ],
+    "items": [
+        {
+            "item": "minecraft:orange_wool",
+            "value": 1.0
+        }
+    ]
+}
