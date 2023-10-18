@@ -108,6 +108,7 @@ public class HoverMaterialList extends InteractAbleWidget {
         } else {
             scrollPosOne = 0;
             scrollPosTwo = 0;
+            selected = 0;
         }
     }
 
@@ -137,6 +138,8 @@ public class HoverMaterialList extends InteractAbleWidget {
                 if (amount < 0) {
                     int maxElementsTotal = materialKeys.size();
                     if (selected + scrollPosOne == maxElementsTotal - 1) {
+                    } else if (scrollPosOne == 0 && maxElements == maxElementsTotal) {
+                        selected = Math.min(selected + 1, maxElements - 1);
                     } else if (scrollPosOne + maxElements == maxElementsTotal - 1) {
                         selected = Math.min(selected + 1, maxElements - 1);
                     } else if (selected == maxElements - 2) {
