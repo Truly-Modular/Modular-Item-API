@@ -28,6 +28,9 @@ public class ImmolateProperty extends DoubleProperty {
             return Math.min(toLevel + level, Math.max(4, level));
         });
         TickEvent.PLAYER_POST.register(player -> {
+            if(player.getWorld().isClient()){
+                return;
+            }
             if (player.age % 250 == 0) {
                 double strength = getForItems(player.getItemsEquipped());
                 if (strength > 0) {
@@ -41,6 +44,9 @@ public class ImmolateProperty extends DoubleProperty {
             }
         });
         PlayerEvent.ATTACK_ENTITY.register((player, level, target, hand, result) -> {
+            if(player.getWorld().isClient()){
+                return EventResult.pass();
+            }
             double strength = getForItems(player.getHandItems());
             if (strength > 0) {
                 double chance = Math.min(1, strength * 0.05 + 0.2);
@@ -58,6 +64,9 @@ public class ImmolateProperty extends DoubleProperty {
             return EventResult.pass();
         });
         BlockEvent.BREAK.register(((level, pos, state, player, xp) -> {
+            if(player.getWorld().isClient()){
+                return EventResult.pass();
+            }
             double strength = getForItems(player.getHandItems());
             if (strength > 0) {
                 double chance = Math.min(1, strength * 0.05 + 0.2);
@@ -71,6 +80,9 @@ public class ImmolateProperty extends DoubleProperty {
         }));
         Transform transform;
         MiapiProjectileEvents.MODULAR_PROJECTILE_ENTITY_HIT.register((modularProjectileEntityHitEvent) -> {
+            if(modularProjectileEntityHitEvent.projectile.getWorld().isClient()){
+                return EventResult.pass();
+            }
             double strength = getValueSafe(modularProjectileEntityHitEvent.projectile.asItemStack());
             ItemStack bowItem = modularProjectileEntityHitEvent.projectile.getBowItem();
             if (bowItem != null && !bowItem.isEmpty()) {

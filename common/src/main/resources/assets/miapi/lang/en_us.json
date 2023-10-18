@@ -134,6 +134,10 @@
     "miapi.stat.fortune.description":"Fortune level of the Item",
     "miapi.stat.mending":"Mending",
     "miapi.stat.mending.description":"Mending level of the Item",
+    "miapi.stat.immolate":"Immolate",
+    "miapi.stat.immolate.description":"It Burns. Yourself, your target, everything. \nAlso makes fire more tolerable",
+    "miapi.stat.leeching":"Leeching",
+    "miapi.stat.leeching.description":"Slowly eats the players experience to repair itself",
 
     "miapi.material_stat.color": "Color",
     "miapi.material_stat.flexibility": "Flexibility",

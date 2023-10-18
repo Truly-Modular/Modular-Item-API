@@ -92,7 +92,8 @@ public class StatListWidget extends InteractAbleWidget {
                 .setTranslationKey("projectile_accuracy")
                 .setFormat("##.##")
                 .setDefault(0)
-                .setMax(10).build());
+                .setMin(-2)
+                .setMax(2).build());
         addStatDisplay(AttributeSingleDisplay
                 .builder(AttributeRegistry.PROJECTILE_PIERCING)
                 .setTranslationKey("projectile_piercing")
@@ -171,6 +172,10 @@ public class StatListWidget extends InteractAbleWidget {
                 .builder(ImmolateProperty.property)
                 .setMax(4)
                 .setTranslationKey(ImmolateProperty.KEY).build());
+        addStatDisplay(SinglePropertyStatDisplay
+                .builder(LeechingProperty.property)
+                .setMax(2)
+                .setTranslationKey(LeechingProperty.KEY).build());
 
         AttributeSingleDisplay.attributesWithDisplay.add(AttributeRegistry.MINING_SPEED_AXE);
         AttributeSingleDisplay.attributesWithDisplay.add(AttributeRegistry.MINING_SPEED_PICKAXE);

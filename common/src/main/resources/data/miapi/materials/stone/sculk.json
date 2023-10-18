@@ -27,7 +27,7 @@
     },
     "properties": {
         "default": {
-            "mending": "1"
+            "leeching": "1"
         }
     },
     "mining_speed": 3.8,

@@ -432,6 +432,7 @@ public class RegistryInventory {
             registerMiapi(moduleProperties, RepairPriority.KEY, new RepairPriority());
             registerMiapi(moduleProperties, PriorityProperty.KEY, new PriorityProperty());
             registerMiapi(moduleProperties, ImmolateProperty.KEY, new ImmolateProperty());
+            registerMiapi(moduleProperties, LeechingProperty.KEY, new LeechingProperty());
 
             //compat
             registerMiapi(moduleProperties, BetterCombatProperty.KEY, new BetterCombatProperty());

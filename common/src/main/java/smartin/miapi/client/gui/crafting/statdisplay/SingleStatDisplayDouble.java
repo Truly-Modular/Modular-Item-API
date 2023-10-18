@@ -20,8 +20,10 @@ import smartin.miapi.config.MiapiConfig;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 @Environment(EnvType.CLIENT)
 public abstract class SingleStatDisplayDouble extends InteractAbleWidget implements SingleStatDisplay, Drawable {
@@ -153,7 +155,8 @@ public abstract class SingleStatDisplayDouble extends InteractAbleWidget impleme
         if (isMouseOver(mouseX, mouseY)) {
             Text text1 = this.hover.resolve(compareTo);
             if(!text1.getString().isEmpty()){
-                drawContext.drawTooltip(MinecraftClient.getInstance().textRenderer, this.hover.resolve(compareTo), mouseX, mouseY);
+                List<Text> texts = Arrays.stream(text1.getString().split("\n")).map(a -> Text.literal(a)).collect(Collectors.toList());
+                drawContext.drawTooltip(MinecraftClient.getInstance().textRenderer, texts, mouseX, mouseY);
             }
         }
     }
