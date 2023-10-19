@@ -60,7 +60,8 @@
     "durability": "[material.durability] / 2",
     "allowedMaterial": {
         "allowedMaterials": [
-            "fabric"
+            "fabric",
+            "feather"
         ],
         "cost": 2
     }
