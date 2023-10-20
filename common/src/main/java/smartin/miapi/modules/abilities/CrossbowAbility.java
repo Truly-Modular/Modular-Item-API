@@ -27,6 +27,7 @@ import net.minecraft.world.World;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import smartin.miapi.Miapi;
+import smartin.miapi.modules.abilities.util.ItemAbilityManager;
 import smartin.miapi.modules.abilities.util.ItemUseAbility;
 import smartin.miapi.modules.properties.CrossbowProperty;
 
@@ -45,7 +46,7 @@ public class CrossbowAbility implements ItemUseAbility {
     }
 
     @Override
-    public boolean allowedOnItem(ItemStack itemStack, World world, PlayerEntity player, Hand hand) {
+    public boolean allowedOnItem(ItemStack itemStack, World world, PlayerEntity player, Hand hand, ItemAbilityManager.AbilityContext abilityContext) {
         CrossbowProperty.CrossbowAbilityConfig config = CrossbowProperty.getConfig(itemStack);
         if (true) {
             Miapi.LOGGER.warn("testing if ALLOWED");

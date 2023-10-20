@@ -62,6 +62,7 @@
     "allowedMaterial": {
         "allowedMaterials": [
             "metal",
+            "crystal",
             "flint",
             "bone"
         ],

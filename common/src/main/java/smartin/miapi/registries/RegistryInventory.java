@@ -61,6 +61,9 @@ import smartin.miapi.item.MaterialSmithingRecipe;
 import smartin.miapi.item.modular.items.*;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.abilities.*;
+import smartin.miapi.modules.abilities.toolabilities.AxeAbility;
+import smartin.miapi.modules.abilities.toolabilities.HoeAbility;
+import smartin.miapi.modules.abilities.toolabilities.ShovelAbility;
 import smartin.miapi.modules.conditions.*;
 import smartin.miapi.modules.edit_options.CreateItemOption.CreateItemOption;
 import smartin.miapi.modules.edit_options.EditOption;
@@ -447,6 +450,9 @@ public class RegistryInventory {
             registerMiapi(useAbilityRegistry, HeavyAttackProperty.KEY, new HeavyAttackAbility());
             registerMiapi(useAbilityRegistry, CircleAttackProperty.KEY, new CircleAttackAbility());
             registerMiapi(useAbilityRegistry, CrossbowProperty.KEY, new CrossbowAbility());
+            registerMiapi(useAbilityRegistry, AxeAbility.KEY, new AxeAbility());
+            registerMiapi(useAbilityRegistry, HoeAbility.KEY, new HoeAbility());
+            registerMiapi(useAbilityRegistry, ShovelAbility.KEY, new ShovelAbility());
         });
     }
 

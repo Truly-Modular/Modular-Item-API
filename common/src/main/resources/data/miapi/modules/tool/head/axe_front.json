@@ -31,6 +31,9 @@
     "allowedInSlots": [
         "tool_head"
     ],
+    "abilities": [
+        "axe_ability"
+    ],
     "enchantments": {
         "allowed": [
             "miapi:tool"

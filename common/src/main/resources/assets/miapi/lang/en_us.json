@@ -572,12 +572,12 @@
     "miapi.module.belt_chain.description": "A piece of chainmail to protect your underbelly and keep your pants high",
     "miapi.module.belt_chain.short_description": "A piece of chainmail to protect your underbelly and keep your pants high",
 
-    "miapi.module.arm_chain_left": "Left Arm Chainmail-Sleve",
+    "miapi.module.arm_chain_left": "Left Chainmail-Sleve",
     "miapi.module.arm_chain_left.name": "[translation.[material.translation]]Left Chainmail-Sleve",
     "miapi.module.arm_chain_left.description": "A piece of chainmail to protect your left arm",
     "miapi.module.arm_chain_left.short_description": "A piece of chainmail to protect your left arm",
 
-    "miapi.module.arm_chain_right": "Right Arm Chainmail-Sleve",
+    "miapi.module.arm_chain_right": "Right Chainmail-Sleve",
     "miapi.module.arm_chain_right.name": "[translation.[material.translation]]Right Chainmail-Sleve",
     "miapi.module.arm_chain_right.description": "A piece of chainmail to protect your right arm",
     "miapi.module.arm_chain_right.short_description": "A piece of chainmail to protect your right arm",

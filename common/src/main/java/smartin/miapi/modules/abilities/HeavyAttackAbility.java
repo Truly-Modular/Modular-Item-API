@@ -12,6 +12,7 @@ import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.world.World;
 import smartin.miapi.mixin.LivingEntityAccessor;
 import smartin.miapi.modules.abilities.util.AttackUtil;
+import smartin.miapi.modules.abilities.util.ItemAbilityManager;
 import smartin.miapi.modules.abilities.util.ItemUseAbility;
 import smartin.miapi.modules.properties.HeavyAttackProperty;
 
@@ -21,7 +22,7 @@ import smartin.miapi.modules.properties.HeavyAttackProperty;
  */
 public class HeavyAttackAbility implements ItemUseAbility {
     @Override
-    public boolean allowedOnItem(ItemStack itemStack, World world, PlayerEntity player, Hand hand) {
+    public boolean allowedOnItem(ItemStack itemStack, World world, PlayerEntity player, Hand hand, ItemAbilityManager.AbilityContext abilityContext) {
         return HeavyAttackProperty.property.hasHeavyAttack(itemStack);
     }
 

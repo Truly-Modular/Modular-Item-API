@@ -4,6 +4,7 @@
     "package": "smartin.miapi.mixin",
     "compatibilityLevel": "JAVA_17",
     "mixins": [
+        "AxeItemAccessor",
         "BCWeaponRegistryMixin",
         "DefaultAttributeContainerAccessor",
         "DefaultAttributeRegistryMixin",
@@ -13,6 +14,7 @@
         "EntityMixin",
         "FireworkRocketEntityMixin",
         "ForgingScreenHandlerAccessor",
+        "HoeItemAccessor",
         "InventoryValidationMixin",
         "ItemEntityMixin",
         "ItemStackMixin",
@@ -24,6 +26,7 @@
         "PowderSnowBlockMixin",
         "ProjectileDispenserBehaviorAccessor",
         "ProjectileEntityAccessor",
+        "ShovelItemAccessor",
         "SmithingScreenHandlerAccessor",
         "SmithingScreenHandlerMixin",
         "ThrowablePotionItemAccessor"

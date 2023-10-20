@@ -8,6 +8,7 @@ import smartin.miapi.Miapi;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.EnchantmentProperty;
+import smartin.miapi.modules.properties.ItemIdProperty;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.util.HashMap;
@@ -52,7 +53,7 @@ public class ItemToModularConverter implements ModularItemStackConverter.Modular
                     }
                 });
                 nextStack.setCount(stack.getCount());
-                return nextStack;
+                return ItemIdProperty.changeId(nextStack);
             }
         }
         return stack;

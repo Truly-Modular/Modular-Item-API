@@ -25,7 +25,7 @@ public interface ItemUseAbility {
      * @param hand      The hand with which the item is being used.
      * @return true if the item is allowed to be used, false otherwise.
      */
-    boolean allowedOnItem(ItemStack itemStack, World world, PlayerEntity player, Hand hand);
+    boolean allowedOnItem(ItemStack itemStack, World world, PlayerEntity player, Hand hand, ItemAbilityManager.AbilityContext abilityContext);
 
     /**
      * Gets the use action of the specified item stack.
@@ -62,19 +62,19 @@ public interface ItemUseAbility {
      * @param user  The entity using the item.
      * @return The resulting item stack after finishing usage.
      */
-    default ItemStack finishUsing(ItemStack stack, World world, LivingEntity user){
+    default ItemStack finishUsing(ItemStack stack, World world, LivingEntity user) {
         return stack;
     }
 
     /**
      * Called when the item usage is stopped (stopped holding Left Click)
      *
-     * @param stack              The item stack being used.
-     * @param world              The world in which the item was used.
-     * @param user               The entity using the item.
-     * @param remainingUseTicks  The remaining ticks of item usage.
+     * @param stack             The item stack being used.
+     * @param world             The world in which the item was used.
+     * @param user              The entity using the item.
+     * @param remainingUseTicks The remaining ticks of item usage.
      */
-    default void onStoppedUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks){
+    default void onStoppedUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
 
     }
 
@@ -85,9 +85,10 @@ public interface ItemUseAbility {
      * @param world The world in which the item is being held.
      * @param user  The entity holding the item.
      */
-    default void onStoppedHolding(ItemStack stack, World world, LivingEntity user){
+    default void onStoppedHolding(ItemStack stack, World world, LivingEntity user) {
 
     }
+
     /**
      * Handles the usage of the item on an entity.
      *
@@ -97,7 +98,7 @@ public interface ItemUseAbility {
      * @param hand   The hand with which the item is being used.
      * @return The result of using the item on the entity.
      */
-    default ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand){
+    default ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
         return ActionResult.PASS;
     }
 
@@ -107,11 +108,11 @@ public interface ItemUseAbility {
      * @param context The item usage context, including the item stack, player, and block information.
      * @return The result of using the item on the block.
      */
-    default ActionResult useOnBlock(ItemUsageContext context){
+    default ActionResult useOnBlock(ItemUsageContext context) {
         return ActionResult.PASS;
     }
 
-    default void usageTick(World world, LivingEntity user, ItemStack stack, int remainingUseTicks){
+    default void usageTick(World world, LivingEntity user, ItemStack stack, int remainingUseTicks) {
 
     }
 }

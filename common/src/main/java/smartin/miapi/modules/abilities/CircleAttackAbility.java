@@ -13,6 +13,7 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
 import net.minecraft.world.World;
 import smartin.miapi.modules.abilities.util.AttackUtil;
+import smartin.miapi.modules.abilities.util.ItemAbilityManager;
 import smartin.miapi.modules.abilities.util.ItemUseAbility;
 import smartin.miapi.modules.properties.CircleAttackProperty;
 
@@ -21,7 +22,7 @@ import smartin.miapi.modules.properties.CircleAttackProperty;
  */
 public class CircleAttackAbility implements ItemUseAbility {
     @Override
-    public boolean allowedOnItem(ItemStack itemStack, World world, PlayerEntity player, Hand hand) {
+    public boolean allowedOnItem(ItemStack itemStack, World world, PlayerEntity player, Hand hand, ItemAbilityManager.AbilityContext abilityContext) {
         return CircleAttackProperty.property.hasCircleAttack(itemStack);
     }
 

@@ -8,6 +8,7 @@ import smartin.miapi.item.ModularItemStackConverter;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.material.GeneratedMaterial;
 import smartin.miapi.modules.material.Material;
+import smartin.miapi.modules.properties.ItemIdProperty;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.util.HashMap;
@@ -24,7 +25,7 @@ public class GenerateModularConverters {
         });
         ModularItemStackConverter.converters.add((stack)->{
             if(modularItem.containsKey(stack.getItem())){
-                return modularItem.get(stack.getItem()).convert(stack);
+                return ItemIdProperty.changeId(modularItem.get(stack.getItem()).convert(stack));
             }
             return stack;
         });

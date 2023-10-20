@@ -20,7 +20,7 @@ import java.util.List;
  */
 public class ItemIdProperty implements CraftingProperty, ModuleProperty {
     public static final String KEY = "itemId";
-    public static ModuleProperty property;
+    public static ItemIdProperty property;
 
     public ItemIdProperty() {
         property = this;
@@ -36,6 +36,23 @@ public class ItemIdProperty implements CraftingProperty, ModuleProperty {
     @Override
     public boolean shouldExecuteOnCraft(ItemModule.ModuleInstance module, ItemModule.ModuleInstance root, ItemStack stack) {
         return true;
+    }
+
+    public static ItemStack changeId(ItemStack itemStack){
+        ItemModule.ModuleInstance root = ItemModule.getModules(itemStack);
+        JsonElement data = ItemModule.getMergedProperty(root, property);
+        if (data != null) {
+            String translationKey = data.getAsString();
+            Item item = RegistryInventory.modularItems.get(translationKey);
+            if (item != null) {
+                ItemStack newStack = new ItemStack(item);
+                newStack.setNbt(itemStack.getNbt());
+                newStack.setCount(itemStack.getCount());
+                root.writeToItem(newStack);
+                return newStack;
+            }
+        }
+        return itemStack;
     }
 
 

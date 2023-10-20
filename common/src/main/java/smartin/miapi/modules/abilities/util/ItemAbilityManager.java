@@ -1,6 +1,7 @@
 package smartin.miapi.modules.abilities.util;
 
 import dev.architectury.event.events.common.TickEvent;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -10,11 +11,14 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 import smartin.miapi.events.property.ApplicationEvents;
 import smartin.miapi.modules.properties.AbilityProperty;
 import smartin.miapi.registries.MiapiRegistry;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.WeakHashMap;
 
 /**
  * The ItemAbilityManager is the brain and control behind what Ability is executed on what Item.
@@ -62,9 +66,9 @@ public class ItemAbilityManager {
         return useAbility == null ? emptyAbility : useAbility;
     }
 
-    private static ItemUseAbility getAbility(ItemStack itemStack, World world, PlayerEntity player, Hand hand) {
+    private static ItemUseAbility getAbility(ItemStack itemStack, World world, PlayerEntity player, Hand hand, AbilityContext abilityContext) {
         for (ItemUseAbility ability : AbilityProperty.get(itemStack)) {
-            if (ability.allowedOnItem(itemStack, world, player, hand)) {
+            if (ability.allowedOnItem(itemStack, world, player, hand, abilityContext)) {
                 return ability;
             }
         }
@@ -81,7 +85,17 @@ public class ItemAbilityManager {
 
     public static TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         ItemStack itemStack = user.getStackInHand(hand);
-        ItemUseAbility ability = getAbility(itemStack, world, user, hand);
+        ItemUseAbility ability = getAbility(itemStack, world, user, hand, new AbilityContext() {
+            @Override
+            public @Nullable ItemUsageContext hitResult() {
+                return null;
+            }
+
+            @Override
+            public @Nullable Entity hitEntity() {
+                return null;
+            }
+        });
         abilityMap.put(itemStack, ability);
 
         if (ability != emptyAbility)
@@ -121,17 +135,49 @@ public class ItemAbilityManager {
     }
 
     public static ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
+        ItemUseAbility ability = getAbility(stack, user.getWorld(), user, hand, new AbilityContext() {
+            @Override
+            public @Nullable ItemUsageContext hitResult() {
+                return null;
+            }
+
+            @Override
+            public @Nullable Entity hitEntity() {
+                return entity;
+            }
+        });
+        abilityMap.put(stack, ability);
         return getAbility(stack).useOnEntity(stack, user, entity, hand);
     }
 
     public static ActionResult useOnBlock(ItemUsageContext context) {
+        ItemUseAbility ability = getAbility(context.getStack(), context.getWorld(), context.getPlayer(), context.getHand(), new AbilityContext() {
+            @Override
+            public @Nullable ItemUsageContext hitResult() {
+                return context;
+            }
+
+            @Override
+            public @Nullable Entity hitEntity() {
+                return null;
+            }
+        });
+        abilityMap.put(context.getStack(), ability);
         return getAbility(context.getStack()).useOnBlock(context);
+    }
+
+    public interface AbilityContext {
+        @Nullable
+        ItemUsageContext hitResult();
+
+        @Nullable
+        Entity hitEntity();
     }
 
     static class EmptyAbility implements ItemUseAbility {
 
         @Override
-        public boolean allowedOnItem(ItemStack itemStack, World world, PlayerEntity player, Hand hand) {
+        public boolean allowedOnItem(ItemStack itemStack, World world, PlayerEntity player, Hand hand, ItemAbilityManager.AbilityContext abilityContext) {
             return true;
         }
 

@@ -28,6 +28,9 @@
         "tool",
         "head"
     ],
+    "abilities": [
+        "shovel_ability"
+    ],
     "allowedInSlots": [
         "tool_head"
     ],
