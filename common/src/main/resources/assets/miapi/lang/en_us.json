@@ -546,6 +546,58 @@
     "miapi.module.helmet_base.description": "a small piece on your head to hold the helmet",
     "miapi.module.helmet_base.short_description": "a small piece on your head to hold the helmet",
 
+
+    "miapi.module.boot_chain_left": "Left Chainmail Boot",
+    "miapi.module.boot_chain_left.name": "[translation.[material.translation]]Chainmail Boots",
+    "miapi.module.boot_chain_left.description": "The left Boot protecting your left foot",
+    "miapi.module.boot_chain_left.short_description": "The left Boot protecting your left foot",
+
+    "miapi.module.boot_chain_right": "Right Chainmail Boot",
+    "miapi.module.boot_chain_right.name": "[translation.[material.translation]]Chainmail Boots",
+    "miapi.module.boot_chain_right.description": "A chainmail boot protecting your right foot",
+    "miapi.module.boot_chain_right.short_description": "A chainmail boot protecting your right foot",
+
+    "miapi.module.leg_chain_left": "Left Chainmail Pants",
+    "miapi.module.leg_chain_left.name": "[translation.[material.translation]]Left Chainmail Pants",
+    "miapi.module.leg_chain_left.description": "A chainmail pant protecting your left leg",
+    "miapi.module.leg_chain_left.short_description": "A chainmail pant protecting your left leg",
+
+    "miapi.module.leg_chain_right": "Right Chainmail Pants",
+    "miapi.module.leg_chain_right.name": "[translation.[material.translation]]Right Chainmail Pants",
+    "miapi.module.leg_chain_right.description": "A chainmail pant protecting your right leg",
+    "miapi.module.leg_chain_right.short_description": "A chainmail pant protecting your right leg",
+
+    "miapi.module.belt_chain": "Chainmail Belt",
+    "miapi.module.belt_chain.name": "[translation.[material.translation]]Chainmail Leggings",
+    "miapi.module.belt_chain.description": "A piece of chainmail to protect your underbelly and keep your pants high",
+    "miapi.module.belt_chain.short_description": "A piece of chainmail to protect your underbelly and keep your pants high",
+
+    "miapi.module.arm_chain_left": "Left Arm Chainmail-Sleve",
+    "miapi.module.arm_chain_left.name": "[translation.[material.translation]]Left Chainmail-Sleve",
+    "miapi.module.arm_chain_left.description": "A piece of chainmail to protect your left arm",
+    "miapi.module.arm_chain_left.short_description": "A piece of chainmail to protect your left arm",
+
+    "miapi.module.arm_chain_right": "Right Arm Chainmail-Sleve",
+    "miapi.module.arm_chain_right.name": "[translation.[material.translation]]Right Chainmail-Sleve",
+    "miapi.module.arm_chain_right.description": "A piece of chainmail to protect your right arm",
+    "miapi.module.arm_chain_right.short_description": "A piece of chainmail to protect your right arm",
+
+    "miapi.module.front_chain_chestplate": "Chainmail Chestplate",
+    "miapi.module.front_chain_chestplate.name": "[translation.[material.translation]]Chainmail Chestplate",
+    "miapi.module.front_chain_chestplate.description": "A piece of chainmail to protect your chest",
+    "miapi.module.front_chain_chestplate.short_description": "A piece of chainmail to protect your chest",
+
+    "miapi.module.back_chain_chestplate": "Chainmail Backplate",
+    "miapi.module.back_chain_chestplate.name": "[translation.[material.translation]]Chainmail Backplate",
+    "miapi.module.back_chain_chestplate.description": "A piece of chainmail to protect your back",
+    "miapi.module.back_chain_chestplate.short_description": "A piece of chainmail to protect your back",
+
+    "miapi.module.helmet_chain": "Chainmail Helmet",
+    "miapi.module.helmet_chain.name": "[translation.[material.translation]]Chain Helmet",
+    "miapi.module.helmet_chain.description": "A chainmail helmet to protect your head",
+    "miapi.module.helmet_chain.short_description": "A chainmail helmet to protect your head",
+
+
     "miapi.module.wing_boot_left": "Left Flap",
     "miapi.module.wing_boot_left.name": "[translation.[material.translation]]Flaps",
     "miapi.module.wing_boot_left.description": "A flap on your left foot to have better turning",

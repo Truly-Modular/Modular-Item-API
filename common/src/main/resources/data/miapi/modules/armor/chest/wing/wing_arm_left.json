@@ -1,8 +1,8 @@
 {
-    "name": "wing_leg_right",
+    "name": "wing_arm_left",
     "texture": [
         {
-            "path": "miapi:models/item/armor/model/leg_right/wing/[material.texture].json",
+            "path": "miapi:models/item/armor/model/arm_left/wing/[material.texture].json",
             "transform": {
                 "rotation": {
                     "x": 0.0,
@@ -19,11 +19,11 @@
                     "y": 1.0,
                     "z": 1.0
                 },
-                "origin": "right_leg"
+                "origin": "left_arm"
             }
         },
         {
-            "path": "miapi:models/item/armor/gui/wingsuit/leg_right/base/[material.texture].json",
+            "path": "miapi:models/item/armor/gui/wingsuit/arm_left/base/[material.texture].json",
             "transform": {
                 "rotation": {
                     "x": 0.0,
@@ -50,30 +50,36 @@
         "default",
         "armor",
         "wing",
-        "pants"
+        "chest"
     ],
     "allowedInSlots": [
-        "leg_right"
+        "arm_left"
+    ],
+    "tag": [
+        "background_icon_alt",
+        "armor",
+        "arm"
     ],
     "attributes": [
         {
             "attribute": "minecraft:generic.armor",
-            "value": "(([material.hardness]-ceil((([material.hardness])/(6.5)))+ceil((([material.hardness])/(4.5)))-1)/(14))",
+            "value": "([material.hardness] + 2 - ceil([material.flexibility]/4))/16",
             "operation": "+",
-            "slot": "legs"
+            "slot": "chest"
         },
         {
             "attribute": "miapi:generic.elytra_glide_efficiency",
-            "value": "5+[material.flexibility]*3-[material.density]*2",
+            "value": "[material.flexibility]*2-[material.density]*2",
             "operation": "+",
-            "slot": "legs"
+            "slot": "chest"
         }
     ],
-    "durability": "[material.durability] / 7 * 2 / 3.7",
+    "durability": "[material.durability] / 8",
     "allowedMaterial": {
         "allowedMaterials": [
-            "fabric"
+            "fabric",
+            "feather"
         ],
-        "cost": 4
+        "cost": 2
     }
 }

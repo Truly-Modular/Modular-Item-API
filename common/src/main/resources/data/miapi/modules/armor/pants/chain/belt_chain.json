@@ -1,8 +1,8 @@
 {
-    "name": "wing_leg_left",
+    "name": "belt_chain",
     "texture": [
         {
-            "path": "miapi:models/item/armor/model/leg_left/wing/[material.texture].json",
+            "path": "miapi:models/item/armor/model/belt/chain/[material.texture].json",
             "transform": {
                 "rotation": {
                     "x": 0.0,
@@ -19,11 +19,11 @@
                     "y": 1.0,
                     "z": 1.0
                 },
-                "origin": "left_leg"
+                "origin": "body"
             }
         },
         {
-            "path": "miapi:models/item/armor/gui/wingsuit/leg_left/base/[material.texture].json",
+            "path": "miapi:models/item/armor/gui/chain/belt/base/[material.texture].json",
             "transform": {
                 "rotation": {
                     "x": 0.0,
@@ -44,36 +44,49 @@
             }
         }
     ],
-    "priority": 1,
+    "priority": 0,
     "repairPriority": 0,
     "materialProperty": [
         "default",
         "armor",
-        "wing",
         "pants"
     ],
     "allowedInSlots": [
-        "leg_left"
+        "belt"
     ],
+    "tag": [
+        "background_icon",
+        "armor",
+        "pants"
+    ],
+    "allowedMaterial": {
+        "allowedMaterials": [
+            "metal",
+            "flint",
+            "bone"
+        ],
+        "cost": 3
+    },
     "attributes": [
         {
             "attribute": "minecraft:generic.armor",
-            "value": "(([material.hardness]-ceil((([material.hardness])/(6.5)))+ceil((([material.hardness])/(4.5)))-1)/(14))",
+            "value": "(([material.hardness]-ceil((([material.hardness])/(6.5)))+ceil((([material.hardness])/(4.5)))-2)/(7))*3",
             "operation": "+",
             "slot": "legs"
         },
         {
-            "attribute": "miapi:generic.elytra_glide_efficiency",
-            "value": "5+[material.flexibility]*3-[material.density]*2",
+            "attribute": "minecraft:generic.armor_toughness",
+            "value": "((((([material.mining_level]-2)/(abs([material.mining_level]-2))))/(2))+0.5) * ([material.mining_level]-1)",
+            "operation": "+",
+            "slot": "legs"
+        },
+        {
+            "attribute": "minecraft:generic.knockback_resistance",
+            "value": "((((([material.mining_level]-3)/(abs([material.mining_level]-3))))/(2))+0.5) * ([material.mining_level]-3) / 10",
             "operation": "+",
             "slot": "legs"
         }
     ],
-    "durability": "[material.durability] / 7 * 2 / 3.7",
-    "allowedMaterial": {
-        "allowedMaterials": [
-            "fabric"
-        ],
-        "cost": 4
-    }
+    "durability": "[material.durability] / 7 * 3 / 3.7",
+    "displayName": "miapi.module.belt_chain.name"
 }

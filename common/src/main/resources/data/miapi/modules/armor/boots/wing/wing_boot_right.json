@@ -1,8 +1,8 @@
 {
-    "name": "wing_arm_right",
+    "name": "wing_boot_right",
     "texture": [
         {
-            "path": "miapi:models/item/armor/model/arm_right/wing/[material.texture].json",
+            "path": "miapi:models/item/armor/model/boot_right/wing/[material.texture].json",
             "transform": {
                 "rotation": {
                     "x": 0.0,
@@ -19,11 +19,11 @@
                     "y": 1.0,
                     "z": 1.0
                 },
-                "origin": "right_arm"
+                "origin": "right_leg"
             }
         },
         {
-            "path": "miapi:models/item/armor/gui/wingsuit/arm_right/base/[material.texture].json",
+            "path": "miapi:models/item/armor/gui/wingsuit/boot_right/base/[material.texture].json",
             "transform": {
                 "rotation": {
                     "x": 0.0,
@@ -50,35 +50,31 @@
         "default",
         "armor",
         "wing",
-        "chest"
+        "boot"
     ],
     "allowedInSlots": [
-        "arm_right"
+        "boot_right"
     ],
-    "tag": [
-        "background_icon_alt",
-        "armor",
-        "arm"
-    ],
+    "allowedMaterial": {
+        "allowedMaterials": [
+            "fabric",
+            "feather"
+        ],
+        "cost": 3
+    },
     "attributes": [
         {
             "attribute": "minecraft:generic.armor",
-            "value": "([material.hardness] + 2 - ceil([material.flexibility]/4))/16",
+            "value": "((floor((([material.hardness])/(2)))-floor((([material.density])/(4))))/(4))",
             "operation": "+",
-            "slot": "chest"
+            "slot": "feet"
         },
         {
-            "attribute": "miapi:generic.elytra_glide_efficiency",
-            "value": "[material.flexibility]*2-[material.density]*2",
+            "attribute": "miapi:generic.elytra_turn_efficiency",
+            "value": "floor(12+[material.flexibility]*2-[material.density])/2",
             "operation": "+",
-            "slot": "chest"
+            "slot": "feet"
         }
     ],
-    "durability": "[material.durability] / 8",
-    "allowedMaterial": {
-        "allowedMaterials": [
-            "fabric"
-        ],
-        "cost": 2
-    }
+    "durability": "[material.durability]* 0.5"
 }

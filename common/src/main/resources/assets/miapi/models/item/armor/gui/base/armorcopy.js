@@ -3,7 +3,7 @@ const path = require('path')
 
 const sourceFolder = './' // Replace with the path to your source folder
 const searchString = 'default' // Replace with the string you want to replace
-const replaceString = 'netherite' // Replace with the string you want to use as a replacement
+const replaceString = 'chain' // Replace with the string you want to use as a replacement
 const requiredPath = ``
 
 function processFolder(folderPath) {
