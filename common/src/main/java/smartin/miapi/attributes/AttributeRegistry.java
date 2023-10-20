@@ -16,7 +16,6 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-import smartin.miapi.Miapi;
 import smartin.miapi.entity.ItemProjectileEntity;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.events.MiapiProjectileEvents;
@@ -80,7 +79,7 @@ public class AttributeRegistry {
                 if (attacker.getAttributes().hasAttribute(SHIELD_BREAK)) {
                     double value = attacker.getAttributeValue(SHIELD_BREAK);
                     if (livingHurtEvent.livingEntity instanceof PlayerEntity player) {
-                        if (value > 0) {
+                        if (value > 0 && player.isBlocking()) {
                             player.getItemCooldownManager().set(Items.SHIELD, (int) (value * 20));
                             player.clearActiveItem();
                             player.getWorld().sendEntityStatus(player, (byte) 30);
@@ -120,7 +119,6 @@ public class AttributeRegistry {
             ItemProjectileEntity projectile = listener.projectile;
             if (projectile.isCritical()) {
                 listener.damage = (float) (listener.damage * AttributeProperty.getActualValue(projectile.asItemStack(), EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_CRIT_MULTIPLIER));
-                Miapi.DEBUG_LOGGER.warn("criticalArrow " + projectile.getDamage() + " speed " + projectile.getVelocity().length());
             }
             return EventResult.pass();
         });

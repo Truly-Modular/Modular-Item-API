@@ -176,12 +176,42 @@ public class StatListWidget extends InteractAbleWidget {
                 .builder(LeechingProperty.property)
                 .setMax(2)
                 .setTranslationKey(LeechingProperty.KEY).build());
+        addStatDisplay(AttributeSingleDisplay
+                .builder(EntityAttributes.GENERIC_ARMOR)
+                .setTranslationKey("armor")
+                .setMax(8).build());
+        addStatDisplay(AttributeSingleDisplay
+                .builder(EntityAttributes.GENERIC_ARMOR_TOUGHNESS)
+                .setTranslationKey("armor_toughness")
+                .setMax(3).build());
+        addStatDisplay(AttributeSingleDisplay
+                .builder(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE)
+                .setTranslationKey("knockback_resistance")
+                .setMax(1).build());
+        addStatDisplay(AttributeSingleDisplay
+                .builder(AttributeRegistry.ELYTRA_GLIDE_EFFICIENCY)
+                .setTranslationKey("elytra_glide")
+                .setMax(20)
+                .setMin(-20).build());
+        addStatDisplay(AttributeSingleDisplay
+                .builder(AttributeRegistry.ELYTRA_TURN_EFFICIENCY)
+                .setTranslationKey("elytra_turn")
+                .setMax(20)
+                .setMin(-20).build());
+        addStatDisplay(AttributeSingleDisplay
+                .builder(AttributeRegistry.ELYTRA_ROCKET_EFFICIENCY)
+                .setTranslationKey("rocket_efficiency")
+                .setMax(5)
+                .setMin(-5).build());
 
         AttributeSingleDisplay.attributesWithDisplay.add(AttributeRegistry.MINING_SPEED_AXE);
         AttributeSingleDisplay.attributesWithDisplay.add(AttributeRegistry.MINING_SPEED_PICKAXE);
         AttributeSingleDisplay.attributesWithDisplay.add(AttributeRegistry.MINING_SPEED_HOE);
         AttributeSingleDisplay.attributesWithDisplay.add(AttributeRegistry.MINING_SPEED_SHOVEL);
         AttributeSingleDisplay.attributesWithDisplay.add(AttributeRegistry.ARMOR_CRUSHING);
+    }
+
+    public static void setupClientDone(){
         Registries.ATTRIBUTE.forEach(entityAttribute -> {
             if (!AttributeSingleDisplay.attributesWithDisplay.contains(entityAttribute)) {
                 addStatDisplay(AttributeSingleDisplay

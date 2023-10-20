@@ -3,14 +3,11 @@ package smartin.miapi.client.gui;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.Element;
 import net.minecraft.text.Text;
-import net.minecraft.util.math.ColorHelper;
 import org.joml.Vector4f;
-import org.joml.Vector4i;
 
 /**
  * This is a widget that displays a scrolling text. The text slowly scrolls through
@@ -20,7 +17,6 @@ import org.joml.Vector4i;
  */
 @Environment(EnvType.CLIENT)
 public class ScrollingTextWidget extends InteractAbleWidget implements Drawable, Element {
-    private TextRenderer renderer = MinecraftClient.getInstance().textRenderer;
     private Text text;
     private float timer = 0;
     private int scrollPosition = 0;
@@ -142,12 +138,14 @@ public class ScrollingTextWidget extends InteractAbleWidget implements Drawable,
             context.enableScissor((int) corner1.x, (int) corner1.y, (int) corner2.x+1, (int) corner2.y);
             scissorEnabled = true;
         }
-        context.drawText(renderer, text, textStart, getY(), textColor, hasTextShadow);
+        if(text!=null){
+            context.drawText(MinecraftClient.getInstance().textRenderer, text, textStart, getY(), textColor, hasTextShadow);
+        }
         if (scissorEnabled) context.disableScissor();
     }
 
     public int getRequiredWidth() {
-        return Math.min(this.width, renderer.getWidth(text));
+        return Math.min(this.width, MinecraftClient.getInstance().textRenderer.getWidth(text));
     }
 
     public enum Orientation {

@@ -60,6 +60,7 @@ public class MiapiClient {
         //materialAtlasManager = new MaterialAtlasManager(mc.getTextureManager());
         //((ReloadableResourceManagerImpl) mc.getResourceManager()).registerReloader(materialAtlasManager);
         SpriteLoader.setup();
+        StatListWidget.setup();
     }
 
     protected static void clientStart(MinecraftClient client) {
@@ -72,10 +73,10 @@ public class MiapiClient {
             ((ItemRendererAccessor) client.getItemRenderer()).color().register(new CustomColorProvider(), item);
         });
         CryoStatusEffect.setupOnClient();
+        StatListWidget.setupClientDone();
     }
 
     protected static void clientLevelLoad(ClientWorld clientWorld) {
-        StatListWidget.setup();
         SpriteLoader.clientStart();
     }
 
