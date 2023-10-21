@@ -6,6 +6,7 @@ import smartin.miapi.config.oro_config.BooleanConfigItem;
 import smartin.miapi.config.oro_config.Config;
 import smartin.miapi.config.oro_config.ConfigItemGroup;
 import smartin.miapi.config.oro_config.IntegerConfigItem;
+import smartin.miapi.datapack.ReloadEvents;
 
 import java.io.File;
 import java.util.List;
@@ -27,7 +28,10 @@ public class MiapiConfig extends Config {
                 "miapi_server");
         if (Platform.isModLoaded("cloth_config")) {
         }
-        this.saveConfigToFile();
+        this.readConfigFromFile();
+        ReloadEvents.START.subscribe((isClient -> {
+            readConfigFromFile();
+        }));
     }
 
     public static class ClientConfig extends ConfigItemGroup {

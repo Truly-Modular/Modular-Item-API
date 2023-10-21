@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.client.MiapiClient;
+import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.datapack.ReloadListener;
 import smartin.miapi.events.property.ApplicationEvents;
@@ -50,6 +51,7 @@ public class Miapi {
     public static Gson gson = new Gson();
 
     public static void init() {
+        MiapiConfig.getInstance();
         setupNetworking();
         ApplicationEvents.setup();
         RegistryInventory.setup();

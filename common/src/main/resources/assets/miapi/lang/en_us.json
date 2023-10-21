@@ -265,6 +265,7 @@
     "miapi.material.custom.splash_potion": "Splash Potion ",
     "miapi.material.custom.lingering_potion": "Lingering Potion ",
     "miapi.material.custom.tnt": "TNT ",
+    "miapi.material.custom.elytra": "Elytra ",
 
     "block.miapi.modular_work_bench": "Modular Workbench",
 
@@ -630,8 +631,8 @@
     "miapi.module.wing_arm_right.description": "A small wing to stabilise flight",
     "miapi.module.wing_arm_right.short_description": "A small wing to stabilise flight",
 
-    "miapi.module.back_elytra": "Elytra Attachtment",
-    "miapi.module.back_elytra.name": "Elytra Attachtment",
+    "miapi.module.back_elytra": "Elytra Attachment",
+    "miapi.module.back_elytra.name": "Elytra Attachment",
     "miapi.module.back_elytra.description": "A Attachment for Wings to enable flight",
     "miapi.module.back_elytra.short_description": "A Attachment for Wings to enable flight",
 

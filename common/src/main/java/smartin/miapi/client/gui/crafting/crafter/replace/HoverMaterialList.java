@@ -64,7 +64,7 @@ public class HoverMaterialList extends InteractAbleWidget {
                 }
             }
             drawContext.fill(getX(), getY(), getX() + sizeDetailList + sizeBaseList + 10, getY() + verticalSize * 14, ColorHelper.Argb.getArgb(210, 0, 0, 0));
-            if (materials.size() > 1) {
+            if (!materials.isEmpty()) {
                 scrollPosOne = Math.max(0, Math.min(materials.size() - maxElements - 1, scrollPosOne));
                 int start = scrollPosOne;
                 int end = Math.min(scrollPosOne + maxElements, materials.size());
