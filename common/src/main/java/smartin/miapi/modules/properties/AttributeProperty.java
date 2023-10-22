@@ -32,6 +32,7 @@ public class AttributeProperty implements ModuleProperty {
     public static final Map<String, Supplier<EntityAttribute>> replaceMap = new HashMap<>();
     public static final Map<EntityAttribute, Float> priorityMap = new HashMap<>();
     public static final List<AttributeTransformer> attributeTransformers = new ArrayList<>();
+    public static Map<EquipmentSlot, UUID> uuidCache = new HashMap<>();
 
     public AttributeProperty() {
         property = this;
@@ -108,6 +109,11 @@ public class AttributeProperty implements ModuleProperty {
         return old;
     }
 
+    /**
+     * return all attributemodifiers of an itemstack
+     * @param itemStack
+     * @return
+     */
     public static Multimap<EntityAttribute, EntityAttributeModifierHolder> getAttributeModifiers(ItemStack itemStack) {
         Multimap<EntityAttribute, EntityAttributeModifierHolder> map = getAttributeModifiersRaw(itemStack);
         Multimap<EntityAttribute, EntityAttributeModifierHolder> map2 = ArrayListMultimap.create();
@@ -125,11 +131,21 @@ public class AttributeProperty implements ModuleProperty {
         return map;
     }
 
+    /**
+     * returns the raw modifiers, shouldnt be used widely
+     * @param itemStack
+     * @return
+     */
     public static Multimap<EntityAttribute, EntityAttributeModifierHolder> getAttributeModifiersRaw(ItemStack itemStack) {
         Multimap<EntityAttribute, EntityAttributeModifierHolder> multimap = ArrayListMultimap.create();
         return ModularItemCache.get(itemStack, KEY, multimap);
     }
 
+    /**
+     * Generates the multimap for the Cache
+     * @param itemStack
+     * @return
+     */
     private static Map<EquipmentSlot, Multimap<EntityAttribute, EntityAttributeModifier>> equipmentSlotMultimapMapGenerate(ItemStack itemStack) {
         Map<EquipmentSlot, Multimap<EntityAttribute, EntityAttributeModifier>> map = new HashMap<>();
         Arrays.stream(EquipmentSlot.values()).forEach(equipmentSlot -> {
@@ -138,6 +154,12 @@ public class AttributeProperty implements ModuleProperty {
         return map;
     }
 
+    /**
+     * returns the Attribute map based on equipmentslot
+     * This will be nullsave for all equipmentslot
+     * @param itemStack
+     * @return
+     */
     public static Map<EquipmentSlot, Multimap<EntityAttribute, EntityAttributeModifier>> equipmentSlotMultimapMap(ItemStack itemStack) {
         Map<EquipmentSlot, Multimap<EntityAttribute, EntityAttributeModifier>> replaceMap = new EnumMap<>(EquipmentSlot.class);
         for (EquipmentSlot slot : EquipmentSlot.values()) {
@@ -146,7 +168,7 @@ public class AttributeProperty implements ModuleProperty {
         return ModularItemCache.get(itemStack, KEY + "_unmodifieable", replaceMap);
     }
 
-    public static Multimap<EntityAttribute, EntityAttributeModifier> getAttributeModifiersForSlot(ItemStack itemStack, EquipmentSlot slot, Multimap<EntityAttribute, EntityAttributeModifier> toAdding) {
+    private static Multimap<EntityAttribute, EntityAttributeModifier> getAttributeModifiersForSlot(ItemStack itemStack, EquipmentSlot slot, Multimap<EntityAttribute, EntityAttributeModifier> toAdding) {
         if (itemStack.getItem() instanceof ModularItem) {
             Multimap<EntityAttribute, AttributeProperty.EntityAttributeModifierHolder> toMerge = AttributeProperty.getAttributeModifiers(itemStack);
             Multimap<EntityAttribute, EntityAttributeModifier> merged = ArrayListMultimap.create();
@@ -210,6 +232,12 @@ public class AttributeProperty implements ModuleProperty {
         return toAdding;
     }
 
+    /**
+     * A private function to sort the multimap to provide better view in the gui.
+     * Sorting is based on the {@link AttributeProperty#priorityMap}
+     * @param multimap
+     * @return
+     */
     private static Multimap<EntityAttribute, EntityAttributeModifier> sortMultimap(Multimap<EntityAttribute, EntityAttributeModifier> multimap) {
         Comparator<EntityAttribute> comparator = (attribute1, attribute2) -> {
             // Get the priority values for the attributes, using 0 as the default value
@@ -236,6 +264,14 @@ public class AttributeProperty implements ModuleProperty {
         return sortedMultimap;
     }
 
+    /**
+     * A util function to make reading the multimap simpler
+     * @param rawMap
+     * @param slot
+     * @param entityAttribute
+     * @param fallback
+     * @return
+     */
     public static double getActualValueFrom(Multimap<EntityAttribute, EntityAttributeModifierHolder> rawMap, EquipmentSlot slot, EntityAttribute entityAttribute, double fallback) {
 
         DefaultAttributeContainer container = DefaultAttributeContainer.builder().add(entityAttribute).build();
@@ -257,6 +293,14 @@ public class AttributeProperty implements ModuleProperty {
         }
     }
 
+    /**
+     * A Util function to make reading attributes from items easier
+     * @param stack
+     * @param slot
+     * @param entityAttribute
+     * @param fallback if the item does not have this attribute, this value is returned
+     * @return the double value of the attribute according to the Itemstack
+     */
     public static double getActualValue(ItemStack stack, EquipmentSlot slot, EntityAttribute entityAttribute, double fallback) {
         Collection<EntityAttributeModifier> attributes = stack.getAttributeModifiers(slot).get(entityAttribute);
         Multimap<EntityAttribute, EntityAttributeModifier> map = HashMultimap.create();
@@ -276,21 +320,31 @@ public class AttributeProperty implements ModuleProperty {
         }
     }
 
+    /**
+     * A Util function to make reading attributes from items easier
+     * @param stack
+     * @param slot
+     * @param entityAttribute
+     * @return the double value of the attribute according to the Itemstack
+     */
     public static double getActualValue(ItemStack stack, EquipmentSlot slot, EntityAttribute entityAttribute) {
         return getActualValue(stack, slot, entityAttribute, entityAttribute.getDefaultValue());
     }
 
     private static Multimap<EntityAttribute, EntityAttributeModifierHolder> createAttributeCache(ItemStack itemStack) {
+        return createAttributeMap(itemStack, AttributeProperty::getUUIDForSlot);
+    }
+
+    public static Multimap<EntityAttribute, EntityAttributeModifierHolder> createAttributeMap(ItemStack itemStack, UUIDGetter defaultUUID) {
         ItemModule.ModuleInstance rootInstance = ItemModule.getModules(itemStack);
         Multimap<EntityAttribute, EntityAttributeModifierHolder> attributeModifiers = ArrayListMultimap.create();
-        UUID defaultUUID = UUID.randomUUID();
         for (ItemModule.ModuleInstance instance : rootInstance.allSubModules()) {
             getAttributeModifiers(defaultUUID, instance, attributeModifiers);
         }
         return attributeModifiers;
     }
 
-    public static void getAttributeModifiers(UUID defaultUUID, ItemModule.ModuleInstance instance, Multimap<EntityAttribute, EntityAttributeModifierHolder> attributeModifiers) {
+    public static void getAttributeModifiers(UUIDGetter defaultUUID, ItemModule.ModuleInstance instance, Multimap<EntityAttribute, EntityAttributeModifierHolder> attributeModifiers) {
         JsonElement element = instance.getProperties().get(property);
         if (element == null) {
             return;
@@ -309,29 +363,27 @@ public class AttributeProperty implements ModuleProperty {
                 Miapi.LOGGER.warn(String.valueOf(Registries.ATTRIBUTE.get(new Identifier(attributeName))));
                 Miapi.LOGGER.warn("Attribute is null " + attributeName + " on module " + instance.module.getName() + " this should not have happened.");
             } else {
-                if (attributeJson.uuid == null && !attributeJson.seperateOnItem) {
-                    attributeJson.uuid = getUUIDforSlot(slot).toString();
+                UUID uuid = attributeJson.uuid == null ? defaultUUID.fromSlot(slot) : UUID.fromString(attributeJson.uuid);
+                if (uuid.equals(ExampleModularItem.attackDamageUUID())) {
+                    uuid = ExampleModularItem.attackDamageUUID();
                 }
-
-                if (attributeJson.uuid != null) {
-                    UUID uuid = UUID.fromString(attributeJson.uuid);
-                    // Thanks Mojang for using == and not .equals so i have to do this abomination
-                    if (uuid.equals(ExampleModularItem.attackDamageUUID())) {
-                        uuid = ExampleModularItem.attackDamageUUID();
-                    }
-                    if (uuid.equals(ExampleModularItem.attackSpeedUUID())) {
-                        uuid = ExampleModularItem.attackSpeedUUID();
-                    }
-                    attributeModifiers.put(attribute, new EntityAttributeModifierHolder(new EntityAttributeModifier(uuid, attributeName, value, operation), slot, attributeJson.seperateOnItem));
-                } else {
-                    // Use constructor without UUID
-                    attributeModifiers.put(attribute, new EntityAttributeModifierHolder(new EntityAttributeModifier(attributeName, value, operation), slot, attributeJson.seperateOnItem));
+                if (uuid.equals(ExampleModularItem.attackSpeedUUID())) {
+                    uuid = ExampleModularItem.attackSpeedUUID();
                 }
+                attributeModifiers.put(attribute, new EntityAttributeModifierHolder(new EntityAttributeModifier(uuid, attributeName, value, operation), slot, attributeJson.seperateOnItem));
             }
         }
     }
 
-    public static UUID getUUIDforSlot(EquipmentSlot equipmentSlot) {
+    /**
+     * Generates a unique uuid for the slot to prevent collisions
+     * @param equipmentSlot
+     * @return a unique UUID for the slot
+     */
+    public static UUID getUUIDForSlot(EquipmentSlot equipmentSlot) {
+        if (uuidCache.containsKey(equipmentSlot)) {
+            return uuidCache.get(equipmentSlot);
+        }
         String slotidString = equipmentSlot.getName() + "-" + equipmentSlot.getEntitySlotId() + "-" + equipmentSlot.getArmorStandSlotId();
         try {
             // Create a MessageDigest instance with the desired hashing algorithm (e.g., MD5 or SHA-1).
@@ -354,10 +406,12 @@ public class AttributeProperty implements ModuleProperty {
             }
 
             // Create a UUID using the most and least significant bits.
-            return new UUID(mostSigBits, leastSigBits);
+            UUID uuid = new UUID(mostSigBits, leastSigBits);
+            uuidCache.put(equipmentSlot, uuid);
+            return uuid;
 
         } catch (NoSuchAlgorithmException e) {
-            Miapi.LOGGER.warn("could not setup UUID generator");
+            Miapi.LOGGER.warn("could not setup UUID generator - Attributes are likely to be broken now");
             return UUID.fromString("d3b89c4c-68ff-11ee-8c99-0242ac120002");
         }
     }
@@ -389,6 +443,10 @@ public class AttributeProperty implements ModuleProperty {
 
     public interface AttributeTransformer {
         Multimap<EntityAttribute, EntityAttributeModifierHolder> transform(Multimap<EntityAttribute, EntityAttributeModifierHolder> map, ItemStack itemstack);
+    }
+
+    public interface UUIDGetter {
+        UUID fromSlot(EquipmentSlot equipmentSlot);
     }
 
     public static class AttributeJson {
