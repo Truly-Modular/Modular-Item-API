@@ -26,10 +26,9 @@ public class DisplayNameProperty implements ModuleProperty {
     }
 
     private static Text resolveDisplayText(ItemStack itemStack) {
+        String translationKey = "miapi.name.missing.nomodule";
         ItemModule.ModuleInstance root = ItemModule.getModules(itemStack);
-        root.allSubModules();
-        String translationKey = "";
-        ItemModule.ModuleInstance primaryModule = root;
+        ItemModule.ModuleInstance primaryModule = ItemModule.getModules(itemStack);
         for (ItemModule.ModuleInstance moduleInstance : root.allSubModules()) {
             JsonElement data = moduleInstance.getProperties().get(property);
             if (data != null) {

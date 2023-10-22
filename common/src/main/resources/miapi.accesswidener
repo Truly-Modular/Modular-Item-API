@@ -3,5 +3,7 @@ accessible field net/minecraft/client/gui/screen/ingame/HandledScreens PROVIDERS
 extendable method net/minecraft/client/texture/SpriteAtlasHolder afterReload (Lnet/minecraft/client/texture/SpriteLoader$StitchResult;Lnet/minecraft/util/profiler/Profiler;)V
 accessible field net/minecraft/client/texture/SpriteAtlasHolder atlas Lnet/minecraft/client/texture/SpriteAtlasTexture;
 extendable method net/minecraft/client/texture/SpriteAtlasHolder reload (Lnet/minecraft/resource/ResourceReloader$Synchronizer;Lnet/minecraft/resource/ResourceManager;Lnet/minecraft/util/profiler/Profiler;Lnet/minecraft/util/profiler/Profiler;Ljava/util/concurrent/Executor;Ljava/util/concurrent/Executor;)Ljava/util/concurrent/CompletableFuture;
+accessible field net/minecraft/item/CrossbowItem charged Z
+accessible field net/minecraft/item/CrossbowItem loaded Z
 
 #accessible field net/minecraft/client/texture/TextureManager textures Ljava/util/Map; # was used for testing

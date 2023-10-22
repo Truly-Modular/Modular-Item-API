@@ -1,12 +1,16 @@
 package smartin.miapi.item.modular.items;
 
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.attribute.EntityAttribute;
+import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
+import net.minecraft.item.ShovelItem;
 import net.minecraft.text.Text;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
@@ -19,9 +23,10 @@ import smartin.miapi.modules.properties.MiningLevelProperty;
 import smartin.miapi.modules.properties.RepairPriority;
 import smartin.miapi.modules.properties.ToolOrWeaponProperty;
 
-public class ModularWeapon extends Item implements ModularItem {
-    public ModularWeapon() {
-        super(new Settings().maxCount(1).maxDamage(500).rarity(Rarity.COMMON));
+public class ModularShovel extends ShovelItem implements ModularItem {
+
+    public ModularShovel() {
+        super(new ModularToolMaterial(), 5, 5, new Settings().maxCount(1).maxDamage(500).rarity(Rarity.COMMON));
     }
 
     @Override
@@ -67,6 +72,10 @@ public class ModularWeapon extends Item implements ModularItem {
             });
         }
         return true;
+    }
+
+    public Multimap<EntityAttribute, EntityAttributeModifier> getAttributeModifiers(EquipmentSlot slot) {
+        return ArrayListMultimap.create();
     }
 
     @Override
