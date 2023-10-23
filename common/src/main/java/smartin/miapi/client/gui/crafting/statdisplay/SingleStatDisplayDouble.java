@@ -164,4 +164,8 @@ public abstract class SingleStatDisplayDouble extends InteractAbleWidget impleme
     public InteractAbleWidget getHoverWidget() {
         return null;
     }
+
+    public interface ValueReader{
+        double getValue(ItemStack itemStack);
+    }
 }

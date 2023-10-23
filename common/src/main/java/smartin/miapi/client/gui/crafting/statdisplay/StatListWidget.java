@@ -5,6 +5,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.widget.ClickableWidget;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
@@ -144,9 +145,10 @@ public class StatListWidget extends InteractAbleWidget {
                 .setTranslationKey(WaterDragProperty.KEY).build());
         addStatDisplay(AttributeSingleDisplay
                 .builder(AttributeRegistry.BOW_DRAW_TIME)
-                .setMax(30)
+                .setMax(100)
                 .setMin(1)
                 .setDefault(20)
+                .setValueGetter((stack)-> 20-AttributeProperty.getActualValue(stack, EquipmentSlot.MAINHAND,AttributeRegistry.BOW_DRAW_TIME))
                 .setTranslationKey("bow_draw_time")
                 .inverseNumber(true)
                 .setFormat("##.##").build());

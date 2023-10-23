@@ -1,6 +1,8 @@
 package smartin.miapi.item.modular.items;
 
 import com.google.common.collect.Lists;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
@@ -21,6 +23,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -29,6 +32,7 @@ import net.minecraft.world.World;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import smartin.miapi.attributes.AttributeRegistry;
+import smartin.miapi.client.model.ModularModelPredicateProvider;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.modules.properties.AttributeProperty;
 import smartin.miapi.modules.properties.DisplayNameProperty;
@@ -43,6 +47,26 @@ public class ModularCrossbow extends CrossbowItem implements ModularItem {
 
     public ModularCrossbow() {
         super(new Item.Settings().maxCount(1));
+        if (smartin.miapi.Environment.isClient()) {
+            registerAnimations();
+        }
+    }
+
+    @Environment(EnvType.CLIENT)
+    public void registerAnimations() {
+        ModularModelPredicateProvider.registerModelOverride(this, new Identifier("pull"), (stack, world, entity, seed) -> {
+            if (entity == null) {
+                return 0.0F;
+            } else {
+                return entity.getActiveItem() != stack ? 0.0F : getPullProgress((stack.getMaxUseTime() - entity.getItemUseTimeLeft()), stack);
+            }
+        });
+        ModularModelPredicateProvider.registerModelOverride(this, new Identifier("pulling"), (stack, world, entity, seed) -> {
+            return entity != null && entity.isUsingItem() && entity.getActiveItem() == stack ? 1.0F : 0.0F;
+        });
+        ModularModelPredicateProvider.registerModelOverride(this, new Identifier("charged"), (stack, world, entity, seed) -> {
+            return entity != null && isCharged(stack) ? 1.0F : 0.0F;
+        });
     }
 
     @Override
@@ -98,7 +122,7 @@ public class ModularCrossbow extends CrossbowItem implements ModularItem {
 
     public static int getPullTime(ItemStack stack) {
         int i = EnchantmentHelper.getLevel(Enchantments.QUICK_CHARGE, stack);
-        return i == 0 ? 25 : (int) (25 + AttributeProperty.getActualValue(stack, EquipmentSlot.MAINHAND, AttributeRegistry.BOW_DRAW_TIME) - 5 * i);
+        return i == 0 ? 25 : (int) (25 - AttributeProperty.getActualValue(stack, EquipmentSlot.MAINHAND, AttributeRegistry.BOW_DRAW_TIME) - 5 * i);
     }
 
     private static boolean loadProjectiles(LivingEntity shooter, ItemStack crossbow) {

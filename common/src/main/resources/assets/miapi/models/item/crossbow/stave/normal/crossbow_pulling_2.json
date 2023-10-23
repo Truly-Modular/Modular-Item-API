@@ -1,0 +1,6 @@
+{
+    "parent": "miapi:item/crossbow/stave/normal/default",
+    "textures": {
+        "layer0": "miapi:item/crossbow/stave/normal/crossbow_stave_normal_2"
+    }
+}

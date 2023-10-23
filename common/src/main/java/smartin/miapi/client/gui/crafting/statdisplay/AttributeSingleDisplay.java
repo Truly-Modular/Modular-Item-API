@@ -23,6 +23,7 @@ public class AttributeSingleDisplay extends SingleStatDisplayDouble {
     final EntityAttribute attribute;
     final EquipmentSlot slot;
     double defaultValue;
+    public ValueReader valueReader = this::getValueFunction;
 
     private AttributeSingleDisplay(EntityAttribute attribute, EquipmentSlot slot, StatListWidget.TextGetter text, StatListWidget.TextGetter hover, double defaultValue, DecimalFormat modifierFormat) {
         super(0, 0, 51, 19, text, hover);
@@ -35,6 +36,11 @@ public class AttributeSingleDisplay extends SingleStatDisplayDouble {
 
     @Override
     public double getValue(ItemStack stack) {
+        return this.valueReader.getValue(stack);
+    }
+
+
+    public double getValueFunction(ItemStack stack) {
         if (slot == null) {
             Double value = null;
             for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
@@ -98,6 +104,7 @@ public class AttributeSingleDisplay extends SingleStatDisplayDouble {
         public double min = 0;
         public double max = 100;
         public boolean inverse = false;
+        public ValueReader valueReader;
 
         private Builder(EntityAttribute attribute) {
             this.attribute = attribute;
@@ -169,6 +176,11 @@ public class AttributeSingleDisplay extends SingleStatDisplayDouble {
             return this;
         }
 
+        public Builder setValueGetter(ValueReader reader){
+            valueReader = reader;
+            return this;
+        }
+
         public AttributeSingleDisplay build() {
             // Validate the required fields
             if (name == null) {
@@ -183,6 +195,9 @@ public class AttributeSingleDisplay extends SingleStatDisplayDouble {
             display.minValue = min;
             display.maxValue = max;
             display.setInverse(inverse);
+            if(valueReader!=null){
+                display.valueReader = valueReader;
+            }
             return display;
         }
     }
