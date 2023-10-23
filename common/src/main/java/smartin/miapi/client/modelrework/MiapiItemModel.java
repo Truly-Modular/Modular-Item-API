@@ -63,6 +63,10 @@ public class MiapiItemModel implements MiapiModel {
         for (ModelTransformer transformer : modelTransformers) {
             matrices = transformer.transform(matrices, stack, mode, modelType, tickDelta);
         }
+        if(entity == null && mode.equals(ModelTransformationMode.GUI)){
+            //needed because otherwise overwrites dont work
+            entity = MinecraftClient.getInstance().player;
+        }
         RegistryInventory.Client.glintShader.getUniformOrDefault("ModelMat").set(new Matrix4f(matrices.peek().getPositionMatrix()));
         rootModel.render(modelType, stack, matrices, mode, tickDelta, vertexConsumers, entity, light, overlay);
         matrices.pop();

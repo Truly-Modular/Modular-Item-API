@@ -121,7 +121,7 @@ public class ModelProperty implements ModuleProperty {
                         if (colorProvider == null) {
                             throw new RuntimeException("colorProvider is null");
                         }
-                        models.add(new BakedMiapiModel.ModelHolder(model.optimize(), matrix4f, colorProvider));
+                        models.add(new BakedMiapiModel.ModelHolder(model, matrix4f, colorProvider));
                     }
                 }
             }

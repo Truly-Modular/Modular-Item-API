@@ -2,7 +2,8 @@ package smartin.miapi.client.modelrework;
 
 import com.redpxnda.nucleus.util.Color;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.*;
+import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.json.ModelOverrideList;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
@@ -14,9 +15,9 @@ import net.minecraft.util.math.random.Random;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import smartin.miapi.modules.ItemModule;
-import smartin.miapi.modules.properties.GlintProperty;
 import smartin.miapi.modules.material.Material;
 import smartin.miapi.modules.material.MaterialProperty;
+import smartin.miapi.modules.properties.GlintProperty;
 import smartin.miapi.modules.properties.render.colorproviders.ColorProvider;
 import smartin.miapi.registries.RegistryInventory;
 
