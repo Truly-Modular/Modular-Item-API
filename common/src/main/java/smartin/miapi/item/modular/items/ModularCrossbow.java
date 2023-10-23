@@ -312,7 +312,7 @@ public class ModularCrossbow extends CrossbowItem implements ModularItem {
         return baseSpeed;
     }
 
-    private static List<ItemStack> getProjectiles(ItemStack crossbow) {
+    public static List<ItemStack> getProjectiles(ItemStack crossbow) {
         List<ItemStack> list = Lists.newArrayList();
         NbtCompound nbtCompound = crossbow.getNbt();
         if (nbtCompound != null && nbtCompound.contains("ChargedProjectiles", 9)) {

@@ -656,8 +656,25 @@
     "miapi.module.wing_leg_right.description": "A Large Panel to stabilise gliding with Wings",
     "miapi.module.wing_leg_right.short_description": "A Large Panel to stabilise gliding with Wings",
 
+    "miapi.module.crossbow_stock_normal": "Crossbow Stock",
+    "miapi.module.crossbow_stock_normal.name": "[translation.[material.translation]]Crossbow Stock",
+    "miapi.module.crossbow_stock_normal.description": "The grip and shoulder support, essential for accurate aiming and comfortable handling",
+    "miapi.module.crossbow_stock_normal.short_description": "The grip and shoulder support, essential for accurate aiming and comfortable handling",
+
+    "miapi.module.crossbow_arms_normal": "Crossbow Stave",
+    "miapi.module.crossbow_arms_normal.name": "[translation.[material.translation]]Stave",
+    "miapi.module.crossbow_arms_normal.description": "The sturdy core frame of a crossbow, providing the structure and stability for firing bolts.",
+    "miapi.module.crossbow_arms_normal.short_description": "The sturdy core frame of a crossbow, providing the structure and stability for firing bolts.",
+
+    "miapi.module.crossbow_string_normal": "Crossbow String",
+    "miapi.module.crossbow_string_normal.name": "[translation.[material.translation]]Crossbow String",
+    "miapi.module.crossbow_string_normal.description": "The high-tension element that launches bolts with force and precision.",
+    "miapi.module.crossbow_string_normal.short_description": "The high-tension element that launches bolts with force and precision.",
+
     "miapi.modular_elytra": "[translation.[material.translation]]Elytra",
     "miapi:armored_elytra": "[translation.[material.translation]]Armored Elytra",
 
-    "miapi.module.mattock.name": "[translation.[material.translation]]Mattock"
+    "miapi.module.mattock.name": "[translation.[material.translation]]Mattock",
+
+    "miapi.module.crossbow.name": "[translation.[material.translation]]Crossbow"
 }

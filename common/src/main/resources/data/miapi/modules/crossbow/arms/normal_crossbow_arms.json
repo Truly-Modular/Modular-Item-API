@@ -82,7 +82,5 @@
             "netherite"
         ],
         "cost": 2
-    },
-    "displayName": "miapi.module.bow_arms_normal.name",
-    "itemId": "miapi:modular_crossbow"
+    }
 }

@@ -63,7 +63,7 @@ public class MiapiItemModel implements MiapiModel {
         for (ModelTransformer transformer : modelTransformers) {
             matrices = transformer.transform(matrices, stack, mode, modelType, tickDelta);
         }
-        if(entity == null && mode.equals(ModelTransformationMode.GUI)){
+        if(entity == null){
             //needed because otherwise overwrites dont work
             entity = MinecraftClient.getInstance().player;
         }

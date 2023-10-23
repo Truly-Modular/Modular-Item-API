@@ -10,6 +10,7 @@ import smartin.miapi.client.modelrework.ItemMiapiModel;
 import smartin.miapi.client.modelrework.MiapiItemModel;
 import smartin.miapi.client.modelrework.MiapiModel;
 import smartin.miapi.item.modular.Transform;
+import smartin.miapi.item.modular.items.ModularCrossbow;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.ArrayList;
@@ -28,18 +29,25 @@ public class ItemModelProperty implements ModuleProperty {
             if (element != null) {
                 element.getAsJsonArray().forEach(element1 -> {
                     ModelJson modelJson = Miapi.gson.fromJson(element1, ModelJson.class);
-                    Supplier<ItemStack> stackSupplier = (() -> {
-                        if ("item_nbt".equals(modelJson.type)) {
+                    Supplier<ItemStack> stackSupplier = switch (modelJson.type) {
+                        case "item_nbt":{
                             NbtCompound itemCompound = stack.getOrCreateNbt().getCompound(modelJson.model);
                             if (!itemCompound.isEmpty()) {
-                                return ItemStack.fromNbt(itemCompound);
+                                yield () -> ItemStack.fromNbt(itemCompound);
+                            }
+                            yield () -> ItemStack.EMPTY;
+                        }
+                        case "item" : {
+                            yield () -> new ItemStack(Registries.ITEM.get(new Identifier(modelJson.model)));
+                        }
+                        case "projectile" : {
+                            if(stack.getItem() instanceof ModularCrossbow){
+                                yield () -> ModularCrossbow.getProjectiles(stack).stream().findFirst().orElse(ItemStack.EMPTY);
                             }
                         }
-                        if ("item".equals(modelJson.type)) {
-                            return new ItemStack(Registries.ITEM.get(new Identifier(modelJson.model)));
-                        }
-                        return ItemStack.EMPTY;
-                    });
+                        default:
+                            throw new IllegalStateException("Unexpected value: " + modelJson.type);
+                    };
                     ItemMiapiModel miapiModel = new ItemMiapiModel(stackSupplier, modelJson.transform.toMatrix());
                     models.add(miapiModel);
                 });
