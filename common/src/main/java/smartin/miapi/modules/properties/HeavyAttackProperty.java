@@ -1,32 +1,28 @@
 package smartin.miapi.modules.properties;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
+import com.redpxnda.nucleus.codec.AutoCodec;
+import com.redpxnda.nucleus.registry.particles.EmitterParticleOptions;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import smartin.miapi.client.gui.crafting.statdisplay.SingleStatDisplayDouble;
 import smartin.miapi.client.gui.crafting.statdisplay.StatListWidget;
-import smartin.miapi.item.modular.StatResolver;
-import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.properties.util.CodecBasedProperty;
 import smartin.miapi.modules.properties.util.GuiWidgetSupplier;
 import smartin.miapi.modules.properties.util.MergeType;
-import smartin.miapi.modules.properties.util.ModuleProperty;
 
 /**
  * This property controls {@link smartin.miapi.modules.abilities.HeavyAttackAbility}
  */
-public class HeavyAttackProperty implements ModuleProperty, GuiWidgetSupplier {
+public class HeavyAttackProperty extends CodecBasedProperty<HeavyAttackProperty.HeavyAttackHolder> implements GuiWidgetSupplier {
     public static String KEY = "heavyAttack";
     public static HeavyAttackProperty property;
+    public static final Codec<HeavyAttackHolder> codec = AutoCodec.of(HeavyAttackHolder.class).codec();
 
     public HeavyAttackProperty() {
+        super(KEY,codec);
         property = this;
-    }
-
-    @Override
-    public boolean load(String moduleKey, JsonElement data) throws Exception {
-        new HeavyAttackJson(data, new ItemModule.ModuleInstance(ItemModule.empty));
-        return true;
     }
 
     @Override
@@ -42,22 +38,6 @@ public class HeavyAttackProperty implements ModuleProperty, GuiWidgetSupplier {
         return old.deepCopy();
     }
 
-    public HeavyAttackJson get(ItemStack itemStack) {
-        JsonElement jsonElement = ItemModule.getMergedProperty(itemStack, property);
-        ItemModule.ModuleInstance instance = ItemModule.getModules(itemStack);
-        for (ItemModule.ModuleInstance moduleInstance : instance.allSubModules()) {
-            if (moduleInstance.getProperties().containsKey(property)) {
-                instance = moduleInstance;
-                jsonElement = moduleInstance.getProperties().get(property);
-            }
-        }
-        if (jsonElement == null) {
-            return null;
-        }
-
-        return new HeavyAttackJson(jsonElement, instance);
-    }
-
     public boolean hasHeavyAttack(ItemStack itemStack) {
         return get(itemStack) != null;
     }
@@ -65,7 +45,7 @@ public class HeavyAttackProperty implements ModuleProperty, GuiWidgetSupplier {
     @Override
     public StatListWidget.TextGetter getTitle() {
         return (stack -> {
-            HeavyAttackJson json = get(stack);
+            HeavyAttackHolder json = get(stack);
             if (json != null) {
                 Text asd = Text.translatable(json.title);
                 return asd;
@@ -77,7 +57,7 @@ public class HeavyAttackProperty implements ModuleProperty, GuiWidgetSupplier {
     @Override
     public StatListWidget.TextGetter getDescription() {
         return (stack -> {
-            HeavyAttackJson json = get(stack);
+            HeavyAttackHolder json = get(stack);
             if (json != null) {
                 Text asd = Text.translatable(json.description, json.damage, json.range, json.minHold / 20);
                 return asd;
@@ -91,7 +71,7 @@ public class HeavyAttackProperty implements ModuleProperty, GuiWidgetSupplier {
         return new SingleStatDisplayDouble.StatReaderHelper() {
             @Override
             public double getValue(ItemStack itemStack) {
-                HeavyAttackJson json = get(itemStack);
+                HeavyAttackHolder json = get(itemStack);
                 if (json != null) {
                     return json.range;
                 }
@@ -105,45 +85,17 @@ public class HeavyAttackProperty implements ModuleProperty, GuiWidgetSupplier {
         };
     }
 
-    public static class HeavyAttackJson {
-        public double damage;
-        public double sweeping;
-        public double range;
-        public double minHold;
-        public double cooldown;
+    public static class HeavyAttackHolder{
+        public double damage = 1.0;
+        public double sweeping = 0.0;
+        public double range = 3.5;
+        public double minHold = 20;
+        public double cooldown = 20;
+        @AutoCodec.Optional
         public String title = "miapi.ability.heavy_attack.title";
+        @AutoCodec.Optional
         public String description = "miapi.ability.heavy_attack.description";
-
-        public HeavyAttackJson(JsonElement element, ItemModule.ModuleInstance instance) {
-            JsonObject object = element.getAsJsonObject();
-            damage = get(object.get("damage"), instance);
-            sweeping = get(object.get("sweeping"), instance);
-            range = get(object.get("range"), instance);
-            minHold = get(object.get("minHold"), instance);
-            cooldown = get(object.get("cooldown"), instance);
-            if (object.has("title")) {
-                title = getString(object.get("title"), instance);
-            }
-            if (object.has("description")) {
-                description = getString(object.get("description"), instance);
-            }
-        }
-
-        private double get(JsonElement object, ItemModule.ModuleInstance instance) {
-            try {
-                return object.getAsDouble();
-            } catch (Exception e) {
-                return StatResolver.resolveDouble(object.getAsString(), instance);
-            }
-        }
-
-        private String getString(JsonElement object, ItemModule.ModuleInstance instance) {
-            try {
-                return object.getAsString();
-            } catch (Exception e) {
-                return StatResolver.resolveString(object.getAsString(), instance);
-            }
-        }
-
+        @AutoCodec.Optional
+        public EmitterParticleOptions emitterParticleOptions;
     }
 }

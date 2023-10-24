@@ -48,7 +48,7 @@ public class HeavyAttackAbility implements ItemUseAbility {
 
     @Override
     public void onStoppedUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
-        HeavyAttackProperty.HeavyAttackJson heavyAttackJson = HeavyAttackProperty.property.get(stack);
+        HeavyAttackProperty.HeavyAttackHolder heavyAttackJson = HeavyAttackProperty.property.get(stack);
         double damage = heavyAttackJson.damage;
         double sweeping = heavyAttackJson.sweeping;
         double range = heavyAttackJson.range;
@@ -68,6 +68,9 @@ public class HeavyAttackAbility implements ItemUseAbility {
                     }
                     player.swingHand(player.getActiveHand());
                     player.getItemCooldownManager().set(stack.getItem(), (int) cooldown);
+                    if(heavyAttackJson.emitterParticleOptions!=null){
+                        //emit particle?
+                    }
                 }
             }
         }
