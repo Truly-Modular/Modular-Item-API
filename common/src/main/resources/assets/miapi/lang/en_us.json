@@ -42,6 +42,10 @@
 
     "miapi.tab.name": "Truly Modular",
 
+
+    "miapi.ability.heavy_attack.title": "Heavy Attack",
+    "miapi.ability.heavy_attack.description": "Right Click to Heavy Attack\nDealing %s times the Damage and %s blocks of Range\nRight click has to be held for %s seconds",
+
     "miapi.attribute.name.durability":"Durability",
     "miapi.attribute.name.resistance":"Damage Ressistance",
     "miapi.attribute.name.shield_break":"Shield Break",

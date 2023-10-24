@@ -4,7 +4,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
-import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.crafting.statdisplay.SingleStatDisplayDouble;
 import smartin.miapi.client.gui.crafting.statdisplay.StatListWidget;
 import smartin.miapi.item.modular.StatResolver;
@@ -45,10 +44,18 @@ public class HeavyAttackProperty implements ModuleProperty, GuiWidgetSupplier {
 
     public HeavyAttackJson get(ItemStack itemStack) {
         JsonElement jsonElement = ItemModule.getMergedProperty(itemStack, property);
+        ItemModule.ModuleInstance instance = ItemModule.getModules(itemStack);
+        for (ItemModule.ModuleInstance moduleInstance : instance.allSubModules()) {
+            if (moduleInstance.getProperties().containsKey(property)) {
+                instance = moduleInstance;
+                jsonElement = moduleInstance.getProperties().get(property);
+            }
+        }
         if (jsonElement == null) {
             return null;
         }
-        return Miapi.gson.fromJson(jsonElement, HeavyAttackJson.class);
+
+        return new HeavyAttackJson(jsonElement, instance);
     }
 
     public boolean hasHeavyAttack(ItemStack itemStack) {
@@ -57,7 +64,14 @@ public class HeavyAttackProperty implements ModuleProperty, GuiWidgetSupplier {
 
     @Override
     public StatListWidget.TextGetter getTitle() {
-        return (stack -> Text.literal("Heavy Attack"));
+        return (stack -> {
+            HeavyAttackJson json = get(stack);
+            if (json != null) {
+                Text asd = Text.translatable(json.title);
+                return asd;
+            }
+            return Text.empty();
+        });
     }
 
     @Override
@@ -65,9 +79,9 @@ public class HeavyAttackProperty implements ModuleProperty, GuiWidgetSupplier {
         return (stack -> {
             HeavyAttackJson json = get(stack);
             if (json != null) {
-                return Text.literal("Heavy attack with " + json.damage + " and " + json.range + " \nHas to be held for " + json.minHold / 20 + " seconds");
+                Text asd = Text.translatable(json.description, json.damage, json.range, json.minHold / 20);
+                return asd;
             }
-            Miapi.DEBUG_LOGGER.warn("idk? why not working" + stack);
             return Text.empty();
         });
     }
@@ -97,6 +111,8 @@ public class HeavyAttackProperty implements ModuleProperty, GuiWidgetSupplier {
         public double range;
         public double minHold;
         public double cooldown;
+        public String title = "miapi.ability.heavy_attack.title";
+        public String description = "miapi.ability.heavy_attack.description";
 
         public HeavyAttackJson(JsonElement element, ItemModule.ModuleInstance instance) {
             JsonObject object = element.getAsJsonObject();
@@ -105,6 +121,12 @@ public class HeavyAttackProperty implements ModuleProperty, GuiWidgetSupplier {
             range = get(object.get("range"), instance);
             minHold = get(object.get("minHold"), instance);
             cooldown = get(object.get("cooldown"), instance);
+            if (object.has("title")) {
+                title = getString(object.get("title"), instance);
+            }
+            if (object.has("description")) {
+                description = getString(object.get("description"), instance);
+            }
         }
 
         private double get(JsonElement object, ItemModule.ModuleInstance instance) {
@@ -112,6 +134,14 @@ public class HeavyAttackProperty implements ModuleProperty, GuiWidgetSupplier {
                 return object.getAsDouble();
             } catch (Exception e) {
                 return StatResolver.resolveDouble(object.getAsString(), instance);
+            }
+        }
+
+        private String getString(JsonElement object, ItemModule.ModuleInstance instance) {
+            try {
+                return object.getAsString();
+            } catch (Exception e) {
+                return StatResolver.resolveString(object.getAsString(), instance);
             }
         }
 
