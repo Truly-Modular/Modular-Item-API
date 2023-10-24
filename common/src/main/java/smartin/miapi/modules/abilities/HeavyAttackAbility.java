@@ -1,10 +1,12 @@
 package smartin.miapi.modules.abilities;
 
+import com.redpxnda.nucleus.network.clientbound.ParticleCreationPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
@@ -38,7 +40,7 @@ public class HeavyAttackAbility implements ItemUseAbility {
 
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-        if(user.getItemCooldownManager().isCoolingDown(user.getStackInHand(hand).getItem())){
+        if (user.getItemCooldownManager().isCoolingDown(user.getStackInHand(hand).getItem())) {
             return TypedActionResult.pass(user.getStackInHand(hand));
         }
         user.setCurrentHand(hand);
@@ -68,8 +70,11 @@ public class HeavyAttackAbility implements ItemUseAbility {
                     }
                     player.swingHand(player.getActiveHand());
                     player.getItemCooldownManager().set(stack.getItem(), (int) cooldown);
-                    if(heavyAttackJson.emitterParticleOptions!=null){
-                        //emit particle?
+                    if (player.getWorld() instanceof ServerWorld serverWorld) {
+                        if (heavyAttackJson.particle != null) {
+                            ParticleCreationPacket particleCreationPacket = new ParticleCreationPacket(heavyAttackJson.particle, player.getX(), player.getY(), player.getZ(), 0, 0, 0);
+                            particleCreationPacket.send(serverWorld);
+                        }
                     }
                 }
             }

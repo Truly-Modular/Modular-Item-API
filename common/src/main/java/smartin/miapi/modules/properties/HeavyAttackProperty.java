@@ -96,6 +96,6 @@ public class HeavyAttackProperty extends CodecBasedProperty<HeavyAttackProperty.
         @AutoCodec.Optional
         public String description = "miapi.ability.heavy_attack.description";
         @AutoCodec.Optional
-        public EmitterParticleOptions emitterParticleOptions;
+        public EmitterParticleOptions particle;
     }
 }

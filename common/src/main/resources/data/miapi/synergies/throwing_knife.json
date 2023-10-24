@@ -1,0 +1,17 @@
+{
+    "blade_throwing_knife": {
+        "condition": {
+            "type": "not",
+            "condition": {
+                "type": "otherModule",
+                "condition": {
+                    "type": "module",
+                    "module": "handle_polearm"
+                }
+            }
+        },
+        "properties": {
+            "crossbowAmmunition": true
+        }
+    }
+}

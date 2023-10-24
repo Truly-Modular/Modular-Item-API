@@ -32,9 +32,11 @@ import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.client.model.ModularModelPredicateProvider;
+import smartin.miapi.entity.ItemProjectileEntity;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.modules.properties.AttributeProperty;
 import smartin.miapi.modules.properties.DisplayNameProperty;
+import smartin.miapi.modules.properties.IsCrossbowShootAble;
 import smartin.miapi.modules.properties.RepairPriority;
 
 import java.util.List;
@@ -216,10 +218,16 @@ public class ModularCrossbow extends CrossbowItem implements ModularItem {
     }
 
     private static PersistentProjectileEntity createArrow(World world, LivingEntity entity, ItemStack crossbow, ItemStack arrow) {
-        ArrowItem arrowItem = (ArrowItem)(arrow.getItem() instanceof ArrowItem ? arrow.getItem() : Items.ARROW);
-        PersistentProjectileEntity persistentProjectileEntity = arrowItem.createArrow(world, arrow, entity);
-        if (entity instanceof PlayerEntity) {
-            persistentProjectileEntity.setCritical(true);
+        PersistentProjectileEntity persistentProjectileEntity;
+        if(arrow.getItem() instanceof ModularItem && !(arrow.getItem() instanceof ArrowItem)){
+            persistentProjectileEntity = new ItemProjectileEntity(world, entity, arrow);
+        }
+        else{
+            ArrowItem arrowItem = (ArrowItem)(arrow.getItem() instanceof ArrowItem ? arrow.getItem() : Items.ARROW);
+            persistentProjectileEntity = arrowItem.createArrow(world, arrow, entity);
+            if (entity instanceof PlayerEntity) {
+                persistentProjectileEntity.setCritical(true);
+            }
         }
 
         persistentProjectileEntity.setSound(SoundEvents.ITEM_CROSSBOW_HIT);
@@ -327,6 +335,6 @@ public class ModularCrossbow extends CrossbowItem implements ModularItem {
     }
 
     public Predicate<ItemStack> getProjectiles() {
-        return projectile;
+        return itemStack -> projectile.test(itemStack) || IsCrossbowShootAble.canCrossbowShoot(itemStack);
     }
 }

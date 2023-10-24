@@ -93,7 +93,16 @@
         "sweeping": 3,
         "range": 5,
         "minHold": 15,
-        "cooldown": 60
+        "cooldown": 60,
+        "particle": {
+            "emit": {
+                "type":"minecraft:angry_villager"
+            },
+            "frequency": 1,
+            "count": 5,
+            "speed": 3,
+            "startAfter": 0
+        }
     },
     "itemId": "miapi:modular_greatsword",
 
