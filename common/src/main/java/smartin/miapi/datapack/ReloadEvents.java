@@ -165,6 +165,14 @@ public class ReloadEvents {
                 synchronized (DATA_PACKS) {
                     DATA_PACKS.clear();
                     DATA_PACKS.putAll(dataTemp);
+                    MinecraftClient.getInstance().execute(() -> {
+                        DataPackLoader.trigger(new ConcurrentHashMap<>(DATA_PACKS));
+                        ReloadEvents.MAIN.fireEvent(true);
+                        ReloadEvents.END.fireEvent(true);
+                        Miapi.LOGGER.info("Client load took " + (double) (System.nanoTime() - clientReloadTimeStart) / 1000 / 1000 + " ms");
+                        dataPackSize = Integer.MAX_VALUE;
+                        inReload = false;
+                    });
                 }
             }
         });
@@ -186,42 +194,13 @@ public class ReloadEvents {
             }
             inReload = true;
             dataPackSize = buffer.readInt();
-            MinecraftClient.getInstance().execute(() -> {
-                clientReloadTimeStart = System.nanoTime();
-                PacketByteBuf buf = Networking.createBuffer();
-                buf.writeBoolean(true);
-                DATA_PACKS.clear();
-                dataTemp.clear();
-                Networking.sendC2S(RELOAD_PACKET_ID, buf);
-                ReloadEvents.START.fireEvent(true);
-                try {
-                    int counter = 0;
-                    while (DATA_PACKS.size() != dataPackSize && counter != -1) {
-                        counter++;
-                        Thread.sleep(10);
-                        /*
-                         * If reload takes more than 2 min, force disconnect(maybe rewrite for last package less than 30s?)
-                         */
-                        if (counter > 10 * 100 * 60 * 2) {
-                            counter = -1;
-                            MinecraftClient.getInstance().disconnect();
-                        }
-                    }
-                } catch (InterruptedException e) {
-                    MinecraftClient.getInstance().disconnect();
-                }
-                try {
-                    Thread.sleep(10);
-                } catch (InterruptedException e) {
-                    //throw new RuntimeException(e);
-                }
-                DataPackLoader.trigger(new ConcurrentHashMap<>(DATA_PACKS));
-                ReloadEvents.MAIN.fireEvent(true);
-                ReloadEvents.END.fireEvent(true);
-                Miapi.LOGGER.info("Client load took " + (double) (System.nanoTime() - clientReloadTimeStart) / 1000 / 1000 + " ms");
-                dataPackSize = Integer.MAX_VALUE;
-                inReload = false;
-            });
+            clientReloadTimeStart = System.nanoTime();
+            PacketByteBuf buf = Networking.createBuffer();
+            buf.writeBoolean(true);
+            DATA_PACKS.clear();
+            dataTemp.clear();
+            ReloadEvents.START.fireEvent(true);
+            Networking.sendC2S(RELOAD_PACKET_ID, buf);
         });
     }
 

@@ -8,6 +8,7 @@ import com.google.gson.stream.JsonWriter;
 import net.minecraft.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
+import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.PropertyResolver;
 import smartin.miapi.modules.cache.ModularItemCache;
@@ -173,7 +174,7 @@ public class ItemModule {
      * @return the module instance associated with the given ItemStack
      */
     public static ItemModule.ModuleInstance getModules(ItemStack stack) {
-        if (stack.getItem() instanceof ModularItem) {
+        if (stack.getItem() instanceof ModularItem && !ReloadEvents.isInReload() && stack.getOrCreateNbt().get("modules") != null) {
             ItemModule.ModuleInstance moduleInstance = (ItemModule.ModuleInstance) ModularItemCache.getRaw(stack, MODULE_KEY);
             if (moduleInstance == null || moduleInstance.module == null) {
                 IllegalArgumentException exception = new IllegalArgumentException("Item has Invalid Module onReload - treating it like it has no modules");
