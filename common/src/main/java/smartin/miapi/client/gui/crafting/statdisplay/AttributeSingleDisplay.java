@@ -23,7 +23,17 @@ public class AttributeSingleDisplay extends SingleStatDisplayDouble {
     final EntityAttribute attribute;
     final EquipmentSlot slot;
     double defaultValue;
-    public ValueReader valueReader = this::getValueFunction;
+    public StatReaderHelper valueReader = new StatReaderHelper() {
+        @Override
+        public double getValue(ItemStack itemStack) {
+            return getValueFunction(itemStack);
+        }
+
+        @Override
+        public boolean hasValue(ItemStack itemStack) {
+            return hasAttribute(itemStack);
+        }
+    };
 
     private AttributeSingleDisplay(EntityAttribute attribute, EquipmentSlot slot, StatListWidget.TextGetter text, StatListWidget.TextGetter hover, double defaultValue, DecimalFormat modifierFormat) {
         super(0, 0, 51, 19, text, hover);
@@ -68,24 +78,28 @@ public class AttributeSingleDisplay extends SingleStatDisplayDouble {
     @Override
     public boolean shouldRender(ItemStack original, ItemStack compareTo) {
         super.shouldRender(original, compareTo);
+        if(valueReader.hasValue(original)){
+            return true;
+        }
+        return valueReader.hasValue(compareTo);
+    }
+
+    public boolean hasAttribute(ItemStack itemStack){
         if (slot == null) {
             for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
                 if (
-                        original.getAttributeModifiers(equipmentSlot).containsKey(attribute) &&
-                                AttributeProperty.getActualValue(original, equipmentSlot, attribute) != attribute.getDefaultValue()) {
-                    return true;
-                }
-                if (compareTo.getAttributeModifiers(equipmentSlot).containsKey(attribute) &&
-                        AttributeProperty.getActualValue(compareTo, equipmentSlot, attribute) != attribute.getDefaultValue()) {
+                        itemStack.getAttributeModifiers(equipmentSlot).containsKey(attribute) &&
+                                AttributeProperty.getActualValue(itemStack, equipmentSlot, attribute) != attribute.getDefaultValue()) {
                     return true;
                 }
             }
-            return false;
         }
-        if (original.getAttributeModifiers(slot).containsKey(attribute)) {
-            return true;
+        else{
+            if (itemStack.getAttributeModifiers(slot).containsKey(attribute)) {
+                return true;
+            }
         }
-        return compareTo.getAttributeModifiers(slot).containsKey(attribute);
+        return false;
     }
 
     public static Builder builder(EntityAttribute attribute) {
@@ -104,7 +118,7 @@ public class AttributeSingleDisplay extends SingleStatDisplayDouble {
         public double min = 0;
         public double max = 100;
         public boolean inverse = false;
-        public ValueReader valueReader;
+        public ValueGetter valueGetter;
 
         private Builder(EntityAttribute attribute) {
             this.attribute = attribute;
@@ -176,9 +190,13 @@ public class AttributeSingleDisplay extends SingleStatDisplayDouble {
             return this;
         }
 
-        public Builder setValueGetter(ValueReader reader){
-            valueReader = reader;
+        public Builder setValueGetter(ValueGetter reader){
+            valueGetter = reader;
             return this;
+        }
+
+        interface ValueGetter {
+            double getValue(ItemStack itemStack);
         }
 
         public AttributeSingleDisplay build() {
@@ -195,8 +213,18 @@ public class AttributeSingleDisplay extends SingleStatDisplayDouble {
             display.minValue = min;
             display.maxValue = max;
             display.setInverse(inverse);
-            if(valueReader!=null){
-                display.valueReader = valueReader;
+            if(valueGetter !=null){
+                display.valueReader = new StatReaderHelper() {
+                    @Override
+                    public double getValue(ItemStack itemStack) {
+                        return valueGetter.getValue(itemStack);
+                    }
+
+                    @Override
+                    public boolean hasValue(ItemStack itemStack) {
+                        return display.hasAttribute(itemStack);
+                    }
+                };
             }
             return display;
         }

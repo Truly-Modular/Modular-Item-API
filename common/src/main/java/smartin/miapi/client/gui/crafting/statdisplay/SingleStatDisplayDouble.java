@@ -165,7 +165,9 @@ public abstract class SingleStatDisplayDouble extends InteractAbleWidget impleme
         return null;
     }
 
-    public interface ValueReader{
+    public interface StatReaderHelper {
         double getValue(ItemStack itemStack);
+
+        boolean hasValue(ItemStack itemStack);
     }
 }

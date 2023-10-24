@@ -7,7 +7,6 @@ import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.CrossbowUser;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -188,7 +187,7 @@ public class ModularCrossbow extends CrossbowItem implements ModularItem {
     private static void shoot(World world, LivingEntity shooter, Hand hand, ItemStack crossbow, ItemStack projectile, float soundPitch, boolean creative, float speed, float divergence, float simulated) {
         if (!world.isClient) {
             boolean bl = projectile.isOf(Items.FIREWORK_ROCKET);
-            Object projectileEntity;
+            ProjectileEntity projectileEntity;
             if (bl) {
                 projectileEntity = new FireworkRocketEntity(world, projectile, shooter, shooter.getX(), shooter.getEyeY() - 0.15000000596046448, shooter.getZ(), true);
             } else {
@@ -198,22 +197,21 @@ public class ModularCrossbow extends CrossbowItem implements ModularItem {
                 }
             }
 
-            if (shooter instanceof CrossbowUser) {
-                CrossbowUser crossbowUser = (CrossbowUser)shooter;
-                crossbowUser.shoot(crossbowUser.getTarget(), crossbow, (ProjectileEntity)projectileEntity, simulated);
+            if (shooter instanceof CrossbowUser crossbowUser) {
+                crossbowUser.shoot(crossbowUser.getTarget(), crossbow, projectileEntity, simulated);
             } else {
                 Vec3d vec3d = shooter.getOppositeRotationVector(1.0F);
-                Quaternionf quaternionf = (new Quaternionf()).setAngleAxis((double)(simulated * 0.017453292F), vec3d.x, vec3d.y, vec3d.z);
+                Quaternionf quaternionf = (new Quaternionf()).setAngleAxis(simulated * 0.017453292F, vec3d.x, vec3d.y, vec3d.z);
                 Vec3d vec3d2 = shooter.getRotationVec(1.0F);
                 Vector3f vector3f = vec3d2.toVector3f().rotate(quaternionf);
-                ((ProjectileEntity)projectileEntity).setVelocity((double)vector3f.x(), (double)vector3f.y(), (double)vector3f.z(), speed, divergence);
+                projectileEntity.setVelocity(vector3f.x(), vector3f.y(), vector3f.z(), speed, divergence);
             }
 
             crossbow.damage(bl ? 3 : 1, shooter, (e) -> {
                 e.sendToolBreakStatus(hand);
             });
-            world.spawnEntity((Entity)projectileEntity);
-            world.playSound((PlayerEntity)null, shooter.getX(), shooter.getY(), shooter.getZ(), SoundEvents.ITEM_CROSSBOW_SHOOT, SoundCategory.PLAYERS, 1.0F, soundPitch);
+            world.spawnEntity(projectileEntity);
+            world.playSound(null, shooter.getX(), shooter.getY(), shooter.getZ(), SoundEvents.ITEM_CROSSBOW_SHOOT, SoundCategory.PLAYERS, 1.0F, soundPitch);
         }
     }
 
@@ -239,8 +237,8 @@ public class ModularCrossbow extends CrossbowItem implements ModularItem {
         float[] fs = getSoundPitches(entity.getRandom());
 
         for(int i = 0; i < list.size(); ++i) {
-            ItemStack itemStack = (ItemStack)list.get(i);
-            boolean bl = entity instanceof PlayerEntity && ((PlayerEntity)entity).getAbilities().creativeMode;
+            ItemStack itemStack = list.get(i);
+            boolean bl = entity instanceof PlayerEntity playerEntity&& playerEntity.getAbilities().creativeMode;
             if (!itemStack.isEmpty()) {
                 if (i == 0) {
                     shoot(world, entity, hand, stack, itemStack, fs[i], bl, speed, divergence, 0.0F);

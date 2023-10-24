@@ -27,7 +27,6 @@
         "crossbow"
     ],
     "allowedInSlots": [
-        "crossbow",
         "bow"
     ],
     "durability": "[material.durability]* 0.5",
@@ -95,7 +94,7 @@
             "crystal",
             "glass"
         ],
-        "cost": 1
+        "cost": 2
     },
     "displayName": "miapi.module.crossbow_stock_normal.name",
     "itemId": "miapi:modular_crossbow_part"

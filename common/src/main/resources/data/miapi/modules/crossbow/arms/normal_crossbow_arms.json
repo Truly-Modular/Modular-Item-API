@@ -61,13 +61,13 @@
     "attributes": [
         {
             "attribute": "miapi:generic.projectile_speed",
-            "value": "( [material.hardness] * 2 + [material.flexibility] ) / 9 - 1",
+            "value": "( [material.hardness] * 2 + [material.flexibility] ) / 3 - 3",
             "operation": "+",
             "slot": "mainhand"
         },
         {
             "attribute": "miapi:generic.bow_draw_time",
-            "value": "([material.hardness]/3 - 1) * 8",
+            "value": "-([material.hardness]/3 - 1) * 12",
             "operation": "+",
             "slot": "mainhand"
         }

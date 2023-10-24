@@ -411,7 +411,7 @@ public class AttributeProperty implements ModuleProperty {
             return uuid;
 
         } catch (NoSuchAlgorithmException e) {
-            Miapi.LOGGER.warn("could not setup UUID generator - Attributes are likely to be broken now");
+            Miapi.LOGGER.warn("could not onReload UUID generator - Attributes are likely to be broken now");
             return UUID.fromString("d3b89c4c-68ff-11ee-8c99-0242ac120002");
         }
     }

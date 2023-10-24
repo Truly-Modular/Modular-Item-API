@@ -1,0 +1,25 @@
+{
+    "minecraft:crossbow": {
+        "module": "crossbow_stock_normal",
+        "moduleData": {
+            "properties": "{\"material\":\"wood\"}"
+        },
+        "subModules": {
+            "0": {
+                "module": "crossbow_arms_normal",
+                "moduleData": {
+                    "properties": "{\"material\":\"wood\"}"
+                },
+                "subModules": {
+                    "0": {
+                        "module": "crossbow_string_normal",
+                        "moduleData": {
+                            "properties": "{\"material\":\"string\"}"
+                        },
+                        "subModules": {}
+                    }
+                }
+            }
+        }
+    }
+}

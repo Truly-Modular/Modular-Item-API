@@ -176,8 +176,8 @@ public class ItemModule {
         if (stack.getItem() instanceof ModularItem) {
             ItemModule.ModuleInstance moduleInstance = (ItemModule.ModuleInstance) ModularItemCache.getRaw(stack, MODULE_KEY);
             if (moduleInstance == null || moduleInstance.module == null) {
-                IllegalArgumentException exception = new IllegalArgumentException("Item has Invalid Module setup - treating it like it has no modules");
-                Miapi.LOGGER.warn("Item has Invalid Module setup - treating it like it has no modules", exception);
+                IllegalArgumentException exception = new IllegalArgumentException("Item has Invalid Module onReload - treating it like it has no modules");
+                Miapi.LOGGER.warn("Item has Invalid Module onReload - treating it like it has no modules", exception);
                 return new ItemModule.ModuleInstance(new ItemModule("empty", new HashMap<>()));
             }
             return moduleInstance;
@@ -359,7 +359,7 @@ public class ItemModule {
         }
 
         /**
-         * Returns a map of all properties and their associated JSON elements for this module instance and its sub-modules,
+         * Returns a map of all properties and their associated JSON elements for this module instance,
          * keyed by the property names.
          *
          * @return a map of module properties and their associated JSON elements, keyed by property name
@@ -369,6 +369,27 @@ public class ItemModule {
             getProperties().forEach((property, jsonElement) -> {
                 map.put(RegistryInventory.moduleProperties.findKey(property), jsonElement);
             });
+            return map;
+        }
+
+        /**
+         * Returns a map of all properties and their associated JSON elements for this module instance and all its submodules
+         * keyed by the property names.
+         *
+         * @return a map of module properties and their associated JSON elements, keyed by property name
+         */
+        public Map<ModuleProperty, JsonElement> getPropertiesMerged() {
+            Map<ModuleProperty, JsonElement> map = new HashMap<>();
+            for(ModuleInstance moduleInstance: this.allSubModules()){
+                moduleInstance.getProperties().forEach((property, element) -> {
+                    if(map.containsKey(property)){
+                        map.put(property,property.merge(map.get(property),element,MergeType.SMART));
+                    }
+                    else{
+                        map.put(property,element);
+                    }
+                });
+            }
             return map;
         }
 

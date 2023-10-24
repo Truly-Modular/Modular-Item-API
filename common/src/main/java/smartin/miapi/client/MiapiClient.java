@@ -18,6 +18,7 @@ import smartin.miapi.client.gui.crafting.CraftingScreen;
 import smartin.miapi.client.gui.crafting.statdisplay.StatListWidget;
 import smartin.miapi.client.model.CustomColorProvider;
 import smartin.miapi.client.model.ModularModelPredicateProvider;
+import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.effects.CryoStatusEffect;
 import smartin.miapi.entity.ItemProjectileRenderer;
 import smartin.miapi.mixin.client.ItemRendererAccessor;
@@ -52,15 +53,22 @@ public class MiapiClient {
             });
             ModularModelPredicateProvider.registerModelOverride(item, new Identifier(Miapi.MOD_ID, "damaged"), (stack, world, entity, seed) -> stack.isDamaged() ? 1.0F : 0.0F);
         }));
+        ReloadEvents.START.subscribe(isClient -> {
+            if(isClient){
+                StatListWidget.onReload();
+            }
+        });
+        ReloadEvents.END.subscribe(isClient -> {
+            if(isClient){
+                StatListWidget.reloadEnd();
+            }
+        });
     }
 
     protected static void clientSetup(MinecraftClient client) {
         MinecraftClient mc = MinecraftClient.getInstance();
         mc.getTextureManager();
-        //materialAtlasManager = new MaterialAtlasManager(mc.getTextureManager());
-        //((ReloadableResourceManagerImpl) mc.getResourceManager()).registerReloader(materialAtlasManager);
         SpriteLoader.setup();
-        StatListWidget.setup();
     }
 
     protected static void clientStart(MinecraftClient client) {
@@ -73,7 +81,6 @@ public class MiapiClient {
             ((ItemRendererAccessor) client.getItemRenderer()).color().register(new CustomColorProvider(), item);
         });
         CryoStatusEffect.setupOnClient();
-        StatListWidget.setupClientDone();
     }
 
     protected static void clientLevelLoad(ClientWorld clientWorld) {

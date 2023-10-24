@@ -104,7 +104,7 @@ public class MaterialProperty implements ModuleProperty {
                         if (generatedMaterial.assignStats(toolItems)) {
                             materials.put(generatedMaterial.getKey(), generatedMaterial);
                         } else {
-                            Miapi.LOGGER.warn("Couldn't correctly setup material for " + generatedMaterial.mainIngredient.getItem());
+                            Miapi.LOGGER.warn("Couldn't correctly onReload material for " + generatedMaterial.mainIngredient.getItem());
                         }
                     });
             Registries.ITEM.stream().filter(item -> item.getDefaultStack().isIn(ItemTags.PLANKS)).forEach(item -> {

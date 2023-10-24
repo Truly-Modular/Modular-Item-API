@@ -19,10 +19,14 @@ import smartin.miapi.client.gui.BoxList;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.ScrollList;
 import smartin.miapi.client.gui.TransformableWidget;
+import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.*;
+import smartin.miapi.modules.properties.util.GuiWidgetSupplier;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Environment(EnvType.CLIENT)
 public class StatListWidget extends InteractAbleWidget {
@@ -34,7 +38,32 @@ public class StatListWidget extends InteractAbleWidget {
     private ItemStack original = ItemStack.EMPTY;
     private ItemStack compareTo = ItemStack.EMPTY;
 
-    public static void setup() {
+    static {
+        statWidgetSupplier.add(new StatWidgetSupplier() {
+            @Override
+            public <T extends InteractAbleWidget & SingleStatDisplay> List<T> currentList(ItemStack original, ItemStack compareTo) {
+                Set<GuiWidgetSupplier> suppliers = new HashSet<>();
+                suppliers.addAll(
+                        ItemModule.getModules(original).getPropertiesMerged().keySet().stream()
+                                .filter(property -> property instanceof GuiWidgetSupplier)
+                                .map(property -> (GuiWidgetSupplier) property)
+                                .toList());
+                suppliers.addAll(
+                        ItemModule.getModules(compareTo).getPropertiesMerged().keySet().stream()
+                                .filter(property -> property instanceof GuiWidgetSupplier)
+                                .map(property -> (GuiWidgetSupplier) property)
+                                .toList());
+                return suppliers.stream()
+                        .map(guiWidgetSupplier -> (T)
+                                new JsonStatDisplay(
+                                        guiWidgetSupplier.getTitle(),
+                                        guiWidgetSupplier.getDescription(),
+                                        guiWidgetSupplier.getStatReader())).toList();
+            }
+        });
+    }
+
+    public static void onReload() {
         statDisplays.clear();
         addStatDisplay(new FlattenedListPropertyStatDisplay<>(
                 PotionEffectProperty.property,
@@ -148,7 +177,7 @@ public class StatListWidget extends InteractAbleWidget {
                 .setMax(100)
                 .setMin(1)
                 .setDefault(20)
-                .setValueGetter((stack)-> 20-AttributeProperty.getActualValue(stack, EquipmentSlot.MAINHAND,AttributeRegistry.BOW_DRAW_TIME))
+                .setValueGetter((stack) -> 20 - AttributeProperty.getActualValue(stack, EquipmentSlot.MAINHAND, AttributeRegistry.BOW_DRAW_TIME))
                 .setTranslationKey("bow_draw_time")
                 .inverseNumber(true)
                 .setFormat("##.##").build());
@@ -213,7 +242,7 @@ public class StatListWidget extends InteractAbleWidget {
         AttributeSingleDisplay.attributesWithDisplay.add(AttributeRegistry.ARMOR_CRUSHING);
     }
 
-    public static void setupClientDone(){
+    public static void reloadEnd() {
         Registries.ATTRIBUTE.forEach(entityAttribute -> {
             if (!AttributeSingleDisplay.attributesWithDisplay.contains(entityAttribute)) {
                 addStatDisplay(AttributeSingleDisplay
