@@ -1,5 +1,5 @@
 {
-    "crossbow_stock_normal": {
+    "crossbow_arms_normal": {
         "condition": {
             "type": "otherModule",
             "condition": {

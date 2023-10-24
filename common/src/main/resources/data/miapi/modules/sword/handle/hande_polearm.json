@@ -244,24 +244,6 @@
     "abilities": [
         "circleAttack"
     ],
-    "circleAttack": {
-        "damage": 1.5,
-        "range": 5,
-        "minHold": 10,
-        "cooldown": 50,
-        "particles": [
-            {
-                "particle": "minecraft:sweep_attack",
-                "count": 0,
-                "rangePercent": 0.75
-            },
-            {
-                "particle": "minecraft:bubble",
-                "count": 0,
-                "rangePercent": 0.3
-            }
-        ]
-    },
     "isWeapon": true,
     "displayName": "miapi.module.handle_polearm.name",
     "itemId": "miapi:modular_handle"

@@ -89,19 +89,6 @@
     "better_combat_config": {
         "parent": "bettercombat:dagger"
     },
-    "applyPotionEffects": [
-        {
-            "event": "hurt",
-            "item": "attacker.mainhand",
-            "applyTo": "victim",
-            "duration": 50,
-            "amplifier": 2,
-            "effect": "minecraft:poison",
-            "target_description": {
-                "translate": "miapi.application_target.description.hurt_victim"
-            }
-        }
-    ],
     "crafting_condition": {
         "craftable": {
             "type": "miapi_perm",
