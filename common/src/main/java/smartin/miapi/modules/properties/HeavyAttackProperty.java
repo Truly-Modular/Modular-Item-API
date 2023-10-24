@@ -3,16 +3,20 @@ package smartin.miapi.modules.properties;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.minecraft.item.ItemStack;
+import net.minecraft.text.Text;
 import smartin.miapi.Miapi;
+import smartin.miapi.client.gui.crafting.statdisplay.SingleStatDisplayDouble;
+import smartin.miapi.client.gui.crafting.statdisplay.StatListWidget;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.properties.util.GuiWidgetSupplier;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
 /**
  * This property controls {@link smartin.miapi.modules.abilities.HeavyAttackAbility}
  */
-public class HeavyAttackProperty implements ModuleProperty {
+public class HeavyAttackProperty implements ModuleProperty, GuiWidgetSupplier {
     public static String KEY = "heavyAttack";
     public static HeavyAttackProperty property;
 
@@ -49,6 +53,42 @@ public class HeavyAttackProperty implements ModuleProperty {
 
     public boolean hasHeavyAttack(ItemStack itemStack) {
         return get(itemStack) != null;
+    }
+
+    @Override
+    public StatListWidget.TextGetter getTitle() {
+        return (stack -> Text.literal("Heavy Attack"));
+    }
+
+    @Override
+    public StatListWidget.TextGetter getDescription() {
+        return (stack -> {
+            HeavyAttackJson json = get(stack);
+            if (json != null) {
+                return Text.literal("Heavy attack with " + json.damage + " and " + json.range + " \nHas to be held for " + json.minHold / 20 + " seconds");
+            }
+            Miapi.DEBUG_LOGGER.warn("idk? why not working" + stack);
+            return Text.empty();
+        });
+    }
+
+    @Override
+    public SingleStatDisplayDouble.StatReaderHelper getStatReader() {
+        return new SingleStatDisplayDouble.StatReaderHelper() {
+            @Override
+            public double getValue(ItemStack itemStack) {
+                HeavyAttackJson json = get(itemStack);
+                if (json != null) {
+                    return json.range;
+                }
+                return 0;
+            }
+
+            @Override
+            public boolean hasValue(ItemStack itemStack) {
+                return get(itemStack) != null;
+            }
+        };
     }
 
     public static class HeavyAttackJson {

@@ -58,7 +58,9 @@ public class StatListWidget extends InteractAbleWidget {
                                 new JsonStatDisplay(
                                         guiWidgetSupplier.getTitle(),
                                         guiWidgetSupplier.getDescription(),
-                                        guiWidgetSupplier.getStatReader())).toList();
+                                        guiWidgetSupplier.getStatReader(),
+                                        guiWidgetSupplier.getMinValue(),
+                                        guiWidgetSupplier.getMaxValue())).toList();
             }
         });
     }
@@ -297,9 +299,11 @@ public class StatListWidget extends InteractAbleWidget {
         for (StatWidgetSupplier supplier : statWidgetSupplier) {
             List<T> statWidgets = supplier.currentList(original, compareTo);
             for (T statDisplay : statWidgets) {
-                statDisplay.setHeight(statDisplay.getHeightDesired());
-                statDisplay.setWidth(statDisplay.getWidthDesired());
-                widgets.add(statDisplay);
+                if(statDisplay.shouldRender(original,compareTo)){
+                    statDisplay.setHeight(statDisplay.getHeightDesired());
+                    statDisplay.setWidth(statDisplay.getWidthDesired());
+                    widgets.add(statDisplay);
+                }
             }
         }
         for (InteractAbleWidget statDisplay : statDisplays) {

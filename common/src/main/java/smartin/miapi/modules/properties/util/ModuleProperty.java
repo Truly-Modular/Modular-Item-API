@@ -37,13 +37,23 @@ public interface ModuleProperty {
     default JsonElement merge(JsonElement old, JsonElement toMerge, MergeType type) {
         Type typeToken = new TypeToken<List<JsonElement>>() {
         }.getType();
-        List<JsonElement> oldList = Miapi.gson.fromJson(old, typeToken);
-        List<JsonElement> newList = Miapi.gson.fromJson(toMerge, typeToken);
-        if (Objects.requireNonNull(type) == MergeType.SMART || type == MergeType.EXTEND) {
-            oldList.addAll(newList);
-            return Miapi.gson.toJsonTree(oldList, typeToken);
-        } else if (type == MergeType.OVERWRITE) {
-            return toMerge;
+        if(old.isJsonArray() && toMerge.isJsonArray()){
+            List<JsonElement> oldList = Miapi.gson.fromJson(old, typeToken);
+            List<JsonElement> newList = Miapi.gson.fromJson(toMerge, typeToken);
+            if (Objects.requireNonNull(type) == MergeType.SMART || type == MergeType.EXTEND) {
+                oldList.addAll(newList);
+                return Miapi.gson.toJsonTree(oldList, typeToken);
+            } else if (type == MergeType.OVERWRITE) {
+                return toMerge;
+            }
+        }
+        else{
+            if(MergeType.EXTEND == type){
+                return old;
+            }
+            else{
+                return toMerge;
+            }
         }
         return old;
     }

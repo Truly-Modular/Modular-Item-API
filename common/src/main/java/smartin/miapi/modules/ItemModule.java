@@ -380,13 +380,17 @@ public class ItemModule {
          */
         public Map<ModuleProperty, JsonElement> getPropertiesMerged() {
             Map<ModuleProperty, JsonElement> map = new HashMap<>();
-            for(ModuleInstance moduleInstance: this.allSubModules()){
+            for (ModuleInstance moduleInstance : this.allSubModules()) {
                 moduleInstance.getProperties().forEach((property, element) -> {
-                    if(map.containsKey(property)){
-                        map.put(property,property.merge(map.get(property),element,MergeType.SMART));
-                    }
-                    else{
-                        map.put(property,element);
+                    if (map.containsKey(property)) {
+                        try {
+                            map.put(property, property.merge(map.get(property), element, MergeType.SMART));
+                        } catch (Exception e) {
+                            Miapi.DEBUG_LOGGER.error("coudlnt merge " + property, e);
+                            map.put(property, element);
+                        }
+                    } else {
+                        map.put(property, element);
                     }
                 });
             }
