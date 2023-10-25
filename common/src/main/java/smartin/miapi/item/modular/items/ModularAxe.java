@@ -31,6 +31,7 @@ public class ModularAxe extends AxeItem implements ModularItem {
 
     @Override
     public int getItemBarStep(ItemStack stack) {
+        ItemStack itemStack;
         return Math.round(13.0F - (float) stack.getDamage() * 13.0F / ModularItem.getDurability(stack));
     }
 

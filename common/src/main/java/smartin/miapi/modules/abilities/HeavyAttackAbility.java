@@ -1,12 +1,15 @@
 package smartin.miapi.modules.abilities;
 
 import com.redpxnda.nucleus.network.clientbound.ParticleCreationPacket;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
@@ -16,13 +19,36 @@ import smartin.miapi.mixin.LivingEntityAccessor;
 import smartin.miapi.modules.abilities.util.AttackUtil;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
 import smartin.miapi.modules.abilities.util.ItemUseAbility;
+import smartin.miapi.modules.properties.AbilityProperty;
 import smartin.miapi.modules.properties.HeavyAttackProperty;
+import smartin.miapi.modules.properties.LoreProperty;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This Ability allows a stronger attack than the normal left click.
  * Has Configurable range and default sweeping and a scale factor for Damage
  */
 public class HeavyAttackAbility implements ItemUseAbility {
+
+    public HeavyAttackAbility() {
+        if(smartin.miapi.Environment.isClient()){
+            clientSetup();
+        }
+    }
+
+    @Environment(EnvType.CLIENT)
+    public void clientSetup(){
+        LoreProperty.loreSuppliers.add(itemStack -> {
+            List<Text> texts = new ArrayList<>();
+            if (AbilityProperty.property.isPrimaryAbility(this, itemStack)) {
+                texts.add(Text.translatable("miapi.ability.heavy_attack.lore"));
+            }
+            return texts;
+        });
+    }
+
     @Override
     public boolean allowedOnItem(ItemStack itemStack, World world, PlayerEntity player, Hand hand, ItemAbilityManager.AbilityContext abilityContext) {
         return HeavyAttackProperty.property.hasHeavyAttack(itemStack);

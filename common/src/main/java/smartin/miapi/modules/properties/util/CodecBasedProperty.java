@@ -25,7 +25,7 @@ public abstract class CodecBasedProperty<T> implements ModuleProperty {
         this.key = key;
         this.codec = codec;
 
-        ModularItemCache.setSupplier(key, this::createCache);
+        ModularItemCache.setSupplier(key + "_codec", this::createCache);
     }
 
     @Override
@@ -36,7 +36,7 @@ public abstract class CodecBasedProperty<T> implements ModuleProperty {
     }
 
     public T get(ItemStack itemStack) {
-        return (T) ModularItemCache.getRaw(itemStack, key);
+        return (T) ModularItemCache.getRaw(itemStack, key + "_codec");
     }
 
     public T createCache(ItemStack stack) {

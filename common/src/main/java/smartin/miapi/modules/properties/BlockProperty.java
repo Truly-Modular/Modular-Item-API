@@ -1,8 +1,8 @@
 package smartin.miapi.modules.properties;
 
 import net.minecraft.item.ItemStack;
-import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.modules.properties.util.DoubleProperty;
+import smartin.miapi.modules.properties.util.ModuleProperty;
 
 /**
  * This property controls {@link smartin.miapi.modules.abilities.BlockAbility}

@@ -8,6 +8,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
+import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
@@ -17,13 +18,27 @@ import smartin.miapi.entity.ItemProjectileEntity;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
 import smartin.miapi.modules.abilities.util.ItemUseAbility;
+import smartin.miapi.modules.properties.AbilityProperty;
 import smartin.miapi.modules.properties.AttributeProperty;
+import smartin.miapi.modules.properties.LoreProperty;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This Ability allows you to throw the Item in question like a Trident
  */
 public class ThrowingAbility implements ItemUseAbility {
 
+    public ThrowingAbility() {
+        LoreProperty.loreSuppliers.add(itemStack -> {
+            List<Text> texts = new ArrayList<>();
+            if (AbilityProperty.property.isPrimaryAbility(this, itemStack)) {
+                texts.add(Text.translatable("miapi.ability.throw.lore"));
+            }
+            return texts;
+        });
+    }
     @Override
     public boolean allowedOnItem(ItemStack itemStack, World world, PlayerEntity player, Hand hand, ItemAbilityManager.AbilityContext abilityContext) {
         return true;

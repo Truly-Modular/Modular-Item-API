@@ -21,7 +21,7 @@ public class HeavyAttackProperty extends CodecBasedProperty<HeavyAttackProperty.
     public static final Codec<HeavyAttackHolder> codec = AutoCodec.of(HeavyAttackHolder.class).codec();
 
     public HeavyAttackProperty() {
-        super(KEY,codec);
+        super(KEY, codec);
         property = this;
     }
 
@@ -85,7 +85,7 @@ public class HeavyAttackProperty extends CodecBasedProperty<HeavyAttackProperty.
         };
     }
 
-    public static class HeavyAttackHolder{
+    public static class HeavyAttackHolder {
         public double damage = 1.0;
         public double sweeping = 0.0;
         public double range = 3.5;

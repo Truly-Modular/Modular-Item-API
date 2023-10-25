@@ -18,7 +18,7 @@ import java.util.List;
  */
 public class AbilityProperty implements ModuleProperty {
     public static final String KEY = "abilities";
-    public static ModuleProperty property;
+    public static AbilityProperty property;
 
     public AbilityProperty() {
         property = this;
@@ -38,6 +38,11 @@ public class AbilityProperty implements ModuleProperty {
             });
         }
         return abilities;
+    }
+
+    public boolean isPrimaryAbility(ItemUseAbility itemUseAbility, ItemStack itemStack) {
+        List<ItemUseAbility> abilities = get(itemStack);
+        return !abilities.isEmpty() && itemUseAbility == abilities.get(0);
     }
 
     @Override

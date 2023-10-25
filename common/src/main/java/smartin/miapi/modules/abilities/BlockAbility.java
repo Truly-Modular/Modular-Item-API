@@ -3,6 +3,8 @@ package smartin.miapi.modules.abilities;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.redpxnda.nucleus.pose.ServerPoseFacet;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
@@ -10,14 +12,19 @@ import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.modules.abilities.util.EntityAttributeAbility;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
+import smartin.miapi.modules.properties.AbilityProperty;
 import smartin.miapi.modules.properties.BlockProperty;
+import smartin.miapi.modules.properties.LoreProperty;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -27,6 +34,24 @@ import java.util.UUID;
  */
 public class BlockAbility extends EntityAttributeAbility {
     UUID attributeUUID = UUID.fromString("3e91990e-4774-11ee-be56-0242ac120002");
+
+    public BlockAbility() {
+        if(smartin.miapi.Environment.isClient()){
+            clientSetup();
+        }
+    }
+
+    @Environment(EnvType.CLIENT)
+    public void clientSetup(){
+        LoreProperty.loreSuppliers.add(itemStack -> {
+            List<Text> texts = new ArrayList<>();
+            if (AbilityProperty.property.isPrimaryAbility(this, itemStack)) {
+                Text raw = Text.translatable("miapi.ability.block.lore");
+                texts.add(raw);
+            }
+            return texts;
+        });
+    }
 
     @Override
     protected Multimap<EntityAttribute, EntityAttributeModifier> getAttributes(ItemStack itemStack) {
