@@ -17,47 +17,57 @@ import org.joml.Matrix4f;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.material.Material;
 import smartin.miapi.modules.material.MaterialProperty;
-import smartin.miapi.modules.properties.render.colorproviders.ColorProvider;
+import smartin.miapi.modules.properties.GlintProperty;
+import smartin.miapi.registries.RegistryInventory;
 
-public class BakedMiapiModel implements MiapiModel {
+public class BakedMiapiGlintModel implements MiapiModel {
     ItemModule.ModuleInstance instance;
     Material material;
     BakedModel model;
     Matrix4f modelMatrix;
     Color color;
-    ModelHolder modelHolder;
+    BakedMiapiModel.ModelHolder modelHolder;
+    GlintProperty.GlintSettings settings;
+    GlintProperty.GlintSettings rootSettings;
 
-    public BakedMiapiModel(ModelHolder holder, ItemModule.ModuleInstance instance, ItemStack stack) {
+    public BakedMiapiGlintModel(BakedMiapiModel.ModelHolder holder, ItemModule.ModuleInstance instance, ItemStack stack) {
         modelHolder = holder;
         this.instance = instance;
         material = MaterialProperty.getMaterial(instance);
-        color = holder.colorProvider.getVertexColor();
+        color = holder.colorProvider().getVertexColor();
         modelMatrix = holder.matrix4f();
         model = holder.model();
+        settings = GlintProperty.property.getGlintSettings(instance, stack);
+        rootSettings = GlintProperty.property.getGlintSettings(instance.getRoot(), stack);
     }
 
     @Override
     public void render(MatrixStack matrices, ItemStack stack, ModelTransformationMode transformationMode, float tickDelta, VertexConsumerProvider vertexConsumers, LivingEntity entity, int light, int overlay) {
         if (!(vertexConsumers instanceof VertexConsumerProvider.Immediate)) return;
-        MinecraftClient.getInstance().world.getProfiler().push("BakedModel");
+        MinecraftClient.getInstance().world.getProfiler().push("BakedGlintModel");
         matrices.push();
         matrices.multiplyPositionMatrix(modelMatrix);
         for (Direction direction : Direction.values()) {
             if (model.getOverrides() != null && !model.getOverrides().equals(ModelOverrideList.EMPTY)) {
                 model = model.getOverrides().apply(model, stack, MinecraftClient.getInstance().world, entity, light);
             }
-            VertexConsumer consumer = modelHolder.colorProvider.getConsumer(vertexConsumers, stack, instance, transformationMode);
+            VertexConsumer consumer = modelHolder.colorProvider().getConsumer(vertexConsumers, stack, instance, transformationMode);
 
             model.getQuads(null, direction, Random.create()).forEach(bakedQuad -> {
                 consumer.quad(matrices.peek(), bakedQuad, color.redAsFloat(), color.greenAsFloat(), color.blueAsFloat(), light, overlay);
             });
+
+            rootSettings.applySpeed();
+            settings.applyAlpha();
+            VertexConsumer glintConsumer = vertexConsumers.getBuffer(RegistryInventory.Client.modularItemGlint);
+
+            Color glintColor = settings.getColor();
+            model.getQuads(null, direction, Random.create()).forEach(bakedQuad -> {
+                glintConsumer.quad(matrices.peek(), bakedQuad, (float) glintColor.r() / 255, (float) glintColor.g() / 255, (float) glintColor.b() / 255, light, overlay);
+            });
         }
         MinecraftClient.getInstance().world.getProfiler().pop();
         matrices.pop();
-    }
-
-    public record ModelHolder(BakedModel model, Matrix4f matrix4f, ColorProvider colorProvider) {
-
     }
 
     @Override

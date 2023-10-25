@@ -74,7 +74,7 @@ public class MiapiItemModel implements MiapiModel {
     }
 
     @Override
-    public @Nullable Matrix4f subModuleMatrix(int submoduleId) {
+    public @Nullable Matrix4f subModuleMatrix() {
         return null;
     }
 

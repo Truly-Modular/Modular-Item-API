@@ -48,28 +48,20 @@ public class ModuleModel {
         if (!otherModels.containsKey(modelType)) {
             otherModels.put(modelType, generateModel(modelType));
         }
-        Map<Integer, Matrix4f> map = new HashMap<>();
-        //render own Models
+        Matrix4f submoduleMatrix = new Matrix4f();
+
         otherModels.get(modelType).forEach(matrix4fMiapiModelPair -> {
             matrices.push();
             matrices.peek().getPositionMatrix().mul(matrix4fMiapiModelPair.getFirst());
             matrix4fMiapiModelPair.getSecond().render(matrices, stack, mode, tickDelta, vertexConsumers, entity, light, overlay);
             matrices.pop();
 
-            //prepare for submodules
-            instance.subModules.forEach((integer, instance1) -> {
-                Matrix4f matrix4f = map.getOrDefault(integer, new Matrix4f());
-                Matrix4f subModuleMatrix = matrix4fMiapiModelPair.getSecond().subModuleMatrix(integer);
-                if (subModuleMatrix != null) {
-                    matrix4f.mul(matrix4fMiapiModelPair.getSecond().subModuleMatrix(integer));
-                }
-                map.put(integer, matrix4f);
-            });
+            submoduleMatrix.mul(matrix4fMiapiModelPair.getSecond().subModuleMatrix());
         });
         //render submodules
         instance.subModules.forEach((integer, instance1) -> {
             matrices.push();
-            matrices.multiplyPositionMatrix(map.get(integer));
+            matrices.multiplyPositionMatrix(submoduleMatrix);
             ModuleModel subModuleModel = subModuleModels.get(integer);
             if (subModuleModel == null) {
                 subModuleModel = new ModuleModel(instance1, stack);

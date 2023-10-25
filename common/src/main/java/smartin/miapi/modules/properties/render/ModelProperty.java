@@ -28,17 +28,20 @@ import smartin.miapi.Miapi;
 import smartin.miapi.client.model.DynamicBakedModel;
 import smartin.miapi.client.model.DynamicBakery;
 import smartin.miapi.client.model.ModelLoadAccessor;
+import smartin.miapi.client.modelrework.BakedMiapiGlintModel;
 import smartin.miapi.client.modelrework.BakedMiapiModel;
 import smartin.miapi.client.modelrework.MiapiItemModel;
+import smartin.miapi.client.modelrework.MiapiModel;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.item.modular.Transform;
 import smartin.miapi.item.modular.TransformMap;
 import smartin.miapi.mixin.client.ModelLoaderInterfaceAccessor;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.cache.ModularItemCache;
-import smartin.miapi.modules.properties.SlotProperty;
 import smartin.miapi.modules.material.Material;
 import smartin.miapi.modules.material.MaterialProperty;
+import smartin.miapi.modules.properties.GlintProperty;
+import smartin.miapi.modules.properties.SlotProperty;
 import smartin.miapi.modules.properties.render.colorproviders.ColorProvider;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
@@ -68,7 +71,17 @@ public class ModelProperty implements ModuleProperty {
         ModularItemCache.setSupplier(CACHE_KEY_ITEM, (stack) -> getModelMap(stack).get("item"));
         ModularItemCache.setSupplier(CACHE_KEY_MAP, ModelProperty::generateModels);
         MiapiItemModel.modelSuppliers.add((key, model, stack) -> {
-            return Collections.singletonList(new BakedMiapiModel(getForModule(model, key, stack), model, stack));
+            GlintProperty.GlintSettings settings = GlintProperty.property.getGlintSettings(model, stack);
+            List<MiapiModel> miapiModels = new ArrayList<>();
+            for(BakedMiapiModel.ModelHolder holder : getForModule(model,key,stack)){
+                if(settings.shouldRender()){
+                    miapiModels.add(new BakedMiapiGlintModel(holder, model, stack));
+                }
+                else{
+                    miapiModels.add(new BakedMiapiModel(holder, model, stack));
+                }
+            }
+            return miapiModels;
         });
     }
 
