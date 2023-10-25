@@ -47,22 +47,23 @@ public class BakedMiapiGlintModel implements MiapiModel {
         MinecraftClient.getInstance().world.getProfiler().push("BakedGlintModel");
         matrices.push();
         matrices.multiplyPositionMatrix(modelMatrix);
+        BakedModel currentModel = model;
         if (model.getOverrides() != null && !model.getOverrides().equals(ModelOverrideList.EMPTY)) {
-            model = model.getOverrides().apply(model, stack, MinecraftClient.getInstance().world, entity, light);
+            currentModel = model.getOverrides().apply(model, stack, MinecraftClient.getInstance().world, entity, light);
         }
         rootSettings.applySpeed();
         settings.applyAlpha();
         Color glintColor = settings.getColor();
         VertexConsumer materialConsumer = modelHolder.colorProvider().getConsumer(vertexConsumerProvider, stack, instance, transformationMode);
         for (Direction direction : Direction.values()) {
-            model.getQuads(null, direction, random).forEach(bakedQuad -> {
+            currentModel.getQuads(null, direction, random).forEach(bakedQuad -> {
                 materialConsumer.quad(matrices.peek(), bakedQuad, color.redAsFloat(), color.greenAsFloat(), color.blueAsFloat(), light, overlay);
             });
         }
         ((VertexConsumerProvider.Immediate) vertexConsumerProvider).draw();
         VertexConsumer glintConsumer = vertexConsumerProvider.getBuffer(RegistryInventory.Client.modularItemGlint);
         for (Direction direction : Direction.values()) {
-            model.getQuads(null, direction, random).forEach(bakedQuad -> {
+            currentModel.getQuads(null, direction, random).forEach(bakedQuad -> {
                 glintConsumer.quad(matrices.peek(), bakedQuad, glintColor.redAsFloat(), glintColor.greenAsFloat(), glintColor.blueAsFloat(), light, overlay);
             });
         }

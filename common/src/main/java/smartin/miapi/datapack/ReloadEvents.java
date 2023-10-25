@@ -162,18 +162,20 @@ public class ReloadEvents {
             String data = buffer.readString();
             dataTemp.put(key, data);
             if (dataTemp.size() == dataPackSize) {
+                Miapi.DEBUG_LOGGER.warn("load complete?"+dataTemp.size());
+                dataPackSize = Integer.MAX_VALUE;
                 synchronized (DATA_PACKS) {
                     DATA_PACKS.clear();
                     DATA_PACKS.putAll(dataTemp);
-                    MinecraftClient.getInstance().execute(() -> {
-                        DataPackLoader.trigger(new ConcurrentHashMap<>(DATA_PACKS));
-                        ReloadEvents.MAIN.fireEvent(true);
-                        ReloadEvents.END.fireEvent(true);
-                        Miapi.LOGGER.info("Client load took " + (double) (System.nanoTime() - clientReloadTimeStart) / 1000 / 1000 + " ms");
-                        dataPackSize = Integer.MAX_VALUE;
-                        inReload = false;
-                    });
+                    dataTemp.clear();
                 }
+                MinecraftClient.getInstance().execute(() -> {
+                    DataPackLoader.trigger(new ConcurrentHashMap<>(DATA_PACKS));
+                    ReloadEvents.MAIN.fireEvent(true);
+                    ReloadEvents.END.fireEvent(true);
+                    Miapi.LOGGER.info("Client load took " + (double) (System.nanoTime() - clientReloadTimeStart) / 1000 / 1000 + " ms");
+                    inReload = false;
+                });
             }
         });
         Networking.registerS2CPacket(RELOAD_PACKET_ID, (buffer) -> {

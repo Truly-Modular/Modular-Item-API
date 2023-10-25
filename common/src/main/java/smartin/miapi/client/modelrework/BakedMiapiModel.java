@@ -42,12 +42,13 @@ public class BakedMiapiModel implements MiapiModel {
         MinecraftClient.getInstance().world.getProfiler().push("BakedModel");
         matrices.push();
         matrices.multiplyPositionMatrix(modelMatrix);
+        BakedModel currentModel = model;
         if (model.getOverrides() != null && !model.getOverrides().equals(ModelOverrideList.EMPTY)) {
-            model = model.getOverrides().apply(model, stack, MinecraftClient.getInstance().world, entity, light);
+            currentModel = model.getOverrides().apply(model, stack, MinecraftClient.getInstance().world, entity, light);
         }
         VertexConsumer consumer = modelHolder.colorProvider.getConsumer(vertexConsumers, stack, instance,transformationMode);
         for (Direction direction : Direction.values()) {
-            model.getQuads(null, direction, random).forEach(bakedQuad -> {
+            currentModel.getQuads(null, direction, random).forEach(bakedQuad -> {
                 consumer.quad(matrices.peek(), bakedQuad, color.redAsFloat(), color.greenAsFloat(), color.blueAsFloat(), light, overlay);
             });
         }
