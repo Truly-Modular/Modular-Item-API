@@ -52,7 +52,7 @@ public abstract class DynamicCodecBasedProperty<T, A> implements ModuleProperty 
 
     @Nullable
     public A get(ItemStack itemStack) {
-        return (A) ModularItemCache.getRaw(itemStack, key);
+        return ModularItemCache.getRaw(itemStack, key);
     }
 
     @Override

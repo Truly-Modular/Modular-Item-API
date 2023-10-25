@@ -6,7 +6,6 @@ import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
-import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 
 import java.util.function.Supplier;
@@ -38,10 +37,5 @@ public class ItemMiapiModel implements MiapiModel {
                 0);
         matrices.pop();
         MinecraftClient.getInstance().world.getProfiler().pop();
-    }
-
-    @Override
-    public @Nullable Matrix4f subModuleMatrix() {
-        return new Matrix4f();
     }
 }

@@ -175,7 +175,7 @@ public class ItemModule {
      */
     public static ItemModule.ModuleInstance getModules(ItemStack stack) {
         if (stack.getItem() instanceof ModularItem && !ReloadEvents.isInReload() && stack.getOrCreateNbt().get("modules") != null) {
-            ItemModule.ModuleInstance moduleInstance = (ItemModule.ModuleInstance) ModularItemCache.getRaw(stack, MODULE_KEY);
+            ItemModule.ModuleInstance moduleInstance = ModularItemCache.getRaw(stack, MODULE_KEY);
             if (moduleInstance == null || moduleInstance.module == null) {
                 IllegalArgumentException exception = new IllegalArgumentException("Item has Invalid Module onReload - treating it like it has no modules");
                 Miapi.LOGGER.warn("Item has Invalid Module onReload - treating it like it has no modules", exception);

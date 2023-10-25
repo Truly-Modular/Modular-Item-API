@@ -4,6 +4,8 @@ import com.google.gson.JsonElement;
 import com.mojang.serialization.Codec;
 import com.redpxnda.nucleus.codec.AutoCodec;
 import com.redpxnda.nucleus.registry.particles.EmitterParticleOptions;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import smartin.miapi.client.gui.crafting.statdisplay.SingleStatDisplayDouble;
@@ -42,6 +44,7 @@ public class HeavyAttackProperty extends CodecBasedProperty<HeavyAttackProperty.
         return get(itemStack) != null;
     }
 
+    @Environment(EnvType.CLIENT)
     @Override
     public StatListWidget.TextGetter getTitle() {
         return (stack -> {
@@ -54,6 +57,7 @@ public class HeavyAttackProperty extends CodecBasedProperty<HeavyAttackProperty.
         });
     }
 
+    @Environment(EnvType.CLIENT)
     @Override
     public StatListWidget.TextGetter getDescription() {
         return (stack -> {
@@ -66,6 +70,7 @@ public class HeavyAttackProperty extends CodecBasedProperty<HeavyAttackProperty.
         });
     }
 
+    @Environment(EnvType.CLIENT)
     @Override
     public SingleStatDisplayDouble.StatReaderHelper getStatReader() {
         return new SingleStatDisplayDouble.StatReaderHelper() {

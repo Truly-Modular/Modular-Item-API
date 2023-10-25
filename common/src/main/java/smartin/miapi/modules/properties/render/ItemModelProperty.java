@@ -1,6 +1,8 @@
 package smartin.miapi.modules.properties.render;
 
 import com.google.gson.JsonElement;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.Registries;
@@ -17,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
+@Environment(EnvType.CLIENT)
 public class ItemModelProperty implements ModuleProperty {
     public static final String KEY = "item_model";
     public static ItemModelProperty property;

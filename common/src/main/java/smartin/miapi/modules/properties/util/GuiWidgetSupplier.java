@@ -5,7 +5,6 @@ import net.fabricmc.api.Environment;
 import smartin.miapi.client.gui.crafting.statdisplay.SingleStatDisplayDouble;
 import smartin.miapi.client.gui.crafting.statdisplay.StatListWidget;
 
-@Environment(EnvType.CLIENT)
 public interface GuiWidgetSupplier {
 
     @Environment(EnvType.CLIENT)
@@ -17,10 +16,12 @@ public interface GuiWidgetSupplier {
     @Environment(EnvType.CLIENT)
     SingleStatDisplayDouble.StatReaderHelper getStatReader();
 
+    @Environment(EnvType.CLIENT)
     default double getMinValue(){
         return 0;
     }
 
+    @Environment(EnvType.CLIENT)
     default double getMaxValue(){
         return 5;
     }

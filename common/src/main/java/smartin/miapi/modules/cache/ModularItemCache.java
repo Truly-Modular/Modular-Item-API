@@ -45,10 +45,10 @@ public class ModularItemCache {
     }
 
     @Nullable
-    public static Object getRaw(ItemStack stack, String key) {
+    public static <T> T getRaw(ItemStack stack, String key) {
         if (!ReloadEvents.inReload && !stack.isEmpty() && stack.getItem() instanceof ModularItem) {
             Cache itemCache = find(stack);
-            return itemCache.get(key);
+            return (T) itemCache.get(key);
         }
         return null;
     }

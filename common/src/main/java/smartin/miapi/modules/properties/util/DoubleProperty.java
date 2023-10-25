@@ -183,7 +183,7 @@ public abstract class DoubleProperty implements ModuleProperty {
 
     @Nullable
     public Double getValueRaw(ItemStack itemStack) {
-        return (Double) ModularItemCache.getRaw(itemStack, privateKey);
+        return ModularItemCache.getRaw(itemStack, privateKey);
     }
 
     public double getValueSafeRaw(ItemStack itemStack) {

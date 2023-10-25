@@ -1,5 +1,7 @@
 package smartin.miapi.modules.abilities;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -31,6 +33,13 @@ import java.util.List;
 public class ThrowingAbility implements ItemUseAbility {
 
     public ThrowingAbility() {
+        if(smartin.miapi.Environment.isClient()){
+            clientSetup();
+        }
+    }
+
+    @Environment(EnvType.CLIENT)
+    public void clientSetup(){
         LoreProperty.loreSuppliers.add(itemStack -> {
             List<Text> texts = new ArrayList<>();
             if (AbilityProperty.property.isPrimaryAbility(this, itemStack)) {
@@ -39,6 +48,7 @@ public class ThrowingAbility implements ItemUseAbility {
             return texts;
         });
     }
+
     @Override
     public boolean allowedOnItem(ItemStack itemStack, World world, PlayerEntity player, Hand hand, ItemAbilityManager.AbilityContext abilityContext) {
         return true;

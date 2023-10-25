@@ -36,7 +36,7 @@ public abstract class CodecBasedProperty<T> implements ModuleProperty {
     }
 
     public T get(ItemStack itemStack) {
-        return (T) ModularItemCache.getRaw(itemStack, key + "_codec");
+        return ModularItemCache.getRaw(itemStack, key + "_codec");
     }
 
     public T createCache(ItemStack stack) {

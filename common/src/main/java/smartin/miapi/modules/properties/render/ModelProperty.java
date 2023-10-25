@@ -149,7 +149,7 @@ public class ModelProperty implements ModuleProperty {
 
     @Nullable
     public static BakedModel getItemModel(ItemStack stack) {
-        return (BakedModel) ModularItemCache.getRaw(stack, CACHE_KEY_ITEM);
+        return ModularItemCache.getRaw(stack, CACHE_KEY_ITEM);
     }
 
     protected static Map<String, BakedModel> generateModels(ItemStack itemStack) {

@@ -378,11 +378,13 @@ public class RegistryInventory {
                 registerMiapi(moduleProperties, ModelTransformationProperty.KEY, new ModelTransformationProperty());
                 registerMiapi(moduleProperties, ModelMergeProperty.KEY, new ModelMergeProperty());
                 registerMiapi(moduleProperties, GuiOffsetProperty.KEY, new GuiOffsetProperty());
+                registerMiapi(moduleProperties, ItemModelProperty.KEY, new ItemModelProperty());
             } catch (Exception surpressed) {
                 registerMiapi(moduleProperties, "texture", new ServerReplaceProperty());
                 registerMiapi(moduleProperties, "modelTransform", new ServerReplaceProperty());
                 registerMiapi(moduleProperties, "modelMerge", new ServerReplaceProperty());
                 registerMiapi(moduleProperties, "guiOffset", new ServerReplaceProperty());
+                registerMiapi(moduleProperties, "item_model", new ServerReplaceProperty());
             }
             registerMiapi(moduleProperties, NameProperty.KEY, new NameProperty());
             registerMiapi(moduleProperties, SlotProperty.KEY, new SlotProperty());
@@ -416,7 +418,6 @@ public class RegistryInventory {
             registerMiapi(moduleProperties, StatRequirementProperty.KEY, new StatRequirementProperty());
             registerMiapi(moduleProperties, StatProvisionProperty.KEY, new StatProvisionProperty());
             registerMiapi(moduleProperties, GlintProperty.KEY, new GlintProperty());
-            registerMiapi(moduleProperties, ItemModelProperty.KEY, new ItemModelProperty());
             registerMiapi(moduleProperties, EnderpearlProperty.KEY, new EnderpearlProperty());
             registerMiapi(moduleProperties, TeleportTarget.KEY, new TeleportTarget());
             registerMiapi(moduleProperties, ExplosionProperty.KEY, new ExplosionProperty());
@@ -525,6 +526,7 @@ public class RegistryInventory {
                         .transparency(GLINT_TRANSPARENCY)
                         .lightmap(ENABLE_LIGHTMAP)
                         //.cull(DISABLE_CULLING)
+                        .writeMaskState(COLOR_MASK)
                         .texturing(RenderLayer.ENTITY_GLINT_TEXTURING)
                         .overlay(ENABLE_OVERLAY_COLOR).build(false));
 

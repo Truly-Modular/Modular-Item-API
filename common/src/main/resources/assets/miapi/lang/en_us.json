@@ -45,8 +45,9 @@
 
     "miapi.ability.heavy_attack.title": "Heavy Attack",
     "miapi.ability.heavy_attack.description": "Right Click to Heavy Attack\nDealing %s times the Damage and %s blocks of Range\nRight click has to be held for %s seconds",
-    "miapi.ability.heavy_attack.lore": "&6Right Click Ability:\n&fHeavy Attack\n&7Hold Right click to charge a Heavy Attack",
-    "miapi.ability.block.lore": "&6Right Click Ability:\n&fBlocking\n&7Hold Right click to reduce incoming Damage",
+    "miapi.ability.heavy_attack.lore": "Right Click for Charged Attack",
+    "miapi.ability.block.lore": "Right Click to Block",
+    "miapi.ability.block.throw": "Throwable",
 
     "miapi.attribute.name.durability":"Durability",
     "miapi.attribute.name.resistance":"Damage Ressistance",

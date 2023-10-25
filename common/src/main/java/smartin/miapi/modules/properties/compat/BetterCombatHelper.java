@@ -47,6 +47,6 @@ public class BetterCombatHelper {
 
     @Nullable
     public static net.bettercombat.api.WeaponAttributes getAttributes(ItemStack stack) {
-        return (net.bettercombat.api.WeaponAttributes) ModularItemCache.getRaw(stack, BetterCombatProperty.KEY);
+        return ModularItemCache.getRaw(stack, BetterCombatProperty.KEY);
     }
 }
