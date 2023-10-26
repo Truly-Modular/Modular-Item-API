@@ -28,33 +28,47 @@ tasks.register('buildBoth') {
     doLast {
         def modVersion = rootProject.mod_version
         def minecraftVersion = rootProject.minecraft_version
-        def fabricBuild = project(':fabric').tasks.getByName('jar').archivePath
-        def forgeBuild = project(':forge').tasks.getByName('jar').archivePath
+        def fabricBuildDir = project(':fabric').file('build/libs')
+        def forgeBuildDir = project(':forge').file('build/libs')
+        def fabricJar = fabricBuildDir.listFiles().find { it.name.endsWith("${modVersion}.jar") }
+        def forgeJar = forgeBuildDir.listFiles().find { it.name.endsWith("${modVersion}.jar") }
 
-        copy {
-            from fabricBuild
-            into project.file("build/libs")
-            rename { fileName ->
-                "Truly-Modular-miapi-${modVersion}-${minecraftVersion}-fabric.jar"
+        if (fabricJar) {
+            copy {
+                from fabricJar
+                into project.file('Merged')
+                rename { fileName ->
+                    "Truly-Modular-miapi-${modVersion}-${minecraftVersion}-fabric.jar"
+                }
             }
         }
 
-        copy {
-            from forgeBuild
-            into project.file("build/libs")
-            rename { fileName ->
-                "Truly-Modular-miapi-${modVersion}-${minecraftVersion}-forge.jar"
+        if (forgeJar) {
+            copy {
+                from forgeJar
+                into project.file('Merged')
+                rename { fileName ->
+                    "Truly-Modular-miapi-${modVersion}-${minecraftVersion}-forge.jar"
+                }
             }
         }
 
-        println "Build completed"
+        println "Builds completed"
     }
 }
 
 tasks.register('buildMerged') {
     dependsOn('clean-builds',':fabric:build', ':forge:build')
     doLast {
-        println "Build completed"
+        println "Builds completed"
+    }
+    finalizedBy ':mergeJars'
+}
+
+tasks.register('buildAll') {
+    dependsOn('buildBoth')
+    doLast {
+        println "Merging..."
     }
     finalizedBy ':mergeJars'
 }
