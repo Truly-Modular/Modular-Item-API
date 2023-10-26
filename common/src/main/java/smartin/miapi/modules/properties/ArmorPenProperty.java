@@ -8,6 +8,7 @@ import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.item.ItemStack;
+import smartin.miapi.Miapi;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.modules.properties.util.DoubleProperty;
 
@@ -29,9 +30,10 @@ public class ArmorPenProperty extends DoubleProperty {
             if (event.damageSource.getAttacker() instanceof LivingEntity attacker) {
                 ItemStack itemStack = event.getCausingItemStack();
                 if (property.hasValue(itemStack)) {
-                    double value = valueRemap(property.getValueSafe(itemStack)) / 100;
+                    double value = property.getValueSafe(itemStack) / 100;
                     Multimap<EntityAttribute, EntityAttributeModifier> multimap = ArrayListMultimap.create();
-                    multimap.put(EntityAttributes.GENERIC_ARMOR, new EntityAttributeModifier("tempArmorPen", 1 - value, EntityAttributeModifier.Operation.MULTIPLY_TOTAL));
+                    Miapi.DEBUG_LOGGER.warn("Value " + value +" recalc " + (- 1 + value) );
+                    multimap.put(EntityAttributes.GENERIC_ARMOR, new EntityAttributeModifier("tempArmorPen", (- 1 + value), EntityAttributeModifier.Operation.MULTIPLY_TOTAL));
                     cache.put(event.livingEntity, multimap);
                     event.livingEntity.getAttributes().addTemporaryModifiers(multimap);
                 }

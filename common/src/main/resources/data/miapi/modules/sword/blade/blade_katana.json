@@ -78,8 +78,8 @@
         "sizeX": 3,
         "sizeY": 3
     },
-    "healthPercent": "[material.density]*2.0 + 40",
-    "armor_pen": "-[material.flexibility]*2.0 - 17",
+    "healthPercent": "[material.density]*2.0 + 20",
+    "armor_pen": "-[material.flexibility]*2.0 - 27",
     "displayName": "miapi.module.blade_katana.name",
     "itemId": "miapi:modular_katana"
 }

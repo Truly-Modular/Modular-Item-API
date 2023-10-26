@@ -73,7 +73,7 @@
         }
     ],
     "durability": "[material.durability]* 0.45",
-    "armor_pen": "[material.hardness]*2.0 + 45",
+    "armor_pen": "[material.hardness]*2.0 + 20",
     "displayName": "miapi.module.blade_rapier.name",
     "itemId": "miapi:modular_rapier"
 }
