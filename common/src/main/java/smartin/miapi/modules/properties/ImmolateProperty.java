@@ -88,13 +88,15 @@ public class ImmolateProperty extends DoubleProperty {
             if (bowItem != null && !bowItem.isEmpty()) {
                 strength += getValueSafe(modularProjectileEntityHitEvent.projectile.getBowItem());
             }
-            double chance = Math.min(1, strength * 0.1 + 0.4);
-            if (MathUtil.random(0d, 1d) < chance) {
-                Entity entity = modularProjectileEntityHitEvent.entityHitResult.getEntity();
-                if (entity instanceof LivingEntity living && !living.isFireImmune()) {
-                    double ticksExtention = strength * 2;
-                    int fireTicks = (int) Math.ceil(MathUtil.random(50 + ticksExtention, 80 + ticksExtention * 1.5));
-                    setOnFireFor(living, fireTicks);
+            if(strength>0){
+                double chance = Math.min(1, strength * 0.1 + 0.4);
+                if (MathUtil.random(0d, 1d) < chance) {
+                    Entity entity = modularProjectileEntityHitEvent.entityHitResult.getEntity();
+                    if (entity instanceof LivingEntity living && !living.isFireImmune()) {
+                        double ticksExtention = strength * 2;
+                        int fireTicks = (int) Math.ceil(MathUtil.random(50 + ticksExtention, 80 + ticksExtention * 1.5));
+                        setOnFireFor(living, fireTicks);
+                    }
                 }
             }
             return EventResult.pass();

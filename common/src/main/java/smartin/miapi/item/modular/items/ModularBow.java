@@ -17,6 +17,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.client.model.ModularModelPredicateProvider;
@@ -48,6 +49,17 @@ public class ModularBow extends BowItem implements ModularItem {
     @Override
     public int getEnchantability() {
         return 1;
+    }
+
+    @Override
+    public int getItemBarStep(ItemStack stack) {
+        return Math.round(13.0F - (float) stack.getDamage() * 13.0F / ModularItem.getDurability(stack));
+    }
+
+    @Override
+    public int getItemBarColor(ItemStack stack) {
+        float f = Math.max(0.0F, ((float) ModularItem.getDurability(stack) - (float) stack.getDamage()) / ModularItem.getDurability(stack));
+        return MathHelper.hsvToRgb(f / 3.0F, 1.0F, 1.0F);
     }
 
     @Override

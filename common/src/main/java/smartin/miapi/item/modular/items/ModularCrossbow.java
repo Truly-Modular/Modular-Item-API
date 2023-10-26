@@ -47,7 +47,7 @@ import static smartin.miapi.item.modular.items.ModularBow.projectile;
 public class ModularCrossbow extends CrossbowItem implements ModularItem {
 
     public ModularCrossbow() {
-        super(new Item.Settings().maxCount(1));
+        super(new Item.Settings().maxCount(1).maxDamage(50));
         if (smartin.miapi.Environment.isClient()) {
             registerAnimations();
         }
@@ -129,8 +129,8 @@ public class ModularCrossbow extends CrossbowItem implements ModularItem {
     private static boolean loadProjectiles(LivingEntity shooter, ItemStack crossbow) {
         int i = EnchantmentHelper.getLevel(Enchantments.MULTISHOT, crossbow);
         int j = i == 0 ? 1 : 3;
-        boolean bl = shooter instanceof PlayerEntity player && player.getAbilities().creativeMode;
-        ItemStack itemStack = shooter.getProjectileType(crossbow).copy();
+        boolean isCreative = shooter instanceof PlayerEntity player && player.getAbilities().creativeMode;
+        ItemStack itemStack = shooter.getProjectileType(crossbow);
         ItemStack itemStack2 = itemStack.copy();
 
         for (int k = 0; k < j; ++k) {
@@ -138,12 +138,12 @@ public class ModularCrossbow extends CrossbowItem implements ModularItem {
                 itemStack = itemStack2.copy();
             }
 
-            if (itemStack.isEmpty() && bl) {
+            if (itemStack.isEmpty() && isCreative) {
                 itemStack = new ItemStack(Items.ARROW);
                 itemStack2 = itemStack.copy();
             }
 
-            if (!loadProjectile(shooter, crossbow, itemStack, k > 0, bl)) {
+            if (!loadProjectile(shooter, crossbow, itemStack, k > 0, isCreative)) {
                 return false;
             }
         }
@@ -155,12 +155,12 @@ public class ModularCrossbow extends CrossbowItem implements ModularItem {
         if (projectile.isEmpty()) {
             return false;
         } else {
-            boolean bl = creative && projectile.getItem() instanceof ArrowItem;
             ItemStack itemStack;
-            if (!bl && !creative && !simulated) {
+            if (!creative && !simulated) {
                 itemStack = projectile.split(1);
-                if (projectile.isEmpty() && shooter instanceof PlayerEntity) {
-                    ((PlayerEntity) shooter).getInventory().removeOne(projectile);
+                if (itemStack.isDamageable()) {
+                    itemStack.damage(1, shooter, LivingEntity -> {
+                    });
                 }
             } else {
                 itemStack = projectile.copy();
@@ -195,7 +195,7 @@ public class ModularCrossbow extends CrossbowItem implements ModularItem {
             } else {
                 projectileEntity = createArrow(world, shooter, crossbow, projectile);
                 if (creative || simulated != 0.0F) {
-                    ((PersistentProjectileEntity)projectileEntity).pickupType = PersistentProjectileEntity.PickupPermission.CREATIVE_ONLY;
+                    ((PersistentProjectileEntity) projectileEntity).pickupType = PersistentProjectileEntity.PickupPermission.CREATIVE_ONLY;
                 }
             }
 
@@ -219,11 +219,10 @@ public class ModularCrossbow extends CrossbowItem implements ModularItem {
 
     private static PersistentProjectileEntity createArrow(World world, LivingEntity entity, ItemStack crossbow, ItemStack arrow) {
         PersistentProjectileEntity persistentProjectileEntity;
-        if(arrow.getItem() instanceof ModularItem && !(arrow.getItem() instanceof ArrowItem)){
+        if (arrow.getItem() instanceof ModularItem && !(arrow.getItem() instanceof ArrowItem)) {
             persistentProjectileEntity = new ItemProjectileEntity(world, entity, arrow);
-        }
-        else{
-            ArrowItem arrowItem = (ArrowItem)(arrow.getItem() instanceof ArrowItem ? arrow.getItem() : Items.ARROW);
+        } else {
+            ArrowItem arrowItem = (ArrowItem) (arrow.getItem() instanceof ArrowItem ? arrow.getItem() : Items.ARROW);
             persistentProjectileEntity = arrowItem.createArrow(world, arrow, entity);
             if (entity instanceof PlayerEntity) {
                 persistentProjectileEntity.setCritical(true);
@@ -234,7 +233,7 @@ public class ModularCrossbow extends CrossbowItem implements ModularItem {
         persistentProjectileEntity.setShotFromCrossbow(true);
         int i = EnchantmentHelper.getLevel(Enchantments.PIERCING, crossbow);
         if (i > 0) {
-            persistentProjectileEntity.setPierceLevel((byte)i);
+            persistentProjectileEntity.setPierceLevel((byte) i);
         }
 
         return persistentProjectileEntity;
@@ -244,9 +243,12 @@ public class ModularCrossbow extends CrossbowItem implements ModularItem {
         List<ItemStack> list = getProjectiles(stack);
         float[] fs = getSoundPitches(entity.getRandom());
 
-        for(int i = 0; i < list.size(); ++i) {
+        for (int i = 0; i < list.size(); ++i) {
             ItemStack itemStack = list.get(i);
-            boolean bl = entity instanceof PlayerEntity playerEntity&& playerEntity.getAbilities().creativeMode;
+            if (itemStack.isDamageable()) {
+
+            }
+            boolean bl = entity instanceof PlayerEntity playerEntity && playerEntity.getAbilities().creativeMode;
             if (!itemStack.isEmpty()) {
                 if (i == 0) {
                     shoot(world, entity, hand, stack, itemStack, fs[i], bl, speed, divergence, 0.0F);
@@ -293,6 +295,7 @@ public class ModularCrossbow extends CrossbowItem implements ModularItem {
         if (isCharged(itemStack)) {
             shootAll(world, user, hand, itemStack, getSpeed(itemStack), 1.0F);
             setCharged(itemStack, false);
+            itemStack.damage(1, user, p -> p.sendToolBreakStatus(user.getActiveHand()));
             return TypedActionResult.consume(itemStack);
         } else if (!user.getProjectileType(itemStack).isEmpty()) {
             if (!isCharged(itemStack)) {
@@ -314,7 +317,7 @@ public class ModularCrossbow extends CrossbowItem implements ModularItem {
 
     private static float getSpeed(ItemStack stack) {
         float baseSpeed = hasProjectile(stack, Items.FIREWORK_ROCKET) ? 1.6F : 3.15F;
-        baseSpeed += (float) AttributeProperty.getActualValue(stack,EquipmentSlot.MAINHAND,AttributeRegistry.PROJECTILE_SPEED);
+        baseSpeed += (float) AttributeProperty.getActualValue(stack, EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_SPEED);
         return baseSpeed;
     }
 
@@ -324,7 +327,7 @@ public class ModularCrossbow extends CrossbowItem implements ModularItem {
         if (nbtCompound != null && nbtCompound.contains("ChargedProjectiles", 9)) {
             NbtList nbtList = nbtCompound.getList("ChargedProjectiles", 10);
             if (nbtList != null) {
-                for(int i = 0; i < nbtList.size(); ++i) {
+                for (int i = 0; i < nbtList.size(); ++i) {
                     NbtCompound nbtCompound2 = nbtList.getCompound(i);
                     list.add(ItemStack.fromNbt(nbtCompound2));
                 }

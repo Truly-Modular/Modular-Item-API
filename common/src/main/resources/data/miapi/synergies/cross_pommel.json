@@ -1,0 +1,22 @@
+{
+    "pommel_cross": {
+        "condition": {
+            "type": "otherModule",
+            "condition": {
+                "type": "tag",
+                "tag": "blade_large"
+            }
+        },
+        "properties": {
+            "attributes": [
+                {
+                    "attribute": "generic.attack_speed",
+                    "value": "1.05",
+                    "operation": "**",
+                    "slot": "mainhand",
+                    "uuid": "FA233E1C-4180-4865-B01B-BCCE9785ACA3"
+                }
+            ]
+        }
+    }
+}

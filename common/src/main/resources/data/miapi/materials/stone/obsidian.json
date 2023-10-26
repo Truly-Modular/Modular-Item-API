@@ -28,6 +28,20 @@
     "textures": [
         "rough"
     ],
+    "properties": {
+        "default": {
+            "attributes": [
+
+                {
+                    "attribute": "generic.attack_speed",
+                    "value": "0.95",
+                    "operation": "**",
+                    "slot": "mainhand",
+                    "uuid": "FA233E1C-4180-4865-B01B-BCCE9785ACA3"
+                }
+            ]
+        }
+    },
     "items": [
         {
             "item": "minecraft:obsidian",

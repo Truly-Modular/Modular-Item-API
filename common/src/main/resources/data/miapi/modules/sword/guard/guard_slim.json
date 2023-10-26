@@ -19,6 +19,10 @@
         "default",
         "handheld"
     ],
+    "tag": [
+        "guard",
+        "guard_normal"
+    ],
     "priority": 1,
     "repairPriority": 0,
     "allowedMaterial": {

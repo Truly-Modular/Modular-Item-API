@@ -1,0 +1,22 @@
+{
+    "blade_throwing_knife": {
+        "condition": {
+            "type": "otherModule",
+            "condition": {
+                "type": "tag",
+                "tag": "blade_short"
+            }
+        },
+        "properties": {
+            "attributes": [
+                {
+                    "attribute": "generic.attack_damage",
+                    "value": "0.85",
+                    "operation": "**",
+                    "slot": "mainhand",
+                    "uuid": "CB3F55D3-645C-4F38-A497-9C13A33DB5CF"
+                }
+            ]
+        }
+    }
+}

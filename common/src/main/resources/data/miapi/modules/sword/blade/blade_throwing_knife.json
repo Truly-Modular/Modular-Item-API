@@ -43,6 +43,7 @@
     },
     "tag": [
         "blade",
+        "blade_short",
         "polearm_spear"
     ],
     "water_drag": "0.89",

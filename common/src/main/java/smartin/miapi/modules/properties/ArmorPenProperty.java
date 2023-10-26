@@ -31,7 +31,7 @@ public class ArmorPenProperty extends DoubleProperty {
                 if (property.hasValue(itemStack)) {
                     double value = valueRemap(property.getValueSafe(itemStack)) / 100;
                     Multimap<EntityAttribute, EntityAttributeModifier> multimap = ArrayListMultimap.create();
-                    multimap.put(EntityAttributes.GENERIC_ARMOR, new EntityAttributeModifier("tempArmorPen", value, EntityAttributeModifier.Operation.MULTIPLY_TOTAL));
+                    multimap.put(EntityAttributes.GENERIC_ARMOR, new EntityAttributeModifier("tempArmorPen", 1 - value, EntityAttributeModifier.Operation.MULTIPLY_TOTAL));
                     cache.put(event.livingEntity, multimap);
                     event.livingEntity.getAttributes().addTemporaryModifiers(multimap);
                 }

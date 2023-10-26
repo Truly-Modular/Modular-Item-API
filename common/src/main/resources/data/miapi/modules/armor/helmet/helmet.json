@@ -10,8 +10,8 @@
             ],
             "transform": {
                 "rotation": {"x": 0.0, "y": 0.0, "z": 0.0},
-                "translation": {"x": 0.0, "y": -3.5, "z": 0.0},
-                "scale": {"x": 1.25, "y": 1.5, "z": 1.25},
+                "translation": {"x": 0.0, "y": -3.375, "z": 0.0},
+                "scale": {"x": 1.25, "y": 1.405, "z": 1.25},
                 "origin": "head"
             }
         }
