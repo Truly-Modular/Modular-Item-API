@@ -57,6 +57,7 @@ public class CraftViewRework extends InteractAbleWidget {
             update();
         }
     });
+    EmptyCraftingWidget fallbackCraftingWidget;
 
     public CraftViewRework(int x, int y, int width, int height, int offset, ItemModule module, EditOption.EditContext editContext, Consumer<SlotProperty.ModuleSlot> back) {
         super(x, y, width, height, Text.empty());
@@ -75,6 +76,7 @@ public class CraftViewRework extends InteractAbleWidget {
                 craftingProperties.add(craftingProperty);
             }
         }));
+        fallbackCraftingWidget = new EmptyCraftingWidget(this.getX(), this.getY(), this.width, this.height, action);
         addChild(new SimpleButton<>(this.getX() + 2, this.getY() + this.height - 14, 40, 12, Text.translatable(Miapi.MOD_ID + ".ui.back"), null, (moduleSlot) -> {
             isClosed = true;
             closeSlot();
@@ -207,6 +209,8 @@ public class CraftViewRework extends InteractAbleWidget {
         // Add the initial GUI to the screen
         if (!craftingGuis.isEmpty()) {
             addGui(craftingGuis.get(currentGuiIndex));
+        }else{
+            addChild(fallbackCraftingWidget);
         }
         super.render(drawContext, mouseX, mouseY, delta);
     }
