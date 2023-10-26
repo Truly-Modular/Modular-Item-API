@@ -23,6 +23,34 @@ tasks.register('clean-builds') {
     }
 }
 
+tasks.register('buildBoth') {
+    dependsOn('clean-builds', ':fabric:build', ':forge:build')
+    doLast {
+        def modVersion = rootProject.mod_version
+        def minecraftVersion = rootProject.minecraft_version
+        def fabricBuild = project(':fabric').tasks.getByName('jar').archivePath
+        def forgeBuild = project(':forge').tasks.getByName('jar').archivePath
+
+        copy {
+            from fabricBuild
+            into project.file("build/libs")
+            rename { fileName ->
+                "Truly-Modular-miapi-${modVersion}-${minecraftVersion}-fabric.jar"
+            }
+        }
+
+        copy {
+            from forgeBuild
+            into project.file("build/libs")
+            rename { fileName ->
+                "Truly-Modular-miapi-${modVersion}-${minecraftVersion}-forge.jar"
+            }
+        }
+
+        println "Build completed"
+    }
+}
+
 tasks.register('buildMerged') {
     dependsOn('clean-builds',':fabric:build', ':forge:build')
     doLast {
