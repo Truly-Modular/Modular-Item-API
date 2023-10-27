@@ -18,6 +18,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
 import org.joml.Vector2d;
+import smartin.miapi.config.MiapiConfig;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -34,7 +35,7 @@ public abstract class InteractAbleWidget extends ClickableWidget implements Draw
     protected final List<Element> children = new ArrayList<>();
     protected final List<InteractAbleWidget> hoverElements = new ArrayList<>();
     public boolean debug = false;
-    public static boolean globalDebug = true; // todo disable
+    public static boolean globalDebug = MiapiConfig.OtherConfigGroup.developmentMode.getValue();
     public int randomColor = ColorHelper.Argb.getArgb(180, (int) (Math.random()*255), (int) (Math.random()*255), (int) (Math.random()*255));
 
     /**

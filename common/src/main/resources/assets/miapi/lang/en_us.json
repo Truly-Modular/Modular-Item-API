@@ -167,6 +167,13 @@
     "miapi.material_stat.mining_speed": "Mining Speed",
     "miapi.material_stat.mining_level": "Mining Level",
 
+    "miapi.material_group.crystal" : "Crystals",
+    "miapi.material_group.fabric" : "fabrics",
+    "miapi.material_group.metal" : "Metals",
+    "miapi.material_group.rod" : "Rods",
+    "miapi.material_group.rope" : "Ropes",
+    "miapi.material_group.fletching" : "Fletching",
+
     "miapi.material.wood": "Wooden ",
     "miapi.material.wood.acacia": "Acaica ",
     "miapi.material.wood.bamboo": "Bamboo ",

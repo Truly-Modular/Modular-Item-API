@@ -216,19 +216,19 @@ public class CraftingScreenHandler extends ScreenHandler {
         int xOffset = 30 + 2 * 18 + 138 + 7 + 2;
         for (int j = 0; j < 3; ++j) {
             for (int k = 0; k < 9; ++k) {
-                this.addSlot(new PlayerInventorySlot(playerInventory, k + j * 9 + 9, k * 18 + xOffset, j * 18 + yOffset));
+                this.addSlot(new PlayerInventorySlot(playerInventory, k + j * 9 + 9, k * 18 + xOffset - 15, j * 18 + yOffset - 14));
             }
         }
 
         for (int j = 0; j < 9; ++j) {
-            this.addSlot(new PlayerInventorySlot(playerInventory, j, j * 18 + xOffset, 3 * 18 + 4 + yOffset));
+            this.addSlot(new PlayerInventorySlot(playerInventory, j, j * 18 + xOffset - 15, 3 * 18 + 4 + yOffset - 14));
         }
 
-        this.addSlot(new ModifyingSlot(inventory, 0, 112 - 61, 118 + 71, blockEntity));
+        this.addSlot(new ModifyingSlot(inventory, 0, 112 - 60 - 15, 118 + 72 - 14, blockEntity));
         for (int i = 0; i < 4; ++i) {
             final EquipmentSlot equipmentSlot = EQUIPMENT_SLOT_ORDER[i];
             int offset = i < 2 ? 0 : 1;
-            this.addSlot(new Slot(playerInventory, 39 - i, 69 + i * 18 - offset, 118 + 71) {
+            this.addSlot(new Slot(playerInventory, 39 - i, 87 + i * 18 - offset - 15, 118 + 71 - 14) {
 
                 @Override
                 public void setStack(ItemStack stack) {
@@ -261,7 +261,7 @@ public class CraftingScreenHandler extends ScreenHandler {
                 }
             });
         }
-        this.addSlot(new Slot(playerInventory, 40, 111 - 61 + 5 * 18, 118 + 71) {
+        this.addSlot(new Slot(playerInventory, 40, 111 - 61 + 5 * 18 + 18 - 15, 118 + 71 - 14) {
 
             @Override
             public void setStack(ItemStack stack) {

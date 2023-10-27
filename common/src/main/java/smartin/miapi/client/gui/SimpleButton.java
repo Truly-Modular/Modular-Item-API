@@ -38,7 +38,7 @@ public class SimpleButton<T> extends InteractAbleWidget {
         assert callback != null;
         this.toCallback = toCallback;
         this.callback = callback;
-        ScrollingTextWidget textWidget = new ScrollingTextWidget(x, y, width, title, ColorHelper.Argb.getArgb(255, 200, 200, 200));
+        ScrollingTextWidget textWidget = new ScrollingTextWidget(x, y, width, title, ColorHelper.Argb.getArgb(255, 255, 255, 255));
         textWidget.setOrientation(ScrollingTextWidget.Orientation.CENTERED);
         textWidget.hasTextShadow = false;
         this.addChild(textWidget);

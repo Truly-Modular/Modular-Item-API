@@ -55,8 +55,9 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
 
     public CraftingScreen(CraftingScreenHandler handler, PlayerInventory inventory, Text title) {
         super(handler, inventory, Text.empty());
-        this.backgroundWidth = 393;
-        this.backgroundHeight = 223;
+        this.backgroundWidth = 369 + 12 - 15;
+
+        this.backgroundHeight = 223 - 9 - 15;
     }
 
     public EditOption getEditOption() {
@@ -88,7 +89,7 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
         int centerX = (this.width - this.backgroundWidth) / 2;
         int centerY = (this.height - this.backgroundHeight) / 2;
 
-        moduleCrafter = new ModuleCrafter(centerX + 51, centerY + 22, 144, 89, this::selectSlot, (item) -> {
+        moduleCrafter = new ModuleCrafter(centerX + 51 - 15, centerY + 22 - 14, 144, 89, this::selectSlot, (item) -> {
             slotDisplay.setItem(item);
             statDisplay.setCompareTo(item);
             smithDisplay.setPreview(item);
@@ -97,24 +98,24 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
         moduleCrafter.setPacketIdentifier(handler.packetID);
         this.addChild(moduleCrafter);
 
-        slotDisplay = new SlotDisplay(stack, centerX + 51, centerY + 117, 70, 87, (selected) -> {
+        slotDisplay = new SlotDisplay(stack, centerX + 51 - 15, centerY + 117 - 14, 68, 87, (selected) -> {
 
         });
         slotDisplay.setItem(getItem());
         this.addChild(slotDisplay);
-        smithDisplay = new SmithDisplay(centerX + 140, centerY + 117, 55, 70);
+        smithDisplay = new SmithDisplay(centerX + 140 - 15, centerY + 117 - 14, 55, 70);
         this.addChild(smithDisplay);
-        statDisplay = new StatListWidget(centerX + 213, centerY + 30, 161, 95);
+        statDisplay = new StatListWidget(centerX + 213 - 15, centerY + 30 - 14, 161, 95);
         this.addChild(statDisplay);
 
-        minimizer = new MinimizeButton(centerX + 178, centerY + 188, 18, 18, this::minimizeView, this::maximizeView);
+        minimizer = new MinimizeButton(centerX + 178 - 15, centerY + 188 - 14, 18, 18, this::minimizeView, this::maximizeView);
         this.addChild(minimizer);
 
         super.init();
         playerInventoryTitleX = -1000;
         playerInventoryTitleY = -1000;
 
-        editHolder = new TransformableWidget(x, y, 0, 0, Text.empty());
+        editHolder = new TransformableWidget(x - 15, y - 14, 0, 0, Text.empty());
         addChild(editHolder);
 
         updateItem(handler.inventory.getStack(0));
@@ -137,7 +138,7 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
         remove(moduleCrafter);
         SlotProperty.ModuleSlot slot1 = moduleCrafter.slot;
         editHolder.children().clear();
-        moduleCrafter = new ModuleCrafter(moduleCrafter.getX(), moduleCrafter.getY(), moduleCrafter.getWidth(), moduleCrafter.getHeight() + 72, moduleCrafter);
+        moduleCrafter = new ModuleCrafter(moduleCrafter.getX(), moduleCrafter.getY(), moduleCrafter.getWidth(), moduleCrafter.getHeight() + 74, moduleCrafter);
         moduleCrafter.handler = handler;
         moduleCrafter.setPacketIdentifier(handler.packetID);
         addChild(moduleCrafter);
@@ -150,12 +151,13 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
         updateEditOptions();
         selectEditOption(op);
     }
+
     public void maximizeView() {
         EditOption op = getEditOption();
         remove(moduleCrafter);
         SlotProperty.ModuleSlot slot1 = moduleCrafter.slot;
         editHolder.children().clear();
-        moduleCrafter = new ModuleCrafter(moduleCrafter.getX(), moduleCrafter.getY(), moduleCrafter.getWidth(), moduleCrafter.getHeight() - 72, moduleCrafter);
+        moduleCrafter = new ModuleCrafter(moduleCrafter.getX(), moduleCrafter.getY(), moduleCrafter.getWidth(), moduleCrafter.getHeight() - 74, moduleCrafter);
         moduleCrafter.handler = handler;
         moduleCrafter.setPacketIdentifier(handler.packetID);
         addChild(moduleCrafter);
@@ -318,8 +320,9 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         int i = (this.width - this.backgroundWidth) / 2;
         int j = (this.height - this.backgroundHeight) / 2;
+        //InteractAbleWidget.drawSquareBorder(drawContext, i, j, this.backgroundWidth, this.backgroundHeight, 1, ColorHelper.Argb.getArgb(255, 255, 0, 0));
         //(Identifier texture, int x, int y, int width, int height, float u, float v, int regionWidth, int regionHeight, int textureWidth, int textureHeight)
-        drawContext.drawTexture(BACKGROUND_TEXTURE, i + 43, j + 14, 338, 199, 0.0f, 0.0f, 338, 199, 512, 512);
+        drawContext.drawTexture(BACKGROUND_TEXTURE, i + 43 - 15, j + 14 - 14, 338, 199, 0.0f, 0.0f, 338, 199, 512, 512);
 
         // long timeSinceMod = Util.getMeasuringTimeMs()-minimizer.getLastChangeTime();
         if (minimizer.isEnabled()/* || timeSinceMod < 1000*/) {
@@ -344,7 +347,7 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
             if (disableScissor) drawContext.disableScissor();
             //InteractAbleWidget.drawSquareBorder(drawContext, i + 43, j + 111, 160, 77, 1, Color.RED.argb());*/
 
-            drawContext.drawTexture(BACKGROUND_TEXTURE, i + 43, j + 111, 160, 95, 0, 199, 160, 95, 512, 512);
+            drawContext.drawTexture(BACKGROUND_TEXTURE, i + 43 - 15, j + 111 - 14, 160, 95, 0, 199, 160, 95, 512, 512);
         }
         super.render(drawContext, mouseX, mouseY, delta);
         this.drawMouseoverTooltip(drawContext, mouseX, mouseY);
