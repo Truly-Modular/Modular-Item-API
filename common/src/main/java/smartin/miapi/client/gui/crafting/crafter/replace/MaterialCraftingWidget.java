@@ -51,7 +51,7 @@ public class MaterialCraftingWidget extends InteractAbleWidget {
         costDescr = new ScrollingTextWidget(x + 71, y + this.height - 8, 78, Text.empty());
         //costDescr.setOrientation(ScrollingTextWidget.Orientation.RIGHT);
         costDescr.textColor = ColorHelper.Argb.getArgb(255, 225, 225, 225);
-        this.addChild(new HoverMaterialList(action.toAdd, x + 71, y + this.height+10, 31, 19));
+        this.addChild(new HoverMaterialList(action.toAdd, x + 71, y + this.height + 10, 31, 19));
         addChild(description);
         addChild(costDescr);
     }

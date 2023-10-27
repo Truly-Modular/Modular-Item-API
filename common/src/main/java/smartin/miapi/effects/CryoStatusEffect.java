@@ -39,7 +39,7 @@ public class CryoStatusEffect extends RenderingMobEffect {
     public CryoStatusEffect() {
         super(StatusEffectCategory.HARMFUL, 1160409);
 
-        addAttributeModifier(EntityAttributes.GENERIC_MOVEMENT_SPEED, "309da7c1-944e-4d5e-aad1-be2491a44695", -0.4, EntityAttributeModifier.Operation.MULTIPLY_TOTAL);
+        super.addAttributeModifier(EntityAttributes.GENERIC_MOVEMENT_SPEED, "309da7c1-944e-4d5e-aad1-be2491a44695", -0.4, EntityAttributeModifier.Operation.MULTIPLY_TOTAL);
 
         MiscEvents.LIVING_JUMP_POWER.register(player -> {
             if (player.hasStatusEffect(this)) return CompoundEventResult.interruptFalse(0.2f);

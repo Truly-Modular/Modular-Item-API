@@ -30,30 +30,29 @@ public class AllowedMaterial implements CraftingProperty, ModuleProperty {
     public double materialCostClient = 0.0f;
     public double materialRequirementClient = 0.0f;
     public boolean wrongMaterial = false;
-    public int slotHeight = 130;
+    public int slotHeight = 130 - 14;
 
-    public AllowedMaterial(){
+    public AllowedMaterial() {
         property = this;
     }
 
-    public List<String> getAllowedKeys(ItemModule module){
+    public List<String> getAllowedKeys(ItemModule module) {
         JsonElement element = module.getProperties().get(KEY);
-        if(element!=null){
+        if (element != null) {
             AllowedMaterialJson json = Miapi.gson.fromJson(element, AllowedMaterialJson.class);
             return json.allowedMaterials;
-        }
-        else{
+        } else {
             return new ArrayList<>();
         }
     }
 
-    public List<Material> getMaterials(String key){
-        return MaterialProperty.materials.values().stream().filter(a-> a.getGroups().contains(key)).collect(Collectors.toList());
+    public List<Material> getMaterials(String key) {
+        return MaterialProperty.materials.values().stream().filter(a -> a.getGroups().contains(key)).collect(Collectors.toList());
     }
 
     public List<Vec2f> getSlotPositions() {
         List<Vec2f> test = new ArrayList<>();
-        test.add(new Vec2f(110, slotHeight));
+        test.add(new Vec2f(96, slotHeight - 12));
         return test;
     }
 
