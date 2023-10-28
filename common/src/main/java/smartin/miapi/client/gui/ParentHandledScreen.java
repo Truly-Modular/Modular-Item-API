@@ -7,7 +7,9 @@ import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.screen.ScreenHandler;
+import net.minecraft.screen.slot.Slot;
 import net.minecraft.text.Text;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Vector4f;
 
 
@@ -51,6 +53,16 @@ public abstract class ParentHandledScreen<T extends ScreenHandler> extends Handl
     public void removeChild(Element element) {
         children().remove(element);
     }
+
+    /**
+     * Acess the slot the mouse is hovering over
+     * @return
+     */
+    @Nullable
+    public Slot getFocusSlot(){
+        return this.focusedSlot;
+    }
+
 
     /**
      * This function triggers whenever the mouse is Moved above the Widget

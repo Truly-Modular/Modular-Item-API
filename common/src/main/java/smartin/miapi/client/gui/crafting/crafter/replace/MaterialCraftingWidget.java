@@ -3,20 +3,22 @@ package smartin.miapi.client.gui.crafting.crafter.replace;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.item.ItemStack;
+import net.minecraft.screen.slot.Slot;
 import net.minecraft.text.Text;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.ColorHelper;
 import smartin.miapi.Miapi;
-import smartin.miapi.client.gui.InteractAbleWidget;
-import smartin.miapi.client.gui.MultiLineTextWidget;
-import smartin.miapi.client.gui.ScrollingTextWidget;
-import smartin.miapi.client.gui.TransformableWidget;
+import smartin.miapi.client.gui.*;
 import smartin.miapi.client.gui.crafting.CraftingScreen;
 import smartin.miapi.craft.CraftAction;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.edit_options.ReplaceOption;
 import smartin.miapi.modules.material.AllowedMaterial;
+import smartin.miapi.network.Networking;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -26,12 +28,14 @@ import java.util.Locale;
 public class MaterialCraftingWidget extends InteractAbleWidget {
     private final AllowedMaterial allowedMaterial;
     private final ScrollingTextWidget costDescr;
+    public CraftAction action;
     private final DecimalFormat modifierFormat = Util.make(new DecimalFormat("##.##"), (decimalFormat) -> {
         decimalFormat.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ROOT));
     });
 
     public MaterialCraftingWidget(AllowedMaterial allowedMaterial, int x, int y, int width, int height, CraftAction action) {
         super(x, y, width, height, Text.empty());
+        this.action = action;
         this.allowedMaterial = allowedMaterial;
         allowedMaterial.slotHeight = height + 12;
 
@@ -58,6 +62,20 @@ public class MaterialCraftingWidget extends InteractAbleWidget {
 
     public void render(DrawContext drawContext, int mouseX, int mouseY, float delta) {
         RenderSystem.enableDepthTest();
+        if (MinecraftClient.getInstance().currentScreen instanceof ParentHandledScreen<?> parentHandledScreen) {
+            Slot focusSlot = parentHandledScreen.getFocusSlot();
+            if(focusSlot!=null){
+                if(ReplaceOption.hoverStack == null || !ItemStack.areEqual(ReplaceOption.hoverStack,focusSlot.getStack())){
+                    ReplaceOption.hoverStack = focusSlot.getStack();
+                    ReplaceOption.tryPreview(action.toPacket(Networking.createBuffer()));
+                }
+            }
+            else{
+                ReplaceOption.hoverStack = ItemStack.EMPTY;
+                ReplaceOption.tryPreview(action.toPacket(Networking.createBuffer()));
+            }
+        }
+
 
         int textureOffset = 0;
 
