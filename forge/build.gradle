@@ -38,9 +38,9 @@ dependencies {
     modImplementation("me.shedaniel.cloth:cloth-config-forge:${rootProject.cloth_config_version}")
     modApi(include("com.github.RedPxnda.Nucleus:nucleus-forge:${rootProject.nucleus_version}"))
 
-    //modApi "maven.modrinth:truly-modular-arsenal:${arsenal_version}"
-    //modApi "maven.modrinth:truly-modular-archery:${archery_version}"
-    //modApi "maven.modrinth:truly-modular-armory:${armory_version}"
+    modApi "maven.modrinth:truly-modular-arsenal:${arsenal_version}-forge"
+    modApi "maven.modrinth:truly-modular-archery:${archery_version}-forge"
+    modApi "maven.modrinth:truly-modular-armory:${armory_version}-forge"
 
     //forgeRuntimeLibrary(include("dev.kosmx.player-anim:player-animation-lib-forge:0.4.2"
     //modApi include("curse.maven:bettercombat-639842:4357578")
