@@ -47,7 +47,7 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
     @Nullable
     public SlotProperty.ModuleSlot slot;
     @Nullable
-    private EditOption editOption;
+    private static EditOption editOption;
     private TransformableWidget editHolder;
     static int editSpace = 30;
 
@@ -184,31 +184,36 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
     }
 
     private void updateItem(ItemStack stack) {
+        stack = stack.copy();
         slotDisplay.setItem(stack);
-        ItemStack converted = ModularItemStackConverter.getModularVersion(stack);
-
+        ItemStack converted = ModularItemStackConverter.getModularVersion(stack).copy();
         baseSlot.inSlot = ItemModule.getModules(converted);
         baseSlot.allowed = AllowedSlots.getAllowedSlots(baseSlot.inSlot.module);
         SlotProperty.ModuleSlot current = baseSlot;
+        slot = null;
         if (baseSlot.inSlot.module.equals(ItemModule.empty)) {
             current = null;
         }
+        if (moduleCrafter != null) {
+            moduleCrafter.setItem(converted);
+            moduleCrafter.setBaseSlot(current);
+            moduleCrafter.setSelectedSlot(null);
+            moduleCrafter.setItem(converted);
+            moduleCrafter.setBaseSlot(current);
+            moduleCrafter.setSelectedSlot(null);
+        }
         if (slotDisplay != null) {
-            slotDisplay.select(current);
             slotDisplay.setItem(converted);
+            slotDisplay.select(current);
         }
         if (smithDisplay != null) {
             smithDisplay.setPreview(converted);
-        }
-        if (moduleCrafter != null) {
-            moduleCrafter.setBaseSlot(current);
-            moduleCrafter.setItem(converted);
-            moduleCrafter.setSelectedSlot(null);
         }
         if (statDisplay != null) {
             statDisplay.setOriginal(converted);
             statDisplay.setCompareTo(converted);
         }
+        /*
         List<Integer> slotPos = new ArrayList<>();
         if (slot != null) {
             if (slot.inSlot != null) {
@@ -218,10 +223,11 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
             }
         }
         if (baseSlot.inSlot != null) {
-            slot = SlotProperty.getSlotIn(baseSlot.inSlot.getRoot().getPosition(slotPos));
+            //slot = SlotProperty.getSlotIn(baseSlot.inSlot.getRoot().getPosition(slotPos));
         } else {
             slot = null;
         }
+         */
         updateEditOptions();
     }
 

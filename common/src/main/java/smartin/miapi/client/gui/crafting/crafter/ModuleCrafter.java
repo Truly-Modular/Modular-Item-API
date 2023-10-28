@@ -44,6 +44,7 @@ public class ModuleCrafter extends InteractAbleWidget {
     EditOption editOption;
     Consumer<SlotProperty.ModuleSlot> selected;
     public EditOption.EditContext editContext;
+    Mode currentMode = Mode.DETAIL;
 
     public ModuleCrafter(int x, int y, int width, int height, Consumer<SlotProperty.ModuleSlot> selected, Consumer<ItemStack> craftedItem, Inventory linkedInventory, Consumer<Slot> addSlot, Consumer<Slot> removeSlot) {
         super(x, y, width, height, Text.empty());
@@ -83,9 +84,8 @@ public class ModuleCrafter extends InteractAbleWidget {
     }
 
     public void setEditMode(EditOption editOption, EditOption.EditContext editContext) {
-        if(editOption == null){
-        }
-        else{
+        if (editOption == null) {
+        } else {
             this.editOption = editOption;
             this.editContext = editContext;
             this.setMode(Mode.EDIT);
@@ -93,11 +93,12 @@ public class ModuleCrafter extends InteractAbleWidget {
     }
 
     public void setMode(Mode mode) {
+        currentMode = mode;
         if (craftView != null) {
             craftView.closeSlot();
             craftView = null;
         }
-        if(mode != Mode.EDIT && editView != null){
+        if (mode != Mode.EDIT && editView != null) {
             editView.clearSlots();
         }
         if (mode == Mode.DETAIL && !(stack.getItem() instanceof ModularItem)) {
@@ -128,21 +129,25 @@ public class ModuleCrafter extends InteractAbleWidget {
             }
             case CRAFT -> {
                 ItemModule replaceModule = module;
-                if(module == null){
+                if (module == null) {
                     module = ItemModule.empty;
                 }
                 craftView = new CraftView(this.getX(), this.getY(), this.width, this.height, paketIdentifier, module, stack, linkedInventory, 1, slot, (backSlot) -> {
                     slot = backSlot;
                     setMode(Mode.REPLACE);
                 }, (replaceItem) -> {
-                    preview.accept(replaceItem);
+                    if (currentMode == Mode.CRAFT) {
+                        preview.accept(replaceItem);
+                    }
                 }, addSlot, removeSlot, handler);
                 this.children().clear();
                 this.addChild(craftView);
             }
             case EDIT -> {
                 editView = new EditView(this.getX(), this.getY(), this.width, this.height, stack, slot, (previewItem) -> {
-                    preview.accept(previewItem);
+                    if (currentMode == Mode.EDIT) {
+                        preview.accept(previewItem);
+                    }
                 }, (object) -> {
                     setMode(Mode.DETAIL);
                 });
@@ -160,7 +165,9 @@ public class ModuleCrafter extends InteractAbleWidget {
                 }), (itemModule -> {
                     CraftAction action = new CraftAction(stack, slot, itemModule, null, handler.blockEntity, new PacketByteBuf[0]);
                     action.linkInventory(linkedInventory, 1);
-                    preview.accept(action.getPreview());
+                    if (currentMode == Mode.REPLACE) {
+                        preview.accept(action.getPreview());
+                    }
                 }));
                 addChild(view);
             }
