@@ -436,6 +436,7 @@ public class RegistryInventory {
             registerMiapi(moduleProperties, LeechingProperty.KEY, new LeechingProperty());
             registerMiapi(moduleProperties, IsCrossbowShootAble.KEY, new IsCrossbowShootAble());
             registerMiapi(moduleProperties, LoreProperty.KEY, new LoreProperty());
+            registerMiapi(moduleProperties, EdibleProperty.KEY, new EdibleProperty());
 
             //compat
             registerMiapi(moduleProperties, BetterCombatProperty.KEY, new BetterCombatProperty());
@@ -453,6 +454,7 @@ public class RegistryInventory {
             registerMiapi(useAbilityRegistry, AxeAbility.KEY, new AxeAbility());
             registerMiapi(useAbilityRegistry, HoeAbility.KEY, new HoeAbility());
             registerMiapi(useAbilityRegistry, ShovelAbility.KEY, new ShovelAbility());
+            registerMiapi(useAbilityRegistry, EatAbility.KEY, new EatAbility());
         });
     }
 
