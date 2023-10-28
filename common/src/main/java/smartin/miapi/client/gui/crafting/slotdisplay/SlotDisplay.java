@@ -149,6 +149,9 @@ public class SlotDisplay extends InteractAbleWidget {
 
     public void setItem(ItemStack itemStack) {
         stack = itemStack;
+        slotProjection = new MatrixStack();
+        slotProjection.scale(1.0F, -1.0F, 1.0F);
+        selected = new SlotProperty.ModuleSlot(new ArrayList<>());
     }
 
     public int getSize() {

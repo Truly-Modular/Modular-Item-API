@@ -3,8 +3,7 @@
     "translation": "miapi.material.bone",
     "icon": "textures/item/bone.png",
     "groups": [
-        "bone",
-        "metal"
+        "bone"
     ],
     "hardness": 5,
     "density": 3,

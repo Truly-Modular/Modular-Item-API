@@ -1,6 +1,0 @@
-{
-    "parent": "item/generated",
-    "textures": {
-        "layer0": "miapi:item/bow/handle/long/bow_handle_long_1"
-    }
-}

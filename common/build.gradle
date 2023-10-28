@@ -32,6 +32,9 @@ dependencies {
     implementation "org.mariuszgromada.math:MathParser.org-mXparser:${rootProject.mathparser_version}"
     modImplementation 'dev.kosmx.player-anim:player-animation-lib:1.0.2-rc1+1.20'
     modApi "curse.maven:bettercombat-639842:4597949"
+    modApi "maven.modrinth:truly-modular-arsenal:${arsenal_version}"
+    modApi "maven.modrinth:truly-modular-archery:${archery_version}"
+    modApi "maven.modrinth:truly-modular-armory:${armory_version}"
 
     modApi("me.shedaniel.cloth:cloth-config-fabric:${rootProject.cloth_config_version}") {
         exclude(group: "net.fabricmc.fabric-api")

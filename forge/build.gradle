@@ -20,6 +20,13 @@ repositories {
     maven {
         url = "https://maven.theillusivec4.top/"
     }
+    maven {
+        name = 'Modrinth'
+        url = 'https://api.modrinth.com/maven'
+        content {
+            includeGroup 'maven.modrinth'
+        }
+    }
 }
 
 dependencies {
@@ -28,13 +35,15 @@ dependencies {
     modApi "dev.architectury:architectury-forge:${rootProject.architectury_version}"
 
     forgeRuntimeLibrary(include("org.mariuszgromada.math:MathParser.org-mXparser:${rootProject.mathparser_version}"))
-
     modImplementation("me.shedaniel.cloth:cloth-config-forge:${rootProject.cloth_config_version}")
+    modApi(include("com.github.RedPxnda.Nucleus:nucleus-forge:${rootProject.nucleus_version}"))
+
+    modApi "maven.modrinth:truly-modular-arsenal:${arsenal_version}"
+    modApi "maven.modrinth:truly-modular-archery:${archery_version}"
+    modApi "maven.modrinth:truly-modular-armory:${armory_version}"
 
     //forgeRuntimeLibrary(include("dev.kosmx.player-anim:player-animation-lib-forge:0.4.2"
     //modApi include("curse.maven:bettercombat-639842:4357578")
-
-    modApi(include("com.github.RedPxnda.Nucleus:nucleus-forge:${rootProject.nucleus_version}"))
 
     //forgeRuntimeLibrary("top.theillusivec4.caelus:caelus-forge:${rootProject.caelus_forge_version}")
     modApi("top.theillusivec4.caelus:caelus-forge:${rootProject.forge_caelus_version}")

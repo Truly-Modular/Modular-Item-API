@@ -1,6 +1,0 @@
-{
-    "parent": "miapi:item/bow/arms/long/default",
-    "textures": {
-        "layer0": "miapi:item/bow/arms/long/bow_arms_long_1"
-    }
-}

@@ -1,6 +1,0 @@
-{
-    "parent": "miapi:item/crossbow/stock/normal/default",
-    "textures": {
-        "layer0": "miapi:item/crossbow/stock/normal/crossbow_stock_normal_0"
-    }
-}

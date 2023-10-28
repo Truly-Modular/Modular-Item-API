@@ -43,8 +43,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.world.event.GameEvent;
 import org.joml.Matrix4f;
-import smartin.miapi.armory.GenerateArmorModularConverter;
-import smartin.miapi.arsenal.GenerateModularConverters;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.blocks.ModularWorkBench;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
@@ -245,8 +243,6 @@ public class RegistryInventory {
         //ITEM
         register(modularItems, "modular_item", ExampleModularItem::new, i -> {
             modularItem = i;
-            new GenerateArmorModularConverter();
-            new GenerateModularConverters();
         });
         register(modularItems, "modular_handle", ModularWeapon::new);
         register(modularItems, "modular_sword", ModularSword::new);
