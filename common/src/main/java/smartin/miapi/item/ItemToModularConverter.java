@@ -3,6 +3,7 @@ package smartin.miapi.item;
 import com.google.gson.reflect.TypeToken;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.Registries;
 import smartin.miapi.Miapi;
 import smartin.miapi.datapack.ReloadEvents;
@@ -38,8 +39,22 @@ public class ItemToModularConverter implements ModularItemStackConverter.Modular
         }));
     }
 
+    public boolean preventConvert(ItemStack itemStack) {
+        NbtCompound nbt = itemStack.getOrCreateNbt();
+        if(nbt.get("CustomModelData")!=null){
+            return true;
+        }
+        if(nbt.get("SpellboundItem")!=null){
+            return true;
+        }
+        return true;
+    }
+
     @Override
     public ItemStack convert(ItemStack stack) {
+        if(preventConvert(stack)){
+            return stack.copy();
+        }
         for (Map.Entry<String, ItemStack> entry : regexes.entrySet()) {
             if (Registries.ITEM.getId(stack.getItem()).toString().matches(entry.getKey())) {
                 ItemStack nextStack = entry.getValue().copy();
