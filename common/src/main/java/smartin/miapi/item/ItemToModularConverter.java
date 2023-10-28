@@ -47,7 +47,7 @@ public class ItemToModularConverter implements ModularItemStackConverter.Modular
         if(nbt.get("SpellboundItem")!=null){
             return true;
         }
-        return true;
+        return false;
     }
 
     @Override

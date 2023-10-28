@@ -11,7 +11,7 @@ import smartin.miapi.datapack.ReloadEvents;
 import java.io.File;
 import java.util.List;
 
-import static org.spongepowered.include.com.google.common.collect.ImmutableList.of;
+import static com.google.common.collect.ImmutableList.of;
 
 public class MiapiConfig extends Config {
     public static ServerConfig serverConfig = new ServerConfig();

@@ -282,5 +282,10 @@
     "miapi.material.custom.tnt": "TNT ",
     "miapi.material.custom.elytra": "Elytra ",
 
-    "block.miapi.modular_work_bench": "Modular Workbench"
+    "block.miapi.modular_work_bench": "Modular Workbench",
+
+    "miapi.module.empty": "Empty Slot",
+    "miapi.module.empty.name": "Empty Slot",
+    "miapi.module.empty.description": "Empty Slot, crafting this will empty this slot",
+    "miapi.module.empty.short_description": "Empty Slot, crafting this will empty this slot"
 }
