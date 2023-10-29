@@ -6,6 +6,7 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.ColorHelper;
+import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.crafting.CraftingScreen;
 import smartin.miapi.modules.ItemModule;
@@ -88,8 +89,8 @@ public class HoverMaterialList extends InteractAbleWidget {
             if (materialList.size() > 1) {
                 scrollPosTwo = Math.max(0, Math.min(materialList.size() - maxElements - 1, scrollPosTwo));
                 int start = scrollPosTwo;
-                int end = Math.min(scrollPosTwo + maxElements, materialList.size() - 1);
-                if (end < materialList.size() - 1) {
+                int end = Math.min(scrollPosTwo + maxElements - 1, materialList.size() - 1);
+                if (end < materialList.size() - 2) {
                     drawContext.drawText(MinecraftClient.getInstance().textRenderer, "...⬇(shift)", getX() + sizeBaseList + 6, currentY + 14 * (maxElements - 1), moreEntryColor, false);
                     end--;
                 }
@@ -98,8 +99,9 @@ public class HoverMaterialList extends InteractAbleWidget {
                     start++;
                     currentY += 14;
                 }
-                for (int i = start; i < end; i++) {
+                for (int i = start; i <= end; i++) {
                     Text material = getTranslation(materialList.get(i).getKey());
+                    Miapi.DEBUG_LOGGER.warn("no " + i + " " + material.getString());
                     drawContext.drawText(MinecraftClient.getInstance().textRenderer, material, getX() + sizeBaseList + 6, currentY, unselectedColor, false);
                     currentY += 14;
                 }
