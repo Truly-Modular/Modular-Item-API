@@ -6,7 +6,6 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.ColorHelper;
-import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.crafting.CraftingScreen;
 import smartin.miapi.modules.ItemModule;
@@ -101,7 +100,6 @@ public class HoverMaterialList extends InteractAbleWidget {
                 }
                 for (int i = start; i <= end; i++) {
                     Text material = getTranslation(materialList.get(i).getKey());
-                    Miapi.DEBUG_LOGGER.warn("no " + i + " " + material.getString());
                     drawContext.drawText(MinecraftClient.getInstance().textRenderer, material, getX() + sizeBaseList + 6, currentY, unselectedColor, false);
                     currentY += 14;
                 }
