@@ -437,6 +437,7 @@ public class RegistryInventory {
             registerMiapi(moduleProperties, IsCrossbowShootAble.KEY, new IsCrossbowShootAble());
             registerMiapi(moduleProperties, LoreProperty.KEY, new LoreProperty());
             registerMiapi(moduleProperties, EdibleProperty.KEY, new EdibleProperty());
+            registerMiapi(moduleProperties, CryoProperty.KEY, new CryoProperty());
 
             //compat
             registerMiapi(moduleProperties, BetterCombatProperty.KEY, new BetterCombatProperty());
