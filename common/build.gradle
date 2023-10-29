@@ -27,14 +27,14 @@ dependencies {
     // Remove the next line if you don't want to depend on the API
     modApi "dev.architectury:architectury:${rootProject.architectury_version}"
 
-    modApi("com.github.RedPxnda.Nucleus:nucleus:${rootProject.nucleus_version}")
+    modImplementation include(files('libs/nucleus-local.jar'))
+    modImplementation files('libs/arsenal-local.jar')
+    modImplementation files('libs/archery-local.jar')
+    modImplementation files('libs/armory-local.jar')
 
     implementation "org.mariuszgromada.math:MathParser.org-mXparser:${rootProject.mathparser_version}"
     modImplementation 'dev.kosmx.player-anim:player-animation-lib:1.0.2-rc1+1.20'
     modApi "curse.maven:bettercombat-639842:4597949"
-    modApi "maven.modrinth:truly-modular-arsenal:${arsenal_version}-fabric"
-    modApi "maven.modrinth:truly-modular-archery:${archery_version}-fabric"
-    modApi "maven.modrinth:truly-modular-armory:${armory_version}-fabric"
 
     modApi("me.shedaniel.cloth:cloth-config-fabric:${rootProject.cloth_config_version}") {
         exclude(group: "net.fabricmc.fabric-api")

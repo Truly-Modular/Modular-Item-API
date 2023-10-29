@@ -68,17 +68,19 @@ tasks.register('copyArchery') {
         println fabricBuildDir
         def fabricJar = fabricBuildDir.listFiles().find { it.name.endsWith("${modVersion}.jar") }
         def forgeJar = forgeBuildDir.listFiles().find { it.name.endsWith("${modVersion}.jar") }
-        if (fabricJar) {
-            copy {
-                from fabricJar
-                into project.file('fabric/libs')
-                rename { fileName -> projectName+"-local.jar"}
-            }
-        }
         if (forgeJar) {
             copy {
                 from forgeJar
                 into project.file('forge/libs')
+                into project.file('common/libs')
+                rename { fileName -> projectName+"-local.jar"}
+            }
+        }
+        if (fabricJar) {
+            copy {
+                from fabricJar
+                into project.file('fabric/libs')
+                into project.file('common/libs')
                 rename { fileName -> projectName+"-local.jar"}
             }
         }
@@ -98,17 +100,19 @@ tasks.register('copyArmory') {
         println fabricBuildDir
         def fabricJar = fabricBuildDir.listFiles().find { it.name.endsWith("${modVersion}.jar") }
         def forgeJar = forgeBuildDir.listFiles().find { it.name.endsWith("${modVersion}.jar") }
-        if (fabricJar) {
-            copy {
-                from fabricJar
-                into project.file('fabric/libs')
-                rename { fileName -> projectName+"-local.jar"}
-            }
-        }
         if (forgeJar) {
             copy {
                 from forgeJar
                 into project.file('forge/libs')
+                into project.file('common/libs')
+                rename { fileName -> projectName+"-local.jar"}
+            }
+        }
+        if (fabricJar) {
+            copy {
+                from fabricJar
+                into project.file('fabric/libs')
+                into project.file('common/libs')
                 rename { fileName -> projectName+"-local.jar"}
             }
         }
@@ -128,17 +132,19 @@ tasks.register('copyArsenal') {
         println fabricBuildDir
         def fabricJar = fabricBuildDir.listFiles().find { it.name.endsWith("${modVersion}.jar") }
         def forgeJar = forgeBuildDir.listFiles().find { it.name.endsWith("${modVersion}.jar") }
-        if (fabricJar) {
-            copy {
-                from fabricJar
-                into project.file('fabric/libs')
-                rename { fileName -> projectName+"-local.jar"}
-            }
-        }
         if (forgeJar) {
             copy {
                 from forgeJar
                 into project.file('forge/libs')
+                into project.file('common/libs')
+                rename { fileName -> projectName+"-local.jar"}
+            }
+        }
+        if (fabricJar) {
+            copy {
+                from fabricJar
+                into project.file('fabric/libs')
+                into project.file('common/libs')
                 rename { fileName -> projectName+"-local.jar"}
             }
         }
@@ -158,17 +164,19 @@ tasks.register('copyNucleus') {
         println fabricBuildDir
         def fabricJar = fabricBuildDir.listFiles().find { it.name.endsWith("${modVersion}.jar") }
         def forgeJar = forgeBuildDir.listFiles().find { it.name.endsWith("${modVersion}.jar") }
-        if (fabricJar) {
-            copy {
-                from fabricJar
-                into project.file('fabric/libs')
-                rename { fileName -> projectName+"-local.jar"}
-            }
-        }
         if (forgeJar) {
             copy {
                 from forgeJar
                 into project.file('forge/libs')
+                into project.file('common/libs')
+                rename { fileName -> projectName+"-local.jar"}
+            }
+        }
+        if (fabricJar) {
+            copy {
+                from fabricJar
+                into project.file('fabric/libs')
+                into project.file('common/libs')
                 rename { fileName -> projectName+"-local.jar"}
             }
         }

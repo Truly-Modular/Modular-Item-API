@@ -61,10 +61,14 @@ dependencies {
     include modImplementation("com.jamieswhiteshirt:reach-entity-attributes:$rootProject.fabric_reach_range_version")
     implementation(include("org.mariuszgromada.math:MathParser.org-mXparser:${rootProject.mathparser_version}"))
 
-    modImplementation include(files('libs/nucleus-local.jar'))
-    modImplementation files('libs/arsenal-local.jar')
-    modImplementation files('libs/archery-local.jar')
-    modImplementation files('libs/armory-local.jar')
+    //modApi( include(files('libs/nucleus-local.jar')))
+    modApi(include("com.github.RedPxnda.Nucleus:nucleus-fabric:${rootProject.nucleus_version}"))
+    modApi files('libs/arsenal-local.jar')
+    modApi files('libs/archery-local.jar')
+    modApi files('libs/armory-local.jar')
+
+    annotationProcessor(group: 'com.github.LlamaLad7', name: 'MixinExtras', version: "${rootProject.mixin_extras_version}")
+    implementation(include(group: 'com.github.LlamaLad7', name: 'MixinExtras', version: "${rootProject.mixin_extras_version}"))
 
     //modImplementation "curse.maven:cloth-348521:4554906"
     //modImplementation "curse.maven:bettercombat-639842:4597949"
