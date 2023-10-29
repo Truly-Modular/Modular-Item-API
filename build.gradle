@@ -57,6 +57,127 @@ tasks.register('buildBoth') {
     }
 }
 
+tasks.register('copyArchery') {
+    ext.projectName = "archery"
+    group = '_tm_tasks'
+    doLast {
+        def currentProject = project(projectName)
+        def modVersion = currentProject.mod_version
+        def fabricBuildDir = currentProject.file('fabric/build/libs')
+        def forgeBuildDir = currentProject.file('forge/build/libs')
+        println fabricBuildDir
+        def fabricJar = fabricBuildDir.listFiles().find { it.name.endsWith("${modVersion}.jar") }
+        def forgeJar = forgeBuildDir.listFiles().find { it.name.endsWith("${modVersion}.jar") }
+        if (fabricJar) {
+            copy {
+                from fabricJar
+                into project.file('fabric/libs')
+                rename { fileName -> projectName+"-local.jar"}
+            }
+        }
+        if (forgeJar) {
+            copy {
+                from forgeJar
+                into project.file('forge/libs')
+                rename { fileName -> projectName+"-local.jar"}
+            }
+        }
+
+        println "Builds Copied"
+    }
+}
+
+tasks.register('copyArmory') {
+    ext.projectName = "armory"
+    group = '_tm_tasks'
+    doLast {
+        def currentProject = project(projectName)
+        def modVersion = currentProject.mod_version
+        def fabricBuildDir = currentProject.file('fabric/build/libs')
+        def forgeBuildDir = currentProject.file('forge/build/libs')
+        println fabricBuildDir
+        def fabricJar = fabricBuildDir.listFiles().find { it.name.endsWith("${modVersion}.jar") }
+        def forgeJar = forgeBuildDir.listFiles().find { it.name.endsWith("${modVersion}.jar") }
+        if (fabricJar) {
+            copy {
+                from fabricJar
+                into project.file('fabric/libs')
+                rename { fileName -> projectName+"-local.jar"}
+            }
+        }
+        if (forgeJar) {
+            copy {
+                from forgeJar
+                into project.file('forge/libs')
+                rename { fileName -> projectName+"-local.jar"}
+            }
+        }
+
+        println "Builds Copied"
+    }
+}
+
+tasks.register('copyArsenal') {
+    ext.projectName = "arsenal"
+    group = '_tm_tasks'
+    doLast {
+        def currentProject = project(projectName)
+        def modVersion = currentProject.mod_version
+        def fabricBuildDir = currentProject.file('fabric/build/libs')
+        def forgeBuildDir = currentProject.file('forge/build/libs')
+        println fabricBuildDir
+        def fabricJar = fabricBuildDir.listFiles().find { it.name.endsWith("${modVersion}.jar") }
+        def forgeJar = forgeBuildDir.listFiles().find { it.name.endsWith("${modVersion}.jar") }
+        if (fabricJar) {
+            copy {
+                from fabricJar
+                into project.file('fabric/libs')
+                rename { fileName -> projectName+"-local.jar"}
+            }
+        }
+        if (forgeJar) {
+            copy {
+                from forgeJar
+                into project.file('forge/libs')
+                rename { fileName -> projectName+"-local.jar"}
+            }
+        }
+
+        println "Builds Copied"
+    }
+}
+
+tasks.register('copyNucleus') {
+    ext.projectName = "nucleus"
+    group = '_tm_tasks'
+    doLast {
+        def currentProject = project(projectName)
+        def modVersion = currentProject.mod_version
+        def fabricBuildDir = currentProject.file('fabric/build/libs')
+        def forgeBuildDir = currentProject.file('forge/build/libs')
+        println fabricBuildDir
+        def fabricJar = fabricBuildDir.listFiles().find { it.name.endsWith("${modVersion}.jar") }
+        def forgeJar = forgeBuildDir.listFiles().find { it.name.endsWith("${modVersion}.jar") }
+        if (fabricJar) {
+            copy {
+                from fabricJar
+                into project.file('fabric/libs')
+                rename { fileName -> projectName+"-local.jar"}
+            }
+        }
+        if (forgeJar) {
+            copy {
+                from forgeJar
+                into project.file('forge/libs')
+                rename { fileName -> projectName+"-local.jar"}
+            }
+        }
+
+        println "Builds Copied"
+    }
+}
+
+
 tasks.register('buildMerged') {
     dependsOn('clean-builds',':fabric:build', ':forge:build')
     doLast {
