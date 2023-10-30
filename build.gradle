@@ -25,6 +25,7 @@ tasks.register('clean-builds') {
 
 tasks.register('buildBoth') {
     dependsOn('clean-builds', ':fabric:build', ':forge:build')
+    group = '_tm_tasks'
     doLast {
         def modVersion = rootProject.mod_version
         def minecraftVersion = rootProject.minecraft_version
@@ -227,6 +228,7 @@ tasks.register('buildMerged') {
 
 tasks.register('buildAll') {
     dependsOn('buildBoth')
+    group = '_tm_tasks'
     doLast {
         println "Merging..."
     }
