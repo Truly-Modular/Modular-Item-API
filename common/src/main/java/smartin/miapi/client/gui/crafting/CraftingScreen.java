@@ -324,6 +324,7 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
     @Override
     public void render(DrawContext drawContext, int mouseX, int mouseY, float delta) {
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+        renderBackground(drawContext);
         int i = (this.width - this.backgroundWidth) / 2;
         int j = (this.height - this.backgroundHeight) / 2;
         //InteractAbleWidget.drawSquareBorder(drawContext, i, j, this.backgroundWidth, this.backgroundHeight, 1, ColorHelper.Argb.getArgb(255, 255, 0, 0));
@@ -367,6 +368,5 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
 
     @Override
     protected void drawBackground(DrawContext context, float delta, int mouseX, int mouseY) {
-
     }
 }

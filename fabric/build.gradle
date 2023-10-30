@@ -66,6 +66,8 @@ dependencies {
     modApi files('libs/arsenal-local.jar')
     modApi files('libs/archery-local.jar')
     modApi files('libs/armory-local.jar')
+    //modImplementation "maven.modrinth:sodium:mc1.20.1-0.5.3"
+    //modImplementation "maven.modrinth:iris:1.6.10+1.20.1"
 
     annotationProcessor(group: 'com.github.LlamaLad7', name: 'MixinExtras', version: "${rootProject.mixin_extras_version}")
     implementation(include(group: 'com.github.LlamaLad7', name: 'MixinExtras', version: "${rootProject.mixin_extras_version}"))
