@@ -36,7 +36,10 @@ dependencies {
 
     forgeRuntimeLibrary(include("org.mariuszgromada.math:MathParser.org-mXparser:${rootProject.mathparser_version}"))
     modImplementation("me.shedaniel.cloth:cloth-config-forge:${rootProject.cloth_config_version}")
-    modApi(include(files('libs/nucleus-local.jar')))
+    //api(files('libs/nucleus-local.jar'))
+    //modApi(files('libs/nucleus-local.jar'))
+    //include(modApi(files('libs/nucleus-local.jar')))
+    modApi(include("com.github.RedPxnda.Nucleus:nucleus-forge:${rootProject.nucleus_version}"))
     modApi files('libs/arsenal-local.jar')
     modApi files('libs/archery-local.jar')
     modApi files('libs/armory-local.jar')

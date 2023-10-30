@@ -73,7 +73,7 @@ public class MaterialDetailView extends InteractAbleWidget {
 
     @Override
     public void render(DrawContext drawContext, int mouseX, int mouseY, float delta) {
-        drawTextureWithEdge(drawContext, texture, getX(), getY(), getWidth(), getHeight(), 160, 190, 10);
+        //drawTextureWithEdge(drawContext, texture, getX(), getY(), getWidth(), getHeight(), 160, 190, 10);
         if (material != null && material.hasIcon()) {
             material.renderIcon(drawContext, (int) (getX() + 5 + header.getRequiredWidth() * scale), getY() + 5);
         }
