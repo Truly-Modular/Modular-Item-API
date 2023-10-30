@@ -1,7 +1,6 @@
 package smartin.miapi.modules.properties;
 
 import dev.architectury.event.EventResult;
-import dev.architectury.event.events.common.PlayerEvent;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.item.ItemStack;
@@ -16,7 +15,7 @@ public class CryoProperty extends DoubleProperty {
     public CryoProperty() {
         super(KEY);
         property = this;
-        PlayerEvent.ATTACK_ENTITY.register((player, level, target, hand, result) -> {
+        /*PlayerEvent.ATTACK_ENTITY.register((player, level, target, hand, result) -> {
             double strength = getForItems(player.getHandItems());
             if (strength > 0 && target instanceof LivingEntity living) {
                 int potionStrength = (int) Math.ceil(strength / 3);
@@ -25,7 +24,7 @@ public class CryoProperty extends DoubleProperty {
                 living.addStatusEffect(instance, player);
             }
             return EventResult.pass();
-        });
+        });*/
         MiapiProjectileEvents.MODULAR_PROJECTILE_ENTITY_HIT.register((modularProjectileEntityHitEvent) -> {
             if (modularProjectileEntityHitEvent.entityHitResult.getEntity() instanceof LivingEntity target) {
                 double strength = getValueSafe(modularProjectileEntityHitEvent.projectile.asItemStack());

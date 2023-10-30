@@ -12,7 +12,6 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
-import smartin.miapi.events.property.ApplicationEvents;
 import smartin.miapi.modules.properties.AbilityProperty;
 import smartin.miapi.registries.MiapiRegistry;
 
@@ -45,10 +44,6 @@ public class ItemAbilityManager {
                 activeItems.put(playerEntity, playerItem);
                 if (oldItem != null) {
                     ItemUseAbility ability = getAbility(oldItem);
-                    if (ability != emptyAbility) {
-                        ApplicationEvents.ABILITY_STOP_HOLDING.invoker().call(playerItem, playerEntity.getWorld(), playerEntity, playerEntity.getItemUseTimeLeft(), ability);
-                        ApplicationEvents.ABILITY_STOP.invoker().call(playerItem, playerEntity.getWorld(), playerEntity, playerEntity.getItemUseTimeLeft(), ability);
-                    }
                     ability.onStoppedHolding(oldItem, playerEntity.getWorld(), playerEntity);
                     abilityMap.remove(oldItem);
                 }
@@ -98,9 +93,6 @@ public class ItemAbilityManager {
         });
         abilityMap.put(itemStack, ability);
 
-        if (ability != emptyAbility)
-            ApplicationEvents.ABILITY_START.invoker().call(itemStack, world, user, user.getItemUseTimeLeft(), ability);
-
         return ability.use(world, user, hand);
     }
 
@@ -109,9 +101,6 @@ public class ItemAbilityManager {
         ItemStack itemStack = ability.finishUsing(stack, world, user);
         abilityMap.remove(stack);
 
-        if (ability != emptyAbility)
-            ApplicationEvents.ABILITY_FINISH.invoker().call(itemStack, world, user, user.getItemUseTimeLeft(), ability);
-
         return itemStack;
     }
 
@@ -119,18 +108,11 @@ public class ItemAbilityManager {
         ItemUseAbility ability = getAbility(stack);
         ability.onStoppedUsing(stack, world, user, remainingUseTicks);
 
-        if (ability != emptyAbility) {
-            ApplicationEvents.ABILITY_STOP_USING.invoker().call(stack, world, user, remainingUseTicks, ability);
-            ApplicationEvents.ABILITY_STOP.invoker().call(stack, world, user, remainingUseTicks, ability);
-        }
-
         abilityMap.remove(stack);
     }
 
     public static void usageTick(World world, LivingEntity user, ItemStack stack, int remainingUseTicks) {
         ItemUseAbility ability = getAbility(stack);
-        if (ability != emptyAbility)
-            ApplicationEvents.ABILITY_TICK.invoker().call(stack, world, user, remainingUseTicks, ability);
         ability.usageTick(world, user, stack, remainingUseTicks);
     }
 

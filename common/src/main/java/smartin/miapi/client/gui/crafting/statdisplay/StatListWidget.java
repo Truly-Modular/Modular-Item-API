@@ -67,10 +67,6 @@ public class StatListWidget extends InteractAbleWidget {
 
     public static void onReload() {
         statDisplays.clear();
-        addStatDisplay(new FlattenedListPropertyStatDisplay<>(
-                PotionEffectProperty.property,
-                stk -> statTranslation("tipped"))
-                .withLimitedDescSize(350).withArrowsInTitle());
         addStatDisplay(AttributeSingleDisplay
                 .builder(EntityAttributes.GENERIC_ATTACK_DAMAGE)
                 .setTranslationKey("damage")

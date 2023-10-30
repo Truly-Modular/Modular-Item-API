@@ -20,7 +20,6 @@ import smartin.miapi.client.MiapiClient;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.datapack.ReloadListener;
-import smartin.miapi.events.property.ApplicationEvents;
 import smartin.miapi.injectors.PropertySubstitution;
 import smartin.miapi.item.ItemToModularConverter;
 import smartin.miapi.item.ModularItemStackConverter;
@@ -53,7 +52,6 @@ public class Miapi {
     public static void init() {
         MiapiConfig.getInstance();
         setupNetworking();
-        ApplicationEvents.setup();
         RegistryInventory.setup();
         ReloadEvents.setup();
         ItemAbilityManager.setup();

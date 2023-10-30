@@ -54,7 +54,6 @@ import smartin.miapi.craft.stat.CraftingStat;
 import smartin.miapi.craft.stat.SimpleCraftingStat;
 import smartin.miapi.effects.CryoStatusEffect;
 import smartin.miapi.entity.ItemProjectileEntity;
-import smartin.miapi.events.property.PropertyAction;
 import smartin.miapi.item.MaterialSmithingRecipe;
 import smartin.miapi.item.modular.items.*;
 import smartin.miapi.modules.ItemModule;
@@ -68,12 +67,12 @@ import smartin.miapi.modules.edit_options.EditOption;
 import smartin.miapi.modules.edit_options.PropertyInjectionDev;
 import smartin.miapi.modules.edit_options.ReplaceOption;
 import smartin.miapi.modules.edit_options.skins.SkinOptions;
-import smartin.miapi.modules.properties.*;
-import smartin.miapi.modules.properties.compat.BetterCombatProperty;
 import smartin.miapi.modules.material.AllowedMaterial;
 import smartin.miapi.modules.material.MaterialInscribeProperty;
 import smartin.miapi.modules.material.MaterialProperties;
 import smartin.miapi.modules.material.MaterialProperty;
+import smartin.miapi.modules.properties.*;
+import smartin.miapi.modules.properties.compat.BetterCombatProperty;
 import smartin.miapi.modules.properties.render.*;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
@@ -104,7 +103,6 @@ public class RegistryInventory {
     public static final MiapiRegistry<ItemModule> modules = MiapiRegistry.getInstance(ItemModule.class);
     public static final MiapiRegistry<EditOption> editOptions = MiapiRegistry.getInstance(EditOption.class);
     public static final MiapiRegistry<CraftingStat> craftingStats = MiapiRegistry.getInstance(CraftingStat.class);
-    public static final MiapiRegistry<PropertyAction> propertyActions = MiapiRegistry.getInstance(PropertyAction.class);
 
     public static <T> RegistrySupplier<T> registerAndSupply(Registrar<T> rg, Identifier id, Supplier<T> object) {
         return rg.register(id, object);
@@ -388,11 +386,7 @@ public class RegistryInventory {
             registerMiapi(moduleProperties, MaterialProperty.KEY, new MaterialProperty());
             registerMiapi(moduleProperties, AllowedMaterial.KEY, new AllowedMaterial());
             registerMiapi(moduleProperties, AttributeProperty.KEY, new AttributeProperty());
-            registerMiapi(moduleProperties, PotionEffectProperty.KEY, new PotionEffectProperty());
             //registerMiapi(moduleProperties, ParticleShapingProperty.KEY, new ParticleShapingProperty());
-            registerMiapi(moduleProperties, PlaySoundProperty.KEY, new PlaySoundProperty());
-            registerMiapi(moduleProperties, ExecuteProperty.KEY, new ExecuteProperty());
-            registerMiapi(moduleProperties, ImmolatePropertyOLD.KEY, new ImmolatePropertyOLD());
             registerMiapi(moduleProperties, DisplayNameProperty.KEY, new DisplayNameProperty());
             registerMiapi(moduleProperties, ItemIdProperty.KEY, new ItemIdProperty());
             registerMiapi(moduleProperties, EquipmentSlotProperty.KEY, new EquipmentSlotProperty());
