@@ -5,6 +5,7 @@ import dev.architectury.event.events.common.PlayerEvent;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.item.ItemStack;
+import smartin.miapi.events.MiapiProjectileEvents;
 import smartin.miapi.modules.properties.util.DoubleProperty;
 import smartin.miapi.registries.RegistryInventory;
 
@@ -16,15 +17,24 @@ public class CryoProperty extends DoubleProperty {
         super(KEY);
         property = this;
         PlayerEvent.ATTACK_ENTITY.register((player, level, target, hand, result) -> {
-            if (player.getWorld().isClient()) {
-                return EventResult.pass();
-            }
             double strength = getForItems(player.getHandItems());
             if (strength > 0 && target instanceof LivingEntity living) {
                 int potionStrength = (int) Math.ceil(strength / 3);
                 int potionLength = (int) (strength * 20 + 40);
                 StatusEffectInstance instance = new StatusEffectInstance(RegistryInventory.cryoStatusEffect, potionLength, potionStrength);
                 living.addStatusEffect(instance, player);
+            }
+            return EventResult.pass();
+        });
+        MiapiProjectileEvents.MODULAR_PROJECTILE_ENTITY_HIT.register((modularProjectileEntityHitEvent) -> {
+            if (modularProjectileEntityHitEvent.entityHitResult.getEntity() instanceof LivingEntity target) {
+                double strength = getValueSafe(modularProjectileEntityHitEvent.projectile.asItemStack());
+                if (strength > 0) {
+                    int potionStrength = (int) Math.ceil(strength / 3);
+                    int potionLength = (int) (strength * 20 + 40);
+                    StatusEffectInstance instance = new StatusEffectInstance(RegistryInventory.cryoStatusEffect, potionLength, potionStrength);
+                    target.addStatusEffect(instance);
+                }
             }
             return EventResult.pass();
         });

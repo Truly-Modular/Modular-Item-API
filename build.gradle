@@ -72,6 +72,10 @@ tasks.register('copyArchery') {
             copy {
                 from forgeJar
                 into project.file('forge/libs')
+                rename { fileName -> projectName+"-local.jar"}
+            }
+            copy {
+                from forgeJar
                 into project.file('common/libs')
                 rename { fileName -> projectName+"-local.jar"}
             }
@@ -80,11 +84,14 @@ tasks.register('copyArchery') {
             copy {
                 from fabricJar
                 into project.file('fabric/libs')
+                rename { fileName -> projectName+"-local.jar"}
+            }
+            copy {
+                from fabricJar
                 into project.file('common/libs')
                 rename { fileName -> projectName+"-local.jar"}
             }
         }
-
         println "Builds Copied"
     }
 }
@@ -104,6 +111,10 @@ tasks.register('copyArmory') {
             copy {
                 from forgeJar
                 into project.file('forge/libs')
+                rename { fileName -> projectName+"-local.jar"}
+            }
+            copy {
+                from forgeJar
                 into project.file('common/libs')
                 rename { fileName -> projectName+"-local.jar"}
             }
@@ -112,6 +123,10 @@ tasks.register('copyArmory') {
             copy {
                 from fabricJar
                 into project.file('fabric/libs')
+                rename { fileName -> projectName+"-local.jar"}
+            }
+            copy {
+                from fabricJar
                 into project.file('common/libs')
                 rename { fileName -> projectName+"-local.jar"}
             }
@@ -136,6 +151,10 @@ tasks.register('copyArsenal') {
             copy {
                 from forgeJar
                 into project.file('forge/libs')
+                rename { fileName -> projectName+"-local.jar"}
+            }
+            copy {
+                from forgeJar
                 into project.file('common/libs')
                 rename { fileName -> projectName+"-local.jar"}
             }
@@ -144,6 +163,10 @@ tasks.register('copyArsenal') {
             copy {
                 from fabricJar
                 into project.file('fabric/libs')
+                rename { fileName -> projectName+"-local.jar"}
+            }
+            copy {
+                from fabricJar
                 into project.file('common/libs')
                 rename { fileName -> projectName+"-local.jar"}
             }
@@ -168,6 +191,10 @@ tasks.register('copyNucleus') {
             copy {
                 from forgeJar
                 into project.file('forge/libs')
+                rename { fileName -> projectName+"-local.jar"}
+            }
+            copy {
+                from forgeJar
                 into project.file('common/libs')
                 rename { fileName -> projectName+"-local.jar"}
             }
@@ -176,6 +203,10 @@ tasks.register('copyNucleus') {
             copy {
                 from fabricJar
                 into project.file('fabric/libs')
+                rename { fileName -> projectName+"-local.jar"}
+            }
+            copy {
+                from fabricJar
                 into project.file('common/libs')
                 rename { fileName -> projectName+"-local.jar"}
             }
