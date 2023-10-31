@@ -14,12 +14,11 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import smartin.miapi.client.modelrework.ItemMiapiModel;
 import smartin.miapi.client.modelrework.MiapiItemModel;
 import smartin.miapi.item.modular.ModularItem;
 
 @Debug(export = true)
-@Mixin(ItemRenderer.class)
+@Mixin(value = ItemRenderer.class, priority = 750)
 public class ItemRendererMixin {
 
     private LivingEntity entity;
@@ -35,7 +34,7 @@ public class ItemRendererMixin {
     ) {
         if (stack.getItem() instanceof ModularItem) {
             MiapiItemModel miapiModel = MiapiItemModel.getItemModel(stack);
-            if(miapiModel != null){
+            if (miapiModel != null) {
                 miapiModel.render(matrices, stack, renderMode, MinecraftClient.getInstance().getTickDelta(), vertexConsumers, entity, light, overlay);
             }
             entity = null;
