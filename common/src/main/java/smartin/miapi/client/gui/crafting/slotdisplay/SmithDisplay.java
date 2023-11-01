@@ -46,7 +46,7 @@ public class SmithDisplay extends InteractAbleWidget {
             this.armorStand.equipStack(equipmentSlot, ItemStack.EMPTY);
         }
         if (!stack.isEmpty()) {
-            ItemStack itemStack = stack.copy();
+            ItemStack itemStack = stack;
             Item item = stack.getItem();
             if (item instanceof ArmorItem) {
                 ArmorItem armorItem = (ArmorItem) item;

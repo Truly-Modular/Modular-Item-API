@@ -94,6 +94,17 @@ public class AttributeProperty implements ModuleProperty {
         return true;
     }
 
+    public static Multimap<EntityAttribute, EntityAttributeModifier> mergeAttributes(Multimap<EntityAttribute, EntityAttributeModifier> old, Multimap<EntityAttribute, EntityAttributeModifier> into) {
+        Multimap<EntityAttribute, EntityAttributeModifier> mergedList = LinkedListMultimap.create();
+        old.entries().forEach(entityAttributeEntityAttributeModifierHolderEntry -> {
+            mergedList.put(entityAttributeEntityAttributeModifierHolderEntry.getKey(), entityAttributeEntityAttributeModifierHolderEntry.getValue());
+        });
+        into.entries().forEach(entityAttributeEntityAttributeModifierHolderEntry -> {
+            mergedList.put(entityAttributeEntityAttributeModifierHolderEntry.getKey(), entityAttributeEntityAttributeModifierHolderEntry.getValue());
+        });
+        return mergedList;
+    }
+
     @Override
     public JsonElement merge(JsonElement old, JsonElement toMerge, MergeType type) {
         switch (type) {
@@ -111,6 +122,7 @@ public class AttributeProperty implements ModuleProperty {
 
     /**
      * return all attributemodifiers of an itemstack
+     *
      * @param itemStack
      * @return
      */
@@ -133,6 +145,7 @@ public class AttributeProperty implements ModuleProperty {
 
     /**
      * returns the raw modifiers, shouldnt be used widely
+     *
      * @param itemStack
      * @return
      */
@@ -143,6 +156,7 @@ public class AttributeProperty implements ModuleProperty {
 
     /**
      * Generates the multimap for the Cache
+     *
      * @param itemStack
      * @return
      */
@@ -157,6 +171,7 @@ public class AttributeProperty implements ModuleProperty {
     /**
      * returns the Attribute map based on equipmentslot
      * This will be nullsave for all equipmentslot
+     *
      * @param itemStack
      * @return
      */
@@ -235,6 +250,7 @@ public class AttributeProperty implements ModuleProperty {
     /**
      * A private function to sort the multimap to provide better view in the gui.
      * Sorting is based on the {@link AttributeProperty#priorityMap}
+     *
      * @param multimap
      * @return
      */
@@ -266,6 +282,7 @@ public class AttributeProperty implements ModuleProperty {
 
     /**
      * A util function to make reading the multimap simpler
+     *
      * @param rawMap
      * @param slot
      * @param entityAttribute
@@ -295,19 +312,21 @@ public class AttributeProperty implements ModuleProperty {
 
     /**
      * A Util function to make reading attributes from items easier
+     *
      * @param stack
      * @param slot
      * @param entityAttribute
-     * @param fallback if the item does not have this attribute, this value is returned
+     * @param fallback        if the item does not have this attribute, this value is returned
      * @return the double value of the attribute according to the Itemstack
      */
     public static double getActualValue(ItemStack stack, EquipmentSlot slot, EntityAttribute entityAttribute, double fallback) {
         Collection<EntityAttributeModifier> attributes = stack.getAttributeModifiers(slot).get(entityAttribute);
+        return getActualValue(attributes,fallback);
+        /*
         Multimap<EntityAttribute, EntityAttributeModifier> map = HashMultimap.create();
         attributes.forEach(attribute -> {
             map.put(entityAttribute, attribute);
         });
-
         DefaultAttributeContainer container = DefaultAttributeContainer.builder().add(entityAttribute).build();
 
         AttributeContainer container1 = new AttributeContainer(container);
@@ -318,10 +337,55 @@ public class AttributeProperty implements ModuleProperty {
         } else {
             return fallback;
         }
+        */
+    }
+
+    public static double getActualValue(Multimap<EntityAttribute, EntityAttributeModifier> map, EntityAttribute entityAttribute, double fallback) {
+        Collection<EntityAttributeModifier> attributes = map.get(entityAttribute);
+        return getActualValue(attributes,fallback);
+        /*
+        DefaultAttributeContainer container = DefaultAttributeContainer.builder().add(entityAttribute).build();
+
+        AttributeContainer container1 = new AttributeContainer(container);
+
+        container1.addTemporaryModifiers(map);
+        if (map.containsKey(entityAttribute) && container1.hasAttribute(entityAttribute)) {
+            return container1.getValue(entityAttribute);
+        } else {
+            return fallback;
+        }
+        */
+    }
+
+    public static double getActualValue(Collection<EntityAttributeModifier> attributes, double fallback) {
+        List<Double> addition = new ArrayList<>();
+        List<Double> multiplyBase = new ArrayList<>();
+        List<Double> multiplyTotal = new ArrayList<>();
+        attributes.forEach(attribute -> {
+            switch (attribute.getOperation()) {
+                case ADDITION -> addition.add(attribute.getValue());
+                case MULTIPLY_BASE -> multiplyBase.add(attribute.getValue());
+                case MULTIPLY_TOTAL -> multiplyTotal.add(attribute.getValue());
+            }
+        });
+        double value = fallback;
+        for (Double currentValue : addition) {
+            value += currentValue;
+        }
+        double multiplier = 1.0;
+        for (Double currentValue : multiplyBase) {
+            multiplier += currentValue;
+        }
+        value = value * multiplier;
+        for (Double currentValue : multiplyTotal) {
+            value = (1 + currentValue) * value;
+        }
+        return value;
     }
 
     /**
      * A Util function to make reading attributes from items easier
+     *
      * @param stack
      * @param slot
      * @param entityAttribute
@@ -377,6 +441,7 @@ public class AttributeProperty implements ModuleProperty {
 
     /**
      * Generates a unique uuid for the slot to prevent collisions
+     *
      * @param equipmentSlot
      * @return a unique UUID for the slot
      */

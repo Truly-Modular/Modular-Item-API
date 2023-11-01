@@ -1,25 +1,26 @@
 package smartin.miapi.client.gui.crafting.statdisplay;
 
+import com.google.common.collect.Multimap;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.attribute.EntityAttribute;
+import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Util;
 import smartin.miapi.Miapi;
-import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.modules.properties.AttributeProperty;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
-import java.util.HashSet;
-import java.util.Locale;
-import java.util.Set;
+import java.util.*;
 
 @Environment(EnvType.CLIENT)
 public class AttributeSingleDisplay extends SingleStatDisplayDouble {
     public static Set<EntityAttribute> attributesWithDisplay = new HashSet<>();
+    public static Map<EquipmentSlot, Multimap<EntityAttribute, EntityAttributeModifier>> oldItemCache = new WeakHashMap<>();
+    public static Map<EquipmentSlot, Multimap<EntityAttribute, EntityAttributeModifier>> compareItemCache = new WeakHashMap<>();
     final EntityAttribute attribute;
     final EquipmentSlot slot;
     double defaultValue;
@@ -51,52 +52,66 @@ public class AttributeSingleDisplay extends SingleStatDisplayDouble {
 
 
     public double getValueFunction(ItemStack stack) {
+        Map<EquipmentSlot, Multimap<EntityAttribute, EntityAttributeModifier>> attributeCache = compareItemCache;
+        if (stack.equals(original)) {
+            attributeCache = oldItemCache;
+        }
         if (slot == null) {
             Double value = null;
             for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
-                if (stack.getAttributeModifiers(equipmentSlot).containsKey(attribute)) {
+                Multimap<EntityAttribute, EntityAttributeModifier> currentSlot = attributeCache.get(equipmentSlot);
+                if (attributeCache.get(equipmentSlot).containsKey(attribute)) {
                     if (inverse) {
                         if (value != null) {
-                            value = Math.min(value, AttributeRegistry.getAttribute(stack, attribute, equipmentSlot, defaultValue));
+                            value = Math.min(value, AttributeProperty.getActualValue(currentSlot, attribute, defaultValue));
                         } else {
-                            value = AttributeRegistry.getAttribute(stack, attribute, equipmentSlot, defaultValue);
+                            value = AttributeProperty.getActualValue(currentSlot, attribute, defaultValue);
                         }
                     } else {
                         if (value != null) {
-                            value = Math.max(value, AttributeRegistry.getAttribute(stack, attribute, equipmentSlot, defaultValue));
+                            value = Math.max(value, AttributeProperty.getActualValue(currentSlot, attribute, defaultValue));
                         } else {
-                            value = AttributeRegistry.getAttribute(stack, attribute, equipmentSlot, defaultValue);
+                            value = AttributeProperty.getActualValue(currentSlot, attribute, defaultValue);
                         }
                     }
                 }
             }
             return value != null ? value : 0;
         }
-        return AttributeRegistry.getAttribute(stack, attribute, slot, defaultValue);
+        return AttributeProperty.getActualValue(attributeCache.get(slot), attribute, defaultValue);
     }
 
     @Override
     public boolean shouldRender(ItemStack original, ItemStack compareTo) {
         super.shouldRender(original, compareTo);
-        if(valueReader.hasValue(original)){
+        if (valueReader.hasValue(original)) {
             return true;
         }
         return valueReader.hasValue(compareTo);
     }
 
-    public boolean hasAttribute(ItemStack itemStack){
+    public boolean hasAttribute(ItemStack itemStack) {
+        Map<EquipmentSlot, Multimap<EntityAttribute, EntityAttributeModifier>> attributeCache = compareItemCache;
+        if (itemStack.equals(original)) {
+            attributeCache = oldItemCache;
+        }
         if (slot == null) {
             for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
-                if (
-                        itemStack.getAttributeModifiers(equipmentSlot).containsKey(attribute) &&
-                                AttributeProperty.getActualValue(itemStack, equipmentSlot, attribute) != attribute.getDefaultValue()) {
-                    return true;
+                Multimap<EntityAttribute, EntityAttributeModifier> slotMap = attributeCache.get(equipmentSlot);
+                if(slotMap!=null){
+                    Collection<EntityAttributeModifier> attrCollection = attributeCache.get(equipmentSlot).get(attribute);
+                    if (attrCollection!= null && !attrCollection.isEmpty()) {
+                        return true;
+                    }
                 }
             }
-        }
-        else{
-            if (itemStack.getAttributeModifiers(slot).containsKey(attribute)) {
-                return true;
+        } else {
+            Multimap<EntityAttribute, EntityAttributeModifier> slotMap = attributeCache.get(slot);
+            if(slotMap!=null){
+                Collection<EntityAttributeModifier> attrCollection = attributeCache.get(slot).get(attribute);
+                if (attrCollection!= null && !attrCollection.isEmpty()) {
+                    return true;
+                }
             }
         }
         return false;
@@ -190,7 +205,7 @@ public class AttributeSingleDisplay extends SingleStatDisplayDouble {
             return this;
         }
 
-        public Builder setValueGetter(ValueGetter reader){
+        public Builder setValueGetter(ValueGetter reader) {
             valueGetter = reader;
             return this;
         }
@@ -213,7 +228,7 @@ public class AttributeSingleDisplay extends SingleStatDisplayDouble {
             display.minValue = min;
             display.maxValue = max;
             display.setInverse(inverse);
-            if(valueGetter !=null){
+            if (valueGetter != null) {
                 display.valueReader = new StatReaderHelper() {
                     @Override
                     public double getValue(ItemStack itemStack) {

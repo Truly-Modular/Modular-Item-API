@@ -1,11 +1,14 @@
 package smartin.miapi.client.gui.crafting.statdisplay;
 
+import com.google.common.collect.Multimap;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.entity.attribute.EntityAttribute;
+import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
@@ -23,10 +26,7 @@ import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.*;
 import smartin.miapi.modules.properties.util.GuiWidgetSupplier;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Environment(EnvType.CLIENT)
 public class StatListWidget extends InteractAbleWidget {
@@ -291,11 +291,17 @@ public class StatListWidget extends InteractAbleWidget {
     }
 
     private <T extends InteractAbleWidget & SingleStatDisplay> void update() {
+        for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
+            Multimap<EntityAttribute, EntityAttributeModifier> oldAttr = original.getAttributeModifiers(equipmentSlot);
+            Multimap<EntityAttribute, EntityAttributeModifier> compAttr = original.getAttributeModifiers(equipmentSlot);
+            AttributeSingleDisplay.oldItemCache.put(equipmentSlot,oldAttr);
+            AttributeSingleDisplay.compareItemCache.put(equipmentSlot,compAttr);
+        }
         List<ClickableWidget> widgets = new ArrayList<>();
         for (StatWidgetSupplier supplier : statWidgetSupplier) {
             List<T> statWidgets = supplier.currentList(original, compareTo);
             for (T statDisplay : statWidgets) {
-                if(statDisplay.shouldRender(original,compareTo)){
+                if (statDisplay.shouldRender(original, compareTo)) {
                     statDisplay.setHeight(statDisplay.getHeightDesired());
                     statDisplay.setWidth(statDisplay.getWidthDesired());
                     widgets.add(statDisplay);

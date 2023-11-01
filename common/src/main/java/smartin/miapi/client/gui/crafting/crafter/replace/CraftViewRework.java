@@ -179,7 +179,7 @@ public class CraftViewRework extends InteractAbleWidget {
             }
         });
         CraftingProperty property = craftingProperties.get(craftingGuis.indexOf(widget));
-        action.forEachCraftingProperty(action.getPreview().copy(), (craftingProperty, module, inventory, start, end, buffer) -> {
+        action.forEachCraftingProperty(action.getPreview(), (craftingProperty, module, inventory, start, end, buffer) -> {
             if (craftingProperty.equals(property)) {
                 AtomicInteger counter = new AtomicInteger(0);
                 property.getSlotPositions().forEach(vec2f -> {

@@ -11,7 +11,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Slice;
@@ -22,12 +21,13 @@ import smartin.miapi.modules.properties.AttributeProperty;
 import smartin.miapi.modules.properties.LoreProperty;
 import smartin.miapi.modules.properties.MiningLevelProperty;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.WeakHashMap;
 
 @Mixin(ItemStack.class)
 public abstract class ItemStackMixin {
-    @Shadow
-    public abstract ItemStack split(int amount);
 
     //@Inject(method = "foo()V", at = @At(value = "INVOKE", item = "La/b/c/Something;doSomething()V", shift = At.Shift.AFTER))
     @Inject(
@@ -43,12 +43,22 @@ public abstract class ItemStackMixin {
         //
     }
 
+    WeakHashMap<ItemStack, Map<EquipmentSlot, Multimap<EntityAttribute, EntityAttributeModifier>>> apoCache = new WeakHashMap<>();
+
     @Inject(method = "getAttributeModifiers", at = @At("RETURN"), cancellable = true)
     public void miapi$modifyAttributeModifiers(EquipmentSlot slot, CallbackInfoReturnable<Multimap<EntityAttribute, EntityAttributeModifier>> cir) {
         ItemStack stack = (ItemStack) (Object) this;
 
         if (stack.getItem() instanceof ModularItem) {
-            cir.setReturnValue(AttributeProperty.equipmentSlotMultimapMap(stack).get(slot));
+            Map<EquipmentSlot, Multimap<EntityAttribute, EntityAttributeModifier>> slotMultimapMap = apoCache.getOrDefault(stack, new HashMap<>());
+            if (slotMultimapMap.containsKey(slot)) {
+                cir.setReturnValue(slotMultimapMap.get(slot));
+            } else {
+                Multimap<EntityAttribute, EntityAttributeModifier> attributes = AttributeProperty.mergeAttributes(AttributeProperty.equipmentSlotMultimapMap(stack).get(slot), cir.getReturnValue());
+                slotMultimapMap.put(slot, attributes);
+                apoCache.put(stack, slotMultimapMap);
+                cir.setReturnValue(attributes);
+            }
         }
     }
 

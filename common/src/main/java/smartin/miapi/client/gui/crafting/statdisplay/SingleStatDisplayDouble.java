@@ -44,6 +44,8 @@ public abstract class SingleStatDisplayDouble extends InteractAbleWidget impleme
     int red = MiapiConfig.ColorGroup.red.getValue().intValue();
     int green = MiapiConfig.ColorGroup.green.getValue().intValue();
     public boolean inverse = false;
+    double oldValue = 0;
+    double compareToValue = 0;
 
     protected SingleStatDisplayDouble(int x, int y, int width, int height, StatListWidget.TextGetter title, StatListWidget.TextGetter hover) {
         super(x, y, width, height, Text.empty());
@@ -75,7 +77,8 @@ public abstract class SingleStatDisplayDouble extends InteractAbleWidget impleme
         ItemStack mainStack = compareTo.isEmpty() ? original : compareTo;
         textWidget.setText(text.resolve(mainStack));
         hoverDescription.setText(hover.resolve(mainStack));
-        double compareToValue = getValue(compareTo);
+        compareToValue = getValue(compareTo);
+        oldValue = getValue(original);
         compareValue.setText(Text.of(modifierFormat.format(compareToValue)));
         int textWidth = MinecraftClient.getInstance().textRenderer.getWidth(this.text.resolve(original));
         int numberWidth = MinecraftClient.getInstance().textRenderer.getWidth(compareValue.getText());
@@ -104,8 +107,8 @@ public abstract class SingleStatDisplayDouble extends InteractAbleWidget impleme
 
     @Override
     public void render(DrawContext drawContext, int mouseX, int mouseY, float delta) {
-        double oldValue = getValue(original);
-        double compareToValue = getValue(compareTo);
+        //double oldValue = getValue(original);
+        //double compareToValue = getValue(compareTo);
 
         double min = Math.min(minValue, Math.min(oldValue, compareToValue));
         double max = Math.max(maxValue, Math.max(oldValue, compareToValue));

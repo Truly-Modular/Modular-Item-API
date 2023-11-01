@@ -1,13 +1,8 @@
 package smartin.miapi.attributes;
 
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
 import dev.architectury.event.EventResult;
 import net.minecraft.entity.*;
-import net.minecraft.entity.attribute.AttributeContainer;
-import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttribute;
-import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -22,7 +17,6 @@ import smartin.miapi.events.MiapiProjectileEvents;
 import smartin.miapi.modules.abilities.util.WrappedSoundEvent;
 import smartin.miapi.modules.properties.AttributeProperty;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -125,21 +119,6 @@ public class AttributeRegistry {
     }
 
     public static double getAttribute(ItemStack stack, EntityAttribute attribute, EquipmentSlot slot, double defaultValue) {
-        if (!stack.getAttributeModifiers(slot).containsKey(attribute)) {
-            return attribute.getDefaultValue();
-        }
-        Collection<EntityAttributeModifier> attributes = stack.getAttributeModifiers(slot).get(attribute);
-        Multimap<EntityAttribute, EntityAttributeModifier> map = HashMultimap.create();
-        attributes.forEach(attributeModifier -> {
-            map.put(attribute, attributeModifier);
-        });
-
-        DefaultAttributeContainer container = DefaultAttributeContainer.builder().add(attribute, defaultValue).build();
-
-        AttributeContainer container1 = new AttributeContainer(container);
-
-        container1.addTemporaryModifiers(map);
-
-        return container1.getValue(attribute);
+        return AttributeProperty.getActualValue(stack, slot, attribute, defaultValue);
     }
 }
