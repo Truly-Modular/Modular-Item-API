@@ -290,24 +290,13 @@ public class AttributeProperty implements ModuleProperty {
      * @return
      */
     public static double getActualValueFrom(Multimap<EntityAttribute, EntityAttributeModifierHolder> rawMap, EquipmentSlot slot, EntityAttribute entityAttribute, double fallback) {
-
-        DefaultAttributeContainer container = DefaultAttributeContainer.builder().add(entityAttribute).build();
-
-        AttributeContainer container1 = new AttributeContainer(container);
-
         Multimap<EntityAttribute, EntityAttributeModifier> map = ArrayListMultimap.create();
         rawMap.forEach(((attribute, entityAttributeModifierHolder) -> {
             if (entityAttributeModifierHolder.slot.equals(slot)) {
                 map.put(attribute, entityAttributeModifierHolder.attributeModifier);
             }
         }));
-
-        container1.addTemporaryModifiers(map);
-        if (container1.hasAttribute(entityAttribute)) {
-            return container1.getValue(entityAttribute);
-        } else {
-            return fallback;
-        }
+        return getActualValue(map,entityAttribute,fallback);
     }
 
     /**
