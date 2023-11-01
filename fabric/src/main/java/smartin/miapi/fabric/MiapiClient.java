@@ -3,7 +3,6 @@ package smartin.miapi.fabric;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.model.loading.v1.ModelLoadingPlugin;
-import net.fabricmc.fabric.api.entity.event.v1.EntityElytraEvents;
 import net.minecraft.util.Identifier;
 import smartin.miapi.client.model.CustomModel;
 import smartin.miapi.registries.RegistryInventory;

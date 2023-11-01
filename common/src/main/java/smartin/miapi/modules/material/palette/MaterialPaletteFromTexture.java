@@ -44,29 +44,89 @@ public class MaterialPaletteFromTexture extends SimpleMaterialPalette {
     }
 
     @Environment(EnvType.CLIENT)
+    public @Nullable SpriteContents generateSpriteContentsALT(Identifier id) {
+        //@Panda your stuff failed and this didnt work either. some out of index stuff, but even fixin that looked really bad.
+        try {
+            List<Color> pixels = Arrays.stream(getPixelArray())
+                    .mapToObj(Color::new)
+                    .filter(color -> color.a() > 0.1)
+                    .sorted(Comparator.comparingDouble(Color::length))
+                    .toList();
+            Map<Integer, Color> finalColorMap = new HashMap<>();
+            pixels.stream().distinct().forEach(color -> {
+                int avgIndex = 0;
+                int count = 0;
+                for (int i = 0; i < pixels.size(); i++) {
+
+                    if (pixels.get(i).equals(color)) {
+                        avgIndex = avgIndex + i;
+                        count++;
+                    }
+                }
+                avgIndex = avgIndex / count;
+                finalColorMap.put(avgIndex, color);
+            });
+            NativeImage nativeImage = new NativeImage(256, 1, false);
+            PaletteCreators.FillerFunction filler = PaletteCreators.fillers.getOrDefault("interpolation", PaletteCreators.interpolateFiller);
+            PaletteCreators.PixelPlacer placer = (color, x, y) -> nativeImage.setColor(x, y, color.abgr());
+            List<Map.Entry<Integer, Color>> list = finalColorMap.entrySet().stream().sorted(Map.Entry.comparingByKey()).toList();
+            for (int i = 0; i < list.size(); i++) {
+                int relativePos =(int) ((float)i / (float)list.size() * 256.0f);
+                Map.Entry<Integer, Color> last = i == 0 ? Map.entry(0, Color.BLACK) : list.get(i - 1);
+                Map.Entry<Integer, Color> current = list.get(i);
+                Map.Entry<Integer, Color> next = i == list.size() - 1 ? Map.entry(255, Color.WHITE) : list.get(i + 1);
+                filler.fill(
+                        last.getValue(),
+                        current.getValue(),
+                        next.getValue(),
+                        last.getKey(),
+                        relativePos,
+                        next.getKey(),
+                        placer
+                );
+                nativeImage.setColor(relativePos, 0, current.getValue().abgr());
+            }
+            nativeImage.untrack();
+            return new SpriteContents(id, new SpriteDimensions(256, 1), nativeImage, AnimationResourceMetadata.EMPTY);
+        } catch (Exception e) {
+            Miapi.DEBUG_LOGGER.warn("Material Palette generation for " + id + " failed.", e);
+            NativeImage nativeImage = new NativeImage(256, 1, false);
+            nativeImage.untrack();
+            return new SpriteContents(id, new SpriteDimensions(256, 1), nativeImage, AnimationResourceMetadata.EMPTY);
+        }
+    }
+
+    @Environment(EnvType.CLIENT)
     @Override
     public @Nullable SpriteContents generateSpriteContents(Identifier id) {
-        List<Color> colors = Arrays.stream(getPixelArray())
+        List<Color> pixels = Arrays.stream(getPixelArray())
                 .mapToObj(Color::new)
                 .filter(color -> color.a() > 0)
-                .distinct()
-                .sorted(Comparator.comparingDouble(Color::length))
+                .sorted(Comparator.comparingDouble(a -> a.toFloatVecNoDiv().length()))
                 .toList();
 
 
-        NativeImage nativeImage = new NativeImage(256, 1, false);
         PaletteCreators.FillerFunction filler = PaletteCreators.fillers.getOrDefault("interpolation", PaletteCreators.interpolateFiller);
+
+        Map<Integer, Color> colors = new HashMap<>();
+
+        for (int i = 0; i < pixels.size(); i++) {
+            colors.put((int)((float)i / (float)pixels.size() * 255.0), pixels.get(i));
+        }
+
+        if (!colors.containsKey(0))
+            colors.put(0, colors.get(0));
+        if (!colors.containsKey(255))
+            colors.put(255, colors.get(colors.size()-1));
+
+        NativeImage nativeImage = new NativeImage(256, 1, false);
         PaletteCreators.PixelPlacer placer = (color, x, y) -> nativeImage.setColor(x, y, color.abgr());
 
-        int spacing = 255/Math.min(colors.size()-1, 255);
-        int index = 0;
-        for (int i = 0; i < 256; i+=spacing) {
-            boolean isLast = index == colors.size()-1;
-            int x = isLast ? 255 : i;
-
-            Map.Entry<Integer, Color> last = index == 0 ? Map.entry(0, Color.BLACK) : Map.entry(i-spacing, colors.get(index - 1));
-            Map.Entry<Integer, Color> current = Map.entry(x, colors.get(index));
-            Map.Entry<Integer, Color> next = isLast ? Map.entry(255, Color.WHITE) : Map.entry(i+spacing, colors.get(index + 1));
+        List<Map.Entry<Integer, Color>> list = colors.entrySet().stream().sorted(Map.Entry.comparingByKey()).toList();
+        for (int i = 0; i < list.size(); i++) {
+            Map.Entry<Integer, Color> last = i == 0 ? Map.entry(0, Color.BLACK) : list.get(i - 1);
+            Map.Entry<Integer, Color> current = list.get(i);
+            Map.Entry<Integer, Color> next = i == list.size() - 1 ? Map.entry(255, Color.WHITE) : list.get(i + 1);
 
             filler.fill(
                     last.getValue(),
@@ -78,10 +138,7 @@ public class MaterialPaletteFromTexture extends SimpleMaterialPalette {
                     placer
             );
             nativeImage.setColor(current.getKey(), 0, current.getValue().abgr());
-
-            index++;
         }
-
         nativeImage.untrack();
         return new SpriteContents(id, new SpriteDimensions(256, 1), nativeImage, AnimationResourceMetadata.EMPTY);
     }

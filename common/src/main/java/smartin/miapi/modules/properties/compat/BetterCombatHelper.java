@@ -2,6 +2,7 @@ package smartin.miapi.modules.properties.compat;
 
 import com.google.gson.JsonElement;
 import com.google.gson.stream.JsonReader;
+import dev.architectury.platform.Platform;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
@@ -17,10 +18,13 @@ import java.io.StringReader;
 
 public class BetterCombatHelper {
     public static void setup() {
-        ModularItemCache.setSupplier(BetterCombatProperty.KEY, BetterCombatHelper:: getAttributesContainer);
+        ModularItemCache.setSupplier(BetterCombatProperty.KEY, BetterCombatHelper::getAttributesContainer);
     }
 
     private static float getAttackRange(ItemStack stack) {
+        if (Platform.isForge()) {
+            return (float) (AttributeProperty.getActualValueFrom(AttributeProperty.getAttributeModifiersRaw(stack), EquipmentSlot.MAINHAND, AttributeRegistry.ATTACK_RANGE, 0) - 0.5f);
+        }
         return (float) (AttributeProperty.getActualValueFrom(AttributeProperty.getAttributeModifiersRaw(stack), EquipmentSlot.MAINHAND, AttributeRegistry.ATTACK_RANGE, 0) + 2.5f);
     }
 

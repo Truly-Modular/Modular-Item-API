@@ -25,7 +25,11 @@ public class ItemRendererMixin {
 
     @Inject(
             method = "renderItem(Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/render/model/json/ModelTransformationMode;ZLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;IILnet/minecraft/client/render/model/BakedModel;)V",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/model/BakedModel;isBuiltin()Z")
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/client/util/math/MatrixStack;translate(FFF)V",
+                    shift = At.Shift.AFTER
+            )
     )
     private void miapi$customItemRendering(
             ItemStack stack, ModelTransformationMode renderMode, boolean leftHanded,

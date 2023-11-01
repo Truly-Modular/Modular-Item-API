@@ -162,7 +162,6 @@ public class ReloadEvents {
             String data = buffer.readString();
             dataTemp.put(key, data);
             if (dataTemp.size() == dataPackSize) {
-                Miapi.DEBUG_LOGGER.warn("load complete?"+dataTemp.size());
                 dataPackSize = Integer.MAX_VALUE;
                 synchronized (DATA_PACKS) {
                     DATA_PACKS.clear();
