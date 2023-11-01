@@ -367,13 +367,14 @@ public class RegistryInventory {
             registerMiapi(moduleConditionRegistry, "miapi_perm", new MiapiPerm());
 
             //MODULEPROPERTIES
-            try {
+            if(smartin.miapi.Environment.isClient()){
                 registerMiapi(moduleProperties, ModelProperty.KEY, new ModelProperty());
                 registerMiapi(moduleProperties, ModelTransformationProperty.KEY, new ModelTransformationProperty());
                 registerMiapi(moduleProperties, ModelMergeProperty.KEY, new ModelMergeProperty());
                 registerMiapi(moduleProperties, GuiOffsetProperty.KEY, new GuiOffsetProperty());
                 registerMiapi(moduleProperties, ItemModelProperty.KEY, new ItemModelProperty());
-            } catch (Exception surpressed) {
+            }
+            else{
                 registerMiapi(moduleProperties, "texture", new ServerReplaceProperty());
                 registerMiapi(moduleProperties, "modelTransform", new ServerReplaceProperty());
                 registerMiapi(moduleProperties, "modelMerge", new ServerReplaceProperty());
