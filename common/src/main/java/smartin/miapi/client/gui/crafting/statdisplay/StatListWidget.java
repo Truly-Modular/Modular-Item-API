@@ -293,7 +293,7 @@ public class StatListWidget extends InteractAbleWidget {
     private <T extends InteractAbleWidget & SingleStatDisplay> void update() {
         for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
             Multimap<EntityAttribute, EntityAttributeModifier> oldAttr = original.getAttributeModifiers(equipmentSlot);
-            Multimap<EntityAttribute, EntityAttributeModifier> compAttr = original.getAttributeModifiers(equipmentSlot);
+            Multimap<EntityAttribute, EntityAttributeModifier> compAttr = compareTo.getAttributeModifiers(equipmentSlot);
             AttributeSingleDisplay.oldItemCache.put(equipmentSlot,oldAttr);
             AttributeSingleDisplay.compareItemCache.put(equipmentSlot,compAttr);
         }

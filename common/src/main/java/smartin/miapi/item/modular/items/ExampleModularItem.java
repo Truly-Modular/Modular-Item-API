@@ -12,7 +12,7 @@ public class ExampleModularItem extends Item implements ModularItem {
     public static Item modularItem;
 
     public ExampleModularItem() {
-        super(new Item.Settings());
+        super(new Item.Settings().maxCount(1).maxDamage(50));
         modularItem = this;
     }
 

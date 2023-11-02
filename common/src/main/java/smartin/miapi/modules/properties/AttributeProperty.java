@@ -293,10 +293,11 @@ public class AttributeProperty implements ModuleProperty {
         Multimap<EntityAttribute, EntityAttributeModifier> map = ArrayListMultimap.create();
         rawMap.forEach(((attribute, entityAttributeModifierHolder) -> {
             if (entityAttributeModifierHolder.slot.equals(slot)) {
+                Miapi.DEBUG_LOGGER.warn("checking" + attribute.getTranslationKey());
                 map.put(attribute, entityAttributeModifierHolder.attributeModifier);
             }
         }));
-        return getActualValue(map,entityAttribute,fallback);
+        return getActualValue(map, entityAttribute, fallback);
     }
 
     /**
@@ -310,7 +311,7 @@ public class AttributeProperty implements ModuleProperty {
      */
     public static double getActualValue(ItemStack stack, EquipmentSlot slot, EntityAttribute entityAttribute, double fallback) {
         Collection<EntityAttributeModifier> attributes = stack.getAttributeModifiers(slot).get(entityAttribute);
-        return getActualValue(attributes,fallback);
+        return getActualValue(attributes, fallback);
         /*
         Multimap<EntityAttribute, EntityAttributeModifier> map = HashMultimap.create();
         attributes.forEach(attribute -> {
@@ -331,7 +332,7 @@ public class AttributeProperty implements ModuleProperty {
 
     public static double getActualValue(Multimap<EntityAttribute, EntityAttributeModifier> map, EntityAttribute entityAttribute, double fallback) {
         Collection<EntityAttributeModifier> attributes = map.get(entityAttribute);
-        return getActualValue(attributes,fallback);
+        return getActualValue(attributes, fallback);
         /*
         DefaultAttributeContainer container = DefaultAttributeContainer.builder().add(entityAttribute).build();
 

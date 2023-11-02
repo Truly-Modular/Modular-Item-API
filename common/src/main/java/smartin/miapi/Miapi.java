@@ -7,6 +7,7 @@ import com.redpxnda.nucleus.registry.NucleusNamespaces;
 import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.event.events.common.PlayerEvent;
 import dev.architectury.registry.ReloadListenerRegistry;
+import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.server.MinecraftServer;
@@ -50,6 +51,7 @@ public class Miapi {
     public static Gson gson = new Gson();
 
     public static void init() {
+        ClientPlayerEntity clientPlayerEntity;
         MiapiConfig.getInstance();
         setupNetworking();
         RegistryInventory.setup();

@@ -2,6 +2,7 @@ package smartin.miapi.item.modular.items;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.EquipmentSlot;
@@ -17,6 +18,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
+import net.minecraft.util.UseAction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import smartin.miapi.attributes.AttributeRegistry;
@@ -29,16 +31,22 @@ import smartin.miapi.modules.properties.AttributeProperty;
 import smartin.miapi.modules.properties.DisplayNameProperty;
 import smartin.miapi.modules.properties.RepairPriority;
 
+import java.util.UUID;
 import java.util.function.Predicate;
 
 public class ModularBow extends BowItem implements ModularItem {
     public static Predicate<ItemStack> projectile = BOW_PROJECTILES;
+    public static UUID bowMoveSpeedUUId = UUID.fromString("4de85d6c-7923-11ee-b962-0242ac120002");
 
     public ModularBow() {
         super(new Item.Settings().maxCount(1).maxDamage(50));
         if (smartin.miapi.Environment.isClient()) {
             registerAnimations();
         }
+        PlayerEntity entity;
+        ClientPlayerEntity clientPlayerEntity;
+        LivingEntity living;
+        UseAction useAction;
     }
 
     @Override
@@ -67,8 +75,19 @@ public class ModularBow extends BowItem implements ModularItem {
         return RepairPriority.getRepairValue(stack, ingredient) > 0;
     }
 
+    public void usageTick(World world, LivingEntity user, ItemStack stack, int remainingUseTicks) {
+        //float movementBonus = getPullProgress(getMaxUseTime(stack) - remainingUseTicks) * 2.0f;
+        //Multimap
+        //Multimap<EntityAttribute, EntityAttributeModifier> attributeModifiers = ArrayListMultimap.create();
+        //attributeModifiers.put(EntityAttributes.GENERIC_MOVEMENT_SPEED, new EntityAttributeModifier(bowMoveSpeedUUId, "bowMoveSpeed", movementBonus, EntityAttributeModifier.Operation.MULTIPLY_TOTAL));
+        //user.getAttributes().addTemporaryModifiers(attributeModifiers);
+    }
+
     @Override
     public void onStoppedUsing(ItemStack bowStack, World world, LivingEntity user, int remainingUseTicks) {
+        //Multimap<EntityAttribute, EntityAttributeModifier> attributeModifiers = ArrayListMultimap.create();
+        //attributeModifiers.put(EntityAttributes.GENERIC_MOVEMENT_SPEED, new EntityAttributeModifier(bowMoveSpeedUUId, "bowMoveSpeed", 0, EntityAttributeModifier.Operation.MULTIPLY_TOTAL));
+        //user.getAttributes().removeModifiers(attributeModifiers);
         if (!(user instanceof PlayerEntity)) {
             return;
         }
