@@ -37,6 +37,7 @@ import static smartin.miapi.registries.RegistryInventory.Client.glintShader;
 
 public class MiapiClient {
     public static MaterialAtlasManager materialAtlasManager;
+    public static boolean irisLoaded = Platform.isModLoaded("iris");
 
     private MiapiClient() {
     }
@@ -51,7 +52,7 @@ public class MiapiClient {
         ClientLifecycleEvent.CLIENT_LEVEL_LOAD.register(MiapiClient::clientLevelLoad);
         ClientPlayerEvent.CLIENT_PLAYER_JOIN.register(player -> new Thread(() -> MiapiPermissions.getPerms(player)).start());
         ClientPlayerEvent.CLIENT_PLAYER_JOIN.register(player -> {
-            if (Platform.isModLoaded("iris")) {
+            if (irisLoaded) {
                 player.sendMessage(Text.literal("Truly Modular is sadly not compatible with Iris."));
                 player.sendMessage(Text.literal("This is due to Iris not allowing Mods to implement custom shaders."));
                 ClickEvent event = new ClickEvent(ClickEvent.Action.OPEN_URL,"https://github.com/IrisShaders/Iris/blob/1.20.1/docs/development/compatibility/core-shaders.md");
