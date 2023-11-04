@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="GradleMigrationSettings" migrationVersion="1" />
+  <component name="GradleSettings">
+    <option name="linkedExternalProjectsSettings">
+      <GradleProjectSettings>
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="gradleJvm" value="corretto-17" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/common" />
+            <option value="$PROJECT_DIR$/fabric" />
+            <option value="$PROJECT_DIR$/forge" />
+          </set>
+        </option>
+      </GradleProjectSettings>
+      <GradleProjectSettings>
+        <option name="externalProjectPath" value="$PROJECT_DIR$/archery" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$/archery" />
+            <option value="$PROJECT_DIR$/archery/common" />
+            <option value="$PROJECT_DIR$/archery/fabric" />
+            <option value="$PROJECT_DIR$/archery/forge" />
+          </set>
+        </option>
+      </GradleProjectSettings>
+      <GradleProjectSettings>
+        <option name="externalProjectPath" value="$PROJECT_DIR$/armory" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$/armory" />
+            <option value="$PROJECT_DIR$/armory/common" />
+            <option value="$PROJECT_DIR$/armory/fabric" />
+            <option value="$PROJECT_DIR$/armory/forge" />
+          </set>
+        </option>
+      </GradleProjectSettings>
+      <GradleProjectSettings>
+        <option name="externalProjectPath" value="$PROJECT_DIR$/arsenal" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$/arsenal" />
+            <option value="$PROJECT_DIR$/arsenal/common" />
+            <option value="$PROJECT_DIR$/arsenal/fabric" />
+            <option value="$PROJECT_DIR$/arsenal/forge" />
+          </set>
+        </option>
+      </GradleProjectSettings>
+      <GradleProjectSettings>
+        <option name="externalProjectPath" value="$PROJECT_DIR$/nucleus" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$/nucleus" />
+            <option value="$PROJECT_DIR$/nucleus/common" />
+            <option value="$PROJECT_DIR$/nucleus/fabric" />
+            <option value="$PROJECT_DIR$/nucleus/forge" />
+          </set>
+        </option>
+      </GradleProjectSettings>
+    </option>
+  </component>
+</project>

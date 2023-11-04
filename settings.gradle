@@ -10,7 +10,3 @@ pluginManagement {
 include("common")
 include("fabric")
 include("forge")
-include("arsenal")
-include("archery")
-include("armory")
-include("nucleus")

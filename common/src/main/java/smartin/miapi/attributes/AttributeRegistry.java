@@ -39,6 +39,8 @@ public class AttributeRegistry {
 
     public static EntityAttribute BOW_DRAW_TIME;
 
+    public static EntityAttribute PLAYER_ITEM_USE_MOVEMENT_SPEED;
+
     public static EntityAttribute PROJECTILE_DAMAGE;
     public static EntityAttribute PROJECTILE_CRIT_MULTIPLIER;
     public static EntityAttribute PROJECTILE_SPEED;
