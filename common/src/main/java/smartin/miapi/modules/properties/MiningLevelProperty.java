@@ -3,9 +3,11 @@ package smartin.miapi.modules.properties;
 import com.google.gson.JsonElement;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.SwordItem;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.math.BlockPos;
@@ -37,6 +39,7 @@ public class MiningLevelProperty implements ModuleProperty {
         miningCapabilities.put("axe", BlockTags.AXE_MINEABLE);
         miningCapabilities.put("shovel", BlockTags.SHOVEL_MINEABLE);
         miningCapabilities.put("hoe", BlockTags.HOE_MINEABLE);
+        miningCapabilities.put("sword", BlockTags.SWORD_EFFICIENT);
         miningLevels.put(BlockTags.NEEDS_STONE_TOOL, 1);
         miningLevels.put(BlockTags.NEEDS_IRON_TOOL, 2);
         miningLevels.put(BlockTags.NEEDS_DIAMOND_TOOL, 3);
@@ -111,6 +114,13 @@ public class MiningLevelProperty implements ModuleProperty {
         if (state.isIn(BlockTags.HOE_MINEABLE)) {
             double value = AttributeProperty.getActualValue(stack, EquipmentSlot.MAINHAND, AttributeRegistry.MINING_SPEED_HOE, 1);
             return (value == 0) ? 1.0f : (float) value;
+        }
+        if (stack.getItem() instanceof SwordItem) {
+            if (state.isOf(Blocks.COBWEB)) {
+                return 15.0F;
+            } else {
+                return state.isIn(BlockTags.SWORD_EFFICIENT) ? 1.5F : 1.0F;
+            }
         }
         return 1.0f;
     }
