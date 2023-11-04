@@ -369,6 +369,7 @@ public class RegistryInventory {
             registerMiapi(moduleConditionRegistry, "material", new MaterialCondition());
             registerMiapi(moduleConditionRegistry, "tag", new TagCondition());
             registerMiapi(moduleConditionRegistry, "miapi_perm", new MiapiPerm());
+            registerMiapi(moduleConditionRegistry, "item_in_inventory", new ItemInInventoryCondition());
 
             //MODULEPROPERTIES
             if(smartin.miapi.Environment.isClient()){
