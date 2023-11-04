@@ -2,7 +2,10 @@ package smartin.miapi.modules.properties.compat;
 
 import com.google.gson.JsonElement;
 import dev.architectury.platform.Platform;
+import net.minecraft.item.ItemStack;
+import org.jetbrains.annotations.Nullable;
 import smartin.miapi.attributes.AttributeRegistry;
+import smartin.miapi.craft.CraftAction;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.AttributeProperty;
 import smartin.miapi.modules.properties.util.MergeType;
@@ -22,6 +25,19 @@ public class BetterCombatProperty implements ModuleProperty {
                     map.removeAll(AttributeRegistry.ATTACK_RANGE);
                 }
                 return map;
+            });
+            CraftAction.events.add(new CraftAction.CraftingEvent() {
+                @Override
+                public ItemStack onCraft(ItemStack old, ItemStack crafted, ItemModule.@Nullable ModuleInstance crafting) {
+                    BetterCombatHelper.applyNBT(crafted);
+                    return crafted;
+                }
+
+                @Override
+                public ItemStack onPreview(ItemStack old, ItemStack crafted, ItemModule.@Nullable ModuleInstance crafting) {
+                    BetterCombatHelper.applyNBT(crafted);
+                    return crafted;
+                }
             });
         }
     }

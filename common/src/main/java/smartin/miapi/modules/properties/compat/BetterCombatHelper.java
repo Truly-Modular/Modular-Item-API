@@ -3,6 +3,9 @@ package smartin.miapi.modules.properties.compat;
 import com.google.gson.JsonElement;
 import com.google.gson.stream.JsonReader;
 import dev.architectury.platform.Platform;
+import net.bettercombat.BetterCombat;
+import net.bettercombat.api.AttributesContainer;
+import net.bettercombat.api.WeaponAttributesHelper;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
@@ -40,6 +43,18 @@ public class BetterCombatHelper {
         }
     }
 
+    public static net.bettercombat.api.WeaponAttributes getAttributesNoCache(ItemStack stack) {
+        if (stack.getItem() instanceof ModularItem) {
+            net.bettercombat.api.WeaponAttributes attributes = container(ItemModule.getMergedProperty(stack, BetterCombatProperty.property));
+            if (attributes != null) {
+                attributes = new net.bettercombat.api.WeaponAttributes(getAttackRange(stack), attributes.pose(), attributes.offHandPose(), attributes.isTwoHanded(), attributes.category(), attributes.attacks());
+            }
+            return attributes;
+        } else {
+            return null;
+        }
+    }
+
     private static net.bettercombat.api.WeaponAttributes container(JsonElement data) {
         if (data == null) {
             return null;
@@ -47,6 +62,18 @@ public class BetterCombatHelper {
         String jsonString = data.toString();
         JsonReader jsonReader = new JsonReader(new StringReader(jsonString));
         return net.bettercombat.logic.WeaponRegistry.resolveAttributes(new Identifier(Miapi.MOD_ID, "modular_item"), net.bettercombat.api.WeaponAttributesHelper.decode(jsonReader));
+    }
+
+    public static ItemStack applyNBT(ItemStack itemStack) {
+        if(itemStack.getItem() instanceof ModularItem){
+            net.bettercombat.api.WeaponAttributes container = getAttributesNoCache(itemStack);
+            if (container != null) {
+                WeaponAttributesHelper.writeToNBT(itemStack, new AttributesContainer(null, container));
+            } else {
+                itemStack.getOrCreateNbt().remove("weapon_attributes");
+            }
+        }
+        return itemStack;
     }
 
     @Nullable
