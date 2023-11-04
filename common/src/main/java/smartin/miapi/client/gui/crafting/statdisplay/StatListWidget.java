@@ -232,6 +232,11 @@ public class StatListWidget extends InteractAbleWidget {
                 .setTranslationKey("rocket_efficiency")
                 .setMax(5)
                 .setMin(-5).build());
+        addStatDisplay(AttributeSingleDisplay
+                .builder(AttributeRegistry.PLAYER_ITEM_USE_MOVEMENT_SPEED)
+                .setTranslationKey("player_item_use_speed")
+                .setMax(0)
+                .setMin(-1).build());
 
         AttributeSingleDisplay.attributesWithDisplay.add(AttributeRegistry.MINING_SPEED_AXE);
         AttributeSingleDisplay.attributesWithDisplay.add(AttributeRegistry.MINING_SPEED_PICKAXE);

@@ -310,7 +310,7 @@ public class RegistryInventory {
                 att -> SHIELD_BREAK = att);
 
         registerAtt("generic.player_item_use_speed", true, () ->
-                        new ClampedEntityAttribute("miapi.attribute.name.player_item_use_speed", 0.2, 0.0, 1.0).setTracked(true),
+                        new ClampedEntityAttribute("miapi.attribute.name.player_item_use_speed", -0.8, -1.0, 0.0).setTracked(true),
                 att -> PLAYER_ITEM_USE_MOVEMENT_SPEED = att);
 
         //projectile based

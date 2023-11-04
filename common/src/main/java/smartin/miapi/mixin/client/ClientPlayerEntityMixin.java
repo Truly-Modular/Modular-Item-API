@@ -10,11 +10,19 @@ import smartin.miapi.attributes.AttributeRegistry;
 @Mixin(value = ClientPlayerEntity.class)
 public class ClientPlayerEntityMixin {
 
-    @Inject(method = "tickMovement()V", at = @At("HEAD"))
+    //Lnet/minecraft/client/network/ClientPlayerEntity;isUsingItem()Z
+    @Inject(
+            method = "tickMovement()V",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/client/network/ClientPlayerEntity;isUsingItem()Z",
+                    shift = At.Shift.AFTER
+            )
+    )
     void miapi$renderArmorInject(CallbackInfo ci) {
         ClientPlayerEntity clientPlayerEntity = (ClientPlayerEntity) (Object) this;
         double attributeScale = clientPlayerEntity.getAttributeValue(AttributeRegistry.PLAYER_ITEM_USE_MOVEMENT_SPEED);
-        clientPlayerEntity.input.movementForward *= (float) (attributeScale * 5);
-        clientPlayerEntity.input.movementSideways *= (float) (attributeScale * 5);
+        clientPlayerEntity.input.movementForward *= (float) ((attributeScale+1) * 5);
+        clientPlayerEntity.input.movementSideways *= (float) ((attributeScale+1) * 5);
     }
 }

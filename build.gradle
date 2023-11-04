@@ -100,8 +100,8 @@ tasks.register('copyArchery') {
         def fabricBuildDir = rootProject.file(ext.projectName + '/fabric/build/libs')
         def forgeBuildDir = rootProject.file(ext.projectName + '/forge/build/libs')
         println fabricBuildDir
-        def fabricJar = fabricBuildDir.listFiles().find { it.name.endsWith(".jar") && !it.name.endsWith("lib.jar") && !it.name.endsWith("devlib.jar") }
-        def forgeJar = forgeBuildDir.listFiles().find { it.name.endsWith(".jar") && !it.name.endsWith("lib.jar") && !it.name.endsWith("devlib.jar") }
+        def fabricJar = fabricBuildDir.listFiles().find { it.name.endsWith(".jar") && !it.name.endsWith("sources.jar") && !it.name.endsWith("dev-shadow.jar") }
+        def forgeJar = forgeBuildDir.listFiles().find { it.name.endsWith(".jar") && !it.name.endsWith("sources.jar") && !it.name.endsWith("dev-shadow.jar") }
 
         if (forgeJar) {
             copy {

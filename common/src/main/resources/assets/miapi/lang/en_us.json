@@ -68,7 +68,7 @@
     "miapi.attribute.name.elytra_turn_efficiency": "Elytra Turn Efficiency",
     "miapi.attribute.name.elytra_glide_efficiency": "Elytra Glide Efficiency",
     "miapi.attribute.name.elytra_rocket_efficiency": "Elytra Rocket Efficiency",
-    "miapi.attribute.name.player_item_use_speed": "Movement speed scale while Using a Item",
+    "miapi.attribute.name.player_item_use_speed": "Use movement Penalty",
 
     "miapi.application_target.victim": "Victim",
     "miapi.application_target.attacker": "Attacker",
@@ -159,6 +159,8 @@
     "miapi.stat.elytra_turn.description":"How much speed is lost while turning with an elytra",
     "miapi.stat.rocket_efficiency":"Rocket Efficiency",
     "miapi.stat.rocket_efficiency.description":"How much boost you get from a rocket",
+    "miapi.stat.player_item_use_speed":"Use movement Penalty",
+    "miapi.stat.player_item_use_speed.description":"How much Speed you are loosing while holding right click",
 
     "miapi.material_stat.color": "Color",
     "miapi.material_stat.flexibility": "Flexibility",
