@@ -63,8 +63,11 @@ tasks.register('rebuildArsenal') {
     doLast {
         def mergedBuildDir = rootProject.file(ext.projectName + '/Merged')
         println mergedBuildDir
-        def fabricJar = mergedBuildDir.listFiles().find { it.name.endsWith("fabric.jar")}
-        def forgeJar = mergedBuildDir.listFiles().find { it.name.endsWith("forge.jar")}
+        def fabricJars = mergedBuildDir.listFiles().findAll { it.name.endsWith("fabric.jar") }
+        def forgeJars = mergedBuildDir.listFiles().findAll { it.name.endsWith("forge.jar") }
+
+        def fabricJar = fabricJars.max { it.lastModified() }
+        def forgeJar = forgeJars.max { it.lastModified() }
 
         if (forgeJar) {
             copy {
@@ -102,8 +105,11 @@ tasks.register('rebuildArchery') {
     doLast {
         def mergedBuildDir = rootProject.file(ext.projectName + '/Merged')
         println mergedBuildDir
-        def fabricJar = mergedBuildDir.listFiles().find { it.name.endsWith("fabric.jar")}
-        def forgeJar = mergedBuildDir.listFiles().find { it.name.endsWith("forge.jar")}
+        def fabricJars = mergedBuildDir.listFiles().findAll { it.name.endsWith("fabric.jar") }
+        def forgeJars = mergedBuildDir.listFiles().findAll { it.name.endsWith("forge.jar") }
+
+        def fabricJar = fabricJars.max { it.lastModified() }
+        def forgeJar = forgeJars.max { it.lastModified() }
 
         if (forgeJar) {
             copy {
@@ -141,8 +147,11 @@ tasks.register('rebuildArmory') {
     doLast {
         def mergedBuildDir = rootProject.file(ext.projectName + '/Merged')
         println mergedBuildDir
-        def fabricJar = mergedBuildDir.listFiles().find { it.name.endsWith("fabric.jar")}
-        def forgeJar = mergedBuildDir.listFiles().find { it.name.endsWith("forge.jar")}
+        def fabricJars = mergedBuildDir.listFiles().findAll { it.name.endsWith("fabric.jar") }
+        def forgeJars = mergedBuildDir.listFiles().findAll { it.name.endsWith("forge.jar") }
+
+        def fabricJar = fabricJars.max { it.lastModified() }
+        def forgeJar = forgeJars.max { it.lastModified() }
 
         if (forgeJar) {
             copy {
@@ -180,8 +189,11 @@ tasks.register('rebuildNucleus') {
     doLast {
         def mergedBuildDir = rootProject.file(ext.projectName + '/Merged')
         println mergedBuildDir
-        def fabricJar = mergedBuildDir.listFiles().find { it.name.endsWith("fabric.jar")}
-        def forgeJar = mergedBuildDir.listFiles().find { it.name.endsWith("forge.jar")}
+        def fabricJars = mergedBuildDir.listFiles().findAll { it.name.endsWith("fabric.jar") }
+        def forgeJars = mergedBuildDir.listFiles().findAll { it.name.endsWith("forge.jar") }
+
+        def fabricJar = fabricJars.max { it.lastModified() }
+        def forgeJar = forgeJars.max { it.lastModified() }
 
         if (forgeJar) {
             copy {
