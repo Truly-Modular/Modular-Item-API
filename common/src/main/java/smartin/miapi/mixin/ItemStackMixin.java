@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 
-@Mixin(ItemStack.class)
+@Mixin(value = ItemStack.class, priority = 2000)
 public abstract class ItemStackMixin {
 
     //@Inject(method = "foo()V", at = @At(value = "INVOKE", item = "La/b/c/Something;doSomething()V", shift = At.Shift.AFTER))
@@ -50,6 +50,9 @@ public abstract class ItemStackMixin {
         ItemStack stack = (ItemStack) (Object) this;
 
         if (stack.getItem() instanceof ModularItem) {
+            Multimap<EntityAttribute, EntityAttributeModifier> attributes = AttributeProperty.mergeAttributes(AttributeProperty.equipmentSlotMultimapMap(stack).get(slot), cir.getReturnValue());
+            cir.setReturnValue(attributes);
+            /*
             Map<EquipmentSlot, Multimap<EntityAttribute, EntityAttributeModifier>> slotMultimapMap = apoCache.getOrDefault(stack, new HashMap<>());
             if (slotMultimapMap.containsKey(slot)) {
                 cir.setReturnValue(slotMultimapMap.get(slot));
@@ -59,6 +62,7 @@ public abstract class ItemStackMixin {
                 apoCache.put(stack, slotMultimapMap);
                 cir.setReturnValue(attributes);
             }
+             */
         }
     }
 

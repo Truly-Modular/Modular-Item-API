@@ -55,37 +55,38 @@ tasks.register('buildBoth') {
     }
 }
 
-tasks.register('copyArsenal') {
+tasks.register('rebuildArsenal') {
     ext.projectName = "arsenal"
+    def project = gradle.includedBuild("arsenal")
+    dependsOn project.task(":buildBoth")
     group = '_tm_tasks'
     doLast {
-        def fabricBuildDir = rootProject.file(ext.projectName + '/fabric/build/libs')
-        def forgeBuildDir = rootProject.file(ext.projectName + '/forge/build/libs')
-        println fabricBuildDir
-        def fabricJar = fabricBuildDir.listFiles().find { it.name.endsWith(".jar") && !it.name.endsWith("lib.jar") && !it.name.endsWith("devlib.jar") }
-        def forgeJar = forgeBuildDir.listFiles().find { it.name.endsWith(".jar") && !it.name.endsWith("lib.jar") && !it.name.endsWith("devlib.jar") }
+        def mergedBuildDir = rootProject.file(ext.projectName + '/Merged')
+        println mergedBuildDir
+        def fabricJar = mergedBuildDir.listFiles().find { it.name.endsWith("fabric.jar")}
+        def forgeJar = mergedBuildDir.listFiles().find { it.name.endsWith("forge.jar")}
 
         if (forgeJar) {
             copy {
                 from forgeJar
-                into project.file('forge/libs')
+                into rootProject.file('forge/libs')
                 rename { fileName -> projectName + "-local.jar" }
             }
             copy {
                 from forgeJar
-                into project.file('common/libs')
+                into rootProject.file('common/libs')
                 rename { fileName -> projectName + "-local.jar" }
             }
         }
         if (fabricJar) {
             copy {
                 from fabricJar
-                into project.file('fabric/libs')
+                into rootProject.file('fabric/libs')
                 rename { fileName -> projectName + "-local.jar" }
             }
             copy {
                 from fabricJar
-                into project.file('common/libs')
+                into rootProject.file('common/libs')
                 rename { fileName -> projectName + "-local.jar" }
             }
         }
@@ -93,37 +94,38 @@ tasks.register('copyArsenal') {
     }
 }
 
-tasks.register('copyArchery') {
+tasks.register('rebuildArchery') {
     ext.projectName = "archery"
+    def project = gradle.includedBuild("archery")
+    dependsOn project.task(":buildBoth")
     group = '_tm_tasks'
     doLast {
-        def fabricBuildDir = rootProject.file(ext.projectName + '/fabric/build/libs')
-        def forgeBuildDir = rootProject.file(ext.projectName + '/forge/build/libs')
-        println fabricBuildDir
-        def fabricJar = fabricBuildDir.listFiles().find { it.name.endsWith(".jar") && !it.name.endsWith("sources.jar") && !it.name.endsWith("dev-shadow.jar") }
-        def forgeJar = forgeBuildDir.listFiles().find { it.name.endsWith(".jar") && !it.name.endsWith("sources.jar") && !it.name.endsWith("dev-shadow.jar") }
+        def mergedBuildDir = rootProject.file(ext.projectName + '/Merged')
+        println mergedBuildDir
+        def fabricJar = mergedBuildDir.listFiles().find { it.name.endsWith("fabric.jar")}
+        def forgeJar = mergedBuildDir.listFiles().find { it.name.endsWith("forge.jar")}
 
         if (forgeJar) {
             copy {
                 from forgeJar
-                into project.file('forge/libs')
+                into rootProject.file('forge/libs')
                 rename { fileName -> projectName + "-local.jar" }
             }
             copy {
                 from forgeJar
-                into project.file('common/libs')
+                into rootProject.file('common/libs')
                 rename { fileName -> projectName + "-local.jar" }
             }
         }
         if (fabricJar) {
             copy {
                 from fabricJar
-                into project.file('fabric/libs')
+                into rootProject.file('fabric/libs')
                 rename { fileName -> projectName + "-local.jar" }
             }
             copy {
                 from fabricJar
-                into project.file('common/libs')
+                into rootProject.file('common/libs')
                 rename { fileName -> projectName + "-local.jar" }
             }
         }
@@ -131,37 +133,38 @@ tasks.register('copyArchery') {
     }
 }
 
-tasks.register('copyArmory') {
+tasks.register('rebuildArmory') {
     ext.projectName = "armory"
+    def project = gradle.includedBuild("armory")
+    dependsOn project.task(":buildBoth")
     group = '_tm_tasks'
     doLast {
-        def fabricBuildDir = rootProject.file(ext.projectName + '/fabric/build/libs')
-        def forgeBuildDir = rootProject.file(ext.projectName + '/forge/build/libs')
-        println fabricBuildDir
-        def fabricJar = fabricBuildDir.listFiles().find { it.name.endsWith(".jar") && !it.name.endsWith("lib.jar") && !it.name.endsWith("devlib.jar") }
-        def forgeJar = forgeBuildDir.listFiles().find { it.name.endsWith(".jar") && !it.name.endsWith("lib.jar") && !it.name.endsWith("devlib.jar") }
+        def mergedBuildDir = rootProject.file(ext.projectName + '/Merged')
+        println mergedBuildDir
+        def fabricJar = mergedBuildDir.listFiles().find { it.name.endsWith("fabric.jar")}
+        def forgeJar = mergedBuildDir.listFiles().find { it.name.endsWith("forge.jar")}
 
         if (forgeJar) {
             copy {
                 from forgeJar
-                into project.file('forge/libs')
+                into rootProject.file('forge/libs')
                 rename { fileName -> projectName + "-local.jar" }
             }
             copy {
                 from forgeJar
-                into project.file('common/libs')
+                into rootProject.file('common/libs')
                 rename { fileName -> projectName + "-local.jar" }
             }
         }
         if (fabricJar) {
             copy {
                 from fabricJar
-                into project.file('fabric/libs')
+                into rootProject.file('fabric/libs')
                 rename { fileName -> projectName + "-local.jar" }
             }
             copy {
                 from fabricJar
-                into project.file('common/libs')
+                into rootProject.file('common/libs')
                 rename { fileName -> projectName + "-local.jar" }
             }
         }
@@ -169,37 +172,38 @@ tasks.register('copyArmory') {
     }
 }
 
-tasks.register('copyNucleus') {
+tasks.register('rebuildNucleus') {
     ext.projectName = "nucleus"
+    def project = gradle.includedBuild("nucleus")
+    dependsOn project.task(":buildBoth")
     group = '_tm_tasks'
     doLast {
-        def fabricBuildDir = rootProject.file(ext.projectName + '/fabric/build/libs')
-        def forgeBuildDir = rootProject.file(ext.projectName + '/forge/build/libs')
-        println fabricBuildDir
-        def fabricJar = fabricBuildDir.listFiles().find { it.name.endsWith(".jar") && !it.name.endsWith("lib.jar") && !it.name.endsWith("devlib.jar") }
-        def forgeJar = forgeBuildDir.listFiles().find { it.name.endsWith(".jar") && !it.name.endsWith("lib.jar") && !it.name.endsWith("devlib.jar") }
+        def mergedBuildDir = rootProject.file(ext.projectName + '/Merged')
+        println mergedBuildDir
+        def fabricJar = mergedBuildDir.listFiles().find { it.name.endsWith("fabric.jar")}
+        def forgeJar = mergedBuildDir.listFiles().find { it.name.endsWith("forge.jar")}
 
         if (forgeJar) {
             copy {
                 from forgeJar
-                into project.file('forge/libs')
+                into rootProject.file('forge/libs')
                 rename { fileName -> projectName + "-local.jar" }
             }
             copy {
                 from forgeJar
-                into project.file('common/libs')
+                into rootProject.file('common/libs')
                 rename { fileName -> projectName + "-local.jar" }
             }
         }
         if (fabricJar) {
             copy {
                 from fabricJar
-                into project.file('fabric/libs')
+                into rootProject.file('fabric/libs')
                 rename { fileName -> projectName + "-local.jar" }
             }
             copy {
                 from fabricJar
-                into project.file('common/libs')
+                into rootProject.file('common/libs')
                 rename { fileName -> projectName + "-local.jar" }
             }
         }

@@ -293,7 +293,6 @@ public class AttributeProperty implements ModuleProperty {
         Multimap<EntityAttribute, EntityAttributeModifier> map = ArrayListMultimap.create();
         rawMap.forEach(((attribute, entityAttributeModifierHolder) -> {
             if (entityAttributeModifierHolder.slot.equals(slot)) {
-                Miapi.DEBUG_LOGGER.warn("checking" + attribute.getTranslationKey());
                 map.put(attribute, entityAttributeModifierHolder.attributeModifier);
             }
         }));
