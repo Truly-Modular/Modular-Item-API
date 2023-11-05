@@ -77,6 +77,10 @@ tasks.register('rebuildArsenal') {
             }
             copy {
                 from forgeJar
+                into rootProject.file('Merged')
+            }
+            copy {
+                from forgeJar
                 into rootProject.file('common/libs')
                 rename { fileName -> projectName + "-local.jar" }
             }
@@ -86,6 +90,10 @@ tasks.register('rebuildArsenal') {
                 from fabricJar
                 into rootProject.file('fabric/libs')
                 rename { fileName -> projectName + "-local.jar" }
+            }
+            copy {
+                from fabricJar
+                into rootProject.file('Merged')
             }
             copy {
                 from fabricJar
@@ -119,6 +127,10 @@ tasks.register('rebuildArchery') {
             }
             copy {
                 from forgeJar
+                into rootProject.file('Merged')
+            }
+            copy {
+                from forgeJar
                 into rootProject.file('common/libs')
                 rename { fileName -> projectName + "-local.jar" }
             }
@@ -128,6 +140,10 @@ tasks.register('rebuildArchery') {
                 from fabricJar
                 into rootProject.file('fabric/libs')
                 rename { fileName -> projectName + "-local.jar" }
+            }
+            copy {
+                from fabricJar
+                into rootProject.file('Merged')
             }
             copy {
                 from fabricJar
@@ -161,6 +177,10 @@ tasks.register('rebuildArmory') {
             }
             copy {
                 from forgeJar
+                into rootProject.file('Merged')
+            }
+            copy {
+                from forgeJar
                 into rootProject.file('common/libs')
                 rename { fileName -> projectName + "-local.jar" }
             }
@@ -170,6 +190,10 @@ tasks.register('rebuildArmory') {
                 from fabricJar
                 into rootProject.file('fabric/libs')
                 rename { fileName -> projectName + "-local.jar" }
+            }
+            copy {
+                from fabricJar
+                into rootProject.file('Merged')
             }
             copy {
                 from fabricJar
@@ -203,6 +227,10 @@ tasks.register('rebuildNucleus') {
             }
             copy {
                 from forgeJar
+                into rootProject.file('Merged')
+            }
+            copy {
+                from forgeJar
                 into rootProject.file('common/libs')
                 rename { fileName -> projectName + "-local.jar" }
             }
@@ -212,6 +240,10 @@ tasks.register('rebuildNucleus') {
                 from fabricJar
                 into rootProject.file('fabric/libs')
                 rename { fileName -> projectName + "-local.jar" }
+            }
+            copy {
+                from fabricJar
+                into rootProject.file('Merged')
             }
             copy {
                 from fabricJar
