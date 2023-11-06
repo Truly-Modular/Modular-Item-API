@@ -28,6 +28,14 @@
     "textures": [
         "shiny"
     ],
+    "properties": {
+        "tool": {
+            "luminiousLearning": "1"
+        },
+        "handheld": {
+            "luminiousLearning": "0.3"
+        }
+    },
     "items": [
         {
             "item": "minecraft:lapis_lazuli",

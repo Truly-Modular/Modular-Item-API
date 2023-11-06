@@ -26,7 +26,10 @@ import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.*;
 import smartin.miapi.modules.properties.util.GuiWidgetSupplier;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Environment(EnvType.CLIENT)
 public class StatListWidget extends InteractAbleWidget {
@@ -243,6 +246,12 @@ public class StatListWidget extends InteractAbleWidget {
                 .setMax(3)
                 .setFormat("##.#")
                 .setTranslationKey(IllagerBane.KEY).build());
+
+        addStatDisplay(SinglePropertyStatDisplay
+                .builder(LuminousLearningProperty.property)
+                .setMax(2)
+                .setFormat("##.#")
+                .setTranslationKey(LuminousLearningProperty.KEY).build());
 
         addStatDisplay(SinglePropertyStatDisplay
                 .builder(PillagesGuard.property)

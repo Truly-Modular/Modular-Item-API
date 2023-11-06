@@ -2,6 +2,7 @@ package smartin.miapi.events;
 
 import com.redpxnda.nucleus.event.PrioritizedEvent;
 import dev.architectury.event.EventResult;
+import dev.architectury.event.events.common.BlockEvent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
@@ -9,6 +10,9 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.intprovider.IntProvider;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.entity.ItemProjectileEntity;
@@ -24,6 +28,7 @@ public class MiapiEvents {
     public static PrioritizedEvent<BlockCraftingStatUpdate> BLOCK_STAT_UPDATE = PrioritizedEvent.createEventResult();
     public static PrioritizedEvent<ItemCraftingStatUpdate> ITEM_STAT_UPDATE = PrioritizedEvent.createEventResult();
     public static PrioritizedEvent<GeneratedMaterialEvent> GENERATED_MATERIAL = PrioritizedEvent.createEventResult();
+    public static PrioritizedEvent<BlockBreakEvent> BLOCK_BREAK_EVENT = PrioritizedEvent.createEventResult();
 
     public static class LivingHurtEvent {
         public final LivingEntity livingEntity;
@@ -51,6 +56,10 @@ public class MiapiEvents {
 
     public interface GeneratedMaterialEvent {
         EventResult generated(GeneratedMaterial material, ItemStack mainIngredient, List<Item> tools, boolean isClient);
+    }
+
+    public interface BlockBreakEvent {
+        void breakBlock(ServerWorld world, BlockPos pos, ItemStack tool, IntProvider experience);
     }
 
     public interface LivingHurt {
