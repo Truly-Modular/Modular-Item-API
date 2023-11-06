@@ -4,9 +4,12 @@ import dev.architectury.event.events.common.PlayerEvent;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
 import smartin.miapi.Environment;
 import smartin.miapi.Miapi;
+import smartin.miapi.modules.ItemModule;
 import smartin.miapi.network.Networking;
+import smartin.miapi.registries.RegistryInventory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,19 +22,9 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class ReloadEvents {
     /**
-     * The size of the data pack.
-     */
-    private static int dataPackSize = Integer.MAX_VALUE;
-
-    /**
      * A flag indicating whether the class is currently in the process of reloading.
      */
     public static boolean inReload = false;
-
-    /**
-     * A map that stores the data packs to be synced on the server.
-     */
-    private static Map<String, String> SERVER_DATA_PACKS = new HashMap<>();
 
     /**
      * The packet ID for triggering a server-to-client reload.
@@ -39,19 +32,9 @@ public class ReloadEvents {
     protected static final String RELOAD_PACKET_ID = Miapi.MOD_ID + ":events_reload_s2c";
 
     /**
-     * The packet ID for sending data during a server-to-client reload.
-     */
-    protected static final String RELOAD_DATA_PACKET_ID = Miapi.MOD_ID + ":events_reload_s2c_data";
-
-    /**
      * A map that stores the paths of data packs to be synced.
      */
     public static final Map<String, String> DATA_PACKS = new ConcurrentHashMap<>();
-
-    /**
-     * Reloading Datapack.
-     */
-    public static final Map<String, String> RELOADING_DATA_PACKS = new ConcurrentHashMap<>();
 
     /**
      * A map that stores the paths of data packs that have been synced.
@@ -92,8 +75,6 @@ public class ReloadEvents {
      */
     private static int reloadCounter = 0;
 
-    private static long clientReloadTimeStart = 0;
-
     public static void setup() {
         if (Environment.isClient()) {
             clientSetup();
@@ -102,18 +83,11 @@ public class ReloadEvents {
         Networking.registerC2SPacket(RELOAD_PACKET_ID, ((buf, serverPlayerEntity) -> {
             boolean allowHandshake = buf.readBoolean();
             if (!allowHandshake) {
-                Miapi.LOGGER.warn("Client " + serverPlayerEntity.getUuid() + " rejected reload? this should never happen");
-                return;
+                Miapi.LOGGER.warn("Client " + serverPlayerEntity.getUuid() + " rejected reload? this should never happen!");
+                Miapi.server.sendMessage(Text.literal("Client " + serverPlayerEntity.getDisplayName() + " failed to reload."));
+            } else {
+                triggerReloadOnClient(serverPlayerEntity);
             }
-            HashMap<String, String> staticData = new HashMap<>(SERVER_DATA_PACKS);
-            Thread workerThread = new Thread(() -> staticData.forEach((key, data) -> {
-                PacketByteBuf buffer = Networking.createBuffer();
-                buffer.writeString(key);
-                buffer.writeString(data);
-                Networking.sendS2C(RELOAD_DATA_PACKET_ID, serverPlayerEntity, buffer);
-            }));
-            workerThread.setName("miapi-handshake-thread");
-            workerThread.start();
         }));
 
         //scedule join?
@@ -142,9 +116,12 @@ public class ReloadEvents {
      * @param entity The player entity to send the packet to.
      */
     public static void triggerReloadOnClient(ServerPlayerEntity entity) {
-        SERVER_DATA_PACKS = new HashMap<>(DATA_PACKS);
         PacketByteBuf buf = Networking.createBuffer();
         buf.writeInt(DATA_PACKS.size());
+        for (String key : DATA_PACKS.keySet()) {
+            buf.writeString(key);
+            buf.writeString(DATA_PACKS.get(key));
+        }
         Networking.sendS2C(RELOAD_PACKET_ID, entity, buf);
     }
 
@@ -156,53 +133,36 @@ public class ReloadEvents {
     }
 
     private static void clientSetup() {
-        Map<String, String> dataTemp = new HashMap<>();
-        Networking.registerS2CPacket(RELOAD_DATA_PACKET_ID, (buffer) -> {
-            //make this previewStack on main thread maybe
-            String key = buffer.readString();
-            String data = buffer.readString();
-            dataTemp.put(key, data);
-            if (dataTemp.size() == dataPackSize) {
-                dataPackSize = Integer.MAX_VALUE;
-                synchronized (DATA_PACKS) {
-                    DATA_PACKS.clear();
-                    DATA_PACKS.putAll(dataTemp);
-                    dataTemp.clear();
-                }
-                MinecraftClient.getInstance().execute(() -> {
-                    DataPackLoader.trigger(new ConcurrentHashMap<>(DATA_PACKS));
-                    ReloadEvents.MAIN.fireEvent(true);
-                    ReloadEvents.END.fireEvent(true);
-                    Miapi.LOGGER.info("Client load took " + (double) (System.nanoTime() - clientReloadTimeStart) / 1000 / 1000 + " ms");
-                    inReload = false;
-                });
-            }
-        });
         Networking.registerS2CPacket(RELOAD_PACKET_ID, (buffer) -> {
+            long clientReloadTimeStart = System.nanoTime();
             if (inReload) {
                 Miapi.LOGGER.error("Cannot trigger a Reload during another reload");
+                PacketByteBuf answerBuffer = Networking.createBuffer();
+                answerBuffer.writeBoolean(false);
+                Networking.sendC2S(RELOAD_PACKET_ID, answerBuffer);
                 return;
             }
-            int counterinit = 0;
-            while (MinecraftClient.getInstance().getNetworkHandler() == null) {
-                counterinit++;
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException e) {
-                }
-                if (counterinit > 200) {
-                    throw new RuntimeException("Miapi waited 2 Minutes and still could not establish a Connection with the server and is unable to force disconnect");
-                }
+            int dataPackSize = buffer.readInt();
+            Map<String, String> tempDataPack = new HashMap<>(dataPackSize);
+            for (int i = 0; i < dataPackSize - 1; i++) {
+                String key = buffer.readString();
+                String value = buffer.readString();
+                tempDataPack.put(key, value);
             }
-            inReload = true;
-            dataPackSize = buffer.readInt();
-            clientReloadTimeStart = System.nanoTime();
-            PacketByteBuf buf = Networking.createBuffer();
-            buf.writeBoolean(true);
-            DATA_PACKS.clear();
-            dataTemp.clear();
-            ReloadEvents.START.fireEvent(true);
-            Networking.sendC2S(RELOAD_PACKET_ID, buf);
+            MinecraftClient.getInstance().execute(() -> {
+                inReload = true;
+                ReloadEvents.START.fireEvent(true);
+                synchronized (DATA_PACKS) {
+                    DATA_PACKS.clear();
+                    DATA_PACKS.putAll(tempDataPack);
+                }
+                DataPackLoader.trigger(tempDataPack);
+                tempDataPack.clear();
+                ReloadEvents.MAIN.fireEvent(true);
+                ReloadEvents.END.fireEvent(true);
+                inReload = false;
+                Miapi.LOGGER.info("Client load took " + (double) (System.nanoTime() - clientReloadTimeStart) / 1000 / 1000 + " ms");
+            });
         });
     }
 
