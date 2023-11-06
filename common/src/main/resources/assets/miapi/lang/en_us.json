@@ -161,6 +161,11 @@
     "miapi.stat.rocket_efficiency.description":"How much boost you get from a rocket",
     "miapi.stat.player_item_use_speed":"Using Slowdown",
     "miapi.stat.player_item_use_speed.description":"How much Speed you are loosing while holding right click.\n0 means normal movement and 1 means no movement",
+    "miapi.stat.pillagerGuard":"Villagers Guard",
+    "miapi.stat.pillagerGuard.description":"Decreases Damage taken from raid-related mobs by %d percent",
+    "miapi.stat.illagerBane":"Illagers Bane",
+    "miapi.stat.illagerBane.description":"Bonus Damage against raid-related Mobs",
+
 
     "miapi.material_stat.color": "Color",
     "miapi.material_stat.flexibility": "Flexibility",

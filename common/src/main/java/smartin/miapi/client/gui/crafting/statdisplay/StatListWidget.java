@@ -238,6 +238,18 @@ public class StatListWidget extends InteractAbleWidget {
                 .setMax(0)
                 .setMin(-1).build());
 
+        addStatDisplay(SinglePropertyStatDisplay
+                .builder(IllagerBane.property)
+                .setMax(3)
+                .setFormat("##.#")
+                .setTranslationKey(IllagerBane.KEY).build());
+
+        addStatDisplay(SinglePropertyStatDisplay
+                .builder(PillagesGuard.property)
+                .setMax(3)
+                .setFormat("##.#")
+                .setTranslationKey(PillagesGuard.KEY).build());
+
         AttributeSingleDisplay.attributesWithDisplay.add(AttributeRegistry.MINING_SPEED_AXE);
         AttributeSingleDisplay.attributesWithDisplay.add(AttributeRegistry.MINING_SPEED_PICKAXE);
         AttributeSingleDisplay.attributesWithDisplay.add(AttributeRegistry.MINING_SPEED_HOE);

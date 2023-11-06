@@ -119,6 +119,7 @@ public class ReloadEvents {
         //scedule join?
         PlayerEvent.PLAYER_JOIN.register((ReloadEvents::triggerReloadOnClient));
 
+
         START.subscribe(isClient -> {
             reloadCounter++;
         });

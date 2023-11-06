@@ -23,8 +23,14 @@
     }
   },
   "properties": {
-    "default": {
+    "tool": {
       "fortune": "1"
+    },
+    "handheld": {
+      "illagerBane": "1"
+    },
+    "armor": {
+      "pillagerGuard": "1"
     }
   },
   "textures": [

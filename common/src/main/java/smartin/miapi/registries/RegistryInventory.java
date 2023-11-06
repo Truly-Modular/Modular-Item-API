@@ -438,6 +438,8 @@ public class RegistryInventory {
             registerMiapi(moduleProperties, LoreProperty.KEY, new LoreProperty());
             registerMiapi(moduleProperties, EdibleProperty.KEY, new EdibleProperty());
             registerMiapi(moduleProperties, CryoProperty.KEY, new CryoProperty());
+            registerMiapi(moduleProperties, IllagerBane.KEY, new IllagerBane());
+            registerMiapi(moduleProperties, PillagesGuard.KEY, new PillagesGuard());
 
             //compat
             registerMiapi(moduleProperties, BetterCombatProperty.KEY, new BetterCombatProperty());
