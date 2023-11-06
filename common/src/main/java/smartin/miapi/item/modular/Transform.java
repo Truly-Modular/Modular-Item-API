@@ -260,7 +260,7 @@ public class Transform {
         } else if (o.getClass() != this.getClass()) {
             return false;
         } else {
-            Transformation transformation = (Transformation) o;
+            Transform transformation = (Transform) o;
             return this.rotation.equals(transformation.rotation) && this.scale.equals(transformation.scale) && this.translation.equals(transformation.translation);
         }
     }

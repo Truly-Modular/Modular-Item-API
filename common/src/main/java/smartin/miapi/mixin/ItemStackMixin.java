@@ -4,8 +4,6 @@ import com.google.common.collect.Multimap;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.attribute.EntityAttribute;
-import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.MutableText;
@@ -17,14 +15,10 @@ import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 import smartin.miapi.item.modular.ModularItem;
-import smartin.miapi.modules.properties.AttributeProperty;
 import smartin.miapi.modules.properties.LoreProperty;
 import smartin.miapi.modules.properties.MiningLevelProperty;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.WeakHashMap;
 
 @Mixin(value = ItemStack.class, priority = 2000)
 public abstract class ItemStackMixin {
@@ -41,29 +35,6 @@ public abstract class ItemStackMixin {
             cancellable = true)
     private void miapi$skipAttributeModifier(PlayerEntity player, TooltipContext context, CallbackInfoReturnable<List<Text>> cir, List list, MutableText mutableText, int i, EquipmentSlot[] var6, int var7, int var8, EquipmentSlot equipmentSlot, Multimap multimap) {
         //
-    }
-
-    WeakHashMap<ItemStack, Map<EquipmentSlot, Multimap<EntityAttribute, EntityAttributeModifier>>> apoCache = new WeakHashMap<>();
-
-    @Inject(method = "getAttributeModifiers", at = @At("RETURN"), cancellable = true)
-    public void miapi$modifyAttributeModifiers(EquipmentSlot slot, CallbackInfoReturnable<Multimap<EntityAttribute, EntityAttributeModifier>> cir) {
-        ItemStack stack = (ItemStack) (Object) this;
-
-        if (stack.getItem() instanceof ModularItem) {
-            Multimap<EntityAttribute, EntityAttributeModifier> attributes = AttributeProperty.mergeAttributes(AttributeProperty.equipmentSlotMultimapMap(stack).get(slot), cir.getReturnValue());
-            cir.setReturnValue(attributes);
-            /*
-            Map<EquipmentSlot, Multimap<EntityAttribute, EntityAttributeModifier>> slotMultimapMap = apoCache.getOrDefault(stack, new HashMap<>());
-            if (slotMultimapMap.containsKey(slot)) {
-                cir.setReturnValue(slotMultimapMap.get(slot));
-            } else {
-                Multimap<EntityAttribute, EntityAttributeModifier> attributes = AttributeProperty.mergeAttributes(AttributeProperty.equipmentSlotMultimapMap(stack).get(slot), cir.getReturnValue());
-                slotMultimapMap.put(slot, attributes);
-                apoCache.put(stack, slotMultimapMap);
-                cir.setReturnValue(attributes);
-            }
-             */
-        }
     }
 
     @Inject(method = "getMaxDamage", at = @At("HEAD"), cancellable = true)

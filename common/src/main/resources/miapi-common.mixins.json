@@ -19,6 +19,7 @@
         "InventoryValidationMixin",
         "ItemEntityMixin",
         "ItemStackMixin",
+        "ItemStackMixinHighPriority",
         "LivingEntityAccessor",
         "LivingEntityMixin",
         "LootContextTypesAccessor",
