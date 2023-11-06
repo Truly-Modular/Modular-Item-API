@@ -47,7 +47,11 @@ public class AttributeSingleDisplay extends SingleStatDisplayDouble {
 
     @Override
     public double getValue(ItemStack stack) {
-        return this.valueReader.getValue(stack);
+        double value = this.valueReader.getValue(stack);
+        if(Double.isNaN(value)){
+            return attribute.getDefaultValue();
+        }
+        return value;
     }
 
 

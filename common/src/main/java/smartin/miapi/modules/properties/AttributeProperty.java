@@ -369,6 +369,9 @@ public class AttributeProperty implements ModuleProperty {
         for (Double currentValue : multiplyTotal) {
             value = (1 + currentValue) * value;
         }
+        if(Double.isNaN(value)){
+            return fallback;
+        }
         return value;
     }
 

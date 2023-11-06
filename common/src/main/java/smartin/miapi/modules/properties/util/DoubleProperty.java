@@ -97,6 +97,9 @@ public abstract class DoubleProperty implements ModuleProperty {
             value = currentValue * value;
         }
         if (hasValue) {
+            if(Double.isNaN(value)){
+                return 0d;
+            }
             return value;
         } else {
             return null;

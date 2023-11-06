@@ -18,11 +18,12 @@ public class PillagesGuard extends DoubleProperty {
         property = this;
         MiapiEvents.LIVING_HURT.register((livingHurtEvent) -> {
             if (livingHurtEvent.damageSource.getAttacker() instanceof LivingEntity living) {
-                if (IllagerBane.isIllagerType(living)) {
-                    double level = this.getForItems(livingHurtEvent.livingEntity.getArmorItems());
-                    Miapi.DEBUG_LOGGER.warn("guard_damage " + livingHurtEvent.amount + " " + valueRemap(level));
-                    Miapi.DEBUG_LOGGER.warn(String.valueOf(livingHurtEvent.livingEntity.getAttributes().getValue(EntityAttributes.GENERIC_ARMOR))+ " "+livingHurtEvent.livingEntity.getWorld().isClient());
-                    livingHurtEvent.amount *= (float) valueRemap(level);
+                if (IllagerBane.isIllagerType(living) && !living.getWorld().isClient()) {
+                    double level = 1;
+                    for (ItemStack itemStack : livingHurtEvent.livingEntity.getArmorItems()) {
+                        level -= (1 - valueRemap(getValueSafe(itemStack)));
+                    }
+                    livingHurtEvent.amount *= (float) level;
                 }
             }
             return EventResult.pass();

@@ -248,7 +248,13 @@ public class StatListWidget extends InteractAbleWidget {
                 .builder(PillagesGuard.property)
                 .setMax(3)
                 .setFormat("##.#")
-                .setTranslationKey(PillagesGuard.KEY).build());
+                .setTranslationKey(PillagesGuard.KEY)
+                .setHoverDescription(
+                        (stack -> {
+                            double value = PillagesGuard.valueRemap(PillagesGuard.property.getValueSafe(stack));
+                            value = (double) Math.round((1 - value) * 1000) / 10;
+                            return Text.translatable("miapi.stat.pillagerGuard.description", value);
+                        })).build());
 
         AttributeSingleDisplay.attributesWithDisplay.add(AttributeRegistry.MINING_SPEED_AXE);
         AttributeSingleDisplay.attributesWithDisplay.add(AttributeRegistry.MINING_SPEED_PICKAXE);
@@ -311,8 +317,8 @@ public class StatListWidget extends InteractAbleWidget {
         for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
             Multimap<EntityAttribute, EntityAttributeModifier> oldAttr = original.getAttributeModifiers(equipmentSlot);
             Multimap<EntityAttribute, EntityAttributeModifier> compAttr = compareTo.getAttributeModifiers(equipmentSlot);
-            AttributeSingleDisplay.oldItemCache.put(equipmentSlot,oldAttr);
-            AttributeSingleDisplay.compareItemCache.put(equipmentSlot,compAttr);
+            AttributeSingleDisplay.oldItemCache.put(equipmentSlot, oldAttr);
+            AttributeSingleDisplay.compareItemCache.put(equipmentSlot, compAttr);
         }
         List<ClickableWidget> widgets = new ArrayList<>();
         for (StatWidgetSupplier supplier : statWidgetSupplier) {
