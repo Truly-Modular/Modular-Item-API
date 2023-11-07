@@ -2,23 +2,10 @@ package smartin.miapi.fabric;
 
 import com.jamieswhiteshirt.reachentityattributes.ReachEntityAttributes;
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.entity.event.v1.FabricElytraItem;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
-import net.minecraft.entity.attribute.EntityAttribute;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.Item;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.Identifier;
 import smartin.miapi.Environment;
 import smartin.miapi.Miapi;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.modules.properties.AttributeProperty;
-import smartin.miapi.network.Networking;
-import smartin.miapi.registries.RegistryInventory;
-
-import java.util.Objects;
 
 public class TrulyModularFabric implements ModInitializer {
 
@@ -30,7 +17,6 @@ public class TrulyModularFabric implements ModInitializer {
         if(Environment.isClient()){
             MiapiClient.setupClient();
         }
-        //FabricElytraItem
 
         //ATTRIBUTE REPLACEMENT
         AttributeRegistry.ATTACK_RANGE = ReachEntityAttributes.ATTACK_RANGE;

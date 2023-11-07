@@ -1,11 +1,9 @@
 package smartin.miapi.forge;
 
 import dev.architectury.platform.forge.EventBuses;
-import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.common.ForgeMod;
-import net.minecraftforge.event.ItemAttributeModifierEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -21,7 +19,6 @@ public class TrulyModularForge {
         // Submit our event bus to let architectury register our content on the right time
         EventBuses.registerModEventBus(MOD_ID, FMLJavaModLoadingContext.get().getModEventBus());
         Miapi.init();
-        ServerPlayNetworkHandler handler;
         //ATTRIBUTE REPLACEMENT
         //AttributeRegistry.REACH = ForgeMod.BLOCK_REACH.getRaw();
         //AttributeRegistry.ATTACK_RANGE = ForgeMod.ENTITY_REACH.getRaw();
@@ -31,10 +28,6 @@ public class TrulyModularForge {
         AttributeProperty.replaceMap.put("forge:entity_reach", ForgeMod.ENTITY_REACH);
         AttributeProperty.replaceMap.put("reach-entity-attributes:reach", ForgeMod.BLOCK_REACH);
         AttributeProperty.replaceMap.put("reach-entity-attributes:attack_range", ForgeMod.ENTITY_REACH);
-        ItemAttributeModifierEvent event;
-        //AttributeRegistry.ATTACK_RANGE = ForgeMod.ENTITY_REACH.getRaw();
-        //AttributeProperty.priorityMap.put(ForgeMod.BLOCK_REACH, -7.0f);
-        //AttributeProperty.priorityMap.put(ForgeMod.ENTITY_REACH, -7.0f);
     }
 
 
