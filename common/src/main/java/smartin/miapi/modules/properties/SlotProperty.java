@@ -179,7 +179,7 @@ public class SlotProperty implements ModuleProperty {
         }
 
         public List<String> allowed;
-        @Environment(EnvType.CLIENT)
+        //@Environment(EnvType.CLIENT) // POTENTIAL BEHAVIOR CHANGE (Panda's fix to #11): removed @environment notation to fix NoSuchFieldError
         public Transform transform = Transform.IDENTITY;
         @Nullable
         public ItemModule.ModuleInstance inSlot;
