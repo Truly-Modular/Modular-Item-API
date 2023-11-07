@@ -1,6 +1,7 @@
 package smartin.miapi.forge;
 
 import dev.architectury.platform.forge.EventBuses;
+import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.common.ForgeMod;
@@ -20,7 +21,7 @@ public class TrulyModularForge {
         // Submit our event bus to let architectury register our content on the right time
         EventBuses.registerModEventBus(MOD_ID, FMLJavaModLoadingContext.get().getModEventBus());
         Miapi.init();
-
+        ServerPlayNetworkHandler handler;
         //ATTRIBUTE REPLACEMENT
         //AttributeRegistry.REACH = ForgeMod.BLOCK_REACH.getRaw();
         //AttributeRegistry.ATTACK_RANGE = ForgeMod.ENTITY_REACH.getRaw();
