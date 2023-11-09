@@ -1,7 +1,6 @@
 package smartin.miapi.entity;
 
 import dev.architectury.event.EventResult;
-import net.minecraft.block.BlockState;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -49,7 +48,6 @@ public class ItemProjectileEntity extends PersistentProjectileEntity {
     public float waterDrag = 0.99f;
     public WrappedSoundEvent hitEntitySound = new WrappedSoundEvent(this.getHitSound(), 1.0f, 1.0f);
     public ProjectileHitBehaviour projectileHitBehaviour = new EntityBounceBehaviour();
-    private BlockState inBlockState;
 
     public ItemProjectileEntity(EntityType<? extends Entity> entityType, World world) {
         super((EntityType<? extends PersistentProjectileEntity>) entityType, world);
@@ -63,6 +61,7 @@ public class ItemProjectileEntity extends PersistentProjectileEntity {
         this.dataTracker.set(THROWING_STACK, thrownStack);
         this.dataTracker.set(LOYALTY, (byte) EnchantmentHelper.getLoyalty(stack));
         this.dataTracker.set(ENCHANTED, stack.hasGlint());
+        this.checkDespawn();
         setup();
     }
 
@@ -173,6 +172,12 @@ public class ItemProjectileEntity extends PersistentProjectileEntity {
         this.setVelocity(vec3d.multiply(m));
 
         super.tick();
+    }
+
+    protected void age() {
+        if (this.age >= 1200 * 20) {
+            this.discard();
+        }
     }
 
     private boolean isOwnerAlive() {
@@ -371,15 +376,6 @@ public class ItemProjectileEntity extends PersistentProjectileEntity {
         nbt.putBoolean("SpeedDamage", this.dataTracker.get(SPEED_DAMAGE));
         nbt.putInt("PreferredSlot", this.dataTracker.get(PREFERRED_SLOT));
         MiapiProjectileEvents.MODULAR_PROJECTILE_NBT_WRITE.invoker().nbtEvent(this, nbt);
-    }
-
-    @Override
-    public void age() {
-        int i = this.dataTracker.get(LOYALTY);
-        if (this.pickupType != PickupPermission.ALLOWED || i <= 0) {
-            super.age();
-        }
-
     }
 
     @Override
