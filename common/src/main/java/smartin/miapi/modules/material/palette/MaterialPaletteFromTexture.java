@@ -12,6 +12,7 @@ import net.minecraft.client.texture.SpriteDimensions;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
+import net.minecraft.util.math.Direction;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.mixin.client.SpriteContentsAccessor;
@@ -31,8 +32,17 @@ public class MaterialPaletteFromTexture extends SimpleMaterialPalette {
                 SpriteContents contents = itemModel.getParticleSprite().getContents();
                 return ((SpriteContentsAccessor) contents).getImage();
             });
-        } catch (Exception e) {
-            Miapi.LOGGER.warn("Error during palette creation", e);
+        } catch (Exception surpressed) {
+            try{
+                return new MaterialPaletteFromTexture(material, () -> {
+                    BakedModel itemModel = MinecraftClient.getInstance().getItemRenderer().getModel(mainIngredient, MinecraftClient.getInstance().world, null, 0);
+                    SpriteContents contents = itemModel.getQuads(null, Direction.NORTH,MinecraftClient.getInstance().textRenderer.random).get(0).getSprite().getContents();
+                    return ((SpriteContentsAccessor) contents).getImage();
+                });
+            }
+            catch (Exception e){
+                Miapi.LOGGER.warn("Error during palette creation", e);
+            }
             return new EmptyMaterialPalette(material);
         }
     }

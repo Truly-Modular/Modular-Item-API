@@ -1,5 +1,6 @@
 package smartin.miapi.forge;
 
+import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.platform.forge.EventBuses;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;
@@ -22,6 +23,10 @@ public class TrulyModularForge {
         //ATTRIBUTE REPLACEMENT
         //AttributeRegistry.REACH = ForgeMod.BLOCK_REACH.getRaw();
         //AttributeRegistry.ATTACK_RANGE = ForgeMod.ENTITY_REACH.getRaw();
+        LifecycleEvent.SERVER_STARTING.register((instance -> {
+            AttributeRegistry.REACH = ForgeMod.BLOCK_REACH.get();
+            AttributeRegistry.ATTACK_RANGE = ForgeMod.ENTITY_REACH.get();
+        }));
         AttributeProperty.replaceMap.put("miapi:generic.reach", ForgeMod.BLOCK_REACH);
         AttributeProperty.replaceMap.put("miapi:generic.attack_range", ForgeMod.ENTITY_REACH);
         AttributeProperty.replaceMap.put("forge:block_reach", ForgeMod.BLOCK_REACH);

@@ -37,11 +37,11 @@ public class GeneratedMaterial implements Material {
     @Nullable
     public MaterialIcons.MaterialIcon icon;
 
-    public GeneratedMaterial(ToolMaterial toolMaterial) {
-        this(toolMaterial, toolMaterial.getRepairIngredient().getMatchingStacks()[0]);
+    public GeneratedMaterial(ToolMaterial toolMaterial, boolean isClient) {
+        this(toolMaterial, toolMaterial.getRepairIngredient().getMatchingStacks()[0], isClient);
     }
 
-    public GeneratedMaterial(ToolMaterial toolMaterial, ItemStack itemStack) {
+    public GeneratedMaterial(ToolMaterial toolMaterial, ItemStack itemStack, boolean isClient) {
         this.toolMaterial = toolMaterial;
         mainIngredient = itemStack;
         key = "generated_" + mainIngredient.getItem().getTranslationKey();
@@ -78,7 +78,9 @@ public class GeneratedMaterial implements Material {
         builder.append("}");
         jsonObject = Miapi.gson.fromJson(builder.toString(), JsonObject.class);
 
-        if (Platform.getEnvironment() == Env.CLIENT) clientSetup();
+        if (isClient) {
+            clientSetup();
+        }
     }
 
     @Environment(EnvType.CLIENT)
@@ -156,6 +158,9 @@ public class GeneratedMaterial implements Material {
 
     static String longestSubsString(String stringA, String stringB) {
         // Find length of both the Strings.
+        if (stringB == null || stringA == null) {
+            return "";
+        }
         try {
             if (stringB.length() > stringA.length()) {
                 String buffer = stringA;
@@ -211,9 +216,9 @@ public class GeneratedMaterial implements Material {
 
             // Longest common subString is from index
             // end - result + 1 to index end in X.
-            return stringA.substring(end - result + 1, result);
+            return stringA.substring(end - result + 1, end + 1);
         } catch (Exception e) {
-            Miapi.LOGGER.warn("Exception during string comparison");
+            Miapi.LOGGER.warn("Exception during string comparison" + e);
             return "";
         }
     }

@@ -4,8 +4,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import dev.architectury.platform.Platform;
-import dev.architectury.utils.Env;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
@@ -33,11 +31,11 @@ public class JsonMaterial implements Material {
     public MaterialIcons.MaterialIcon icon;
     protected MaterialPalette palette;
 
-    public JsonMaterial(JsonObject element) {
+    public JsonMaterial(JsonObject element, boolean isClient) {
         rawJson = element;
         key = element.get("key").getAsString();
 
-        if (Platform.getEnvironment() == Env.CLIENT) {
+        if (isClient) {
             if (element.has("icon")) {
                 JsonElement emnt = element.get("icon");
                 if (emnt instanceof JsonPrimitive primitive && primitive.isString())

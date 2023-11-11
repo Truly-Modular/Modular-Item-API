@@ -82,7 +82,7 @@ public class MaterialProperty implements ModuleProperty {
         Miapi.registerReloadHandler(ReloadEvents.MAIN, "materials", materials, (isClient, path, data) -> {
             JsonParser parser = new JsonParser();
             JsonObject obj = parser.parse(data).getAsJsonObject();
-            JsonMaterial material = new JsonMaterial(obj);
+            JsonMaterial material = new JsonMaterial(obj, isClient);
             if (materials.containsKey(material.getKey())) {
                 Miapi.LOGGER.warn("Overwriting Materials isnt supported yet and may cause issues. Material from  " + path + " is overwriting " + material.getKey());
             }
@@ -100,23 +100,23 @@ public class MaterialProperty implements ModuleProperty {
                     .filter(toolMaterial -> toolMaterial.getRepairIngredient().getMatchingStacks().length > 0)
                     .filter(toolMaterial -> Arrays.stream(toolMaterial.getRepairIngredient().getMatchingStacks()).allMatch(itemStack -> getMaterial(itemStack) == null))
                     .collect(Collectors.toSet()).forEach(toolMaterial -> {
-                        GeneratedMaterial generatedMaterial = new GeneratedMaterial(toolMaterial);
+                        GeneratedMaterial generatedMaterial = new GeneratedMaterial(toolMaterial, isClient);
                         if (generatedMaterial.assignStats(toolItems)) {
                             materials.put(generatedMaterial.getKey(), generatedMaterial);
                         } else {
-                            Miapi.LOGGER.warn("Couldn't correctly onReload material for " + generatedMaterial.mainIngredient.getItem());
+                            Miapi.LOGGER.warn("Couldn't correctly setup material for " + generatedMaterial.mainIngredient.getItem());
                         }
                     });
             Registries.ITEM.stream().filter(item -> item.getDefaultStack().isIn(ItemTags.PLANKS)).forEach(item -> {
                 if (getMaterial(item.getDefaultStack()) == null) {
-                    GeneratedMaterial generatedMaterial = new GeneratedMaterial(ToolMaterials.WOOD, item.getDefaultStack());
+                    GeneratedMaterial generatedMaterial = new GeneratedMaterial(ToolMaterials.WOOD, item.getDefaultStack(), isClient);
                     materials.put(generatedMaterial.getKey(), generatedMaterial);
                     generatedMaterial.copyStatsFrom(materials.get("wood"));
                 }
             });
             Registries.ITEM.stream().filter(item -> item.getDefaultStack().isIn(ItemTags.STONE_TOOL_MATERIALS)).forEach(item -> {
                 if (getMaterial(item.getDefaultStack()) == null) {
-                    GeneratedMaterial generatedMaterial = new GeneratedMaterial(ToolMaterials.STONE, item.getDefaultStack());
+                    GeneratedMaterial generatedMaterial = new GeneratedMaterial(ToolMaterials.STONE, item.getDefaultStack(), isClient);
                     materials.put(generatedMaterial.getKey(), generatedMaterial);
                     generatedMaterial.copyStatsFrom(materials.get("stone"));
                 }

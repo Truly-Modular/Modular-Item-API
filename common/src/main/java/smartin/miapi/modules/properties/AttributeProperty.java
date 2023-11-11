@@ -235,7 +235,7 @@ public class AttributeProperty implements ModuleProperty {
                         }
                     }
                     startValue = startValue - key.getDefaultValue();
-                    if (startValue != 0) {
+                    if (startValue != 0 && !Double.isNaN(startValue)) {
                         EntityAttributeModifier entityAttributeModifier = new EntityAttributeModifier(uuid, "generic.miapi." + key.getTranslationKey(), startValue, EntityAttributeModifier.Operation.ADDITION);
                         toAdding.put(key, entityAttributeModifier);
                     }

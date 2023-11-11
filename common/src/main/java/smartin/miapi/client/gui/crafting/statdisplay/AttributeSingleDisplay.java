@@ -48,7 +48,7 @@ public class AttributeSingleDisplay extends SingleStatDisplayDouble {
     @Override
     public double getValue(ItemStack stack) {
         double value = this.valueReader.getValue(stack);
-        if(Double.isNaN(value)){
+        if (Double.isNaN(value)) {
             return attribute.getDefaultValue();
         }
         return value;
@@ -102,19 +102,23 @@ public class AttributeSingleDisplay extends SingleStatDisplayDouble {
         if (slot == null) {
             for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
                 Multimap<EntityAttribute, EntityAttributeModifier> slotMap = attributeCache.get(equipmentSlot);
-                if(slotMap!=null){
+                if (slotMap != null) {
                     Collection<EntityAttributeModifier> attrCollection = attributeCache.get(equipmentSlot).get(attribute);
-                    if (attrCollection!= null && !attrCollection.isEmpty()) {
-                        return true;
+                    if (attrCollection != null && !attrCollection.isEmpty()) {
+                        if (AttributeProperty.getActualValue(attrCollection, attribute.getDefaultValue()) != attribute.getDefaultValue()) {
+                            return true;
+                        }
                     }
                 }
             }
         } else {
             Multimap<EntityAttribute, EntityAttributeModifier> slotMap = attributeCache.get(slot);
-            if(slotMap!=null){
+            if (slotMap != null) {
                 Collection<EntityAttributeModifier> attrCollection = attributeCache.get(slot).get(attribute);
-                if (attrCollection!= null && !attrCollection.isEmpty()) {
-                    return true;
+                if (attrCollection != null && !attrCollection.isEmpty()) {
+                    if (AttributeProperty.getActualValue(attrCollection, attribute.getDefaultValue()) != attribute.getDefaultValue()) {
+                        return true;
+                    }
                 }
             }
         }
