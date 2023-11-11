@@ -45,6 +45,7 @@ public class GeneratedMaterial implements Material {
         this.toolMaterial = toolMaterial;
         mainIngredient = itemStack;
         key = "generated_" + mainIngredient.getItem().getTranslationKey();
+        groups.add(key);
         if (mainIngredient.getItem().getTranslationKey().contains("ingot")) {
             groups.add("metal");
         }
@@ -57,7 +58,7 @@ public class GeneratedMaterial implements Material {
         if (mainIngredient.isIn(ItemTags.PLANKS)) {
             groups.add("wood");
         }
-        if (groups.isEmpty()) {
+        if (groups.size() == 1) {
             groups.add("crystal");
         }
         //TODO:generate those sensible ig?

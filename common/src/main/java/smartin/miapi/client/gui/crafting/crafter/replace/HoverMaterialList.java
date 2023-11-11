@@ -112,7 +112,7 @@ public class HoverMaterialList extends InteractAbleWidget {
         }
     }
 
-    public Text getTranslation(String materialOrGroupKey) {
+    public static Text getTranslation(String materialOrGroupKey) {
         if (MaterialProperty.materials.containsKey(materialOrGroupKey)) {
             Material material = MaterialProperty.materials.get(materialOrGroupKey);
             return Text.translatable(material.getData("translation"));

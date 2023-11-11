@@ -56,6 +56,31 @@ public abstract class ItemStackMixin {
     @Inject(
             method = "getTooltip(Lnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/client/item/TooltipContext;)Ljava/util/List;",
             slice = @Slice(
+                    from = @At("HEAD"),
+                    to = @At(value = "INVOKE", target = "Lnet/minecraft/client/item/TooltipContext;isAdvanced()Z")
+            ),
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/client/item/TooltipContext;isAdvanced()Z",
+                    shift = At.Shift.BEFORE,
+                    by = +1
+            ),
+            locals = LocalCapture.CAPTURE_FAILSOFT
+    )
+    public void miapi$injectLoreTop(PlayerEntity player, TooltipContext context, CallbackInfoReturnable<List<Text>> cir, List<Text> arg1) {
+        ItemStack stack = (ItemStack) (Object) this;
+        /*
+        if (stack.getItem() instanceof ModularItem) {
+            Miapi.DEBUG_LOGGER.warn("topLoreInject");
+            LoreProperty.property.appendLoreTop(arg1, stack);
+        }
+         */
+        LoreProperty.property.appendLoreTop(arg1, stack);
+    }
+
+    @Inject(
+            method = "getTooltip(Lnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/client/item/TooltipContext;)Ljava/util/List;",
+            slice = @Slice(
                     from = @At(value = "INVOKE", target = "Lnet/minecraft/client/item/TooltipContext;isAdvanced()Z"),
                     to = @At("RETURN")
             ),
@@ -67,10 +92,14 @@ public abstract class ItemStackMixin {
             ),
             locals = LocalCapture.CAPTURE_FAILSOFT
     )
-    public void miapi$injectLore(PlayerEntity player, TooltipContext context, CallbackInfoReturnable<List<Text>> cir, List<Text> arg1) {
+    public void miapi$injectLoreBottom(PlayerEntity player, TooltipContext context, CallbackInfoReturnable<List<Text>> cir, List<Text> arg1) {
         ItemStack stack = (ItemStack) (Object) this;
+        /*
         if (stack.getItem() instanceof ModularItem) {
-            LoreProperty.property.appendLore(arg1, stack);
+            LoreProperty.property.appendLoreBottom(arg1, stack);
         }
+
+         */
+        LoreProperty.property.appendLoreBottom(arg1, stack);
     }
 }

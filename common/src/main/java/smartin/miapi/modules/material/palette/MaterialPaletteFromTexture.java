@@ -33,14 +33,13 @@ public class MaterialPaletteFromTexture extends SimpleMaterialPalette {
                 return ((SpriteContentsAccessor) contents).getImage();
             });
         } catch (Exception surpressed) {
-            try{
+            try {
                 return new MaterialPaletteFromTexture(material, () -> {
                     BakedModel itemModel = MinecraftClient.getInstance().getItemRenderer().getModel(mainIngredient, MinecraftClient.getInstance().world, null, 0);
-                    SpriteContents contents = itemModel.getQuads(null, Direction.NORTH,MinecraftClient.getInstance().textRenderer.random).get(0).getSprite().getContents();
+                    SpriteContents contents = itemModel.getQuads(null, Direction.NORTH, MinecraftClient.getInstance().textRenderer.random).get(0).getSprite().getContents();
                     return ((SpriteContentsAccessor) contents).getImage();
                 });
-            }
-            catch (Exception e){
+            } catch (Exception e) {
                 Miapi.LOGGER.warn("Error during palette creation", e);
             }
             return new EmptyMaterialPalette(material);
@@ -81,7 +80,7 @@ public class MaterialPaletteFromTexture extends SimpleMaterialPalette {
             PaletteCreators.PixelPlacer placer = (color, x, y) -> nativeImage.setColor(x, y, color.abgr());
             List<Map.Entry<Integer, Color>> list = finalColorMap.entrySet().stream().sorted(Map.Entry.comparingByKey()).toList();
             for (int i = 0; i < list.size(); i++) {
-                int relativePos =(int) ((float)i / (float)list.size() * 256.0f);
+                int relativePos = (int) ((float) i / (float) list.size() * 256.0f);
                 Map.Entry<Integer, Color> last = i == 0 ? Map.entry(0, Color.BLACK) : list.get(i - 1);
                 Map.Entry<Integer, Color> current = list.get(i);
                 Map.Entry<Integer, Color> next = i == list.size() - 1 ? Map.entry(255, Color.WHITE) : list.get(i + 1);
@@ -111,7 +110,7 @@ public class MaterialPaletteFromTexture extends SimpleMaterialPalette {
     public @Nullable SpriteContents generateSpriteContents(Identifier id) {
         List<Color> pixels = Arrays.stream(getPixelArray())
                 .mapToObj(Color::new)
-                .filter(color -> color.a() > 0)
+                .filter(color -> color.a() > 5)
                 .sorted(Comparator.comparingDouble(a -> a.toFloatVecNoDiv().length()))
                 .toList();
 
@@ -121,18 +120,21 @@ public class MaterialPaletteFromTexture extends SimpleMaterialPalette {
         Map<Integer, Color> colors = new HashMap<>();
 
         for (int i = 0; i < pixels.size(); i++) {
-            colors.put((int)((float)i / (float)pixels.size() * 255.0), pixels.get(i));
+            double key = Math.round(i * (255.0 / (pixels.size() - 1)));
+            colors.put((int) key, pixels.get(i));
         }
 
         if (!colors.containsKey(0))
             colors.put(0, colors.get(0));
         if (!colors.containsKey(255))
-            colors.put(255, colors.get(colors.size()-1));
+            colors.put(255, colors.get(colors.size() - 1));
 
         NativeImage nativeImage = new NativeImage(256, 1, false);
         PaletteCreators.PixelPlacer placer = (color, x, y) -> nativeImage.setColor(x, y, color.abgr());
 
-        List<Map.Entry<Integer, Color>> list = colors.entrySet().stream().sorted(Map.Entry.comparingByKey()).toList();
+        List<Map.Entry<Integer, Color>> list = colors.entrySet().stream()
+                .sorted(Map.Entry.comparingByKey())
+                .toList();
         for (int i = 0; i < list.size(); i++) {
             Map.Entry<Integer, Color> last = i == 0 ? Map.entry(0, Color.BLACK) : list.get(i - 1);
             Map.Entry<Integer, Color> current = list.get(i);

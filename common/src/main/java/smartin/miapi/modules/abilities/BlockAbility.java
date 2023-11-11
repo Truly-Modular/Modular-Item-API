@@ -43,7 +43,7 @@ public class BlockAbility extends EntityAttributeAbility {
 
     @Environment(EnvType.CLIENT)
     public void clientSetup(){
-        LoreProperty.loreSuppliers.add(itemStack -> {
+        LoreProperty.bottomLoreSuppliers.add(itemStack -> {
             List<Text> texts = new ArrayList<>();
             if (AbilityProperty.property.isPrimaryAbility(this, itemStack)) {
                 Text raw = Text.translatable("miapi.ability.block.lore");

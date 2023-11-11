@@ -40,7 +40,7 @@ public class ThrowingAbility implements ItemUseAbility {
 
     @Environment(EnvType.CLIENT)
     public void clientSetup(){
-        LoreProperty.loreSuppliers.add(itemStack -> {
+        LoreProperty.bottomLoreSuppliers.add(itemStack -> {
             List<Text> texts = new ArrayList<>();
             if (AbilityProperty.property.isPrimaryAbility(this, itemStack)) {
                 texts.add(Text.translatable("miapi.ability.throw.lore"));
