@@ -378,6 +378,7 @@ public class RegistryInventory {
                 registerMiapi(moduleProperties, ModelMergeProperty.KEY, new ModelMergeProperty());
                 registerMiapi(moduleProperties, GuiOffsetProperty.KEY, new GuiOffsetProperty());
                 registerMiapi(moduleProperties, ItemModelProperty.KEY, new ItemModelProperty());
+                registerMiapi(moduleProperties, LoreProperty.KEY, new LoreProperty());
             }
             else{
                 registerMiapi(moduleProperties, "texture", new ServerReplaceProperty());
@@ -385,6 +386,7 @@ public class RegistryInventory {
                 registerMiapi(moduleProperties, "modelMerge", new ServerReplaceProperty());
                 registerMiapi(moduleProperties, "guiOffset", new ServerReplaceProperty());
                 registerMiapi(moduleProperties, "item_model", new ServerReplaceProperty());
+                registerMiapi(moduleProperties, "itemLore", new ServerReplaceProperty());
             }
             registerMiapi(moduleProperties, NameProperty.KEY, new NameProperty());
             registerMiapi(moduleProperties, SlotProperty.KEY, new SlotProperty());
@@ -435,7 +437,6 @@ public class RegistryInventory {
             registerMiapi(moduleProperties, ImmolateProperty.KEY, new ImmolateProperty());
             registerMiapi(moduleProperties, LeechingProperty.KEY, new LeechingProperty());
             registerMiapi(moduleProperties, IsCrossbowShootAble.KEY, new IsCrossbowShootAble());
-            registerMiapi(moduleProperties, LoreProperty.KEY, new LoreProperty());
             registerMiapi(moduleProperties, EdibleProperty.KEY, new EdibleProperty());
             registerMiapi(moduleProperties, CryoProperty.KEY, new CryoProperty());
             registerMiapi(moduleProperties, IllagerBane.KEY, new IllagerBane());

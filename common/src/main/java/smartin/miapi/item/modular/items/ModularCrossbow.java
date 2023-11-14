@@ -123,7 +123,9 @@ public class ModularCrossbow extends CrossbowItem implements ModularItem {
 
     public static int getPullTime(ItemStack stack) {
         int i = EnchantmentHelper.getLevel(Enchantments.QUICK_CHARGE, stack);
-        return i == 0 ? 25 : (int) (25 - AttributeProperty.getActualValue(stack, EquipmentSlot.MAINHAND, AttributeRegistry.BOW_DRAW_TIME) - 5 * i);
+        double drawTime = (25 - AttributeProperty.getActualValue(stack, EquipmentSlot.MAINHAND, AttributeRegistry.BOW_DRAW_TIME));
+        drawTime = Math.max(5, drawTime - drawTime / 5 * i);
+        return (int) drawTime;
     }
 
     private static boolean loadProjectiles(LivingEntity shooter, ItemStack crossbow) {

@@ -28,7 +28,7 @@ public class BuiltinModelItemRendererMixin {
             if (miapiModel != null) {
                 miapiModel.render(matrices, stack, mode, MinecraftClient.getInstance().getTickDelta(), vertexConsumers, CustomModel.currentEntity, light, overlay);
             }
-            //entity = null;
+            CustomModel.currentEntity = null;
         }
     }
 }
