@@ -69,8 +69,10 @@ public class LoreProperty extends CodecBasedProperty<LoreProperty.Holder> {
     public void appendLoreTop(List<Text> oldLore, ItemStack itemStack) {
         loreSuppliers.forEach(loreSupplier -> oldLore.addAll(loreSupplier.getLore(itemStack)));
         Holder holder = get(itemStack);
-        if (holder != null && holder.position.equals("top")) {
-            oldLore.addAll(Text.translatable(holder.lang).getSiblings());
+        if (holder != null) {
+            if("top".equals(holder.position) && holder.lang != null){
+                oldLore.add(Text.translatable(holder.lang));
+            }
         }
     }
 
@@ -78,14 +80,18 @@ public class LoreProperty extends CodecBasedProperty<LoreProperty.Holder> {
     public void appendLoreBottom(List<Text> oldLore, ItemStack itemStack) {
         bottomLoreSuppliers.forEach(loreSupplier -> oldLore.addAll(loreSupplier.getLore(itemStack)));
         Holder holder = get(itemStack);
-        if (holder != null && holder.position.equals("bottom")) {
-            oldLore.addAll(Text.translatable(holder.lang).getSiblings());
+        if (holder != null) {
+            if("bottom".equals(holder.position) && holder.lang != null){
+                oldLore.add(Text.translatable(holder.lang));
+            }
         }
     }
 
     public static class Holder {
-        String lang = "miapi.lore.empty";
-        public String position = "top";
+        @AutoCodec.Mandatory
+        public String lang;
+        @AutoCodec.Mandatory
+        public String position;
     }
 
     @Environment(EnvType.CLIENT)

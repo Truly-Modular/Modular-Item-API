@@ -25,6 +25,7 @@
     "miapi.ui.craft.warning.flexibility": "Flexibility cannot go bellow 0",
     "miapi.ui.craft.warning.durability_negative": "Durability cant be negative",
     "miapi.ui.craft.result_equal_warning": "Crafting does not change the Item.",
+    "miapi.lore.empty": "",
     "miapi.skin.name.": "Default Skin",
     "miapi.skin.name.star_wars": "",
     "miapi.skin.name.buster": "Ducks Buster Sword",
