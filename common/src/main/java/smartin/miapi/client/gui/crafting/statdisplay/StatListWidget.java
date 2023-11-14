@@ -239,6 +239,7 @@ public class StatListWidget extends InteractAbleWidget {
                 .builder(AttributeRegistry.PLAYER_ITEM_USE_MOVEMENT_SPEED)
                 .setTranslationKey("player_item_use_speed")
                 .setMax(0)
+                .inverseNumber(true)
                 .setMin(-1).build());
 
         addStatDisplay(SinglePropertyStatDisplay
