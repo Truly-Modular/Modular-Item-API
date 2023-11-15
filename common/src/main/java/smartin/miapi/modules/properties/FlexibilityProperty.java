@@ -2,15 +2,18 @@ package smartin.miapi.modules.properties;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Text;
+import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
+import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.edit_options.EditOption;
 import smartin.miapi.modules.properties.util.CraftingProperty;
 import smartin.miapi.modules.properties.util.DoubleProperty;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Flexibility is a optional tool to limit items to be somewhat reasonable
@@ -39,6 +42,9 @@ public class FlexibilityProperty extends DoubleProperty implements CraftingPrope
         return getValueSafeRaw(stack);
     }
 
+    public void writeData(Map<String, String> data, @Nullable InteractAbleWidget createdGui, EditOption.EditContext editContext) {
+    }
+
     @Override
     public boolean shouldExecuteOnCraft(ItemModule.ModuleInstance module, ItemModule.ModuleInstance root, ItemStack stack) {
         return ItemModule.getMergedProperty(root,this)!=null;
@@ -46,13 +52,13 @@ public class FlexibilityProperty extends DoubleProperty implements CraftingPrope
 
 
     @Override
-    public boolean canPerform(ItemStack old, ItemStack crafting, ModularWorkBenchEntity bench, PlayerEntity player, ItemModule.ModuleInstance newModule, ItemModule module, List<ItemStack> inventory, PacketByteBuf buf) {
+    public boolean canPerform(ItemStack old, ItemStack crafting, ModularWorkBenchEntity bench, PlayerEntity player, ItemModule.ModuleInstance newModule, ItemModule module, List<ItemStack> inventory, Map<String,String> data) {
         double flexibility = getValueSafe(crafting);
         return flexibility >= 0;
     }
 
     @Override
-    public ItemStack preview(ItemStack old, ItemStack crafting, PlayerEntity player, ModularWorkBenchEntity bench, ItemModule.ModuleInstance newModule, ItemModule module, List<ItemStack> inventory, PacketByteBuf buf) {
+    public ItemStack preview(ItemStack old, ItemStack crafting, PlayerEntity player, ModularWorkBenchEntity bench, ItemModule.ModuleInstance newModule, ItemModule module, List<ItemStack> inventory, Map<String,String> data) {
         return crafting;
     }
 }

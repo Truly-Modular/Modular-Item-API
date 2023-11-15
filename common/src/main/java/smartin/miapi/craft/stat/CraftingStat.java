@@ -7,12 +7,10 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
-import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.StatProvisionProperty;
@@ -87,7 +85,7 @@ public interface CraftingStat<T> {
      * @param newModule the new ModuleInstance
      * @param module    the new Module
      * @param inventory Linked Inventory, length of {@link CraftingProperty#getSlotPositions()}
-     * @param buf       the writen buffer from {@link CraftingProperty#writeCraftingBuffer(PacketByteBuf, InteractAbleWidget)}
+     * @param data      A map for properties to send addtional Data
      * @return if the crafting can happen
      */
     default boolean canCraft(
@@ -100,7 +98,7 @@ public interface CraftingStat<T> {
             ItemModule.ModuleInstance newModule,
             ItemModule module,
             List<ItemStack> inventory,
-            PacketByteBuf buf) {
+            Map<String,String> data) {
         return instance.equals(expected);
     }
 

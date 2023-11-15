@@ -5,7 +5,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.text.Text;
 import smartin.miapi.client.gui.InteractAbleWidget;
@@ -16,11 +15,12 @@ import smartin.miapi.craft.CraftAction;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.edit_options.EditOption;
-import smartin.miapi.modules.properties.SlotProperty;
 import smartin.miapi.modules.material.Material;
 import smartin.miapi.modules.material.MaterialProperty;
+import smartin.miapi.modules.properties.SlotProperty;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -163,7 +163,7 @@ public class ModuleCrafter extends InteractAbleWidget {
                     this.module = itemModule;
                     setMode(Mode.CRAFT);
                 }), (itemModule -> {
-                    CraftAction action = new CraftAction(stack, slot, itemModule, null, handler.blockEntity, new PacketByteBuf[0]);
+                    CraftAction action = new CraftAction(stack, slot, itemModule, null, handler.blockEntity, new HashMap<>());
                     action.linkInventory(linkedInventory, 1);
                     if (currentMode == Mode.REPLACE) {
                         preview.accept(action.getPreview());

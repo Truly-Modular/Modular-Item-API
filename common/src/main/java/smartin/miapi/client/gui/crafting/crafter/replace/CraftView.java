@@ -8,7 +8,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.text.MutableText;
@@ -28,6 +27,7 @@ import smartin.miapi.modules.properties.util.CraftingProperty;
 import smartin.miapi.network.Networking;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -252,16 +252,8 @@ public class CraftView extends InteractAbleWidget {
     }
 
     public void setBuffers() {
-        List<PacketByteBuf> buffers = new ArrayList<>();
-        action.forEachCraftingProperty(compareStack, ((craftingProperty, moduleInstance, itemStacks, invStart, invEnd, buf) -> {
-            PacketByteBuf buf1 = Networking.createBuffer();
-            int index = craftingProperties.indexOf(craftingProperty);
-            if (index >= 0) {
-                craftingProperty.writeCraftingBuffer(buf1, craftingGuis.get(craftingProperties.indexOf(craftingProperty)));
-            }
-            buffers.add(buf1);
-        }));
-        action.setBuffer(buffers.toArray(new PacketByteBuf[0]));
+        Map<String,String> data = new HashMap<>();
+        action.setData(data);
     }
 
     public ItemStack compareStack() {

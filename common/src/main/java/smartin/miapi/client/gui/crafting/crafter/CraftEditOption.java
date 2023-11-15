@@ -1,6 +1,5 @@
 package smartin.miapi.client.gui.crafting.crafter;
 
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Text;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.crafting.crafter.replace.CraftViewRework;
@@ -9,6 +8,8 @@ import smartin.miapi.craft.CraftAction;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.edit_options.EditOption;
 import smartin.miapi.network.Networking;
+
+import java.util.HashMap;
 
 public class CraftEditOption extends InteractAbleWidget {
     EditOption.EditContext editContext;
@@ -37,7 +38,7 @@ public class CraftEditOption extends InteractAbleWidget {
                     this.module = itemModule;
                     setMode(Mode.CRAFT);
                 }), (itemModule -> {
-                    CraftAction action = new CraftAction(editContext.getItemstack(), editContext.getSlot(), itemModule, editContext.getPlayer(), editContext.getWorkbench(), new PacketByteBuf[0]);
+                    CraftAction action = new CraftAction(editContext.getItemstack(), editContext.getSlot(), itemModule, editContext.getPlayer(), editContext.getWorkbench(), new HashMap<>());
                     action.setItem(editContext.getLinkedInventory().getStack(0));
                     action.linkInventory(editContext.getLinkedInventory(), 1);
                     editContext.preview(action.toPacket(Networking.createBuffer()));

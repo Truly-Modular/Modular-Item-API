@@ -4,7 +4,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
@@ -17,6 +16,7 @@ import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class StatRequirementProperty implements ModuleProperty, CraftingProperty {
@@ -28,7 +28,7 @@ public class StatRequirementProperty implements ModuleProperty, CraftingProperty
     }
 
     @Override
-    public boolean canPerform(ItemStack old, ItemStack crafting, @Nullable ModularWorkBenchEntity bench, PlayerEntity player, ItemModule.ModuleInstance newModule, ItemModule module, List<ItemStack> inventory, PacketByteBuf buf) {
+    public boolean canPerform(ItemStack old, ItemStack crafting, @Nullable ModularWorkBenchEntity bench, PlayerEntity player, ItemModule.ModuleInstance newModule, ItemModule module, List<ItemStack> inventory, Map<String,String> data) {
         if (bench == null) return true;
 
         JsonElement element = newModule.getProperties().get(property);
@@ -38,7 +38,7 @@ public class StatRequirementProperty implements ModuleProperty, CraftingProperty
             element.getAsJsonObject().asMap().forEach((key, val) -> {
                 CraftingStat<?> stat = RegistryInventory.craftingStats.get(key);
                 if (stat != null) {
-                    boolean craftable = ((CraftingStat) stat).canCraft(bench.getStat(stat), stat.createFromJson(val, newModule), old, crafting, bench, player, newModule, module, inventory, buf);
+                    boolean craftable = ((CraftingStat) stat).canCraft(bench.getStat(stat), stat.createFromJson(val, newModule), old, crafting, bench, player, newModule, module, inventory, data);
                     if (!craftable) canCraft.set(false);
                 }
             });
@@ -50,7 +50,7 @@ public class StatRequirementProperty implements ModuleProperty, CraftingProperty
     }
 
     @Override
-    public ItemStack preview(ItemStack old, ItemStack crafting, PlayerEntity player, ModularWorkBenchEntity bench, ItemModule.ModuleInstance newModule, ItemModule module, List<ItemStack> inventory, PacketByteBuf buf) {
+    public ItemStack preview(ItemStack old, ItemStack crafting, PlayerEntity player, ModularWorkBenchEntity bench, ItemModule.ModuleInstance newModule, ItemModule module, List<ItemStack> inventory, Map<String,String> data) {
         return crafting;
     }
 
