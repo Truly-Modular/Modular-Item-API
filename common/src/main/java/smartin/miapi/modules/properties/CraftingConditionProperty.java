@@ -18,6 +18,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * This property can manage if a module can be crafted in the first place
+ */
 public class CraftingConditionProperty implements ModuleProperty, CraftingProperty {
     public static final String KEY = "crafting_condition";
     public static CraftingConditionProperty property;

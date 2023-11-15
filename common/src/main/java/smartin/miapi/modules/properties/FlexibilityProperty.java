@@ -14,7 +14,6 @@ import java.util.Map;
 
 /**
  * Flexibility is a optional tool to limit items to be somewhat reasonable
- *
  */
 public class FlexibilityProperty extends DoubleProperty implements CraftingProperty {
     public static final String KEY = "flexibility";

@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class EdibleProperty implements ModuleProperty {
+    //@Panda is this done or under construction still?
     public static final String KEY = "edible";
     public static EdibleProperty property;
 

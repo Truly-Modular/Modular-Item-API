@@ -6,7 +6,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.*;
@@ -19,7 +18,10 @@ import smartin.miapi.modules.properties.CraftingConditionProperty;
 import smartin.miapi.modules.properties.PriorityProperty;
 import smartin.miapi.modules.properties.SlotProperty;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
 import java.util.function.Consumer;
 
 /**
@@ -72,7 +74,6 @@ public class ReplaceView extends InteractAbleWidget {
     }
 
     class SlotButton extends InteractAbleWidget {
-        private final Identifier texture = new Identifier(Miapi.MOD_ID, "textures/gui/crafter/module_button_select.png");
         private ScrollingTextWidget textWidget;
         private CraftOption option;
         private boolean isAllowed = true;

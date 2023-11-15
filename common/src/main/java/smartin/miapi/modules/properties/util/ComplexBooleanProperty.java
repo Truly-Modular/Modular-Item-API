@@ -4,6 +4,7 @@ import net.minecraft.item.ItemStack;
 
 public abstract class ComplexBooleanProperty extends DoubleProperty {
     boolean defaultValue;
+    //TODO:add a gui to this and all its inheritors
 
     protected ComplexBooleanProperty(String key, boolean defaultValue) {
         super(key);

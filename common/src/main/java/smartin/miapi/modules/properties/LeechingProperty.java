@@ -8,6 +8,9 @@ import net.minecraft.item.ItemStack;
 import smartin.miapi.item.FakeEnchantment;
 import smartin.miapi.modules.properties.util.DoubleProperty;
 
+/**
+ * this property eats Xp continously and repears the item with it
+ */
 public class LeechingProperty extends DoubleProperty {
     public static final String KEY = "leeching";
     public static LeechingProperty property;

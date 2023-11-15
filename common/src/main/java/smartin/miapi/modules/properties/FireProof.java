@@ -4,8 +4,7 @@ import net.minecraft.item.ItemStack;
 import smartin.miapi.modules.properties.util.ComplexBooleanProperty;
 
 /**
- * This Property allows to designate the Item as Tool or Weapon,
- * mainly affecting durability calculations
+ * This Property allows to be set as fireproof, making them immune to Lava
  */
 public class FireProof extends ComplexBooleanProperty {
     public static final String KEY = "fireProof";

@@ -7,6 +7,7 @@ import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.cache.ModularItemCache;
 
 public class BooleanProperty implements ModuleProperty {
+    //TODO:add a gui to this and all its inheritors
     private final String KEY_PRIVATE;
     public BooleanProperty property;
     private final boolean defaultValueSaved;

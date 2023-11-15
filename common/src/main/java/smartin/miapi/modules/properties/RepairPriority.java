@@ -10,6 +10,9 @@ import smartin.miapi.modules.properties.util.DoubleProperty;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * controls the repair material
+ */
 public class RepairPriority extends DoubleProperty {
     public static RepairPriority property;
     public static final String KEY = "repairPriority";

@@ -15,6 +15,9 @@ import smartin.miapi.item.FakeEnchantment;
 import smartin.miapi.item.modular.Transform;
 import smartin.miapi.modules.properties.util.DoubleProperty;
 
+/**
+ * This property is arson.
+ */
 public class ImmolateProperty extends DoubleProperty {
     public static final String KEY = "immolate";
     public static ImmolateProperty property;

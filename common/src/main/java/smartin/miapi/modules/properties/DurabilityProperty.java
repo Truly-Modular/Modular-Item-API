@@ -3,6 +3,9 @@ package smartin.miapi.modules.properties;
 import net.minecraft.item.ItemStack;
 import smartin.miapi.modules.properties.util.DoubleProperty;
 
+/**
+ * This property manages the final durabiltiy of the item
+ */
 public class DurabilityProperty extends DoubleProperty {
     public static final String KEY = "durability";
     public static DurabilityProperty property;

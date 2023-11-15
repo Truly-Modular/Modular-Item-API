@@ -2,12 +2,13 @@ package smartin.miapi.modules.properties;
 
 import dev.architectury.event.EventResult;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.item.ItemStack;
-import smartin.miapi.Miapi;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.modules.properties.util.DoubleProperty;
 
+/**
+ * decreases damage from raid type mobs
+ */
 public class PillagesGuard extends DoubleProperty {
     public static final String KEY = "pillagerGuard";
     public static PillagesGuard property;

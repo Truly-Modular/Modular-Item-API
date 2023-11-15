@@ -19,8 +19,12 @@ import smartin.miapi.modules.properties.util.CodecBasedProperty;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This property manages the Itemlore of an Item
+ */
 public class LoreProperty extends CodecBasedProperty<LoreProperty.Holder> {
     public static final String KEY = "itemLore";
+    //TODO: maybe add more points to it? also add diret text to the json
     public static final Codec<LoreProperty.Holder> codec = AutoCodec.of(LoreProperty.Holder.class).codec();
     public static LoreProperty property;
     public static List<LoreSupplier> bottomLoreSuppliers = new ArrayList<>();

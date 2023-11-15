@@ -21,7 +21,7 @@ import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
 /**
- * This property gives a projectile ender pearl behaviour
+ * replaces the projectile with another projectile on impact
  */
 public class ProjectileTriggerProperty implements ModuleProperty {
     public static final String KEY = "replace_projectile";

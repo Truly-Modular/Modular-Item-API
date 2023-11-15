@@ -15,7 +15,12 @@ import smartin.miapi.registries.RegistryInventory;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * This property manages the Glint on the item
+ */
 public class GlintProperty implements ModuleProperty {
+    //TODO:add gui implementation
+    //TODO:fix me
     public static GlintProperty property;
     public static final String KEY = "glint_settings";
 

@@ -6,6 +6,9 @@ import net.minecraft.item.ItemStack;
 import smartin.miapi.item.FakeEnchantment;
 import smartin.miapi.modules.properties.util.DoubleProperty;
 
+/**
+ * Applies fake mending to the Item
+ */
 public class MendingProperty extends DoubleProperty {
     public static final String KEY = "mending";
     public static MendingProperty property;

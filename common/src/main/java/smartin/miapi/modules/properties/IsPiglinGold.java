@@ -4,8 +4,7 @@ import net.minecraft.item.ItemStack;
 import smartin.miapi.modules.properties.util.ComplexBooleanProperty;
 
 /**
- * This Property allows to designate the Item as Tool or Weapon,
- * mainly affecting durability calculations
+ * This Property sets an armor Piece to be valid as a Piglin Gold Item so they dont attack the player
  */
 public class IsPiglinGold extends ComplexBooleanProperty {
     public static final String KEY = "isPiglinGold";

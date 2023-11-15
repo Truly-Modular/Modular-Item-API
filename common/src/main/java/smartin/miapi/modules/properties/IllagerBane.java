@@ -11,7 +11,11 @@ import smartin.miapi.Miapi;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.modules.properties.util.DoubleProperty;
 
+/**
+ * this property increases damage to Raid type mods
+ */
 public class IllagerBane extends DoubleProperty {
+    ///TODO:look how to better detect those entitys, maybe a tag and look into mod compat as well
     public static final String KEY = "illagerBane";
     public static IllagerBane property;
 

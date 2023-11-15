@@ -8,6 +8,9 @@ import smartin.miapi.events.MiapiProjectileEvents;
 import smartin.miapi.modules.properties.util.DoubleProperty;
 import smartin.miapi.registries.RegistryInventory;
 
+/**
+ * This Property applies the Cryo effect on Arrowhit(only on arrowhit)
+ */
 public class CryoProperty extends DoubleProperty {
     public static final String KEY = "cryo";
     public static CryoProperty property;

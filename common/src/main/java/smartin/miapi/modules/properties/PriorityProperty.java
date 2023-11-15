@@ -4,6 +4,9 @@ import net.minecraft.item.ItemStack;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.util.DoubleProperty;
 
+/**
+ * influences the ordering inside the gui
+ */
 public class PriorityProperty extends DoubleProperty {
     public static final String KEY = "priority";
     public static PriorityProperty property;

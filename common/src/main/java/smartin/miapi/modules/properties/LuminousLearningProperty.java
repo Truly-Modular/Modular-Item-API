@@ -14,6 +14,9 @@ import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.modules.properties.util.DoubleProperty;
 
+/**
+ * Increases Xp Drops from slain mods and broken blocks
+ */
 public class LuminousLearningProperty extends DoubleProperty {
     public static final String KEY = "luminiousLearning";
     public static LuminousLearningProperty property;
