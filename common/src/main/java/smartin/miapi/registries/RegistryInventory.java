@@ -442,6 +442,7 @@ public class RegistryInventory {
             registerMiapi(moduleProperties, IllagerBane.KEY, new IllagerBane());
             registerMiapi(moduleProperties, PillagesGuard.KEY, new PillagesGuard());
             registerMiapi(moduleProperties, LuminousLearningProperty.KEY, new LuminousLearningProperty());
+            registerMiapi(moduleProperties, BlueprintProperty.KEY, new BlueprintProperty());
 
             //compat
             registerMiapi(moduleProperties, BetterCombatProperty.KEY, new BetterCombatProperty());

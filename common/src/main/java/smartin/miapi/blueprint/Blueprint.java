@@ -9,6 +9,8 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import smartin.miapi.Miapi;
 import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.conditions.ConditionManager;
+import smartin.miapi.modules.conditions.ModuleCondition;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.registries.MiapiRegistry;
 import smartin.miapi.registries.RegistryInventory;
@@ -19,12 +21,12 @@ import java.util.Map;
 
 @JsonAdapter(Blueprint.BlueprintJsonAdapter.class)
 public class Blueprint {
-    public static MiapiRegistry<BlueprintCondition> blueprintConditionRegistry = MiapiRegistry.getInstance(BlueprintCondition.class);
+    public static MiapiRegistry<Blueprint> blueprintRegistry = MiapiRegistry.getInstance(Blueprint.class);
     public ItemModule module = ItemModule.empty;
     public String key;
     public int level = 0;
     public Map<ModuleProperty, JsonElement> upgrades = new HashMap<>();
-    public BlueprintCondition isAllowed = AlwaysAllowedCondition.ALWAYS_ALLOWED;
+    public ModuleCondition isAllowed;
 
     public void writeToElement() {
 
@@ -49,9 +51,7 @@ public class Blueprint {
                 Miapi.LOGGER.warn("Blueprints target module is invalid. Either Module is not loaded or Blueprint is setup wrong. " + key);
             }
             if (jsonObject.has("condition")) {
-                JsonObject conditionElement = jsonObject.get("condition").getAsJsonObject();
-                String asd = conditionElement.get("key").getAsString();
-                blueprint.isAllowed = blueprintConditionRegistry.get(asd).fromJson(conditionElement);
+                blueprint.isAllowed = ConditionManager.get(jsonObject.get("condition"));
             } else {
                 Miapi.LOGGER.warn("Blueprints target condition is invalid. Either Condition is not loaded or Blueprint is setup wrong. " + key);
             }

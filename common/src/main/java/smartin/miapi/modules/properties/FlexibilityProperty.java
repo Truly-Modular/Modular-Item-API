@@ -3,12 +3,9 @@ package smartin.miapi.modules.properties;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
-import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
-import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.modules.ItemModule;
-import smartin.miapi.modules.edit_options.EditOption;
 import smartin.miapi.modules.properties.util.CraftingProperty;
 import smartin.miapi.modules.properties.util.DoubleProperty;
 
@@ -40,9 +37,6 @@ public class FlexibilityProperty extends DoubleProperty implements CraftingPrope
     @Override
     public double getValueSafe(ItemStack stack) {
         return getValueSafeRaw(stack);
-    }
-
-    public void writeData(Map<String, String> data, @Nullable InteractAbleWidget createdGui, EditOption.EditContext editContext) {
     }
 
     @Override

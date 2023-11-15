@@ -18,7 +18,6 @@ import org.joml.Vector4f;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.*;
 import smartin.miapi.craft.CraftAction;
-import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.edit_options.EditOption;
 import smartin.miapi.modules.properties.SlotProperty;
 import smartin.miapi.modules.properties.util.CraftingProperty;
@@ -52,6 +51,7 @@ public class CraftViewRework extends InteractAbleWidget {
     SimpleButton<Object> nextButton;
     CraftButton<Object> craftButton;
     Matrix4f currentMatrix = new Matrix4f();
+    public Map<String,String> defaultMap = new HashMap<>();
     ScreenHandlerListener listener = new SimpleScreenHandlerListener((h, slotId, itemStack) -> {
         if (slotId != 36) {
             update();
@@ -59,13 +59,11 @@ public class CraftViewRework extends InteractAbleWidget {
     });
     EmptyCraftingWidget fallbackCraftingWidget;
 
-    public CraftViewRework(int x, int y, int width, int height, int offset, ItemModule module, EditOption.EditContext editContext, Consumer<SlotProperty.ModuleSlot> back) {
+    public CraftViewRework(int x, int y, int width, int height, int offset, CraftOption option, EditOption.EditContext editContext, Consumer<SlotProperty.ModuleSlot> back) {
         super(x, y, width, height, Text.empty());
         this.editContext = editContext;
-        if (module == null) {
-            module = ItemModule.empty;
-        }
-        action = new CraftAction(editContext.getItemstack(), editContext.getSlot(), module, editContext.getPlayer(), editContext.getWorkbench(), new HashMap<>());
+        defaultMap = option.data();
+        action = new CraftAction(editContext.getItemstack(), editContext.getSlot(), option.module(), editContext.getPlayer(), editContext.getWorkbench(), option.data());
         action.setItem(editContext.getItemstack());
         action.linkInventory(editContext.getLinkedInventory(), offset);
         setBuffers();
@@ -85,7 +83,7 @@ public class CraftViewRework extends InteractAbleWidget {
         }));
 
         if (craftingGuis.size() > 1) {
-            previousButton = new CraftView.PageButton<>(this.getX() + this.width - 10, this.getY(), 10, 12, true, null, (callback) -> {
+            previousButton = new PageButton<>(this.getX() + this.width - 10, this.getY(), 10, 12, true, null, (callback) -> {
                 if (currentGuiIndex > 0) {
                     removeChild(craftingGuis.get(currentGuiIndex));
                     currentGuiIndex--;
@@ -96,7 +94,7 @@ public class CraftViewRework extends InteractAbleWidget {
                     nextButton.isEnabled = true;
                 }
             });
-            nextButton = new CraftView.PageButton<>(this.getX() + 10, this.getY(), 10, 12, false, null, (callback) -> {
+            nextButton = new PageButton<>(this.getX() + 10, this.getY(), 10, 12, false, null, (callback) -> {
                 if (currentGuiIndex < craftingGuis.size() - 1) {
                     removeChild(craftingGuis.get(currentGuiIndex));
                     currentGuiIndex++;
@@ -216,7 +214,7 @@ public class CraftViewRework extends InteractAbleWidget {
     }
 
     public void setBuffers() {
-        Map<String, String> data = new HashMap<>();
+        Map<String, String> data = new HashMap<>(defaultMap);
         action.forEachCraftingProperty(editContext.getItemstack(), ((craftingProperty, moduleInstance, itemStacks, invStart, invEnd, buf) -> {
             int index = craftingProperties.indexOf(craftingProperty);
             if (index >= 0) {
