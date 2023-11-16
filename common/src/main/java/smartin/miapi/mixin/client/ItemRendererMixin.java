@@ -1,5 +1,6 @@
 package smartin.miapi.mixin.client;
 
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.BakedModel;
@@ -13,7 +14,10 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import smartin.miapi.client.MiapiClient;
 import smartin.miapi.client.model.CustomModel;
+import smartin.miapi.client.modelrework.MiapiItemModel;
+import smartin.miapi.item.modular.ModularItem;
 
 @Debug(export = true)
 @Mixin(value = ItemRenderer.class, priority = 750)
@@ -32,15 +36,13 @@ public class ItemRendererMixin {
             MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light,
             int overlay, BakedModel model, CallbackInfo ci
     ) {
-        /*
-        if (stack.getItem() instanceof ModularItem) {
+        if (MiapiClient.irisLoaded &&  stack.getItem() instanceof ModularItem) {
             MiapiItemModel miapiModel = MiapiItemModel.getItemModel(stack);
             if (miapiModel != null) {
-                miapiModel.render(matrices, stack, renderMode, MinecraftClient.getInstance().getTickDelta(), vertexConsumers, entity, light, overlay);
+                miapiModel.render(matrices, stack, renderMode, MinecraftClient.getInstance().getTickDelta(), vertexConsumers, CustomModel.currentEntity, light, overlay);
             }
-            entity = null;
+            CustomModel.currentEntity = null;
         }
-         */
     }
 
     @Inject(

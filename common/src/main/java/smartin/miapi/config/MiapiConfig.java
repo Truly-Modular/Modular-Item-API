@@ -62,12 +62,12 @@ public class MiapiConfig extends Config {
         public static BooleanConfigItem fallbackRenderer = new BooleanConfigItem(
                 "use_fallback_renderer", true, "Use Fallback renderer if Iris is detected");
         public static BooleanConfigItem forceFallbackRenderer = new BooleanConfigItem(
-                "force_fallback_renderer", true, "Force enable the fallback renderer");
+                "force_fallback_renderer", false, "Force enable the fallback renderer");
         public static BooleanConfigItem sendWarningOnWorldLoad = new BooleanConfigItem(
                 "send_warning", true, "Send chat warning is Iris was detected");
 
         protected CompatGroup() {
-            super(of(fallbackRenderer), "Fallback Compat");
+            super(of(fallbackRenderer,forceFallbackRenderer,sendWarningOnWorldLoad), "Fallback Compat");
         }
     }
 

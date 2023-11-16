@@ -2,7 +2,10 @@ package smartin.miapi.client.modelrework;
 
 import com.redpxnda.nucleus.util.Color;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.*;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.RenderLayers;
+import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.json.ModelOverrideList;
@@ -13,6 +16,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 import org.joml.Matrix4f;
+import smartin.miapi.Miapi;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.material.Material;
 import smartin.miapi.modules.material.MaterialProperty;
@@ -40,15 +44,15 @@ public class BadShaderCompatModel implements MiapiModel {
 
     @Override
     public void render(MatrixStack matrices, ItemStack stack, ModelTransformationMode transformationMode, float tickDelta, VertexConsumerProvider vertexConsumers, LivingEntity entity, int light, int overlay) {
-        if (!(vertexConsumers instanceof VertexConsumerProvider.Immediate)) return;
         MinecraftClient.getInstance().world.getProfiler().push("BakedModel");
         matrices.push();
         matrices.multiplyPositionMatrix(modelMatrix);
+        Miapi.DEBUG_LOGGER.error("rendering " + stack.getTranslationKey());
         BakedModel currentModel = model;
         if (model.getOverrides() != null && !model.getOverrides().equals(ModelOverrideList.EMPTY)) {
             currentModel = model.getOverrides().apply(model, stack, MinecraftClient.getInstance().world, entity, light);
         }
-        RenderLayer renderLayer = RenderLayers.getItemLayer(stack, false);
+        RenderLayer renderLayer = RenderLayers.getItemLayer(stack, true);
         VertexConsumer consumer = ItemRenderer.getItemGlintConsumer(vertexConsumers, renderLayer, true, stack.hasEnchantments());
         for (Direction direction : Direction.values()) {
             currentModel.getQuads(null, direction, random).forEach(bakedQuad -> {
@@ -57,13 +61,5 @@ public class BadShaderCompatModel implements MiapiModel {
         }
         MinecraftClient.getInstance().world.getProfiler().pop();
         matrices.pop();
-    }
-
-    public static VertexConsumer getItemGlintConsumer(VertexConsumerProvider vertexConsumers, RenderLayer layer, boolean solid, boolean glint) {
-        if (glint) {
-            return MinecraftClient.isFabulousGraphicsOrBetter() && layer == TexturedRenderLayers.getItemEntityTranslucentCull() ? VertexConsumers.union(vertexConsumers.getBuffer(RenderLayer.getGlintTranslucent()), vertexConsumers.getBuffer(layer)) : VertexConsumers.union(vertexConsumers.getBuffer(solid ? RenderLayer.getGlint() : RenderLayer.getEntityGlint()), vertexConsumers.getBuffer(layer));
-        } else {
-            return vertexConsumers.getBuffer(layer);
-        }
     }
 }

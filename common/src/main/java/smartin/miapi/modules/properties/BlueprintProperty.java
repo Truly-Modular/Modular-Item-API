@@ -41,7 +41,7 @@ public class BlueprintProperty implements CraftingProperty, ModuleProperty {
                 blueprint.isAllowed = ConditionManager.get(null);
                 blueprint.module = module;
                 blueprint.key = "testing" + s;
-                Blueprint.blueprintRegistry.register(blueprint.key, blueprint);
+                //Blueprint.blueprintRegistry.register(blueprint.key, blueprint);
             });
         }));
     }
