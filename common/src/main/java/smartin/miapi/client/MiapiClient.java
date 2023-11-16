@@ -22,6 +22,7 @@ import smartin.miapi.client.gui.crafting.CraftingScreen;
 import smartin.miapi.client.gui.crafting.statdisplay.StatListWidget;
 import smartin.miapi.client.model.CustomColorProvider;
 import smartin.miapi.client.model.ModularModelPredicateProvider;
+import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.effects.CryoStatusEffect;
 import smartin.miapi.entity.ItemProjectileRenderer;
@@ -52,11 +53,13 @@ public class MiapiClient {
         ClientLifecycleEvent.CLIENT_LEVEL_LOAD.register(MiapiClient::clientLevelLoad);
         ClientPlayerEvent.CLIENT_PLAYER_JOIN.register(player -> new Thread(() -> MiapiPermissions.getPerms(player)).start());
         ClientPlayerEvent.CLIENT_PLAYER_JOIN.register(player -> {
-            if (irisLoaded) {
-                player.sendMessage(Text.literal("Truly Modular is sadly not compatible with Iris."));
+            if (irisLoaded && MiapiConfig.CompatGroup.sendWarningOnWorldLoad.getValue()) {
+                player.sendMessage(Text.literal("Truly Modulars rendering is switched to Fallback."));
+                player.sendMessage(Text.literal("This means Modular Items will look significantly worse than they are supposed to."));
                 player.sendMessage(Text.literal("This is due to Iris not allowing Mods to implement custom shaders."));
                 ClickEvent event = new ClickEvent(ClickEvent.Action.OPEN_URL,"https://github.com/IrisShaders/Iris/blob/1.20.1/docs/development/compatibility/core-shaders.md");
                 Text link = Text.literal("For more information you can read this");
+                player.sendMessage(Text.literal("You can disable this warning and switch back to the default renderer in the Config."));
                 link = link.getWithStyle(Style.EMPTY.withClickEvent(event).withUnderline(true)).get(0);
                 player.sendMessage(link);
             }

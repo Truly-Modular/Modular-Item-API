@@ -25,13 +25,12 @@ import net.minecraft.util.math.random.Random;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import smartin.miapi.Miapi;
+import smartin.miapi.client.MiapiClient;
 import smartin.miapi.client.model.DynamicBakedModel;
 import smartin.miapi.client.model.DynamicBakery;
 import smartin.miapi.client.model.ModelLoadAccessor;
-import smartin.miapi.client.modelrework.BakedMiapiGlintModel;
-import smartin.miapi.client.modelrework.BakedMiapiModel;
-import smartin.miapi.client.modelrework.MiapiItemModel;
-import smartin.miapi.client.modelrework.MiapiModel;
+import smartin.miapi.client.modelrework.*;
+import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.item.modular.Transform;
 import smartin.miapi.item.modular.TransformMap;
@@ -73,12 +72,15 @@ public class ModelProperty implements ModuleProperty {
         MiapiItemModel.modelSuppliers.add((key, model, stack) -> {
             GlintProperty.GlintSettings settings = GlintProperty.property.getGlintSettings(model, stack);
             List<MiapiModel> miapiModels = new ArrayList<>();
-            for(BakedMiapiModel.ModelHolder holder : getForModule(model,key,stack)){
-                if(settings.shouldRender()){
-                    miapiModels.add(new BakedMiapiGlintModel(holder, model, stack));
-                }
-                else{
-                    miapiModels.add(new BakedMiapiModel(holder, model, stack));
+            for (BakedMiapiModel.ModelHolder holder : getForModule(model, key, stack)) {
+                if (MiapiClient.irisLoaded && MiapiConfig.CompatGroup.fallbackRenderer.getValue() || MiapiConfig.CompatGroup.forceFallbackRenderer.getValue()) {
+                    miapiModels.add(new BadShaderCompatModel(holder, model, stack));
+                } else {
+                    if (settings.shouldRender()) {
+                        miapiModels.add(new BakedMiapiGlintModel(holder, model, stack));
+                    } else {
+                        miapiModels.add(new BakedMiapiModel(holder, model, stack));
+                    }
                 }
             }
             return miapiModels;

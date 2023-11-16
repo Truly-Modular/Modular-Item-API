@@ -20,6 +20,7 @@ import smartin.miapi.modules.properties.util.ModuleProperty;
  * This property gives a projectile ender pearl behaviour
  */
 public class EnderpearlProperty implements ModuleProperty {
+    //TODO:rework this into complexBooleanProperty
     public static final String KEY = "is_enderpearl";
     public static EnderpearlProperty property;
 

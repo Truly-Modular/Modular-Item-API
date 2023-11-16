@@ -36,8 +36,10 @@ public class MiapiConfig extends Config {
 
     public static class ClientConfig extends ConfigItemGroup {
         public static ColorGroup colorConfig = new ColorGroup();
+        public static CompatGroup compatGroup = new CompatGroup();
+
         protected ClientConfig() {
-            super(of(colorConfig), "client");
+            super(of(compatGroup, colorConfig), "client");
         }
     }
 
@@ -56,9 +58,23 @@ public class MiapiConfig extends Config {
         }
     }
 
+    public static class CompatGroup extends ConfigItemGroup {
+        public static BooleanConfigItem fallbackRenderer = new BooleanConfigItem(
+                "use_fallback_renderer", true, "Use Fallback renderer if Iris is detected");
+        public static BooleanConfigItem forceFallbackRenderer = new BooleanConfigItem(
+                "force_fallback_renderer", true, "Force enable the fallback renderer");
+        public static BooleanConfigItem sendWarningOnWorldLoad = new BooleanConfigItem(
+                "send_warning", true, "Send chat warning is Iris was detected");
+
+        protected CompatGroup() {
+            super(of(fallbackRenderer), "Fallback Compat");
+        }
+    }
+
     public static class ServerConfig extends ConfigItemGroup {
         public static EnchantmentGroup enchantmentGroup = new EnchantmentGroup();
         public static OtherConfigGroup otherGroup = new OtherConfigGroup();
+
         protected ServerConfig() {
             super(of(otherGroup, enchantmentGroup), "server");
         }
