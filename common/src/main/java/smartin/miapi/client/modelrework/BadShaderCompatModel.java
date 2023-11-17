@@ -16,7 +16,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 import org.joml.Matrix4f;
-import smartin.miapi.Miapi;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.material.Material;
 import smartin.miapi.modules.material.MaterialProperty;
@@ -47,7 +46,6 @@ public class BadShaderCompatModel implements MiapiModel {
         MinecraftClient.getInstance().world.getProfiler().push("BakedModel");
         matrices.push();
         matrices.multiplyPositionMatrix(modelMatrix);
-        Miapi.DEBUG_LOGGER.error("rendering " + stack.getTranslationKey());
         BakedModel currentModel = model;
         if (model.getOverrides() != null && !model.getOverrides().equals(ModelOverrideList.EMPTY)) {
             currentModel = model.getOverrides().apply(model, stack, MinecraftClient.getInstance().world, entity, light);

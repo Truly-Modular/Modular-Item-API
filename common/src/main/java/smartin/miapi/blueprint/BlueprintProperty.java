@@ -1,14 +1,15 @@
-package smartin.miapi.modules.properties;
+package smartin.miapi.blueprint;
 
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import net.fabricmc.api.EnvType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Environment;
+import smartin.miapi.Miapi;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
-import smartin.miapi.blueprint.Blueprint;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.crafting.crafter.replace.CraftOption;
 import smartin.miapi.client.gui.crafting.crafter.replace.ReplaceView;
@@ -52,8 +53,8 @@ public class BlueprintProperty implements CraftingProperty, ModuleProperty {
             List<CraftOption> options = new ArrayList<>();
             Blueprint.blueprintRegistry.getFlatMap().forEach((key, blueprint) -> {
                 BlockPos pos;
-                Map<ModuleProperty,JsonElement> propertyMap = new HashMap<>();
-                if(option.getInstance()!=null){
+                Map<ModuleProperty, JsonElement> propertyMap = new HashMap<>();
+                if (option.getInstance() != null) {
                     propertyMap = option.getInstance().getProperties();
                 }
                 if (option.getWorkbench() != null) {
@@ -63,7 +64,7 @@ public class BlueprintProperty implements CraftingProperty, ModuleProperty {
                 }
                 if (
                         blueprint.isAllowed.isAllowed(option.getInstance(), pos, option.getPlayer(), propertyMap, new ArrayList<>())) {
-                    if(option.getSlot().allowedIn(new ItemModule.ModuleInstance(blueprint.module))){
+                    if (option.getSlot().allowedIn(new ItemModule.ModuleInstance(blueprint.module))) {
                         Map<String, String> dataMap = new HashMap<>();
                         dataMap.put("blueprint", blueprint.key);
                         options.add(new CraftOption(blueprint.module, dataMap));
@@ -83,9 +84,30 @@ public class BlueprintProperty implements CraftingProperty, ModuleProperty {
         String blueprintKey = data.get("blueprint");
         if (blueprintKey != null && newModule != null) {
             newModule.moduleData.put("blueprint", blueprintKey);
+            Blueprint blueprint = Blueprint.blueprintRegistry.get(blueprintKey);
+            if(blueprint!=null){
+                writePropertiesToModule(newModule,blueprint.upgrades);
+            }
             newModule.getRoot().writeToItem(old);
         }
         return old;
+    }
+
+    public static void writePropertiesToModule(ItemModule.ModuleInstance moduleInstance, Map<ModuleProperty, JsonElement> properties) {
+        String rawProperties = moduleInstance.moduleData.get("properties");
+        if (rawProperties != null) {
+            Map<ModuleProperty, JsonElement> nextMap = new HashMap<>(properties);
+            JsonObject moduleJson = Miapi.gson.fromJson(rawProperties, JsonObject.class);
+            if (moduleJson != null) {
+                moduleJson.entrySet().forEach(stringJsonElementEntry -> {
+                    ModuleProperty property = RegistryInventory.moduleProperties.get(stringJsonElementEntry.getKey());
+                    if (property != null) {
+                        nextMap.put(property, stringJsonElementEntry.getValue());
+                    }
+                });
+            }
+            moduleInstance.moduleData.put("properties", Miapi.gson.toJson(nextMap));
+        }
     }
 
     @Override

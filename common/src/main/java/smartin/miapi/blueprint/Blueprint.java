@@ -28,6 +28,9 @@ public class Blueprint {
     public Map<ModuleProperty, JsonElement> upgrades = new HashMap<>();
     public ModuleCondition isAllowed;
 
+    public void setup(){
+    }
+
     public void writeToElement() {
 
     }
