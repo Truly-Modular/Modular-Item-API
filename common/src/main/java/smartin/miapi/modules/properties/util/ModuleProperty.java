@@ -6,7 +6,9 @@ import com.google.gson.reflect.TypeToken;
 import smartin.miapi.Miapi;
 
 import java.lang.reflect.Type;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -70,5 +72,17 @@ public interface ModuleProperty {
             }
         }
         return old;
+    }
+    static Map<ModuleProperty,JsonElement> mergeList(Map<ModuleProperty,JsonElement> old, Map<ModuleProperty,JsonElement> toMerge, MergeType type) {
+        Map<ModuleProperty,JsonElement> mergedMap = new HashMap<>(old);
+        toMerge.forEach((key,json)->{
+            if(mergedMap.containsKey(key)){
+                mergedMap.put(key,mergeList(mergedMap.get(key),json,type));
+            }
+            else{
+                mergedMap.put(key,json);
+            }
+        });
+        return mergedMap;
     }
 }

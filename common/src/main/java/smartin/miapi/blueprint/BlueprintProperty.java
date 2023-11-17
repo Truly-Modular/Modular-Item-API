@@ -14,10 +14,12 @@ import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.crafting.crafter.replace.CraftOption;
 import smartin.miapi.client.gui.crafting.crafter.replace.ReplaceView;
 import smartin.miapi.datapack.ReloadEvents;
+import smartin.miapi.item.modular.PropertyResolver;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.conditions.ConditionManager;
 import smartin.miapi.modules.edit_options.EditOption;
 import smartin.miapi.modules.properties.util.CraftingProperty;
+import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.registries.RegistryInventory;
 
@@ -35,6 +37,15 @@ public class BlueprintProperty implements CraftingProperty, ModuleProperty {
         if (Environment.isClient()) {
             setupClient();
         }
+        PropertyResolver.propertyProviderRegistry.register("blueprint", (moduleInstance, oldMap) -> {
+            if(moduleInstance != null && moduleInstance.moduleData.containsKey("blueprint")){
+                Blueprint blueprint = Blueprint.blueprintRegistry.get(moduleInstance.moduleData.get("blueprint"));
+                if(blueprint!=null && !blueprint.writeToItem){
+                    return ModuleProperty.mergeList(oldMap,blueprint.upgrades, MergeType.SMART);
+                }
+            }
+            return oldMap;
+        });
         ReloadEvents.END.subscribe((isClient -> {
             Blueprint.blueprintRegistry.clear();
             RegistryInventory.modules.getFlatMap().forEach((s, module) -> {
@@ -64,7 +75,8 @@ public class BlueprintProperty implements CraftingProperty, ModuleProperty {
                 }
                 if (
                         blueprint.isAllowed.isAllowed(option.getInstance(), pos, option.getPlayer(), propertyMap, new ArrayList<>())) {
-                    if (option.getSlot().allowedIn(new ItemModule.ModuleInstance(blueprint.module))) {
+                    if (
+                            option.getSlot().allowedIn(new ItemModule.ModuleInstance(blueprint.module))) {
                         Map<String, String> dataMap = new HashMap<>();
                         dataMap.put("blueprint", blueprint.key);
                         options.add(new CraftOption(blueprint.module, dataMap));
@@ -85,8 +97,8 @@ public class BlueprintProperty implements CraftingProperty, ModuleProperty {
         if (blueprintKey != null && newModule != null) {
             newModule.moduleData.put("blueprint", blueprintKey);
             Blueprint blueprint = Blueprint.blueprintRegistry.get(blueprintKey);
-            if(blueprint!=null){
-                writePropertiesToModule(newModule,blueprint.upgrades);
+            if (blueprint != null && blueprint.writeToItem) {
+                writePropertiesToModule(newModule, blueprint.upgrades);
             }
             newModule.getRoot().writeToItem(old);
         }
