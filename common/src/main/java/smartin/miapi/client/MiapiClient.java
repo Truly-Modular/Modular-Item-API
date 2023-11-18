@@ -39,6 +39,7 @@ import static smartin.miapi.registries.RegistryInventory.Client.glintShader;
 public class MiapiClient {
     public static MaterialAtlasManager materialAtlasManager;
     public static boolean irisLoaded = Platform.isModLoaded("iris");
+    public static boolean sodiumLoaded = Platform.isModLoaded("sodium");
 
     private MiapiClient() {
     }
@@ -57,11 +58,17 @@ public class MiapiClient {
                 player.sendMessage(Text.literal("Truly Modulars rendering is switched to Fallback."));
                 player.sendMessage(Text.literal("This means Modular Items will look significantly worse than they are supposed to."));
                 player.sendMessage(Text.literal("This is due to Iris not allowing Mods to implement custom shaders."));
-                ClickEvent event = new ClickEvent(ClickEvent.Action.OPEN_URL,"https://github.com/IrisShaders/Iris/blob/1.20.1/docs/development/compatibility/core-shaders.md");
+                ClickEvent event = new ClickEvent(ClickEvent.Action.OPEN_URL, "https://github.com/IrisShaders/Iris/blob/1.20.1/docs/development/compatibility/core-shaders.md");
                 Text link = Text.literal("For more information you can read this");
                 player.sendMessage(Text.literal("You can disable this warning and switch back to the default renderer in the Config."));
                 link = link.getWithStyle(Style.EMPTY.withClickEvent(event).withUnderline(true)).get(0);
                 player.sendMessage(link);
+            }
+            if (sodiumLoaded && MiapiConfig.CompatGroup.sendWarningOnWorldLoad.getValue()) {
+                player.sendMessage(Text.literal("Sodium was detected."));
+                player.sendMessage(Text.literal("For the best experience with sodium we currently recommend to disable sodiums Immediate Rendering improvements"));
+                player.sendMessage(Text.literal("This can be done by adding mixin.features.render.immediate=false to sodium-mixins.properties in your config"));
+                player.sendMessage(Text.literal("You can disable this warning and switch back to the default renderer in the Config."));
             }
         });
         ClientReloadShadersEvent.EVENT.register((resourceFactory, asd) -> ModularItemCache.discardCache());

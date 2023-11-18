@@ -16,6 +16,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 import org.joml.Matrix4f;
+import org.joml.Vector3f;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.material.Material;
 import smartin.miapi.modules.material.MaterialProperty;
@@ -28,6 +29,7 @@ public class BadShaderCompatModel implements MiapiModel {
     Matrix4f modelMatrix;
     Color color;
     Random random = Random.create();
+    float randomScaleNoZ = (float) (1 + Math.random() / 10000f);
 
     public BadShaderCompatModel(BakedMiapiModel.ModelHolder holder, ItemModule.ModuleInstance instance, ItemStack stack) {
         this.instance = instance;
@@ -45,19 +47,31 @@ public class BadShaderCompatModel implements MiapiModel {
     public void render(MatrixStack matrices, ItemStack stack, ModelTransformationMode transformationMode, float tickDelta, VertexConsumerProvider vertexConsumers, LivingEntity entity, int light, int overlay) {
         MinecraftClient.getInstance().world.getProfiler().push("BakedModel");
         matrices.push();
+        Matrix4f matrix4f = new Matrix4f();
+        matrix4f = matrix4f.scale(new Vector3f(randomScaleNoZ, randomScaleNoZ, randomScaleNoZ));
+        matrices.multiplyPositionMatrix(matrix4f);
         matrices.multiplyPositionMatrix(modelMatrix);
         BakedModel currentModel = model;
         if (model.getOverrides() != null && !model.getOverrides().equals(ModelOverrideList.EMPTY)) {
             currentModel = model.getOverrides().apply(model, stack, MinecraftClient.getInstance().world, entity, light);
         }
         RenderLayer renderLayer = RenderLayers.getItemLayer(stack, true);
-        VertexConsumer consumer = ItemRenderer.getItemGlintConsumer(vertexConsumers, renderLayer, true, stack.hasEnchantments());
+        VertexConsumer consumer = ItemRenderer.getDirectItemGlintConsumer(vertexConsumers, renderLayer, true, stack.hasGlint());
         for (Direction direction : Direction.values()) {
             currentModel.getQuads(null, direction, random).forEach(bakedQuad -> {
                 consumer.quad(matrices.peek(), bakedQuad, color.redAsFloat(), color.greenAsFloat(), color.blueAsFloat(), light, overlay);
             });
         }
+        if (consumer instanceof VertexConsumerProvider.Immediate immediate) {
+            immediate.draw();
+        }
         MinecraftClient.getInstance().world.getProfiler().pop();
         matrices.pop();
+    }
+
+    public Matrix4f subModuleMatrix() {
+        Matrix4f matrix4f = new Matrix4f();
+        matrix4f = matrix4f.scale(new Vector3f(1.001f, 1.001f, 1.001f));
+        return matrix4f;
     }
 }
