@@ -60,7 +60,6 @@ public class BakedMiapiGlintModel implements MiapiModel {
                 materialConsumer.quad(matrices.peek(), bakedQuad, color.redAsFloat(), color.greenAsFloat(), color.blueAsFloat(), light, overlay);
             });
         }
-        ((VertexConsumerProvider.Immediate) vertexConsumerProvider).draw();
         VertexConsumer glintConsumer = vertexConsumerProvider.getBuffer(RegistryInventory.Client.modularItemGlint);
         for (Direction direction : Direction.values()) {
             currentModel.getQuads(null, direction, random).forEach(bakedQuad -> {

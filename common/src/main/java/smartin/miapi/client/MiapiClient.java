@@ -64,12 +64,6 @@ public class MiapiClient {
                 link = link.getWithStyle(Style.EMPTY.withClickEvent(event).withUnderline(true)).get(0);
                 player.sendMessage(link);
             }
-            if (sodiumLoaded && MiapiConfig.CompatGroup.sendWarningOnWorldLoad.getValue()) {
-                player.sendMessage(Text.literal("Sodium was detected."));
-                player.sendMessage(Text.literal("For the best experience with sodium we currently recommend to disable sodiums Immediate Rendering improvements"));
-                player.sendMessage(Text.literal("This can be done by adding mixin.features.render.immediate=false to sodium-mixins.properties in your config"));
-                player.sendMessage(Text.literal("You can disable this warning and switch back to the default renderer in the Config."));
-            }
         });
         ClientReloadShadersEvent.EVENT.register((resourceFactory, asd) -> ModularItemCache.discardCache());
         RegistryInventory.modularItems.addCallback((item -> {

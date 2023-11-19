@@ -58,29 +58,29 @@ Modular Item Api
    # Side this dependency is applied on - BOTH, CLIENT or SERVER
    side="BOTH"
 [[dependencies.miapi]] #optional
-# the modid of the dependency
-modId="caelus" #mandatory
-# Does this dependency have to exist - if not, ordering below must be specified
-mandatory=true #mandatory
-# The version range of the dependency
-versionRange="[3.1.0,)" #mandatory
-# An ordering relationship for the dependency - BEFORE or AFTER required if the relationship is not mandatory
-ordering="NONE"
-# Side this dependency is applied on - BOTH, CLIENT or SERVER
-side="BOTH"
-# Here's another dependency
+   # the modid of the dependency
+   modId="caelus" #mandatory
+   # Does this dependency have to exist - if not, ordering below must be specified
+   mandatory=true #mandatory
+   # The version range of the dependency
+   versionRange="[3.1.0,)" #mandatory
+   # An ordering relationship for the dependency - BEFORE or AFTER required if the relationship is not mandatory
+   ordering="NONE"
+   # Side this dependency is applied on - BOTH, CLIENT or SERVER
+   side="BOTH"
+   # Here's another dependency
 [[dependencies.miapi]] #optional
-# the modid of the dependency
-modId="architectury" #mandatory
-# Does this dependency have to exist - if not, ordering below must be specified
-mandatory=true #mandatory
-# The version range of the dependency
-versionRange="[9.0.8,)" #mandatory
-# An ordering relationship for the dependency - BEFORE or AFTER required if the relationship is not mandatory
-ordering="NONE"
-# Side this dependency is applied on - BOTH, CLIENT or SERVER
-side="BOTH"
-# Here's another dependency
+   # the modid of the dependency
+   modId="architectury" #mandatory
+   # Does this dependency have to exist - if not, ordering below must be specified
+   mandatory=true #mandatory
+   # The version range of the dependency
+   versionRange="[9.0.8,)" #mandatory
+   # An ordering relationship for the dependency - BEFORE or AFTER required if the relationship is not mandatory
+   ordering="NONE"
+   # Side this dependency is applied on - BOTH, CLIENT or SERVER
+   side="BOTH"
+   # Here's another dependency
 [[dependencies.miapi]]
    modId="minecraft"
    mandatory=true

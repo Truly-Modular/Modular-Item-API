@@ -26,14 +26,7 @@ public class MaterialVertexConsumer implements VertexConsumer {
             this.x = 0;
             this.y = 0;
         }
-        //RegistryInventory.Client.entityTranslucentMaterialShader.getUniformOrDefault("materialUV").set(x,y);
-        //RegistryInventory.Client.entityTranslucentMaterialShader.markUniformsDirty();
     }
-
-    /*@Override
-    public void quad(MatrixStack.Entry matrixEntry, BakedQuad quad, float red, float green, float blue, int light, int overlay) {
-        this.quad(matrixEntry, quad, new float[]{1.0F, 1.0F, 1.0F, 1.0F}, x, y, blue, new int[]{light, light, light, light}, x + y * (2 ^ 16) * 0, false);
-    }*/
 
     @Override
     public VertexConsumer vertex(double x, double y, double z) {

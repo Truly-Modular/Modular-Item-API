@@ -232,6 +232,9 @@ public class ItemProjectileEntity extends PersistentProjectileEntity {
                         damage);
         EventResult result = MiapiProjectileEvents.MODULAR_PROJECTILE_ENTITY_HIT.invoker().hit(event);
         if (result.interruptsFurtherEvaluation()) {
+            if (this.projectileHitBehaviour != null) {
+                projectileHitBehaviour.onHit(this, entityHitResult.getEntity(), entityHitResult);
+            }
             return;
         }
         damage = event.damage;
@@ -271,7 +274,13 @@ public class ItemProjectileEntity extends PersistentProjectileEntity {
     protected void onBlockHit(BlockHitResult blockHitResult) {
         if (MiapiProjectileEvents.MODULAR_PROJECTILE_BLOCK_HIT.invoker().hit(
                 new MiapiProjectileEvents.ModularProjectileBlockHitEvent(blockHitResult, this)).interruptsFurtherEvaluation()) {
+            if (this.projectileHitBehaviour != null) {
+                projectileHitBehaviour.onBlockHit(this, blockHitResult);
+            }
             return;
+        }
+        if (this.projectileHitBehaviour != null) {
+            projectileHitBehaviour.onBlockHit(this, blockHitResult);
         }
         super.onBlockHit(blockHitResult);
     }
