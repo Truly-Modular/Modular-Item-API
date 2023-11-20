@@ -222,7 +222,6 @@ public class CraftViewRework extends InteractAbleWidget {
             } else {
                 craftingProperty.writeData(data, null, editContext);
             }
-            Miapi.DEBUG_LOGGER.error(data.toString());
         }));
         action.setData(data);
     }

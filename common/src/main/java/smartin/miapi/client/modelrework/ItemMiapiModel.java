@@ -5,7 +5,9 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.item.FireworkRocketItem;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.math.RotationAxis;
 import org.joml.Matrix4f;
 
 import java.util.function.Supplier;
@@ -26,6 +28,9 @@ public class ItemMiapiModel implements MiapiModel {
         matrices.push();
         matrices.multiplyPositionMatrix(matrix4f);
         ItemStack modelStack = stackSupplier.get();
+        if(modelStack.getItem() instanceof FireworkRocketItem){
+            matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(45));
+        }
         MinecraftClient.getInstance().getItemRenderer().renderItem(
                 modelStack,
                 ModelTransformationMode.FIXED,

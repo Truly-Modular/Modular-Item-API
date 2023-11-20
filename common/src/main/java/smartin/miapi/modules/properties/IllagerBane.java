@@ -7,7 +7,6 @@ import net.minecraft.entity.mob.RavagerEntity;
 import net.minecraft.entity.mob.VexEntity;
 import net.minecraft.entity.mob.VindicatorEntity;
 import net.minecraft.item.ItemStack;
-import smartin.miapi.Miapi;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.modules.properties.util.DoubleProperty;
 
@@ -26,7 +25,6 @@ public class IllagerBane extends DoubleProperty {
             ItemStack itemStack = livingHurtEvent.getCausingItemStack();
             Double value = getValue(itemStack);
             if (value != null && isIllagerType(livingHurtEvent.livingEntity)) {
-                Miapi.DEBUG_LOGGER.warn("illagerBane " + livingHurtEvent.amount + " " + value);
                 livingHurtEvent.amount += value;
             }
             return EventResult.pass();

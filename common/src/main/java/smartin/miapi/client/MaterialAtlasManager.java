@@ -67,7 +67,7 @@ public class MaterialAtlasManager extends SpriteAtlasHolder {
             SpriteContents contents = SpriteLoader.load(sprite.getContents().getId(), resource);
             materialSprites.add(contents);
         } catch (FileNotFoundException e) {
-            Miapi.LOGGER.error("Error during MaterialAtlasStitching", e);
+            Miapi.LOGGER.error("Error during MaterialAtlasStitching - this can be ignored, but should be fixed at some point");
         }
         for (String s : MaterialProperty.materials.keySet()) {
             Material material = MaterialProperty.materials.get(s);
