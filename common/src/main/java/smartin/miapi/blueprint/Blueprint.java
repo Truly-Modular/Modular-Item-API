@@ -24,7 +24,6 @@ public class Blueprint {
     public static MiapiRegistry<Blueprint> blueprintRegistry = MiapiRegistry.getInstance(Blueprint.class);
     public ItemModule module = ItemModule.empty;
     public String key;
-    public int level = 0;
     public Map<ModuleProperty, JsonElement> upgrades = new HashMap<>();
     public ModuleCondition isAllowed;
     public boolean writeToItem = true;

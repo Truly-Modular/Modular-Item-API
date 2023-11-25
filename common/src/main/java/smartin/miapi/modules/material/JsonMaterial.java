@@ -195,4 +195,35 @@ public class JsonMaterial implements Material {
         }
         return 0;
     }
+
+    @Override
+    public Double getPriorityOfItem(ItemStack itemStack) {
+        if (this.getRawElement("items") != null && this.getRawElement("items").isJsonArray()) {
+            JsonArray items = this.getRawElement("items").getAsJsonArray();
+
+            for (JsonElement element : items) {
+                JsonObject itemObj = element.getAsJsonObject();
+
+                if (itemObj.has("item")) {
+                    String itemId = itemObj.get("item").getAsString();
+                    if (Registries.ITEM.getId(itemStack.getItem()).toString().equals(itemId)) {
+                        return 0.0;
+                    }
+                }
+            }
+
+            for (JsonElement element : items) {
+                JsonObject itemObj = element.getAsJsonObject();
+
+                if (itemObj.has("tag")) {
+                    String tagId = itemObj.get("tag").getAsString();
+                    TagKey<Item> tag = TagKey.of(Registries.ITEM.getKey(), new Identifier(tagId));
+                    if (tag != null && itemStack.isIn(tag)) {
+                        return 1.0;
+                    }
+                }
+            }
+        }
+        return null;
+    }
 }

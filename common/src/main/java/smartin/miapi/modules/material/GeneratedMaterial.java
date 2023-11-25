@@ -307,4 +307,12 @@ public class GeneratedMaterial implements Material {
     public double getValueOfItem(ItemStack item) {
         return 1;
     }
+
+    @Override
+    public @Nullable Double getPriorityOfItem(ItemStack itemStack) {
+        if (ItemStack.areEqual(itemStack, mainIngredient)) {
+            return 0.0;
+        }
+        return null;
+    }
 }

@@ -11,6 +11,7 @@ import smartin.miapi.client.gui.crafting.crafter.replace.CraftOption;
 import smartin.miapi.client.gui.crafting.crafter.replace.CraftViewRework;
 import smartin.miapi.modules.edit_options.CreateItemOption.CreateItemOption;
 import smartin.miapi.modules.edit_options.EditOption;
+import smartin.miapi.modules.edit_options.ReplaceOption;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,6 +34,8 @@ public class CreateListView extends InteractAbleWidget {
 
     public void create(CreateItemOption.CreateItem createItem) {
         CreateItemOption.selected = createItem;
+        EditOption.EditContext editContext1 = CreateItemOption.transform(editContext, createItem);
+        ReplaceOption.unsafeEditContext = editContext1;
         CraftViewRework craftView = new CraftViewRework(
                 this.getX(),
                 this.getY(),
@@ -40,7 +43,7 @@ public class CreateListView extends InteractAbleWidget {
                 this.height,
                 1,
                 new CraftOption(createItem.getBaseModule(), new HashMap<>()),
-                CreateItemOption.transform(editContext, createItem),
+                editContext1,
                 (backSlot) -> {
                     this.children().clear();
                     this.addChild(scrollList);

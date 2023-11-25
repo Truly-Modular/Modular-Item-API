@@ -18,7 +18,6 @@ import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.edit_options.ReplaceOption;
 import smartin.miapi.modules.material.AllowedMaterial;
-import smartin.miapi.network.Networking;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -64,15 +63,14 @@ public class MaterialCraftingWidget extends InteractAbleWidget {
         RenderSystem.enableDepthTest();
         if (MinecraftClient.getInstance().currentScreen instanceof ParentHandledScreen<?> parentHandledScreen) {
             Slot focusSlot = parentHandledScreen.getFocusSlot();
+            ReplaceOption.unsafeCraftAction = action;
             if(focusSlot!=null){
                 if(ReplaceOption.hoverStack == null || !ItemStack.areEqual(ReplaceOption.hoverStack,focusSlot.getStack())){
-                    ReplaceOption.hoverStack = focusSlot.getStack();
-                    ReplaceOption.tryPreview(action.toPacket(Networking.createBuffer()));
+                    ReplaceOption.setHoverStack(focusSlot.getStack(),false);
                 }
             }
             else{
-                ReplaceOption.hoverStack = ItemStack.EMPTY;
-                ReplaceOption.tryPreview(action.toPacket(Networking.createBuffer()));
+                ReplaceOption.setHoverStack(ItemStack.EMPTY,false);
             }
         }
 

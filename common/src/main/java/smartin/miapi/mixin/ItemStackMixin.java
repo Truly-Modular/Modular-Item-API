@@ -15,6 +15,7 @@ import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 import smartin.miapi.item.modular.ModularItem;
+import smartin.miapi.modules.edit_options.ReplaceOption;
 import smartin.miapi.modules.properties.LoreProperty;
 import smartin.miapi.modules.properties.MiningLevelProperty;
 
@@ -94,6 +95,7 @@ public abstract class ItemStackMixin {
     )
     public void miapi$injectLoreBottom(PlayerEntity player, TooltipContext context, CallbackInfoReturnable<List<Text>> cir, List<Text> arg1) {
         ItemStack stack = (ItemStack) (Object) this;
+        ReplaceOption.setHoverStack(stack, true);
         /*
         if (stack.getItem() instanceof ModularItem) {
             LoreProperty.property.appendLoreBottom(arg1, stack);

@@ -6,18 +6,25 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
+import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.crafting.CraftingScreen;
 import smartin.miapi.client.gui.crafting.crafter.CraftEditOption;
 import smartin.miapi.craft.CraftAction;
+import smartin.miapi.modules.material.Material;
+import smartin.miapi.modules.material.MaterialProperty;
+import smartin.miapi.network.Networking;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class ReplaceOption implements EditOption {
     public static ItemStack hoverStack = null;
-    private static EditContext unsafeEditContext;
+    @Nullable
+    public static EditContext unsafeEditContext;
+    @Nullable
+    public static CraftAction unsafeCraftAction;
 
     @Override
     public ItemStack preview(PacketByteBuf buffer, EditContext editContext) {
@@ -32,9 +39,29 @@ public class ReplaceOption implements EditOption {
         return action.getPreview();
     }
 
-    public static void tryPreview(PacketByteBuf buf) {
-        if (unsafeEditContext != null) {
-            unsafeEditContext.preview(buf);
+    public static void tryPreview() {
+        if (unsafeEditContext != null && unsafeCraftAction != null) {
+            try{
+                unsafeEditContext.preview(unsafeCraftAction.toPacket(Networking.createBuffer()));
+            }
+            catch (Exception e){
+
+            }
+        }
+    }
+
+    public static void setHoverStack(ItemStack itemStack, boolean safe) {
+        if (!itemStack.isEmpty()) {
+            Material material = MaterialProperty.getMaterial(itemStack);
+            if (material != null) {
+                tryPreview();
+                hoverStack = itemStack;
+                return;
+            }
+        }
+        if (!safe) {
+            tryPreview();
+            hoverStack = itemStack;
         }
     }
 
@@ -67,6 +94,8 @@ public class ReplaceOption implements EditOption {
     @Environment(EnvType.CLIENT)
     @Override
     public InteractAbleWidget getIconGui(int x, int y, int width, int height, Consumer<EditOption> select, Supplier<EditOption> getSelected) {
-        return new EditOptionIcon(x, y, width, height, select, getSelected, CraftingScreen.BACKGROUND_TEXTURE, 339 + 32, 25, 512, 512,"miapi.ui.edit_option.hover.replace", this);
+        hoverStack = null;
+        unsafeEditContext = null;
+        return new EditOptionIcon(x, y, width, height, select, getSelected, CraftingScreen.BACKGROUND_TEXTURE, 339 + 32, 25, 512, 512, "miapi.ui.edit_option.hover.replace", this);
     }
 }

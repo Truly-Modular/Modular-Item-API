@@ -6,12 +6,13 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.item.*;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.item.ToolItem;
+import net.minecraft.item.ToolMaterials;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.tag.ItemTags;
-import net.minecraft.registry.tag.TagKey;
 import net.minecraft.resource.ResourceReloader;
-import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.MiapiClient;
@@ -185,35 +186,15 @@ public class MaterialProperty implements ModuleProperty {
 
     @Nullable
     public static Material getMaterial(ItemStack item) {
+        double lowestPrio = Double.MAX_VALUE;
+        Material foundMaterial = null;
         for (Material material : materials.values()) {
-            if (material.getRawElement("items") != null && material.getRawElement("items").isJsonArray()) {
-                JsonArray items = material.getRawElement("items").getAsJsonArray();
-
-                for (JsonElement element : items) {
-                    JsonObject itemObj = element.getAsJsonObject();
-
-                    if (itemObj.has("item")) {
-                        String itemId = itemObj.get("item").getAsString();
-                        if (Registries.ITEM.getId(item.getItem()).toString().equals(itemId)) {
-                            return material;
-                        }
-                    }
-                }
-
-                for (JsonElement element : items) {
-                    JsonObject itemObj = element.getAsJsonObject();
-
-                    if (itemObj.has("tag")) {
-                        String tagId = itemObj.get("tag").getAsString();
-                        TagKey<Item> tag = TagKey.of(Registries.ITEM.getKey(), new Identifier(tagId));
-                        if (tag != null && item.isIn(tag)) {
-                            return material;
-                        }
-                    }
-                }
+            Double matPrio = material.getPriorityOfItem(item);
+            if (matPrio != null && matPrio < lowestPrio) {
+                foundMaterial = material;
             }
         }
-        return null;
+        return foundMaterial;
     }
 
     @Nullable
@@ -228,7 +209,7 @@ public class MaterialProperty implements ModuleProperty {
     public static Material getMaterial(ItemModule.ModuleInstance instance) {
         JsonElement element = instance.getProperties().get(property);
         if (element != null) {
-            return materials.get(element.getAsString());
+            return materials.get(element.getAsString()).getMaterial(instance);
         }
         return null;
     }

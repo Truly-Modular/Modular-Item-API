@@ -8,6 +8,7 @@ import smartin.miapi.client.gui.crafting.crafter.replace.ReplaceView;
 import smartin.miapi.craft.CraftAction;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.edit_options.EditOption;
+import smartin.miapi.modules.edit_options.ReplaceOption;
 import smartin.miapi.network.Networking;
 
 import java.util.HashMap;
@@ -18,6 +19,7 @@ public class CraftEditOption extends InteractAbleWidget {
 
     public CraftEditOption(int x, int y, int width, int height, EditOption.EditContext context) {
         super(x, y, width, height, Text.empty());
+        ReplaceOption.unsafeEditContext = context;
         this.editContext = context;
         setMode(Mode.REPLACE);
 

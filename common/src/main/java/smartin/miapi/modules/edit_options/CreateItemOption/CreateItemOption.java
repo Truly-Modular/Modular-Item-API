@@ -4,6 +4,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
+import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.registry.Registries;
@@ -22,6 +23,8 @@ import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.edit_options.EditOption;
 import smartin.miapi.modules.edit_options.EditOptionIcon;
+import smartin.miapi.modules.edit_options.ReplaceOption;
+import smartin.miapi.modules.material.MaterialProperty;
 import smartin.miapi.modules.properties.SlotProperty;
 import smartin.miapi.network.Networking;
 import smartin.miapi.registries.RegistryInventory;
@@ -60,8 +63,13 @@ public class CreateItemOption implements EditOption {
         ItemModule.ModuleInstance instance = new ItemModule.ModuleInstance(RegistryInventory.modules.get(module));
         instance.writeToItem(itemStack);
         CraftAction action = new CraftAction(buffer, editContext.getWorkbench());
+        Inventory inventory = editContext.getLinkedInventory();
+        if (ReplaceOption.hoverStack != null && !ReplaceOption.hoverStack.isEmpty() && MaterialProperty.getMaterial(ReplaceOption.hoverStack)!=null) {
+            inventory = new SimpleInventory(2);
+            inventory.setStack(1, ReplaceOption.hoverStack);
+        }
+        action.linkInventory(inventory, 1);
         action.setItem(itemStack);
-        action.linkInventory(editContext.getLinkedInventory(), 1);
         return action.getPreview();
     }
 
@@ -93,6 +101,8 @@ public class CreateItemOption implements EditOption {
     @Environment(EnvType.CLIENT)
     @Override
     public InteractAbleWidget getGui(int x, int y, int width, int height, EditContext editContext) {
+        ReplaceOption.hoverStack = null;
+        ReplaceOption.unsafeEditContext = editContext;
         return new CreateListView(x, y, width, height, editContext);
     }
 

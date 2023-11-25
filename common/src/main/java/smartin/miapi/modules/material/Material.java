@@ -10,6 +10,7 @@ import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
+import org.jetbrains.annotations.Nullable;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.material.palette.MaterialPalette;
 import smartin.miapi.modules.properties.util.ModuleProperty;
@@ -53,6 +54,10 @@ public interface Material {
         return 0;
     }
 
+    default Material getMaterial(ItemModule.ModuleInstance moduleInstance){
+        return this;
+    }
+
     @Environment(EnvType.CLIENT)
     default boolean hasIcon() {
         return false;
@@ -75,4 +80,10 @@ public interface Material {
     }
 
     double getValueOfItem(ItemStack item);
+
+    /**
+     * return null if itemstack is not assosiated with the material
+     */
+    @Nullable
+    Double getPriorityOfItem(ItemStack itemStack);
 }
