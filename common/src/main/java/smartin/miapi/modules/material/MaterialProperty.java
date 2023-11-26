@@ -96,7 +96,7 @@ public class MaterialProperty implements ModuleProperty {
                     .collect(Collectors.toSet())
                     .stream()
                     .filter(toolMaterial -> toolMaterial.getRepairIngredient().getMatchingStacks().length > 0)
-                    .filter(toolMaterial -> Arrays.stream(toolMaterial.getRepairIngredient().getMatchingStacks()).allMatch(itemStack -> getMaterial(itemStack) == null && !itemStack.getItem().equals(Items.BARRIER)))
+                    .filter(toolMaterial -> Arrays.stream(toolMaterial.getRepairIngredient().getMatchingStacks()).allMatch(itemStack -> getMaterialFromIngredient(itemStack) == null && !itemStack.getItem().equals(Items.BARRIER)))
                     .collect(Collectors.toSet()).forEach(toolMaterial -> {
                         GeneratedMaterial generatedMaterial = new GeneratedMaterial(toolMaterial, isClient);
                         if (generatedMaterial.assignStats(toolItems)) {
@@ -106,14 +106,14 @@ public class MaterialProperty implements ModuleProperty {
                         }
                     });
             Registries.ITEM.stream().filter(item -> item.getDefaultStack().isIn(ItemTags.PLANKS)).forEach(item -> {
-                if (getMaterial(item.getDefaultStack()) == null) {
+                if (getMaterialFromIngredient(item.getDefaultStack()) == null) {
                     GeneratedMaterial generatedMaterial = new GeneratedMaterial(ToolMaterials.WOOD, item.getDefaultStack(), isClient);
                     materials.put(generatedMaterial.getKey(), generatedMaterial);
                     generatedMaterial.copyStatsFrom(materials.get("wood"));
                 }
             });
             Registries.ITEM.stream().filter(item -> item.getDefaultStack().isIn(ItemTags.STONE_TOOL_MATERIALS)).forEach(item -> {
-                if (getMaterial(item.getDefaultStack()) == null) {
+                if (getMaterialFromIngredient(item.getDefaultStack()) == null) {
                     GeneratedMaterial generatedMaterial = new GeneratedMaterial(ToolMaterials.STONE, item.getDefaultStack(), isClient);
                     materials.put(generatedMaterial.getKey(), generatedMaterial);
                     generatedMaterial.copyStatsFrom(materials.get("stone"));
@@ -184,29 +184,50 @@ public class MaterialProperty implements ModuleProperty {
         return old;
     }
 
+    /**
+     * @param item
+     * @return
+     */
     @Nullable
-    public static Material getMaterial(ItemStack item) {
+    public static Material getMaterialFromIngredient(ItemStack item) {
         double lowestPrio = Double.MAX_VALUE;
         Material foundMaterial = null;
         for (Material material : materials.values()) {
-            Double matPrio = material.getPriorityOfItem(item);
+            Double matPrio = material.getPriorityOfIngredientItem(item);
             if (matPrio != null && matPrio < lowestPrio) {
                 foundMaterial = material;
             }
         }
-        return foundMaterial;
+        if(foundMaterial!=null){
+            return foundMaterial.getMaterialFromIngredient(item);
+        }
+        else{
+            return null;
+        }
     }
 
+    /**
+     * This call should only used if no valid moduleinstance is known and only the Key of the material is important
+     *
+     * @param element
+     * @return
+     */
     @Nullable
-    public static Material getMaterial(JsonElement element) {
+    public static Material getMaterialFromIngredient(JsonElement element) {
         if (element != null) {
             return materials.get(element.getAsString());
         }
         return null;
     }
 
+    /**
+     * Gets the used Material of a ModuleInstnace
+     *
+     * @param instance
+     * @return
+     */
     @Nullable
-    public static Material getMaterial(ItemModule.ModuleInstance instance) {
+    public static Material getMaterialFromIngredient(ItemModule.ModuleInstance instance) {
         JsonElement element = instance.getProperties().get(property);
         if (element != null) {
             return materials.get(element.getAsString()).getMaterial(instance);
@@ -214,6 +235,12 @@ public class MaterialProperty implements ModuleProperty {
         return null;
     }
 
+    /**
+     * Sets a material of a MOduleinstance via Stringkey
+     *
+     * @param instance
+     * @param material
+     */
     public static void setMaterial(ItemModule.ModuleInstance instance, String material) {
         String propertyString = instance.moduleData.computeIfAbsent("properties", (key) -> {
             return "{material:empty}";

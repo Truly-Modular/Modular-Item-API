@@ -197,7 +197,7 @@ public class JsonMaterial implements Material {
     }
 
     @Override
-    public Double getPriorityOfItem(ItemStack itemStack) {
+    public Double getPriorityOfIngredientItem(ItemStack itemStack) {
         if (this.getRawElement("items") != null && this.getRawElement("items").isJsonArray()) {
             JsonArray items = this.getRawElement("items").getAsJsonArray();
 

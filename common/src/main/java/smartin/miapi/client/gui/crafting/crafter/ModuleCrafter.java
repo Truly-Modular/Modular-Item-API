@@ -94,7 +94,7 @@ public class ModuleCrafter extends InteractAbleWidget {
             editView.clearSlots();
         }
         if (mode == Mode.DETAIL && !(stack.getItem() instanceof ModularItem)) {
-            Material material = MaterialProperty.getMaterial(stack);
+            Material material = MaterialProperty.getMaterialFromIngredient(stack);
             if (material != null) {
                 mode = Mode.MATERIAL;
             }

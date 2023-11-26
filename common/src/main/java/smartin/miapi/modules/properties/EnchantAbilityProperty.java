@@ -33,7 +33,7 @@ public class EnchantAbilityProperty {
     }
 
     public static double getEnchantAbility(ItemModule.ModuleInstance instance){
-        Material material = MaterialProperty.getMaterial(instance);
+        Material material = MaterialProperty.getMaterialFromIngredient(instance);
         if(material!=null){
             return Math.max(1,material.getDouble("enchantability"));
         }

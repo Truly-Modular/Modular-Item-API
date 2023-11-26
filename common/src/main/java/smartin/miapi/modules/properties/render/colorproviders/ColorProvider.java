@@ -57,7 +57,7 @@ public interface ColorProvider {
 
         @Override
         public ColorProvider getInstance(ItemStack stack, ItemModule.ModuleInstance instance) {
-            Material material1 = MaterialProperty.getMaterial(instance);
+            Material material1 = MaterialProperty.getMaterialFromIngredient(instance);
             if (material1 != null) {
                 return new MaterialColorProvider(material1);
             }

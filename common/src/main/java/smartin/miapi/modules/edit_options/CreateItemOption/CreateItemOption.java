@@ -64,7 +64,7 @@ public class CreateItemOption implements EditOption {
         instance.writeToItem(itemStack);
         CraftAction action = new CraftAction(buffer, editContext.getWorkbench());
         Inventory inventory = editContext.getLinkedInventory();
-        if (ReplaceOption.hoverStack != null && !ReplaceOption.hoverStack.isEmpty() && MaterialProperty.getMaterial(ReplaceOption.hoverStack)!=null) {
+        if (ReplaceOption.hoverStack != null && !ReplaceOption.hoverStack.isEmpty() && MaterialProperty.getMaterialFromIngredient(ReplaceOption.hoverStack)!=null) {
             inventory = new SimpleInventory(2);
             inventory.setStack(1, ReplaceOption.hoverStack);
         }

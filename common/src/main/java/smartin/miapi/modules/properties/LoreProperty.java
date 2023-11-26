@@ -35,7 +35,7 @@ public class LoreProperty extends CodecBasedProperty<LoreProperty.Holder> {
 
         property = this;
         loreSuppliers.add(itemStack -> {
-            Material material = MaterialProperty.getMaterial(itemStack);
+            Material material = MaterialProperty.getMaterialFromIngredient(itemStack);
             List<Text> descriptions = new ArrayList<>();
             if (material != null) {
                 int i = material.getGroups().size();

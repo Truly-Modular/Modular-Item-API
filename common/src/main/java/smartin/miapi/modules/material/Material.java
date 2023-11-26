@@ -58,6 +58,10 @@ public interface Material {
         return this;
     }
 
+    default Material getMaterialFromIngredient(ItemStack ingredient){
+        return this;
+    }
+
     @Environment(EnvType.CLIENT)
     default boolean hasIcon() {
         return false;
@@ -85,5 +89,5 @@ public interface Material {
      * return null if itemstack is not assosiated with the material
      */
     @Nullable
-    Double getPriorityOfItem(ItemStack itemStack);
+    Double getPriorityOfIngredientItem(ItemStack itemStack);
 }

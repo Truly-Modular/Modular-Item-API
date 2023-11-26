@@ -52,7 +52,7 @@ public class ReplaceOption implements EditOption {
 
     public static void setHoverStack(ItemStack itemStack, boolean safe) {
         if (!itemStack.isEmpty()) {
-            Material material = MaterialProperty.getMaterial(itemStack);
+            Material material = MaterialProperty.getMaterialFromIngredient(itemStack);
             if (material != null) {
                 tryPreview();
                 hoverStack = itemStack;

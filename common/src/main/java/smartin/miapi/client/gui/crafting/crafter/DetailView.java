@@ -86,7 +86,7 @@ public class DetailView extends InteractAbleWidget {
                 moduleInstance = new ItemModule.ModuleInstance(ItemModule.empty);
             }
             Text materialNameText = StatResolver.translateAndResolve("[translation.[material.translation]]", moduleInstance);
-            material = MaterialProperty.getMaterial(moduleInstance);
+            material = MaterialProperty.getMaterialFromIngredient(moduleInstance);
 
             Text displayText = StatResolver.translateAndResolve(Miapi.MOD_ID + ".module." + moduleInstance.module.getName(), moduleInstance);
             if (hasNoModule && slot.translationKey != null) {

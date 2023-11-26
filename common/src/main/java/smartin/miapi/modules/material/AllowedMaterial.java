@@ -81,7 +81,7 @@ public class AllowedMaterial implements CraftingProperty, ModuleProperty {
         ItemStack input = inventory.get(0);
         if (element != null) {
             AllowedMaterialJson json = Miapi.gson.fromJson(element, AllowedMaterialJson.class);
-            Material material = MaterialProperty.getMaterial(input);
+            Material material = MaterialProperty.getMaterialFromIngredient(input);
             materialRequirementClient = json.cost * crafting.getCount();
             if (material != null) {
                 boolean isAllowed = (json.allowedMaterials.stream().anyMatch(allowedMaterial ->
@@ -109,7 +109,7 @@ public class AllowedMaterial implements CraftingProperty, ModuleProperty {
         ItemStack input = inventory.get(0);
         ItemStack inputCopy = input.copy();
         if (element != null) {
-            Material material = MaterialProperty.getMaterial(input);
+            Material material = MaterialProperty.getMaterialFromIngredient(input);
             if (material != null) {
                 AllowedMaterialJson json = Miapi.gson.fromJson(element, AllowedMaterialJson.class);
                 boolean isAllowed = (json.allowedMaterials.stream().anyMatch(allowedMaterial ->
@@ -131,7 +131,7 @@ public class AllowedMaterial implements CraftingProperty, ModuleProperty {
         ItemStack input = inventory.get(0);
         ItemStack inputCopy = input.copy();
         AllowedMaterialJson json = Miapi.gson.fromJson(element, AllowedMaterialJson.class);
-        Material material = MaterialProperty.getMaterial(input);
+        Material material = MaterialProperty.getMaterialFromIngredient(input);
         assert material != null;
         int newCount = (int) (input.getCount() - Math.ceil(json.cost * crafting.getCount() / material.getValueOfItem(input)));
         input.setCount(newCount);

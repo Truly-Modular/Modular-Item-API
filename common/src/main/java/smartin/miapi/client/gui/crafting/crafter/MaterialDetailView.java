@@ -52,7 +52,7 @@ public class MaterialDetailView extends InteractAbleWidget {
         super(x, y, width, height, Text.empty());
         this.itemStack = stack;
         this.back = back;
-        this.material = MaterialProperty.getMaterial(stack);
+        this.material = MaterialProperty.getMaterialFromIngredient(stack);
         TransformableWidget headerScaler = new TransformableWidget(this.getX(), this.getY(), this.getWidth(), this.getHeight(), scale);
         this.header = new ScrollingTextWidget((int) ((x + 5) * (1 / scale)), (int) ((y + 5) * (1 / scale)), width, Text.translatable(material.getData("translation")), ColorHelper.Argb.getArgb(255, 255, 255, 255));
         headerScaler.addChild(header);
