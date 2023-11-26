@@ -88,7 +88,6 @@ public class JsonMaterial implements Material {
         return propertyMap;
     }
 
-    @Override
     public JsonElement getRawElement(String key) {
         return rawJson.getAsJsonObject().get(key);
     }

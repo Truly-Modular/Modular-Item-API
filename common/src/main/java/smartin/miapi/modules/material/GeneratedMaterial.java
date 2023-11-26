@@ -273,11 +273,6 @@ public class GeneratedMaterial implements Material {
     }
 
     @Override
-    public JsonElement getRawElement(String key) {
-        return jsonObject.get(key);
-    }
-
-    @Override
     public double getDouble(String property) {
         if (materialStats.containsKey(property)) {
             return materialStats.get(property);
