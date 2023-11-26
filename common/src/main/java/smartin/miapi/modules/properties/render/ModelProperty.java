@@ -111,7 +111,7 @@ public class ModelProperty implements ModuleProperty {
             int condition = Material.getColor(StatResolver.resolveString(json.condition, instance));
             if (json.transform.origin == null || json.transform.origin.equals(key) || (json.transform.origin.equals("item") && key == null)) {
                 if (condition != 0) {
-                    Material material = MaterialProperty.getMaterialFromIngredient(instance);
+                    Material material = MaterialProperty.getMaterial(instance);
                     List<String> list = new ArrayList<>();
                     if (material != null) {
                         list.add(material.getKey());
@@ -233,7 +233,7 @@ public class ModelProperty implements ModuleProperty {
                 int color = 0;
                 int condition = Material.getColor(StatResolver.resolveString(json.condition, moduleI));
                 if (condition != 0) {
-                    Material material = MaterialProperty.getMaterialFromIngredient(moduleI);
+                    Material material = MaterialProperty.getMaterial(moduleI);
                     List<String> list = new ArrayList<>();
                     if (material != null) {
                         list.add(material.getKey());

@@ -20,7 +20,7 @@ public class MaterialProperties implements ModuleProperty {
     public MaterialProperties() {
         property = this;
         PropertyResolver.propertyProviderRegistry.register(KEY, (moduleInstance, oldMap) -> {
-            Material material = MaterialProperty.getMaterialFromIngredient(oldMap.get(MaterialProperty.property));
+            Material material = MaterialProperty.getMaterial(oldMap.get(MaterialProperty.property));
             Map<ModuleProperty, JsonElement> returnMap = new HashMap<>(oldMap);
             if (material != null) {
                 List<String> keys = new ArrayList<>();

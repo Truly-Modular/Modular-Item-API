@@ -32,8 +32,8 @@ public class MaterialCondition implements ModuleCondition {
             reasons.add(Text.translatable(Miapi.MOD_ID + ".condition.material.error"));
             return false;
         }
-        Material material1 = MaterialProperty.getMaterialFromIngredient(data);
-        if (material1 != null && MaterialProperty.getMaterialFromIngredient(data).getKey().equals(material)) {
+        Material material1 = MaterialProperty.getMaterial(data);
+        if (material1 != null && MaterialProperty.getMaterial(data).getKey().equals(material)) {
             return true;
         }
         reasons.add(Text.translatable(Miapi.MOD_ID + ".condition.material.error"));

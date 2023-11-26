@@ -33,7 +33,7 @@ public class BadShaderCompatModel implements MiapiModel {
 
     public BadShaderCompatModel(BakedMiapiModel.ModelHolder holder, ItemModule.ModuleInstance instance, ItemStack stack) {
         this.instance = instance;
-        material = MaterialProperty.getMaterialFromIngredient(instance);
+        material = MaterialProperty.getMaterial(instance);
         if (material != null && holder.colorProvider() instanceof ColorProvider.MaterialColorProvider) {
             color = new Color(material.getColor());
         } else {

@@ -185,6 +185,7 @@ public class MaterialProperty implements ModuleProperty {
     }
 
     /**
+     * Resolves a Material form an Itemstack. if no Material is set for the Itemstack, returns null
      * @param item
      * @return
      */
@@ -213,7 +214,7 @@ public class MaterialProperty implements ModuleProperty {
      * @return
      */
     @Nullable
-    public static Material getMaterialFromIngredient(JsonElement element) {
+    public static Material getMaterial(JsonElement element) {
         if (element != null) {
             return materials.get(element.getAsString());
         }
@@ -227,7 +228,7 @@ public class MaterialProperty implements ModuleProperty {
      * @return
      */
     @Nullable
-    public static Material getMaterialFromIngredient(ItemModule.ModuleInstance instance) {
+    public static Material getMaterial(ItemModule.ModuleInstance instance) {
         JsonElement element = instance.getProperties().get(property);
         if (element != null) {
             return materials.get(element.getAsString()).getMaterial(instance);

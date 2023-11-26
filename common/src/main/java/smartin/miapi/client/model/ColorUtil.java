@@ -49,7 +49,7 @@ public class ColorUtil {
     }
 
     public static int getModuleColor(ItemModule.ModuleInstance instance) {
-        Material material = MaterialProperty.getMaterialFromIngredient(instance);
+        Material material = MaterialProperty.getMaterial(instance);
         if (material != null) {
             return material.getColor();
         }

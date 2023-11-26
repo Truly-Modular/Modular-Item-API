@@ -30,7 +30,7 @@ public class BakedMiapiModel implements MiapiModel {
     public BakedMiapiModel(ModelHolder holder, ItemModule.ModuleInstance instance, ItemStack stack) {
         modelHolder = holder;
         this.instance = instance;
-        material = MaterialProperty.getMaterialFromIngredient(instance);
+        material = MaterialProperty.getMaterial(instance);
         color = holder.colorProvider.getVertexColor();
         modelMatrix = holder.matrix4f();
         model = holder.model();
