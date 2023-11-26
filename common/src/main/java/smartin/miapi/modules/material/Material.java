@@ -69,13 +69,10 @@ public interface Material {
 
     Map<ModuleProperty, JsonElement> materialProperties(String key);
 
-    JsonElement getRawElement(String key);
-
     double getDouble(String property);
 
     String getData(String property);
 
-    @Environment(EnvType.CLIENT)
     List<String> getTextureKeys();
 
     @Environment(EnvType.CLIENT)
