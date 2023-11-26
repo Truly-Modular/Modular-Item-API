@@ -49,7 +49,8 @@ public class Miapi {
     public static MinecraftServer server;
     public static Gson gson = new Gson();
 
-    public static void init() {MiapiConfig.getInstance();
+    public static void init() {
+        MiapiConfig.getInstance();
         setupNetworking();
         RegistryInventory.setup();
         ReloadEvents.setup();
