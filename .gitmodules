@@ -7,6 +7,3 @@
 [submodule "armory"]
 	path = armory
 	url = https://github.com/Truly-Modular/Armory
-[submodule "nucleus"]
-	path = nucleus
-	url = https://github.com/RedPxnda/Nucleus
