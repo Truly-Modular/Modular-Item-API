@@ -222,7 +222,7 @@ public class MaterialProperty implements ModuleProperty {
     }
 
     /**
-     * Gets the used Material of a ModuleInstnace
+     * Gets the used Material of a ModuleInstance
      *
      * @param instance
      * @return

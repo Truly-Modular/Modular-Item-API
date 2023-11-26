@@ -18,6 +18,8 @@ import smartin.miapi.modules.properties.util.CodecBasedProperty;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.WeakHashMap;
 
 /**
  * This property manages the Itemlore of an Item
@@ -29,13 +31,14 @@ public class LoreProperty extends CodecBasedProperty<LoreProperty.Holder> {
     public static LoreProperty property;
     public static List<LoreSupplier> bottomLoreSuppliers = new ArrayList<>();
     public static List<LoreSupplier> loreSuppliers = new ArrayList<>();
+    public static Map<ItemStack, Material> materialLookupTable = new WeakHashMap<>();
 
     public LoreProperty() {
         super(KEY, codec);
 
         property = this;
         loreSuppliers.add(itemStack -> {
-            Material material = MaterialProperty.getMaterialFromIngredient(itemStack);
+            Material material = materialLookupTable.computeIfAbsent(itemStack, itemStack1 -> MaterialProperty.getMaterialFromIngredient(itemStack));
             List<Text> descriptions = new ArrayList<>();
             if (material != null) {
                 int i = material.getGroups().size();
@@ -74,7 +77,7 @@ public class LoreProperty extends CodecBasedProperty<LoreProperty.Holder> {
         loreSuppliers.forEach(loreSupplier -> oldLore.addAll(loreSupplier.getLore(itemStack)));
         Holder holder = get(itemStack);
         if (holder != null) {
-            if("top".equals(holder.position) && holder.lang != null){
+            if ("top".equals(holder.position) && holder.lang != null) {
                 oldLore.add(Text.translatable(holder.lang));
             }
         }
@@ -85,7 +88,7 @@ public class LoreProperty extends CodecBasedProperty<LoreProperty.Holder> {
         bottomLoreSuppliers.forEach(loreSupplier -> oldLore.addAll(loreSupplier.getLore(itemStack)));
         Holder holder = get(itemStack);
         if (holder != null) {
-            if("bottom".equals(holder.position) && holder.lang != null){
+            if ("bottom".equals(holder.position) && holder.lang != null) {
                 oldLore.add(Text.translatable(holder.lang));
             }
         }
