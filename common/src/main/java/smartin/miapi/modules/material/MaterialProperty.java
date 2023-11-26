@@ -197,6 +197,7 @@ public class MaterialProperty implements ModuleProperty {
         for (Material material : materials.values()) {
             Double matPrio = material.getPriorityOfIngredientItem(item);
             if (matPrio != null && matPrio < lowestPrio) {
+                lowestPrio = matPrio;
                 foundMaterial = material;
             }
         }
