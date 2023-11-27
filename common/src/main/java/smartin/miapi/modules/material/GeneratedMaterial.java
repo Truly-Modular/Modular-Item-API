@@ -6,17 +6,25 @@ import dev.architectury.platform.Platform;
 import dev.architectury.utils.Env;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.item.*;
+import net.minecraft.recipe.*;
+import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.registry.tag.ItemTags;
+import net.minecraft.screen.SmithingScreenHandler;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.events.MiapiEvents;
+import smartin.miapi.item.MaterialSmithingRecipe;
 import smartin.miapi.mixin.MiningToolItemAccessor;
+import smartin.miapi.mixin.SmithingTransformRecipeAccessor;
+import smartin.miapi.modules.material.palette.EmptyMaterialPalette;
 import smartin.miapi.modules.material.palette.MaterialPalette;
 import smartin.miapi.modules.material.palette.MaterialPaletteFromTexture;
 import smartin.miapi.modules.properties.util.ModuleProperty;
@@ -32,7 +40,7 @@ public class GeneratedMaterial implements Material {
     public final List<String> groups = new ArrayList<>();
     public final Map<String, Double> materialStats = new HashMap<>();
     public final Map<String, String> materialStatsString = new HashMap<>();
-    public JsonObject jsonObject;
+    public SwordItem swordItem;
     protected MaterialPalette palette;
     @Nullable
     public MaterialIcons.MaterialIcon icon;
@@ -66,18 +74,6 @@ public class GeneratedMaterial implements Material {
         materialStats.put("durability", (double) toolMaterial.getDurability());
         materialStats.put("mining_level", (double) toolMaterial.getMiningLevel());
         materialStats.put("mining_speed", (double) toolMaterial.getMiningSpeedMultiplier());
-        Identifier itemId = Registries.ITEM.getId(mainIngredient.getItem());
-        StringBuilder builder = new StringBuilder();
-        builder.append("{");
-        builder.append("\"items\":");
-        builder.append("[");
-        builder.append("{");
-        builder.append("\"item\": \"").append(itemId).append("\",");
-        builder.append("\"value\": 1.0");
-        builder.append("}");
-        builder.append("]");
-        builder.append("}");
-        jsonObject = Miapi.gson.fromJson(builder.toString(), JsonObject.class);
 
         if (isClient) {
             clientSetup();
@@ -96,29 +92,101 @@ public class GeneratedMaterial implements Material {
         palette = MaterialPaletteFromTexture.forGeneratedMaterial(this, mainIngredient);
     }
 
-    public boolean assignStats(List<ToolItem> toolItems) {
+    public boolean assignStats(List<ToolItem> toolItems, boolean isClient) {
         List<Item> toolMaterials = toolItems.stream()
                 .filter(material -> toolMaterial.equals(material.getMaterial()))
                 .collect(Collectors.toList());
-        Optional<Item> swordItem = toolMaterials.stream().filter(SwordItem.class::isInstance).findFirst();
-        Optional<Item> axeItem = toolMaterials.stream().filter(AxeItem.class::isInstance).findFirst();
-        if (axeItem.isEmpty()) {
-            axeItem = toolMaterials.stream().filter(MiningToolItem.class::isInstance).filter(miningTool -> ((MiningToolItemAccessor) miningTool).getEffectiveBlocks().equals(BlockTags.AXE_MINEABLE)).findFirst();
+        Optional<Item> swordItemOptional = toolMaterials.stream().filter(SwordItem.class::isInstance).findFirst();
+        Optional<Item> axeItemOptional = toolMaterials.stream().filter(AxeItem.class::isInstance).findFirst();
+        if (axeItemOptional.isEmpty()) {
+            axeItemOptional = toolMaterials.stream().filter(MiningToolItem.class::isInstance).filter(miningTool -> ((MiningToolItemAccessor) miningTool).getEffectiveBlocks().equals(BlockTags.AXE_MINEABLE)).findFirst();
         }
-        if (swordItem.isPresent() && axeItem.isPresent()) {
-            if (swordItem.get() instanceof SwordItem swordItem1 && axeItem.get() instanceof MiningToolItem axeItem1) {
-                materialStats.put("hardness", (double) swordItem1.getAttackDamage());
+        if (swordItemOptional.isPresent() && axeItemOptional.isPresent()) {
+            if (swordItemOptional.get() instanceof SwordItem foundSwordItem && axeItemOptional.get() instanceof MiningToolItem axeItem) {
+                this.swordItem = foundSwordItem;
+                materialStats.put("hardness", (double) swordItem.getAttackDamage());
 
-                double firstPart = Math.floor(Math.pow((swordItem1.getAttackDamage() - 3.4) * 2.3, 1.0 / 3.0)) + 7;
+                double firstPart = Math.floor(Math.pow((swordItem.getAttackDamage() - 3.4) * 2.3, 1.0 / 3.0)) + 7;
 
-                materialStats.put("density", ((axeItem1.getAttackDamage() - firstPart) / 2.0) * 4.0);
+                materialStats.put("density", ((axeItem.getAttackDamage() - firstPart) / 2.0) * 4.0);
                 materialStats.put("flexibility", (double) (toolMaterial.getMiningSpeedMultiplier() / 4));
                 if (Platform.getEnvironment() == Env.CLIENT) generateTranslation(toolMaterials);
-                MiapiEvents.GENERATED_MATERIAL.invoker().generated(this, mainIngredient, toolMaterials, true);
+                MiapiEvents.GENERATED_MATERIAL.invoker().generated(this, mainIngredient, toolMaterials, isClient);
                 return true;
             }
         }
         return false;
+    }
+
+    public void testForSmithingMaterial(boolean isClient) {
+        RecipeManager manager = findManager(isClient);
+        Optional<SmithingRecipe> smithingRecipe = manager.listAllOfType(RecipeType.SMITHING).stream()
+                .filter(recipe -> recipe.getOutput(findRegistryManager(isClient)).getItem().equals(swordItem)).findAny();
+        if (smithingRecipe.isPresent()) {
+            Miapi.DEBUG_LOGGER.warn("found Smithing recipe");
+            if (smithingRecipe.get() instanceof SmithingTransformRecipe smithingTransformRecipe) {
+                ItemStack templateItem = ((SmithingTransformRecipeAccessor) smithingTransformRecipe).getTemplate().getMatchingStacks()[0];
+                Material sourceMaterial = Arrays.stream(((SmithingTransformRecipeAccessor) smithingTransformRecipe).getBase().getMatchingStacks())
+                        .filter(itemStack -> {
+                            if (itemStack.getItem() instanceof ToolItem toolItem) {
+                                Miapi.DEBUG_LOGGER.warn(toolItem.getTranslationKey());
+                                Material material = MaterialProperty.getMaterialFromIngredient(toolItem.getMaterial()
+                                        .getRepairIngredient().getMatchingStacks()[0]);
+                                Miapi.DEBUG_LOGGER.warn(String.valueOf(toolItem.getMaterial().getRepairIngredient().getMatchingStacks()[0]));
+                                Miapi.DEBUG_LOGGER.warn(String.valueOf(material));
+                                return material != null;
+                            }
+                            return false;
+                        })
+                        .map(itemStack -> MaterialProperty.getMaterialFromIngredient(((ToolItem) itemStack.getItem()).getMaterial()
+                                .getRepairIngredient().getMatchingStacks()[0]))
+                        .findAny().orElse(null);
+
+                Miapi.DEBUG_LOGGER.warn("found Smithing recipe #2");
+                if (
+                        templateItem != null && !templateItem.isEmpty()) {
+                    Miapi.DEBUG_LOGGER.warn("found Smithing recipe #3");
+                    if (sourceMaterial != null) {
+                        Miapi.DEBUG_LOGGER.warn("found Smithing recipe #4");
+                        Collection<Recipe<?>> recipes = manager.values();
+                        recipes.add(new MaterialSmithingRecipe(
+                                new Identifier(Miapi.MOD_ID, "generated_material_recipe" + key),
+                                Ingredient.ofStacks(templateItem),
+                                sourceMaterial.getKey(),
+                                ((SmithingTransformRecipeAccessor) smithingTransformRecipe).getAddition(),
+                                this.key
+                        ));
+                        Miapi.DEBUG_LOGGER.warn("added recipe for " + sourceMaterial.getKey() + " to " + this.key + " via " + templateItem.getItem());
+                        SmithingScreenHandler smithingScreenHandler;
+                        this.groups.clear();
+                        this.groups.add(this.key);
+                        this.groups.add("smithing");
+                        manager.setRecipes(recipes);
+                    } else {
+                        Miapi.DEBUG_LOGGER.warn(String.valueOf(((SmithingTransformRecipeAccessor) smithingTransformRecipe).getAddition()));
+                    }
+
+                }
+            }
+        }
+    }
+
+    static RecipeManager findManager(boolean isClient) {
+        if (isClient) {
+            return MinecraftClient.getInstance().world.getRecipeManager();
+        } else {
+            return Miapi.server.getRecipeManager();
+        }
+    }
+
+    static DynamicRegistryManager findRegistryManager(boolean isClient) {
+        if (isClient) {
+            return MinecraftClient.getInstance().world.getRegistryManager();
+        } else {
+            MinecraftServer server;
+            DynamicRegistryManager manager;
+            return Miapi.server.getRegistryManager();
+        }
     }
 
     @Environment(EnvType.CLIENT)
@@ -295,6 +363,9 @@ public class GeneratedMaterial implements Material {
     @Environment(EnvType.CLIENT)
     @Override
     public MaterialPalette getPalette() {
+        if (palette == null) {
+            return new EmptyMaterialPalette(this);
+        }
         return palette;
     }
 

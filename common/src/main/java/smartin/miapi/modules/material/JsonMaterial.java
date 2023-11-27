@@ -150,6 +150,9 @@ public class JsonMaterial implements Material {
     @Environment(EnvType.CLIENT)
     @Override
     public MaterialPalette getPalette() {
+        if(palette==null){
+            return new EmptyMaterialPalette(this);
+        }
         return palette;
     }
 

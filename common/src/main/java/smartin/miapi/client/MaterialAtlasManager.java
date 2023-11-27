@@ -82,7 +82,7 @@ public class MaterialAtlasManager extends SpriteAtlasHolder {
                         material.getPalette().setSpriteId(BASE_MATERIAL_ID);
                     }
                 } catch (Exception e) {
-                    Miapi.LOGGER.error("Could not generate MaterialPalette for " + s + " ",e);
+                    Miapi.LOGGER.error("Could not generate MaterialPalette for " + s + " ", e);
                     material.getPalette().setSpriteId(BASE_MATERIAL_ID);
                 }
             } else {
@@ -91,21 +91,26 @@ public class MaterialAtlasManager extends SpriteAtlasHolder {
                     Identifier identifier = new Identifier(sprite.getContents().getId().toString().replace(":", ":textures/") + ".png");
                     Resource resource = MinecraftClient.getInstance().getResourceManager().getResourceOrThrow(identifier);
                     SpriteContents contents = SpriteLoader.load(sprite.getContents().getId(), resource);
-                    if (contents.getWidth() < 255) {
+                    if (contents.getWidth() != 256) {
                         Miapi.LOGGER.error("Material manual Image not correctly sized for material " + materialIdentifier);
                     }
                     materialSprites.add(contents);
                     material.getPalette().setSpriteId(materialIdentifier);
                 } catch (FileNotFoundException e) {
                     Miapi.LOGGER.error("Error during MaterialAtlasStitching", e);
+                } catch (Exception e) {
+                    Miapi.LOGGER.error("Could not stitch Material " + materialIdentifier, e);
                 }
             }
         }
         Executor executor = newSingleThreadExecutor();
         int shortMax = 32766;
-        int width = (int) (Math.floor((double) materialSprites.size() / shortMax) * 256);
-        int height = materialSprites.size() % shortMax;
-        SpriteLoader spriteLoader = new SpriteLoader(MATERIAL_ID, 256, width, height);
+        int width = (int) (Math.floor((double) materialSprites.size() / shortMax) * 256) + 1;
+        int height = materialSprites.size() % shortMax + 5;
+        Miapi.LOGGER.warn("Recreated Material atlas with Size " + width + "x" + height);
+        int maxSize = Math.max(Math.max(512, width + 5), height + 5);
+        SpriteLoader spriteLoader = new SpriteLoader(MATERIAL_ID, maxSize, width, height);
+        TextureStitcher textureStitcher;
         SpriteLoader.StitchResult stitchResult = spriteLoader.stitch(materialSprites, 0, executor);
         profiler.startTick();
         profiler.push("upload");

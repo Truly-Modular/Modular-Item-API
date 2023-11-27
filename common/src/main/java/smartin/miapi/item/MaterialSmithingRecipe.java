@@ -2,9 +2,7 @@ package smartin.miapi.item;
 
 import com.google.gson.JsonObject;
 import net.minecraft.inventory.Inventory;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.RecipeSerializer;
@@ -30,8 +28,8 @@ public class MaterialSmithingRecipe implements SmithingRecipe {
     final Ingredient addition;
     final Identifier id;
 
-    public MaterialSmithingRecipe(Identifier id, Ingredient template, String base, Ingredient addition, String resultMaterial) {
-        this.startMaterial = base;
+    public MaterialSmithingRecipe(Identifier id, Ingredient template, String baseMaterial, Ingredient addition, String resultMaterial) {
+        this.startMaterial = baseMaterial;
         this.resultMaterial = resultMaterial;
         smithingTemplate = template;
         this.addition = addition;
@@ -46,8 +44,7 @@ public class MaterialSmithingRecipe implements SmithingRecipe {
      */
     @Override
     public boolean testTemplate(ItemStack stack) {
-        Item netherIteUpgradeTemplate = Items.NETHERITE_UPGRADE_SMITHING_TEMPLATE;
-        return stack.getItem().equals(netherIteUpgradeTemplate);
+        return smithingTemplate.test(stack);
     }
 
     /**
@@ -72,7 +69,7 @@ public class MaterialSmithingRecipe implements SmithingRecipe {
     }
 
     /**
-     * if the Material to be added is the correct ingrediant {@link MaterialSmithingRecipe#addition}
+     * if the Material to be added is the correct ingredient {@link MaterialSmithingRecipe#addition}
      *
      * @param stack the stack to be tested
      * @return if the stack is of the right ingredient
@@ -109,7 +106,7 @@ public class MaterialSmithingRecipe implements SmithingRecipe {
             instance.allSubModules().forEach(module -> {
                 Material material = MaterialProperty.getMaterial(module);
                 if (material != null && material.getKey().equals(startMaterial)) {
-                        MaterialProperty.setMaterial(module, resultMaterial);
+                    MaterialProperty.setMaterial(module, resultMaterial);
 
                 }
             });

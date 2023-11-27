@@ -1,10 +1,10 @@
 package smartin.miapi.modules.material;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.mojang.blaze3d.systems.RenderSystem;
+import dev.architectury.event.events.common.LifecycleEvent;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -99,7 +99,7 @@ public class MaterialProperty implements ModuleProperty {
                     .filter(toolMaterial -> Arrays.stream(toolMaterial.getRepairIngredient().getMatchingStacks()).allMatch(itemStack -> getMaterialFromIngredient(itemStack) == null && !itemStack.getItem().equals(Items.BARRIER)))
                     .collect(Collectors.toSet()).forEach(toolMaterial -> {
                         GeneratedMaterial generatedMaterial = new GeneratedMaterial(toolMaterial, isClient);
-                        if (generatedMaterial.assignStats(toolItems)) {
+                        if (generatedMaterial.assignStats(toolItems, isClient)) {
                             materials.put(generatedMaterial.getKey(), generatedMaterial);
                         } else {
                             Miapi.LOGGER.warn("Couldn't correctly setup material for " + generatedMaterial.mainIngredient.getItem());
@@ -119,7 +119,17 @@ public class MaterialProperty implements ModuleProperty {
                     generatedMaterial.copyStatsFrom(materials.get("stone"));
                 }
             });
+            if(isClient){
+                MaterialProperty.materials.values().stream()
+                        .filter(GeneratedMaterial.class::isInstance)
+                        .forEach(generatedMaterial -> ((GeneratedMaterial) generatedMaterial).testForSmithingMaterial(isClient));
+            }
         }, -1f);
+        LifecycleEvent.SERVER_BEFORE_START.register(server->{
+            MaterialProperty.materials.values().stream()
+                    .filter(GeneratedMaterial.class::isInstance)
+                    .forEach(generatedMaterial -> ((GeneratedMaterial) generatedMaterial).testForSmithingMaterial(false));
+        });
         ReloadEvents.END.subscribe((isClient) -> {
             if (isClient) {
                 MinecraftClient.getInstance().execute(() -> {
