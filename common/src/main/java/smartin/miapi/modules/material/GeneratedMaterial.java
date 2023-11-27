@@ -14,7 +14,6 @@ import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.registry.tag.ItemTags;
-import net.minecraft.screen.SmithingScreenHandler;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -120,55 +119,67 @@ public class GeneratedMaterial implements Material {
 
     public void testForSmithingMaterial(boolean isClient) {
         RecipeManager manager = findManager(isClient);
-        Optional<SmithingRecipe> smithingRecipe = manager.listAllOfType(RecipeType.SMITHING).stream()
-                .filter(recipe -> recipe.getOutput(findRegistryManager(isClient)).getItem().equals(swordItem)).findAny();
-        if (smithingRecipe.isPresent()) {
-            Miapi.DEBUG_LOGGER.warn("found Smithing recipe");
-            if (smithingRecipe.get() instanceof SmithingTransformRecipe smithingTransformRecipe) {
-                ItemStack templateItem = ((SmithingTransformRecipeAccessor) smithingTransformRecipe).getTemplate().getMatchingStacks()[0];
-                Material sourceMaterial = Arrays.stream(((SmithingTransformRecipeAccessor) smithingTransformRecipe).getBase().getMatchingStacks())
-                        .filter(itemStack -> {
-                            if (itemStack.getItem() instanceof ToolItem toolItem) {
-                                Miapi.DEBUG_LOGGER.warn(toolItem.getTranslationKey());
-                                Material material = MaterialProperty.getMaterialFromIngredient(toolItem.getMaterial()
-                                        .getRepairIngredient().getMatchingStacks()[0]);
-                                Miapi.DEBUG_LOGGER.warn(String.valueOf(toolItem.getMaterial().getRepairIngredient().getMatchingStacks()[0]));
-                                Miapi.DEBUG_LOGGER.warn(String.valueOf(material));
-                                return material != null;
-                            }
-                            return false;
-                        })
-                        .map(itemStack -> MaterialProperty.getMaterialFromIngredient(((ToolItem) itemStack.getItem()).getMaterial()
-                                .getRepairIngredient().getMatchingStacks()[0]))
-                        .findAny().orElse(null);
-
-                Miapi.DEBUG_LOGGER.warn("found Smithing recipe #2");
-                if (
-                        templateItem != null && !templateItem.isEmpty()) {
-                    Miapi.DEBUG_LOGGER.warn("found Smithing recipe #3");
-                    if (sourceMaterial != null) {
-                        Miapi.DEBUG_LOGGER.warn("found Smithing recipe #4");
-                        Collection<Recipe<?>> recipes = manager.values();
-                        recipes.add(new MaterialSmithingRecipe(
-                                new Identifier(Miapi.MOD_ID, "generated_material_recipe" + key),
-                                Ingredient.ofStacks(templateItem),
-                                sourceMaterial.getKey(),
-                                ((SmithingTransformRecipeAccessor) smithingTransformRecipe).getAddition(),
-                                this.key
-                        ));
-                        Miapi.DEBUG_LOGGER.warn("added recipe for " + sourceMaterial.getKey() + " to " + this.key + " via " + templateItem.getItem());
-                        SmithingScreenHandler smithingScreenHandler;
-                        this.groups.clear();
-                        this.groups.add(this.key);
-                        this.groups.add("smithing");
-                        manager.setRecipes(recipes);
-                    } else {
-                        Miapi.DEBUG_LOGGER.warn(String.valueOf(((SmithingTransformRecipeAccessor) smithingTransformRecipe).getAddition()));
+        DynamicRegistryManager registryManager = findRegistryManager(isClient);
+        manager.listAllOfType(RecipeType.SMITHING).stream()
+                .filter(SmithingTransformRecipe.class::isInstance)
+                //filter for only ItemChanging Recipes
+                .map(SmithingTransformRecipe.class::cast)
+                //check if the output is valid
+                .filter(recipe -> isValidRecipe(recipe, swordItem, registryManager))
+                .findAny()
+                .ifPresent(smithingTransformRecipe -> {
+                    Miapi.DEBUG_LOGGER.warn("found Smithing recipe #1 from:" + this.key);
+                    ItemStack templateItem = Arrays.stream(((SmithingTransformRecipeAccessor) smithingTransformRecipe).getTemplate().getMatchingStacks()).filter(itemStack -> !itemStack.isEmpty()).findAny().orElse(ItemStack.EMPTY);
+                    if(templateItem.isEmpty()){
+                        //make sure the recipe is valid by testing its template Item
+                        return;
                     }
+                    Miapi.DEBUG_LOGGER.warn("found Smithing recipe #2 TemplateID: " + templateItem.getItem().getTranslationKey());
+                    Arrays.stream(((SmithingTransformRecipeAccessor) smithingTransformRecipe).getBase().getMatchingStacks())
+                            //making sure the input has a valid SourceMaterial
+                            .filter(itemStack -> {
+                                if (itemStack.getItem() instanceof ToolItem toolItem) {
+                                    Material material = MaterialProperty.getMaterialFromIngredient(toolItem.getMaterial()
+                                            .getRepairIngredient().getMatchingStacks()[0]);
+                                    Miapi.DEBUG_LOGGER.warn("found Smithing recipe #3 RecipeID: " + smithingTransformRecipe.getId());
+                                    return material != null;
+                                }
+                                return false;
+                            })
+                            .map(itemStack -> MaterialProperty.getMaterialFromIngredient(((ToolItem) itemStack.getItem()).getMaterial()
+                                    .getRepairIngredient().getMatchingStacks()[0]))
+                            .findAny()
+                            .ifPresent(sourceMaterial -> {
+                                Miapi.DEBUG_LOGGER.warn("found Smithing recipe #4 TemplateID: " + templateItem.getItem().getTranslationKey());
+                                addSmithingRecipe(sourceMaterial, templateItem, smithingTransformRecipe, isClient);
+                            });
+                });
+    }
 
-                }
-            }
+    public void addSmithingRecipe(Material sourceMaterial, ItemStack templateItem, SmithingTransformRecipe smithingTransformRecipe, boolean isClient) {
+        RecipeManager manager = findManager(isClient);
+        Miapi.DEBUG_LOGGER.warn("found Smithing recipe #4 " + sourceMaterial.getKey() + " to " + this.key + " via " + templateItem.getItem());
+        Collection<Recipe<?>> recipes = manager.values();
+        recipes.add(new MaterialSmithingRecipe(
+                new Identifier(Miapi.MOD_ID, "generated_material_recipe" + key),
+                Ingredient.ofStacks(templateItem),
+                sourceMaterial.getKey(),
+                ((SmithingTransformRecipeAccessor) smithingTransformRecipe).getAddition(),
+                this.key
+        ));
+        Miapi.DEBUG_LOGGER.warn("added recipe for " + sourceMaterial.getKey() + " to " + this.key + " via " + templateItem.getItem());
+        this.groups.clear();
+        this.groups.add(this.key);
+        this.groups.add("smithing");
+        manager.setRecipes(recipes);
+    }
+
+    static boolean isValidRecipe
+            (SmithingTransformRecipe recipe, SwordItem swordItem, DynamicRegistryManager manager) {
+        if (recipe.getOutput(manager).getItem().equals(swordItem)) {
+            return true;
         }
+        return ((SmithingTransformRecipeAccessor) recipe).getResult().getItem().equals(swordItem);
     }
 
     static RecipeManager findManager(boolean isClient) {
