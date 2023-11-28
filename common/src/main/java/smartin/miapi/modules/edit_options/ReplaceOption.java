@@ -20,7 +20,7 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class ReplaceOption implements EditOption {
-    public static ItemStack hoverStack = null;
+    public static ItemStack hoverStack = ItemStack.EMPTY;
     @Nullable
     public static EditContext unsafeEditContext;
     @Nullable
@@ -41,18 +41,18 @@ public class ReplaceOption implements EditOption {
 
     public static void tryPreview() {
         if (unsafeEditContext != null && unsafeCraftAction != null) {
-            try{
+            try {
                 unsafeEditContext.preview(unsafeCraftAction.toPacket(Networking.createBuffer()));
-            }
-            catch (Exception e){
+            } catch (Exception e) {
 
             }
         }
     }
 
     public static void setHoverStack(ItemStack itemStack, boolean safe) {
-        if (!itemStack.isEmpty()) {
+        if (!itemStack.isEmpty()){
             Material material = MaterialProperty.getMaterialFromIngredient(itemStack);
+            //h!ItemStack.areEqual(itemStack, hoverStack)
             if (material != null) {
                 tryPreview();
                 hoverStack = itemStack;

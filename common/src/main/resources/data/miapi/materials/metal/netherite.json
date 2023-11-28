@@ -3,6 +3,7 @@
     "translation": "miapi.material.metal.netherite",
     "icon": "textures/item/netherite_ingot.png",
     "groups": [
+        "smithing"
     ],
     "hardness": 7,
     "density": 2.8,

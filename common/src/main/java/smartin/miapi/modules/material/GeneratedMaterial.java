@@ -128,20 +128,17 @@ public class GeneratedMaterial implements Material {
                 .filter(recipe -> isValidRecipe(recipe, swordItem, registryManager))
                 .findAny()
                 .ifPresent(smithingTransformRecipe -> {
-                    Miapi.DEBUG_LOGGER.warn("found Smithing recipe #1 from:" + this.key);
                     ItemStack templateItem = Arrays.stream(((SmithingTransformRecipeAccessor) smithingTransformRecipe).getTemplate().getMatchingStacks()).filter(itemStack -> !itemStack.isEmpty()).findAny().orElse(ItemStack.EMPTY);
                     if(templateItem.isEmpty()){
                         //make sure the recipe is valid by testing its template Item
                         return;
                     }
-                    Miapi.DEBUG_LOGGER.warn("found Smithing recipe #2 TemplateID: " + templateItem.getItem().getTranslationKey());
                     Arrays.stream(((SmithingTransformRecipeAccessor) smithingTransformRecipe).getBase().getMatchingStacks())
                             //making sure the input has a valid SourceMaterial
                             .filter(itemStack -> {
                                 if (itemStack.getItem() instanceof ToolItem toolItem) {
                                     Material material = MaterialProperty.getMaterialFromIngredient(toolItem.getMaterial()
                                             .getRepairIngredient().getMatchingStacks()[0]);
-                                    Miapi.DEBUG_LOGGER.warn("found Smithing recipe #3 RecipeID: " + smithingTransformRecipe.getId());
                                     return material != null;
                                 }
                                 return false;
@@ -150,7 +147,6 @@ public class GeneratedMaterial implements Material {
                                     .getRepairIngredient().getMatchingStacks()[0]))
                             .findAny()
                             .ifPresent(sourceMaterial -> {
-                                Miapi.DEBUG_LOGGER.warn("found Smithing recipe #4 TemplateID: " + templateItem.getItem().getTranslationKey());
                                 addSmithingRecipe(sourceMaterial, templateItem, smithingTransformRecipe, isClient);
                             });
                 });
@@ -158,7 +154,6 @@ public class GeneratedMaterial implements Material {
 
     public void addSmithingRecipe(Material sourceMaterial, ItemStack templateItem, SmithingTransformRecipe smithingTransformRecipe, boolean isClient) {
         RecipeManager manager = findManager(isClient);
-        Miapi.DEBUG_LOGGER.warn("found Smithing recipe #4 " + sourceMaterial.getKey() + " to " + this.key + " via " + templateItem.getItem());
         Collection<Recipe<?>> recipes = manager.values();
         recipes.add(new MaterialSmithingRecipe(
                 new Identifier(Miapi.MOD_ID, "generated_material_recipe" + key),
@@ -167,7 +162,7 @@ public class GeneratedMaterial implements Material {
                 ((SmithingTransformRecipeAccessor) smithingTransformRecipe).getAddition(),
                 this.key
         ));
-        Miapi.DEBUG_LOGGER.warn("added recipe for " + sourceMaterial.getKey() + " to " + this.key + " via " + templateItem.getItem());
+        Miapi.DEBUG_LOGGER.warn("added Smithing Recipe for " + sourceMaterial.getKey() + " to " + this.key + " via " + templateItem.getItem());
         this.groups.clear();
         this.groups.add(this.key);
         this.groups.add("smithing");

@@ -181,6 +181,7 @@
     "miapi.material_group.rod": "Rods",
     "miapi.material_group.rope": "Ropes",
     "miapi.material_group.fletching": "Fletching",
+    "miapi.material_group.smithing": "Smithing Material - Applied via Smithing Table",
     "miapi.material.wood": "Wooden ",
     "miapi.material.wood.acacia": "Acaica ",
     "miapi.material.wood.bamboo": "Bamboo ",
