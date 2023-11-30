@@ -5,7 +5,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.item.ItemStack;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.text.Text;
 import net.minecraft.util.Util;
@@ -64,13 +63,10 @@ public class MaterialCraftingWidget extends InteractAbleWidget {
         if (MinecraftClient.getInstance().currentScreen instanceof ParentHandledScreen<?> parentHandledScreen) {
             Slot focusSlot = parentHandledScreen.getFocusSlot();
             ReplaceOption.unsafeCraftAction = action;
-            if(focusSlot!=null){
-                if(ReplaceOption.hoverStack == null || !ItemStack.areEqual(ReplaceOption.hoverStack,focusSlot.getStack())){
-                    ReplaceOption.setHoverStack(focusSlot.getStack(),false);
+            if (focusSlot != null) {
+                if (true) {
+                    ReplaceOption.setHoverStack(focusSlot.getStack(), false);
                 }
-            }
-            else{
-                ReplaceOption.setHoverStack(ItemStack.EMPTY,false);
             }
         }
 

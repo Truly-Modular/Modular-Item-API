@@ -50,18 +50,23 @@ public class ReplaceOption implements EditOption {
     }
 
     public static void setHoverStack(ItemStack itemStack, boolean safe) {
-        if (!itemStack.isEmpty()){
+        if (itemStack != null && hoverStack != null) {
+            if (ItemStack.areEqual(itemStack, hoverStack)) {
+                return;
+            }
+        }
+        if (!itemStack.isEmpty()) {
             Material material = MaterialProperty.getMaterialFromIngredient(itemStack);
             //h!ItemStack.areEqual(itemStack, hoverStack)
             if (material != null) {
-                tryPreview();
                 hoverStack = itemStack;
+                tryPreview();
                 return;
             }
         }
         if (!safe) {
-            tryPreview();
             hoverStack = itemStack;
+            tryPreview();
         }
     }
 
