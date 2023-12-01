@@ -39,13 +39,13 @@ public class ModularElytraFeatureRenderer<T extends LivingEntity, M extends Enti
             MiapiItemModel miapiItemModel = MiapiItemModel.getItemModel(itemStack);
             if (miapiItemModel != null) {
                 matrixStack.push();
-                ModelPart leftWing = ((ElytraEntityModelAccessor)elytra).getLeftWing();
+                ModelPart leftWing = ((ElytraEntityModelAccessor) elytra).getLeftWing();
                 leftWing.rotate(matrixStack);
                 miapiItemModel.render("left_wing", matrixStack, ModelTransformationMode.HEAD, 0, vertexConsumerProvider, i, OverlayTexture.DEFAULT_UV);
                 matrixStack.pop();
 
                 matrixStack.push();
-                ModelPart rightWing = ((ElytraEntityModelAccessor)elytra).getRightWing();
+                ModelPart rightWing = ((ElytraEntityModelAccessor) elytra).getRightWing();
                 rightWing.rotate(matrixStack);
                 miapiItemModel.render("right_wing", matrixStack, ModelTransformationMode.HEAD, 0, vertexConsumerProvider, i, OverlayTexture.DEFAULT_UV);
                 matrixStack.pop();

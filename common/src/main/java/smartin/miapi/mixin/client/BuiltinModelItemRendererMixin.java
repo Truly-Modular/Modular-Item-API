@@ -19,7 +19,8 @@ import smartin.miapi.item.modular.ModularItem;
 public class BuiltinModelItemRendererMixin {
     @Inject(
             method = "render(Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/render/model/json/ModelTransformationMode;Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;II)V",
-            at = @At("HEAD")
+            at = @At("HEAD"),
+            cancellable = true
     )
     private void miapi$customItemRendering(
             ItemStack stack, ModelTransformationMode mode, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay, CallbackInfo ci
@@ -28,8 +29,9 @@ public class BuiltinModelItemRendererMixin {
             MiapiItemModel miapiModel = MiapiItemModel.getItemModel(stack);
             if (miapiModel != null) {
                 miapiModel.render(matrices, stack, mode, MinecraftClient.getInstance().getTickDelta(), vertexConsumers, CustomModel.currentEntity, light, overlay);
+                CustomModel.currentEntity = null;
+                ci.cancel();
             }
-            CustomModel.currentEntity = null;
         }
     }
 }

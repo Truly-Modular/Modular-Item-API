@@ -185,7 +185,11 @@ public class DynamicBakedModel implements BakedModel {
         }));
         List<BakedQuad> defaultList = bakedQuads.get(null);
         defaultList = defaultList == null ? new ArrayList<>() : defaultList;
-        BakedModel model = new BasicBakedModel(defaultList, bakedQuads, true, false, true, this.getParticleSprite(), this.modelTransformation, this.getOverrides());
+        Map<Direction,List<BakedQuad>> map = new HashMap<>();
+        for(Direction direction:Direction.values()){
+            map.put(direction,new ArrayList<>());
+        }
+        BakedModel model = new BasicBakedModel(new ArrayList<>(), bakedQuads, true, false, true, this.getParticleSprite(), this.modelTransformation, ModelOverrideList.EMPTY);
         return model;
     }
 

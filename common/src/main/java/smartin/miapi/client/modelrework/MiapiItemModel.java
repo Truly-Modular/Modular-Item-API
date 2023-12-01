@@ -8,6 +8,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
+import smartin.miapi.Miapi;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.modules.ItemModule;
@@ -16,6 +17,8 @@ import smartin.miapi.registries.RegistryInventory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.WeakHashMap;
 
 public class MiapiItemModel implements MiapiModel {
     public static List<ModelSupplier> modelSuppliers = new ArrayList<>();
@@ -28,15 +31,20 @@ public class MiapiItemModel implements MiapiModel {
         ModularItemCache.setSupplier(CACHE_KEY, (MiapiItemModel::new));
     }
 
+    public static Map<ItemStack, MiapiItemModel> cacheTest = new WeakHashMap<>();
+
     @Nullable
     public static MiapiItemModel getItemModel(ItemStack stack) {
-        return ModularItemCache.getRaw(stack, CACHE_KEY);
+        return cacheTest.computeIfAbsent(stack, MiapiItemModel::new);
+        //return null;
+        //return ModularItemCache.getRaw(stack, CACHE_KEY);
     }
 
     private MiapiItemModel(ItemStack stack) {
         this.stack = stack;
         if (stack.getItem() instanceof ModularItem) {
             rootModel = new ModuleModel(ItemModule.getModules(stack), stack);
+            Miapi.LOGGER.info("generated New Model");
         } else {
             rootModel = null;
             throw new RuntimeException("Can only make MiapiModel for Modular Items");
@@ -57,13 +65,13 @@ public class MiapiItemModel implements MiapiModel {
     }
 
     public void render(String modelType, ItemStack stack, MatrixStack matrices, ModelTransformationMode mode, float tickDelta, VertexConsumerProvider vertexConsumers, LivingEntity entity, int light, int overlay) {
-        if(ReloadEvents.isInReload()) return;
+        if (ReloadEvents.isInReload()) return;
         MinecraftClient.getInstance().world.getProfiler().push("modular_item");
         matrices.push();
         for (ModelTransformer transformer : modelTransformers) {
             matrices = transformer.transform(matrices, stack, mode, modelType, tickDelta);
         }
-        if(entity == null){
+        if (entity == null) {
             //needed because otherwise overwrites dont work
             entity = MinecraftClient.getInstance().player;
         }

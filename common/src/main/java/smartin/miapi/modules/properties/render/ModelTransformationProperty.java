@@ -13,6 +13,7 @@ import smartin.miapi.Miapi;
 import smartin.miapi.client.modelrework.MiapiItemModel;
 import smartin.miapi.item.modular.Transform;
 import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.*;
@@ -25,6 +26,7 @@ public class ModelTransformationProperty implements ModuleProperty {
 
     public ModelTransformationProperty() {
         property = this;
+        ModularItemCache.setSupplier(KEY, ModelTransformationProperty::getTransformation);
         MiapiItemModel.modelTransformers.add((matrices, itemStack, mode, modelType, tickDelta) -> {
             applyTransformation(itemStack, mode, matrices);
             return matrices;
@@ -32,7 +34,7 @@ public class ModelTransformationProperty implements ModuleProperty {
     }
 
     public static void applyTransformation(ItemStack stack, ModelTransformationMode mode, MatrixStack matrices) {
-        Transformation transformation = ModelTransformationProperty.getTransformation(stack).getTransformation(mode);
+        Transformation transformation = ModularItemCache.get(stack,KEY, ModelTransformation.NONE).getTransformation(mode);
         boolean leftHanded = isLeftHanded(mode);
         matrices.translate(0.5f, 0.5f, 0.5f);
         transformation.apply(false, matrices);
