@@ -15,6 +15,10 @@ configurations {
 }
 
 repositories {
+    maven {
+        url 'http://trulymodular.duckdns.org/maven'
+        allowInsecureProtocol = true
+    }
     maven { url 'https://jitpack.io' }
     maven { url 'https://maven.theillusivec4.top/' }
     maven {
@@ -39,7 +43,7 @@ dependencies {
     //api(files('libs/nucleus-local.jar'))
     //modApi(files('libs/nucleus-local.jar'))
     //include(modApi(files('libs/nucleus-local.jar')))
-    modApi(include("com.github.RedPxnda.Nucleus:nucleus-forge:${rootProject.minecraft_version}-${rootProject.nucleus_version}"))
+    modApi(include("com.RedPxnda.Nucleus:nucleus-forge:${rootProject.minecraft_version}-${rootProject.nucleus_version}"))
     modApi files('libs/arsenal-local.jar')
     modApi files('libs/archery-local.jar')
     modApi files('libs/armory-local.jar')
