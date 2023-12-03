@@ -13,6 +13,7 @@ import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.modules.properties.AttributeProperty;
 
 import static smartin.miapi.Miapi.MOD_ID;
+import static smartin.miapi.attributes.AttributeRegistry.SWIM_SPEED;
 
 @Mod(MOD_ID)
 public class TrulyModularForge {
@@ -26,6 +27,7 @@ public class TrulyModularForge {
         LifecycleEvent.SERVER_STARTING.register((instance -> {
             AttributeRegistry.REACH = ForgeMod.BLOCK_REACH.get();
             AttributeRegistry.ATTACK_RANGE = ForgeMod.ENTITY_REACH.get();
+            AttributeRegistry.SWIM_SPEED = ForgeMod.SWIM_SPEED.get();
         }));
         AttributeProperty.replaceMap.put("miapi:generic.reach", ForgeMod.BLOCK_REACH);
         AttributeProperty.replaceMap.put("miapi:generic.attack_range", ForgeMod.ENTITY_REACH);
@@ -33,6 +35,7 @@ public class TrulyModularForge {
         AttributeProperty.replaceMap.put("forge:entity_reach", ForgeMod.ENTITY_REACH);
         AttributeProperty.replaceMap.put("reach-entity-attributes:reach", ForgeMod.BLOCK_REACH);
         AttributeProperty.replaceMap.put("reach-entity-attributes:attack_range", ForgeMod.ENTITY_REACH);
+        AttributeProperty.replaceMap.put("miapi:generic.swim_speed", () -> SWIM_SPEED);
     }
 
 

@@ -25,6 +25,7 @@
         "LootContextTypesAccessor",
         "MiningToolItemAccessor",
         "PiglinBrainMixin",
+        "PlayerEntityMixin",
         "PowderSnowBlockMixin",
         "ProjectileDispenserBehaviorAccessor",
         "ProjectileEntityAccessor",

@@ -2,7 +2,6 @@ package smartin.miapi.events;
 
 import com.redpxnda.nucleus.event.PrioritizedEvent;
 import dev.architectury.event.EventResult;
-import dev.architectury.event.events.common.BlockEvent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
@@ -29,6 +28,8 @@ public class MiapiEvents {
     public static PrioritizedEvent<ItemCraftingStatUpdate> ITEM_STAT_UPDATE = PrioritizedEvent.createEventResult();
     public static PrioritizedEvent<GeneratedMaterialEvent> GENERATED_MATERIAL = PrioritizedEvent.createEventResult();
     public static PrioritizedEvent<BlockBreakEvent> BLOCK_BREAK_EVENT = PrioritizedEvent.createEventResult();
+    public static PrioritizedEvent<PlayerTickEvent> PLAYER_TICK_START = PrioritizedEvent.createLoop();
+    public static PrioritizedEvent<PlayerTickEvent> PLAYER_TICK_END = PrioritizedEvent.createLoop();
 
     public static class LivingHurtEvent {
         public final LivingEntity livingEntity;
@@ -53,6 +54,11 @@ public class MiapiEvents {
             return ItemStack.EMPTY;
         }
     }
+
+    public interface PlayerTickEvent {
+        EventResult tick(PlayerEntity player);
+    }
+
 
     public interface GeneratedMaterialEvent {
         EventResult generated(GeneratedMaterial material, ItemStack mainIngredient, List<Item> tools, boolean isClient);

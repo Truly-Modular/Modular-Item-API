@@ -51,7 +51,24 @@ tasks.register('buildBoth') {
             }
         }
 
+        /*
+        def cacheDir = file("${gradle.gradleUserHomeDir}/caches/modules-2/files-2.1/${group}/${artifact}/${version}")
+        def jarFile = cacheDir.listFiles().find { it.name == jarName }
+        if (jarFile) {
+            jarFile.delete()
+            println "Deleted ${jarName} from the Gradle cache."
+        } else {
+            println "${jarName} not found in the Gradle cache."
+        }
+         */
+
         println "Builds completed"
+    }
+}
+
+task printGradleHomeDir {
+    doLast {
+        println "Gradle home directory: ${gradle.gradleHomeDir}"
     }
 }
 

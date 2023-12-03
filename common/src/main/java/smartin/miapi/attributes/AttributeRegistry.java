@@ -27,6 +27,8 @@ public class AttributeRegistry {
     public static EntityAttribute REACH;
     public static EntityAttribute ATTACK_RANGE;
 
+    public static EntityAttribute SWIM_SPEED;
+
     public static EntityAttribute MINING_SPEED_PICKAXE;
     public static EntityAttribute MINING_SPEED_AXE;
     public static EntityAttribute MINING_SPEED_SHOVEL;
