@@ -95,11 +95,14 @@ processResources {
 }
 
 shadowJar {
+    exclude "architectury.common.json"
+
     configurations = [project.configurations.shadowCommon]
     archiveClassifier = "dev-shadow"
 }
 
 remapJar {
+    injectAccessWidener = true
     input.set shadowJar.archiveFile
     dependsOn shadowJar
     archiveClassifier = null
@@ -121,16 +124,27 @@ components.java {
     }
 }
 
+tasks.register('githubPublish') {
+    finalizedBy ':fabric:publish'
+    group = 'publishing'
+
+    doLast {
+        publishing.publications.mavenFabric.groupId = "com.${rootProject.github}"
+    }
+}
+
 publishing {
     publications {
         mavenFabric(MavenPublication) {
-            artifactId = rootProject.archives_base_name + "-" + project.name + "-fabric"
+            artifactId = rootProject.archives_base_name + "-" + project.name
+            version = rootProject.mod_version + "-" + rootProject.minecraft_version
+
             from components.java
         }
     }
 
     // See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
     repositories {
-        // Add repositories to publish to here.
+        maven { url uri(file("$rootDir/build/repository")) }
     }
 }
