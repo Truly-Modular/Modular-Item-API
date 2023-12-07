@@ -30,7 +30,7 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Build with Gradle
-        run: chmod +x ./gradlew githubPublish
+        run: ./gradlew githubPublish
         
       - name: Create Github Release
         uses: ncipollo/release-action@v1
