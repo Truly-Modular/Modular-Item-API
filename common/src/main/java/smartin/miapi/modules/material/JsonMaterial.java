@@ -17,6 +17,7 @@ import smartin.miapi.modules.material.palette.EmptyMaterialPalette;
 import smartin.miapi.modules.material.palette.MaterialPalette;
 import smartin.miapi.modules.material.palette.PaletteCreators;
 import smartin.miapi.modules.properties.util.ModuleProperty;
+import smartin.miapi.registries.FakeTranslation;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.util.ArrayList;
@@ -47,6 +48,9 @@ public class JsonMaterial implements Material {
                 palette = PaletteCreators.paletteCreator.dispatcher().createPalette(element.get("color_palette"), this);
             } else {
                 palette = new EmptyMaterialPalette(this);
+            }
+            if(element.has("fake_translation") && element.has("translation")){
+                FakeTranslation.translations.put(element.get("translation").getAsString() ,element.get("fake_translation").getAsString());
             }
         }
     }

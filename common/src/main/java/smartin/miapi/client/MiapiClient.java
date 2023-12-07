@@ -40,6 +40,7 @@ public class MiapiClient {
     public static MaterialAtlasManager materialAtlasManager;
     public static boolean irisLoaded = Platform.isModLoaded("iris");
     public static boolean sodiumLoaded = Platform.isModLoaded("sodium");
+    public static boolean jerLoaded = Platform.isModLoaded("jeresources");
 
     private MiapiClient() {
     }
@@ -64,6 +65,16 @@ public class MiapiClient {
                 link = link.getWithStyle(Style.EMPTY.withClickEvent(event).withUnderline(true)).get(0);
                 player.sendMessage(link);
             }
+            if (jerLoaded && Miapi.server == null) {
+                String version = Platform.getMod("jeresources").getVersion();
+                if (version.equals("1.4.0.238")) {
+                    player.sendMessage(Text.literal("Just Enough Resources 1.20.1-1.4.0.238 Release is broken on servers. Please Remove it."));
+                    ClickEvent event = new ClickEvent(ClickEvent.Action.OPEN_URL, "https://github.com/way2muchnoise/JustEnoughResources/issues/392");
+                    Text link = Text.literal("For more information you can read this");
+                    player.sendMessage(link.getWithStyle(Style.EMPTY.withClickEvent(event).withUnderline(true)).get(0));
+                    player.sendMessage(Text.literal("This message was sent by Truly Modular."));
+                }
+            }
         });
         ClientReloadShadersEvent.EVENT.register((resourceFactory, asd) -> ModularItemCache.discardCache());
         RegistryInventory.modularItems.addCallback((item -> {
@@ -82,6 +93,25 @@ public class MiapiClient {
                 StatListWidget.reloadEnd();
             }
         });
+    }
+
+    public static boolean isHigherVersion(String version, String compareToVersion) {
+        String[] versionParts = version.split("\\.");
+        String[] compareToVersionParts = compareToVersion.split("\\.");
+
+        for (int i = 0; i < versionParts.length && i < compareToVersionParts.length; i++) {
+            int part1 = Integer.parseInt(versionParts[i]);
+            int part2 = Integer.parseInt(compareToVersionParts[i]);
+
+            if (part1 > part2) {
+                return true;
+            } else if (part1 < part2) {
+                return false;
+            }
+        }
+
+        // If all common parts are equal, the longer version is considered higher
+        return versionParts.length > compareToVersionParts.length;
     }
 
     protected static void clientSetup(MinecraftClient client) {

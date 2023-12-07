@@ -12,7 +12,6 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import smartin.miapi.events.MiapiProjectileEvents;
 import smartin.miapi.item.FakeEnchantment;
-import smartin.miapi.item.modular.Transform;
 import smartin.miapi.modules.properties.util.DoubleProperty;
 
 /**
@@ -81,7 +80,6 @@ public class ImmolateProperty extends DoubleProperty {
             }
             return EventResult.pass();
         }));
-        Transform transform;
         MiapiProjectileEvents.MODULAR_PROJECTILE_ENTITY_HIT.register((modularProjectileEntityHitEvent) -> {
             if(modularProjectileEntityHitEvent.projectile.getWorld().isClient()){
                 return EventResult.pass();

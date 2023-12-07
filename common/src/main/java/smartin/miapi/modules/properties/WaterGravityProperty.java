@@ -2,7 +2,6 @@ package smartin.miapi.modules.properties;
 
 import dev.architectury.event.EventResult;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.Vec3d;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.modules.properties.util.DoubleProperty;
 
@@ -17,10 +16,10 @@ public class WaterGravityProperty extends DoubleProperty {
         super(KEY);
         property = this;
         MiapiEvents.PLAYER_TICK_START.register((player -> {
-            if (player.isSubmergedInWater() && !player.getWorld().isClient()) {
-                double speed = property.getForItems(player.getItemsEquipped());
-                if (player.getVelocity().y > speed) {
-                    player.addVelocity(new Vec3d(0, speed / 20, 0));
+            if (player.isSubmergedInWater() && player.isLogicalSideForUpdatingMovement()) {
+                double speed = property.getForItems(player.getItemsEquipped()) / 100;
+                if (player.getVelocity().y < speed) {
+                    player.addVelocity(0, -speed / 20, 0);
                 }
             }
             return EventResult.pass();
