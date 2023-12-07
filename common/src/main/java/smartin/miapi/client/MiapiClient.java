@@ -102,12 +102,9 @@ public class MiapiClient {
     @Environment(EnvType.CLIENT)
     public static void registerAnimations(Item item) {
         if(item.isDamageable()){
+            //TODO:figure out why these broke
             ModularModelPredicateProvider.registerModelOverride(item, new Identifier(Miapi.MOD_ID,"damage"), (stack, world, entity, seed) -> {
-                if (entity == null) {
-                    return 0.0F;
-                } else {
-                    return stack.isDamageable() && stack.isDamaged() ? 0.0f : (float) stack.getMaxDamage() /stack.getDamage();
-                }
+                return stack.isDamageable() && stack.isDamaged() ? 0.0f : (float) stack.getMaxDamage() / (stack.getMaxDamage()-stack.getDamage());
             });
             ModularModelPredicateProvider.registerModelOverride(item, new Identifier(Miapi.MOD_ID,"damaged"), (stack, world, entity, seed) -> {
                 return stack.isDamaged() ? 0.0f : 1.0f;
