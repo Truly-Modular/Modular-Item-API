@@ -2,7 +2,6 @@ package smartin.miapi.item.modular.items;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.EquipmentSlot;
@@ -18,7 +17,6 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
-import net.minecraft.util.UseAction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import smartin.miapi.attributes.AttributeRegistry;
@@ -43,10 +41,6 @@ public class ModularBow extends BowItem implements ModularItem {
         if (smartin.miapi.Environment.isClient()) {
             registerAnimations();
         }
-        PlayerEntity entity;
-        ClientPlayerEntity clientPlayerEntity;
-        LivingEntity living;
-        UseAction useAction;
     }
 
     @Override

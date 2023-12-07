@@ -8,9 +8,12 @@ import dev.architectury.platform.Platform;
 import dev.architectury.registry.client.level.entity.EntityRendererRegistry;
 import dev.architectury.registry.client.rendering.BlockEntityRendererRegistry;
 import dev.architectury.registry.menu.MenuRegistry;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.item.Item;
 import net.minecraft.resource.ReloadableResourceManagerImpl;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.Style;
@@ -46,6 +49,7 @@ public class MiapiClient {
     }
 
     public static void init() {
+        RegistryInventory.modularItems.addCallback((MiapiClient::registerAnimations));
         registerShaders();
         PaletteCreators.setup();
         MaterialIcons.setup();
@@ -93,6 +97,22 @@ public class MiapiClient {
                 StatListWidget.reloadEnd();
             }
         });
+    }
+
+    @Environment(EnvType.CLIENT)
+    public static void registerAnimations(Item item) {
+        if(item.isDamageable()){
+            ModularModelPredicateProvider.registerModelOverride(item, new Identifier(Miapi.MOD_ID,"damage"), (stack, world, entity, seed) -> {
+                if (entity == null) {
+                    return 0.0F;
+                } else {
+                    return stack.isDamageable() && stack.isDamaged() ? 0.0f : (float) stack.getMaxDamage() /stack.getDamage();
+                }
+            });
+            ModularModelPredicateProvider.registerModelOverride(item, new Identifier(Miapi.MOD_ID,"damaged"), (stack, world, entity, seed) -> {
+                return stack.isDamaged() ? 0.0f : 1.0f;
+            });
+        }
     }
 
     public static boolean isHigherVersion(String version, String compareToVersion) {

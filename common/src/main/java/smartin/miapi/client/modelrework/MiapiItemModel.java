@@ -8,7 +8,6 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
-import smartin.miapi.Miapi;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.modules.ItemModule;
@@ -44,7 +43,6 @@ public class MiapiItemModel implements MiapiModel {
         this.stack = stack;
         if (stack.getItem() instanceof ModularItem) {
             rootModel = new ModuleModel(ItemModule.getModules(stack), stack);
-            Miapi.LOGGER.info("generated New Model");
         } else {
             rootModel = null;
             throw new RuntimeException("Can only make MiapiModel for Modular Items");
