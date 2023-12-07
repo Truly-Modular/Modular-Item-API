@@ -26,8 +26,11 @@ jobs:
           file: gradle.properties
           all: true
 
+      - name: Gradle chmod
+        run: chmod +x ./gradlew
+
       - name: Build with Gradle
-        run: ./gradlew githubPublish
+        run: chmod +x ./gradlew githubPublish
         
       - name: Create Github Release
         uses: ncipollo/release-action@v1
