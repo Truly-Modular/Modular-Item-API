@@ -1,4 +1,3 @@
-## v1.0.9 (1.20.1)
-- added support for translations within Materials for Material Helper
-- added Swimspeed Attribute and heavy property for future armory update
-- added warning regarded JER on servers
+## v1.0.10 (1.20.1)
+- added optional condition to all Jsons
+- added crafting enchant property
