@@ -26,6 +26,9 @@ jobs:
           file: gradle.properties
           all: true
 
+      - name: Gradle chmod
+        run: chmod +x ./gradlew
+
       - name: Build with Gradle
         run: ./gradlew githubPublish
         
