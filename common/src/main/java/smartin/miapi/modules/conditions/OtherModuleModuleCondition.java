@@ -21,6 +21,7 @@ public class OtherModuleModuleCondition implements ModuleCondition {
                 for (ItemModule.ModuleInstance otherInstance : moduleInstance.getRoot().allSubModules()) {
                     ConditionManager.ModuleConditionContext copy = moduleConditionContext.copy();
                     copy.moduleInstance = otherInstance;
+                    copy.propertyMap = otherInstance.module.getKeyedProperties();
                     if (condition.isAllowed(copy)) {
                         return true;
                     }

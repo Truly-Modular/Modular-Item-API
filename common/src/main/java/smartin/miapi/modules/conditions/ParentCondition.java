@@ -21,6 +21,7 @@ public class ParentCondition implements ModuleCondition {
             if (moduleInstance != null && moduleInstance.parent != null) {
                 ConditionManager.ModuleConditionContext copy = moduleConditionContext.copy();
                 copy.moduleInstance = moduleInstance.parent;
+                copy.propertyMap = moduleInstance.parent.module.getKeyedProperties();
                 return condition.isAllowed(copy);
             }
         }

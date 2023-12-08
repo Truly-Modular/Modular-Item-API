@@ -18,8 +18,8 @@ import org.slf4j.LoggerFactory;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.client.MiapiClient;
 import smartin.miapi.config.MiapiConfig;
+import smartin.miapi.datapack.MiapiReloadListener;
 import smartin.miapi.datapack.ReloadEvents;
-import smartin.miapi.datapack.ReloadListener;
 import smartin.miapi.injectors.PropertySubstitution;
 import smartin.miapi.item.ItemToModularConverter;
 import smartin.miapi.item.ModularItemStackConverter;
@@ -58,7 +58,7 @@ public class Miapi {
         AttributeRegistry.setup();
         ConditionManager.setup();
         LifecycleEvent.SERVER_BEFORE_START.register(minecraftServer -> server = minecraftServer);
-        ReloadListenerRegistry.register(ResourceType.SERVER_DATA, new ReloadListener());
+        ReloadListenerRegistry.register(ResourceType.SERVER_DATA, new MiapiReloadListener());
         registerReloadHandler(ReloadEvents.MAIN, "modules", RegistryInventory.modules,
                 (isClient, path, data) -> ItemModule.loadFromData(path, data), -0.5f);
         registerReloadHandler(ReloadEvents.MAIN, "injectors", bl -> PropertySubstitution.injectorsCount = 0, (isClient, path, data) -> {

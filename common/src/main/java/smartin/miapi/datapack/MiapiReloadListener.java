@@ -23,7 +23,7 @@ import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
 
 
-public class ReloadListener implements ResourceReloader {
+public class MiapiReloadListener implements ResourceReloader {
     static long timeStart;
 
     public CompletableFuture load(ResourceManager manager, Profiler profiler, Executor executor) {

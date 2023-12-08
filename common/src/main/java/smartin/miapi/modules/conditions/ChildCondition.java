@@ -23,6 +23,7 @@ public class ChildCondition implements ModuleCondition {
                     assert moduleInstance.parent != null;
                     ConditionManager.ModuleConditionContext copy = moduleCondition.copy();
                     copy.moduleInstance = otherInstace;
+                    copy.propertyMap = otherInstace.module.getKeyedProperties();
                     if (condition.isAllowed(copy)) {
                         return true;
                     }
