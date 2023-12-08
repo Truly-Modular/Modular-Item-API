@@ -25,8 +25,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-public class DefaultEnchantProperty implements ModuleProperty,CraftingProperty {
-    public static String KEY = "default_enchants";
+public class DefaultEnchantProperty implements ModuleProperty, CraftingProperty {
+    public static String KEY = "crafting_enchants";
     public static DefaultEnchantProperty property;
     private static Type type = new TypeToken<Map<String, Integer>>() {
     }.getType();
@@ -39,7 +39,7 @@ public class DefaultEnchantProperty implements ModuleProperty,CraftingProperty {
     private static List<Pair<Enchantment, Integer>> getEnchantsCache(ItemStack itemStack) {
         List<Pair<Enchantment, Integer>> enchants = new ArrayList<>();
         JsonElement list = ItemModule.getMergedProperty(itemStack, property, MergeType.SMART);
-        ItemModule.getMergedProperty(ItemModule.getModules(itemStack),property);
+        ItemModule.getMergedProperty(ItemModule.getModules(itemStack), property);
         if (list != null) {
             Miapi.DEBUG_LOGGER.info("FOUND JSON " + list);
         }
@@ -92,7 +92,7 @@ public class DefaultEnchantProperty implements ModuleProperty,CraftingProperty {
                 nbtElements.add(EnchantmentHelper.createNbt(EnchantmentHelper.getEnchantmentId(enchantment), (byte) level));
             }
         }));
-        if(nbtElements.isEmpty() && nbtList==null){
+        if (nbtElements.isEmpty() && nbtList == null) {
             return null;
         }
         return nbtElements;
@@ -106,20 +106,26 @@ public class DefaultEnchantProperty implements ModuleProperty,CraftingProperty {
     }
 
     @Override
+    public boolean shouldExecuteOnCraft(@Nullable ItemModule.ModuleInstance module, ItemModule.ModuleInstance root, ItemStack stack) {
+        return true;
+    }
+
+    @Override
     public ItemStack preview(ItemStack old, ItemStack crafting, PlayerEntity player, ModularWorkBenchEntity bench, ItemModule.@Nullable ModuleInstance newModule, ItemModule module, List<ItemStack> inventory, Map<String, String> data) {
+        if(newModule!=null){
+            Miapi.DEBUG_LOGGER.info(newModule.toString());
+        }
         getEnchantsCache(crafting).forEach((enchantmentIntegerPair -> {
             Enchantment enchantment = enchantmentIntegerPair.getFirst();
             int level = enchantmentIntegerPair.getSecond();
-            if(enchantment.isAcceptableItem(crafting)){
-                int prevLevel = EnchantmentHelper.getLevel(enchantment,crafting);
-                if(level>prevLevel){
-                    crafting.addEnchantment(enchantmentIntegerPair.getFirst(),enchantmentIntegerPair.getSecond());
-                }
-                else{
+            if (enchantment.isAcceptableItem(crafting)) {
+                int prevLevel = EnchantmentHelper.getLevel(enchantment, crafting);
+                if (level > prevLevel) {
+                    crafting.addEnchantment(enchantmentIntegerPair.getFirst(), enchantmentIntegerPair.getSecond());
+                } else {
                     Miapi.DEBUG_LOGGER.info("to low level");
                 }
-            }
-            else{
+            } else {
                 Miapi.DEBUG_LOGGER.info("not accept Item");
             }
         }));

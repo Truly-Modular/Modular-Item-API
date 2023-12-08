@@ -100,7 +100,8 @@ public class ReloadListener implements ResourceReloader {
                         }
                     });
                     if (allowed) {
-                        filteredMap.put(key, value);
+                        element.remove("load_condition");
+                        filteredMap.put(key, Miapi.gson.toJson(element));
                     }
                 } catch (Exception e) {
                     filteredMap.put(key, value);
