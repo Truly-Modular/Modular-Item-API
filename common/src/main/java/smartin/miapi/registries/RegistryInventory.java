@@ -446,7 +446,7 @@ public class RegistryInventory {
             registerMiapi(moduleProperties, LuminousLearningProperty.KEY, new LuminousLearningProperty());
             registerMiapi(moduleProperties, BlueprintProperty.KEY, new BlueprintProperty());
             registerMiapi(moduleProperties, WaterGravityProperty.KEY, new WaterGravityProperty());
-            registerMiapi(moduleProperties, DefaultEnchantProperty.KEY, new DefaultEnchantProperty());
+            registerMiapi(moduleProperties, CraftingEnchantProperty.KEY, new CraftingEnchantProperty());
 
             //compat
             registerMiapi(moduleProperties, BetterCombatProperty.KEY, new BetterCombatProperty());

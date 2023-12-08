@@ -25,10 +25,7 @@
     },
     "properties": {
         "head": {
-            "fracturing": "20",
-            "crafting_enchants": {
-                "minecraft:sharpness": 5
-            }
+            "fracturing": "20"
         }
     },
     "mining_speed": 4,
