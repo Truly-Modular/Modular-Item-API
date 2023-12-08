@@ -1,15 +1,7 @@
 package smartin.miapi.modules.conditions;
 
 import com.google.gson.JsonElement;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.text.Text;
-import net.minecraft.util.math.BlockPos;
-import org.jetbrains.annotations.Nullable;
 import smartin.miapi.modules.ItemModule;
-import smartin.miapi.modules.properties.util.ModuleProperty;
-
-import java.util.List;
-import java.util.Map;
 
 public class ChildCondition implements ModuleCondition {
     public ModuleCondition condition;
@@ -23,11 +15,18 @@ public class ChildCondition implements ModuleCondition {
     }
 
     @Override
-    public boolean isAllowed(ItemModule.ModuleInstance moduleInstance, @Nullable BlockPos tablePos, @Nullable PlayerEntity player, Map<ModuleProperty, JsonElement> propertyMap, List<Text> reasons) {
-        for (ItemModule.ModuleInstance otherInstace : moduleInstance.subModules.values()) {
-            assert moduleInstance.parent != null;
-            if (condition.isAllowed(otherInstace,tablePos, player, moduleInstance.parent.module.getKeyedProperties(), reasons)) {
-                return true;
+    public boolean isAllowed(ConditionManager.ConditionContext conditionContext) {
+        if(conditionContext instanceof ConditionManager.ModuleConditionContext moduleCondition){
+            if(moduleCondition.moduleInstance != null){
+                ItemModule.ModuleInstance moduleInstance = moduleCondition.moduleInstance;
+                for (ItemModule.ModuleInstance otherInstace : moduleInstance.subModules.values()) {
+                    assert moduleInstance.parent != null;
+                    ConditionManager.ModuleConditionContext copy = moduleCondition.copy();
+                    copy.moduleInstance = otherInstace;
+                    if (condition.isAllowed(copy)) {
+                        return true;
+                    }
+                }
             }
         }
         return false;

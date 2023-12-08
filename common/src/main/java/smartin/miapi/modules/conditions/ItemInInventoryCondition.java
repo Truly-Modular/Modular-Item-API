@@ -10,14 +10,9 @@ import net.minecraft.item.Item;
 import net.minecraft.predicate.NumberRange;
 import net.minecraft.registry.Registries;
 import net.minecraft.text.Text;
-import net.minecraft.util.math.BlockPos;
-import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
-import smartin.miapi.modules.ItemModule;
-import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.List;
-import java.util.Map;
 
 public class ItemInInventoryCondition implements ModuleCondition {
     public Item item;
@@ -27,18 +22,22 @@ public class ItemInInventoryCondition implements ModuleCondition {
     }
 
     @Override
-    public boolean isAllowed(@Nullable ItemModule.ModuleInstance moduleInstance, @Nullable BlockPos tablePos, @Nullable PlayerEntity player, @Nullable Map<ModuleProperty, JsonElement> propertyMap, List<Text> reasons) {
-        if (player != null && count.test(player.getInventory().count(item))) return true;
+    public boolean isAllowed(ConditionManager.ConditionContext conditionContext) {
+        if(conditionContext instanceof ConditionManager.ModuleConditionContext moduleConditionContext){
+            PlayerEntity player = moduleConditionContext.player;
+            List<Text> reasons = moduleConditionContext.reasons;
+            if (player != null && count.test(player.getInventory().count(item))) return true;
 
-        Text text;
+            Text text;
 
-        int min = count.getMin() == null ? 0 : count.getMin();
-        Integer max = count.getMax();
+            int min = count.getMin() == null ? 0 : count.getMin();
+            Integer max = count.getMax();
 
-        if (max != null) text = Text.translatable(Miapi.MOD_ID + ".condition.item_in_inventory.error.specific", min, max, Registries.ITEM.getId(item).toString());
-        else text = Text.translatable(Miapi.MOD_ID + ".condition.item_in_inventory.error.no_max", min, Registries.ITEM.getId(item).toString());
+            if (max != null) text = Text.translatable(Miapi.MOD_ID + ".condition.item_in_inventory.error.specific", min, max, Registries.ITEM.getId(item).toString());
+            else text = Text.translatable(Miapi.MOD_ID + ".condition.item_in_inventory.error.no_max", min, Registries.ITEM.getId(item).toString());
 
-        reasons.add(text);
+            reasons.add(text);
+        }
         return false;
     }
 

@@ -1,12 +1,8 @@
 package smartin.miapi.modules.conditions;
 
 import com.google.gson.JsonElement;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.Text;
-import net.minecraft.util.math.BlockPos;
-import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
-import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.TagProperty;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
@@ -25,11 +21,15 @@ public class TagCondition implements ModuleCondition {
     }
 
     @Override
-    public boolean isAllowed(ItemModule.ModuleInstance moduleInstance, @Nullable BlockPos tablePos, @Nullable PlayerEntity player, Map<ModuleProperty, JsonElement> propertyMap, List<Text> reasons) {
-        if (TagProperty.getTags(propertyMap).contains(tag)) {
-            return true;
+    public boolean isAllowed(ConditionManager.ConditionContext conditionContext) {
+        if(conditionContext instanceof ConditionManager.ModuleConditionContext moduleConditionContext) {
+            Map<ModuleProperty, JsonElement> propertyMap = moduleConditionContext.propertyMap;
+            List<Text> reasons = moduleConditionContext.reasons;
+            if (TagProperty.getTags(propertyMap).contains(tag)) {
+                return true;
+            }
+            reasons.add(Text.translatable(Miapi.MOD_ID + ".condition.tag.error"));
         }
-        reasons.add(Text.translatable(Miapi.MOD_ID + ".condition.tag.error"));
         return false;
     }
 

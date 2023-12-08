@@ -33,7 +33,7 @@ public class CraftingConditionProperty implements ModuleProperty, CraftingProper
         JsonElement element = module.getKeyedProperties().get(property);
         List<Text> reasons = new ArrayList<>();
         if (element != null) {
-            return new CraftingConditionJson(element).getVisible().isAllowed(slot.parent, pos, entity, module.getKeyedProperties(), reasons);
+            return new CraftingConditionJson(element).getVisible().isAllowed(new ConditionManager.ModuleConditionContext(slot.parent, pos, entity, module.getKeyedProperties(), reasons));
         }
         return true;
     }
@@ -44,7 +44,7 @@ public class CraftingConditionProperty implements ModuleProperty, CraftingProper
         if (element != null) {
             ItemModule.ModuleInstance instance = slot == null ? null : slot.parent;
             CraftingConditionJson conditionJson = new CraftingConditionJson(element);
-            return conditionJson.getCraftAble().isAllowed(instance, pos, entity, module.getKeyedProperties(), reasons);
+            return conditionJson.getCraftAble().isAllowed(new ConditionManager.ModuleConditionContext(instance, pos, entity, module.getKeyedProperties(), reasons));
         }
         return true;
     }
@@ -54,7 +54,7 @@ public class CraftingConditionProperty implements ModuleProperty, CraftingProper
         List<Text> reasons = new ArrayList<>();
         if (element != null) {
             ItemModule.ModuleInstance instance = slot == null ? null : slot.parent;
-            new CraftingConditionJson(element).getCraftAble().isAllowed(instance, pos, entity, module.getKeyedProperties(), reasons);
+            new CraftingConditionJson(element).getCraftAble().isAllowed(new ConditionManager.ModuleConditionContext(instance, pos, entity, module.getKeyedProperties(), reasons));
         }
         return reasons;
     }
@@ -80,19 +80,19 @@ public class CraftingConditionProperty implements ModuleProperty, CraftingProper
     }
 
     @Override
-    public boolean canPerform(ItemStack old, ItemStack crafting, ModularWorkBenchEntity bench, PlayerEntity player, @Nullable ItemModule.ModuleInstance newModule, ItemModule module, List<ItemStack> inventory, Map<String,String> data) {
-        if(newModule != null){
+    public boolean canPerform(ItemStack old, ItemStack crafting, ModularWorkBenchEntity bench, PlayerEntity player, @Nullable ItemModule.ModuleInstance newModule, ItemModule module, List<ItemStack> inventory, Map<String, String> data) {
+        if (newModule != null) {
             JsonElement element = newModule.getProperties().get(property);
-            if(element!=null){
+            if (element != null) {
                 List<Text> reasons = new ArrayList<>();
-                return new CraftingConditionJson(element).craftAble.isAllowed(newModule,null,player,newModule.getProperties(),reasons);
+                return new CraftingConditionJson(element).craftAble.isAllowed(new ConditionManager.ModuleConditionContext(newModule, null, player, newModule.getProperties(), reasons));
             }
         }
         return true;
     }
 
     @Override
-    public ItemStack preview(ItemStack old, ItemStack crafting, PlayerEntity player, ModularWorkBenchEntity bench, ItemModule.ModuleInstance newModule, ItemModule module, List<ItemStack> inventory, Map<String,String> data) {
+    public ItemStack preview(ItemStack old, ItemStack crafting, PlayerEntity player, ModularWorkBenchEntity bench, ItemModule.ModuleInstance newModule, ItemModule module, List<ItemStack> inventory, Map<String, String> data) {
         return crafting;
     }
 

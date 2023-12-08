@@ -26,10 +26,10 @@ public class SynergyManager {
         PropertyResolver.propertyProviderRegistry.register("synergies", (moduleInstance, oldMap) -> {
             if (moduleInstance != null) {
                 List<Synergy> synergies = maps.get(moduleInstance.module);
-                if(synergies!=null){
+                if (synergies != null) {
                     synergies.forEach(synergy -> {
                         List<Text> error = new ArrayList<>();
-                        if (synergy.condition.isAllowed(moduleInstance, null, null, oldMap, error)) {
+                        if (synergy.condition.isAllowed(new ConditionManager.ModuleConditionContext(moduleInstance, null, null, oldMap, error))) {
                             oldMap.putAll(synergy.properties);
                         }
                     });
@@ -52,25 +52,24 @@ public class SynergyManager {
     public static void load(String data) {
         JsonObject element = Miapi.gson.fromJson(data, JsonObject.class);
         element.getAsJsonObject().entrySet().forEach((entry) -> {
-            if(element.has("type")){
+            if (element.has("type")) {
                 String type = element.get("type").getAsString();
-                if(type.equals("tag")){
+                if (type.equals("tag")) {
                     String tagKey = entry.getKey();
                     TagProperty.getModulesWithTag(tagKey).forEach(itemModule -> {
-                        loadSynergy(itemModule,entry.getValue().getAsJsonObject());
+                        loadSynergy(itemModule, entry.getValue().getAsJsonObject());
                     });
                 }
-            }
-            else{
+            } else {
                 ItemModule property = RegistryInventory.modules.get(entry.getKey());
                 JsonObject entryData = entry.getValue().getAsJsonObject();
-                loadSynergy(property,entryData);
+                loadSynergy(property, entryData);
             }
         });
     }
 
-    public static void loadSynergy(ItemModule itemModule,JsonObject entryData){
-        if(itemModule == null){
+    public static void loadSynergy(ItemModule itemModule, JsonObject entryData) {
+        if (itemModule == null) {
             Miapi.LOGGER.warn("ItemModule is null?");
             return;
         }

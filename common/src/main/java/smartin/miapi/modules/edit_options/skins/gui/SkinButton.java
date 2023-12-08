@@ -9,6 +9,7 @@ import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.ScrollingTextWidget;
 import smartin.miapi.item.modular.StatResolver;
+import smartin.miapi.modules.conditions.ConditionManager;
 import smartin.miapi.modules.edit_options.skins.Skin;
 
 import java.util.ArrayList;
@@ -31,8 +32,8 @@ class SkinButton extends InteractAbleWidget implements SkinGui.SortAble {
         this.skinGui = skinGui;
         this.skinPath = skinPath;
         this.skin = skin;
-        if(skin.condition!=null){
-            isAllowed = skin.condition.isAllowed(skinGui.instance, null, MinecraftClient.getInstance().player, skinGui.instance.getProperties(), reasons);
+        if (skin.condition != null) {
+            isAllowed = skin.condition.isAllowed(new ConditionManager.ModuleConditionContext(skinGui.instance, null, MinecraftClient.getInstance().player, skinGui.instance.getProperties(), reasons));
         }
         String[] parts = skinPath.split("/");
         Text skinName = StatResolver.translateAndResolve(Miapi.MOD_ID + ".skin.name." + parts[parts.length - 1], skinGui.instance);
@@ -53,7 +54,7 @@ class SkinButton extends InteractAbleWidget implements SkinGui.SortAble {
         } else {
             hover = skinGui.currentSkin().equals(skinPath) ? skin.textureOptions.ySize() * 2 : hover;
         }
-        if(isMouseOver(mouseX,mouseY)){
+        if (isMouseOver(mouseX, mouseY)) {
             hover = skin.textureOptions.ySize();
         }
         drawTextureWithEdge(drawContext, skin.textureOptions.texture(), getX(), getY(), 0, hover, 100, SIZE_Y, this.width, height, skin.textureOptions.xSize(), skin.textureOptions.ySize() * 3, skin.textureOptions.borderSize());
@@ -71,9 +72,9 @@ class SkinButton extends InteractAbleWidget implements SkinGui.SortAble {
 
     @Override
     public void renderHover(DrawContext drawContext, int mouseX, int mouseY, float delta) {
-        if(!isAllowed){
-            if(isMouseOver(mouseX,mouseY)){
-                drawContext.drawTooltip(MinecraftClient.getInstance().textRenderer,reasons,mouseX,mouseY);
+        if (!isAllowed) {
+            if (isMouseOver(mouseX, mouseY)) {
+                drawContext.drawTooltip(MinecraftClient.getInstance().textRenderer, reasons, mouseX, mouseY);
             }
         }
     }

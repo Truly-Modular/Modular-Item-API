@@ -1,5 +1,6 @@
 package smartin.miapi.datapack;
 
+import com.google.gson.JsonObject;
 import dev.architectury.platform.Platform;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
@@ -8,10 +9,12 @@ import net.minecraft.resource.ResourceType;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.profiler.Profiler;
 import smartin.miapi.Miapi;
+import smartin.miapi.modules.conditions.ConditionManager;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,8 +54,7 @@ public class ReloadListener implements ResourceReloader {
                     });
                 });
             });
-        }
-        else{
+        } else {
             ReloadEvents.syncedPaths.forEach((modID, dataPaths) -> {
                 dataPaths.forEach(dataPath -> {
                     Map<Identifier, List<Resource>> map = manager.findAllResources(dataPath, (fileName) -> true);
@@ -79,7 +81,34 @@ public class ReloadListener implements ResourceReloader {
     public CompletableFuture<Void> apply(Object data, ResourceManager manager, Profiler profiler, Executor executor) {
         return CompletableFuture.runAsync(() -> {
             Map<String, String> dataMap = (Map) data;
-            ReloadEvents.DataPackLoader.trigger(dataMap);
+            Map<String, String> filteredMap = new HashMap<>();
+            dataMap.forEach((key, value) -> {
+                if (!key.endsWith(".json")) {
+                    filteredMap.put(key, value);
+                    return;
+                }
+                try {
+                    JsonObject element = Miapi.gson.fromJson(value, JsonObject.class);
+                    if (!element.has("load_condition")) {
+                        filteredMap.put(key, value);
+                        return;
+                    }
+                    boolean allowed = ConditionManager.get(element.get("load_condition")).isAllowed(new ConditionManager.ConditionContext() {
+                        @Override
+                        public ConditionManager.ConditionContext copy() {
+                            return this;
+                        }
+                    });
+                    if (allowed) {
+                        filteredMap.put(key, value);
+                    }
+                } catch (Exception e) {
+                    filteredMap.put(key, value);
+                }
+            });
+
+
+            ReloadEvents.DataPackLoader.trigger(filteredMap);
             ReloadEvents.MAIN.fireEvent(false);
             ReloadEvents.END.fireEvent(false);
             Miapi.LOGGER.info("Server load took " + (double) (System.nanoTime() - timeStart) / 1000 / 1000 + " ms");

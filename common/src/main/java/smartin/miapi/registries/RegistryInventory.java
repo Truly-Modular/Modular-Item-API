@@ -371,6 +371,7 @@ public class RegistryInventory {
             registerMiapi(moduleConditionRegistry, "tag", new TagCondition());
             registerMiapi(moduleConditionRegistry, "miapi_perm", new MiapiPerm());
             registerMiapi(moduleConditionRegistry, "item_in_inventory", new ItemInInventoryCondition());
+            registerMiapi(moduleConditionRegistry, "mod_loaded", new IsModLoadedCondition());
 
             //MODULEPROPERTIES
             if(smartin.miapi.Environment.isClient()){
@@ -445,6 +446,7 @@ public class RegistryInventory {
             registerMiapi(moduleProperties, LuminousLearningProperty.KEY, new LuminousLearningProperty());
             registerMiapi(moduleProperties, BlueprintProperty.KEY, new BlueprintProperty());
             registerMiapi(moduleProperties, WaterGravityProperty.KEY, new WaterGravityProperty());
+            registerMiapi(moduleProperties, DefaultEnchantProperty.KEY, new DefaultEnchantProperty());
 
             //compat
             registerMiapi(moduleProperties, BetterCombatProperty.KEY, new BetterCombatProperty());

@@ -38,10 +38,10 @@ public class BlueprintProperty implements CraftingProperty, ModuleProperty {
             setupClient();
         }
         PropertyResolver.propertyProviderRegistry.register("blueprint", (moduleInstance, oldMap) -> {
-            if(moduleInstance != null && moduleInstance.moduleData.containsKey("blueprint")){
+            if (moduleInstance != null && moduleInstance.moduleData.containsKey("blueprint")) {
                 Blueprint blueprint = Blueprint.blueprintRegistry.get(moduleInstance.moduleData.get("blueprint"));
-                if(blueprint!=null && !blueprint.writeToItem){
-                    return ModuleProperty.mergeList(oldMap,blueprint.upgrades, MergeType.SMART);
+                if (blueprint != null && !blueprint.writeToItem) {
+                    return ModuleProperty.mergeList(oldMap, blueprint.upgrades, MergeType.SMART);
                 }
             }
             return oldMap;
@@ -74,7 +74,7 @@ public class BlueprintProperty implements CraftingProperty, ModuleProperty {
                     pos = null;
                 }
                 if (
-                        blueprint.isAllowed.isAllowed(option.getInstance(), pos, option.getPlayer(), propertyMap, new ArrayList<>())) {
+                        blueprint.isAllowed.isAllowed(new ConditionManager.ModuleConditionContext(option.getInstance(), pos, option.getPlayer(), propertyMap, new ArrayList<>()))) {
                     if (
                             option.getSlot().allowedIn(new ItemModule.ModuleInstance(blueprint.module))) {
                         Map<String, String> dataMap = new HashMap<>();
