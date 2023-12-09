@@ -347,6 +347,11 @@ public class GeneratedMaterial implements Material {
     }
 
     @Override
+    public List<String> getAllPropertyKeys() {
+        return new ArrayList<>();
+    }
+
+    @Override
     public double getDouble(String property) {
         if (materialStats.containsKey(property)) {
             return materialStats.get(property);

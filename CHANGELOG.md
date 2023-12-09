@@ -1,2 +1,2 @@
-## v1.0.11 (1.20.1)
-- fixes to miapis Conditionsystem caused by last update
+## v1.0.12 (1.20.1)
+- fixes startup crash on forge

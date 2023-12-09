@@ -92,6 +92,15 @@ public class JsonMaterial implements Material {
         return propertyMap;
     }
 
+    @Override
+    public List<String> getAllPropertyKeys() {
+        JsonElement propertyElement = rawJson.getAsJsonObject().get("properties");
+        if (propertyElement != null) {
+            return new ArrayList<>(propertyElement.getAsJsonObject().keySet());
+        }
+        return new ArrayList<>();
+    }
+
     public JsonElement getRawElement(String key) {
         return rawJson.getAsJsonObject().get(key);
     }

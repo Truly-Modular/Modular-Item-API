@@ -69,6 +69,8 @@ public interface Material {
 
     Map<ModuleProperty, JsonElement> materialProperties(String key);
 
+    List<String> getAllPropertyKeys();
+
     double getDouble(String property);
 
     String getData(String property);
