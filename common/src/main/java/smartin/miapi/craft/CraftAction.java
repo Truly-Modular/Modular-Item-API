@@ -204,7 +204,15 @@ public class CraftAction {
     public ItemStack perform() {
         final ItemStack[] craftingStack = {craft()};
         forEachCraftingProperty(craftingStack[0], (craftingProperty, module, inventory, start, end, buffer) -> {
-            List<ItemStack> itemStacks = craftingProperty.performCraftAction(old, craftingStack[0], player, blockEntity, module, toAdd, inventory, buffer);
+            List<ItemStack> itemStacks = craftingProperty.performCraftAction(
+                    old,
+                    craftingStack[0],
+                    player,
+                    blockEntity,
+                    getModifyingModuleInstance(craftingStack[0]),
+                    toAdd,
+                    inventory,
+                    buffer);
             updateItem(craftingStack[0], module);
             craftingStack[0] = itemStacks.remove(0);
             for (int i = start; i < end; i++) {
@@ -290,7 +298,15 @@ public class CraftAction {
     public ItemStack getPreview() {
         AtomicReference<ItemStack> craftingStack = new AtomicReference<>(craft());
         forEachCraftingProperty(craftingStack.get(), (guiCraftingProperty, module, inventory, start, end, buffer) ->
-                craftingStack.set(guiCraftingProperty.preview(old, craftingStack.get(), player, blockEntity, module, toAdd, inventory, buffer)));
+                craftingStack.set(guiCraftingProperty.preview(
+                        old,
+                        craftingStack.get(),
+                        player,
+                        blockEntity,
+                        getModifyingModuleInstance(craftingStack.get()),
+                        toAdd,
+                        inventory,
+                        buffer)));
         ItemModule.ModuleInstance parsingInstance = ItemModule.getModules(craftingStack.get());
         for (int i = slotId.size() - 1; i >= 0; i--) {
             parsingInstance = parsingInstance.subModules.get(slotId.get(i));
@@ -309,6 +325,19 @@ public class CraftAction {
      */
     public void setData(Map<String, String> dataMap) {
         data = dataMap;
+    }
+
+    @Nullable
+    private ItemModule.ModuleInstance getModifyingModuleInstance(ItemStack itemStack){
+        try{
+            ItemModule.ModuleInstance parsingInstance = ItemModule.getModules(itemStack);
+            for (int i = slotId.size() - 1; i >= 0; i--) {
+                parsingInstance = parsingInstance.subModules.get(slotId.get(i));
+            }
+            return parsingInstance;
+        }catch (Exception e){
+            return null;
+        }
     }
 
     /**
