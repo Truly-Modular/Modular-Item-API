@@ -34,9 +34,7 @@ public class MiapiItemModel implements MiapiModel {
 
     @Nullable
     public static MiapiItemModel getItemModel(ItemStack stack) {
-        return cacheTest.computeIfAbsent(stack, MiapiItemModel::new);
-        //return null;
-        //return ModularItemCache.getRaw(stack, CACHE_KEY);
+        return ModularItemCache.getRaw(stack, CACHE_KEY);
     }
 
     private MiapiItemModel(ItemStack stack) {

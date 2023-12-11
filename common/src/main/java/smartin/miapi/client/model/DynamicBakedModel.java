@@ -131,7 +131,6 @@ public class DynamicBakedModel implements BakedModel {
     }
 
     public BakedModel optimize() {
-        if(true) return this;
         Map<Direction, List<BakedQuad>> bakedQuads = createEmpty();
         putDirectionalQuads(bakedQuads, this);
         Map<DynamicModelOverrides.ConditionHolder,
@@ -186,11 +185,7 @@ public class DynamicBakedModel implements BakedModel {
         }));
         List<BakedQuad> defaultList = bakedQuads.get(null);
         defaultList = defaultList == null ? new ArrayList<>() : defaultList;
-        Map<Direction,List<BakedQuad>> map = new HashMap<>();
-        for(Direction direction:Direction.values()){
-            map.put(direction,new ArrayList<>());
-        }
-        BakedModel model = new BasicBakedModel(new ArrayList<>(), bakedQuads, true, false, true, this.getParticleSprite(), this.modelTransformation, this.overrideList);
+        BakedModel model = new BasicBakedModel(defaultList, bakedQuads, true, false, true, this.getParticleSprite(), this.modelTransformation, this.getOverrides());
         return model;
     }
 

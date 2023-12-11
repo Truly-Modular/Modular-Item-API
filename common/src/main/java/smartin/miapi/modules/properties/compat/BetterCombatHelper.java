@@ -3,7 +3,6 @@ package smartin.miapi.modules.properties.compat;
 import com.google.gson.JsonElement;
 import com.google.gson.stream.JsonReader;
 import dev.architectury.platform.Platform;
-import net.bettercombat.BetterCombat;
 import net.bettercombat.api.AttributesContainer;
 import net.bettercombat.api.WeaponAttributesHelper;
 import net.minecraft.entity.EquipmentSlot;
@@ -21,7 +20,7 @@ import java.io.StringReader;
 
 public class BetterCombatHelper {
     public static void setup() {
-        ModularItemCache.setSupplier(BetterCombatProperty.KEY, BetterCombatHelper::getAttributesContainer);
+        ModularItemCache.setSupplier(BetterCombatProperty.KEY,itemStack -> new AttributeHolder(BetterCombatHelper.getAttributesContainer(itemStack)));
     }
 
     private static float getAttackRange(ItemStack stack) {
@@ -78,6 +77,8 @@ public class BetterCombatHelper {
 
     @Nullable
     public static net.bettercombat.api.WeaponAttributes getAttributes(ItemStack stack) {
-        return ModularItemCache.getRaw(stack, BetterCombatProperty.KEY);
+        return ModularItemCache.get(stack, BetterCombatProperty.KEY, new  AttributeHolder(null)).attributes();
     }
+
+    public record AttributeHolder(net.bettercombat.api.WeaponAttributes attributes){}
 }

@@ -18,8 +18,6 @@ import smartin.miapi.modules.material.Material;
 import smartin.miapi.modules.material.MaterialProperty;
 import smartin.miapi.modules.properties.render.colorproviders.ColorProvider;
 
-import java.util.Arrays;
-
 public class BakedMiapiModel implements MiapiModel {
     ItemModule.ModuleInstance instance;
     Material material;
@@ -50,7 +48,6 @@ public class BakedMiapiModel implements MiapiModel {
         if (model.getOverrides() != null && !model.getOverrides().equals(ModelOverrideList.EMPTY)) {
             currentModel = model.getOverrides().apply(model, stack, MinecraftClient.getInstance().world, entity, light);
         }
-        VertexConsumer consumer = modelHolder.colorProvider.getConsumer(vertexConsumers, stack, instance, transformationMode);
         MinecraftClient.getInstance().world.getProfiler().push("QuadPushing");
         /*
         for (Direction direction : Direction.values()) {
@@ -59,12 +56,12 @@ public class BakedMiapiModel implements MiapiModel {
             });
         }
          */
-        BakedModel finalCurrentModel = currentModel;
-        Arrays.stream(Direction.values())
-                .flatMap(direction -> finalCurrentModel.getQuads(null, direction, random).stream())
-                .forEach(bakedQuad -> {
-                    consumer.quad(matrices.peek(), bakedQuad, colors[0], colors[1], colors[2], light, overlay);
-                });
+        VertexConsumer consumer = modelHolder.colorProvider.getConsumer(vertexConsumers, stack, instance,transformationMode);
+        for (Direction direction : Direction.values()) {
+            currentModel.getQuads(null, direction, random).forEach(bakedQuad -> {
+                consumer.quad(matrices.peek(), bakedQuad, color.redAsFloat(), color.greenAsFloat(), color.blueAsFloat(), light, overlay);
+            });
+        }
 
         MinecraftClient.getInstance().world.getProfiler().pop();
         MinecraftClient.getInstance().world.getProfiler().pop();

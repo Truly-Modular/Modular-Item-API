@@ -17,23 +17,23 @@ import org.jetbrains.annotations.Nullable;
 import smartin.miapi.modules.properties.render.ModelProperty;
 import smartin.miapi.registries.RegistryInventory;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.function.Function;
 
 import static smartin.miapi.client.SpriteLoader.miapiModels;
 
 @Environment(EnvType.CLIENT)
 public class CustomModel implements UnbakedModel, BakedModel {
-    public static LivingEntity currentEntity;
+    public static LivingEntity currentEntity = null;
     public static boolean isModularItem(Identifier identifier) {
         return RegistryInventory.modularItems.get(identifier.toString().replace("item/", "")) != null;
     }
 
+    private CustomModelOverrides overrides;
+
     @Override
     public ModelOverrideList getOverrides() {
-        return ModelOverrideList.EMPTY;
+        return overrides;
     }
 
     @Override
@@ -88,12 +88,14 @@ public class CustomModel implements UnbakedModel, BakedModel {
     public BakedModel bake(Baker baker, Function<SpriteIdentifier, Sprite> textureGetter, ModelBakeSettings rotationContainer, Identifier modelId) {
         ModelProperty.textureGetter = textureGetter;
         DynamicBakery.dynamicBaker = baker;
+        overrides = new CustomModelOverrides();
         return this;
     }
 
     @Override
     public String toString() {
         return "CustomModel{" +
+                "overrides=" + overrides +
                 '}';
     }
 }
