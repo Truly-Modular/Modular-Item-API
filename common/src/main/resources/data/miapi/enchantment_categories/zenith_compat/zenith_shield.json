@@ -1,0 +1,6 @@
+{
+    "id": "miapi:shield",
+    "add": [
+        "zenith:shield_bash"
+    ]
+}

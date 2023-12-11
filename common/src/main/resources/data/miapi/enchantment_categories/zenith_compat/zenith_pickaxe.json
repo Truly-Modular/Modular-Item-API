@@ -1,0 +1,7 @@
+{
+    "id": "miapi:pickaxe",
+    "add": [
+        "zenith:miners_fervor",
+        "zenith:earths_boon"
+    ]
+}
