@@ -46,13 +46,11 @@ import org.joml.Matrix4f;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.blocks.ModularWorkBench;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
-import smartin.miapi.blocks.StatProvidingBlockEntity;
 import smartin.miapi.blueprint.BlueprintProperty;
 import smartin.miapi.client.MaterialAtlasManager;
 import smartin.miapi.client.MiapiClient;
 import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
 import smartin.miapi.craft.stat.CraftingStat;
-import smartin.miapi.craft.stat.SimpleCraftingStat;
 import smartin.miapi.effects.CryoStatusEffect;
 import smartin.miapi.entity.ItemProjectileEntity;
 import smartin.miapi.item.MaterialSmithingRecipe;
@@ -113,11 +111,11 @@ public class RegistryInventory {
         return registerAndSupply(rg, new Identifier(MOD_ID, id), object);
     }
 
-    public static <T> void register(Registrar<T> rg, Identifier id, Supplier<T> object, Consumer<T> onRegister) {
+    public static <T, E extends T> void register(Registrar<T> rg, Identifier id, Supplier<E> object, Consumer<E> onRegister) {
         rg.register(id, object).listen(onRegister);
     }
 
-    public static <T> void register(Registrar<T> rg, String id, Supplier<T> object, Consumer<T> onRegister) {
+    public static <T, E extends T> void register(Registrar<T> rg, String id, Supplier<E> object, Consumer<E> onRegister) {
         register(rg, new Identifier(MOD_ID, id), object, onRegister);
     }
 
@@ -133,7 +131,7 @@ public class RegistryInventory {
         rg.register(id, object);
     }
 
-    public static <T> void registerMiapi(MiapiRegistry<T> rg, String id, T object, Consumer<T> onRegister) {
+    public static <T, E extends T> void registerMiapi(MiapiRegistry<T> rg, String id, E object, Consumer<E> onRegister) {
         rg.register(id, object);
         onRegister.accept(object);
     }
@@ -164,12 +162,11 @@ public class RegistryInventory {
     public static Block modularWorkBench;
     //public static Block exampleStatProviderBlock;
     public static BlockEntityType<ModularWorkBenchEntity> modularWorkBenchEntityType;
-    public static BlockEntityType<StatProvidingBlockEntity> exampleStatProviderBlockEntityType;
     public static Item modularItem;
-    public static GameEvent statUpdateEvent;
     public static StatusEffect cryoStatusEffect;
-    public static GameEvent statProviderUpdatedEvent;
-    public static SimpleCraftingStat exampleCraftingStat;
+    public static GameEvent statProviderCreatedEvent;
+    public static GameEvent statProviderRemovedEvent;
+    //public static SimpleCraftingStat exampleCraftingStat;
     public static RecipeSerializer serializer;
     public static RegistrySupplier<EntityType<ItemProjectileEntity>> itemProjectileType = (RegistrySupplier) registerAndSupply(entityTypes, "thrown_item", () ->
             EntityType.Builder.create(ItemProjectileEntity::new, SpawnGroup.MISC).setDimensions(0.5F, 0.5F).maxTrackingRange(4).trackingTickInterval(20).build("miapi:thrown_item"));
@@ -193,11 +190,12 @@ public class RegistryInventory {
                 });
 
         //ENTITY
-        // commented out because RegistrySupplier is needed
+        // commented out because RegistrySupplier is needed... see itemProjectileType field definition above
         /*register(entityTypes, "thrown_item", () ->
                 EntityType.builder.create(ItemProjectile::new, SpawnGroup.MISC).setDimensions(0.5F, 0.5F).maxTrackingRange(4).trackingTickInterval(20).build("miapi:thrown_item"),
                 type -> itemProjectileType = (EntityType<ItemProjectile>) type);*/
 
+        //RECIPE SERIALIZERS
         register(recipeSerializers, "smithing", MaterialSmithingRecipe.Serializer::new, i -> serializer = i);
 
 
@@ -214,20 +212,16 @@ public class RegistryInventory {
         register(blockEntities, "modular_work_bench", () -> BlockEntityType.Builder.create(
                 ModularWorkBenchEntity::new, modularWorkBench
         ).build(null), be -> {
-            modularWorkBenchEntityType = (BlockEntityType<ModularWorkBenchEntity>) be;
+            modularWorkBenchEntityType = be;
             if (Platform.getEnvironment() == Env.CLIENT) MiapiClient.registerBlockEntityRenderer();
         });
         register(items, "modular_work_bench", () -> new BlockItem(modularWorkBench, new Item.Settings()));
 
 
-        /*register(blocks, "example_stat_provider", () ->
-                new StatProvidingBlock(AbstractBlock.Settings.create(), StatProvidingBlockEntity.Example::new), b -> exampleStatProviderBlock = b);
-        register(blockEntities, "example_stat_provider", () -> BlockEntityType.builder.create(
-                StatProvidingBlockEntity.Example::new, exampleStatProviderBlock
-        ).build(null), be -> {
-            exampleStatProviderBlockEntityType = (BlockEntityType<StatProvidingBlockEntity>) be;
-        });
-        register(items, "example_stat_provider", () -> new BlockItem(exampleStatProviderBlock, new Item.Settings()));*/
+//        registerMiapi(craftingStats, "hammering", new SimpleCraftingStat(0), stat -> exampleCraftingStat = stat);
+//        register(blocks, "example_stat_provider", () ->
+//                new StatProvidingBlock(AbstractBlock.Settings.create(), new StatProvidersMap().set(exampleCraftingStat, StatActorType.ADD, 2d)), b -> exampleStatProviderBlock = b);
+//        register(items, "example_stat_provider", () -> new BlockItem(exampleStatProviderBlock, new Item.Settings()));
 
 
         // CREATIVE TAB
@@ -239,6 +233,7 @@ public class RegistryInventory {
                         entries.add(modularWorkBench);
                     });
                 }));
+
         //ITEM
         register(modularItems, "modular_item", ExampleModularItem::new, i -> {
             modularItem = i;
@@ -346,13 +341,12 @@ public class RegistryInventory {
 
 
         // GAME EVENTS
-        register(gameEvents, "request_crafting_stat_update", () -> new GameEvent(MOD_ID + ":crafting_stat_update", 16), ev -> statUpdateEvent = ev);
-        register(gameEvents, "stat_provider_updated", () -> new GameEvent(MOD_ID + ":stat_provider_updated", 16), ev -> statProviderUpdatedEvent = ev);
+        register(gameEvents, "stat_provider_added", () -> new GameEvent(MOD_ID + ":stat_provider_added", 16), ev -> statProviderCreatedEvent = ev);
+        register(gameEvents, "stat_provider_removed", () -> new GameEvent(MOD_ID + ":stat_provider_removed", 16), ev -> statProviderRemovedEvent = ev);
 
 
         LifecycleEvent.SETUP.register(() -> {
             //EDITPROPERTIES
-
             registerMiapi(editOptions, "replace", new ReplaceOption());
             registerMiapi(editOptions, "dev", new PropertyInjectionDev());
             registerMiapi(editOptions, "skin", new SkinOptions());
@@ -452,7 +446,7 @@ public class RegistryInventory {
             registerMiapi(moduleProperties, BetterCombatProperty.KEY, new BetterCombatProperty());
 
             // CRAFTING STATS
-            //registerMiapi(craftingStats, "hammering", new SimpleCraftingStat(0), stat -> exampleCraftingStat = (SimpleCraftingStat) stat);
+            //registerMiapi(craftingStats, "hammering", new SimpleCraftingStat(0), stat -> exampleCraftingStat = stat);
 
             // ABILITIES
             registerMiapi(useAbilityRegistry, "throw", new ThrowingAbility());

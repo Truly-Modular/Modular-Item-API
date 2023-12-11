@@ -6,6 +6,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -14,22 +15,23 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.intprovider.IntProvider;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
+import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
+import smartin.miapi.craft.stat.StatProvidersMap;
 import smartin.miapi.entity.ItemProjectileEntity;
 import smartin.miapi.modules.material.GeneratedMaterial;
 
 import java.util.List;
 
 public class MiapiEvents {
-    public static PrioritizedEvent<LivingHurt> LIVING_HURT = PrioritizedEvent.createEventResult();
-    public static PrioritizedEvent<LivingHurt> LIVING_HURT_AFTER = PrioritizedEvent.createEventResult();
-    public static PrioritizedEvent<EntityRide> START_RIDING = PrioritizedEvent.createLoop(); // only fires on successful rides, and is not cancellable (if I wanted to make it cancellable, i would add mixinextras)
-    public static PrioritizedEvent<EntityRide> STOP_RIDING = PrioritizedEvent.createLoop();
-    public static PrioritizedEvent<BlockCraftingStatUpdate> BLOCK_STAT_UPDATE = PrioritizedEvent.createEventResult();
-    public static PrioritizedEvent<ItemCraftingStatUpdate> ITEM_STAT_UPDATE = PrioritizedEvent.createEventResult();
-    public static PrioritizedEvent<GeneratedMaterialEvent> GENERATED_MATERIAL = PrioritizedEvent.createEventResult();
-    public static PrioritizedEvent<BlockBreakEvent> BLOCK_BREAK_EVENT = PrioritizedEvent.createEventResult();
-    public static PrioritizedEvent<PlayerTickEvent> PLAYER_TICK_START = PrioritizedEvent.createLoop();
-    public static PrioritizedEvent<PlayerTickEvent> PLAYER_TICK_END = PrioritizedEvent.createLoop();
+    public static final PrioritizedEvent<LivingHurt> LIVING_HURT = PrioritizedEvent.createEventResult();
+    public static final PrioritizedEvent<LivingHurt> LIVING_HURT_AFTER = PrioritizedEvent.createEventResult();
+    public static final PrioritizedEvent<EntityRide> START_RIDING = PrioritizedEvent.createLoop(); // only fires on successful rides, and is not cancellable (if I wanted to make it cancellable, i would add mixinextras)
+    public static final PrioritizedEvent<EntityRide> STOP_RIDING = PrioritizedEvent.createLoop();
+    public static final PrioritizedEvent<StatUpdateEvent> STAT_UPDATE_EVENT = PrioritizedEvent.createEventResult();
+    public static final PrioritizedEvent<GeneratedMaterialEvent> GENERATED_MATERIAL = PrioritizedEvent.createEventResult();
+    public static final PrioritizedEvent<BlockBreakEvent> BLOCK_BREAK_EVENT = PrioritizedEvent.createEventResult();
+    public static final PrioritizedEvent<PlayerTickEvent> PLAYER_TICK_START = PrioritizedEvent.createLoop();
+    public static final PrioritizedEvent<PlayerTickEvent> PLAYER_TICK_END = PrioritizedEvent.createLoop();
 
     public static class LivingHurtEvent {
         public final LivingEntity livingEntity;
@@ -59,7 +61,6 @@ public class MiapiEvents {
         EventResult tick(PlayerEntity player);
     }
 
-
     public interface GeneratedMaterialEvent {
         EventResult generated(GeneratedMaterial material, ItemStack mainIngredient, List<Item> tools, boolean isClient);
     }
@@ -82,5 +83,9 @@ public class MiapiEvents {
 
     public interface EntityRide {
         void ride(Entity passenger, Entity vehicle);
+    }
+
+    public interface StatUpdateEvent {
+        EventResult update(ModularWorkBenchEntity blockEntity, StatProvidersMap map, int syncId, PlayerInventory playerInventory, PlayerEntity player, CraftingScreenHandler handler);
     }
 }

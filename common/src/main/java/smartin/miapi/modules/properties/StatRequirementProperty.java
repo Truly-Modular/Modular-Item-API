@@ -38,7 +38,8 @@ public class StatRequirementProperty implements ModuleProperty, CraftingProperty
             element.getAsJsonObject().asMap().forEach((key, val) -> {
                 CraftingStat<?> stat = RegistryInventory.craftingStats.get(key);
                 if (stat != null) {
-                    boolean craftable = ((CraftingStat) stat).canCraft(bench.getStat(stat), stat.createFromJson(val, newModule), old, crafting, bench, player, newModule, module, inventory, data);
+                    Object instance = bench.getStat(stat);
+                    boolean craftable = ((CraftingStat) stat).canCraft(instance == null ? stat.getDefault() : instance, stat.createFromJson(val, newModule), old, crafting, bench, player, newModule, module, inventory, data);
                     if (!craftable) canCraft.set(false);
                 }
             });
@@ -61,7 +62,7 @@ public class StatRequirementProperty implements ModuleProperty, CraftingProperty
 
     @Override
     public float getPriority() {
-        return -1.01f;
+        return 0f;
     }
 
     @Override

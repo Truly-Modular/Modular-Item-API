@@ -71,7 +71,17 @@ public class SimpleCraftingStat implements CraftingStat<Double> {
     }
 
     @Override
-    public Double merge(@Nullable ModularWorkBenchEntity bench, Double old, Double toMerge) {
-        return Math.max(old, toMerge);
+    public Double getBetter(Double first, Double second) {
+        return Math.max(first, second);
+    }
+
+    @Override
+    public Double multiply(Double first, Double second) {
+        return first+second;
+    }
+
+    @Override
+    public Double add(Double first, Double second) {
+        return first*second;
     }
 }

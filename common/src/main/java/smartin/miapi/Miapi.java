@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.client.MiapiClient;
 import smartin.miapi.config.MiapiConfig;
+import smartin.miapi.craft.stat.StatActorType;
 import smartin.miapi.datapack.MiapiReloadListener;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.injectors.PropertySubstitution;
@@ -57,6 +58,7 @@ public class Miapi {
         ItemAbilityManager.setup();
         AttributeRegistry.setup();
         ConditionManager.setup();
+        StatActorType.setup();
         LifecycleEvent.SERVER_BEFORE_START.register(minecraftServer -> server = minecraftServer);
         ReloadListenerRegistry.register(ResourceType.SERVER_DATA, new MiapiReloadListener());
         registerReloadHandler(ReloadEvents.MAIN, "modules", RegistryInventory.modules,
