@@ -24,6 +24,7 @@ import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.injectors.PropertySubstitution;
 import smartin.miapi.item.ItemToModularConverter;
 import smartin.miapi.item.ModularItemStackConverter;
+import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.PropertyResolver;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ItemModule;
@@ -63,6 +64,9 @@ public class Miapi {
         ReloadListenerRegistry.register(ResourceType.SERVER_DATA, new MiapiReloadListener());
         registerReloadHandler(ReloadEvents.MAIN, "modules", RegistryInventory.modules,
                 (isClient, path, data) -> ItemModule.loadFromData(path, data), -0.5f);
+        registerReloadHandler(ReloadEvents.MAIN, "module_extensions", new HashMap<>(),
+                (isClient, path, data) -> ItemModule.loadModuleExtension(path, data), -0.4f);
+
         registerReloadHandler(ReloadEvents.MAIN, "injectors", bl -> PropertySubstitution.injectorsCount = 0, (isClient, path, data) -> {
             JsonElement element = JsonHelper.deserialize(data);
             if (element instanceof JsonObject object) {
@@ -101,14 +105,16 @@ public class Miapi {
             return map;
         });
         ModularItemCache.setSupplier(ItemModule.MODULE_KEY, itemStack -> {
-            NbtCompound tag = itemStack.getOrCreateNbt();
-            try {
-                String modulesString = tag.getString(ItemModule.MODULE_KEY);
-                return Miapi.gson.fromJson(modulesString, ItemModule.ModuleInstance.class);
-            } catch (Exception e) {
-                Miapi.LOGGER.error("could not resolve Modules", e);
-                return null;
+            if(itemStack.getItem() instanceof ModularItem){
+                NbtCompound tag = itemStack.getOrCreateNbt();
+                try {
+                    String modulesString = tag.getString(ItemModule.MODULE_KEY);
+                    return Miapi.gson.fromJson(modulesString, ItemModule.ModuleInstance.class);
+                } catch (Exception e) {
+                    Miapi.LOGGER.error("could not resolve Modules", e);
+                }
             }
+            return null;
         });
         ModularItemCache.setSupplier(ItemModule.PROPERTY_KEY,
                 itemStack -> ItemModule.getUnmergedProperties(
@@ -183,7 +189,8 @@ public class Miapi {
 
     public static void registerReloadHandler(
             ReloadEvents.ReloadEvent event,
-            String location, Map<?, ?> toClear,
+            String location,
+            Map<?, ?> toClear,
             TriConsumer<Boolean, String, String> handler) {
         registerReloadHandler(event, location, true, bl -> toClear.clear(), handler, 0f);
     }

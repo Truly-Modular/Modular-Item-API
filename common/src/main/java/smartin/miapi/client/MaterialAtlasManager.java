@@ -26,7 +26,7 @@ import static smartin.miapi.Miapi.MOD_ID;
 
 @Environment(value = EnvType.CLIENT)
 public class MaterialAtlasManager extends SpriteAtlasHolder {
-    public static final Identifier MATERIAL_ID = new Identifier("miapi_materials");
+    public static final Identifier MATERIAL_ID = new Identifier(MOD_ID,"miapi_materials");
     public static final Identifier MATERIAL_ATLAS_ID = new Identifier(MOD_ID, "textures/atlas/materials.png");
     public static final Identifier BASE_MATERIAL_ID = new Identifier(MOD_ID, "miapi_materials/base_palette");
 
@@ -105,15 +105,15 @@ public class MaterialAtlasManager extends SpriteAtlasHolder {
         }
         Executor executor = newSingleThreadExecutor();
         int shortMax = 32766;
-        int width = (int) (Math.floor((double) materialSprites.size() / shortMax) * 256) + 1;
+        int width = ((int) (Math.floor((double) materialSprites.size() / shortMax) * 256) + 1) * 256;
         int height = materialSprites.size() % shortMax + 5;
-        Miapi.LOGGER.info("Recreated Material atlas with Size " + width + "x" + height);
         int maxSize = Math.max(Math.max(512, width + 5), height + 5);
         SpriteLoader spriteLoader = new SpriteLoader(MATERIAL_ID, maxSize, width, height);
         SpriteLoader.StitchResult stitchResult = spriteLoader.stitch(materialSprites, 0, executor);
         profiler.startTick();
         profiler.push("upload");
         this.atlas.upload(stitchResult);
+        Miapi.LOGGER.info("Recreated Material atlas with Size " + width + "x" + height);
         profiler.pop();
         profiler.endTick();
     }

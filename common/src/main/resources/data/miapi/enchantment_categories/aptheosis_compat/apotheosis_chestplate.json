@@ -1,0 +1,8 @@
+{
+    "id": "miapi:chestplate",
+    "add": [
+        "apotheosis:icy_thorns",
+        "apotheosis:berserkers_fury",
+        "apotheosis:rebounding"
+    ]
+}

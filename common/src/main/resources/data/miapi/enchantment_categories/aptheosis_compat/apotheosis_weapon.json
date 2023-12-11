@@ -1,0 +1,9 @@
+{
+    "id": "miapi:weapon",
+    "add": [
+        "apotheosis:scavenger",
+        "apotheosis:knowledge",
+        "apotheosis:bane_of_illagers",
+        "apotheosis:capturing"
+    ]
+}

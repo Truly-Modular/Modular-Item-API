@@ -40,12 +40,14 @@ public class ItemToModularConverter implements ModularItemStackConverter.Modular
     }
 
     public boolean preventConvert(ItemStack itemStack) {
-        NbtCompound nbt = itemStack.getOrCreateNbt();
-        if(nbt.get("CustomModelData")!=null){
-            return true;
-        }
-        if(nbt.get("SpellboundItem")!=null){
-            return true;
+        NbtCompound nbt = itemStack.getNbt();
+        if(nbt!=null){
+            if(nbt.get("CustomModelData")!=null){
+                return true;
+            }
+            if(nbt.get("SpellboundItem")!=null){
+                return true;
+            }
         }
         return false;
     }

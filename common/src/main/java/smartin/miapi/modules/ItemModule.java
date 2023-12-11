@@ -7,7 +7,6 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import net.minecraft.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
-import smartin.miapi.Miapi;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.PropertyResolver;
@@ -18,10 +17,13 @@ import smartin.miapi.registries.MiapiRegistry;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static smartin.miapi.Miapi.*;
 
 /**
  * An ItemModule represents a Module loaded from a JSON
@@ -95,19 +97,100 @@ public class ItemModule {
      */
     public static void loadFromData(String path, String moduleJsonString) {
         try {
-            JsonObject moduleJson = Miapi.gson.fromJson(moduleJsonString, JsonObject.class);
+            JsonObject moduleJson = gson.fromJson(moduleJsonString, JsonObject.class);
             if (!path.startsWith(MODULE_KEY)) {
                 return;
             }
+            Type type = new TypeToken<Map<String, JsonElement>>() {
+            }.getType();
             String name = moduleJson.get("name").getAsString();
             Map<String, JsonElement> moduleProperties = new HashMap<>();
-
-            processModuleJsonElement(moduleJson, moduleProperties, name, path, moduleJsonString);
+            Map<String, JsonElement> rawProperties = gson.fromJson(moduleJsonString, type);
+            rawProperties.forEach((key, json) -> {
+                if (isValidProperty(key, path, json)) {
+                    moduleProperties.put(key, json);
+                }
+            });
+            //processModuleJsonElement(moduleJson, moduleProperties, name, path, moduleJsonString);
 
             moduleRegistry.register(name, new ItemModule(name, moduleProperties));
         } catch (Exception e) {
-            Miapi.LOGGER.warn("Could not load Module " + path, e);
+            LOGGER.warn("Could not load Module " + path, e);
         }
+    }
+
+    /**
+     * Loads an ItemModule from a JSON string.
+     *
+     * @param path             the path of the JSON file
+     * @param moduleJsonString the JSON string to load from
+     */
+    public static void loadModuleExtension(String path, String moduleJsonString) {
+        try {
+            JsonObject moduleJson = gson.fromJson(moduleJsonString, JsonObject.class);
+            String name = moduleJson.get("name").getAsString();
+            ItemModule module = moduleRegistry.get(name);
+            if (module == null) {
+                LOGGER.warn("module not found to be extended! " + name);
+                return;
+            }
+            Map<String, JsonElement> moduleProperties = new HashMap<>(module.getProperties());
+            if (moduleJson.has("remove")) {
+                moduleJson.get("remove").getAsJsonArray().forEach(jsonElement -> {
+                    try {
+                        moduleProperties.remove(jsonElement.getAsString());
+                    } catch (Exception e) {
+                    }
+                });
+            }
+            if (moduleJson.has("merge")) {
+                Map<String, JsonElement> rawMergeProperties = getPropertiesFromJsonString(moduleJson.get("merge"), path);
+                rawMergeProperties.forEach((key, element) -> {
+                    if (moduleProperties.containsKey(key)) {
+                        ModuleProperty property = RegistryInventory.moduleProperties.get(key);
+                        if (property != null) {
+                            moduleProperties.put(key, property.merge(moduleProperties.get(key), element, MergeType.SMART));
+                        }
+                    } else {
+                        moduleProperties.put(key, element);
+                    }
+                });
+            }
+            if (moduleJson.has("replace")) {
+                Map<String, JsonElement> rawReplaceProperties = getPropertiesFromJsonString(moduleJson.get("replace"), path);
+                moduleProperties.putAll(rawReplaceProperties);
+            }
+            moduleRegistry.getFlatMap().remove(name);
+            moduleRegistry.register(name, new ItemModule(name, moduleProperties));
+        } catch (Exception e) {
+            LOGGER.warn("Could not load Module to extend " + path, e);
+        }
+    }
+
+    protected static Map<String, JsonElement> getPropertiesFromJsonString(String jsonString, String debugPath) {
+        Map<String, JsonElement> moduleProperties = new HashMap<>();
+        Type type = new TypeToken<Map<String, JsonElement>>() {
+        }.getType();
+        Map<String, JsonElement> rawProperties = gson.fromJson(jsonString, type);
+        rawProperties.forEach((key, json) -> {
+            if (isValidProperty(key, debugPath, json)) {
+                moduleProperties.put(key, json);
+            }
+        });
+        return moduleProperties;
+    }
+
+    protected static Map<String, JsonElement> getPropertiesFromJsonString(JsonElement jsonString, String debugPath) {
+        Map<String, JsonElement> moduleProperties = new HashMap<>();
+        Type type = new TypeToken<Map<String, JsonElement>>() {
+        }.getType();
+        Map<String, JsonElement> rawProperties = gson.fromJson(jsonString, type);
+        rawProperties.forEach((key, json) -> {
+            if (isValidProperty(key, debugPath, json)) {
+                moduleProperties.put(key, json);
+            }
+        });
+        return moduleProperties;
     }
 
     /**
@@ -138,7 +221,7 @@ public class ItemModule {
                         processModuleJsonElement(jsonElement, moduleProperties, name, path, rawString);
                     }
                 } else {
-                    Miapi.LOGGER.error("Error while reading ModuleJson, module " + name + " key/property " + key + " in file " + path + " Please make sure there are no Typos in the Property Names");
+                    LOGGER.error("Error while reading ModuleJson, module " + name + " key/property " + key + " in file " + path + " Please make sure there are no Typos in the Property Names");
                 }
             }
         }
@@ -163,6 +246,9 @@ public class ItemModule {
                 exception.addSuppressed(e);
                 throw exception;
             }
+        } else {
+            LOGGER.error("Module " + moduleKey + " contains invalid property " + key);
+            LOGGER.error("This indicates either a broken Module, Outdated API version or missing dependency!");
         }
         return false;
     }
@@ -178,7 +264,7 @@ public class ItemModule {
             ItemModule.ModuleInstance moduleInstance = ModularItemCache.getRaw(stack, MODULE_KEY);
             if (moduleInstance == null || moduleInstance.module == null) {
                 IllegalArgumentException exception = new IllegalArgumentException("Item has Invalid Module onReload - treating it like it has no modules");
-                Miapi.LOGGER.warn("Item has Invalid Module onReload - treating it like it has no modules", exception);
+                LOGGER.warn("Item has Invalid Module onReload - treating it like it has no modules", exception);
                 return new ItemModule.ModuleInstance(new ItemModule("empty", new HashMap<>()));
             }
             return moduleInstance;
@@ -387,7 +473,7 @@ public class ItemModule {
                         try {
                             map.put(property, property.merge(map.get(property), element, MergeType.SMART));
                         } catch (Exception e) {
-                            Miapi.DEBUG_LOGGER.error("coudlnt merge " + property, e);
+                            DEBUG_LOGGER.error("coudlnt merge " + property, e);
                             map.put(property, element);
                         }
                     } else {
@@ -541,16 +627,16 @@ public class ItemModule {
             out.beginObject();
             out.name("module").value(value.module.name);
             if (value.moduleData != null) {
-                out.name("moduleData").jsonValue(Miapi.gson.toJson(value.moduleData));
+                out.name("moduleData").jsonValue(gson.toJson(value.moduleData));
             } else {
                 Map<String, String> moduleData = new HashMap<>();
-                out.name("moduleData").jsonValue(Miapi.gson.toJson(moduleData));
+                out.name("moduleData").jsonValue(gson.toJson(moduleData));
             }
             if (value.subModules != null) {
-                out.name("subModules").jsonValue(Miapi.gson.toJson(value.subModules));
+                out.name("subModules").jsonValue(gson.toJson(value.subModules));
             } else {
                 Map<String, String> subModules = new HashMap<>();
-                out.name("subModules").jsonValue(Miapi.gson.toJson(subModules));
+                out.name("subModules").jsonValue(gson.toJson(subModules));
             }
             out.endObject();
         }
@@ -561,11 +647,11 @@ public class ItemModule {
             String moduleKey = jsonObject.get("module").getAsString();
             ItemModule module = moduleRegistry.get(moduleKey);
             if (module == null) {
-                Miapi.LOGGER.warn("Module not found for " + moduleKey + " Key - substituting with empty module");
+                LOGGER.warn("Module not found for " + moduleKey + " Key - substituting with empty module");
                 module = ItemModule.empty;
             }
             ModuleInstance moduleInstance = new ModuleInstance(module);
-            moduleInstance.subModules = Miapi.gson.fromJson(jsonObject.get("subModules"), new TypeToken<Map<Integer, ModuleInstance>>() {
+            moduleInstance.subModules = gson.fromJson(jsonObject.get("subModules"), new TypeToken<Map<Integer, ModuleInstance>>() {
             }.getType());
             if (moduleInstance.subModules != null) {
                 moduleInstance.subModules.forEach((key, subModule) -> {
@@ -574,7 +660,7 @@ public class ItemModule {
             } else {
                 moduleInstance.subModules = new HashMap<>();
             }
-            moduleInstance.moduleData = Miapi.gson.fromJson(jsonObject.get("moduleData"), new TypeToken<Map<String, String>>() {
+            moduleInstance.moduleData = gson.fromJson(jsonObject.get("moduleData"), new TypeToken<Map<String, String>>() {
             }.getType());
             if (moduleInstance.moduleData == null) {
                 moduleInstance.moduleData = new HashMap<>();

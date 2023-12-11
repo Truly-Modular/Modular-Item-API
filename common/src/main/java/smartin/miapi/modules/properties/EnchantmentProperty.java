@@ -59,6 +59,7 @@ public class EnchantmentProperty implements CraftingProperty, ModuleProperty {
     }
 
     private static void fillMapDefault() {
+        //TODO:scan items for enchants to be added by default?
         addToReplaceMap("miapi:armor", EnchantmentTarget.ARMOR);
         addToReplaceMap("miapi:basic", EnchantmentTarget.BREAKABLE);
         addToReplaceMap("miapi:weapon", EnchantmentTarget.WEAPON);
@@ -80,7 +81,9 @@ public class EnchantmentProperty implements CraftingProperty, ModuleProperty {
             EnchantmentPropertyJson json = Miapi.gson.fromJson(element, EnchantmentPropertyJson.class);
             if (json.allowed == null) json.allowed = new ArrayList<>();
             if (json.forbidden == null) json.forbidden = new ArrayList<>();
-            return convert(json.allowed);
+            List<Enchantment> enchantments = convert(json.allowed);
+            enchantments.removeAll(convert(json.forbidden));
+            return enchantments;
         } else {
             return new ArrayList<>();
         }

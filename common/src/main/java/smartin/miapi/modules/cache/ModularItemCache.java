@@ -73,7 +73,10 @@ public class ModularItemCache {
     @Nullable
     public static UUID getUUIDFor(ItemStack stack) {
         try {
-            return nbtCache.get(stack.getOrCreateNbt());
+            if(stack.getItem() instanceof ModularItem){
+                return nbtCache.get(stack.getOrCreateNbt());
+            }
+            return null;
         } catch (ExecutionException e) {
             throw new RuntimeException(e);
         }

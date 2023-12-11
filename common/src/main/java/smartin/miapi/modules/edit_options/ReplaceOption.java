@@ -29,7 +29,14 @@ public class ReplaceOption implements EditOption {
     @Override
     public ItemStack preview(PacketByteBuf buffer, EditContext editContext) {
         CraftAction action = new CraftAction(buffer, editContext.getWorkbench());
-        action.setItem(editContext.getLinkedInventory().getStack(0));
+        if(editContext.getLinkedInventory()==null){
+            return ItemStack.EMPTY;
+        }
+        ItemStack itemStack = editContext.getLinkedInventory().getStack(0);
+        if(itemStack.isEmpty()){
+            return itemStack;
+        }
+        action.setItem(itemStack);
         Inventory inventory = editContext.getLinkedInventory();
         if (hoverStack != null && !hoverStack.isEmpty()) {
             inventory = new SimpleInventory(2);
