@@ -1,6 +1,6 @@
 package smartin.miapi.modules.properties;
 
-import com.google.common.reflect.TypeToken;
+import com.google.gson.reflect.TypeToken;
 import com.google.gson.JsonElement;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.enchantment.Enchantment;
@@ -29,7 +29,7 @@ import static net.minecraft.enchantment.EnchantmentHelper.*;
 public class CraftingEnchantProperty implements ModuleProperty, CraftingProperty {
     public static String KEY = "crafting_enchants";
     public static CraftingEnchantProperty property;
-    private static Type type = new TypeToken<Map<String, Integer>>() {
+    private static final Type type = new TypeToken<Map<String, Integer>>() {
     }.getType();
 
     public CraftingEnchantProperty() {

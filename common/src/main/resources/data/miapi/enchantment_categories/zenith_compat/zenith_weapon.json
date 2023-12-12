@@ -1,9 +1,0 @@
-{
-    "id": "miapi:weapon",
-    "add": [
-        "zenith:scavenger",
-        "zenith:knowledge",
-        "zenith:bane_of_illagers",
-        "zenith:capturing"
-    ]
-}

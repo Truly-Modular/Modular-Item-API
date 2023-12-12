@@ -100,9 +100,13 @@ public class MiapiConfig extends Config {
                 "better_loyalty",
                 true,
                 "Loyalty triggers in the void with modular Items");
+        public static BooleanConfigItem leanEnchantments = new BooleanConfigItem(
+                "lean_enchantments",
+                true,
+                "Truly Modular is more lean with its allowed Enchantments on its Tools");
 
         protected EnchantmentGroup() {
-            super(of(betterInfinity, betterLoyalty), "enchants");
+            super(of(betterInfinity, betterLoyalty, leanEnchantments), "enchants");
         }
     }
 }

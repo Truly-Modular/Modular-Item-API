@@ -6,7 +6,9 @@ import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.EnchantmentTarget;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
@@ -59,7 +61,6 @@ public class EnchantmentProperty implements CraftingProperty, ModuleProperty {
     }
 
     private static void fillMapDefault() {
-        //TODO:scan items for enchants to be added by default?
         addToReplaceMap("miapi:armor", EnchantmentTarget.ARMOR);
         addToReplaceMap("miapi:basic", EnchantmentTarget.BREAKABLE);
         addToReplaceMap("miapi:weapon", EnchantmentTarget.WEAPON);
@@ -73,6 +74,32 @@ public class EnchantmentProperty implements CraftingProperty, ModuleProperty {
         addToReplaceMap("miapi:leggings", EnchantmentTarget.ARMOR_LEGS);
         addToReplaceMap("miapi:boots", EnchantmentTarget.ARMOR_FEET);
         addToReplaceMap("miapi:trident", EnchantmentTarget.TRIDENT);
+        addDefault("miapi:axe", new String[]{"miapi:basic", "miapi:tool"}, Items.WOODEN_AXE, Items.STONE_AXE, Items.GOLDEN_AXE, Items.DIAMOND_AXE, Items.NETHERITE_AXE);
+        addDefault("miapi:pickaxe", new String[]{"miapi:basic", "miapi:tool"}, Items.WOODEN_PICKAXE, Items.STONE_PICKAXE, Items.GOLDEN_PICKAXE, Items.DIAMOND_PICKAXE, Items.NETHERITE_PICKAXE);
+        addDefault("miapi:shovel", new String[]{"miapi:basic", "miapi:tool"}, Items.WOODEN_SHOVEL, Items.STONE_SHOVEL, Items.GOLDEN_SHOVEL, Items.DIAMOND_SHOVEL, Items.NETHERITE_SHOVEL);
+        addDefault("miapi:hoe", new String[]{"miapi:basic", "miapi:tool"}, Items.WOODEN_HOE, Items.STONE_HOE, Items.GOLDEN_HOE, Items.DIAMOND_HOE, Items.NETHERITE_HOE);
+    }
+
+    public static void addDefault(String addToID, String[] removeIDs, Item... items) {
+        Registries.ENCHANTMENT.stream().filter(enchant -> {
+            for (Item item : items) {
+                if (!enchant.isAcceptableItem(new ItemStack(item))) {
+                    return false;
+                }
+            }
+            return true;
+        }).filter(enchant -> {
+            for (String remove : removeIDs) {
+                Set<String> replacements = replaceMap.get(remove);
+                String enchantId = Registries.ENCHANTMENT.getId(enchant).toString();
+                if (replacements.contains(enchantId)) {
+                    return false;
+                }
+            }
+            return true;
+        }).forEach(enchant -> {
+            addToReplaceMap(addToID, Registries.ENCHANTMENT.getId(enchant).toString());
+        });
     }
 
     private List<Enchantment> createAllowedList(ItemStack itemStack) {
@@ -133,7 +160,7 @@ public class EnchantmentProperty implements CraftingProperty, ModuleProperty {
         List<Enchantment> enchantments = new ArrayList<>();
         for (String id : replaceList) {
             Enchantment enchantment = Registries.ENCHANTMENT.get(new Identifier(id));
-            if(enchantment!=null && !enchantments.contains(enchantment)){
+            if (enchantment != null && !enchantments.contains(enchantment)) {
                 enchantments.add(enchantment);
             }
         }
@@ -185,7 +212,7 @@ public class EnchantmentProperty implements CraftingProperty, ModuleProperty {
     }
 
     @Override
-    public ItemStack preview(ItemStack old, ItemStack crafting, PlayerEntity player, ModularWorkBenchEntity bench, ItemModule.ModuleInstance newModule, ItemModule module, List<ItemStack> inventory, Map<String,String> data) {
+    public ItemStack preview(ItemStack old, ItemStack crafting, PlayerEntity player, ModularWorkBenchEntity bench, ItemModule.ModuleInstance newModule, ItemModule module, List<ItemStack> inventory, Map<String, String> data) {
         List<Enchantment> allowedEnchants = getAllowedList(crafting);
         Map<Enchantment, Integer> newEnchants = new HashMap<>();
         for (Map.Entry<Enchantment, Integer> entry : EnchantmentHelper.get(crafting).entrySet()) {
@@ -204,7 +231,7 @@ public class EnchantmentProperty implements CraftingProperty, ModuleProperty {
     }
 
     @Override
-    public List<ItemStack> performCraftAction(ItemStack old, ItemStack crafting, PlayerEntity player, ModularWorkBenchEntity bench, ItemModule.ModuleInstance newModule, ItemModule module, List<ItemStack> inventory, Map<String,String> data) {
+    public List<ItemStack> performCraftAction(ItemStack old, ItemStack crafting, PlayerEntity player, ModularWorkBenchEntity bench, ItemModule.ModuleInstance newModule, ItemModule module, List<ItemStack> inventory, Map<String, String> data) {
         List<Enchantment> allowedEnchants = getAllowedList(crafting);
         Map<Enchantment, Integer> newEnchants = new HashMap<>();
         for (Map.Entry<Enchantment, Integer> entry : EnchantmentHelper.get(crafting).entrySet()) {
