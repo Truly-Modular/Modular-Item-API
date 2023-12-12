@@ -7,9 +7,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import smartin.miapi.Environment;
 import smartin.miapi.Miapi;
-import smartin.miapi.modules.ItemModule;
 import smartin.miapi.network.Networking;
-import smartin.miapi.registries.RegistryInventory;
 
 import java.util.ArrayList;
 import java.util.HashMap;

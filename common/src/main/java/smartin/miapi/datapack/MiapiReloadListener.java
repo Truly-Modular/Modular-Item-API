@@ -1,6 +1,7 @@
 package smartin.miapi.datapack;
 
 import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 import dev.architectury.platform.Platform;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
@@ -31,6 +32,9 @@ public class MiapiReloadListener implements ResourceReloader {
         timeStart = System.nanoTime();
         ReloadEvents.START.fireEvent(false);
         Map<String, String> data = new LinkedHashMap<>();
+        TypeToken<String> placeHolderToken = TypeToken.get(String.class);
+        com.google.common.reflect.TypeToken<String> secondPlaceHolder = com.google.common.reflect.TypeToken.of(String.class);
+        Miapi.LOGGER.info("LoadTest "+placeHolderToken.equals(secondPlaceHolder));
 
         if (Platform.isFabric() && false) {
             //TODO:figure out why this does nto work on forge.

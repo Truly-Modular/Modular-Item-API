@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.platform.forge.EventBuses;
 import net.minecraft.resource.ResourcePackManager;
+import net.minecraft.server.ServerTask;
 import net.minecraft.world.SaveProperties;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;
@@ -14,6 +15,8 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import smartin.miapi.Environment;
 import smartin.miapi.Miapi;
 import smartin.miapi.attributes.AttributeRegistry;
+import smartin.miapi.config.MiapiConfig;
+import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.modules.properties.AttributeProperty;
 
 import java.util.Collection;
@@ -37,15 +40,34 @@ public class TrulyModularForge {
             AttributeRegistry.SWIM_SPEED = ForgeMod.SWIM_SPEED.get();
         }));
         LifecycleEvent.SERVER_STARTED.register((minecraftServer -> {
-            if(!Environment.isClient()){
-                ResourcePackManager resourcePackManager = minecraftServer.getDataPackManager();
-                SaveProperties saveProperties = minecraftServer.getSaveProperties();
-                Collection<String> collection = resourcePackManager.getEnabledNames();
-                Collection<String> collection2 = findNewDataPacks(resourcePackManager, saveProperties, collection);
-                minecraftServer.reloadResources(collection2).exceptionally((throwable) -> {
-                    Miapi.LOGGER.warn("Failed to execute sceduled reload reload", throwable);
-                    return null;
-                });
+            if(!Environment.isClient() && MiapiConfig.OtherConfigGroup.forgeAutoReloads.getValue()){
+                Miapi.LOGGER.info("Truly Modular will now go onto reload twice.");
+                Miapi.LOGGER.info("This is done because Forges classloading is buggy and stupid. Until we have a better fix, this is used");
+                Miapi.LOGGER.info("This can be turned off in Miapis config.json");
+                MiapiEvents.GENERATED_MATERIAL.hasBeenSorted();
+                minecraftServer.executeTask(new ServerTask(10, () -> {
+                    ResourcePackManager resourcePackManager = minecraftServer.getDataPackManager();
+                    SaveProperties saveProperties = minecraftServer.getSaveProperties();
+                    Collection<String> collection = resourcePackManager.getEnabledNames();
+                    Collection<String> collection2 = findNewDataPacks(resourcePackManager, saveProperties, collection);
+                    minecraftServer.reloadResources(collection2).exceptionally((throwable) -> {
+                        Miapi.LOGGER.warn("Failed to execute sceduled reload reload", throwable);
+                        return null;
+                    });
+                    minecraftServer.executeTask(new ServerTask(10, () -> {
+                        ResourcePackManager resourcePackManager1 = minecraftServer.getDataPackManager();
+                        SaveProperties saveProperties1 = minecraftServer.getSaveProperties();
+                        Collection<String> collection1 = resourcePackManager1.getEnabledNames();
+                        Collection<String> collection21 = findNewDataPacks(resourcePackManager1, saveProperties1, collection1);
+                        minecraftServer.reloadResources(collection21).exceptionally((throwable) -> {
+                            Miapi.LOGGER.warn("Failed to execute sceduled reload reload", throwable);
+                            return null;
+                        });
+                        Miapi.LOGGER.info("Truly Modulars double Reload was successfull.");
+                        Miapi.LOGGER.info("This is done because Forges classloading is buggy and stupid. Until we have a better fix, this is used");
+                        Miapi.LOGGER.info("This can be turned off in Miapis config.json");
+                    }));
+                }));
             }
         }));
         AttributeProperty.replaceMap.put("miapi:generic.reach", ForgeMod.BLOCK_REACH);

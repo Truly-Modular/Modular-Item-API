@@ -85,9 +85,13 @@ public class MiapiConfig extends Config {
                 "development_mode",
                 Platform.isDevelopmentEnvironment(),
                 "Development mode of Miapi - DO NOT ENABLE IF U DONT KNOW WHAT IT DOES");
+        public static BooleanConfigItem forgeAutoReloads = new BooleanConfigItem(
+                "forge_reload_mode",
+                Platform.isForge(),
+                "Auto reloads on Servers to fix Forge having buggy classloading");
 
         protected OtherConfigGroup() {
-            super(of(developmentMode), "other");
+            super(of(developmentMode,forgeAutoReloads), "other");
         }
     }
 
