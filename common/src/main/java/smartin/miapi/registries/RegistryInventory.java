@@ -259,8 +259,12 @@ public class RegistryInventory {
         register(modularItems, "modular_mattock", ModularAxe::new);
 
         register(modularItems, "modular_bow", ModularBow::new);
+        register(modularItems, "modular_small_bow", ModularBow::new);
+        register(modularItems, "modular_large_bow", ModularBow::new);
         register(modularItems, "modular_bow_part", ExampleModularItem::new);
         register(modularItems, "modular_crossbow", ModularCrossbow::new);
+        register(modularItems, "modular_small_crossbow", ModularCrossbow::new);
+        register(modularItems, "modular_large_crossbow", ModularCrossbow::new);
         register(modularItems, "modular_crossbow_part", ExampleModularItem::new);
         register(modularItems, "modular_arrow", ModularArrow::new);
         register(modularItems, "modular_arrow_part", ExampleModularItem::new);
@@ -301,6 +305,9 @@ public class RegistryInventory {
         registerAtt("generic.armor_crushing", true, () ->
                         new ClampedEntityAttribute("miapi.attribute.name.armor_crushing", 0.0, 0.0, 1024.0).setTracked(true),
                 att -> ARMOR_CRUSHING = att);
+        registerAtt("generic.projectile_armor", true, () ->
+                        new ClampedEntityAttribute("miapi.attribute.name.projectile_armor", 0.0, 0.0, 1024.0).setTracked(true),
+                att -> PROJECTILE_ARMOR = att);
         registerAtt("generic.shield_break", true, () ->
                         new ClampedEntityAttribute("miapi.attribute.name.shield_break", 0.0, 0.0, 1024.0).setTracked(true),
                 att -> SHIELD_BREAK = att);
@@ -441,6 +448,7 @@ public class RegistryInventory {
             registerMiapi(moduleProperties, BlueprintProperty.KEY, new BlueprintProperty());
             registerMiapi(moduleProperties, WaterGravityProperty.KEY, new WaterGravityProperty());
             registerMiapi(moduleProperties, CraftingEnchantProperty.KEY, new CraftingEnchantProperty());
+            registerMiapi(moduleProperties, ExhaustionProperty.KEY, new ExhaustionProperty());
 
             //compat
             registerMiapi(moduleProperties, BetterCombatProperty.KEY, new BetterCombatProperty());

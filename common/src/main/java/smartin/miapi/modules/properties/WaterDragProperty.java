@@ -10,7 +10,7 @@ import smartin.miapi.modules.properties.util.DoubleProperty;
  * This property manages the speedloss of Projectiles inside Water
  */
 public class WaterDragProperty extends DoubleProperty {
-    public static String KEY = "water_drag";
+    public static final String KEY = "water_drag";
     public static WaterDragProperty property;
 
     public WaterDragProperty() {

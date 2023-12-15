@@ -7,7 +7,7 @@ import smartin.miapi.modules.properties.util.DoubleProperty;
  * This Property manages speedloss of {@link smartin.miapi.entity.ItemProjectileEntity} of Modular Items
  */
 public class AirDragProperty extends DoubleProperty {
-    public static String KEY = "air_drag";
+    public static final String KEY = "air_drag";
     public static AirDragProperty property;
 
     public AirDragProperty() {

@@ -33,7 +33,7 @@ public class SkinOptions implements EditOption {
                 String skinKey = moduleInstance.moduleData.get("skin");
                 Map<String, Skin> moduleSkins = skins.get(moduleInstance.module);
                 if (skinKey != null && moduleSkins != null && moduleSkins.containsKey(skinKey)) {
-                    oldMap.putAll(moduleSkins.get(skinKey).properties);
+                    moduleSkins.get(skinKey).propertyHolder.applyHolder(oldMap);
                 }
             }
             return oldMap;

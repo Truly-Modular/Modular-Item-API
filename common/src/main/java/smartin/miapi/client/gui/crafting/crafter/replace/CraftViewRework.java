@@ -51,17 +51,21 @@ public class CraftViewRework extends InteractAbleWidget {
     SimpleButton<Object> nextButton;
     CraftButton<Object> craftButton;
     Matrix4f currentMatrix = new Matrix4f();
-    public Map<String,String> defaultMap = new HashMap<>();
-    ScreenHandlerListener listener = new SimpleScreenHandlerListener((h, slotId, itemStack) -> {
-        if (slotId != 36) {
-            update();
-        }
-    });
+    public Map<String, String> defaultMap = new HashMap<>();
+    static ScreenHandlerListener listener;
     EmptyCraftingWidget fallbackCraftingWidget;
 
     public CraftViewRework(int x, int y, int width, int height, int offset, CraftOption option, EditOption.EditContext editContext, Consumer<SlotProperty.ModuleSlot> back) {
         super(x, y, width, height, Text.empty());
         this.editContext = editContext;
+        if (listener != null) {
+            editContext.getScreenHandler().removeListener(listener);
+        }
+        listener = new SimpleScreenHandlerListener((h, slotId, itemStack) -> {
+            if (slotId != 36) {
+                update();
+            }
+        });
         defaultMap = option.data();
         action = new CraftAction(editContext.getItemstack(), editContext.getSlot(), option.module(), editContext.getPlayer(), editContext.getWorkbench(), option.data());
         action.setItem(editContext.getItemstack());

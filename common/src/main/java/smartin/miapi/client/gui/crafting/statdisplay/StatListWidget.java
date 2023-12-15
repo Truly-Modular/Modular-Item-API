@@ -255,6 +255,17 @@ public class StatListWidget extends InteractAbleWidget {
                 .setTranslationKey(LuminousLearningProperty.KEY).build());
 
         addStatDisplay(SinglePropertyStatDisplay
+                .builder(ExhaustionProperty.property)
+                .setMax(50)
+                .setFormat("##.#")
+                .setTranslationKey(ExhaustionProperty.KEY).build());
+        addStatDisplay(SinglePropertyStatDisplay
+                .builder(WaterGravityProperty.property)
+                .setMax(100)
+                .setFormat("##.#")
+                .setTranslationKey(WaterGravityProperty.KEY).build());
+
+        addStatDisplay(SinglePropertyStatDisplay
                 .builder(PillagesGuard.property)
                 .setMax(3)
                 .setFormat("##.#")

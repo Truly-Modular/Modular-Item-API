@@ -27,7 +27,7 @@ import java.util.Map;
 import static net.minecraft.enchantment.EnchantmentHelper.*;
 
 public class CraftingEnchantProperty implements ModuleProperty, CraftingProperty {
-    public static String KEY = "crafting_enchants";
+    public static final String KEY = "crafting_enchants";
     public static CraftingEnchantProperty property;
     private static final Type type = new TypeToken<Map<String, Integer>>() {
     }.getType();

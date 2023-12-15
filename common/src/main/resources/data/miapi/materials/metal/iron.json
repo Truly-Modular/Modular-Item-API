@@ -22,7 +22,8 @@
     "filler": "interpolate"
   },
   "textures": [
-    "metalic"
+    "metalic",
+    "bright"
   ],
   "mining_speed": 6,
   "mining_level": 2,

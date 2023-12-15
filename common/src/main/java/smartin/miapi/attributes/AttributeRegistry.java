@@ -6,6 +6,7 @@ import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
@@ -14,6 +15,7 @@ import net.minecraft.util.math.Vec3d;
 import smartin.miapi.entity.ItemProjectileEntity;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.events.MiapiProjectileEvents;
+import smartin.miapi.mixin.LivingEntityAccessor;
 import smartin.miapi.modules.abilities.util.WrappedSoundEvent;
 import smartin.miapi.modules.properties.AttributeProperty;
 
@@ -38,6 +40,8 @@ public class AttributeRegistry {
     public static EntityAttribute BACK_STAB;
     public static EntityAttribute ARMOR_CRUSHING;
     public static EntityAttribute SHIELD_BREAK;
+
+    public static EntityAttribute PROJECTILE_ARMOR;
 
     public static EntityAttribute BOW_DRAW_TIME;
 
@@ -72,6 +76,17 @@ public class AttributeRegistry {
             }
             return EventResult.pass();
         }));
+        MiapiEvents.LIVING_HURT.register((livingHurtEvent -> {
+            if (livingHurtEvent.damageSource.isIn(DamageTypeTags.IS_PROJECTILE) &&
+                    livingHurtEvent.livingEntity.getAttributes().hasAttribute(PROJECTILE_ARMOR)) {
+                double projectileArmor = livingHurtEvent.livingEntity.getAttributeValue(PROJECTILE_ARMOR);
+                if (projectileArmor > 0) {
+                    double totalDamage = livingHurtEvent.amount * (1 - ((Math.max(20, projectileArmor)) / 25));
+                    livingHurtEvent.amount = (float) totalDamage;
+                }
+            }
+            return EventResult.pass();
+        }));
         MiapiEvents.LIVING_HURT_AFTER.register((livingHurtEvent -> {
             if (livingHurtEvent.damageSource.getAttacker() instanceof LivingEntity attacker) {
                 if (attacker.getAttributes().hasAttribute(SHIELD_BREAK)) {
@@ -91,7 +106,7 @@ public class AttributeRegistry {
             if (livingHurtEvent.damageSource.getAttacker() instanceof LivingEntity attacker) {
                 if (attacker.getAttributes().hasAttribute(ARMOR_CRUSHING)) {
                     double value = attacker.getAttributeValue(ARMOR_CRUSHING);
-                    //((LivingEntityAccessor) livingHurtEvent.livingEntity).damageArmor(livingHurtEvent.damageSource, (float) (livingHurtEvent.livingEntity.getArmor() * value));
+                    ((LivingEntityAccessor) livingHurtEvent.livingEntity).callDamageArmor(livingHurtEvent.damageSource, (float) (livingHurtEvent.livingEntity.getArmor() * value));
                 }
             }
             return EventResult.pass();

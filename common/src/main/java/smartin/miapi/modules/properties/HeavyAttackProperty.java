@@ -18,7 +18,7 @@ import smartin.miapi.modules.properties.util.MergeType;
  * This property controls {@link smartin.miapi.modules.abilities.HeavyAttackAbility}
  */
 public class HeavyAttackProperty extends CodecBasedProperty<HeavyAttackProperty.HeavyAttackHolder> implements GuiWidgetSupplier {
-    public static String KEY = "heavyAttack";
+    public static final String KEY = "heavyAttack";
     public static HeavyAttackProperty property;
     public static final Codec<HeavyAttackHolder> codec = AutoCodec.of(HeavyAttackHolder.class).codec();
 

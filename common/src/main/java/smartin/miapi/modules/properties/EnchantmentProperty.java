@@ -27,7 +27,7 @@ import java.util.*;
  * This property allows to set allowed enchantments
  */
 public class EnchantmentProperty implements CraftingProperty, ModuleProperty {
-    public static String KEY = "enchantments";
+    public static final String KEY = "enchantments";
     public static EnchantmentProperty property;
     public static Map<String, Set<String>> replaceMap = new HashMap<>();
 
@@ -83,7 +83,7 @@ public class EnchantmentProperty implements CraftingProperty, ModuleProperty {
     public static void addDefault(String addToID, String[] removeIDs, Item... items) {
         Registries.ENCHANTMENT.stream().filter(enchant -> {
             for (Item item : items) {
-                if (!enchant.isAcceptableItem(new ItemStack(item))) {
+                if (!enchant.isAcceptableItem(item.getDefaultStack())) {
                     return false;
                 }
             }

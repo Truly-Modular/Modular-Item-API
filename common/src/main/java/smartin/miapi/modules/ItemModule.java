@@ -127,6 +127,7 @@ public class ItemModule {
      */
     public static void loadModuleExtension(String path, String moduleJsonString) {
         try {
+            //TODO:rework this into SynergyManagers implementation
             JsonObject moduleJson = gson.fromJson(moduleJsonString, JsonObject.class);
             String name = moduleJson.get("name").getAsString();
             ItemModule module = moduleRegistry.get(name);
