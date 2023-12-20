@@ -29,5 +29,9 @@ Forge/Fabric:
 Miapi:
 other:
 
+**Full Mod List**
+
+**Ingame Logs**
+
 **Additional context**
 Add any other context about the problem here.
