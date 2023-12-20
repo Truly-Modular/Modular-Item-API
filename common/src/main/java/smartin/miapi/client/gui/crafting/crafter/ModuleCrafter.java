@@ -43,6 +43,7 @@ public class ModuleCrafter extends InteractAbleWidget {
     public EditOption.EditContext editContext;
     Mode currentMode = Mode.DETAIL;
     CraftOption craftOption;
+    public String moduleType = "default";
 
     public ModuleCrafter(int x, int y, int width, int height, Consumer<SlotProperty.ModuleSlot> selected, Consumer<ItemStack> craftedItem, Inventory linkedInventory, Consumer<Slot> addSlot, Consumer<Slot> removeSlot) {
         super(x, y, width, height, Text.empty());
@@ -115,7 +116,7 @@ public class ModuleCrafter extends InteractAbleWidget {
                             }
                             slot = toReplace;
                             setMode(Mode.REPLACE);
-                        });
+                        }, moduleType);
                 this.children.add(detailView);
             }
             case EDIT -> {

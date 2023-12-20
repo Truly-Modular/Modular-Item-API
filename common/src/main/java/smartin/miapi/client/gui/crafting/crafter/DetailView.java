@@ -33,21 +33,31 @@ public class DetailView extends InteractAbleWidget {
     ScrollList scrollList;
 
 
-    public DetailView(int x, int y, int width, int height, SlotProperty.ModuleSlot baseSlot, SlotProperty.ModuleSlot selected, Consumer<SlotProperty.ModuleSlot> edit, Consumer<SlotProperty.ModuleSlot> replace) {
+    public DetailView(int x, int y, int width, int height, SlotProperty.ModuleSlot baseSlot, SlotProperty.ModuleSlot selected, Consumer<SlotProperty.ModuleSlot> edit, Consumer<SlotProperty.ModuleSlot> replace, String slotType) {
         super(x, y, width, height, Text.empty());
         selectedSlot = selected;
         if (baseSlot != null) {
-            scrollList = new ScrollList(x, y, width, height, getButtons(baseSlot, new ArrayList<>(), 0));
+            scrollList = new ScrollList(x, y, width, height, getButtons(baseSlot, new ArrayList<>(), 0, slotType));
             this.addChild(scrollList);
         }
         this.selectConsumer = edit;
     }
 
-    public List<InteractAbleWidget> getButtons(SlotProperty.ModuleSlot slot, List<InteractAbleWidget> buttons, int level) {
-        buttons.add(new SlotButton(0, 0, 50, 22, slot, level));
+    public List<InteractAbleWidget> getButtons(SlotProperty.ModuleSlot slot, List<InteractAbleWidget> buttons, int level, String slotType) {
+        int nextLevel;
+        if (slot.slotType.equals(slotType)) {
+            buttons.add(new SlotButton(0, 0, 50, 22, slot, level));
+            nextLevel = level;
+        } else {
+            nextLevel = level + 1;
+        }
         if (slot.inSlot != null) {
             SlotProperty.getSlots(slot.inSlot).forEach((id, childSlot) -> {
-                getButtons(childSlot, buttons, level + 1);
+                if (childSlot.slotType.equals(slotType)) {
+                    getButtons(childSlot, buttons, nextLevel, slotType);
+                } else {
+                    Miapi.LOGGER.info("disregard slot " + childSlot.slotType);
+                }
             });
         }
 

@@ -19,6 +19,7 @@
     "miapi.ui.edit_option.hover.create": "Create",
     "miapi.ui.edit_option.hover.replace": "Replace selected Module",
     "miapi.ui.edit_option.hover.skin": "Skins",
+    "miapi.ui.edit_option.hover.cosmetic": "Cosmetic Slots",
     "miapi.ui.craft.warning.material": "Insufficient Material",
     "miapi.ui.craft.warning.material.wrong": "Wrong Material",
     "miapi.ui.craft.warning.crafting_stat": "Crafting Stat Requirement Unmet",

@@ -41,6 +41,7 @@ public class BakedMiapiModel implements MiapiModel {
     @Override
     public void render(MatrixStack matrices, ItemStack stack, ModelTransformationMode transformationMode, float tickDelta, VertexConsumerProvider vertexConsumers, LivingEntity entity, int light, int overlay) {
         if (!(vertexConsumers instanceof VertexConsumerProvider.Immediate)) return;
+        assert MinecraftClient.getInstance().world != null;
         MinecraftClient.getInstance().world.getProfiler().push("BakedModel");
         matrices.push();
         matrices.multiplyPositionMatrix(modelMatrix);
@@ -49,17 +50,11 @@ public class BakedMiapiModel implements MiapiModel {
             currentModel = model.getOverrides().apply(model, stack, MinecraftClient.getInstance().world, entity, light);
         }
         MinecraftClient.getInstance().world.getProfiler().push("QuadPushing");
-        /*
+        VertexConsumer consumer = modelHolder.colorProvider.getConsumer(vertexConsumers, stack, instance, transformationMode);
+        assert currentModel != null;
         for (Direction direction : Direction.values()) {
             currentModel.getQuads(null, direction, random).forEach(bakedQuad -> {
                 consumer.quad(matrices.peek(), bakedQuad, colors[0], colors[1], colors[2], light, overlay);
-            });
-        }
-         */
-        VertexConsumer consumer = modelHolder.colorProvider.getConsumer(vertexConsumers, stack, instance,transformationMode);
-        for (Direction direction : Direction.values()) {
-            currentModel.getQuads(null, direction, random).forEach(bakedQuad -> {
-                consumer.quad(matrices.peek(), bakedQuad, color.redAsFloat(), color.greenAsFloat(), color.blueAsFloat(), light, overlay);
             });
         }
 

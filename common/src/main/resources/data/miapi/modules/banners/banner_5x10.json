@@ -1,0 +1,59 @@
+{
+    "name": "banner_5x10",
+    "inscribe_data_on_craft": "banner",
+    "allowedInSlots": [
+        "banner_5x10",
+        "cosmetic_5x10"
+    ],
+    "banner": [{
+        "type": "module_data",
+        "model": "model",
+        "modelType": "parent",
+        "transform": {
+            "rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "translation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "scale": {
+                "x": 5.0,
+                "y": 5.0,
+                "z": 5.0
+            }
+        }
+    }],
+    "texture": [
+        {
+            "path": "miapi:models/item/model.json",
+            "color": "[material.color]",
+            "transform": {
+                "rotation": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "translation": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                }
+            }
+        }
+    ],
+    "allowedMaterial": {
+        "allowedMaterials": [
+            "banner"
+        ],
+        "cost": 1
+    }
+}

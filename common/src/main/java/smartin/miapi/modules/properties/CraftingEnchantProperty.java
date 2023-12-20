@@ -14,6 +14,7 @@ import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
+import smartin.miapi.craft.CraftAction;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.util.CraftingProperty;
 import smartin.miapi.modules.properties.util.MergeType;
@@ -84,7 +85,7 @@ public class CraftingEnchantProperty implements ModuleProperty, CraftingProperty
     }
 
     @Override
-    public ItemStack preview(ItemStack old, ItemStack crafting, PlayerEntity player, ModularWorkBenchEntity bench, ItemModule.@Nullable ModuleInstance newModule, ItemModule module, List<ItemStack> inventory, Map<String, String> data) {
+    public ItemStack preview(ItemStack old, ItemStack crafting, PlayerEntity player, ModularWorkBenchEntity bench, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<String, String> data) {
         getEnchantsCache(crafting).forEach((enchantmentIntegerPair -> {
             Enchantment enchantment = enchantmentIntegerPair.getFirst();
             int level = enchantmentIntegerPair.getSecond();

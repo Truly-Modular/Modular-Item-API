@@ -109,7 +109,10 @@ public class ModelProperty implements ModuleProperty {
         }
         for (ModelJson json : modelJsonList) {
             int condition = Material.getColor(StatResolver.resolveString(json.condition, instance));
-            if (json.transform.origin == null || json.transform.origin.equals(key) || (json.transform.origin.equals("item") && key == null)) {
+            if (
+                    json.transform.origin == null && key == null ||
+                            json.transform.origin != null && json.transform.origin.equals(key) ||
+                            ("item".equals(json.transform.origin) && key == null)) {
                 if (condition != 0) {
                     Material material = MaterialProperty.getMaterial(instance);
                     List<String> list = new ArrayList<>();
@@ -142,6 +145,12 @@ public class ModelProperty implements ModuleProperty {
             }
         }
         return models;
+    }
+
+    public static boolean isAllowedKey(@Nullable String jsonKey, @Nullable String modelTypeKey) {
+        return jsonKey == null && modelTypeKey == null ||
+                jsonKey != null && jsonKey.equals(modelTypeKey) ||
+                ("item".equals(jsonKey) && modelTypeKey == null);
     }
 
     public static Map<String, BakedModel> getModelMap(ItemStack stack) {

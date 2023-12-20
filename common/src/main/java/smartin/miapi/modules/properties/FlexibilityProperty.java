@@ -5,6 +5,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import smartin.miapi.Miapi;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
+import smartin.miapi.craft.CraftAction;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.util.CraftingProperty;
 import smartin.miapi.modules.properties.util.DoubleProperty;
@@ -45,13 +46,13 @@ public class FlexibilityProperty extends DoubleProperty implements CraftingPrope
 
 
     @Override
-    public boolean canPerform(ItemStack old, ItemStack crafting, ModularWorkBenchEntity bench, PlayerEntity player, ItemModule.ModuleInstance newModule, ItemModule module, List<ItemStack> inventory, Map<String,String> data) {
+    public boolean canPerform(ItemStack old, ItemStack crafting, ModularWorkBenchEntity bench, PlayerEntity player, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<String,String> data) {
         double flexibility = getValueSafe(crafting);
         return flexibility >= 0;
     }
 
     @Override
-    public ItemStack preview(ItemStack old, ItemStack crafting, PlayerEntity player, ModularWorkBenchEntity bench, ItemModule.ModuleInstance newModule, ItemModule module, List<ItemStack> inventory, Map<String,String> data) {
+    public ItemStack preview(ItemStack old, ItemStack crafting, PlayerEntity player, ModularWorkBenchEntity bench, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<String,String> data) {
         return crafting;
     }
 }

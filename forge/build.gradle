@@ -31,6 +31,7 @@ repositories {
             includeGroup 'maven.modrinth'
         }
     }
+    maven { url "https://maven.merchantpug.net" }
 }
 
 dependencies {
@@ -39,6 +40,9 @@ dependencies {
     modApi "dev.architectury:architectury-forge:${rootProject.architectury_version}"
 
     forgeRuntimeLibrary(include("org.mariuszgromada.math:MathParser.org-mXparser:${rootProject.mathparser_version}"))
+
+    //forgeRuntimeLibrary(include("io.github.edwirmindcraft:apoli-forge:${rootProject.forge_apoli_version}"))
+
     modImplementation("me.shedaniel.cloth:cloth-config-forge:${rootProject.cloth_config_version}")
     //api(files('libs/nucleus-local.jar'))
     //modApi(files('libs/nucleus-local.jar'))

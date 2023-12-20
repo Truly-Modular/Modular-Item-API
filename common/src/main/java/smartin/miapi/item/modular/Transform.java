@@ -11,10 +11,12 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.render.model.ModelBakeSettings;
 import net.minecraft.client.render.model.json.Transformation;
 import net.minecraft.util.math.AffineTransformation;
+import net.minecraft.util.math.RotationAxis;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
+import smartin.miapi.Miapi;
 
 import java.io.IOException;
 
@@ -82,12 +84,23 @@ public class Transform {
 
         Matrix4f childMatrix = child.toMatrix();
         childMatrix.mul(parentMatrix);
-        return fromMatrix(childMatrix);
+        Transform merged = fromMatrix(childMatrix);
+        float rotation = merged.rotation.y;
+        if (Float.isNaN(rotation)) {
+            Miapi.LOGGER.info("FAILURE " + rotation);
+        }
+        return merged;
     }
 
     public Matrix4f toMatrix() {
         // Create the translation matrix
         Matrix4f translationMatrix = new Matrix4f().translate(translation);
+
+        //Alt Rotation Matrix
+        Quaternionf a = new Quaternionf(RotationAxis.POSITIVE_X.rotationDegrees(rotation.x));
+        Quaternionf b = new Quaternionf(RotationAxis.POSITIVE_Y.rotationDegrees(rotation.y));
+        Quaternionf c = new Quaternionf(RotationAxis.POSITIVE_Z.rotationDegrees(rotation.z));
+        Quaternionf d = a.add(b).add(c);
 
         // Create the rotation matrix
         Matrix4f rotationMatrix = new Matrix4f()
@@ -97,7 +110,7 @@ public class Transform {
 
         // Create the scale matrix
         Matrix4f scaleMatrix = new Matrix4f().scale(scale);
-        
+
         // Combine the matrices
         return new Matrix4f()
                 .mul(translationMatrix)
@@ -111,7 +124,9 @@ public class Transform {
         matrix.getTranslation(translation);
 
         // Extract rotation (in Euler angles)
-        Vector3f rotation = matrix.getEulerAnglesXYZ(new Vector3f());
+        Matrix4f rotationMatrix = new Matrix4f(matrix);
+        rotationMatrix.normalize3x3();
+        Vector3f rotation = rotationMatrix.getEulerAnglesXYZ(new Vector3f());
         rotation.x = (float) Math.toDegrees(rotation.x());
         rotation.y = (float) Math.toDegrees(rotation.y());
         rotation.z = (float) Math.toDegrees(rotation.z());

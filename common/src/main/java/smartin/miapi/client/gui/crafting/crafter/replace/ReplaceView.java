@@ -53,6 +53,7 @@ public class ReplaceView extends InteractAbleWidget {
         List<CraftOption> craftOptions = new ArrayList<>();
         AllowedSlots.allowedIn(slot).stream()
                 .sorted(Comparator.comparingDouble(PriorityProperty::getFor))
+                .distinct()
                 .forEach(module -> {
                     if (CraftingConditionProperty.isVisible(slot, module, MinecraftClient.getInstance().player, null)) {
                         craftOptions.add(new CraftOption(module, new HashMap<>()));

@@ -13,6 +13,7 @@ import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.crafting.crafter.replace.CraftOption;
 import smartin.miapi.client.gui.crafting.crafter.replace.ReplaceView;
+import smartin.miapi.craft.CraftAction;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.item.modular.PropertyResolver;
 import smartin.miapi.modules.ItemModule;
@@ -92,7 +93,8 @@ public class BlueprintProperty implements CraftingProperty, ModuleProperty {
     }
 
     @Override
-    public ItemStack preview(ItemStack old, ItemStack crafting, PlayerEntity player, ModularWorkBenchEntity bench, ItemModule.@Nullable ModuleInstance newModule, ItemModule module, List<ItemStack> inventory, Map<String, String> data) {
+    public ItemStack preview(ItemStack old, ItemStack crafting, PlayerEntity player, ModularWorkBenchEntity bench, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<String, String> data) {
+        ItemModule.ModuleInstance newModule = craftAction.getModifyingModuleInstance(crafting);
         String blueprintKey = data.get("blueprint");
         if (blueprintKey != null && newModule != null) {
             newModule.moduleData.put("blueprint", blueprintKey);

@@ -1,0 +1,72 @@
+{
+    "key": "banner",
+    "translation": "miapi.material.custom.banner",
+    "icon": "textures/item/chorus_fruit.png",
+    "color": "8C668B",
+    "items": [
+        {
+            "item": "minecraft:white_banner",
+            "value": 1.0
+        },
+        {
+            "item": "minecraft:orange_banner",
+            "value": 1.0
+        },
+        {
+            "item": "minecraft:magenta_banner",
+            "value": 1.0
+        },
+        {
+            "item": "minecraft:light_blue_banner",
+            "value": 1.0
+        },
+        {
+            "item": "minecraft:yellow_banner",
+            "value": 1.0
+        },
+        {
+            "item": "minecraft:lime_banner",
+            "value": 1.0
+        },
+        {
+            "item": "minecraft:pink_banner",
+            "value": 1.0
+        },
+        {
+            "item": "minecraft:gray_banner",
+            "value": 1.0
+        },
+        {
+            "item": "minecraft:light_gray_banner",
+            "value": 1.0
+        },
+        {
+            "item": "minecraft:cyan_banner",
+            "value": 1.0
+        },
+        {
+            "item": "minecraft:purple_banner",
+            "value": 1.0
+        },
+        {
+            "item": "minecraft:blue_banner",
+            "value": 1.0
+        },
+        {
+            "item": "minecraft:brown_banner",
+            "value": 1.0
+        },
+        {
+            "item": "minecraft:green_banner",
+            "value": 1.0
+        },
+        {
+            "item": "minecraft:red_banner",
+            "value": 1.0
+        },
+        {
+            "item": "minecraft:black_banner",
+            "value": 1.0
+        }
+    ]
+}

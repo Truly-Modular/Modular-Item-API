@@ -65,6 +65,8 @@ dependencies {
     include modImplementation("com.jamieswhiteshirt:reach-entity-attributes:$rootProject.fabric_reach_range_version")
     implementation(include("org.mariuszgromada.math:MathParser.org-mXparser:${rootProject.mathparser_version}"))
 
+    //modApi "com.github.apace100:apoli:${rootProject.fabric_apoli_version}"
+
     //modApi( include(files('libs/nucleus-local.jar')))
     modApi(include("com.RedPxnda.Nucleus:nucleus-fabric:${rootProject.minecraft_version}-${rootProject.nucleus_version}"))
     modApi files('libs/arsenal-local.jar')

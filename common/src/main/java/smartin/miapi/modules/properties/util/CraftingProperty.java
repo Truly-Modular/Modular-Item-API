@@ -78,13 +78,13 @@ public interface CraftingProperty {
      * @param crafting  the newly Crafted Itemstack
      * @param player    the player crafting
      * @param bench     the workbench block entity (null on client)
-     * @param newModule the new ModuleInstance
+     * @param craftAction CraftAction in question. can be used to access other stuff
      * @param module    the new Module
      * @param inventory Linked Inventory, length of {@link #getSlotPositions()}
      * @param data      a map including Data send from the Client for additional Craftinginfo
      * @return if the crafting can happen
      */
-    default boolean canPerform(ItemStack old, ItemStack crafting, @Nullable ModularWorkBenchEntity bench, PlayerEntity player, @Nullable ItemModule.ModuleInstance newModule, ItemModule module, List<ItemStack> inventory, Map<String, String> data) {
+    default boolean canPerform(ItemStack old, ItemStack crafting, @Nullable ModularWorkBenchEntity bench, PlayerEntity player, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<String, String> data) {
         return true;
     }
 
@@ -99,13 +99,13 @@ public interface CraftingProperty {
      * @param crafting  the newly Crafted Itemstack
      * @param player    the player crafting
      * @param bench     the modular workbench block entity (null on client)
-     * @param newModule the new ModuleInstance
+     * @param craftAction CraftAction in question. can be used to access other stuff
      * @param module    the new Module
      * @param inventory Linked Inventory, length of {@link #getSlotPositions()}
      * @param data      a map including Data send from the Client for additional Craftinginfo
      * @return the previewStack Itemstack
      */
-    ItemStack preview(ItemStack old, ItemStack crafting, PlayerEntity player, ModularWorkBenchEntity bench, @Nullable ItemModule.ModuleInstance newModule, ItemModule module, List<ItemStack> inventory, Map<String, String> data);
+    ItemStack preview(ItemStack old, ItemStack crafting, PlayerEntity player, ModularWorkBenchEntity bench, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<String, String> data);
 
     /**
      * the actual CraftAction
@@ -114,15 +114,15 @@ public interface CraftingProperty {
      * @param crafting  the newly Crafted Itemstack
      * @param player    the player crafting
      * @param bench     the modular workbench block entity (null on client)
-     * @param newModule the new ModuleInstance
+     * @param craftAction CraftAction in question. can be used to access other stuff
      * @param module    the new Module
      * @param inventory Linked Inventory, length of {@link #getSlotPositions()}
      * @param data      a map including Data send from the Client for additional Craftinginfo
      * @return a List of Itemstacks, first is the CraftedItem, followed by a List of Itemstacks to replace Inventory slots registered by {@link #getSlotPositions()}
      */
-    default List<ItemStack> performCraftAction(ItemStack old, ItemStack crafting, PlayerEntity player, @Nullable ModularWorkBenchEntity bench, @Nullable ItemModule.ModuleInstance newModule, ItemModule module, List<ItemStack> inventory, Map<String, String> data) {
+    default List<ItemStack> performCraftAction(ItemStack old, ItemStack crafting, PlayerEntity player, @Nullable ModularWorkBenchEntity bench, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<String, String> data) {
         List<ItemStack> stacks = new ArrayList<>();
-        stacks.add(this.preview(old, crafting, player, bench, newModule, module, inventory, data));
+        stacks.add(this.preview(old, crafting, player, bench, craftAction, module, inventory, data));
         stacks.addAll(inventory);
         return stacks;
     }

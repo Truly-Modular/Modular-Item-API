@@ -61,15 +61,13 @@ import smartin.miapi.modules.abilities.toolabilities.AxeAbility;
 import smartin.miapi.modules.abilities.toolabilities.HoeAbility;
 import smartin.miapi.modules.abilities.toolabilities.ShovelAbility;
 import smartin.miapi.modules.conditions.*;
+import smartin.miapi.modules.edit_options.CosmeticEditOption;
 import smartin.miapi.modules.edit_options.CreateItemOption.CreateItemOption;
 import smartin.miapi.modules.edit_options.EditOption;
 import smartin.miapi.modules.edit_options.PropertyInjectionDev;
 import smartin.miapi.modules.edit_options.ReplaceOption;
 import smartin.miapi.modules.edit_options.skins.SkinOptions;
-import smartin.miapi.modules.material.AllowedMaterial;
-import smartin.miapi.modules.material.MaterialInscribeProperty;
-import smartin.miapi.modules.material.MaterialProperties;
-import smartin.miapi.modules.material.MaterialProperty;
+import smartin.miapi.modules.material.*;
 import smartin.miapi.modules.properties.*;
 import smartin.miapi.modules.properties.compat.BetterCombatProperty;
 import smartin.miapi.modules.properties.render.*;
@@ -358,6 +356,7 @@ public class RegistryInventory {
             registerMiapi(editOptions, "dev", new PropertyInjectionDev());
             registerMiapi(editOptions, "skin", new SkinOptions());
             registerMiapi(editOptions, "create", new CreateItemOption());
+            registerMiapi(editOptions, "cosmetic", new CosmeticEditOption());
 
             //CONDITIONS
             registerMiapi(moduleConditionRegistry, "true", new TrueCondition());
@@ -382,6 +381,7 @@ public class RegistryInventory {
                 registerMiapi(moduleProperties, GuiOffsetProperty.KEY, new GuiOffsetProperty());
                 registerMiapi(moduleProperties, ItemModelProperty.KEY, new ItemModelProperty());
                 registerMiapi(moduleProperties, LoreProperty.KEY, new LoreProperty());
+                registerMiapi(moduleProperties, BannerModelProperty.KEY,new BannerModelProperty());
             }
             else{
                 registerMiapi(moduleProperties, "texture", new ServerReplaceProperty());
@@ -390,6 +390,7 @@ public class RegistryInventory {
                 registerMiapi(moduleProperties, "guiOffset", new ServerReplaceProperty());
                 registerMiapi(moduleProperties, "item_model", new ServerReplaceProperty());
                 registerMiapi(moduleProperties, "itemLore", new ServerReplaceProperty());
+                registerMiapi(moduleProperties, "banner",new ServerReplaceProperty());
             }
             registerMiapi(moduleProperties, NameProperty.KEY, new NameProperty());
             registerMiapi(moduleProperties, SlotProperty.KEY, new SlotProperty());
@@ -449,7 +450,7 @@ public class RegistryInventory {
             registerMiapi(moduleProperties, WaterGravityProperty.KEY, new WaterGravityProperty());
             registerMiapi(moduleProperties, CraftingEnchantProperty.KEY, new CraftingEnchantProperty());
             registerMiapi(moduleProperties, ExhaustionProperty.KEY, new ExhaustionProperty());
-
+            registerMiapi(moduleProperties, MaterialInscribeDataProperty.KEY, new MaterialInscribeDataProperty());
             //compat
             registerMiapi(moduleProperties, BetterCombatProperty.KEY, new BetterCombatProperty());
 

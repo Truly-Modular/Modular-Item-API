@@ -6,10 +6,9 @@ import com.google.gson.reflect.TypeToken;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import org.jetbrains.annotations.Nullable;
-import smartin.miapi.Miapi;
-import smartin.miapi.modules.ItemModule;
 import smartin.miapi.item.modular.Transform;
 import smartin.miapi.item.modular.TransformMap;
+import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.registries.RegistryInventory;
 
@@ -78,7 +77,7 @@ public class SlotProperty implements ModuleProperty {
                 mergedTransform.set(stack.primary, mergedTransform.get(null));
                 mergedTransform.set(null, Transform.IDENTITY);
             }
-            mergedTransform = TransformMap.merge(getLocalTransformStack(current), mergedTransform);
+            mergedTransform = TransformMap.merge(stack, mergedTransform);
             current = current.parent;
         }
         mergedTransform = TransformMap.merge(moduleSlot.getTransformStack(), mergedTransform);
@@ -100,6 +99,9 @@ public class SlotProperty implements ModuleProperty {
                 slot.id = number;
                 if (slot.translationKey == null) {
                     slot.translationKey = "miapi.module.empty.name";
+                }
+                if (slot.slotType == null) {
+                    slot.slotType = "default";
                 }
             });
             return slots;
@@ -191,7 +193,7 @@ public class SlotProperty implements ModuleProperty {
         public ItemModule.ModuleInstance inSlot;
         public ItemModule.ModuleInstance parent;
         public String translationKey = "miapi.module.empty.name";
-        public String hoverTranslationKey = "";
+        public String slotType = "default";
         public int id;
 
         public boolean allowedIn(ItemModule.ModuleInstance instance) {

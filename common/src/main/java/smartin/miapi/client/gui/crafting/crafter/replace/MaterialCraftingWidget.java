@@ -3,14 +3,16 @@ package smartin.miapi.client.gui.crafting.crafter.replace;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.screen.slot.Slot;
+import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.ColorHelper;
 import smartin.miapi.Miapi;
-import smartin.miapi.client.gui.*;
+import smartin.miapi.client.gui.InteractAbleWidget;
+import smartin.miapi.client.gui.MultiLineTextWidget;
+import smartin.miapi.client.gui.ScrollingTextWidget;
+import smartin.miapi.client.gui.TransformableWidget;
 import smartin.miapi.client.gui.crafting.CraftingScreen;
 import smartin.miapi.craft.CraftAction;
 import smartin.miapi.item.modular.StatResolver;
@@ -60,14 +62,14 @@ public class MaterialCraftingWidget extends InteractAbleWidget {
 
     public void render(DrawContext drawContext, int mouseX, int mouseY, float delta) {
         RenderSystem.enableDepthTest();
-        if (MinecraftClient.getInstance().currentScreen instanceof ParentHandledScreen<?> parentHandledScreen) {
-            Slot focusSlot = parentHandledScreen.getFocusSlot();
-            ReplaceOption.unsafeCraftAction = action;
-            if (focusSlot != null) {
-                if (true) {
-                    ReplaceOption.setHoverStack(focusSlot.getStack(), false);
-                }
-            }
+        ReplaceOption.unsafeCraftAction = action;
+        if (ReplaceOption.updateCount < 1 &&
+                ReplaceOption.unsafeEditContext != null &&
+                !ReplaceOption.unsafeEditContext.getScreenHandler().inventory.getStack(1).isEmpty()) {
+            ReplaceOption.setHoverStack(ItemStack.EMPTY, false);
+        }
+        else{
+            ReplaceOption.updateCount--;
         }
 
 

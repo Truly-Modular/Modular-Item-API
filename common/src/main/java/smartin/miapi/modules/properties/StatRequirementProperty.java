@@ -8,6 +8,7 @@ import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
+import smartin.miapi.craft.CraftAction;
 import smartin.miapi.craft.stat.CraftingStat;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.util.CraftingProperty;
@@ -28,7 +29,8 @@ public class StatRequirementProperty implements ModuleProperty, CraftingProperty
     }
 
     @Override
-    public boolean canPerform(ItemStack old, ItemStack crafting, @Nullable ModularWorkBenchEntity bench, PlayerEntity player, ItemModule.ModuleInstance newModule, ItemModule module, List<ItemStack> inventory, Map<String,String> data) {
+    public boolean canPerform(ItemStack old, ItemStack crafting, @Nullable ModularWorkBenchEntity bench, PlayerEntity player, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<String,String> data) {
+        ItemModule.ModuleInstance newModule = craftAction.getModifyingModuleInstance(crafting);
         if (bench == null) return true;
 
         JsonElement element = newModule.getProperties().get(property);
@@ -51,7 +53,7 @@ public class StatRequirementProperty implements ModuleProperty, CraftingProperty
     }
 
     @Override
-    public ItemStack preview(ItemStack old, ItemStack crafting, PlayerEntity player, ModularWorkBenchEntity bench, ItemModule.ModuleInstance newModule, ItemModule module, List<ItemStack> inventory, Map<String,String> data) {
+    public ItemStack preview(ItemStack old, ItemStack crafting, PlayerEntity player, ModularWorkBenchEntity bench, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<String,String> data) {
         return crafting;
     }
 

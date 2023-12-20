@@ -1,0 +1,7 @@
+{
+    "name": "split_4",
+    "inscribe_data_on_craft": "banner",
+    "allowedInSlots": [
+        "cosmetic_2x4"
+    ]
+}

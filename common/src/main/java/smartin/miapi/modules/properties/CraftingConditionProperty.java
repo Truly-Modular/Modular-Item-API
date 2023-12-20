@@ -5,8 +5,8 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
-import org.jetbrains.annotations.Nullable;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
+import smartin.miapi.craft.CraftAction;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.conditions.ConditionManager;
 import smartin.miapi.modules.conditions.ModuleCondition;
@@ -80,7 +80,8 @@ public class CraftingConditionProperty implements ModuleProperty, CraftingProper
     }
 
     @Override
-    public boolean canPerform(ItemStack old, ItemStack crafting, ModularWorkBenchEntity bench, PlayerEntity player, @Nullable ItemModule.ModuleInstance newModule, ItemModule module, List<ItemStack> inventory, Map<String, String> data) {
+    public boolean canPerform(ItemStack old, ItemStack crafting, ModularWorkBenchEntity bench, PlayerEntity player, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<String, String> data) {
+        ItemModule.ModuleInstance newModule = craftAction.getModifyingModuleInstance(crafting);
         if (newModule != null) {
             JsonElement element = newModule.getProperties().get(property);
             if (element != null) {
@@ -92,7 +93,7 @@ public class CraftingConditionProperty implements ModuleProperty, CraftingProper
     }
 
     @Override
-    public ItemStack preview(ItemStack old, ItemStack crafting, PlayerEntity player, ModularWorkBenchEntity bench, ItemModule.ModuleInstance newModule, ItemModule module, List<ItemStack> inventory, Map<String, String> data) {
+    public ItemStack preview(ItemStack old, ItemStack crafting, PlayerEntity player, ModularWorkBenchEntity bench, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<String, String> data) {
         return crafting;
     }
 

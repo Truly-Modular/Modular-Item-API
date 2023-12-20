@@ -5,14 +5,13 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.Registries;
-import net.minecraft.util.Identifier;
 import smartin.miapi.Miapi;
-import smartin.miapi.client.modelrework.ItemMiapiModel;
+import smartin.miapi.client.modelrework.BannerMiapiModel;
 import smartin.miapi.client.modelrework.MiapiItemModel;
 import smartin.miapi.client.modelrework.MiapiModel;
 import smartin.miapi.item.modular.Transform;
-import smartin.miapi.item.modular.items.ModularCrossbow;
+import smartin.miapi.modules.material.MaterialInscribeDataProperty;
+import smartin.miapi.modules.properties.SlotProperty;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.ArrayList;
@@ -20,43 +19,48 @@ import java.util.List;
 import java.util.function.Supplier;
 
 @Environment(EnvType.CLIENT)
-public class ItemModelProperty implements ModuleProperty {
-    public static final String KEY = "item_model";
-    public static ItemModelProperty property;
+public class BannerModelProperty implements ModuleProperty {
+    public static final String KEY = "banner";
+    public static BannerModelProperty property;
 
-    public ItemModelProperty() {
+    public BannerModelProperty() {
         property = this;
-        MiapiItemModel.modelSuppliers.add((key, model, stack) -> {
-            JsonElement element = model.getProperties().get(property);
+        MiapiItemModel.modelSuppliers.add((key, moduleInstance, stack) -> {
+            JsonElement element = moduleInstance.getProperties().get(property);
             List<MiapiModel> models = new ArrayList<>();
             if (element != null) {
                 element.getAsJsonArray().forEach(element1 -> {
                     ModelJson modelJson = Miapi.gson.fromJson(element1, ModelJson.class);
+                    if ("parent".equals(modelJson.modelType)) {
+                        SlotProperty.ModuleSlot slot = SlotProperty.getSlotIn(moduleInstance);
+                        if (slot != null) {
+                            modelJson.modelType = slot.transform.origin;
+                        }
+                    }
                     Supplier<ItemStack> stackSupplier = switch (modelJson.type) {
                         case "item_nbt": {
-                            NbtCompound itemCompound = stack.getOrCreateNbt().getCompound(modelJson.model);
+                            NbtCompound itemCompound = stack.getOrCreateNbt().getCompound("banner");
                             if (!itemCompound.isEmpty() && ModelProperty.isAllowedKey(modelJson.modelType, key)) {
                                 yield () -> ItemStack.fromNbt(itemCompound);
                             }
                             yield () -> ItemStack.EMPTY;
                         }
-                        case "item": {
+                        case "module_data": {
+                            Miapi.LOGGER.info("reading Module data");
                             if (ModelProperty.isAllowedKey(modelJson.modelType, key)) {
-                                yield () -> new ItemStack(Registries.ITEM.get(new Identifier(modelJson.model)));
-                            }
-                            yield () -> ItemStack.EMPTY;
-                        }
-                        case "projectile": {
-                            if (stack.getItem() instanceof ModularCrossbow && ModelProperty.isAllowedKey(modelJson.modelType, key)) {
-                                yield () -> ModularCrossbow.getProjectiles(stack).stream().findFirst().orElse(ItemStack.EMPTY);
+                                yield () -> MaterialInscribeDataProperty.readStackFromModuleInstance(moduleInstance, "banner");
                             }
                             yield () -> ItemStack.EMPTY;
                         }
                         default:
                             throw new IllegalStateException("Unexpected value: " + modelJson.type);
                     };
-                    ItemMiapiModel miapiModel = new ItemMiapiModel(stackSupplier, modelJson.transform.toMatrix());
-                    models.add(miapiModel);
+                    BannerMiapiModel.BannerMode mode = BannerMiapiModel.getMode(modelJson.model);
+                    modelJson.transform = Transform.repair(modelJson.transform);
+                    BannerMiapiModel bannerMiapiModel = BannerMiapiModel.getFromStack(stackSupplier.get(), mode, modelJson.transform.toMatrix());
+                    if (bannerMiapiModel != null) {
+                        models.add(bannerMiapiModel);
+                    }
                 });
             }
             return models;

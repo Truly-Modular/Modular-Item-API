@@ -37,7 +37,7 @@ public class ModuleModel {
         Matrix4f matrix4f = Transform.toModelTransformation(transform).toMatrix();
         for (MiapiItemModel.ModelSupplier supplier : MiapiItemModel.modelSuppliers) {
             supplier.getModels(key, instance, stack).forEach(model -> {
-                modelList.add(new Pair<>(new Matrix4f(matrix4f), model));
+                modelList.add(new Pair<>(matrix4f, model));
             });
         }
         return modelList;
@@ -52,7 +52,7 @@ public class ModuleModel {
 
         otherModels.get(modelType).forEach(matrix4fMiapiModelPair -> {
             matrices.push();
-            matrices.peek().getPositionMatrix().mul(matrix4fMiapiModelPair.getFirst());
+            matrices.multiplyPositionMatrix(matrix4fMiapiModelPair.getFirst());
             matrix4fMiapiModelPair.getSecond().render(matrices, stack, mode, tickDelta, vertexConsumers, entity, light, overlay);
             matrices.pop();
 

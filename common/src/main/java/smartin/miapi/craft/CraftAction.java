@@ -142,7 +142,7 @@ public class CraftAction {
         AtomicBoolean test = new AtomicBoolean(true);
         forEachCraftingProperty(crafted, (guiCraftingProperty, module, inventory, start, end, buffer) -> {
             if (test.get()) {
-                test.set(guiCraftingProperty.canPerform(old, crafted, blockEntity, player, module, toAdd, inventory, buffer));
+                test.set(guiCraftingProperty.canPerform(old, crafted, blockEntity, player, this, toAdd, inventory, buffer));
             }
         });
         return test.get();
@@ -158,7 +158,7 @@ public class CraftAction {
         ItemStack crafted = getPreview();
         AtomicBoolean test = new AtomicBoolean(true);
         forEachCraftingProperty(crafted, (guiCraftingProperty, module, inventory, start, end, dataMap) -> {
-            boolean result = guiCraftingProperty.canPerform(old, crafted, blockEntity, player, module, toAdd, inventory, dataMap);
+            boolean result = guiCraftingProperty.canPerform(old, crafted, blockEntity, player, this, toAdd, inventory, dataMap);
             map.put(guiCraftingProperty, result);
             if (test.get()) test.set(result);
         });
@@ -209,7 +209,7 @@ public class CraftAction {
                     craftingStack[0],
                     player,
                     blockEntity,
-                    getModifyingModuleInstance(craftingStack[0]),
+                    this,
                     toAdd,
                     inventory,
                     buffer);
@@ -303,7 +303,7 @@ public class CraftAction {
                         craftingStack.get(),
                         player,
                         blockEntity,
-                        getModifyingModuleInstance(craftingStack.get()),
+                        this,
                         toAdd,
                         inventory,
                         buffer)));
@@ -328,7 +328,7 @@ public class CraftAction {
     }
 
     @Nullable
-    private ItemModule.ModuleInstance getModifyingModuleInstance(ItemStack itemStack){
+    public ItemModule.ModuleInstance getModifyingModuleInstance(ItemStack itemStack){
         try{
             ItemModule.ModuleInstance parsingInstance = ItemModule.getModules(itemStack);
             for (int i = slotId.size() - 1; i >= 0; i--) {

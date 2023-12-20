@@ -14,6 +14,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import smartin.miapi.Miapi;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
+import smartin.miapi.craft.CraftAction;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.cache.ModularItemCache;
@@ -212,7 +213,7 @@ public class EnchantmentProperty implements CraftingProperty, ModuleProperty {
     }
 
     @Override
-    public ItemStack preview(ItemStack old, ItemStack crafting, PlayerEntity player, ModularWorkBenchEntity bench, ItemModule.ModuleInstance newModule, ItemModule module, List<ItemStack> inventory, Map<String, String> data) {
+    public ItemStack preview(ItemStack old, ItemStack crafting, PlayerEntity player, ModularWorkBenchEntity bench, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<String, String> data) {
         List<Enchantment> allowedEnchants = getAllowedList(crafting);
         Map<Enchantment, Integer> newEnchants = new HashMap<>();
         for (Map.Entry<Enchantment, Integer> entry : EnchantmentHelper.get(crafting).entrySet()) {
@@ -231,7 +232,7 @@ public class EnchantmentProperty implements CraftingProperty, ModuleProperty {
     }
 
     @Override
-    public List<ItemStack> performCraftAction(ItemStack old, ItemStack crafting, PlayerEntity player, ModularWorkBenchEntity bench, ItemModule.ModuleInstance newModule, ItemModule module, List<ItemStack> inventory, Map<String, String> data) {
+    public List<ItemStack> performCraftAction(ItemStack old, ItemStack crafting, PlayerEntity player, ModularWorkBenchEntity bench, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<String, String> data) {
         List<Enchantment> allowedEnchants = getAllowedList(crafting);
         Map<Enchantment, Integer> newEnchants = new HashMap<>();
         for (Map.Entry<Enchantment, Integer> entry : EnchantmentHelper.get(crafting).entrySet()) {
@@ -241,7 +242,7 @@ public class EnchantmentProperty implements CraftingProperty, ModuleProperty {
         }
         crafting.removeSubNbt("Enchantments");
         EnchantmentHelper.set(newEnchants, crafting);
-        return CraftingProperty.super.performCraftAction(old, crafting, player, bench, newModule, module, inventory, data);
+        return CraftingProperty.super.performCraftAction(old, crafting, player, bench, craftAction, module, inventory, data);
     }
 
     public static class EnchantmentPropertyJson {

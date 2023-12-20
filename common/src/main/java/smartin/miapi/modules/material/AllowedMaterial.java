@@ -12,6 +12,7 @@ import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.crafting.crafter.replace.MaterialCraftingWidget;
 import smartin.miapi.craft.CraftAction;
+import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.util.CraftingProperty;
 import smartin.miapi.modules.properties.util.ModuleProperty;
@@ -75,7 +76,7 @@ public class AllowedMaterial implements CraftingProperty, ModuleProperty {
     }
 
     @Override
-    public boolean canPerform(ItemStack old, ItemStack crafting, ModularWorkBenchEntity bench, PlayerEntity player, ItemModule.ModuleInstance newModule, ItemModule module, List<ItemStack> inventory, Map<String,String> data) {
+    public boolean canPerform(ItemStack old, ItemStack crafting, ModularWorkBenchEntity bench, PlayerEntity player, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<String, String> data) {
         //AllowedMaterialJson json = Miapi.gson.fromJson()
         JsonElement element = module.getProperties().get(KEY);
         ItemStack input = inventory.get(0);
@@ -104,7 +105,8 @@ public class AllowedMaterial implements CraftingProperty, ModuleProperty {
     }
 
     @Override
-    public ItemStack preview(ItemStack old, ItemStack crafting, PlayerEntity player, ModularWorkBenchEntity bench, ItemModule.ModuleInstance newModule, ItemModule module, List<ItemStack> inventory, Map<String,String> data) {
+    public ItemStack preview(ItemStack old, ItemStack crafting, PlayerEntity player, ModularWorkBenchEntity bench, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<String, String> data) {
+        ItemModule.ModuleInstance newModule = craftAction.getModifyingModuleInstance(crafting);
         JsonElement element = module.getProperties().get(KEY);
         ItemStack input = inventory.get(0);
         ItemStack inputCopy = input.copy();
@@ -124,7 +126,8 @@ public class AllowedMaterial implements CraftingProperty, ModuleProperty {
     }
 
     @Override
-    public List<ItemStack> performCraftAction(ItemStack old, ItemStack crafting, PlayerEntity player, ModularWorkBenchEntity bench, ItemModule.ModuleInstance newModule, ItemModule module, List<ItemStack> inventory, Map<String,String> data) {
+    public List<ItemStack> performCraftAction(ItemStack old, ItemStack crafting, PlayerEntity player, ModularWorkBenchEntity bench, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<String, String> data) {
+        ItemModule.ModuleInstance newModule = craftAction.getModifyingModuleInstance(crafting);
         //AllowedMaterialJson json = Miapi.gson.fromJson()
         List<ItemStack> results = new ArrayList<>();
         JsonElement element = module.getProperties().get(KEY);
@@ -136,7 +139,11 @@ public class AllowedMaterial implements CraftingProperty, ModuleProperty {
         int newCount = (int) (input.getCount() - Math.ceil(json.cost * crafting.getCount() / material.getValueOfItem(input)));
         input.setCount(newCount);
         MaterialProperty.setMaterial(newModule, material.getKey());
-        crafting = MaterialInscribeProperty.inscribe(crafting, inputCopy);
+        ItemStack materialStack = inputCopy.copy();
+        materialStack.setCount(1);
+        MiapiEvents.MaterialCraftEventData eventData = new MiapiEvents.MaterialCraftEventData(crafting, materialStack, material, newModule, craftAction);
+        MiapiEvents.MATERIAL_CRAFT_EVENT.invoker().craft(eventData);
+        crafting = eventData.crafted;
         results.add(crafting);
         results.add(input);
         return results;

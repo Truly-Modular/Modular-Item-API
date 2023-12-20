@@ -16,9 +16,12 @@ import net.minecraft.util.math.intprovider.IntProvider;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
+import smartin.miapi.craft.CraftAction;
 import smartin.miapi.craft.stat.StatProvidersMap;
 import smartin.miapi.entity.ItemProjectileEntity;
+import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.material.GeneratedMaterial;
+import smartin.miapi.modules.material.Material;
 
 import java.util.List;
 
@@ -32,6 +35,7 @@ public class MiapiEvents {
     public static final PrioritizedEvent<BlockBreakEvent> BLOCK_BREAK_EVENT = PrioritizedEvent.createEventResult();
     public static final PrioritizedEvent<PlayerTickEvent> PLAYER_TICK_START = PrioritizedEvent.createLoop();
     public static final PrioritizedEvent<PlayerTickEvent> PLAYER_TICK_END = PrioritizedEvent.createLoop();
+    public static final PrioritizedEvent<MaterialCraftEvent> MATERIAL_CRAFT_EVENT = PrioritizedEvent.createLoop();
 
     public static class LivingHurtEvent {
         public final LivingEntity livingEntity;
@@ -55,6 +59,30 @@ public class MiapiEvents {
             }
             return ItemStack.EMPTY;
         }
+    }
+
+    public static class MaterialCraftEventData {
+        public ItemStack crafted;
+        public final ItemStack materialStack;
+        public Material material;
+        public ItemModule.ModuleInstance moduleInstance;
+        CraftAction action;
+
+        public MaterialCraftEventData(ItemStack crafted,
+                                  ItemStack materialStack,
+                                  Material material,
+                                  ItemModule.ModuleInstance moduleInstance,
+                                  CraftAction action) {
+            this.crafted = crafted;
+            this.material = material;
+            this.materialStack = materialStack;
+            this.moduleInstance = moduleInstance;
+            this.action = action;
+        }
+    }
+
+    public interface MaterialCraftEvent {
+        EventResult craft(MaterialCraftEventData data);
     }
 
     public interface PlayerTickEvent {
