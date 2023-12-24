@@ -142,7 +142,7 @@ public class ReloadEvents {
             }
             int dataPackSize = buffer.readInt();
             Map<String, String> tempDataPack = new HashMap<>(dataPackSize);
-            for (int i = 0; i < dataPackSize - 1; i++) {
+            for (int i = 0; i < dataPackSize; i++) {
                 String key = buffer.readString();
                 String value = buffer.readString();
                 tempDataPack.put(key, value);

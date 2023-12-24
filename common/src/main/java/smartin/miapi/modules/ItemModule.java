@@ -474,7 +474,7 @@ public class ItemModule {
                         try {
                             map.put(property, property.merge(map.get(property), element, MergeType.SMART));
                         } catch (Exception e) {
-                            DEBUG_LOGGER.error("coudlnt merge " + property, e);
+                            LOGGER.error("coudlnt merge " + property, e);
                             map.put(property, element);
                         }
                     } else {

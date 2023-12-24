@@ -85,11 +85,11 @@ public class SynergyManager {
             return new ArrayList<>();
         });
         synergies.add(synergy);
-        synergy.holder = PropertyHolderJsonAdapter.readFromObject(entryData);
+        synergy.holder = PropertyHolderJsonAdapter.readFromObject(entryData, "synergy" + entryData);
     }
 
-    public static PropertyHolder getFrom(JsonElement element) {
-        return PropertyHolderJsonAdapter.readFromObject(element);
+    public static PropertyHolder getFrom(JsonElement element, String context) {
+        return PropertyHolderJsonAdapter.readFromObject(element, context);
     }
 
     public static class Synergy {
@@ -183,16 +183,17 @@ public class SynergyManager {
 
         @Override
         public PropertyHolder read(JsonReader jsonReader) throws IOException {
-            return readFromObject(Miapi.gson.fromJson(jsonReader, JsonElement.class));
+            return readFromObject(Miapi.gson.fromJson(jsonReader, JsonElement.class), "context missing");
         }
 
-        public static PropertyHolder readFromObject(JsonElement jsonElement) {
+        public static PropertyHolder readFromObject(JsonElement jsonElement, String context) {
             JsonObject entryData = jsonElement.getAsJsonObject();
             PropertyHolder propertyHolder = new PropertyHolder();
             JsonElement replaceProperty = entryData.get("replace");
             if (entryData.has("properties")) {
                 replaceProperty = entryData.get("properties");
                 Miapi.LOGGER.warn("The raw use of the Field `properties` should be replaced with the field `replace`");
+                Miapi.LOGGER.warn(context);
             }
             propertyHolder.replace = getProperties(replaceProperty);
             propertyHolder.merge = getProperties(entryData.get("merge"));

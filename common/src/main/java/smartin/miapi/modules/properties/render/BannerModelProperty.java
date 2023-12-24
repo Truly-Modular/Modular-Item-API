@@ -46,7 +46,6 @@ public class BannerModelProperty implements ModuleProperty {
                             yield () -> ItemStack.EMPTY;
                         }
                         case "module_data": {
-                            Miapi.LOGGER.info("reading Module data");
                             if (ModelProperty.isAllowedKey(modelJson.modelType, key)) {
                                 yield () -> MaterialInscribeDataProperty.readStackFromModuleInstance(moduleInstance, "banner");
                             }

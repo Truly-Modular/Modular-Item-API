@@ -162,7 +162,7 @@ public class GeneratedMaterial implements Material {
                 ((SmithingTransformRecipeAccessor) smithingTransformRecipe).getAddition(),
                 this.key
         ));
-        Miapi.DEBUG_LOGGER.warn("added Smithing Recipe for " + sourceMaterial.getKey() + " to " + this.key + " via " + templateItem.getItem());
+        Miapi.LOGGER.warn("added Smithing Recipe for " + sourceMaterial.getKey() + " to " + this.key + " via " + templateItem.getItem());
         this.groups.clear();
         this.groups.add(this.key);
         this.groups.add("smithing");

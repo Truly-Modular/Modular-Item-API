@@ -43,7 +43,6 @@ public class BakedMiapiGlintModel implements MiapiModel {
 
     @Override
     public void render(MatrixStack matrices, ItemStack stack, ModelTransformationMode transformationMode, float tickDelta, VertexConsumerProvider vertexConsumerProvider, LivingEntity entity, int light, int overlay) {
-        if (!(vertexConsumerProvider instanceof VertexConsumerProvider.Immediate)) return;
         MinecraftClient.getInstance().world.getProfiler().push("BakedGlintModel");
         matrices.push();
         matrices.multiplyPositionMatrix(modelMatrix);
@@ -56,15 +55,29 @@ public class BakedMiapiGlintModel implements MiapiModel {
         Color glintColor = settings.getColor();
         VertexConsumer materialConsumer = modelHolder.colorProvider().getConsumer(vertexConsumerProvider, stack, instance, transformationMode);
         for (Direction direction : Direction.values()) {
-            currentModel.getQuads(null, direction, random).forEach(bakedQuad -> {
-                materialConsumer.quad(matrices.peek(), bakedQuad, color.redAsFloat(), color.greenAsFloat(), color.blueAsFloat(), light, overlay);
-            });
+            currentModel.getQuads(null, direction, random)
+                    .forEach(bakedQuad ->
+                            materialConsumer.quad(
+                                    matrices.peek(),
+                                    bakedQuad,
+                                    color.redAsFloat(),
+                                    color.greenAsFloat(),
+                                    color.blueAsFloat(),
+                                    light,
+                                    overlay));
         }
         VertexConsumer glintConsumer = vertexConsumerProvider.getBuffer(RegistryInventory.Client.modularItemGlint);
         for (Direction direction : Direction.values()) {
-            currentModel.getQuads(null, direction, random).forEach(bakedQuad -> {
-                glintConsumer.quad(matrices.peek(), bakedQuad, glintColor.redAsFloat(), glintColor.greenAsFloat(), glintColor.blueAsFloat(), light, overlay);
-            });
+            currentModel.getQuads(null, direction, random)
+                    .forEach(bakedQuad ->
+                            glintConsumer.quad(
+                                    matrices.peek(),
+                                    bakedQuad,
+                                    glintColor.redAsFloat(),
+                                    glintColor.greenAsFloat(),
+                                    glintColor.blueAsFloat(),
+                                    light,
+                                    overlay));
         }
         MinecraftClient.getInstance().world.getProfiler().pop();
         matrices.pop();

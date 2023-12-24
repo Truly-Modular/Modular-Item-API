@@ -196,8 +196,8 @@ public class CraftingScreenHandler extends ScreenHandler {
                     this.onContentChanged(inventory);
                 } else {
                     Miapi.LOGGER.warn("ERROR - Couldn`t verify craft action from client " + player.getUuidAsString() + " " + player.getDisplayName().getString() + " This might be a bug or somebody is trying to exploit");
-                    Miapi.DEBUG_LOGGER.warn(String.valueOf(current));
-                    Miapi.DEBUG_LOGGER.warn(position.toString());
+                    Miapi.LOGGER.warn(String.valueOf(current));
+                    Miapi.LOGGER.warn(position.toString());
                 }
             });
         }

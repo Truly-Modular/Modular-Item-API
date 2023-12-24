@@ -1,0 +1,38 @@
+{
+    "key": "turtle_scute",
+    "translation": "miapi.material.scute.turtle",
+    "icon": {
+        "type": "item",
+        "item": "minecraf:scute"
+    },
+    "groups": [
+        "scute"
+    ],
+    "hardness": 5,
+    "density": 1,
+    "flexibility": 0,
+    "durability": 95,
+    "mining_speed": 4,
+    "mining_level": 1,
+    "color_palette": {
+        "type": "grayscale_map",
+        "colors": {
+            "0": "000000",
+            "36": "0a3018",
+            "72": "1b5a30",
+            "108": "2f713e",
+            "144": "3ea241",
+            "180": "46bd49",
+            "216": "1be007",
+            "252": "32fd01",
+            "255": "32fd01"
+        },
+        "filler": "interpolate"
+    },
+    "items": [
+        {
+            "item": "minecraf:scute",
+            "value": 1
+        }
+    ]
+}

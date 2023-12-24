@@ -98,7 +98,7 @@ public class MaterialPaletteFromTexture extends SimpleMaterialPalette {
             nativeImage.untrack();
             return new SpriteContents(id, new SpriteDimensions(256, 1), nativeImage, AnimationResourceMetadata.EMPTY);
         } catch (Exception e) {
-            Miapi.DEBUG_LOGGER.warn("Material Palette generation for " + id + " failed.", e);
+            Miapi.LOGGER.warn("Material Palette generation for " + id + " failed.", e);
             NativeImage nativeImage = new NativeImage(256, 1, false);
             nativeImage.untrack();
             return new SpriteContents(id, new SpriteDimensions(256, 1), nativeImage, AnimationResourceMetadata.EMPTY);

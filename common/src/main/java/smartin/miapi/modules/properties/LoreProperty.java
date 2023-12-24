@@ -26,7 +26,7 @@ import java.util.WeakHashMap;
  */
 public class LoreProperty extends CodecBasedProperty<LoreProperty.Holder> {
     public static final String KEY = "itemLore";
-    //TODO: maybe add more points to it? also add diret text to the json
+    //TODO: maybe add more points to it? also add direct text to the json
     public static final Codec<LoreProperty.Holder> codec = AutoCodec.of(LoreProperty.Holder.class).codec();
     public static LoreProperty property;
     public static List<LoreSupplier> bottomLoreSuppliers = new ArrayList<>();
@@ -77,8 +77,8 @@ public class LoreProperty extends CodecBasedProperty<LoreProperty.Holder> {
         loreSuppliers.forEach(loreSupplier -> oldLore.addAll(loreSupplier.getLore(itemStack)));
         Holder holder = get(itemStack);
         if (holder != null) {
-            if ("top".equals(holder.position) && holder.lang != null) {
-                oldLore.add(Text.translatable(holder.lang));
+            if ("top".equals(holder.position)) {
+                oldLore.add(holder.getText());
             }
         }
     }
@@ -88,17 +88,30 @@ public class LoreProperty extends CodecBasedProperty<LoreProperty.Holder> {
         bottomLoreSuppliers.forEach(loreSupplier -> oldLore.addAll(loreSupplier.getLore(itemStack)));
         Holder holder = get(itemStack);
         if (holder != null) {
-            if ("bottom".equals(holder.position) && holder.lang != null) {
-                oldLore.add(Text.translatable(holder.lang));
+            if ("bottom".equals(holder.position)) {
+                oldLore.add(holder.getText());
             }
         }
     }
 
     public static class Holder {
-        @AutoCodec.Mandatory
+        @AutoCodec.Optional
         public String lang;
+        @AutoCodec.Optional
+        public Text text;
         @AutoCodec.Mandatory
         public String position;
+
+        public Text getText() {
+            if (lang != null) {
+                return Text.translatable(lang);
+            }
+            if (text != null) {
+                return text;
+                //return Codecs.TEXT.parse(JsonOps.INSTANCE, text).result().orElse(Text.empty());
+            }
+            return Text.empty();
+        }
     }
 
     @Environment(EnvType.CLIENT)

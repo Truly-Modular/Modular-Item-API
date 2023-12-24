@@ -265,7 +265,7 @@ public class RegistryInventory {
         register(modularItems, "modular_large_crossbow", ModularCrossbow::new);
         register(modularItems, "modular_crossbow_part", ExampleModularItem::new);
         register(modularItems, "modular_arrow", ModularArrow::new);
-        register(modularItems, "modular_arrow_part", ExampleModularItem::new);
+        register(modularItems, "modular_arrow_part", ExampleModularStrackableItem::new);
 
         register(modularItems, "modular_helmet", ModularHelmet::new);
         register(modularItems, "modular_chestplate", ModularChestPlate::new);

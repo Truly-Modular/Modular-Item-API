@@ -7,6 +7,7 @@ import smartin.miapi.config.oro_config.Config;
 import smartin.miapi.config.oro_config.ConfigItemGroup;
 import smartin.miapi.config.oro_config.IntegerConfigItem;
 import smartin.miapi.datapack.ReloadEvents;
+import smartin.miapi.modules.cache.ModularItemCache;
 
 import java.io.File;
 import java.util.List;
@@ -67,7 +68,13 @@ public class MiapiConfig extends Config {
                 "send_warning", true, "Send chat warning is Iris was detected");
 
         protected CompatGroup() {
-            super(of(fallbackRenderer,forceFallbackRenderer,sendWarningOnWorldLoad), "Fallback Compat");
+            super(of(fallbackRenderer, forceFallbackRenderer, sendWarningOnWorldLoad), "Fallback Compat");
+            fallbackRenderer.changeListener.add((change) -> {
+                ModularItemCache.discardCache();
+            });
+            forceFallbackRenderer.changeListener.add((change) -> {
+                ModularItemCache.discardCache();
+            });
         }
     }
 
@@ -91,7 +98,7 @@ public class MiapiConfig extends Config {
                 "Auto reloads on Servers to fix Forge having buggy classloading");
 
         protected OtherConfigGroup() {
-            super(of(developmentMode,forgeAutoReloads), "other");
+            super(of(developmentMode, forgeAutoReloads), "other");
         }
     }
 

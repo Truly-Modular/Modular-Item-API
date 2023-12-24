@@ -107,7 +107,6 @@ public class CosmeticEditOption implements EditOption {
             return SlotProperty.getSlots(editContext.getInstance()).values().stream()
                     .anyMatch(moduleSlot -> moduleSlot.slotType.equals(slotType));
         }
-        Miapi.LOGGER.info(String.valueOf(editContext.getSlot()));
         return false;
     }
 

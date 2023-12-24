@@ -24,8 +24,8 @@ public class Skin {
         Skin skin = new Skin();
         skin.module = RegistryInventory.modules.get(jsonObject.get("module").getAsString());
         skin.condition = ConditionManager.get(jsonObject.get("condition"));
-        skin.propertyHolder = SynergyManager.getFrom(jsonObject);
         skin.path = jsonObject.get("path").getAsString();
+        skin.propertyHolder = SynergyManager.getFrom(jsonObject, "skin for " + skin.module + " skinpath " + skin.path);
         skin.textureOptions = TextureOptions.fromJson(jsonObject.get("texture"), new Identifier(Miapi.MOD_ID, "textures/gui/skin/skin_button.png"), 100, 16, 3, ColorHelper.Argb.getArgb(255, 255, 255, 255));
         return skin;
     }

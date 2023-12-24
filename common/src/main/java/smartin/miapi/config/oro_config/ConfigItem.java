@@ -28,6 +28,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
 
 /**
@@ -46,6 +48,7 @@ public abstract class ConfigItem<T> {
     @Nullable
     protected final Consumer<ConfigItem<T>> onChange;
     protected T value;
+    public List<Consumer<ConfigItem<T>>> changeListener = new ArrayList<>();
 
     /**
      * Creates a new config with the name, defaultValue, and details
@@ -131,6 +134,9 @@ public abstract class ConfigItem<T> {
         if (this.onChange != null) {
             this.onChange.accept(this);
         }
+        changeListener.forEach(listener -> {
+            listener.accept(this);
+        });
     }
 
     @Override

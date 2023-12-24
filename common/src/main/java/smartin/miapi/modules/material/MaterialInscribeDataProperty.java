@@ -7,7 +7,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.StringNbtReader;
-import smartin.miapi.Miapi;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.util.ModuleProperty;
@@ -45,7 +44,6 @@ public class MaterialInscribeDataProperty implements ModuleProperty {
 
     public static ItemStack readStackFromModuleInstance(ItemModule.ModuleInstance moduleInstance, String key) {
         String itemStackString = moduleInstance.moduleData.get(key);
-        Miapi.LOGGER.info("reading data from ModuleInstance : " + itemStackString);
         if (itemStackString != null) {
             try {
                 return ItemStack.fromNbt(StringNbtReader.parse(itemStackString));
