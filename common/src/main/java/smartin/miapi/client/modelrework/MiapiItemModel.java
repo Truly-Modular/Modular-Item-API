@@ -12,6 +12,7 @@ import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.cache.ModularItemCache;
+import smartin.miapi.registries.RegistryInventory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +24,7 @@ public class MiapiItemModel implements MiapiModel {
     public static List<ModelTransformer> modelTransformers = new ArrayList<>();
     public final ItemStack stack;
     public final ModuleModel rootModel;
-    private final static String CACHE_KEY = "miapi_model_rework";
+    private static final String CACHE_KEY = "miapi_model_rework";
 
     static {
         ModularItemCache.setSupplier(CACHE_KEY, (MiapiItemModel::new));
@@ -70,7 +71,7 @@ public class MiapiItemModel implements MiapiModel {
             //needed because otherwise overwrites dont work
             entity = MinecraftClient.getInstance().player;
         }
-        //RegistryInventory.Client.glintShader.getUniformOrDefault("ModelMat").set(new Matrix4f(matrices.peek().getPositionMatrix()));
+        RegistryInventory.Client.glintShader.getUniformOrDefault("ModelMat").set(new Matrix4f(matrices.peek().getPositionMatrix()));
         rootModel.render(modelType, stack, matrices, mode, tickDelta, vertexConsumers, entity, light, overlay);
         matrices.pop();
         MinecraftClient.getInstance().world.getProfiler().pop();

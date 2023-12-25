@@ -129,7 +129,7 @@ public class GeneratedMaterial implements Material {
                 .findAny()
                 .ifPresent(smithingTransformRecipe -> {
                     ItemStack templateItem = Arrays.stream(((SmithingTransformRecipeAccessor) smithingTransformRecipe).getTemplate().getMatchingStacks()).filter(itemStack -> !itemStack.isEmpty()).findAny().orElse(ItemStack.EMPTY);
-                    if(templateItem.isEmpty()){
+                    if (templateItem.isEmpty()) {
                         //make sure the recipe is valid by testing its template Item
                         return;
                     }
@@ -382,7 +382,7 @@ public class GeneratedMaterial implements Material {
 
     @Override
     public double getValueOfItem(ItemStack item) {
-        return 1;
+        return item.getItem().equals(mainIngredient.getItem()) ? 1 : 0;
     }
 
     @Override
