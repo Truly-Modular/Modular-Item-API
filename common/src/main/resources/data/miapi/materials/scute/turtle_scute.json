@@ -5,6 +5,10 @@
         "type": "item",
         "item": "minecraf:scute"
     },
+    "load_condition": {
+        "type": "mod_loaded",
+        "mod": "forbidden"
+    },
     "groups": [
         "scute"
     ],
