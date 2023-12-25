@@ -1,15 +1,2 @@
-## v1.1.3 (1.20.1)
-- added Banner cosmetic support
-- expanded Lore Text to allow for Formatting
-- normalised module expansion and skin and synergy format to support "replace","remove" and "merge"
-- added Slot-types and Cosmetic sub-slot option for purely cosmetic modules
-- added Projectile Armor attribute
-- added Exhaustion attribute for passive food drain
-- added fabric swimspeed attribute to match forges
-- changing settings related to fallback-renderer now apply instantly without world reloading(on fabric)
-- fixed issues were enchantments could not be applied to items
-- fixed compatibility issues with Entity Texture Features
-- fixed Bug were Buster skin would not load
-- fixed some Typos and wordings within Translations
-- fixed arrow-part items not stacking correctly
-- fixed internal issues where slot rotation was not normalised correctly
+## v1.1.4 (1.20.1)
+- fixed server startup crash with Immersive Engineering
