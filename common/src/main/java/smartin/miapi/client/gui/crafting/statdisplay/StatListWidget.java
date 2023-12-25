@@ -213,6 +213,10 @@ public class StatListWidget extends InteractAbleWidget {
                 .setTranslationKey("armor")
                 .setMax(8).build());
         addStatDisplay(AttributeSingleDisplay
+                .builder(AttributeRegistry.PROJECTILE_ARMOR)
+                .setTranslationKey("projectile_armor")
+                .setMax(8).build());
+        addStatDisplay(AttributeSingleDisplay
                 .builder(EntityAttributes.GENERIC_ARMOR_TOUGHNESS)
                 .setTranslationKey("armor_toughness")
                 .setMax(3).build());
@@ -220,6 +224,11 @@ public class StatListWidget extends InteractAbleWidget {
                 .builder(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE)
                 .setTranslationKey("knockback_resistance")
                 .setMax(1).build());
+        addStatDisplay(AttributeSingleDisplay
+                .builder(AttributeRegistry.SWIM_SPEED)
+                .setTranslationKey("swim_speed")
+                .setMax(1)
+                .setMin(-1).build());
         addStatDisplay(AttributeSingleDisplay
                 .builder(AttributeRegistry.ELYTRA_GLIDE_EFFICIENCY)
                 .setTranslationKey("elytra_glide")

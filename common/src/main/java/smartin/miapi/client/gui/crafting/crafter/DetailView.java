@@ -55,8 +55,6 @@ public class DetailView extends InteractAbleWidget {
             SlotProperty.getSlots(slot.inSlot).forEach((id, childSlot) -> {
                 if (childSlot.slotType.equals(slotType)) {
                     getButtons(childSlot, buttons, nextLevel, slotType);
-                } else {
-                    Miapi.LOGGER.info("disregard slot " + childSlot.slotType);
                 }
             });
         }
