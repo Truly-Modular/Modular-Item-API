@@ -50,8 +50,7 @@ public class HeavyAttackProperty extends CodecBasedProperty<HeavyAttackProperty.
         return (stack -> {
             HeavyAttackHolder json = get(stack);
             if (json != null) {
-                Text asd = Text.translatable(json.title);
-                return asd;
+                return Text.translatable(json.title);
             }
             return Text.empty();
         });
@@ -63,8 +62,7 @@ public class HeavyAttackProperty extends CodecBasedProperty<HeavyAttackProperty.
         return (stack -> {
             HeavyAttackHolder json = get(stack);
             if (json != null) {
-                Text asd = Text.translatable(json.description, json.damage, json.range, json.minHold / 20);
-                return asd;
+                return Text.translatable(json.description, json.damage, json.range, json.minHold / 20);
             }
             return Text.empty();
         });

@@ -289,9 +289,30 @@
     "miapi.material.custom.lingering_potion": "Lingering Potion ",
     "miapi.material.custom.tnt": "TNT ",
     "miapi.material.custom.elytra": "Elytra ",
+    "miapi.material.custom.banner": "Banner ",
     "block.miapi.modular_work_bench": "Modular Workbench",
     "miapi.module.empty": "Empty Slot",
     "miapi.module.empty.name": "Empty Slot",
     "miapi.module.empty.description": "Empty Slot, crafting this will empty this slot",
-    "miapi.module.empty.short_description": "Empty Slot, crafting this will empty this slot"
+    "miapi.module.empty.short_description": "Empty Slot, crafting this will empty this slot",
+
+    "miapi.module.banner_1x2": "Banner Cosmetic",
+    "miapi.module.banner_1x2.name": "[translation.[material.translation]]Left Scuba-Sleeve",
+    "miapi.module.banner_1x2.description": "A Cosmetic Banner option",
+
+    "miapi.module.banner_2x4": "Banner Cosmetic",
+    "miapi.module.banner_2x4.name": "[translation.[material.translation]]Left Scuba-Sleeve",
+    "miapi.module.banner_2x4.description": "A Cosmetic Banner option\nGreat for displaying Art or Flags",
+
+    "miapi.module.banner_3x6": "Banner Cosmetic",
+    "miapi.module.banner_3x6.name": "[translation.[material.translation]]Left Scuba-Sleeve",
+    "miapi.module.banner_3x6.description": "A Cosmetic Banner option\nGreat for displaying Art or Flags",
+
+    "miapi.module.banner_4x8": "Banner Cosmetic",
+    "miapi.module.banner_4x8.name": "[translation.[material.translation]]Left Scuba-Sleeve",
+    "miapi.module.banner_4x8.description": "A Cosmetic Banner option\nGreat for displaying Art or Flags",
+
+    "miapi.module.banner_5x10": "Banner Cosmetic",
+    "miapi.module.banner_5x10.name": "[translation.[material.translation]]Left Scuba-Sleeve",
+    "miapi.module.banner_5x10.description": "A Cosmetic Banner option\nGreat for displaying Art or Flags"
 }

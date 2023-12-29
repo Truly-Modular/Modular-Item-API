@@ -41,7 +41,7 @@ import static smartin.miapi.registries.RegistryInventory.Client.glintShader;
 
 public class MiapiClient {
     public static MaterialAtlasManager materialAtlasManager;
-    public static boolean irisLoaded = Platform.isModLoaded("iris");
+    public static boolean irisLoaded = Platform.isModLoaded("iris") || Platform.isModLoaded("oculus");
     public static boolean sodiumLoaded = Platform.isModLoaded("sodium");
     public static boolean jerLoaded = Platform.isModLoaded("jeresources");
 
@@ -102,7 +102,6 @@ public class MiapiClient {
     @Environment(EnvType.CLIENT)
     public static void registerAnimations(Item item) {
         if(item.isDamageable()){
-            //TODO:figure out why these broke
             ModularModelPredicateProvider.registerModelOverride(item, new Identifier(Miapi.MOD_ID,"damage"), (stack, world, entity, seed) -> {
                 return stack.isDamageable() && stack.isDamaged() ? 0.0f : (float) stack.getMaxDamage() / (stack.getMaxDamage()-stack.getDamage());
             });

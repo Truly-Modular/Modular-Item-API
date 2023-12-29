@@ -329,6 +329,11 @@ public class AttributeProperty implements ModuleProperty {
         */
     }
 
+    public static boolean hasAttribute(Multimap<EntityAttribute, EntityAttributeModifier> map, EntityAttribute entityAttribute, double fallback) {
+        Collection<EntityAttributeModifier> attributes = map.get(entityAttribute);
+        return !attributes.isEmpty();
+    }
+
     public static double getActualValue(Multimap<EntityAttribute, EntityAttributeModifier> map, EntityAttribute entityAttribute, double fallback) {
         Collection<EntityAttributeModifier> attributes = map.get(entityAttribute);
         return getActualValue(attributes, fallback);

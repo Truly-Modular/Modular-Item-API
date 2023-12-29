@@ -26,6 +26,8 @@ public class JsonStatDisplay extends SingleStatDisplayDouble {
         if (statReader.hasValue(original)) {
             return true;
         }
+        textWidget.setText(text.resolve(compareTo));
+        hoverDescription.setText(hover.resolve(compareTo));
         return statReader.hasValue(compareTo);
     }
 }

@@ -110,6 +110,7 @@ public class AllowedMaterial implements CraftingProperty, ModuleProperty {
         JsonElement element = module.getProperties().get(KEY);
         ItemStack input = inventory.get(0);
         ItemStack inputCopy = input.copy();
+        ItemStack materialStack = inputCopy.copy();
         if (element != null) {
             Material material = MaterialProperty.getMaterialFromIngredient(input);
             if (material != null) {
@@ -119,9 +120,11 @@ public class AllowedMaterial implements CraftingProperty, ModuleProperty {
                 if (isAllowed) {
                     MaterialProperty.setMaterial(newModule, material.getKey());
                 }
+                MiapiEvents.MaterialCraftEventData eventData = new MiapiEvents.MaterialCraftEventData(crafting, materialStack, material, newModule, craftAction);
+                MiapiEvents.MATERIAL_CRAFT_EVENT.invoker().craft(eventData);
+                crafting = eventData.crafted;
             }
         }
-        crafting = MaterialInscribeProperty.inscribe(crafting, inputCopy);
         return crafting;
     }
 

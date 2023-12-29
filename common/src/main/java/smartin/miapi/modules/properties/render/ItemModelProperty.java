@@ -13,6 +13,7 @@ import smartin.miapi.client.modelrework.MiapiItemModel;
 import smartin.miapi.client.modelrework.MiapiModel;
 import smartin.miapi.item.modular.Transform;
 import smartin.miapi.item.modular.items.ModularCrossbow;
+import smartin.miapi.modules.material.MaterialInscribeDataProperty;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.ArrayList;
@@ -37,6 +38,12 @@ public class ItemModelProperty implements ModuleProperty {
                             NbtCompound itemCompound = stack.getOrCreateNbt().getCompound(modelJson.model);
                             if (!itemCompound.isEmpty() && ModelProperty.isAllowedKey(modelJson.modelType, key)) {
                                 yield () -> ItemStack.fromNbt(itemCompound);
+                            }
+                            yield () -> ItemStack.EMPTY;
+                        }
+                        case "module_data": {
+                            if (ModelProperty.isAllowedKey(modelJson.modelType, key)) {
+                                yield () -> MaterialInscribeDataProperty.readStackFromModuleInstance(model, modelJson.model);
                             }
                             yield () -> ItemStack.EMPTY;
                         }

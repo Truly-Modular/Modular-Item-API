@@ -1,6 +1,7 @@
 package smartin.miapi.client.gui.crafting.statdisplay;
 
 import com.google.common.collect.Multimap;
+import com.google.gson.JsonElement;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
@@ -25,16 +26,15 @@ import smartin.miapi.client.gui.TransformableWidget;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.*;
 import smartin.miapi.modules.properties.util.GuiWidgetSupplier;
+import smartin.miapi.registries.RegistryInventory;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Environment(EnvType.CLIENT)
 public class StatListWidget extends InteractAbleWidget {
     private static final List<InteractAbleWidget> statDisplays = new ArrayList<>();
     private static final List<StatWidgetSupplier> statWidgetSupplier = new ArrayList<>();
+    public static final Map<String, JsonConverter> jsonConverterMap = new HashMap<>();
     private final BoxList boxList;
     private TransformableWidget transformableWidget;
     private TransformableWidget hoverText;
@@ -227,8 +227,9 @@ public class StatListWidget extends InteractAbleWidget {
         addStatDisplay(AttributeSingleDisplay
                 .builder(AttributeRegistry.SWIM_SPEED)
                 .setTranslationKey("swim_speed")
-                .setMax(1)
-                .setMin(-1).build());
+                .setMax(1.5)
+                .setDefault(1)
+                .setMin(0).build());
         addStatDisplay(AttributeSingleDisplay
                 .builder(AttributeRegistry.ELYTRA_GLIDE_EFFICIENCY)
                 .setTranslationKey("elytra_glide")
@@ -291,6 +292,11 @@ public class StatListWidget extends InteractAbleWidget {
         AttributeSingleDisplay.attributesWithDisplay.add(AttributeRegistry.MINING_SPEED_HOE);
         AttributeSingleDisplay.attributesWithDisplay.add(AttributeRegistry.MINING_SPEED_SHOVEL);
         AttributeSingleDisplay.attributesWithDisplay.add(AttributeRegistry.ARMOR_CRUSHING);
+        RegistryInventory.moduleProperties.getFlatMap().values().stream()
+                .filter(StatWidgetSupplier.class::isInstance)
+                .map(StatWidgetSupplier.class::cast)
+                .filter(statWidgetSupplier::contains)
+                .forEach(statWidgetSupplier::add);
     }
 
     public static void reloadEnd() {
@@ -400,5 +406,9 @@ public class StatListWidget extends InteractAbleWidget {
 
     public interface MultiTextGetter {
         List<Text> resolve(ItemStack stack);
+    }
+
+    public interface JsonConverter<T extends InteractAbleWidget & SingleStatDisplay> {
+        T fromJson(JsonElement element, SingleStatDisplayDouble.StatReaderHelper statReader);
     }
 }

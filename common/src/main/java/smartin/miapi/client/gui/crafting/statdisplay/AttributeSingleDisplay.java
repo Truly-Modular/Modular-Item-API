@@ -48,7 +48,7 @@ public class AttributeSingleDisplay extends SingleStatDisplayDouble {
     @Override
     public double getValue(ItemStack stack) {
         double value = this.valueReader.getValue(stack);
-        if (Double.isNaN(value)) {
+        if (!this.valueReader.hasValue(stack) || Double.isNaN(value)) {
             return attribute.getDefaultValue();
         }
         return value;
@@ -65,22 +65,10 @@ public class AttributeSingleDisplay extends SingleStatDisplayDouble {
             for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
                 Multimap<EntityAttribute, EntityAttributeModifier> currentSlot = attributeCache.get(equipmentSlot);
                 if (attributeCache.get(equipmentSlot).containsKey(attribute)) {
-                    if (inverse) {
-                        if (value != null) {
-                            value = Math.min(value, AttributeProperty.getActualValue(currentSlot, attribute, defaultValue));
-                        } else {
-                            value = AttributeProperty.getActualValue(currentSlot, attribute, defaultValue);
-                        }
-                    } else {
-                        if (value != null) {
-                            value = Math.max(value, AttributeProperty.getActualValue(currentSlot, attribute, defaultValue));
-                        } else {
-                            value = AttributeProperty.getActualValue(currentSlot, attribute, defaultValue);
-                        }
-                    }
+                    return AttributeProperty.getActualValue(currentSlot, attribute, defaultValue);
                 }
             }
-            return value != null ? value : 0;
+            return defaultValue;
         }
         return AttributeProperty.getActualValue(attributeCache.get(slot), attribute, defaultValue);
     }

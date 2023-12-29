@@ -35,7 +35,8 @@
         }
     },
     "textures": [
-        "metalic"
+        "metalic",
+        "contrast"
     ],
     "mining_speed": 12,
     "mining_level": 1,
