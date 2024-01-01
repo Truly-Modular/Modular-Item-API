@@ -60,6 +60,8 @@ public class MiapiConfig extends Config {
     }
 
     public static class CompatGroup extends ConfigItemGroup {
+        public static BooleanConfigItem altRenderer = new BooleanConfigItem(
+                "use_alt_renderer", true, "Use Alt renderer");
         public static BooleanConfigItem fallbackRenderer = new BooleanConfigItem(
                 "use_fallback_renderer", true, "Use Fallback renderer if Iris is detected");
         public static BooleanConfigItem forceFallbackRenderer = new BooleanConfigItem(
@@ -68,11 +70,14 @@ public class MiapiConfig extends Config {
                 "send_warning", true, "Send chat warning is Iris was detected");
 
         protected CompatGroup() {
-            super(of(fallbackRenderer, forceFallbackRenderer, sendWarningOnWorldLoad), "Fallback Compat");
+            super(of(fallbackRenderer, forceFallbackRenderer, altRenderer, sendWarningOnWorldLoad), "Fallback Compat");
             fallbackRenderer.changeListener.add((change) -> {
                 ModularItemCache.discardCache();
             });
             forceFallbackRenderer.changeListener.add((change) -> {
+                ModularItemCache.discardCache();
+            });
+            altRenderer.changeListener.add((change) -> {
                 ModularItemCache.discardCache();
             });
         }

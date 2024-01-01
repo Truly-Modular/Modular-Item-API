@@ -33,7 +33,6 @@ import smartin.miapi.modules.abilities.util.ItemAbilityManager;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.conditions.ConditionManager;
 import smartin.miapi.modules.properties.util.ModuleProperty;
-import smartin.miapi.modules.synergies.SynergyManager;
 import smartin.miapi.network.Networking;
 import smartin.miapi.network.NetworkingImplCommon;
 import smartin.miapi.registries.MiapiRegistry;
@@ -134,7 +133,6 @@ public class Miapi {
         if (Environment.isClient()) {
             MiapiClient.init();
         }
-        SynergyManager.setup();
 
         NucleusNamespaces.addAddonNamespace("miapi");
     }

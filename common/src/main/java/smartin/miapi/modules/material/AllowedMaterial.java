@@ -109,8 +109,7 @@ public class AllowedMaterial implements CraftingProperty, ModuleProperty {
         ItemModule.ModuleInstance newModule = craftAction.getModifyingModuleInstance(crafting);
         JsonElement element = module.getProperties().get(KEY);
         ItemStack input = inventory.get(0);
-        ItemStack inputCopy = input.copy();
-        ItemStack materialStack = inputCopy.copy();
+        ItemStack materialStack = input.copy();
         if (element != null) {
             Material material = MaterialProperty.getMaterialFromIngredient(input);
             if (material != null) {
@@ -135,15 +134,14 @@ public class AllowedMaterial implements CraftingProperty, ModuleProperty {
         List<ItemStack> results = new ArrayList<>();
         JsonElement element = module.getProperties().get(KEY);
         ItemStack input = inventory.get(0);
-        ItemStack inputCopy = input.copy();
+        ItemStack materialStack = input.copy();
         AllowedMaterialJson json = Miapi.gson.fromJson(element, AllowedMaterialJson.class);
         Material material = MaterialProperty.getMaterialFromIngredient(input);
         assert material != null;
         int newCount = (int) (input.getCount() - Math.ceil(json.cost * crafting.getCount() / material.getValueOfItem(input)));
         input.setCount(newCount);
         MaterialProperty.setMaterial(newModule, material.getKey());
-        ItemStack materialStack = inputCopy.copy();
-        materialStack.setCount(1);
+        //materialStack.setCount(1);
         MiapiEvents.MaterialCraftEventData eventData = new MiapiEvents.MaterialCraftEventData(crafting, materialStack, material, newModule, craftAction);
         MiapiEvents.MATERIAL_CRAFT_EVENT.invoker().craft(eventData);
         crafting = eventData.crafted;

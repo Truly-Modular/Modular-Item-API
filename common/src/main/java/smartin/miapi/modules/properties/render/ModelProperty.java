@@ -73,13 +73,17 @@ public class ModelProperty implements ModuleProperty {
             GlintProperty.GlintSettings settings = GlintProperty.property.getGlintSettings(model, stack);
             List<MiapiModel> miapiModels = new ArrayList<>();
             for (BakedMiapiModel.ModelHolder holder : getForModule(model, key, stack)) {
-                if (MiapiClient.irisLoaded && MiapiConfig.CompatGroup.fallbackRenderer.getValue() || MiapiConfig.CompatGroup.forceFallbackRenderer.getValue()) {
-                    miapiModels.add(new BadShaderCompatModel(holder, model, stack));
+                if (MiapiConfig.CompatGroup.altRenderer.getValue()) {
+                    miapiModels.add(new AltBakedMiapiModel(holder, model, stack));
                 } else {
-                    if (settings.shouldRender()) {
-                        miapiModels.add(new BakedMiapiGlintModel(holder, model, stack));
+                    if (MiapiClient.irisLoaded && MiapiConfig.CompatGroup.fallbackRenderer.getValue() || MiapiConfig.CompatGroup.forceFallbackRenderer.getValue()) {
+                        miapiModels.add(new BadShaderCompatModel(holder, model, stack));
                     } else {
-                        miapiModels.add(new BakedMiapiModel(holder, model, stack));
+                        if (settings.shouldRender()) {
+                            miapiModels.add(new BakedMiapiGlintModel(holder, model, stack));
+                        } else {
+                            miapiModels.add(new BakedMiapiModel(holder, model, stack));
+                        }
                     }
                 }
             }

@@ -72,6 +72,7 @@ import smartin.miapi.modules.properties.*;
 import smartin.miapi.modules.properties.compat.BetterCombatProperty;
 import smartin.miapi.modules.properties.render.*;
 import smartin.miapi.modules.properties.util.ModuleProperty;
+import smartin.miapi.modules.synergies.SynergyManager;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -355,6 +356,7 @@ public class RegistryInventory {
             registerMiapi(editOptions, "replace", new ReplaceOption());
             registerMiapi(editOptions, "dev", new PropertyInjectionDev());
             registerMiapi(editOptions, "skin", new SkinOptions());
+            SynergyManager.setup();
             registerMiapi(editOptions, "create", new CreateItemOption());
             registerMiapi(editOptions, "cosmetic", new CosmeticEditOption());
 

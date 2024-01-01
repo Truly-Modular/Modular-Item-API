@@ -8,7 +8,14 @@ import net.minecraft.item.ItemStack;
 import org.joml.Matrix4f;
 
 public interface MiapiModel {
-    void render(MatrixStack matrices, ItemStack stack, ModelTransformationMode transformationMode, float tickDelta, VertexConsumerProvider vertexConsumers, LivingEntity entity, int light, int overlay);
+    void render(MatrixStack matrices,
+                ItemStack stack,
+                ModelTransformationMode transformationMode,
+                float tickDelta,
+                VertexConsumerProvider vertexConsumers,
+                LivingEntity entity,
+                int light,
+                int overlay);
 
     default Matrix4f subModuleMatrix() {
         return new Matrix4f();
