@@ -1,7 +1,9 @@
 package smartin.miapi.client.modelrework;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.redpxnda.nucleus.util.Color;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gl.ShaderProgram;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.BakedModel;
@@ -46,8 +48,9 @@ public class AltBakedMiapiModel implements MiapiModel {
         List<BakedQuad> quadsList = holder.model().getQuads(null, Direction.DOWN, random);
         if (quadsList.size() > 0) {
             textureSprite = holder.model().getQuads(null, Direction.DOWN, random).get(0).getSprite();
-            SpriteContents contents = textureSprite.getContents();
+            SpriteContents contents = holder.colorProvider().tranform(textureSprite.getContents());
             textureSprite = new Sprite(new Identifier(Miapi.MOD_ID, "module_model_texture_99"), contents, contents.getWidth(), contents.getHeight(), contents.getWidth(), contents.getHeight());
+            textureSprite.upload();
 
         }
     }
@@ -66,8 +69,19 @@ public class AltBakedMiapiModel implements MiapiModel {
         MinecraftClient.getInstance().world.getProfiler().push("QuadPushing");
         //VertexConsumer consumer = modelHolder.colorProvider.getConsumer(vertexConsumers, stack, instance, transformationMode);
         RenderLayer renderLayer = RenderLayers.getItemLayer(stack, true);
+        textureSprite.upload();
+        renderLayer = RenderLayer.getEntityTranslucentCull(textureSprite.getAtlasId());
         VertexConsumer consumerOld = ItemRenderer.getDirectItemGlintConsumer(vertexConsumers, renderLayer, true, stack.hasGlint());
         VertexConsumer consumer = textureSprite.getTextureSpecificVertexConsumer(consumerOld);
+        BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
+
+        ShaderProgram program;
+
+
+        //RenderSystem.setShader(GameRenderer::getPositionTexProgram);
+        GameRenderer gameRenderer;
+        RenderSystem.setShaderTexture(0, textureSprite.getAtlasId());
+        RenderSystem.bindTexture(0);
         assert currentModel != null;
         for (Direction direction : Direction.values()) {
             currentModel.getQuads(null, direction, random)

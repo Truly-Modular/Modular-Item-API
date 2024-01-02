@@ -7,11 +7,22 @@ import net.minecraft.client.render.RenderLayers;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
+import net.minecraft.client.resource.metadata.AnimationResourceMetadata;
+import net.minecraft.client.texture.NativeImage;
+import net.minecraft.client.texture.Sprite;
+import net.minecraft.client.texture.SpriteContents;
+import net.minecraft.client.texture.SpriteDimensions;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionUtil;
+import net.minecraft.util.Identifier;
+import smartin.miapi.Miapi;
+import smartin.miapi.client.MaterialAtlasManager;
+import smartin.miapi.client.MiapiClient;
+import smartin.miapi.mixin.client.SpriteContentsAccessor;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.material.Material;
 import smartin.miapi.modules.material.MaterialProperty;
+import smartin.miapi.modules.material.palette.MaterialPalette;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -39,6 +50,8 @@ public interface ColorProvider {
 
     ColorProvider getInstance(ItemStack stack, ItemModule.ModuleInstance instance);
 
+    SpriteContents tranform(SpriteContents contents);
+
     class MaterialColorProvider implements ColorProvider {
         Material material;
 
@@ -63,6 +76,36 @@ public interface ColorProvider {
             }
             return new ModelColorProvider();
         }
+
+        @Override
+        public SpriteContents tranform(SpriteContents contents) {
+            MaterialPalette palette = material.getPalette();
+            NativeImage rawImage = ((SpriteContentsAccessor) contents).getImage();
+            NativeImage image = new NativeImage(contents.getWidth(), contents.getHeight(), false);
+            for (int x = 0; x < rawImage.getWidth(); x++) {
+                for (int y = 0; y < rawImage.getHeight(); y++) {
+                    rawImage.getColor(x, y);
+                    image.setColor(x, y, getColor(material, rawImage.getRed(x, y)));
+                    //image.setColor(x, y, 1);
+                }
+            }
+            Identifier newID = new Identifier(Miapi.MOD_ID, contents.getId().getPath() + "_transformed_" + material.getKey());
+            return new SpriteContents(
+                    newID,
+                    new SpriteDimensions(
+                            ((SpriteContentsAccessor) contents).getHeight(),
+                            ((SpriteContentsAccessor) contents).getHeight()),
+                    image,
+                    AnimationResourceMetadata.EMPTY);
+        }
+
+        private int getColor(Material material, int color) {
+            Sprite sprite = MiapiClient.materialAtlasManager.getMaterialSprite(material.getPalette().getSpriteId());
+            if (sprite == null) {
+                sprite = MiapiClient.materialAtlasManager.getMaterialSprite(MaterialAtlasManager.BASE_MATERIAL_ID);
+            }
+            return ((SpriteContentsAccessor) sprite.getContents()).getImage().getColor(Math.max(color, 255), 0);
+        }
     }
 
     class ModelColorProvider implements ColorProvider {
@@ -84,6 +127,11 @@ public interface ColorProvider {
         @Override
         public ColorProvider getInstance(ItemStack stack, ItemModule.ModuleInstance instance) {
             return new ModelColorProvider(stack);
+        }
+
+        @Override
+        public SpriteContents tranform(SpriteContents contents) {
+            return contents;
         }
     }
 
@@ -112,6 +160,11 @@ public interface ColorProvider {
         @Override
         public ColorProvider getInstance(ItemStack stack, ItemModule.ModuleInstance instance) {
             return new PotionColorProvider(stack);
+        }
+
+        @Override
+        public SpriteContents tranform(SpriteContents contents) {
+            return contents;
         }
     }
 }

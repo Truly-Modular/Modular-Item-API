@@ -9,4 +9,10 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 public interface SpriteContentsAccessor {
     @Accessor
     NativeImage getImage();
+
+    @Accessor
+    int getWidth();
+
+    @Accessor
+    int getHeight();
 }
