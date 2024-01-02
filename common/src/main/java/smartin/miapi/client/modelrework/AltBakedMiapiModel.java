@@ -28,10 +28,7 @@ import smartin.miapi.modules.material.Material;
 import smartin.miapi.modules.material.MaterialProperty;
 
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class AltBakedMiapiModel implements MiapiModel {
     ItemModule.ModuleInstance instance;
@@ -44,6 +41,8 @@ public class AltBakedMiapiModel implements MiapiModel {
     float[] colors;
     Sprite textureSprite = null;
     Map<Sprite, Identifier> replaceSprites = new HashMap<>();
+
+    public Map<BakedModel, List<BakedQuad>> quadLookupMap = new HashMap<>();
 
     public AltBakedMiapiModel(BakedMiapiModel.ModelHolder holder, ItemModule.ModuleInstance instance, ItemStack stack) {
         modelHolder = holder;
@@ -113,6 +112,38 @@ public class AltBakedMiapiModel implements MiapiModel {
         VertexConsumer consumer = replaceSprite.getTextureSpecificVertexConsumer(consumerOld);
 
         assert currentModel != null;
+        quadLookupMap.computeIfAbsent(currentModel, model -> {
+            List<BakedQuad> rawQuads = new ArrayList<>();
+            for (Direction direction : Direction.values()) {
+                rawQuads.addAll(model.getQuads(null, direction, random));
+            }
+            List<BakedQuad> redoneQuads = new ArrayList<>();
+            rawQuads.forEach(bakedQuad -> {
+                float uStart = bakedQuad.getSprite().getMinU();
+                float uScale = 1 / (bakedQuad.getSprite().getMaxU() - bakedQuad.getSprite().getMinU());
+                float vStart = bakedQuad.getSprite().getMinV();
+                float vScale = 1 / (bakedQuad.getSprite().getMaxV() - bakedQuad.getSprite().getMinV());
+                bakedQuad.getVertexData();
+                int[] newVertexData = bakedQuad.getVertexData();
+                for (int i = 0; i < bakedQuad.getVertexData().length / 8; i++) {
+                    newVertexData[i * 8 + 4] = Float.floatToRawIntBits((Float.intBitsToFloat(newVertexData[i * 8 + 4]) - uStart) * uScale);
+                    newVertexData[i * 8 + 5] = Float.floatToRawIntBits((Float.intBitsToFloat(newVertexData[i * 8 + 5]) - vStart) * vScale);
+                }
+                redoneQuads.add(new BakedQuad(bakedQuad.getVertexData(), bakedQuad.getColorIndex(), bakedQuad.getFace(), bakedQuad.getSprite(), bakedQuad.hasShade()));
+            });
+            /*
+            0: X position
+            1: Y position
+            2: Z position
+            3: Color (assumed to be stored as a packed integer)
+            4: Texture U coordinate
+            5: Texture V coordinate
+            6: Lighting value (assumed to be stored as a packed integer)
+            7: Normals (assumed to be stored as a packed integer)
+             */
+
+            return redoneQuads;
+        }).forEach(bakedQuad -> consumer.quad(matrices.peek(), bakedQuad, colors[0], colors[1], colors[2], light, overlay));
         for (Direction direction : Direction.values()) {
             currentModel.getQuads(null, direction, random)
                     .forEach(bakedQuad -> consumer.quad(matrices.peek(), bakedQuad, colors[0], colors[1], colors[2], light, overlay));
