@@ -50,7 +50,25 @@ public interface ColorProvider {
 
     ColorProvider getInstance(ItemStack stack, ItemModule.ModuleInstance instance);
 
-    SpriteContents tranform(SpriteContents contents);
+    default SpriteContents tranform(SpriteContents contents) {
+        NativeImage rawImage = ((SpriteContentsAccessor) contents).getImage();
+        NativeImage image = new NativeImage(contents.getWidth(), contents.getHeight(), true);
+        for (int x = 0; x < rawImage.getWidth(); x++) {
+            for (int y = 0; y < rawImage.getHeight(); y++) {
+                image.setColor(x, y, rawImage.getColor(x, y));
+                //image.setColor(x, y, 1);
+            }
+        }
+        image.untrack();
+        Identifier newID = new Identifier(Miapi.MOD_ID, contents.getId().getPath() + "_transformed_no_material");
+        return new SpriteContents(
+                newID,
+                new SpriteDimensions(
+                        ((SpriteContentsAccessor) contents).getHeight(),
+                        ((SpriteContentsAccessor) contents).getHeight()),
+                image,
+                AnimationResourceMetadata.EMPTY);
+    }
 
     class MaterialColorProvider implements ColorProvider {
         Material material;
@@ -81,19 +99,26 @@ public interface ColorProvider {
         public SpriteContents tranform(SpriteContents contents) {
             MaterialPalette palette = material.getPalette();
             NativeImage rawImage = ((SpriteContentsAccessor) contents).getImage();
-            NativeImage image = new NativeImage(contents.getWidth(), contents.getHeight(), false);
+            NativeImage image = new NativeImage(contents.getWidth(), contents.getHeight(), true);
             for (int x = 0; x < rawImage.getWidth(); x++) {
                 for (int y = 0; y < rawImage.getHeight(); y++) {
                     rawImage.getColor(x, y);
-                    image.setColor(x, y, getColor(material, rawImage.getRed(x, y)));
+                    if (rawImage.getOpacity(x, y) < 5 && rawImage.getOpacity(x, y) > -1) {
+                        image.setColor(x, y, 0);
+                    } else {
+                        int unsignedInt = rawImage.getRed(x, y) & 0xFF;
+                        image.setColor(x, y, getColor(material, unsignedInt));
+                        //Miapi.LOGGER.info(String.valueOf(rawImage.getRed(x, y)));
+                    }
                     //image.setColor(x, y, 1);
                 }
             }
+            image.untrack();
             Identifier newID = new Identifier(Miapi.MOD_ID, contents.getId().getPath() + "_transformed_" + material.getKey());
             return new SpriteContents(
                     newID,
                     new SpriteDimensions(
-                            ((SpriteContentsAccessor) contents).getHeight(),
+                            ((SpriteContentsAccessor) contents).getWidth(),
                             ((SpriteContentsAccessor) contents).getHeight()),
                     image,
                     AnimationResourceMetadata.EMPTY);
@@ -104,7 +129,7 @@ public interface ColorProvider {
             if (sprite == null) {
                 sprite = MiapiClient.materialAtlasManager.getMaterialSprite(MaterialAtlasManager.BASE_MATERIAL_ID);
             }
-            return ((SpriteContentsAccessor) sprite.getContents()).getImage().getColor(Math.max(color, 255), 0);
+            return ((SpriteContentsAccessor) sprite.getContents()).getImage().getColor(Math.max(Math.min(color, 255), 0), 0);
         }
     }
 
@@ -127,11 +152,6 @@ public interface ColorProvider {
         @Override
         public ColorProvider getInstance(ItemStack stack, ItemModule.ModuleInstance instance) {
             return new ModelColorProvider(stack);
-        }
-
-        @Override
-        public SpriteContents tranform(SpriteContents contents) {
-            return contents;
         }
     }
 
@@ -160,11 +180,6 @@ public interface ColorProvider {
         @Override
         public ColorProvider getInstance(ItemStack stack, ItemModule.ModuleInstance instance) {
             return new PotionColorProvider(stack);
-        }
-
-        @Override
-        public SpriteContents tranform(SpriteContents contents) {
-            return contents;
         }
     }
 }

@@ -1,10 +1,11 @@
 package smartin.miapi.client.modelrework;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.redpxnda.nucleus.util.Color;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gl.ShaderProgram;
-import net.minecraft.client.render.*;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.RenderLayers;
+import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.BakedQuad;
@@ -15,16 +16,22 @@ import net.minecraft.client.texture.SpriteContents;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 import org.joml.Matrix4f;
 import smartin.miapi.Miapi;
+import smartin.miapi.client.AltModelAtlasManager;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.material.Material;
 import smartin.miapi.modules.material.MaterialProperty;
 
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class AltBakedMiapiModel implements MiapiModel {
     ItemModule.ModuleInstance instance;
@@ -36,6 +43,7 @@ public class AltBakedMiapiModel implements MiapiModel {
     Random random = Random.create();
     float[] colors;
     Sprite textureSprite = null;
+    Map<Sprite, Identifier> replaceSprites = new HashMap<>();
 
     public AltBakedMiapiModel(BakedMiapiModel.ModelHolder holder, ItemModule.ModuleInstance instance, ItemStack stack) {
         modelHolder = holder;
@@ -49,10 +57,33 @@ public class AltBakedMiapiModel implements MiapiModel {
         if (quadsList.size() > 0) {
             textureSprite = holder.model().getQuads(null, Direction.DOWN, random).get(0).getSprite();
             SpriteContents contents = holder.colorProvider().tranform(textureSprite.getContents());
-            textureSprite = new Sprite(new Identifier(Miapi.MOD_ID, "module_model_texture_99"), contents, contents.getWidth(), contents.getHeight(), contents.getWidth(), contents.getHeight());
-            textureSprite.upload();
-
+            String id = textureSprite.getContents().getId().getPath() + "_no_material";
+            if (material != null) {
+                id = textureSprite.getContents().getId().getPath() + "_" + material.getKey();
+            }
+            id = "materialsprite_testing";
+            textureSprite = new Sprite(new Identifier(Miapi.MOD_ID, id), contents, contents.getWidth(), contents.getHeight(), contents.getWidth(), contents.getHeight());
+            ResourceManager manager = MinecraftClient.getInstance().getResourceManager();
+            //manager.getResource(id);
+            //textureSprite.upload();
+            BakedQuad quad;
         }
+        AltModelAtlasManager.models.add(new WeakReference<>(this));
+        AltModelAtlasManager.atlasInstance.update();
+        //AltModelAtlasManager.atlasInstance.update();
+    }
+
+    public List<AltModelAtlasManager.SpriteInfoHolder> getSprites() {
+        List<AltModelAtlasManager.SpriteInfoHolder> spriteInfoHolders = new ArrayList<>();
+        List<BakedQuad> quadsList = modelHolder.model().getQuads(null, Direction.DOWN, random);
+        if (quadsList.size() > 0) {
+            textureSprite = modelHolder.model().getQuads(null, Direction.DOWN, random).get(0).getSprite();
+            //SpriteContents contents = textureSprite.getContents();//
+            SpriteContents contents = modelHolder.colorProvider().tranform(textureSprite.getContents());
+            spriteInfoHolders.add(new AltModelAtlasManager.SpriteInfoHolder(contents, material));
+            replaceSprites.put(textureSprite, contents.getId());
+        }
+        return spriteInfoHolders;
     }
 
     @Override
@@ -69,19 +100,18 @@ public class AltBakedMiapiModel implements MiapiModel {
         MinecraftClient.getInstance().world.getProfiler().push("QuadPushing");
         //VertexConsumer consumer = modelHolder.colorProvider.getConsumer(vertexConsumers, stack, instance, transformationMode);
         RenderLayer renderLayer = RenderLayers.getItemLayer(stack, true);
-        textureSprite.upload();
-        renderLayer = RenderLayer.getEntityTranslucentCull(textureSprite.getAtlasId());
+        //textureSprite.upload();
+        renderLayer = RenderLayer.getEntityTranslucentCull(AltModelAtlasManager.MATERIAL_ATLAS_ID);
         VertexConsumer consumerOld = ItemRenderer.getDirectItemGlintConsumer(vertexConsumers, renderLayer, true, stack.hasGlint());
-        VertexConsumer consumer = textureSprite.getTextureSpecificVertexConsumer(consumerOld);
-        BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
+        Sprite replaceSprite = AltModelAtlasManager.atlasInstance.getSprite(replaceSprites.get(textureSprite));
+        if (replaceSprite == null) {
+            MinecraftClient.getInstance().world.getProfiler().pop();
+            MinecraftClient.getInstance().world.getProfiler().pop();
+            matrices.pop();
+            return;
+        }
+        VertexConsumer consumer = replaceSprite.getTextureSpecificVertexConsumer(consumerOld);
 
-        ShaderProgram program;
-
-
-        //RenderSystem.setShader(GameRenderer::getPositionTexProgram);
-        GameRenderer gameRenderer;
-        RenderSystem.setShaderTexture(0, textureSprite.getAtlasId());
-        RenderSystem.bindTexture(0);
         assert currentModel != null;
         for (Direction direction : Direction.values()) {
             currentModel.getQuads(null, direction, random)

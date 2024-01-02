@@ -142,6 +142,7 @@ public class MiapiClient {
         mc.getTextureManager();
         materialAtlasManager = new MaterialAtlasManager(mc.getTextureManager());
         ((ReloadableResourceManagerImpl) mc.getResourceManager()).registerReloader(materialAtlasManager);
+        ((ReloadableResourceManagerImpl) mc.getResourceManager()).registerReloader(new AltModelAtlasManager(mc.getTextureManager()));
         RegistryInventory.addCallback(RegistryInventory.modularItems, item -> {
             ((ItemRendererAccessor) client.getItemRenderer()).color().register(new CustomColorProvider(), item);
         });
