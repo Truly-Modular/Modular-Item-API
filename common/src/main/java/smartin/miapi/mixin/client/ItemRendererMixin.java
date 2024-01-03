@@ -36,7 +36,7 @@ public class ItemRendererMixin {
             MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light,
             int overlay, BakedModel model, CallbackInfo ci
     ) {
-        if (MiapiClient.irisLoaded &&  stack.getItem() instanceof ModularItem) {
+        if (MiapiClient.shaderModLoaded &&  stack.getItem() instanceof ModularItem) {
             MiapiItemModel miapiModel = MiapiItemModel.getItemModel(stack);
             if (miapiModel != null) {
                 miapiModel.render(matrices, stack, renderMode, MinecraftClient.getInstance().getTickDelta(), vertexConsumers, CustomModel.currentEntity, light, overlay);

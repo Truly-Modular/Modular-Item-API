@@ -25,7 +25,6 @@ import net.minecraft.util.math.random.Random;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import smartin.miapi.Miapi;
-import smartin.miapi.client.MiapiClient;
 import smartin.miapi.client.model.DynamicBakedModel;
 import smartin.miapi.client.model.DynamicBakery;
 import smartin.miapi.client.model.ModelLoadAccessor;
@@ -73,12 +72,14 @@ public class ModelProperty implements ModuleProperty {
             GlintProperty.GlintSettings settings = GlintProperty.property.getGlintSettings(model, stack);
             List<MiapiModel> miapiModels = new ArrayList<>();
             for (BakedMiapiModel.ModelHolder holder : getForModule(model, key, stack)) {
-                if (MiapiConfig.CompatGroup.altRenderer.getValue()) {
-                    miapiModels.add(new AltBakedMiapiModel(holder, model, stack));
-                } else {
-                    if (MiapiClient.irisLoaded && MiapiConfig.CompatGroup.fallbackRenderer.getValue() || MiapiConfig.CompatGroup.forceFallbackRenderer.getValue()) {
+                switch (MiapiConfig.CompatGroup.getRenderMode()){
+                    case ALT_RENDERER -> {
+                        miapiModels.add(new AltBakedMiapiModel(holder, model, stack));
+                    }
+                    case FALLBACK_RENDERER -> {
                         miapiModels.add(new BadShaderCompatModel(holder, model, stack));
-                    } else {
+                    }
+                    default -> {
                         if (settings.shouldRender()) {
                             miapiModels.add(new BakedMiapiGlintModel(holder, model, stack));
                         } else {

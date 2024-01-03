@@ -2,10 +2,8 @@ package smartin.miapi.config;
 
 import dev.architectury.platform.Platform;
 import net.minecraft.util.math.ColorHelper;
-import smartin.miapi.config.oro_config.BooleanConfigItem;
-import smartin.miapi.config.oro_config.Config;
-import smartin.miapi.config.oro_config.ConfigItemGroup;
-import smartin.miapi.config.oro_config.IntegerConfigItem;
+import smartin.miapi.client.MiapiClient;
+import smartin.miapi.config.oro_config.*;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.modules.cache.ModularItemCache;
 
@@ -60,26 +58,32 @@ public class MiapiConfig extends Config {
     }
 
     public static class CompatGroup extends ConfigItemGroup {
-        public static BooleanConfigItem altRenderer = new BooleanConfigItem(
-                "use_alt_renderer", true, "Use Alt renderer");
-        public static BooleanConfigItem fallbackRenderer = new BooleanConfigItem(
-                "use_fallback_renderer", true, "Use Fallback renderer if Iris is detected");
-        public static BooleanConfigItem forceFallbackRenderer = new BooleanConfigItem(
-                "force_fallback_renderer", false, "Force enable the fallback renderer");
-        public static BooleanConfigItem sendWarningOnWorldLoad = new BooleanConfigItem(
-                "send_warning", true, "Send chat warning is Iris was detected");
+        public static EnumConfigItem<RenderMode> renderModeConfig = new EnumConfigItem<>("render_mode", RenderMode.AUTO, "Select a Rendermode,\n AUTO,DEFAULT_RENDERER,ALT_RENDERER,FALLBACK_RENDERER");
 
         protected CompatGroup() {
-            super(of(fallbackRenderer, forceFallbackRenderer, altRenderer, sendWarningOnWorldLoad), "Fallback Compat");
-            fallbackRenderer.changeListener.add((change) -> {
+            super(of(renderModeConfig), "compat_settings");
+            renderModeConfig.changeListener.add((renderModeConfigItem -> {
                 ModularItemCache.discardCache();
-            });
-            forceFallbackRenderer.changeListener.add((change) -> {
-                ModularItemCache.discardCache();
-            });
-            altRenderer.changeListener.add((change) -> {
-                ModularItemCache.discardCache();
-            });
+            }));
+        }
+
+        public static RenderMode getRenderMode() {
+            switch (renderModeConfig.getValue()) {
+                case AUTO -> {
+                    if (MiapiClient.shaderModLoaded) {
+                        return RenderMode.ALT_RENDERER;
+                    }
+                    return RenderMode.DEFAULT_RENDERER;
+                }
+            }
+            return renderModeConfig.getValue();
+        }
+
+        public enum RenderMode {
+            FALLBACK_RENDERER,
+            ALT_RENDERER,
+            DEFAULT_RENDERER,
+            AUTO
         }
     }
 

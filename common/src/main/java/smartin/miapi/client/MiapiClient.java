@@ -25,7 +25,6 @@ import smartin.miapi.client.gui.crafting.CraftingScreen;
 import smartin.miapi.client.gui.crafting.statdisplay.StatListWidget;
 import smartin.miapi.client.model.CustomColorProvider;
 import smartin.miapi.client.model.ModularModelPredicateProvider;
-import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.effects.CryoStatusEffect;
 import smartin.miapi.entity.ItemProjectileRenderer;
@@ -41,7 +40,11 @@ import static smartin.miapi.registries.RegistryInventory.Client.glintShader;
 
 public class MiapiClient {
     public static MaterialAtlasManager materialAtlasManager;
-    public static boolean irisLoaded = Platform.isModLoaded("iris") || Platform.isModLoaded("oculus");
+    public static boolean shaderModLoaded =
+            Platform.isModLoaded("iris") ||
+            Platform.isModLoaded("optifine") ||
+            Platform.isModLoaded("optifabric") ||
+            Platform.isModLoaded("oculus");
     public static boolean sodiumLoaded = Platform.isModLoaded("sodium");
     public static boolean jerLoaded = Platform.isModLoaded("jeresources");
 
@@ -59,6 +62,7 @@ public class MiapiClient {
         ClientLifecycleEvent.CLIENT_LEVEL_LOAD.register(MiapiClient::clientLevelLoad);
         ClientPlayerEvent.CLIENT_PLAYER_JOIN.register(player -> new Thread(() -> MiapiPermissions.getPerms(player)).start());
         ClientPlayerEvent.CLIENT_PLAYER_JOIN.register(player -> {
+            /*
             if (irisLoaded && MiapiConfig.CompatGroup.sendWarningOnWorldLoad.getValue()) {
                 player.sendMessage(Text.literal("Truly Modulars rendering is switched to Fallback."));
                 player.sendMessage(Text.literal("This means Modular Items will look significantly worse than they are supposed to."));
@@ -69,6 +73,7 @@ public class MiapiClient {
                 link = link.getWithStyle(Style.EMPTY.withClickEvent(event).withUnderline(true)).get(0);
                 player.sendMessage(link);
             }
+             */
             if (jerLoaded && Miapi.server == null) {
                 String version = Platform.getMod("jeresources").getVersion();
                 if (version.equals("1.4.0.238")) {
@@ -101,11 +106,11 @@ public class MiapiClient {
 
     @Environment(EnvType.CLIENT)
     public static void registerAnimations(Item item) {
-        if(item.isDamageable()){
-            ModularModelPredicateProvider.registerModelOverride(item, new Identifier(Miapi.MOD_ID,"damage"), (stack, world, entity, seed) -> {
-                return stack.isDamageable() && stack.isDamaged() ? 0.0f : (float) stack.getMaxDamage() / (stack.getMaxDamage()-stack.getDamage());
+        if (item.isDamageable()) {
+            ModularModelPredicateProvider.registerModelOverride(item, new Identifier(Miapi.MOD_ID, "damage"), (stack, world, entity, seed) -> {
+                return stack.isDamageable() && stack.isDamaged() ? 0.0f : (float) stack.getMaxDamage() / (stack.getMaxDamage() - stack.getDamage());
             });
-            ModularModelPredicateProvider.registerModelOverride(item, new Identifier(Miapi.MOD_ID,"damaged"), (stack, world, entity, seed) -> {
+            ModularModelPredicateProvider.registerModelOverride(item, new Identifier(Miapi.MOD_ID, "damaged"), (stack, world, entity, seed) -> {
                 return stack.isDamaged() ? 0.0f : 1.0f;
             });
         }
