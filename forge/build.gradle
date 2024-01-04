@@ -22,9 +22,6 @@ repositories {
     maven { url 'https://jitpack.io' }
     maven { url 'https://maven.theillusivec4.top/' }
     maven {
-        url = "https://maven.theillusivec4.top/"
-    }
-    maven {
         name = 'Modrinth'
         url = 'https://api.modrinth.com/maven'
         content {
@@ -61,7 +58,8 @@ dependencies {
     // NUCLEUS EMBEDDED DEPENDS
     forgeRuntimeLibrary('com.github.ezylang:EvalEx:3.0.4') // because nucleus uses it
     annotationProcessor(group: 'com.github.LlamaLad7', name: 'MixinExtras', version: "${rootProject.mixin_extras_version}")
-    forgeRuntimeLibrary(/*include(*/group: 'com.github.LlamaLad7', name: 'MixinExtras', version: "${rootProject.mixin_extras_version}"/*)*/) // i don't need "include" it, shouldn't be necessary since nucleus does alr
+    forgeRuntimeLibrary(/*include(*/ group: 'com.github.LlamaLad7', name: 'MixinExtras', version: "${rootProject.mixin_extras_version}"/*)*/)
+    // i don't need "include" it, shouldn't be necessary since nucleus does alr
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive = false }
