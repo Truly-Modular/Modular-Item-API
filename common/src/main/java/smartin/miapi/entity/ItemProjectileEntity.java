@@ -309,6 +309,9 @@ public class ItemProjectileEntity extends PersistentProjectileEntity {
                 return false;
             }
             case CREATIVE_ONLY -> {
+                if (EnchantmentHelper.getLoyalty(this.asItemStack()) > 0 && this.isOwner(player)) {
+                    return true;
+                }
                 return player.getAbilities().creativeMode;
             }
             case ALLOWED -> {

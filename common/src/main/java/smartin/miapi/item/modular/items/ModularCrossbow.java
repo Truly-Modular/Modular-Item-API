@@ -125,6 +125,7 @@ public class ModularCrossbow extends CrossbowItem implements ModularItem {
         int i = EnchantmentHelper.getLevel(Enchantments.QUICK_CHARGE, stack);
         double drawTime = (25 - AttributeProperty.getActualValue(stack, EquipmentSlot.MAINHAND, AttributeRegistry.BOW_DRAW_TIME));
         drawTime = Math.max(5, drawTime - drawTime / 5 * i);
+        if (Double.isNaN(drawTime)) return 5;
         return (int) drawTime;
     }
 
@@ -235,7 +236,7 @@ public class ModularCrossbow extends CrossbowItem implements ModularItem {
         persistentProjectileEntity.setShotFromCrossbow(true);
         int i = EnchantmentHelper.getLevel(Enchantments.PIERCING, crossbow);
         if (i > 0) {
-            persistentProjectileEntity.setPierceLevel((byte) i);
+            persistentProjectileEntity.setPierceLevel((byte) ((byte) i + AttributeProperty.getActualValue(arrow, EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_PIERCING)));
         }
 
         return persistentProjectileEntity;

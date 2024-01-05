@@ -36,7 +36,7 @@ dependencies {
     modImplementation files('libs/archery-local.jar')
     modImplementation files('libs/armory-local.jar')
 
-    api(include("org.mariuszgromada.math:MathParser.org-mXparser:${rootProject.mathparser_version}"))
+    implementation "org.mariuszgromada.math:MathParser.org-mXparser:${rootProject.mathparser_version}"
 
     modImplementation 'dev.kosmx.player-anim:player-animation-lib:1.0.2-rc1+1.20'
     modApi "curse.maven:bettercombat-639842:4597949"

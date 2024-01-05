@@ -141,7 +141,10 @@ public class AltModelAtlasManager extends SpriteAtlasHolder {
     public void afterReload(SpriteLoader.StitchResult invalidResult, Profiler profiler) {
         profiler.startTick();
         profiler.push("upload");
-        atlas.upload(invalidResult);
+        try {
+            atlas.upload(invalidResult);
+        } catch (Exception e) {
+        }
         profiler.pop();
         profiler.endTick();
     }

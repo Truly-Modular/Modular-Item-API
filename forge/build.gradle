@@ -89,7 +89,7 @@ shadowJar {
 }
 
 remapJar {
-    inputFile.set shadowJar.archiveFile
+    input.set shadowJar.archiveFile
     dependsOn shadowJar
     archiveClassifier = null
 }
