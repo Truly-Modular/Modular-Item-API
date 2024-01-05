@@ -12,7 +12,6 @@ import net.minecraft.client.render.model.BakedQuad;
 import net.minecraft.client.render.model.json.ModelOverrideList;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.texture.Sprite;
-import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
@@ -28,6 +27,7 @@ import smartin.miapi.modules.properties.render.colorproviders.ColorProvider;
 
 import java.lang.ref.WeakReference;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class AltBakedMiapiModel implements MiapiModel {
     ItemModule.ModuleInstance instance;
@@ -79,14 +79,8 @@ public class AltBakedMiapiModel implements MiapiModel {
         if (model.getOverrides() != null && !model.getOverrides().equals(ModelOverrideList.EMPTY)) {
             currentModel = model.getOverrides().apply(model, stack, MinecraftClient.getInstance().world, entity, light);
         }
-        if (material == null || !uploaded || !(modelHolder.colorProvider() instanceof ColorProvider.MaterialColorProvider)) {
-            RenderLayer renderLayer = RenderLayers.getItemLayer(stack, true);
-            VertexConsumer consumer = ItemRenderer.getDirectItemGlintConsumer(vertexConsumers, renderLayer, true, false);
-            for (Direction direction : Direction.values()) {
-                currentModel.getQuads(null, direction, random).forEach(bakedQuad -> {
-                    consumer.quad(matrices.peek(), bakedQuad, colors[0], colors[1], colors[2], light, overlay);
-                });
-            }
+        if (!(modelHolder.colorProvider() instanceof ColorProvider.MaterialColorProvider) || material == null || !uploaded) {
+            badShaderRenderer(matrices, stack, currentModel, vertexConsumers, light, overlay);
             matrices.pop();
             return;
         }
@@ -94,6 +88,7 @@ public class AltBakedMiapiModel implements MiapiModel {
         assert currentModel != null;
         RenderLayer atlasRenderLayer = RenderLayer.getEntityTranslucentCull(AltModelAtlasManager.MATERIAL_ATLAS_ID);
         VertexConsumer atlasConsumer = ItemRenderer.getDirectItemGlintConsumer(vertexConsumers, atlasRenderLayer, true, false);
+        AtomicBoolean hasFailed = new AtomicBoolean(false);
         quadLookupMap.computeIfAbsent(currentModel, model -> {
             List<BakedQuad> rawQuads = new ArrayList<>();
             for (Direction direction : Direction.values()) {
@@ -133,11 +128,29 @@ public class AltBakedMiapiModel implements MiapiModel {
                 VertexConsumer consumer = replaceSprite.getTextureSpecificVertexConsumer(atlasConsumer);
                 consumer.quad(matrices.peek(), bakedQuad, colors[0], colors[1], colors[2], light, overlay);
             } else {
-                SpriteAtlasTexture texture = AltModelAtlasManager.atlasInstance.atlas;
-                VertexConsumer consumer = ItemRenderer.getDirectItemGlintConsumer(vertexConsumers, atlasRenderLayer, true, false);
+                hasFailed.set(true);
             }
         });
+        if (hasFailed.get()) {
+            badShaderRenderer(matrices, stack, currentModel, vertexConsumers, light, overlay);
+        }
         MinecraftClient.getInstance().world.getProfiler().pop();
         matrices.pop();
+    }
+
+    public void badShaderRenderer(MatrixStack matrices, ItemStack stack, BakedModel currentModel, VertexConsumerProvider vertexConsumers, int light, int overlay) {
+        RenderLayer renderLayer = RenderLayers.getItemLayer(stack, true);
+        VertexConsumer consumer = ItemRenderer.getDirectItemGlintConsumer(vertexConsumers, renderLayer, true, false);
+        Color materialColor;
+        if (material != null && modelHolder.colorProvider() instanceof ColorProvider.MaterialColorProvider) {
+            materialColor = new Color(material.getColor());
+        } else {
+            materialColor = modelHolder.colorProvider().getVertexColor();
+        }
+        for (Direction direction : Direction.values()) {
+            currentModel.getQuads(null, direction, random).forEach(bakedQuad -> {
+                consumer.quad(matrices.peek(), bakedQuad, materialColor.redAsFloat(), materialColor.greenAsFloat(), materialColor.blueAsFloat(), light, overlay);
+            });
+        }
     }
 }

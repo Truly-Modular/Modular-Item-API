@@ -3,10 +3,12 @@ package smartin.miapi.client;
 import dev.architectury.event.events.client.ClientTickEvent;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.resource.metadata.AnimationResourceMetadata;
 import net.minecraft.client.texture.SpriteLoader;
 import net.minecraft.client.texture.*;
 import net.minecraft.resource.ResourceManager;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.profiler.Profiler;
 import smartin.miapi.Miapi;
@@ -19,7 +21,6 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
-import static java.util.concurrent.Executors.newSingleThreadExecutor;
 import static smartin.miapi.Miapi.MOD_ID;
 
 @Environment(value = EnvType.CLIENT)
@@ -32,6 +33,10 @@ public class AltModelAtlasManager extends SpriteAtlasHolder {
     public AltModelAtlasManager(TextureManager textureManager) {
         super(textureManager, MATERIAL_ATLAS_ID, MATERIAL_ID);
         atlasInstance = this;
+        //FilledMapItem filledMapItem;
+        //MapRenderer mapRenderer;
+        //MinecraftClient.getInstance().getTextureManager().registerDynamicTexture(null, null);
+        //MinecraftClient.getInstance().getTextureManager().destroyTexture(null);
         ClientTickEvent.CLIENT_PRE.register((client) -> {
             if (AltModelAtlasManager.shouldUpdate) {
                 update();
@@ -72,14 +77,22 @@ public class AltModelAtlasManager extends SpriteAtlasHolder {
                 });
         sprites.stream().distinct().forEach(spriteInfoHolder -> {
             if (spriteInfoHolder.material != null) {
-                materialSprites.add(transform(spriteInfoHolder, spriteInfoHolder.material));
+                try {
+                    materialSprites.add(transform(spriteInfoHolder, spriteInfoHolder.material));
+                } catch (Exception e) {
+                    Miapi.LOGGER.error("Could not transform Sprite to material - skipping " + spriteInfoHolder.getIdentifier(), e);
+                }
             }
         });
-        SpriteLoader spriteLoader = new SpriteLoader(MATERIAL_ID, 1024, 1024, 1024);
-        Executor executor = newSingleThreadExecutor();
-        SpriteLoader.StitchResult stitchResult = spriteLoader.stitch(materialSprites, 0, executor);
-        this.atlas.clear();
-        this.atlas.upload(stitchResult);
+        try {
+            SpriteLoader spriteLoader = new SpriteLoader(MATERIAL_ID, 1024, 1024, 1024);
+            SpriteLoader.StitchResult stitchResult = spriteLoader.stitch(materialSprites, 0, Runnable::run);
+            this.atlas.clear();
+            this.atlas.upload(stitchResult);
+        } catch (Exception e) {
+            Miapi.LOGGER.error("Could not Stitch atlas correctly. This could be a huge issue. Please Report this issue", e);
+            MinecraftClient.getInstance().player.sendMessage(Text.literal("Critical error of the Altrenderer. Please report this issue and consider swapping to default or fallback renderer"));
+        }
     }
 
     public SpriteContents transform(SpriteInfoHolder holder, Material material) {

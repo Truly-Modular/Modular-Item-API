@@ -6,6 +6,19 @@ architectury {
     forge()
 }
 
+loom {
+    accessWidenerPath = project(":common").loom.accessWidenerPath
+
+
+    forge { // gone are the days of forge!
+        convertAccessWideners = true
+        extraAccessWideners.add loom.accessWidenerPath.get().asFile.name
+
+        mixinConfig "miapi-common.mixins.json"
+        mixinConfig "miapi.mixins.json"
+    }
+}
+
 configurations {
     common
     shadowCommon // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
@@ -37,44 +50,25 @@ dependencies {
     modApi "dev.architectury:architectury-forge:${rootProject.architectury_version}"
 
     forgeRuntimeLibrary(include("org.mariuszgromada.math:MathParser.org-mXparser:${rootProject.mathparser_version}"))
-
-    //forgeRuntimeLibrary(include("io.github.edwirmindcraft:apoli-forge:${rootProject.forge_apoli_version}"))
-
     modImplementation("me.shedaniel.cloth:cloth-config-forge:${rootProject.cloth_config_version}")
-    //api(files('libs/nucleus-local.jar'))
-    //modApi(files('libs/nucleus-local.jar'))
-    //include(modApi(files('libs/nucleus-local.jar')))
+    modApi("top.theillusivec4.caelus:caelus-forge:${rootProject.forge_caelus_version}")
     modApi(include("com.RedPxnda.Nucleus:nucleus-forge:${rootProject.minecraft_version}-${rootProject.nucleus_version}"))
-    modApi files('libs/arsenal-local.jar')
-    modApi files('libs/archery-local.jar')
-    modApi files('libs/armory-local.jar')
+
+    modLocalRuntime files('libs/arsenal-local.jar')
+    modLocalRuntime files('libs/archery-local.jar')
+    modLocalRuntime files('libs/armory-local.jar')
 
     //forgeRuntimeLibrary(include("dev.kosmx.player-anim:player-animation-lib-forge:0.4.2"
     //modApi include("curse.maven:bettercombat-639842:4357578")
-
-    //forgeRuntimeLibrary("top.theillusivec4.caelus:caelus-forge:${rootProject.caelus_forge_version}")
-    modApi("top.theillusivec4.caelus:caelus-forge:${rootProject.forge_caelus_version}")
 
     // NUCLEUS EMBEDDED DEPENDS
     forgeRuntimeLibrary('com.github.ezylang:EvalEx:3.0.4') // because nucleus uses it
     annotationProcessor(group: 'com.github.LlamaLad7', name: 'MixinExtras', version: "${rootProject.mixin_extras_version}")
     forgeRuntimeLibrary(/*include(*/ group: 'com.github.LlamaLad7', name: 'MixinExtras', version: "${rootProject.mixin_extras_version}"/*)*/)
-    // i don't need "include" it, shouldn't be necessary since nucleus does alr
+
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive = false }
-}
-
-loom {
-    accessWidenerPath = project(":common").loom.accessWidenerPath
-
-    forge {
-        convertAccessWideners = true
-        extraAccessWideners.add loom.accessWidenerPath.get().asFile.name
-
-        mixinConfig "miapi-common.mixins.json"
-        mixinConfig "miapi.mixins.json"
-    }
 }
 
 processResources {
@@ -86,20 +80,23 @@ processResources {
 }
 
 shadowJar {
+    //exclude("architectury.common.json", "architectury.common", "fabric.mod.json")
     exclude "fabric.mod.json"
+    exclude "architectury.common.json"
 
     configurations = [project.configurations.shadowCommon]
     archiveClassifier = "dev-shadow"
 }
 
 remapJar {
-    input.set shadowJar.archiveFile
+    inputFile.set shadowJar.archiveFile
     dependsOn shadowJar
     archiveClassifier = null
 }
 
 jar {
     archiveClassifier = "dev"
+    //exclude("architectury.common.json", "architectury.common")
 }
 
 sourcesJar {

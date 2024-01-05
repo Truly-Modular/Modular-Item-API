@@ -51,10 +51,7 @@ dependencies {
     // Remove the next line if you don't want to depend on the API
     modApi "dev.architectury:architectury-fabric:${rootProject.architectury_version}"
 
-    //modImplementation files('libs/nbteditor.jar')
-    //modImplementation files('libs/dummy.jar')
-    //modImplementation files('libs/moonlight.jar')
-
+    //this will be replaced by nucleusConfig soon
     include(modApi("me.shedaniel.cloth:cloth-config-fabric:${rootProject.cloth_config_version}")) {
         exclude(group: "net.fabricmc.fabric-api")
     }
@@ -62,27 +59,25 @@ dependencies {
     modApi("com.terraformersmc:modmenu:${rootProject.fabric_modmenu_version}") {
         exclude(module: "fabric-api")
     }
+
+    include implementation("org.mariuszgromada.math:MathParser.org-mXparser:${rootProject.mathparser_version}")
     include modImplementation("com.jamieswhiteshirt:reach-entity-attributes:$rootProject.fabric_reach_range_version")
-    implementation(include("org.mariuszgromada.math:MathParser.org-mXparser:${rootProject.mathparser_version}"))
-
-    //modApi "com.github.apace100:apoli:${rootProject.fabric_apoli_version}"
-
-    //modApi( include(files('libs/nucleus-local.jar')))
     modApi(include("com.RedPxnda.Nucleus:nucleus-fabric:${rootProject.minecraft_version}-${rootProject.nucleus_version}"))
-    modApi files('libs/arsenal-local.jar')
-    modApi files('libs/archery-local.jar')
-    modApi files('libs/armory-local.jar')
-    //modImplementation "maven.modrinth:sodium:mc1.20.1-0.5.3"
-    //modImplementation "maven.modrinth:iris:1.6.10+1.20.1"
+
+    modLocalRuntime files('libs/arsenal-local.jar')
+    modLocalRuntime files('libs/archery-local.jar')
+    modLocalRuntime files('libs/armory-local.jar')
+    //modLocalRuntime "maven.modrinth:sodium:mc1.20.1-0.5.3"
+    //modLocalRuntime"maven.modrinth:iris:1.6.10+1.20.1"
 
     annotationProcessor(group: 'com.github.LlamaLad7', name: 'MixinExtras', version: "${rootProject.mixin_extras_version}")
     implementation(include(group: 'com.github.LlamaLad7', name: 'MixinExtras', version: "${rootProject.mixin_extras_version}"))
 
-    //modImplementation "curse.maven:cloth-348521:4554906"
-    //modImplementation "curse.maven:bettercombat-639842:4597949"
-    //modImplementation 'dev.kosmx.player-anim:player-animation-lib-fabric:1.0.2-rc1+1.20'
+    //modLocalRuntime "curse.maven:cloth-348521:4554906"
+    //modLocalRuntime "curse.maven:bettercombat-639842:4597949"
+    //modLocalRuntime 'dev.kosmx.player-anim:player-animation-lib-fabric:1.0.2-rc1+1.20'
 
-    modImplementation "maven.modrinth:obsidian-equipment:kwMkZlFD"
+    //modLocalRuntime "maven.modrinth:obsidian-equipment:kwMkZlFD"
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }
