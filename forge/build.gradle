@@ -96,7 +96,6 @@ remapJar {
 
 jar {
     archiveClassifier = "dev"
-    //exclude("architectury.common.json", "architectury.common")
 }
 
 sourcesJar {

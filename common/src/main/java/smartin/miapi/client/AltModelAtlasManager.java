@@ -7,7 +7,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.resource.metadata.AnimationResourceMetadata;
 import net.minecraft.client.texture.SpriteLoader;
 import net.minecraft.client.texture.*;
-import net.minecraft.resource.ResourceManager;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.profiler.Profiler;
@@ -17,9 +16,10 @@ import smartin.miapi.mixin.client.SpriteContentsAccessor;
 import smartin.miapi.modules.material.Material;
 
 import java.lang.ref.WeakReference;
-import java.util.*;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import static smartin.miapi.Miapi.MOD_ID;
 
@@ -44,6 +44,7 @@ public class AltModelAtlasManager extends SpriteAtlasHolder {
         });
     }
 
+    /*
     public CompletableFuture<Void> reload(Synchronizer synchronizer, ResourceManager manager, Profiler prepareProfiler, Profiler applyProfiler, Executor prepareExecutor, Executor applyExecutor) {
         try {
             CompletableFuture var10000 = SpriteLoader.fromAtlas(this.atlas).load(manager, MATERIAL_ID, 0, prepareExecutor).thenCompose(SpriteLoader.StitchResult::whenComplete);
@@ -59,6 +60,7 @@ public class AltModelAtlasManager extends SpriteAtlasHolder {
             });
         }
     }
+     */
 
     public static List<WeakReference<AltBakedMiapiModel>> models = new ArrayList<>();
 

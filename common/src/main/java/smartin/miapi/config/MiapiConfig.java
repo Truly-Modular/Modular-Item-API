@@ -28,6 +28,7 @@ public class MiapiConfig extends Config {
         if (Platform.isModLoaded("cloth_config")) {
         }
         this.readConfigFromFile();
+        this.saveConfigToFile();
         ReloadEvents.START.subscribe((isClient -> {
             readConfigFromFile();
         }));

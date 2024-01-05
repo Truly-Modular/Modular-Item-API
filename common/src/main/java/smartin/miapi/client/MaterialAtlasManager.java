@@ -6,8 +6,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.SpriteLoader;
 import net.minecraft.client.texture.*;
 import net.minecraft.resource.Resource;
-import net.minecraft.resource.ResourceManager;
-import net.minecraft.resource.ResourceReloader;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.profiler.Profiler;
 import smartin.miapi.Miapi;
@@ -17,8 +15,6 @@ import smartin.miapi.modules.material.MaterialProperty;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
@@ -26,7 +22,7 @@ import static smartin.miapi.Miapi.MOD_ID;
 
 @Environment(value = EnvType.CLIENT)
 public class MaterialAtlasManager extends SpriteAtlasHolder {
-    public static final Identifier MATERIAL_ID = new Identifier(MOD_ID,"miapi_materials");
+    public static final Identifier MATERIAL_ID = new Identifier(MOD_ID, "miapi_materials");
     public static final Identifier MATERIAL_ATLAS_ID = new Identifier(MOD_ID, "textures/atlas/materials.png");
     public static final Identifier BASE_MATERIAL_ID = new Identifier(MOD_ID, "miapi_materials/base_palette");
 
@@ -34,6 +30,7 @@ public class MaterialAtlasManager extends SpriteAtlasHolder {
         super(textureManager, MATERIAL_ATLAS_ID, MATERIAL_ID);
     }
 
+    /*
     public CompletableFuture<Void> reload(ResourceReloader.Synchronizer synchronizer, ResourceManager manager, Profiler prepareProfiler, Profiler applyProfiler, Executor prepareExecutor, Executor applyExecutor) {
         try {
             CompletableFuture var10000 = SpriteLoader.fromAtlas(this.atlas).load(manager, MATERIAL_ID, 0, prepareExecutor).thenCompose(SpriteLoader.StitchResult::whenComplete);
@@ -49,6 +46,7 @@ public class MaterialAtlasManager extends SpriteAtlasHolder {
             });
         }
     }
+     */
 
     @Override
     public void afterReload(SpriteLoader.StitchResult invalidResult, Profiler profiler) {
