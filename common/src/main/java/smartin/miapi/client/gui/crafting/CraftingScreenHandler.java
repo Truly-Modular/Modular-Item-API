@@ -94,111 +94,119 @@ public class CraftingScreenHandler extends ScreenHandler {
         if (playerInventory.player instanceof ServerPlayerEntity) {
             Networking.registerC2SPacket(packetID, (buffer, player) -> {
                 CraftAction action = new CraftAction(buffer, blockEntity);
-                action.setItem(inventory.getStack(0));
-                action.linkInventory(inventory, 1);
-                if (action.canPerform()) {
-                    ItemStack stack = action.perform();
-                    inventory.setStack(0, stack);
-                    if (blockEntity != null) {
-                        blockEntity.setItem(stack);
-                        blockEntity.saveAndSync();
+                Miapi.server.execute(()->{
+                    action.setItem(inventory.getStack(0));
+                    action.linkInventory(inventory, 1);
+                    if (action.canPerform()) {
+                        ItemStack stack = action.perform();
+                        inventory.setStack(0, stack);
+                        if (blockEntity != null) {
+                            blockEntity.setItem(stack);
+                            blockEntity.saveAndSync();
+                        }
+                        this.onContentChanged(inventory);
                     }
-                    this.onContentChanged(inventory);
-                }
+                });
             });
             Networking.registerC2SPacket(packetIDSlotAdd, (buffer, player) -> {
                 int invId = buffer.readInt();
                 int slotId = buffer.readInt();
-                Slot slot = new Slot(inventory, invId, 0, 0);
-                slot.id = slotId;
-                mutableSlots.add(slot);
-                this.addSlot(slot);
-                slot.id = slotId;
+                Miapi.server.execute(()->{
+                    Slot slot = new Slot(inventory, invId, 0, 0);
+                    slot.id = slotId;
+                    mutableSlots.add(slot);
+                    this.addSlot(slot);
+                    slot.id = slotId;
+                });
             });
             Networking.registerC2SPacket(packetIDSlotRemove, (buffer, player) -> {
                 int slotId = buffer.readInt();
-                Slot slot = this.getSlot(slotId);
-                mutableSlots.remove(slot);
-                quickMove(playerInventory.player, slotId);
+                Miapi.server.execute(()->{
+                    Slot slot = this.getSlot(slotId);
+                    mutableSlots.remove(slot);
+                    quickMove(playerInventory.player, slotId);
+                });
             });
             Networking.registerC2SPacket(editPacketID, (buffer, player) -> {
                 EditOption option = RegistryInventory.editOptions.get(buffer.readString());
                 int[] intArray = buffer.readIntArray();
-                ItemStack stack = ModularItemStackConverter.getModularVersion(inventory.getStack(0));
-                ItemModule.ModuleInstance root = ItemModule.getModules(stack);
-                List<Integer> position = new ArrayList<>();
-                for (int value : intArray) {
-                    position.add(value);
-                }
-                ItemModule.ModuleInstance current = root.getPosition(position).copy();
+                Miapi.server.execute(()->{
+                    ItemStack stack = ModularItemStackConverter.getModularVersion(inventory.getStack(0));
+                    ItemModule.ModuleInstance root = ItemModule.getModules(stack);
+                    List<Integer> position = new ArrayList<>();
+                    for (int value : intArray) {
+                        position.add(value);
+                    }
+                    ItemModule.ModuleInstance current = root.getPosition(position).copy();
 
-                SlotProperty.ModuleSlot slot = SlotProperty.getSlotIn(current);
-                if (slot == null && current != null && current.module != null) {
-                    slot = new SlotProperty.ModuleSlot(AllowedSlots.getAllowedSlots(current.module));
-                }
-
-                assert option != null;
-                SlotProperty.ModuleSlot finalSlot = slot;
-                EditOption.EditContext editContext = new EditOption.EditContext() {
-                    @Override
-                    public void craft(PacketByteBuf craftBuffer) {
-
+                    SlotProperty.ModuleSlot slot = SlotProperty.getSlotIn(current);
+                    if (slot == null && current != null && current.module != null) {
+                        slot = new SlotProperty.ModuleSlot(AllowedSlots.getAllowedSlots(current.module));
                     }
 
-                    @Override
-                    public void preview(PacketByteBuf preview) {
+                    assert option != null;
+                    SlotProperty.ModuleSlot finalSlot = slot;
+                    EditOption.EditContext editContext = new EditOption.EditContext() {
+                        @Override
+                        public void craft(PacketByteBuf craftBuffer) {
 
-                    }
+                        }
 
-                    @Override
-                    public SlotProperty.ModuleSlot getSlot() {
-                        return finalSlot;
-                    }
+                        @Override
+                        public void preview(PacketByteBuf preview) {
 
-                    @Override
-                    public ItemStack getItemstack() {
-                        return stack;
-                    }
+                        }
 
-                    @Override
-                    public @Nullable ItemModule.ModuleInstance getInstance() {
-                        return current;
-                    }
+                        @Override
+                        public SlotProperty.ModuleSlot getSlot() {
+                            return finalSlot;
+                        }
 
-                    @Override
-                    public @Nullable PlayerEntity getPlayer() {
-                        return player;
-                    }
+                        @Override
+                        public ItemStack getItemstack() {
+                            return stack;
+                        }
 
-                    @Override
-                    public @Nullable ModularWorkBenchEntity getWorkbench() {
-                        return blockEntity;
-                    }
+                        @Override
+                        public @Nullable ItemModule.ModuleInstance getInstance() {
+                            return current;
+                        }
 
-                    @Override
-                    public Inventory getLinkedInventory() {
-                        return inventory;
-                    }
+                        @Override
+                        public @Nullable PlayerEntity getPlayer() {
+                            return player;
+                        }
 
-                    @Override
-                    public CraftingScreenHandler getScreenHandler() {
-                        return craftingScreenHandler;
+                        @Override
+                        public @Nullable ModularWorkBenchEntity getWorkbench() {
+                            return blockEntity;
+                        }
+
+                        @Override
+                        public Inventory getLinkedInventory() {
+                            return inventory;
+                        }
+
+                        @Override
+                        public CraftingScreenHandler getScreenHandler() {
+                            return craftingScreenHandler;
+                        }
+                    };
+                    if (option.isVisible(editContext)) {
+                        ItemStack editedStack = option.execute(buffer, editContext);
+                        inventory.setStack(0, editedStack);
+                        if (blockEntity != null) {
+                            blockEntity.setItem(editedStack);
+                            blockEntity.saveAndSync();
+                        }
+                        inventory.markDirty();
+                        this.onContentChanged(inventory);
+                    } else {
+                        Miapi.LOGGER.warn("ERROR - Couldn`t verify craft action from client " + player.getUuidAsString() + " " + player.getDisplayName().getString() + " This might be a bug or somebody is trying to exploit");
+                        Miapi.LOGGER.warn(String.valueOf(current));
+                        Miapi.LOGGER.warn(position.toString());
                     }
-                };
-                if (option.isVisible(editContext)) {
-                    ItemStack editedStack = option.execute(buffer, editContext);
-                    inventory.setStack(0, editedStack);
-                    if (blockEntity != null) {
-                        blockEntity.setItem(editedStack);
-                        blockEntity.saveAndSync();
-                    }
-                    inventory.markDirty();
-                    this.onContentChanged(inventory);
-                } else {
-                    Miapi.LOGGER.warn("ERROR - Couldn`t verify craft action from client " + player.getUuidAsString() + " " + player.getDisplayName().getString() + " This might be a bug or somebody is trying to exploit");
-                    Miapi.LOGGER.warn(String.valueOf(current));
-                    Miapi.LOGGER.warn(position.toString());
-                }
+                });
             });
         }
         this.context = context;
