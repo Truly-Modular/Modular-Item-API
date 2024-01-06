@@ -74,7 +74,7 @@ public class ModelProperty implements ModuleProperty {
             for (BakedMiapiModel.ModelHolder holder : getForModule(model, key, stack)) {
                 switch (MiapiConfig.CompatGroup.getRenderMode()){
                     case ALT_RENDERER -> {
-                        miapiModels.add(new AltBakedMiapiModel(holder, model, stack));
+                        miapiModels.add(new Alt2BakedMiapiModel(holder, model, stack));
                     }
                     case FALLBACK_RENDERER -> {
                         miapiModels.add(new BadShaderCompatModel(holder, model, stack));

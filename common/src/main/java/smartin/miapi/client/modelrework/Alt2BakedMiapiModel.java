@@ -11,7 +11,6 @@ import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.BakedQuad;
 import net.minecraft.client.render.model.json.ModelOverrideList;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
-import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
@@ -25,11 +24,9 @@ import smartin.miapi.modules.material.Material;
 import smartin.miapi.modules.material.MaterialProperty;
 import smartin.miapi.modules.properties.render.colorproviders.ColorProvider;
 
-import java.lang.ref.WeakReference;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 
-public class AltBakedMiapiModel implements MiapiModel {
+public class Alt2BakedMiapiModel implements MiapiModel {
     ItemModule.ModuleInstance instance;
     Material material;
     BakedModel model;
@@ -44,7 +41,7 @@ public class AltBakedMiapiModel implements MiapiModel {
 
     public Map<BakedModel, List<BakedQuad>> quadLookupMap = new HashMap<>();
 
-    public AltBakedMiapiModel(BakedMiapiModel.ModelHolder holder, ItemModule.ModuleInstance instance, ItemStack stack) {
+    public Alt2BakedMiapiModel(BakedMiapiModel.ModelHolder holder, ItemModule.ModuleInstance instance, ItemStack stack) {
         modelHolder = holder;
         this.instance = instance;
         material = MaterialProperty.getMaterial(instance);
@@ -52,22 +49,9 @@ public class AltBakedMiapiModel implements MiapiModel {
         modelMatrix = holder.matrix4f();
         model = holder.model();
         colors = new float[]{color.redAsFloat(), color.greenAsFloat(), color.blueAsFloat()};
-        AltModelAtlasManager.models.add(new WeakReference<>(this));
-        AltModelAtlasManager.shouldUpdate = true;
-    }
 
-    public Set<AltModelAtlasManager.SpriteInfoHolder> getSprites() {
-        if (spriteInfos == null) {
-            spriteInfos = new HashSet<>();
-            for (Direction direction : Direction.values()) {
-                modelHolder.model().getQuads(null, direction, random).forEach(bakedQuad -> {
-                    AltModelAtlasManager.SpriteInfoHolder holder = new AltModelAtlasManager.SpriteInfoHolder(bakedQuad.getSprite(), material);
-                    spriteInfos.add(holder);
-                    replaceSprites.put(bakedQuad.getSprite().getContents().getId(), holder.getIdentifier());
-                });
-            }
-        }
-        return spriteInfos;
+        //AltModelAtlasManager.models.add(new WeakReference<>(new AltBakedMiapiModel(holder, instance, stack)));
+        //AltModelAtlasManager.shouldUpdate = true;
     }
 
     @Override
@@ -86,9 +70,6 @@ public class AltBakedMiapiModel implements MiapiModel {
         }
         MinecraftClient.getInstance().world.getProfiler().push("BakedModel");
         assert currentModel != null;
-        RenderLayer atlasRenderLayer = RenderLayer.getEntityTranslucentCull(AltModelAtlasManager.MATERIAL_ATLAS_ID);
-        VertexConsumer atlasConsumer = ItemRenderer.getDirectItemGlintConsumer(vertexConsumers, atlasRenderLayer, true, false);
-        AtomicBoolean hasFailed = new AtomicBoolean(false);
         quadLookupMap.computeIfAbsent(currentModel, model -> {
             List<BakedQuad> rawQuads = new ArrayList<>();
             for (Direction direction : Direction.values()) {
@@ -122,22 +103,13 @@ public class AltBakedMiapiModel implements MiapiModel {
 
             return redoneQuads;
         }).forEach(bakedQuad -> {
-            Identifier replaceId = replaceSprites.get(bakedQuad.getSprite().getContents().getId());
-            Sprite replaceSprite = AltModelAtlasManager.atlasInstance.getSprite(replaceId);
-            if (replaceSprite != null) {
-                VertexConsumer consumer = replaceSprite.getTextureSpecificVertexConsumer(atlasConsumer);
-                consumer.quad(matrices.peek(), bakedQuad, colors[0], colors[1], colors[2], light, overlay);
-            } else {
-                if (material != null && modelHolder.colorProvider() instanceof ColorProvider.MaterialColorProvider && spriteInfos != null) {
-                    this.spriteInfos.add(new AltModelAtlasManager.SpriteInfoHolder(bakedQuad.getSprite(), material));
-                    hasFailed.set(true);
-                    AltModelAtlasManager.shouldUpdate = true;
-                }
+            Identifier replaceId = MaterialSpriteManager.getMaterialSprite(bakedQuad.getSprite(), material);
+            if (replaceId != null) {
+                RenderLayer atlasRenderLayer = RenderLayer.getEntityTranslucentCull(replaceId);
+                VertexConsumer atlasConsumer = ItemRenderer.getDirectItemGlintConsumer(vertexConsumers, atlasRenderLayer, true, false);
+                atlasConsumer.quad(matrices.peek(), bakedQuad, colors[0], colors[1], colors[2], light, overlay);
             }
         });
-        if (hasFailed.get()) {
-            badShaderRenderer(matrices, stack, currentModel, vertexConsumers, light, overlay);
-        }
         MinecraftClient.getInstance().world.getProfiler().pop();
         matrices.pop();
     }
