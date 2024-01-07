@@ -36,6 +36,7 @@ public class MiapiEvents {
     public static final PrioritizedEvent<PlayerTickEvent> PLAYER_TICK_START = PrioritizedEvent.createLoop();
     public static final PrioritizedEvent<PlayerTickEvent> PLAYER_TICK_END = PrioritizedEvent.createLoop();
     public static final PrioritizedEvent<MaterialCraftEvent> MATERIAL_CRAFT_EVENT = PrioritizedEvent.createLoop();
+    public static final PrioritizedEvent<SmithingEvent> SMITHING_EVENT = PrioritizedEvent.createLoop();
 
     public static class LivingHurtEvent {
         public final LivingEntity livingEntity;
@@ -69,10 +70,10 @@ public class MiapiEvents {
         CraftAction action;
 
         public MaterialCraftEventData(ItemStack crafted,
-                                  ItemStack materialStack,
-                                  Material material,
-                                  ItemModule.ModuleInstance moduleInstance,
-                                  CraftAction action) {
+                                      ItemStack materialStack,
+                                      Material material,
+                                      ItemModule.ModuleInstance moduleInstance,
+                                      CraftAction action) {
             this.crafted = crafted;
             this.material = material;
             this.materialStack = materialStack;
@@ -85,12 +86,24 @@ public class MiapiEvents {
         EventResult craft(MaterialCraftEventData data);
     }
 
+    public static class MaterialCraft {
+        public ItemStack itemStack;
+
+        public MaterialCraft(ItemStack itemStack) {
+            this.itemStack = itemStack;
+        }
+    }
+
     public interface PlayerTickEvent {
         EventResult tick(PlayerEntity player);
     }
 
     public interface GeneratedMaterialEvent {
         EventResult generated(GeneratedMaterial material, ItemStack mainIngredient, List<Item> tools, boolean isClient);
+    }
+
+    public interface SmithingEvent {
+        EventResult craft(MaterialCraft itemStack);
     }
 
     public interface BlockBreakEvent {

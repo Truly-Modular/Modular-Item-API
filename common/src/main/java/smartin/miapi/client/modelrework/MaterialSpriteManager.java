@@ -68,6 +68,8 @@ public class MaterialSpriteManager {
     }
 
     public static NativeImage transform(Sprite oldSprite, Material material) {
+        ((SpriteContentsAccessor) oldSprite.getContents()).getImage();
+
         NativeImage rawImage = ((SpriteContentsAccessor) oldSprite.getContents()).getImage();
         NativeImage image = new NativeImage(oldSprite.getContents().getWidth(), oldSprite.getContents().getHeight(), true);
         for (int x = 0; x < rawImage.getWidth(); x++) {

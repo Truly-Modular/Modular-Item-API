@@ -35,6 +35,7 @@ public interface ColorProvider {
         colorProviders.put("material", new MaterialColorProvider());
         colorProviders.put("model", new ModelColorProvider());
         colorProviders.put("potion", new PotionColorProvider());
+        colorProviders.put("parent", new ParentColorProvider());
     }
 
     static ColorProvider getProvider(String type, ItemStack itemStack, ItemModule.ModuleInstance moduleInstance) {
@@ -71,7 +72,7 @@ public interface ColorProvider {
     }
 
     class MaterialColorProvider implements ColorProvider {
-        Material material;
+        public Material material;
 
         public MaterialColorProvider() {
         }
@@ -130,6 +131,16 @@ public interface ColorProvider {
                 sprite = MiapiClient.materialAtlasManager.getMaterialSprite(MaterialAtlasManager.BASE_MATERIAL_ID);
             }
             return ((SpriteContentsAccessor) sprite.getContents()).getImage().getColor(Math.max(Math.min(color, 255), 0), 0);
+        }
+    }
+
+    class ParentColorProvider extends MaterialColorProvider {
+        @Override
+        public ColorProvider getInstance(ItemStack stack, ItemModule.ModuleInstance instance) {
+            if (instance.parent != null) {
+                return super.getInstance(stack, instance.parent);
+            }
+            return new ModelColorProvider(stack);
         }
     }
 

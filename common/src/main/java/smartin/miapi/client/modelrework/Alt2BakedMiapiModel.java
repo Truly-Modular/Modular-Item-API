@@ -45,6 +45,9 @@ public class Alt2BakedMiapiModel implements MiapiModel {
         modelHolder = holder;
         this.instance = instance;
         material = MaterialProperty.getMaterial(instance);
+        if(holder.colorProvider() instanceof ColorProvider.MaterialColorProvider colorProvider){
+            material = colorProvider.material;
+        }
         color = holder.colorProvider().getVertexColor();
         modelMatrix = holder.matrix4f();
         model = holder.model();

@@ -73,7 +73,7 @@ public class ModularItemCache {
     @Nullable
     public static UUID getUUIDFor(ItemStack stack) {
         try {
-            if(stack.getItem() instanceof ModularItem){
+            if (stack.getItem() instanceof ModularItem) {
                 return nbtCache.get(stack.getOrCreateNbt());
             }
             return null;
@@ -95,6 +95,8 @@ public class ModularItemCache {
     public static void clearUUIDFor(ItemStack stack) {
         if (stack.getItem() instanceof ModularItem) {
             nbtCache.invalidate(stack.getOrCreateNbt());
+            UUID uuid = getUUIDFor(stack);
+            cache.invalidate(uuid);
         }
     }
 

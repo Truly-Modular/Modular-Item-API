@@ -1,6 +1,7 @@
 package smartin.miapi.item;
 
 import net.minecraft.item.ItemStack;
+import smartin.miapi.registries.RegistryInventory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +24,9 @@ public class ModularItemStackConverter {
      * @return The modular version of the ItemStack.
      */
     public static ItemStack getModularVersion(ItemStack original) {
+        if (original.isIn(RegistryInventory.MIAPI_FORBIDDEN_TAG)) {
+            return original;
+        }
         for (ModularConverter converter : converters) {
             original = converter.convert(original);
         }

@@ -12,6 +12,7 @@ import smartin.miapi.Miapi;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.item.ModularItemStackConverter;
 import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.SlotProperty;
 import smartin.miapi.modules.properties.util.CraftingProperty;
 import smartin.miapi.registries.RegistryInventory;
@@ -213,8 +214,8 @@ public class CraftAction {
                     toAdd,
                     inventory,
                     buffer);
-            updateItem(craftingStack[0], module);
             craftingStack[0] = itemStacks.remove(0);
+            updateItem(craftingStack[0], module);
             for (int i = start; i < end; i++) {
                 linkedInventory.setStack(i, itemStacks.get(i - start));
             }
@@ -259,6 +260,7 @@ public class CraftAction {
                 }
             });
             newModule.writeToItem(craftingStack);
+            ModularItemCache.clearUUIDFor(craftingStack);
             return craftingStack;
         }
         ItemModule.ModuleInstance parsingInstance = newBaseModule;
@@ -328,14 +330,14 @@ public class CraftAction {
     }
 
     @Nullable
-    public ItemModule.ModuleInstance getModifyingModuleInstance(ItemStack itemStack){
-        try{
+    public ItemModule.ModuleInstance getModifyingModuleInstance(ItemStack itemStack) {
+        try {
             ItemModule.ModuleInstance parsingInstance = ItemModule.getModules(itemStack);
             for (int i = slotId.size() - 1; i >= 0; i--) {
                 parsingInstance = parsingInstance.subModules.get(slotId.get(i));
             }
             return parsingInstance;
-        }catch (Exception e){
+        } catch (Exception e) {
             return null;
         }
     }

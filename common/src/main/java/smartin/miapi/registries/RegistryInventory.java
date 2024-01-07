@@ -35,6 +35,7 @@ import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.sound.BlockSoundGroup;
@@ -101,6 +102,7 @@ public class RegistryInventory {
     public static final MiapiRegistry<ItemModule> modules = MiapiRegistry.getInstance(ItemModule.class);
     public static final MiapiRegistry<EditOption> editOptions = MiapiRegistry.getInstance(EditOption.class);
     public static final MiapiRegistry<CraftingStat> craftingStats = MiapiRegistry.getInstance(CraftingStat.class);
+    public static final TagKey<Item> MIAPI_FORBIDDEN_TAG = TagKey.of(RegistryKeys.ITEM, new Identifier("miapi_forbidden"));
 
     public static <T> RegistrySupplier<T> registerAndSupply(Registrar<T> rg, Identifier id, Supplier<T> object) {
         return rg.register(id, object);
@@ -376,23 +378,22 @@ public class RegistryInventory {
             registerMiapi(moduleConditionRegistry, "mod_loaded", new IsModLoadedCondition());
 
             //MODULEPROPERTIES
-            if(smartin.miapi.Environment.isClient()){
+            if (smartin.miapi.Environment.isClient()) {
                 registerMiapi(moduleProperties, ModelProperty.KEY, new ModelProperty());
                 registerMiapi(moduleProperties, ModelTransformationProperty.KEY, new ModelTransformationProperty());
                 registerMiapi(moduleProperties, ModelMergeProperty.KEY, new ModelMergeProperty());
                 registerMiapi(moduleProperties, GuiOffsetProperty.KEY, new GuiOffsetProperty());
                 registerMiapi(moduleProperties, ItemModelProperty.KEY, new ItemModelProperty());
                 registerMiapi(moduleProperties, LoreProperty.KEY, new LoreProperty());
-                registerMiapi(moduleProperties, BannerModelProperty.KEY,new BannerModelProperty());
-            }
-            else{
+                registerMiapi(moduleProperties, BannerModelProperty.KEY, new BannerModelProperty());
+            } else {
                 registerMiapi(moduleProperties, "texture", new ServerReplaceProperty());
                 registerMiapi(moduleProperties, "modelTransform", new ServerReplaceProperty());
                 registerMiapi(moduleProperties, "modelMerge", new ServerReplaceProperty());
                 registerMiapi(moduleProperties, "guiOffset", new ServerReplaceProperty());
                 registerMiapi(moduleProperties, "item_model", new ServerReplaceProperty());
                 registerMiapi(moduleProperties, "itemLore", new ServerReplaceProperty());
-                registerMiapi(moduleProperties, "banner",new ServerReplaceProperty());
+                registerMiapi(moduleProperties, "banner", new ServerReplaceProperty());
             }
             registerMiapi(moduleProperties, NameProperty.KEY, new NameProperty());
             registerMiapi(moduleProperties, SlotProperty.KEY, new SlotProperty());

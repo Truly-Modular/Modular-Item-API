@@ -26,6 +26,17 @@
     "properties": {
         "head": {
             "fracturing": "20"
+        },
+        "default": {
+            "enchantments": {
+                "allowed": [
+                    "minecraft:riptide"
+                ]
+            },
+            "crafting_enchants": {
+                "minecraft:sharpness": 5,
+                "minecraft:riptide": 3
+            }
         }
     },
     "mining_speed": 4,

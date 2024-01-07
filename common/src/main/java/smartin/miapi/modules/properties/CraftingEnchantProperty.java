@@ -1,8 +1,9 @@
 package smartin.miapi.modules.properties;
 
-import com.google.gson.reflect.TypeToken;
 import com.google.gson.JsonElement;
+import com.google.gson.reflect.TypeToken;
 import com.mojang.datafixers.util.Pair;
+import dev.architectury.event.EventResult;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.PlayerEntity;
@@ -15,6 +16,7 @@ import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.craft.CraftAction;
+import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.util.CraftingProperty;
 import smartin.miapi.modules.properties.util.MergeType;
@@ -25,7 +27,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static net.minecraft.enchantment.EnchantmentHelper.*;
+import static net.minecraft.enchantment.EnchantmentHelper.getEnchantmentId;
+import static net.minecraft.enchantment.EnchantmentHelper.getIdFromNbt;
 
 public class CraftingEnchantProperty implements ModuleProperty, CraftingProperty {
     public static final String KEY = "crafting_enchants";
@@ -35,10 +38,15 @@ public class CraftingEnchantProperty implements ModuleProperty, CraftingProperty
 
     public CraftingEnchantProperty() {
         property = this;
+        MiapiEvents.SMITHING_EVENT.register((listener) -> {
+            listener.itemStack = applyEnchants(listener.itemStack);
+            return EventResult.pass();
+        });
     }
 
     private static List<Pair<Enchantment, Integer>> getEnchantsCache(ItemStack itemStack) {
         List<Pair<Enchantment, Integer>> enchants = new ArrayList<>();
+
         JsonElement list = ItemModule.getMergedProperty(itemStack, property, MergeType.SMART);
         ItemModule.getMergedProperty(ItemModule.getModules(itemStack), property);
         Map<String, Integer> map = Miapi.gson.fromJson(list, type);
@@ -54,21 +62,23 @@ public class CraftingEnchantProperty implements ModuleProperty, CraftingProperty
     }
 
     public JsonElement merge(JsonElement old, JsonElement toMerge, MergeType mergeType) {
-        if(old!=null && toMerge!=null){
+        if (old != null && toMerge != null) {
             Map<String, Integer> mapOld = Miapi.gson.fromJson(old, type);
             Map<String, Integer> mapToMerge = Miapi.gson.fromJson(toMerge, type);
-            if(mergeType.equals(MergeType.OVERWRITE)){
+            if (mergeType.equals(MergeType.OVERWRITE)) {
                 return toMerge;
             }
-            mapOld.forEach((key,level)->{
-                if(mapToMerge.containsKey(key)){
-                    mapToMerge.put(key,Math.max(mapOld.get(key),mapToMerge.get(key)));
-                }
-                else{
-                    mapToMerge.put(key,level);
+            mapOld.forEach((key, level) -> {
+                if (mapToMerge.containsKey(key)) {
+                    mapToMerge.put(key, Math.max(mapOld.get(key), mapToMerge.get(key)));
+                } else {
+                    mapToMerge.put(key, level);
                 }
             });
             return Miapi.gson.toJsonTree(mapToMerge);
+        }
+        if (old == null && toMerge != null) {
+            return toMerge;
         }
         return old;
     }
@@ -86,16 +96,20 @@ public class CraftingEnchantProperty implements ModuleProperty, CraftingProperty
 
     @Override
     public ItemStack preview(ItemStack old, ItemStack crafting, PlayerEntity player, ModularWorkBenchEntity bench, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<String, String> data) {
+        return applyEnchants(crafting);
+    }
+
+    public ItemStack applyEnchants(ItemStack crafting) {
         getEnchantsCache(crafting).forEach((enchantmentIntegerPair -> {
             Enchantment enchantment = enchantmentIntegerPair.getFirst();
             int level = enchantmentIntegerPair.getSecond();
             if (enchantment.isAcceptableItem(crafting)) {
                 int prevLevel = EnchantmentHelper.getLevel(enchantment, crafting);
                 if (level > prevLevel) {
-                    if(prevLevel>0){
-                        removeEnchant(enchantment,crafting);
+                    if (prevLevel > 0) {
+                        removeEnchant(enchantment, crafting);
                     }
-                    crafting.addEnchantment(enchantment,level);
+                    crafting.addEnchantment(enchantment, level);
                 }
             }
         }));
@@ -109,7 +123,7 @@ public class CraftingEnchantProperty implements ModuleProperty, CraftingProperty
             Identifier identifier = getEnchantmentId(enchantment);
             NbtList nbtList = stack.getEnchantments();
 
-            for(int i = 0; i < nbtList.size(); ++i) {
+            for (int i = 0; i < nbtList.size(); ++i) {
                 NbtCompound nbtCompound = nbtList.getCompound(i);
                 Identifier identifier2 = getIdFromNbt(nbtCompound);
                 if (identifier2 != null && identifier2.equals(identifier)) {

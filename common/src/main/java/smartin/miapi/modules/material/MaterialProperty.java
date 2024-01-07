@@ -21,6 +21,7 @@ import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
+import smartin.miapi.registries.RegistryInventory;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -96,6 +97,7 @@ public class MaterialProperty implements ModuleProperty {
                     .collect(Collectors.toSet())
                     .stream()
                     .filter(toolMaterial -> toolMaterial.getRepairIngredient().getMatchingStacks().length > 0)
+                    .filter(toolMaterial -> !toolMaterial.getRepairIngredient().getMatchingStacks()[0].isIn(RegistryInventory.MIAPI_FORBIDDEN_TAG))
                     .filter(toolMaterial -> Arrays.stream(toolMaterial.getRepairIngredient().getMatchingStacks()).allMatch(itemStack -> getMaterialFromIngredient(itemStack) == null && !itemStack.getItem().equals(Items.BARRIER)))
                     .collect(Collectors.toSet()).forEach(toolMaterial -> {
                         GeneratedMaterial generatedMaterial = new GeneratedMaterial(toolMaterial, isClient);
@@ -105,27 +107,30 @@ public class MaterialProperty implements ModuleProperty {
                             Miapi.LOGGER.warn("Couldn't correctly setup material for " + generatedMaterial.mainIngredient.getItem());
                         }
                     });
-            Registries.ITEM.stream().filter(item -> item.getDefaultStack().isIn(ItemTags.PLANKS)).forEach(item -> {
+            Registries.ITEM.stream().filter(item ->
+                    item.getDefaultStack().isIn(ItemTags.PLANKS) &&
+                            !item.getDefaultStack().isIn(RegistryInventory.MIAPI_FORBIDDEN_TAG)).forEach(item -> {
                 if (getMaterialFromIngredient(item.getDefaultStack()) == null) {
                     GeneratedMaterial generatedMaterial = new GeneratedMaterial(ToolMaterials.WOOD, item.getDefaultStack(), isClient);
                     materials.put(generatedMaterial.getKey(), generatedMaterial);
                     generatedMaterial.copyStatsFrom(materials.get("wood"));
                 }
             });
-            Registries.ITEM.stream().filter(item -> item.getDefaultStack().isIn(ItemTags.STONE_TOOL_MATERIALS)).forEach(item -> {
+            Registries.ITEM.stream().filter(item -> item.getDefaultStack().isIn(ItemTags.STONE_TOOL_MATERIALS) &&
+                    !item.getDefaultStack().isIn(RegistryInventory.MIAPI_FORBIDDEN_TAG)).forEach(item -> {
                 if (getMaterialFromIngredient(item.getDefaultStack()) == null) {
                     GeneratedMaterial generatedMaterial = new GeneratedMaterial(ToolMaterials.STONE, item.getDefaultStack(), isClient);
                     materials.put(generatedMaterial.getKey(), generatedMaterial);
                     generatedMaterial.copyStatsFrom(materials.get("stone"));
                 }
             });
-            if(isClient){
+            if (isClient) {
                 MaterialProperty.materials.values().stream()
                         .filter(GeneratedMaterial.class::isInstance)
                         .forEach(generatedMaterial -> ((GeneratedMaterial) generatedMaterial).testForSmithingMaterial(isClient));
             }
         }, -1f);
-        LifecycleEvent.SERVER_BEFORE_START.register(server->{
+        LifecycleEvent.SERVER_BEFORE_START.register(server -> {
             MaterialProperty.materials.values().stream()
                     .filter(GeneratedMaterial.class::isInstance)
                     .forEach(generatedMaterial -> ((GeneratedMaterial) generatedMaterial).testForSmithingMaterial(false));

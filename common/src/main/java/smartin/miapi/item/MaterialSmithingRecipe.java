@@ -11,6 +11,7 @@ import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.world.World;
+import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.material.Material;
@@ -112,7 +113,9 @@ public class MaterialSmithingRecipe implements SmithingRecipe {
             });
             instance.writeToItem(old);
         }
-        return old;
+        MiapiEvents.MaterialCraft data = new MiapiEvents.MaterialCraft(old);
+        MiapiEvents.SMITHING_EVENT.invoker().craft(data);
+        return data.itemStack;
     }
 
     /**
