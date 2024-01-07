@@ -17,6 +17,7 @@ import java.util.List;
 public abstract class DoubleProperty implements ModuleProperty {
     public ModuleProperty property;
     protected String privateKey;
+    public double baseValue = 0;
 
     protected DoubleProperty(String key) {
         property = this;
@@ -55,8 +56,8 @@ public abstract class DoubleProperty implements ModuleProperty {
         }
     }
 
-    private static Double createValue(ItemStack itemStack, ModuleProperty property) {
-        double value = 0;
+    private Double createValue(ItemStack itemStack, ModuleProperty property) {
+        double value = baseValue;
         boolean hasValue = false;
         List<Double> addition = new ArrayList<>();
         List<Double> multiplyBase = new ArrayList<>();

@@ -454,6 +454,7 @@ public class RegistryInventory {
             registerMiapi(moduleProperties, CraftingEnchantProperty.KEY, new CraftingEnchantProperty());
             registerMiapi(moduleProperties, ExhaustionProperty.KEY, new ExhaustionProperty());
             registerMiapi(moduleProperties, MaterialInscribeDataProperty.KEY, new MaterialInscribeDataProperty());
+            registerMiapi(moduleProperties, MiningSpeedProperty.KEY, new MiningSpeedProperty());
             //compat
             registerMiapi(moduleProperties, BetterCombatProperty.KEY, new BetterCombatProperty());
 
