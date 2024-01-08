@@ -26,7 +26,6 @@ import smartin.miapi.client.gui.crafting.CraftingScreen;
 import smartin.miapi.client.gui.crafting.statdisplay.StatListWidget;
 import smartin.miapi.client.model.CustomColorProvider;
 import smartin.miapi.client.model.ModularModelPredicateProvider;
-import smartin.miapi.client.modelrework.MaterialSpriteManager;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.effects.CryoStatusEffect;
 import smartin.miapi.entity.ItemProjectileRenderer;
@@ -56,7 +55,7 @@ public class MiapiClient {
     public static void init() {
         RegistryInventory.modularItems.addCallback((MiapiClient::registerAnimations));
         ClientTickEvent.CLIENT_PRE.register((client)->{
-            MaterialSpriteManager.tick();
+            //MaterialSpriteManager.tick();
         });
         registerShaders();
         PaletteCreators.setup();

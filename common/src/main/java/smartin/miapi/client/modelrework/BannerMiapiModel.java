@@ -17,6 +17,7 @@ import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.math.RotationAxis;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 
 import java.util.List;
@@ -62,6 +63,7 @@ public class BannerMiapiModel implements MiapiModel {
                 matrices.translate(8, -8, -8.75);
                 matrices.scale(1, 1, -1);
                 matrices.multiplyPositionMatrix(transform);
+                matrices.peek().getNormalMatrix().mul(transform.get3x3(new Matrix3f()));
                 matrices.scale(16f, 16f, 1f);
                 matrices.scale(1 / 20f, 1 / 20f, 2f);
                 BannerBlockEntityRenderer.renderCanvas(matrices, vertexConsumers, light, overlay, banner, ModelLoader.BANNER_BASE, true, patterns, stack.hasGlint());
@@ -71,6 +73,7 @@ public class BannerMiapiModel implements MiapiModel {
                 matrices.translate(8, -8, -7.25);
                 matrices.scale(1, 1, 1);
                 matrices.multiplyPositionMatrix(transform);
+                matrices.peek().getNormalMatrix().mul(transform.get3x3(new Matrix3f()));
                 matrices.scale(16f, 16f, 1f);
                 matrices.scale(1 / 20f, 1 / 20f, 2f);
                 BannerBlockEntityRenderer.renderCanvas(matrices, vertexConsumers, light, overlay, banner, ModelLoader.BANNER_BASE, true, patterns, stack.hasGlint());
@@ -104,6 +107,7 @@ public class BannerMiapiModel implements MiapiModel {
                 matrices.translate(0, -1, 0);
                 matrices.push();
                 matrices.multiplyPositionMatrix(new Matrix4f(transform));
+                matrices.peek().getNormalMatrix().mul(transform.get3x3(new Matrix3f()));
                 matrices.scale(16f, 16f, 16f);
                 matrices.scale(1 / 20f, 1 / 20f, 1 / 20f);
                 BannerBlockEntityRenderer.renderCanvas(matrices, vertexConsumers, light, overlay, banner, ModelLoader.BANNER_BASE, true, patterns, stack.hasGlint());
