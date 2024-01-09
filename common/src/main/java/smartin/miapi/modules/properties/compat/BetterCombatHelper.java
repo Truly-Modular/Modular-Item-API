@@ -34,7 +34,7 @@ public class BetterCombatHelper {
         if (stack.getItem() instanceof ModularItem) {
             net.bettercombat.api.WeaponAttributes attributes = container(ItemModule.getMergedProperty(stack, BetterCombatProperty.property));
             if (attributes != null) {
-                attributes = new net.bettercombat.api.WeaponAttributes(getAttackRange(stack), attributes.pose(), attributes.offHandPose(), attributes.isTwoHanded(), attributes.category(), attributes.attacks());
+                attributes = new net.bettercombat.api.WeaponAttributes(attributes.attackRange()+getAttackRange(stack)-2.5, attributes.pose(), attributes.offHandPose(), attributes.isTwoHanded(), attributes.category(), attributes.attacks());
             }
             return attributes;
         } else {
@@ -46,7 +46,7 @@ public class BetterCombatHelper {
         if (stack.getItem() instanceof ModularItem) {
             net.bettercombat.api.WeaponAttributes attributes = container(ItemModule.getMergedProperty(stack, BetterCombatProperty.property));
             if (attributes != null) {
-                attributes = new net.bettercombat.api.WeaponAttributes(getAttackRange(stack), attributes.pose(), attributes.offHandPose(), attributes.isTwoHanded(), attributes.category(), attributes.attacks());
+                attributes = new net.bettercombat.api.WeaponAttributes(attributes.attackRange()+getAttackRange(stack)-2.5, attributes.pose(), attributes.offHandPose(), attributes.isTwoHanded(), attributes.category(), attributes.attacks());
             }
             return attributes;
         } else {
