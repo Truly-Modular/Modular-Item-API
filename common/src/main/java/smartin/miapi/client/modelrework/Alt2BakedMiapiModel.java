@@ -121,8 +121,8 @@ public class Alt2BakedMiapiModel implements MiapiModel {
             Identifier replaceId = MaterialSpriteManager.getMaterialSprite(bakedQuad.getSprite(), material);
             if (replaceId != null) {
                 RenderLayer atlasRenderLayer = RenderLayer.getEntityTranslucentCull(replaceId);
-                VertexConsumer atlasConsumer = ItemRenderer.getDirectItemGlintConsumer(vertexConsumers, atlasRenderLayer, false, false);
-                atlasConsumer = vertexConsumers.getBuffer(atlasRenderLayer);
+                VertexConsumer atlasConsumer = ItemRenderer.getDirectItemGlintConsumer(vertexConsumers, atlasRenderLayer, true, false);
+                //atlasConsumer = vertexConsumers.getBuffer(atlasRenderLayer);
                 atlasConsumer.quad(matrices.peek(), bakedQuad, colors[0], colors[1], colors[2], light, overlay);
 
 
@@ -134,6 +134,15 @@ public class Alt2BakedMiapiModel implements MiapiModel {
                         }
                     }
                 }
+            }
+        });
+        ModelTransformer.getRescaleInverse(currentModel, random).forEach(bakedQuad -> {
+            Identifier replaceId = MaterialSpriteManager.getMaterialSprite(bakedQuad.getSprite(), material);
+            if (replaceId != null) {
+                RenderLayer atlasRenderLayer = RenderLayer.getEntityTranslucentCull(replaceId);
+                VertexConsumer atlasConsumer = ItemRenderer.getDirectItemGlintConsumer(vertexConsumers, atlasRenderLayer, true, false);
+                //atlasConsumer = vertexConsumers.getBuffer(atlasRenderLayer);
+                atlasConsumer.quad(matrices.peek(), bakedQuad, colors[0], colors[1], colors[2], light, overlay);
             }
         });
         MinecraftClient.getInstance().world.getProfiler().pop();
@@ -153,16 +162,6 @@ public class Alt2BakedMiapiModel implements MiapiModel {
             currentModel.getQuads(null, direction, random).forEach(bakedQuad -> {
                 consumer.quad(matrices.peek(), bakedQuad, materialColor.redAsFloat(), materialColor.greenAsFloat(), materialColor.blueAsFloat(), light, overlay);
             });
-        }
-    }
-
-    private void renderTrim(ArmorMaterial material, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, ArmorTrim trim, BakedModel model, boolean leggings) {
-        Sprite sprite = this.armorTrimsAtlas.getSprite(leggings ? trim.getLeggingsModelId(material) : trim.getGenericModelId(material));
-        VertexConsumer vertexConsumer = sprite.getTextureSpecificVertexConsumer(vertexConsumers.getBuffer(TexturedRenderLayers.getArmorTrims()));
-
-        for (Direction direction : Direction.values()) {
-            model.getQuads(null, direction, random)
-                    .forEach(bakedQuad -> vertexConsumer.quad(matrices.peek(), bakedQuad, colors[0], colors[1], colors[2], light, OverlayTexture.DEFAULT_UV));
         }
     }
 }
