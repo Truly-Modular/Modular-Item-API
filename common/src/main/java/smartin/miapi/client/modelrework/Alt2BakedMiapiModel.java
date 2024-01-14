@@ -136,15 +136,17 @@ public class Alt2BakedMiapiModel implements MiapiModel {
                 }
             }
         });
-        ModelTransformer.getRescaleInverse(currentModel, random).forEach(bakedQuad -> {
-            Identifier replaceId = MaterialSpriteManager.getMaterialSprite(bakedQuad.getSprite(), material);
-            if (replaceId != null) {
-                RenderLayer atlasRenderLayer = RenderLayer.getEntityTranslucentCull(replaceId);
-                VertexConsumer atlasConsumer = ItemRenderer.getDirectItemGlintConsumer(vertexConsumers, atlasRenderLayer, true, false);
-                //atlasConsumer = vertexConsumers.getBuffer(atlasRenderLayer);
-                atlasConsumer.quad(matrices.peek(), bakedQuad, colors[0], colors[1], colors[2], light, overlay);
-            }
-        });
+        if(modelHolder.entityRendering()){
+            ModelTransformer.getRescaleInverse(currentModel, random).forEach(bakedQuad -> {
+                Identifier replaceId = MaterialSpriteManager.getMaterialSprite(bakedQuad.getSprite(), material);
+                if (replaceId != null) {
+                    RenderLayer atlasRenderLayer = RenderLayer.getEntityTranslucentCull(replaceId);
+                    VertexConsumer atlasConsumer = ItemRenderer.getDirectItemGlintConsumer(vertexConsumers, atlasRenderLayer, true, false);
+                    //atlasConsumer = vertexConsumers.getBuffer(atlasRenderLayer);
+                    atlasConsumer.quad(matrices.peek(), bakedQuad, colors[0], colors[1], colors[2], light, overlay);
+                }
+            });
+        }
         MinecraftClient.getInstance().world.getProfiler().pop();
         matrices.pop();
     }

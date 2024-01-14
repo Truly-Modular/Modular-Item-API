@@ -144,7 +144,7 @@ public class ModelProperty implements ModuleProperty {
                         if (colorProvider == null) {
                             throw new RuntimeException("colorProvider is null");
                         }
-                        models.add(new BakedMiapiModel.ModelHolder(model.optimize(), matrix4f, colorProvider, json.getTrimMode()));
+                        models.add(new BakedMiapiModel.ModelHolder(model.optimize(), matrix4f, colorProvider, json.getTrimMode(), json.entity_render));
                     }
                 }
             }
@@ -406,6 +406,7 @@ public class ModelProperty implements ModuleProperty {
         public String condition = "1";
         public String color_provider = "material";
         public String trim_mode;
+        public Boolean entity_render = false;
 
         public void repair() {
             //this shouldn't be necessary as the values should be loaded from the class but anyways
@@ -413,9 +414,12 @@ public class ModelProperty implements ModuleProperty {
                 transform = Transform.IDENTITY;
             }
             transform = Transform.repair(transform);
+            if (entity_render == null) {
+                entity_render = !this.getTrimMode().equals(TrimRenderer.TrimMode.NONE);
+            }
         }
 
-        public TrimRenderer.TrimMode getTrimMode(){
+        public TrimRenderer.TrimMode getTrimMode() {
             if (trim_mode == null) {
                 return TrimRenderer.TrimMode.NONE;
             } else {

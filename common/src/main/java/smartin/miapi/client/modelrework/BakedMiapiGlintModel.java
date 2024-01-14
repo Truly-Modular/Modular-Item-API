@@ -2,14 +2,17 @@ package smartin.miapi.client.modelrework;
 
 import com.redpxnda.nucleus.util.Color;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.json.ModelOverrideList;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 import org.joml.Matrix4f;
@@ -78,6 +81,20 @@ public class BakedMiapiGlintModel implements MiapiModel {
                                     glintColor.blueAsFloat(),
                                     light,
                                     overlay));
+        }
+        if (modelHolder.entityRendering()) {
+            ModelTransformer.getRescaleInverse(currentModel, random).forEach(bakedQuad -> {
+                Identifier replaceId = MaterialSpriteManager.getMaterialSprite(bakedQuad.getSprite(), material);
+                if (replaceId != null) {
+                    RenderLayer atlasRenderLayer = RenderLayer.getEntityTranslucentCull(replaceId);
+                    VertexConsumer atlasConsumer = ItemRenderer.getDirectItemGlintConsumer(vertexConsumerProvider, atlasRenderLayer, true, false);
+                    //atlasConsumer = vertexConsumers.getBuffer(atlasRenderLayer);
+                    atlasConsumer.quad(matrices.peek(), bakedQuad,
+                            glintColor.redAsFloat(),
+                            glintColor.greenAsFloat(),
+                            glintColor.blueAsFloat(), light, overlay);
+                }
+            });
         }
         MinecraftClient.getInstance().world.getProfiler().pop();
         matrices.pop();

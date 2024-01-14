@@ -2,11 +2,9 @@ package smartin.miapi.client.modelrework;
 
 import com.redpxnda.nucleus.util.Color;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.OverlayTexture;
-import net.minecraft.client.render.TexturedRenderLayers;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.*;
 import net.minecraft.client.render.entity.feature.ArmorFeatureRenderer;
+import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.json.ModelOverrideList;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
@@ -19,6 +17,7 @@ import net.minecraft.item.ArmorMaterial;
 import net.minecraft.item.ArmorMaterials;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.trim.ArmorTrim;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 import org.joml.Matrix4f;
@@ -72,6 +71,19 @@ public class BakedMiapiModel implements MiapiModel {
             });
         }
 
+        if (modelHolder.entityRendering()) {
+            ModelTransformer.getRescaleInverse(currentModel, random).forEach(bakedQuad -> {
+                Identifier replaceId = MaterialSpriteManager.getMaterialSprite(bakedQuad.getSprite(), material);
+                if (replaceId != null) {
+                    RenderLayer atlasRenderLayer = RenderLayer.getEntityTranslucentCull(replaceId);
+                    VertexConsumer atlasConsumer = ItemRenderer.getDirectItemGlintConsumer(vertexConsumers, atlasRenderLayer, true, false);
+                    //atlasConsumer = vertexConsumers.getBuffer(atlasRenderLayer);
+                    atlasConsumer.quad(matrices.peek(), bakedQuad,
+                            colors[0], colors[1], colors[2], light, overlay);
+                }
+            });
+        }
+
         MinecraftClient.getInstance().world.getProfiler().pop();
         MinecraftClient.getInstance().world.getProfiler().pop();
         matrices.pop();
@@ -88,7 +100,7 @@ public class BakedMiapiModel implements MiapiModel {
     }
 
     public record ModelHolder(BakedModel model, Matrix4f matrix4f, ColorProvider colorProvider,
-                              TrimRenderer.TrimMode trimMode) {
+                              TrimRenderer.TrimMode trimMode, boolean entityRendering) {
 
     }
 }
