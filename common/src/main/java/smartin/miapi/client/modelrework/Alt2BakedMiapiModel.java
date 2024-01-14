@@ -2,18 +2,21 @@ package smartin.miapi.client.modelrework;
 
 import com.redpxnda.nucleus.util.Color;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.RenderLayers;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.*;
+import net.minecraft.client.render.entity.feature.ArmorFeatureRenderer;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.BakedQuad;
 import net.minecraft.client.render.model.json.ModelOverrideList;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
+import net.minecraft.client.texture.Sprite;
+import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.item.ArmorItem;
+import net.minecraft.item.ArmorMaterial;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.trim.ArmorTrim;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
@@ -38,6 +41,8 @@ public class Alt2BakedMiapiModel implements MiapiModel {
     Map<Identifier, Identifier> replaceSprites = new HashMap<>();
     public boolean uploaded = false;
     Set<AltModelAtlasManager.SpriteInfoHolder> spriteInfos;
+    private final SpriteAtlasTexture armorTrimsAtlas = MinecraftClient.getInstance().getBakedModelManager().getAtlas(TexturedRenderLayers.ARMOR_TRIMS_ATLAS_TEXTURE);
+
 
     public Map<BakedModel, List<BakedQuad>> quadLookupMap = new HashMap<>();
 
@@ -45,7 +50,7 @@ public class Alt2BakedMiapiModel implements MiapiModel {
         modelHolder = holder;
         this.instance = instance;
         material = MaterialProperty.getMaterial(instance);
-        if(holder.colorProvider() instanceof ColorProvider.MaterialColorProvider colorProvider){
+        if (holder.colorProvider() instanceof ColorProvider.MaterialColorProvider colorProvider) {
             material = colorProvider.material;
         }
         color = holder.colorProvider().getVertexColor();
@@ -73,6 +78,13 @@ public class Alt2BakedMiapiModel implements MiapiModel {
         }
         MinecraftClient.getInstance().world.getProfiler().push("BakedModel");
         assert currentModel != null;
+        ArmorTrim trim = ArmorTrim.getTrim(entity.getWorld().getRegistryManager(), stack).orElse(null);
+        ArmorMaterial armorMaterial;
+        if (stack.getItem() instanceof ArmorItem armorItem) {
+            armorMaterial = armorItem.getMaterial();
+        } else {
+            armorMaterial = null;
+        }
         quadLookupMap.computeIfAbsent(currentModel, model -> {
             List<BakedQuad> rawQuads = new ArrayList<>();
             for (Direction direction : Direction.values()) {
@@ -109,8 +121,19 @@ public class Alt2BakedMiapiModel implements MiapiModel {
             Identifier replaceId = MaterialSpriteManager.getMaterialSprite(bakedQuad.getSprite(), material);
             if (replaceId != null) {
                 RenderLayer atlasRenderLayer = RenderLayer.getEntityTranslucentCull(replaceId);
-                VertexConsumer atlasConsumer = ItemRenderer.getDirectItemGlintConsumer(vertexConsumers, atlasRenderLayer, true, false);
+                VertexConsumer atlasConsumer = ItemRenderer.getDirectItemGlintConsumer(vertexConsumers, atlasRenderLayer, false, false);
+                atlasConsumer = vertexConsumers.getBuffer(atlasRenderLayer);
                 atlasConsumer.quad(matrices.peek(), bakedQuad, colors[0], colors[1], colors[2], light, overlay);
+
+
+                if (trim != null) {
+                    if (armorMaterial != null) {
+                        if (!modelHolder.trimMode().equals(TrimRenderer.TrimMode.NONE)) {
+                            TrimRenderer.renderTrims(matrices, bakedQuad, modelHolder.trimMode(), light, vertexConsumers, armorMaterial, stack);
+
+                        }
+                    }
+                }
             }
         });
         MinecraftClient.getInstance().world.getProfiler().pop();
@@ -130,6 +153,16 @@ public class Alt2BakedMiapiModel implements MiapiModel {
             currentModel.getQuads(null, direction, random).forEach(bakedQuad -> {
                 consumer.quad(matrices.peek(), bakedQuad, materialColor.redAsFloat(), materialColor.greenAsFloat(), materialColor.blueAsFloat(), light, overlay);
             });
+        }
+    }
+
+    private void renderTrim(ArmorMaterial material, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, ArmorTrim trim, BakedModel model, boolean leggings) {
+        Sprite sprite = this.armorTrimsAtlas.getSprite(leggings ? trim.getLeggingsModelId(material) : trim.getGenericModelId(material));
+        VertexConsumer vertexConsumer = sprite.getTextureSpecificVertexConsumer(vertexConsumers.getBuffer(TexturedRenderLayers.getArmorTrims()));
+
+        for (Direction direction : Direction.values()) {
+            model.getQuads(null, direction, random)
+                    .forEach(bakedQuad -> vertexConsumer.quad(matrices.peek(), bakedQuad, colors[0], colors[1], colors[2], light, OverlayTexture.DEFAULT_UV));
         }
     }
 }

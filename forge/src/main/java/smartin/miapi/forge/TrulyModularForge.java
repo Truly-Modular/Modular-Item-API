@@ -35,6 +35,17 @@ public class TrulyModularForge {
         //ATTRIBUTE REPLACEMENT
         //AttributeRegistry.REACH = ForgeMod.BLOCK_REACH.getRaw();
         //AttributeRegistry.ATTACK_RANGE = ForgeMod.ENTITY_REACH.getRaw();
+        /*
+        ApoliAPI api;
+        ApoliAPI.getPowerContainer(null).getOwner();
+        ItemOnItemPower power;
+        ItemHasPowerConfiguration itemHasPowerConfiguration;
+        ItemHasPowerConfiguration itemHasPowerConfiguration1;
+        ItemStackMixin mixin;
+        ItemAction action;
+         */
+
+
         LifecycleEvent.SERVER_STARTING.register((instance -> {
             AttributeRegistry.REACH = ForgeMod.BLOCK_REACH.get();
             AttributeRegistry.ATTACK_RANGE = ForgeMod.ENTITY_REACH.get();

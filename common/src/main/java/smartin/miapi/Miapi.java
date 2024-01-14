@@ -7,9 +7,14 @@ import com.redpxnda.nucleus.registry.NucleusNamespaces;
 import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.event.events.common.PlayerEvent;
 import dev.architectury.registry.ReloadListenerRegistry;
+import net.minecraft.item.Items;
+import net.minecraft.item.trim.ArmorTrim;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.resource.ResourceType;
+import net.minecraft.screen.SmithingScreenHandler;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.command.SpawnArmorTrimsCommand;
 import net.minecraft.text.Text;
 import net.minecraft.util.JsonHelper;
 import org.apache.logging.log4j.util.TriConsumer;
@@ -51,6 +56,11 @@ public class Miapi {
     public static Gson gson = new Gson();
 
     public static void init() {
+        SpawnArmorTrimsCommand command;
+        ArmorTrim armorTrim;
+        SmithingScreenHandler smithingScreenHandler;
+        //Items.ACACIA_PLANKS;
+        //ItemTags.TRIMMABLE_ARMOR;
         MiapiConfig.getInstance();
         setupNetworking();
         RegistryInventory.setup();

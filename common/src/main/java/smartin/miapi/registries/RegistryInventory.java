@@ -452,6 +452,7 @@ public class RegistryInventory {
             registerMiapi(moduleProperties, BlueprintProperty.KEY, new BlueprintProperty());
             registerMiapi(moduleProperties, WaterGravityProperty.KEY, new WaterGravityProperty());
             registerMiapi(moduleProperties, CraftingEnchantProperty.KEY, new CraftingEnchantProperty());
+            registerMiapi(moduleProperties, FakeEnchantmentProperty.KEY, new FakeEnchantmentProperty());
             registerMiapi(moduleProperties, ExhaustionProperty.KEY, new ExhaustionProperty());
             registerMiapi(moduleProperties, MaterialInscribeDataProperty.KEY, new MaterialInscribeDataProperty());
             //compat

@@ -1,2 +1,2 @@
-## v1.1.7 (1.20.1)
-- changed attackrange calculations for BC
+## v1.1.8 (1.20.1)
+- added Fake-Enchantment Property

@@ -72,7 +72,7 @@ public class ModelProperty implements ModuleProperty {
             GlintProperty.GlintSettings settings = GlintProperty.property.getGlintSettings(model, stack);
             List<MiapiModel> miapiModels = new ArrayList<>();
             for (BakedMiapiModel.ModelHolder holder : getForModule(model, key, stack)) {
-                switch (MiapiConfig.CompatGroup.getRenderMode()){
+                switch (MiapiConfig.CompatGroup.getRenderMode()) {
                     case ALT_RENDERER -> {
                         miapiModels.add(new Alt2BakedMiapiModel(holder, model, stack));
                     }
@@ -144,7 +144,7 @@ public class ModelProperty implements ModuleProperty {
                         if (colorProvider == null) {
                             throw new RuntimeException("colorProvider is null");
                         }
-                        models.add(new BakedMiapiModel.ModelHolder(model.optimize(), matrix4f, colorProvider));
+                        models.add(new BakedMiapiModel.ModelHolder(model.optimize(), matrix4f, colorProvider, json.getTrimMode()));
                     }
                 }
             }
@@ -405,6 +405,7 @@ public class ModelProperty implements ModuleProperty {
         public Transform transform = Transform.IDENTITY;
         public String condition = "1";
         public String color_provider = "material";
+        public String trim_mode;
 
         public void repair() {
             //this shouldn't be necessary as the values should be loaded from the class but anyways
@@ -412,6 +413,27 @@ public class ModelProperty implements ModuleProperty {
                 transform = Transform.IDENTITY;
             }
             transform = Transform.repair(transform);
+        }
+
+        public TrimRenderer.TrimMode getTrimMode(){
+            if (trim_mode == null) {
+                return TrimRenderer.TrimMode.NONE;
+            } else {
+                switch (trim_mode.toLowerCase()) {
+                    case "armor_layer_one": {
+                        return TrimRenderer.TrimMode.ARMOR_LAYER_ONE;
+                    }
+                    case "armor_layer_two": {
+                        return TrimRenderer.TrimMode.ARMOR_LAYER_TWO;
+                    }
+                    case "item": {
+                        return TrimRenderer.TrimMode.ITEM;
+                    }
+                    default: {
+                        return TrimRenderer.TrimMode.NONE;
+                    }
+                }
+            }
         }
     }
 

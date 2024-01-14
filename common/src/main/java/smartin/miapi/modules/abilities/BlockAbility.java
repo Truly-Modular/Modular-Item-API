@@ -36,13 +36,13 @@ public class BlockAbility extends EntityAttributeAbility {
     UUID attributeUUID = UUID.fromString("3e91990e-4774-11ee-be56-0242ac120002");
 
     public BlockAbility() {
-        if(smartin.miapi.Environment.isClient()){
+        if (smartin.miapi.Environment.isClient()) {
             clientSetup();
         }
     }
 
     @Environment(EnvType.CLIENT)
-    public void clientSetup(){
+    public void clientSetup() {
         LoreProperty.bottomLoreSuppliers.add(itemStack -> {
             List<Text> texts = new ArrayList<>();
             if (AbilityProperty.property.isPrimaryAbility(this, itemStack)) {
@@ -58,12 +58,12 @@ public class BlockAbility extends EntityAttributeAbility {
         Multimap<EntityAttribute, EntityAttributeModifier> multimap = ArrayListMultimap.create();
         double value = BlockProperty.property.getValueSafe(itemStack);
         value = calculate(value);
-        multimap.put(EntityAttributes.GENERIC_MOVEMENT_SPEED, new EntityAttributeModifier(attributeUUID,"miapi-block", -value / 100, EntityAttributeModifier.Operation.MULTIPLY_TOTAL));
-        multimap.put(AttributeRegistry.DAMAGE_RESISTANCE, new EntityAttributeModifier(attributeUUID,"miapi-block", value, EntityAttributeModifier.Operation.ADDITION));
+        multimap.put(EntityAttributes.GENERIC_MOVEMENT_SPEED, new EntityAttributeModifier(attributeUUID, "miapi-block", -(value / 2) / 100, EntityAttributeModifier.Operation.MULTIPLY_TOTAL));
+        multimap.put(AttributeRegistry.DAMAGE_RESISTANCE, new EntityAttributeModifier(attributeUUID, "miapi-block", value, EntityAttributeModifier.Operation.ADDITION));
         return multimap;
     }
 
-    public static double calculate(double value){
+    public static double calculate(double value) {
         return (160.0 / (1 + Math.exp(-value / 50.0))) - 80.0;
     }
 
