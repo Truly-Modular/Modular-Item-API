@@ -2,11 +2,21 @@ package smartin.miapi.modules.properties;
 
 import com.google.gson.JsonElement;
 import com.google.gson.reflect.TypeToken;
+import dev.architectury.utils.Env;
+import net.fabricmc.api.EnvType;
 import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import smartin.miapi.Environment;
 import smartin.miapi.Miapi;
+import smartin.miapi.client.gui.InteractAbleWidget;
+import smartin.miapi.client.gui.crafting.statdisplay.JsonStatDisplay;
+import smartin.miapi.client.gui.crafting.statdisplay.SingleStatDisplay;
+import smartin.miapi.client.gui.crafting.statdisplay.SingleStatDisplayDouble;
+import smartin.miapi.client.gui.crafting.statdisplay.StatListWidget;
 import smartin.miapi.item.FakeEnchantment;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.cache.ModularItemCache;
@@ -14,7 +24,9 @@ import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class FakeEnchantmentProperty implements ModuleProperty {
@@ -25,13 +37,56 @@ public class FakeEnchantmentProperty implements ModuleProperty {
 
     public FakeEnchantmentProperty() {
         property = this;
+        ModularItemCache.setSupplier(KEY, FakeEnchantmentProperty::getEnchantsCache);
         FakeEnchantment.enchantmentTransformers.add((enchantment, stack, level) -> {
             if (getEnchants(stack).containsKey(enchantment)) {
                 return Math.max(getEnchants(stack).get(enchantment), level);
             }
             return level;
         });
-        ModularItemCache.setSupplier(KEY, FakeEnchantmentProperty::getEnchantsCache);
+        if (Environment.isClient()) {
+            setupClient();
+        }
+    }
+
+    @net.fabricmc.api.Environment(EnvType.CLIENT)
+    public void setupClient() {
+        StatListWidget.addStatDisplaySupplier(new StatListWidget.StatWidgetSupplier() {
+            @Override
+            public <T extends InteractAbleWidget & SingleStatDisplay> List<T> currentList(ItemStack original, ItemStack compareTo) {
+                List<T> displays = new ArrayList<>();
+
+                Map<Enchantment, Integer> enchantments = new HashMap<>(getEnchants(original));
+                getEnchants(original).forEach((enchantment, integer) -> {
+                    if (enchantments.containsKey(enchantment)) {
+                        enchantments.put(enchantment, Math.max(integer, enchantments.get(enchantment)));
+                    }
+                    enchantments.put(enchantment, integer);
+                });
+                enchantments.keySet().forEach(enchantment -> {
+                    JsonStatDisplay display = new JsonStatDisplay((stack) -> Text.translatable(enchantment.getTranslationKey()),
+                            (stack) -> Text.translatable(enchantment.getTranslationKey()),
+                            new SingleStatDisplayDouble.StatReaderHelper() {
+                                @Override
+                                public double getValue(ItemStack itemStack) {
+                                    return EnchantmentHelper.getLevel(enchantment, itemStack);
+                                }
+
+                                @Override
+                                public boolean hasValue(ItemStack itemStack) {
+                                    return true;
+                                }
+                            },
+                            0,
+                            enchantment.getMaxLevel());
+                    if(enchantment.isCursed()){
+                        display.inverse = true;
+                    }
+                    displays.add((T) display);
+                });
+                return displays;
+            }
+        });
     }
 
     private static Map<Enchantment, Integer> getEnchantsCache(ItemStack itemStack) {

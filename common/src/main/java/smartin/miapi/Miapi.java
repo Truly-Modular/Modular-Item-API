@@ -27,6 +27,7 @@ import smartin.miapi.craft.stat.StatActorType;
 import smartin.miapi.datapack.MiapiReloadListener;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.injectors.PropertySubstitution;
+import smartin.miapi.item.FakeEnchantment;
 import smartin.miapi.item.ItemToModularConverter;
 import smartin.miapi.item.ModularItemStackConverter;
 import smartin.miapi.item.modular.ModularItem;
@@ -56,11 +57,6 @@ public class Miapi {
     public static Gson gson = new Gson();
 
     public static void init() {
-        SpawnArmorTrimsCommand command;
-        ArmorTrim armorTrim;
-        SmithingScreenHandler smithingScreenHandler;
-        //Items.ACACIA_PLANKS;
-        //ItemTags.TRIMMABLE_ARMOR;
         MiapiConfig.getInstance();
         setupNetworking();
         RegistryInventory.setup();
