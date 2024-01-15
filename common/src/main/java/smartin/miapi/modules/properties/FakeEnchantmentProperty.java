@@ -19,7 +19,7 @@ import java.util.Map;
 
 public class FakeEnchantmentProperty implements ModuleProperty {
     public static FakeEnchantmentProperty property;
-    public static final String KEY = "fake_enchants";
+    public static final String KEY = "fake_enchant";
     private static final Type type = new TypeToken<Map<String, Integer>>() {
     }.getType();
 
