@@ -3,10 +3,7 @@ plugins {
 }
 repositories {
     mavenCentral()
-    maven {
-        url 'http://trulymodular.duckdns.org/maven'
-        allowInsecureProtocol = true
-    }
+    maven { url 'https://maven.uuid.gg/releases' }
     maven { url 'https://maven.kosmx.dev/' }
     maven { url 'https://maven.shedaniel.me/' }
     maven { url 'https://maven.fabricmc.net/' }
@@ -62,16 +59,17 @@ dependencies {
 
     include api("org.mariuszgromada.math:MathParser.org-mXparser:${rootProject.mathparser_version}")
     include modApi("com.jamieswhiteshirt:reach-entity-attributes:$rootProject.fabric_reach_range_version")
-    modApi(include("com.RedPxnda.Nucleus:nucleus-fabric:${rootProject.minecraft_version}-${rootProject.nucleus_version}"))
+
+    modApi(include("com.redpxnda.nucleus:core-fabric:${rootProject.minecraft_version}+${rootProject.nucleus_core_version}"))
+    modApi(include("com.redpxnda.nucleus:codec-fabric:${rootProject.minecraft_version}+${rootProject.nucleus_codec_version}"))
+    modApi(include("com.redpxnda.nucleus:pose-fabric:${rootProject.minecraft_version}+${rootProject.nucleus_pose_version}"))
+    modApi(include("com.redpxnda.nucleus:facet-fabric:${rootProject.minecraft_version}+${rootProject.nucleus_facet_version}"))
 
     modLocalRuntime files('libs/arsenal-local.jar')
     modLocalRuntime files('libs/archery-local.jar')
     modLocalRuntime files('libs/armory-local.jar')
     //modLocalRuntime "maven.modrinth:sodium:mc1.20.1-0.5.3"
     //modLocalRuntime"maven.modrinth:iris:1.6.10+1.20.1"
-
-    annotationProcessor(group: 'com.github.LlamaLad7', name: 'MixinExtras', version: "${rootProject.mixin_extras_version}")
-    implementation(include(group: 'com.github.LlamaLad7', name: 'MixinExtras', version: "${rootProject.mixin_extras_version}"))
 
     //modLocalRuntime "curse.maven:cloth-348521:4554906"
     //modLocalRuntime "curse.maven:bettercombat-639842:4597949"

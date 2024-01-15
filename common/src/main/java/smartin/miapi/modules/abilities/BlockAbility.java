@@ -2,7 +2,7 @@ package smartin.miapi.modules.abilities;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
-import com.redpxnda.nucleus.pose.ServerPoseFacet;
+import com.redpxnda.nucleus.pose.server.ServerPoseFacet;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.LivingEntity;

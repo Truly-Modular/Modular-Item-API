@@ -1,7 +1,7 @@
 package smartin.miapi.modules.material.palette;
 
 import com.google.gson.JsonElement;
-import com.redpxnda.nucleus.codec.InterfaceDispatcher;
+import com.redpxnda.nucleus.util.InterfaceDispatcher;
 import com.redpxnda.nucleus.util.Color;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;

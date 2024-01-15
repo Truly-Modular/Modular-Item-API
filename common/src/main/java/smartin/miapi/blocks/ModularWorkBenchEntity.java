@@ -1,6 +1,6 @@
 package smartin.miapi.blocks;
 
-import com.redpxnda.nucleus.codec.MiscCodecs;
+import com.redpxnda.nucleus.codec.misc.MiscCodecs;
 import com.redpxnda.nucleus.util.MiscUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;

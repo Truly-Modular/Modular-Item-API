@@ -2,7 +2,7 @@ package smartin.miapi.modules.properties;
 
 import com.google.common.collect.Sets;
 import com.mojang.serialization.Codec;
-import com.redpxnda.nucleus.codec.AutoCodec;
+import com.redpxnda.nucleus.codec.auto.AutoCodec;
 import dev.architectury.event.EventResult;
 import net.minecraft.block.BlockState;
 import net.minecraft.enchantment.ProtectionEnchantment;

@@ -97,8 +97,8 @@ public class HeavyAttackAbility implements ItemUseAbility {
                     player.swingHand(player.getActiveHand());
                     player.getItemCooldownManager().set(stack.getItem(), (int) cooldown);
                     if (player.getWorld() instanceof ServerWorld serverWorld) {
-                        if (heavyAttackJson.particle != null) {
-                            ParticleCreationPacket particleCreationPacket = new ParticleCreationPacket(heavyAttackJson.particle, player.getX(), player.getY(), player.getZ(), 0, 0, 0);
+                        if (heavyAttackJson.particleEffect != null) {
+                            ParticleCreationPacket particleCreationPacket = new ParticleCreationPacket(heavyAttackJson.particleEffect, player.getX(), player.getY(), player.getZ(), 0, 0, 0);
                             particleCreationPacket.send(serverWorld);
                         }
                     }

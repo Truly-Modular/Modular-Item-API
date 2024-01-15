@@ -2,7 +2,7 @@ package smartin.miapi.modules.properties;
 
 import com.google.gson.JsonElement;
 import com.mojang.serialization.JsonOps;
-import com.redpxnda.nucleus.codec.MiscCodecs;
+import com.redpxnda.nucleus.codec.misc.MiscCodecs;
 import com.redpxnda.nucleus.util.Color;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Util;

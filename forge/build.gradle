@@ -28,10 +28,7 @@ configurations {
 }
 
 repositories {
-    maven {
-        url 'http://trulymodular.duckdns.org/maven'
-        allowInsecureProtocol = true
-    }
+    maven { url 'https://maven.uuid.gg/releases' }
     maven { url 'https://jitpack.io' }
     maven { url 'https://maven.theillusivec4.top/' }
     maven {
@@ -52,7 +49,11 @@ dependencies {
     forgeRuntimeLibrary(include("org.mariuszgromada.math:MathParser.org-mXparser:${rootProject.mathparser_version}"))
     modImplementation("me.shedaniel.cloth:cloth-config-forge:${rootProject.cloth_config_version}")
     modApi("top.theillusivec4.caelus:caelus-forge:${rootProject.forge_caelus_version}")
-    modApi(include("com.RedPxnda.Nucleus:nucleus-forge:${rootProject.minecraft_version}-${rootProject.nucleus_version}"))
+
+    modApi(include("com.redpxnda.nucleus:core-forge:${rootProject.minecraft_version}+${rootProject.nucleus_core_version}"))
+    modApi(include("com.redpxnda.nucleus:codec-forge:${rootProject.minecraft_version}+${rootProject.nucleus_codec_version}"))
+    modApi(include("com.redpxnda.nucleus:pose-forge:${rootProject.minecraft_version}+${rootProject.nucleus_pose_version}"))
+    modApi(include("com.redpxnda.nucleus:facet-forge:${rootProject.minecraft_version}+${rootProject.nucleus_facet_version}"))
 
     modLocalRuntime files('libs/arsenal-local.jar')
     modLocalRuntime files('libs/archery-local.jar')
@@ -79,11 +80,6 @@ modApi "com.github.EdwinMindcraft:origins-architectury:1.13.0"
 modApi "com.github.EdwinMindcraft:origins-architectury:${project.fabric_apoli_version}"
 include "com.github.EdwinMindcraft:origins-architectury:${project.fabric_apoli_version}"
  */
-
-    // NUCLEUS EMBEDDED DEPENDS
-    forgeRuntimeLibrary('com.github.ezylang:EvalEx:3.0.4') // because nucleus uses it
-    annotationProcessor(group: 'com.github.LlamaLad7', name: 'MixinExtras', version: "${rootProject.mixin_extras_version}")
-    forgeRuntimeLibrary(/*include(*/ group: 'com.github.LlamaLad7', name: 'MixinExtras', version: "${rootProject.mixin_extras_version}"/*)*/)
 
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }

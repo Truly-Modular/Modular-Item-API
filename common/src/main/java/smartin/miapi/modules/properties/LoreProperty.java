@@ -1,7 +1,7 @@
 package smartin.miapi.modules.properties;
 
 import com.mojang.serialization.Codec;
-import com.redpxnda.nucleus.codec.AutoCodec;
+import com.redpxnda.nucleus.codec.auto.AutoCodec;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.Screen;

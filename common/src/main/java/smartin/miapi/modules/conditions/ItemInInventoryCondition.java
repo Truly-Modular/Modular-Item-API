@@ -3,7 +3,7 @@ package smartin.miapi.modules.conditions;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import com.redpxnda.nucleus.codec.MiscCodecs;
+import com.redpxnda.nucleus.codec.misc.MiscCodecs;
 import com.redpxnda.nucleus.util.MiscUtil;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;

@@ -2,11 +2,11 @@ package smartin.miapi.modules.properties;
 
 import com.google.gson.JsonElement;
 import com.mojang.serialization.Codec;
-import com.redpxnda.nucleus.codec.AutoCodec;
-import com.redpxnda.nucleus.registry.particles.EmitterParticleOptions;
+import com.redpxnda.nucleus.codec.auto.AutoCodec;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.item.ItemStack;
+import net.minecraft.particle.ParticleEffect;
 import net.minecraft.text.Text;
 import smartin.miapi.client.gui.crafting.statdisplay.SingleStatDisplayDouble;
 import smartin.miapi.client.gui.crafting.statdisplay.StatListWidget;
@@ -99,6 +99,6 @@ public class HeavyAttackProperty extends CodecBasedProperty<HeavyAttackProperty.
         @AutoCodec.Optional
         public String description = "miapi.ability.heavy_attack.description";
         @AutoCodec.Optional
-        public EmitterParticleOptions particle;
+        public ParticleEffect particleEffect;
     }
 }
