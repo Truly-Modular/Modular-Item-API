@@ -65,22 +65,15 @@ public class BakedMiapiModel implements MiapiModel {
                     .forEach(bakedQuad -> consumer.quad(matrices.peek(), bakedQuad, colors[0], colors[1], colors[2], light, overlay));
         }
 
-        if (stack.getItem() instanceof ArmorItem armorItem) {
-            ArmorTrim.getTrim(entity.getWorld().getRegistryManager(), stack).ifPresent((trim) -> {
-                this.renderTrim(armorItem.getMaterial(), matrices, vertexConsumers, light, trim, model, false);
+        if (modelHolder.entityRendering()) {
+            ModelTransformer.getInverse(currentModel, random).forEach(bakedQuad -> {
+                consumer.quad(matrices.peek(), bakedQuad, colors[0], colors[1], colors[2], light, overlay);
             });
         }
 
-        if (modelHolder.entityRendering()) {
-            ModelTransformer.getRescaleInverse(currentModel, random).forEach(bakedQuad -> {
-                Identifier replaceId = MaterialSpriteManager.getMaterialSprite(bakedQuad.getSprite(), material);
-                if (replaceId != null) {
-                    RenderLayer atlasRenderLayer = RenderLayer.getEntityTranslucentCull(replaceId);
-                    VertexConsumer atlasConsumer = ItemRenderer.getDirectItemGlintConsumer(vertexConsumers, atlasRenderLayer, true, false);
-                    //atlasConsumer = vertexConsumers.getBuffer(atlasRenderLayer);
-                    atlasConsumer.quad(matrices.peek(), bakedQuad,
-                            colors[0], colors[1], colors[2], light, overlay);
-                }
+        if (stack.getItem() instanceof ArmorItem armorItem) {
+            ModelTransformer.getRescale(currentModel, random).forEach(bakedQuad -> {
+                TrimRenderer.renderTrims(matrices, bakedQuad, modelHolder.trimMode(), light, vertexConsumers, armorItem.getMaterial(), stack);
             });
         }
 

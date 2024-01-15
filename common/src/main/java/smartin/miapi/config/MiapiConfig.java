@@ -74,7 +74,7 @@ public class MiapiConfig extends Config {
                     if (MiapiClient.shaderModLoaded) {
                         return RenderMode.ALT_RENDERER;
                     }
-                    return RenderMode.ALT_RENDERER;
+                    return RenderMode.DEFAULT_RENDERER;
                 }
             }
             return renderModeConfig.getValue();

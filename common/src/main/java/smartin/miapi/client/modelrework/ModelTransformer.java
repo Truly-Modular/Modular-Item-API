@@ -4,6 +4,8 @@ import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.BakedQuad;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
+import smartin.miapi.item.modular.ModularItem;
+import smartin.miapi.modules.cache.ModularItemCache;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +26,12 @@ public class ModelTransformer {
     private static Map<BakedModel, List<BakedQuad>> inverseMap = new WeakHashMap<>();
     private static Map<BakedModel, List<BakedQuad>> reScaledMap = new WeakHashMap<>();
     private static Map<BakedModel, List<BakedQuad>> inversedRescaledMap = new WeakHashMap<>();
+
+    public static void clearCaches() {
+        inverseMap.clear();
+        reScaledMap.clear();
+        inversedRescaledMap.clear();
+    }
 
 
     public static List<BakedQuad> getInverse(BakedModel bakedModel, Random random) {
@@ -76,7 +84,7 @@ public class ModelTransformer {
         });
     }
 
-    static int[] rescale(int[] raw, float uStart, float uScale, float vStart, float vScale) {
+    private static int[] rescale(int[] raw, float uStart, float uScale, float vStart, float vScale) {
         int[] copiedArray = new int[raw.length];
         System.arraycopy(raw, 0, copiedArray, 0, raw.length);
         for (int i = 0; i < raw.length / 8; i++) {
@@ -86,7 +94,7 @@ public class ModelTransformer {
         return copiedArray;
     }
 
-    static int[] inverse(int[] raw) {
+    private static int[] inverse(int[] raw) {
         int[] copiedArray = new int[raw.length];
         System.arraycopy(raw, 0, copiedArray, 0, raw.length);
         for (int j = 0; j < 8; j++) {

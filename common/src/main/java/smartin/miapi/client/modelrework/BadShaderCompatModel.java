@@ -12,6 +12,7 @@ import net.minecraft.client.render.model.json.ModelOverrideList;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.item.ArmorItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
@@ -29,6 +30,7 @@ public class BadShaderCompatModel implements MiapiModel {
     Matrix4f modelMatrix;
     Color color;
     Random random = Random.create();
+    BakedMiapiModel.ModelHolder modelHolder;
     float randomScaleNoZ = (float) (1 + Math.random() / 10000f);
 
     public BadShaderCompatModel(BakedMiapiModel.ModelHolder holder, ItemModule.ModuleInstance instance, ItemStack stack) {
@@ -41,6 +43,7 @@ public class BadShaderCompatModel implements MiapiModel {
         }
         modelMatrix = holder.matrix4f();
         model = holder.model();
+        this.modelHolder = holder;
     }
 
     @Override
@@ -60,6 +63,17 @@ public class BadShaderCompatModel implements MiapiModel {
         for (Direction direction : Direction.values()) {
             currentModel.getQuads(null, direction, random).forEach(bakedQuad -> {
                 consumer.quad(matrices.peek(), bakedQuad, color.redAsFloat(), color.greenAsFloat(), color.blueAsFloat(), light, overlay);
+            });
+        }
+        if (modelHolder.entityRendering()) {
+            ModelTransformer.getInverse(currentModel, random).forEach(bakedQuad -> {
+                consumer.quad(matrices.peek(), bakedQuad, color.redAsFloat(), color.greenAsFloat(), color.blueAsFloat(), light, overlay);
+            });
+        }
+
+        if (stack.getItem() instanceof ArmorItem armorItem) {
+            ModelTransformer.getRescale(currentModel, random).forEach(bakedQuad -> {
+                TrimRenderer.renderTrims(matrices, bakedQuad, modelHolder.trimMode(), light, vertexConsumers, armorItem.getMaterial(), stack);
             });
         }
         if (consumer instanceof VertexConsumerProvider.Immediate immediate) {

@@ -1,5 +1,6 @@
 package smartin.miapi.modules.cache;
 
+import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -7,7 +8,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import smartin.miapi.Environment;
 import smartin.miapi.Miapi;
+import smartin.miapi.client.modelrework.ModelTransformer;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.item.modular.ModularItem;
 
@@ -68,6 +71,9 @@ public class ModularItemCache {
     public static void discardCache() {
         cache.cleanUp();
         cache.invalidateAll();
+        if (Environment.isClient()) {
+            ModelTransformer.clearCaches();
+        }
     }
 
     @Nullable

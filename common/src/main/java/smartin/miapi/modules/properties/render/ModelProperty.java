@@ -406,7 +406,7 @@ public class ModelProperty implements ModuleProperty {
         public String condition = "1";
         public String color_provider = "material";
         public String trim_mode;
-        public Boolean entity_render = false;
+        public Boolean entity_render;
 
         public void repair() {
             //this shouldn't be necessary as the values should be loaded from the class but anyways

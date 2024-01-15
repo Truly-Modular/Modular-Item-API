@@ -62,6 +62,17 @@ public class Alt2BakedMiapiModel implements MiapiModel {
         //AltModelAtlasManager.shouldUpdate = true;
     }
 
+                /*
+            0: X position
+            1: Y position
+            2: Z position
+            3: Color (assumed to be stored as a packed integer)
+            4: Texture U coordinate
+            5: Texture V coordinate
+            6: Lighting value (assumed to be stored as a packed integer)
+            7: Normals (assumed to be stored as a packed integer)
+             */
+
     @Override
     public void render(MatrixStack matrices, ItemStack stack, ModelTransformationMode transformationMode, float tickDelta, VertexConsumerProvider vertexConsumers, LivingEntity entity, int light, int overlay) {
         assert MinecraftClient.getInstance().world != null;
@@ -85,6 +96,26 @@ public class Alt2BakedMiapiModel implements MiapiModel {
         } else {
             armorMaterial = null;
         }
+        ModelTransformer.getRescale(currentModel, random).forEach(bakedQuad -> {
+            Identifier replaceId = MaterialSpriteManager.getMaterialSprite(bakedQuad.getSprite(), material);
+            if (replaceId != null) {
+                RenderLayer atlasRenderLayer = RenderLayer.getEntityTranslucentCull(replaceId);
+                //VertexConsumer atlasConsumer = ItemRenderer.getDirectDynamicDisplayGlintConsumer(vertexConsumers,atlasRenderLayer,matrices.peek());
+                VertexConsumer atlasConsumer = ItemRenderer.getDirectItemGlintConsumer(vertexConsumers, atlasRenderLayer, true, false);
+                atlasConsumer.quad(matrices.peek(), bakedQuad, colors[0], colors[1], colors[2], light, overlay);
+
+
+                if (trim != null) {
+                    if (armorMaterial != null) {
+                        if (!modelHolder.trimMode().equals(TrimRenderer.TrimMode.NONE)) {
+                            TrimRenderer.renderTrims(matrices, bakedQuad, modelHolder.trimMode(), light, vertexConsumers, armorMaterial, stack);
+
+                        }
+                    }
+                }
+            }
+        });
+        /*
         quadLookupMap.computeIfAbsent(currentModel, model -> {
             List<BakedQuad> rawQuads = new ArrayList<>();
             for (Direction direction : Direction.values()) {
@@ -105,22 +136,13 @@ public class Alt2BakedMiapiModel implements MiapiModel {
                 }
                 redoneQuads.add(new BakedQuad(copiedArray, bakedQuad.getColorIndex(), bakedQuad.getFace(), bakedQuad.getSprite(), bakedQuad.hasShade()));
             });
-            /*
-            0: X position
-            1: Y position
-            2: Z position
-            3: Color (assumed to be stored as a packed integer)
-            4: Texture U coordinate
-            5: Texture V coordinate
-            6: Lighting value (assumed to be stored as a packed integer)
-            7: Normals (assumed to be stored as a packed integer)
-             */
 
             return redoneQuads;
         }).forEach(bakedQuad -> {
             Identifier replaceId = MaterialSpriteManager.getMaterialSprite(bakedQuad.getSprite(), material);
             if (replaceId != null) {
                 RenderLayer atlasRenderLayer = RenderLayer.getEntityTranslucentCull(replaceId);
+                //VertexConsumer atlasConsumer = ItemRenderer.getDirectDynamicDisplayGlintConsumer(vertexConsumers,atlasRenderLayer,matrices.peek());
                 VertexConsumer atlasConsumer = ItemRenderer.getDirectItemGlintConsumer(vertexConsumers, atlasRenderLayer, true, false);
                 //atlasConsumer = vertexConsumers.getBuffer(atlasRenderLayer);
                 atlasConsumer.quad(matrices.peek(), bakedQuad, colors[0], colors[1], colors[2], light, overlay);
@@ -136,7 +158,8 @@ public class Alt2BakedMiapiModel implements MiapiModel {
                 }
             }
         });
-        if(modelHolder.entityRendering()){
+        */
+        if (modelHolder.entityRendering()) {
             ModelTransformer.getRescaleInverse(currentModel, random).forEach(bakedQuad -> {
                 Identifier replaceId = MaterialSpriteManager.getMaterialSprite(bakedQuad.getSprite(), material);
                 if (replaceId != null) {
