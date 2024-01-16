@@ -29,12 +29,15 @@ public class MaterialProperties implements ModuleProperty {
                         keys.add(element.getAsString());
                     }
                 }
-                if(keys.isEmpty()){
+                if (keys.isEmpty()) {
                     keys.add("default");
+                }
+                if (moduleInstance.module != null) {
+                    keys.add(moduleInstance.module.getName());
                 }
                 for (String key : keys) {
                     Map<ModuleProperty, JsonElement> materialProperties = material.materialProperties(key);
-                    if(!materialProperties.isEmpty()){
+                    if (!materialProperties.isEmpty()) {
                         returnMap = PropertyResolver.merge(oldMap, materialProperties, MergeType.SMART);
                     }
                 }
@@ -43,7 +46,7 @@ public class MaterialProperties implements ModuleProperty {
         });
     }
 
-    public static void getMap(Material material){
+    public static void getMap(Material material) {
 
     }
 
