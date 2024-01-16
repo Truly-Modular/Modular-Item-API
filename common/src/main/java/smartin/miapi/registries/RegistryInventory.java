@@ -376,6 +376,7 @@ public class RegistryInventory {
             registerMiapi(moduleConditionRegistry, "miapi_perm", new MiapiPerm());
             registerMiapi(moduleConditionRegistry, "item_in_inventory", new ItemInInventoryCondition());
             registerMiapi(moduleConditionRegistry, "mod_loaded", new IsModLoadedCondition());
+            registerMiapi(moduleConditionRegistry, "advancement", new AdvancementCondition());
 
             //MODULEPROPERTIES
             if (smartin.miapi.Environment.isClient()) {
@@ -455,6 +456,7 @@ public class RegistryInventory {
             registerMiapi(moduleProperties, FakeEnchantmentProperty.KEY, new FakeEnchantmentProperty());
             registerMiapi(moduleProperties, ExhaustionProperty.KEY, new ExhaustionProperty());
             registerMiapi(moduleProperties, MaterialInscribeDataProperty.KEY, new MaterialInscribeDataProperty());
+            registerMiapi(moduleProperties, FakeItemTagProperty.KEY, new FakeItemTagProperty());
             //compat
             registerMiapi(moduleProperties, BetterCombatProperty.KEY, new BetterCombatProperty());
 

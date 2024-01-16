@@ -100,6 +100,6 @@ class SkinButton extends InteractAbleWidget implements SkinGui.SortAble {
 
     @Override
     public boolean isActive() {
-        return isEnabled;
+        return isEnabled && isAllowed;
     }
 }

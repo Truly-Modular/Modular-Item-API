@@ -25,6 +25,9 @@
     },
     "properties": {
         "default": {
+            "fake_item_tag": [
+                "minecraft:piglin_loved"
+            ],
             "durability": {
                 "operation": "**",
                 "value": "0.65"

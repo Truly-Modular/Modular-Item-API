@@ -8,6 +8,7 @@
         "AxeItemAccessor",
         "BCWeaponRegistryMixin",
         "BlockMixin",
+        "ClientAdvancementManagerAccessor",
         "DefaultAttributeContainerAccessor",
         "DefaultAttributeRegistryMixin",
         "DispenserBlockAccessor",
