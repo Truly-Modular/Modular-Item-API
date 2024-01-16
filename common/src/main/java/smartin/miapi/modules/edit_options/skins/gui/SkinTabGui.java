@@ -37,8 +37,6 @@ class SkinTabGui extends InteractAbleWidget implements SkinGui.SortAble {
         if (isRoot) {
             this.height = 0;
             this.realHeight = 0;
-        }
-        if (isRoot) {
             spacing = 0;
             SkinButton child = new SkinButton(skinGui, x + spacing, y, width - spacing, "", new Skin());
             fullList.add(child);
@@ -108,6 +106,11 @@ class SkinTabGui extends InteractAbleWidget implements SkinGui.SortAble {
 
         }
         return false;
+    }
+
+    public void setY(int y) {
+        super.setY(y);
+        setChildren(true);
     }
 
     @Override
