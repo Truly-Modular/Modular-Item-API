@@ -2,6 +2,7 @@ package smartin.miapi.modules.properties;
 
 import com.google.gson.JsonElement;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.util.MergeType;
@@ -12,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Allows the Modules to define tags to identify eachother
+ * Allows the set Itemtags via a Properterty (relies on {@link ItemStack#isIn(TagKey)}
  */
 public class FakeItemTagProperty implements ModuleProperty {
     public static final String KEY = "fake_item_tag";
@@ -28,7 +29,6 @@ public class FakeItemTagProperty implements ModuleProperty {
     }
 
     public static boolean hasTag(Identifier identifier, ItemStack itemStack) {
-        List<String> tags = getTags(itemStack);
         return getTags(itemStack).contains(identifier.toString());
     }
 

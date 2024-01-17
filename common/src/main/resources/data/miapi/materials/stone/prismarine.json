@@ -27,6 +27,13 @@
     "textures": [
         "rough"
     ],
+    "properties": {
+        "armor": {
+            "fake_enchant": {
+                "minecrtaft:thorns": 2
+            }
+        }
+    },
     "items": [
         {
             "item": "minecraft:prismarine",

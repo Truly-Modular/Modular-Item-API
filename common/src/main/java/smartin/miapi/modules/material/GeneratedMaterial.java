@@ -51,15 +51,15 @@ public class GeneratedMaterial implements Material {
     public GeneratedMaterial(ToolMaterial toolMaterial, ItemStack itemStack, boolean isClient) {
         this.toolMaterial = toolMaterial;
         mainIngredient = itemStack;
-        key = "generated_" + mainIngredient.getItem().getTranslationKey();
+        key = "generated_" + mainIngredient.getTranslationKey();
         groups.add(key);
-        if (mainIngredient.getItem().getTranslationKey().contains("ingot")) {
+        if (mainIngredient.getTranslationKey().contains("ingot")) {
             groups.add("metal");
         }
-        if (mainIngredient.getItem().getTranslationKey().contains("stone")) {
+        if (mainIngredient.getTranslationKey().contains("stone")) {
             groups.add("stone");
         }
-        if (mainIngredient.getItem().getTranslationKey().contains("bone")) {
+        if (mainIngredient.getTranslationKey().contains("bone")) {
             groups.add("bone");
         }
         if (mainIngredient.isIn(ItemTags.PLANKS)) {
