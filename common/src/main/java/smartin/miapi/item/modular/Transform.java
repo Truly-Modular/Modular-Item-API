@@ -10,15 +10,14 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.model.ModelBakeSettings;
 import net.minecraft.client.render.model.json.Transformation;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.AffineTransformation;
 import net.minecraft.util.math.RotationAxis;
-import org.joml.Matrix4f;
-import org.joml.Quaternionf;
-import org.joml.Vector3f;
-import org.joml.Vector4f;
+import org.joml.*;
 import smartin.miapi.Miapi;
 
 import java.io.IOException;
+import java.lang.Math;
 
 /**
  * A Transform represents a transformation in 3D space, including rotation, translation, and scaling.
@@ -90,6 +89,19 @@ public class Transform {
             Miapi.LOGGER.info("FAILURE " + rotation);
         }
         return merged;
+    }
+
+    public static void applyPosition(MatrixStack matrixStack, Matrix4f matrix4f) {
+        matrixStack.multiplyPositionMatrix(matrix4f);
+        matrixStack.peek().getNormalMatrix().mul(matrix4f.get3x3(new Matrix3f()));
+    }
+
+    public static void applyPosition(MatrixStack matrixStack, Transform transform) {
+        applyPosition(matrixStack, transform.toMatrix());
+    }
+
+    public void applyPosition(MatrixStack matrixStack) {
+        applyPosition(matrixStack, this);
     }
 
     public Matrix4f toMatrix() {

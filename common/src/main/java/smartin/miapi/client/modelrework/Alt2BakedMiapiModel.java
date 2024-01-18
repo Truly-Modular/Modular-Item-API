@@ -22,6 +22,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 import org.joml.Matrix4f;
 import smartin.miapi.client.AltModelAtlasManager;
+import smartin.miapi.item.modular.Transform;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.material.Material;
 import smartin.miapi.modules.material.MaterialProperty;
@@ -38,13 +39,6 @@ public class Alt2BakedMiapiModel implements MiapiModel {
     BakedMiapiModel.ModelHolder modelHolder;
     Random random = Random.create();
     float[] colors;
-    Map<Identifier, Identifier> replaceSprites = new HashMap<>();
-    public boolean uploaded = false;
-    Set<AltModelAtlasManager.SpriteInfoHolder> spriteInfos;
-    private final SpriteAtlasTexture armorTrimsAtlas = MinecraftClient.getInstance().getBakedModelManager().getAtlas(TexturedRenderLayers.ARMOR_TRIMS_ATLAS_TEXTURE);
-
-
-    public Map<BakedModel, List<BakedQuad>> quadLookupMap = new HashMap<>();
 
     public Alt2BakedMiapiModel(BakedMiapiModel.ModelHolder holder, ItemModule.ModuleInstance instance, ItemStack stack) {
         modelHolder = holder;
@@ -77,7 +71,7 @@ public class Alt2BakedMiapiModel implements MiapiModel {
     public void render(MatrixStack matrices, ItemStack stack, ModelTransformationMode transformationMode, float tickDelta, VertexConsumerProvider vertexConsumers, LivingEntity entity, int light, int overlay) {
         assert MinecraftClient.getInstance().world != null;
         matrices.push();
-        matrices.multiplyPositionMatrix(modelMatrix);
+        Transform.applyPosition(matrices, modelMatrix);
         BakedModel currentModel = model;
         if (model.getOverrides() != null && !model.getOverrides().equals(ModelOverrideList.EMPTY)) {
             currentModel = model.getOverrides().apply(model, stack, MinecraftClient.getInstance().world, entity, light);

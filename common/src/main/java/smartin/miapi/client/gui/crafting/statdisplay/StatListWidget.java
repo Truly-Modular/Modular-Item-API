@@ -11,6 +11,7 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.item.CrossbowItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
 import net.minecraft.text.MutableText;
@@ -178,7 +179,12 @@ public class StatListWidget extends InteractAbleWidget {
                 .setMax(100)
                 .setMin(1)
                 .setDefault(20)
-                .setValueGetter((stack) -> 20 - AttributeProperty.getActualValue(stack, EquipmentSlot.MAINHAND, AttributeRegistry.BOW_DRAW_TIME))
+                .setValueGetter((stack) -> {
+                    if(stack.getItem() instanceof CrossbowItem){
+                        return 25 - AttributeProperty.getActualValue(stack, EquipmentSlot.MAINHAND, AttributeRegistry.BOW_DRAW_TIME);
+                    }
+                    return 20 - AttributeProperty.getActualValue(stack, EquipmentSlot.MAINHAND, AttributeRegistry.BOW_DRAW_TIME);
+                })
                 .setTranslationKey("bow_draw_time")
                 .inverseNumber(true)
                 .setFormat("##.##").build());

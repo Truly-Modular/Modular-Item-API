@@ -30,6 +30,7 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
+import smartin.miapi.Miapi;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.client.model.ModularModelPredicateProvider;
 import smartin.miapi.entity.ItemProjectileEntity;
@@ -112,13 +113,14 @@ public class ModularCrossbow extends CrossbowItem implements ModularItem {
 
     }
 
-    private static float getPullProgress(int useTicks, ItemStack stack) {
-        float f = (float) useTicks / (float) getPullTime(stack);
-        if (f > 1.0F) {
-            f = 1.0F;
-        }
+    public int getMaxUseTime(ItemStack stack) {
+        return getPullTime(stack) + 3;
+    }
 
-        return f;
+    private static float getPullProgress(int useTicks, ItemStack stack) {
+        float progress = (float) useTicks / (float) getPullTime(stack);
+        Miapi.LOGGER.info("pull Progress " + useTicks + " pullTime " + getPullTime(stack) + " " + progress);
+        return Math.max(0, Math.min(1, progress));
     }
 
     public static int getPullTime(ItemStack stack) {

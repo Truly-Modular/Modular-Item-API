@@ -52,7 +52,7 @@ public class ModuleModel {
 
         otherModels.get(modelType).forEach(matrix4fMiapiModelPair -> {
             matrices.push();
-            matrices.multiplyPositionMatrix(matrix4fMiapiModelPair.getFirst());
+            Transform.applyPosition(matrices,matrix4fMiapiModelPair.getFirst());
             matrix4fMiapiModelPair.getSecond().render(matrices, stack, mode, tickDelta, vertexConsumers, entity, light, overlay);
             matrices.pop();
 
@@ -61,7 +61,7 @@ public class ModuleModel {
         //render submodules
         instance.subModules.forEach((integer, instance1) -> {
             matrices.push();
-            matrices.multiplyPositionMatrix(submoduleMatrix);
+            Transform.applyPosition(matrices,submoduleMatrix);
             ModuleModel subModuleModel = subModuleModels.get(integer);
             if (subModuleModel == null) {
                 subModuleModel = new ModuleModel(instance1, stack);
