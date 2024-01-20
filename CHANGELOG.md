@@ -4,6 +4,7 @@
 - added Itemtag Property
 - added Advancement Condition
 - fixed issue with generative compat
+- generative compat should now also hit groups of items
 - fixed Trim rendering issue in gui
 - buffed Blocking
 - added Thorns to Prismarine
