@@ -3,3 +3,7 @@
 - fixed scrolling in skin-gui
 - added Itemtag Property
 - added Advancement Condition
+- fixed issue with generative compat
+- fixed Trim rendering issue in gui
+- buffed Blocking
+- added Thorns to Prismarine

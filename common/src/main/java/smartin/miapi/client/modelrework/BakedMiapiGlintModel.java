@@ -78,7 +78,7 @@ public class BakedMiapiGlintModel implements MiapiModel {
             });
         }
 
-        if (stack.getItem() instanceof ArmorItem armorItem) {
+        if (stack.getItem() instanceof ArmorItem armorItem && !modelHolder.trimMode().equals(TrimRenderer.TrimMode.NONE)) {
             ModelTransformer.getRescale(currentModel, random).forEach(bakedQuad -> {
                 TrimRenderer.renderTrims(matrices, bakedQuad, modelHolder.trimMode(), light, vertexConsumerProvider, armorItem.getMaterial(), stack);
             });

@@ -382,12 +382,18 @@ public class GeneratedMaterial implements Material {
 
     @Override
     public double getValueOfItem(ItemStack item) {
+        if(toolMaterial.getRepairIngredient().test(item)){
+            return 1;
+        }
         return item.getItem().equals(mainIngredient.getItem()) ? 1 : 0;
     }
 
     @Override
     public @Nullable Double getPriorityOfIngredientItem(ItemStack itemStack) {
         if (mainIngredient.getItem().equals(itemStack.getItem())) {
+            return 0.0;
+        }
+        if(toolMaterial.getRepairIngredient().test(itemStack)){
             return 0.0;
         }
         return null;

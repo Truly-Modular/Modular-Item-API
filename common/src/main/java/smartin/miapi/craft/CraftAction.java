@@ -288,7 +288,7 @@ public class CraftAction {
             parsingInstance.subModules.put(slotId.get(0), newModule);
         }
         newBaseModule.writeToItem(craftingStack);
-        return craftingStack;
+        return craftingStack.copy();
     }
 
     /**

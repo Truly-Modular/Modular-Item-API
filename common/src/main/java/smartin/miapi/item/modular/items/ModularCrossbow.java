@@ -34,6 +34,7 @@ import smartin.miapi.Miapi;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.client.model.ModularModelPredicateProvider;
 import smartin.miapi.entity.ItemProjectileEntity;
+import smartin.miapi.item.modular.CustomDrawTimeItem;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.modules.properties.AttributeProperty;
 import smartin.miapi.modules.properties.DisplayNameProperty;
@@ -45,7 +46,7 @@ import java.util.function.Predicate;
 
 import static smartin.miapi.item.modular.items.ModularBow.projectile;
 
-public class ModularCrossbow extends CrossbowItem implements ModularItem {
+public class ModularCrossbow extends CrossbowItem implements ModularItem, CustomDrawTimeItem {
 
     public ModularCrossbow() {
         super(new Item.Settings().maxCount(1).maxDamage(50));
@@ -119,7 +120,6 @@ public class ModularCrossbow extends CrossbowItem implements ModularItem {
 
     private static float getPullProgress(int useTicks, ItemStack stack) {
         float progress = (float) useTicks / (float) getPullTime(stack);
-        Miapi.LOGGER.info("pull Progress " + useTicks + " pullTime " + getPullTime(stack) + " " + progress);
         return Math.max(0, Math.min(1, progress));
     }
 
@@ -344,5 +344,10 @@ public class ModularCrossbow extends CrossbowItem implements ModularItem {
 
     public Predicate<ItemStack> getProjectiles() {
         return itemStack -> projectile.test(itemStack) || IsCrossbowShootAble.canCrossbowShoot(itemStack);
+    }
+
+    @Override
+    public double getBaseDrawTime(ItemStack itemStack) {
+        return 25;
     }
 }

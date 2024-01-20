@@ -71,13 +71,10 @@ public class BadShaderCompatModel implements MiapiModel {
             });
         }
 
-        if (stack.getItem() instanceof ArmorItem armorItem) {
+        if (stack.getItem() instanceof ArmorItem armorItem && !modelHolder.trimMode().equals(TrimRenderer.TrimMode.NONE)) {
             ModelTransformer.getRescale(currentModel, random).forEach(bakedQuad -> {
                 TrimRenderer.renderTrims(matrices, bakedQuad, modelHolder.trimMode(), light, vertexConsumers, armorItem.getMaterial(), stack);
             });
-        }
-        if (consumer instanceof VertexConsumerProvider.Immediate immediate) {
-            immediate.draw();
         }
         MinecraftClient.getInstance().world.getProfiler().pop();
         matrices.pop();

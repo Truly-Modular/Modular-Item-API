@@ -109,50 +109,7 @@ public class Alt2BakedMiapiModel implements MiapiModel {
                 }
             }
         });
-        /*
-        quadLookupMap.computeIfAbsent(currentModel, model -> {
-            List<BakedQuad> rawQuads = new ArrayList<>();
-            for (Direction direction : Direction.values()) {
-                rawQuads.addAll(model.getQuads(null, direction, random));
-            }
-            List<BakedQuad> redoneQuads = new ArrayList<>();
-            rawQuads.forEach(bakedQuad -> {
-                float uStart = bakedQuad.getSprite().getMinU();
-                float uScale = 1 / (bakedQuad.getSprite().getMaxU() - bakedQuad.getSprite().getMinU());
-                float vStart = bakedQuad.getSprite().getMinV();
-                float vScale = 1 / (bakedQuad.getSprite().getMaxV() - bakedQuad.getSprite().getMinV());
-                int[] copiedArray = new int[bakedQuad.getVertexData().length];
 
-                System.arraycopy(bakedQuad.getVertexData(), 0, copiedArray, 0, bakedQuad.getVertexData().length);
-                for (int i = 0; i < bakedQuad.getVertexData().length / 8; i++) {
-                    copiedArray[i * 8 + 4] = Float.floatToRawIntBits((Float.intBitsToFloat(copiedArray[i * 8 + 4]) - uStart) * uScale);
-                    copiedArray[i * 8 + 5] = Float.floatToRawIntBits((Float.intBitsToFloat(copiedArray[i * 8 + 5]) - vStart) * vScale);
-                }
-                redoneQuads.add(new BakedQuad(copiedArray, bakedQuad.getColorIndex(), bakedQuad.getFace(), bakedQuad.getSprite(), bakedQuad.hasShade()));
-            });
-
-            return redoneQuads;
-        }).forEach(bakedQuad -> {
-            Identifier replaceId = MaterialSpriteManager.getMaterialSprite(bakedQuad.getSprite(), material);
-            if (replaceId != null) {
-                RenderLayer atlasRenderLayer = RenderLayer.getEntityTranslucentCull(replaceId);
-                //VertexConsumer atlasConsumer = ItemRenderer.getDirectDynamicDisplayGlintConsumer(vertexConsumers,atlasRenderLayer,matrices.peek());
-                VertexConsumer atlasConsumer = ItemRenderer.getDirectItemGlintConsumer(vertexConsumers, atlasRenderLayer, true, false);
-                //atlasConsumer = vertexConsumers.getBuffer(atlasRenderLayer);
-                atlasConsumer.quad(matrices.peek(), bakedQuad, colors[0], colors[1], colors[2], light, overlay);
-
-
-                if (trim != null) {
-                    if (armorMaterial != null) {
-                        if (!modelHolder.trimMode().equals(TrimRenderer.TrimMode.NONE)) {
-                            TrimRenderer.renderTrims(matrices, bakedQuad, modelHolder.trimMode(), light, vertexConsumers, armorMaterial, stack);
-
-                        }
-                    }
-                }
-            }
-        });
-        */
         if (modelHolder.entityRendering()) {
             ModelTransformer.getRescaleInverse(currentModel, random).forEach(bakedQuad -> {
                 Identifier replaceId = MaterialSpriteManager.getMaterialSprite(bakedQuad.getSprite(), material);

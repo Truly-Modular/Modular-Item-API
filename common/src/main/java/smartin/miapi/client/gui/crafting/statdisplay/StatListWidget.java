@@ -24,6 +24,7 @@ import smartin.miapi.client.gui.BoxList;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.ScrollList;
 import smartin.miapi.client.gui.TransformableWidget;
+import smartin.miapi.item.modular.CustomDrawTimeItem;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.*;
 import smartin.miapi.modules.properties.util.GuiWidgetSupplier;
@@ -180,7 +181,10 @@ public class StatListWidget extends InteractAbleWidget {
                 .setMin(1)
                 .setDefault(20)
                 .setValueGetter((stack) -> {
-                    if(stack.getItem() instanceof CrossbowItem){
+                    if (stack.getItem() instanceof CustomDrawTimeItem customDrawTimeItem) {
+                        return customDrawTimeItem.getActualDrawTime(stack);
+                    }
+                    if (stack.getItem() instanceof CrossbowItem) {
                         return 25 - AttributeProperty.getActualValue(stack, EquipmentSlot.MAINHAND, AttributeRegistry.BOW_DRAW_TIME);
                     }
                     return 20 - AttributeProperty.getActualValue(stack, EquipmentSlot.MAINHAND, AttributeRegistry.BOW_DRAW_TIME);

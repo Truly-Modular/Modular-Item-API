@@ -96,6 +96,7 @@ public class MaterialProperty implements ModuleProperty {
                     .map(toolItem -> toolItem.getMaterial())
                     .collect(Collectors.toSet())
                     .stream()
+                    .filter(toolMaterial -> toolMaterial.getRepairIngredient() != null && toolMaterial.getRepairIngredient().getMatchingStacks() != null)
                     .filter(toolMaterial -> toolMaterial.getRepairIngredient().getMatchingStacks().length > 0)
                     .filter(toolMaterial -> !toolMaterial.getRepairIngredient().getMatchingStacks()[0].isIn(RegistryInventory.MIAPI_FORBIDDEN_TAG))
                     .filter(toolMaterial -> Arrays.stream(toolMaterial.getRepairIngredient().getMatchingStacks()).allMatch(itemStack -> getMaterialFromIngredient(itemStack) == null && !itemStack.getItem().equals(Items.BARRIER)))

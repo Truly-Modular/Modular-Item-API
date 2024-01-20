@@ -53,7 +53,7 @@ public class BakedMiapiModel implements MiapiModel {
         assert MinecraftClient.getInstance().world != null;
         MinecraftClient.getInstance().world.getProfiler().push("BakedModel");
         matrices.push();
-        Transform.applyPosition(matrices,modelMatrix);
+        Transform.applyPosition(matrices, modelMatrix);
         BakedModel currentModel = model;
         if (model.getOverrides() != null && !model.getOverrides().equals(ModelOverrideList.EMPTY)) {
             currentModel = model.getOverrides().apply(model, stack, MinecraftClient.getInstance().world, entity, light);
@@ -72,7 +72,7 @@ public class BakedMiapiModel implements MiapiModel {
             });
         }
 
-        if (stack.getItem() instanceof ArmorItem armorItem) {
+        if (stack.getItem() instanceof ArmorItem armorItem && !modelHolder.trimMode().equals(TrimRenderer.TrimMode.NONE)) {
             ModelTransformer.getRescale(currentModel, random).forEach(bakedQuad -> {
                 TrimRenderer.renderTrims(matrices, bakedQuad, modelHolder.trimMode(), light, vertexConsumers, armorItem.getMaterial(), stack);
             });
