@@ -21,6 +21,7 @@ import java.util.Map;
 public class GlintProperty implements ModuleProperty {
     //TODO:add gui implementation
     //TODO:fix me
+    //this should be re-thought for shader support
     public static GlintProperty property;
     public static final String KEY = "glint_settings";
 
