@@ -1,4 +1,4 @@
-package smartin.miapi.mixin;
+package smartin.miapi.fabric.mixin;
 
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
@@ -14,8 +14,12 @@ import smartin.miapi.events.MiapiEvents;
 @Mixin(Block.class)
 public class BlockMixin {
 
-    @Inject(method = "dropExperienceWhenMined(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/item/ItemStack;Lnet/minecraft/util/math/intprovider/IntProvider;)V", at = @At("TAIL"))
-    private void miapi$startRidingEvent(ServerWorld world, BlockPos pos, ItemStack tool, IntProvider experience, CallbackInfo ci) {
+    @Inject(
+            method = "dropExperienceWhenMined(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/item/ItemStack;Lnet/minecraft/util/math/intprovider/IntProvider;)V",
+            at = @At("TAIL"),
+            require = -1
+    )
+    private void miapi$dropXpEvent(ServerWorld world, BlockPos pos, ItemStack tool, IntProvider experience, CallbackInfo ci) {
         MiapiEvents.BLOCK_BREAK_EVENT.invoker().breakBlock(world, pos, tool, experience);
     }
 }

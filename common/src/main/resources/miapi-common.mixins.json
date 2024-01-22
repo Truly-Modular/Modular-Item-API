@@ -7,7 +7,6 @@
         "ArcheryHookMixin",
         "AxeItemAccessor",
         "BCWeaponRegistryMixin",
-        "BlockMixin",
         "ClientAdvancementManagerAccessor",
         "DefaultAttributeContainerAccessor",
         "DefaultAttributeRegistryMixin",

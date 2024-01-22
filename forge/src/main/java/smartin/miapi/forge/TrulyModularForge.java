@@ -4,10 +4,16 @@ import com.google.common.collect.Lists;
 import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.platform.forge.EventBuses;
 import net.minecraft.resource.ResourcePackManager;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.math.intprovider.IntProvider;
+import net.minecraft.util.math.intprovider.IntProviderType;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.SaveProperties;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.common.ForgeMod;
+import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -16,6 +22,7 @@ import smartin.miapi.Miapi;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.datapack.ReloadEvents;
+import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.modules.properties.AttributeProperty;
 
 import java.util.Collection;
@@ -44,6 +51,8 @@ public class TrulyModularForge {
         ItemStackMixin mixin;
         ItemAction action;
          */
+        PlayerEvent event;
+        BlockEvent event1;
 
 
         LifecycleEvent.SERVER_STARTING.register((instance -> {
@@ -52,8 +61,8 @@ public class TrulyModularForge {
             AttributeRegistry.SWIM_SPEED = ForgeMod.SWIM_SPEED.get();
         }));
         LifecycleEvent.SERVER_STARTED.register((minecraftServer -> {
-            if(!Environment.isClient() && MiapiConfig.OtherConfigGroup.forgeAutoReloads.getValue()){
-                Map<String,String> cacheDatapack = new HashMap<>(ReloadEvents.DATA_PACKS);
+            if (!Environment.isClient() && MiapiConfig.OtherConfigGroup.forgeAutoReloads.getValue()) {
+                Map<String, String> cacheDatapack = new HashMap<>(ReloadEvents.DATA_PACKS);
                 Miapi.LOGGER.info("Truly Modular will now go onto reload twice.");
                 Miapi.LOGGER.info("This is done because Forges classloading is buggy and stupid. Until we have a better fix, this is used");
                 Miapi.LOGGER.info("This can be turned off in Miapis config.json");
@@ -80,8 +89,8 @@ public class TrulyModularForge {
         Collection<String> collection2 = saveProperties.getDataConfiguration().dataPacks().getDisabled();
         Iterator var5 = dataPackManager.getNames().iterator();
 
-        while(var5.hasNext()) {
-            String string = (String)var5.next();
+        while (var5.hasNext()) {
+            String string = (String) var5.next();
             if (!collection2.contains(string) && !collection.contains(string)) {
                 collection.add(string);
             }
@@ -98,6 +107,39 @@ public class TrulyModularForge {
             public static void entityRenderers(EntityRenderersEvent.RegisterRenderers event) {
                 AttributeRegistry.REACH = ForgeMod.BLOCK_REACH.get();
                 AttributeRegistry.ATTACK_RANGE = ForgeMod.ENTITY_REACH.get();
+            }
+
+            @SubscribeEvent
+            public static void blockBreakEvent(BlockEvent.BreakEvent breakEvent) {
+                IntProvider intProvider = new IntProvider() {
+                    @Override
+                    public int get(Random random) {
+                        return breakEvent.getExpToDrop();
+                    }
+
+                    @Override
+                    public int getMin() {
+                        return breakEvent.getExpToDrop();
+                    }
+
+                    @Override
+                    public int getMax() {
+                        return breakEvent.getExpToDrop();
+                    }
+
+                    @Override
+                    public IntProviderType<?> getType() {
+                        return IntProviderType.CONSTANT;
+                    }
+                };
+                if(breakEvent.getPlayer().getWorld() instanceof ServerWorld serverWorld){
+                    MiapiEvents.BLOCK_BREAK_EVENT.invoker().breakBlock(
+                            serverWorld,
+                            breakEvent.getPos(),
+                            breakEvent.getPlayer().getMainHandStack(),
+                            intProvider);
+                }
+                //breakEvent.setExpToDrop(intProvider.get(Random.create()));
             }
         }
     }
