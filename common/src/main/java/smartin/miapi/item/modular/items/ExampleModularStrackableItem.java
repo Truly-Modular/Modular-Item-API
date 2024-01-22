@@ -12,7 +12,7 @@ public class ExampleModularStrackableItem extends Item implements ModularItem {
     public static Item modularItem;
 
     public ExampleModularStrackableItem() {
-        super(new Settings().maxCount(64).maxDamage(50));
+        super(new Settings().maxCount(64));
         modularItem = this;
     }
 

@@ -7,10 +7,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class FakeEnchantment {
 
-    public static Map<Enchantment, List<SpecificEnchantmentTransformer>> enchantmentListMap = new HashMap<>();
+    public static Map<Enchantment, List<SpecificEnchantmentTransformer>> enchantmentListMap = new ConcurrentHashMap<>();
 
     public static List<EnchantmentTransformer> enchantmentTransformers = new ArrayList<>();
 

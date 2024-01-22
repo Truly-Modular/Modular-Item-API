@@ -2,6 +2,7 @@ package smartin.miapi.item.modular;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * A map of Transforms, represented as a mapping of strings to {@link Transform}.

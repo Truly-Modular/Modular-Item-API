@@ -46,6 +46,7 @@ import smartin.miapi.registries.RegistryInventory;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 public class Miapi {
@@ -69,7 +70,7 @@ public class Miapi {
         ReloadListenerRegistry.register(ResourceType.SERVER_DATA, new MiapiReloadListener());
         registerReloadHandler(ReloadEvents.MAIN, "modules", RegistryInventory.modules,
                 (isClient, path, data) -> ItemModule.loadFromData(path, data), -0.5f);
-        registerReloadHandler(ReloadEvents.MAIN, "module_extensions", new HashMap<>(),
+        registerReloadHandler(ReloadEvents.MAIN, "module_extensions", new ConcurrentHashMap<>(),
                 (isClient, path, data) -> ItemModule.loadModuleExtension(path, data), -0.4f);
 
         registerReloadHandler(ReloadEvents.MAIN, "injectors", bl -> PropertySubstitution.injectorsCount = 0, (isClient, path, data) -> {
@@ -88,13 +89,13 @@ public class Miapi {
         ReloadEvents.END.subscribe((isClient) -> ModularItemCache.discardCache());
         PlayerEvent.PLAYER_JOIN.register((player -> new Thread(() -> MiapiPermissions.getPerms(player)).start()));
         PropertyResolver.propertyProviderRegistry.register("module", (moduleInstance, oldMap) -> {
-            HashMap<ModuleProperty, JsonElement> map = new HashMap<>();
+            Map<ModuleProperty, JsonElement> map = new ConcurrentHashMap<>();
             moduleInstance.module.getProperties().forEach((key, jsonData) ->
                     map.put(RegistryInventory.moduleProperties.get(key), jsonData));
             return map;
         });
         PropertyResolver.propertyProviderRegistry.register("moduleData", (moduleInstance, oldMap) -> {
-            HashMap<ModuleProperty, JsonElement> map = new HashMap<>();
+            Map<ModuleProperty, JsonElement> map = new ConcurrentHashMap<>();
             String properties = moduleInstance.moduleData.get("properties");
             if (properties != null) {
                 JsonObject moduleJson = gson.fromJson(properties, JsonObject.class);

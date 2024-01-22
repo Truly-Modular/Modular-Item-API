@@ -18,6 +18,7 @@ import smartin.miapi.modules.properties.util.CraftingProperty;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
@@ -37,7 +38,7 @@ public class CraftAction {
     private final ModularWorkBenchEntity blockEntity;
     private Inventory linkedInventory;
     private int inventoryOffset;
-    public Map<String, String> data = new HashMap<>();
+    public Map<String, String> data = new ConcurrentHashMap<>();
     public static final List<CraftingEvent> events = new ArrayList<>();
 
     /**

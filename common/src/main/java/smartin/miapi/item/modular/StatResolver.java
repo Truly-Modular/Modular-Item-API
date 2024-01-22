@@ -11,6 +11,7 @@ import org.mariuszgromada.math.mxparser.Expression;
 import smartin.miapi.modules.ItemModule;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiFunction;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -109,7 +110,7 @@ public class StatResolver {
     /**
      * A map of resolvers, keyed by resolver keyword.
      */
-    private static final Map<String, Resolver> resolverMap = new HashMap<>();
+    private static final Map<String, Resolver> resolverMap = new ConcurrentHashMap<>();
 
     /**
      * Resolves all string values contained in square brackets in the input string.

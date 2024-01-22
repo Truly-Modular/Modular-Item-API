@@ -32,10 +32,6 @@
                 "allowed": [
                     "minecraft:riptide"
                 ]
-            },
-            "crafting_enchants": {
-                "minecraft:sharpness": 5,
-                "minecraft:riptide": 3
             }
         }
     },

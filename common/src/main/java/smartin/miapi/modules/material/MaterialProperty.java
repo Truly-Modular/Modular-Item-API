@@ -25,6 +25,8 @@ import smartin.miapi.registries.RegistryInventory;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
 
@@ -34,7 +36,8 @@ import java.util.stream.Collectors;
 public class MaterialProperty implements ModuleProperty {
     public static final String KEY = "material";
     public static ModuleProperty property;
-    public static Map<String, Material> materials = new HashMap<>();
+    public static Map<String, Material> materials = new ConcurrentHashMap<>() {
+    };
 
     public MaterialProperty() {
         property = this;

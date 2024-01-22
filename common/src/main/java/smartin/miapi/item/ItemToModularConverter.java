@@ -12,11 +12,11 @@ import smartin.miapi.modules.properties.EnchantmentProperty;
 import smartin.miapi.modules.properties.ItemIdProperty;
 import smartin.miapi.registries.RegistryInventory;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ItemToModularConverter implements ModularItemStackConverter.ModularConverter {
-    public Map<String, ItemStack> regexes = new HashMap<>();
+    public Map<String, ItemStack> regexes = new ConcurrentHashMap<>();
 
 
     public ItemToModularConverter() {
