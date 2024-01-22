@@ -108,39 +108,6 @@ public class TrulyModularForge {
                 AttributeRegistry.REACH = ForgeMod.BLOCK_REACH.get();
                 AttributeRegistry.ATTACK_RANGE = ForgeMod.ENTITY_REACH.get();
             }
-
-            @SubscribeEvent
-            public static void blockBreakEvent(BlockEvent.BreakEvent breakEvent) {
-                IntProvider intProvider = new IntProvider() {
-                    @Override
-                    public int get(Random random) {
-                        return breakEvent.getExpToDrop();
-                    }
-
-                    @Override
-                    public int getMin() {
-                        return breakEvent.getExpToDrop();
-                    }
-
-                    @Override
-                    public int getMax() {
-                        return breakEvent.getExpToDrop();
-                    }
-
-                    @Override
-                    public IntProviderType<?> getType() {
-                        return IntProviderType.CONSTANT;
-                    }
-                };
-                if(breakEvent.getPlayer().getWorld() instanceof ServerWorld serverWorld){
-                    MiapiEvents.BLOCK_BREAK_EVENT.invoker().breakBlock(
-                            serverWorld,
-                            breakEvent.getPos(),
-                            breakEvent.getPlayer().getMainHandStack(),
-                            intProvider);
-                }
-                //breakEvent.setExpToDrop(intProvider.get(Random.create()));
-            }
         }
     }
 }
