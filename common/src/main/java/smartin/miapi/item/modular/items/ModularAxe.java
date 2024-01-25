@@ -18,10 +18,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
-import smartin.miapi.modules.properties.DisplayNameProperty;
-import smartin.miapi.modules.properties.MiningLevelProperty;
-import smartin.miapi.modules.properties.RepairPriority;
-import smartin.miapi.modules.properties.ToolOrWeaponProperty;
+import smartin.miapi.modules.properties.*;
 
 public class ModularAxe extends AxeItem implements ModularItem {
 
@@ -49,6 +46,11 @@ public class ModularAxe extends AxeItem implements ModularItem {
     @Override
     public boolean canRepair(ItemStack stack, ItemStack ingredient) {
         return RepairPriority.getRepairValue(stack, ingredient) > 0;
+    }
+
+    @Override
+    public Rarity getRarity(ItemStack stack) {
+        return RarityProperty.getRarity(stack);
     }
 
     @Override

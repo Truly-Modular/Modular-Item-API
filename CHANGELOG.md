@@ -1,10 +1,4 @@
-## v1.1.8 (1.20.1)
-- added option to use modulekeys in material-properties
-- fixed scrolling in skin-gui
-- added Itemtag Property
-- added Advancement Condition
-- fixed issue with generative compat
-- generative compat should now also hit groups of items
-- fixed Trim rendering issue in gui
-- buffed Blocking
-- added Thorns to Prismarine
+## v1.1.9 (1.20.1)
+- fixed crash related to Explosive Arrows shot from dispensers
+- fixed crash on Mohist servers
+- added Rarity Property

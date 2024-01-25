@@ -23,6 +23,7 @@ import net.minecraft.stat.Stats;
 import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Rarity;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -36,10 +37,7 @@ import smartin.miapi.client.model.ModularModelPredicateProvider;
 import smartin.miapi.entity.ItemProjectileEntity;
 import smartin.miapi.item.modular.CustomDrawTimeItem;
 import smartin.miapi.item.modular.ModularItem;
-import smartin.miapi.modules.properties.AttributeProperty;
-import smartin.miapi.modules.properties.DisplayNameProperty;
-import smartin.miapi.modules.properties.IsCrossbowShootAble;
-import smartin.miapi.modules.properties.RepairPriority;
+import smartin.miapi.modules.properties.*;
 
 import java.util.List;
 import java.util.function.Predicate;
@@ -75,6 +73,11 @@ public class ModularCrossbow extends CrossbowItem implements ModularItem, Custom
     @Override
     public int getItemBarStep(ItemStack stack) {
         return Math.round(13.0F - (float) stack.getDamage() * 13.0F / ModularItem.getDurability(stack));
+    }
+
+    @Override
+    public Rarity getRarity(ItemStack stack) {
+        return RarityProperty.getRarity(stack);
     }
 
     @Override

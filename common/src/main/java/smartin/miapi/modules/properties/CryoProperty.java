@@ -4,6 +4,7 @@ import dev.architectury.event.EventResult;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.world.ServerWorld;
 import smartin.miapi.events.MiapiProjectileEvents;
 import smartin.miapi.modules.properties.util.DoubleProperty;
 import smartin.miapi.registries.RegistryInventory;
@@ -29,7 +30,7 @@ public class CryoProperty extends DoubleProperty {
             return EventResult.pass();
         });*/
         MiapiProjectileEvents.MODULAR_PROJECTILE_ENTITY_HIT.register((modularProjectileEntityHitEvent) -> {
-            if (modularProjectileEntityHitEvent.entityHitResult.getEntity() instanceof LivingEntity target) {
+            if (modularProjectileEntityHitEvent.entityHitResult.getEntity() instanceof LivingEntity target && target.getWorld() instanceof ServerWorld) {
                 double strength = getValueSafe(modularProjectileEntityHitEvent.projectile.asItemStack());
                 if (strength > 0) {
                     int potionStrength = (int) Math.ceil(strength / 3);

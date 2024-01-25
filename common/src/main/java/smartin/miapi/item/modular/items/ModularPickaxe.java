@@ -18,10 +18,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
-import smartin.miapi.modules.properties.DisplayNameProperty;
-import smartin.miapi.modules.properties.MiningLevelProperty;
-import smartin.miapi.modules.properties.RepairPriority;
-import smartin.miapi.modules.properties.ToolOrWeaponProperty;
+import smartin.miapi.modules.properties.*;
 
 public class ModularPickaxe extends PickaxeItem implements ModularItem {
 
@@ -128,6 +125,11 @@ public class ModularPickaxe extends PickaxeItem implements ModularItem {
     @Override
     public ItemStack finishUsing(ItemStack stack, World world, LivingEntity user) {
         return ItemAbilityManager.finishUsing(stack, world, user);
+    }
+
+    @Override
+    public Rarity getRarity(ItemStack stack) {
+        return RarityProperty.getRarity(stack);
     }
 
     @Override

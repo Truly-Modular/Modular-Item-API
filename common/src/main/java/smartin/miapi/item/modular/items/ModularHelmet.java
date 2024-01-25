@@ -2,9 +2,11 @@ package smartin.miapi.item.modular.items;
 
 import net.minecraft.item.*;
 import net.minecraft.text.Text;
+import net.minecraft.util.Rarity;
 import net.minecraft.util.math.MathHelper;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.modules.properties.DisplayNameProperty;
+import smartin.miapi.modules.properties.RarityProperty;
 import smartin.miapi.modules.properties.RepairPriority;
 
 public class ModularHelmet extends ArmorItem implements ModularItem {
@@ -25,6 +27,11 @@ public class ModularHelmet extends ArmorItem implements ModularItem {
     @Override
     public boolean canRepair(ItemStack stack, ItemStack ingredient) {
         return RepairPriority.getRepairValue(stack, ingredient) > 0;
+    }
+
+    @Override
+    public Rarity getRarity(ItemStack stack) {
+        return RarityProperty.getRarity(stack);
     }
 
     @Override

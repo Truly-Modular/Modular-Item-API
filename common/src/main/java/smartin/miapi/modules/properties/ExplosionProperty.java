@@ -47,7 +47,7 @@ public class ExplosionProperty extends CodecBasedProperty<ExplosionProperty.Expl
         MiapiProjectileEvents.MODULAR_PROJECTILE_ENTITY_HIT.register(event -> {
             ExplosionInfo info = this.get(event.projectile.asItemStack());
             if (info != null) {
-                if(!event.projectile.getWorld().isClient()) {
+                if (!event.projectile.getWorld().isClient()) {
                     explode(info, event.projectile, event.entityHitResult);
                     event.projectile.discard();
                 }
@@ -58,7 +58,7 @@ public class ExplosionProperty extends CodecBasedProperty<ExplosionProperty.Expl
         MiapiProjectileEvents.MODULAR_PROJECTILE_BLOCK_HIT.register(event -> {
             ExplosionInfo info = this.get(event.projectile.asItemStack());
             if (info != null) {
-                if(!event.projectile.getWorld().isClient()){
+                if (!event.projectile.getWorld().isClient()) {
                     explode(info, event.projectile, event.blockHitResult);
                     event.projectile.discard();
                 }
@@ -87,7 +87,9 @@ public class ExplosionProperty extends CodecBasedProperty<ExplosionProperty.Expl
             destructionType = Explosion.DestructionType.KEEP;
         }
 
-        MiapiExplosion explosion = new MiapiExplosion(projectile.getWorld(), projectile.getOwner(), null, behavior, x, y, z, info.strength, false, destructionType);
+        MiapiExplosion explosion = new MiapiExplosion(projectile.getWorld(),
+                projectile.getOwner() == null ? projectile : projectile.getOwner(),
+        null, behavior, x, y, z, info.strength, false, destructionType);
         explosion.entityMaxDamage = info.entityMaxDamage;
         if (info.entityRadius != null) {
             explosion.entityRadius = info.entityRadius;
@@ -99,15 +101,15 @@ public class ExplosionProperty extends CodecBasedProperty<ExplosionProperty.Expl
             explosion.collectBlocksAndDamageEntities();
         }
         explosion.affectWorld(true);
-        if(!projectile.getWorld().isClient()){
+        if (!projectile.getWorld().isClient()) {
             if (!explosion.shouldDestroy()) {
                 explosion.clearAffectedBlocks();
             }
 
             Iterator var14 = projectile.getWorld().getPlayers().iterator();
 
-            while(var14.hasNext()) {
-                ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)var14.next();
+            while (var14.hasNext()) {
+                ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity) var14.next();
                 if (serverPlayerEntity.squaredDistanceTo(x, y, z) < 4096.0) {
                     serverPlayerEntity.networkHandler.sendPacket(new ExplosionS2CPacket(x, y, z, info.strength, explosion.getAffectedBlocks(), explosion.getAffectedPlayers().get(serverPlayerEntity)));
                 }
@@ -115,7 +117,7 @@ public class ExplosionProperty extends CodecBasedProperty<ExplosionProperty.Expl
         }
     }
 
-    public class MiapiExplosion extends Explosion {
+    public static class MiapiExplosion extends Explosion {
         private static final ExplosionBehavior DEFAULT_BEHAVIOR = new ExplosionBehavior();
         public float blockExplosionPower;
         public float entityExplosionPower;
@@ -143,7 +145,7 @@ public class ExplosionProperty extends CodecBasedProperty<ExplosionProperty.Expl
         }
 
         private ExplosionBehavior chooseBehavior(@Nullable Entity entity) {
-            return (ExplosionBehavior) (entity == null ? DEFAULT_BEHAVIOR : new EntityExplosionBehavior(entity));
+            return entity == null ? DEFAULT_BEHAVIOR : new EntityExplosionBehavior(entity);
         }
 
         @Override

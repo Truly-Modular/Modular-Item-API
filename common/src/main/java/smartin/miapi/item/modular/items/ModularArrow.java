@@ -9,11 +9,13 @@ import net.minecraft.item.ArrowItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
+import net.minecraft.util.Rarity;
 import net.minecraft.util.math.Position;
 import net.minecraft.world.World;
 import smartin.miapi.entity.ItemProjectileEntity;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.modules.properties.DisplayNameProperty;
+import smartin.miapi.modules.properties.RarityProperty;
 
 public class ModularArrow extends ArrowItem implements ModularItem {
     public ModularArrow() {
@@ -30,6 +32,11 @@ public class ModularArrow extends ArrowItem implements ModularItem {
             }
         });
         //ItemTags.ARROWS
+    }
+
+    @Override
+    public Rarity getRarity(ItemStack stack) {
+        return RarityProperty.getRarity(stack);
     }
 
     @Override

@@ -457,6 +457,7 @@ public class RegistryInventory {
             registerMiapi(moduleProperties, ExhaustionProperty.KEY, new ExhaustionProperty());
             registerMiapi(moduleProperties, MaterialInscribeDataProperty.KEY, new MaterialInscribeDataProperty());
             registerMiapi(moduleProperties, FakeItemTagProperty.KEY, new FakeItemTagProperty());
+            registerMiapi(moduleProperties, RarityProperty.KEY, new RarityProperty());
             //compat
             registerMiapi(moduleProperties, BetterCombatProperty.KEY, new BetterCombatProperty());
 

@@ -10,6 +10,7 @@ import smartin.miapi.modules.properties.util.DoubleProperty;
  * Applies fake mending to the Item
  */
 public class MendingProperty extends DoubleProperty {
+    //TODO:delete, fake enchants does the same thing better
     public static final String KEY = "mending";
     public static MendingProperty property;
 
