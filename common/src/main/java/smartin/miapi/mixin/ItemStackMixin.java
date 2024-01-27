@@ -28,9 +28,6 @@ import java.util.List;
 @Mixin(value = ItemStack.class, priority = 2000)
 public abstract class ItemStackMixin {
 
-    @Shadow
-    public abstract boolean isIn(TagKey<Item> tag);
-
     //@Inject(method = "foo()V", at = @At(value = "INVOKE", item = "La/b/c/Something;doSomething()V", shift = At.Shift.AFTER))
     @Inject(
             method = "getTooltip(Lnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/client/item/TooltipContext;)Ljava/util/List;",

@@ -4,6 +4,7 @@
     "package": "smartin.miapi.mixin",
     "compatibilityLevel": "JAVA_17",
     "mixins": [
+        "ApoliStackPowerMixin",
         "ArcheryHookMixin",
         "AxeItemAccessor",
         "BCWeaponRegistryMixin",

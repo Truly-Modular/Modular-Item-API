@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.modules.properties.AttributeProperty;
 
-@Mixin(value = ItemStack.class, priority = 600)
+@Mixin(value = ItemStack.class, priority = 100)
 public abstract class ItemStackMixinHighPriority {
     @Inject(method = "getAttributeModifiers", at = @At("RETURN"), require = 1, cancellable = true)
     public void miapi$modifyAttributeModifiers(EquipmentSlot slot, CallbackInfoReturnable<Multimap<EntityAttribute, EntityAttributeModifier>> cir) {

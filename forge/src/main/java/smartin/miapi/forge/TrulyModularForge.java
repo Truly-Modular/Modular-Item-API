@@ -3,6 +3,7 @@ package smartin.miapi.forge;
 import com.google.common.collect.Lists;
 import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.platform.forge.EventBuses;
+import io.github.apace100.apoli.util.StackPowerUtil;
 import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.intprovider.IntProvider;
@@ -39,6 +40,10 @@ public class TrulyModularForge {
         // Submit our event bus to let architectury register our content on the right time
         EventBuses.registerModEventBus(MOD_ID, FMLJavaModLoadingContext.get().getModEventBus());
         Miapi.init();
+
+        //StackPo
+        StackPowerUtil powerUtil;
+
         //ATTRIBUTE REPLACEMENT
         //AttributeRegistry.REACH = ForgeMod.BLOCK_REACH.getRaw();
         //AttributeRegistry.ATTACK_RANGE = ForgeMod.ENTITY_REACH.getRaw();

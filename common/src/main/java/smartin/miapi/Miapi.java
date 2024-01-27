@@ -7,6 +7,7 @@ import com.redpxnda.nucleus.registry.NucleusNamespaces;
 import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.event.events.common.PlayerEvent;
 import dev.architectury.registry.ReloadListenerRegistry;
+import io.github.apace100.apoli.power.ItemOnItemPower;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -61,6 +62,7 @@ public class Miapi {
     public static Gson gson = new Gson();
 
     public static void init() {
+        ItemOnItemPower power;
         MiapiConfig.getInstance();
         setupNetworking();
         RegistryInventory.setup();

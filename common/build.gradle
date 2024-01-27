@@ -44,15 +44,15 @@ dependencies {
     modImplementation files('libs/archery-local.jar')
     modImplementation files('libs/armory-local.jar')
 
-    //modApi("dev.onyxstudios.cardinal-components-api:cardinal-components-base:${cca_version}") {
-    //    exclude(group: "net.fabricmc.fabric-api")
-    //}
-    //modApi("dev.onyxstudios.cardinal-components-api:cardinal-components-entity:${cca_version}") {
-    //    exclude(group: "net.fabricmc.fabric-api")
-    //}
+    modApi("dev.onyxstudios.cardinal-components-api:cardinal-components-base:${cca_version}") {
+        exclude(group: "net.fabricmc.fabric-api")
+    }
+    modApi("dev.onyxstudios.cardinal-components-api:cardinal-components-entity:${cca_version}") {
+        exclude(group: "net.fabricmc.fabric-api")
+    }
 
-    //modApi "com.github.apace100:calio:1.13.0"
-    //modApi "com.github.apace100:apoli:${project.fabric_apoli_version}"
+    modApi "com.github.apace100:calio:1.13.0"
+    modApi "com.github.apace100:apoli:${project.fabric_apoli_version}"
     //include "com.github.apace100:apoli:${project.fabric_apoli_version}"
 
     implementation "org.mariuszgromada.math:MathParser.org-mXparser:${rootProject.mathparser_version}"

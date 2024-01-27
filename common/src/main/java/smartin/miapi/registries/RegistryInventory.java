@@ -70,6 +70,7 @@ import smartin.miapi.modules.edit_options.ReplaceOption;
 import smartin.miapi.modules.edit_options.skins.SkinOptions;
 import smartin.miapi.modules.material.*;
 import smartin.miapi.modules.properties.*;
+import smartin.miapi.modules.properties.compat.ApoliPowersProperty;
 import smartin.miapi.modules.properties.compat.BetterCombatProperty;
 import smartin.miapi.modules.properties.render.*;
 import smartin.miapi.modules.properties.util.ModuleProperty;
@@ -460,6 +461,7 @@ public class RegistryInventory {
             registerMiapi(moduleProperties, RarityProperty.KEY, new RarityProperty());
             //compat
             registerMiapi(moduleProperties, BetterCombatProperty.KEY, new BetterCombatProperty());
+            registerMiapi(moduleProperties, ApoliPowersProperty.KEY, new ApoliPowersProperty());
 
             // CRAFTING STATS
             //registerMiapi(craftingStats, "hammering", new SimpleCraftingStat(0), stat -> exampleCraftingStat = stat);

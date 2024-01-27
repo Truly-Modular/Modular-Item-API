@@ -486,7 +486,7 @@ public class AttributeProperty implements ModuleProperty {
         };
     }
 
-    private static EquipmentSlot getSlot(String slotString) {
+    public static EquipmentSlot getSlot(String slotString) {
         if (slotString != null && !slotString.isEmpty()) {
             try {
                 return EquipmentSlot.byName(slotString);
