@@ -7,20 +7,13 @@ import com.redpxnda.nucleus.registry.NucleusNamespaces;
 import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.event.events.common.PlayerEvent;
 import dev.architectury.registry.ReloadListenerRegistry;
-import io.github.apace100.apoli.power.ItemOnItemPower;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.item.trim.ArmorTrim;
+import net.fabricmc.fabric.api.resource.ResourceReloadListenerKeys;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.resource.ResourceType;
-import net.minecraft.screen.SmithingScreenHandler;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.command.SpawnArmorTrimsCommand;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.Rarity;
 import org.apache.logging.log4j.util.TriConsumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +24,6 @@ import smartin.miapi.craft.stat.StatActorType;
 import smartin.miapi.datapack.MiapiReloadListener;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.injectors.PropertySubstitution;
-import smartin.miapi.item.FakeEnchantment;
 import smartin.miapi.item.ItemToModularConverter;
 import smartin.miapi.item.ModularItemStackConverter;
 import smartin.miapi.item.modular.ModularItem;
@@ -48,7 +40,7 @@ import smartin.miapi.network.NetworkingImplCommon;
 import smartin.miapi.registries.MiapiRegistry;
 import smartin.miapi.registries.RegistryInventory;
 
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
@@ -62,7 +54,6 @@ public class Miapi {
     public static Gson gson = new Gson();
 
     public static void init() {
-        ItemOnItemPower power;
         MiapiConfig.getInstance();
         setupNetworking();
         RegistryInventory.setup();
@@ -72,7 +63,11 @@ public class Miapi {
         ConditionManager.setup();
         StatActorType.setup();
         LifecycleEvent.SERVER_BEFORE_START.register(minecraftServer -> server = minecraftServer);
-        ReloadListenerRegistry.register(ResourceType.SERVER_DATA, new MiapiReloadListener());
+        ReloadListenerRegistry.register(
+                ResourceType.SERVER_DATA,
+                new MiapiReloadListener(),
+                new Identifier(MOD_ID, "main_reload_listener"),
+                List.of(ResourceReloadListenerKeys.TAGS, ResourceReloadListenerKeys.RECIPES));
         registerReloadHandler(ReloadEvents.MAIN, "modules", RegistryInventory.modules,
                 (isClient, path, data) -> ItemModule.loadFromData(path, data), -0.5f);
         registerReloadHandler(ReloadEvents.MAIN, "module_extensions", new ConcurrentHashMap<>(),
@@ -116,7 +111,7 @@ public class Miapi {
             return map;
         });
         ModularItemCache.setSupplier(ItemModule.MODULE_KEY, itemStack -> {
-            if(itemStack.getItem() instanceof ModularItem){
+            if (itemStack.getItem() instanceof ModularItem) {
                 NbtCompound tag = itemStack.getOrCreateNbt();
                 try {
                     String modulesString = tag.getString(ItemModule.MODULE_KEY);

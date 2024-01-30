@@ -13,6 +13,7 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
+import smartin.miapi.Miapi;
 import smartin.miapi.modules.material.palette.EmptyMaterialPalette;
 import smartin.miapi.modules.material.palette.MaterialPalette;
 import smartin.miapi.modules.material.palette.PaletteCreators;
@@ -49,8 +50,8 @@ public class JsonMaterial implements Material {
             } else {
                 palette = new EmptyMaterialPalette(this);
             }
-            if(element.has("fake_translation") && element.has("translation")){
-                FakeTranslation.translations.put(element.get("translation").getAsString() ,element.get("fake_translation").getAsString());
+            if (element.has("fake_translation") && element.has("translation")) {
+                FakeTranslation.translations.put(element.get("translation").getAsString(), element.get("fake_translation").getAsString());
             }
         }
     }
@@ -111,11 +112,14 @@ public class JsonMaterial implements Material {
         JsonElement jsonData = rawJson;
         for (String k : keys) {
             jsonData = jsonData.getAsJsonObject().get(k);
-            if (jsonData == null) {
+            if (jsonData == null || !jsonData.isJsonObject()) {
                 break;
             }
         }
-        if (jsonData != null) {
+        if(jsonData != null && jsonData.isJsonNull()){
+            Miapi.LOGGER.info(String.valueOf(rawJson));
+        }
+        if (jsonData != null && jsonData.isJsonPrimitive()) {
             return jsonData.getAsDouble();
         }
         return 0;
@@ -127,11 +131,11 @@ public class JsonMaterial implements Material {
         JsonElement jsonData = rawJson;
         for (String key : keys) {
             jsonData = jsonData.getAsJsonObject().get(key);
-            if (jsonData == null) {
+            if (jsonData == null || !jsonData.isJsonObject()) {
                 break;
             }
         }
-        if (jsonData != null) {
+        if (jsonData != null && jsonData.isJsonPrimitive()) {
             return jsonData.getAsString();
         }
         return "";
@@ -163,7 +167,7 @@ public class JsonMaterial implements Material {
     @Environment(EnvType.CLIENT)
     @Override
     public MaterialPalette getPalette() {
-        if(palette==null){
+        if (palette == null) {
             return new EmptyMaterialPalette(this);
         }
         return palette;

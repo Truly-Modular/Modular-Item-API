@@ -34,7 +34,6 @@ public class MiapiReloadListener implements ResourceReloader {
         Map<String, String> data = new LinkedHashMap<>();
         TypeToken<String> placeHolderToken = TypeToken.get(String.class);
         com.google.common.reflect.TypeToken<String> secondPlaceHolder = com.google.common.reflect.TypeToken.of(String.class);
-        Miapi.LOGGER.info("LoadTest "+placeHolderToken.equals(secondPlaceHolder));
 
         if (Platform.isFabric() && false) {
             //TODO:figure out why this does nto work on forge.
@@ -105,6 +104,7 @@ public class MiapiReloadListener implements ResourceReloader {
                     });
                     if (allowed) {
                         element.remove("load_condition");
+                        Miapi.LOGGER.info("redid " + key);
                         filteredMap.put(key, Miapi.gson.toJson(element));
                     }
                 } catch (Exception e) {
@@ -128,8 +128,13 @@ public class MiapiReloadListener implements ResourceReloader {
 
     @Override
     public CompletableFuture<Void> reload(Synchronizer synchronizer, ResourceManager manager, Profiler prepareProfiler, Profiler applyProfiler, Executor prepareExecutor, Executor applyExecutor) {
+        return load(manager, prepareProfiler, prepareExecutor).thenCompose(synchronizer::whenPrepared).thenAcceptAsync( a ->{
+            apply(a, manager, applyProfiler, applyExecutor);
+        });
+        /*
         return load(manager, prepareProfiler, prepareExecutor).thenCompose(synchronizer::whenPrepared).thenCompose(
                 (o) -> apply(o, manager, applyProfiler, applyExecutor)
         );
+         */
     }
 }

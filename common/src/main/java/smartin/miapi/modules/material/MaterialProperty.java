@@ -26,7 +26,6 @@ import smartin.miapi.registries.RegistryInventory;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
 
@@ -86,7 +85,7 @@ public class MaterialProperty implements ModuleProperty {
             JsonObject obj = parser.parse(data).getAsJsonObject();
             JsonMaterial material = new JsonMaterial(obj, isClient);
             if (materials.containsKey(material.getKey())) {
-                Miapi.LOGGER.warn("Overwriting Materials isnt supported yet and may cause issues. Material from  " + path + " is overwriting " + material.getKey());
+                Miapi.LOGGER.warn("Overwriting Materials isnt 100% safe. The ordering might be wrong, please set the overwrite material in the same path as the origin Material" + path + " is overwriting " + material.getKey());
             }
             materials.put(material.getKey(), material);
         }, -2f);
@@ -96,7 +95,7 @@ public class MaterialProperty implements ModuleProperty {
                     .map(ToolItem.class::cast)
                     .toList();
             toolItems.stream()
-                    .map(toolItem -> toolItem.getMaterial())
+                    .map(ToolItem::getMaterial)
                     .collect(Collectors.toSet())
                     .stream()
                     .filter(toolMaterial -> toolMaterial.getRepairIngredient() != null && toolMaterial.getRepairIngredient().getMatchingStacks() != null)
@@ -146,12 +145,7 @@ public class MaterialProperty implements ModuleProperty {
                     Executor done = new CurrentThreadExecutor();
                     RenderSystem.assertOnRenderThread();
                     MinecraftClient.getInstance().getTextureManager();
-                    ResourceReloader.Synchronizer synchronizer = new ResourceReloader.Synchronizer() {
-                        @Override
-                        public <T> CompletableFuture<T> whenPrepared(T preparedObject) {
-                            return CompletableFuture.completedFuture(preparedObject);
-                        }
-                    };
+                    ResourceReloader.Synchronizer synchronizer = CompletableFuture::completedFuture;
 
                     MiapiClient.materialAtlasManager.reload(synchronizer, MinecraftClient.getInstance().getResourceManager(), MinecraftClient.getInstance().getProfiler(), MinecraftClient.getInstance().getProfiler(), prepare, done);
                 });
