@@ -7,6 +7,7 @@ import smartin.miapi.Miapi;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.craft.CraftAction;
 import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.util.CraftingProperty;
 import smartin.miapi.modules.properties.util.DoubleProperty;
 
@@ -40,7 +41,7 @@ public class FlexibilityProperty extends DoubleProperty implements CraftingPrope
     }
 
     @Override
-    public boolean shouldExecuteOnCraft(ItemModule.ModuleInstance module, ItemModule.ModuleInstance root, ItemStack stack) {
+    public boolean shouldExecuteOnCraft(ModuleInstance module, ModuleInstance root, ItemStack stack) {
         return ItemModule.getMergedProperty(root,this)!=null;
     }
 

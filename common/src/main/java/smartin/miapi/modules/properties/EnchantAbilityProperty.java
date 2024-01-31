@@ -2,6 +2,7 @@ package smartin.miapi.modules.properties;
 
 import net.minecraft.item.ItemStack;
 import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.material.Material;
 import smartin.miapi.modules.material.MaterialProperty;
 
@@ -18,7 +19,7 @@ public class EnchantAbilityProperty {
     }
 
     public static double getEnchantAbility(ItemStack itemStack){
-        List<ItemModule.ModuleInstance> moduleInstances = ItemModule.getModules(itemStack).allSubModules();
+        List<ModuleInstance> moduleInstances = ItemModule.getModules(itemStack).allSubModules();
         List<Double> enchantAbilities = moduleInstances.stream().map(moduleInstance -> getEnchantAbility(moduleInstance)).sorted().collect(Collectors.toList());
         if(enchantAbilities.isEmpty()){
             return 1.0;
@@ -32,7 +33,7 @@ public class EnchantAbilityProperty {
                 .orElse(1.0);
     }
 
-    public static double getEnchantAbility(ItemModule.ModuleInstance instance){
+    public static double getEnchantAbility(ModuleInstance instance){
         Material material = MaterialProperty.getMaterial(instance);
         if(material!=null){
             return Math.max(1,material.getDouble("enchantability"));

@@ -21,6 +21,7 @@ import smartin.miapi.client.gui.crafting.crafter.create_module.CreateListView;
 import smartin.miapi.craft.CraftAction;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.edit_options.EditOption;
 import smartin.miapi.modules.edit_options.EditOptionIcon;
 import smartin.miapi.modules.edit_options.ReplaceOption;
@@ -60,7 +61,7 @@ public class CreateItemOption implements EditOption {
         int count = buffer.readInt();
         ItemStack itemStack = new ItemStack(Registries.ITEM.get(new Identifier(itemID)));
         itemStack.setCount(count);
-        ItemModule.ModuleInstance instance = new ItemModule.ModuleInstance(RegistryInventory.modules.get(module));
+        ModuleInstance instance = new ModuleInstance(RegistryInventory.modules.get(module));
         instance.writeToItem(itemStack);
         CraftAction action = new CraftAction(buffer, editContext.getWorkbench());
         Inventory inventory = editContext.getLinkedInventory();
@@ -80,7 +81,7 @@ public class CreateItemOption implements EditOption {
         int count = buffer.readInt();
         ItemStack itemStack = new ItemStack(Registries.ITEM.get(new Identifier(itemID)));
         itemStack.setCount(count);
-        ItemModule.ModuleInstance instance = new ItemModule.ModuleInstance(RegistryInventory.modules.get(module));
+        ModuleInstance instance = new ModuleInstance(RegistryInventory.modules.get(module));
         instance.writeToItem(itemStack);
         CraftAction action = new CraftAction(buffer, editContext.getWorkbench());
         action.setItem(itemStack);
@@ -148,8 +149,8 @@ public class CreateItemOption implements EditOption {
             }
 
             @Override
-            public @Nullable ItemModule.ModuleInstance getInstance() {
-                return new ItemModule.ModuleInstance(item.getBaseModule());
+            public @Nullable ModuleInstance getInstance() {
+                return new ModuleInstance(item.getBaseModule());
             }
 
             @Override

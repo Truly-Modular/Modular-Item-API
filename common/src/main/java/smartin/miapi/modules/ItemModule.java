@@ -1,15 +1,12 @@
 package smartin.miapi.modules;
 
 import com.google.gson.*;
-import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import net.minecraft.item.ItemStack;
-import org.jetbrains.annotations.Nullable;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.item.modular.ModularItem;
-import smartin.miapi.item.modular.PropertyResolver;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
@@ -260,17 +257,17 @@ public class ItemModule {
      * @param stack the ItemStack to getRaw the module instance from
      * @return the module instance associated with the given ItemStack
      */
-    public static ItemModule.ModuleInstance getModules(ItemStack stack) {
+    public static ModuleInstance getModules(ItemStack stack) {
         if (stack.getItem() instanceof ModularItem && !ReloadEvents.isInReload() && stack.getOrCreateNbt().get("modules") != null) {
-            ItemModule.ModuleInstance moduleInstance = ModularItemCache.getRaw(stack, MODULE_KEY);
+            ModuleInstance moduleInstance = ModularItemCache.getRaw(stack, MODULE_KEY);
             if (moduleInstance == null || moduleInstance.module == null) {
                 IllegalArgumentException exception = new IllegalArgumentException("Item has Invalid Module onReload - treating it like it has no modules");
                 LOGGER.warn("Item has Invalid Module onReload - treating it like it has no modules", exception);
-                return new ItemModule.ModuleInstance(new ItemModule("empty", new HashMap<>()));
+                return new ModuleInstance(new ItemModule("empty", new HashMap<>()));
             }
             return moduleInstance;
         }
-        return new ItemModule.ModuleInstance(new ItemModule("empty", new HashMap<>()));
+        return new ModuleInstance(new ItemModule("empty", new HashMap<>()));
     }
 
     /**
@@ -279,9 +276,9 @@ public class ItemModule {
      * @param modules the module instance to getRaw the unmerged module properties from
      * @return a map of unmerged module properties
      */
-    public static Map<ItemModule, List<JsonElement>> getUnmergedProperties(ItemModule.ModuleInstance modules) {
+    public static Map<ItemModule, List<JsonElement>> getUnmergedProperties(ModuleInstance modules) {
         Map<ItemModule, List<JsonElement>> unmergedProperties = new HashMap<>();
-        for (ItemModule.ModuleInstance module : modules.subModules.values()) {
+        for (ModuleInstance module : modules.subModules.values()) {
             module.getProperties().forEach((property, data) -> {
                 unmergedProperties.getOrDefault(property, new ArrayList<>()).add(data);
             });
@@ -314,7 +311,7 @@ public class ItemModule {
      */
     public static JsonElement getMergedProperty(ModuleInstance moduleInstance, ModuleProperty property, MergeType type) {
         JsonElement mergedProperty = null;
-        for (ItemModule.ModuleInstance module : moduleInstance.allSubModules()) {
+        for (ModuleInstance module : moduleInstance.allSubModules()) {
             JsonElement currentProperty = module.getProperties().get(property);
             if (currentProperty != null) {
                 if (mergedProperty == null) {
@@ -338,7 +335,7 @@ public class ItemModule {
     public static JsonElement getMergedProperty(ItemStack itemStack, ModuleProperty property, MergeType type) {
         ModuleInstance moduleInstance = getModules(itemStack);
         JsonElement mergedProperty = null;
-        for (ItemModule.ModuleInstance module : moduleInstance.allSubModules()) {
+        for (ModuleInstance module : moduleInstance.allSubModules()) {
             JsonElement currentProperty = module.getProperties().get(property);
             if (currentProperty != null) {
                 if (mergedProperty == null) {
@@ -394,232 +391,6 @@ public class ItemModule {
             return this.name.equals(otherModule.name);
         }
         return false;
-    }
-
-    /**
-     * A class representing a single module instance that belongs to an item.
-     */
-    @JsonAdapter(ModuleInstanceJsonAdapter.class)
-    public static class ModuleInstance {
-        /**
-         * The item module represented by this module instance.
-         */
-        public ItemModule module;
-        /**
-         * The parent module instance of this module instance, if any.
-         */
-        @Nullable
-        public ModuleInstance parent;
-        /**
-         * A map of child module instances to their respective module IDs.
-         */
-        public Map<Integer, ModuleInstance> subModules = new HashMap<>();
-        /**
-         * A map of module data keys to their respective values.
-         */
-        public Map<String, String> moduleData = new HashMap<>();
-
-        /**
-         * Constructs a new module instance with the given item module.
-         *
-         * @param module the item module for the module instance
-         */
-        public ModuleInstance(ItemModule module) {
-            this.module = module;
-        }
-
-        /**
-         * Returns a flat list of all sub-modules, including the current module instance.
-         *
-         * @return a list of all sub-modules
-         */
-        public List<ModuleInstance> allSubModules() {
-            return ItemModule.createFlatList(this);
-        }
-
-        /**
-         * Returns a map of all properties and their associated JSON elements for this module instance and its sub-modules.
-         *
-         * @return a map of module properties and their associated JSON elements
-         */
-        public Map<ModuleProperty, JsonElement> getProperties() {
-            return PropertyResolver.resolve(this);
-        }
-
-        /**
-         * Returns a map of all properties and their associated JSON elements for this module instance,
-         * keyed by the property names.
-         *
-         * @return a map of module properties and their associated JSON elements, keyed by property name
-         */
-        public Map<String, JsonElement> getKeyedProperties() {
-            Map<String, JsonElement> map = new HashMap<>();
-            getProperties().forEach((property, jsonElement) -> {
-                map.put(RegistryInventory.moduleProperties.findKey(property), jsonElement);
-            });
-            return map;
-        }
-
-        /**
-         * Returns a map of all properties and their associated JSON elements for this module instance and all its submodules
-         * keyed by the property names.
-         *
-         * @return a map of module properties and their associated JSON elements, keyed by property name
-         */
-        public Map<ModuleProperty, JsonElement> getPropertiesMerged() {
-            Map<ModuleProperty, JsonElement> map = new HashMap<>();
-            for (ModuleInstance moduleInstance : this.allSubModules()) {
-                moduleInstance.getProperties().forEach((property, element) -> {
-                    if (map.containsKey(property)) {
-                        try {
-                            map.put(property, property.merge(map.get(property), element, MergeType.SMART));
-                        } catch (Exception e) {
-                            LOGGER.error("coudlnt merge " + property, e);
-                            map.put(property, element);
-                        }
-                    } else {
-                        map.put(property, element);
-                    }
-                });
-            }
-            return map;
-        }
-
-        /**
-         * Returns the root module instance, i.e., the module instance that has no parent.
-         *
-         * @return the root module instance
-         */
-        public ModuleInstance getRoot() {
-            ModuleInstance root = this;
-            while (root.parent != null) {
-                root = root.parent;
-            }
-            return root;
-        }
-
-        /**
-         * Creates a copy of this module instance and all its parents and children.
-         *
-         * @return The copied module instance.
-         */
-        public ModuleInstance copy() {
-            List<Integer> position = new ArrayList<>();
-            calculatePosition(position);
-
-            ModuleInstance root = this.getRoot().deepCopy();
-
-            return root.getPosition(position);
-        }
-
-        /**
-         * Recursively calculates the position of this module instance in its hierarchy.
-         *
-         * @param position The list to store the position.
-         */
-        public void calculatePosition(List<Integer> position) {
-            if (parent != null) {
-                parent.calculatePosition(position);
-                position.add(this.getId());
-            }
-        }
-
-        /**
-         * Retrieves the module instance at the specified position in the hierarchy.
-         *
-         * @param position The position of the module instance.
-         * @return The module instance at the specified position.
-         */
-        public ModuleInstance getPosition(List<Integer> position) {
-            if (!position.isEmpty()) {
-                int pos = position.remove(0);
-                ModuleInstance subModule = subModules.get(pos);
-                if (subModule != null) {
-                    return subModule.getPosition(position);
-                }
-            }
-            return this;
-        }
-
-        /**
-         * Retrieves the ID of this module instance.
-         *
-         * @return The ID of the module instance, or null if not found.
-         */
-        @Nullable
-        public Integer getId() {
-            if (parent != null) {
-                for (Map.Entry<Integer, ModuleInstance> entry : parent.subModules.entrySet()) {
-                    if (entry.getValue() == this) {
-                        return entry.getKey();
-                    }
-                }
-            }
-            return null;
-        }
-
-        /**
-         * Creates a deep copy of this module instance and its submodules.
-         *
-         * @return The copied module instance.
-         */
-        private ModuleInstance deepCopy() {
-            ModuleInstance copy = new ModuleInstance(this.module);
-            copy.moduleData = new HashMap<>(this.moduleData);
-            this.subModules.forEach(((id, subModule) -> {
-                ModuleInstance subModuleCopy = subModule.deepCopy();
-                subModuleCopy.parent = copy;
-                copy.subModules.put(id, subModuleCopy);
-            }));
-            return copy;
-        }
-
-        /**
-         * Writes the module to the item using the current module.
-         *
-         * @param stack The ItemStack to write the module to.
-         */
-        public void writeToItem(ItemStack stack) {
-            writeToItem(stack, true);
-        }
-
-        /**
-         * Writes the module to the item using the current module.
-         *
-         * @param stack      The ItemStack to write the module to.
-         * @param clearCache Determines whether to clear the cache after writing the module.
-         */
-        public void writeToItem(ItemStack stack, boolean clearCache) {
-            stack.getOrCreateNbt().putString("modules", this.toString());
-            if (clearCache) {
-                ModularItemCache.clearUUIDFor(stack);
-            }
-        }
-
-        /**
-         * Returns a JSON string representation of this module instance.
-         *
-         * @return a JSON string representation of this module instance
-         */
-        public String toString() {
-            Gson gson = new Gson();
-            return gson.toJson(this);
-        }
-
-        /**
-         * Returns a module instance constructed from the given JSON string representation.
-         *
-         * @param string the JSON string representation of a module instance
-         * @return a module instance constructed from the given JSON string representation
-         */
-        public static ModuleInstance fromString(String string) {
-            Gson gson = new Gson();
-            ModuleInstance moduleInstance = gson.fromJson(string, ModuleInstance.class);
-            if (moduleInstance.module == null) {
-                moduleInstance.module = ItemModule.empty;
-            }
-            return moduleInstance;
-        }
     }
 
     public static class ModuleInstanceJsonAdapter extends TypeAdapter<ModuleInstance> {

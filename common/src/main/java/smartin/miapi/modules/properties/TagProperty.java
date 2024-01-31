@@ -3,6 +3,7 @@ package smartin.miapi.modules.properties;
 import com.google.gson.JsonElement;
 import net.minecraft.item.ItemStack;
 import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
@@ -26,7 +27,7 @@ public class TagProperty implements ModuleProperty {
         return getTags(ItemModule.getMergedProperty(itemStack, property));
     }
 
-    public static List<String> getTags(ItemModule.ModuleInstance instance) {
+    public static List<String> getTags(ModuleInstance instance) {
         return getTags(instance.getProperties());
     }
 

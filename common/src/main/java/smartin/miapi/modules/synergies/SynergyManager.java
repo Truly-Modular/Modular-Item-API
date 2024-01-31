@@ -13,6 +13,8 @@ import smartin.miapi.item.modular.PropertyResolver;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.conditions.ConditionManager;
 import smartin.miapi.modules.conditions.ModuleCondition;
+import smartin.miapi.modules.material.Material;
+import smartin.miapi.modules.material.MaterialProperty;
 import smartin.miapi.modules.properties.TagProperty;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
@@ -27,6 +29,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class SynergyManager {
     public static Map<ItemModule, List<Synergy>> maps = new ConcurrentHashMap<>();
+    public static Map<Material, List<Synergy>> materialSynergies = new ConcurrentHashMap<>();
 
     public static void setup() {
         PropertyResolver.propertyProviderRegistry.register("synergies", (moduleInstance, oldMap) -> {
@@ -66,6 +69,13 @@ public class SynergyManager {
                         loadSynergy(itemModule, entry.getValue().getAsJsonObject());
                     });
                 }
+                if (type.equals("material")) {
+                    String tagKey = entry.getKey();
+                    Material material = MaterialProperty.materials.get(tagKey);
+                    if (material != null) {
+                        loadSynergy(material, entry.getValue().getAsJsonObject());
+                    }
+                }
             } else {
                 ItemModule property = RegistryInventory.modules.get(entry.getKey());
                 JsonObject entryData = entry.getValue().getAsJsonObject();
@@ -82,6 +92,20 @@ public class SynergyManager {
         Synergy synergy = new Synergy();
         synergy.condition = ConditionManager.get(entryData.get("condition"));
         List<Synergy> synergies = maps.computeIfAbsent(itemModule, (module) -> {
+            return new ArrayList<>();
+        });
+        synergies.add(synergy);
+        synergy.holder = PropertyHolderJsonAdapter.readFromObject(entryData, "synergy" + entryData);
+    }
+
+    public static void loadSynergy(Material material, JsonObject entryData) {
+        if (material == null) {
+            Miapi.LOGGER.warn("ItemModule is null?");
+            return;
+        }
+        Synergy synergy = new Synergy();
+        synergy.condition = ConditionManager.get(entryData.get("condition"));
+        List<Synergy> synergies = materialSynergies.computeIfAbsent(material, (module) -> {
             return new ArrayList<>();
         });
         synergies.add(synergy);

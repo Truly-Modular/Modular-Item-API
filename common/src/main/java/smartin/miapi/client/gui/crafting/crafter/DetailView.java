@@ -12,6 +12,7 @@ import smartin.miapi.client.gui.ScrollingTextWidget;
 import smartin.miapi.client.gui.crafting.CraftingScreen;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.material.Material;
 import smartin.miapi.modules.material.MaterialProperty;
 import smartin.miapi.modules.properties.SlotProperty;
@@ -88,10 +89,10 @@ public class DetailView extends InteractAbleWidget {
             super(x, y, width, height, Text.empty());
             this.slot = slot;
             this.level = level;
-            ItemModule.ModuleInstance moduleInstance = slot.inSlot;
+            ModuleInstance moduleInstance = slot.inSlot;
             boolean hasNoModule = moduleInstance == null;
             if (hasNoModule) {
-                moduleInstance = new ItemModule.ModuleInstance(ItemModule.empty);
+                moduleInstance = new ModuleInstance(ItemModule.empty);
             }
             Text materialNameText = StatResolver.translateAndResolve("[translation.[material.translation]]", moduleInstance);
             material = MaterialProperty.getMaterial(moduleInstance);

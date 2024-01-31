@@ -12,6 +12,7 @@ import smartin.miapi.client.gui.*;
 import smartin.miapi.client.gui.crafting.CraftingScreen;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.edit_options.EditOption;
 import smartin.miapi.modules.properties.AllowedSlots;
 import smartin.miapi.modules.properties.CraftingConditionProperty;
@@ -85,7 +86,7 @@ public class ReplaceView extends InteractAbleWidget {
             super(x, y, width, height, Text.empty());
             String moduleName = option.module().getName();
             this.option = option;
-            ItemModule.ModuleInstance instance = new ItemModule.ModuleInstance(option.module());
+            ModuleInstance instance = new ModuleInstance(option.module());
             Text translated = StatResolver.translateAndResolve(Miapi.MOD_ID + ".module." + moduleName, instance);
             textWidget = new ScrollingTextWidget(0, 0, this.width, translated, ColorHelper.Argb.getArgb(255, 255, 255, 255));
             isAllowed = CraftingConditionProperty.isCraftable(null, option.module(), MinecraftClient.getInstance().player, null);

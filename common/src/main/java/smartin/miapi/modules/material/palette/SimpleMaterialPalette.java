@@ -15,7 +15,7 @@ import org.jetbrains.annotations.Nullable;
 import smartin.miapi.client.MaterialVertexConsumer;
 import smartin.miapi.client.MiapiClient;
 import smartin.miapi.mixin.client.SpriteContentsAccessor;
-import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.material.Material;
 import smartin.miapi.registries.RegistryInventory;
 
@@ -85,7 +85,7 @@ public abstract class SimpleMaterialPalette implements MaterialPalette {
     }
 
     @Environment(EnvType.CLIENT)
-    public VertexConsumer getVertexConsumer(VertexConsumerProvider vertexConsumers, ItemStack stack, ItemModule.ModuleInstance moduleInstance, ModelTransformationMode mode) {
+    public VertexConsumer getVertexConsumer(VertexConsumerProvider vertexConsumers, ItemStack stack, ModuleInstance moduleInstance, ModelTransformationMode mode) {
         if (cachedVertexConsumer == null) {
             cachedVertexConsumer = new MaterialVertexConsumer(vertexConsumers.getBuffer(RegistryInventory.Client.entityTranslucentMaterialRenderType), material);
         } else {

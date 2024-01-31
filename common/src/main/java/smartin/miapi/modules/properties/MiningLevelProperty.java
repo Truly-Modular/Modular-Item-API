@@ -15,6 +15,7 @@ import net.minecraft.world.World;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
@@ -45,7 +46,7 @@ public class MiningLevelProperty implements ModuleProperty {
         miningLevels.put(BlockTags.NEEDS_DIAMOND_TOOL, 3);
         ModularItemCache.setSupplier(KEY, (stack) -> {
             Map<String, Float> mergedMap = new HashMap<>();
-            List<ItemModule.ModuleInstance> modules = ItemModule.getModules(stack).allSubModules();
+            List<ModuleInstance> modules = ItemModule.getModules(stack).allSubModules();
             modules.forEach(module -> {
                 JsonElement element = module.getProperties().get(property);
                 if (element != null) {

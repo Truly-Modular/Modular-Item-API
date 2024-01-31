@@ -11,7 +11,7 @@ import org.jetbrains.annotations.Nullable;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
-import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.SlotProperty;
 import smartin.miapi.registries.RegistryInventory;
 
@@ -59,7 +59,7 @@ public interface EditOption {
         ItemStack getItemstack();
 
         @Nullable
-        ItemModule.ModuleInstance getInstance();
+        ModuleInstance getInstance();
 
         @Nullable
         PlayerEntity getPlayer();

@@ -35,6 +35,7 @@ import smartin.miapi.item.modular.Transform;
 import smartin.miapi.item.modular.TransformMap;
 import smartin.miapi.mixin.client.ModelLoaderInterfaceAccessor;
 import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.material.Material;
 import smartin.miapi.modules.material.MaterialProperty;
@@ -92,7 +93,7 @@ public class ModelProperty implements ModuleProperty {
         });
     }
 
-    List<BakedMiapiModel.ModelHolder> getForModule(ItemModule.ModuleInstance instance, String key, ItemStack itemStack) {
+    List<BakedMiapiModel.ModelHolder> getForModule(ModuleInstance instance, String key, ItemStack itemStack) {
         Gson gson = Miapi.gson;
         List<ModelJson> modelJsonList = new ArrayList<>();
         List<BakedMiapiModel.ModelHolder> models = new ArrayList<>();
@@ -169,7 +170,7 @@ public class ModelProperty implements ModuleProperty {
     }
 
     protected static Map<String, BakedModel> generateModels(ItemStack itemStack) {
-        ItemModule.ModuleInstance root = ItemModule.getModules(itemStack);
+        ModuleInstance root = ItemModule.getModules(itemStack);
 
         List<TransformedUnbakedModel> unbakedModels = resolveUnbakedModel(root);
 
@@ -217,10 +218,10 @@ public class ModelProperty implements ModuleProperty {
         return bakedModelMap;
     }
 
-    protected static List<TransformedUnbakedModel> resolveUnbakedModel(ItemModule.ModuleInstance root) {
+    protected static List<TransformedUnbakedModel> resolveUnbakedModel(ModuleInstance root) {
         List<TransformedUnbakedModel> unbakedModels = new ArrayList<>();
         AtomicReference<Float> scaleAdder = new AtomicReference<>(1.0f);
-        for (ItemModule.ModuleInstance moduleI : root.allSubModules()) {
+        for (ModuleInstance moduleI : root.allSubModules()) {
             Gson gson = Miapi.gson;
             List<ModelJson> modelJsonList = new ArrayList<>();
             JsonElement data = moduleI.getProperties().get(property);
@@ -397,7 +398,7 @@ public class ModelProperty implements ModuleProperty {
     }
 
     public record TransformedUnbakedModel(TransformMap transform, JsonUnbakedModel unbakedModel,
-                                          ItemModule.ModuleInstance instance, int color) {
+                                          ModuleInstance instance, int color) {
     }
 
     static class ModelJson {

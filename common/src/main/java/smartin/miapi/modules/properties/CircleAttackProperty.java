@@ -10,6 +10,7 @@ import net.minecraft.util.Identifier;
 import smartin.miapi.Miapi;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
@@ -31,7 +32,7 @@ public class CircleAttackProperty implements ModuleProperty {
 
     @Override
     public boolean load(String moduleKey, JsonElement data) throws Exception {
-        new CircleAttackJson(data, new ItemModule.ModuleInstance(ItemModule.empty));
+        new CircleAttackJson(data, new ModuleInstance(ItemModule.empty));
         return true;
     }
 
@@ -67,7 +68,7 @@ public class CircleAttackProperty implements ModuleProperty {
         public double cooldown;
         public List<ParticleJson> particles = new ArrayList<>();
 
-        public CircleAttackJson(JsonElement element, ItemModule.ModuleInstance instance) {
+        public CircleAttackJson(JsonElement element, ModuleInstance instance) {
             JsonObject object = element.getAsJsonObject();
             damage = get(object.get("damage"), instance);
             range = get(object.get("range"), instance);
@@ -85,7 +86,7 @@ public class CircleAttackProperty implements ModuleProperty {
             }
         }
 
-        private double get(JsonElement object, ItemModule.ModuleInstance instance) {
+        private double get(JsonElement object, ModuleInstance instance) {
             try {
                 return object.getAsDouble();
             } catch (Exception e) {

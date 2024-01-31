@@ -2,10 +2,8 @@ package smartin.miapi.client.modelrework;
 
 import com.redpxnda.nucleus.util.Color;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.json.ModelOverrideList;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
@@ -13,18 +11,17 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 import org.joml.Matrix4f;
-import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.material.Material;
 import smartin.miapi.modules.material.MaterialProperty;
 import smartin.miapi.modules.properties.GlintProperty;
 import smartin.miapi.registries.RegistryInventory;
 
 public class BakedMiapiGlintModel implements MiapiModel {
-    ItemModule.ModuleInstance instance;
+    ModuleInstance instance;
     Material material;
     BakedModel model;
     Matrix4f modelMatrix;
@@ -34,7 +31,7 @@ public class BakedMiapiGlintModel implements MiapiModel {
     GlintProperty.GlintSettings rootSettings;
     Random random = Random.create();
 
-    public BakedMiapiGlintModel(BakedMiapiModel.ModelHolder holder, ItemModule.ModuleInstance instance, ItemStack stack) {
+    public BakedMiapiGlintModel(BakedMiapiModel.ModelHolder holder, ModuleInstance instance, ItemStack stack) {
         modelHolder = holder;
         this.instance = instance;
         material = MaterialProperty.getMaterial(instance);

@@ -23,6 +23,7 @@ import smartin.miapi.client.gui.MutableSlot;
 import smartin.miapi.craft.CraftAction;
 import smartin.miapi.item.ModularItemStackConverter;
 import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.edit_options.EditOption;
 import smartin.miapi.modules.properties.AllowedSlots;
 import smartin.miapi.modules.properties.SlotProperty;
@@ -132,12 +133,12 @@ public class CraftingScreenHandler extends ScreenHandler {
                 int[] intArray = buffer.readIntArray();
                 //Miapi.server.execute(()->{
                 ItemStack stack = ModularItemStackConverter.getModularVersion(inventory.getStack(0));
-                ItemModule.ModuleInstance root = ItemModule.getModules(stack);
+                ModuleInstance root = ItemModule.getModules(stack);
                 List<Integer> position = new ArrayList<>();
                 for (int value : intArray) {
                     position.add(value);
                 }
-                ItemModule.ModuleInstance current = root.getPosition(position).copy();
+                ModuleInstance current = root.getPosition(position).copy();
 
                 SlotProperty.ModuleSlot slot = SlotProperty.getSlotIn(current);
                 if (slot == null && current != null && current.module != null) {
@@ -168,7 +169,7 @@ public class CraftingScreenHandler extends ScreenHandler {
                     }
 
                     @Override
-                    public @Nullable ItemModule.ModuleInstance getInstance() {
+                    public @Nullable ModuleInstance getInstance() {
                         return current;
                     }
 

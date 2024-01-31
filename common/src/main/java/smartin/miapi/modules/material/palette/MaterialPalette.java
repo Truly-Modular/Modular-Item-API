@@ -10,7 +10,7 @@ import net.minecraft.client.texture.SpriteContents;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
-import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.ModuleInstance;
 
 public interface MaterialPalette {
     @Environment(EnvType.CLIENT)
@@ -28,5 +28,5 @@ public interface MaterialPalette {
     Color getPaletteAverageColor();
 
     @Environment(EnvType.CLIENT)
-    VertexConsumer getVertexConsumer(VertexConsumerProvider vertexConsumers, ItemStack stack, ItemModule.ModuleInstance moduleInstance, ModelTransformationMode mode);
+    VertexConsumer getVertexConsumer(VertexConsumerProvider vertexConsumers, ItemStack stack, ModuleInstance moduleInstance, ModelTransformationMode mode);
 }

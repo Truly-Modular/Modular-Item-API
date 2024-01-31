@@ -11,6 +11,7 @@ import org.joml.Matrix4f;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.registries.RegistryInventory;
 
@@ -83,7 +84,7 @@ public class MiapiItemModel implements MiapiModel {
     }
 
     public interface ModelSupplier {
-        List<MiapiModel> getModels(@Nullable String key, ItemModule.ModuleInstance model, ItemStack stack);
+        List<MiapiModel> getModels(@Nullable String key, ModuleInstance model, ItemStack stack);
     }
 
     public interface ModelTransformer {

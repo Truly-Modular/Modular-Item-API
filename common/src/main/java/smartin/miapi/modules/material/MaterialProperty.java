@@ -18,7 +18,7 @@ import smartin.miapi.Miapi;
 import smartin.miapi.client.MiapiClient;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.item.modular.StatResolver;
-import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.registries.RegistryInventory;
@@ -42,7 +42,7 @@ public class MaterialProperty implements ModuleProperty {
         property = this;
         StatResolver.registerResolver(KEY, new StatResolver.Resolver() {
             @Override
-            public double resolveDouble(String data, ItemModule.ModuleInstance instance) {
+            public double resolveDouble(String data, ModuleInstance instance) {
                 JsonElement jsonData = instance.getKeyedProperties().get(KEY);
                 try {
                     if (jsonData != null) {
@@ -61,7 +61,7 @@ public class MaterialProperty implements ModuleProperty {
             }
 
             @Override
-            public String resolveString(String data, ItemModule.ModuleInstance instance) {
+            public String resolveString(String data, ModuleInstance instance) {
                 JsonElement jsonData = instance.getProperties().get(property);
                 try {
                     if (jsonData != null) {
@@ -236,7 +236,7 @@ public class MaterialProperty implements ModuleProperty {
      * @return
      */
     @Nullable
-    public static Material getMaterial(ItemModule.ModuleInstance instance) {
+    public static Material getMaterial(ModuleInstance instance) {
         JsonElement element = instance.getProperties().get(property);
         if (element != null) {
             Material basicMaterial = materials.get(element.getAsString());
@@ -253,7 +253,7 @@ public class MaterialProperty implements ModuleProperty {
      * @param instance
      * @param material
      */
-    public static void setMaterial(ItemModule.ModuleInstance instance, String material) {
+    public static void setMaterial(ModuleInstance instance, String material) {
         String propertyString = instance.moduleData.computeIfAbsent("properties", (key) -> {
             return "{material:empty}";
         });

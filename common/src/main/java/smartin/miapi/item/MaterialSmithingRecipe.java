@@ -14,6 +14,7 @@ import net.minecraft.world.World;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.material.Material;
 import smartin.miapi.modules.material.MaterialProperty;
 import smartin.miapi.registries.RegistryInventory;
@@ -57,7 +58,7 @@ public class MaterialSmithingRecipe implements SmithingRecipe {
     @Override
     public boolean testBase(ItemStack stack) {
         if (stack.getItem() instanceof ModularItem) {
-            ItemModule.ModuleInstance instance = ItemModule.getModules(stack);
+            ModuleInstance instance = ItemModule.getModules(stack);
             return instance.allSubModules().stream().anyMatch(module -> {
                 Material material = MaterialProperty.getMaterial(module);
                 if (material != null) {
@@ -103,7 +104,7 @@ public class MaterialSmithingRecipe implements SmithingRecipe {
     public ItemStack craft(Inventory inventory, DynamicRegistryManager registryManager) {
         ItemStack old = inventory.getStack(1).copy();
         if (old.getItem() instanceof ModularItem) {
-            ItemModule.ModuleInstance instance = ItemModule.getModules(old).copy();
+            ModuleInstance instance = ItemModule.getModules(old).copy();
             instance.allSubModules().forEach(module -> {
                 Material material = MaterialProperty.getMaterial(module);
                 if (material != null && material.getKey().equals(startMaterial)) {

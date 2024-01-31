@@ -5,6 +5,7 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
@@ -34,7 +35,7 @@ public class EquipmentSlotProperty implements ModuleProperty {
      */
     @Nullable
     public static EquipmentSlot getSlot(ItemStack stack) {
-        ItemModule.ModuleInstance root = ItemModule.getModules(stack);
+        ModuleInstance root = ItemModule.getModules(stack);
         JsonElement element = ItemModule.getMergedProperty(root, property, MergeType.OVERWRITE);
         if (element != null) {
             String name = element.getAsString();

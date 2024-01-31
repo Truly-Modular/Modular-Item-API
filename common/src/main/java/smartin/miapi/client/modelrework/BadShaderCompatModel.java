@@ -18,13 +18,13 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
-import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.material.Material;
 import smartin.miapi.modules.material.MaterialProperty;
 import smartin.miapi.modules.properties.render.colorproviders.ColorProvider;
 
 public class BadShaderCompatModel implements MiapiModel {
-    ItemModule.ModuleInstance instance;
+    ModuleInstance instance;
     Material material;
     BakedModel model;
     Matrix4f modelMatrix;
@@ -33,7 +33,7 @@ public class BadShaderCompatModel implements MiapiModel {
     BakedMiapiModel.ModelHolder modelHolder;
     float randomScaleNoZ = (float) (1 + Math.random() / 10000f);
 
-    public BadShaderCompatModel(BakedMiapiModel.ModelHolder holder, ItemModule.ModuleInstance instance, ItemStack stack) {
+    public BadShaderCompatModel(BakedMiapiModel.ModelHolder holder, ModuleInstance instance, ItemStack stack) {
         this.instance = instance;
         material = MaterialProperty.getMaterial(instance);
         if (material != null && holder.colorProvider() instanceof ColorProvider.MaterialColorProvider) {

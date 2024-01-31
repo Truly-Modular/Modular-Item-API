@@ -14,6 +14,7 @@ import smartin.miapi.client.model.DynamicBakedModel;
 import smartin.miapi.client.modelrework.MiapiItemModel;
 import smartin.miapi.item.modular.Transform;
 import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.SlotProperty;
 import smartin.miapi.modules.properties.util.ModuleProperty;
@@ -47,7 +48,7 @@ public class GuiOffsetProperty implements ModuleProperty {
             public Map<String, DynamicBakedModel> bakedTransform(Map<String, DynamicBakedModel> dynamicBakedModelmap, ItemStack stack) {
                 dynamicBakedModelmap.forEach((id, dynamicBakedModel) -> {
                     GuiOffsetJson guiOffsetJson = new GuiOffsetJson();
-                    for (ItemModule.ModuleInstance instance : ItemModule.createFlatList(ItemModule.getModules(stack))) {
+                    for (ModuleInstance instance : ItemModule.createFlatList(ItemModule.getModules(stack))) {
                         JsonElement element = instance.getProperties().get(property);
                         if (element != null) {
                             GuiOffsetJson add = Miapi.gson.fromJson(element, GuiOffsetJson.class);
@@ -83,7 +84,7 @@ public class GuiOffsetProperty implements ModuleProperty {
 
     public float[] getGuiOffsets(ItemStack itemStack, String modelType) {
         GuiOffsetJson guiOffsetJson = new GuiOffsetJson();
-        for (ItemModule.ModuleInstance instance : ItemModule.createFlatList(ItemModule.getModules(itemStack))) {
+        for (ModuleInstance instance : ItemModule.createFlatList(ItemModule.getModules(itemStack))) {
             JsonElement element = instance.getProperties().get(property);
             if (element != null) {
                 GuiOffsetJson add = Miapi.gson.fromJson(element, GuiOffsetJson.class);

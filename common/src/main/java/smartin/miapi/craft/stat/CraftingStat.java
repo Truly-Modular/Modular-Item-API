@@ -9,6 +9,7 @@ import org.jetbrains.annotations.Nullable;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.StatProvisionProperty;
 import smartin.miapi.modules.properties.StatRequirementProperty;
 import smartin.miapi.modules.properties.util.CraftingProperty;
@@ -47,7 +48,7 @@ public interface CraftingStat<T> {
      * @param moduleInstance the module instance of the model this stat is being applied to. Usually used for {@link StatResolver}
      * @return the stat instance created with the json
      */
-    T createFromJson(JsonElement json, ItemModule.ModuleInstance moduleInstance);
+    T createFromJson(JsonElement json, ModuleInstance moduleInstance);
 
     /**
      * A method used to save stat instances to nbt.
@@ -88,7 +89,7 @@ public interface CraftingStat<T> {
             ItemStack crafting,
             @Nullable ModularWorkBenchEntity bench,
             PlayerEntity player,
-            ItemModule.ModuleInstance newModule,
+            ModuleInstance newModule,
             ItemModule module,
             List<ItemStack> inventory,
             Map<String,String> data) {

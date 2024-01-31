@@ -1,6 +1,8 @@
 package smartin.miapi.modules.properties;
 
+import com.google.gson.JsonElement;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.JsonOps;
 import com.redpxnda.nucleus.codec.auto.AutoCodec;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -9,12 +11,16 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.crafting.crafter.replace.HoverMaterialList;
 import smartin.miapi.item.ModularItemStackConverter;
 import smartin.miapi.item.modular.ModularItem;
+import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.material.Material;
 import smartin.miapi.modules.material.MaterialProperty;
 import smartin.miapi.modules.properties.util.CodecBasedProperty;
+import smartin.miapi.modules.properties.util.MergeType;
+import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +30,7 @@ import java.util.WeakHashMap;
 /**
  * This property manages the Itemlore of an Item
  */
-public class LoreProperty extends CodecBasedProperty<LoreProperty.Holder> {
+public class LoreProperty implements ModuleProperty {
     public static final String KEY = "itemLore";
     //TODO: maybe add more points to it? also add direct text to the json
     public static final Codec<LoreProperty.Holder> codec = AutoCodec.of(LoreProperty.Holder.class).codec();
@@ -34,8 +40,8 @@ public class LoreProperty extends CodecBasedProperty<LoreProperty.Holder> {
     public static Map<ItemStack, Material> materialLookupTable = new WeakHashMap<>();
 
     public LoreProperty() {
-        super(KEY, codec);
-
+        super();
+        CodecBasedProperty property1;
         property = this;
         loreSuppliers.add(itemStack -> {
             Material material = materialLookupTable.computeIfAbsent(itemStack, itemStack1 -> MaterialProperty.getMaterialFromIngredient(itemStack));
@@ -64,6 +70,38 @@ public class LoreProperty extends CodecBasedProperty<LoreProperty.Holder> {
         });
     }
 
+    public List<Holder> getHolders(ItemStack itemStack) {
+        return getHolders(ItemModule.getMergedProperty(itemStack, property));
+    }
+
+    public List<Holder> getHolders(JsonElement element) {
+        List<Holder> holders = new ArrayList<>();
+        if (element != null) {
+            if (element.isJsonArray()) {
+                element.getAsJsonArray().forEach(element1 -> {
+                    holders.add(getFromSingleElement(element1));
+                });
+            } else {
+                holders.add(getFromSingleElement(element));
+            }
+        }
+        return holders;
+    }
+
+    public JsonElement merge(JsonElement old, JsonElement toMerge, MergeType type) {
+        if (MergeType.OVERWRITE.equals(type)) {
+            return ModuleProperty.mergeToList(old,toMerge);
+        }
+
+        return old;
+    }
+
+    private Holder getFromSingleElement(JsonElement element) {
+        return codec.parse(JsonOps.INSTANCE, element).getOrThrow(false, s -> {
+            Miapi.LOGGER.error("Failed to decode using codec during cache creation for a CodecBasedProperty! -> " + s);
+        });
+    }
+
     private Text gray(Text text) {
         return format(text, Formatting.GRAY);
     }
@@ -75,23 +113,23 @@ public class LoreProperty extends CodecBasedProperty<LoreProperty.Holder> {
     @Environment(EnvType.CLIENT)
     public void appendLoreTop(List<Text> oldLore, ItemStack itemStack) {
         loreSuppliers.forEach(loreSupplier -> oldLore.addAll(loreSupplier.getLore(itemStack)));
-        Holder holder = get(itemStack);
-        if (holder != null) {
-            if ("top".equals(holder.position)) {
-                oldLore.add(holder.getText());
-            }
-        }
+        List<Holder> holders = getHolders(itemStack);
+        getHolders(itemStack).stream().filter(h -> h.position.equals("top")).forEach(holder -> {
+            oldLore.add(holder.getText());
+        });
     }
 
     @Environment(EnvType.CLIENT)
     public void appendLoreBottom(List<Text> oldLore, ItemStack itemStack) {
         bottomLoreSuppliers.forEach(loreSupplier -> oldLore.addAll(loreSupplier.getLore(itemStack)));
-        Holder holder = get(itemStack);
-        if (holder != null) {
-            if ("bottom".equals(holder.position)) {
-                oldLore.add(holder.getText());
-            }
-        }
+        getHolders(itemStack).stream().filter(h -> h.position.equals("bottom")).forEach(holder -> {
+            oldLore.add(holder.getText());
+        });
+    }
+
+    @Override
+    public boolean load(String moduleKey, JsonElement data) throws Exception {
+        return false;
     }
 
     public static class Holder {

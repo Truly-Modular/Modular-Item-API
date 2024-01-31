@@ -73,6 +73,28 @@ public interface ModuleProperty {
         }
         return old;
     }
+
+    static JsonElement mergeToList(JsonElement left,JsonElement right){
+        JsonArray returnArray = new JsonArray();
+        if(left!=null && !left.isJsonNull()){
+            if(left.isJsonArray()){
+                left.getAsJsonArray().forEach(returnArray::add);
+            }
+            else{
+                returnArray.add(left);
+            }
+        }
+        if(right!=null && !right.isJsonNull()){
+            if(right.isJsonArray()){
+                right.getAsJsonArray().forEach(returnArray::add);
+            }
+            else{
+                returnArray.add(right);
+            }
+        }
+        return right;
+    }
+
     static Map<ModuleProperty,JsonElement> mergeList(Map<ModuleProperty,JsonElement> old, Map<ModuleProperty,JsonElement> toMerge, MergeType type) {
         Map<ModuleProperty,JsonElement> mergedMap = new HashMap<>(old);
         toMerge.forEach((key,json)->{

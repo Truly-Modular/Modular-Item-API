@@ -19,7 +19,7 @@ import smartin.miapi.Miapi;
 import smartin.miapi.client.MaterialAtlasManager;
 import smartin.miapi.client.MiapiClient;
 import smartin.miapi.mixin.client.SpriteContentsAccessor;
-import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.material.Material;
 import smartin.miapi.modules.material.MaterialProperty;
 import smartin.miapi.modules.material.palette.MaterialPalette;
@@ -38,7 +38,7 @@ public interface ColorProvider {
         colorProviders.put("parent", new ParentColorProvider());
     }
 
-    static ColorProvider getProvider(String type, ItemStack itemStack, ItemModule.ModuleInstance moduleInstance) {
+    static ColorProvider getProvider(String type, ItemStack itemStack, ModuleInstance moduleInstance) {
         return colorProviders.getOrDefault(type, colorProviders.get("material")).getInstance(itemStack, moduleInstance);
     }
 
@@ -47,9 +47,9 @@ public interface ColorProvider {
     }
 
     @Environment(EnvType.CLIENT)
-    VertexConsumer getConsumer(VertexConsumerProvider vertexConsumers, ItemStack stack, ItemModule.ModuleInstance moduleInstance, ModelTransformationMode mode);
+    VertexConsumer getConsumer(VertexConsumerProvider vertexConsumers, ItemStack stack, ModuleInstance moduleInstance, ModelTransformationMode mode);
 
-    ColorProvider getInstance(ItemStack stack, ItemModule.ModuleInstance instance);
+    ColorProvider getInstance(ItemStack stack, ModuleInstance instance);
 
     default SpriteContents tranform(SpriteContents contents) {
         NativeImage rawImage = ((SpriteContentsAccessor) contents).getImage();
@@ -83,12 +83,12 @@ public interface ColorProvider {
 
         @Environment(EnvType.CLIENT)
         @Override
-        public VertexConsumer getConsumer(VertexConsumerProvider vertexConsumers, ItemStack stack, ItemModule.ModuleInstance moduleInstance, ModelTransformationMode mode) {
+        public VertexConsumer getConsumer(VertexConsumerProvider vertexConsumers, ItemStack stack, ModuleInstance moduleInstance, ModelTransformationMode mode) {
             return material.getVertexConsumer(vertexConsumers, stack, moduleInstance, mode);
         }
 
         @Override
-        public ColorProvider getInstance(ItemStack stack, ItemModule.ModuleInstance instance) {
+        public ColorProvider getInstance(ItemStack stack, ModuleInstance instance) {
             Material material1 = MaterialProperty.getMaterial(instance);
             if (material1 != null) {
                 return new MaterialColorProvider(material1);
@@ -136,7 +136,7 @@ public interface ColorProvider {
 
     class ParentColorProvider extends MaterialColorProvider {
         @Override
-        public ColorProvider getInstance(ItemStack stack, ItemModule.ModuleInstance instance) {
+        public ColorProvider getInstance(ItemStack stack, ModuleInstance instance) {
             if (instance.parent != null) {
                 return super.getInstance(stack, instance.parent);
             }
@@ -156,12 +156,12 @@ public interface ColorProvider {
 
         @Environment(EnvType.CLIENT)
         @Override
-        public VertexConsumer getConsumer(VertexConsumerProvider vertexConsumers, ItemStack stack, ItemModule.ModuleInstance moduleInstance, ModelTransformationMode mode) {
+        public VertexConsumer getConsumer(VertexConsumerProvider vertexConsumers, ItemStack stack, ModuleInstance moduleInstance, ModelTransformationMode mode) {
             return vertexConsumers.getBuffer(RenderLayers.getItemLayer(stack, true));
         }
 
         @Override
-        public ColorProvider getInstance(ItemStack stack, ItemModule.ModuleInstance instance) {
+        public ColorProvider getInstance(ItemStack stack, ModuleInstance instance) {
             return new ModelColorProvider(stack);
         }
     }
@@ -184,12 +184,12 @@ public interface ColorProvider {
 
         @Environment(EnvType.CLIENT)
         @Override
-        public VertexConsumer getConsumer(VertexConsumerProvider vertexConsumers, ItemStack stack, ItemModule.ModuleInstance moduleInstance, ModelTransformationMode mode) {
+        public VertexConsumer getConsumer(VertexConsumerProvider vertexConsumers, ItemStack stack, ModuleInstance moduleInstance, ModelTransformationMode mode) {
             return vertexConsumers.getBuffer(RenderLayers.getItemLayer(stack, true));
         }
 
         @Override
-        public ColorProvider getInstance(ItemStack stack, ItemModule.ModuleInstance instance) {
+        public ColorProvider getInstance(ItemStack stack, ModuleInstance instance) {
             return new PotionColorProvider(stack);
         }
     }

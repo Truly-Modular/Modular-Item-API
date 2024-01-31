@@ -10,6 +10,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
+import org.jetbrains.annotations.Nullable;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -20,6 +22,7 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.modules.edit_options.ReplaceOption;
 import smartin.miapi.modules.properties.FakeItemTagProperty;
+import smartin.miapi.modules.properties.HideFlagsProperty;
 import smartin.miapi.modules.properties.LoreProperty;
 import smartin.miapi.modules.properties.MiningLevelProperty;
 
@@ -27,6 +30,13 @@ import java.util.List;
 
 @Mixin(value = ItemStack.class, priority = 2000)
 public abstract class ItemStackMixin {
+
+    @Shadow
+    @Final
+    private static String HIDE_FLAGS_KEY;
+
+    @Shadow
+    public abstract ItemStack setCustomName(@Nullable Text name);
 
     //@Inject(method = "foo()V", at = @At(value = "INVOKE", item = "La/b/c/Something;doSomething()V", shift = At.Shift.AFTER))
     @Inject(
@@ -40,6 +50,15 @@ public abstract class ItemStackMixin {
             cancellable = true)
     private void miapi$skipAttributeModifier(PlayerEntity player, TooltipContext context, CallbackInfoReturnable<List<Text>> cir, List list, MutableText mutableText, int i, EquipmentSlot[] var6, int var7, int var8, EquipmentSlot equipmentSlot, Multimap multimap) {
         //
+    }
+
+    @Inject(
+            method = "getHideFlags()I",
+            at = @At("TAIL"),
+            cancellable = true)
+    private void miapi$adjustGetHideFlags(CallbackInfoReturnable<Integer> cir) {
+        ItemStack stack = (ItemStack) (Object) this;
+        cir.setReturnValue(HideFlagsProperty.getHideProperty(cir.getReturnValue(), stack));
     }
 
     @Inject(method = "getMaxDamage", at = @At("HEAD"), cancellable = true)

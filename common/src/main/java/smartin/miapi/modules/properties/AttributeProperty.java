@@ -14,6 +14,7 @@ import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.item.modular.items.ExampleModularItem;
 import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
@@ -65,7 +66,7 @@ public class AttributeProperty implements ModuleProperty {
         for (JsonElement attributeElement : element.getAsJsonArray()) {
             JsonObject attributeJson = attributeElement.getAsJsonObject();
             String attributeName = attributeJson.get("attribute").getAsString();
-            double value = StatResolver.resolveDouble(attributeJson.get("value").getAsString(), new ItemModule.ModuleInstance(ItemModule.empty));
+            double value = StatResolver.resolveDouble(attributeJson.get("value").getAsString(), new ModuleInstance(ItemModule.empty));
             EntityAttributeModifier.Operation operation = getOperation(attributeJson.get("operation").getAsString());
             EquipmentSlot slot = getSlot(attributeJson.get("slot").getAsString());
 
@@ -97,10 +98,14 @@ public class AttributeProperty implements ModuleProperty {
     public static Multimap<EntityAttribute, EntityAttributeModifier> mergeAttributes(Multimap<EntityAttribute, EntityAttributeModifier> old, Multimap<EntityAttribute, EntityAttributeModifier> into) {
         Multimap<EntityAttribute, EntityAttributeModifier> mergedList = LinkedListMultimap.create();
         old.entries().forEach(entityAttributeEntityAttributeModifierHolderEntry -> {
-            mergedList.put(entityAttributeEntityAttributeModifierHolderEntry.getKey(), entityAttributeEntityAttributeModifierHolderEntry.getValue());
+            if(!mergedList.get(entityAttributeEntityAttributeModifierHolderEntry.getKey()).contains(entityAttributeEntityAttributeModifierHolderEntry.getValue())){
+                mergedList.put(entityAttributeEntityAttributeModifierHolderEntry.getKey(), entityAttributeEntityAttributeModifierHolderEntry.getValue());
+            }
         });
         into.entries().forEach(entityAttributeEntityAttributeModifierHolderEntry -> {
-            mergedList.put(entityAttributeEntityAttributeModifierHolderEntry.getKey(), entityAttributeEntityAttributeModifierHolderEntry.getValue());
+            if(!mergedList.get(entityAttributeEntityAttributeModifierHolderEntry.getKey()).contains(entityAttributeEntityAttributeModifierHolderEntry.getValue())){
+                mergedList.put(entityAttributeEntityAttributeModifierHolderEntry.getKey(), entityAttributeEntityAttributeModifierHolderEntry.getValue());
+            }
         });
         return mergedList;
     }
@@ -397,15 +402,15 @@ public class AttributeProperty implements ModuleProperty {
     }
 
     public static Multimap<EntityAttribute, EntityAttributeModifierHolder> createAttributeMap(ItemStack itemStack, UUIDGetter defaultUUID) {
-        ItemModule.ModuleInstance rootInstance = ItemModule.getModules(itemStack);
+        ModuleInstance rootInstance = ItemModule.getModules(itemStack);
         Multimap<EntityAttribute, EntityAttributeModifierHolder> attributeModifiers = ArrayListMultimap.create();
-        for (ItemModule.ModuleInstance instance : rootInstance.allSubModules()) {
+        for (ModuleInstance instance : rootInstance.allSubModules()) {
             getAttributeModifiers(defaultUUID, instance, attributeModifiers);
         }
         return attributeModifiers;
     }
 
-    public static void getAttributeModifiers(UUIDGetter defaultUUID, ItemModule.ModuleInstance instance, Multimap<EntityAttribute, EntityAttributeModifierHolder> attributeModifiers) {
+    public static void getAttributeModifiers(UUIDGetter defaultUUID, ModuleInstance instance, Multimap<EntityAttribute, EntityAttributeModifierHolder> attributeModifiers) {
         JsonElement element = instance.getProperties().get(property);
         if (element == null) {
             return;

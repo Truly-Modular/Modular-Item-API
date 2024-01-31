@@ -21,7 +21,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 import org.joml.Matrix4f;
 import smartin.miapi.client.AltModelAtlasManager;
-import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.material.Material;
 import smartin.miapi.modules.material.MaterialProperty;
 import smartin.miapi.modules.properties.render.colorproviders.ColorProvider;
@@ -31,7 +31,7 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class AltBakedMiapiModel implements MiapiModel {
-    ItemModule.ModuleInstance instance;
+    ModuleInstance instance;
     Material material;
     BakedModel model;
     Matrix4f modelMatrix;
@@ -47,7 +47,7 @@ public class AltBakedMiapiModel implements MiapiModel {
 
     public Map<BakedModel, List<BakedQuad>> quadLookupMap = new HashMap<>();
 
-    public AltBakedMiapiModel(BakedMiapiModel.ModelHolder holder, ItemModule.ModuleInstance instance, ItemStack stack) {
+    public AltBakedMiapiModel(BakedMiapiModel.ModelHolder holder, ModuleInstance instance, ItemStack stack) {
         modelHolder = holder;
         this.instance = instance;
         material = MaterialProperty.getMaterial(instance);

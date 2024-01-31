@@ -11,7 +11,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
 import org.jetbrains.annotations.Nullable;
-import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.material.palette.MaterialPalette;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
@@ -38,7 +38,7 @@ public interface Material {
     MaterialPalette getPalette();
 
     @Environment(EnvType.CLIENT)
-    default VertexConsumer getVertexConsumer(VertexConsumerProvider vertexConsumers, ItemStack stack, ItemModule.ModuleInstance moduleInstance, ModelTransformationMode mode) {
+    default VertexConsumer getVertexConsumer(VertexConsumerProvider vertexConsumers, ItemStack stack, ModuleInstance moduleInstance, ModelTransformationMode mode) {
         return getPalette().getVertexConsumer(vertexConsumers, stack, moduleInstance, mode);
         //return new MaterialVertexConsumer(vertexConsumers.getBuffer(RegistryInventory.Client.entityTranslucentMaterialRenderType), this);
     }
@@ -54,7 +54,7 @@ public interface Material {
         return 0;
     }
 
-    default Material getMaterial(ItemModule.ModuleInstance moduleInstance){
+    default Material getMaterial(ModuleInstance moduleInstance){
         return this;
     }
 

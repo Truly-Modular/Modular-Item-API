@@ -44,6 +44,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.world.event.GameEvent;
 import org.joml.Matrix4f;
+import smartin.miapi.Miapi;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.blocks.ModularWorkBench;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
@@ -55,6 +56,7 @@ import smartin.miapi.craft.stat.CraftingStat;
 import smartin.miapi.effects.CryoStatusEffect;
 import smartin.miapi.entity.ItemProjectileEntity;
 import smartin.miapi.item.MaterialSmithingRecipe;
+import smartin.miapi.item.modular.PropertyResolver;
 import smartin.miapi.item.modular.items.*;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.abilities.*;
@@ -357,9 +359,9 @@ public class RegistryInventory {
         LifecycleEvent.SETUP.register(() -> {
             //EDITPROPERTIES
             registerMiapi(editOptions, "replace", new ReplaceOption());
+            SynergyManager.setup();
             registerMiapi(editOptions, "dev", new PropertyInjectionDev());
             registerMiapi(editOptions, "skin", new SkinOptions());
-            SynergyManager.setup();
             registerMiapi(editOptions, "create", new CreateItemOption());
             registerMiapi(editOptions, "cosmetic", new CosmeticEditOption());
 
@@ -373,6 +375,7 @@ public class RegistryInventory {
             registerMiapi(moduleConditionRegistry, "otherModule", new OtherModuleModuleCondition());
             registerMiapi(moduleConditionRegistry, "module", new ModuleTypeCondition());
             registerMiapi(moduleConditionRegistry, "material", new MaterialCondition());
+            registerMiapi(moduleConditionRegistry, "material_count", new MaterialCountCondition());
             registerMiapi(moduleConditionRegistry, "tag", new TagCondition());
             registerMiapi(moduleConditionRegistry, "miapi_perm", new MiapiPerm());
             registerMiapi(moduleConditionRegistry, "item_in_inventory", new ItemInInventoryCondition());
@@ -459,6 +462,7 @@ public class RegistryInventory {
             registerMiapi(moduleProperties, MaterialInscribeDataProperty.KEY, new MaterialInscribeDataProperty());
             registerMiapi(moduleProperties, FakeItemTagProperty.KEY, new FakeItemTagProperty());
             registerMiapi(moduleProperties, RarityProperty.KEY, new RarityProperty());
+            registerMiapi(moduleProperties, HideFlagsProperty.KEY, new HideFlagsProperty());
             //compat
             registerMiapi(moduleProperties, BetterCombatProperty.KEY, new BetterCombatProperty());
             registerMiapi(moduleProperties, ApoliPowersProperty.KEY, new ApoliPowersProperty());
@@ -477,6 +481,11 @@ public class RegistryInventory {
             registerMiapi(useAbilityRegistry, HoeAbility.KEY, new HoeAbility());
             registerMiapi(useAbilityRegistry, ShovelAbility.KEY, new ShovelAbility());
             registerMiapi(useAbilityRegistry, EatAbility.KEY, new EatAbility());
+
+            Miapi.LOGGER.info("Registered Truly Modulars Property resolvers:");
+            PropertyResolver.propertyProviderRegistry.getFlatMap().forEach((id, resolver) -> {
+                Miapi.LOGGER.info("registered resolver: " + id);
+            });
         });
     }
 

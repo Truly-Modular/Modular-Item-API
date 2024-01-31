@@ -3,14 +3,10 @@ package smartin.miapi.client.modelrework;
 import com.redpxnda.nucleus.util.Color;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.*;
-import net.minecraft.client.render.entity.feature.ArmorFeatureRenderer;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.BakedModel;
-import net.minecraft.client.render.model.BakedQuad;
 import net.minecraft.client.render.model.json.ModelOverrideList;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
-import net.minecraft.client.texture.Sprite;
-import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ArmorItem;
@@ -21,17 +17,14 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 import org.joml.Matrix4f;
-import smartin.miapi.client.AltModelAtlasManager;
 import smartin.miapi.item.modular.Transform;
-import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.material.Material;
 import smartin.miapi.modules.material.MaterialProperty;
 import smartin.miapi.modules.properties.render.colorproviders.ColorProvider;
 
-import java.util.*;
-
 public class Alt2BakedMiapiModel implements MiapiModel {
-    ItemModule.ModuleInstance instance;
+    ModuleInstance instance;
     Material material;
     BakedModel model;
     Matrix4f modelMatrix;
@@ -40,7 +33,7 @@ public class Alt2BakedMiapiModel implements MiapiModel {
     Random random = Random.create();
     float[] colors;
 
-    public Alt2BakedMiapiModel(BakedMiapiModel.ModelHolder holder, ItemModule.ModuleInstance instance, ItemStack stack) {
+    public Alt2BakedMiapiModel(BakedMiapiModel.ModelHolder holder, ModuleInstance instance, ItemStack stack) {
         modelHolder = holder;
         this.instance = instance;
         material = MaterialProperty.getMaterial(instance);

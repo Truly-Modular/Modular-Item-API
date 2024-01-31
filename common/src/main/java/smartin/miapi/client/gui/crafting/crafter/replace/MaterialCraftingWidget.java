@@ -16,7 +16,7 @@ import smartin.miapi.client.gui.TransformableWidget;
 import smartin.miapi.client.gui.crafting.CraftingScreen;
 import smartin.miapi.craft.CraftAction;
 import smartin.miapi.item.modular.StatResolver;
-import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.edit_options.ReplaceOption;
 import smartin.miapi.modules.material.AllowedMaterial;
 
@@ -39,7 +39,7 @@ public class MaterialCraftingWidget extends InteractAbleWidget {
         this.allowedMaterial = allowedMaterial;
         allowedMaterial.slotHeight = height + 12;
 
-        ItemModule.ModuleInstance moduleInstance = new ItemModule.ModuleInstance(action.toAdd);
+        ModuleInstance moduleInstance = new ModuleInstance(action.toAdd);
         Text displayText = StatResolver.translateAndResolve(Miapi.MOD_ID + ".module." + moduleInstance.module.getName(), moduleInstance);
         Text descriptionText = StatResolver.translateAndResolve(Miapi.MOD_ID + ".module." + moduleInstance.module.getName() + ".description", moduleInstance);
 

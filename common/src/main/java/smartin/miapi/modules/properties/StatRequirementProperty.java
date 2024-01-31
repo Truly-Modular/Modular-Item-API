@@ -11,6 +11,7 @@ import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.craft.CraftAction;
 import smartin.miapi.craft.stat.CraftingStat;
 import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.util.CraftingProperty;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
@@ -30,7 +31,7 @@ public class StatRequirementProperty implements ModuleProperty, CraftingProperty
 
     @Override
     public boolean canPerform(ItemStack old, ItemStack crafting, @Nullable ModularWorkBenchEntity bench, PlayerEntity player, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<String,String> data) {
-        ItemModule.ModuleInstance newModule = craftAction.getModifyingModuleInstance(crafting);
+        ModuleInstance newModule = craftAction.getModifyingModuleInstance(crafting);
         if (bench == null) return true;
 
         JsonElement element = newModule.getProperties().get(property);

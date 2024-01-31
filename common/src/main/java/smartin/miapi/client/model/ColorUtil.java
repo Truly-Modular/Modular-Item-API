@@ -8,7 +8,7 @@ import net.minecraft.client.render.model.BakedQuad;
 import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
-import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.material.Material;
 import smartin.miapi.modules.material.MaterialProperty;
 
@@ -48,7 +48,7 @@ public class ColorUtil {
         return new BakedQuad(originalQuad.getVertexData(), newColor, originalQuad.getFace(), originalQuad.getSprite(), false);
     }
 
-    public static int getModuleColor(ItemModule.ModuleInstance instance) {
+    public static int getModuleColor(ModuleInstance instance) {
         Material material = MaterialProperty.getMaterial(instance);
         if (material != null) {
             return material.getColor();

@@ -8,7 +8,7 @@ import net.fabricmc.api.Environment;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.item.modular.Transform;
 import smartin.miapi.item.modular.TransformMap;
-import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.registries.RegistryInventory;
 
@@ -28,10 +28,10 @@ public class SlotProperty implements ModuleProperty {
     }
 
     @Environment(EnvType.CLIENT)
-    public static Transform getTransform(ItemModule.ModuleInstance instance) {
+    public static Transform getTransform(ModuleInstance instance) {
         ModuleSlot slot = getSlotIn(instance);
         if (slot == null) return Transform.IDENTITY;
-        ItemModule.ModuleInstance current = instance;
+        ModuleInstance current = instance;
         Transform merged = Transform.IDENTITY;
         while (current != null) {
             merged = Transform.merge(getLocalTransform(current), merged);
@@ -42,7 +42,7 @@ public class SlotProperty implements ModuleProperty {
 
     @Environment(EnvType.CLIENT)
     public static Transform getTransform(ModuleSlot moduleSlot) {
-        ItemModule.ModuleInstance current = moduleSlot.parent;
+        ModuleInstance current = moduleSlot.parent;
         Transform mergedTransform = Transform.IDENTITY;
         while (current != null) {
             mergedTransform = Transform.merge(getLocalTransform(current), mergedTransform);
@@ -58,7 +58,7 @@ public class SlotProperty implements ModuleProperty {
     }
 
     @Environment(EnvType.CLIENT)
-    public static TransformMap getTransformStack(ItemModule.ModuleInstance instance) {
+    public static TransformMap getTransformStack(ModuleInstance instance) {
         ModuleSlot slot = getSlotIn(instance);
         if (slot == null) return new TransformMap();
         return getTransformStack(slot);
@@ -69,7 +69,7 @@ public class SlotProperty implements ModuleProperty {
         if (moduleSlot == null) {
             return new TransformMap();
         }
-        ItemModule.ModuleInstance current = moduleSlot.parent;
+        ModuleInstance current = moduleSlot.parent;
         TransformMap mergedTransform = new TransformMap();
         while (current != null) {
             TransformMap stack = getLocalTransformStack(current);
@@ -84,7 +84,7 @@ public class SlotProperty implements ModuleProperty {
         return mergedTransform;
     }
 
-    public static Map<Integer, ModuleSlot> getSlots(ItemModule.ModuleInstance instance) {
+    public static Map<Integer, ModuleSlot> getSlots(ModuleInstance instance) {
         ModuleProperty property = RegistryInventory.moduleProperties.get(KEY);
         JsonElement data = instance.getProperties().get(property);
         if (data != null) {
@@ -109,7 +109,7 @@ public class SlotProperty implements ModuleProperty {
         return new HashMap<>();
     }
 
-    public static Integer getSlotNumberIn(ItemModule.ModuleInstance instance) {
+    public static Integer getSlotNumberIn(ModuleInstance instance) {
         if (instance.parent != null) {
             Map<Integer, ModuleSlot> slots = getSlots(instance.parent);
             AtomicReference<Integer> id = new AtomicReference<>(0);
@@ -124,7 +124,7 @@ public class SlotProperty implements ModuleProperty {
     }
 
     @Environment(EnvType.CLIENT)
-    public static Transform getLocalTransform(ItemModule.ModuleInstance instance) {
+    public static Transform getLocalTransform(ModuleInstance instance) {
         ModuleProperty property = RegistryInventory.moduleProperties.get(KEY);
         JsonElement test = instance.getProperties().get(property);
         if (test != null) {
@@ -137,7 +137,7 @@ public class SlotProperty implements ModuleProperty {
     }
 
     @Environment(EnvType.CLIENT)
-    public static TransformMap getLocalTransformStack(ItemModule.ModuleInstance instance) {
+    public static TransformMap getLocalTransformStack(ModuleInstance instance) {
         ModuleProperty property = RegistryInventory.moduleProperties.get(KEY);
         JsonElement test = instance.getProperties().get(property);
         if (test != null) {
@@ -154,7 +154,7 @@ public class SlotProperty implements ModuleProperty {
     }
 
     @Nullable
-    public static ModuleSlot getSlotIn(ItemModule.ModuleInstance instance) {
+    public static ModuleSlot getSlotIn(ModuleInstance instance) {
         if (instance != null && instance.parent != null) {
             Map<Integer, ModuleSlot> slots = getSlots(instance.parent);
             ModuleSlot slot = slots.values().stream().filter(moduleSlot -> {
@@ -190,13 +190,13 @@ public class SlotProperty implements ModuleProperty {
         public List<String> allowed;
         public Transform transform = Transform.IDENTITY;
         @Nullable
-        public ItemModule.ModuleInstance inSlot;
-        public ItemModule.ModuleInstance parent;
+        public ModuleInstance inSlot;
+        public ModuleInstance parent;
         public String translationKey = "miapi.module.empty.name";
         public String slotType = "default";
         public int id;
 
-        public boolean allowedIn(ItemModule.ModuleInstance instance) {
+        public boolean allowedIn(ModuleInstance instance) {
             List<String> allowedSlots = AllowedSlots.getAllowedSlots(instance.module);
             for (String key : allowed) {
                 if (allowedSlots.contains(key)) {
