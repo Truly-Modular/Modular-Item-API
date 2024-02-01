@@ -14,7 +14,6 @@ import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.registry.tag.ItemTags;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
@@ -109,8 +108,11 @@ public class GeneratedMaterial implements Material {
 
                 materialStats.put("density", ((axeItem.getAttackDamage() - firstPart) / 2.0) * 4.0);
                 materialStats.put("flexibility", (double) (toolMaterial.getMiningSpeedMultiplier() / 4));
-                if (Platform.getEnvironment() == Env.CLIENT) generateTranslation(toolMaterials);
+                if (Platform.getEnvironment() == Env.CLIENT) {
+                    generateTranslation(toolMaterials);
+                }
                 MiapiEvents.GENERATED_MATERIAL.invoker().generated(this, mainIngredient, toolMaterials, isClient);
+                MiapiEvents.GENERATE_MATERIAL_CONVERTERS.invoker().generated(this, toolMaterials, isClient);
                 return true;
             }
         }
@@ -169,6 +171,10 @@ public class GeneratedMaterial implements Material {
         manager.setRecipes(recipes);
     }
 
+    public boolean generateConverters() {
+        return true;
+    }
+
     static boolean isValidRecipe
             (SmithingTransformRecipe recipe, SwordItem swordItem, DynamicRegistryManager manager) {
         if (recipe.getOutput(manager).getItem().equals(swordItem)) {
@@ -189,8 +195,6 @@ public class GeneratedMaterial implements Material {
         if (isClient) {
             return MinecraftClient.getInstance().world.getRegistryManager();
         } else {
-            MinecraftServer server;
-            DynamicRegistryManager manager;
             return Miapi.server.getRegistryManager();
         }
     }
@@ -382,7 +386,7 @@ public class GeneratedMaterial implements Material {
 
     @Override
     public double getValueOfItem(ItemStack item) {
-        if(toolMaterial.getRepairIngredient().test(item)){
+        if (toolMaterial.getRepairIngredient().test(item)) {
             return 1;
         }
         return item.getItem().equals(mainIngredient.getItem()) ? 1 : 0;
@@ -393,7 +397,7 @@ public class GeneratedMaterial implements Material {
         if (mainIngredient.getItem().equals(itemStack.getItem())) {
             return 0.0;
         }
-        if(toolMaterial.getRepairIngredient().test(itemStack)){
+        if (toolMaterial.getRepairIngredient().test(itemStack)) {
             return 0.0;
         }
         return null;

@@ -20,7 +20,7 @@ public class ChildCondition implements ModuleCondition {
             if(moduleCondition.moduleInstance != null){
                 ModuleInstance moduleInstance = moduleCondition.moduleInstance;
                 for (ModuleInstance otherInstace : moduleInstance.subModules.values()) {
-                    assert moduleInstance.parent != null;
+                    assert otherInstace.parent != null;
                     ConditionManager.ModuleConditionContext copy = moduleCondition.copy();
                     copy.moduleInstance = otherInstace;
                     copy.propertyMap = otherInstace.getProperties();

@@ -75,6 +75,10 @@ public interface Material {
 
     String getData(String property);
 
+    default boolean generateConverters(){
+        return false;
+    }
+
     List<String> getTextureKeys();
 
     @Environment(EnvType.CLIENT)

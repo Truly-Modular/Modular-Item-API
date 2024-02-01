@@ -31,7 +31,12 @@ public class MiapiEvents {
     public static final PrioritizedEvent<EntityRide> START_RIDING = PrioritizedEvent.createLoop(); // only fires on successful rides, and is not cancellable (if I wanted to make it cancellable, i would add mixinextras)
     public static final PrioritizedEvent<EntityRide> STOP_RIDING = PrioritizedEvent.createLoop();
     public static final PrioritizedEvent<StatUpdateEvent> STAT_UPDATE_EVENT = PrioritizedEvent.createEventResult();
+    @Deprecated
+    /**
+     * @Deprecated use {@link MiapiEvents#GENERATE_MATERIAL_CONVERTERS} instead
+     */
     public static final PrioritizedEvent<GeneratedMaterialEvent> GENERATED_MATERIAL = PrioritizedEvent.createEventResult();
+    public static final PrioritizedEvent<CreateMaterialModularConvertersEvent> GENERATE_MATERIAL_CONVERTERS = PrioritizedEvent.createEventResult();
     public static final PrioritizedEvent<PlayerTickEvent> PLAYER_TICK_START = PrioritizedEvent.createLoop();
     public static final PrioritizedEvent<PlayerTickEvent> PLAYER_TICK_END = PrioritizedEvent.createLoop();
     public static final PrioritizedEvent<MaterialCraftEvent> MATERIAL_CRAFT_EVENT = PrioritizedEvent.createLoop();
@@ -99,6 +104,10 @@ public class MiapiEvents {
 
     public interface GeneratedMaterialEvent {
         EventResult generated(GeneratedMaterial material, ItemStack mainIngredient, List<Item> tools, boolean isClient);
+    }
+
+    public interface CreateMaterialModularConvertersEvent {
+        EventResult generated(Material material, List<Item> tools, boolean isClient);
     }
 
     public interface SmithingEvent {

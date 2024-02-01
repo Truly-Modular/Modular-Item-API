@@ -6,10 +6,7 @@ import com.google.gson.JsonParser;
 import com.mojang.blaze3d.systems.RenderSystem;
 import dev.architectury.event.events.common.LifecycleEvent;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.item.ToolItem;
-import net.minecraft.item.ToolMaterials;
+import net.minecraft.item.*;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.resource.ResourceReloader;
@@ -17,6 +14,7 @@ import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.MiapiClient;
 import smartin.miapi.datapack.ReloadEvents;
+import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.util.MergeType;
@@ -98,9 +96,9 @@ public class MaterialProperty implements ModuleProperty {
                     .map(ToolItem::getMaterial)
                     .collect(Collectors.toSet())
                     .stream()
-                    .filter(toolMaterial -> toolMaterial.getRepairIngredient() != null && toolMaterial.getRepairIngredient().getMatchingStacks() != null)
                     .filter(toolMaterial -> toolMaterial.getRepairIngredient().getMatchingStacks().length > 0)
                     .filter(toolMaterial -> !toolMaterial.getRepairIngredient().getMatchingStacks()[0].isIn(RegistryInventory.MIAPI_FORBIDDEN_TAG))
+                    .filter(toolMaterial -> toolMaterial.getRepairIngredient() != null && toolMaterial.getRepairIngredient().getMatchingStacks() != null)
                     .filter(toolMaterial -> Arrays.stream(toolMaterial.getRepairIngredient().getMatchingStacks()).allMatch(itemStack -> getMaterialFromIngredient(itemStack) == null && !itemStack.getItem().equals(Items.BARRIER)))
                     .collect(Collectors.toSet()).forEach(toolMaterial -> {
                         GeneratedMaterial generatedMaterial = new GeneratedMaterial(toolMaterial, isClient);
@@ -127,16 +125,41 @@ public class MaterialProperty implements ModuleProperty {
                     generatedMaterial.copyStatsFrom(materials.get("stone"));
                 }
             });
+
             if (isClient) {
                 MaterialProperty.materials.values().stream()
                         .filter(GeneratedMaterial.class::isInstance)
                         .forEach(generatedMaterial -> ((GeneratedMaterial) generatedMaterial).testForSmithingMaterial(isClient));
             }
+
+            toolItems.stream()
+                    .map(ToolItem::getMaterial)
+                    .collect(Collectors.toSet())
+                    .stream()
+                    .filter(toolMaterial -> toolMaterial.getRepairIngredient().getMatchingStacks().length > 0)
+                    .filter(toolMaterial -> !toolMaterial.getRepairIngredient().getMatchingStacks()[0].isIn(RegistryInventory.MIAPI_FORBIDDEN_TAG))
+                    .filter(toolMaterial -> toolMaterial.getRepairIngredient() != null && toolMaterial.getRepairIngredient().getMatchingStacks() != null)
+                    .filter(toolMaterial -> Arrays.stream(toolMaterial.getRepairIngredient().getMatchingStacks()).allMatch(itemStack -> getMaterialFromIngredient(itemStack) != null && !itemStack.getItem().equals(Items.BARRIER)))
+                    .forEach(toolMaterial -> {
+                        Material material = getMaterialFromIngredient(toolMaterial.getRepairIngredient().getMatchingStacks()[0]);
+                        List<Item> toolMaterials = toolItems.stream()
+                                .filter(toolMat -> toolMaterial.equals(toolMat.getMaterial()))
+                                .collect(Collectors.toList());
+                        if (material != null && material.generateConverters()) {
+                            MiapiEvents.GENERATE_MATERIAL_CONVERTERS.invoker().generated(material, toolMaterials, isClient);
+                        }
+                    });
+
         }, -1f);
         LifecycleEvent.SERVER_BEFORE_START.register(server -> {
             MaterialProperty.materials.values().stream()
                     .filter(GeneratedMaterial.class::isInstance)
                     .forEach(generatedMaterial -> ((GeneratedMaterial) generatedMaterial).testForSmithingMaterial(false));
+
+            List<ToolItem> toolItems = Registries.ITEM.stream()
+                    .filter(ToolItem.class::isInstance)
+                    .map(ToolItem.class::cast)
+                    .toList();
         });
         ReloadEvents.END.subscribe((isClient) -> {
             if (isClient) {

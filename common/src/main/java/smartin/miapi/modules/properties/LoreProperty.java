@@ -18,7 +18,6 @@ import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.material.Material;
 import smartin.miapi.modules.material.MaterialProperty;
-import smartin.miapi.modules.properties.util.CodecBasedProperty;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
@@ -32,7 +31,6 @@ import java.util.WeakHashMap;
  */
 public class LoreProperty implements ModuleProperty {
     public static final String KEY = "itemLore";
-    //TODO: maybe add more points to it? also add direct text to the json
     public static final Codec<LoreProperty.Holder> codec = AutoCodec.of(LoreProperty.Holder.class).codec();
     public static LoreProperty property;
     public static List<LoreSupplier> bottomLoreSuppliers = new ArrayList<>();
@@ -41,7 +39,6 @@ public class LoreProperty implements ModuleProperty {
 
     public LoreProperty() {
         super();
-        CodecBasedProperty property1;
         property = this;
         loreSuppliers.add(itemStack -> {
             Material material = materialLookupTable.computeIfAbsent(itemStack, itemStack1 -> MaterialProperty.getMaterialFromIngredient(itemStack));
@@ -90,7 +87,7 @@ public class LoreProperty implements ModuleProperty {
 
     public JsonElement merge(JsonElement old, JsonElement toMerge, MergeType type) {
         if (MergeType.OVERWRITE.equals(type)) {
-            return ModuleProperty.mergeToList(old,toMerge);
+            return ModuleProperty.mergeToList(old, toMerge);
         }
 
         return old;
@@ -134,6 +131,10 @@ public class LoreProperty implements ModuleProperty {
 
     public static class Holder {
         @AutoCodec.Optional
+        @Deprecated
+        /**
+         * @deprecated will be fully removed and replaced with the {@link Holder#text}
+         */
         public String lang;
         @AutoCodec.Optional
         public Text text;

@@ -141,6 +141,16 @@ public class JsonMaterial implements Material {
         return "";
     }
 
+    public boolean generateConverters(){
+        if(rawJson.getAsJsonObject().has("generate_converters")){
+            JsonElement element = rawJson.getAsJsonObject().get("generate_converters");
+            if(element!=null && !element.isJsonNull() && element.isJsonPrimitive()){
+                return element.getAsBoolean();
+            }
+        }
+        return false;
+    }
+
     @Override
     public List<String> getTextureKeys() {
         List<String> textureKeys = new ArrayList<>();

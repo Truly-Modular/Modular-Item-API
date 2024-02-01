@@ -17,6 +17,7 @@ public class PropertyResolver {
      * This will probably be reworked to allow for a proper prioritized ordering or sth like that to ensure certain behaviour
      * If you are an Addon-Developer reading this - be aware this might change at anytime - hit us up to tell us we should fix this
      */
+    //TODO:rethink this - add a requiredPrior thing to register
     public static MiapiRegistry<PropertyProvider> propertyProviderRegistry = MiapiRegistry.getInstance(PropertyProvider.class);
 
     /**
