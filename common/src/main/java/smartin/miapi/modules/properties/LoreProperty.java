@@ -11,6 +11,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import org.jetbrains.annotations.NotNull;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.crafting.crafter.replace.HoverMaterialList;
 import smartin.miapi.item.ModularItemStackConverter;
@@ -25,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
+import java.util.stream.Collectors;
 
 /**
  * This property manages the Itemlore of an Item
@@ -82,7 +84,7 @@ public class LoreProperty implements ModuleProperty {
                 holders.add(getFromSingleElement(element));
             }
         }
-        return holders;
+        return holders.stream().sorted().collect(Collectors.toCollection(ArrayList::new));
     }
 
     public JsonElement merge(JsonElement old, JsonElement toMerge, MergeType type) {
@@ -110,7 +112,6 @@ public class LoreProperty implements ModuleProperty {
     @Environment(EnvType.CLIENT)
     public void appendLoreTop(List<Text> oldLore, ItemStack itemStack) {
         loreSuppliers.forEach(loreSupplier -> oldLore.addAll(loreSupplier.getLore(itemStack)));
-        List<Holder> holders = getHolders(itemStack);
         getHolders(itemStack).stream().filter(h -> h.position.equals("top")).forEach(holder -> {
             oldLore.add(holder.getText());
         });
@@ -129,7 +130,7 @@ public class LoreProperty implements ModuleProperty {
         return false;
     }
 
-    public static class Holder {
+    public static class Holder implements Comparable<Holder> {
         @AutoCodec.Optional
         @Deprecated
         /**
@@ -140,6 +141,8 @@ public class LoreProperty implements ModuleProperty {
         public Text text;
         @AutoCodec.Mandatory
         public String position;
+        @AutoCodec.Optional
+        public float priority = 0;
 
         public Text getText() {
             if (lang != null) {
@@ -150,6 +153,11 @@ public class LoreProperty implements ModuleProperty {
                 //return Codecs.TEXT.parse(JsonOps.INSTANCE, text).result().orElse(Text.empty());
             }
             return Text.empty();
+        }
+
+        @Override
+        public int compareTo(@NotNull Holder o) {
+            return Float.compare(priority, o.priority);
         }
     }
 
