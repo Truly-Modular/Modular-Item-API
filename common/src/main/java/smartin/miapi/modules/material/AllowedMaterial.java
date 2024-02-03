@@ -151,6 +151,14 @@ public class AllowedMaterial implements CraftingProperty, ModuleProperty {
         return results;
     }
 
+    public static double getMaterialCost(ModuleInstance moduleInstance){
+        JsonElement element = property.getJsonElement(moduleInstance);
+        if(element!=null){
+            return Miapi.gson.fromJson(element, AllowedMaterialJson.class).cost;
+        }
+        return 0;
+    }
+
     @Override
     public boolean load(String moduleKey, JsonElement data) throws Exception {
         return true;

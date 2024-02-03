@@ -3,7 +3,11 @@ package smartin.miapi.modules.properties.util;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.reflect.TypeToken;
+import net.minecraft.item.ItemStack;
+import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
+import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.ModuleInstance;
 
 import java.lang.reflect.Type;
 import java.util.HashMap;
@@ -39,7 +43,7 @@ public interface ModuleProperty {
     default JsonElement merge(JsonElement old, JsonElement toMerge, MergeType type) {
         Type typeToken = new TypeToken<List<JsonElement>>() {
         }.getType();
-        if(old.isJsonArray() && toMerge.isJsonArray()){
+        if (old.isJsonArray() && toMerge.isJsonArray()) {
             List<JsonElement> oldList = Miapi.gson.fromJson(old, typeToken);
             List<JsonElement> newList = Miapi.gson.fromJson(toMerge, typeToken);
             if (Objects.requireNonNull(type) == MergeType.SMART || type == MergeType.EXTEND) {
@@ -48,12 +52,10 @@ public interface ModuleProperty {
             } else if (type == MergeType.OVERWRITE) {
                 return toMerge;
             }
-        }
-        else{
-            if(MergeType.EXTEND == type){
+        } else {
+            if (MergeType.EXTEND == type) {
                 return old;
-            }
-            else{
+            } else {
                 return toMerge;
             }
         }
@@ -74,37 +76,44 @@ public interface ModuleProperty {
         return old;
     }
 
-    static JsonElement mergeToList(JsonElement left,JsonElement right){
+    static JsonElement mergeToList(JsonElement left, JsonElement right) {
         JsonArray returnArray = new JsonArray();
-        if(left!=null && !left.isJsonNull()){
-            if(left.isJsonArray()){
+        if (left != null && !left.isJsonNull()) {
+            if (left.isJsonArray()) {
                 left.getAsJsonArray().forEach(returnArray::add);
-            }
-            else{
+            } else {
                 returnArray.add(left);
             }
         }
-        if(right!=null && !right.isJsonNull()){
-            if(right.isJsonArray()){
+        if (right != null && !right.isJsonNull()) {
+            if (right.isJsonArray()) {
                 right.getAsJsonArray().forEach(returnArray::add);
-            }
-            else{
+            } else {
                 returnArray.add(right);
             }
         }
         return right;
     }
 
-    static Map<ModuleProperty,JsonElement> mergeList(Map<ModuleProperty,JsonElement> old, Map<ModuleProperty,JsonElement> toMerge, MergeType type) {
-        Map<ModuleProperty,JsonElement> mergedMap = new HashMap<>(old);
-        toMerge.forEach((key,json)->{
-            if(mergedMap.containsKey(key)){
-                mergedMap.put(key,mergeList(mergedMap.get(key),json,type));
-            }
-            else{
-                mergedMap.put(key,json);
+    static Map<ModuleProperty, JsonElement> mergeList(Map<ModuleProperty, JsonElement> old, Map<ModuleProperty, JsonElement> toMerge, MergeType type) {
+        Map<ModuleProperty, JsonElement> mergedMap = new HashMap<>(old);
+        toMerge.forEach((key, json) -> {
+            if (mergedMap.containsKey(key)) {
+                mergedMap.put(key, mergeList(mergedMap.get(key), json, type));
+            } else {
+                mergedMap.put(key, json);
             }
         });
         return mergedMap;
+    }
+
+    @Nullable
+    default JsonElement getJsonElement(ModuleInstance moduleInstance) {
+        return moduleInstance.getProperties().get(this);
+    }
+
+    @Nullable
+    default JsonElement getJsonElement(ItemStack itemStack) {
+        return ItemModule.getMergedProperty(itemStack, this);
     }
 }

@@ -80,8 +80,8 @@ public class MiapiClient {
              */
             if (jerLoaded && Miapi.server == null) {
                 String version = Platform.getMod("jeresources").getVersion();
-                if (version.equals("1.4.0.238")) {
-                    player.sendMessage(Text.literal("Just Enough Resources 1.20.1-1.4.0.238 Release is broken on servers. Please Remove it."));
+                if (version.equals("1.4.0.238") || version.equals("1.4.0.246") || version.equals("1.4.0.247")) {
+                    player.sendMessage(Text.literal("Just Enough Resources 1.20.1-1.4.0.247 Release is broken on servers. Please Remove it."));
                     ClickEvent event = new ClickEvent(ClickEvent.Action.OPEN_URL, "https://github.com/way2muchnoise/JustEnoughResources/issues/392");
                     Text link = Text.literal("For more information you can read this");
                     player.sendMessage(link.getWithStyle(Style.EMPTY.withClickEvent(event).withUnderline(true)).get(0));

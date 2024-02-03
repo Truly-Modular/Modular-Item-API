@@ -463,6 +463,8 @@ public class RegistryInventory {
             registerMiapi(moduleProperties, FakeItemTagProperty.KEY, new FakeItemTagProperty());
             registerMiapi(moduleProperties, RarityProperty.KEY, new RarityProperty());
             registerMiapi(moduleProperties, HideFlagsProperty.KEY, new HideFlagsProperty());
+            registerMiapi(moduleProperties, MiningShapeProperty.KEY, new MiningShapeProperty());
+            registerMiapi(moduleProperties, ModuleStats.KEY, new ModuleStats());
             //compat
             registerMiapi(moduleProperties, BetterCombatProperty.KEY, new BetterCombatProperty());
             registerMiapi(moduleProperties, ApoliPowersProperty.KEY, new ApoliPowersProperty());
