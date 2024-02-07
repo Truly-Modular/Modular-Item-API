@@ -2,8 +2,10 @@ package smartin.miapi.config;
 
 import dev.architectury.platform.Platform;
 import net.minecraft.util.math.ColorHelper;
-import smartin.miapi.client.MiapiClient;
-import smartin.miapi.config.oro_config.*;
+import smartin.miapi.config.oro_config.BooleanConfigItem;
+import smartin.miapi.config.oro_config.Config;
+import smartin.miapi.config.oro_config.ConfigItemGroup;
+import smartin.miapi.config.oro_config.IntegerConfigItem;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.modules.cache.ModularItemCache;
 
@@ -59,32 +61,16 @@ public class MiapiConfig extends Config {
     }
 
     public static class CompatGroup extends ConfigItemGroup {
-        public static EnumConfigItem<RenderMode> renderModeConfig = new EnumConfigItem<>("render_mode", RenderMode.AUTO, "Select a Rendermode,\n AUTO,DEFAULT_RENDERER,ALT_RENDERER,FALLBACK_RENDERER");
+       public static BooleanConfigItem animatedMaterial = new BooleanConfigItem(
+                "animated_materials",
+                false,
+                "Animated Materials do have a significant fps impact at the moment");
 
         protected CompatGroup() {
-            super(of(renderModeConfig), "compat_settings");
-            renderModeConfig.changeListener.add((renderModeConfigItem -> {
+            super(of(animatedMaterial), "compat_settings");
+            animatedMaterial.changeListener.add((renderModeConfigItem -> {
                 ModularItemCache.discardCache();
             }));
-        }
-
-        public static RenderMode getRenderMode() {
-            switch (renderModeConfig.getValue()) {
-                case AUTO -> {
-                    if (MiapiClient.shaderModLoaded) {
-                        return RenderMode.ALT_RENDERER;
-                    }
-                    return RenderMode.DEFAULT_RENDERER;
-                }
-            }
-            return renderModeConfig.getValue();
-        }
-
-        public enum RenderMode {
-            FALLBACK_RENDERER,
-            ALT_RENDERER,
-            DEFAULT_RENDERER,
-            AUTO
         }
     }
 

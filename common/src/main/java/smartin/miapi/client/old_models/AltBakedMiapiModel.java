@@ -1,4 +1,4 @@
-package smartin.miapi.client.modelrework;
+package smartin.miapi.client.old_models;
 
 import com.redpxnda.nucleus.util.Color;
 import net.minecraft.client.MinecraftClient;
@@ -21,6 +21,8 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 import org.joml.Matrix4f;
 import smartin.miapi.client.AltModelAtlasManager;
+import smartin.miapi.client.model.MiapiModel;
+import smartin.miapi.client.model.ModelHolder;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.material.Material;
 import smartin.miapi.modules.material.MaterialProperty;
@@ -29,14 +31,16 @@ import smartin.miapi.modules.properties.render.colorproviders.ColorProvider;
 import java.lang.ref.WeakReference;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
-
+/**
+ * relied on old MaterialVertexConsumer to function
+ */
 public class AltBakedMiapiModel implements MiapiModel {
     ModuleInstance instance;
     Material material;
     BakedModel model;
     Matrix4f modelMatrix;
     Color color;
-    BakedMiapiModel.ModelHolder modelHolder;
+    ModelHolder modelHolder;
     Random random = Random.create();
     float[] colors;
     Map<Identifier, Identifier> replaceSprites = new HashMap<>();
@@ -47,7 +51,7 @@ public class AltBakedMiapiModel implements MiapiModel {
 
     public Map<BakedModel, List<BakedQuad>> quadLookupMap = new HashMap<>();
 
-    public AltBakedMiapiModel(BakedMiapiModel.ModelHolder holder, ModuleInstance instance, ItemStack stack) {
+    public AltBakedMiapiModel(ModelHolder holder, ModuleInstance instance, ItemStack stack) {
         modelHolder = holder;
         this.instance = instance;
         material = MaterialProperty.getMaterial(instance);

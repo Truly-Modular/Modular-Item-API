@@ -1,4 +1,4 @@
-package smartin.miapi.client;
+package smartin.miapi.client.atlas;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;

@@ -1,4 +1,4 @@
-package smartin.miapi.client.model;
+package smartin.miapi.client.model.item;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -14,22 +14,23 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
 import org.jetbrains.annotations.Nullable;
+import smartin.miapi.client.model.DynamicBakery;
 import smartin.miapi.modules.properties.render.ModelProperty;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.util.*;
 import java.util.function.Function;
 
-import static smartin.miapi.client.SpriteLoader.miapiModels;
+import static smartin.miapi.client.renderer.SpriteLoader.miapiModels;
 
 @Environment(EnvType.CLIENT)
-public class CustomModel implements UnbakedModel, BakedModel {
+public class ItemBakedModelReplacement implements UnbakedModel, BakedModel {
     public static LivingEntity currentEntity = null;
     public static boolean isModularItem(Identifier identifier) {
         return RegistryInventory.modularItems.get(identifier.toString().replace("item/", "")) != null;
     }
 
-    private CustomModelOverrides overrides;
+    private ItemBakedModelOverrides overrides;
 
     @Override
     public ModelOverrideList getOverrides() {
@@ -88,7 +89,7 @@ public class CustomModel implements UnbakedModel, BakedModel {
     public BakedModel bake(Baker baker, Function<SpriteIdentifier, Sprite> textureGetter, ModelBakeSettings rotationContainer, Identifier modelId) {
         ModelProperty.textureGetter = textureGetter;
         DynamicBakery.dynamicBaker = baker;
-        overrides = new CustomModelOverrides();
+        overrides = new ItemBakedModelOverrides();
         return this;
     }
 

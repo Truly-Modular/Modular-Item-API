@@ -5,13 +5,13 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.resource.metadata.AnimationResourceMetadata;
-import net.minecraft.client.texture.SpriteLoader;
 import net.minecraft.client.texture.*;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.profiler.Profiler;
 import smartin.miapi.Miapi;
-import smartin.miapi.client.modelrework.AltBakedMiapiModel;
+import smartin.miapi.client.atlas.MaterialAtlasManager;
+import smartin.miapi.client.old_models.AltBakedMiapiModel;
 import smartin.miapi.mixin.client.SpriteContentsAccessor;
 import smartin.miapi.modules.material.Material;
 

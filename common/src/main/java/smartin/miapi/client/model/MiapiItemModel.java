@@ -1,4 +1,4 @@
-package smartin.miapi.client.modelrework;
+package smartin.miapi.client.model;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.VertexConsumerProvider;

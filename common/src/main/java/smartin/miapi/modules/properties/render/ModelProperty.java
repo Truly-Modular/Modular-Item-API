@@ -25,11 +25,9 @@ import net.minecraft.util.math.random.Random;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import smartin.miapi.Miapi;
-import smartin.miapi.client.model.DynamicBakedModel;
-import smartin.miapi.client.model.DynamicBakery;
-import smartin.miapi.client.model.ModelLoadAccessor;
-import smartin.miapi.client.modelrework.*;
-import smartin.miapi.config.MiapiConfig;
+import smartin.miapi.client.model.*;
+import smartin.miapi.client.model.item.BakedSIngleModel;
+import smartin.miapi.client.renderer.TrimRenderer;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.item.modular.Transform;
 import smartin.miapi.item.modular.TransformMap;
@@ -72,31 +70,17 @@ public class ModelProperty implements ModuleProperty {
         MiapiItemModel.modelSuppliers.add((key, model, stack) -> {
             GlintProperty.GlintSettings settings = GlintProperty.property.getGlintSettings(model, stack);
             List<MiapiModel> miapiModels = new ArrayList<>();
-            for (BakedMiapiModel.ModelHolder holder : getForModule(model, key, stack)) {
-                switch (MiapiConfig.CompatGroup.getRenderMode()) {
-                    case ALT_RENDERER -> {
-                        miapiModels.add(new Alt2BakedMiapiModel(holder, model, stack));
-                    }
-                    case FALLBACK_RENDERER -> {
-                        miapiModels.add(new BadShaderCompatModel(holder, model, stack));
-                    }
-                    default -> {
-                        if (settings.shouldRender()) {
-                            miapiModels.add(new BakedMiapiGlintModel(holder, model, stack));
-                        } else {
-                            miapiModels.add(new BakedMiapiModel(holder, model, stack));
-                        }
-                    }
-                }
+            for (ModelHolder holder : getForModule(model, key, stack)) {
+                miapiModels.add(new BakedMiapiModel(holder, model, stack));
             }
             return miapiModels;
         });
     }
 
-    List<BakedMiapiModel.ModelHolder> getForModule(ModuleInstance instance, String key, ItemStack itemStack) {
+    List<ModelHolder> getForModule(ModuleInstance instance, String key, ItemStack itemStack) {
         Gson gson = Miapi.gson;
         List<ModelJson> modelJsonList = new ArrayList<>();
-        List<BakedMiapiModel.ModelHolder> models = new ArrayList<>();
+        List<ModelHolder> models = new ArrayList<>();
         JsonElement data = instance.getProperties().get(property);
         if (data == null) {
             return new ArrayList<>();
@@ -136,7 +120,7 @@ public class ModelProperty implements ModuleProperty {
                             break;
                         }
                     }
-                    DynamicBakedModel model = DynamicBakery.bakeModel(unbakedModel.model, textureGetter, ColorHelper.Argb.getArgb(255, 255, 255, 255), Transform.IDENTITY);
+                    BakedSIngleModel model = DynamicBakery.bakeModel(unbakedModel.model, textureGetter, ColorHelper.Argb.getArgb(255, 255, 255, 255), Transform.IDENTITY);
                     if (model != null) {
                         Matrix4f matrix4f = Transform.toModelTransformation(json.transform).toMatrix();
                         String colorProviderId = unbakedModel.modelData.colorProvider != null ?
@@ -145,7 +129,7 @@ public class ModelProperty implements ModuleProperty {
                         if (colorProvider == null) {
                             throw new RuntimeException("colorProvider is null");
                         }
-                        models.add(new BakedMiapiModel.ModelHolder(model.optimize(), matrix4f, colorProvider, json.getTrimMode(), json.entity_render));
+                        models.add(new ModelHolder(model.optimize(), matrix4f, colorProvider, json.getTrimMode(), json.entity_render));
                     }
                 }
             }
@@ -177,7 +161,7 @@ public class ModelProperty implements ModuleProperty {
         for (ModelTransformer transformer : modelTransformers) {
             unbakedModels = transformer.unBakedTransform(unbakedModels, itemStack);
         }
-        Map<String, DynamicBakedModel> bakedModelMap = bakedModelMap(unbakedModels);
+        Map<String, BakedSIngleModel> bakedModelMap = bakedModelMap(unbakedModels);
 
         for (ModelTransformer transformer : modelTransformers) {
             bakedModelMap = transformer.bakedTransform(bakedModelMap, itemStack);
@@ -186,7 +170,7 @@ public class ModelProperty implements ModuleProperty {
         return optimizedMap;
     }
 
-    protected static Map<String, BakedModel> optimize(Map<String, DynamicBakedModel> bakedModelMap) {
+    protected static Map<String, BakedModel> optimize(Map<String, BakedSIngleModel> bakedModelMap) {
         HashMap<String, BakedModel> map = new HashMap<>();
         bakedModelMap.forEach((id, dynamicModel) -> {
             map.put(id, dynamicModel.optimize());
@@ -194,22 +178,22 @@ public class ModelProperty implements ModuleProperty {
         return map;
     }
 
-    protected static Map<String, DynamicBakedModel> bakedModelMap(List<TransformedUnbakedModel> unbakedModels) {
-        Map<String, DynamicBakedModel> bakedModelMap = new HashMap<>();
+    protected static Map<String, BakedSIngleModel> bakedModelMap(List<TransformedUnbakedModel> unbakedModels) {
+        Map<String, BakedSIngleModel> bakedModelMap = new HashMap<>();
         for (TransformedUnbakedModel unbakedModel : unbakedModels) {
             ModelBakeSettings settings = unbakedModel.transform.get().toModelBakeSettings();
-            DynamicBakedModel model = DynamicBakery.bakeModel(unbakedModel.unbakedModel, mirroredGetter, unbakedModel.color, unbakedModel.transform.get());
-            DynamicBakedModel dynamicBakedModel = bakedModelMap.computeIfAbsent(unbakedModel.transform.primary, (key) ->
-                    new DynamicBakedModel(new ArrayList<>())
+            BakedSIngleModel model = DynamicBakery.bakeModel(unbakedModel.unbakedModel, mirroredGetter, unbakedModel.color, unbakedModel.transform.get());
+            BakedSIngleModel bakedSIngleModel = bakedModelMap.computeIfAbsent(unbakedModel.transform.primary, (key) ->
+                    new BakedSIngleModel(new ArrayList<>())
             );
             if (model != null) {
                 if (model.getOverrides() == null || model.getOverrides().equals(ModelOverrideList.EMPTY)) {
-                    dynamicBakedModel.quads.addAll(model.getQuads(null, null, Random.create()));
+                    bakedSIngleModel.quads.addAll(model.getQuads(null, null, Random.create()));
                     for (Direction dir : Direction.values()) {
-                        dynamicBakedModel.quads.addAll(model.getQuads(null, dir, Random.create()));
+                        bakedSIngleModel.quads.addAll(model.getQuads(null, dir, Random.create()));
                     }
                 } else {
-                    dynamicBakedModel.addModel(model);
+                    bakedSIngleModel.addModel(model);
                 }
             } else {
                 Miapi.LOGGER.warn("Model is null? - this probably indicates another issue");
@@ -388,7 +372,7 @@ public class ModelProperty implements ModuleProperty {
     }
 
     public interface ModelTransformer {
-        default Map<String, DynamicBakedModel> bakedTransform(Map<String, DynamicBakedModel> dynamicBakedModelMap, ItemStack stack) {
+        default Map<String, BakedSIngleModel> bakedTransform(Map<String, BakedSIngleModel> dynamicBakedModelMap, ItemStack stack) {
             return dynamicBakedModelMap;
         }
 

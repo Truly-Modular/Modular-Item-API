@@ -1,4 +1,4 @@
-package smartin.miapi.client.modelrework;
+package smartin.miapi.client.renderer;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.OverlayTexture;

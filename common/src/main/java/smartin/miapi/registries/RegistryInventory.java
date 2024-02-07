@@ -49,7 +49,7 @@ import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.blocks.ModularWorkBench;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.blueprint.BlueprintProperty;
-import smartin.miapi.client.MaterialAtlasManager;
+import smartin.miapi.client.atlas.MaterialAtlasManager;
 import smartin.miapi.client.MiapiClient;
 import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
 import smartin.miapi.craft.stat.CraftingStat;

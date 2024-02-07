@@ -1,8 +1,11 @@
-package smartin.miapi.client.modelrework;
+package smartin.miapi.client.old_models;
 
 import com.redpxnda.nucleus.util.Color;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.*;
+import net.minecraft.client.render.OverlayTexture;
+import net.minecraft.client.render.TexturedRenderLayers;
+import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.json.ModelOverrideList;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
@@ -17,12 +20,23 @@ import net.minecraft.item.trim.ArmorTrim;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 import org.joml.Matrix4f;
+import smartin.miapi.client.model.MiapiModel;
+import smartin.miapi.client.model.ModelTransformer;
+import smartin.miapi.client.renderer.TrimRenderer;
 import smartin.miapi.item.modular.Transform;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.material.Material;
 import smartin.miapi.modules.material.MaterialProperty;
 import smartin.miapi.modules.properties.render.colorproviders.ColorProvider;
 
+/**
+ * The old Model that uses a custom renderlayer and Shaders to function.
+ * this is considered to be outdated and should no longer be used
+ * prob doesnt work anymore
+ */
+/**
+ * relied on old MaterialVertexConsumer to function
+ */
 public class BakedMiapiModel implements MiapiModel {
     ModuleInstance instance;
     Material material;
@@ -55,15 +69,18 @@ public class BakedMiapiModel implements MiapiModel {
             currentModel = model.getOverrides().apply(model, stack, MinecraftClient.getInstance().world, entity, light);
         }
         MinecraftClient.getInstance().world.getProfiler().push("QuadPushing");
-        VertexConsumer consumer = modelHolder.colorProvider.getConsumer(vertexConsumers, stack, instance, transformationMode);
         assert currentModel != null;
         for (Direction direction : Direction.values()) {
             currentModel.getQuads(null, direction, random)
-                    .forEach(bakedQuad -> consumer.quad(matrices.peek(), bakedQuad, colors[0], colors[1], colors[2], light, overlay));
+                    .forEach(bakedQuad -> {
+                        VertexConsumer consumer = modelHolder.colorProvider.getConsumer(vertexConsumers,bakedQuad.getSprite(), stack, instance, transformationMode);
+                        consumer.quad(matrices.peek(), bakedQuad, colors[0], colors[1], colors[2], light, overlay);
+                    });
         }
 
         if (modelHolder.entityRendering()) {
             ModelTransformer.getInverse(currentModel, random).forEach(bakedQuad -> {
+                VertexConsumer consumer = modelHolder.colorProvider.getConsumer(vertexConsumers,bakedQuad.getSprite(), stack, instance, transformationMode);
                 consumer.quad(matrices.peek(), bakedQuad, colors[0], colors[1], colors[2], light, overlay);
             });
         }

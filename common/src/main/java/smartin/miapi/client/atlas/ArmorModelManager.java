@@ -1,4 +1,4 @@
-package smartin.miapi.client;
+package smartin.miapi.client.atlas;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -17,7 +17,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
-import smartin.miapi.client.modelrework.MiapiItemModel;
+import smartin.miapi.client.model.MiapiItemModel;
 import smartin.miapi.mixin.client.ElytraEntityModelAccessor;
 import smartin.miapi.mixin.client.ElytraFeatureRendererAccessor;
 import smartin.miapi.mixin.client.LivingEntityRendererAccessor;

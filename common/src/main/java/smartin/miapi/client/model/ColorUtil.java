@@ -8,6 +8,7 @@ import net.minecraft.client.render.model.BakedQuad;
 import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
+import smartin.miapi.client.model.item.BakedSIngleModel;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.material.Material;
 import smartin.miapi.modules.material.MaterialProperty;
@@ -39,7 +40,7 @@ public class ColorUtil {
                 builder.add(recolorBakedQuad(quad, color));
             }
         }
-        DynamicBakedModel model = new DynamicBakedModel(builder.build());
+        BakedSIngleModel model = new BakedSIngleModel(builder.build());
         model.overrideList = originalModel.getOverrides();
         return model;
     }

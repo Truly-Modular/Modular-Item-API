@@ -4,7 +4,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.model.loading.v1.ModelLoadingPlugin;
 import net.minecraft.util.Identifier;
-import smartin.miapi.client.model.CustomModel;
+import smartin.miapi.client.model.item.ItemBakedModelReplacement;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.util.List;
@@ -18,8 +18,8 @@ public class MiapiClient {
             pluginContext.addModels(ids);
             pluginContext.resolveModel().register((context) -> {
                 context.id();
-                if (CustomModel.isModularItem(context.id())) {
-                    return new CustomModel();
+                if (ItemBakedModelReplacement.isModularItem(context.id())) {
+                    return new ItemBakedModelReplacement();
                 } else {
                     return null;
                 }

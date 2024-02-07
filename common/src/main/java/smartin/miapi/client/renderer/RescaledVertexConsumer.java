@@ -1,31 +1,38 @@
-package smartin.miapi.client;
+package smartin.miapi.client.renderer;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.texture.Sprite;
-import smartin.miapi.modules.material.Material;
 
-@Environment(EnvType.CLIENT)
-public class MaterialVertexConsumer implements VertexConsumer {
+public class RescaledVertexConsumer implements VertexConsumer {
     public VertexConsumer delegate;
-    protected final int x;
-    protected final int y;
+    float uStart;
+    float uScale;
+    float vStart;
+    float vScale;
 
-    public MaterialVertexConsumer(VertexConsumer delegate, Material material) {
+    public RescaledVertexConsumer(VertexConsumer delegate, Sprite sprite) {
         this.delegate = delegate;
-        Sprite sprite = MiapiClient.materialAtlasManager.getMaterialSprite(material.getPalette().getSpriteId());
-        if(sprite == null){
-            sprite = MiapiClient.materialAtlasManager.getMaterialSprite(MaterialAtlasManager.BASE_MATERIAL_ID);
-        }
-        if (sprite != null) {
-            //Miapi.LOGGER.error(material.getKey() + " " + sprite.getY());
-            this.x = sprite.getX();
-            this.y = sprite.getY();
-        } else {
-            this.x = 0;
-            this.y = 0;
-        }
+        setSprite(sprite);
+    }
+
+    public void setSprite(Sprite sprite) {
+        uStart = sprite.getMinU();
+        uScale = 1 / (sprite.getMaxU() - sprite.getMinU());
+        vStart = sprite.getMinV();
+        vScale = 1 / (sprite.getMaxV() - sprite.getMinV());
+    }
+
+    @Override
+    public void vertex(float x, float y, float z, float red, float green, float blue, float alpha, float u, float v, int overlay, int light, float normalX, float normalY, float normalZ) {
+        u = ((u - uStart) * uScale);
+        v = ((v - vStart) * vScale);
+        this.vertex(x, y, z);
+        this.color(red, green, blue, alpha);
+        this.texture(u, v);
+        this.overlay(overlay);
+        this.light(light);
+        this.normal(normalX, normalY, normalZ);
+        this.next();
     }
 
     @Override
@@ -45,12 +52,12 @@ public class MaterialVertexConsumer implements VertexConsumer {
 
     @Override
     public VertexConsumer overlay(int u, int v) {
-        return delegate.overlay(x, y);
+        return delegate.overlay(u, v);
     }
 
     @Override
     public VertexConsumer overlay(int v) {
-        return delegate.overlay(x, y);
+        return delegate.overlay(v);
     }
 
     @Override

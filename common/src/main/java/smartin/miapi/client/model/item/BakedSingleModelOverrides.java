@@ -1,4 +1,4 @@
-package smartin.miapi.client.model;
+package smartin.miapi.client.model.item;
 
 import com.google.common.collect.Lists;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
@@ -8,7 +8,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.item.ModelPredicateProvider;
 import net.minecraft.client.item.ModelPredicateProviderRegistry;
 import net.minecraft.client.render.model.BakedModel;
-import net.minecraft.client.render.model.json.JsonUnbakedModel;
 import net.minecraft.client.render.model.json.ModelOverride;
 import net.minecraft.client.render.model.json.ModelOverrideList;
 import net.minecraft.client.world.ClientWorld;
@@ -16,22 +15,17 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.random.Random;
-import org.apache.logging.log4j.core.lookup.JmxRuntimeInputArgumentsLookup;
 import org.jetbrains.annotations.Nullable;
-import smartin.miapi.Miapi;
-import smartin.miapi.modules.properties.render.ModelProperty;
+import smartin.miapi.client.model.DynamicBakery;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Environment(EnvType.CLIENT)
-public class DynamicModelOverrides extends ModelOverrideList {
+public class BakedSingleModelOverrides extends ModelOverrideList {
     public final DynamicBakedOverride[] dynamicOverrides;
     public final Identifier[] dynamicConditionTypes;
 
-    public DynamicModelOverrides(Map<ConditionHolder, BakedModel> modelHashMap) {
+    public BakedSingleModelOverrides(Map<ConditionHolder, BakedModel> modelHashMap) {
         super(DynamicBakery.dynamicBaker, null, new ArrayList<>());
         this.dynamicConditionTypes = modelHashMap.keySet().stream().flatMap(conditionHolder -> conditionHolder.conditions.stream()).map(Condition::getType).distinct().toArray(Identifier[]::new);
         Object2IntMap<Identifier> object2IntMap = new Object2IntOpenHashMap<>();

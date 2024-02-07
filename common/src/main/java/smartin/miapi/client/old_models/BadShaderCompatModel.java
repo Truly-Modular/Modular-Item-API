@@ -1,4 +1,4 @@
-package smartin.miapi.client.modelrework;
+package smartin.miapi.client.old_models;
 
 import com.redpxnda.nucleus.util.Color;
 import net.minecraft.client.MinecraftClient;
@@ -18,6 +18,9 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
+import smartin.miapi.client.model.MiapiModel;
+import smartin.miapi.client.model.ModelTransformer;
+import smartin.miapi.client.renderer.TrimRenderer;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.material.Material;
 import smartin.miapi.modules.material.MaterialProperty;

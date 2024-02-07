@@ -1,4 +1,4 @@
-package smartin.miapi.client;
+package smartin.miapi.client.renderer;
 
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.OverlayTexture;
@@ -14,7 +14,7 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
-import smartin.miapi.client.modelrework.MiapiItemModel;
+import smartin.miapi.client.model.MiapiItemModel;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.mixin.client.ElytraEntityModelAccessor;
 import smartin.miapi.mixin.client.ElytraFeatureRendererAccessor;

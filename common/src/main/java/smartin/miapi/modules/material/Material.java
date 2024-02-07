@@ -4,9 +4,6 @@ import com.google.gson.JsonElement;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
@@ -36,12 +33,6 @@ public interface Material {
 
     @Environment(EnvType.CLIENT)
     MaterialPalette getPalette();
-
-    @Environment(EnvType.CLIENT)
-    default VertexConsumer getVertexConsumer(VertexConsumerProvider vertexConsumers, ItemStack stack, ModuleInstance moduleInstance, ModelTransformationMode mode) {
-        return getPalette().getVertexConsumer(vertexConsumers, stack, moduleInstance, mode);
-        //return new MaterialVertexConsumer(vertexConsumers.getBuffer(RegistryInventory.Client.entityTranslucentMaterialRenderType), this);
-    }
 
     /**
      * @param drawContext a DrawContext that can be used to draw shtuff

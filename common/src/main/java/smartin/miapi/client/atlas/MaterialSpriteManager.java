@@ -1,4 +1,4 @@
-package smartin.miapi.client.modelrework;
+package smartin.miapi.client.atlas;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -8,8 +8,8 @@ import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.util.Identifier;
-import smartin.miapi.client.MaterialAtlasManager;
 import smartin.miapi.client.MiapiClient;
+import smartin.miapi.client.renderer.NativeImageGetter;
 import smartin.miapi.mixin.client.SpriteContentsAccessor;
 import smartin.miapi.modules.material.Material;
 
@@ -70,7 +70,7 @@ public class MaterialSpriteManager {
     public static NativeImage transform(Sprite oldSprite, Material material) {
         ((SpriteContentsAccessor) oldSprite.getContents()).getImage();
 
-        NativeImage rawImage = ((SpriteContentsAccessor) oldSprite.getContents()).getImage();
+        NativeImage rawImage = NativeImageGetter.get(oldSprite.getContents());
         NativeImage image = new NativeImage(oldSprite.getContents().getWidth(), oldSprite.getContents().getHeight(), true);
         for (int x = 0; x < rawImage.getWidth(); x++) {
             for (int y = 0; y < rawImage.getHeight(); y++) {
@@ -98,7 +98,7 @@ public class MaterialSpriteManager {
         if (sprite == null) {
             sprite = MiapiClient.materialAtlasManager.getMaterialSprite(MaterialAtlasManager.BASE_MATERIAL_ID);
         }
-        return ((SpriteContentsAccessor) sprite.getContents()).getImage().getColor(Math.max(Math.min(color, 255), 0), 0);
+        return NativeImageGetter.get(sprite.getContents()).getColor(Math.max(Math.min(color, 255), 0), 0);
     }
 
     public record Holder(Sprite sprite, Material material) {

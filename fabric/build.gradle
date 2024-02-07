@@ -42,6 +42,12 @@ configurations {
     developmentFabric.extendsFrom common
 }
 
+// Add the Archery project dependency and a custom task
+tasks.register('buildWithArchery', Jar) {
+    def project = gradle.includedBuild("arsenal")
+    dependsOn project.task(":fabric:build")
+}
+
 dependencies {
     modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
     modApi "net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_api_version}"
@@ -66,8 +72,13 @@ dependencies {
     modApi(include("com.redpxnda.nucleus:facet-fabric:${rootProject.minecraft_version}+${rootProject.nucleus_facet_version}"))
 
     modLocalRuntime files('libs/arsenal-local.jar')
-    modLocalRuntime files('libs/archery-local.jar')
+    //modLocalRuntime files('libs/archery-local.jar')
+    modLocalRuntime tasks.getByName("buildWithArchery").outputs.files
+    //modLocalRuntime gradle.includedBuild("arsenal").task(":fabric:build").outputs.files
     modLocalRuntime files('libs/armory-local.jar')
+
+
+
     //modLocalRuntime "maven.modrinth:sodium:mc1.20.1-0.5.3"
     //modLocalRuntime"maven.modrinth:iris:1.6.10+1.20.1"
 

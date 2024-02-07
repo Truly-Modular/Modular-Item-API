@@ -1,4 +1,4 @@
-package smartin.miapi.client.model;
+package smartin.miapi.client.model.item;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -19,6 +19,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
+import smartin.miapi.client.model.DynamicBakery;
 
 import java.util.*;
 
@@ -26,14 +27,14 @@ import java.util.*;
  * A BakedModel made to be semi mutable and allow for more dynamic interactions
  */
 @Environment(EnvType.CLIENT)
-public class DynamicBakedModel implements BakedModel {
+public class BakedSIngleModel implements BakedModel {
     public List<BakedQuad> quads;
     public ModelTransformation modelTransformation = ModelTransformation.NONE;
     public List<BakedModel> childModels = new ArrayList<>();
-    private DynamicBakedModel overrideModel;
+    private BakedSIngleModel overrideModel;
     public ModelOverrideList overrideList;
 
-    public DynamicBakedModel(List<BakedQuad> quads) {
+    public BakedSIngleModel(List<BakedQuad> quads) {
         this.quads = quads;
         overrideList = new DynamicOverrides();
     }
@@ -51,7 +52,7 @@ public class DynamicBakedModel implements BakedModel {
 
     public void addModel(BakedModel child) {
         if (overrideModel == null) {
-            overrideModel = new DynamicBakedModel(new ArrayList<>());
+            overrideModel = new BakedSIngleModel(new ArrayList<>());
         }
         this.childModels.add(child);
     }
@@ -90,8 +91,8 @@ public class DynamicBakedModel implements BakedModel {
     public void setModelTransformation(ModelTransformation transformation) {
         modelTransformation = transformation;
         this.childModels.forEach(childModel -> {
-            if (childModel instanceof DynamicBakedModel dynamicBakedModel) {
-                dynamicBakedModel.setModelTransformation(transformation);
+            if (childModel instanceof BakedSIngleModel bakedSIngleModel) {
+                bakedSIngleModel.setModelTransformation(transformation);
             } else {
                 Miapi.LOGGER.warn("childModel is not a Dynamic Model. This should not happen");
             }
@@ -133,14 +134,14 @@ public class DynamicBakedModel implements BakedModel {
     public BakedModel optimize() {
         Map<Direction, List<BakedQuad>> bakedQuads = createEmpty();
         putDirectionalQuads(bakedQuads, this);
-        Map<DynamicModelOverrides.ConditionHolder,
+        Map<BakedSingleModelOverrides.ConditionHolder,
                 Map<Direction, List<BakedQuad>>> completeList = new LinkedHashMap<>();
         childModels.forEach(child -> {
-            if (child instanceof DynamicBakedModel dynamicBakedModel) {
+            if (child instanceof BakedSIngleModel bakedSIngleModel) {
                 putDirectionalQuads(bakedQuads, child);
-                if (dynamicBakedModel.overrideList instanceof DynamicBakery.DynamicOverrideList dynamicOverrideList) {
+                if (bakedSIngleModel.overrideList instanceof DynamicBakery.DynamicOverrideList dynamicOverrideList) {
                     for (DynamicBakery.DynamicOverrideList.DynamicBakedOverride overrides : dynamicOverrideList.dynamicOverrides) {
-                        DynamicModelOverrides.ConditionHolder condition = overrides.conditionHolder;
+                        BakedSingleModelOverrides.ConditionHolder condition = overrides.conditionHolder;
                         assert condition != null;
                         if (!completeList.containsKey(condition)) {
                             completeList.put(condition, createEmpty());
@@ -150,13 +151,13 @@ public class DynamicBakedModel implements BakedModel {
             }
         });
         childModels.forEach(child -> {
-            if (child instanceof DynamicBakedModel dynamicBakedModel) {
-                if (dynamicBakedModel.overrideList instanceof DynamicBakery.DynamicOverrideList dynamicOverrideList) {
+            if (child instanceof BakedSIngleModel bakedSIngleModel) {
+                if (bakedSIngleModel.overrideList instanceof DynamicBakery.DynamicOverrideList dynamicOverrideList) {
                     completeList.forEach(((conditionHolder, directionBakedQuadHashMap) -> {
                         int index = -1;
                         boolean fallback = true;
                         for (int i = 0; i < dynamicOverrideList.dynamicOverrides.length; i++) {
-                            DynamicModelOverrides.ConditionHolder otherCOndition = dynamicOverrideList.dynamicOverrides[i].conditionHolder;
+                            BakedSingleModelOverrides.ConditionHolder otherCOndition = dynamicOverrideList.dynamicOverrides[i].conditionHolder;
                             if (dynamicOverrideList.dynamicOverrides[i].conditionHolder.equals(conditionHolder)) {
                                 putDirectionalQuads(directionBakedQuadHashMap, dynamicOverrideList.dynamicOverrides[i].model);
                                 fallback = false;
@@ -166,7 +167,7 @@ public class DynamicBakedModel implements BakedModel {
                             }
                         }
                         if (index == -1) {
-                            putDirectionalQuads(directionBakedQuadHashMap, dynamicBakedModel);
+                            putDirectionalQuads(directionBakedQuadHashMap, bakedSIngleModel);
                         } else {
                             if (fallback) {
                                 putDirectionalQuads(directionBakedQuadHashMap, dynamicOverrideList.dynamicOverrides[index].model);
@@ -176,7 +177,7 @@ public class DynamicBakedModel implements BakedModel {
                 }
             }
         });
-        Map<DynamicModelOverrides.ConditionHolder, BakedModel> overrideModels = new LinkedHashMap<>();
+        Map<BakedSingleModelOverrides.ConditionHolder, BakedModel> overrideModels = new LinkedHashMap<>();
         completeList.forEach(((conditionHolder, directionBakedQuadHashMap) -> {
             List<BakedQuad> defaultList = directionBakedQuadHashMap.get(null);
             defaultList = defaultList == null ? new ArrayList<>() : defaultList;

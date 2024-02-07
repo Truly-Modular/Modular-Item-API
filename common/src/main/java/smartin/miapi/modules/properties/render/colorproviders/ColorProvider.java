@@ -16,7 +16,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionUtil;
 import net.minecraft.util.Identifier;
 import smartin.miapi.Miapi;
-import smartin.miapi.client.MaterialAtlasManager;
+import smartin.miapi.client.atlas.MaterialAtlasManager;
 import smartin.miapi.client.MiapiClient;
 import smartin.miapi.mixin.client.SpriteContentsAccessor;
 import smartin.miapi.modules.ModuleInstance;
@@ -47,7 +47,7 @@ public interface ColorProvider {
     }
 
     @Environment(EnvType.CLIENT)
-    VertexConsumer getConsumer(VertexConsumerProvider vertexConsumers, ItemStack stack, ModuleInstance moduleInstance, ModelTransformationMode mode);
+    VertexConsumer getConsumer(VertexConsumerProvider vertexConsumers,Sprite sprite, ItemStack stack, ModuleInstance moduleInstance, ModelTransformationMode mode);
 
     ColorProvider getInstance(ItemStack stack, ModuleInstance instance);
 
@@ -83,8 +83,8 @@ public interface ColorProvider {
 
         @Environment(EnvType.CLIENT)
         @Override
-        public VertexConsumer getConsumer(VertexConsumerProvider vertexConsumers, ItemStack stack, ModuleInstance moduleInstance, ModelTransformationMode mode) {
-            return material.getVertexConsumer(vertexConsumers, stack, moduleInstance, mode);
+        public VertexConsumer getConsumer(VertexConsumerProvider vertexConsumers,Sprite sprite, ItemStack stack, ModuleInstance moduleInstance, ModelTransformationMode mode) {
+            return material.getPalette().getVertexConsumer(vertexConsumers,sprite, stack, moduleInstance, mode);
         }
 
         @Override
@@ -156,7 +156,7 @@ public interface ColorProvider {
 
         @Environment(EnvType.CLIENT)
         @Override
-        public VertexConsumer getConsumer(VertexConsumerProvider vertexConsumers, ItemStack stack, ModuleInstance moduleInstance, ModelTransformationMode mode) {
+        public VertexConsumer getConsumer(VertexConsumerProvider vertexConsumers,Sprite sprite, ItemStack stack, ModuleInstance moduleInstance, ModelTransformationMode mode) {
             return vertexConsumers.getBuffer(RenderLayers.getItemLayer(stack, true));
         }
 
@@ -184,7 +184,7 @@ public interface ColorProvider {
 
         @Environment(EnvType.CLIENT)
         @Override
-        public VertexConsumer getConsumer(VertexConsumerProvider vertexConsumers, ItemStack stack, ModuleInstance moduleInstance, ModelTransformationMode mode) {
+        public VertexConsumer getConsumer(VertexConsumerProvider vertexConsumers,Sprite sprite, ItemStack stack, ModuleInstance moduleInstance, ModelTransformationMode mode) {
             return vertexConsumers.getBuffer(RenderLayers.getItemLayer(stack, true));
         }
 

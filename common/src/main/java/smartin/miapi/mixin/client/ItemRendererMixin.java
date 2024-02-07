@@ -15,8 +15,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import smartin.miapi.client.MiapiClient;
-import smartin.miapi.client.model.CustomModel;
-import smartin.miapi.client.modelrework.MiapiItemModel;
+import smartin.miapi.client.model.item.ItemBakedModelReplacement;
+import smartin.miapi.client.model.MiapiItemModel;
 import smartin.miapi.item.modular.ModularItem;
 
 @Debug(export = true)
@@ -39,9 +39,9 @@ public class ItemRendererMixin {
         if (MiapiClient.shaderModLoaded &&  stack.getItem() instanceof ModularItem) {
             MiapiItemModel miapiModel = MiapiItemModel.getItemModel(stack);
             if (miapiModel != null) {
-                miapiModel.render(matrices, stack, renderMode, MinecraftClient.getInstance().getTickDelta(), vertexConsumers, CustomModel.currentEntity, light, overlay);
+                miapiModel.render(matrices, stack, renderMode, MinecraftClient.getInstance().getTickDelta(), vertexConsumers, ItemBakedModelReplacement.currentEntity, light, overlay);
             }
-            CustomModel.currentEntity = null;
+            ItemBakedModelReplacement.currentEntity = null;
         }
     }
 
@@ -50,6 +50,6 @@ public class ItemRendererMixin {
             at = @At("HEAD")
     )
     private void miapi$customItemRenderingEntityGetter(LivingEntity entity, ItemStack item, ModelTransformationMode renderMode, boolean leftHanded, MatrixStack matrices, VertexConsumerProvider vertexConsumers, World world, int light, int overlay, int seed, CallbackInfo ci) {
-        CustomModel.currentEntity = entity;
+        ItemBakedModelReplacement.currentEntity = entity;
     }
 }

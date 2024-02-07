@@ -52,7 +52,8 @@
         "client.ModelLoaderInterfaceAccessor",
         "client.ModelLoaderMixin",
         "client.ModelPredicateProviderRegistryAccessor",
-        "client.SpriteContentsAccessor"
+        "client.SpriteContentsAccessor",
+        "client.SpriteContentsNativeImageGetter"
     ],
     "injectors": {
         "defaultRequire": 1

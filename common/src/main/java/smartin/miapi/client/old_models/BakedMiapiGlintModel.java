@@ -1,4 +1,4 @@
-package smartin.miapi.client.modelrework;
+package smartin.miapi.client.old_models;
 
 import com.redpxnda.nucleus.util.Color;
 import net.minecraft.client.MinecraftClient;
@@ -14,6 +14,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 import org.joml.Matrix4f;
+import smartin.miapi.client.model.MiapiModel;
+import smartin.miapi.client.model.ModelTransformer;
+import smartin.miapi.client.renderer.TrimRenderer;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.material.Material;
 import smartin.miapi.modules.material.MaterialProperty;
@@ -54,21 +57,23 @@ public class BakedMiapiGlintModel implements MiapiModel {
         rootSettings.applySpeed();
         settings.applyAlpha();
         Color glintColor = settings.getColor();
-        VertexConsumer materialConsumer = modelHolder.colorProvider().getConsumer(vertexConsumerProvider, stack, instance, transformationMode);
         for (Direction direction : Direction.values()) {
             currentModel.getQuads(null, direction, random)
-                    .forEach(bakedQuad ->
-                            materialConsumer.quad(
-                                    matrices.peek(),
-                                    bakedQuad,
-                                    color.redAsFloat(),
-                                    color.greenAsFloat(),
-                                    color.blueAsFloat(),
-                                    light,
-                                    overlay));
+                    .forEach(bakedQuad -> {
+                        VertexConsumer materialConsumer = modelHolder.colorProvider().getConsumer(vertexConsumerProvider,bakedQuad.getSprite(), stack, instance, transformationMode);
+                        materialConsumer.quad(
+                                matrices.peek(),
+                                bakedQuad,
+                                color.redAsFloat(),
+                                color.greenAsFloat(),
+                                color.blueAsFloat(),
+                                light,
+                                overlay);
+                    });
         }
         if (modelHolder.entityRendering()) {
             ModelTransformer.getInverse(currentModel, random).forEach(bakedQuad -> {
+                VertexConsumer materialConsumer = modelHolder.colorProvider().getConsumer(vertexConsumerProvider,bakedQuad.getSprite(), stack, instance, transformationMode);
                 materialConsumer.quad(matrices.peek(), bakedQuad, color.redAsFloat(),
                         color.greenAsFloat(),
                         color.blueAsFloat(), light, overlay);

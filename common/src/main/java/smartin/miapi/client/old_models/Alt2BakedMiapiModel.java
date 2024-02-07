@@ -1,8 +1,11 @@
-package smartin.miapi.client.modelrework;
+package smartin.miapi.client.old_models;
 
 import com.redpxnda.nucleus.util.Color;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.*;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.RenderLayers;
+import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.json.ModelOverrideList;
@@ -17,12 +20,19 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 import org.joml.Matrix4f;
+import smartin.miapi.client.atlas.MaterialSpriteManager;
+import smartin.miapi.client.model.MiapiModel;
+import smartin.miapi.client.model.ModelTransformer;
+import smartin.miapi.client.renderer.TrimRenderer;
 import smartin.miapi.item.modular.Transform;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.material.Material;
 import smartin.miapi.modules.material.MaterialProperty;
 import smartin.miapi.modules.properties.render.colorproviders.ColorProvider;
 
+/**
+ * relied on old MaterialVertexConsumer to function
+ */
 public class Alt2BakedMiapiModel implements MiapiModel {
     ModuleInstance instance;
     Material material;

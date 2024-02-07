@@ -3,3 +3,6 @@
 - made LoreProperty usable
 - changed module property resolving to allow for more complex conditions
 - added HideFlags property
+- rebranded Altrenderer to BakedModelRenderer
+- made BakedModelRenderer the default Renderer and removed other renderers
+- enabled Animations for BakedModelRenderer

@@ -10,7 +10,7 @@ import net.minecraft.client.render.model.json.Transformation;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import smartin.miapi.Miapi;
-import smartin.miapi.client.modelrework.MiapiItemModel;
+import smartin.miapi.client.model.MiapiItemModel;
 import smartin.miapi.item.modular.Transform;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;

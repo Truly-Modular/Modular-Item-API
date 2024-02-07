@@ -22,14 +22,15 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import smartin.miapi.Miapi;
 import smartin.miapi.blocks.ModularWorkBenchRenderer;
+import smartin.miapi.client.atlas.MaterialAtlasManager;
+import smartin.miapi.client.atlas.MaterialSpriteManager;
 import smartin.miapi.client.gui.crafting.CraftingScreen;
 import smartin.miapi.client.gui.crafting.statdisplay.StatListWidget;
-import smartin.miapi.client.model.CustomColorProvider;
 import smartin.miapi.client.model.ModularModelPredicateProvider;
+import smartin.miapi.client.renderer.SpriteLoader;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.effects.CryoStatusEffect;
 import smartin.miapi.entity.ItemProjectileRenderer;
-import smartin.miapi.mixin.client.ItemRendererAccessor;
 import smartin.miapi.modules.MiapiPermissions;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.material.MaterialIcons;
@@ -37,15 +38,16 @@ import smartin.miapi.modules.material.palette.PaletteCreators;
 import smartin.miapi.modules.properties.render.colorproviders.ColorProvider;
 import smartin.miapi.registries.RegistryInventory;
 
+import static smartin.miapi.config.MiapiConfig.CompatGroup.animatedMaterial;
 import static smartin.miapi.registries.RegistryInventory.Client.glintShader;
 
 public class MiapiClient {
     public static MaterialAtlasManager materialAtlasManager;
     public static boolean shaderModLoaded =
             Platform.isModLoaded("iris") ||
-            Platform.isModLoaded("optifine") ||
-            Platform.isModLoaded("optifabric") ||
-            Platform.isModLoaded("oculus");
+                    Platform.isModLoaded("optifine") ||
+                    Platform.isModLoaded("optifabric") ||
+                    Platform.isModLoaded("oculus");
     public static boolean sodiumLoaded = Platform.isModLoaded("sodium");
     public static boolean jerLoaded = Platform.isModLoaded("jeresources");
 
@@ -54,9 +56,13 @@ public class MiapiClient {
 
     public static void init() {
         RegistryInventory.modularItems.addCallback((MiapiClient::registerAnimations));
-        ClientTickEvent.CLIENT_PRE.register((client)->{
-            //MaterialSpriteManager.tick();
-        });
+        ClientTickEvent.CLIENT_LEVEL_PRE.register((instance -> {
+            if (animatedMaterial.getValue()) {
+                MinecraftClient.getInstance().world.getProfiler().push("Miapi Material Animations");
+                MaterialSpriteManager.tick();
+                MinecraftClient.getInstance().world.getProfiler().pop();
+            }
+        }));
         registerShaders();
         PaletteCreators.setup();
         MaterialIcons.setup();
@@ -152,9 +158,6 @@ public class MiapiClient {
         materialAtlasManager = new MaterialAtlasManager(mc.getTextureManager());
         ((ReloadableResourceManagerImpl) mc.getResourceManager()).registerReloader(materialAtlasManager);
         //((ReloadableResourceManagerImpl) mc.getResourceManager()).registerReloader(new AltModelAtlasManager(mc.getTextureManager()));
-        RegistryInventory.addCallback(RegistryInventory.modularItems, item -> {
-            ((ItemRendererAccessor) client.getItemRenderer()).color().register(new CustomColorProvider(), item);
-        });
         CryoStatusEffect.setupOnClient();
     }
 

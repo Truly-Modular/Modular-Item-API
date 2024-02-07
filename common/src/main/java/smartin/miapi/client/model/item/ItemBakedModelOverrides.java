@@ -1,4 +1,4 @@
-package smartin.miapi.client.model;
+package smartin.miapi.client.model.item;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -8,14 +8,15 @@ import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
+import smartin.miapi.client.model.DynamicBakery;
 import smartin.miapi.modules.properties.render.ModelProperty;
 
 import java.util.ArrayList;
 
 @Environment(EnvType.CLIENT)
-public class CustomModelOverrides extends ModelOverrideList {
+public class ItemBakedModelOverrides extends ModelOverrideList {
 
-    public CustomModelOverrides() {
+    public ItemBakedModelOverrides() {
         super(DynamicBakery.dynamicBaker, null, new ArrayList<>());
     }
 

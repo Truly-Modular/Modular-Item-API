@@ -1,4 +1,4 @@
-package smartin.miapi.client;
+package smartin.miapi.client.renderer;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;

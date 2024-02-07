@@ -2,10 +2,7 @@ package smartin.miapi.forge.mixin;
 
 import net.minecraft.client.render.model.ModelLoader;
 import net.minecraft.client.render.model.UnbakedModel;
-import net.minecraft.client.render.model.json.JsonUnbakedModel;
-import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.ModelIdentifier;
-import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.util.Identifier;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -13,14 +10,11 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import smartin.miapi.client.model.CustomModel;
+import smartin.miapi.client.model.item.ItemBakedModelReplacement;
 import smartin.miapi.registries.RegistryInventory;
 
-import java.io.IOException;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.BiFunction;
-import java.util.stream.Collectors;
 
 @Mixin(ModelLoader.class)
 public abstract class ModelLoaderMixin {
@@ -35,7 +29,7 @@ public abstract class ModelLoaderMixin {
     private void miapi$loadModelHook(Identifier id, CallbackInfo ci) {
         if (isModularItem(id) && id instanceof ModelIdentifier model && Objects.equals(model.getVariant(), "inventory")) {
             Identifier identifier = id.withPrefixedPath("item/");
-            UnbakedModel unbaked = new CustomModel();
+            UnbakedModel unbaked = new ItemBakedModelReplacement();
             putModel(model, unbaked);
             unbakedModels.put(identifier, unbaked);
             ci.cancel();

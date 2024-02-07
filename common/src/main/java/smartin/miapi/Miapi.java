@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.redpxnda.nucleus.registry.NucleusNamespaces;
+import com.redpxnda.nucleus.util.Color;
 import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.event.events.common.PlayerEvent;
 import dev.architectury.registry.ReloadListenerRegistry;
@@ -55,6 +56,7 @@ public class Miapi {
     public static Gson gson = new Gson();
 
     public static void init() {
+        Color color;
         MiapiConfig.getInstance();
         setupNetworking();
         RegistryInventory.setup();
