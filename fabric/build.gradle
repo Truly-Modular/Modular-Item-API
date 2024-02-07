@@ -43,9 +43,25 @@ configurations {
 }
 
 // Add the Archery project dependency and a custom task
-tasks.register('buildWithArchery', Jar) {
+tasks.register('buildWithArsenal', Jar) {
     def project = gradle.includedBuild("arsenal")
-    dependsOn project.task(":fabric:build")
+    //dependsOn project.task(":fabric:build")
+    //dependsOn ":rebuildArsenal"
+    outputs.file("libs/arsenal-local.jar")
+}
+
+tasks.register('buildWithArchery', Jar) {
+    def project = gradle.includedBuild("archery")
+    //dependsOn project.task(":fabric:build")
+    //dependsOn ":rebuildArchery"
+    outputs.file("libs/archery-local.jar")
+}
+
+tasks.register('buildWithArmory', Jar) {
+    def project = gradle.includedBuild("armory")
+    //dependsOn project.task(":fabric:build")
+    //dependsOn ":rebuildArmory"
+    outputs.file("libs/armory-local.jar")
 }
 
 dependencies {
@@ -71,11 +87,17 @@ dependencies {
     modApi(include("com.redpxnda.nucleus:pose-fabric:${rootProject.minecraft_version}+${rootProject.nucleus_pose_version}"))
     modApi(include("com.redpxnda.nucleus:facet-fabric:${rootProject.minecraft_version}+${rootProject.nucleus_facet_version}"))
 
-    modLocalRuntime files('libs/arsenal-local.jar')
+
     //modLocalRuntime files('libs/archery-local.jar')
+    //this doesnt work yet
+    //modImplementation files('libs/arsenal-local.jar')
+    //modImplementation files('libs/archery-local.jar')
+    //modImplementation files('libs/armory-local.jar')
+
+    modLocalRuntime tasks.getByName("buildWithArsenal").outputs.files
     modLocalRuntime tasks.getByName("buildWithArchery").outputs.files
+    modLocalRuntime tasks.getByName("buildWithArmory").outputs.files
     //modLocalRuntime gradle.includedBuild("arsenal").task(":fabric:build").outputs.files
-    modLocalRuntime files('libs/armory-local.jar')
 
 
 

@@ -40,9 +40,9 @@ dependencies {
     modApi "com.redpxnda.nucleus:pose-common:${rootProject.minecraft_version}+${rootProject.nucleus_pose_version}"
     modApi "com.redpxnda.nucleus:facet-common:${rootProject.minecraft_version}+${rootProject.nucleus_facet_version}"
 
-    modImplementation files('libs/arsenal-local.jar')
-    modImplementation files('libs/archery-local.jar')
-    modImplementation files('libs/armory-local.jar')
+    //modImplementation files('libs/arsenal-local.jar')
+    //modImplementation files('libs/archery-local.jar')
+    //modImplementation files('libs/armory-local.jar')
 
     modApi("dev.onyxstudios.cardinal-components-api:cardinal-components-base:${cca_version}") {
         exclude(group: "net.fabricmc.fabric-api")

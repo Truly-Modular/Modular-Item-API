@@ -6,6 +6,7 @@ pluginManagement {
         gradlePluginPortal()
     }
 }
+rootProject.name = 'miapi'
 
 include("common")
 include("fabric")
