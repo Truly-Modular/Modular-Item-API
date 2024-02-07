@@ -15,6 +15,7 @@ import net.minecraft.world.World;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
 import smartin.miapi.modules.properties.*;
+import smartin.miapi.modules.properties.mining.MiningLevelProperty;
 
 public class ModularWeapon extends Item implements ModularItem {
     public ModularWeapon() {

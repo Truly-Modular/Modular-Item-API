@@ -1,4 +1,4 @@
-package smartin.miapi.modules.properties;
+package smartin.miapi.modules.properties.mining;
 
 import net.minecraft.item.ItemStack;
 import smartin.miapi.modules.properties.util.DoubleProperty;

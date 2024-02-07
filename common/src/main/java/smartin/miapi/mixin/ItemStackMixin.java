@@ -24,7 +24,7 @@ import smartin.miapi.modules.edit_options.ReplaceOption;
 import smartin.miapi.modules.properties.FakeItemTagProperty;
 import smartin.miapi.modules.properties.HideFlagsProperty;
 import smartin.miapi.modules.properties.LoreProperty;
-import smartin.miapi.modules.properties.MiningLevelProperty;
+import smartin.miapi.modules.properties.mining.MiningLevelProperty;
 
 import java.util.List;
 

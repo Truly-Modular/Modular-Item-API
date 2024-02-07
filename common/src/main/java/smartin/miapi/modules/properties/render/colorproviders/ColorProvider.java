@@ -83,7 +83,11 @@ public interface ColorProvider {
 
         @Environment(EnvType.CLIENT)
         @Override
-        public VertexConsumer getConsumer(VertexConsumerProvider vertexConsumers,Sprite sprite, ItemStack stack, ModuleInstance moduleInstance, ModelTransformationMode mode) {
+        public VertexConsumer getConsumer(VertexConsumerProvider vertexConsumers,
+                                          Sprite sprite,
+                                          ItemStack stack,
+                                          ModuleInstance moduleInstance,
+                                          ModelTransformationMode mode) {
             return material.getPalette().getVertexConsumer(vertexConsumers,sprite, stack, moduleInstance, mode);
         }
 

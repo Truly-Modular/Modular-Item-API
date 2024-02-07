@@ -17,7 +17,7 @@ import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.client.gui.*;
 import smartin.miapi.client.gui.crafting.CraftingScreen;
 import smartin.miapi.config.MiapiConfig;
-import smartin.miapi.modules.properties.MiningLevelProperty;
+import smartin.miapi.modules.properties.mining.MiningLevelProperty;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;

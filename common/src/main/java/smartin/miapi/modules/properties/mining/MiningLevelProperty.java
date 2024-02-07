@@ -1,4 +1,4 @@
-package smartin.miapi.modules.properties;
+package smartin.miapi.modules.properties.mining;
 
 import com.google.gson.JsonElement;
 import net.minecraft.block.Block;
@@ -17,6 +17,8 @@ import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.cache.ModularItemCache;
+import smartin.miapi.modules.properties.AttributeProperty;
+import smartin.miapi.modules.properties.ToolOrWeaponProperty;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 

@@ -74,6 +74,8 @@ import smartin.miapi.modules.material.*;
 import smartin.miapi.modules.properties.*;
 import smartin.miapi.modules.properties.compat.ApoliPowersProperty;
 import smartin.miapi.modules.properties.compat.BetterCombatProperty;
+import smartin.miapi.modules.properties.mining.MiningLevelProperty;
+import smartin.miapi.modules.properties.mining.MiningShapeProperty;
 import smartin.miapi.modules.properties.render.*;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.modules.synergies.SynergyManager;
