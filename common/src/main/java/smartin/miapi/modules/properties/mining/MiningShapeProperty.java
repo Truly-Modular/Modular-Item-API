@@ -16,9 +16,12 @@ import smartin.miapi.modules.properties.mining.condition.MiningCondition;
 import smartin.miapi.modules.properties.mining.condition.MiningTypeCondition;
 import smartin.miapi.modules.properties.mining.mode.InstantMiningMode;
 import smartin.miapi.modules.properties.mining.mode.MiningMode;
+import smartin.miapi.modules.properties.mining.mode.StaggeredMiningMode;
 import smartin.miapi.modules.properties.mining.modifier.MiningModifier;
+import smartin.miapi.modules.properties.mining.modifier.SameBlockModifier;
 import smartin.miapi.modules.properties.mining.shape.CubeMiningShape;
 import smartin.miapi.modules.properties.mining.shape.MiningShape;
+import smartin.miapi.modules.properties.mining.shape.VeinMiningShape;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.ArrayList;
@@ -59,15 +62,17 @@ public class MiningShapeProperty implements ModuleProperty {
         });
 
         miningModeMap.put("instant", new InstantMiningMode());
+        miningModeMap.put("staggered",new StaggeredMiningMode());
+
+        miningModifierMap.put("require_same", new SameBlockModifier());
 
         miningConditionMap.put("always", new AlwaysMiningCondition());
 
 
-        MiningLevelProperty.miningCapabilities.keySet().forEach(s -> {
-            miningConditionMap.put(s, new MiningTypeCondition(s));
-        });
+        MiningLevelProperty.miningCapabilities.keySet().forEach(s -> miningConditionMap.put(s, new MiningTypeCondition(s)));
 
         miningShapeMap.put("cube", new CubeMiningShape());
+        miningShapeMap.put("vein", new VeinMiningShape());
     }
 
     //TODO:update on port to 1.20.5, wont change for forge cause idk
