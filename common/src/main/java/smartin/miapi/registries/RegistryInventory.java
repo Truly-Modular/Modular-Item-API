@@ -260,6 +260,7 @@ public class RegistryInventory {
 
         register(modularItems, "modular_shovel", ModularShovel::new);
         register(modularItems, "modular_pickaxe", ModularPickaxe::new);
+        register(modularItems, "modular_hammer", ModularPickaxe::new);
         register(modularItems, "modular_axe", ModularAxe::new);
         register(modularItems, "modular_hoe", ModularHoe::new);
         register(modularItems, "modular_mattock", ModularAxe::new);

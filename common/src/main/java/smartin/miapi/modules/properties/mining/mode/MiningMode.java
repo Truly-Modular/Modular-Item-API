@@ -1,6 +1,7 @@
 package smartin.miapi.modules.properties.mining.mode;
 
 import com.google.gson.JsonObject;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
@@ -20,5 +21,17 @@ public interface MiningMode {
     MiningMode fromJson(JsonObject object, ModuleInstance moduleInstance);
 
     void execute(List<BlockPos> posList, World world, ServerPlayerEntity player, BlockPos origin, ItemStack itemStack);
+
+    default void removeDurability(double durability, ItemStack itemStack, World world, ServerPlayerEntity player) {
+        double additionalChance = durability - Math.floor(durability);
+        if (additionalChance > 0) {
+            if (world.random.nextDouble() > additionalChance) {
+                durability++;
+            }
+        }
+        if (Math.floor(durability) > 0) {
+            itemStack.damage((int) Math.floor(durability), player, (p) -> p.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND));
+        }
+    }
 
 }

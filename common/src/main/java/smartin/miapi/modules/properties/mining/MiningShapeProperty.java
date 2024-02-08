@@ -64,7 +64,7 @@ public class MiningShapeProperty implements ModuleProperty {
             return EventResult.pass();
         });
 
-        miningModeMap.put("instant", new InstantMiningMode());
+        miningModeMap.put("instant", new InstantMiningMode(1));
         miningModeMap.put("staggered", new StaggeredMiningMode());
 
         miningModifierMap.put("require_same", new SameBlockModifier());

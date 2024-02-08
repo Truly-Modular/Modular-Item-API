@@ -16,6 +16,7 @@ import java.util.List;
 
 public class StaggeredMiningMode implements MiningMode {
     public float speed = 1;
+    public double durabilityBreakChance;
     public static List<Runnable> nextTickTask = new ArrayList<>();
 
     static {
@@ -34,6 +35,7 @@ public class StaggeredMiningMode implements MiningMode {
     public MiningMode fromJson(JsonObject object, ModuleInstance moduleInstance) {
         StaggeredMiningMode miningMode = new StaggeredMiningMode();
         miningMode.speed = (float) MiningShapeProperty.getDouble(object, "speed", moduleInstance, 1);
+        miningMode.durabilityBreakChance = MiningShapeProperty.getDouble(object, "durability_chance", moduleInstance, 1);
         return miningMode;
     }
 
@@ -48,13 +50,15 @@ public class StaggeredMiningMode implements MiningMode {
                 pos = reducedList.remove(0);
                 if (world.breakBlock(pos, MiningLevelProperty.canMine(world.getBlockState(pos), world, pos, player) && !player.isCreative(), player)) {
                     success++;
-                    itemStack.damage(1, world.random, player);
+                    if(!player.isCreative()){
+                        removeDurability(durabilityBreakChance, itemStack, world, player);
+                    }
                 }
             } while (
                     success < speed
-                            && !reducedList.isEmpty() && itemStack.getMaxDamage() - itemStack.getDamage() > 2
+                            && !reducedList.isEmpty() && itemStack.getMaxDamage() - itemStack.getDamage() > 1
             );
-            if (!reducedList.isEmpty() && itemStack.getMaxDamage() - itemStack.getDamage() > 2) {
+            if (!reducedList.isEmpty() && itemStack.getMaxDamage() - itemStack.getDamage() > 1) {
                 execute(reducedList, world, player, origin, itemStack);
             }
         });
