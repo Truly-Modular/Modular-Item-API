@@ -20,7 +20,7 @@ public class EmptyMaterialPalette extends SimpleMaterialPalette {
     }
 
     @Override
-    public Color getPaletteAverageColor() {
+    public Color getAverageColor() {
         return Color.WHITE;
     }
 }

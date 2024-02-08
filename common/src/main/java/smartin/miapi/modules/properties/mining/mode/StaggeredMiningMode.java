@@ -2,10 +2,13 @@ package smartin.miapi.modules.properties.mining.mode;
 
 import com.google.gson.JsonObject;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.mining.MiningLevelProperty;
+import smartin.miapi.modules.properties.mining.MiningShapeProperty;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -28,23 +31,31 @@ public class StaggeredMiningMode implements MiningMode {
     }
 
     @Override
-    public MiningMode fromJson(JsonObject object) {
+    public MiningMode fromJson(JsonObject object, ModuleInstance moduleInstance) {
         StaggeredMiningMode miningMode = new StaggeredMiningMode();
-        if(object.has("float")){
-            miningMode.speed = object.get("speed").getAsFloat();
-        }
+        miningMode.speed = (float) MiningShapeProperty.getDouble(object, "speed", moduleInstance, 1);
         return miningMode;
     }
 
     @Override
-    public void execute(List<BlockPos> posList, World world, PlayerEntity player) {
+    public void execute(List<BlockPos> posList, World world, ServerPlayerEntity player, BlockPos origin, ItemStack itemStack) {
         List<BlockPos> reducedList = new ArrayList<>(posList);
-        reducedList.sort(Comparator.comparingDouble((pos) -> pos.getSquaredDistance(player.getPos())));
+        reducedList.sort(Comparator.comparingDouble((pos) -> pos.getSquaredDistance(origin)));
         nextTickTask.add(() -> {
-            BlockPos pos = reducedList.remove(0);
-            world.breakBlock(pos, MiningLevelProperty.canMine(world.getBlockState(pos),world,pos,player) && !player.isCreative(), player);
-            if (!reducedList.isEmpty()) {
-                execute(reducedList, world, player);
+            BlockPos pos;
+            int success = 0;
+            do {
+                pos = reducedList.remove(0);
+                if (world.breakBlock(pos, MiningLevelProperty.canMine(world.getBlockState(pos), world, pos, player) && !player.isCreative(), player)) {
+                    success++;
+                    itemStack.damage(1, world.random, player);
+                }
+            } while (
+                    success < speed
+                            && !reducedList.isEmpty() && itemStack.getMaxDamage() - itemStack.getDamage() > 2
+            );
+            if (!reducedList.isEmpty() && itemStack.getMaxDamage() - itemStack.getDamage() > 2) {
+                execute(reducedList, world, player, origin, itemStack);
             }
         });
     }

@@ -1,10 +1,18 @@
 package smartin.miapi.modules.material.palette;
 
 import com.google.gson.JsonElement;
-import com.redpxnda.nucleus.util.InterfaceDispatcher;
 import com.redpxnda.nucleus.util.Color;
+import com.redpxnda.nucleus.util.InterfaceDispatcher;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.Blocks;
+import net.minecraft.client.render.RenderLayers;
+import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.model.json.ModelTransformationMode;
+import net.minecraft.client.texture.Sprite;
+import net.minecraft.item.ItemStack;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.material.Material;
 
 import java.util.HashMap;
@@ -46,10 +54,22 @@ public class PaletteCreators {
         });
 
         creators.put("grayscale_map", (json, material) -> new GrayscaleMapMaterialPalette(material, json));
+        creators.put("end_portal", (json, material) -> new MaterialColorer() {
+            @Override
+            public VertexConsumer getVertexConsumer(VertexConsumerProvider vertexConsumers, Sprite originalSprite, ItemStack stack, ModuleInstance moduleInstance, ModelTransformationMode mode) {
+                RenderLayers renderLayers;
+                return vertexConsumers.getBuffer(RenderLayers.getBlockLayer(Blocks.END_GATEWAY.getDefaultState()));
+            }
+
+            @Override
+            public Color getAverageColor() {
+                return Color.BLACK;
+            }
+        });
     }
 
     public interface PaletteCreator {
-        MaterialPalette createPalette(JsonElement element, Material material);
+        MaterialColorer createPalette(JsonElement element, Material material);
     }
 
     public interface FillerFunction {

@@ -9,9 +9,12 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.Direction;
+import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.mining.condition.AlwaysMiningCondition;
+import smartin.miapi.modules.properties.mining.condition.BlockTagCondition;
 import smartin.miapi.modules.properties.mining.condition.MiningCondition;
 import smartin.miapi.modules.properties.mining.condition.MiningTypeCondition;
 import smartin.miapi.modules.properties.mining.mode.InstantMiningMode;
@@ -62,12 +65,12 @@ public class MiningShapeProperty implements ModuleProperty {
         });
 
         miningModeMap.put("instant", new InstantMiningMode());
-        miningModeMap.put("staggered",new StaggeredMiningMode());
+        miningModeMap.put("staggered", new StaggeredMiningMode());
 
         miningModifierMap.put("require_same", new SameBlockModifier());
 
         miningConditionMap.put("always", new AlwaysMiningCondition());
-
+        miningConditionMap.put("block_tag", new BlockTagCondition(new ArrayList<>()));
 
         MiningLevelProperty.miningCapabilities.keySet().forEach(s -> miningConditionMap.put(s, new MiningTypeCondition(s)));
 
@@ -75,7 +78,7 @@ public class MiningShapeProperty implements ModuleProperty {
         miningShapeMap.put("vein", new VeinMiningShape());
     }
 
-    //TODO:update on port to 1.20.5, wont change for forge cause idk
+    //TODO:update on port to 1.20.5, wont change for forge cause idc
     public double getBlockBreakDistance(PlayerEntity player) {
         return 10;
     }
@@ -85,20 +88,23 @@ public class MiningShapeProperty implements ModuleProperty {
     }
 
     private static List<MiningShapeJson> getCache(ItemStack stack) {
-        JsonElement element = ItemModule.getMergedProperty(stack, property);
-        if (element == null) {
-            return new ArrayList<>();
-        }
-        return get(element);
+        List<MiningShapeJson> miningShapeJsons = new ArrayList<>();
+        ItemModule.getModules(stack).allSubModules().forEach(moduleInstance -> {
+            JsonElement element = moduleInstance.getProperties().get(property);
+            if (element != null) {
+                miningShapeJsons.addAll(get(element, moduleInstance));
+            }
+        });
+        return miningShapeJsons;
     }
 
-    public static List<MiningShapeJson> get(JsonElement element) {
-        return element.getAsJsonArray().asList().stream().map(subElement -> new MiningShapeJson(subElement.getAsJsonObject())).toList();
+    public static List<MiningShapeJson> get(JsonElement element, ModuleInstance moduleInstance) {
+        return element.getAsJsonArray().asList().stream().map(subElement -> new MiningShapeJson(subElement.getAsJsonObject(), moduleInstance)).toList();
     }
 
     @Override
     public boolean load(String moduleKey, JsonElement data) throws Exception {
-        get(data);
+        get(data, new ModuleInstance(ItemModule.empty));
         return true;
     }
 
@@ -117,6 +123,26 @@ public class MiningShapeProperty implements ModuleProperty {
             JsonElement json = object.get(element);
             if (json != null && !json.isJsonNull() && json.isJsonPrimitive()) {
                 return json.getAsInt();
+            }
+        }
+        return defaultValue;
+    }
+
+    public static int getInteger(JsonObject object, String element, ModuleInstance moduleInstance, int defaultValue) {
+        if (object != null) {
+            JsonElement json = object.get(element);
+            if (json != null && !json.isJsonNull()) {
+                return (int) StatResolver.resolveDouble(json, moduleInstance);
+            }
+        }
+        return defaultValue;
+    }
+
+    public static double getDouble(JsonObject object, String element, ModuleInstance moduleInstance, int defaultValue) {
+        if (object != null) {
+            JsonElement json = object.get(element);
+            if (json != null && !json.isJsonNull()) {
+                return StatResolver.resolveDouble(json, moduleInstance);
             }
         }
         return defaultValue;

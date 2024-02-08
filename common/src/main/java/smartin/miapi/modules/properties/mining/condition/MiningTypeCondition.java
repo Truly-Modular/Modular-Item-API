@@ -6,6 +6,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.mining.MiningLevelProperty;
 
 import java.util.List;
@@ -18,7 +19,7 @@ public class MiningTypeCondition implements MiningCondition {
     }
 
     @Override
-    public MiningCondition fromJson(JsonObject object) {
+    public MiningCondition fromJson(JsonObject object, ModuleInstance moduleInstance) {
         return new MiningTypeCondition(type);
     }
 

@@ -3,7 +3,6 @@ package smartin.miapi.client.atlas;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.texture.SpriteLoader;
 import net.minecraft.client.texture.*;
 import net.minecraft.resource.Resource;
 import net.minecraft.util.Identifier;
@@ -11,6 +10,7 @@ import net.minecraft.util.profiler.Profiler;
 import smartin.miapi.Miapi;
 import smartin.miapi.modules.material.Material;
 import smartin.miapi.modules.material.MaterialProperty;
+import smartin.miapi.modules.material.palette.MaterialAtlasPalette;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -69,33 +69,30 @@ public class MaterialAtlasManager extends SpriteAtlasHolder {
         }
         for (String s : MaterialProperty.materials.keySet()) {
             Material material = MaterialProperty.materials.get(s);
-            Identifier materialIdentifier = new Identifier(Miapi.MOD_ID, "miapi_materials/" + s);
-            if (invalidResult != null && atlas.getSprite(materialIdentifier).equals(invalidResult.missing())) {
+            if (material.getPalette() instanceof MaterialAtlasPalette materialAtlasPalette) {
+                Identifier materialIdentifier = new Identifier(Miapi.MOD_ID, "miapi_materials/" + s);
                 try {
-                    SpriteContents contents = material.getPalette().generateSpriteContents(materialIdentifier);
-                    if (contents != null) {
-                        materialSprites.add(contents);
-                        material.getPalette().setSpriteId(materialIdentifier);
+                    SpriteContents fromTexturePack = null;
+                    try {
+                        Sprite sprite = atlas.getSprite(materialIdentifier);
+                        Identifier identifier = new Identifier(sprite.getContents().getId().toString().replace(":", ":textures/") + ".png");
+                        Resource resource = MinecraftClient.getInstance().getResourceManager().getResourceOrThrow(identifier);
+                        fromTexturePack = SpriteLoader.load(sprite.getContents().getId(), resource);
+                    } catch (FileNotFoundException ignored) {
+
+                    }
+                    SpriteContents materialSprite = materialAtlasPalette.generateSpriteContents(materialIdentifier, fromTexturePack);
+                    if(materialSprite==null){
+                        Miapi.LOGGER.error("Material Image was not found for " + materialIdentifier);
+                        Miapi.LOGGER.error("replacing with Uncolored Material " + materialIdentifier);
+                    }
+                    else if (materialSprite.getWidth() != 256) {
+                        Miapi.LOGGER.error("Material Image not correctly sized for material " + materialIdentifier);
+                        Miapi.LOGGER.error("replacing with Uncolored Material " + materialIdentifier);
                     } else {
-                        material.getPalette().setSpriteId(BASE_MATERIAL_ID);
+                        materialSprites.add(materialSprite);
+                        materialAtlasPalette.setSpriteId(materialIdentifier);
                     }
-                } catch (Exception e) {
-                    Miapi.LOGGER.error("Could not generate MaterialPalette for " + s + " ", e);
-                    material.getPalette().setSpriteId(BASE_MATERIAL_ID);
-                }
-            } else {
-                Sprite sprite = atlas.getSprite(materialIdentifier);
-                try {
-                    Identifier identifier = new Identifier(sprite.getContents().getId().toString().replace(":", ":textures/") + ".png");
-                    Resource resource = MinecraftClient.getInstance().getResourceManager().getResourceOrThrow(identifier);
-                    SpriteContents contents = SpriteLoader.load(sprite.getContents().getId(), resource);
-                    if (contents.getWidth() != 256) {
-                        Miapi.LOGGER.error("Material manual Image not correctly sized for material " + materialIdentifier);
-                    }
-                    materialSprites.add(contents);
-                    material.getPalette().setSpriteId(materialIdentifier);
-                } catch (FileNotFoundException e) {
-                    Miapi.LOGGER.error("Error during MaterialAtlasStitching", e);
                 } catch (Exception e) {
                     Miapi.LOGGER.error("Could not stitch Material " + materialIdentifier, e);
                 }
@@ -117,6 +114,10 @@ public class MaterialAtlasManager extends SpriteAtlasHolder {
     }
 
     public Sprite getMaterialSprite(Identifier id) {
-        return getSprite(id);
+        Sprite sprite = getSprite(id);
+        if (sprite == null) {
+            return getSprite(BASE_MATERIAL_ID);
+        }
+        return sprite;
     }
 }

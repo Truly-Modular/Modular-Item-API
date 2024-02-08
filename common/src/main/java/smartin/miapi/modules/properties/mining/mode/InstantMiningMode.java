@@ -1,9 +1,11 @@
 package smartin.miapi.modules.properties.mining.mode;
 
 import com.google.gson.JsonObject;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.mining.MiningLevelProperty;
 
 import java.util.List;
@@ -13,12 +15,12 @@ import java.util.List;
  */
 public class InstantMiningMode implements MiningMode {
     @Override
-    public MiningMode fromJson(JsonObject object) {
+    public MiningMode fromJson(JsonObject object, ModuleInstance moduleInstance) {
         return this;
     }
 
     @Override
-    public void execute(List<BlockPos> posList, World world, PlayerEntity player) {
-        posList.forEach(blockPos -> world.breakBlock(blockPos, MiningLevelProperty.canMine(world.getBlockState(blockPos),world,blockPos,player) && !player.isCreative(), player));
+    public void execute(List<BlockPos> posList, World world, ServerPlayerEntity player, BlockPos origin, ItemStack itemStack) {
+        posList.forEach(blockPos -> world.breakBlock(blockPos, MiningLevelProperty.canMine(world.getBlockState(blockPos), world, blockPos, player) && !player.isCreative(), player));
     }
 }

@@ -56,11 +56,11 @@ public class MiapiClient {
 
     public static void init() {
         RegistryInventory.modularItems.addCallback((MiapiClient::registerAnimations));
-        ClientTickEvent.CLIENT_LEVEL_PRE.register((instance -> {
+        ClientTickEvent.CLIENT_PRE.register((instance -> {
             if (animatedMaterial.getValue()) {
-                MinecraftClient.getInstance().world.getProfiler().push("Miapi Material Animations");
+                MinecraftClient.getInstance().getProfiler().push("miapiMaterialAnimations");
                 MaterialSpriteManager.tick();
-                MinecraftClient.getInstance().world.getProfiler().pop();
+                MinecraftClient.getInstance().getProfiler().pop();
             }
         }));
         registerShaders();

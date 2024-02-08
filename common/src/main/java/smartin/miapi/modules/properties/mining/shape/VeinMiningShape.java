@@ -6,6 +6,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 import smartin.miapi.Miapi;
+import smartin.miapi.modules.ModuleInstance;
+import smartin.miapi.modules.properties.mining.MiningShapeProperty;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -17,14 +19,10 @@ public class VeinMiningShape implements MiningShape {
     public int maxBlocks = 15;
 
     @Override
-    public MiningShape fromJson(JsonObject object) {
+    public MiningShape fromJson(JsonObject object, ModuleInstance moduleInstance) {
         VeinMiningShape veinMiningShape = new VeinMiningShape();
-        if (object.has("size")) {
-            veinMiningShape.size = object.get("size").getAsInt();
-        }
-        if (object.has("max")) {
-            veinMiningShape.size = object.get("max").getAsInt();
-        }
+        veinMiningShape.size = MiningShapeProperty.getInteger(object,"size",moduleInstance,5);
+        veinMiningShape.maxBlocks = MiningShapeProperty.getInteger(object,"max",moduleInstance,5);
         return veinMiningShape;
     }
 
@@ -32,10 +30,10 @@ public class VeinMiningShape implements MiningShape {
     public List<BlockPos> getMiningBlocks(World world, BlockPos pos, Direction face) {
         List<BlockPos> miningBlocks = new ArrayList<>();
         Queue<BlockPos> queue = new LinkedList<>();
-        boolean[][][] visited = new boolean[size * 2 + 1][size * 2 + 1][size * 2 + 1];
+        List<BlockPos> visited = new ArrayList<>();
 
         queue.add(pos);
-        visited[size][size][size] = true;
+        visited.add(pos);
 
         BlockState centerState = world.getBlockState(pos);
 
@@ -51,9 +49,9 @@ public class VeinMiningShape implements MiningShape {
                 int dy = neighborPos.getY() - pos.getY() + size;
                 int dz = neighborPos.getZ() - pos.getZ() + size;
                 if (Math.abs(dx - size) <= size && Math.abs(dy - size) <= size && Math.abs(dz - size) <= size
-                        && !visited[dx][dy][dz]) {
+                        && !visited.contains(neighborPos)) {
 
-                    visited[dx][dy][dz] = true;
+                    visited.add(neighborPos);
 
                     BlockState neighborState = world.getBlockState(neighborPos);
                     if (neighborState.getBlock().equals(centerState.getBlock())) {
@@ -63,7 +61,7 @@ public class VeinMiningShape implements MiningShape {
                         Miapi.LOGGER.info("not-same " + neighborPos);
                     }
                 } else {
-                    Miapi.LOGGER.info("failed " + neighborPos + visited[dx][dy][dz]);
+                    Miapi.LOGGER.info("failed " + neighborPos + visited.contains(neighborPos));
                 }
             }
         }

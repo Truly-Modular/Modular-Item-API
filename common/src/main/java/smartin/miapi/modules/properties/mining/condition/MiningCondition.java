@@ -6,6 +6,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
+import smartin.miapi.modules.ModuleInstance;
 
 import java.util.List;
 
@@ -13,7 +14,7 @@ import java.util.List;
  * This class adds a Condition for applying the Mining. this is supposed to filter for block or tool prior to mining
  */
 public interface MiningCondition {
-    MiningCondition fromJson(JsonObject object);
+    MiningCondition fromJson(JsonObject object, ModuleInstance moduleInstance);
 
     List<BlockPos> trimList(World level, BlockPos original, List<BlockPos> positions);
 

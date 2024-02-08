@@ -9,7 +9,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.modules.ModuleInstance;
-import smartin.miapi.modules.material.palette.MaterialPalette;
+import smartin.miapi.modules.material.palette.MaterialColorer;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.List;
@@ -32,7 +32,7 @@ public interface Material {
     List<String> getGroups();
 
     @Environment(EnvType.CLIENT)
-    MaterialPalette getPalette();
+    MaterialColorer getPalette();
 
     /**
      * @param drawContext a DrawContext that can be used to draw shtuff
@@ -74,7 +74,7 @@ public interface Material {
 
     @Environment(EnvType.CLIENT)
     default int getColor() {
-        return getPalette().getPaletteAverageColor().argb();
+        return getPalette().getAverageColor().argb();
     }
 
     double getValueOfItem(ItemStack item);

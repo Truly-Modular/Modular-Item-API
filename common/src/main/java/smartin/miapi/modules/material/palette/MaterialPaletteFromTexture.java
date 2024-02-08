@@ -25,7 +25,7 @@ public class MaterialPaletteFromTexture extends SimpleMaterialPalette {
     Supplier<NativeImage> imageSupplier;
 
     @Environment(EnvType.CLIENT)
-    public static MaterialPalette forGeneratedMaterial(Material material, ItemStack mainIngredient) {
+    public static MaterialColorer forGeneratedMaterial(Material material, ItemStack mainIngredient) {
         try {
             return new MaterialPaletteFromTexture(material, () -> {
                 BakedModel itemModel = MinecraftClient.getInstance().getItemRenderer().getModel(mainIngredient, MinecraftClient.getInstance().world, null, 0);

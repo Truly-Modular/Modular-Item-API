@@ -5,17 +5,18 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import smartin.miapi.modules.ModuleInstance;
 
 import java.util.List;
 
 public class SameBlockModifier implements MiningModifier {
 
-    public SameBlockModifier(){
+    public SameBlockModifier() {
 
     }
 
     @Override
-    public MiningModifier fromJson(JsonElement object) {
+    public MiningModifier fromJson(JsonElement object, ModuleInstance moduleInstance) {
         return this;
     }
 

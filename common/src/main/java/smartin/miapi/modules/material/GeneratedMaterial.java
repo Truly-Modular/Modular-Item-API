@@ -23,7 +23,7 @@ import smartin.miapi.item.MaterialSmithingRecipe;
 import smartin.miapi.mixin.MiningToolItemAccessor;
 import smartin.miapi.mixin.SmithingTransformRecipeAccessor;
 import smartin.miapi.modules.material.palette.EmptyMaterialPalette;
-import smartin.miapi.modules.material.palette.MaterialPalette;
+import smartin.miapi.modules.material.palette.MaterialColorer;
 import smartin.miapi.modules.material.palette.MaterialPaletteFromTexture;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.registries.FakeTranslation;
@@ -39,7 +39,7 @@ public class GeneratedMaterial implements Material {
     public final Map<String, Double> materialStats = new HashMap<>();
     public final Map<String, String> materialStatsString = new HashMap<>();
     public SwordItem swordItem;
-    protected MaterialPalette palette;
+    protected MaterialColorer palette;
     @Nullable
     public MaterialIcons.MaterialIcon icon;
 
@@ -377,7 +377,7 @@ public class GeneratedMaterial implements Material {
 
     @Environment(EnvType.CLIENT)
     @Override
-    public MaterialPalette getPalette() {
+    public MaterialColorer getPalette() {
         if (palette == null) {
             return new EmptyMaterialPalette(this);
         }

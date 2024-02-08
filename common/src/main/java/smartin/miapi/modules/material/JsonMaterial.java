@@ -15,7 +15,7 @@ import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.modules.material.palette.EmptyMaterialPalette;
-import smartin.miapi.modules.material.palette.MaterialPalette;
+import smartin.miapi.modules.material.palette.MaterialColorer;
 import smartin.miapi.modules.material.palette.PaletteCreators;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.registries.FakeTranslation;
@@ -31,7 +31,7 @@ public class JsonMaterial implements Material {
     protected JsonElement rawJson;
     @Nullable
     public MaterialIcons.MaterialIcon icon;
-    protected MaterialPalette palette;
+    protected MaterialColorer palette;
 
     public JsonMaterial(JsonObject element, boolean isClient) {
         rawJson = element;
@@ -171,12 +171,12 @@ public class JsonMaterial implements Material {
             long longValue = Long.parseLong(rawJson.getAsJsonObject().get("color").getAsString(), 16);
             return (int) (longValue & 0xffffffffL);
         }
-        return getPalette().getPaletteAverageColor().argb();
+        return getPalette().getAverageColor().argb();
     }
 
     @Environment(EnvType.CLIENT)
     @Override
-    public MaterialPalette getPalette() {
+    public MaterialColorer getPalette() {
         if (palette == null) {
             return new EmptyMaterialPalette(this);
         }
