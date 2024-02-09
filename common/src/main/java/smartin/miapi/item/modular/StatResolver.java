@@ -180,7 +180,7 @@ public class StatResolver {
             @Override
             public String resolveString(String data, ItemModule.ModuleInstance instance) {
                 String firstResult = StatResolver.resolveString("material." + data, instance);
-                if (firstResult == null || firstResult.equals("")) {
+                if (firstResult == null || firstResult.isEmpty()) {
                     return StatResolver.resolveString("module." + data, instance);
                 }
                 return firstResult;
@@ -200,10 +200,35 @@ public class StatResolver {
             @Override
             public String resolveString(String data, ItemModule.ModuleInstance instance) {
                 String firstResult = StatResolver.resolveString("module." + data, instance);
-                if (firstResult == null || firstResult.equals("")) {
+                if (firstResult == null || firstResult.isEmpty()) {
                     return StatResolver.resolveString("material." + data, instance);
                 }
                 return firstResult;
+            }
+        });
+        StatResolver.registerResolver("count", new StatResolver.Resolver() {
+            @Override
+            public double resolveDouble(String data, ItemModule.ModuleInstance instance) {
+                double count = 0;
+                switch (data){
+                    case "module":{
+                        count = instance.getRoot().allSubModules().size();
+                        break;
+                    }
+                    case "submodule":{
+                        count = instance.allSubModules().size();
+                        break;
+                    }
+                    default:{
+                        Miapi.LOGGER.warn("Statresolver count doesnt recognise "+data + " it only allows for module and submodules as keys");
+                    }
+                }
+                return count;
+            }
+
+            @Override
+            public String resolveString(String data, ItemModule.ModuleInstance instance) {
+                return null;
             }
         });
     }

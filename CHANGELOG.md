@@ -13,10 +13,7 @@
   - Mode (the actual mining, allows for delayed mining)
   - Addons can add custom shapes, conditions modfiers and modes dynamicly in java and they can be used fully interchangeably
 - added basic Epic Fight Compat
-- introduced the concept of module stats via module_stats Property
-  - these work similar to material stats and are resolvable via [module.customstat] 
-  - [module.cost] is allocated to the material cost of the module
-- added StatResolvers "collect","module" "material-module", "module-material"
+- added StatResolvers "collect","module" "material-module", "module-material", "count"
   - "collect"/ [collect.add.material.somestat]
     - allows for "add","max","min","average"
     - will collect the stats of all modules/their materials and use the desired operation on them
@@ -26,3 +23,6 @@
   - "material-module"/ [material-module.someStat] and "module-material"/ [module-material.someStat]
     - "material-module" will first attempt to use the stat of the material, if the material has no stat defined it will use the module stat
     - "module-material" does the same but in the opposite order
+  - "count" counts certain things
+    - [count.module] will return the count of modules
+    - [count.submodules] will return the count of submodules
