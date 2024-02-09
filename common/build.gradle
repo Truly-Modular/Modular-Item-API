@@ -62,6 +62,8 @@ dependencies {
     modApi "curse.maven:bettercombat-639842:4597949"
     modImplementation "maven.modrinth:archers:1.0.6+1.20.1"
 
+    //modImplementation "curse.maven:epic-fight-mod-405076:4785528"
+
     modApi("me.shedaniel.cloth:cloth-config-fabric:${rootProject.cloth_config_version}") {
         exclude(group: "net.fabricmc.fabric-api")
     }

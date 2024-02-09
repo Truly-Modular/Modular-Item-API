@@ -1,9 +1,8 @@
-package smartin.miapi.modules.properties.compat;
+package smartin.miapi.modules.properties.compat.apoli;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import dev.architectury.injectables.annotations.ExpectPlatform;
 import dev.architectury.platform.Platform;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.ItemStack;
@@ -11,7 +10,6 @@ import net.minecraft.util.Identifier;
 import smartin.miapi.Miapi;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.modules.ItemModule;
-import smartin.miapi.modules.abilities.util.ItemAbilityManager;
 import smartin.miapi.modules.abilities.util.ItemUseAbility;
 import smartin.miapi.modules.properties.AttributeProperty;
 import smartin.miapi.modules.properties.util.MergeType;

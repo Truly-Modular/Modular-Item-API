@@ -1,4 +1,4 @@
-package smartin.miapi.modules.properties.compat;
+package smartin.miapi.modules.properties.compat.apoli;
 
 import io.github.apace100.apoli.util.StackPowerUtil;
 import net.minecraft.entity.EquipmentSlot;

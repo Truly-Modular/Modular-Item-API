@@ -38,6 +38,7 @@ repositories {
             includeGroup 'maven.modrinth'
         }
     }
+    maven { url "https://cursemaven.com" }
     maven { url "https://maven.merchantpug.net" }
 }
 
@@ -59,8 +60,10 @@ dependencies {
     modLocalRuntime files('libs/archery-local.jar')
     modLocalRuntime files('libs/armory-local.jar')
 
+    //modCompileOnly "curse.maven:epic-fight-mod-405076:4785528"
+    //modImplementation "curse.maven:epic-fight-mod-405076:4785528"
 
-    modApi files('libs/apoli-forge-1.20.1-2.9.0.4-all.jar')
+    //modApi files('libs/apoli-forge-1.20.1-2.9.0.4-all.jar')
 
     //forgeRuntimeLibrary(include("dev.kosmx.player-anim:player-animation-lib-forge:0.4.2"
     //modApi include("curse.maven:bettercombat-639842:4357578")

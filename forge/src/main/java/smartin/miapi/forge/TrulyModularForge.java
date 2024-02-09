@@ -3,18 +3,11 @@ package smartin.miapi.forge;
 import com.google.common.collect.Lists;
 import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.platform.forge.EventBuses;
-import io.github.apace100.apoli.util.StackPowerUtil;
 import net.minecraft.resource.ResourcePackManager;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.intprovider.IntProvider;
-import net.minecraft.util.math.intprovider.IntProviderType;
-import net.minecraft.util.math.random.Random;
 import net.minecraft.world.SaveProperties;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.common.ForgeMod;
-import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -23,8 +16,9 @@ import smartin.miapi.Miapi;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.datapack.ReloadEvents;
-import smartin.miapi.events.MiapiEvents;
+import smartin.miapi.forge.compat.epic_fight.EpicFightCompatProperty;
 import smartin.miapi.modules.properties.AttributeProperty;
+import smartin.miapi.registries.RegistryInventory;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -41,23 +35,7 @@ public class TrulyModularForge {
         EventBuses.registerModEventBus(MOD_ID, FMLJavaModLoadingContext.get().getModEventBus());
         Miapi.init();
 
-        //StackPo
-        StackPowerUtil powerUtil;
-
-        //ATTRIBUTE REPLACEMENT
-        //AttributeRegistry.REACH = ForgeMod.BLOCK_REACH.getRaw();
-        //AttributeRegistry.ATTACK_RANGE = ForgeMod.ENTITY_REACH.getRaw();
-        /*
-        ApoliAPI api;
-        ApoliAPI.getPowerContainer(null).getOwner();
-        ItemOnItemPower power;
-        ItemHasPowerConfiguration itemHasPowerConfiguration;
-        ItemHasPowerConfiguration itemHasPowerConfiguration1;
-        ItemStackMixin mixin;
-        ItemAction action;
-         */
-        PlayerEvent event;
-        BlockEvent event1;
+        RegistryInventory.moduleProperties.register(EpicFightCompatProperty.KEY, new EpicFightCompatProperty());
 
 
         LifecycleEvent.SERVER_STARTING.register((instance -> {

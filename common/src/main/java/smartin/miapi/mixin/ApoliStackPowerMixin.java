@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import smartin.miapi.item.modular.ModularItem;
-import smartin.miapi.modules.properties.compat.ApoliPowersHelper;
+import smartin.miapi.modules.properties.compat.apoli.ApoliPowersHelper;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -4,11 +4,9 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.redpxnda.nucleus.registry.NucleusNamespaces;
-import com.redpxnda.nucleus.util.Color;
 import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.event.events.common.PlayerEvent;
 import dev.architectury.registry.ReloadListenerRegistry;
-import net.fabricmc.fabric.api.resource.ResourceReloadListenerKeys;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.server.MinecraftServer;
@@ -56,7 +54,7 @@ public class Miapi {
     public static Gson gson = new Gson();
 
     public static void init() {
-        Color color;
+
         MiapiConfig.getInstance();
         setupNetworking();
         RegistryInventory.setup();
@@ -70,7 +68,7 @@ public class Miapi {
                 ResourceType.SERVER_DATA,
                 new MiapiReloadListener(),
                 new Identifier(MOD_ID, "main_reload_listener"),
-                List.of(ResourceReloadListenerKeys.TAGS, ResourceReloadListenerKeys.RECIPES));
+                List.of(new Identifier("minecraft:tags"), new Identifier("minecraft:recipes")));
         registerReloadHandler(ReloadEvents.MAIN, "modules", RegistryInventory.modules,
                 (isClient, path, data) -> ItemModule.loadFromData(path, data), -0.5f);
         registerReloadHandler(ReloadEvents.MAIN, "module_extensions", new ConcurrentHashMap<>(),
@@ -165,8 +163,13 @@ public class Miapi {
         event.subscribe(isClient -> {
             beforeLoop.accept(isClient);
             ReloadEvents.DATA_PACKS.forEach((path, data) -> {
-                if (path.startsWith(location))
-                    handler.accept(isClient, path, data);
+                if (path.startsWith(location)) {
+                    try {
+                        handler.accept(isClient, path, data);
+                    } catch (Exception e) {
+                        Miapi.LOGGER.warn("could not load " + path, e);
+                    }
+                }
             });
         }, priority);
     }

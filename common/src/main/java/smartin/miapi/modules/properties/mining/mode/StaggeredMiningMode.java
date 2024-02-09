@@ -1,7 +1,7 @@
 package smartin.miapi.modules.properties.mining.mode;
 
 import com.google.gson.JsonObject;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+import dev.architectury.event.events.common.TickEvent;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
@@ -20,7 +20,7 @@ public class StaggeredMiningMode implements MiningMode {
     public static List<Runnable> nextTickTask = new ArrayList<>();
 
     static {
-        ServerTickEvents.START_SERVER_TICK.register((server -> {
+        TickEvent.SERVER_POST.register((server -> {
             List<Runnable> currentTicks = new ArrayList<>(nextTickTask);
             nextTickTask.clear();
             currentTicks.forEach(server::execute);

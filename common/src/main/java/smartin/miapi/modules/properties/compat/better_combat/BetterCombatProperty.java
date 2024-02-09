@@ -1,4 +1,4 @@
-package smartin.miapi.modules.properties.compat;
+package smartin.miapi.modules.properties.compat.better_combat;
 
 import com.google.gson.JsonElement;
 import dev.architectury.platform.Platform;

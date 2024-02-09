@@ -87,18 +87,13 @@ dependencies {
     modApi(include("com.redpxnda.nucleus:pose-fabric:${rootProject.minecraft_version}+${rootProject.nucleus_pose_version}"))
     modApi(include("com.redpxnda.nucleus:facet-fabric:${rootProject.minecraft_version}+${rootProject.nucleus_facet_version}"))
 
+    //modLocalRuntime tasks.getByName("buildWithArsenal").outputs.files
+    //modLocalRuntime tasks.getByName("buildWithArchery").outputs.files
+    //modLocalRuntime tasks.getByName("buildWithArmory").outputs.files
 
-    //modLocalRuntime files('libs/archery-local.jar')
-    //this doesnt work yet
-    //modImplementation files('libs/arsenal-local.jar')
-    //modImplementation files('libs/archery-local.jar')
-    //modImplementation files('libs/armory-local.jar')
-
-    modLocalRuntime tasks.getByName("buildWithArsenal").outputs.files
-    modLocalRuntime tasks.getByName("buildWithArchery").outputs.files
-    modLocalRuntime tasks.getByName("buildWithArmory").outputs.files
-    //modLocalRuntime gradle.includedBuild("arsenal").task(":fabric:build").outputs.files
-
+    modLocalRuntime files('libs/arsenal-local.jar')
+    modLocalRuntime files('libs/archery-local.jar')
+    modLocalRuntime files('libs/armory-local.jar')
 
 
     //modLocalRuntime "maven.modrinth:sodium:mc1.20.1-0.5.3"
