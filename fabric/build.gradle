@@ -43,6 +43,7 @@ configurations {
 }
 
 // Add the Archery project dependency and a custom task
+/*
 tasks.register('buildWithArsenal', Jar) {
     def project = gradle.includedBuild("arsenal")
     //dependsOn project.task(":fabric:build")
@@ -63,6 +64,7 @@ tasks.register('buildWithArmory', Jar) {
     //dependsOn ":rebuildArmory"
     outputs.file("libs/armory-local.jar")
 }
+ */
 
 dependencies {
     modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
