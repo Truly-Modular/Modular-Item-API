@@ -5,4 +5,24 @@
 - added HideFlags property
 - rebranded Altrenderer to BakedModelRenderer
 - made BakedModelRenderer the default Renderer and removed other renderers
-- enabled Animations for BakedModelRenderer
+- added config options to enable Animations for BakedModelRenderer
+- added ShapedMining Property allowing for vein and Cube based Mining with the following elements
+  - Shape (what shape is mined)
+  - Condition (if the effect can trigger)
+  - Modifiers (adjusting behaviour)
+  - Mode (the actual mining, allows for delayed mining)
+  - Addons can add custom shapes, conditions modfiers and modes dynamicly in java and they can be used fully interchangeably
+- added basic Epic Fight Compat
+- introduced the concept of module stats via module_stats Property
+  - these work similar to material stats and are resolvable via [module.customstat] 
+  - [module.cost] is allocated to the material cost of the module
+- added StatResolvers "collect","module" "material-module", "module-material"
+  - "collect"/ [collect.add.material.somestat]
+    - allows for "add","max","min","average"
+    - will collect the stats of all modules/their materials and use the desired operation on them
+  - "module"/ [module.someStat]
+    - these work similar to material stats and are resolvable via [module.customstat]
+    - [module.cost] is allocated to the material cost of the module
+  - "material-module"/ [material-module.someStat] and "module-material"/ [module-material.someStat]
+    - "material-module" will first attempt to use the stat of the material, if the material has no stat defined it will use the module stat
+    - "module-material" does the same but in the opposite order

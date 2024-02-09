@@ -128,17 +128,6 @@ public class Miapi {
         ModularItemCache.setSupplier(ItemModule.PROPERTY_KEY,
                 itemStack -> ItemModule.getUnmergedProperties(
                         ModularItemCache.get(itemStack, ItemModule.MODULE_KEY, new ItemModule.ModuleInstance(ItemModule.empty))));
-        StatResolver.registerResolver("translation", new StatResolver.Resolver() {
-            @Override
-            public double resolveDouble(String data, ItemModule.ModuleInstance instance) {
-                return Double.parseDouble(Text.translatable(data).getString());
-            }
-
-            @Override
-            public String resolveString(String data, ItemModule.ModuleInstance instance) {
-                return Text.translatable(data).getString();
-            }
-        });
         ModularItemStackConverter.converters.add(new ItemToModularConverter());
         if (Environment.isClient()) {
             MiapiClient.init();
