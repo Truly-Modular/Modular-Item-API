@@ -54,7 +54,6 @@ public class Miapi {
     public static Gson gson = new Gson();
 
     public static void init() {
-
         MiapiConfig.getInstance();
         setupNetworking();
         RegistryInventory.setup();
@@ -74,15 +73,18 @@ public class Miapi {
         registerReloadHandler(ReloadEvents.MAIN, "module_extensions", new ConcurrentHashMap<>(),
                 (isClient, path, data) -> ItemModule.loadModuleExtension(path, data), -0.4f);
 
-        registerReloadHandler(ReloadEvents.MAIN, "injectors", bl -> PropertySubstitution.injectorsCount = 0, (isClient, path, data) -> {
-            JsonElement element = JsonHelper.deserialize(data);
-            if (element instanceof JsonObject object) {
-                PropertySubstitution.targetSelectionDispatcher.dispatcher().triggerTargetFrom(object.get("target"), PropertySubstitution.getInjector(object));
-                PropertySubstitution.injectorsCount++;
-            } else {
-                LOGGER.warn("Found a non JSON object PropertyInjector. PropertyInjectors should be JSON objects.");
-            }
-        }, 1f);
+        registerReloadHandler(ReloadEvents.MAIN, "injectors", bl -> PropertySubstitution.injectorsCount = 0,
+                (isClient, path, data) -> {
+                    JsonElement element = JsonHelper.deserialize(data);
+                    if (element instanceof JsonObject object) {
+                        PropertySubstitution.targetSelectionDispatcher.dispatcher()
+                                .triggerTargetFrom(object.get("target"), PropertySubstitution.getInjector(object));
+                        PropertySubstitution.injectorsCount++;
+                    } else {
+                        LOGGER.warn(
+                                "Found a non JSON object PropertyInjector. PropertyInjectors should be JSON objects.");
+                    }
+                }, 1f);
         ReloadEvents.END.subscribe(isClient -> {
             Miapi.LOGGER.info("Loaded " + PropertySubstitution.injectorsCount + " Injectors/Property Substitutors");
             Miapi.LOGGER.info("Loaded " + RegistryInventory.modules.getFlatMap().size() + " Modules");
@@ -91,8 +93,8 @@ public class Miapi {
         PlayerEvent.PLAYER_JOIN.register((player -> new Thread(() -> MiapiPermissions.getPerms(player)).start()));
         PropertyResolver.propertyProviderRegistry.register("module", (moduleInstance, oldMap) -> {
             Map<ModuleProperty, JsonElement> map = new ConcurrentHashMap<>();
-            moduleInstance.module.getProperties().forEach((key, jsonData) ->
-                    map.put(RegistryInventory.moduleProperties.get(key), jsonData));
+            moduleInstance.module.getProperties()
+                    .forEach((key, jsonData) -> map.put(RegistryInventory.moduleProperties.get(key), jsonData));
             return map;
         });
         PropertyResolver.propertyProviderRegistry.register("moduleData", (moduleInstance, oldMap) -> {
@@ -102,7 +104,8 @@ public class Miapi {
                 JsonObject moduleJson = gson.fromJson(properties, JsonObject.class);
                 if (moduleJson != null) {
                     moduleJson.entrySet().forEach(stringJsonElementEntry -> {
-                        ModuleProperty property = RegistryInventory.moduleProperties.get(stringJsonElementEntry.getKey());
+                        ModuleProperty property = RegistryInventory.moduleProperties
+                                .get(stringJsonElementEntry.getKey());
                         if (property != null) {
                             map.put(property, stringJsonElementEntry.getValue());
                         }

@@ -209,56 +209,6 @@ tasks.register('rebuildArmory') {
     }
 }
 
-tasks.register('rebuildNucleus') {
-    ext.projectName = "nucleus"
-    def project = gradle.includedBuild("nucleus")
-    dependsOn project.task(":buildBoth")
-    group = '_tm_tasks'
-    doLast {
-        def mergedBuildDir = rootProject.file(ext.projectName + '/Merged')
-        println mergedBuildDir
-        def fabricJars = mergedBuildDir.listFiles().findAll { it.name.endsWith("fabric.jar") }
-        def forgeJars = mergedBuildDir.listFiles().findAll { it.name.endsWith("forge.jar") }
-
-        def fabricJar = fabricJars.max { it.lastModified() }
-        def forgeJar = forgeJars.max { it.lastModified() }
-
-        if (forgeJar) {
-            copy {
-                from forgeJar
-                into rootProject.file('forge/libs')
-                rename { fileName -> projectName + "-local.jar" }
-            }
-            copy {
-                from forgeJar
-                into rootProject.file('Merged')
-            }
-            copy {
-                from forgeJar
-                into rootProject.file('common/libs')
-                rename { fileName -> projectName + "-local.jar" }
-            }
-        }
-        if (fabricJar) {
-            copy {
-                from fabricJar
-                into rootProject.file('fabric/libs')
-                rename { fileName -> projectName + "-local.jar" }
-            }
-            copy {
-                from fabricJar
-                into rootProject.file('Merged')
-            }
-            copy {
-                from fabricJar
-                into rootProject.file('common/libs')
-                rename { fileName -> projectName + "-local.jar" }
-            }
-        }
-        println "Builds Copied"
-    }
-}
-
 subprojects {
     apply plugin: "dev.architectury.loom"
 
