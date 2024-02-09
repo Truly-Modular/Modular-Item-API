@@ -17,7 +17,6 @@ import smartin.miapi.craft.CraftAction;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.item.modular.PropertyResolver;
 import smartin.miapi.modules.ItemModule;
-import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.conditions.ConditionManager;
 import smartin.miapi.modules.edit_options.EditOption;
 import smartin.miapi.modules.properties.util.CraftingProperty;
@@ -78,7 +77,7 @@ public class BlueprintProperty implements CraftingProperty, ModuleProperty {
                 if (
                         blueprint.isAllowed.isAllowed(new ConditionManager.ModuleConditionContext(option.getInstance(), pos, option.getPlayer(), propertyMap, new ArrayList<>()))) {
                     if (
-                            option.getSlot().allowedIn(new ModuleInstance(blueprint.module))) {
+                            option.getSlot().allowedIn(new ItemModule.ModuleInstance(blueprint.module))) {
                         Map<String, String> dataMap = new HashMap<>();
                         dataMap.put("blueprint", blueprint.key);
                         options.add(new CraftOption(blueprint.module, dataMap));
@@ -95,7 +94,7 @@ public class BlueprintProperty implements CraftingProperty, ModuleProperty {
 
     @Override
     public ItemStack preview(ItemStack old, ItemStack crafting, PlayerEntity player, ModularWorkBenchEntity bench, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<String, String> data) {
-        ModuleInstance newModule = craftAction.getModifyingModuleInstance(crafting);
+        ItemModule.ModuleInstance newModule = craftAction.getModifyingModuleInstance(crafting);
         String blueprintKey = data.get("blueprint");
         if (blueprintKey != null && newModule != null) {
             newModule.moduleData.put("blueprint", blueprintKey);
@@ -108,7 +107,7 @@ public class BlueprintProperty implements CraftingProperty, ModuleProperty {
         return old;
     }
 
-    public static void writePropertiesToModule(ModuleInstance moduleInstance, Map<ModuleProperty, JsonElement> properties) {
+    public static void writePropertiesToModule(ItemModule.ModuleInstance moduleInstance, Map<ModuleProperty, JsonElement> properties) {
         String rawProperties = moduleInstance.moduleData.get("properties");
         if (rawProperties != null) {
             Map<ModuleProperty, JsonElement> nextMap = new HashMap<>(properties);

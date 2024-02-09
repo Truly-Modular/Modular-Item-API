@@ -12,7 +12,7 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.item.ItemStack;
-import smartin.miapi.modules.ModuleInstance;
+import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.material.Material;
 
 import java.util.HashMap;
@@ -56,7 +56,7 @@ public class PaletteCreators {
         creators.put("grayscale_map", (json, material) -> new GrayscaleMapMaterialPalette(material, json));
         creators.put("end_portal", (json, material) -> new MaterialColorer() {
             @Override
-            public VertexConsumer getVertexConsumer(VertexConsumerProvider vertexConsumers, Sprite originalSprite, ItemStack stack, ModuleInstance moduleInstance, ModelTransformationMode mode) {
+            public VertexConsumer getVertexConsumer(VertexConsumerProvider vertexConsumers, Sprite originalSprite, ItemStack stack, ItemModule.ModuleInstance moduleInstance, ModelTransformationMode mode) {
                 RenderLayers renderLayers;
                 return vertexConsumers.getBuffer(RenderLayers.getBlockLayer(Blocks.END_GATEWAY.getDefaultState()));
             }

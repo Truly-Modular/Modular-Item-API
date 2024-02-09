@@ -4,7 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
 import smartin.miapi.craft.stat.StatRequirementMap;
-import smartin.miapi.modules.ModuleInstance;
+import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.util.DynamicCodecBasedProperty;
 import smartin.miapi.modules.properties.util.MergeType;
 
@@ -18,7 +18,7 @@ public class StatProvisionProperty extends DynamicCodecBasedProperty<StatRequire
     }
 
     @Override
-    public void addTo(ModuleInstance module, StatRequirementMap object, StatRequirementMap holder) {
+    public void addTo(ItemModule.ModuleInstance module, StatRequirementMap object, StatRequirementMap holder) {
         holder.putAll(object);
     }
 
@@ -28,7 +28,7 @@ public class StatProvisionProperty extends DynamicCodecBasedProperty<StatRequire
     }
 
     @Override
-    public Codec<StatRequirementMap> codec(ModuleInstance instance) {
+    public Codec<StatRequirementMap> codec(ItemModule.ModuleInstance instance) {
         return new StatRequirementMap.Codec(instance);
     }
 

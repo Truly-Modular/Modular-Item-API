@@ -8,7 +8,7 @@ import com.mojang.serialization.MapLike;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.util.dynamic.Codecs;
 import smartin.miapi.Miapi;
-import smartin.miapi.modules.ModuleInstance;
+import smartin.miapi.modules.ItemModule;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.util.HashMap;
@@ -48,9 +48,9 @@ public class StatRequirementMap {
     }
 
     public static class Codec implements com.mojang.serialization.Codec<StatRequirementMap> {
-        private final ModuleInstance modules;
+        private final ItemModule.ModuleInstance modules;
 
-        public Codec(ModuleInstance modules) {
+        public Codec(ItemModule.ModuleInstance modules) {
             this.modules = modules;
         }
 

@@ -1,7 +1,7 @@
 package smartin.miapi.item.modular;
 
 import com.google.gson.JsonElement;
-import smartin.miapi.modules.ModuleInstance;
+import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.registries.MiapiRegistry;
@@ -21,12 +21,12 @@ public class PropertyResolver {
     public static MiapiRegistry<PropertyProvider> propertyProviderRegistry = MiapiRegistry.getInstance(PropertyProvider.class);
 
     /**
-     * Resolves {@link ModuleProperty} maps for an {@link ModuleInstance}
+     * Resolves {@link ModuleProperty} maps for an {@link ItemModule.ModuleInstance}
      *
-     * @param moduleInstance the {@link ModuleInstance} to resolve for
+     * @param moduleInstance the {@link ItemModule.ModuleInstance} to resolve for
      * @return a map of {@link ModuleProperty} and their related Data
      */
-    public static void resolve(ModuleInstance moduleInstance) {
+    public static void resolve(ItemModule.ModuleInstance moduleInstance) {
         moduleInstance.allSubModules().forEach(instance -> {
             if (instance.rawProperties == null) {
                 instance.rawProperties = new HashMap<>();
@@ -57,6 +57,6 @@ public class PropertyResolver {
      * This interface allows other classes to add Properties to items
      */
     public interface PropertyProvider {
-        Map<ModuleProperty, JsonElement> resolve(ModuleInstance moduleInstance, Map<ModuleProperty, JsonElement> oldMap);
+        Map<ModuleProperty, JsonElement> resolve(ItemModule.ModuleInstance moduleInstance, Map<ModuleProperty, JsonElement> oldMap);
     }
 }

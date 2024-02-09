@@ -6,7 +6,7 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
 import net.minecraft.item.ItemStack;
 import smartin.miapi.item.modular.StatResolver;
-import smartin.miapi.modules.ModuleInstance;
+import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.material.AllowedMaterial;
 import smartin.miapi.modules.properties.util.ModuleProperty;
@@ -24,7 +24,7 @@ public class ModuleStats implements ModuleProperty {
         ModularItemCache.setSupplier(KEY, ModuleStats::createCache);
         StatResolver.registerResolver("module", new StatResolver.Resolver() {
             @Override
-            public double resolveDouble(String data, ModuleInstance instance) {
+            public double resolveDouble(String data, ItemModule.ModuleInstance instance) {
                 if ("cost".equals(data)) {
                     return AllowedMaterial.getMaterialCost(instance);
                 }
@@ -32,7 +32,7 @@ public class ModuleStats implements ModuleProperty {
             }
 
             @Override
-            public String resolveString(String data, ModuleInstance instance) {
+            public String resolveString(String data, ItemModule.ModuleInstance instance) {
                 return null;
             }
         });
@@ -42,7 +42,7 @@ public class ModuleStats implements ModuleProperty {
         return ModularItemCache.get(itemStack, KEY, new HashMap<>());
     }
 
-    public static Map<String, Integer> getStats(ModuleInstance moduleInstance) {
+    public static Map<String, Integer> getStats(ItemModule.ModuleInstance moduleInstance) {
         JsonElement element = property.getJsonElement(moduleInstance);
         if (element != null) {
             return getStats(element);

@@ -5,7 +5,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import smartin.miapi.modules.ModuleInstance;
+import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.mining.MiningLevelProperty;
 import smartin.miapi.modules.properties.mining.MiningShapeProperty;
 
@@ -24,7 +24,7 @@ public class InstantMiningMode implements MiningMode {
     }
 
     @Override
-    public MiningMode fromJson(JsonObject object, ModuleInstance moduleInstance) {
+    public MiningMode fromJson(JsonObject object, ItemModule.ModuleInstance moduleInstance) {
         return new InstantMiningMode(MiningShapeProperty.getDouble(object, "durability_chance", moduleInstance, 1));
     }
 

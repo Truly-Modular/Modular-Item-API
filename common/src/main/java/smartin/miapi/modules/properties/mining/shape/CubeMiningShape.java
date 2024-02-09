@@ -4,7 +4,7 @@ import com.google.gson.JsonObject;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
-import smartin.miapi.modules.ModuleInstance;
+import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.mining.MiningShapeProperty;
 
 import java.util.ArrayList;
@@ -21,7 +21,7 @@ public class CubeMiningShape implements MiningShape {
     int depth;
 
     @Override
-    public MiningShape fromJson(JsonObject object, ModuleInstance moduleInstance) {
+    public MiningShape fromJson(JsonObject object, ItemModule.ModuleInstance moduleInstance) {
         int radius = MiningShapeProperty.getInteger(object, "radius", 1);
         CubeMiningShape cube = new CubeMiningShape();
         cube.width = MiningShapeProperty.getInteger(object, "width", moduleInstance, radius);

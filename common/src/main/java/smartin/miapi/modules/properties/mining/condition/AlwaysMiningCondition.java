@@ -6,13 +6,13 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
-import smartin.miapi.modules.ModuleInstance;
+import smartin.miapi.modules.ItemModule;
 
 import java.util.List;
 
 public class AlwaysMiningCondition implements MiningCondition {
     @Override
-    public MiningCondition fromJson(JsonObject object, ModuleInstance moduleInstance) {
+    public MiningCondition fromJson(JsonObject object, ItemModule.ModuleInstance moduleInstance) {
         return this;
     }
 

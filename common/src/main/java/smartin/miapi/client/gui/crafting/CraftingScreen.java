@@ -24,7 +24,6 @@ import smartin.miapi.client.gui.crafting.slotdisplay.SmithDisplay;
 import smartin.miapi.client.gui.crafting.statdisplay.StatListWidget;
 import smartin.miapi.item.ModularItemStackConverter;
 import smartin.miapi.modules.ItemModule;
-import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.edit_options.EditOption;
 import smartin.miapi.modules.edit_options.EditOptionIcon;
 import smartin.miapi.modules.properties.AllowedSlots;
@@ -284,7 +283,7 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
             }
 
             @Override
-            public @Nullable ModuleInstance getInstance() {
+            public @Nullable ItemModule.ModuleInstance getInstance() {
                 if (getSlot() == null) {
                     return null;
                 }

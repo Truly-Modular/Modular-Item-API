@@ -12,7 +12,6 @@ import smartin.miapi.Miapi;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.item.ModularItemStackConverter;
 import smartin.miapi.modules.ItemModule;
-import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.SlotProperty;
 import smartin.miapi.modules.properties.util.CraftingProperty;
@@ -62,7 +61,7 @@ public class CraftAction {
             Map<String, String> data) {
         this.old = ModularItemStackConverter.getModularVersion(old);
         this.toAdd = toAdd;
-        ModuleInstance instance = slot.parent;
+        ItemModule.ModuleInstance instance = slot.parent;
         if (instance != null) {
             slotId.add(slot.id);
             while (instance.parent != null) {
@@ -174,7 +173,7 @@ public class CraftAction {
      * @param stack    the ItemStack to update.
      * @param instance the module instance to set.
      */
-    protected void updateItem(ItemStack stack, ModuleInstance instance) {
+    protected void updateItem(ItemStack stack, ItemModule.ModuleInstance instance) {
         if (instance != null) {
             while (instance.parent != null) {
                 instance = instance.parent;
@@ -222,7 +221,7 @@ public class CraftAction {
                 linkedInventory.setStack(i, itemStacks.get(i - start));
             }
         });
-        ModuleInstance parsingInstance = ItemModule.getModules(craftingStack[0]);
+        ItemModule.ModuleInstance parsingInstance = ItemModule.getModules(craftingStack[0]);
         for (int i = slotId.size() - 1; i >= 0; i--) {
             parsingInstance = parsingInstance.subModules.get(slotId.get(i));
         }
@@ -245,16 +244,16 @@ public class CraftAction {
             return old;
         }
         //remove CacheKey so new cache gets Generated
-        ModuleInstance oldBaseModule = ItemModule.getModules(old);
-        ModuleInstance newBaseModule = ModuleInstance.fromString(oldBaseModule.toString());
-        Map<Integer, ModuleInstance> subModuleMap = new HashMap<>();
+        ItemModule.ModuleInstance oldBaseModule = ItemModule.getModules(old);
+        ItemModule.ModuleInstance newBaseModule = ItemModule.ModuleInstance.fromString(oldBaseModule.toString());
+        Map<Integer, ItemModule.ModuleInstance> subModuleMap = new HashMap<>();
         if (slotId.isEmpty()) {
             //a module already exists, replacing module 0
             if (toAdd == null) {
                 return ItemStack.EMPTY;
             }
             subModuleMap = oldBaseModule.subModules;
-            ModuleInstance newModule = new ModuleInstance(toAdd);
+            ItemModule.ModuleInstance newModule = new ItemModule.ModuleInstance(toAdd);
             subModuleMap.forEach((id, module) -> {
                 SlotProperty.ModuleSlot slot = SlotProperty.getSlots(newModule).get(id);
                 if (slot != null && slot.allowedIn(module)) {
@@ -265,7 +264,7 @@ public class CraftAction {
             ModularItemCache.clearUUIDFor(craftingStack);
             return craftingStack;
         }
-        ModuleInstance parsingInstance = newBaseModule;
+        ItemModule.ModuleInstance parsingInstance = newBaseModule;
         for (int i = slotId.size() - 1; i > 0; i--) {
             parsingInstance = parsingInstance.subModules.get(slotId.get(i));
         }
@@ -273,7 +272,7 @@ public class CraftAction {
         if (toAdd == null) {
             parsingInstance.subModules.remove(slotId.get(0));
         } else {
-            ModuleInstance newModule = new ModuleInstance(toAdd);
+            ItemModule.ModuleInstance newModule = new ItemModule.ModuleInstance(toAdd);
             if (parsingInstance.subModules.get(slotId.get(0)) != null) {
                 subModuleMap = parsingInstance.subModules.get(slotId.get(0)).subModules;
             }
@@ -311,7 +310,7 @@ public class CraftAction {
                         toAdd,
                         inventory,
                         buffer)));
-        ModuleInstance parsingInstance = ItemModule.getModules(craftingStack.get());
+        ItemModule.ModuleInstance parsingInstance = ItemModule.getModules(craftingStack.get());
         for (int i = slotId.size() - 1; i >= 0; i--) {
             parsingInstance = parsingInstance.subModules.get(slotId.get(i));
         }
@@ -332,9 +331,9 @@ public class CraftAction {
     }
 
     @Nullable
-    public ModuleInstance getModifyingModuleInstance(ItemStack itemStack) {
+    public ItemModule.ModuleInstance getModifyingModuleInstance(ItemStack itemStack) {
         try {
-            ModuleInstance parsingInstance = ItemModule.getModules(itemStack);
+            ItemModule.ModuleInstance parsingInstance = ItemModule.getModules(itemStack);
             for (int i = slotId.size() - 1; i >= 0; i--) {
                 parsingInstance = parsingInstance.subModules.get(slotId.get(i));
             }
@@ -352,7 +351,7 @@ public class CraftAction {
      * @param propertyConsumer The {@link PropertyConsumer} to process each {@link CraftingProperty}.
      */
     public void forEachCraftingProperty(ItemStack crafted, PropertyConsumer propertyConsumer) {
-        ModuleInstance parsingInstance = ItemModule.getModules(crafted);
+        ItemModule.ModuleInstance parsingInstance = ItemModule.getModules(crafted);
         for (int i = slotId.size() - 1; i >= 0; i--) {
             parsingInstance = parsingInstance.subModules.get(slotId.get(i));
         }
@@ -360,7 +359,7 @@ public class CraftAction {
         AtomicInteger integer = new AtomicInteger(inventoryOffset);
         AtomicInteger counter = new AtomicInteger(0);
 
-        ModuleInstance newInstance = parsingInstance;
+        ItemModule.ModuleInstance newInstance = parsingInstance;
         List<CraftingProperty> sortedProperties =
                 RegistryInventory.moduleProperties.getFlatMap().values().stream()
                         .filter(CraftingProperty.class::isInstance)
@@ -410,12 +409,12 @@ public class CraftAction {
          * @param end              the ending index of the crafting slots in the inventory
          * @param dataMap          a Map including fields for Craftingproperty to send additional Information
          */
-        void accept(CraftingProperty craftingProperty, ModuleInstance moduleInstance, List<ItemStack> inventory, int start, int end, Map<String, String> dataMap);
+        void accept(CraftingProperty craftingProperty, ItemModule.ModuleInstance moduleInstance, List<ItemStack> inventory, int start, int end, Map<String, String> dataMap);
     }
 
     public interface CraftingEvent {
-        ItemStack onCraft(ItemStack old, ItemStack crafted, @Nullable ModuleInstance crafting);
+        ItemStack onCraft(ItemStack old, ItemStack crafted, @Nullable ItemModule.ModuleInstance crafting);
 
-        ItemStack onPreview(ItemStack old, ItemStack crafted, @Nullable ModuleInstance crafting);
+        ItemStack onPreview(ItemStack old, ItemStack crafted, @Nullable ItemModule.ModuleInstance crafting);
     }
 }

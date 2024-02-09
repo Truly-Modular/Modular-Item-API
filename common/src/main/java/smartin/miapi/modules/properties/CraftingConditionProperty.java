@@ -8,7 +8,6 @@ import net.minecraft.util.math.BlockPos;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.craft.CraftAction;
 import smartin.miapi.modules.ItemModule;
-import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.conditions.ConditionManager;
 import smartin.miapi.modules.conditions.ModuleCondition;
 import smartin.miapi.modules.properties.util.CraftingProperty;
@@ -43,7 +42,7 @@ public class CraftingConditionProperty implements ModuleProperty, CraftingProper
         JsonElement element = module.getKeyedProperties().get(property);
         List<Text> reasons = new ArrayList<>();
         if (element != null) {
-            ModuleInstance instance = slot == null ? null : slot.parent;
+            ItemModule.ModuleInstance instance = slot == null ? null : slot.parent;
             CraftingConditionJson conditionJson = new CraftingConditionJson(element);
             return conditionJson.getCraftAble().isAllowed(new ConditionManager.ModuleConditionContext(instance, pos, entity, module.getKeyedProperties(), reasons));
         }
@@ -54,7 +53,7 @@ public class CraftingConditionProperty implements ModuleProperty, CraftingProper
         JsonElement element = module.getKeyedProperties().get(property);
         List<Text> reasons = new ArrayList<>();
         if (element != null) {
-            ModuleInstance instance = slot == null ? null : slot.parent;
+            ItemModule.ModuleInstance instance = slot == null ? null : slot.parent;
             new CraftingConditionJson(element).getCraftAble().isAllowed(new ConditionManager.ModuleConditionContext(instance, pos, entity, module.getKeyedProperties(), reasons));
         }
         return reasons;
@@ -71,7 +70,7 @@ public class CraftingConditionProperty implements ModuleProperty, CraftingProper
     }
 
     @Override
-    public boolean shouldExecuteOnCraft(ModuleInstance module, ModuleInstance root, ItemStack stack) {
+    public boolean shouldExecuteOnCraft(ItemModule.ModuleInstance module, ItemModule.ModuleInstance root, ItemStack stack) {
         return true;
     }
 
@@ -82,7 +81,7 @@ public class CraftingConditionProperty implements ModuleProperty, CraftingProper
 
     @Override
     public boolean canPerform(ItemStack old, ItemStack crafting, ModularWorkBenchEntity bench, PlayerEntity player, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<String, String> data) {
-        ModuleInstance newModule = craftAction.getModifyingModuleInstance(crafting);
+        ItemModule.ModuleInstance newModule = craftAction.getModifyingModuleInstance(crafting);
         if (newModule != null) {
             JsonElement element = newModule.getProperties().get(property);
             if (element != null) {

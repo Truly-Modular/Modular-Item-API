@@ -7,7 +7,6 @@ import net.minecraft.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.modules.ItemModule;
-import smartin.miapi.modules.ModuleInstance;
 
 import java.lang.reflect.Type;
 import java.util.HashMap;
@@ -108,7 +107,7 @@ public interface ModuleProperty {
     }
 
     @Nullable
-    default JsonElement getJsonElement(ModuleInstance moduleInstance) {
+    default JsonElement getJsonElement(ItemModule.ModuleInstance moduleInstance) {
         return moduleInstance.getProperties().get(this);
     }
 

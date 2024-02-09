@@ -9,7 +9,6 @@ import smartin.miapi.Miapi;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.item.modular.Transform;
 import smartin.miapi.item.modular.TransformMap;
-import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.modules.properties.SlotProperty;
 
@@ -31,7 +30,7 @@ public class ModelMergeProperty implements ModuleProperty {
                 new ModelProperty.ModelTransformer() {
                     @Override
                     public List<ModelProperty.TransformedUnbakedModel> unBakedTransform(List<ModelProperty.TransformedUnbakedModel> list, ItemStack stack) {
-                        ModuleInstance root = ItemModule.getModules(stack);
+                        ItemModule.ModuleInstance root = ItemModule.getModules(stack);
                         List<Json> toMerge = new ArrayList<>();
                         root.allSubModules().forEach(moduleInstance -> {
                             JsonElement data = moduleInstance.getProperties().get(property);

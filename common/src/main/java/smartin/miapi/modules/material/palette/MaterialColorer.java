@@ -6,7 +6,7 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.item.ItemStack;
-import smartin.miapi.modules.ModuleInstance;
+import smartin.miapi.modules.ItemModule;
 
 /**
  * This takes control of the rendering with a Material
@@ -27,7 +27,7 @@ public interface MaterialColorer {
             VertexConsumerProvider vertexConsumers,
             Sprite originalSprite,
             ItemStack stack,
-            ModuleInstance moduleInstance,
+            ItemModule.ModuleInstance moduleInstance,
             ModelTransformationMode mode);
 
     /**

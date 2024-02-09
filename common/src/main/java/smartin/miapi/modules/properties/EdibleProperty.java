@@ -13,7 +13,6 @@ import net.minecraft.item.ItemStack;
 import smartin.miapi.Miapi;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ItemModule;
-import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
@@ -37,7 +36,7 @@ public class EdibleProperty implements ModuleProperty {
 
     public static Holder createCache(ItemStack stack) {
         Holder result = new Holder(0, 0, 1, false, new ArrayList<>());
-        for (ModuleInstance subModule : ItemModule.getModules(stack).allSubModules()) {
+        for (ItemModule.ModuleInstance subModule : ItemModule.getModules(stack).allSubModules()) {
             JsonElement element = subModule.getProperties().get(property);
             if (element == null) continue;
 
@@ -99,7 +98,7 @@ public class EdibleProperty implements ModuleProperty {
         public @AutoCodec.Optional boolean alwaysEdible = false;
         public @AutoCodec.Optional List<StatusEffectHolder> effects = new ArrayList<>();
 
-        public Holder toHolder(ModuleInstance instance) {
+        public Holder toHolder(ItemModule.ModuleInstance instance) {
             return new Holder(
                     hunger.evaluate(instance),
                     saturation.evaluate(instance),

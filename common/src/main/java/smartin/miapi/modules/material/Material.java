@@ -8,7 +8,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
 import org.jetbrains.annotations.Nullable;
-import smartin.miapi.modules.ModuleInstance;
+import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.material.palette.MaterialColorer;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
@@ -45,7 +45,7 @@ public interface Material {
         return 0;
     }
 
-    default Material getMaterial(ModuleInstance moduleInstance){
+    default Material getMaterial(ItemModule.ModuleInstance moduleInstance){
         return this;
     }
 

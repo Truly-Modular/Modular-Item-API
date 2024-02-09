@@ -6,7 +6,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import smartin.miapi.modules.ModuleInstance;
+import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.mining.MiningLevelProperty;
 import smartin.miapi.modules.properties.mining.MiningShapeProperty;
 
@@ -32,7 +32,7 @@ public class StaggeredMiningMode implements MiningMode {
     }
 
     @Override
-    public MiningMode fromJson(JsonObject object, ModuleInstance moduleInstance) {
+    public MiningMode fromJson(JsonObject object, ItemModule.ModuleInstance moduleInstance) {
         StaggeredMiningMode miningMode = new StaggeredMiningMode();
         miningMode.speed = (float) MiningShapeProperty.getDouble(object, "speed", moduleInstance, 1);
         miningMode.durabilityBreakChance = MiningShapeProperty.getDouble(object, "durability_chance", moduleInstance, 1);

@@ -19,7 +19,7 @@ import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
 import smartin.miapi.craft.CraftAction;
 import smartin.miapi.craft.stat.StatProvidersMap;
 import smartin.miapi.entity.ItemProjectileEntity;
-import smartin.miapi.modules.ModuleInstance;
+import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.material.GeneratedMaterial;
 import smartin.miapi.modules.material.Material;
 
@@ -70,13 +70,13 @@ public class MiapiEvents {
         public ItemStack crafted;
         public final ItemStack materialStack;
         public Material material;
-        public ModuleInstance moduleInstance;
+        public ItemModule.ModuleInstance moduleInstance;
         CraftAction action;
 
         public MaterialCraftEventData(ItemStack crafted,
                                       ItemStack materialStack,
                                       Material material,
-                                      ModuleInstance moduleInstance,
+                                      ItemModule.ModuleInstance moduleInstance,
                                       CraftAction action) {
             this.crafted = crafted;
             this.material = material;

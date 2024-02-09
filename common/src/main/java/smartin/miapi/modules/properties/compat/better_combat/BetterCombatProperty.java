@@ -8,7 +8,6 @@ import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.craft.CraftAction;
 import smartin.miapi.item.ModularItemStackConverter;
 import smartin.miapi.modules.ItemModule;
-import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.AttributeProperty;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
@@ -30,13 +29,13 @@ public class BetterCombatProperty implements ModuleProperty {
             });
             CraftAction.events.add(new CraftAction.CraftingEvent() {
                 @Override
-                public ItemStack onCraft(ItemStack old, ItemStack crafted, @Nullable ModuleInstance crafting) {
+                public ItemStack onCraft(ItemStack old, ItemStack crafted, @Nullable ItemModule.ModuleInstance crafting) {
                     BetterCombatHelper.applyNBT(crafted);
                     return crafted;
                 }
 
                 @Override
-                public ItemStack onPreview(ItemStack old, ItemStack crafted, @Nullable ModuleInstance crafting) {
+                public ItemStack onPreview(ItemStack old, ItemStack crafted, @Nullable ItemModule.ModuleInstance crafting) {
                     BetterCombatHelper.applyNBT(crafted);
                     return crafted;
                 }

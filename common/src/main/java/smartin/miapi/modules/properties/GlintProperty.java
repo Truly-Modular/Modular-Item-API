@@ -8,7 +8,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Util;
 import smartin.miapi.Miapi;
 import smartin.miapi.item.modular.StatResolver;
-import smartin.miapi.modules.ModuleInstance;
+import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.registries.RegistryInventory;
 
@@ -37,11 +37,11 @@ public class GlintProperty implements ModuleProperty {
         return false;
     }
 
-    public GlintSettings getGlintSettings(ModuleInstance instance, ItemStack stack) {
+    public GlintSettings getGlintSettings(ItemModule.ModuleInstance instance, ItemStack stack) {
         return getStatic(instance, stack);
     }
 
-    static GlintSettings getStatic(ModuleInstance instance, ItemStack stack) {
+    static GlintSettings getStatic(ItemModule.ModuleInstance instance, ItemStack stack) {
         if (true) {
             return glintSettingsMap.get("rainbow").get(instance, stack);
         }
@@ -62,7 +62,7 @@ public class GlintProperty implements ModuleProperty {
         public float speed = 1;
         public boolean shouldRenderGlint;
 
-        public JsonGlintSettings(ModuleInstance instance, ItemStack stack) {
+        public JsonGlintSettings(ItemModule.ModuleInstance instance, ItemStack stack) {
             shouldRenderGlint = stack.hasGlint();
             JsonElement element = instance.getProperties().get(property);
             if (element != null) {
@@ -82,7 +82,7 @@ public class GlintProperty implements ModuleProperty {
         }
 
         @Override
-        public GlintSettings get(ModuleInstance instance, ItemStack stack) {
+        public GlintSettings get(ItemModule.ModuleInstance instance, ItemStack stack) {
             JsonElement element = instance.getProperties().get(property);
             if (element.getAsJsonObject().has("type")) {
                 String type = element.getAsJsonObject().get("type").getAsString();
@@ -122,7 +122,7 @@ public class GlintProperty implements ModuleProperty {
         int colorCount = 3;
 
         @Override
-        public GlintSettings get(ModuleInstance instance, ItemStack stack) {
+        public GlintSettings get(ItemModule.ModuleInstance instance, ItemStack stack) {
             JsonElement element = instance.getProperties().get(property);
             RainbowGlintSettings rainbowGlintSettings = new RainbowGlintSettings();
             rainbowGlintSettings.shouldRenderGlint = stack.hasGlint();
@@ -172,7 +172,7 @@ public class GlintProperty implements ModuleProperty {
 
     public interface GlintSettings {
 
-        GlintSettings get(ModuleInstance instance, ItemStack stack);
+        GlintSettings get(ItemModule.ModuleInstance instance, ItemStack stack);
 
         float getA();
 

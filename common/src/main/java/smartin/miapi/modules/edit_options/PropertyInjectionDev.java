@@ -18,7 +18,7 @@ import smartin.miapi.client.gui.ScrollingTextWidget;
 import smartin.miapi.client.gui.SimpleButton;
 import smartin.miapi.client.gui.crafting.CraftingScreen;
 import smartin.miapi.config.MiapiConfig;
-import smartin.miapi.modules.ModuleInstance;
+import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.network.Networking;
@@ -61,7 +61,7 @@ public class PropertyInjectionDev implements EditOption {
     @Environment(EnvType.CLIENT)
     public static class EditDevView extends InteractAbleWidget {
 
-        public EditDevView(int x, int y, int width, int height, ItemStack stack, ModuleInstance moduleInstance, Consumer<PacketByteBuf> craft) {
+        public EditDevView(int x, int y, int width, int height, ItemStack stack, ItemModule.ModuleInstance moduleInstance, Consumer<PacketByteBuf> craft) {
             super(x, y, width, height, Text.empty());
             MutableText text = Text.literal(moduleInstance.moduleData.get("properties")).copy();
             TextFieldWidget textFieldWidget = new ClickAbleTextWidget(MinecraftClient.getInstance().textRenderer, x + 5, y + 10, this.width - 10, 20, text);

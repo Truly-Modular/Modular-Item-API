@@ -30,7 +30,6 @@ import smartin.miapi.item.modular.PropertyResolver;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.MiapiPermissions;
-import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.conditions.ConditionManager;
@@ -119,7 +118,7 @@ public class Miapi {
                 NbtCompound tag = itemStack.getOrCreateNbt();
                 try {
                     String modulesString = tag.getString(ItemModule.MODULE_KEY);
-                    return Miapi.gson.fromJson(modulesString, ModuleInstance.class);
+                    return Miapi.gson.fromJson(modulesString, ItemModule.ModuleInstance.class);
                 } catch (Exception e) {
                     Miapi.LOGGER.error("could not resolve Modules", e);
                 }
@@ -128,15 +127,15 @@ public class Miapi {
         });
         ModularItemCache.setSupplier(ItemModule.PROPERTY_KEY,
                 itemStack -> ItemModule.getUnmergedProperties(
-                        ModularItemCache.get(itemStack, ItemModule.MODULE_KEY, new ModuleInstance(ItemModule.empty))));
+                        ModularItemCache.get(itemStack, ItemModule.MODULE_KEY, new ItemModule.ModuleInstance(ItemModule.empty))));
         StatResolver.registerResolver("translation", new StatResolver.Resolver() {
             @Override
-            public double resolveDouble(String data, ModuleInstance instance) {
+            public double resolveDouble(String data, ItemModule.ModuleInstance instance) {
                 return Double.parseDouble(Text.translatable(data).getString());
             }
 
             @Override
-            public String resolveString(String data, ModuleInstance instance) {
+            public String resolveString(String data, ItemModule.ModuleInstance instance) {
                 return Text.translatable(data).getString();
             }
         });

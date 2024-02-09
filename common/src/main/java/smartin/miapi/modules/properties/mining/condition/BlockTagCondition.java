@@ -11,7 +11,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
-import smartin.miapi.modules.ModuleInstance;
+import smartin.miapi.modules.ItemModule;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +24,7 @@ public class BlockTagCondition implements MiningCondition {
     }
 
     @Override
-    public MiningCondition fromJson(JsonObject object, ModuleInstance moduleInstance) {
+    public MiningCondition fromJson(JsonObject object, ItemModule.ModuleInstance moduleInstance) {
         JsonElement element = object.get("tags");
         List<TagKey<Block>> tags = new ArrayList<>();
         if (element != null && element.isJsonArray()) {

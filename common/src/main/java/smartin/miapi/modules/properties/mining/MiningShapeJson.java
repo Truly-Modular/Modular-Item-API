@@ -8,7 +8,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 import smartin.miapi.Miapi;
-import smartin.miapi.modules.ModuleInstance;
+import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.mining.condition.MiningCondition;
 import smartin.miapi.modules.properties.mining.mode.MiningMode;
 import smartin.miapi.modules.properties.mining.modifier.MiningModifier;
@@ -26,7 +26,7 @@ public class MiningShapeJson {
     public MiningShape miningShape;
     public List<MiningModifier> modifiers = new ArrayList<>();
 
-    public MiningShapeJson(JsonObject element, ModuleInstance moduleInstance) {
+    public MiningShapeJson(JsonObject element, ItemModule.ModuleInstance moduleInstance) {
         JsonObject conditionJson = element.get("condition").getAsJsonObject();
         MiningCondition condition = MiningShapeProperty.miningConditionMap.get(conditionJson.get("type").getAsString());
         if (condition == null) {

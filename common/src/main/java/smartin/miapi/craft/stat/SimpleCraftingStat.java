@@ -11,7 +11,6 @@ import org.jetbrains.annotations.Nullable;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ItemModule;
-import smartin.miapi.modules.ModuleInstance;
 
 import java.util.List;
 import java.util.Map;
@@ -32,7 +31,7 @@ public class SimpleCraftingStat implements CraftingStat<Double> {
     }
 
     @Override
-    public Double createFromJson(JsonElement json, ModuleInstance instance) {
+    public Double createFromJson(JsonElement json, ItemModule.ModuleInstance instance) {
         return StatResolver.resolveDouble(json, instance);
     }
 
@@ -54,7 +53,7 @@ public class SimpleCraftingStat implements CraftingStat<Double> {
             ItemStack crafting,
             @Nullable ModularWorkBenchEntity bench,
             PlayerEntity player,
-            ModuleInstance newModule,
+            ItemModule.ModuleInstance newModule,
             ItemModule module,
             List<ItemStack> inventory,
             Map<String,String> data ) {

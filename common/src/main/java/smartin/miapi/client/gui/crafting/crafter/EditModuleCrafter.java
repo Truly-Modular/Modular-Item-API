@@ -14,7 +14,7 @@ import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
 import smartin.miapi.client.gui.crafting.crafter.replace.CraftOption;
-import smartin.miapi.modules.ModuleInstance;
+import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.edit_options.EditOption;
 import smartin.miapi.modules.properties.SlotProperty;
 
@@ -107,7 +107,7 @@ public class EditModuleCrafter extends InteractAbleWidget {
             }
 
             @Override
-            public @Nullable ModuleInstance getInstance() {
+            public @Nullable ItemModule.ModuleInstance getInstance() {
                 return context.getInstance();
             }
 

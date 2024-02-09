@@ -11,7 +11,7 @@ import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.ClickAbleTextWidget;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.ScrollList;
-import smartin.miapi.modules.ModuleInstance;
+import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.edit_options.skins.Skin;
 import smartin.miapi.modules.edit_options.skins.SkinOptions;
 import smartin.miapi.network.Networking;
@@ -27,10 +27,10 @@ public class SkinGui extends InteractAbleWidget {
     public final Consumer<PacketByteBuf> craft;
     public final Consumer<PacketByteBuf> preview;
     public String currentPreview;
-    public ModuleInstance instance;
+    public ItemModule.ModuleInstance instance;
 
     @Environment(EnvType.CLIENT)
-    public SkinGui(int x, int y, int width, int height, ItemStack stack, ModuleInstance instance, Consumer<PacketByteBuf> craft, Consumer<PacketByteBuf> preview) {
+    public SkinGui(int x, int y, int width, int height, ItemStack stack, ItemModule.ModuleInstance instance, Consumer<PacketByteBuf> craft, Consumer<PacketByteBuf> preview) {
         super(x, y, width, height, Text.empty());
         this.craft = craft;
         this.preview = preview;

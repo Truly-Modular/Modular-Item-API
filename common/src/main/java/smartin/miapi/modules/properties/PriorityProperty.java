@@ -2,7 +2,6 @@ package smartin.miapi.modules.properties;
 
 import net.minecraft.item.ItemStack;
 import smartin.miapi.modules.ItemModule;
-import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.util.DoubleProperty;
 
 /**
@@ -24,7 +23,7 @@ public class PriorityProperty extends DoubleProperty {
     }
 
     public static double getFor(ItemModule module) {
-        return property.getValueForModule(new ModuleInstance(module),0.0);
+        return property.getValueForModule(new ItemModule.ModuleInstance(module),0.0);
     }
 
     @Override

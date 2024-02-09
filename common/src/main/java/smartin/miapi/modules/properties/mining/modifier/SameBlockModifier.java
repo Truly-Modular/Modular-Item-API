@@ -5,7 +5,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import smartin.miapi.modules.ModuleInstance;
+import smartin.miapi.modules.ItemModule;
 
 import java.util.List;
 
@@ -16,7 +16,7 @@ public class SameBlockModifier implements MiningModifier {
     }
 
     @Override
-    public MiningModifier fromJson(JsonElement object, ModuleInstance moduleInstance) {
+    public MiningModifier fromJson(JsonElement object, ItemModule.ModuleInstance moduleInstance) {
         return this;
     }
 

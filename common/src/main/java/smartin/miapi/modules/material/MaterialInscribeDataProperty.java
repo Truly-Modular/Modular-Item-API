@@ -9,7 +9,6 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.StringNbtReader;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.modules.ItemModule;
-import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
 /**
@@ -38,12 +37,12 @@ public class MaterialInscribeDataProperty implements ModuleProperty {
         return raw;
     }
 
-    public static void inscribeModuleInstance(ModuleInstance moduleInstance, ItemStack itemStack, String key) {
+    public static void inscribeModuleInstance(ItemModule.ModuleInstance moduleInstance, ItemStack itemStack, String key) {
         NbtElement nbtElement = itemStack.writeNbt(new NbtCompound());
         moduleInstance.moduleData.put(key, nbtElement.asString());
     }
 
-    public static ItemStack readStackFromModuleInstance(ModuleInstance moduleInstance, String key) {
+    public static ItemStack readStackFromModuleInstance(ItemModule.ModuleInstance moduleInstance, String key) {
         String itemStackString = moduleInstance.moduleData.get(key);
         if (itemStackString != null) {
             try {

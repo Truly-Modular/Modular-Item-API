@@ -14,7 +14,6 @@ import smartin.miapi.client.gui.crafting.crafter.replace.MaterialCraftingWidget;
 import smartin.miapi.craft.CraftAction;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.modules.ItemModule;
-import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.util.CraftingProperty;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
@@ -107,7 +106,7 @@ public class AllowedMaterial implements CraftingProperty, ModuleProperty {
 
     @Override
     public ItemStack preview(ItemStack old, ItemStack crafting, PlayerEntity player, ModularWorkBenchEntity bench, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<String, String> data) {
-        ModuleInstance newModule = craftAction.getModifyingModuleInstance(crafting);
+        ItemModule.ModuleInstance newModule = craftAction.getModifyingModuleInstance(crafting);
         JsonElement element = module.getProperties().get(KEY);
         ItemStack input = inventory.get(0);
         ItemStack materialStack = input.copy();
@@ -130,7 +129,7 @@ public class AllowedMaterial implements CraftingProperty, ModuleProperty {
 
     @Override
     public List<ItemStack> performCraftAction(ItemStack old, ItemStack crafting, PlayerEntity player, ModularWorkBenchEntity bench, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<String, String> data) {
-        ModuleInstance newModule = craftAction.getModifyingModuleInstance(crafting);
+        ItemModule.ModuleInstance newModule = craftAction.getModifyingModuleInstance(crafting);
         //AllowedMaterialJson json = Miapi.gson.fromJson()
         List<ItemStack> results = new ArrayList<>();
         JsonElement element = module.getProperties().get(KEY);
@@ -151,7 +150,7 @@ public class AllowedMaterial implements CraftingProperty, ModuleProperty {
         return results;
     }
 
-    public static double getMaterialCost(ModuleInstance moduleInstance){
+    public static double getMaterialCost(ItemModule.ModuleInstance moduleInstance){
         JsonElement element = property.getJsonElement(moduleInstance);
         if(element!=null){
             return Miapi.gson.fromJson(element, AllowedMaterialJson.class).cost;

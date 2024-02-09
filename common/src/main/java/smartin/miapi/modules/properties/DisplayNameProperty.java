@@ -5,7 +5,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.item.modular.StatResolver;
-import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
@@ -28,9 +27,9 @@ public class DisplayNameProperty implements ModuleProperty {
 
     private static Text resolveDisplayText(ItemStack itemStack) {
         String translationKey = "miapi.name.missing.nomodule";
-        ModuleInstance root = ItemModule.getModules(itemStack);
-        ModuleInstance primaryModule = ItemModule.getModules(itemStack);
-        for (ModuleInstance moduleInstance : root.allSubModules()) {
+        ItemModule.ModuleInstance root = ItemModule.getModules(itemStack);
+        ItemModule.ModuleInstance primaryModule = ItemModule.getModules(itemStack);
+        for (ItemModule.ModuleInstance moduleInstance : root.allSubModules()) {
             JsonElement data = moduleInstance.getProperties().get(property);
             if (data != null) {
                 translationKey = data.getAsString();
