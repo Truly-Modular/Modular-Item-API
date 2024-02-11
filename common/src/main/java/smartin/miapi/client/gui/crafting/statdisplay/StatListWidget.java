@@ -99,13 +99,13 @@ public class StatListWidget extends InteractAbleWidget {
                 .builder(AttributeRegistry.REACH)
                 .setTranslationKey("reach")
                 .setDefault(0)
-                .setFormat("##.#")
+                .setFormat("##.##")
                 .setMax(2).build());
         addStatDisplay(AttributeSingleDisplay
                 .builder(AttributeRegistry.ATTACK_RANGE)
                 .setTranslationKey("attack_range")
                 .setDefault(0)
-                .setFormat("##.#")
+                .setFormat("##.##")
                 .setMax(2).build());
         addStatDisplay(AttributeSingleDisplay
                 .builder(AttributeRegistry.PROJECTILE_DAMAGE)
@@ -261,6 +261,16 @@ public class StatListWidget extends InteractAbleWidget {
                 .setMax(0)
                 .inverseNumber(true)
                 .setMin(-1).build());
+        addStatDisplay(AttributeSingleDisplay
+                .builder(AttributeRegistry.CRITICAL_DAMAGE)
+                .setTranslationKey("crit_damage")
+                .setMax(3)
+                .setMin(0).build());
+        addStatDisplay(AttributeSingleDisplay
+                .builder(AttributeRegistry.CRITICAL_CHANCE)
+                .setTranslationKey("crit_chance")
+                .setMax(1)
+                .setMin(0).build());
 
         addStatDisplay(SinglePropertyStatDisplay
                 .builder(IllagerBane.property)
@@ -394,6 +404,9 @@ public class StatListWidget extends InteractAbleWidget {
 
     public static <T extends InteractAbleWidget & SingleStatDisplay> void addStatDisplay(T statDisplay) {
         statDisplays.add(statDisplay);
+    }
+    public static <T extends InteractAbleWidget & SingleStatDisplay> void addStatDisplay(T ...statDisplay) {
+        statDisplays.addAll(Arrays.asList(statDisplay));
     }
 
     public static void addStatDisplaySupplier(StatWidgetSupplier supplier) {

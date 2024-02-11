@@ -43,7 +43,7 @@ public class MiningShapeJson {
         this.miningShape = shape.fromJson(shapeJson, moduleInstance);
 
 
-        sameBlock = MiningShapeProperty.saveBoolean(element, "sameBlock", true);
+        sameBlock = MiningShapeProperty.getBoolean(element, "sameBlock", true);
 
 
         JsonObject modeJson = element.get("collapseMode").getAsJsonObject();

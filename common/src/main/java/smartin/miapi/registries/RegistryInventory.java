@@ -323,6 +323,14 @@ public class RegistryInventory {
                         new ClampedEntityAttribute("miapi.attribute.name.player_item_use_speed", -0.8, -1.0, 0.0).setTracked(true),
                 att -> PLAYER_ITEM_USE_MOVEMENT_SPEED = att);
 
+        registerAtt("generic.crit_damage", true, () ->
+                        new ClampedEntityAttribute("miapi.attribute.name.crit_damage", 0.0, 0.0, 1024.0).setTracked(true),
+                att -> CRITICAL_DAMAGE = att);
+
+        registerAtt("generic.crit_chance", true, () ->
+                        new ClampedEntityAttribute("miapi.attribute.name.crit_chance", 0.0, 0.0, 1024.0).setTracked(true),
+                att -> CRITICAL_CHANCE = att);
+
         //projectile based
         registerAtt("generic.bow_draw_time", true, () ->
                         new ClampedEntityAttribute("miapi.attribute.name.bow_draw_time", 0.0, -1024.0, 1024.0).setTracked(true),

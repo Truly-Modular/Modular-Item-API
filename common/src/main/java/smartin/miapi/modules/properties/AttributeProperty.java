@@ -80,14 +80,18 @@ public class AttributeProperty implements ModuleProperty {
             if (attributeJson.has("name")) {
                 modifierName = attributeJson.get("name").getAsString();
             }
+            EntityAttributeModifier.Operation targetOperation = EntityAttributeModifier.Operation.ADDITION;
+            if (attributeJson.has("target_operation")) {
+                targetOperation = getOperation(attributeJson.get("target_operation").getAsString());
+            }
 
             if (attribute != null) {
                 if (uuid != null) {
                     // Use constructor with UUID
-                    attributeModifiers.put(attribute, new EntityAttributeModifierHolder(new EntityAttributeModifier(uuid, modifierName, value, operation), slot, true));
+                    attributeModifiers.put(attribute, new EntityAttributeModifierHolder(new EntityAttributeModifier(uuid, modifierName, value, operation), slot, true, targetOperation));
                 } else {
                     // Use constructor without UUID
-                    attributeModifiers.put(attribute, new EntityAttributeModifierHolder(new EntityAttributeModifier(modifierName, value, operation), slot, true));
+                    attributeModifiers.put(attribute, new EntityAttributeModifierHolder(new EntityAttributeModifier(modifierName, value, operation), slot, true, targetOperation));
                 }
             }
         }
@@ -97,12 +101,12 @@ public class AttributeProperty implements ModuleProperty {
     public static Multimap<EntityAttribute, EntityAttributeModifier> mergeAttributes(Multimap<EntityAttribute, EntityAttributeModifier> old, Multimap<EntityAttribute, EntityAttributeModifier> into) {
         Multimap<EntityAttribute, EntityAttributeModifier> mergedList = LinkedListMultimap.create();
         old.entries().forEach(entityAttributeEntityAttributeModifierHolderEntry -> {
-            if(!mergedList.get(entityAttributeEntityAttributeModifierHolderEntry.getKey()).contains(entityAttributeEntityAttributeModifierHolderEntry.getValue())){
+            if (!mergedList.get(entityAttributeEntityAttributeModifierHolderEntry.getKey()).contains(entityAttributeEntityAttributeModifierHolderEntry.getValue())) {
                 mergedList.put(entityAttributeEntityAttributeModifierHolderEntry.getKey(), entityAttributeEntityAttributeModifierHolderEntry.getValue());
             }
         });
         into.entries().forEach(entityAttributeEntityAttributeModifierHolderEntry -> {
-            if(!mergedList.get(entityAttributeEntityAttributeModifierHolderEntry.getKey()).contains(entityAttributeEntityAttributeModifierHolderEntry.getValue())){
+            if (!mergedList.get(entityAttributeEntityAttributeModifierHolderEntry.getKey()).contains(entityAttributeEntityAttributeModifierHolderEntry.getValue())) {
                 mergedList.put(entityAttributeEntityAttributeModifierHolderEntry.getKey(), entityAttributeEntityAttributeModifierHolderEntry.getValue());
             }
         });
@@ -191,7 +195,9 @@ public class AttributeProperty implements ModuleProperty {
         if (itemStack.getItem() instanceof ModularItem) {
             Multimap<EntityAttribute, AttributeProperty.EntityAttributeModifierHolder> toMerge = AttributeProperty.getAttributeModifiers(itemStack);
             Multimap<EntityAttribute, EntityAttributeModifier> merged = ArrayListMultimap.create();
-            Multimap<EntityAttribute, EntityAttributeModifier> mergedOnItem = ArrayListMultimap.create();
+            Map<UUID, Multimap<EntityAttribute, EntityAttributeModifier>> mergedAdditive = new HashMap<>();
+            Map<UUID, Multimap<EntityAttribute, EntityAttributeModifier>> mergedMultiBase = new HashMap<>();
+            Map<UUID, Multimap<EntityAttribute, EntityAttributeModifier>> mergedMultiTotal = new HashMap<>();
 
             // Add existing modifiers from original to merged
             toAdding.entries().forEach(entry -> merged.put(entry.getKey(), entry.getValue()));
@@ -201,7 +207,20 @@ public class AttributeProperty implements ModuleProperty {
                     if (entityAttributeModifier.seperateOnItem) {
                         merged.put(entityAttribute, entityAttributeModifier.attributeModifier());
                     } else {
-                        mergedOnItem.put(entityAttribute, entityAttributeModifier.attributeModifier());
+                        switch (entityAttributeModifier.mergeTo) {
+                            case ADDITION -> {
+                                Multimap<EntityAttribute, EntityAttributeModifier> multimap = mergedAdditive.computeIfAbsent(entityAttributeModifier.attributeModifier().getId(), (id) -> ArrayListMultimap.create());
+                                multimap.put(entityAttribute, entityAttributeModifier.attributeModifier());
+                            }
+                            case MULTIPLY_BASE -> {
+                                Multimap<EntityAttribute, EntityAttributeModifier> multimap = mergedMultiBase.computeIfAbsent(entityAttributeModifier.attributeModifier().getId(), (id) -> ArrayListMultimap.create());
+                                multimap.put(entityAttribute, entityAttributeModifier.attributeModifier());
+                            }
+                            case MULTIPLY_TOTAL -> {
+                                Multimap<EntityAttribute, EntityAttributeModifier> multimap = mergedMultiTotal.computeIfAbsent(entityAttributeModifier.attributeModifier().getId(), (id) -> ArrayListMultimap.create());
+                                multimap.put(entityAttribute, entityAttributeModifier.attributeModifier());
+                            }
+                        }
                     }
                 }
             });
@@ -209,24 +228,16 @@ public class AttributeProperty implements ModuleProperty {
             // Assign merged back to original
             toAdding.clear();
             toAdding.putAll(merged);
-            Map<UUID, Multimap<EntityAttribute, EntityAttributeModifier>> uuidMultimapMap = new HashMap<>();
 
-            mergedOnItem.forEach((attribute, attributeModifier) -> {
-                Multimap<EntityAttribute, EntityAttributeModifier> multimap = uuidMultimapMap.computeIfAbsent(attributeModifier.getId(), (id) -> ArrayListMultimap.create());
-                if (attribute == null) {
-                    Miapi.LOGGER.warn("Attribute is null?! - this should never happen");
-                } else {
-                    multimap.put(attribute, attributeModifier);
-                }
-            });
-
-            uuidMultimapMap.forEach((uuid, entityAttributeEntityAttributeModifierMultimap) -> {
+            mergedAdditive.forEach((uuid, entityAttributeEntityAttributeModifierMultimap) -> {
                 entityAttributeEntityAttributeModifierMultimap.asMap().forEach((key, collection) -> {
                     double startValue = key.getDefaultValue();
                     double multiply = 1;
+                    boolean hasValue = false;
                     for (EntityAttributeModifier entityAttributeModifier : collection) {
                         if (entityAttributeModifier.getOperation().equals(EntityAttributeModifier.Operation.ADDITION)) {
                             startValue += entityAttributeModifier.getValue();
+                            hasValue = true;
                         }
                         if (entityAttributeModifier.getOperation().equals(EntityAttributeModifier.Operation.MULTIPLY_BASE)) {
                             multiply += entityAttributeModifier.getValue();
@@ -239,8 +250,52 @@ public class AttributeProperty implements ModuleProperty {
                         }
                     }
                     startValue = startValue - key.getDefaultValue();
-                    if (startValue != 0 && !Double.isNaN(startValue)) {
+                    if ((startValue != 0 || hasValue) && !Double.isNaN(startValue)) {
                         EntityAttributeModifier entityAttributeModifier = new EntityAttributeModifier(uuid, "generic.miapi." + key.getTranslationKey(), startValue, EntityAttributeModifier.Operation.ADDITION);
+                        toAdding.put(key, entityAttributeModifier);
+                    }
+                });
+            });
+
+            mergedMultiBase.forEach((uuid, entityAttributeEntityAttributeModifierMultimap) -> {
+                entityAttributeEntityAttributeModifierMultimap.asMap().forEach((key, collection) -> {
+                    double multiply = 0;
+                    for (EntityAttributeModifier entityAttributeModifier : collection) {
+                        if (entityAttributeModifier.getOperation().equals(EntityAttributeModifier.Operation.MULTIPLY_BASE)) {
+                            multiply += entityAttributeModifier.getValue();
+                        }
+                        if (entityAttributeModifier.getOperation().equals(EntityAttributeModifier.Operation.ADDITION)) {
+                            Miapi.LOGGER.warn("Operation Addition(+) is not supported to be merged to Multiply Base(*)");
+                        }
+                    }
+                    for (EntityAttributeModifier entityAttributeModifier : collection) {
+                        if (entityAttributeModifier.getOperation().equals(EntityAttributeModifier.Operation.MULTIPLY_TOTAL)) {
+                            multiply = (multiply + 1) * (entityAttributeModifier.getValue() + 1) -1;
+                        }
+                    }
+                    if (!Double.isNaN(multiply) && multiply != 1) {
+                        EntityAttributeModifier entityAttributeModifier = new EntityAttributeModifier(uuid, "generic.miapi." + key.getTranslationKey(), multiply, EntityAttributeModifier.Operation.MULTIPLY_BASE);
+                        toAdding.put(key, entityAttributeModifier);
+                    }
+                });
+            });
+
+            mergedMultiTotal.forEach((uuid, entityAttributeEntityAttributeModifierMultimap) -> {
+                entityAttributeEntityAttributeModifierMultimap.asMap().forEach((key, collection) -> {
+                    double multiply = 1;
+                    for (EntityAttributeModifier entityAttributeModifier : collection) {
+                        if (entityAttributeModifier.getOperation().equals(EntityAttributeModifier.Operation.MULTIPLY_TOTAL)) {
+                            multiply = multiply * entityAttributeModifier.getValue();
+                        }
+                        if (entityAttributeModifier.getOperation().equals(EntityAttributeModifier.Operation.ADDITION)) {
+                            Miapi.LOGGER.warn("Operation Addition(+) is not supported to be merged to Multiply Total(**)");
+                        }
+                        if (entityAttributeModifier.getOperation().equals(EntityAttributeModifier.Operation.ADDITION)) {
+                            Miapi.LOGGER.warn("Operation Multiply Base(*) is not supported to be merged to Multiply Total(**)");
+                        }
+                    }
+                    if (!Double.isNaN(multiply)) {
+                        EntityAttributeModifier entityAttributeModifier = new EntityAttributeModifier(uuid, "generic.miapi." + key.getTranslationKey(), multiply, EntityAttributeModifier.Operation.MULTIPLY_TOTAL);
                         toAdding.put(key, entityAttributeModifier);
                     }
                 });
@@ -315,22 +370,6 @@ public class AttributeProperty implements ModuleProperty {
     public static double getActualValue(ItemStack stack, EquipmentSlot slot, EntityAttribute entityAttribute, double fallback) {
         Collection<EntityAttributeModifier> attributes = stack.getAttributeModifiers(slot).get(entityAttribute);
         return getActualValue(attributes, fallback);
-        /*
-        Multimap<EntityAttribute, EntityAttributeModifier> map = HashMultimap.create();
-        attributes.forEach(attribute -> {
-            map.put(entityAttribute, attribute);
-        });
-        DefaultAttributeContainer container = DefaultAttributeContainer.builder().add(entityAttribute).build();
-
-        AttributeContainer container1 = new AttributeContainer(container);
-
-        container1.addTemporaryModifiers(map);
-        if (map.containsKey(entityAttribute) && container1.hasAttribute(entityAttribute)) {
-            return container1.getValue(entityAttribute);
-        } else {
-            return fallback;
-        }
-        */
     }
 
     public static boolean hasAttribute(Multimap<EntityAttribute, EntityAttributeModifier> map, EntityAttribute entityAttribute, double fallback) {
@@ -378,7 +417,7 @@ public class AttributeProperty implements ModuleProperty {
         for (Double currentValue : multiplyTotal) {
             value = (1 + currentValue) * value;
         }
-        if(Double.isNaN(value)){
+        if (Double.isNaN(value)) {
             return fallback;
         }
         return value;
@@ -423,19 +462,20 @@ public class AttributeProperty implements ModuleProperty {
             String attributeName = attributeJson.attribute;
             double value = StatResolver.resolveDouble(attributeJson.value, instance);
             EntityAttributeModifier.Operation operation = getOperation(attributeJson.operation);
+            EntityAttributeModifier.Operation baseTarget = getOperation(attributeJson.target_operation);
             EntityAttribute attribute = replaceMap.getOrDefault(attributeName, () -> Registries.ATTRIBUTE.get(new Identifier(attributeName))).get();
             if (attribute == null) {
                 Miapi.LOGGER.warn(String.valueOf(Registries.ATTRIBUTE.get(new Identifier(attributeName))));
                 Miapi.LOGGER.warn("Attribute is null " + attributeName + " on module " + instance.module.getName() + " this should not have happened.");
             } else {
-                UUID uuid = attributeJson.uuid == null ? defaultUUID.fromSlot(slot) : UUID.fromString(attributeJson.uuid);
+                UUID uuid = attributeJson.uuid == null ? defaultUUID.fromSlot(slot, baseTarget) : UUID.fromString(attributeJson.uuid);
                 if (uuid.equals(ExampleModularItem.attackDamageUUID())) {
                     uuid = ExampleModularItem.attackDamageUUID();
                 }
                 if (uuid.equals(ExampleModularItem.attackSpeedUUID())) {
                     uuid = ExampleModularItem.attackSpeedUUID();
                 }
-                attributeModifiers.put(attribute, new EntityAttributeModifierHolder(new EntityAttributeModifier(uuid, attributeName, value, operation), slot, attributeJson.seperateOnItem));
+                attributeModifiers.put(attribute, new EntityAttributeModifierHolder(new EntityAttributeModifier(uuid, attributeName, value, operation), slot, attributeJson.seperateOnItem, baseTarget));
             }
         }
     }
@@ -482,7 +522,56 @@ public class AttributeProperty implements ModuleProperty {
         }
     }
 
+    public static Map<EquipmentSlot, Map<EntityAttributeModifier.Operation, UUID>> slotCacheLookUP = new HashMap<>();
+
+    /**
+     * Generates a unique uuid for the slot to prevent collisions
+     *
+     * @param equipmentSlot
+     * @return a unique UUID for the slot
+     */
+    public static UUID getUUIDForSlot(EquipmentSlot equipmentSlot, EntityAttributeModifier.Operation operation) {
+        if (slotCacheLookUP.containsKey(equipmentSlot) && slotCacheLookUP.get(equipmentSlot).containsKey(operation)) {
+            return slotCacheLookUP.get(equipmentSlot).get(operation);
+        }
+        String slotidString = equipmentSlot.getName() + "-" + equipmentSlot.getEntitySlotId() + "-" + equipmentSlot.getArmorStandSlotId() + "-" + operation.toString();
+        try {
+            // Create a MessageDigest instance with the desired hashing algorithm (e.g., MD5 or SHA-1).
+            MessageDigest md = MessageDigest.getInstance("MD5");
+
+            // Update the digest with the bytes of the input string.
+            md.update(slotidString.getBytes());
+
+            // Get the hash bytes and convert them to a long.
+            byte[] hashBytes = md.digest();
+            long mostSigBits = 0;
+            long leastSigBits = 0;
+
+            for (int i = 0; i < 8; i++) {
+                mostSigBits = (mostSigBits << 8) | (hashBytes[i] & 0xff);
+            }
+
+            for (int i = 8; i < 16; i++) {
+                leastSigBits = (leastSigBits << 8) | (hashBytes[i] & 0xff);
+            }
+
+            // Create a UUID using the most and least significant bits.
+            UUID uuid = new UUID(mostSigBits, leastSigBits);
+            Map<EntityAttributeModifier.Operation, UUID> cache = slotCacheLookUP.getOrDefault(equipmentSlot, new HashMap<>());
+            cache.put(operation, uuid);
+            slotCacheLookUP.put(equipmentSlot, cache);
+            return uuid;
+
+        } catch (NoSuchAlgorithmException e) {
+            Miapi.LOGGER.warn("could not onReload UUID generator - Attributes are likely to be broken now");
+            return UUID.fromString("d3b89c4c-68ff-11ee-8c99-0242ac120002");
+        }
+    }
+
     private static EntityAttributeModifier.Operation getOperation(String operationString) {
+        if (operationString == null) {
+            return EntityAttributeModifier.Operation.ADDITION;
+        }
         return switch (operationString) {
             case "*" -> EntityAttributeModifier.Operation.MULTIPLY_BASE;
             case "**" -> EntityAttributeModifier.Operation.MULTIPLY_TOTAL;
@@ -504,7 +593,7 @@ public class AttributeProperty implements ModuleProperty {
     }
 
     public record EntityAttributeModifierHolder(EntityAttributeModifier attributeModifier, EquipmentSlot slot,
-                                                boolean seperateOnItem) {
+                                                boolean seperateOnItem, EntityAttributeModifier.Operation mergeTo) {
     }
 
     public interface AttributeTransformer {
@@ -512,7 +601,7 @@ public class AttributeProperty implements ModuleProperty {
     }
 
     public interface UUIDGetter {
-        UUID fromSlot(EquipmentSlot equipmentSlot);
+        UUID fromSlot(EquipmentSlot equipmentSlot, EntityAttributeModifier.Operation operation);
     }
 
     public static class AttributeJson {
@@ -522,5 +611,6 @@ public class AttributeProperty implements ModuleProperty {
         public String slot;
         public String uuid;
         public boolean seperateOnItem;
+        public String target_operation;
     }
 }

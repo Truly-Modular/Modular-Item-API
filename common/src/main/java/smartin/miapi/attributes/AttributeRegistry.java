@@ -3,6 +3,7 @@ package smartin.miapi.attributes;
 import dev.architectury.event.EventResult;
 import net.minecraft.entity.*;
 import net.minecraft.entity.attribute.EntityAttribute;
+import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -21,6 +22,7 @@ import smartin.miapi.modules.properties.AttributeProperty;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 
 public class AttributeRegistry {
@@ -36,6 +38,8 @@ public class AttributeRegistry {
     public static EntityAttribute MINING_SPEED_SHOVEL;
     public static EntityAttribute MINING_SPEED_HOE;
 
+    public static EntityAttribute CRITICAL_DAMAGE;
+    public static EntityAttribute CRITICAL_CHANCE;
     public static EntityAttribute DAMAGE_RESISTANCE;
     public static EntityAttribute BACK_STAB;
     public static EntityAttribute ARMOR_CRUSHING;
@@ -56,6 +60,8 @@ public class AttributeRegistry {
     public static EntityAttribute ELYTRA_TURN_EFFICIENCY;
     public static EntityAttribute ELYTRA_GLIDE_EFFICIENCY;
     public static EntityAttribute ELYTRA_ROCKET_EFFICIENCY;
+
+    private static UUID TEMP_CRIT_DMG_UUID = UUID.fromString("483b007a-c7db-11ee-a506-0242ac120002");
 
 
     public static void setup() {
@@ -135,6 +141,28 @@ public class AttributeRegistry {
             }
             return EventResult.pass();
         });
+
+        MiapiEvents.LIVING_HURT.register(livingHurtEvent -> {
+            if (livingHurtEvent.damageSource.getAttacker() instanceof LivingEntity attacker) {
+                if (attacker.getAttributes().hasAttribute(CRITICAL_CHANCE) && !livingHurtEvent.isCritical) {
+                    double value = attacker.getAttributeValue(CRITICAL_CHANCE);
+                    if (attacker.getWorld().getRandom().nextDouble() > value) {
+                        livingHurtEvent.isCritical = true;
+                        livingHurtEvent.amount = livingHurtEvent.amount * 1.5f;
+                    }
+                }
+                if (
+                        attacker.getAttributes().hasAttribute(CRITICAL_DAMAGE) &&
+                                livingHurtEvent.isCritical &&
+                                attacker.getAttributes().getCustomInstance(CRITICAL_DAMAGE) != null) {
+                    attacker.getAttributeInstance(CRITICAL_DAMAGE);
+                    attacker.getAttributes().getCustomInstance(CRITICAL_DAMAGE).addTemporaryModifier(new EntityAttributeModifier(TEMP_CRIT_DMG_UUID, "temp_crit_base_damage", livingHurtEvent.amount, EntityAttributeModifier.Operation.ADDITION));
+                    livingHurtEvent.amount = (float) attacker.getAttributeValue(CRITICAL_DAMAGE);
+                    attacker.getAttributes().getCustomInstance(CRITICAL_DAMAGE).removeModifier(TEMP_CRIT_DMG_UUID);
+                }
+            }
+            return EventResult.pass();
+        }, -1);
     }
 
     public static double getAttribute(ItemStack stack, EntityAttribute attribute, EquipmentSlot slot, double defaultValue) {

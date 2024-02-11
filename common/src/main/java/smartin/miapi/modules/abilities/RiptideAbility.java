@@ -94,6 +94,10 @@ public class RiptideAbility implements ItemUseAbility {
                     soundEvent = SoundEvents.ITEM_TRIDENT_RIPTIDE_1;
                 }
 
+                if(json.cooldown>0){
+                    playerEntity.getItemCooldownManager().set(stack.getItem(), (int) json.cooldown);
+                }
+
                 world.playSoundFromEntity((PlayerEntity) null, playerEntity, soundEvent, SoundCategory.PLAYERS, 1.0F, 1.0F);
             }
         }

@@ -43,6 +43,7 @@ public abstract class SingleStatDisplayDouble extends InteractAbleWidget impleme
     public HoverDescription hoverDescription;
     int red = MiapiConfig.ColorGroup.red.getValue().intValue();
     int green = MiapiConfig.ColorGroup.green.getValue().intValue();
+    public Text postfix = Text.of("");
     public boolean inverse = false;
     double oldValue = 0;
     double compareToValue = 0;
@@ -119,7 +120,7 @@ public abstract class SingleStatDisplayDouble extends InteractAbleWidget impleme
 
         textWidget.setX(this.getX() + 3);
         textWidget.setY(this.getY() + 3);
-        textWidget.setWidth(this.width - 8);
+        textWidget.setWidth(this.width - 25);
 
         statBar.setX(this.getX() + 2);
         statBar.setY(this.getY() + 15);
@@ -138,7 +139,7 @@ public abstract class SingleStatDisplayDouble extends InteractAbleWidget impleme
             currentValue.setX(this.getX() - 3);
             currentValue.setY(this.getY() + 5);
             currentValue.setWidth(this.getWidth());
-            currentValue.setText(Text.literal(modifierFormat.format(oldValue)));
+            currentValue.setText(Text.literal(modifierFormat.format(oldValue) + postfix.getString()));
             currentValue.setOrientation(ScrollingTextWidget.Orientation.RIGHT);
             currentValue.render(drawContext, mouseX, mouseY, delta);
         } else {
@@ -146,7 +147,7 @@ public abstract class SingleStatDisplayDouble extends InteractAbleWidget impleme
             compareValue.setY(this.getY() + 5);
             compareValue.setWidth(this.getWidth());
             compareValue.setOrientation(ScrollingTextWidget.Orientation.RIGHT);
-            compareValue.setText(Text.of(modifierFormat.format(compareToValue)));
+            compareValue.setText(Text.literal(Text.of(modifierFormat.format(compareToValue)).getString() + postfix.getString()));
             compareValue.render(drawContext, mouseX, mouseY, delta);
         }
         statBar.render(drawContext, mouseX, mouseY, delta);
@@ -157,7 +158,7 @@ public abstract class SingleStatDisplayDouble extends InteractAbleWidget impleme
     public void renderHover(DrawContext drawContext, int mouseX, int mouseY, float delta) {
         if (isMouseOver(mouseX, mouseY)) {
             Text text1 = this.hover.resolve(compareTo);
-            if(!text1.getString().isEmpty()){
+            if (!text1.getString().isEmpty()) {
                 List<Text> texts = Arrays.stream(text1.getString().split("\n")).map(a -> Text.literal(a)).collect(Collectors.toList());
                 drawContext.drawTooltip(MinecraftClient.getInstance().textRenderer, texts, mouseX, mouseY);
             }

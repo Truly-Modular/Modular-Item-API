@@ -26,3 +26,7 @@
   - "count" counts certain things
     - [count.module] will return the count of modules
     - [count.submodules] will return the count of submodules
+- changed Attribute Property to allow merging to multiplier as well
+- added cooldown field to riptide property
+- added Critical Damage Attribute
+- added Critical Chance Attribute

@@ -107,7 +107,7 @@ public class MiningShapeProperty implements ModuleProperty {
         return true;
     }
 
-    public static boolean saveBoolean(JsonObject object, String element, boolean defaultValue) {
+    public static boolean getBoolean(JsonObject object, String element, boolean defaultValue) {
         if (object != null) {
             JsonElement json = object.get(element);
             if (json != null && !json.isJsonNull() && json.isJsonPrimitive()) {

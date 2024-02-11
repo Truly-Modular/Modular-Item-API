@@ -2,17 +2,17 @@ package smartin.miapi.modules.properties.util;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
+import com.ibm.icu.impl.Pair;
 import net.minecraft.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
+import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ItemModule;
 
 import java.lang.reflect.Type;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * Any kind of property of a Module should be implemented here
@@ -114,5 +114,62 @@ public interface ModuleProperty {
     @Nullable
     default JsonElement getJsonElement(ItemStack itemStack) {
         return ItemModule.getMergedProperty(itemStack, this);
+    }
+
+    static boolean getBoolean(JsonObject object, String element, boolean defaultValue) {
+        if (object != null) {
+            JsonElement json = object.get(element);
+            if (json != null && !json.isJsonNull() && json.isJsonPrimitive()) {
+                return json.getAsBoolean();
+            }
+        }
+        return defaultValue;
+    }
+
+    static double getDouble(JsonObject object, String element, ItemModule.ModuleInstance moduleInstance, double defaultValue) {
+        if (object != null) {
+            JsonElement json = object.get(element);
+            if (json != null && !json.isJsonNull()) {
+                return StatResolver.resolveDouble(json, moduleInstance);
+            }
+        }
+        return defaultValue;
+    }
+
+    static int getInteger(JsonObject object, String element, ItemModule.ModuleInstance moduleInstance, int defaultValue) {
+        if (object != null) {
+            JsonElement json = object.get(element);
+            if (json != null && !json.isJsonNull()) {
+                return (int) StatResolver.resolveDouble(json, moduleInstance);
+            }
+        }
+        return defaultValue;
+    }
+
+    default Map<ItemModule.ModuleInstance, JsonElement> nonNullJsonElements(ItemStack itemStack) {
+        Map<ItemModule.ModuleInstance, JsonElement> maps = new LinkedHashMap<>();
+        ItemModule.getModules(itemStack).allSubModules().forEach(moduleInstance -> {
+            if (moduleInstance.getProperties().containsKey(this)) {
+                maps.put(moduleInstance, moduleInstance.getProperties().get(this));
+            }
+        });
+        return maps;
+    }
+
+    @Nullable
+    default Pair<ItemModule.ModuleInstance, JsonElement> highestPriorityJsonElement(ItemStack itemStack) {
+        Map<ItemModule.ModuleInstance, JsonElement> maps = new LinkedHashMap<>();
+        ItemModule.ModuleInstance moduleInstance = null;
+        JsonElement element = null;
+        for (ItemModule.ModuleInstance instance : ItemModule.getModules(itemStack).allSubModules()) {
+            if (instance.getProperties().containsKey(this)) {
+                moduleInstance = instance;
+                element = instance.getProperties().get(this);
+            }
+        }
+        if (moduleInstance == null) {
+            return null;
+        }
+        return Pair.of(moduleInstance, element);
     }
 }

@@ -33,7 +33,8 @@ public class FracturingProperty extends DoubleProperty {
                                         percentageIncrease + 1,
                                         EntityAttributeModifier.Operation.MULTIPLY_TOTAL),
                                 EquipmentSlot.MAINHAND,
-                                false));
+                                false,
+                                EntityAttributeModifier.Operation.ADDITION));
 
             }
             return map;

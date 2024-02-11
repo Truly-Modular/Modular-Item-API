@@ -46,6 +46,7 @@ public class MiapiEvents {
         public final LivingEntity livingEntity;
         public DamageSource damageSource;
         public float amount;
+        public boolean isCritical = false;
 
         public LivingHurtEvent(LivingEntity livingEntity, DamageSource damageSource, float amount) {
             this.livingEntity = livingEntity;
