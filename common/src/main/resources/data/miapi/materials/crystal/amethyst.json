@@ -9,6 +9,7 @@
   "durability": 1,
   "mining_speed": 5,
   "mining_level": 0,
+  "enchantability": 11,
   "color": "A477EE",
   "color_palette": {
     "type": "grayscale_map",

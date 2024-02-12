@@ -19,7 +19,7 @@ public class ModularArmorMaterial implements ArmorMaterial {
 
     @Override
     public int getEnchantability() {
-        return 5;
+        return 15;
     }
 
     @Override

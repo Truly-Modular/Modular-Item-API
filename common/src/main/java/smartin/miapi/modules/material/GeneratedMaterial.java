@@ -72,6 +72,7 @@ public class GeneratedMaterial implements Material {
         materialStats.put("durability", (double) toolMaterial.getDurability());
         materialStats.put("mining_level", (double) toolMaterial.getMiningLevel());
         materialStats.put("mining_speed", (double) toolMaterial.getMiningSpeedMultiplier());
+        materialStats.put("enchantability", (double) toolMaterial.getEnchantability());
 
         if (isClient) {
             clientSetup();

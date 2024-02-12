@@ -12,6 +12,7 @@
     "density": 2,
     "flexibility": 5,
     "durability": 150,
+    "enchantability": 6,
     "color": "D35FCE",
     "color_palette": {
         "type": "grayscale_map",

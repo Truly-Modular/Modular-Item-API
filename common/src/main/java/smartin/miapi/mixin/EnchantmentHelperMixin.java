@@ -18,6 +18,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import smartin.miapi.item.FakeEnchantment;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.modules.properties.ChannelingProperty;
+import smartin.miapi.modules.properties.EnchantAbilityProperty;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -72,8 +73,7 @@ public class EnchantmentHelperMixin {
     private static void miapi$modifyGenerateEnchantments(Random random, ItemStack stack, int level, boolean treasureAllowed, CallbackInfoReturnable<List<EnchantmentLevelEntry>> cir) {
         if (stack.getItem() instanceof ModularItem) {
             ArrayList<EnchantmentLevelEntry> list = Lists.newArrayList();
-            Item item = stack.getItem();
-            int i = item.getEnchantability();
+            int i = (int) Math.ceil(EnchantAbilityProperty.getEnchantAbility(stack));
             if (i <= 0) {
                 cir.setReturnValue(list);
             }

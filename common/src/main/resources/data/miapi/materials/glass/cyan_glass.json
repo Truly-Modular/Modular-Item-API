@@ -12,6 +12,7 @@
     "density": 1,
     "flexibility": 0,
     "durability": 50,
+    "enchantability": 11,
     "color": "4C7F99",
     "color_palette": {
         "type": "grayscale_map",

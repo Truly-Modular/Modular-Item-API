@@ -9,6 +9,7 @@
     "density": 4.6,
     "flexibility": 1,
     "durability": 32,
+    "enchantability": 22,
     "color": "FFD700",
     "color_palette": {
         "type": "grayscale_map",

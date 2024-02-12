@@ -16,6 +16,7 @@
     "density": 1,
     "flexibility": 0,
     "durability": 95,
+    "enchantability": 12,
     "mining_speed": 4,
     "mining_level": 1,
     "color_palette": {

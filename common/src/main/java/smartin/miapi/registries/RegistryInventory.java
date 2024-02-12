@@ -476,6 +476,7 @@ public class RegistryInventory {
             registerMiapi(moduleProperties, HideFlagsProperty.KEY, new HideFlagsProperty());
             registerMiapi(moduleProperties, MiningShapeProperty.KEY, new MiningShapeProperty());
             registerMiapi(moduleProperties, ModuleStats.KEY, new ModuleStats());
+            registerMiapi(moduleProperties, EnchantAbilityProperty.KEY, new EnchantAbilityProperty());
             //compat
             registerMiapi(moduleProperties, BetterCombatProperty.KEY, new BetterCombatProperty());
             registerMiapi(moduleProperties, ApoliPowersProperty.KEY, new ApoliPowersProperty());

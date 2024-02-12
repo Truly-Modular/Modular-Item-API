@@ -8,6 +8,7 @@
     "hardness": 5,
     "density": 3,
     "flexibility": 0,
+    "enchantability": 7,
     "durability": 189,
     "color": "F9F8EA",
     "color_palette": {
@@ -26,13 +27,6 @@
     "properties": {
         "head": {
             "fracturing": "20"
-        },
-        "default": {
-            "enchantments": {
-                "allowed": [
-                    "minecraft:riptide"
-                ]
-            }
         }
     },
     "mining_speed": 4,

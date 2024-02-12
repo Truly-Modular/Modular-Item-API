@@ -26,7 +26,7 @@ public class ModularToolMaterial implements ToolMaterial {
 
     @Override
     public int getEnchantability() {
-        return 5;
+        return 15;
     }
 
     @Override

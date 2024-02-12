@@ -61,7 +61,11 @@ public class AttributeRegistry {
     public static EntityAttribute ELYTRA_GLIDE_EFFICIENCY;
     public static EntityAttribute ELYTRA_ROCKET_EFFICIENCY;
 
-    private static UUID TEMP_CRIT_DMG_UUID = UUID.fromString("483b007a-c7db-11ee-a506-0242ac120002");
+    /**
+     * Changing these can break savegames, so do not touch
+     */
+    private static final UUID TEMP_CRIT_DMG_UUID = UUID.fromString("483b007a-c7db-11ee-a506-0242ac120002");
+    private static final UUID TEMP_BACKSTAB_DMG_UUID = UUID.fromString("03740034-c97c-11ee-a506-0242ac120002");
 
 
     public static void setup() {
@@ -75,8 +79,9 @@ public class AttributeRegistry {
             if (livingHurtEvent.damageSource.getAttacker() instanceof LivingEntity attacker) {
                 if (attacker.getAttributes().hasAttribute(BACK_STAB)) {
                     if (livingHurtEvent.damageSource.getAttacker().getRotationVector().dotProduct(livingHurtEvent.livingEntity.getRotationVector()) > 0) {
-                        float backStab = (float) attacker.getAttributeValue(BACK_STAB);
-                        livingHurtEvent.amount = livingHurtEvent.amount * (backStab);
+                        attacker.getAttributes().getCustomInstance(BACK_STAB).addTemporaryModifier(new EntityAttributeModifier(TEMP_BACKSTAB_DMG_UUID, "temp_backstab_base_damage", livingHurtEvent.amount, EntityAttributeModifier.Operation.ADDITION));
+                        livingHurtEvent.amount = (float) attacker.getAttributeValue(BACK_STAB);
+                        attacker.getAttributes().getCustomInstance(BACK_STAB).removeModifier(TEMP_BACKSTAB_DMG_UUID);
                     }
                 }
             }
@@ -156,7 +161,7 @@ public class AttributeRegistry {
                                 livingHurtEvent.isCritical &&
                                 attacker.getAttributes().getCustomInstance(CRITICAL_DAMAGE) != null) {
                     attacker.getAttributeInstance(CRITICAL_DAMAGE);
-                    attacker.getAttributes().getCustomInstance(CRITICAL_DAMAGE).addTemporaryModifier(new EntityAttributeModifier(TEMP_CRIT_DMG_UUID, "temp_crit_base_damage", livingHurtEvent.amount, EntityAttributeModifier.Operation.ADDITION));
+                    attacker.getAttributes().getCustomInstance(CRITICAL_DAMAGE).addTemporaryModifier(new EntityAttributeModifier(TEMP_CRIT_DMG_UUID, "temp_crit_base_damage", livingHurtEvent.amount * (1.0 / 1.5), EntityAttributeModifier.Operation.ADDITION));
                     livingHurtEvent.amount = (float) attacker.getAttributeValue(CRITICAL_DAMAGE);
                     attacker.getAttributes().getCustomInstance(CRITICAL_DAMAGE).removeModifier(TEMP_CRIT_DMG_UUID);
                 }

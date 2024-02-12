@@ -11,6 +11,7 @@
     "hardness": 3,
     "density": 1.8,
     "flexibility": 0,
+    "enchantability": 16,
     "durability": 111,
     "color": "E0D8AE",
     "color_palette": {

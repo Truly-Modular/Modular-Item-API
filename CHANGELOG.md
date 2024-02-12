@@ -30,3 +30,6 @@
 - added cooldown field to riptide property
 - added Critical Damage Attribute
 - added Critical Chance Attribute
+- added enchantability to Materials
+- added Enchantability Property to control the enchantability in the enchanting table, this prob wont work with enchanting table rework mods
+- adjusted how Backstab is calculated, +2 Backstab will now give 2 Damage on Backstab +200% will triple your damage on Backstab
