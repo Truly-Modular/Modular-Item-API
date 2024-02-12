@@ -31,5 +31,7 @@
 - added Critical Damage Attribute
 - added Critical Chance Attribute
 - added enchantability to Materials
+- added NoiseCanceling Property to prevent the emitting of StepEvents for certain Armors
+- added Lightning On Hit Property to cast Lightning on Melee Hits
 - added Enchantability Property to control the enchantability in the enchanting table, this prob wont work with enchanting table rework mods
-- adjusted how Backstab is calculated, +2 Backstab will now give 2 Damage on Backstab +200% will triple your damage on Backstab
+- adjusted how Backstab is calculated, +2 Backstab will now give +2 Damage on Backstab +100% will double your damage on Backstab

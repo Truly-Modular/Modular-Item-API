@@ -22,6 +22,11 @@
         },
         "filler": "interpolate"
     },
+    "properties": {
+        "boot": {
+            "step_noise_cancel": true
+        }
+    },
     "mining_speed": 0,
     "mining_level": 0,
     "textures": [

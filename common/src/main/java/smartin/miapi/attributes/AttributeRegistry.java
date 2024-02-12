@@ -162,7 +162,7 @@ public class AttributeRegistry {
                                 attacker.getAttributes().getCustomInstance(CRITICAL_DAMAGE) != null) {
                     attacker.getAttributeInstance(CRITICAL_DAMAGE);
                     attacker.getAttributes().getCustomInstance(CRITICAL_DAMAGE).addTemporaryModifier(new EntityAttributeModifier(TEMP_CRIT_DMG_UUID, "temp_crit_base_damage", livingHurtEvent.amount * (1.0 / 1.5), EntityAttributeModifier.Operation.ADDITION));
-                    livingHurtEvent.amount = (float) attacker.getAttributeValue(CRITICAL_DAMAGE);
+                    livingHurtEvent.amount = (float) attacker.getAttributeValue(CRITICAL_DAMAGE) * 1.5f;
                     attacker.getAttributes().getCustomInstance(CRITICAL_DAMAGE).removeModifier(TEMP_CRIT_DMG_UUID);
                 }
             }

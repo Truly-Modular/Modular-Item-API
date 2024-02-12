@@ -27,6 +27,11 @@
     "textures": [
         "fabric"
     ],
+    "properties": {
+        "boot": {
+            "step_noise_cancel": true
+        }
+    },
     "items": [
         {
             "item": "minecraft:light_blue_wool",
