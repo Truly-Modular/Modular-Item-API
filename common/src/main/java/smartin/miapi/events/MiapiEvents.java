@@ -4,12 +4,14 @@ import com.redpxnda.nucleus.event.PrioritizedEvent;
 import dev.architectury.event.EventResult;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.loot.function.SetAttributesLootFunction;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.intprovider.IntProvider;
@@ -41,6 +43,7 @@ public class MiapiEvents {
     public static final PrioritizedEvent<PlayerTickEvent> PLAYER_TICK_END = PrioritizedEvent.createLoop();
     public static final PrioritizedEvent<MaterialCraftEvent> MATERIAL_CRAFT_EVENT = PrioritizedEvent.createLoop();
     public static final PrioritizedEvent<SmithingEvent> SMITHING_EVENT = PrioritizedEvent.createLoop();
+    public static final PrioritizedEvent<LivingEntityAttributeBuild> LIVING_ENTITY_ATTRIBUTE_BUILD_EVENT = PrioritizedEvent.createLoop();
 
     public static class LivingHurtEvent {
         public final LivingEntity livingEntity;
@@ -65,6 +68,11 @@ public class MiapiEvents {
             }
             return ItemStack.EMPTY;
         }
+    }
+
+    public interface LivingEntityAttributeBuild{
+        EventResult build(DefaultAttributeContainer.Builder builder);
+
     }
 
     public static class MaterialCraftEventData {

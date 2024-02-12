@@ -1,5 +1,6 @@
 package smartin.miapi.modules.abilities.util;
 
+import com.google.gson.JsonObject;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -9,6 +10,8 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
 import net.minecraft.world.World;
+import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.properties.AbilityMangerProperty;
 
 /**
  * Implement this interface to provide custom behavior for item usage and handling.
@@ -25,7 +28,7 @@ public interface ItemUseAbility {
      * @param hand      The hand with which the item is being used.
      * @return true if the item is allowed to be used, false otherwise.
      */
-    boolean allowedOnItem(ItemStack itemStack, World world, PlayerEntity player, Hand hand, ItemAbilityManager.AbilityContext abilityContext);
+    boolean allowedOnItem(ItemStack itemStack, World world, PlayerEntity player, Hand hand, ItemAbilityManager.AbilityHitContext abilityHitContext);
 
     /**
      * Gets the use action of the specified item stack.
@@ -114,5 +117,14 @@ public interface ItemUseAbility {
 
     default void usageTick(World world, LivingEntity user, ItemStack stack, int remainingUseTicks) {
 
+    }
+
+    default AbilityMangerProperty.AbilityContext getAbilityContext(ItemStack itemStack) {
+        AbilityMangerProperty.AbilityContext context = new AbilityMangerProperty.AbilityContext(new JsonObject(), ItemModule.getModules(itemStack), itemStack);
+        String key = ItemAbilityManager.useAbilityRegistry.findKey(this);
+        if (key != null) {
+            context = AbilityMangerProperty.getContext(itemStack, key);
+        }
+        return context;
     }
 }

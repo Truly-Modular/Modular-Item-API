@@ -68,7 +68,7 @@ public class BlockAbility extends EntityAttributeAbility {
     }
 
     @Override
-    public boolean allowedOnItem(ItemStack itemStack, World world, PlayerEntity player, Hand hand, ItemAbilityManager.AbilityContext abilityContext) {
+    public boolean allowedOnItem(ItemStack itemStack, World world, PlayerEntity player, Hand hand, ItemAbilityManager.AbilityHitContext abilityHitContext) {
         return true;
     }
 
@@ -90,7 +90,7 @@ public class BlockAbility extends EntityAttributeAbility {
     }
 
     @Override
-    public void onStoppedUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
+    public void onStoppedUsingAfter(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
         resetAnimation(user);
         super.onStoppedUsing(stack, world, user, remainingUseTicks);
     }

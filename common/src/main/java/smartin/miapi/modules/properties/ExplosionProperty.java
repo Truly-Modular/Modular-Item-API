@@ -1,6 +1,9 @@
 package smartin.miapi.modules.properties;
 
 import com.google.common.collect.Sets;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.ibm.icu.impl.Pair;
 import com.mojang.serialization.Codec;
 import com.redpxnda.nucleus.codec.auto.AutoCodec;
 import dev.architectury.event.EventResult;
@@ -26,9 +29,12 @@ import net.minecraft.world.explosion.EntityExplosionBehavior;
 import net.minecraft.world.explosion.Explosion;
 import net.minecraft.world.explosion.ExplosionBehavior;
 import org.jetbrains.annotations.Nullable;
+import smartin.miapi.craft.stat.StatProvidersMap;
 import smartin.miapi.entity.ItemProjectileEntity;
 import smartin.miapi.events.MiapiProjectileEvents;
+import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.util.CodecBasedProperty;
+import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.Iterator;
 import java.util.List;
@@ -41,12 +47,15 @@ import java.util.Set;
 public class ExplosionProperty extends CodecBasedProperty<ExplosionProperty.ExplosionInfo> {
     public static final String KEY = "explosion_projectile";
     public static final Codec<ExplosionInfo> codec = AutoCodec.of(ExplosionInfo.class).codec();
+    public static ExplosionProperty property;
 
     public ExplosionProperty() {
         super(KEY, codec);
+        property = this;
         MiapiProjectileEvents.MODULAR_PROJECTILE_ENTITY_HIT.register(event -> {
-            ExplosionInfo info = this.get(event.projectile.asItemStack());
-            if (info != null) {
+            @Nullable Pair<ItemModule.ModuleInstance, JsonElement> jsonElement = this.highestPriorityJsonElement(event.projectile.asItemStack());
+            if (jsonElement != null) {
+                ExplosionInfo info = new ExplosionInfo(jsonElement.second.getAsJsonObject(), jsonElement.first);
                 if (!event.projectile.getWorld().isClient()) {
                     explode(info, event.projectile, event.entityHitResult);
                     event.projectile.discard();
@@ -89,14 +98,10 @@ public class ExplosionProperty extends CodecBasedProperty<ExplosionProperty.Expl
 
         MiapiExplosion explosion = new MiapiExplosion(projectile.getWorld(),
                 projectile.getOwner() == null ? projectile : projectile.getOwner(),
-        null, behavior, x, y, z, info.strength, false, destructionType);
-        explosion.entityMaxDamage = info.entityMaxDamage;
-        if (info.entityRadius != null) {
-            explosion.entityRadius = info.entityRadius;
-        }
-        if (info.entityStrength != null) {
-            explosion.entityExplosionPower = info.entityStrength;
-        }
+                (DamageSource) null, behavior, x, y, z, (float) info.strength, false, destructionType);
+        explosion.entityMaxDamage = (float) info.entityMaxDamage;
+        explosion.entityRadius = (float) info.entityRadius;
+        explosion.entityExplosionPower = (float) info.entityStrength;
         if (!projectile.getWorld().isClient) {
             explosion.collectBlocksAndDamageEntities();
         }
@@ -111,7 +116,7 @@ public class ExplosionProperty extends CodecBasedProperty<ExplosionProperty.Expl
             while (var14.hasNext()) {
                 ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity) var14.next();
                 if (serverPlayerEntity.squaredDistanceTo(x, y, z) < 4096.0) {
-                    serverPlayerEntity.networkHandler.sendPacket(new ExplosionS2CPacket(x, y, z, info.strength, explosion.getAffectedBlocks(), explosion.getAffectedPlayers().get(serverPlayerEntity)));
+                    serverPlayerEntity.networkHandler.sendPacket(new ExplosionS2CPacket(x, y, z, (float) info.strength, explosion.getAffectedBlocks(), explosion.getAffectedPlayers().get(serverPlayerEntity)));
                 }
             }
         }
@@ -269,13 +274,20 @@ public class ExplosionProperty extends CodecBasedProperty<ExplosionProperty.Expl
     }
 
     public static class ExplosionInfo {
-        public boolean destroyBlocks = false;
-        public float strength = 1.0f;
-        @AutoCodec.Optional
-        public Float entityStrength;
-        @AutoCodec.Optional
-        public float entityMaxDamage = Float.POSITIVE_INFINITY;
-        @AutoCodec.Optional
-        public Float entityRadius;
+        public boolean destroyBlocks;
+        public double chance;
+        public double strength;
+        public double entityStrength;
+        public double entityMaxDamage;
+        public double entityRadius;
+
+        public ExplosionInfo(JsonObject element, ItemModule.ModuleInstance moduleInstance) {
+            destroyBlocks = ModuleProperty.getBoolean(element, "destroyBlocks", false);
+            chance = ModuleProperty.getDouble(element, "chance", moduleInstance, 1.0);
+            strength = ModuleProperty.getDouble(element, "strength", moduleInstance, 1.0);
+            entityStrength = ModuleProperty.getDouble(element, "entityStrength", moduleInstance, strength * 7);
+            entityMaxDamage = ModuleProperty.getDouble(element, "entityMaxDamage", moduleInstance, Float.POSITIVE_INFINITY);
+            entityRadius = ModuleProperty.getDouble(element, "entityRadius", moduleInstance, strength * 2);
+        }
     }
 }

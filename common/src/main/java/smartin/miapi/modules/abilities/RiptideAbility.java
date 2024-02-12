@@ -17,14 +17,16 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
 import smartin.miapi.modules.abilities.util.ItemUseAbility;
+import smartin.miapi.modules.abilities.util.ItemUseDefaultCooldownAbility;
+import smartin.miapi.modules.abilities.util.ItemUseMinHoldAbility;
 import smartin.miapi.modules.properties.RiptideProperty;
 
 /**
  * This Ability allows you to use the Trident riptide Effect
  */
-public class RiptideAbility implements ItemUseAbility {
+public class RiptideAbility implements ItemUseDefaultCooldownAbility, ItemUseMinHoldAbility {
     @Override
-    public boolean allowedOnItem(ItemStack itemStack, World world, PlayerEntity player, Hand hand, ItemAbilityManager.AbilityContext abilityContext) {
+    public boolean allowedOnItem(ItemStack itemStack, World world, PlayerEntity player, Hand hand, ItemAbilityManager.AbilityHitContext abilityHitContext) {
         RiptideProperty.RiptideJson json = RiptideProperty.getData(itemStack);
         if (json == null) return false;
         boolean missingWater = !player.isTouchingWaterOrRain();
@@ -61,7 +63,12 @@ public class RiptideAbility implements ItemUseAbility {
         }
     }
 
-    public void onStoppedUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
+    @Override
+    public int minHoldTimeDefault(){
+        return 10;
+    }
+
+    public void onStoppedUsingAfter(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
         if (user instanceof PlayerEntity playerEntity) {
             int i = this.getMaxUseTime(stack) - remainingUseTicks;
             if (i >= 10) {

@@ -12,18 +12,20 @@ import net.minecraft.util.UseAction;
 import net.minecraft.world.World;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
 import smartin.miapi.modules.abilities.util.ItemUseAbility;
+import smartin.miapi.modules.abilities.util.ItemUseDefaultCooldownAbility;
+import smartin.miapi.modules.abilities.util.ItemUseMinHoldAbility;
 import smartin.miapi.modules.properties.EdibleProperty;
 
 /**
  * Allows items to be eaten, use in conjunction with {@link EdibleProperty}
  */
-public class EatAbility implements ItemUseAbility {
+public class EatAbility implements ItemUseDefaultCooldownAbility, ItemUseMinHoldAbility {
     public static final String KEY = "eat";
 
     public EatAbility() {}
 
     @Override
-    public boolean allowedOnItem(ItemStack itemStack, World world, PlayerEntity player, Hand hand, ItemAbilityManager.AbilityContext abilityContext) {
+    public boolean allowedOnItem(ItemStack itemStack, World world, PlayerEntity player, Hand hand, ItemAbilityManager.AbilityHitContext abilityHitContext) {
         EdibleProperty.Holder data = EdibleProperty.get(itemStack);
         return data != null && (data.alwaysEdible || player.getHungerManager().isNotFull());
     }

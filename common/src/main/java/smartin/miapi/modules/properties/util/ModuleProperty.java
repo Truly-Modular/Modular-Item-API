@@ -94,6 +94,22 @@ public interface ModuleProperty {
         return right;
     }
 
+    default JsonElement mergeAsMap(JsonElement old, JsonElement toMerge, MergeType mergeType) {
+        if (old != null && toMerge != null) {
+            Map<String, JsonElement> mapOld = old.getAsJsonObject().asMap();
+            Map<String, JsonElement> mapToMerge = toMerge.getAsJsonObject().asMap();
+            if (mergeType.equals(MergeType.OVERWRITE)) {
+                return toMerge;
+            }
+            mapOld.putAll(mapToMerge);
+            return Miapi.gson.toJsonTree(mapToMerge);
+        }
+        if (old == null && toMerge != null) {
+            return toMerge;
+        }
+        return old;
+    }
+
     static Map<ModuleProperty, JsonElement> mergeList(Map<ModuleProperty, JsonElement> old, Map<ModuleProperty, JsonElement> toMerge, MergeType type) {
         Map<ModuleProperty, JsonElement> mergedMap = new HashMap<>(old);
         toMerge.forEach((key, json) -> {
@@ -121,6 +137,16 @@ public interface ModuleProperty {
             JsonElement json = object.get(element);
             if (json != null && !json.isJsonNull() && json.isJsonPrimitive()) {
                 return json.getAsBoolean();
+            }
+        }
+        return defaultValue;
+    }
+
+    static boolean getBoolean(JsonObject object, String element, ItemModule.ModuleInstance moduleInstance, boolean defaultValue) {
+        if (object != null) {
+            JsonElement json = object.get(element);
+            if (json != null && !json.isJsonNull()) {
+                return StatResolver.resolveDouble(json, moduleInstance) > 0;
             }
         }
         return defaultValue;

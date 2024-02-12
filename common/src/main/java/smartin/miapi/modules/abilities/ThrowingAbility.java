@@ -20,6 +20,8 @@ import smartin.miapi.entity.ItemProjectileEntity;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
 import smartin.miapi.modules.abilities.util.ItemUseAbility;
+import smartin.miapi.modules.abilities.util.ItemUseDefaultCooldownAbility;
+import smartin.miapi.modules.abilities.util.ItemUseMinHoldAbility;
 import smartin.miapi.modules.properties.AbilityProperty;
 import smartin.miapi.modules.properties.AttributeProperty;
 import smartin.miapi.modules.properties.LoreProperty;
@@ -30,7 +32,7 @@ import java.util.List;
 /**
  * This Ability allows you to throw the Item in question like a Trident
  */
-public class ThrowingAbility implements ItemUseAbility {
+public class ThrowingAbility implements ItemUseDefaultCooldownAbility, ItemUseMinHoldAbility {
 
     public ThrowingAbility() {
         if(smartin.miapi.Environment.isClient()){
@@ -50,7 +52,7 @@ public class ThrowingAbility implements ItemUseAbility {
     }
 
     @Override
-    public boolean allowedOnItem(ItemStack itemStack, World world, PlayerEntity player, Hand hand, ItemAbilityManager.AbilityContext abilityContext) {
+    public boolean allowedOnItem(ItemStack itemStack, World world, PlayerEntity player, Hand hand, ItemAbilityManager.AbilityHitContext abilityHitContext) {
         return true;
     }
 
@@ -71,7 +73,12 @@ public class ThrowingAbility implements ItemUseAbility {
     }
 
     @Override
-    public void onStoppedUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
+    public int minHoldTimeDefault(){
+        return 10;
+    }
+
+    @Override
+    public void onStoppedUsingAfter(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
         if (user instanceof PlayerEntity playerEntity) {
             int i = this.getMaxUseTime(stack) - remainingUseTicks;
             if (i >= 10) {

@@ -43,6 +43,8 @@ public class AttributeProperty implements ModuleProperty {
         priorityMap.put(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, -13.0f);
         priorityMap.put(EntityAttributes.GENERIC_ATTACK_DAMAGE, -12.0f);
         priorityMap.put(EntityAttributes.GENERIC_ATTACK_SPEED, -11.0f);
+        priorityMap.put(AttributeRegistry.CRITICAL_DAMAGE, -10.9f);
+        priorityMap.put(AttributeRegistry.CRITICAL_CHANCE, -10.8f);
         priorityMap.put(AttributeRegistry.PROJECTILE_DAMAGE, -10.0f);
         priorityMap.put(AttributeRegistry.PROJECTILE_CRIT_MULTIPLIER, -9.5f);
         priorityMap.put(AttributeRegistry.PROJECTILE_SPEED, -9.0f);

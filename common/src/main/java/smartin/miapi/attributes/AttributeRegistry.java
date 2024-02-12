@@ -52,6 +52,10 @@ public class AttributeRegistry {
     public static EntityAttribute PLAYER_ITEM_USE_MOVEMENT_SPEED;
 
     public static EntityAttribute PROJECTILE_DAMAGE;
+    @Deprecated
+    /**
+     * @deprecated use {@link AttributeRegistry#CRITICAL_DAMAGE} instead, its more general and has better logic
+     */
     public static EntityAttribute PROJECTILE_CRIT_MULTIPLIER;
     public static EntityAttribute PROJECTILE_SPEED;
     public static EntityAttribute PROJECTILE_ACCURACY;
@@ -65,6 +69,7 @@ public class AttributeRegistry {
      * Changing these can break savegames, so do not touch
      */
     private static final UUID TEMP_CRIT_DMG_UUID = UUID.fromString("483b007a-c7db-11ee-a506-0242ac120002");
+    private static final UUID TEMP_CRIT_DMG_MULTIPLIER_UUID = UUID.fromString("238664bf-ae30-40f7-b717-230655bd6595");
     private static final UUID TEMP_BACKSTAB_DMG_UUID = UUID.fromString("03740034-c97c-11ee-a506-0242ac120002");
 
 
@@ -162,8 +167,10 @@ public class AttributeRegistry {
                                 attacker.getAttributes().getCustomInstance(CRITICAL_DAMAGE) != null) {
                     attacker.getAttributeInstance(CRITICAL_DAMAGE);
                     attacker.getAttributes().getCustomInstance(CRITICAL_DAMAGE).addTemporaryModifier(new EntityAttributeModifier(TEMP_CRIT_DMG_UUID, "temp_crit_base_damage", livingHurtEvent.amount * (1.0 / 1.5), EntityAttributeModifier.Operation.ADDITION));
-                    livingHurtEvent.amount = (float) attacker.getAttributeValue(CRITICAL_DAMAGE) * 1.5f;
+                    attacker.getAttributes().getCustomInstance(CRITICAL_DAMAGE).addTemporaryModifier(new EntityAttributeModifier(TEMP_CRIT_DMG_MULTIPLIER_UUID, "temp_crit_base_multiplier", 1.5, EntityAttributeModifier.Operation.MULTIPLY_BASE));
+                    livingHurtEvent.amount = (float) attacker.getAttributeValue(CRITICAL_DAMAGE);
                     attacker.getAttributes().getCustomInstance(CRITICAL_DAMAGE).removeModifier(TEMP_CRIT_DMG_UUID);
+                    attacker.getAttributes().getCustomInstance(CRITICAL_DAMAGE).removeModifier(TEMP_CRIT_DMG_MULTIPLIER_UUID);
                 }
             }
             return EventResult.pass();

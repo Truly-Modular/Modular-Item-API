@@ -196,6 +196,9 @@ public class ModularBow extends BowItem implements ModularItem {
     }
 
     public static float getPullProgress(int useTicks, ItemStack stack) {
+        if (useTicks < 1) {
+            return 0;
+        }
         float f = (float) ((float) useTicks / (20 - AttributeProperty.getActualValue(stack, EquipmentSlot.MAINHAND, AttributeRegistry.BOW_DRAW_TIME)));
         if ((f = (f * f + f * 2.0f) / 3.0f) > 1.0f) {
             f = 1.0f;

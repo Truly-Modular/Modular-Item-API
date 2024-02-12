@@ -16,9 +16,7 @@ import net.minecraft.util.UseAction;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.world.World;
 import smartin.miapi.mixin.LivingEntityAccessor;
-import smartin.miapi.modules.abilities.util.AttackUtil;
-import smartin.miapi.modules.abilities.util.ItemAbilityManager;
-import smartin.miapi.modules.abilities.util.ItemUseAbility;
+import smartin.miapi.modules.abilities.util.*;
 import smartin.miapi.modules.properties.AbilityProperty;
 import smartin.miapi.modules.properties.HeavyAttackProperty;
 import smartin.miapi.modules.properties.LoreProperty;
@@ -30,7 +28,7 @@ import java.util.List;
  * This Ability allows a stronger attack than the normal left click.
  * Has Configurable range and default sweeping and a scale factor for Damage
  */
-public class HeavyAttackAbility implements ItemUseAbility {
+public class HeavyAttackAbility implements ItemUseDefaultCooldownAbility, ItemUseMinHoldAbility {
 
     public HeavyAttackAbility() {
         if(smartin.miapi.Environment.isClient()){
@@ -50,7 +48,7 @@ public class HeavyAttackAbility implements ItemUseAbility {
     }
 
     @Override
-    public boolean allowedOnItem(ItemStack itemStack, World world, PlayerEntity player, Hand hand, ItemAbilityManager.AbilityContext abilityContext) {
+    public boolean allowedOnItem(ItemStack itemStack, World world, PlayerEntity player, Hand hand, ItemAbilityManager.AbilityHitContext abilityHitContext) {
         return HeavyAttackProperty.property.hasHeavyAttack(itemStack);
     }
 
@@ -75,7 +73,7 @@ public class HeavyAttackAbility implements ItemUseAbility {
 
 
     @Override
-    public void onStoppedUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
+    public void onStoppedUsingAfter(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
         HeavyAttackProperty.HeavyAttackHolder heavyAttackJson = HeavyAttackProperty.property.get(stack);
         double damage = heavyAttackJson.damage;
         double sweeping = heavyAttackJson.sweeping;

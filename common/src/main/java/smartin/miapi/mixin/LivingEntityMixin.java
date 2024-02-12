@@ -47,6 +47,7 @@ abstract class LivingEntityMixin {
             AttributeRegistry.entityAttributeMap.forEach((id, attribute) -> {
                 builder.add(attribute);
             });
+            MiapiEvents.LIVING_ENTITY_ATTRIBUTE_BUILD_EVENT.invoker().build(builder);
         }
     }
 
