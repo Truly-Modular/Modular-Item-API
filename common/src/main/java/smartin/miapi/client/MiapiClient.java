@@ -73,7 +73,7 @@ public class MiapiClient {
         ClientPlayerEvent.CLIENT_PLAYER_JOIN.register(player -> new Thread(() -> MiapiPermissions.getPerms(player)).start());
         ClientPlayerEvent.CLIENT_PLAYER_JOIN.register(player -> {
             /*
-            if (irisLoaded && MiapiConfig.CompatGroup.sendWarningOnWorldLoad.getValue()) {
+            if (irisLoaded && MiapiConfig.CompatGroup.sendWarningOnWorldLoad.getInt()) {
                 player.sendMessage(Text.literal("Truly Modulars rendering is switched to Fallback."));
                 player.sendMessage(Text.literal("This means Modular Items will look significantly worse than they are supposed to."));
                 player.sendMessage(Text.literal("This is due to Iris not allowing Mods to implement custom shaders."));

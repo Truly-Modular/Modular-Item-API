@@ -14,7 +14,9 @@ import javax.swing.*;
 
 /**
  * The Property controling {@link smartin.miapi.modules.abilities.RiptideAbility}
+ * will be replaced by {@link smartin.miapi.modules.abilities.RiptideAbility}
  */
+@Deprecated
 public class RiptideProperty implements ModuleProperty {
     public static RiptideProperty property;
     public static final String KEY = "riptide";
@@ -26,11 +28,16 @@ public class RiptideProperty implements ModuleProperty {
 
     @Override
     public boolean load(String moduleKey, JsonElement data) throws Exception {
-        new RiptideJson(data.getAsJsonObject(),new ItemModule.ModuleInstance(ItemModule.empty));
+        new RiptideJson(data.getAsJsonObject(), new ItemModule.ModuleInstance(ItemModule.empty));
         return true;
     }
 
     public static RiptideJson getData(ItemStack itemStack) {
+        AbilityMangerProperty.AbilityContext context = AbilityMangerProperty.getContext(itemStack, KEY);
+        if (context != null && context.isFullContext) {
+            return new RiptideJson(context.contextJson, context.contextInstance);
+        }
+
         Pair<ItemModule.ModuleInstance, JsonElement> element = property.highestPriorityJsonElement(itemStack);
         if (element != null) {
             return new RiptideJson(element.second.getAsJsonObject(), element.first);

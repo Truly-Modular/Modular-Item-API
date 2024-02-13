@@ -9,7 +9,7 @@ public interface ItemUseDefaultCooldownAbility extends ItemUseAbility {
 
 
     default int getCooldown(ItemStack itemstack) {
-        return (int) getAbilityContext(itemstack).getValue("cooldown", getDefaultCooldown());
+        return getAbilityContext(itemstack).getInt("cooldown", getDefaultCooldown());
     }
 
     default boolean useCooldown(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {

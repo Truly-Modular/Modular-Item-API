@@ -11,6 +11,7 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
 import net.minecraft.world.World;
 import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.AbilityMangerProperty;
 
 /**
@@ -18,7 +19,7 @@ import smartin.miapi.modules.properties.AbilityMangerProperty;
  * This class allows Modular Items to swap their Actions on RightClick (UseKey).
  * Register implementations in the {@link ItemAbilityManager#useAbilityRegistry} to be used.
  */
-public interface ItemUseAbility {
+public interface ItemUseAbility<T> {
     /**
      * Checks if this {@link ItemUseAbility} is allowed on the specified item stack, world, player, and hand.
      *
@@ -126,5 +127,18 @@ public interface ItemUseAbility {
             context = AbilityMangerProperty.getContext(itemStack, key);
         }
         return context;
+    }
+
+    /**
+     * This can be implemented for caching related context, abilities should use this if they are highly complex
+     * @param jsonObject
+     * @return
+     */
+    default T fromJson(JsonObject jsonObject) {
+        return null;
+    }
+
+    default T getSpecialContext(ItemStack itemStack, T defaultValue) {
+        return ModularItemCache.get(itemStack, AbilityMangerProperty.KEY + "_" + ItemAbilityManager.useAbilityRegistry.findKey(this), defaultValue);
     }
 }

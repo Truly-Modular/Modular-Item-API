@@ -19,6 +19,7 @@ import smartin.miapi.modules.abilities.util.ItemAbilityManager;
 import smartin.miapi.modules.abilities.util.ItemUseAbility;
 import smartin.miapi.modules.abilities.util.ItemUseDefaultCooldownAbility;
 import smartin.miapi.modules.abilities.util.ItemUseMinHoldAbility;
+import smartin.miapi.modules.properties.AbilityMangerProperty;
 import smartin.miapi.modules.properties.RiptideProperty;
 
 /**
@@ -100,11 +101,6 @@ public class RiptideAbility implements ItemUseDefaultCooldownAbility, ItemUseMin
                 } else {
                     soundEvent = SoundEvents.ITEM_TRIDENT_RIPTIDE_1;
                 }
-
-                if(json.cooldown>0){
-                    playerEntity.getItemCooldownManager().set(stack.getItem(), (int) json.cooldown);
-                }
-
                 world.playSoundFromEntity((PlayerEntity) null, playerEntity, soundEvent, SoundCategory.PLAYERS, 1.0F, 1.0F);
             }
         }

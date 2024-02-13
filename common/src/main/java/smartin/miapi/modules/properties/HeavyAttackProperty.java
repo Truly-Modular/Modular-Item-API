@@ -2,6 +2,7 @@ package smartin.miapi.modules.properties;
 
 import com.google.gson.JsonElement;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.JsonOps;
 import com.redpxnda.nucleus.codec.auto.AutoCodec;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -16,7 +17,9 @@ import smartin.miapi.modules.properties.util.MergeType;
 
 /**
  * This property controls {@link smartin.miapi.modules.abilities.HeavyAttackAbility}
+ * will be replaced by {@link smartin.miapi.modules.abilities.HeavyAttackAbility}
  */
+@Deprecated
 public class HeavyAttackProperty extends CodecBasedProperty<HeavyAttackProperty.HeavyAttackHolder> implements GuiWidgetSupplier {
     public static final String KEY = "heavyAttack";
     public static HeavyAttackProperty property;
@@ -25,6 +28,15 @@ public class HeavyAttackProperty extends CodecBasedProperty<HeavyAttackProperty.
     public HeavyAttackProperty() {
         super(KEY, codec);
         property = this;
+    }
+
+
+    public HeavyAttackHolder get(ItemStack itemStack){
+        AbilityMangerProperty.AbilityContext context = AbilityMangerProperty.getContext(itemStack, KEY);
+        if (context != null && context.isFullContext) {
+            return codec.parse(JsonOps.INSTANCE,context.contextJson).result().get();
+        }
+        return super.get(itemStack);
     }
 
     @Override

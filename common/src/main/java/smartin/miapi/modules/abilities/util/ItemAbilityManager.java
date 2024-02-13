@@ -12,6 +12,8 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
+import smartin.miapi.modules.cache.ModularItemCache;
+import smartin.miapi.modules.properties.AbilityMangerProperty;
 import smartin.miapi.modules.properties.AbilityProperty;
 import smartin.miapi.registries.MiapiRegistry;
 
@@ -49,6 +51,9 @@ public class ItemAbilityManager {
                 }
             }
         });
+        useAbilityRegistry.addCallback(ability -> {
+            ModularItemCache.setSupplier(AbilityMangerProperty.KEY + "_" + ItemAbilityManager.useAbilityRegistry.findKey(ability), (itemStack -> ability.fromJson(AbilityMangerProperty.getContext(itemStack, ability).contextJson)));
+        });
         useAbilityRegistry.register("empty", emptyAbility);
     }
 
@@ -62,7 +67,7 @@ public class ItemAbilityManager {
     }
 
     private static ItemUseAbility getAbility(ItemStack itemStack, World world, PlayerEntity player, Hand hand, AbilityHitContext abilityHitContext) {
-        for (ItemUseAbility ability : AbilityProperty.get(itemStack)) {
+        for (ItemUseAbility ability : AbilityMangerProperty.get(itemStack)) {
             if (ability.allowedOnItem(itemStack, world, player, hand, abilityHitContext)) {
                 return ability;
             }

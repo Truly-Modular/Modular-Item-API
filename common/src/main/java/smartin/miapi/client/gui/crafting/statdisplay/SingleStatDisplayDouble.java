@@ -108,8 +108,8 @@ public abstract class SingleStatDisplayDouble extends InteractAbleWidget impleme
 
     @Override
     public void render(DrawContext drawContext, int mouseX, int mouseY, float delta) {
-        //double oldValue = getValue(original);
-        //double compareToValue = getValue(compareTo);
+        //double oldValue = getInt(original);
+        //double compareToValue = getInt(compareTo);
 
         double min = Math.min(minValue, Math.min(oldValue, compareToValue));
         double max = Math.max(maxValue, Math.max(oldValue, compareToValue));

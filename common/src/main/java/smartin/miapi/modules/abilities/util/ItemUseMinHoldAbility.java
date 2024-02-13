@@ -16,7 +16,7 @@ public interface ItemUseMinHoldAbility extends ItemUseAbility {
     }
 
     default int getMinHoldTime(ItemStack itemStack) {
-        return getAbilityContext(itemStack).getValue("min_hold", minHoldTimeDefault());
+        return getAbilityContext(itemStack).getInt("min_hold", minHoldTimeDefault());
     }
 
     @Override

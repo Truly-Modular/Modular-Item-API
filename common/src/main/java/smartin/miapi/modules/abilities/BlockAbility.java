@@ -19,6 +19,7 @@ import net.minecraft.world.World;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.modules.abilities.util.EntityAttributeAbility;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
+import smartin.miapi.modules.properties.AbilityMangerProperty;
 import smartin.miapi.modules.properties.AbilityProperty;
 import smartin.miapi.modules.properties.BlockProperty;
 import smartin.miapi.modules.properties.LoreProperty;
@@ -45,7 +46,7 @@ public class BlockAbility extends EntityAttributeAbility {
     public void clientSetup() {
         LoreProperty.bottomLoreSuppliers.add(itemStack -> {
             List<Text> texts = new ArrayList<>();
-            if (AbilityProperty.property.isPrimaryAbility(this, itemStack)) {
+            if (AbilityMangerProperty.isPrimaryAbility(this, itemStack)) {
                 Text raw = Text.translatable("miapi.ability.block.lore");
                 texts.add(raw);
             }
