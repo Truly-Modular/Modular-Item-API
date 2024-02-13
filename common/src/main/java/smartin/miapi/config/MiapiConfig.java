@@ -63,7 +63,7 @@ public class MiapiConfig extends Config {
     public static class CompatGroup extends ConfigItemGroup {
        public static BooleanConfigItem animatedMaterial = new BooleanConfigItem(
                 "animated_materials",
-                false,
+                true,
                 "Animated Materials do have a significant fps impact at the moment");
 
         protected CompatGroup() {
