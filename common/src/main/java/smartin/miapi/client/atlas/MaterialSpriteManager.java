@@ -7,6 +7,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.util.Identifier;
+import smartin.miapi.Miapi;
 import smartin.miapi.modules.material.Material;
 import smartin.miapi.modules.material.palette.MaterialSpriteColorer;
 
@@ -18,14 +19,15 @@ public class MaterialSpriteManager {
     static Map<Holder, NativeImageBackedTexture> animated_Textures = new HashMap<>();
 
     public static final long CACHE_SIZE = 1000;
-    public static final long CACHE_LIFETIME = 2;
-    public static final TimeUnit CACHE_LIFETIME_UNIT = TimeUnit.MINUTES;
+    public static final long CACHE_LIFETIME = 10;
+    public static final TimeUnit CACHE_LIFETIME_UNIT = TimeUnit.SECONDS;
     protected static final Cache<Holder, Identifier> materialSpriteCache = CacheBuilder.newBuilder()
             .maximumSize(CACHE_SIZE)
             .expireAfterAccess(CACHE_LIFETIME, CACHE_LIFETIME_UNIT)
             .removalListener(notification -> {
                 if (notification.getValue() instanceof Identifier removeId) {
                     MinecraftClient.getInstance().getTextureManager().destroyTexture(removeId);
+                    animated_Textures.remove(notification.getKey());
                 }
             })
             .build(new CacheLoader<>() {

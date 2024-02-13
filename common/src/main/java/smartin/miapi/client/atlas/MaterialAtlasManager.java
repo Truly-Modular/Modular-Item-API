@@ -28,6 +28,7 @@ public class MaterialAtlasManager extends SpriteAtlasHolder {
 
     public MaterialAtlasManager(TextureManager textureManager) {
         super(textureManager, MATERIAL_ATLAS_ID, MATERIAL_ID);
+        Sprite sprite;
     }
 
     /*
