@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static smartin.miapi.Miapi.*;
 
@@ -524,7 +525,7 @@ public class ItemModule {
          * @return a map of module properties and their associated JSON elements, keyed by property name
          */
         public Map<ModuleProperty, JsonElement> getPropertiesMerged() {
-            Map<ModuleProperty, JsonElement> map = new HashMap<>();
+            Map<ModuleProperty, JsonElement> map = new ConcurrentHashMap<>();
             for (ModuleInstance moduleInstance : this.allSubModules()) {
                 moduleInstance.getProperties().forEach((property, element) -> {
                     if (map.containsKey(property)) {

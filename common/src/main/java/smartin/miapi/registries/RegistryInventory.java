@@ -479,6 +479,7 @@ public class RegistryInventory {
             registerMiapi(moduleProperties, EnchantAbilityProperty.KEY, new EnchantAbilityProperty());
             registerMiapi(moduleProperties, StepCancelingProperty.KEY, new StepCancelingProperty());
             registerMiapi(moduleProperties, LightningOnHit.KEY, new LightningOnHit());
+            registerMiapi(moduleProperties, GuiStatProperty.KEY, new GuiStatProperty());
             //compat
             registerMiapi(moduleProperties, BetterCombatProperty.KEY, new BetterCombatProperty());
             registerMiapi(moduleProperties, ApoliPowersProperty.KEY, new ApoliPowersProperty());

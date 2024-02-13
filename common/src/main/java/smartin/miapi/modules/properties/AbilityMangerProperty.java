@@ -64,7 +64,7 @@ public class AbilityMangerProperty implements ModuleProperty {
 
     @Override
     public JsonElement merge(JsonElement old, JsonElement toMerge, MergeType type) {
-        return mergeAsMap(old, toMerge, type);
+        return ModuleProperty.mergeAsMap(old, toMerge, type);
     }
 
     @Nullable

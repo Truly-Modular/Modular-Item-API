@@ -64,7 +64,7 @@ public class MiapiConfig extends Config {
        public static BooleanConfigItem animatedMaterial = new BooleanConfigItem(
                 "animated_materials",
                 true,
-                "Animated Materials do have a significant fps impact at the moment");
+                "Animated Materials do have a some fps impact at the moment");
 
         protected CompatGroup() {
             super(of(animatedMaterial), "compat_settings");

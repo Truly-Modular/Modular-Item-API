@@ -98,7 +98,7 @@ public interface ModuleProperty {
         return right;
     }
 
-    default JsonElement mergeAsMap(JsonElement old, JsonElement toMerge, MergeType mergeType) {
+    static JsonElement mergeAsMap(JsonElement old, JsonElement toMerge, MergeType mergeType) {
         if (old != null && toMerge != null) {
             Map<String, JsonElement> mapOld = old.getAsJsonObject().asMap();
             Map<String, JsonElement> mapToMerge = toMerge.getAsJsonObject().asMap();
