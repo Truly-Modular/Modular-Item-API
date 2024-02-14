@@ -139,7 +139,9 @@ public class AllowedMaterial implements CraftingProperty, ModuleProperty {
         Material material = MaterialProperty.getMaterialFromIngredient(input);
         assert material != null;
         int newCount = (int) (input.getCount() - Math.ceil(json.cost * crafting.getCount() / material.getValueOfItem(input)));
-        input.setCount(newCount);
+        if (!player.getWorld().isClient()) {
+            input.setCount(newCount);
+        }
         MaterialProperty.setMaterial(newModule, material.getKey());
         //materialStack.setCount(1);
         MiapiEvents.MaterialCraftEventData eventData = new MiapiEvents.MaterialCraftEventData(crafting, materialStack, material, newModule, craftAction);
@@ -150,9 +152,9 @@ public class AllowedMaterial implements CraftingProperty, ModuleProperty {
         return results;
     }
 
-    public static double getMaterialCost(ItemModule.ModuleInstance moduleInstance){
+    public static double getMaterialCost(ItemModule.ModuleInstance moduleInstance) {
         JsonElement element = property.getJsonElement(moduleInstance);
-        if(element!=null){
+        if (element != null) {
             return Miapi.gson.fromJson(element, AllowedMaterialJson.class).cost;
         }
         return 0;
