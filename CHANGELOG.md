@@ -4,39 +4,33 @@
 - changed module property resolving to allow for more complex conditions
 - Renderer Changes :
   - rebranded Altrenderer to BakedModelRenderer
-  - made BakedModelRenderer the default Renderer and removed other renderers
-  - added config options to disable Animations for BakedModelRenderer
+  - removed other renderers
+  - added Animations
 - added ShapedMining Property allowing for vein and Cube based Mining with the following elements
   - Shape (what shape is mined)
   - Condition (if the effect can trigger)
   - Modifiers (adjusting behaviour)
   - Mode (the actual mining, allows for delayed mining)
-  - Addons can add custom shapes, conditions modfiers and modes dynamicly in java and they can be used fully interchangeably
 - added StatResolvers "collect","module" "material-module", "module-material", "count"
   - "collect"/ [collect.add.material.somestat]
     - allows for "add","max","min","average"
-    - will collect the stats of all modules/their materials and use the desired operation on them
   - "module"/ [module.someStat]
-    - these work similar to material stats and are resolvable via [module.customstat]
-    - [module.cost] is allocated to the material cost of the module
   - "material-module"/ [material-module.someStat] and "module-material"/ [module-material.someStat]
-    - "material-module" will first attempt to use the stat of the material, if the material has no stat defined it will use the module stat
-    - "module-material" does the same but in the opposite order
+    - "material-module" will first check for a material stat, then module,"module-material" the other way arround
   - "count" counts certain things
     - [count.module] will return the count of modules
     - [count.submodules] will return the count of submodules
 - changed Attribute Property to allow merging to multiplier as well
-- added Critical Damage Attribute
-- added Critical Chance Attribute
+- added Critical Damage and Chance Attribute
 - added HideFlags property
 - added basic Epic Fight Compat
 - added cooldown field to riptide property
-- added NoiseCanceling Property to prevent the emitting of StepEvents for certain Armors
+- added NoiseCanceling Property to prevent the emitting of StepEvents
   - gave wool boots noise canceling
 - added Lightning On Hit Property to cast Lightning on Melee Hits
 - added gui_stat property to add custom stats to the gui via json
 - added enchantability to Materials
 - added Enchantability Property to control the enchantability in the enchanting table, this prob wont work with enchanting table rework mods
-- adjusted how Backstab is calculated, +2 Backstab will now give +2 Damage on Backstab +100% will double your damage on Backstab
-- Reworked Abilities from abilities to ability_context property to allow common things of the abilities and make the code simpler
-  - this includes default cooldown and minhold as parameters, also made them be complex Numbers instead of simple ones 
+- adjusted how Backstab is calculated, +2 Backstab will now give +2 Damage +100% will double your damage
+- Reworked Abilities from abilities to ability_context property to allow common things
+  - default includes cooldown and minhold
