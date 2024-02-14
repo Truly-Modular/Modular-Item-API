@@ -13,6 +13,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import smartin.miapi.Miapi;
 import smartin.miapi.entity.ItemProjectileEntity;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.events.MiapiProjectileEvents;
@@ -23,10 +24,15 @@ import smartin.miapi.modules.properties.AttributeProperty;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.WeakHashMap;
 
 
 public class AttributeRegistry {
     public static Map<String, EntityAttribute> entityAttributeMap = new HashMap<>();
+    /**
+     * Idk, this is kinda bad but i couldnt do it in the mixin
+     */
+    public static Map<PlayerEntity,Boolean> hasCrittedLast = new WeakHashMap<>();
 
     public static EntityAttribute REACH;
     public static EntityAttribute ATTACK_RANGE;
@@ -153,10 +159,16 @@ public class AttributeRegistry {
         });
 
         MiapiEvents.LIVING_HURT.register(livingHurtEvent -> {
-            if (livingHurtEvent.damageSource.getAttacker() instanceof LivingEntity attacker) {
+            if(livingHurtEvent.isCritical){
+                Miapi.LOGGER.info("event is critical");
+            }
+            if (
+                    livingHurtEvent.damageSource.getAttacker() instanceof LivingEntity attacker &&
+                            !livingHurtEvent.livingEntity.getWorld().isClient()
+            ) {
                 if (attacker.getAttributes().hasAttribute(CRITICAL_CHANCE) && !livingHurtEvent.isCritical) {
                     double value = attacker.getAttributeValue(CRITICAL_CHANCE);
-                    if (attacker.getWorld().getRandom().nextDouble() > value) {
+                    if (attacker.getWorld().getRandom().nextDouble() < value) {
                         livingHurtEvent.isCritical = true;
                         livingHurtEvent.amount = livingHurtEvent.amount * 1.5f;
                     }
@@ -166,11 +178,12 @@ public class AttributeRegistry {
                                 livingHurtEvent.isCritical &&
                                 attacker.getAttributes().getCustomInstance(CRITICAL_DAMAGE) != null) {
                     attacker.getAttributeInstance(CRITICAL_DAMAGE);
-                    attacker.getAttributes().getCustomInstance(CRITICAL_DAMAGE).addTemporaryModifier(new EntityAttributeModifier(TEMP_CRIT_DMG_UUID, "temp_crit_base_damage", livingHurtEvent.amount * (1.0 / 1.5), EntityAttributeModifier.Operation.ADDITION));
-                    attacker.getAttributes().getCustomInstance(CRITICAL_DAMAGE).addTemporaryModifier(new EntityAttributeModifier(TEMP_CRIT_DMG_MULTIPLIER_UUID, "temp_crit_base_multiplier", 1.5, EntityAttributeModifier.Operation.MULTIPLY_BASE));
+                    attacker.getAttributes().getCustomInstance(CRITICAL_DAMAGE).addTemporaryModifier(new EntityAttributeModifier(TEMP_CRIT_DMG_UUID, "temp_crit_base_damage", livingHurtEvent.amount / 1.5, EntityAttributeModifier.Operation.ADDITION));
+                    attacker.getAttributes().getCustomInstance(CRITICAL_DAMAGE).addTemporaryModifier(new EntityAttributeModifier(TEMP_CRIT_DMG_MULTIPLIER_UUID, "temp_crit_base_multiplier", 0.5, EntityAttributeModifier.Operation.MULTIPLY_BASE));
                     livingHurtEvent.amount = (float) attacker.getAttributeValue(CRITICAL_DAMAGE);
                     attacker.getAttributes().getCustomInstance(CRITICAL_DAMAGE).removeModifier(TEMP_CRIT_DMG_UUID);
                     attacker.getAttributes().getCustomInstance(CRITICAL_DAMAGE).removeModifier(TEMP_CRIT_DMG_MULTIPLIER_UUID);
+                    Miapi.LOGGER.info("Critical Hit");
                 }
             }
             return EventResult.pass();

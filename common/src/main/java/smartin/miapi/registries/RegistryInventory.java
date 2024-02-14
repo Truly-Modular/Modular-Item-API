@@ -307,7 +307,7 @@ public class RegistryInventory {
                         new ClampedEntityAttribute("miapi.attribute.name.resistance", 0.0, 0.0, 100).setTracked(true),
                 att -> DAMAGE_RESISTANCE = att);
         registerAtt("generic.back_stab", true, () ->
-                        new ClampedEntityAttribute("miapi.attribute.name.back_stab", 1.0, 0.0, 1024.0).setTracked(true),
+                        new ClampedEntityAttribute("miapi.attribute.name.back_stab", 0.0, 0.0, 1024.0).setTracked(true),
                 att -> BACK_STAB = att);
         registerAtt("generic.armor_crushing", true, () ->
                         new ClampedEntityAttribute("miapi.attribute.name.armor_crushing", 0.0, 0.0, 1024.0).setTracked(true),
