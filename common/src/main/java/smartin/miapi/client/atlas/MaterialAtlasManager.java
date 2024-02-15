@@ -4,9 +4,11 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.*;
+import net.minecraft.client.texture.atlas.AtlasLoader;
 import net.minecraft.resource.Resource;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.profiler.Profiler;
+import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.modules.material.Material;
 import smartin.miapi.modules.material.MaterialProperty;
@@ -114,10 +116,14 @@ public class MaterialAtlasManager extends SpriteAtlasHolder {
         profiler.endTick();
     }
 
+    @Nullable
     public Sprite getMaterialSprite(Identifier id) {
         Sprite sprite = getSprite(id);
         if (sprite == null) {
-            return getSprite(BASE_MATERIAL_ID);
+            sprite = getSprite(BASE_MATERIAL_ID);
+        }
+        if(sprite == null){
+            //Miapi.LOGGER.info("Sprite is still not set, something in the reload was broken");
         }
         return sprite;
     }

@@ -2,10 +2,7 @@ package smartin.miapi.config;
 
 import dev.architectury.platform.Platform;
 import net.minecraft.util.math.ColorHelper;
-import smartin.miapi.config.oro_config.BooleanConfigItem;
-import smartin.miapi.config.oro_config.Config;
-import smartin.miapi.config.oro_config.ConfigItemGroup;
-import smartin.miapi.config.oro_config.IntegerConfigItem;
+import smartin.miapi.config.oro_config.*;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.modules.cache.ModularItemCache;
 
@@ -65,6 +62,28 @@ public class MiapiConfig extends Config {
                 "animated_materials",
                 true,
                 "Animated Materials do have a some fps impact at the moment");
+        public static BooleanConfigItem generateMaterial = new BooleanConfigItem(
+                "generate_materials",
+                true,
+                "Generate Materials in general");
+        public static StringConfigItem blockRegexGeneratedMaterials = new StringConfigItem(
+                "block_regex",
+                "^(chipped|everycompat).*",
+                "regex to block generation"
+        );
+        public static BooleanConfigItem generateOtherMaterials = new BooleanConfigItem(
+                "other_materials",
+                true,
+                "Generate Materials for Tools");
+        public static BooleanConfigItem generateWoodMaterials = new BooleanConfigItem(
+                "wood_materials",
+                true,
+                "Generate Wood related Materials");
+        public static BooleanConfigItem generateStoneMaterials = new BooleanConfigItem(
+                "stone_materials",
+                true,
+                "Generate Stone related Materials");
+
 
         protected CompatGroup() {
             super(of(animatedMaterial), "compat_settings");

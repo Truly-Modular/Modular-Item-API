@@ -25,7 +25,6 @@ public abstract class PlayerEntityMixin {
     private void miapi$captureCritHEAD(Entity target, CallbackInfo ci) {
         PlayerEntity player = (PlayerEntity) (Object) this;
         if (!player.getWorld().isClient()) {
-            Miapi.LOGGER.info("Attacked");
             if (target instanceof LivingEntity livingEntity) {
                 AttributeRegistry.hasCrittedLast.put(player, hasCritted(player, livingEntity));
             } else {

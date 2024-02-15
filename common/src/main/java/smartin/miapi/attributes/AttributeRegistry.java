@@ -159,9 +159,6 @@ public class AttributeRegistry {
         });
 
         MiapiEvents.LIVING_HURT.register(livingHurtEvent -> {
-            if(livingHurtEvent.isCritical){
-                Miapi.LOGGER.info("event is critical");
-            }
             if (
                     livingHurtEvent.damageSource.getAttacker() instanceof LivingEntity attacker &&
                             !livingHurtEvent.livingEntity.getWorld().isClient()
@@ -183,7 +180,6 @@ public class AttributeRegistry {
                     livingHurtEvent.amount = (float) attacker.getAttributeValue(CRITICAL_DAMAGE);
                     attacker.getAttributes().getCustomInstance(CRITICAL_DAMAGE).removeModifier(TEMP_CRIT_DMG_UUID);
                     attacker.getAttributes().getCustomInstance(CRITICAL_DAMAGE).removeModifier(TEMP_CRIT_DMG_MULTIPLIER_UUID);
-                    Miapi.LOGGER.info("Critical Hit");
                 }
             }
             return EventResult.pass();

@@ -164,6 +164,9 @@ public abstract class MaterialAtlasPalette extends MaterialSpriteColorer {
         if (sprite == null) {
             sprite = MiapiClient.materialAtlasManager.getMaterialSprite(MaterialAtlasManager.BASE_MATERIAL_ID);
         }
+        if(sprite==null){
+            return color;
+        }
         return NativeImageGetter.get(sprite.getContents()).getColor(Math.max(Math.min(color, 255), 0), 0);
     }
 }
