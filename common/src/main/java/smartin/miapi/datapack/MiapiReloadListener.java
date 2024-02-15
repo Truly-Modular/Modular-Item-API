@@ -86,44 +86,42 @@ public class MiapiReloadListener implements ResourceReloader {
         return CompletableFuture.runAsync(() -> {
             Map<String, String> dataMap = new HashMap<>((Map) data);
             Map<String, String> filteredMap = new HashMap<>();
-            executor.execute(() -> {
-                dataMap.forEach((key, value) -> {
-                    if (!key.endsWith(".json")) {
+            dataMap.forEach((key, value) -> {
+                if (!key.endsWith(".json")) {
+                    filteredMap.put(key, value);
+                    return;
+                }
+                try {
+                    JsonObject element = Miapi.gson.fromJson(value, JsonObject.class);
+                    if (!element.has("load_condition")) {
                         filteredMap.put(key, value);
                         return;
                     }
-                    try {
-                        JsonObject element = Miapi.gson.fromJson(value, JsonObject.class);
-                        if (!element.has("load_condition")) {
-                            filteredMap.put(key, value);
-                            return;
+                    boolean allowed = ConditionManager.get(element.get("load_condition")).isAllowed(new ConditionManager.ConditionContext() {
+                        @Override
+                        public ConditionManager.ConditionContext copy() {
+                            return this;
                         }
-                        boolean allowed = ConditionManager.get(element.get("load_condition")).isAllowed(new ConditionManager.ConditionContext() {
-                            @Override
-                            public ConditionManager.ConditionContext copy() {
-                                return this;
-                            }
-                        });
-                        if (allowed) {
-                            element.remove("load_condition");
-                            Miapi.LOGGER.info("redid " + key);
-                            filteredMap.put(key, Miapi.gson.toJson(element));
-                        }
-                    } catch (Exception e) {
-                        filteredMap.put(key, value);
+                    });
+                    if (allowed) {
+                        element.remove("load_condition");
+                        Miapi.LOGGER.info("redid " + key);
+                        filteredMap.put(key, Miapi.gson.toJson(element));
                     }
-                });
-
-
-                ReloadEvents.DataPackLoader.trigger(filteredMap);
-                ReloadEvents.MAIN.fireEvent(false);
-                ReloadEvents.END.fireEvent(false);
-                Miapi.LOGGER.info("Server load took " + (double) (System.nanoTime() - timeStart) / 1000 / 1000 + " ms");
-                if (Miapi.server != null) {
-                    Miapi.server.getPlayerManager().getPlayerList().forEach(ReloadEvents::triggerReloadOnClient);
+                } catch (Exception e) {
+                    filteredMap.put(key, value);
                 }
-                ReloadEvents.inReload = false;
             });
+
+
+            ReloadEvents.DataPackLoader.trigger(filteredMap);
+            ReloadEvents.MAIN.fireEvent(false);
+            ReloadEvents.END.fireEvent(false);
+            Miapi.LOGGER.info("Server load took " + (double) (System.nanoTime() - timeStart) / 1000 / 1000 + " ms");
+            if (Miapi.server != null) {
+                Miapi.server.getPlayerManager().getPlayerList().forEach(ReloadEvents::triggerReloadOnClient);
+            }
+            ReloadEvents.inReload = false;
         });
     }
 

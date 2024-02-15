@@ -480,6 +480,7 @@ public class RegistryInventory {
             registerMiapi(moduleProperties, StepCancelingProperty.KEY, new StepCancelingProperty());
             registerMiapi(moduleProperties, LightningOnHit.KEY, new LightningOnHit());
             registerMiapi(moduleProperties, GuiStatProperty.KEY, new GuiStatProperty());
+            registerMiapi(moduleProperties, AbilityMangerProperty.KEY, new AbilityMangerProperty());
             //compat
             registerMiapi(moduleProperties, BetterCombatProperty.KEY, new BetterCombatProperty());
             registerMiapi(moduleProperties, ApoliPowersProperty.KEY, new ApoliPowersProperty());

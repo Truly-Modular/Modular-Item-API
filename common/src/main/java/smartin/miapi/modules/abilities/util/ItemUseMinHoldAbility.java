@@ -3,6 +3,7 @@ package smartin.miapi.modules.abilities.util;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
+import smartin.miapi.modules.properties.AbilityMangerProperty;
 
 public interface ItemUseMinHoldAbility extends ItemUseAbility {
 

@@ -27,7 +27,6 @@ public class AbilityMangerProperty implements ModuleProperty {
     public AbilityMangerProperty() {
         property = this;
         ModularItemCache.setSupplier(KEY, AbilityMangerProperty::getForCache);
-        CodecBasedProperty property1;
     }
 
     private static List<ItemUseAbility> getForCache(ItemStack itemStack) {
@@ -85,7 +84,7 @@ public class AbilityMangerProperty implements ModuleProperty {
 
     @Nullable
     public static AbilityContext getContext(ItemStack itemStack, ItemUseAbility ability) {
-        return getContext(itemStack, ability);
+        return getContext(itemStack, ItemAbilityManager.useAbilityRegistry.findKey(ability));
     }
 
 

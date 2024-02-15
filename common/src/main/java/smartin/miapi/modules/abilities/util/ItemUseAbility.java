@@ -121,12 +121,14 @@ public interface ItemUseAbility<T> {
     }
 
     default AbilityMangerProperty.AbilityContext getAbilityContext(ItemStack itemStack) {
-        AbilityMangerProperty.AbilityContext context = new AbilityMangerProperty.AbilityContext(new JsonObject(), ItemModule.getModules(itemStack), itemStack);
         String key = ItemAbilityManager.useAbilityRegistry.findKey(this);
         if (key != null) {
-            context = AbilityMangerProperty.getContext(itemStack, key);
+            AbilityMangerProperty.AbilityContext context1 = AbilityMangerProperty.getContext(itemStack, key);
+            if(context1!=null){
+                return context1;
+            }
         }
-        return context;
+        return new AbilityMangerProperty.AbilityContext(new JsonObject(), ItemModule.getModules(itemStack), itemStack);
     }
 
     /**
