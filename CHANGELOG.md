@@ -4,13 +4,12 @@
 - changed module property resolving to allow for more complex conditions
 - Renderer Changes :
   - rebranded Altrenderer to BakedModelRenderer
-  - removed other renderers
-  - added Animations
+  - removed other renderers + added Animations
 - added ShapedMining Property allowing for vein and Cube based Mining with the following elements
-  - Shape (what shape is mined)
-  - Condition (if the effect can trigger)
+  - Shape
+  - Condition
   - Modifiers (adjusting behaviour)
-  - Mode (the actual mining, allows for delayed mining)
+  - Mode (the actual mining)
 - added StatResolvers "collect","module" "material-module", "module-material", "count"
   - "collect"/ [collect.add.material.somestat]
     - allows for "add","max","min","average"
@@ -34,3 +33,4 @@
 - adjusted how Backstab is calculated, +2 Backstab will now give +2 Damage +100% will double your damage
 - Reworked Abilities from abilities to ability_context property to allow common things
   - default includes cooldown and minhold
+- fixed some issues related to Generated Materials
