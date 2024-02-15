@@ -58,31 +58,10 @@ public class MiapiConfig extends Config {
     }
 
     public static class CompatGroup extends ConfigItemGroup {
-       public static BooleanConfigItem animatedMaterial = new BooleanConfigItem(
+        public static BooleanConfigItem animatedMaterial = new BooleanConfigItem(
                 "animated_materials",
                 true,
                 "Animated Materials do have a some fps impact at the moment");
-        public static BooleanConfigItem generateMaterial = new BooleanConfigItem(
-                "generate_materials",
-                true,
-                "Generate Materials in general");
-        public static StringConfigItem blockRegexGeneratedMaterials = new StringConfigItem(
-                "block_regex",
-                "^(chipped|everycompat).*",
-                "regex to block generation"
-        );
-        public static BooleanConfigItem generateOtherMaterials = new BooleanConfigItem(
-                "other_materials",
-                true,
-                "Generate Materials for Tools");
-        public static BooleanConfigItem generateWoodMaterials = new BooleanConfigItem(
-                "wood_materials",
-                true,
-                "Generate Wood related Materials");
-        public static BooleanConfigItem generateStoneMaterials = new BooleanConfigItem(
-                "stone_materials",
-                true,
-                "Generate Stone related Materials");
 
 
         protected CompatGroup() {
@@ -111,9 +90,30 @@ public class MiapiConfig extends Config {
                 "forge_reload_mode",
                 Platform.isForge(),
                 "Auto reloads on Servers to fix Forge having buggy classloading");
+        public static BooleanConfigItem generateMaterial = new BooleanConfigItem(
+                "generate_materials",
+                true,
+                "Generate Materials in general");
+        public static StringConfigItem blockRegexGeneratedMaterials = new StringConfigItem(
+                "block_regex",
+                "^(chipped|everycompat).*",
+                "regex to block generation"
+        );
+        public static BooleanConfigItem generateOtherMaterials = new BooleanConfigItem(
+                "other_materials",
+                true,
+                "Generate Materials for Tools");
+        public static BooleanConfigItem generateWoodMaterials = new BooleanConfigItem(
+                "wood_materials",
+                true,
+                "Generate Wood related Materials");
+        public static BooleanConfigItem generateStoneMaterials = new BooleanConfigItem(
+                "stone_materials",
+                true,
+                "Generate Stone related Materials");
 
         protected OtherConfigGroup() {
-            super(of(developmentMode, forgeAutoReloads), "other");
+            super(of(developmentMode, forgeAutoReloads, generateMaterial, generateOtherMaterials, blockRegexGeneratedMaterials, generateWoodMaterials, generateStoneMaterials), "other");
         }
     }
 

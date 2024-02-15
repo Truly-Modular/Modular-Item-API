@@ -274,11 +274,16 @@ public class ExplosionProperty extends CodecBasedProperty<ExplosionProperty.Expl
     }
 
     public static class ExplosionInfo {
+        @AutoCodec.Optional
         public boolean destroyBlocks;
+        @AutoCodec.Optional
         public double chance;
         public double strength;
+        @AutoCodec.Optional
         public double entityStrength;
+        @AutoCodec.Optional
         public double entityMaxDamage;
+        @AutoCodec.Optional
         public double entityRadius;
 
         public ExplosionInfo(JsonObject element, ItemModule.ModuleInstance moduleInstance) {
@@ -288,6 +293,10 @@ public class ExplosionProperty extends CodecBasedProperty<ExplosionProperty.Expl
             entityStrength = ModuleProperty.getDouble(element, "entityStrength", moduleInstance, strength * 7);
             entityMaxDamage = ModuleProperty.getDouble(element, "entityMaxDamage", moduleInstance, Float.POSITIVE_INFINITY);
             entityRadius = ModuleProperty.getDouble(element, "entityRadius", moduleInstance, strength * 2);
+        }
+
+        public ExplosionInfo(){
+
         }
     }
 }

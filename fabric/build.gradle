@@ -105,7 +105,7 @@ dependencies {
     //modLocalRuntime "curse.maven:bettercombat-639842:4597949"
     //modLocalRuntime 'dev.kosmx.player-anim:player-animation-lib-fabric:1.0.2-rc1+1.20'
 
-    //modLocalRuntime "maven.modrinth:obsidian-equipment:kwMkZlFD"
+    modLocalRuntime "maven.modrinth:obsidian-equipment:kwMkZlFD"
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }

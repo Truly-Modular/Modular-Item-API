@@ -44,7 +44,7 @@ public class TrulyModularForge {
             AttributeRegistry.SWIM_SPEED = ForgeMod.SWIM_SPEED.get();
         }));
         LifecycleEvent.SERVER_STARTED.register((minecraftServer -> {
-            if (!Environment.isClient() && MiapiConfig.OtherConfigGroup.forgeAutoReloads.getValue()) {
+            if (!Environment.isClient() && MiapiConfig.OtherConfigGroup.forgeAutoReloads.getValue() || true) {
                 Map<String, String> cacheDatapack = new HashMap<>(ReloadEvents.DATA_PACKS);
                 Miapi.LOGGER.info("Truly Modular will now go onto reload twice.");
                 Miapi.LOGGER.info("This is done because Forges classloading is buggy and stupid. Until we have a better fix, this is used");

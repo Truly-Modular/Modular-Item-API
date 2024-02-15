@@ -3,6 +3,7 @@ package smartin.miapi.datapack;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import dev.architectury.platform.Platform;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceReloader;
@@ -83,52 +84,52 @@ public class MiapiReloadListener implements ResourceReloader {
 
     public CompletableFuture<Void> apply(Object data, ResourceManager manager, Profiler profiler, Executor executor) {
         return CompletableFuture.runAsync(() -> {
-            Map<String, String> dataMap = (Map) data;
+            Map<String, String> dataMap = new HashMap<>((Map) data);
             Map<String, String> filteredMap = new HashMap<>();
-            dataMap.forEach((key, value) -> {
-                if (!key.endsWith(".json")) {
-                    filteredMap.put(key, value);
-                    return;
-                }
-                try {
-                    JsonObject element = Miapi.gson.fromJson(value, JsonObject.class);
-                    if (!element.has("load_condition")) {
+            executor.execute(() -> {
+                dataMap.forEach((key, value) -> {
+                    if (!key.endsWith(".json")) {
                         filteredMap.put(key, value);
                         return;
                     }
-                    boolean allowed = ConditionManager.get(element.get("load_condition")).isAllowed(new ConditionManager.ConditionContext() {
-                        @Override
-                        public ConditionManager.ConditionContext copy() {
-                            return this;
+                    try {
+                        JsonObject element = Miapi.gson.fromJson(value, JsonObject.class);
+                        if (!element.has("load_condition")) {
+                            filteredMap.put(key, value);
+                            return;
                         }
-                    });
-                    if (allowed) {
-                        element.remove("load_condition");
-                        Miapi.LOGGER.info("redid " + key);
-                        filteredMap.put(key, Miapi.gson.toJson(element));
+                        boolean allowed = ConditionManager.get(element.get("load_condition")).isAllowed(new ConditionManager.ConditionContext() {
+                            @Override
+                            public ConditionManager.ConditionContext copy() {
+                                return this;
+                            }
+                        });
+                        if (allowed) {
+                            element.remove("load_condition");
+                            Miapi.LOGGER.info("redid " + key);
+                            filteredMap.put(key, Miapi.gson.toJson(element));
+                        }
+                    } catch (Exception e) {
+                        filteredMap.put(key, value);
                     }
-                } catch (Exception e) {
-                    filteredMap.put(key, value);
-                }
-            });
-
-
-            ReloadEvents.DataPackLoader.trigger(filteredMap);
-            ReloadEvents.MAIN.fireEvent(false);
-            ReloadEvents.END.fireEvent(false);
-            Miapi.LOGGER.info("Server load took " + (double) (System.nanoTime() - timeStart) / 1000 / 1000 + " ms");
-            if (Miapi.server != null) {
-                Miapi.server.getPlayerManager().getPlayerList().forEach(serverPlayerEntity -> {
-                    ReloadEvents.triggerReloadOnClient(serverPlayerEntity);
                 });
-            }
-            ReloadEvents.inReload = false;
+
+
+                ReloadEvents.DataPackLoader.trigger(filteredMap);
+                ReloadEvents.MAIN.fireEvent(false);
+                ReloadEvents.END.fireEvent(false);
+                Miapi.LOGGER.info("Server load took " + (double) (System.nanoTime() - timeStart) / 1000 / 1000 + " ms");
+                if (Miapi.server != null) {
+                    Miapi.server.getPlayerManager().getPlayerList().forEach(ReloadEvents::triggerReloadOnClient);
+                }
+                ReloadEvents.inReload = false;
+            });
         });
     }
 
     @Override
     public CompletableFuture<Void> reload(Synchronizer synchronizer, ResourceManager manager, Profiler prepareProfiler, Profiler applyProfiler, Executor prepareExecutor, Executor applyExecutor) {
-        return load(manager, prepareProfiler, prepareExecutor).thenCompose(synchronizer::whenPrepared).thenAcceptAsync( a ->{
+        return load(manager, prepareProfiler, prepareExecutor).thenCompose(synchronizer::whenPrepared).thenAcceptAsync(a -> {
             apply(a, manager, applyProfiler, applyExecutor);
         });
         /*

@@ -4,6 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.architectury.platform.Platform;
 import dev.architectury.utils.Env;
+import it.unimi.dsi.fastutil.objects.ObjectLists;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -52,6 +53,7 @@ public class GeneratedMaterial implements Material {
     public MaterialIcons.MaterialIcon icon;
 
     public static final List<ItemStack> generatedItems = new ArrayList<>();
+    public static final List<ItemStack> generatedItemsTool = new ArrayList<>();
     public static final List<Item> woodItems = new ArrayList<>();
     public static final List<Item> stoneItems = new ArrayList<>();
 
@@ -68,8 +70,9 @@ public class GeneratedMaterial implements Material {
             public PacketByteBuf createDataServer() {
                 PacketByteBuf packetByteBuf = Networking.createBuffer();
                 packetByteBuf.writeInt(generatedItems.size());
-                for (ItemStack itemStack : generatedItems) {
-                    packetByteBuf.writeItemStack(itemStack);
+                for (int i = 0; i < generatedItems.size(); i++) {
+                    packetByteBuf.writeItemStack(generatedItems.get(i));
+                    packetByteBuf.writeItemStack(generatedItemsTool.get(i));
                 }
                 packetByteBuf.writeInt(woodItems.size());
                 for (Item item : woodItems) {
@@ -85,19 +88,24 @@ public class GeneratedMaterial implements Material {
             @Override
             public void interpretDataClient(PacketByteBuf buf) {
                 List<ItemStack> generatedMaterials = new ArrayList<>();
+                List<ItemStack> generatedMaterialsTools = new ArrayList<>();
                 List<Item> stoneMaterials = new ArrayList<>();
                 List<Item> woodMaterials = new ArrayList<>();
                 int genMaterials = buf.readInt();
                 for (int i = 0; i < genMaterials; i++) {
-                    generatedMaterials.add(buf.readItemStack());
+                    ItemStack itemStack = buf.readItemStack();
+                    generatedMaterials.add(itemStack);
+                    generatedMaterialsTools.add(buf.readItemStack());
                 }
                 genMaterials = buf.readInt();
                 for (int i = 0; i < genMaterials; i++) {
-                    stoneMaterials.add(buf.readItemStack().getItem());
+                    Item item = buf.readItemStack().getItem();
+                    stoneMaterials.add(item);
                 }
                 genMaterials = buf.readInt();
                 for (int i = 0; i < genMaterials; i++) {
-                    woodMaterials.add(buf.readItemStack().getItem());
+                    Item item = buf.readItemStack().getItem();
+                    woodMaterials.add(item);
                 }
                 synchronized (generatedItems) {
                     generatedItems.clear();
@@ -120,26 +128,39 @@ public class GeneratedMaterial implements Material {
                 .filter(ToolItem.class::isInstance)
                 .map(ToolItem.class::cast)
                 .toList();
-        generatedItems.forEach(itemStack -> {
-            if (itemStack.getItem() instanceof ToolItem toolItem) {
-                GeneratedMaterial generatedMaterial = new GeneratedMaterial(toolItem.getMaterial(), itemStack, true);
-                if (generatedMaterial.assignStats(toolItems, false)) {
-                    materials.put(generatedMaterial.getKey(), generatedMaterial);
-                    generatedItems.add(generatedMaterial.mainIngredient);
-                } else {
-                    Miapi.LOGGER.error("Couldn't correctly setup Client material for " + generatedMaterial.mainIngredient.getItem());
+        for (int i = 0; i < generatedItems.size(); i++) {
+            ItemStack itemStack = generatedItems.get(i);
+            try {
+                ItemStack toolStack = generatedItemsTool.get(i);
+                if (toolStack.getItem() instanceof ToolItem toolItem) {
+                    GeneratedMaterial generatedMaterial = new GeneratedMaterial(toolItem.getMaterial(), itemStack, true);
+                    if (generatedMaterial.assignStats(toolItems, false)) {
+                        materials.put(generatedMaterial.getKey(), generatedMaterial);
+                    }
+                }
+            } catch (Exception e) {
+                if (itemStack != null) {
+                    Miapi.LOGGER.info("Failure to generate Material on Client for :" + itemStack.getTranslationKey(), e);
                 }
             }
-        });
+        }
         woodItems.forEach(woodItem -> {
-            GeneratedMaterial generatedMaterial = new GeneratedMaterial(ToolMaterials.WOOD, woodItem.getDefaultStack(), false);
-            materials.put(generatedMaterial.getKey(), generatedMaterial);
-            generatedMaterial.copyStatsFrom(materials.get("wood"));
+            try {
+                GeneratedMaterial generatedMaterial = new GeneratedMaterial(ToolMaterials.WOOD, woodItem.getDefaultStack(), false);
+                materials.put(generatedMaterial.getKey(), generatedMaterial);
+                generatedMaterial.copyStatsFrom(materials.get("wood"));
+            } catch (Exception e) {
+                Miapi.LOGGER.error("Failure to setup Wood Material for " + woodItem.getTranslationKey(), e);
+            }
         });
         stoneItems.forEach(stoneItem -> {
-            GeneratedMaterial generatedMaterial = new GeneratedMaterial(ToolMaterials.STONE, stoneItem.getDefaultStack(), false);
-            materials.put(generatedMaterial.getKey(), generatedMaterial);
-            generatedMaterial.copyStatsFrom(materials.get("stone"));
+            try{
+                GeneratedMaterial generatedMaterial = new GeneratedMaterial(ToolMaterials.STONE, stoneItem.getDefaultStack(), false);
+                materials.put(generatedMaterial.getKey(), generatedMaterial);
+                generatedMaterial.copyStatsFrom(materials.get("stone"));
+            } catch (Exception e) {
+                Miapi.LOGGER.error("Failure to setup Stone Material for " + stoneItem.getTranslationKey(), e);
+            }
         });
     }
 
@@ -147,14 +168,14 @@ public class GeneratedMaterial implements Material {
         woodItems.clear();
         stoneItems.clear();
         generatedItems.clear();
-        if (!MiapiConfig.CompatGroup.generateMaterial.getValue()) {
+        if (!MiapiConfig.OtherConfigGroup.generateMaterial.getValue()) {
             return;
         }
         List<ToolItem> toolItems = Registries.ITEM.stream()
                 .filter(ToolItem.class::isInstance)
                 .map(ToolItem.class::cast)
                 .toList();
-        if (MiapiConfig.CompatGroup.generateOtherMaterials.getValue()) {
+        if (MiapiConfig.OtherConfigGroup.generateOtherMaterials.getValue()) {
             toolItems.stream()
                     .map(ToolItem::getMaterial)
                     .collect(Collectors.toSet())
@@ -169,18 +190,19 @@ public class GeneratedMaterial implements Material {
                             if (generatedMaterial.assignStats(toolItems, false)) {
                                 materials.put(generatedMaterial.getKey(), generatedMaterial);
                                 generatedItems.add(generatedMaterial.mainIngredient);
+                                generatedItemsTool.add(generatedMaterial.swordItem.getDefaultStack());
                             } else {
-                                Miapi.LOGGER.warn("Couldn't correctly setup material for " + generatedMaterial.mainIngredient.getItem());
+                                //Miapi.LOGGER.warn("Couldn't correctly setup material for " + generatedMaterial.mainIngredient.getItem());
                             }
                         }
                     });
         }
 
-        if (MiapiConfig.CompatGroup.generateWoodMaterials.getValue()) {
+        if (MiapiConfig.OtherConfigGroup.generateWoodMaterials.getValue()) {
             Registries.ITEM.stream().filter(item ->
                     item.getDefaultStack().isIn(ItemTags.PLANKS) &&
                             !item.getDefaultStack().isIn(RegistryInventory.MIAPI_FORBIDDEN_TAG)).forEach(item -> {
-                if (MaterialProperty.getMaterialFromIngredient(item.getDefaultStack()) == null && isValidItem(item)) {
+                if (isValidItem(item)) {
                     woodItems.add(item);
                     GeneratedMaterial generatedMaterial = new GeneratedMaterial(ToolMaterials.WOOD, item.getDefaultStack(), false);
                     materials.put(generatedMaterial.getKey(), generatedMaterial);
@@ -189,10 +211,10 @@ public class GeneratedMaterial implements Material {
             });
         }
 
-        if (MiapiConfig.CompatGroup.generateStoneMaterials.getValue()) {
+        if (MiapiConfig.OtherConfigGroup.generateStoneMaterials.getValue()) {
             Registries.ITEM.stream().filter(item -> item.getDefaultStack().isIn(ItemTags.STONE_TOOL_MATERIALS) &&
                     !item.getDefaultStack().isIn(RegistryInventory.MIAPI_FORBIDDEN_TAG)).forEach(item -> {
-                if (MaterialProperty.getMaterialFromIngredient(item.getDefaultStack()) == null && isValidItem(item)) {
+                if (isValidItem(item)) {
                     stoneItems.add(item);
                     GeneratedMaterial generatedMaterial = new GeneratedMaterial(ToolMaterials.STONE, item.getDefaultStack(), false);
                     materials.put(generatedMaterial.getKey(), generatedMaterial);
@@ -223,7 +245,7 @@ public class GeneratedMaterial implements Material {
 
     public static boolean isValidItem(Item item) {
         Identifier identifier = Registries.ITEM.getId(item);
-        Pattern pattern = Pattern.compile(MiapiConfig.CompatGroup.blockRegexGeneratedMaterials.getValue());
+        Pattern pattern = Pattern.compile(MiapiConfig.OtherConfigGroup.blockRegexGeneratedMaterials.getValue());
         if (pattern.matcher(identifier.toString()).find()) {
             return false;
         }
@@ -345,7 +367,9 @@ public class GeneratedMaterial implements Material {
     public void addSmithingRecipe(Material sourceMaterial, ItemStack templateItem, SmithingTransformRecipe smithingTransformRecipe, boolean isClient) {
         RecipeManager manager = findManager(isClient);
         Collection<Recipe<?>> recipes = manager.values();
-        Identifier recipeId = new Identifier(Miapi.MOD_ID, "generated_material_recipe." + key + "." + Registries.ITEM.getId(templateItem.getItem()) + "." + sourceMaterial.getKey());
+        String id = "generated_material_recipe." + key + "." + Registries.ITEM.getId(templateItem.getItem()) + "." + sourceMaterial.getKey();
+        id = id.replace(":",".");
+        Identifier recipeId = new Identifier(Miapi.MOD_ID, id);
         if (manager.get(recipeId).isEmpty()) {
             recipes.add(new MaterialSmithingRecipe(
                     recipeId,
