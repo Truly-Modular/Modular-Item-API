@@ -1,36 +1,3 @@
-## v1.1.10 (1.20.1)
-- fixed issue where miapi would break certain tags
-- made LoreProperty usable
-- changed module property resolving to allow for more complex conditions
-- Renderer Changes :
-  - rebranded Altrenderer to BakedModelRenderer
-  - removed other renderers + added Animations
-- added ShapedMining Property allowing for vein and Cube based Mining with the following elements
-  - Shape
-  - Condition
-  - Modifiers (adjusting behaviour)
-  - Mode (the actual mining)
-- added StatResolvers "collect","module" "material-module", "module-material", "count"
-  - "collect"/ [collect.add.material.somestat]
-    - allows for "add","max","min","average"
-  - "module"/ [module.someStat]
-  - "material-module"/ [material-module.someStat] and "module-material"/ [module-material.someStat]
-    - "material-module" will first check for a material stat, then module,"module-material" the other way arround
-  - "count" counts certain things
-    - [count.module] will return the count of modules
-    - [count.submodules] will return the count of submodules
-- changed Attribute Property to allow merging to multiplier as well
-- added Critical Damage and Chance Attribute
-- added HideFlags property
-- added basic Epic Fight Compat
-- added cooldown field to riptide property
-- added NoiseCanceling Property to prevent the emitting of StepEvents
-  - gave wool boots noise canceling
-- added Lightning On Hit Property to cast Lightning on Melee Hits
-- added gui_stat property to add custom stats to the gui via json
-- added enchantability to Materials
-- added Enchantability Property to control the enchantability in the enchanting table, this prob wont work with enchanting table rework mods
-- adjusted how Backstab is calculated, +2 Backstab will now give +2 Damage +100% will double your damage
-- Reworked Abilities from abilities to ability_context property to allow common things
-  - default includes cooldown and minhold
-- fixed some issues related to Generated Materials
+## v1.1.11 (1.20.1)
+- fixed bug were wood tag wasnt picked up correctly
+- added config option for max generated materials to prevent crashes with default of 200 per type (generated,wood,stone)

@@ -93,7 +93,7 @@ public class BlockAbility extends EntityAttributeAbility {
     @Override
     public void onStoppedUsingAfter(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
         resetAnimation(user);
-        super.onStoppedUsing(stack, world, user, remainingUseTicks);
+        super.onStoppedUsingAfter(stack, world, user, remainingUseTicks);
     }
 
     @Override
