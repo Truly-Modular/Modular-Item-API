@@ -175,6 +175,7 @@ public class GeneratedMaterial implements Material {
                 .filter(ToolItem.class::isInstance)
                 .map(ToolItem.class::cast)
                 .toList();
+        List<Material> toRegister = new ArrayList<>();
         if (MiapiConfig.OtherConfigGroup.generateOtherMaterials.getValue()) {
             toolItems.stream()
                     .map(ToolItem::getMaterial)
@@ -191,7 +192,7 @@ public class GeneratedMaterial implements Material {
                         if (isValidItem(toolMaterial.getRepairIngredient().getMatchingStacks()[0].getItem())) {
                             GeneratedMaterial generatedMaterial = new GeneratedMaterial(toolMaterial, false);
                             if (generatedMaterial.assignStats(toolItems, false)) {
-                                materials.put(generatedMaterial.getKey(), generatedMaterial);
+                                toRegister.add(generatedMaterial);
                                 generatedItems.add(generatedMaterial.mainIngredient);
                                 generatedItemsTool.add(generatedMaterial.swordItem.getDefaultStack());
                             } else {
@@ -211,7 +212,7 @@ public class GeneratedMaterial implements Material {
                             woodItems.add(item);
                             GeneratedMaterial generatedMaterial = new GeneratedMaterial(ToolMaterials.WOOD, item.getDefaultStack(), false);
                             if (MaterialProperty.getMaterialFromIngredient(item.getDefaultStack()) != materials.get("wood")) {
-                                materials.put(generatedMaterial.getKey(), generatedMaterial);
+                                toRegister.add(generatedMaterial);
                                 generatedMaterial.copyStatsFrom(materials.get("wood"));
 
                             }
@@ -229,11 +230,14 @@ public class GeneratedMaterial implements Material {
                             stoneItems.add(item);
                             GeneratedMaterial generatedMaterial = new GeneratedMaterial(ToolMaterials.STONE, item.getDefaultStack(), false);
                             if (MaterialProperty.getMaterialFromIngredient(item.getDefaultStack()) != materials.get("stone")) {
-                                materials.put(generatedMaterial.getKey(), generatedMaterial);
+                                toRegister.add(generatedMaterial);
                                 generatedMaterial.copyStatsFrom(materials.get("stone"));
                             }
                         }
                     });
+        }
+        for (Material material : toRegister) {
+            materials.put(material.getKey(), material);
         }
 
         toolItems.stream()
@@ -623,10 +627,10 @@ public class GeneratedMaterial implements Material {
     @Override
     public @Nullable Double getPriorityOfIngredientItem(ItemStack itemStack) {
         if (mainIngredient.getItem().equals(itemStack.getItem())) {
-            return 0.0;
+            return 1.0;
         }
         if (toolMaterial.getRepairIngredient().test(itemStack)) {
-            return 0.0;
+            return 2.0;
         }
         return null;
     }
