@@ -12,7 +12,6 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
-import smartin.miapi.Miapi;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.AbilityMangerProperty;
 import smartin.miapi.modules.properties.AbilityProperty;
@@ -68,12 +67,8 @@ public class ItemAbilityManager {
     }
 
     private static ItemUseAbility getAbility(ItemStack itemStack, World world, PlayerEntity player, Hand hand, AbilityHitContext abilityHitContext) {
-        Miapi.LOGGER.info("searching for ability " + itemStack.getTranslationKey());
         for (ItemUseAbility ability : AbilityMangerProperty.get(itemStack)) {
-            Miapi.LOGGER.info("checking ability " + useAbilityRegistry.findKey(ability));
             if (ability.allowedOnItem(itemStack, world, player, hand, abilityHitContext)) {
-                Miapi.LOGGER.info("Found ability" + useAbilityRegistry.findKey(ability));
-                Miapi.LOGGER.info("for Item " + itemStack.getTranslationKey());
                 return ability;
             }
         }

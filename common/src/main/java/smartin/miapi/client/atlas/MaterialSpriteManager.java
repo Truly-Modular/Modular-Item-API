@@ -32,7 +32,7 @@ public class MaterialSpriteManager {
             })
             .build(new CacheLoader<>() {
                 @Override
-                public Identifier load(Holder key) throws Exception {
+                public Identifier load(Holder key) {
                     return getMaterialSprite(key);
                 }
             });

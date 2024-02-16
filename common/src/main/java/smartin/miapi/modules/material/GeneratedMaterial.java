@@ -100,12 +100,12 @@ public class GeneratedMaterial implements Material {
                 genMaterials = buf.readInt();
                 for (int i = 0; i < genMaterials; i++) {
                     Item item = buf.readItemStack().getItem();
-                    stoneMaterials.add(item);
+                    woodMaterials.add(item);
                 }
                 genMaterials = buf.readInt();
                 for (int i = 0; i < genMaterials; i++) {
                     Item item = buf.readItemStack().getItem();
-                    woodMaterials.add(item);
+                    stoneMaterials.add(item);
                 }
                 synchronized (generatedItems) {
                     generatedItems.clear();
@@ -210,8 +210,11 @@ public class GeneratedMaterial implements Material {
                         if (isValidItem(item)) {
                             woodItems.add(item);
                             GeneratedMaterial generatedMaterial = new GeneratedMaterial(ToolMaterials.WOOD, item.getDefaultStack(), false);
-                            materials.put(generatedMaterial.getKey(), generatedMaterial);
-                            generatedMaterial.copyStatsFrom(materials.get("wood"));
+                            if (MaterialProperty.getMaterialFromIngredient(item.getDefaultStack()) != materials.get("wood")) {
+                                materials.put(generatedMaterial.getKey(), generatedMaterial);
+                                generatedMaterial.copyStatsFrom(materials.get("wood"));
+
+                            }
                         }
                     });
         }
@@ -225,8 +228,10 @@ public class GeneratedMaterial implements Material {
                         if (isValidItem(item)) {
                             stoneItems.add(item);
                             GeneratedMaterial generatedMaterial = new GeneratedMaterial(ToolMaterials.STONE, item.getDefaultStack(), false);
-                            materials.put(generatedMaterial.getKey(), generatedMaterial);
-                            generatedMaterial.copyStatsFrom(materials.get("stone"));
+                            if (MaterialProperty.getMaterialFromIngredient(item.getDefaultStack()) != materials.get("stone")) {
+                                materials.put(generatedMaterial.getKey(), generatedMaterial);
+                                generatedMaterial.copyStatsFrom(materials.get("stone"));
+                            }
                         }
                     });
         }

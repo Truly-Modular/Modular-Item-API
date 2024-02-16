@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.advancement.criterion.Criteria;
+import net.minecraft.client.item.TooltipContext;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.CrossbowUser;
@@ -16,19 +17,18 @@ import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.*;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.screen.ScreenTexts;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.text.Text;
-import net.minecraft.util.Hand;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.Rarity;
-import net.minecraft.util.TypedActionResult;
+import net.minecraft.util.*;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import smartin.miapi.Miapi;
@@ -295,7 +295,7 @@ public class ModularCrossbow extends CrossbowItem implements ModularItem, Custom
             nbtList.clear();
             nbtCompound.put("ChargedProjectiles", nbtList);
         }
-
+        crossbow.setNbt(nbtCompound);
     }
 
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
@@ -343,6 +343,26 @@ public class ModularCrossbow extends CrossbowItem implements ModularItem, Custom
         }
 
         return list;
+    }
+
+    public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
+        List<ItemStack> list = getProjectiles(stack);
+        if (isCharged(stack) && !list.isEmpty()) {
+            ItemStack itemStack = (ItemStack) list.get(0);
+            tooltip.add(Text.translatable("item.minecraft.crossbow.projectile").append(ScreenTexts.SPACE).append(itemStack.toHoverableText()));
+            if (context.isAdvanced() && itemStack.isOf(Items.FIREWORK_ROCKET)) {
+                List<Text> list2 = Lists.newArrayList();
+                Items.FIREWORK_ROCKET.appendTooltip(itemStack, world, list2, context);
+                if (!list2.isEmpty()) {
+                    for (int i = 0; i < list2.size(); ++i) {
+                        list2.set(i, Text.literal("  ").append((Text) list2.get(i)).formatted(Formatting.GRAY));
+                    }
+
+                    tooltip.addAll(list2);
+                }
+            }
+
+        }
     }
 
     public Predicate<ItemStack> getProjectiles() {

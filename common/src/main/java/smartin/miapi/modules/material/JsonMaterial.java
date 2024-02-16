@@ -248,7 +248,7 @@ public class JsonMaterial implements Material {
                     String tagId = itemObj.get("tag").getAsString();
                     TagKey<Item> tag = TagKey.of(Registries.ITEM.getKey(), new Identifier(tagId));
                     if (tag != null && itemStack.isIn(tag)) {
-                        return 1.0;
+                        return 10.0;
                     }
                 }
             }
