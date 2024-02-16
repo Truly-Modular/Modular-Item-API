@@ -86,8 +86,8 @@ public class MaterialAtlasManager extends SpriteAtlasHolder {
                     }
                     SpriteContents materialSprite = materialAtlasPalette.generateSpriteContents(materialIdentifier, fromTexturePack);
                     if(materialSprite==null){
-                        Miapi.LOGGER.error("Material Image was not found for " + materialIdentifier);
-                        Miapi.LOGGER.error("replacing with Uncolored Material " + materialIdentifier);
+                        //Miapi.LOGGER.error("Material Image was not found for " + materialIdentifier);
+                        //Miapi.LOGGER.error("replacing with Uncolored Material " + materialIdentifier);
                     }
                     else if (materialSprite.getWidth() != 256) {
                         Miapi.LOGGER.error("Material Image not correctly sized for material " + materialIdentifier);

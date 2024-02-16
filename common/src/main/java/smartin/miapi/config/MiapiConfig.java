@@ -21,7 +21,9 @@ public class MiapiConfig extends Config {
     }
 
     protected MiapiConfig() {
-        super(List.of(clientConfig, serverConfig),
+        super(List.of(
+                clientConfig,
+                        serverConfig),
                 new File(Platform.getConfigFolder().toString(), "miapi.json"),
                 "miapi_server");
         if (Platform.isModLoaded("cloth_config")) {
@@ -38,7 +40,10 @@ public class MiapiConfig extends Config {
         public static CompatGroup compatGroup = new CompatGroup();
 
         protected ClientConfig() {
-            super(of(compatGroup, colorConfig), "client");
+            super(of(
+                    compatGroup,
+                    colorConfig),
+                    "client");
         }
     }
 
@@ -65,7 +70,9 @@ public class MiapiConfig extends Config {
 
 
         protected CompatGroup() {
-            super(of(animatedMaterial), "compat_settings");
+            super(of(
+                    animatedMaterial),
+                    "compat_settings");
             animatedMaterial.changeListener.add((renderModeConfigItem -> {
                 ModularItemCache.discardCache();
             }));
@@ -111,9 +118,22 @@ public class MiapiConfig extends Config {
                 "stone_materials",
                 true,
                 "Generate Stone related Materials");
+        public static IntegerConfigItem maxGeneratedMaterial = new IntegerConfigItem(
+                "max_generated_materials",
+                200,
+                "Maximum amount of Materials generated per Type");
 
         protected OtherConfigGroup() {
-            super(of(developmentMode, forgeAutoReloads, generateMaterial, generateOtherMaterials, blockRegexGeneratedMaterials, generateWoodMaterials, generateStoneMaterials), "other");
+            super(of(
+                    developmentMode,
+                    forgeAutoReloads,
+                    generateMaterial,
+                    generateOtherMaterials,
+                    blockRegexGeneratedMaterials,
+                    generateWoodMaterials,
+                    generateStoneMaterials,
+                    maxGeneratedMaterial),
+                    "other");
         }
     }
 
@@ -132,7 +152,11 @@ public class MiapiConfig extends Config {
                 "Truly Modular is more lean with its allowed Enchantments on its Tools");
 
         protected EnchantmentGroup() {
-            super(of(betterInfinity, betterLoyalty, leanEnchantments), "enchants");
+            super(of(
+                    betterInfinity,
+                    betterLoyalty,
+                    leanEnchantments),
+                    "enchants");
         }
     }
 }
