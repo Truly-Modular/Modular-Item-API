@@ -18,6 +18,7 @@ import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Pair;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.config.MiapiConfig;
@@ -54,6 +55,7 @@ public class GeneratedMaterial implements Material {
 
     public static final List<ItemStack> generatedItems = new ArrayList<>();
     public static final List<ItemStack> generatedItemsTool = new ArrayList<>();
+    public static final List<Pair<ItemStack,ItemStack>> generatedMaterials = new ArrayList<>();
     public static final List<Item> woodItems = new ArrayList<>();
     public static final List<Item> stoneItems = new ArrayList<>();
 
@@ -69,10 +71,12 @@ public class GeneratedMaterial implements Material {
             @Override
             public PacketByteBuf createDataServer() {
                 PacketByteBuf packetByteBuf = Networking.createBuffer();
-                packetByteBuf.writeInt(generatedItems.size());
-                for (int i = 0; i < generatedItems.size(); i++) {
-                    packetByteBuf.writeItemStack(generatedItems.get(i));
-                    packetByteBuf.writeItemStack(generatedItemsTool.get(i));
+                packetByteBuf.writeInt(generatedMaterials.size());
+                for (int i = 0; i < generatedMaterials.size(); i++) {
+                    ItemStack material = generatedMaterials.get(i).getLeft();
+                    ItemStack sword = generatedMaterials.get(i).getRight();
+                    packetByteBuf.writeItemStack(material);
+                    packetByteBuf.writeItemStack(sword);
                 }
                 packetByteBuf.writeInt(woodItems.size());
                 for (Item item : woodItems) {
@@ -94,8 +98,9 @@ public class GeneratedMaterial implements Material {
                 int genMaterials = buf.readInt();
                 for (int i = 0; i < genMaterials; i++) {
                     ItemStack itemStack = buf.readItemStack();
+                    ItemStack itemStack2 = buf.readItemStack();
                     generatedMaterials.add(itemStack);
-                    generatedMaterialsTools.add(buf.readItemStack());
+                    generatedMaterialsTools.add(itemStack2);
                 }
                 genMaterials = buf.readInt();
                 for (int i = 0; i < genMaterials; i++) {
@@ -109,7 +114,10 @@ public class GeneratedMaterial implements Material {
                 }
                 synchronized (generatedItems) {
                     generatedItems.clear();
+
                     generatedItems.addAll(generatedMaterials);
+                    generatedItemsTool.clear();
+                    generatedItemsTool.addAll(generatedMaterialsTools);
                 }
                 synchronized (stoneItems) {
                     stoneItems.clear();
@@ -193,10 +201,7 @@ public class GeneratedMaterial implements Material {
                             GeneratedMaterial generatedMaterial = new GeneratedMaterial(toolMaterial, false);
                             if (generatedMaterial.assignStats(toolItems, false)) {
                                 toRegister.add(generatedMaterial);
-                                generatedItems.add(generatedMaterial.mainIngredient);
-                                generatedItemsTool.add(generatedMaterial.swordItem.getDefaultStack());
-                            } else {
-                                //Miapi.LOGGER.warn("Couldn't correctly setup material for " + generatedMaterial.mainIngredient.getItem());
+                                generatedMaterials.add(new Pair<>(generatedMaterial.mainIngredient,generatedMaterial.swordItem.getDefaultStack()));
                             }
                         }
                     });
