@@ -1,6 +1,7 @@
 package smartin.miapi.attributes;
 
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.Vec3d;
 import smartin.miapi.Miapi;
 
@@ -15,7 +16,7 @@ public class ElytraAttributes {
         if (!livingEntity.isLogicalSideForUpdatingMovement()) {
             return;
         }
-        if (velocityMap.containsKey(livingEntity)) {
+        if (velocityMap.containsKey(livingEntity) && livingEntity instanceof PlayerEntity) {
             if (isElytraFlying(livingEntity)) {
                 Vec3d lastVelocity = from(velocityMap.get(livingEntity));
                 Vec3d currentVelocity = from(livingEntity.getVelocity());
@@ -59,6 +60,9 @@ public class ElytraAttributes {
     }
 
     private static Vec3d from(Vec3d vec3d) {
+        if (vec3d == null) {
+            return new Vec3d(0, 0, 0);
+        }
 
         double x = Double.isNaN(vec3d.x) ? 0 : vec3d.x;
         double y = Double.isNaN(vec3d.y) ? 0 : vec3d.y;
