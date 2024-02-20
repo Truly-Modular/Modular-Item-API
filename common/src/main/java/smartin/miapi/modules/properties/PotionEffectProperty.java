@@ -18,6 +18,7 @@ import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
+import javax.swing.text.html.HTMLDocument;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,32 +29,16 @@ public abstract class PotionEffectProperty implements ModuleProperty {
     public String KEY;
     public PotionEffectProperty property;
 
-    protected PotionEffectProperty(String key, Text text) {
+    protected PotionEffectProperty(String key) {
         KEY = key;
         property = this;
         ModularItemCache.setSupplier(KEY + ".status_effects", this::getStatusEffectsCache);
-        LoreProperty.loreSuppliers.add(itemStack -> {
-            List<Text> lines = new ArrayList<>();
-            for (EffectHolder effectHolder : getStatusEffects(itemStack)) {
-                if (effectHolder.isGuiVisibility()) {
-                    lines.add(effectHolder.getPotionDescription());
-                }
-            }
-            if (!lines.isEmpty()) {
-                lines.add(0, text);
-            }
-            return lines;
-        });
     }
 
     @Override
     public boolean load(String moduleKey, JsonElement data) throws Exception {
+        getPotions(data, new ItemModule.ModuleInstance(ItemModule.empty));
         return true;
-    }
-
-    @Override
-    public JsonElement merge(JsonElement left, JsonElement right, MergeType mergeType) {
-        return ModuleProperty.mergeAsMap(left, right, mergeType);
     }
 
     public void applyPotions(LivingEntity livingEntity, Iterable<ItemStack> itemStack, @Nullable LivingEntity causer) {
@@ -155,27 +140,36 @@ public abstract class PotionEffectProperty implements ModuleProperty {
 
     public List<EffectHolder> getPotions(JsonElement jsonElement, ItemModule.ModuleInstance moduleInstance) {
         List<EffectHolder> potions = new ArrayList<>();
-        jsonElement.getAsJsonObject().asMap().forEach((id, element) -> {
-            StatusEffect potion = Registries.STATUS_EFFECT.get(new Identifier(id));
+        jsonElement.getAsJsonArray().forEach(element -> {
+            JsonObject object = element.getAsJsonObject();
+            Identifier identifier = new Identifier(ModuleProperty.getString(object, "potion", moduleInstance, ""));
+            StatusEffect potion = Registries.STATUS_EFFECT.get(identifier);
             if (potion != null) {
                 potions.add(getHolder(potion, element.getAsJsonObject(), moduleInstance));
             } else {
-                Miapi.LOGGER.warn("could not find Potion " + id);
+                Miapi.LOGGER.warn("could not find Potion " + identifier);
             }
         });
         return potions;
     }
 
     public EffectHolder getHolder(StatusEffect effect, JsonObject object, ItemModule.ModuleInstance moduleInstance) {
-        int duration = ModuleProperty.getInteger(object, "duration", moduleInstance, 10);
-        int amplifier = ModuleProperty.getInteger(object, "amplifier", moduleInstance, 0);
-        return new EffectHolder(new StatusEffectInstance(effect, duration, amplifier), moduleInstance, object);
+        return new EffectHolder(effect, moduleInstance, object);
     }
 
-    public record EffectHolder(StatusEffectInstance effectInstance, ItemModule.ModuleInstance moduleInstance,
+    public record EffectHolder(StatusEffect statusEffect, ItemModule.ModuleInstance moduleInstance,
                                JsonObject rawData) {
         public boolean isGuiVisibility() {
-            return ModuleProperty.getBoolean(rawData(), "gui_visible", moduleInstance(), true);
+            return ModuleProperty.getBoolean(rawData(), "lore", moduleInstance(), true);
+        }
+
+        public StatusEffectInstance effectInstance() {
+            int duration = ModuleProperty.getInteger(rawData(), "duration", moduleInstance(), 10);
+            int amplifier = ModuleProperty.getInteger(rawData(), "amplifier", moduleInstance(), 0);
+            boolean ambient = ModuleProperty.getBoolean(rawData(), "ambient", moduleInstance(), false);
+            boolean showParticles = ModuleProperty.getBoolean(rawData(), "showParticles", moduleInstance(), true);
+            boolean showIcon = ModuleProperty.getBoolean(rawData(), "showIcon", moduleInstance(), showParticles);
+            return new StatusEffectInstance(statusEffect(), duration, amplifier, ambient, showParticles, showIcon);
         }
 
         public Text getPotionDescription() {

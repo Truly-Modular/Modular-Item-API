@@ -150,6 +150,9 @@ public interface ModuleProperty {
         if (object != null) {
             JsonElement json = object.get(element);
             if (json != null && !json.isJsonNull()) {
+                if (json.isJsonPrimitive()) {
+                    return json.getAsBoolean();
+                }
                 return StatResolver.resolveDouble(json, moduleInstance) > 0;
             }
         }
@@ -190,7 +193,7 @@ public interface ModuleProperty {
         if (object != null) {
             JsonElement json = object.get(element);
             if (json != null && !json.isJsonNull()) {
-                return Codecs.TEXT.parse(JsonOps.INSTANCE,json).result().orElse(defaultValue);
+                return Codecs.TEXT.parse(JsonOps.INSTANCE, json).result().orElse(defaultValue);
             }
         }
         return defaultValue;

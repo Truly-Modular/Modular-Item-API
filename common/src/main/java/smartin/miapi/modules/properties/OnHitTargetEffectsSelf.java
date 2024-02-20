@@ -10,7 +10,7 @@ public class OnHitTargetEffectsSelf extends PotionEffectProperty {
     public OnHitTargetEffectsSelf property;
 
     public OnHitTargetEffectsSelf() {
-        super(KEY, Text.translatable("miapi.potion.target.self"));
+        super(KEY);
         property = this;
         MiapiEvents.LIVING_HURT.register((listener) -> {
             if (listener.damageSource.getAttacker() instanceof LivingEntity livingEntity && !livingEntity.getWorld().isClient()) {
