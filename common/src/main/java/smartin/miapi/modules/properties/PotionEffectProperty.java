@@ -82,8 +82,10 @@ public abstract class PotionEffectProperty implements ModuleProperty {
         List<EffectHolder> effectHolders = new ArrayList<>();
         for (EquipmentSlot slot : EquipmentSlot.values()) {
             ItemStack itemStack = entity.getEquippedStack(slot);
-            List<EffectHolder> holders = getStatusEffects(itemStack);
-            holders.stream().filter(effectHolder -> effectHolder.validEquipmentSlot(slot)).forEach(effectHolders::add);
+            getStatusEffects(itemStack)
+                    .stream()
+                    .filter(effectHolder -> isValidForSlot(slot, effectHolder, entity))
+                    .forEach(effectHolders::add);
         }
         return effectHolders;
     }
@@ -164,10 +166,6 @@ public abstract class PotionEffectProperty implements ModuleProperty {
             Text text = Text.translatable(("effect." + Registries.STATUS_EFFECT.getId(effectInstance().getEffectType())).replace(":", "."));
             text = text.getWithStyle(Style.EMPTY.withColor(effectInstance().getEffectType().getColor())).get(0);
             return text;
-        }
-
-        public boolean validEquipmentSlot(EquipmentSlot equipmentSlot) {
-            return true;
         }
     }
 }
