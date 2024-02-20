@@ -56,15 +56,15 @@ public abstract class PotionEffectProperty implements ModuleProperty {
         return ModuleProperty.mergeAsMap(left, right, mergeType);
     }
 
-    public void applyPotions(LivingEntity livingEntity, Iterable<ItemStack> itemStack) {
-        applyPotions(livingEntity, itemStack, null);
-    }
-
     public void applyPotions(LivingEntity livingEntity, Iterable<ItemStack> itemStack, @Nullable LivingEntity causer) {
         List<EffectHolder> effectHolders = getStatusEffects(itemStack);
         for (EffectHolder effectHolder : effectHolders) {
             livingEntity.addStatusEffect(effectHolder.effectInstance(), causer);
         }
+    }
+
+    public List<EffectHolder> getStatusEffects(ItemStack itemStack) {
+        return ModularItemCache.get(itemStack, KEY + ".status_effects", new ArrayList<>());
     }
 
     public void applyEffects(LivingEntity target, LivingEntity itemsFromEntity, @Nullable LivingEntity causer) {
@@ -74,8 +74,24 @@ public abstract class PotionEffectProperty implements ModuleProperty {
         }
     }
 
-    public List<EffectHolder> getStatusEffects(ItemStack itemStack) {
-        return ModularItemCache.get(itemStack, KEY + ".status_effects", new ArrayList<>());
+    public void applyEffects(LivingEntity target, LivingEntity itemsFromEntity, @Nullable LivingEntity causer, EffectPredicate predicate) {
+        List<EffectHolder> getFilteredEffects = getHoldersConditional(itemsFromEntity, predicate);
+        for (EffectHolder effectHolder : getFilteredEffects) {
+            target.addStatusEffect(effectHolder.effectInstance(), causer);
+        }
+    }
+
+    public List<EffectHolder> getHoldersConditional(LivingEntity entity, EffectPredicate predicate) {
+        List<EffectHolder> effectHolders = new ArrayList<>();
+        for (EquipmentSlot slot : EquipmentSlot.values()) {
+            ItemStack itemStack = entity.getEquippedStack(slot);
+            getStatusEffects(itemStack)
+                    .stream()
+                    .filter(effectHolder -> isValidForSlot(slot, effectHolder, entity))
+                    .filter(effectHolder -> predicate.filterHolder(effectHolder, slot))
+                    .forEach(effectHolders::add);
+        }
+        return effectHolders;
     }
 
     public List<EffectHolder> getHoldersConditional(LivingEntity entity) {
@@ -167,5 +183,9 @@ public abstract class PotionEffectProperty implements ModuleProperty {
             text = text.getWithStyle(Style.EMPTY.withColor(effectInstance().getEffectType().getColor())).get(0);
             return text;
         }
+    }
+
+    public interface EffectPredicate {
+        boolean filterHolder(EffectHolder effectHolder, EquipmentSlot equipmentSlot);
     }
 }

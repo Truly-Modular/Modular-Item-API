@@ -22,6 +22,7 @@ public class LightningOnHit extends DoubleProperty {
                 double lightningStrength = getForItems(attacker.getItemsEquipped());
                 for(int i = 0;i<lightningStrength;i++){
                     LightningEntity lightningEntity = EntityType.LIGHTNING_BOLT.create(listener.livingEntity.getWorld());
+                    assert lightningEntity != null;
                     lightningEntity.refreshPositionAfterTeleport(Vec3d.ofBottomCenter(listener.livingEntity.getBlockPos()));
                     lightningEntity.setChanneler(attacker instanceof ServerPlayerEntity ? (ServerPlayerEntity) attacker : null);
                     listener.livingEntity.getWorld().spawnEntity(lightningEntity);
