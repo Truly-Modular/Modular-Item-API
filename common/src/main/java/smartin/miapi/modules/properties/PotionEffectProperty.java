@@ -7,6 +7,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.item.ItemStack;
+import net.minecraft.potion.PotionUtil;
 import net.minecraft.registry.Registries;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
@@ -15,10 +16,9 @@ import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.cache.ModularItemCache;
-import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
-import javax.swing.text.html.HTMLDocument;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -173,9 +173,17 @@ public abstract class PotionEffectProperty implements ModuleProperty {
         }
 
         public Text getPotionDescription() {
-            Text text = Text.translatable(("effect." + Registries.STATUS_EFFECT.getId(effectInstance().getEffectType())).replace(":", "."));
+            Text text = Text.translatable(effectInstance().getTranslationKey());
             text = text.getWithStyle(Style.EMPTY.withColor(effectInstance().getEffectType().getColor())).get(0);
             return text;
+        }
+
+        public int getDurationSeconds() {
+            return (int) Math.ceil((float) effectInstance().getDuration() / 20.0f);
+        }
+
+        public Text getAmplifier() {
+            return Text.translatable("potion.potency." + effectInstance().getAmplifier());
         }
     }
 

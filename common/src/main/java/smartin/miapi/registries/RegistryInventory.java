@@ -482,7 +482,7 @@ public class RegistryInventory {
             registerMiapi(moduleProperties, GuiStatProperty.KEY, new GuiStatProperty());
             registerMiapi(moduleProperties, AbilityMangerProperty.KEY, new AbilityMangerProperty());
             registerMiapi(moduleProperties, OnHitTargetEffects.KEY, new OnHitTargetEffects());
-            registerMiapi(moduleProperties, OnHitTargetEffectsSelf.KEY, new OnHitTargetEffectsSelf());
+            registerMiapi(moduleProperties, OnDamagedEffects.KEY, new OnDamagedEffects());
             //compat
             registerMiapi(moduleProperties, BetterCombatProperty.KEY, new BetterCombatProperty());
             registerMiapi(moduleProperties, ApoliPowersProperty.KEY, new ApoliPowersProperty());

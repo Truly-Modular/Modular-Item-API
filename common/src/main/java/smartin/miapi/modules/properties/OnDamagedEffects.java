@@ -5,27 +5,28 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
+import net.minecraft.text.TextColor;
 import net.minecraft.util.Formatting;
+import org.apache.logging.log4j.core.tools.picocli.CommandLine;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class OnHitTargetEffects extends PotionEffectProperty {
-    public static String KEY = "on_attack_potion";
-    public OnHitTargetEffects property;
+public class OnDamagedEffects extends PotionEffectProperty {
+    public static String KEY = "on_hurt_potion";
+    public OnDamagedEffects property;
 
-    public OnHitTargetEffects() {
+    public OnDamagedEffects() {
         super(KEY);
         property = this;
-
         MiapiEvents.LIVING_HURT.register((listener) -> {
             if (listener.damageSource.getAttacker() instanceof LivingEntity livingEntity && !livingEntity.getWorld().isClient()) {
-                applyEffects(listener.livingEntity, livingEntity, livingEntity, this::isTargetOther);
+                applyEffects(livingEntity, listener.livingEntity, livingEntity, this::isTargetOther);
             }
             if (listener.damageSource.getAttacker() instanceof LivingEntity livingEntity && !livingEntity.getWorld().isClient()) {
-                applyEffects(livingEntity, livingEntity, livingEntity, this::isTargetSelf);
+                applyEffects(listener.livingEntity, listener.livingEntity, livingEntity, this::isTargetSelf);
             }
             return EventResult.pass();
         });
@@ -36,14 +37,14 @@ public class OnHitTargetEffects extends PotionEffectProperty {
                 if (effectHolder.isGuiVisibility()) {
                     Text text = effectHolder.getPotionDescription();
                     if (isTargetSelf(effectHolder)) {
-                        lines.add(Text.translatable("miapi.potion.target.self.tooltip", text, effectHolder.getDurationSeconds(), effectHolder.getAmplifier()));
+                        lines.add(Text.translatable("miapi.potion.damaged.self.tooltip", text, effectHolder.getDurationSeconds(), effectHolder.getAmplifier()));
                     } else {
-                        lines.add(Text.translatable("miapi.potion.target.other.tooltip", text, effectHolder.getDurationSeconds(), effectHolder.getAmplifier()));
+                        lines.add(Text.translatable("miapi.potion.damaged.other.tooltip", text, effectHolder.getDurationSeconds(), effectHolder.getAmplifier()));
                     }
                 }
             }
             if (!lines.isEmpty()) {
-                lines.add(0, Text.translatable("miapi.potion.target.on_hit").getWithStyle(Style.EMPTY.withColor(Formatting.GRAY)).get(0));
+                lines.add(0, Text.translatable("miapi.potion.damaged.on_hit").getWithStyle(Style.EMPTY.withColor(Formatting.GRAY)).get(0));
                 lines.add(0,Text.empty());
             }
             return lines;
