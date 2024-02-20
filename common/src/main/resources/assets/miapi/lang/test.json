@@ -1,0 +1,11 @@
+{
+    "on_hit_potion_self":[
+        {
+            "effect": "minecraft:poison",
+            "slot": "mainhand",
+            "amplifier":5,
+            "duration":30,
+            "gui":true
+        }
+    ]
+}

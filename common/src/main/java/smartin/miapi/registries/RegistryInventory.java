@@ -481,6 +481,8 @@ public class RegistryInventory {
             registerMiapi(moduleProperties, LightningOnHit.KEY, new LightningOnHit());
             registerMiapi(moduleProperties, GuiStatProperty.KEY, new GuiStatProperty());
             registerMiapi(moduleProperties, AbilityMangerProperty.KEY, new AbilityMangerProperty());
+            registerMiapi(moduleProperties, OnHitTargetEffects.KEY, new OnHitTargetEffects());
+            registerMiapi(moduleProperties, OnHitTargetEffectsSelf.KEY, new OnHitTargetEffectsSelf());
             //compat
             registerMiapi(moduleProperties, BetterCombatProperty.KEY, new BetterCombatProperty());
             registerMiapi(moduleProperties, ApoliPowersProperty.KEY, new ApoliPowersProperty());

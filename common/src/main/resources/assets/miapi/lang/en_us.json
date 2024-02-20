@@ -45,6 +45,8 @@
     "miapi.create_item.bow": "Bow",
     "miapi.create_item.crossbow": "Crossbow",
     "miapi.create_item.tool": "Tool",
+    "miapi.potion.target.self": "Self Effects",
+    "miapi.potion.target.other": "On Hit Effects",
     "effect.miapi.cryo": "Cryo",
     "miapi.tab.name": "Truly Modular",
     "miapi.ability.heavy_attack.title": "Heavy Attack",
