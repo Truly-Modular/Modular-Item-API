@@ -3,7 +3,9 @@
     "translation": "miapi.material.crystal.nether_quartz",
     "icon": "textures/item/quartz.png",
     "groups": [
-        "crystal"
+        "crystal",
+        "gem",
+        "gem_melee"
     ],
     "hardness": 5.9,
     "density": 0.5,
@@ -29,6 +31,16 @@
                 "value": "0.6"
             },
             "fracturing": "5"
+        },
+        "gem_melee_generic": {
+            "on_attack_potion": [
+                {
+                    "potion": "minecraft:luck",
+                    "amplifier": "[module.gem_power]-1",
+                    "duration": "100",
+                    "target_self": true
+                }
+            ]
         }
     },
     "mining_speed": 5,

@@ -1,9 +1,13 @@
 package smartin.miapi.attributes;
 
 import dev.architectury.event.EventResult;
+import dev.architectury.event.events.common.EntityEvent;
 import net.minecraft.entity.*;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
+import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.damage.DamageSources;
+import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -32,7 +36,7 @@ public class AttributeRegistry {
     /**
      * Idk, this is kinda bad but i couldnt do it in the mixin
      */
-    public static Map<PlayerEntity,Boolean> hasCrittedLast = new WeakHashMap<>();
+    public static Map<PlayerEntity, Boolean> hasCrittedLast = new WeakHashMap<>();
 
     public static EntityAttribute REACH;
     public static EntityAttribute ATTACK_RANGE;
@@ -43,6 +47,8 @@ public class AttributeRegistry {
     public static EntityAttribute MINING_SPEED_AXE;
     public static EntityAttribute MINING_SPEED_SHOVEL;
     public static EntityAttribute MINING_SPEED_HOE;
+
+    public static EntityAttribute MAGIC_DAMAGE;
 
     public static EntityAttribute CRITICAL_DAMAGE;
     public static EntityAttribute CRITICAL_CHANCE;
@@ -83,6 +89,15 @@ public class AttributeRegistry {
         MiapiEvents.LIVING_HURT.register((livingHurtEvent -> {
             if (livingHurtEvent.livingEntity.getAttributes().hasAttribute(DAMAGE_RESISTANCE)) {
                 livingHurtEvent.amount = (float) (livingHurtEvent.amount * (100 - livingHurtEvent.livingEntity.getAttributeValue(DAMAGE_RESISTANCE)) / 100);
+            }
+            return EventResult.pass();
+        }));
+        MiapiEvents.LIVING_ATTACK.register(((attacker, defender) -> {
+            if (attacker.getAttributes().hasAttribute(MAGIC_DAMAGE)) {
+                double value = attacker.getAttributeValue(MAGIC_DAMAGE);
+                if (value > 0) {
+                    defender.damage(attacker.getDamageSources().magic(), (float) value);
+                }
             }
             return EventResult.pass();
         }));

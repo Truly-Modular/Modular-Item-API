@@ -1,43 +1,58 @@
 {
-  "key": "amethyst",
-  "translation": "miapi.material.crystal.amethyst",
-  "icon": "textures/item/amethyst_shard.png",
-  "groups": ["crystal","gem"],
-  "hardness": 5,
-  "density": 0.5,
-  "flexibility": 0,
-  "durability": 1,
-  "mining_speed": 5,
-  "mining_level": 0,
-  "enchantability": 11,
-  "color": "A477EE",
-  "color_palette": {
-    "type": "grayscale_map",
-    "colors": {
-      "24": "54398a",
-      "68": "6f4fab",
-      "107": "8d6acc88",
-      "150": "b38ef388",
-      "190": "cfa0f388",
-      "216": "fecbe688",
-      "255": "fffdd588"
-    }
-  },
-  "textures": [
-    "shiny"
-  ],
-  "items": [
-    {
-      "item": "minecraft:amethyst_shard",
-      "value": 0.25
+    "key": "amethyst",
+    "translation": "miapi.material.crystal.amethyst",
+    "icon": "textures/item/amethyst_shard.png",
+    "groups": [
+        "crystal",
+        "gem"
+    ],
+    "hardness": 5,
+    "density": 0.5,
+    "flexibility": 0,
+    "durability": 1,
+    "mining_speed": 5,
+    "mining_level": 0,
+    "enchantability": 11,
+    "color": "A477EE",
+    "color_palette": {
+        "type": "grayscale_map",
+        "colors": {
+            "24": "54398a",
+            "68": "6f4fab",
+            "107": "8d6acc88",
+            "150": "b38ef388",
+            "190": "cfa0f388",
+            "216": "fecbe688",
+            "255": "fffdd588"
+        }
     },
-    {
-      "item": "minecraft:amethyst_cluster",
-      "value": 0.25
+    "textures": [
+        "shiny"
+    ],
+    "properties": {
+        "gem_melee_generic": {
+            "on_attack_potion": [
+                {
+                    "potion": "minecraft:poison",
+                    "amplifier": 1,
+                    "duration": "([module.gem_power]+3)*20",
+                    "showIcon": true
+                }
+            ]
+        }
     },
-    {
-      "item": "minecraft:amethyst_block",
-      "value": 1.0
-    }
-  ]
+    "items": [
+        {
+            "item": "minecraft:amethyst_shard",
+            "value": 0.25
+        },
+        {
+            "item": "minecraft:amethyst_cluster",
+            "value": 0.25
+        },
+        {
+            "item": "minecraft:amethyst_block",
+            "value": 1.0
+        }
+    ]
 }

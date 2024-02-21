@@ -4,6 +4,8 @@ import com.google.common.collect.Lists;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.EnchantmentLevelEntry;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
@@ -14,7 +16,9 @@ import net.minecraft.util.math.random.Random;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.item.FakeEnchantment;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.modules.properties.ChannelingProperty;
@@ -66,6 +70,13 @@ public class EnchantmentHelperMixin {
             if (ChannelingProperty.hasChanneling(stack)) {
                 cir.setReturnValue(true);
             }
+        }
+    }
+
+    @Inject(method = "onTargetDamaged(Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/entity/Entity;)V", at = @At("HEAD"), cancellable = true)
+    private static void miapi$addMagicDamage(LivingEntity attacker, Entity target, CallbackInfo ci) {
+        if(target instanceof LivingEntity defender){
+            MiapiEvents.LIVING_ATTACK.invoker().attack(attacker, defender);
         }
     }
 

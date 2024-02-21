@@ -1,46 +1,67 @@
 {
-  "key": "emerald",
-  "translation": "miapi.material.crystal.emerald",
-  "icon": "textures/item/emerald.png",
-  "groups": ["crystal","gem"],
-  "hardness": 5,
-  "density": 2.9,
-  "flexibility": 0,
-  "durability": 830,
-  "mining_speed": 7.5,
-  "mining_level": 3,
-  "enchantability": 12,
-  "color": "17DA61",
-  "color_palette": {
-    "type": "grayscale_map",
-    "colors": {
-      "24": "002d00",
-      "68": "005300",
-      "107": "007b18",
-      "150": "009529",
-      "190": "00aa2c",
-      "216": "17dd62",
-      "255": "41f384"
-    }
-  },
-  "properties": {
-    "tool": {
-      "fortune": "1"
+    "key": "emerald",
+    "translation": "miapi.material.crystal.emerald",
+    "icon": "textures/item/emerald.png",
+    "groups": [
+        "crystal",
+        "gem"
+    ],
+    "hardness": 5,
+    "density": 2.9,
+    "flexibility": 0,
+    "durability": 830,
+    "mining_speed": 7.5,
+    "mining_level": 3,
+    "enchantability": 12,
+    "color": "17DA61",
+    "color_palette": {
+        "type": "grayscale_map",
+        "colors": {
+            "24": "002d00",
+            "68": "005300",
+            "107": "007b18",
+            "150": "009529",
+            "190": "00aa2c",
+            "216": "17dd62",
+            "255": "41f384"
+        }
     },
-    "handheld": {
-      "illagerBane": "1"
+    "properties": {
+        "tool": {
+            "fortune": "1"
+        },
+        "handheld": {
+            "illagerBane": "1"
+        },
+        "armor": {
+            "pillagerGuard": "1"
+        },
+        "gem_melee_generic": {
+            "on_attack_potion": [
+                {
+                    "potion": "minecraft:luck",
+                    "amplifier": "[module.gem_power]",
+                    "duration": "100",
+                    "target_self": true
+                }
+            ],
+            "attributes": [
+                {
+                    "attribute": "generic.luck",
+                    "value": "[module.gem_power]",
+                    "operation": "+",
+                    "slot": "mainhand"
+                }
+            ]
+        }
     },
-    "armor": {
-      "pillagerGuard": "1"
-    }
-  },
-  "textures": [
-    "shiny"
-  ],
-  "items": [
-    {
-      "item": "minecraft:emerald",
-      "value": 1.0
-    }
-  ]
+    "textures": [
+        "shiny"
+    ],
+    "items": [
+        {
+            "item": "minecraft:emerald",
+            "value": 1.0
+        }
+    ]
 }

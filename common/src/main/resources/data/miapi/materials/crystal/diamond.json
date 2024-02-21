@@ -24,6 +24,28 @@
     },
     "filler": "interpolate"
   },
+  "properties": {
+    "gem_melee_generic": {
+      "durability": [
+        {
+          "value": "400 + [module.gem_power]*200",
+          "operation": "+"
+        },
+        {
+          "value": "0.25",
+          "operation": "*"
+        }
+      ],
+      "on_attack_potion": [
+        {
+          "potion": "minecraft:resistance",
+          "amplifier": 0,
+          "duration": "([module.gem_power]+2)*20",
+          "target_self": true
+        }
+      ]
+    }
+  },
   "textures": [
     "bright"
   ],

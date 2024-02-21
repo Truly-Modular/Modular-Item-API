@@ -4,6 +4,7 @@ import dev.architectury.event.EventResult;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import smartin.miapi.events.MiapiEvents;
+import smartin.miapi.modules.properties.damage_boosts.IllagerBane;
 import smartin.miapi.modules.properties.util.DoubleProperty;
 
 /**

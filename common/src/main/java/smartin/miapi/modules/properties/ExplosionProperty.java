@@ -15,6 +15,7 @@ import net.minecraft.entity.TntEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
+import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.s2c.play.ExplosionS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.hit.HitResult;
@@ -84,7 +85,7 @@ public class ExplosionProperty extends CodecBasedProperty<ExplosionProperty.Expl
      * @param projectile the projectile that is exploding
      * @param result     hitresult / the contact point of the explosion
      */
-    private void explode(ExplosionInfo info, ItemProjectileEntity projectile, HitResult result) {
+    public static void explode(ExplosionInfo info, ItemProjectileEntity projectile, HitResult result) {
         double x = result.getPos().getX();// - projectile.getVelocity().getX() / 60;
         double y = result.getPos().getY();// - projectile.getVelocity().getY() / 60;
         double z = result.getPos().getZ();// - projectile.getVelocity().getZ() / 60;
@@ -112,6 +113,54 @@ public class ExplosionProperty extends CodecBasedProperty<ExplosionProperty.Expl
             }
 
             Iterator var14 = projectile.getWorld().getPlayers().iterator();
+
+            while (var14.hasNext()) {
+                ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity) var14.next();
+                if (serverPlayerEntity.squaredDistanceTo(x, y, z) < 4096.0) {
+                    serverPlayerEntity.networkHandler.sendPacket(new ExplosionS2CPacket(x, y, z, (float) info.strength, explosion.getAffectedBlocks(), explosion.getAffectedPlayers().get(serverPlayerEntity)));
+                }
+            }
+        }
+    }
+
+    public ExplosionProperty.ExplosionInfo getInfo(ItemStack itemStack, ModuleProperty property) {
+        ExplosionProperty.ExplosionInfo info = null;
+        for (ItemModule.ModuleInstance moduleInstance : ItemModule.getModules(itemStack).allSubModules()) {
+            if (moduleInstance.getProperties().containsKey(property)) {
+                info = new ExplosionProperty.ExplosionInfo(moduleInstance.getProperties().get(property).getAsJsonObject(), moduleInstance);
+            }
+        }
+        return info;
+    }
+
+    public static void explode(ExplosionInfo info, World world, Vec3d vec3d, @Nullable Entity owner) {
+        double x = vec3d.getX();
+        double y = vec3d.getY();
+        double z = vec3d.getZ();
+        ExplosionBehavior behavior = new ArrowExplosionInfo();
+        Explosion.DestructionType destructionType;
+        if (info.destroyBlocks) {
+            destructionType = Explosion.DestructionType.DESTROY;
+        } else {
+            destructionType = Explosion.DestructionType.KEEP;
+        }
+
+        MiapiExplosion explosion = new MiapiExplosion(world,
+                owner,
+                (DamageSource) null, behavior, x, y, z, (float) info.strength, false, destructionType);
+        explosion.entityMaxDamage = (float) info.entityMaxDamage;
+        explosion.entityRadius = (float) info.entityRadius;
+        explosion.entityExplosionPower = (float) info.entityStrength;
+        if (!world.isClient) {
+            explosion.collectBlocksAndDamageEntities();
+        }
+        explosion.affectWorld(true);
+        if (!world.isClient()) {
+            if (!explosion.shouldDestroy()) {
+                explosion.clearAffectedBlocks();
+            }
+
+            Iterator var14 = world.getPlayers().iterator();
 
             while (var14.hasNext()) {
                 ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity) var14.next();
@@ -263,7 +312,7 @@ public class ExplosionProperty extends CodecBasedProperty<ExplosionProperty.Expl
         }
     }
 
-    public class ArrowExplosionInfo extends ExplosionBehavior {
+    public static class ArrowExplosionInfo extends ExplosionBehavior {
         public Optional<Float> getBlastResistance(Explosion explosion, BlockView world, BlockPos pos, BlockState blockState, FluidState fluidState) {
             Optional<Float> distance = blockState.isAir() && fluidState.isEmpty() ? Optional.empty() : Optional.of(Math.max(blockState.getBlock().getBlastResistance(), fluidState.getBlastResistance()));
             if (distance.isPresent()) {
@@ -295,7 +344,7 @@ public class ExplosionProperty extends CodecBasedProperty<ExplosionProperty.Expl
             entityRadius = ModuleProperty.getDouble(element, "entityRadius", moduleInstance, strength * 2);
         }
 
-        public ExplosionInfo(){
+        public ExplosionInfo() {
 
         }
     }

@@ -28,6 +28,7 @@ import smartin.miapi.modules.material.Material;
 import java.util.List;
 
 public class MiapiEvents {
+    public static final PrioritizedEvent<LivingAttackEvent> LIVING_ATTACK = PrioritizedEvent.createEventResult();
     public static final PrioritizedEvent<LivingHurt> LIVING_HURT = PrioritizedEvent.createEventResult();
     public static final PrioritizedEvent<LivingHurt> LIVING_HURT_AFTER = PrioritizedEvent.createEventResult();
     public static final PrioritizedEvent<EntityRide> START_RIDING = PrioritizedEvent.createLoop(); // only fires on successful rides, and is not cancellable (if I wanted to make it cancellable, i would add mixinextras)
@@ -70,7 +71,11 @@ public class MiapiEvents {
         }
     }
 
-    public interface LivingEntityAttributeBuild{
+    public interface LivingAttackEvent {
+        EventResult attack(LivingEntity attacker, LivingEntity defender);
+    }
+
+    public interface LivingEntityAttributeBuild {
         EventResult build(DefaultAttributeContainer.Builder builder);
 
     }

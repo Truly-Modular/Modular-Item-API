@@ -4,11 +4,15 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.redpxnda.nucleus.registry.NucleusNamespaces;
+import dev.architectury.event.Event;
+import dev.architectury.event.EventResult;
 import dev.architectury.event.events.common.BlockEvent;
+import dev.architectury.event.events.common.EntityEvent;
 import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.event.events.common.PlayerEvent;
 import dev.architectury.registry.ReloadListenerRegistry;
 import net.minecraft.block.entity.SculkSensorBlockEntity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.resource.ResourceType;
@@ -64,6 +68,10 @@ public class Miapi {
         AttributeRegistry.setup();
         ConditionManager.setup();
         StatActorType.setup();
+        EntityEvent event;
+        EntityEvent.LIVING_DEATH.register((livingEntity, damageSource) -> {
+            return EventResult.pass();
+        });
         LifecycleEvent.SERVER_BEFORE_START.register(minecraftServer -> server = minecraftServer);
         ReloadListenerRegistry.register(
                 ResourceType.SERVER_DATA,

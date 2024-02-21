@@ -1,14 +1,13 @@
-package smartin.miapi.modules.properties;
+package smartin.miapi.modules.properties.potion;
 
 import dev.architectury.event.EventResult;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
-import net.minecraft.text.TextColor;
 import net.minecraft.util.Formatting;
-import org.apache.logging.log4j.core.tools.picocli.CommandLine;
 import smartin.miapi.events.MiapiEvents;
+import smartin.miapi.modules.properties.LoreProperty;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.ArrayList;
@@ -22,11 +21,11 @@ public class OnDamagedEffects extends PotionEffectProperty {
         super(KEY);
         property = this;
         MiapiEvents.LIVING_HURT.register((listener) -> {
-            if (listener.damageSource.getAttacker() instanceof LivingEntity livingEntity && !livingEntity.getWorld().isClient()) {
-                applyEffects(livingEntity, listener.livingEntity, livingEntity, this::isTargetOther);
-            }
-            if (listener.damageSource.getAttacker() instanceof LivingEntity livingEntity && !livingEntity.getWorld().isClient()) {
-                applyEffects(listener.livingEntity, listener.livingEntity, livingEntity, this::isTargetSelf);
+            if(!listener.livingEntity.getWorld().isClient()){
+                applyEffects(listener.livingEntity, listener.livingEntity, listener.livingEntity, this::isTargetSelf);
+                if (listener.damageSource.getAttacker() instanceof LivingEntity livingEntity ) {
+                    applyEffects(livingEntity, listener.livingEntity, livingEntity, this::isTargetOther);
+                }
             }
             return EventResult.pass();
         });
@@ -45,7 +44,7 @@ public class OnDamagedEffects extends PotionEffectProperty {
             }
             if (!lines.isEmpty()) {
                 lines.add(0, Text.translatable("miapi.potion.damaged.on_hit").getWithStyle(Style.EMPTY.withColor(Formatting.GRAY)).get(0));
-                lines.add(0,Text.empty());
+                lines.add(0, Text.empty());
             }
             return lines;
         });

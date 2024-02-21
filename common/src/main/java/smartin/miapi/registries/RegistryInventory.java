@@ -74,8 +74,15 @@ import smartin.miapi.modules.material.*;
 import smartin.miapi.modules.properties.*;
 import smartin.miapi.modules.properties.compat.apoli.ApoliPowersProperty;
 import smartin.miapi.modules.properties.compat.better_combat.BetterCombatProperty;
+import smartin.miapi.modules.properties.damage_boosts.AquaticDamage;
+import smartin.miapi.modules.properties.damage_boosts.IllagerBane;
+import smartin.miapi.modules.properties.damage_boosts.SmiteDamage;
+import smartin.miapi.modules.properties.damage_boosts.SpiderDamage;
 import smartin.miapi.modules.properties.mining.MiningLevelProperty;
 import smartin.miapi.modules.properties.mining.MiningShapeProperty;
+import smartin.miapi.modules.properties.potion.OnDamagedEffects;
+import smartin.miapi.modules.properties.potion.OnHitTargetEffects;
+import smartin.miapi.modules.properties.potion.OnKillEffects;
 import smartin.miapi.modules.properties.render.*;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.modules.synergies.SynergyManager;
@@ -323,6 +330,10 @@ public class RegistryInventory {
                         new ClampedEntityAttribute("miapi.attribute.name.player_item_use_speed", -0.8, -1.0, 0.0).setTracked(true),
                 att -> PLAYER_ITEM_USE_MOVEMENT_SPEED = att);
 
+        registerAtt("generic.magic_damage", true, () ->
+                        new ClampedEntityAttribute("miapi.attribute.name.magic_damage", 0.0, 0.0, 1024.0).setTracked(true),
+                att -> MAGIC_DAMAGE = att);
+
         registerAtt("generic.crit_damage", true, () ->
                         new ClampedEntityAttribute("miapi.attribute.name.crit_damage", 0.0, 0.0, 1024.0).setTracked(true),
                 att -> CRITICAL_DAMAGE = att);
@@ -462,6 +473,9 @@ public class RegistryInventory {
             registerMiapi(moduleProperties, IsCrossbowShootAble.KEY, new IsCrossbowShootAble());
             registerMiapi(moduleProperties, EdibleProperty.KEY, new EdibleProperty());
             registerMiapi(moduleProperties, CryoProperty.KEY, new CryoProperty());
+            registerMiapi(moduleProperties, AquaticDamage.KEY, new AquaticDamage());
+            registerMiapi(moduleProperties, SpiderDamage.KEY, new SpiderDamage());
+            registerMiapi(moduleProperties, SmiteDamage.KEY, new SmiteDamage());
             registerMiapi(moduleProperties, IllagerBane.KEY, new IllagerBane());
             registerMiapi(moduleProperties, PillagesGuard.KEY, new PillagesGuard());
             registerMiapi(moduleProperties, LuminousLearningProperty.KEY, new LuminousLearningProperty());
@@ -483,6 +497,8 @@ public class RegistryInventory {
             registerMiapi(moduleProperties, AbilityMangerProperty.KEY, new AbilityMangerProperty());
             registerMiapi(moduleProperties, OnHitTargetEffects.KEY, new OnHitTargetEffects());
             registerMiapi(moduleProperties, OnDamagedEffects.KEY, new OnDamagedEffects());
+            registerMiapi(moduleProperties, OnKillEffects.KEY, new OnKillEffects());
+            registerMiapi(moduleProperties, OnKillExplosion.KEY, new OnKillExplosion());
             //compat
             registerMiapi(moduleProperties, BetterCombatProperty.KEY, new BetterCombatProperty());
             registerMiapi(moduleProperties, ApoliPowersProperty.KEY, new ApoliPowersProperty());

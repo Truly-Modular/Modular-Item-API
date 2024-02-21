@@ -27,6 +27,7 @@ import smartin.miapi.client.gui.TransformableWidget;
 import smartin.miapi.item.modular.CustomDrawTimeItem;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.*;
+import smartin.miapi.modules.properties.damage_boosts.IllagerBane;
 import smartin.miapi.modules.properties.util.GuiWidgetSupplier;
 import smartin.miapi.registries.RegistryInventory;
 
