@@ -72,6 +72,27 @@ public class JsonMaterial implements Material {
                 groups.add(group);
             }
         }
+        if (rawJson.getAsJsonObject().has("hidden_groups")) {
+            JsonArray groupsJson = rawJson.getAsJsonObject().getAsJsonArray("hidden_groups");
+            for (JsonElement groupElement : groupsJson) {
+                String group = groupElement.getAsString();
+                groups.add(group);
+            }
+        }
+        return groups;
+    }
+
+    @Override
+    public List<String> getGuiGroups() {
+        List<String> groups = new ArrayList<>();
+        groups.add(key);
+        if (rawJson.getAsJsonObject().has("groups")) {
+            JsonArray groupsJson = rawJson.getAsJsonObject().getAsJsonArray("groups");
+            for (JsonElement groupElement : groupsJson) {
+                String group = groupElement.getAsString();
+                groups.add(group);
+            }
+        }
         return groups;
     }
 

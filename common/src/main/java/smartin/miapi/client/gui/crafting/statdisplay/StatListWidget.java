@@ -27,7 +27,10 @@ import smartin.miapi.client.gui.TransformableWidget;
 import smartin.miapi.item.modular.CustomDrawTimeItem;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.*;
+import smartin.miapi.modules.properties.damage_boosts.AquaticDamage;
 import smartin.miapi.modules.properties.damage_boosts.IllagerBane;
+import smartin.miapi.modules.properties.damage_boosts.SmiteDamage;
+import smartin.miapi.modules.properties.damage_boosts.SpiderDamage;
 import smartin.miapi.modules.properties.util.GuiWidgetSupplier;
 import smartin.miapi.registries.RegistryInventory;
 
@@ -295,6 +298,19 @@ public class StatListWidget extends InteractAbleWidget {
                 .setMax(100)
                 .setFormat("##.#")
                 .setTranslationKey(WaterGravityProperty.KEY).build());
+
+        addStatDisplay(SinglePropertyStatDisplay
+                .builder(AquaticDamage.property)
+                .setMax(5)
+                .setTranslationKey(AquaticDamage.KEY).build());
+        addStatDisplay(SinglePropertyStatDisplay
+                .builder(SpiderDamage.property)
+                .setMax(5)
+                .setTranslationKey(SpiderDamage.KEY).build());
+        addStatDisplay(SinglePropertyStatDisplay
+                .builder(SmiteDamage.property)
+                .setMax(5)
+                .setTranslationKey(SmiteDamage.KEY).build());
 
         addStatDisplay(SinglePropertyStatDisplay
                 .builder(PillagesGuard.property)

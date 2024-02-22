@@ -3,8 +3,9 @@
     "translation": "miapi.material.crystal.nether_quartz",
     "icon": "textures/item/quartz.png",
     "groups": [
-        "crystal",
-        "gem",
+        "crystal"
+    ],
+    "hidden_groups": [
         "gem_melee"
     ],
     "hardness": 5.9,
@@ -36,9 +37,17 @@
             "on_attack_potion": [
                 {
                     "potion": "minecraft:luck",
-                    "amplifier": "[module.gem_power]-1",
+                    "amplifier": "[module.gem_power]",
                     "duration": "100",
                     "target_self": true
+                }
+            ],
+            "attributes": [
+                {
+                    "attribute": "generic.luck",
+                    "value": "[module.gem_power]",
+                    "operation": "+",
+                    "slot": "mainhand"
                 }
             ]
         }

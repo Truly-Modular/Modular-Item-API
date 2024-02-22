@@ -37,18 +37,11 @@
             "pillagerGuard": "1"
         },
         "gem_melee_generic": {
-            "on_attack_potion": [
-                {
-                    "potion": "minecraft:luck",
-                    "amplifier": "[module.gem_power]",
-                    "duration": "100",
-                    "target_self": true
-                }
-            ],
+            "fortune": "1",
             "attributes": [
                 {
-                    "attribute": "generic.luck",
-                    "value": "[module.gem_power]",
+                    "attribute": "miapi.crit_chance",
+                    "value": "[module.gem_power]*5+10",
                     "operation": "+",
                     "slot": "mainhand"
                 }

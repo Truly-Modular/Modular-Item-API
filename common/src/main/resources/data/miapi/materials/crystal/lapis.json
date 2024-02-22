@@ -6,6 +6,9 @@
         "crystal",
         "gem"
     ],
+    "hidden_groups": [
+        "gem_melee"
+    ],
     "hardness": 3,
     "density": 0.6,
     "flexibility": 0,
@@ -35,6 +38,9 @@
         },
         "handheld": {
             "luminiousLearning": "0.3"
+        },
+        "gem_melee_generic": {
+            "smite_damage":" 1 + [module.gem_power]"
         }
     },
     "items": [

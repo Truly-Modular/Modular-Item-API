@@ -8,6 +8,9 @@
     "groups": [
         "stone"
     ],
+    "hidden_groups": [
+        "gem_melee"
+    ],
     "hardness": 3,
     "density": 3,
     "flexibility": 0,
@@ -33,13 +36,22 @@
     "properties": {
         "handheld": {
             "attributes": [
-
                 {
                     "attribute": "generic.attack_speed",
                     "value": "1.05",
                     "operation": "**",
                     "slot": "mainhand",
                     "uuid": "FA233E1C-4180-4865-B01B-BCCE9785ACA3"
+                }
+            ]
+        },
+        "gem_melee_generic": {
+            "on_attack_potion": [
+                {
+                    "potion": "minecraft:speed",
+                    "amplifier": "0 + floor([module.gem_power]/2)",
+                    "duration": "([module.gem_power] + 2) * 20",
+                    "target_self": true
                 }
             ]
         }

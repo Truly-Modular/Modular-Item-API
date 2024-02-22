@@ -8,6 +8,7 @@ import smartin.miapi.registries.MiapiRegistry;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * This class manages Properties for Items
@@ -29,13 +30,13 @@ public class PropertyResolver {
     public static void resolve(ItemModule.ModuleInstance moduleInstance) {
         moduleInstance.allSubModules().forEach(instance -> {
             if (instance.rawProperties == null) {
-                instance.rawProperties = new HashMap<>();
+                instance.rawProperties = new ConcurrentHashMap<>();
             }
         });
         propertyProviderRegistry.getFlatMap().forEach((name, propertyProvider) -> {
             moduleInstance.allSubModules().forEach(instance -> {
                 if (instance.rawProperties == null) {
-                    instance.rawProperties = new HashMap<>();
+                    instance.rawProperties = new ConcurrentHashMap<>();
                 }
                 instance.rawProperties.putAll(propertyProvider.resolve(instance, instance.rawProperties));
             });

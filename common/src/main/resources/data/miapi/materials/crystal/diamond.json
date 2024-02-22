@@ -3,6 +3,9 @@
   "translation": "miapi.material.crystal.diamond",
   "icon": "textures/item/diamond.png",
   "groups": ["crystal","gem"],
+  "hidden_groups": [
+    "gem_melee"
+  ],
   "hardness": 6,
   "density": 3.0,
   "flexibility": 0,

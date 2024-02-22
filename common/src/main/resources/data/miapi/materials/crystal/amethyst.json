@@ -37,6 +37,12 @@
                     "amplifier": 1,
                     "duration": "([module.gem_power]+3)*20",
                     "showIcon": true
+                },
+                {
+                    "potion": "minecraft:glowing",
+                    "amplifier": "0",
+                    "duration": "100+[module.gem_power]*20",
+                    "target_self": false
                 }
             ]
         }

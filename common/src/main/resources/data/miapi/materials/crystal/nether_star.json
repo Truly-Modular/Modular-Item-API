@@ -1,0 +1,51 @@
+{
+    "key": "nether_star",
+    "translation": "miapi.material.crystal.nether_star",
+    "icon": "textures/item/nether_star.png",
+    "hidden_groups": [
+        "gem_melee"
+    ],
+    "enchantability": 30,
+    "color_palette": {
+        "type": "grayscale_map",
+        "colors": {
+            "0": "000000",
+            "36": "2c2c27",
+            "72": "484d37",
+            "108": "5f5f55",
+            "144": "787975",
+            "180": "a1a196",
+            "216": "a9aa8f",
+            "252": "e5e788",
+            "255": "e5e788"
+        },
+        "filler": "interpolate"
+    },
+    "properties": {
+        "gem_melee_generic": {
+            "on_attack_potion": [
+                {
+                    "potion": "minecraft:strength",
+                    "amplifier": "[module.gem_power]/2",
+                    "duration": "([module.gem_power]+3)*20",
+                    "showIcon": true,
+                    "target_self": true
+                }
+            ],
+            "attributes": [
+                {
+                    "attribute": "miapi:generic.crit_damage",
+                    "value": "([module.gem_power])*5",
+                    "operation": "*",
+                    "slot": "mainhand"
+                }
+            ]
+        }
+    },
+    "items": [
+        {
+            "item": "minecraft:nether_star",
+            "value": 1.0
+        }
+    ]
+}

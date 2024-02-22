@@ -268,10 +268,7 @@ public class GeneratedMaterial implements Material {
     public static boolean isValidItem(Item item) {
         Identifier identifier = Registries.ITEM.getId(item);
         Pattern pattern = Pattern.compile(MiapiConfig.OtherConfigGroup.blockRegexGeneratedMaterials.getValue());
-        if (pattern.matcher(identifier.toString()).find()) {
-            return false;
-        }
-        return true;
+        return !pattern.matcher(identifier.toString()).find();
     }
 
     public GeneratedMaterial(ToolMaterial toolMaterial, boolean isClient) {

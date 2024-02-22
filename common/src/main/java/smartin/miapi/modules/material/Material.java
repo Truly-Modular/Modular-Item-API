@@ -31,6 +31,10 @@ public interface Material {
 
     List<String> getGroups();
 
+    default List<String> getGuiGroups(){
+        return getGroups();
+    }
+
     @Environment(EnvType.CLIENT)
     MaterialColorer getPalette();
 

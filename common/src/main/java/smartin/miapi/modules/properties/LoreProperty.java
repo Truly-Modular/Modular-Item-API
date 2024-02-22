@@ -54,8 +54,8 @@ public class LoreProperty implements ModuleProperty {
                     descriptions.add(materialDesc);
                     if (Screen.hasAltDown()) {
                         descriptions.add(gray(Text.translatable("miapi.ui.material_desc_alt_2")));
-                        for (i = 1; i < material.getGroups().size(); i++) {
-                            String groupId = material.getGroups().get(i);
+                        for (i = 1; i < material.getGuiGroups().size(); i++) {
+                            String groupId = material.getGuiGroups().get(i);
                             descriptions.add(gray(Text.literal(" - " + HoverMaterialList.getTranslation(groupId).getString())));
                         }
                     }

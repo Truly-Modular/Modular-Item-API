@@ -1,0 +1,43 @@
+{
+    "key": "heart_of_the_sea",
+    "translation": "miapi.material.crystal.heart_of_the_sea",
+    "icon": "textures/item/heart_of_the_sea.png",
+    "hidden_groups": [
+        "gem_melee"
+    ],
+    "enchantability": 30,
+    "color_palette": {
+        "type": "grayscale_map",
+        "colors": {
+            "0": "000000",
+            "36": "1b4864",
+            "72": "216c75",
+            "108": "2647be",
+            "144": "2570c2",
+            "180": "288ea3",
+            "216": "3cbbda",
+            "252": "14e6d7",
+            "255": "14e6d7"
+        },
+        "filler": "interpolate"
+    },
+    "properties": {
+        "gem_melee_generic": {
+            "damage_aquatic": "3+[module.gem_power]/2",
+            "attributes": [
+                {
+                    "attribute": "miapi:generic.swim_speed",
+                    "value": "0.05",
+                    "operation": "*",
+                    "slot": "mainhand"
+                }
+            ]
+        }
+    },
+    "items": [
+        {
+            "item": "minecraft:heart_of_the_sea",
+            "value": 1.0
+        }
+    ]
+}
