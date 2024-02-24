@@ -1,2 +1,4 @@
-## v1.1.12 (1.20.1)
-- fixed another issue with generated Materials
+## v1.1.13 (1.20.1)
+- added When Attacking, When Killing and onDeath Potion effects
+- added Damage Bonus property against Smite , aquatic and Arachnic Mobs
+- added onKill Explosion property
