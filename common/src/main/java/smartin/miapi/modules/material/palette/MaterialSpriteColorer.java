@@ -88,7 +88,7 @@ public abstract class MaterialSpriteColorer implements MaterialColorer {
             return isAnimated || MaterialSpriteColorer.this.isAnimated();
         }
 
-        public Material getMaterial(){
+        public Material getMaterial() {
             return MaterialSpriteColorer.this.material;
         }
 

@@ -13,10 +13,7 @@ import smartin.miapi.client.gui.crafting.CraftingScreen;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.edit_options.EditOption;
-import smartin.miapi.modules.properties.AllowedSlots;
-import smartin.miapi.modules.properties.CraftingConditionProperty;
-import smartin.miapi.modules.properties.PriorityProperty;
-import smartin.miapi.modules.properties.SlotProperty;
+import smartin.miapi.modules.properties.*;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -33,12 +30,14 @@ public class ReplaceView extends InteractAbleWidget {
     Consumer<CraftOption> preview;
     SlotButton lastPreview;
     public static List<CraftOptionSupplier> optionSuppliers = new ArrayList<>();
+    public SlotProperty.ModuleSlot currentSlot;
 
     public ReplaceView(int x, int y, int width, int height, SlotProperty.ModuleSlot slot, EditOption.EditContext editContext, Consumer<SlotProperty.ModuleSlot> back, Consumer<CraftOption> craft, Consumer<CraftOption> preview) {
         super(x, y, width, height, Text.empty());
         this.craft = craft;
         this.preview = preview;
         float headerScale = 1.0f;
+        currentSlot = slot;
         TransformableWidget headerHolder = new TransformableWidget(x, y, width, height, headerScale);
         addChild(headerHolder);
 
@@ -88,10 +87,10 @@ public class ReplaceView extends InteractAbleWidget {
             ItemModule.ModuleInstance instance = new ItemModule.ModuleInstance(option.module());
             Text translated = StatResolver.translateAndResolve(Miapi.MOD_ID + ".module." + moduleName, instance);
             textWidget = new ScrollingTextWidget(0, 0, this.width, translated, ColorHelper.Argb.getArgb(255, 255, 255, 255));
-            isAllowed = CraftingConditionProperty.isCraftable(null, option.module(), MinecraftClient.getInstance().player, null);
+            isAllowed = CraftingConditionProperty.isCraftable(currentSlot, option.module(), MinecraftClient.getInstance().player, null);
             List<Text> texts = new ArrayList<>();
             if (!isAllowed) {
-                texts = CraftingConditionProperty.getReasonsForCraftable(null, option.module(), MinecraftClient.getInstance().player, null);
+                texts = CraftingConditionProperty.getReasonsForCraftable(currentSlot, option.module(), MinecraftClient.getInstance().player, null);
             }
             hoverDescription = new HoverDescription(x, y, texts);
         }
