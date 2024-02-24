@@ -4,7 +4,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.architectury.platform.Platform;
 import dev.architectury.utils.Env;
-import it.unimi.dsi.fastutil.objects.ObjectLists;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -176,7 +175,7 @@ public class GeneratedMaterial implements Material {
         woodItems.clear();
         stoneItems.clear();
         generatedItems.clear();
-        if (!MiapiConfig.OtherConfigGroup.generateMaterial.getValue()) {
+        if (!MiapiConfig.INSTANCE.server.generatedMaterials.generateMaterials) {
             return;
         }
         List<ToolItem> toolItems = Registries.ITEM.stream()
@@ -184,7 +183,7 @@ public class GeneratedMaterial implements Material {
                 .map(ToolItem.class::cast)
                 .toList();
         List<Material> toRegister = new ArrayList<>();
-        if (MiapiConfig.OtherConfigGroup.generateOtherMaterials.getValue()) {
+        if (MiapiConfig.INSTANCE.server.generatedMaterials.generateOtherMaterials) {
             toolItems.stream()
                     .map(ToolItem::getMaterial)
                     .collect(Collectors.toSet())
@@ -195,7 +194,7 @@ public class GeneratedMaterial implements Material {
                             toolMaterial.getRepairIngredient().getMatchingStacks() != null)
                     .filter(toolMaterial -> Arrays.stream(toolMaterial.getRepairIngredient().getMatchingStacks())
                             .allMatch(itemStack -> MaterialProperty.getMaterialFromIngredient(itemStack) == null && !itemStack.getItem().equals(Items.BARRIER)))
-                    .limit(MiapiConfig.OtherConfigGroup.maxGeneratedMaterial.getValue())
+                    .limit(MiapiConfig.INSTANCE.server.generatedMaterials.maximumGeneratedMaterials)
                     .collect(Collectors.toSet()).forEach(toolMaterial -> {
                         if (isValidItem(toolMaterial.getRepairIngredient().getMatchingStacks()[0].getItem())) {
                             GeneratedMaterial generatedMaterial = new GeneratedMaterial(toolMaterial, false);
@@ -207,11 +206,11 @@ public class GeneratedMaterial implements Material {
                     });
         }
 
-        if (MiapiConfig.OtherConfigGroup.generateWoodMaterials.getValue()) {
+        if (MiapiConfig.INSTANCE.server.generatedMaterials.generateWoodMaterials) {
             Registries.ITEM.stream()
                     .filter(item -> item.getDefaultStack().isIn(ItemTags.PLANKS) &&
                             !item.getDefaultStack().isIn(RegistryInventory.MIAPI_FORBIDDEN_TAG))
-                    .limit(MiapiConfig.OtherConfigGroup.maxGeneratedMaterial.getValue())
+                    .limit(MiapiConfig.INSTANCE.server.generatedMaterials.maximumGeneratedMaterials)
                     .forEach(item -> {
                         if (isValidItem(item)) {
                             woodItems.add(item);
@@ -225,11 +224,11 @@ public class GeneratedMaterial implements Material {
                     });
         }
 
-        if (MiapiConfig.OtherConfigGroup.generateStoneMaterials.getValue()) {
+        if (MiapiConfig.INSTANCE.server.generatedMaterials.generateStoneMaterials) {
             Registries.ITEM.stream()
                     .filter(item -> item.getDefaultStack().isIn(ItemTags.STONE_TOOL_MATERIALS) &&
                             !item.getDefaultStack().isIn(RegistryInventory.MIAPI_FORBIDDEN_TAG))
-                    .limit(MiapiConfig.OtherConfigGroup.maxGeneratedMaterial.getValue())
+                    .limit(MiapiConfig.INSTANCE.server.generatedMaterials.maximumGeneratedMaterials)
                     .forEach(item -> {
                         if (isValidItem(item)) {
                             stoneItems.add(item);
@@ -267,7 +266,7 @@ public class GeneratedMaterial implements Material {
 
     public static boolean isValidItem(Item item) {
         Identifier identifier = Registries.ITEM.getId(item);
-        Pattern pattern = Pattern.compile(MiapiConfig.OtherConfigGroup.blockRegexGeneratedMaterials.getValue());
+        Pattern pattern = Pattern.compile(MiapiConfig.INSTANCE.server.generatedMaterials.blockRegex);
         return !pattern.matcher(identifier.toString()).find();
     }
 

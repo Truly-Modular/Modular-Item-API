@@ -4,6 +4,7 @@ import com.google.gson.JsonElement;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 import com.redpxnda.nucleus.codec.auto.AutoCodec;
+import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.Screen;
@@ -131,17 +132,17 @@ public class LoreProperty implements ModuleProperty {
     }
 
     public static class Holder implements Comparable<Holder> {
-        @AutoCodec.Optional
+        @CodecBehavior.Optional
         @Deprecated
         /**
          * @deprecated will be fully removed and replaced with the {@link Holder#text}
          */
         public String lang;
-        @AutoCodec.Optional
+        @CodecBehavior.Optional
         public Text text;
-        @AutoCodec.Mandatory
+        @CodecBehavior.Optional(false)
         public String position;
-        @AutoCodec.Optional
+        @CodecBehavior.Optional
         public float priority = 0;
 
         public Text getText() {

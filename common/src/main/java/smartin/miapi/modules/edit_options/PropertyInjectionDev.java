@@ -43,7 +43,7 @@ public class PropertyInjectionDev implements EditOption {
 
     @Override
     public boolean isVisible(EditContext context) {
-        return MiapiConfig.OtherConfigGroup.developmentMode.getValue() && context.getInstance() != null;
+        return MiapiConfig.INSTANCE.server.other.developmentMode && context.getInstance() != null;
     }
 
     @Environment(EnvType.CLIENT)

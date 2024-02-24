@@ -4,6 +4,7 @@ import com.google.gson.JsonElement;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 import com.redpxnda.nucleus.codec.auto.AutoCodec;
+import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.item.ItemStack;
@@ -106,11 +107,11 @@ public class HeavyAttackProperty extends CodecBasedProperty<HeavyAttackProperty.
         public double range = 3.5;
         public double minHold = 20;
         public double cooldown = 20;
-        @AutoCodec.Optional
+        @CodecBehavior.Optional
         public String title = "miapi.ability.heavy_attack.title";
-        @AutoCodec.Optional
+        @CodecBehavior.Optional
         public String description = "miapi.ability.heavy_attack.description";
-        @AutoCodec.Optional
+        @CodecBehavior.Optional
         public ParticleEffect particleEffect;
     }
 }

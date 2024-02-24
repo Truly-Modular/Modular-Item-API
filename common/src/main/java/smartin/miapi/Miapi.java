@@ -3,19 +3,17 @@ package smartin.miapi;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.redpxnda.nucleus.config.ConfigBuilder;
+import com.redpxnda.nucleus.config.ConfigManager;
+import com.redpxnda.nucleus.config.ConfigType;
 import com.redpxnda.nucleus.registry.NucleusNamespaces;
 import dev.architectury.event.EventResult;
 import dev.architectury.event.events.common.EntityEvent;
 import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.event.events.common.PlayerEvent;
+import dev.architectury.platform.Platform;
 import dev.architectury.registry.ReloadListenerRegistry;
-import net.minecraft.block.Block;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.client.render.block.entity.BlockEntityRenderer;
-import net.minecraft.client.render.entity.EndCrystalEntityRenderer;
-import net.minecraft.client.render.item.BuiltinModelItemRenderer;
-import net.minecraft.client.render.item.ItemRenderer;
-import net.minecraft.entity.decoration.EndCrystalEntity;
+import net.fabricmc.api.EnvType;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.server.MinecraftServer;
@@ -60,15 +58,7 @@ public class Miapi {
     public static Gson gson = new Gson();
 
     public static void init() {
-        EndCrystalEntity entity;
-        EndCrystalEntityRenderer renderer;
-        ItemRenderer itemRenderer;
-        BuiltinModelItemRenderer renderer1;
-        Block block;
-        BlockEntity entity1;
-        BlockEntityRenderer renderer2;
-        //renderer1.render();
-        MiapiConfig.getInstance();
+        setupConfigs();
         setupNetworking();
         RegistryInventory.setup();
         ReloadEvents.setup();
@@ -76,7 +66,6 @@ public class Miapi {
         AttributeRegistry.setup();
         ConditionManager.setup();
         StatActorType.setup();
-        EntityEvent event;
         EntityEvent.LIVING_DEATH.register((livingEntity, damageSource) -> {
             return EventResult.pass();
         });
@@ -159,6 +148,20 @@ public class Miapi {
         networkingImplementation = new NetworkingImplCommon();
         Networking.setImplementation(networkingImplementation);
         networkingImplementation.setupServer();
+    }
+
+    protected static void setupConfigs() {
+        ConfigManager.register(ConfigBuilder.automatic(MiapiConfig.class)
+                .name("miapi")
+                .type(ConfigType.COMMON)
+                .creator(MiapiConfig::new)
+                .updateListener(c -> MiapiConfig.INSTANCE = c));
+
+        if (Platform.getEnv() == EnvType.CLIENT) {
+            ConfigManager.CONFIG_SCREENS_REGISTRY.register(r -> {
+                r.add("miapi", "miapi");
+            });
+        }
     }
 
     public static void registerReloadHandler(

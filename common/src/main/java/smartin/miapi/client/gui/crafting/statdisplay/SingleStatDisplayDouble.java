@@ -41,8 +41,8 @@ public abstract class SingleStatDisplayDouble extends InteractAbleWidget impleme
     public StatListWidget.TextGetter text;
     public StatListWidget.TextGetter hover;
     public HoverDescription hoverDescription;
-    int red = MiapiConfig.ColorGroup.red.getValue().intValue();
-    int green = MiapiConfig.ColorGroup.green.getValue().intValue();
+    int red = MiapiConfig.INSTANCE.client.guiColors.red.argb();
+    int green = MiapiConfig.INSTANCE.client.guiColors.green.argb();
     public Text postfix = Text.of("");
     public boolean inverse = false;
     double oldValue = 0;

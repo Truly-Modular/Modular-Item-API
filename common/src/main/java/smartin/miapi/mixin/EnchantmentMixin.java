@@ -19,7 +19,7 @@ public class EnchantmentMixin {
         Enchantment enchantment = (Enchantment) (Object) this;
         if (stack.getItem() instanceof ModularItem) {
             boolean acceptable = EnchantmentProperty.isAllowed(stack, enchantment);
-            if(MiapiConfig.EnchantmentGroup.leanEnchantments.getValue()){
+            if (MiapiConfig.INSTANCE.server.enchants.lenientEnchantments) {
                 acceptable = acceptable || cir.getReturnValue();
             }
             cir.setReturnValue(acceptable);

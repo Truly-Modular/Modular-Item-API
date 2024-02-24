@@ -6,6 +6,7 @@ import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 import com.redpxnda.nucleus.codec.auto.AutoCodec;
+import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
 import com.redpxnda.nucleus.util.json.JsonUtil;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -94,9 +95,9 @@ public class EdibleProperty implements ModuleProperty {
 
         public StatResolver.IntegerFromStat hunger; // todo perhaps make these number values similar to DoubleProperty's operation?
         public StatResolver.DoubleFromStat saturation;
-        public @AutoCodec.Optional StatResolver.DoubleFromStat eatingSpeed = new StatResolver.DoubleFromStat(1);
-        public @AutoCodec.Optional boolean alwaysEdible = false;
-        public @AutoCodec.Optional List<StatusEffectHolder> effects = new ArrayList<>();
+        public @CodecBehavior.Optional StatResolver.DoubleFromStat eatingSpeed = new StatResolver.DoubleFromStat(1);
+        public @CodecBehavior.Optional boolean alwaysEdible = false;
+        public @CodecBehavior.Optional List<StatusEffectHolder> effects = new ArrayList<>();
 
         public Holder toHolder(ItemModule.ModuleInstance instance) {
             return new Holder(
@@ -124,14 +125,14 @@ public class EdibleProperty implements ModuleProperty {
         }
     }
 
-    @AutoCodec.Override("codec")
-    @AutoCodec.Settings(optionalByDefault = true)
+    @CodecBehavior.Override("codec")
+    @AutoCodec.Settings(defaultOptionalBehavior = @CodecBehavior.Optional)
     public static class StatusEffectHolder {
         public static final Codec<StatusEffectHolder> codec = AutoCodec.of(StatusEffectHolder.class).codec();
 
-        public @AutoCodec.Mandatory StatusEffect effect;
-        public @AutoCodec.Mandatory int duration;
-        public @AutoCodec.Mandatory int amplifier;
+        public @CodecBehavior.Optional(false) StatusEffect effect;
+        public @CodecBehavior.Optional(false) int duration;
+        public @CodecBehavior.Optional(false) int amplifier;
         public boolean ambient = false;
         public boolean showParticles = true;
         public boolean showIcon = true;

@@ -51,10 +51,11 @@ dependencies {
     modImplementation("me.shedaniel.cloth:cloth-config-forge:${rootProject.cloth_config_version}")
     modApi("top.theillusivec4.caelus:caelus-forge:${rootProject.forge_caelus_version}")
 
-    modApi(include("com.redpxnda.nucleus:core-forge:${rootProject.minecraft_version}+${rootProject.nucleus_core_version}"))
-    modApi(include("com.redpxnda.nucleus:codec-forge:${rootProject.minecraft_version}+${rootProject.nucleus_codec_version}"))
-    modApi(include("com.redpxnda.nucleus:pose-forge:${rootProject.minecraft_version}+${rootProject.nucleus_pose_version}"))
-    modApi(include("com.redpxnda.nucleus:facet-forge:${rootProject.minecraft_version}+${rootProject.nucleus_facet_version}"))
+    modApi(include("com.redpxnda.nucleus:nucleus-core-forge:${rootProject.minecraft_version}+${rootProject.nucleus_core_version}"))
+    modApi(include("com.redpxnda.nucleus:nucleus-codec-forge:${rootProject.minecraft_version}+${rootProject.nucleus_codec_version}"))
+    modApi(include("com.redpxnda.nucleus:nucleus-config-forge:${rootProject.minecraft_version}+${rootProject.nucleus_config_version}"))
+    modApi(include("com.redpxnda.nucleus:nucleus-pose-forge:${rootProject.minecraft_version}+${rootProject.nucleus_pose_version}"))
+    modApi(include("com.redpxnda.nucleus:nucleus-facet-forge:${rootProject.minecraft_version}+${rootProject.nucleus_facet_version}"))
 
     modLocalRuntime files('libs/arsenal-local.jar')
     modLocalRuntime files('libs/archery-local.jar')

@@ -84,10 +84,11 @@ dependencies {
     include api("org.mariuszgromada.math:MathParser.org-mXparser:${rootProject.mathparser_version}")
     include modApi("com.jamieswhiteshirt:reach-entity-attributes:$rootProject.fabric_reach_range_version")
 
-    modApi(include("com.redpxnda.nucleus:core-fabric:${rootProject.minecraft_version}+${rootProject.nucleus_core_version}"))
-    modApi(include("com.redpxnda.nucleus:codec-fabric:${rootProject.minecraft_version}+${rootProject.nucleus_codec_version}"))
-    modApi(include("com.redpxnda.nucleus:pose-fabric:${rootProject.minecraft_version}+${rootProject.nucleus_pose_version}"))
-    modApi(include("com.redpxnda.nucleus:facet-fabric:${rootProject.minecraft_version}+${rootProject.nucleus_facet_version}"))
+    modApi(include("com.redpxnda.nucleus:nucleus-core-fabric:${rootProject.minecraft_version}+${rootProject.nucleus_core_version}"))
+    modApi(include("com.redpxnda.nucleus:nucleus-codec-fabric:${rootProject.minecraft_version}+${rootProject.nucleus_codec_version}"))
+    modApi(include("com.redpxnda.nucleus:nucleus-config-fabric:${rootProject.minecraft_version}+${rootProject.nucleus_config_version}"))
+    modApi(include("com.redpxnda.nucleus:nucleus-pose-fabric:${rootProject.minecraft_version}+${rootProject.nucleus_pose_version}"))
+    modApi(include("com.redpxnda.nucleus:nucleus-facet-fabric:${rootProject.minecraft_version}+${rootProject.nucleus_facet_version}"))
 
     //modLocalRuntime tasks.getByName("buildWithArsenal").outputs.files
     //modLocalRuntime tasks.getByName("buildWithArchery").outputs.files

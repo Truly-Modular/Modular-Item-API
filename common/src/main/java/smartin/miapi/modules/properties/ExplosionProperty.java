@@ -6,6 +6,7 @@ import com.google.gson.JsonObject;
 import com.ibm.icu.impl.Pair;
 import com.mojang.serialization.Codec;
 import com.redpxnda.nucleus.codec.auto.AutoCodec;
+import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
 import dev.architectury.event.EventResult;
 import net.minecraft.block.BlockState;
 import net.minecraft.enchantment.ProtectionEnchantment;
@@ -30,7 +31,6 @@ import net.minecraft.world.explosion.EntityExplosionBehavior;
 import net.minecraft.world.explosion.Explosion;
 import net.minecraft.world.explosion.ExplosionBehavior;
 import org.jetbrains.annotations.Nullable;
-import smartin.miapi.craft.stat.StatProvidersMap;
 import smartin.miapi.entity.ItemProjectileEntity;
 import smartin.miapi.events.MiapiProjectileEvents;
 import smartin.miapi.modules.ItemModule;
@@ -323,16 +323,16 @@ public class ExplosionProperty extends CodecBasedProperty<ExplosionProperty.Expl
     }
 
     public static class ExplosionInfo {
-        @AutoCodec.Optional
+        @CodecBehavior.Optional
         public boolean destroyBlocks;
-        @AutoCodec.Optional
+        @CodecBehavior.Optional
         public double chance;
         public double strength;
-        @AutoCodec.Optional
+        @CodecBehavior.Optional
         public double entityStrength;
-        @AutoCodec.Optional
+        @CodecBehavior.Optional
         public double entityMaxDamage;
-        @AutoCodec.Optional
+        @CodecBehavior.Optional
         public double entityRadius;
 
         public ExplosionInfo(JsonObject element, ItemModule.ModuleInstance moduleInstance) {

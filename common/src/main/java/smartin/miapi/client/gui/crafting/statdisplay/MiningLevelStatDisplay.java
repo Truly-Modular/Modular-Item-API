@@ -48,8 +48,8 @@ public class MiningLevelStatDisplay extends InteractAbleWidget implements Single
     EntityAttribute attribute;
     double defaultValue;
     EquipmentSlot slot;
-    int red = MiapiConfig.ColorGroup.red.getValue().intValue();
-    int green = MiapiConfig.ColorGroup.green.getValue().intValue();
+    int red = MiapiConfig.INSTANCE.client.guiColors.red.argb();
+    int green = MiapiConfig.INSTANCE.client.guiColors.green.argb();
 
     public MiningLevelStatDisplay(String type, StatListWidget.TextGetter title, StatListWidget.TextGetter hover) {
         super(0, 0, 76, 19, Text.empty());

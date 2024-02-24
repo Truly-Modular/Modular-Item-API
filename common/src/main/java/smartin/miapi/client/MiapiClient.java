@@ -28,6 +28,7 @@ import smartin.miapi.client.gui.crafting.CraftingScreen;
 import smartin.miapi.client.gui.crafting.statdisplay.StatListWidget;
 import smartin.miapi.client.model.ModularModelPredicateProvider;
 import smartin.miapi.client.renderer.SpriteLoader;
+import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.effects.CryoStatusEffect;
 import smartin.miapi.entity.ItemProjectileRenderer;
@@ -38,7 +39,6 @@ import smartin.miapi.modules.material.palette.PaletteCreators;
 import smartin.miapi.modules.properties.render.colorproviders.ColorProvider;
 import smartin.miapi.registries.RegistryInventory;
 
-import static smartin.miapi.config.MiapiConfig.CompatGroup.animatedMaterial;
 import static smartin.miapi.registries.RegistryInventory.Client.glintShader;
 
 public class MiapiClient {
@@ -57,7 +57,7 @@ public class MiapiClient {
     public static void init() {
         RegistryInventory.modularItems.addCallback((MiapiClient::registerAnimations));
         ClientTickEvent.CLIENT_PRE.register((instance -> {
-            if (animatedMaterial.getValue()) {
+            if (MiapiConfig.INSTANCE.client.other.animatedMaterials) {
                 MinecraftClient.getInstance().getProfiler().push("miapiMaterialAnimations");
                 MaterialSpriteManager.tick();
                 MinecraftClient.getInstance().getProfiler().pop();

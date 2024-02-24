@@ -3,7 +3,7 @@ package smartin.miapi.item.modular;
 import com.google.gson.JsonElement;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
-import com.redpxnda.nucleus.codec.auto.AutoCodec;
+import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
 import com.redpxnda.nucleus.codec.misc.CustomIntermediateCodec;
 import com.redpxnda.nucleus.codec.misc.IntermediateCodec;
 import net.minecraft.text.Text;
@@ -11,7 +11,10 @@ import org.mariuszgromada.math.mxparser.Expression;
 import smartin.miapi.Miapi;
 import smartin.miapi.modules.ItemModule;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiFunction;
 import java.util.regex.Matcher;
@@ -43,7 +46,7 @@ public class StatResolver {
         }
     }
 
-    @AutoCodec.Override("codec")
+    @CodecBehavior.Override("codec")
     public static class StringFromStat extends IntermediateCodec.Median<String, ItemModule.ModuleInstance, String> {
         public static BiFunction<String, ItemModule.ModuleInstance, String> func = StatResolver::resolveString;
         public static Codec<StringFromStat> codec = new CustomIntermediateCodec<>(Codec.STRING, func, (s, b) -> new StringFromStat(s));
@@ -53,7 +56,7 @@ public class StatResolver {
         }
     }
 
-    @AutoCodec.Override("fullCodec")
+    @CodecBehavior.Override("fullCodec")
     public static class DoubleFromStat extends IntermediateCodec.Median<String, ItemModule.ModuleInstance, Double> {
         public static BiFunction<String, ItemModule.ModuleInstance, Double> func = StatResolver::resolveDouble;
         public static Codec<DoubleFromStat> codec = new CustomIntermediateCodec<>(Codec.STRING, func, (s, b) -> new DoubleFromStat(s));
@@ -84,7 +87,7 @@ public class StatResolver {
         }
     }
 
-    @AutoCodec.Override("fullCodec")
+    @CodecBehavior.Override("fullCodec")
     public static class IntegerFromStat extends IntermediateCodec.Median<String, ItemModule.ModuleInstance, Integer> {
         public static BiFunction<String, ItemModule.ModuleInstance, Integer> func = (raw, input) -> (int) resolveDouble(raw, input);
         public static Codec<IntegerFromStat> codec = new CustomIntermediateCodec<>(Codec.STRING, func, (s, b) -> new IntegerFromStat(s));

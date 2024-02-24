@@ -27,9 +27,6 @@
     "entrypoints": {
         "main": [
             "smartin.miapi.fabric.TrulyModularFabric"
-        ],
-        "modmenu": [
-            "smartin.miapi.fabric.ModMenuIntegration"
         ]
     },
     "mixins": [

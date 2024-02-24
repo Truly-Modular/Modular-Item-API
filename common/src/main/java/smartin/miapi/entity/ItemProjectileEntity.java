@@ -132,7 +132,7 @@ public class ItemProjectileEntity extends PersistentProjectileEntity {
             this.setVelocity(new Vec3d(0, 0, 0));
             this.dealtDamage = true;
         }
-        if (this.getBlockPos().getY() < this.getWorld().getBottomY() - 50 && MiapiConfig.EnchantmentGroup.betterLoyalty.getValue()) {
+        if (this.getBlockPos().getY() < this.getWorld().getBottomY() - 50 && MiapiConfig.INSTANCE.server.enchants.betterLoyalty) {
             //loyalty in void
             this.dealtDamage = true;
         }

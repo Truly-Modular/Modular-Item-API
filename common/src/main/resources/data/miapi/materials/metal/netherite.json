@@ -30,7 +30,7 @@
     },
     "textures": [
         "netherite",
-        "metalic"
+        "metallic"
     ],
     "mining_speed": 9,
     "mining_level": 4,
