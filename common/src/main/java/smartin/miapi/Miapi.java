@@ -38,6 +38,7 @@ import smartin.miapi.modules.MiapiPermissions;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.conditions.ConditionManager;
+import smartin.miapi.modules.properties.GlintProperty;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.network.Networking;
 import smartin.miapi.network.NetworkingImplCommon;
@@ -155,7 +156,12 @@ public class Miapi {
                 .name("miapi")
                 .type(ConfigType.COMMON)
                 .creator(MiapiConfig::new)
-                .updateListener(c -> MiapiConfig.INSTANCE = c));
+                .updateListener(c -> {
+                    MiapiConfig.INSTANCE = c;
+                    if(Environment.isClient()){
+                        GlintProperty.updateConfig();
+                    }
+                }));
 
         if (Platform.getEnv() == EnvType.CLIENT) {
             ConfigManager.CONFIG_SCREENS_REGISTRY.register(r -> {

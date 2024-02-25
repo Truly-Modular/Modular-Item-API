@@ -1,6 +1,5 @@
 package smartin.miapi.client.model;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.redpxnda.nucleus.util.Color;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.VertexConsumer;
@@ -21,6 +20,7 @@ import org.joml.Matrix4f;
 import smartin.miapi.client.renderer.TrimRenderer;
 import smartin.miapi.item.modular.Transform;
 import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.properties.GlintProperty;
 import smartin.miapi.registries.RegistryInventory;
 
 public class BakedMiapiModel implements MiapiModel {
@@ -30,6 +30,7 @@ public class BakedMiapiModel implements MiapiModel {
     ModelHolder modelHolder;
     Random random = Random.create();
     float[] colors;
+    GlintProperty.GlintSettings settings;
 
 
     public BakedMiapiModel(ModelHolder holder, ItemModule.ModuleInstance moduleInstance, ItemStack stack) {
@@ -39,6 +40,7 @@ public class BakedMiapiModel implements MiapiModel {
         this.colors = new float[]{color.redAsFloat(), color.greenAsFloat(), color.blueAsFloat()};
         this.modelMatrix = holder.matrix4f();
         this.model = holder.model();
+        settings = GlintProperty.property.getGlintSettings(moduleInstance, stack);
     }
 
     @Override
@@ -54,9 +56,10 @@ public class BakedMiapiModel implements MiapiModel {
             currentModel.getQuads(null, dir, Random.create()).forEach(quad -> {
                 VertexConsumer vertexConsumer = modelHolder.colorProvider().getConsumer(vertexConsumers, quad.getSprite(), stack, instance, transformationMode);
                 vertexConsumer.quad(matrices.peek(), quad, colors[0], colors[1], colors[2], light, overlay);
-                if(stack.hasEnchantments()){
+                if (stack.hasGlint()) {
                     VertexConsumer altConsumer = vertexConsumers.getBuffer(RegistryInventory.Client.modularItemGlint);
-                    altConsumer.quad(matrices.peek(), quad, colors[0], colors[1], colors[2], light, overlay);
+                    Color glintColor = settings.getColor();
+                    altConsumer.quad(matrices.peek(), quad, glintColor.redAsFloat(), glintColor.greenAsFloat(), glintColor.blueAsFloat(), light, overlay);
                 }
             });
         }
@@ -81,9 +84,10 @@ public class BakedMiapiModel implements MiapiModel {
             ModelTransformer.getInverse(currentModel, random).forEach(quad -> {
                 VertexConsumer vertexConsumer = modelHolder.colorProvider().getConsumer(vertexConsumers, quad.getSprite(), stack, instance, transformationMode);
                 vertexConsumer.quad(matrices.peek(), quad, colors[0], colors[1], colors[2], light, overlay);
-                if(stack.hasEnchantments()){
+                if (stack.hasGlint()) {
                     VertexConsumer altConsumer = vertexConsumers.getBuffer(RegistryInventory.Client.modularItemGlint);
-                    altConsumer.quad(matrices.peek(), quad, colors[0], colors[1], colors[2], light, overlay);
+                    Color glintColor = settings.getColor();
+                    altConsumer.quad(matrices.peek(), quad, glintColor.redAsFloat(), glintColor.greenAsFloat(), glintColor.blueAsFloat(), light, overlay);
                 }
             });
         }
@@ -100,14 +104,5 @@ public class BakedMiapiModel implements MiapiModel {
             }
         }
         return model;
-    }
-
-    private static void setupGlintTexturing(float p_110187_) {
-        long i = 4l;//Util.getMillis() * 8L;
-        float f = (float) (i % 110000L) / 110000.0F;
-        float f1 = (float) (i % 30000L) / 30000.0F;
-        Matrix4f matrix4f = (new Matrix4f()).translation(-f, f1, 0.0F);
-        matrix4f.rotateZ(0.17453292F).scale(p_110187_);
-        RenderSystem.setTextureMatrix(matrix4f);
     }
 }

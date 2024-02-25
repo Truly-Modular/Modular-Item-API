@@ -41,8 +41,6 @@ public abstract class SingleStatDisplayDouble extends InteractAbleWidget impleme
     public StatListWidget.TextGetter text;
     public StatListWidget.TextGetter hover;
     public HoverDescription hoverDescription;
-    int red = MiapiConfig.INSTANCE.client.guiColors.red.argb();
-    int green = MiapiConfig.INSTANCE.client.guiColors.green.argb();
     public Text postfix = Text.of("");
     public boolean inverse = false;
     double oldValue = 0;
@@ -67,10 +65,23 @@ public abstract class SingleStatDisplayDouble extends InteractAbleWidget impleme
 
     public void setInverse(boolean inverse) {
         this.inverse = inverse;
-        if (inverse) {
-            int newRed = green;
-            green = red;
-            red = newRed;
+    }
+
+    public int getRed(){
+        if(inverse){
+            return MiapiConfig.INSTANCE.client.guiColors.green.argb();
+        }
+        else{
+            return MiapiConfig.INSTANCE.client.guiColors.red.argb();
+        }
+    }
+
+    public int getGreen(){
+        if(inverse){
+            return MiapiConfig.INSTANCE.client.guiColors.red.argb();
+        }
+        else{
+            return MiapiConfig.INSTANCE.client.guiColors.green.argb();
         }
     }
 
@@ -128,12 +139,12 @@ public abstract class SingleStatDisplayDouble extends InteractAbleWidget impleme
         statBar.setHeight(1);
         if (oldValue < compareToValue) {
             statBar.setPrimary((oldValue - min) / (max - min), ColorHelper.Argb.getArgb(255, 255, 255, 255));
-            statBar.setSecondary((compareToValue - min) / (max - min), green);
-            compareValue.textColor = green;
+            statBar.setSecondary((compareToValue - min) / (max - min), getGreen());
+            compareValue.textColor = getGreen();
         } else {
             statBar.setPrimary((compareToValue - min) / (max - min), ColorHelper.Argb.getArgb(255, 255, 255, 255));
-            statBar.setSecondary((oldValue - min) / (max - min), red);
-            compareValue.textColor = red;
+            statBar.setSecondary((oldValue - min) / (max - min), getRed());
+            compareValue.textColor = getRed();
         }
         if (oldValue == compareToValue) {
             currentValue.setX(this.getX() - 3);

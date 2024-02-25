@@ -2,14 +2,13 @@ package smartin.miapi.modules.properties.potion;
 
 import dev.architectury.event.EventResult;
 import dev.architectury.event.events.common.EntityEvent;
+import net.fabricmc.api.EnvType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.modules.properties.LoreProperty;
-import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +29,13 @@ public class OnKillEffects extends PotionEffectProperty {
             return EventResult.pass();
         }));
 
+        if(smartin.miapi.Environment.isClient()){
+            setupClient();
+        }
+    }
+
+    @net.fabricmc.api.Environment(EnvType.CLIENT)
+    public void setupClient(){
         LoreProperty.loreSuppliers.add(itemStack -> {
             List<Text> lines = new ArrayList<>();
             for (EffectHolder effectHolder : getStatusEffects(itemStack)) {

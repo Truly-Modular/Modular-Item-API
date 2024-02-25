@@ -7,8 +7,10 @@ import com.redpxnda.nucleus.util.Color;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Util;
 import smartin.miapi.Miapi;
+import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.registries.RegistryInventory;
 
@@ -27,6 +29,8 @@ public class GlintProperty implements ModuleProperty {
 
     public static Map<String, GlintSettings> glintSettingsMap = new HashMap<>();
 
+    public static GlintSettings defaultSettings = new RainbowGlintSettings();
+
     public GlintProperty() {
         property = this;
         glintSettingsMap.put("rainbow", new RainbowGlintSettings());
@@ -42,9 +46,6 @@ public class GlintProperty implements ModuleProperty {
     }
 
     static GlintSettings getStatic(ItemModule.ModuleInstance instance, ItemStack stack) {
-        if (true) {
-            return glintSettingsMap.get("rainbow").get(instance, stack);
-        }
         JsonElement element = instance.getProperties().get(property);
         if (element != null && element.getAsJsonObject().has("type")) {
             String type = element.getAsJsonObject().get("type").getAsString();
@@ -52,7 +53,7 @@ public class GlintProperty implements ModuleProperty {
                 return glintSettingsMap.get("type").get(instance, stack);
             }
         }
-        return new JsonGlintSettings(instance, stack);
+        return defaultSettings;
     }
 
 
@@ -112,6 +113,18 @@ public class GlintProperty implements ModuleProperty {
         }
     }
 
+    public static void updateConfig() {
+        Color[] newColors = new Color[MiapiConfig.INSTANCE.client.other.enchantColors.size()];
+        for (int i = 0; i < newColors.length; i++) {
+            newColors[i] = MiapiConfig.INSTANCE.client.other.enchantColors.get(i);
+        }
+        RainbowGlintSettings glintSettings = new RainbowGlintSettings();
+        glintSettings.colors = newColors;
+        glintSettings.rainbowSpeed = MiapiConfig.INSTANCE.client.other.enchantingGlintSpeed;
+        defaultSettings = glintSettings;
+        ModularItemCache.discardCache();
+    }
+
 
     public static class RainbowGlintSettings implements GlintSettings {
 
@@ -119,7 +132,7 @@ public class GlintProperty implements ModuleProperty {
         public float rainbowSpeed = 1;
         public float strength = 1;
         public boolean shouldRenderGlint;
-        int colorCount = 3;
+        public Color[] colors;
 
         @Override
         public GlintSettings get(ItemModule.ModuleInstance instance, ItemStack stack) {
@@ -148,9 +161,50 @@ public class GlintProperty implements ModuleProperty {
             return strength;
         }
 
+
+        public Color getColorold() {
+            long time = Util.getMeasuringTimeMs();
+            double scaledTime = (double) time / 3000 * rainbowSpeed;
+            scaledTime = scaledTime % (colors.length); // Ensure scaledTime is within [0, colors.length - 1]
+
+            int lowerColorIndex = (int) Math.floor(scaledTime);
+            int higherColorIndex = (lowerColorIndex + 1) % (colors.length);
+
+            float percent = (float) (scaledTime - (float) lowerColorIndex); // Calculate the percentage of lower color
+            float otherPercent = 1.0f - percent;
+
+            return new Color(
+                    colors[lowerColorIndex].redAsFloat() * percent + colors[higherColorIndex].redAsFloat() * otherPercent,
+                    colors[lowerColorIndex].greenAsFloat() * percent + colors[higherColorIndex].greenAsFloat() * otherPercent,
+                    colors[lowerColorIndex].blueAsFloat() * percent + colors[higherColorIndex].blueAsFloat() * otherPercent,
+                    colors[lowerColorIndex].alphaAsFloat() * percent + colors[higherColorIndex].alphaAsFloat() * otherPercent
+            );
+        }
+
         @Override
         public Color getColor() {
-            return new Color((int) (getColor(0)*255), (int) (getColor(1)*255), (int) (getColor(2)*255), 1);
+            long time = Util.getMeasuringTimeMs();
+
+            double scaledTime = (double) time / 3000 * rainbowSpeed;
+            scaledTime = scaledTime % (colors.length); // Ensure scaledTime is within [0, colors.length - 1]
+
+            int lowerColorIndex = (int) Math.floor(scaledTime);
+            int higherColorIndex = (lowerColorIndex + 1) % colors.length;
+
+            // Calculate the percentage of lower color
+            float percent = (float) (scaledTime - Math.floor(scaledTime));
+            float otherPercent = 1.0f - percent;
+
+            // Interpolate between the two nearest colors
+            Color lowerColor = colors[higherColorIndex];
+            Color higherColor = colors[lowerColorIndex];
+
+            return new Color(
+                    lowerColor.redAsFloat() * percent + higherColor.redAsFloat() * otherPercent,
+                    lowerColor.greenAsFloat() * percent + higherColor.greenAsFloat() * otherPercent,
+                    lowerColor.blueAsFloat() * percent + higherColor.blueAsFloat() * otherPercent,
+                    lowerColor.alphaAsFloat() * percent + higherColor.alphaAsFloat() * otherPercent
+            );
         }
 
         @Override
@@ -161,7 +215,7 @@ public class GlintProperty implements ModuleProperty {
         public float getColor(int colorNo) {
             long time = Util.getMeasuringTimeMs();
             double scaledTime = (double) time / 3000 * rainbowSpeed;
-            return (float) Math.max(0, Math.min(1, Math.abs(((scaledTime + colorNo * 2) % (colorCount * 2)) - colorCount) - (colorCount - 2)));
+            return (float) Math.max(0, Math.min(1, Math.abs(((scaledTime + colorNo * 2) % (colors.length * 2)) - colors.length) - (colors.length - 2)));
         }
 
         @Override
