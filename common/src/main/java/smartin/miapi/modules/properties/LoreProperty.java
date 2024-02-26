@@ -15,6 +15,7 @@ import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.NotNull;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.crafting.crafter.replace.HoverMaterialList;
+import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.item.ModularItemStackConverter;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.modules.ItemModule;
@@ -49,7 +50,9 @@ public class LoreProperty implements ModuleProperty {
             if (material != null) {
                 int i = material.getGroups().size();
                 if (i == 1) {
-                    descriptions.add(gray(Text.translatable("miapi.ui.material_desc")));
+                    if (MiapiConfig.INSTANCE.client.other.injectLoreWithoutGroup){
+                        descriptions.add(gray(Text.translatable("miapi.ui.material_desc")));
+                    }
                 } else {
                     Text materialDesc = gray(Text.translatable("miapi.ui.material_desc_alt"));
                     descriptions.add(materialDesc);

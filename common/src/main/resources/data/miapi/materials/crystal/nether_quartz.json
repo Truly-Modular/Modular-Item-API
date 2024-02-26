@@ -42,6 +42,15 @@
                     "target_self": true
                 }
             ],
+            "gui_stat": {
+                "luck_on_hit": {
+                    "value": "[module.gem_power]",
+                    "min": 0,
+                    "max": 3,
+                    "header": "Lucky!",
+                    "description": "Applies Luck effect on wielder when hitting a Entity"
+                }
+            },
             "attributes": [
                 {
                     "attribute": "generic.luck",

@@ -142,6 +142,7 @@ public class AllowedMaterial implements CraftingProperty, ModuleProperty {
         if (!player.getWorld().isClient()) {
             input.setCount(newCount);
         }
+        assert newModule != null;
         MaterialProperty.setMaterial(newModule, material.getKey());
         //materialStack.setCount(1);
         MiapiEvents.MaterialCraftEventData eventData = new MiapiEvents.MaterialCraftEventData(crafting, materialStack, material, newModule, craftAction);

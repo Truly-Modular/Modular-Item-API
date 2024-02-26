@@ -54,7 +54,7 @@ public class GeneratedMaterial implements Material {
 
     public static final List<ItemStack> generatedItems = new ArrayList<>();
     public static final List<ItemStack> generatedItemsTool = new ArrayList<>();
-    public static final List<Pair<ItemStack,ItemStack>> generatedMaterials = new ArrayList<>();
+    public static final List<Pair<ItemStack, ItemStack>> generatedMaterials = new ArrayList<>();
     public static final List<Item> woodItems = new ArrayList<>();
     public static final List<Item> stoneItems = new ArrayList<>();
 
@@ -141,7 +141,7 @@ public class GeneratedMaterial implements Material {
                 ItemStack toolStack = generatedItemsTool.get(i);
                 if (toolStack.getItem() instanceof ToolItem toolItem) {
                     GeneratedMaterial generatedMaterial = new GeneratedMaterial(toolItem.getMaterial(), itemStack, true);
-                    if (generatedMaterial.assignStats(toolItems, false)) {
+                    if (generatedMaterial.assignStats(toolItems, true)) {
                         materials.put(generatedMaterial.getKey(), generatedMaterial);
                     }
                 }
@@ -153,18 +153,18 @@ public class GeneratedMaterial implements Material {
         }
         woodItems.forEach(woodItem -> {
             try {
-                GeneratedMaterial generatedMaterial = new GeneratedMaterial(ToolMaterials.WOOD, woodItem.getDefaultStack(), false);
+                GeneratedMaterial generatedMaterial = new GeneratedMaterial(ToolMaterials.WOOD, woodItem.getDefaultStack(), true);
                 materials.put(generatedMaterial.getKey(), generatedMaterial);
-                generatedMaterial.copyStatsFrom(materials.get("wood"));
+                generatedMaterial.setupWood();
             } catch (Exception e) {
                 Miapi.LOGGER.error("Failure to setup Wood Material for " + woodItem.getTranslationKey(), e);
             }
         });
         stoneItems.forEach(stoneItem -> {
             try {
-                GeneratedMaterial generatedMaterial = new GeneratedMaterial(ToolMaterials.STONE, stoneItem.getDefaultStack(), false);
+                GeneratedMaterial generatedMaterial = new GeneratedMaterial(ToolMaterials.STONE, stoneItem.getDefaultStack(), true);
                 materials.put(generatedMaterial.getKey(), generatedMaterial);
-                generatedMaterial.copyStatsFrom(materials.get("stone"));
+                generatedMaterial.setupStone();
             } catch (Exception e) {
                 Miapi.LOGGER.error("Failure to setup Stone Material for " + stoneItem.getTranslationKey(), e);
             }
@@ -200,7 +200,7 @@ public class GeneratedMaterial implements Material {
                             GeneratedMaterial generatedMaterial = new GeneratedMaterial(toolMaterial, false);
                             if (generatedMaterial.assignStats(toolItems, false)) {
                                 toRegister.add(generatedMaterial);
-                                generatedMaterials.add(new Pair<>(generatedMaterial.mainIngredient,generatedMaterial.swordItem.getDefaultStack()));
+                                generatedMaterials.add(new Pair<>(generatedMaterial.mainIngredient, generatedMaterial.swordItem.getDefaultStack()));
                             }
                         }
                     });
@@ -213,12 +213,13 @@ public class GeneratedMaterial implements Material {
                     .limit(MiapiConfig.INSTANCE.server.generatedMaterials.maximumGeneratedMaterials)
                     .forEach(item -> {
                         if (isValidItem(item)) {
-                            woodItems.add(item);
                             GeneratedMaterial generatedMaterial = new GeneratedMaterial(ToolMaterials.WOOD, item.getDefaultStack(), false);
-                            if (MaterialProperty.getMaterialFromIngredient(item.getDefaultStack()) != materials.get("wood")) {
+                            Material old = MaterialProperty.getMaterialFromIngredient(item.getDefaultStack());
+                            if (old == null || old == materials.get("wood")) {
+                                woodItems.add(item);
                                 toRegister.add(generatedMaterial);
-                                generatedMaterial.copyStatsFrom(materials.get("wood"));
-
+                                generatedMaterial.setupWood();
+                                materials.put(generatedMaterial.getKey(), generatedMaterial);
                             }
                         }
                     });
@@ -231,11 +232,13 @@ public class GeneratedMaterial implements Material {
                     .limit(MiapiConfig.INSTANCE.server.generatedMaterials.maximumGeneratedMaterials)
                     .forEach(item -> {
                         if (isValidItem(item)) {
-                            stoneItems.add(item);
                             GeneratedMaterial generatedMaterial = new GeneratedMaterial(ToolMaterials.STONE, item.getDefaultStack(), false);
-                            if (MaterialProperty.getMaterialFromIngredient(item.getDefaultStack()) != materials.get("stone")) {
+                            Material old = MaterialProperty.getMaterialFromIngredient(item.getDefaultStack());
+                            if (old == null || old == materials.get("stone")) {
                                 toRegister.add(generatedMaterial);
-                                generatedMaterial.copyStatsFrom(materials.get("stone"));
+                                generatedMaterial.setupStone();
+                                stoneItems.add(item);
+                                materials.put(generatedMaterial.getKey(), generatedMaterial);
                             }
                         }
                     });
@@ -304,6 +307,20 @@ public class GeneratedMaterial implements Material {
         if (isClient) {
             clientSetup();
         }
+    }
+
+    public void setupWood() {
+        groups.clear();
+        groups.add(key);
+        groups.add("wood");
+        copyStatsFrom(materials.get("wood"));
+    }
+
+    public void setupStone() {
+        groups.clear();
+        groups.add(key);
+        groups.add("stone");
+        copyStatsFrom(materials.get("stone"));
     }
 
     @Environment(EnvType.CLIENT)

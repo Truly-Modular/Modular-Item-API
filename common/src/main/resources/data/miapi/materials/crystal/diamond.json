@@ -1,61 +1,73 @@
 {
-  "key": "diamond",
-  "translation": "miapi.material.crystal.diamond",
-  "icon": "textures/item/diamond.png",
-  "groups": ["crystal","gem"],
-  "hidden_groups": [
-    "gem_melee"
-  ],
-  "hardness": 6,
-  "density": 3.0,
-  "flexibility": 0,
-  "durability": 1560,
-  "mining_speed": 8,
-  "mining_level": 3,
-  "enchantability": 10,
-  "color": "49EAD6",
-  "color_palette": {
-    "type": "grayscale_map",
-    "colors": {
-      "24": "082420",
-      "68": "0e3f36",
-      "107": "156355",
-      "150": "1e8a77",
-      "190": "2bc7ac",
-      "216": "33ebcb",
-      "255": "a4fdf0"
-    },
-    "filler": "interpolate"
-  },
-  "properties": {
-    "gem_melee_generic": {
-      "durability": [
-        {
-          "value": "400 + [module.gem_power]*200",
-          "operation": "+"
+    "key": "diamond",
+    "translation": "miapi.material.crystal.diamond",
+    "icon": "textures/item/diamond.png",
+    "groups": [
+        "crystal",
+        "gem"
+    ],
+    "hidden_groups": [
+        "gem_melee"
+    ],
+    "hardness": 6,
+    "density": 3.0,
+    "flexibility": 0,
+    "durability": 1560,
+    "mining_speed": 8,
+    "mining_level": 3,
+    "enchantability": 10,
+    "color": "49EAD6",
+    "color_palette": {
+        "type": "grayscale_map",
+        "colors": {
+            "24": "082420",
+            "68": "0e3f36",
+            "107": "156355",
+            "150": "1e8a77",
+            "190": "2bc7ac",
+            "216": "33ebcb",
+            "255": "a4fdf0"
         },
-        {
-          "value": "0.25",
-          "operation": "*"
+        "filler": "interpolate"
+    },
+    "properties": {
+        "gem_melee_generic": {
+            "durability": [
+                {
+                    "value": "400 + [module.gem_power]*200",
+                    "operation": "+"
+                },
+                {
+                    "value": "0.25",
+                    "operation": "*"
+                }
+            ],
+            "on_attack_potion": [
+                {
+                    "potion": "minecraft:resistance",
+                    "amplifier": 0,
+                    "duration": "([module.gem_power]+2)*20",
+                    "target_self": true
+                }
+            ],
+            "gui_stat": {
+                "resistance_on_hit": {
+                    "value": 1,
+                    "min": 0,
+                    "max": 2,
+                    "header": "Armoring",
+                    "description": "Applies Resistance effect on wielder when hitting a Entity"
+                }
+            }
         }
-      ],
-      "on_attack_potion": [
+    },
+    "textures": [
+        "bright"
+    ],
+    "items": [
         {
-          "potion": "minecraft:resistance",
-          "amplifier": 0,
-          "duration": "([module.gem_power]+2)*20",
-          "target_self": true
+            "item": "minecraft:diamond",
+            "value": 1.0
         }
-      ]
-    }
-  },
-  "textures": [
-    "bright"
-  ],
-  "items": [
-    {
-      "item": "minecraft:diamond",
-      "value": 1.0
-    }
-  ]
+    ]
 }

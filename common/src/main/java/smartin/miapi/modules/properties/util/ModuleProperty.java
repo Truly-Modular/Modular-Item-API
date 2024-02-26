@@ -8,7 +8,6 @@ import com.ibm.icu.impl.Pair;
 import com.mojang.serialization.JsonOps;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
-import net.minecraft.text.Texts;
 import net.minecraft.util.dynamic.Codecs;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
@@ -190,6 +189,16 @@ public interface ModuleProperty {
     }
 
     static Text getText(JsonObject object, String element, ItemModule.ModuleInstance moduleInstance, Text defaultValue) {
+        if (object != null) {
+            JsonElement json = object.get(element);
+            if (json != null && !json.isJsonNull()) {
+                return Codecs.TEXT.parse(JsonOps.INSTANCE, json).result().orElse(defaultValue);
+            }
+        }
+        return defaultValue;
+    }
+
+    static Text getText(JsonObject object, String element, Text defaultValue) {
         if (object != null) {
             JsonElement json = object.get(element);
             if (json != null && !json.isJsonNull()) {

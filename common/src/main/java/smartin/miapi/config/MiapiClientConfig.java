@@ -29,6 +29,9 @@ public class MiapiClientConfig {
         @Comment("Whether Miapi materials can be animated")
         @AutoCodec.Name("animated_materials")
         public boolean animatedMaterials = true;
+        @Comment("Whether Miapi displays \"Modular Material\" when no groups are present")
+        @AutoCodec.Name("inject_lore_without_material_group")
+        public boolean injectLoreWithoutGroup = false;
         @Comment("The color Miapi uses for its enchanting glint")
         @AutoCodec.Name("enchanting_glint_colors")
         public List<Color> enchantColors = List.of(Color.MAGENTA);

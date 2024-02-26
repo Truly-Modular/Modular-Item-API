@@ -2,9 +2,6 @@
     "key": "end_crystal",
     "translation": "miapi.material.crystal.end_crystal",
     "icon": "textures/item/end_crystal.png",
-    "hidden_groups": [
-        "gem_melee"
-    ],
     "enchantability": 30,
     "color_palette": {
         "type": "grayscale_map",
@@ -20,17 +17,6 @@
             "255": "ffffff"
         },
         "filler": "interpolate"
-    },
-    "properties": {
-        "gem_melee_generic": {
-            "on_kill_explosion":{
-                "destroyBlocks": false,
-                "strength": 3.0,
-                "entityMaxDamage": 12,
-                "entityStrength": 15,
-                "entityRadius": 7
-            }
-        }
     },
     "items": [
         {

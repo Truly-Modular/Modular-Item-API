@@ -6,6 +6,9 @@
         "crystal",
         "gem"
     ],
+    "hidden_groups": [
+        "gem_melee"
+    ],
     "hardness": 5,
     "density": 0.5,
     "flexibility": 0,
@@ -44,7 +47,16 @@
                     "duration": "100+[module.gem_power]*20",
                     "target_self": false
                 }
-            ]
+            ],
+            "gui_stat": {
+                "radiant_poison_on_hit": {
+                    "value": 1,
+                    "min": 0,
+                    "max": 2,
+                    "header": "Radiant Poisonous",
+                    "description": "Applies Poison and Glowing effect when hitting a Entity"
+                }
+            }
         }
     },
     "items": [
