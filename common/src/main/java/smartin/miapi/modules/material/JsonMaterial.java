@@ -17,6 +17,7 @@ import smartin.miapi.Miapi;
 import smartin.miapi.modules.material.palette.EmptyMaterialPalette;
 import smartin.miapi.modules.material.palette.MaterialColorer;
 import smartin.miapi.modules.material.palette.PaletteCreators;
+import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.registries.FakeTranslation;
 import smartin.miapi.registries.RegistryInventory;
@@ -32,6 +33,7 @@ public class JsonMaterial implements Material {
     @Nullable
     public MaterialIcons.MaterialIcon icon;
     protected MaterialColorer palette;
+    public Map<String, Map<ModuleProperty, JsonElement>> propertyMap = new HashMap<>();
 
     public JsonMaterial(JsonObject element, boolean isClient) {
         rawJson = element;
@@ -54,6 +56,57 @@ public class JsonMaterial implements Material {
                 FakeTranslation.translations.put(element.get("translation").getAsString(), element.get("fake_translation").getAsString());
             }
         }
+        mergeJson(rawJson, isClient);
+    }
+
+    public void mergeJson(JsonElement rootElement, boolean isClient) {
+        rootElement.getAsJsonObject().asMap().forEach((elementName, propertyElement) -> {
+            switch (elementName) {
+                case "properties": {
+                    propertyElement.getAsJsonObject().asMap().forEach((id, element) -> {
+                        if (element != null) {
+                            element.getAsJsonObject().entrySet().forEach(stringJsonElementEntry -> {
+                                ModuleProperty property = RegistryInventory.moduleProperties.get(stringJsonElementEntry.getKey());
+                                Map<ModuleProperty, JsonElement> specificPropertyMap = propertyMap.getOrDefault(id, new HashMap<>());
+                                if (property != null) {
+                                    if (specificPropertyMap.containsKey(property)) {
+                                        specificPropertyMap.put(property, property.merge(specificPropertyMap.get(property), stringJsonElementEntry.getValue(), MergeType.SMART));
+                                    } else {
+                                        specificPropertyMap.put(property, stringJsonElementEntry.getValue());
+                                    }
+                                }
+                                propertyMap.put(id, specificPropertyMap);
+                            });
+                        }
+                    });
+                    break;
+                }
+                case "color_palette": {
+                    if (isClient) {
+                        palette = PaletteCreators.paletteCreator.dispatcher().createPalette(propertyElement, this);
+                    }
+                    break;
+                }
+                case "icon": {
+                    if (isClient) {
+                        JsonElement emnt = propertyElement;
+                        if (emnt instanceof JsonPrimitive primitive && primitive.isString())
+                            icon = new MaterialIcons.TextureMaterialIcon(new Identifier(primitive.getAsString()));
+                        else icon = MaterialIcons.getMaterialIcon(key, emnt);
+                    }
+                    break;
+                }
+                case "fake_translation": {
+                    if (isClient) {
+                        FakeTranslation.translations.put(rawJson.getAsJsonObject().get("translation").getAsString(), propertyElement.getAsString());
+                    }
+                    break;
+                }
+                default: {
+                    rawJson.getAsJsonObject().add(elementName, propertyElement);
+                }
+            }
+        });
     }
 
     @Override
@@ -98,20 +151,7 @@ public class JsonMaterial implements Material {
 
     @Override
     public Map<ModuleProperty, JsonElement> materialProperties(String key) {
-        Map<ModuleProperty, JsonElement> propertyMap = new HashMap<>();
-        JsonElement propertyElement = rawJson.getAsJsonObject().get("properties");
-        if (propertyElement != null) {
-            JsonElement element = propertyElement.getAsJsonObject().get(key);
-            if (element != null) {
-                element.getAsJsonObject().entrySet().forEach(stringJsonElementEntry -> {
-                    ModuleProperty property = RegistryInventory.moduleProperties.get(stringJsonElementEntry.getKey());
-                    if (property != null) {
-                        propertyMap.put(property, stringJsonElementEntry.getValue());
-                    }
-                });
-            }
-        }
-        return propertyMap;
+        return propertyMap.getOrDefault(key, new HashMap<>());
     }
 
     @Override
@@ -137,7 +177,7 @@ public class JsonMaterial implements Material {
                 break;
             }
         }
-        if(jsonData != null && jsonData.isJsonNull()){
+        if (jsonData != null && jsonData.isJsonNull()) {
             Miapi.LOGGER.info(String.valueOf(rawJson));
         }
         if (jsonData != null && jsonData.isJsonPrimitive()) {
@@ -162,10 +202,10 @@ public class JsonMaterial implements Material {
         return "";
     }
 
-    public boolean generateConverters(){
-        if(rawJson.getAsJsonObject().has("generate_converters")){
+    public boolean generateConverters() {
+        if (rawJson.getAsJsonObject().has("generate_converters")) {
             JsonElement element = rawJson.getAsJsonObject().get("generate_converters");
-            if(element!=null && !element.isJsonNull() && element.isJsonPrimitive()){
+            if (element != null && !element.isJsonNull() && element.isJsonPrimitive()) {
                 return element.getAsBoolean();
             }
         }

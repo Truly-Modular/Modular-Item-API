@@ -14,6 +14,7 @@ import dev.architectury.event.events.common.PlayerEvent;
 import dev.architectury.platform.Platform;
 import dev.architectury.registry.ReloadListenerRegistry;
 import net.fabricmc.api.EnvType;
+import net.minecraft.client.render.block.entity.ConduitBlockEntityRenderer;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.server.MinecraftServer;
@@ -143,6 +144,8 @@ public class Miapi {
         }
 
         NucleusNamespaces.addAddonNamespace("miapi");
+
+        ConduitBlockEntityRenderer renderer;
     }
 
     protected static void setupNetworking() {
@@ -182,7 +185,7 @@ public class Miapi {
         event.subscribe(isClient -> {
             beforeLoop.accept(isClient);
             ReloadEvents.DATA_PACKS.forEach((path, data) -> {
-                if (path.startsWith(location)) {
+                if (path.startsWith(location+"/")) {
                     try {
                         handler.accept(isClient, path, data);
                     } catch (Exception e) {

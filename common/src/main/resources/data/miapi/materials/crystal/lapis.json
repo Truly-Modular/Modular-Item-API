@@ -38,9 +38,6 @@
         },
         "handheld": {
             "luminiousLearning": "0.3"
-        },
-        "gem_melee_generic": {
-            "smite_damage":" 1 + [module.gem_power]"
         }
     },
     "items": [

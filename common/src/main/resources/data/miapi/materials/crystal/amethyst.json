@@ -32,33 +32,6 @@
     "textures": [
         "shiny"
     ],
-    "properties": {
-        "gem_melee_generic": {
-            "on_attack_potion": [
-                {
-                    "potion": "minecraft:poison",
-                    "amplifier": 1,
-                    "duration": "([module.gem_power]+3)*20",
-                    "showIcon": true
-                },
-                {
-                    "potion": "minecraft:glowing",
-                    "amplifier": "0",
-                    "duration": "100+[module.gem_power]*20",
-                    "target_self": false
-                }
-            ],
-            "gui_stat": {
-                "radiant_poison_on_hit": {
-                    "value": 1,
-                    "min": 0,
-                    "max": 2,
-                    "header": "Radiant Poisonous",
-                    "description": "Applies Poison and Glowing effect when hitting a Entity"
-                }
-            }
-        }
-    },
     "items": [
         {
             "item": "minecraft:amethyst_shard",

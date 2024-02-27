@@ -30,37 +30,6 @@
         },
         "filler": "interpolate"
     },
-    "properties": {
-        "gem_melee_generic": {
-            "durability": [
-                {
-                    "value": "400 + [module.gem_power]*200",
-                    "operation": "+"
-                },
-                {
-                    "value": "0.25",
-                    "operation": "*"
-                }
-            ],
-            "on_attack_potion": [
-                {
-                    "potion": "minecraft:resistance",
-                    "amplifier": 0,
-                    "duration": "([module.gem_power]+2)*20",
-                    "target_self": true
-                }
-            ],
-            "gui_stat": {
-                "resistance_on_hit": {
-                    "value": 1,
-                    "min": 0,
-                    "max": 2,
-                    "header": "Armoring",
-                    "description": "Applies Resistance effect on wielder when hitting a Entity"
-                }
-            }
-        }
-    },
     "textures": [
         "bright"
     ],

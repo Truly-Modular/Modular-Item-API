@@ -32,33 +32,6 @@
                 "value": "0.6"
             },
             "fracturing": "5"
-        },
-        "gem_melee_generic": {
-            "on_attack_potion": [
-                {
-                    "potion": "minecraft:luck",
-                    "amplifier": "[module.gem_power]",
-                    "duration": "100",
-                    "target_self": true
-                }
-            ],
-            "gui_stat": {
-                "luck_on_hit": {
-                    "value": "[module.gem_power]",
-                    "min": 0,
-                    "max": 3,
-                    "header": "Lucky!",
-                    "description": "Applies Luck effect on wielder when hitting a Entity"
-                }
-            },
-            "attributes": [
-                {
-                    "attribute": "generic.luck",
-                    "value": "[module.gem_power]",
-                    "operation": "+",
-                    "slot": "mainhand"
-                }
-            ]
         }
     },
     "mining_speed": 5,

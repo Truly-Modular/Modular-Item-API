@@ -44,16 +44,6 @@
                     "uuid": "FA233E1C-4180-4865-B01B-BCCE9785ACA3"
                 }
             ]
-        },
-        "gem_melee_generic": {
-            "on_attack_potion": [
-                {
-                    "potion": "minecraft:speed",
-                    "amplifier": "0 + floor([module.gem_power]/2)",
-                    "duration": "([module.gem_power] + 2) * 20",
-                    "target_self": true
-                }
-            ]
         }
     },
     "items": [

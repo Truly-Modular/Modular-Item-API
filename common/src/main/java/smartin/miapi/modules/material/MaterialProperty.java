@@ -6,27 +6,23 @@ import com.google.gson.JsonParser;
 import com.mojang.blaze3d.systems.RenderSystem;
 import dev.architectury.event.events.common.LifecycleEvent;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.entity.passive.PandaEntity;
-import net.minecraft.item.*;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.ToolItem;
 import net.minecraft.registry.Registries;
-import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.resource.ResourceReloader;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.MiapiClient;
 import smartin.miapi.datapack.ReloadEvents;
-import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
-import smartin.miapi.registries.RegistryInventory;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
-import java.util.stream.Collectors;
 
 /**
  * This is the Property relating to materials of a Module
@@ -88,6 +84,21 @@ public class MaterialProperty implements ModuleProperty {
             }
             materials.put(material.getKey(), material);
         }, -2f);
+
+        Miapi.registerReloadHandler(ReloadEvents.MAIN, "material_extensions", (isClient) -> {
+
+        }, (isClient, path, data) -> {
+            JsonParser parser = new JsonParser();
+            JsonObject obj = parser.parse(data).getAsJsonObject();
+            Material material = materials.get(obj.get("key").getAsString());
+            if (material != null) {
+                if (material instanceof JsonMaterial jsonMaterial) {
+                    jsonMaterial.mergeJson(obj, isClient);
+                }
+            } else {
+                Miapi.LOGGER.error("Miapi could not find Material for Material extension " + path);
+            }
+        }, -1.5f);
 
         GeneratedMaterial.setup();
 

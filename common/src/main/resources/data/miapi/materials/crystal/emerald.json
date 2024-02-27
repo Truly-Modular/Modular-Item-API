@@ -35,17 +35,6 @@
         },
         "armor": {
             "pillagerGuard": "1"
-        },
-        "gem_melee_generic": {
-            "fortune": "1",
-            "attributes": [
-                {
-                    "attribute": "miapi.crit_chance",
-                    "value": "[module.gem_power]*5+10",
-                    "operation": "+",
-                    "slot": "mainhand"
-                }
-            ]
         }
     },
     "textures": [

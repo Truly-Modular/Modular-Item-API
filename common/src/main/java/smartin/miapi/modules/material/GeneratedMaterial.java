@@ -71,9 +71,9 @@ public class GeneratedMaterial implements Material {
             public PacketByteBuf createDataServer() {
                 PacketByteBuf packetByteBuf = Networking.createBuffer();
                 packetByteBuf.writeInt(generatedMaterials.size());
-                for (int i = 0; i < generatedMaterials.size(); i++) {
-                    ItemStack material = generatedMaterials.get(i).getLeft();
-                    ItemStack sword = generatedMaterials.get(i).getRight();
+                for (Pair<ItemStack, ItemStack> generatedMaterial : generatedMaterials) {
+                    ItemStack material = generatedMaterial.getLeft();
+                    ItemStack sword = generatedMaterial.getRight();
                     packetByteBuf.writeItemStack(material);
                     packetByteBuf.writeItemStack(sword);
                 }

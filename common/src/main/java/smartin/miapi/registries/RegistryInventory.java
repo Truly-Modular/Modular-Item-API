@@ -416,6 +416,7 @@ public class RegistryInventory {
                 registerMiapi(moduleProperties, BlockModelProperty.KEY, new BlockModelProperty());
                 registerMiapi(moduleProperties, EntityModelProperty.KEY, new EntityModelProperty());
                 registerMiapi(moduleProperties, CrystalModelProperty.KEY, new CrystalModelProperty());
+                registerMiapi(moduleProperties, ConduitModelProperty.KEY, new ConduitModelProperty());
             } else {
                 registerMiapi(moduleProperties, "texture", new ServerReplaceProperty());
                 registerMiapi(moduleProperties, "modelTransform", new ServerReplaceProperty());
@@ -427,6 +428,7 @@ public class RegistryInventory {
                 registerMiapi(moduleProperties, "crystal_model", new ServerReplaceProperty());
                 registerMiapi(moduleProperties, "block_model", new ServerReplaceProperty());
                 registerMiapi(moduleProperties, "entity_model", new ServerReplaceProperty());
+                registerMiapi(moduleProperties, "conduit_model", new ServerReplaceProperty());
             }
             registerMiapi(moduleProperties, NameProperty.KEY, new NameProperty());
             registerMiapi(moduleProperties, SlotProperty.KEY, new SlotProperty());

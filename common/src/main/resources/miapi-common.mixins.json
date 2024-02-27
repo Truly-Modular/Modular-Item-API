@@ -9,6 +9,7 @@
         "AxeItemAccessor",
         "BCWeaponRegistryMixin",
         "ClientAdvancementManagerAccessor",
+        "ConduitBlockEntityAccessor",
         "DefaultAttributeContainerAccessor",
         "DefaultAttributeRegistryMixin",
         "DispenserBlockAccessor",

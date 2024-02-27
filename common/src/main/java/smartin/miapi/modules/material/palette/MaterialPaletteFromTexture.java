@@ -14,6 +14,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.Direction;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Vector4i;
 import smartin.miapi.Miapi;
 import smartin.miapi.mixin.client.SpriteContentsAccessor;
 import smartin.miapi.modules.material.Material;
@@ -52,51 +53,86 @@ public class MaterialPaletteFromTexture extends SimpleMaterialPalette {
         this.setSpriteId(new Identifier(Miapi.MOD_ID, "miapi_materials/" + material.getKey()));
     }
 
+    public static List<Color> sortedColors(List<Color> colors) {
+        final Color[] prev = {null};
+        return colors.stream()
+                .sorted(Comparator.comparingDouble(Vector4i::length))
+                .sorted(Comparator.comparingDouble((a) -> {
+                    if (prev[0] == null) {
+                        prev[0] = a;
+                        return 0;
+                    }
+                    double distanceToPrevious = distanceBetween(a, prev[0]);
+                    prev[0] = a;
+                    return distanceToPrevious;
+                }))
+                .toList();
+    }
+
+    public static double distanceBetween(Color v1, Color v2) {
+        double dx = v1.x - v2.x;
+        double dy = v1.y - v2.y;
+        double dz = v1.z - v2.z;
+        double dw = v1.w - v2.w;
+        return Math.sqrt(dx * dx + dy * dy + dz * dz + dw * dw);
+    }
+
     @Environment(EnvType.CLIENT)
-    public @Nullable SpriteContents generateSpriteContentsALT(Identifier id) {
-        //@Panda your stuff failed and this didnt work either. some out of index stuff, but even fixin that looked really bad.
+    public @Nullable SpriteContents generateSpriteContents(Identifier id) {
         try {
             List<Color> pixels = Arrays.stream(getPixelArray())
                     .mapToObj(Color::new)
-                    .filter(color -> color.a() > 0.1)
-                    .sorted(Comparator.comparingDouble(Color::length))
+                    .filter(color -> color.a() > 5)
+                    .sorted(Comparator.comparingDouble((a) -> a.toFloatVecNoDiv().length()))
                     .toList();
             Map<Integer, Color> finalColorMap = new HashMap<>();
-            pixels.stream().distinct().forEach(color -> {
-                int avgIndex = 0;
-                int count = 0;
-                for (int i = 0; i < pixels.size(); i++) {
+            List<Color> uniqueColors = pixels.stream().distinct().toList();
+            for (int i = 0; i < uniqueColors.size() - 1; i++) {
+                float scale = 256.0f / (float) pixels.size();
+                Color current = uniqueColors.get(i);
 
-                    if (pixels.get(i).equals(color)) {
-                        avgIndex = avgIndex + i;
-                        count++;
-                    }
-                }
-                avgIndex = avgIndex / count;
-                finalColorMap.put(avgIndex, color);
-            });
-            NativeImage nativeImage = new NativeImage(256, 1, false);
+                float distanceCurrent = Math.max(1, pixels.lastIndexOf(current) - pixels.indexOf(current));
+
+                int medianScaled = (int) (pixels.indexOf(current) + distanceCurrent / 2);
+                finalColorMap.put((int) ((medianScaled) * scale), current);
+
+                Color next = uniqueColors.get(i + 1);
+                float distanceNext = Math.max(1, pixels.lastIndexOf(next) - pixels.indexOf(next));
+                //float weight = Math.min(1, Math.max(0, Math.min(distanceCurrent / distanceNext, 1 - distanceNext / distanceCurrent)));
+                float weight = Math.min(1, Math.max(0, distanceCurrent / (distanceCurrent + distanceNext)));
+                Color weightedAverage = new Color(
+                        current.redAsFloat() * weight + next.redAsFloat() * (1 - weight),
+                        current.greenAsFloat() * weight + next.greenAsFloat() * (1 - weight),
+                        current.blueAsFloat() * weight + next.blueAsFloat() * (1 - weight),
+                        current.alphaAsFloat() * weight + next.alphaAsFloat() * (1 - weight));
+                float weightedPos = pixels.lastIndexOf(current) + (pixels.lastIndexOf(current) - pixels.indexOf(next)) * 0.5f;
+                finalColorMap.put((int) (weightedPos * scale), weightedAverage);
+            }
+            finalColorMap.putIfAbsent(0, Color.BLACK);
+            finalColorMap.putIfAbsent(255, uniqueColors.get(uniqueColors.size() - 1));
+            NativeImage image = new NativeImage(256, 1, false);
+            PaletteCreators.PixelPlacer placer = (color, x, y) -> image.setColor(x, y, color.abgr());
             PaletteCreators.FillerFunction filler = PaletteCreators.fillers.getOrDefault("interpolation", PaletteCreators.interpolateFiller);
-            PaletteCreators.PixelPlacer placer = (color, x, y) -> nativeImage.setColor(x, y, color.abgr());
+
             List<Map.Entry<Integer, Color>> list = finalColorMap.entrySet().stream().sorted(Map.Entry.comparingByKey()).toList();
             for (int i = 0; i < list.size(); i++) {
-                int relativePos = (int) ((float) i / (float) list.size() * 256.0f);
                 Map.Entry<Integer, Color> last = i == 0 ? Map.entry(0, Color.BLACK) : list.get(i - 1);
                 Map.Entry<Integer, Color> current = list.get(i);
                 Map.Entry<Integer, Color> next = i == list.size() - 1 ? Map.entry(255, Color.WHITE) : list.get(i + 1);
+
                 filler.fill(
                         last.getValue(),
                         current.getValue(),
                         next.getValue(),
                         last.getKey(),
-                        relativePos,
+                        current.getKey(),
                         next.getKey(),
                         placer
                 );
-                nativeImage.setColor(relativePos, 0, current.getValue().abgr());
+                image.setColor(current.getKey(), 0, current.getValue().abgr());
             }
-            nativeImage.untrack();
-            return new SpriteContents(id, new SpriteDimensions(256, 1), nativeImage, AnimationResourceMetadata.EMPTY);
+            image.untrack();
+            return new SpriteContents(id, new SpriteDimensions(256, 1), image, AnimationResourceMetadata.EMPTY);
         } catch (Exception e) {
             Miapi.LOGGER.warn("Material Palette generation for " + id + " failed.", e);
             NativeImage nativeImage = new NativeImage(256, 1, false);
@@ -106,8 +142,7 @@ public class MaterialPaletteFromTexture extends SimpleMaterialPalette {
     }
 
     @Environment(EnvType.CLIENT)
-    @Override
-    public @Nullable SpriteContents generateSpriteContents(Identifier id) {
+    public @Nullable SpriteContents generateSpriteContentsALT(Identifier id) {
         List<Color> pixels = Arrays.stream(getPixelArray())
                 .mapToObj(Color::new)
                 .filter(color -> color.a() > 5)
