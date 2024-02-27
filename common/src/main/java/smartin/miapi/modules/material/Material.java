@@ -1,6 +1,7 @@
 package smartin.miapi.modules.material;
 
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
@@ -88,4 +89,7 @@ public interface Material {
      */
     @Nullable
     Double getPriorityOfIngredientItem(ItemStack itemStack);
+
+    @Environment(EnvType.CLIENT)
+    JsonObject getDebugJson();
 }

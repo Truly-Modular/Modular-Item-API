@@ -1,7 +1,9 @@
 package smartin.miapi.modules.material;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import dev.architectury.platform.Platform;
 import dev.architectury.utils.Env;
 import net.fabricmc.api.EnvType;
@@ -48,7 +50,7 @@ public class GeneratedMaterial implements Material {
     public final Map<String, Double> materialStats = new HashMap<>();
     public final Map<String, String> materialStatsString = new HashMap<>();
     public SwordItem swordItem;
-    protected MaterialColorer palette;
+    protected MaterialPaletteFromTexture palette;
     @Nullable
     public MaterialIcons.MaterialIcon icon;
 
@@ -57,6 +59,10 @@ public class GeneratedMaterial implements Material {
     public static final List<Pair<ItemStack, ItemStack>> generatedMaterials = new ArrayList<>();
     public static final List<Item> woodItems = new ArrayList<>();
     public static final List<Item> stoneItems = new ArrayList<>();
+    public JsonElement iconJson;
+
+    public String langKey;
+    public String fakeTranslation;
 
     public static void setup() {
         ReloadEvents.MAIN.subscribe(isClient -> {
@@ -331,7 +337,8 @@ public class GeneratedMaterial implements Material {
         iconBuilder.append("\"type\": \"").append("item").append("\",");
         iconBuilder.append("\"item\": \"").append(itemId).append("\"");
         iconBuilder.append("}");
-        icon = MaterialIcons.getMaterialIcon(key, Miapi.gson.fromJson(iconBuilder.toString(), JsonObject.class));
+        iconJson = Miapi.gson.fromJson(iconBuilder.toString(), JsonObject.class);
+        icon = MaterialIcons.getMaterialIcon(key, iconJson);
         palette = MaterialPaletteFromTexture.forGeneratedMaterial(this, mainIngredient);
     }
 
@@ -454,13 +461,13 @@ public class GeneratedMaterial implements Material {
         List<String> names = new ArrayList<>();
         items.forEach(item -> names.add(Text.translatable(item.getTranslationKey()).getString()));
         String materialName = Text.translatable(mainIngredient.getTranslationKey()).getString();
-        String translationKey = "miapi.material.generated." + mainIngredient.getItem().getTranslationKey();
-        String materialTranslation = findCommonSubstring(names, materialName);
-        if (!materialTranslation.endsWith(" ")) {
-            materialTranslation += " ";
+        langKey = "miapi.material.generated." + mainIngredient.getItem().getTranslationKey();
+        fakeTranslation = findCommonSubstring(names, materialName);
+        if (!fakeTranslation.endsWith(" ")) {
+            fakeTranslation += " ";
         }
-        FakeTranslation.translations.put(translationKey, materialTranslation);
-        materialStatsString.put("translation", translationKey);
+        FakeTranslation.translations.put(langKey, fakeTranslation);
+        materialStatsString.put("translation", langKey);
     }
 
     static String findCommonSubstring(List<String> itemNames, String materialName) {
@@ -564,13 +571,13 @@ public class GeneratedMaterial implements Material {
 
     @Environment(EnvType.CLIENT)
     public void addFakeTranslationForCopy() {
-        String materialTranslation = Text.translatable(mainIngredient.getTranslationKey()).getString();
-        String translationKey = "miapi.material.generated." + mainIngredient.getItem().getTranslationKey();
-        if (!materialTranslation.endsWith(" ")) {
-            materialTranslation += " ";
+        fakeTranslation = Text.translatable(mainIngredient.getTranslationKey()).getString();
+        langKey = "miapi.material.generated." + mainIngredient.getItem().getTranslationKey();
+        if (!fakeTranslation.endsWith(" ")) {
+            fakeTranslation += " ";
         }
-        FakeTranslation.translations.put(translationKey, materialTranslation);
-        materialStatsString.put("translation", translationKey);
+        FakeTranslation.translations.put(langKey, fakeTranslation);
+        materialStatsString.put("translation", langKey);
     }
 
     @Environment(EnvType.CLIENT)
@@ -651,5 +658,40 @@ public class GeneratedMaterial implements Material {
             return 2.0;
         }
         return null;
+    }
+
+    @Override
+    public JsonObject getDebugJson() {
+        JsonObject object = new JsonObject();
+        object.add("key", new JsonPrimitive(getKey()));
+        JsonArray jsonElements = new JsonArray();
+        getTextureKeys().forEach(jsonElements::add);
+        object.add("groups", jsonElements);
+        materialStats.forEach((id, value) -> object.add(id, new JsonPrimitive(value)));
+        object.add("translation", new JsonPrimitive(langKey));
+        object.add("fake_translation", new JsonPrimitive(fakeTranslation));
+        object.add("icon", iconJson);
+        StringBuilder paletteBuilder = new StringBuilder();
+        paletteBuilder.append("{");
+        paletteBuilder.append("\"type\": \"").append("grayscale_map").append("\",");
+        paletteBuilder.append("\"colors\": ");
+        JsonObject innerPalette = new JsonObject();
+        palette.getColorPalette()
+                .forEach(((integer, color) ->
+                        innerPalette.add(String.valueOf(integer), new JsonPrimitive(color.hex()))));
+        paletteBuilder.append(Miapi.gson.toJson(innerPalette));
+        paletteBuilder.append("}");
+        object.add("palette", Miapi.gson.fromJson(paletteBuilder.toString(), JsonObject.class));
+        JsonArray ingredients = new JsonArray();
+        JsonObject mainIngredientJson = new JsonObject();
+        mainIngredientJson.add("item", new JsonPrimitive(Registries.ITEM.getId(this.mainIngredient.getItem()).toString()));
+        mainIngredientJson.add("value", new JsonPrimitive(1.0));
+        JsonObject otherIngredient = new JsonObject();
+        otherIngredient.add("ingredient", toolMaterial.getRepairIngredient().toJson());
+        otherIngredient.add("value", new JsonPrimitive(1.0));
+        ingredients.add(mainIngredientJson);
+        ingredients.add(otherIngredient);
+        object.add("items", ingredients);
+        return object;
     }
 }

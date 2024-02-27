@@ -9,6 +9,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.recipe.Ingredient;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
@@ -281,6 +282,15 @@ public class JsonMaterial implements Material {
                         return 1;
                     }
                 }
+            }else if(itemObj.has("ingredient")){
+                Ingredient ingredient = Ingredient.fromJson(itemObj.get("ingredient"));
+                if(ingredient.test(item)){
+                    try {
+                        return itemObj.get("value").getAsDouble();
+                    } catch (Exception suppressed) {
+                        return 1;
+                    }
+                }
             }
         }
         return 0;
@@ -305,6 +315,17 @@ public class JsonMaterial implements Material {
             for (JsonElement element : items) {
                 JsonObject itemObj = element.getAsJsonObject();
 
+                if (itemObj.has("ingredient")) {
+                    Ingredient ingredient = Ingredient.fromJson(itemObj.get("ingredient"));
+                    if (ingredient.test(itemStack)) {
+                        return 5.0;
+                    }
+                }
+            }
+
+            for (JsonElement element : items) {
+                JsonObject itemObj = element.getAsJsonObject();
+
                 if (itemObj.has("tag")) {
                     String tagId = itemObj.get("tag").getAsString();
                     TagKey<Item> tag = TagKey.of(Registries.ITEM.getKey(), new Identifier(tagId));
@@ -315,5 +336,10 @@ public class JsonMaterial implements Material {
             }
         }
         return null;
+    }
+
+    @Override
+    public JsonObject getDebugJson() {
+        return rawJson.getAsJsonObject();
     }
 }

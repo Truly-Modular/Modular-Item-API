@@ -34,9 +34,13 @@ import smartin.miapi.effects.CryoStatusEffect;
 import smartin.miapi.entity.ItemProjectileRenderer;
 import smartin.miapi.modules.MiapiPermissions;
 import smartin.miapi.modules.cache.ModularItemCache;
+import smartin.miapi.modules.material.Material;
 import smartin.miapi.modules.material.MaterialIcons;
+import smartin.miapi.modules.material.MaterialProperty;
+import smartin.miapi.modules.material.palette.MaterialCommand;
 import smartin.miapi.modules.material.palette.PaletteCreators;
 import smartin.miapi.modules.properties.render.colorproviders.ColorProvider;
+import smartin.miapi.network.Networking;
 import smartin.miapi.registries.RegistryInventory;
 
 import static smartin.miapi.registries.RegistryInventory.Client.glintShader;
@@ -62,6 +66,19 @@ public class MiapiClient {
                 MaterialSpriteManager.tick();
                 MinecraftClient.getInstance().getProfiler().pop();
             }
+        }));
+        Networking.registerS2CPacket(MaterialCommand.SEND_MATERIAL_CLIENT, (buf -> {
+            String materialId = buf.readString();
+            MinecraftClient.getInstance().execute(() ->{
+                Material material = MaterialProperty.materials.get(materialId);
+                if (material != null) {
+                    String raw = Miapi.gson.toJson(material.getDebugJson());
+                    Text text = Text.literal(raw);
+                    ClickEvent event = new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, raw);
+                    text = text.getWithStyle(Style.EMPTY.withClickEvent(event)).get(0);
+                    MinecraftClient.getInstance().player.sendMessage(text);
+                }
+            });
         }));
         registerShaders();
         PaletteCreators.setup();

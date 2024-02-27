@@ -8,13 +8,13 @@ import com.redpxnda.nucleus.config.ConfigManager;
 import com.redpxnda.nucleus.config.ConfigType;
 import com.redpxnda.nucleus.registry.NucleusNamespaces;
 import dev.architectury.event.EventResult;
+import dev.architectury.event.events.common.CommandRegistrationEvent;
 import dev.architectury.event.events.common.EntityEvent;
 import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.event.events.common.PlayerEvent;
 import dev.architectury.platform.Platform;
 import dev.architectury.registry.ReloadListenerRegistry;
 import net.fabricmc.api.EnvType;
-import net.minecraft.client.render.block.entity.ConduitBlockEntityRenderer;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.server.MinecraftServer;
@@ -39,6 +39,7 @@ import smartin.miapi.modules.MiapiPermissions;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.conditions.ConditionManager;
+import smartin.miapi.modules.material.palette.MaterialCommand;
 import smartin.miapi.modules.properties.GlintProperty;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.network.Networking;
@@ -145,7 +146,9 @@ public class Miapi {
 
         NucleusNamespaces.addAddonNamespace("miapi");
 
-        ConduitBlockEntityRenderer renderer;
+        CommandRegistrationEvent.EVENT.register((serverCommandSourceCommandDispatcher, registryAccess, listener) -> {
+            MaterialCommand.register(serverCommandSourceCommandDispatcher);
+        });
     }
 
     protected static void setupNetworking() {
@@ -161,7 +164,7 @@ public class Miapi {
                 .creator(MiapiConfig::new)
                 .updateListener(c -> {
                     MiapiConfig.INSTANCE = c;
-                    if(Environment.isClient()){
+                    if (Environment.isClient()) {
                         GlintProperty.updateConfig();
                     }
                 }));
@@ -185,7 +188,7 @@ public class Miapi {
         event.subscribe(isClient -> {
             beforeLoop.accept(isClient);
             ReloadEvents.DATA_PACKS.forEach((path, data) -> {
-                if (path.startsWith(location+"/")) {
+                if (path.startsWith(location + "/")) {
                     try {
                         handler.accept(isClient, path, data);
                     } catch (Exception e) {

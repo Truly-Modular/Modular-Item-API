@@ -4,3 +4,6 @@
 - added onKill Explosion property
 - updated config
 - added config option to customize glint coloring
+- added Material Extensions
+- adjusted how Generated Materials are a colored
+- added Minecraft Ingredient as option for JsonMaterials
