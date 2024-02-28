@@ -8,12 +8,7 @@ import com.redpxnda.nucleus.codec.misc.MiscCodecs;
 import com.redpxnda.nucleus.util.Color;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.resource.metadata.AnimationResourceMetadata;
 import net.minecraft.client.texture.NativeImage;
-import net.minecraft.client.texture.SpriteContents;
-import net.minecraft.client.texture.SpriteDimensions;
-import net.minecraft.util.Identifier;
-import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.modules.material.Material;
 
@@ -21,7 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class GrayscaleMapMaterialPalette extends SimpleMaterialPalette {
+public class GrayscaleMapMaterialPalette extends MaterialPalette {
     public static final Codec<Integer> stringToIntCodec = Codec.STRING.xmap(Integer::parseInt, String::valueOf);
     protected final PaletteCreators.FillerFunction filler;
     protected final Map<Integer, Color> colors;
@@ -43,11 +38,11 @@ public class GrayscaleMapMaterialPalette extends SimpleMaterialPalette {
         } else {
             throw new JsonParseException("ModularItem API failed to parse grayscale_map sampling palette for material '" + material.getKey() + "'! Not a JSON object -> " + json);
         }
+        this.materialPalette = generateSpriteContents();
     }
 
     @Environment(EnvType.CLIENT)
-    @Override
-    public @Nullable SpriteContents generateSpriteContents(Identifier id) {
+    public NativeImage generateSpriteContents() {
         try {
             if (!colors.containsKey(0))
                 colors.put(0, Color.BLACK);
@@ -75,8 +70,7 @@ public class GrayscaleMapMaterialPalette extends SimpleMaterialPalette {
                 image.setColor(current.getKey(), 0, current.getValue().abgr());
             }
             image.untrack();
-
-            return new SpriteContents(id, new SpriteDimensions(256, 1), image, AnimationResourceMetadata.EMPTY);
+            return image;
         } catch (Exception e) {
             RuntimeException runtime = new RuntimeException("Exception whilst generating grayscale map material palette for: " + material.getKey());
             runtime.addSuppressed(e);

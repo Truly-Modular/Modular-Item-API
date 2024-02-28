@@ -60,6 +60,7 @@ public class GeneratedMaterial implements Material {
     public static final List<Item> woodItems = new ArrayList<>();
     public static final List<Item> stoneItems = new ArrayList<>();
     public JsonElement iconJson;
+    public boolean isComplex = true;
 
     public String langKey;
     public String fakeTranslation;
@@ -237,7 +238,7 @@ public class GeneratedMaterial implements Material {
                             !item.getDefaultStack().isIn(RegistryInventory.MIAPI_FORBIDDEN_TAG))
                     .limit(MiapiConfig.INSTANCE.server.generatedMaterials.maximumGeneratedMaterials)
                     .forEach(item -> {
-                        if (isValidItem(item)) {
+                        if (isValidItem(item) && !item.equals(Items.COBBLESTONE)) {
                             GeneratedMaterial generatedMaterial = new GeneratedMaterial(ToolMaterials.STONE, item.getDefaultStack(), false);
                             Material old = MaterialProperty.getMaterialFromIngredient(item.getDefaultStack());
                             if (old == null || old == materials.get("stone")) {
@@ -319,6 +320,7 @@ public class GeneratedMaterial implements Material {
         groups.clear();
         groups.add(key);
         groups.add("wood");
+        isComplex = false;
         copyStatsFrom(materials.get("wood"));
     }
 
@@ -326,6 +328,7 @@ public class GeneratedMaterial implements Material {
         groups.clear();
         groups.add(key);
         groups.add("stone");
+        isComplex = false;
         copyStatsFrom(materials.get("stone"));
     }
 
@@ -646,7 +649,7 @@ public class GeneratedMaterial implements Material {
         if (toolMaterial.getRepairIngredient().test(item)) {
             return 1;
         }
-        return item.getItem().equals(mainIngredient.getItem()) ? 1 : 0;
+        return isComplex && item.getItem().equals(mainIngredient.getItem()) ? 1 : 0;
     }
 
     @Override
@@ -654,7 +657,7 @@ public class GeneratedMaterial implements Material {
         if (mainIngredient.getItem().equals(itemStack.getItem())) {
             return 1.0;
         }
-        if (toolMaterial.getRepairIngredient().test(itemStack)) {
+        if (isComplex && toolMaterial.getRepairIngredient().test(itemStack)) {
             return 2.0;
         }
         return null;

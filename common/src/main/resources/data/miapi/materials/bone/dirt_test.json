@@ -1,0 +1,63 @@
+{
+    "key": "dirt",
+    "translation": "miapi.material.bone",
+    "icon": "textures/item/bone.png",
+    "groups": [
+        "bone"
+    ],
+    "hardness": 5,
+    "density": 3,
+    "flexibility": 0,
+    "enchantability": 7,
+    "durability": 189,
+    "color": "F9F8EA",
+    "color_palette": {
+        "type": "mask_palette",
+        "base": {
+            "type": "grayscale_map",
+            "colors": {
+                "24": "2D0500",
+                "68": "4A0800",
+                "107": "720C00",
+                "150": "720C00",
+                "190": "BB2008",
+                "255": "E32008"
+            }
+        },
+        "layer": {
+            "type": "grayscale_map",
+            "colors": {
+                "24": "002d00",
+                "68": "005300",
+                "107": "007b18",
+                "150": "009529",
+                "190": "00aa2c",
+                "216": "17dd62",
+                "255": "41f384"
+            }
+        },
+        "mask": {
+            "type": "texture",
+            "sprite": {
+                "atlas": "block",
+                "texture": "minecraft:block/soul_fire_1"
+            }
+        }
+    },
+    "properties": {
+        "head": {
+            "fracturing": "20"
+        }
+    },
+    "mining_speed": 4,
+    "mining_level": 1,
+    "textures": [
+        "rough"
+    ],
+    "items": [
+        {
+            "item": "minecraft:dirt",
+            "value": 1.0
+        }
+    ]
+}

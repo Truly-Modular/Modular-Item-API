@@ -5,5 +5,6 @@
 - updated config
 - added config option to customize glint coloring
 - added Material Extensions
+- added hidden_groups field to materials
 - adjusted how Generated Materials are a colored
 - added Minecraft Ingredient as option for JsonMaterials
