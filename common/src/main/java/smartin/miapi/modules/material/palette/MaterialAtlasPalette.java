@@ -104,7 +104,6 @@ public abstract class MaterialAtlasPalette extends MaterialSpriteColorer {
         NativeImage image = new NativeImage(rawImage.getWidth(), rawImage.getHeight(), true);
         for (int x = 0; x < rawImage.getWidth(); x++) {
             for (int y = 0; y < rawImage.getHeight(); y++) {
-                rawImage.getColor(x, y);
                 if (rawImage.getOpacity(x, y) < 5 && rawImage.getOpacity(x, y) > -1) {
                     image.setColor(x, y, 0);
                 } else {

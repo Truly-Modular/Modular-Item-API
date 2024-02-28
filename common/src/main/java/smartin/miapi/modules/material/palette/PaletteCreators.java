@@ -54,6 +54,7 @@ public class PaletteCreators {
         });
 
         creators.put("grayscale_map", (json, material) -> new GrayscaleMapMaterialPalette(material, json));
+        creators.put("overlay_texture", (json, material) -> new OverlayMaterialSpriteColorer(material, json));
         creators.put("end_portal", (json, material) -> new MaterialColorer() {
             @Override
             public VertexConsumer getVertexConsumer(VertexConsumerProvider vertexConsumers, Sprite originalSprite, ItemStack stack, ItemModule.ModuleInstance moduleInstance, ModelTransformationMode mode) {
