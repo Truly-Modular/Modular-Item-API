@@ -6,6 +6,7 @@ import com.redpxnda.nucleus.util.Color;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.SpriteContents;
 import smartin.miapi.Miapi;
+import smartin.miapi.client.renderer.NativeImageGetter;
 import smartin.miapi.modules.material.Material;
 
 import java.util.HashMap;
@@ -85,7 +86,7 @@ public class MaskPalette extends MaterialSpriteColorer {
 
         @Override
         public NativeImage mask(NativeImage base, NativeImage other) {
-            NativeImage nativeImage = maskingSprite.getNativeImage();
+            NativeImageGetter.ImageHolder nativeImage = maskingSprite.getNativeImage();
             NativeImage image = new NativeImage(base.getWidth(), base.getHeight(), false);
             for (int width = 0; width < base.getWidth(); width++) {
                 for (int height = 0; height < base.getHeight(); height++) {

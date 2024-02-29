@@ -15,25 +15,26 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
-import smartin.miapi.mixin.client.SpriteContentsAccessor;
+import smartin.miapi.client.renderer.NativeImageGetter;
 import smartin.miapi.modules.material.Material;
 
 import java.util.*;
 import java.util.function.Supplier;
 
 public class MaterialPaletteFromTexture extends SimpleMaterialPalette {
-    protected final Supplier<NativeImage> imageSupplier;
+    protected final Supplier<NativeImageGetter.ImageHolder> imageSupplier;
 
     @Environment(EnvType.CLIENT)
     public static MaterialPaletteFromTexture forGeneratedMaterial(Material material, ItemStack mainIngredient) {
         return new MaterialPaletteFromTexture(material, () -> {
             BakedModel itemModel = MinecraftClient.getInstance().getItemRenderer().getModel(mainIngredient, MinecraftClient.getInstance().world, null, 0);
             SpriteContents contents = itemModel.getParticleSprite().getContents();
-            return ((SpriteContentsAccessor) contents).getImage();
+            NativeImageGetter.ImageHolder holder = NativeImageGetter.getFromContents(contents);
+            return holder;
         });
     }
 
-    public MaterialPaletteFromTexture(Material material, Supplier<NativeImage> img) {
+    public MaterialPaletteFromTexture(Material material, Supplier<NativeImageGetter.ImageHolder> img) {
         super(material);
         this.imageSupplier = img;
         this.setSpriteId(new Identifier(Miapi.MOD_ID, "miapi_materials/" + material.getKey()));
@@ -116,7 +117,7 @@ public class MaterialPaletteFromTexture extends SimpleMaterialPalette {
 
     @Environment(EnvType.CLIENT)
     public int[] getPixelArray() {
-        NativeImage image = imageSupplier.get();
+        NativeImageGetter.ImageHolder image = imageSupplier.get();
         if (image.getFormat() != NativeImage.Format.RGBA) {
             throw new UnsupportedOperationException("can only call makePixelArray for RGBA images.");
         } else {

@@ -28,7 +28,7 @@ public class SpriteFromJson {
         m.put("material", MaterialAtlasManager.MATERIAL_ATLAS_ID);
     });
 
-    public Supplier<NativeImage> imageSupplier;
+    public Supplier<NativeImageGetter.ImageHolder> imageSupplier;
     public boolean isAnimated;
 
     public SpriteFromJson(JsonElement json) {
@@ -51,7 +51,11 @@ public class SpriteFromJson {
             isAnimated = false;
             Identifier textureId = new Identifier(obj.get("texture").getAsString());
             NativeImage rawImage = loadTexture(MinecraftClient.getInstance().getResourceManager(), textureId);
-            imageSupplier = () -> rawImage;
+            NativeImageGetter.ImageHolder holder = new NativeImageGetter.ImageHolder();
+            holder.nativeImage = rawImage;
+            holder.width = rawImage.getWidth();
+            holder.height = rawImage.getHeight();
+            imageSupplier = () -> holder;
         }
     }
 
@@ -72,7 +76,7 @@ public class SpriteFromJson {
         return isAnimated;
     }
 
-    public NativeImage getNativeImage() {
+    public NativeImageGetter.ImageHolder getNativeImage() {
         return imageSupplier.get();
     }
 
@@ -82,7 +86,7 @@ public class SpriteFromJson {
         int blue = 0;
         int count = 0;
 
-        NativeImage img = getNativeImage();
+        NativeImageGetter.ImageHolder img = getNativeImage();
         for (int x = 0; x < img.getWidth(); x++) {
             for (int y = 0; y < img.getHeight(); y++) {
                 int color = img.getColor(x, y);

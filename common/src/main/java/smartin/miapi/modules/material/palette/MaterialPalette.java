@@ -35,7 +35,7 @@ public abstract class MaterialPalette extends MaterialSpriteColorer {
 
     @Environment(EnvType.CLIENT)
     public NativeImage transform(SpriteContents sprite) {
-        NativeImage rawImage = NativeImageGetter.get(sprite);
+        NativeImageGetter.ImageHolder rawImage = NativeImageGetter.get(sprite);
         NativeImage image = new NativeImage(rawImage.getWidth(), rawImage.getHeight(), true);
         for (int x = 0; x < rawImage.getWidth(); x++) {
             for (int y = 0; y < rawImage.getHeight(); y++) {

@@ -3,7 +3,7 @@ package smartin.miapi.modules.properties;
 import com.google.common.collect.Sets;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.ibm.icu.impl.Pair;
+import net.minecraft.util.Pair;
 import com.mojang.serialization.Codec;
 import com.redpxnda.nucleus.codec.auto.AutoCodec;
 import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
@@ -56,7 +56,7 @@ public class ExplosionProperty extends CodecBasedProperty<ExplosionProperty.Expl
         MiapiProjectileEvents.MODULAR_PROJECTILE_ENTITY_HIT.register(event -> {
             @Nullable Pair<ItemModule.ModuleInstance, JsonElement> jsonElement = this.highestPriorityJsonElement(event.projectile.asItemStack());
             if (jsonElement != null) {
-                ExplosionInfo info = new ExplosionInfo(jsonElement.second.getAsJsonObject(), jsonElement.first);
+                ExplosionInfo info = new ExplosionInfo(jsonElement.getRight().getAsJsonObject(), jsonElement.getLeft());
                 if (!event.projectile.getWorld().isClient()) {
                     explode(info, event.projectile, event.entityHitResult);
                     event.projectile.discard();

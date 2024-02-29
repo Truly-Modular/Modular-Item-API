@@ -40,7 +40,7 @@
             "type": "texture",
             "sprite": {
                 "atlas": "block",
-                "texture": "minecraft:block/soul_fire_1"
+                "texture": "minecraft:block/water_still"
             }
         }
     },

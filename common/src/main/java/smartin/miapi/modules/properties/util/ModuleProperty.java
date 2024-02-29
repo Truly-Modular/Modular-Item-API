@@ -4,7 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
-import com.ibm.icu.impl.Pair;
+import net.minecraft.util.Pair;
 import com.mojang.serialization.JsonOps;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
@@ -232,6 +232,6 @@ public interface ModuleProperty {
         if (moduleInstance == null) {
             return null;
         }
-        return Pair.of(moduleInstance, element);
+        return new Pair<>(moduleInstance, element);
     }
 }

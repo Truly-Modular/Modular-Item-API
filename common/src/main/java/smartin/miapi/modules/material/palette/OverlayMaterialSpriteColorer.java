@@ -24,8 +24,8 @@ public class OverlayMaterialSpriteColorer extends MaterialSpriteColorer {
 
     @Override
     public NativeImage transform(SpriteContents sprite) {
-        NativeImage rawImage = NativeImageGetter.get(sprite);
-        NativeImage overlayImage = delegate.getNativeImage();
+        NativeImageGetter.ImageHolder rawImage = NativeImageGetter.get(sprite);
+        NativeImageGetter.ImageHolder overlayImage = delegate.getNativeImage();
         NativeImage image = new NativeImage(rawImage.getWidth(), rawImage.getHeight(), true);
 
         for (int x = 0; x < rawImage.getWidth(); x++) {
