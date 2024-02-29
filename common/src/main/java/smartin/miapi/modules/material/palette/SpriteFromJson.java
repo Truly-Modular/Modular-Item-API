@@ -46,9 +46,12 @@ public class SpriteFromJson {
             Identifier textureId = new Identifier(obj.get("texture").getAsString());
             SpriteContents contents = MinecraftClient.getInstance().getSpriteAtlas(atlasId).apply(textureId).getContents();
             imageSupplier = () -> NativeImageGetter.get(contents);
-            isAnimated = MaterialSpriteColorer.isAnimatedSpriteStatic(contents);
+            if (obj.has("forceTick"))
+                isAnimated = obj.get("forceTick").getAsBoolean();
+            else
+                isAnimated = MaterialSpriteColorer.isAnimatedSpriteStatic(contents);
         } else {
-            isAnimated = false;
+            isAnimated = obj.has("forceTick") && obj.get("forceTick").getAsBoolean();
             Identifier textureId = new Identifier(obj.get("texture").getAsString());
             NativeImage rawImage = loadTexture(MinecraftClient.getInstance().getResourceManager(), textureId);
             NativeImageGetter.ImageHolder holder = new NativeImageGetter.ImageHolder();
