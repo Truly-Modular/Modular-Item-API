@@ -10,7 +10,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.modules.ItemModule;
-import smartin.miapi.modules.material.palette.MaterialColorer;
+import smartin.miapi.modules.material.palette.MaterialRenderController;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.List;
@@ -37,7 +37,7 @@ public interface Material {
     }
 
     @Environment(EnvType.CLIENT)
-    MaterialColorer getPalette();
+    MaterialRenderController getPalette();
 
     /**
      * @param drawContext a DrawContext that can be used to draw shtuff

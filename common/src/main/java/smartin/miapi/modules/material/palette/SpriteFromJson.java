@@ -49,7 +49,7 @@ public class SpriteFromJson {
             if (obj.has("forceTick"))
                 isAnimated = obj.get("forceTick").getAsBoolean();
             else
-                isAnimated = MaterialSpriteColorer.isAnimatedSpriteStatic(contents);
+                isAnimated = SpriteColorer.isAnimatedSpriteStatic(contents);
         } else {
             isAnimated = obj.has("forceTick") && obj.get("forceTick").getAsBoolean();
             Identifier textureId = new Identifier(obj.get("texture").getAsString());

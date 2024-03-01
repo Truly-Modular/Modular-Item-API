@@ -28,9 +28,9 @@ import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.item.MaterialSmithingRecipe;
 import smartin.miapi.mixin.MiningToolItemAccessor;
 import smartin.miapi.mixin.SmithingTransformRecipeAccessor;
-import smartin.miapi.modules.material.palette.EmptyMaterialPalette;
-import smartin.miapi.modules.material.palette.MaterialColorer;
-import smartin.miapi.modules.material.palette.MaterialPaletteFromTexture;
+import smartin.miapi.modules.material.palette.FallbackColorer;
+import smartin.miapi.modules.material.palette.MaterialRenderController;
+import smartin.miapi.modules.material.palette.ImagePaletteColorer;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.network.Networking;
 import smartin.miapi.registries.FakeTranslation;
@@ -50,7 +50,7 @@ public class GeneratedMaterial implements Material {
     public final Map<String, Double> materialStats = new HashMap<>();
     public final Map<String, String> materialStatsString = new HashMap<>();
     public SwordItem swordItem;
-    protected MaterialPaletteFromTexture palette;
+    protected ImagePaletteColorer palette;
     @Nullable
     public MaterialIcons.MaterialIcon icon;
 
@@ -342,7 +342,7 @@ public class GeneratedMaterial implements Material {
         iconBuilder.append("}");
         iconJson = Miapi.gson.fromJson(iconBuilder.toString(), JsonObject.class);
         icon = MaterialIcons.getMaterialIcon(key, iconJson);
-        palette = MaterialPaletteFromTexture.forGeneratedMaterial(this, mainIngredient);
+        palette = ImagePaletteColorer.forGeneratedMaterial(this, mainIngredient);
     }
 
     public boolean assignStats(List<ToolItem> toolItems, boolean isClient) {
@@ -641,9 +641,9 @@ public class GeneratedMaterial implements Material {
 
     @Environment(EnvType.CLIENT)
     @Override
-    public MaterialColorer getPalette() {
+    public MaterialRenderController getPalette() {
         if (palette == null) {
-            return new EmptyMaterialPalette(this);
+            return new FallbackColorer(this);
         }
         return palette;
     }

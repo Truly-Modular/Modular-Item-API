@@ -22,14 +22,14 @@ import java.util.Map;
 import java.util.WeakHashMap;
 
 /**
- * This class implements {@link MaterialColorer} by recoloring the base Sprite
+ * This class implements {@link MaterialRenderController} by recoloring the base Sprite
  * it works hand-in-hand with {@link MaterialSpriteManager} to accomplish that
  */
-public abstract class MaterialSpriteColorer implements MaterialColorer {
+public abstract class SpriteColorer implements MaterialRenderController {
     public static Map<Sprite, RescaledVertexConsumer> lookupMap = new WeakHashMap<>();
     public Material material;
 
-    public MaterialSpriteColorer(Material material) {
+    public SpriteColorer(Material material) {
         this.material = material;
     }
 
@@ -48,7 +48,7 @@ public abstract class MaterialSpriteColorer implements MaterialColorer {
     /**
      * Animated Materials will recolor every frame, use this carefully
      *
-     * @return if the Material is animated and needs to call {@link MaterialSpriteColorer#transform(SpriteContents)} every frame
+     * @return if the Material is animated and needs to call {@link SpriteColorer#transform(SpriteContents)} every frame
      */
     public abstract boolean isAnimated();
 
@@ -67,7 +67,7 @@ public abstract class MaterialSpriteColorer implements MaterialColorer {
     }
 
     public boolean isAnimatedSpite(SpriteContents spriteContents) {
-        return MaterialSpriteColorer.isAnimatedSpriteStatic(spriteContents);
+        return SpriteColorer.isAnimatedSpriteStatic(spriteContents);
     }
     public static boolean isAnimatedSpriteStatic(SpriteContents spriteContents) {
         try (Animator animator = spriteContents.createAnimator()) {
@@ -88,15 +88,15 @@ public abstract class MaterialSpriteColorer implements MaterialColorer {
         }
 
         public boolean requireTick() {
-            return isAnimated || MaterialSpriteColorer.this.isAnimated();
+            return isAnimated || SpriteColorer.this.isAnimated();
         }
 
         public Material getMaterial() {
-            return MaterialSpriteColorer.this.material;
+            return SpriteColorer.this.material;
         }
 
         public NativeImage recolor() {
-            return MaterialSpriteColorer.this.transform(lastRecolouredSprite);
+            return SpriteColorer.this.transform(lastRecolouredSprite);
         }
 
         @Override

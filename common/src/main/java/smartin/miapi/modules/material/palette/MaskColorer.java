@@ -13,10 +13,10 @@ import smartin.miapi.modules.properties.util.ModuleProperty;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MaskPalette extends MaterialSpriteColorer {
+public class MaskColorer extends SpriteColorer {
     public Masker masker;
-    public MaterialSpriteColorer base;
-    public MaterialSpriteColorer layer;
+    public SpriteColorer base;
+    public SpriteColorer layer;
     public static Map<String, Masker> maskerRegistry = new HashMap<>();
 
     static {
@@ -24,21 +24,21 @@ public class MaskPalette extends MaterialSpriteColorer {
         maskerRegistry.put("texture_strength", new SpriteMaskerStrength(null));
     }
 
-    public MaskPalette(Material material, MaterialSpriteColorer base, MaterialSpriteColorer layer, Masker masker) {
+    public MaskColorer(Material material, SpriteColorer base, SpriteColorer layer, Masker masker) {
         super(material);
         this.base = base;
         this.layer = layer;
         this.masker = masker;
     }
 
-    public static MaterialColorer fromJson(Material material, JsonElement element) {
+    public static MaterialRenderController fromJson(Material material, JsonElement element) {
         try {
             JsonObject object = element.getAsJsonObject();
-            MaterialColorer baseColorer = PaletteCreators.paletteCreator.dispatcher().createPalette(object.get("base"), material);
-            MaterialColorer layerColorer = PaletteCreators.paletteCreator.dispatcher().createPalette(object.get("layer"), material);
-            if (baseColorer instanceof MaterialSpriteColorer baseSpriteColor && layerColorer instanceof MaterialSpriteColorer layerSpriteColor) {
+            MaterialRenderController baseColorer = RenderControllers.paletteCreator.dispatcher().createPalette(object.get("base"), material);
+            MaterialRenderController layerColorer = RenderControllers.paletteCreator.dispatcher().createPalette(object.get("layer"), material);
+            if (baseColorer instanceof SpriteColorer baseSpriteColor && layerColorer instanceof SpriteColorer layerSpriteColor) {
                 Masker masker = getMaskerFromJson(object.get("mask"));
-                return new MaskPalette(material, baseSpriteColor, layerSpriteColor, masker);
+                return new MaskColorer(material, baseSpriteColor, layerSpriteColor, masker);
             } else {
                 return baseColorer;
             }

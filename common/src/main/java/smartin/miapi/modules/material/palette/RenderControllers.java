@@ -19,10 +19,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Environment(EnvType.CLIENT)
-public class PaletteCreators {
-    public static final Map<String, PaletteCreator> creators = new HashMap<>();
+public class RenderControllers {
+    public static final Map<String, RenderControllerCreator> creators = new HashMap<>();
     public static final Map<String, FillerFunction> fillers = new HashMap<>();
-    public static final InterfaceDispatcher<PaletteCreator> paletteCreator = InterfaceDispatcher.of(creators, "type");
+    public static final InterfaceDispatcher<RenderControllerCreator> paletteCreator = InterfaceDispatcher.of(creators, "type");
     public static FillerFunction interpolateFiller;
 
     public static void setup() {
@@ -53,11 +53,11 @@ public class PaletteCreators {
             }
         });
 
-        creators.put("grayscale_map", (json, material) -> new GrayscaleMapMaterialPalette(material, json));
-        creators.put("overlay_texture", (json, material) -> new OverlayMaterialSpriteColorer(material, json));
-        creators.put("generated_palette", (json, material) -> new MaterialPaletteFromTexture(material, json));
-        creators.put("mask_palette", (json, material) -> MaskPalette.fromJson(material, json));
-        creators.put("end_portal", (json, material) -> new MaterialColorer() {
+        creators.put("grayscale_map", (json, material) -> new GrayscalePaletteColorer(material, json));
+        creators.put("overlay_texture", (json, material) -> new SpriteOverlayer(material, json));
+        creators.put("generated_palette", (json, material) -> new ImagePaletteColorer(material, json));
+        creators.put("mask_palette", (json, material) -> MaskColorer.fromJson(material, json));
+        creators.put("end_portal", (json, material) -> new MaterialRenderController() {
             @Override
             public VertexConsumer getVertexConsumer(VertexConsumerProvider vertexConsumers, Sprite originalSprite, ItemStack stack, ItemModule.ModuleInstance moduleInstance, ModelTransformationMode mode) {
                 return vertexConsumers.getBuffer(RenderLayers.getBlockLayer(Blocks.END_GATEWAY.getDefaultState()));
@@ -70,8 +70,8 @@ public class PaletteCreators {
         });
     }
 
-    public interface PaletteCreator {
-        MaterialColorer createPalette(JsonElement element, Material material);
+    public interface RenderControllerCreator {
+        MaterialRenderController createPalette(JsonElement element, Material material);
     }
 
     public interface FillerFunction {

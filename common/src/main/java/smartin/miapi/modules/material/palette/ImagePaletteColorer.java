@@ -21,12 +21,12 @@ import smartin.miapi.modules.material.Material;
 import java.util.*;
 import java.util.function.Supplier;
 
-public class MaterialPaletteFromTexture extends SimpleMaterialPalette {
+public class ImagePaletteColorer extends PaletteAtlasBackedColorer {
     protected final Supplier<NativeImageGetter.ImageHolder> imageSupplier;
 
     @Environment(EnvType.CLIENT)
-    public static MaterialPaletteFromTexture forGeneratedMaterial(Material material, ItemStack mainIngredient) {
-        return new MaterialPaletteFromTexture(material, () -> {
+    public static ImagePaletteColorer forGeneratedMaterial(Material material, ItemStack mainIngredient) {
+        return new ImagePaletteColorer(material, () -> {
             BakedModel itemModel = MinecraftClient.getInstance().getItemRenderer().getModel(mainIngredient, MinecraftClient.getInstance().world, null, 0);
             SpriteContents contents = itemModel.getParticleSprite().getContents();
             NativeImageGetter.ImageHolder holder = NativeImageGetter.getFromContents(contents);
@@ -34,13 +34,13 @@ public class MaterialPaletteFromTexture extends SimpleMaterialPalette {
         });
     }
 
-    public MaterialPaletteFromTexture(Material material, Supplier<NativeImageGetter.ImageHolder> img) {
+    public ImagePaletteColorer(Material material, Supplier<NativeImageGetter.ImageHolder> img) {
         super(material);
         this.imageSupplier = img;
         this.setSpriteId(new Identifier(Miapi.MOD_ID, "miapi_materials/" + material.getKey()));
     }
 
-    public MaterialPaletteFromTexture(Material material, JsonElement json) {
+    public ImagePaletteColorer(Material material, JsonElement json) {
         super(material);
         this.imageSupplier = new SpriteFromJson(json).imageSupplier;
         this.setSpriteId(new Identifier(Miapi.MOD_ID, "miapi_materials/" + material.getKey()));
@@ -85,8 +85,8 @@ public class MaterialPaletteFromTexture extends SimpleMaterialPalette {
         try {
             Map<Integer, Color> finalColorMap = getColorPalette();
             NativeImage image = new NativeImage(256, 1, false);
-            PaletteCreators.PixelPlacer placer = (color, x, y) -> image.setColor(x, y, color.abgr());
-            PaletteCreators.FillerFunction filler = PaletteCreators.fillers.getOrDefault("interpolation", PaletteCreators.interpolateFiller);
+            RenderControllers.PixelPlacer placer = (color, x, y) -> image.setColor(x, y, color.abgr());
+            RenderControllers.FillerFunction filler = RenderControllers.fillers.getOrDefault("interpolation", RenderControllers.interpolateFiller);
 
             List<Map.Entry<Integer, Color>> list = finalColorMap.entrySet().stream().sorted(Map.Entry.comparingByKey()).toList();
             for (int i = 0; i < list.size(); i++) {
