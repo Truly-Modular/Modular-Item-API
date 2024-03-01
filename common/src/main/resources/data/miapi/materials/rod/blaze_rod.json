@@ -6,6 +6,7 @@
         "rod"
     ],
     "hardness": 3,
+    "tensile_strength": 2.5,
     "density": 3,
     "flexibility": 3,
     "durability": 196,

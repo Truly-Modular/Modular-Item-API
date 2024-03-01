@@ -9,6 +9,7 @@
         "stone"
     ],
     "hardness": 5,
+    "tensile_strength": 5.0,
     "density": 8,
     "flexibility": 0,
     "enchantability": 9,

@@ -7,6 +7,7 @@
   },
   "groups": ["rod"],
   "hardness": 7,
+  "tensile_strength": 6.0,
   "density": 1.5,
   "flexibility": 0.5,
   "durability": 587,

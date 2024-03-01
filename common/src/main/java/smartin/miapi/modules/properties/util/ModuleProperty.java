@@ -168,6 +168,16 @@ public interface ModuleProperty {
         return defaultValue;
     }
 
+    static float getFloat(JsonObject object, String element,float defaultValue) {
+        if (object != null) {
+            JsonElement json = object.get(element);
+            if (json != null && !json.isJsonNull()) {
+                return json.getAsFloat();
+            }
+        }
+        return defaultValue;
+    }
+
     static int getInteger(JsonObject object, String element, ItemModule.ModuleInstance moduleInstance, int defaultValue) {
         if (object != null) {
             JsonElement json = object.get(element);

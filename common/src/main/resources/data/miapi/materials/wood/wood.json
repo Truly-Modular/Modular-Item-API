@@ -7,6 +7,7 @@
   },
   "groups": ["wood"],
   "hardness": 3,
+  "tensile_strength": 2.5,
   "density": 1.7,
   "flexibility": 3,
   "enchantability": 15,

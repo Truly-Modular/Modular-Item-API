@@ -358,6 +358,8 @@ public class GeneratedMaterial implements Material {
             if (swordItemOptional.get() instanceof SwordItem foundSwordItem && axeItemOptional.get() instanceof MiningToolItem axeItem) {
                 this.swordItem = foundSwordItem;
                 materialStats.put("hardness", (double) swordItem.getAttackDamage());
+                materialStats.put("tensile_strength", (double) swordItem.getAttackDamage());
+                materialStats.put("enchantability", (double) swordItem.getMaterial().getEnchantability());
 
                 double firstPart = Math.floor(Math.pow((swordItem.getAttackDamage() - 3.4) * 2.3, 1.0 / 3.0)) + 7;
 
@@ -564,8 +566,10 @@ public class GeneratedMaterial implements Material {
 
     public void copyStatsFrom(Material other) {
         materialStats.put("hardness", other.getDouble("hardness"));
-        materialStats.put("density", other.getDouble("density"));
+        materialStats.put("tensile_strength", other.getDouble("tensile_strength"));
         materialStats.put("flexibility", other.getDouble("flexibility"));
+        materialStats.put("density", other.getDouble("density"));
+        materialStats.put("enchantability", other.getDouble("enchantability"));
         materialStats.put("durability", other.getDouble("durability"));
         materialStats.put("mining_level", other.getDouble("mining_level"));
         materialStats.put("mining_speed", other.getDouble("mining_speed"));

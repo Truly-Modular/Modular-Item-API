@@ -9,6 +9,7 @@
         "glass"
     ],
     "hardness": 4.8,
+    "tensile_strength": 4.0,
     "density": 1,
     "flexibility": 0,
     "durability": 50,

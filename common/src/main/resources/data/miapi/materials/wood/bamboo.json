@@ -9,6 +9,7 @@
         "wood"
     ],
     "hardness": 2.5,
+    "tensile_strength": 2.0,
     "density": 1.7,
     "flexibility": 4.5,
     "enchantability": 15,

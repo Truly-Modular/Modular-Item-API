@@ -9,6 +9,7 @@
         "gem_melee"
     ],
     "hardness": 5.9,
+    "tensile_strength": 4.2,
     "density": 0.5,
     "flexibility": 0,
     "enchantability": 8,

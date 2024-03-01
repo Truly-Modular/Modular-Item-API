@@ -6,6 +6,7 @@
         "fabric"
     ],
     "hardness": 2,
+    "tensile_strength": 2.0,
     "density": 1.5,
     "flexibility": 6.8,
     "enchantability": 18,

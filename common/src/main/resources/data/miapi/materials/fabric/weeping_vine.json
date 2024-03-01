@@ -11,6 +11,7 @@
         "fletching"
     ],
     "hardness": 0.9,
+    "tensile_strength": 0.9,
     "density": 0.5,
     "flexibility": 8,
     "enchantability": 15,

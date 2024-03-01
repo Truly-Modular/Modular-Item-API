@@ -6,6 +6,7 @@
         "smithing"
     ],
     "hardness": 7,
+    "tensile_strength": 7.0,
     "density": 2.8,
     "flexibility": 3,
     "enchantability": 15,
