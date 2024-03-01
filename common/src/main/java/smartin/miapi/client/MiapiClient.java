@@ -38,7 +38,7 @@ import smartin.miapi.modules.material.Material;
 import smartin.miapi.modules.material.MaterialIcons;
 import smartin.miapi.modules.material.MaterialProperty;
 import smartin.miapi.modules.material.palette.MaterialCommand;
-import smartin.miapi.modules.material.palette.RenderControllers;
+import smartin.miapi.modules.material.palette.MaterialRenderControllers;
 import smartin.miapi.modules.properties.render.colorproviders.ColorProvider;
 import smartin.miapi.network.Networking;
 import smartin.miapi.registries.RegistryInventory;
@@ -81,7 +81,7 @@ public class MiapiClient {
             });
         }));
         registerShaders();
-        RenderControllers.setup();
+        MaterialRenderControllers.setup();
         MaterialIcons.setup();
         ColorProvider.setup();
         ClientLifecycleEvent.CLIENT_SETUP.register(MiapiClient::clientSetup);

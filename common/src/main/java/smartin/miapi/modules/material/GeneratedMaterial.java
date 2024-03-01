@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import com.redpxnda.nucleus.util.Color;
 import dev.architectury.platform.Platform;
 import dev.architectury.utils.Env;
 import net.fabricmc.api.EnvType;
@@ -20,6 +21,7 @@ import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
+import net.minecraft.util.math.ColorHelper;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.config.MiapiConfig;
@@ -29,8 +31,8 @@ import smartin.miapi.item.MaterialSmithingRecipe;
 import smartin.miapi.mixin.MiningToolItemAccessor;
 import smartin.miapi.mixin.SmithingTransformRecipeAccessor;
 import smartin.miapi.modules.material.palette.FallbackColorer;
+import smartin.miapi.modules.material.palette.GrayscalePaletteColorer;
 import smartin.miapi.modules.material.palette.MaterialRenderController;
-import smartin.miapi.modules.material.palette.ImagePaletteColorer;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.network.Networking;
 import smartin.miapi.registries.FakeTranslation;
@@ -50,7 +52,7 @@ public class GeneratedMaterial implements Material {
     public final Map<String, Double> materialStats = new HashMap<>();
     public final Map<String, String> materialStatsString = new HashMap<>();
     public SwordItem swordItem;
-    protected ImagePaletteColorer palette;
+    protected GrayscalePaletteColorer palette;
     @Nullable
     public MaterialIcons.MaterialIcon icon;
 
@@ -342,7 +344,7 @@ public class GeneratedMaterial implements Material {
         iconBuilder.append("}");
         iconJson = Miapi.gson.fromJson(iconBuilder.toString(), JsonObject.class);
         icon = MaterialIcons.getMaterialIcon(key, iconJson);
-        palette = ImagePaletteColorer.forGeneratedMaterial(this, mainIngredient);
+        palette = GrayscalePaletteColorer.createForGeneratedMaterial(this, mainIngredient);
     }
 
     public boolean assignStats(List<ToolItem> toolItems, boolean isClient) {
@@ -683,9 +685,14 @@ public class GeneratedMaterial implements Material {
         paletteBuilder.append("\"type\": \"").append("grayscale_map").append("\",");
         paletteBuilder.append("\"colors\": ");
         JsonObject innerPalette = new JsonObject();
-        palette.getColorPalette()
-                .forEach(((integer, color) ->
-                        innerPalette.add(String.valueOf(integer), new JsonPrimitive(color.hex()))));
+        for (int i = 0; i < palette.getColors().length; i++) {
+            int abgr = palette.getColors()[i];
+            innerPalette.addProperty(String.valueOf(i), new Color(
+                    ColorHelper.Abgr.getRed(abgr),
+                    ColorHelper.Abgr.getGreen(abgr),
+                    ColorHelper.Abgr.getBlue(abgr),
+                    ColorHelper.Abgr.getAlpha(abgr)).hex());
+        }
         paletteBuilder.append(Miapi.gson.toJson(innerPalette));
         paletteBuilder.append("}");
         object.add("palette", Miapi.gson.fromJson(paletteBuilder.toString(), JsonObject.class));

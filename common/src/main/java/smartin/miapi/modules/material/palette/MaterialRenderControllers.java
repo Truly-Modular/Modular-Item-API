@@ -5,21 +5,13 @@ import com.redpxnda.nucleus.util.Color;
 import com.redpxnda.nucleus.util.InterfaceDispatcher;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.block.Blocks;
-import net.minecraft.client.render.RenderLayers;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.model.json.ModelTransformationMode;
-import net.minecraft.client.texture.Sprite;
-import net.minecraft.item.ItemStack;
-import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.material.Material;
 
 import java.util.HashMap;
 import java.util.Map;
 
 @Environment(EnvType.CLIENT)
-public class RenderControllers {
+public class MaterialRenderControllers {
     public static final Map<String, RenderControllerCreator> creators = new HashMap<>();
     public static final Map<String, FillerFunction> fillers = new HashMap<>();
     public static final InterfaceDispatcher<RenderControllerCreator> paletteCreator = InterfaceDispatcher.of(creators, "type");
@@ -55,9 +47,9 @@ public class RenderControllers {
 
         creators.put("grayscale_map", (json, material) -> new GrayscalePaletteColorer(material, json));
         creators.put("overlay_texture", (json, material) -> new SpriteOverlayer(material, json));
-        creators.put("generated_palette", (json, material) -> new ImagePaletteColorer(material, json));
+        creators.put("generated_palette", (json, material) -> GrayscalePaletteColorer.createForImageJson(material, json));
         creators.put("mask_palette", (json, material) -> MaskColorer.fromJson(material, json));
-        creators.put("end_portal", (json, material) -> new MaterialRenderController() {
+        /*creators.put("end_portal", (json, material) -> new MaterialRenderController() {
             @Override
             public VertexConsumer getVertexConsumer(VertexConsumerProvider vertexConsumers, Sprite originalSprite, ItemStack stack, ItemModule.ModuleInstance moduleInstance, ModelTransformationMode mode) {
                 return vertexConsumers.getBuffer(RenderLayers.getBlockLayer(Blocks.END_GATEWAY.getDefaultState()));
@@ -67,7 +59,7 @@ public class RenderControllers {
             public Color getAverageColor() {
                 return Color.BLACK;
             }
-        });
+        });*/
     }
 
     public interface RenderControllerCreator {

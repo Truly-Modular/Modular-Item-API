@@ -17,7 +17,7 @@ import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.modules.material.palette.FallbackColorer;
 import smartin.miapi.modules.material.palette.MaterialRenderController;
-import smartin.miapi.modules.material.palette.RenderControllers;
+import smartin.miapi.modules.material.palette.MaterialRenderControllers;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.registries.FakeTranslation;
@@ -49,7 +49,7 @@ public class JsonMaterial implements Material {
             }
 
             if (element.has("color_palette")) {
-                palette = RenderControllers.paletteCreator.dispatcher().createPalette(element.get("color_palette"), this);
+                palette = MaterialRenderControllers.paletteCreator.dispatcher().createPalette(element.get("color_palette"), this);
             } else {
                 palette = new FallbackColorer(this);
             }
@@ -84,7 +84,7 @@ public class JsonMaterial implements Material {
                 }
                 case "color_palette": {
                     if (isClient) {
-                        palette = RenderControllers.paletteCreator.dispatcher().createPalette(propertyElement, this);
+                        palette = MaterialRenderControllers.paletteCreator.dispatcher().createPalette(propertyElement, this);
                     }
                     break;
                 }
