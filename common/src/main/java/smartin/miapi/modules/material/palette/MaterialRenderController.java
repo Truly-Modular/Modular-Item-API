@@ -16,12 +16,7 @@ public interface MaterialRenderController {
 
     /**
      * This allows Materials to pick their own Vertexconsumers, allowing for all kinds of fancy Animations.
-     * We sadly cant parse the model into it, since in the Future we might want to use different Models that are not BakedModels as well
-     * @param vertexConsumers
-     * @param stack
-     * @param moduleInstance
-     * @param mode
-     * @return
+     * We sadly cant parse the model into it, since there is no guarantee about what the model is
      */
     VertexConsumer getVertexConsumer(
             VertexConsumerProvider vertexConsumers,
@@ -31,8 +26,7 @@ public interface MaterialRenderController {
             ModelTransformationMode mode);
 
     /**
-     * get a simple Color of the Material for other purposes
-     * @return
+     * get a simple Color of the Material for other purposes, namely the material description gui
      */
     Color getAverageColor();
 }

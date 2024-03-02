@@ -15,16 +15,8 @@
     "durability": 37,
     "color": "642828",
     "color_palette": {
-        "type": "grayscale_map",
-        "colors": {
-            "24": "411616",
-            "68": "572121",
-            "107": "501b1b",
-            "150": "652828",
-            "190": "723232",
-            "216": "854242",
-            "255": "511515"
-        }
+        "type": "from_material_palette_image",
+        "location": "miapi:textures/miapi_materials/stone_magma.png"
     },
     "mining_speed": 2.5,
     "mining_level": 0,

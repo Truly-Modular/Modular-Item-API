@@ -61,7 +61,7 @@ public interface ColorProvider {
                                           ItemStack stack,
                                           ItemModule.ModuleInstance moduleInstance,
                                           ModelTransformationMode mode) {
-            return material.getPalette().getVertexConsumer(vertexConsumers,sprite, stack, moduleInstance, mode);
+            return material.getRenderController().getVertexConsumer(vertexConsumers,sprite, stack, moduleInstance, mode);
         }
 
         @Override

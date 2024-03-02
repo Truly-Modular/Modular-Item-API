@@ -11,7 +11,7 @@ public abstract class SpritePixelReplacer extends SpriteColorer {
         super(material);
     }
 
-    public abstract int getReplacementColor(int previousAbgr);
+    public abstract int getReplacementColor(int pixelX, int pixelY, int previousAbgr);
 
     @Override
     public NativeImage transform(SpriteContents originalSprite) {
@@ -24,7 +24,7 @@ public abstract class SpritePixelReplacer extends SpriteColorer {
                 if (opacity < 5 && opacity > -1) {
                     image.setColor(x, y, 0);
                 } else {
-                    image.setColor(x, y, getReplacementColor(abgr));
+                    image.setColor(x, y, getReplacementColor(x, y, abgr));
                 }
             }
         }

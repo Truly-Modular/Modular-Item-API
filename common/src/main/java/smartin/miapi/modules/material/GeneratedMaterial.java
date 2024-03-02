@@ -639,7 +639,7 @@ public class GeneratedMaterial implements Material {
 
     @Environment(EnvType.CLIENT)
     @Override
-    public MaterialRenderController getPalette() {
+    public MaterialRenderController getRenderController() {
         if (palette == null) {
             return new FallbackColorer(this);
         }

@@ -19,6 +19,9 @@ import smartin.miapi.network.Networking;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * A command related to materials- used to fetch debug data of active materials
+ */
 public class MaterialCommand {
     public static String SEND_MATERIAL_CLIENT = "miapi_material_debug";
 

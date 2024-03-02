@@ -7,9 +7,6 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import dev.architectury.event.events.common.LifecycleEvent;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.ToolItem;
-import net.minecraft.registry.Registries;
-import net.minecraft.resource.ResourceReloader;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.MiapiClient;
@@ -20,7 +17,6 @@ import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
 
@@ -106,22 +102,12 @@ public class MaterialProperty implements ModuleProperty {
             MaterialProperty.materials.values().stream()
                     .filter(GeneratedMaterial.class::isInstance)
                     .forEach(generatedMaterial -> ((GeneratedMaterial) generatedMaterial).testForSmithingMaterial(false));
-
-            List<ToolItem> toolItems = Registries.ITEM.stream()
-                    .filter(ToolItem.class::isInstance)
-                    .map(ToolItem.class::cast)
-                    .toList();
         });
         ReloadEvents.END.subscribe((isClient) -> {
             if (isClient) {
                 MinecraftClient.getInstance().execute(() -> {
-                    Executor prepare = new CurrentThreadExecutor();
-                    Executor done = new CurrentThreadExecutor();
                     RenderSystem.assertOnRenderThread();
-                    MinecraftClient.getInstance().getTextureManager();
-                    ResourceReloader.Synchronizer synchronizer = CompletableFuture::completedFuture;
-
-                    MiapiClient.materialAtlasManager.reload(synchronizer, MinecraftClient.getInstance().getResourceManager(), MinecraftClient.getInstance().getProfiler(), MinecraftClient.getInstance().getProfiler(), prepare, done);
+                    MiapiClient.materialAtlasManager.afterReload(null, MinecraftClient.getInstance().getProfiler());
                 });
 
             }

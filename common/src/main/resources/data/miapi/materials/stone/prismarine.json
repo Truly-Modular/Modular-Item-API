@@ -12,16 +12,8 @@
     "durability": 131,
     "color": "78B5A9",
     "color_palette": {
-        "type": "grayscale_map",
-        "colors": {
-            "24": "2e6053",
-            "68": "33695b",
-            "107": "539882",
-            "150": "91c2ac",
-            "190": "559a8a",
-            "216": "7cb3a4",
-            "255": "a4d1c2"
-        }
+        "type": "from_material_palette_image",
+        "location": "miapi:textures/miapi_materials/stone_prismarine.png"
     },
     "mining_speed": 4,
     "mining_level": 1,

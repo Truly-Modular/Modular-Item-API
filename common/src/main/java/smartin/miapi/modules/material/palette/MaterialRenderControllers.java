@@ -3,14 +3,17 @@ package smartin.miapi.modules.material.palette;
 import com.google.gson.JsonElement;
 import com.redpxnda.nucleus.util.Color;
 import com.redpxnda.nucleus.util.InterfaceDispatcher;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+import smartin.miapi.modules.material.JsonMaterial;
 import smartin.miapi.modules.material.Material;
 
 import java.util.HashMap;
 import java.util.Map;
 
-@Environment(EnvType.CLIENT)
+/**
+ * A manager/registry for json-representable {@link MaterialRenderController}s <br>
+ * Used namely for {@link JsonMaterial#getRenderController()} <br>
+ * Add to {@link MaterialRenderControllers#creators} to allow your {@link MaterialRenderController} to be created in json.
+ */
 public class MaterialRenderControllers {
     public static final Map<String, RenderControllerCreator> creators = new HashMap<>();
     public static final Map<String, FillerFunction> fillers = new HashMap<>();
@@ -47,8 +50,9 @@ public class MaterialRenderControllers {
 
         creators.put("grayscale_map", (json, material) -> new GrayscalePaletteColorer(material, json));
         creators.put("overlay_texture", (json, material) -> new SpriteOverlayer(material, json));
-        creators.put("generated_palette", (json, material) -> GrayscalePaletteColorer.createForImageJson(material, json));
-        creators.put("mask_palette", (json, material) -> MaskColorer.fromJson(material, json));
+        creators.put("image_generated", (json, material) -> GrayscalePaletteColorer.createForImageJson(material, json));
+        creators.put("from_material_palette_image", (json, material) -> new PaletteAtlasBackedColorer(material, json));
+        creators.put("layered_mask", (json, material) -> MaskColorer.fromJson(material, json));
         /*creators.put("end_portal", (json, material) -> new MaterialRenderController() {
             @Override
             public VertexConsumer getVertexConsumer(VertexConsumerProvider vertexConsumers, Sprite originalSprite, ItemStack stack, ItemModule.ModuleInstance moduleInstance, ModelTransformationMode mode) {

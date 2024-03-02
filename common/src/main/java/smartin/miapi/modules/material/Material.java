@@ -37,7 +37,7 @@ public interface Material {
     }
 
     @Environment(EnvType.CLIENT)
-    MaterialRenderController getPalette();
+    MaterialRenderController getRenderController();
 
     /**
      * @param drawContext a DrawContext that can be used to draw shtuff
@@ -79,7 +79,7 @@ public interface Material {
 
     @Environment(EnvType.CLIENT)
     default int getColor() {
-        return getPalette().getAverageColor().argb();
+        return getRenderController().getAverageColor().argb();
     }
 
     double getValueOfItem(ItemStack item);

@@ -12,15 +12,22 @@ import smartin.miapi.modules.material.Material;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Colors module sprites with a base colorer, a masker, and a layered colorer.
+ * First, the base colorer is applied. Then using the masker, the layered colorer will be applied on top, wherever the mask covers.
+ * This is comparable to Photoshop masking.
+ * <br>
+ * The most common masker uses an image to blend the base and layered pixels by each respective pixel in the image.
+ */
 public class MaskColorer extends SpriteColorer {
-    public Masker masker;
-    public SpriteColorer base;
-    public SpriteColorer layer;
     public static Map<String, Masker> maskerRegistry = new HashMap<>();
-
     static {
         maskerRegistry.put("texture", new SpriteMasker(null));
     }
+
+    public Masker masker;
+    public SpriteColorer base;
+    public SpriteColorer layer;
 
     public MaskColorer(Material material, SpriteColorer base, SpriteColorer layer, Masker masker) {
         super(material);
@@ -29,6 +36,41 @@ public class MaskColorer extends SpriteColorer {
         this.masker = masker;
     }
 
+    /**
+     * Attempts to create a MaskColorer from its json format.
+     * If either the base colorer or the layer colorer are not SpriteColorers, it will return the base colorer instead. <br>
+     * Example json:
+     * <pre>
+     * "base": { // the base color palette... see {@link MaterialRenderControllers}
+     *      "type": "grayscale_map",
+     *      "colors": {
+     *          "24": "2D0500",
+     *          "68": "4A0800",
+     *          "107": "720C00",
+     *          "150": "720C00",
+     *          "190": "BB2008",
+     *          "255": "E32008"
+     *      }
+     *  },
+     *  "layer": { // the layer color palette
+     *      "type": "grayscale_map",
+     *      "colors": {
+     *          "24": "002d00",
+     *          "68": "005300",
+     *          "107": "007b18",
+     *          "150": "009529",
+     *          "190": "00aa2c",
+     *          "216": "17dd62",
+     *          "255": "41f384"
+     *      }
+     *  },
+     *  "mask": { // the masker... see {@link MaskColorer#maskerRegistry}
+     *      "type": "texture",
+     *      "atlas": "block",
+     *      "texture": "minecraft:block/water_still"
+     *  }
+     * </pre>
+     */
     public static MaterialRenderController fromJson(Material material, JsonElement element) {
         try {
             JsonObject object = element.getAsJsonObject();
@@ -46,6 +88,9 @@ public class MaskColorer extends SpriteColorer {
         return null;
     }
 
+    /**
+     * Retrieves a Masker from the given json element... see {@link MaskColorer#maskerRegistry}
+     */
     public static Masker getMaskerFromJson(JsonElement element) {
         JsonObject object = element.getAsJsonObject();
         String type = object.get("type").getAsString();
@@ -68,12 +113,28 @@ public class MaskColorer extends SpriteColorer {
     }
 
     public interface Masker {
+        /**
+         * @param base the image created from the base colorer
+         * @param other the image created from the layer colorer
+         * @return the result of this masker
+         */
         NativeImage mask(NativeImage base, NativeImage other);
 
+        /**
+         * @param base the average color of the base colorer
+         * @param other the average color of the layer colorer
+         * @return the new average color that this mask colorer should use
+         */
         Color average(Color base, Color other);
 
+        /**
+         * Parse json to create a functional instance of a masker... see {@link MaskColorer#maskerRegistry}
+         */
         Masker fromJson(JsonElement element);
 
+        /**
+         * Whether this masker should force an update on tick
+         */
         boolean isAnimated();
     }
 
@@ -135,8 +196,7 @@ public class MaskColorer extends SpriteColorer {
 
         @Override
         public Masker fromJson(JsonElement element) {
-            JsonObject object = element.getAsJsonObject();
-            SpriteFromJson sprite = new SpriteFromJson(object.get("sprite").getAsJsonObject());
+            SpriteFromJson sprite = new SpriteFromJson(element);
             return new SpriteMasker(sprite);
         }
 

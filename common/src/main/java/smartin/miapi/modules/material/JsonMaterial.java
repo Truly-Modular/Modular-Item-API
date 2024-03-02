@@ -233,12 +233,12 @@ public class JsonMaterial implements Material {
             long longValue = Long.parseLong(rawJson.getAsJsonObject().get("color").getAsString(), 16);
             return (int) (longValue & 0xffffffffL);
         }
-        return getPalette().getAverageColor().argb();
+        return getRenderController().getAverageColor().argb();
     }
 
     @Environment(EnvType.CLIENT)
     @Override
-    public MaterialRenderController getPalette() {
+    public MaterialRenderController getRenderController() {
         if (palette == null) {
             return new FallbackColorer(this);
         }

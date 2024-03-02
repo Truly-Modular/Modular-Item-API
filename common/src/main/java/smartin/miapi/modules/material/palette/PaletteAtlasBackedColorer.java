@@ -1,13 +1,12 @@
 package smartin.miapi.modules.material.palette;
 
+import com.google.gson.JsonElement;
 import com.redpxnda.nucleus.util.Color;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.texture.NativeImage;
-import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteContents;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
+import net.minecraft.util.math.MathHelper;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.client.MiapiClient;
 import smartin.miapi.client.atlas.MaterialAtlasManager;
@@ -19,112 +18,76 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This class focuses on implementing the Recoloring via a MaterialSprite thats 1x256 and stored in the
- * {@link MaterialAtlasManager}
- * Pro: This allows for Resource-pack Materials
- * Cons: This forces the Material into a 1x256 Texture that can be animated
- * to Control the Animation in Code extend the SpriteContents class and implement it in there
+ * Uses textures in {@link MaterialAtlasManager} and treats them as the colors of a {@link GrayscalePaletteColorer} to recolor module sprites. <br>
+ * Essentially, textures in the atlas must be 1x256(or (f)x256 when f is the number of animated frames). The x position of each pixel represents
+ * the grayscale value to replace with that pixel. For example, if index 8 had #F038AD as its color, all #080808 pixels of the module sprite will
+ * be replaced with #F038AD.
+ * This is to be used when you need a simple animated color palette.
  */
-public abstract class PaletteAtlasBackedColorer extends SpriteColorer {
-    protected Identifier paletteSpriteId = Material.BASE_PALETTE_ID;
-    protected Color paletteAverageColor;
-    public boolean isAnimated = false;
+public class PaletteAtlasBackedColorer extends SpritePixelReplacer {
+    protected Identifier spriteId = Material.BASE_PALETTE_ID;
+    protected Color averageColor;
+    protected boolean isAnimated = false;
+    protected NativeImageGetter.ImageHolder image;
+    protected SpriteContents contents;
 
-    public PaletteAtlasBackedColorer(Material material) {
+    protected PaletteAtlasBackedColorer(Material material) {
         super(material);
     }
 
     /**
-     * returns the AtlasSensitive SpriteId of this Material
-     *
-     * @return
+     * Create a new PaletteAtlasBackedColorer, uploading the texture at the specified id
      */
-    @Environment(EnvType.CLIENT)
+    public PaletteAtlasBackedColorer(Material material, Identifier id) {
+        super(material);
+        setupSprite(id);
+    }
+
+    /**
+     * Create a new PaletteAtlasBackedColorer from its json format
+     */
+    public PaletteAtlasBackedColorer(Material material, JsonElement json) {
+        super(material);
+        Identifier id = new Identifier(json.getAsJsonObject().get("location").getAsString());
+        setupSprite(id);
+    }
+
+    @Override
+    public int getReplacementColor(int pixelX, int pixelY, int previousAbgr) {
+        int red = ColorHelper.Abgr.getRed(previousAbgr);
+        return image.getColor(MathHelper.clamp(red, 0, 255), 0);
+    }
+
+    public void setupSprite(Identifier id) {
+        spriteId = id;
+        MiapiClient.materialAtlasManager.addSpriteToLoad(id, c -> {
+            contents = c;
+            isAnimated = isAnimatedSprite(c);
+        });
+    }
+
     @Nullable
     public Identifier getSpriteId() {
-        return paletteSpriteId;
-    }
-
-    /**
-     * Sets the AtlasSensitive SpriteId.
-     * This should only be called by the atlas
-     *
-     * @param id
-     */
-    @Environment(EnvType.CLIENT)
-    public void setSpriteId(Identifier id) {
-        paletteSpriteId = id;
-    }
-
-    /**
-     * This method should be used to generate the SpriteContents
-     *
-     * @param id
-     * @return
-     */
-    @Environment(EnvType.CLIENT)
-    @Nullable
-    public abstract SpriteContents generateSpriteContents(Identifier id);
-
-    /**
-     * This Method allows to read the SpriteContents from the ResourcePack and modify or adjust it.
-     * Generally the Content from the Resourcepack should be higher priority
-     *
-     * @param id
-     * @param fromResourcePack
-     * @return
-     */
-    @Environment(EnvType.CLIENT)
-    @Nullable
-    public SpriteContents generateSpriteContents(Identifier id, @Nullable SpriteContents fromResourcePack) {
-        if (fromResourcePack != null && fromResourcePack.getWidth() == 256) {
-            if (isAnimatedSpite(fromResourcePack)) {
-                isAnimated = true;
-            }
-            return fromResourcePack;
-        } else {
-            return generateSpriteContents(id);
-        }
+        return spriteId;
     }
 
     public boolean isAnimated() {
         return isAnimated;
     }
 
-    /**
-     * actually recolors a model Sprite
-     *
-     * @param sprite original model Sprite
-     * @return
-     */
     @Override
-    @Environment(EnvType.CLIENT)
-    public NativeImage transform(SpriteContents sprite) {
-        NativeImageGetter.ImageHolder rawImage = NativeImageGetter.get(sprite);
-        NativeImage image = new NativeImage(rawImage.getWidth(), rawImage.getHeight(), true);
-        for (int x = 0; x < rawImage.getWidth(); x++) {
-            for (int y = 0; y < rawImage.getHeight(); y++) {
-                if (rawImage.getOpacity(x, y) < 5 && rawImage.getOpacity(x, y) > -1) {
-                    image.setColor(x, y, 0);
-                } else {
-                    if (material != null) {
-                        int unsignedInt = rawImage.getRed(x, y) & 0xFF;
-                        image.setColor(x, y, getColor(unsignedInt));
-                    } else {
-                        image.setColor(x, y, rawImage.getColor(x, y));
-                    }
-                }
-            }
-        }
-        image.untrack();
-        return image;
+    public NativeImage transform(SpriteContents originalSprite) {
+        if (contents == null) contents = MiapiClient.materialAtlasManager.getMaterialSprite(getSpriteId()).getContents();
+        image = NativeImageGetter.get(contents);
+        NativeImage result = super.transform(originalSprite);
+        image = null;
+        return result;
     }
 
     @Override
-    @Environment(EnvType.CLIENT)
     public Color getAverageColor() {
-        if (paletteAverageColor == null) {
-            NativeImage img = ((SpriteContentsAccessor) MiapiClient.materialAtlasManager.getMaterialSprite(paletteSpriteId).getContents()).getImage();
+        if (averageColor == null) {
+            NativeImage img = ((SpriteContentsAccessor) MiapiClient.materialAtlasManager.getMaterialSprite(spriteId).getContents()).getImage();
 
             List<Color> colors = new ArrayList<>();
             int height = img.getHeight();
@@ -153,19 +116,8 @@ public abstract class PaletteAtlasBackedColorer extends SpriteColorer {
                     alpha += color.a();
                 }
             }
-            paletteAverageColor = new Color(red / colors.size(), green / colors.size(), blue / colors.size(), alpha / colors.size());
+            averageColor = new Color(red / colors.size(), green / colors.size(), blue / colors.size(), alpha / colors.size());
         }
-        return paletteAverageColor;
-    }
-
-    private int getColor(int color) {
-        Sprite sprite = MiapiClient.materialAtlasManager.getMaterialSprite(this.getSpriteId());
-        if (sprite == null) {
-            sprite = MiapiClient.materialAtlasManager.getMaterialSprite(MaterialAtlasManager.BASE_MATERIAL_ID);
-        }
-        if(sprite==null){
-            return color;
-        }
-        return NativeImageGetter.get(sprite.getContents()).getColor(Math.max(Math.min(color, 255), 0), 0);
+        return averageColor;
     }
 }

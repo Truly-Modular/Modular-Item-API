@@ -54,6 +54,24 @@ public class GrayscalePaletteColorer extends SpritePixelReplacer {
         colors = createColorsArray(colorsMap);
     }
 
+    /**
+     * Constructs a GrayscalePaletteColorer from the normal json format- an object with: <br>
+     * - a field called "colors" acting as map of grayscale value(0-255) to color hex <br>
+     * - a field called "filler", determining how to fill in empty space <br>
+     * Ex.
+     * <pre>
+     *     "colors": {
+     *       "24": "181818",
+     *       "68": "444444",
+     *       "107": "6b6b6b",
+     *       "150": "969696",
+     *       "190": "bebebe",
+     *       "216": "d8d8d8",
+     *       "255": "ffffff"
+     *     },
+     *     "filler": "interpolate"
+     * </pre>
+     */
     public GrayscalePaletteColorer(Material material, JsonElement json) {
         super(material);
 
@@ -77,12 +95,15 @@ public class GrayscalePaletteColorer extends SpritePixelReplacer {
         }
     }
 
+    /**
+     * Returns an array representing the color at each position(grayscale value) from 0-255
+     */
     public int[] getColors() {
         return colors;
     }
 
     @Override
-    public int getReplacementColor(int previousAbgr) {
+    public int getReplacementColor(int pixelX, int pixelY, int previousAbgr) {
         int red = ColorHelper.Abgr.getRed(previousAbgr);
         return colors[red];
     }
@@ -97,6 +118,9 @@ public class GrayscalePaletteColorer extends SpritePixelReplacer {
         return false;
     }
 
+    /**
+     * Uses the filler function to fill in the empty space in the colors map
+     */
     public static void interpolateColorsMap(Map<Integer, Color> colors, MaterialRenderControllers.FillerFunction filler) {
         colors.putIfAbsent(0, Color.BLACK);
         colors.putIfAbsent(255, Color.WHITE);
@@ -122,13 +146,19 @@ public class GrayscalePaletteColorer extends SpritePixelReplacer {
         }
     }
 
+    /**
+     * Creates the color array from the map of colors
+     */
     public static int[] createColorsArray(Map<Integer, Color> colors) {
         if (colors.size() != 256) throw new IllegalArgumentException("There must be 256 colors!");
         int[] array = new int[256];
-        colors.forEach((pos, color) -> array[0] = color.abgr());
+        colors.forEach((pos, color) -> array[pos] = color.abgr());
         return array;
     }
 
+    /**
+     * Finds the average color in the map of colors
+     */
     public static Color createAverageColor(Map<Integer, Color> colors) {
         Color color = new Color();
         colors.forEach((pos, col) -> {
@@ -144,6 +174,9 @@ public class GrayscalePaletteColorer extends SpritePixelReplacer {
         return color;
     }
 
+    /**
+     * Turns a native image into an array of pixels
+     */
     public static int[] createImagePixelArray(NativeImageGetter.ImageHolder image) {
         if (image.getFormat() != NativeImage.Format.RGBA) {
             throw new UnsupportedOperationException("can only call makePixelArray for RGBA images.");
@@ -161,6 +194,9 @@ public class GrayscalePaletteColorer extends SpritePixelReplacer {
         }
     }
 
+    /**
+     * Scans a native image to intelligently create a palette from it- colors are extracted from the image and distanced from each other based on their weight
+     */
     public static Map<Integer, Color> createImagePalette(NativeImageGetter.ImageHolder image) {
         List<Color> pixels = Arrays.stream(createImagePixelArray(image))
                 .mapToObj(Color::new)

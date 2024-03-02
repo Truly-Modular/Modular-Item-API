@@ -66,7 +66,7 @@ public abstract class SpriteColorer implements MaterialRenderController {
         return rescaled;
     }
 
-    public boolean isAnimatedSpite(SpriteContents spriteContents) {
+    public boolean isAnimatedSprite(SpriteContents spriteContents) {
         return SpriteColorer.isAnimatedSpriteStatic(spriteContents);
     }
     public static boolean isAnimatedSpriteStatic(SpriteContents spriteContents) {
@@ -84,7 +84,7 @@ public abstract class SpriteColorer implements MaterialRenderController {
 
         public MaterialRecoloredSpriteHolder(SpriteContents modelSprite) {
             lastRecolouredSprite = modelSprite;
-            isAnimated = isAnimatedSpite(modelSprite);
+            isAnimated = isAnimatedSprite(modelSprite);
         }
 
         public boolean requireTick() {
