@@ -21,16 +21,18 @@ import net.minecraft.world.event.listener.GameEventListener;
 import org.jetbrains.annotations.Nullable;
 
 public class ModularWorkBench extends BlockWithEntity {
-    private static final VoxelShape BOTTOM = Block.createCuboidShape(2, 0, 4, 14, 3, 12);
-    private static final VoxelShape CONNECTOR = Block.createCuboidShape(3, 3, 5, 13, 8, 11);
+    private static final VoxelShape BOTTOM = Block.createCuboidShape(2, 0, 4, 14, 4, 12);
+    private static final VoxelShape CONNECTOR = Block.createCuboidShape(3, 4, 5, 13, 12, 11);
     private static final VoxelShape BASE = VoxelShapes.union(BOTTOM, CONNECTOR);
-    private static final VoxelShape TOP = Block.createCuboidShape(0, 8, 2, 16, 11, 14);
+
+    private static final VoxelShape TOP = Block.createCuboidShape(0, 12, 2, 16, 16, 14);
     private static final VoxelShape WHOLE = VoxelShapes.union(BASE, TOP);
 
-    private static final VoxelShape BOTTOM_SWAPPED = Block.createCuboidShape(4, 0, 2, 12, 3, 14);
-    private static final VoxelShape CONNECTOR_SWAPPED = Block.createCuboidShape(5, 3, 3, 11, 8, 13);
+    private static final VoxelShape BOTTOM_SWAPPED = Block.createCuboidShape(4, 0, 2, 12, 4, 14);
+    private static final VoxelShape CONNECTOR_SWAPPED = Block.createCuboidShape(5, 4, 3, 11, 12, 13);
     private static final VoxelShape BASE_SWAPPED = VoxelShapes.union(BOTTOM_SWAPPED, CONNECTOR_SWAPPED);
-    private static final VoxelShape TOP_SWAPPED = Block.createCuboidShape(2, 8, 0, 14, 11, 16);
+
+    private static final VoxelShape TOP_SWAPPED = Block.createCuboidShape(2, 12, 0, 14, 16, 16);
     private static final VoxelShape WHOLE_SWAPPED = VoxelShapes.union(BASE_SWAPPED, TOP_SWAPPED);
 
     public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
@@ -53,10 +55,9 @@ public class ModularWorkBench extends BlockWithEntity {
     @Override
     public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         Direction facing = state.get(FACING);
-        if(facing.equals(Direction.NORTH) || facing.equals(Direction.SOUTH)){
+        if (facing.equals(Direction.NORTH) || facing.equals(Direction.SOUTH)) {
             return WHOLE;
-        }
-        else{
+        } else {
             return WHOLE_SWAPPED;
         }
     }

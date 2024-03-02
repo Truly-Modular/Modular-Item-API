@@ -22,7 +22,7 @@ public class ModularWorkBenchRenderer implements BlockEntityRenderer<ModularWork
         if (stack.isEmpty()) return;
 
         matrices.push();
-        matrices.translate(8 / 16f, 11.5 / 16f, 8 / 16f);
+        matrices.translate(8 / 16f, 16.5f/16, 8 / 16f);
         float rotAmnt = be.getCachedState().get(ModularWorkBench.FACING).asRotation();
         if (!(stack.getItem() instanceof Equipment) && (
                 stack.getItem() instanceof ModularItem ||
