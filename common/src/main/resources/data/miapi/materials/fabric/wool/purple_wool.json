@@ -9,7 +9,6 @@
         "fabric"
     ],
     "hardness": 0.5,
-    "tensile_strength": 1.0,
     "density": 2,
     "flexibility": 5,
     "durability": 150,

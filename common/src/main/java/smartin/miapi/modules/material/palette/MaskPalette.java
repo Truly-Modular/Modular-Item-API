@@ -8,7 +8,6 @@ import net.minecraft.client.texture.SpriteContents;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.renderer.NativeImageGetter;
 import smartin.miapi.modules.material.Material;
-import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,7 +20,6 @@ public class MaskPalette extends MaterialSpriteColorer {
 
     static {
         maskerRegistry.put("texture", new SpriteMasker(null));
-        maskerRegistry.put("texture_strength", new SpriteMaskerStrength(null));
     }
 
     public MaskPalette(Material material, MaterialSpriteColorer base, MaterialSpriteColorer layer, Masker masker) {
@@ -115,10 +113,10 @@ public class MaskPalette extends MaterialSpriteColorer {
             int otherAlpha = other & 0xFF;
 
             // Extracting the individual components from the blend integer
-            int blendRed = ((blend) >> 24) & 0xFF;
-            int blendGreen = ((blend) >> 16) & 0xFF;
-            int blendBlue = ((blend) >> 8) & 0xFF;
-            int blendAlpha = (blend) & 0xFF;
+            int blendRed = (blend >> 24) & 0xFF;
+            int blendGreen = (blend >> 16) & 0xFF;
+            int blendBlue = (blend >> 8) & 0xFF;
+            int blendAlpha = blend & 0xFF;
 
             // Calculate blended components
             int blendedRed = (blendRed * otherRed + (255 - blendRed) * baseRed) / 255;
@@ -139,80 +137,7 @@ public class MaskPalette extends MaterialSpriteColorer {
         public Masker fromJson(JsonElement element) {
             JsonObject object = element.getAsJsonObject();
             SpriteFromJson sprite = new SpriteFromJson(object.get("sprite").getAsJsonObject());
-            SpriteMasker masker = new SpriteMasker(sprite);
-            return masker;
-        }
-
-        @Override
-        public boolean isAnimated() {
-            return maskingSprite.isAnimated();
-        }
-    }
-
-    public static class SpriteMaskerStrength implements Masker {
-        SpriteFromJson maskingSprite;
-        float strength = 1.0F;
-
-        public SpriteMaskerStrength(SpriteFromJson contents) {
-            maskingSprite = contents;
-        }
-
-        @Override
-        public NativeImage mask(NativeImage base, NativeImage other) {
-            NativeImageGetter.ImageHolder nativeImage = maskingSprite.getNativeImage();
-            NativeImage image = new NativeImage(base.getWidth(), base.getHeight(), false);
-            for (int width = 0; width < base.getWidth(); width++) {
-                for (int height = 0; height < base.getHeight(); height++) {
-                    int baseColor = base.getColor(width, height);
-                    int otherColor = other.getColor(width, height);
-                    int blendColor = nativeImage.getColor(width % nativeImage.getWidth(), height % nativeImage.getHeight());
-                    image.setColor(width, height, blend(baseColor, otherColor, blendColor));
-                }
-            }
-            image.untrack();
-            return image;
-        }
-
-        public int blend(int base, int other, int blend) {
-            // Extracting the individual components from the packed integers
-            int baseRed = (base >> 24) & 0xFF;
-            int baseGreen = (base >> 16) & 0xFF;
-            int baseBlue = (base >> 8) & 0xFF;
-            int baseAlpha = base & 0xFF;
-
-            int otherRed = (other >> 24) & 0xFF;
-            int otherGreen = (other >> 16) & 0xFF;
-            int otherBlue = (other >> 8) & 0xFF;
-            int otherAlpha = other & 0xFF;
-
-            // Extracting the individual components from the blend integer
-            int blendRed = (int) Math.min(255, strength * (blend >> 24 & 0xFF));
-            int blendGreen = (int) Math.min(255, strength * (blend >> 16 & 0xFF));
-            int blendBlue = (int) Math.min(255, strength * (blend >> 8 & 0xFF));
-            int blendAlpha = (int) Math.min(255, strength * ((blend) & 0xFF));
-
-            // Calculate blended components
-            int blendedRed = (blendRed * otherRed + (255 - blendRed) * baseRed) / 255;
-            int blendedGreen = (blendGreen * otherGreen + (255 - blendGreen) * baseGreen) / 255;
-            int blendedBlue = (blendBlue * otherBlue + (255 - blendBlue) * baseBlue) / 255;
-            int blendedAlpha = (blendAlpha * otherAlpha + (255 - blendAlpha) * baseAlpha) / 255;
-
-            // Pack the blended components into a single integer
-            return (blendedRed << 24) | (blendedGreen << 16) | (blendedBlue << 8) | blendedAlpha;
-        }
-
-        @Override
-        public Color average(Color base, Color other) {
-            return base;
-        }
-
-        @Override
-        public Masker fromJson(JsonElement element) {
-            JsonObject object = element.getAsJsonObject();
-            SpriteFromJson sprite = new SpriteFromJson(object.get("sprite").getAsJsonObject());
-            SpriteMaskerStrength masker = new SpriteMaskerStrength(sprite);
-            masker.strength = 1.0f / ModuleProperty.getFloat(object, "strength", 1.0f);
-            return masker;
+            return new SpriteMasker(sprite);
         }
 
         @Override

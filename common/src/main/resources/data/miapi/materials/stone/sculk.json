@@ -15,30 +15,9 @@
     "durability": 111,
     "color": "E0D8AE",
     "color_palette": {
-        "type": "mask_palette",
-        "base": {
-            "type": "grayscale_map",
-            "colors": {
-                "24": "000001",
-                "68": "06030b",
-                "107": "100c1c",
-                "150": "271e3d",
-                "255": "3b2754"
-            }
-        },
-        "layer": {
-            "type": "overlay_texture",
-            "atlas": "block",
-            "texture": "minecraft:block/sculk"
-        },
-        "mask": {
-            "type": "texture_strength",
-            "strength": 0.5,
-            "sprite": {
-                "atlas": "block",
-                "texture": "minecraft:block/sculk"
-            }
-        }
+        "type": "overlay_texture",
+        "atlas": "block",
+        "texture": "minecraft:block/sculk"
     },
     "properties": {
         "default": {

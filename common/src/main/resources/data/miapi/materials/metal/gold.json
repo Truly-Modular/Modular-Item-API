@@ -6,7 +6,6 @@
     ],
     "icon": "textures/item/gold_ingot.png",
     "hardness": 4,
-    "tensile_strength": 4.0,
     "density": 4.6,
     "flexibility": 1,
     "durability": 32,

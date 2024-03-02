@@ -10,7 +10,6 @@
         "gem_melee"
     ],
     "hardness": 6,
-    "tensile_strength": 6,
     "density": 3.0,
     "flexibility": 0,
     "durability": 1560,

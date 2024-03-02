@@ -6,7 +6,6 @@
     ],
     "icon": "textures/item/copper_ingot.png",
     "hardness": 3.8,
-    "tensile_strength": 3.5,
     "density": 3.6,
     "flexibility": 1,
     "durability": 200,

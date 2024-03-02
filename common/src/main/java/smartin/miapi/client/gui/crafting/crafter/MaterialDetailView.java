@@ -29,19 +29,13 @@ public class MaterialDetailView extends InteractAbleWidget {
 
     static {
         registerBuilder(
-                new Builder("hardness")
-        );
-        registerBuilder(
-                new Builder("tensile_strength")
-        );
-        registerBuilder(
                 new Builder("flexibility")
         );
         registerBuilder(
                 new Builder("density")
         );
         registerBuilder(
-                new Builder("enchantability")
+                new Builder("hardness")
         );
         registerBuilder(
                 new Builder("durability").setMax(2000).setFormat("##")

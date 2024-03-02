@@ -37,8 +37,7 @@
             }
         },
         "mask": {
-            "type": "texture_strength",
-            "strength": 0.6,
+            "type": "texture",
             "sprite": {
                 "atlas": "block",
                 "texture": "minecraft:block/water_still"

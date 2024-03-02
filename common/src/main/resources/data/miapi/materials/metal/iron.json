@@ -4,7 +4,6 @@
   "icon": "textures/item/iron_ingot.png",
   "groups": ["metal"],
   "hardness": 5,
-  "tensile_strength": 5.0,
   "density": 3.8,
   "flexibility": 1,
   "durability": 250,
