@@ -15,9 +15,9 @@ import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
-import smartin.miapi.modules.material.palette.EmptyMaterialPalette;
-import smartin.miapi.modules.material.palette.MaterialColorer;
-import smartin.miapi.modules.material.palette.PaletteCreators;
+import smartin.miapi.modules.material.palette.FallbackColorer;
+import smartin.miapi.modules.material.palette.MaterialRenderController;
+import smartin.miapi.modules.material.palette.MaterialRenderControllers;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.registries.FakeTranslation;
@@ -33,7 +33,7 @@ public class JsonMaterial implements Material {
     protected JsonElement rawJson;
     @Nullable
     public MaterialIcons.MaterialIcon icon;
-    protected MaterialColorer palette;
+    protected MaterialRenderController palette;
     public Map<String, Map<ModuleProperty, JsonElement>> propertyMap = new HashMap<>();
 
     public JsonMaterial(JsonObject element, boolean isClient) {
@@ -49,9 +49,9 @@ public class JsonMaterial implements Material {
             }
 
             if (element.has("color_palette")) {
-                palette = PaletteCreators.paletteCreator.dispatcher().createPalette(element.get("color_palette"), this);
+                palette = MaterialRenderControllers.paletteCreator.dispatcher().createPalette(element.get("color_palette"), this);
             } else {
-                palette = new EmptyMaterialPalette(this);
+                palette = new FallbackColorer(this);
             }
             if (element.has("fake_translation") && element.has("translation")) {
                 FakeTranslation.translations.put(element.get("translation").getAsString(), element.get("fake_translation").getAsString());
@@ -84,7 +84,7 @@ public class JsonMaterial implements Material {
                 }
                 case "color_palette": {
                     if (isClient) {
-                        palette = PaletteCreators.paletteCreator.dispatcher().createPalette(propertyElement, this);
+                        palette = MaterialRenderControllers.paletteCreator.dispatcher().createPalette(propertyElement, this);
                     }
                     break;
                 }
@@ -238,9 +238,9 @@ public class JsonMaterial implements Material {
 
     @Environment(EnvType.CLIENT)
     @Override
-    public MaterialColorer getPalette() {
+    public MaterialRenderController getPalette() {
         if (palette == null) {
-            return new EmptyMaterialPalette(this);
+            return new FallbackColorer(this);
         }
         return palette;
     }

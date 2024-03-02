@@ -7,9 +7,8 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.util.Identifier;
-import smartin.miapi.Miapi;
 import smartin.miapi.modules.material.Material;
-import smartin.miapi.modules.material.palette.MaterialSpriteColorer;
+import smartin.miapi.modules.material.palette.SpriteColorer;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -36,7 +35,7 @@ public class MaterialSpriteManager {
                     return getMaterialSprite(key);
                 }
             });
-    public static Identifier getMaterialSprite(Sprite oldSprite, Material material, MaterialSpriteColorer materialSpriteColorer) {
+    public static Identifier getMaterialSprite(Sprite oldSprite, Material material, SpriteColorer materialSpriteColorer) {
         Holder holder = new Holder(oldSprite, material, materialSpriteColorer);
         return getMaterialSprite(holder);
     }
@@ -63,6 +62,6 @@ public class MaterialSpriteManager {
         }));
     }
 
-    public record Holder(Sprite sprite, Material material, MaterialSpriteColorer colorer) {
+    public record Holder(Sprite sprite, Material material, SpriteColorer colorer) {
     }
 }

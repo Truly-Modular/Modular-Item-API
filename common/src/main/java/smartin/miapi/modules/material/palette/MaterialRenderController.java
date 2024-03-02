@@ -10,9 +10,9 @@ import smartin.miapi.modules.ItemModule;
 
 /**
  * This takes control of the rendering with a Material
- * You probably want to extend the {@link SimpleMaterialPalette} instead
+ * You probably want to extend the {@link SpritePixelReplacer} instead
  */
-public interface MaterialColorer {
+public interface MaterialRenderController {
 
     /**
      * This allows Materials to pick their own Vertexconsumers, allowing for all kinds of fancy Animations.

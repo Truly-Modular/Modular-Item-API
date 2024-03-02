@@ -7,11 +7,11 @@ import net.minecraft.client.texture.SpriteContents;
 import smartin.miapi.client.renderer.NativeImageGetter;
 import smartin.miapi.modules.material.Material;
 
-public class OverlayMaterialSpriteColorer extends MaterialSpriteColorer {
+public class SpriteOverlayer extends SpriteColorer {
     public final Color averageColor;
     public final SpriteFromJson delegate;
 
-    public OverlayMaterialSpriteColorer(Material material, JsonElement json) {
+    public SpriteOverlayer(Material material, JsonElement json) {
         super(material);
         delegate = new SpriteFromJson(json);
         averageColor = delegate.getAverageColor();

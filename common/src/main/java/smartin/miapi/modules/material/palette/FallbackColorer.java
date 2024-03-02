@@ -8,8 +8,8 @@ import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.modules.material.Material;
 
-public class EmptyMaterialPalette extends SimpleMaterialPalette {
-    public EmptyMaterialPalette(Material material) {
+public class FallbackColorer extends PaletteAtlasBackedColorer {
+    public FallbackColorer(Material material) {
         super(material);
     }
 

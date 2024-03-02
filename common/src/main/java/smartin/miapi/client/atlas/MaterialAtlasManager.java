@@ -4,7 +4,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.*;
-import net.minecraft.client.texture.atlas.AtlasLoader;
 import net.minecraft.resource.Resource;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.profiler.Profiler;
@@ -12,7 +11,7 @@ import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.modules.material.Material;
 import smartin.miapi.modules.material.MaterialProperty;
-import smartin.miapi.modules.material.palette.MaterialAtlasPalette;
+import smartin.miapi.modules.material.palette.PaletteAtlasBackedColorer;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -72,7 +71,7 @@ public class MaterialAtlasManager extends SpriteAtlasHolder {
         }
         for (String s : MaterialProperty.materials.keySet()) {
             Material material = MaterialProperty.materials.get(s);
-            if (material.getPalette() instanceof MaterialAtlasPalette materialAtlasPalette) {
+            if (material.getPalette() instanceof PaletteAtlasBackedColorer materialAtlasPalette) {
                 Identifier materialIdentifier = new Identifier(Miapi.MOD_ID, "miapi_materials/" + s);
                 try {
                     SpriteContents fromTexturePack = null;
