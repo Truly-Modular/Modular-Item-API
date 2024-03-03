@@ -108,8 +108,8 @@ public class MaskColorer extends SpriteColorer {
     }
 
     @Override
-    public boolean isAnimated() {
-        return base.isAnimated() || layer.isAnimated() || masker.isAnimated();
+    public boolean doTick() {
+        return base.doTick() || layer.doTick() || masker.isAnimated();
     }
 
     public interface Masker {

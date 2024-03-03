@@ -114,7 +114,7 @@ public class GrayscalePaletteColorer extends SpritePixelReplacer {
     }
 
     @Override
-    public boolean isAnimated() {
+    public boolean doTick() {
         return false;
     }
 

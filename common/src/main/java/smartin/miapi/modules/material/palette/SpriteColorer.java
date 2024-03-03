@@ -20,6 +20,7 @@ import smartin.miapi.modules.material.Material;
 
 import java.util.Map;
 import java.util.WeakHashMap;
+import java.util.function.Consumer;
 
 /**
  * This class implements {@link MaterialRenderController} by recoloring the base Sprite
@@ -37,6 +38,17 @@ public abstract class SpriteColorer implements MaterialRenderController {
         return new MaterialRecoloredSpriteHolder(spriteContents);
     }
 
+
+    /**
+     * This function is called if {@link SpriteColorer#doTick()} is true. This allows SpriteColorers to NOT update the uploaded image if they dont want to
+     *
+     * @param nativeImageConsumer
+     * @param spriteContents
+     */
+    public void tick(Consumer<NativeImage> nativeImageConsumer, SpriteContents spriteContents) {
+        nativeImageConsumer.accept(transform(spriteContents));
+    }
+
     /**
      * This method transform a module Sprite to be recolored with this Material Colorer
      *
@@ -50,7 +62,7 @@ public abstract class SpriteColorer implements MaterialRenderController {
      *
      * @return if the Material is animated and needs to call {@link SpriteColorer#transform(SpriteContents)} every frame
      */
-    public abstract boolean isAnimated();
+    public abstract boolean doTick();
 
     @Environment(EnvType.CLIENT)
     public VertexConsumer getVertexConsumer(VertexConsumerProvider vertexConsumers, Sprite originalSprite, ItemStack stack, ItemModule.ModuleInstance moduleInstance, ModelTransformationMode mode) {
@@ -69,6 +81,7 @@ public abstract class SpriteColorer implements MaterialRenderController {
     public boolean isAnimatedSprite(SpriteContents spriteContents) {
         return SpriteColorer.isAnimatedSpriteStatic(spriteContents);
     }
+
     public static boolean isAnimatedSpriteStatic(SpriteContents spriteContents) {
         try (Animator animator = spriteContents.createAnimator()) {
             if (animator != null) {
@@ -88,7 +101,7 @@ public abstract class SpriteColorer implements MaterialRenderController {
         }
 
         public boolean requireTick() {
-            return isAnimated || SpriteColorer.this.isAnimated();
+            return isAnimated || SpriteColorer.this.doTick();
         }
 
         public Material getMaterial() {

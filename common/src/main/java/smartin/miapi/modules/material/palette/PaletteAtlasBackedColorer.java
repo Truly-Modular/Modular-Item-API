@@ -71,7 +71,7 @@ public class PaletteAtlasBackedColorer extends SpritePixelReplacer {
         return spriteId;
     }
 
-    public boolean isAnimated() {
+    public boolean doTick() {
         return isAnimated;
     }
 

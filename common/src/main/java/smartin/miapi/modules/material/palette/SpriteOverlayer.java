@@ -61,7 +61,7 @@ public class SpriteOverlayer extends SpritePixelReplacer {
     }
 
     @Override
-    public boolean isAnimated() {
+    public boolean doTick() {
         return delegate.isAnimated();
     }
 }

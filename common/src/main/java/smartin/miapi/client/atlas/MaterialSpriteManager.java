@@ -35,6 +35,7 @@ public class MaterialSpriteManager {
                     return getMaterialSprite(key);
                 }
             });
+
     public static Identifier getMaterialSprite(Sprite oldSprite, Material material, SpriteColorer materialSpriteColorer) {
         Holder holder = new Holder(oldSprite, material, materialSpriteColorer);
         return getMaterialSprite(holder);
@@ -57,8 +58,10 @@ public class MaterialSpriteManager {
 
     public static void tick() {
         animated_Textures.forEach(((holder, nativeImageBackedTexture) -> {
-            nativeImageBackedTexture.setImage(holder.colorer().transform(holder.sprite().getContents()));
-            nativeImageBackedTexture.upload();
+            holder.colorer.tick((nativeImage) -> {
+                nativeImageBackedTexture.setImage(nativeImage);
+                nativeImageBackedTexture.upload();
+            }, holder.sprite().getContents());
         }));
     }
 
