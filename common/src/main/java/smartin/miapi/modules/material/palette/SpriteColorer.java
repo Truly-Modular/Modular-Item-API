@@ -42,8 +42,8 @@ public abstract class SpriteColorer implements MaterialRenderController {
     /**
      * This function is called if {@link SpriteColorer#doTick()} is true. This allows SpriteColorers to NOT update the uploaded image if they dont want to
      *
-     * @param nativeImageConsumer
-     * @param spriteContents
+     * @param nativeImageConsumer call this to upload a new NativeImage
+     * @param spriteContents      the contents of the original sprite in question
      */
     public void tick(Consumer<NativeImage> nativeImageConsumer, SpriteContents spriteContents) {
         nativeImageConsumer.accept(transform(spriteContents));
