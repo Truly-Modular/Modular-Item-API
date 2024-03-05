@@ -6,7 +6,7 @@ import smartin.miapi.modules.properties.DurabilityProperty;
 /**
  * Empty Interface to identify Modular Item
  */
-public interface ModularItem{
+public interface ModularItem extends VisualModularItem {
 
     static int getDurability(ItemStack stack){
         if (stack.getItem() instanceof ModularItem) {

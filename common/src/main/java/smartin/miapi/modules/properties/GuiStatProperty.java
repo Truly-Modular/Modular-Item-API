@@ -75,7 +75,7 @@ public class GuiStatProperty implements ModuleProperty {
     }
 
     public static Map<String, GuiInfo> getInfo(ItemStack itemStack) {
-        return ModularItemCache.get(itemStack, KEY, new HashMap<>());
+        return ModularItemCache.getVisualOnlyCache(itemStack, KEY, new HashMap<>());
     }
 
     public static double getValue(ItemStack itemStack, String key) {

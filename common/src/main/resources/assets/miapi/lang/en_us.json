@@ -166,7 +166,7 @@
     "miapi.stat.immolate": "Immolate",
     "miapi.stat.immolate.description": "It Burns. Yourself, your target, everything. \nAlso makes fire more tolerable",
     "miapi.stat.leeching": "Leeching",
-    "miapi.stat.leeching.description": "Slowly eats the players experience to repair itself",
+    "miapi.stat.leeching.description": "Adds a bit of Lifesteel, is in % of damage dealt",
     "miapi.stat.armor": "Armor",
     "miapi.stat.armor.description": "How strong the armor is",
     "miapi.stat.armor_toughness": "Armor Toughness",

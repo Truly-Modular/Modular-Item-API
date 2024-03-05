@@ -6,7 +6,6 @@ import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
-import net.minecraft.client.render.entity.PlayerEntityRenderer;
 import net.minecraft.client.render.entity.feature.ElytraFeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
@@ -72,8 +71,6 @@ public class ArmorModelManager {
             if (context instanceof LivingEntityRenderer livingEntityRenderer) {
                 Optional<ElytraFeatureRenderer<?, ?>> elytraFeatureRenderer =
                 ((LivingEntityRendererAccessor) livingEntityRenderer).getFeatures().stream().filter(a -> a instanceof ElytraFeatureRenderer<?, ?>).findAny();
-                LivingEntityRenderer livingEntityRenderer1;
-                PlayerEntityRenderer playerEntityRenderer;
                 if(elytraFeatureRenderer.isPresent()){
                     ElytraEntityModel elytraEntityModel = ((ElytraFeatureRendererAccessor)elytraFeatureRenderer.get()).getElytra();
                     parts.add((matrixStack, equipmentSlot1, livingEntity1, model1, entityModel1) -> {

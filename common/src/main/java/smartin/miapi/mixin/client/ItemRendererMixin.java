@@ -15,9 +15,9 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import smartin.miapi.client.MiapiClient;
-import smartin.miapi.client.model.item.ItemBakedModelReplacement;
 import smartin.miapi.client.model.MiapiItemModel;
-import smartin.miapi.item.modular.ModularItem;
+import smartin.miapi.client.model.item.ItemBakedModelReplacement;
+import smartin.miapi.item.modular.VisualModularItem;
 
 @Debug(export = true)
 @Mixin(value = ItemRenderer.class, priority = 750)
@@ -36,7 +36,7 @@ public class ItemRendererMixin {
             MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light,
             int overlay, BakedModel model, CallbackInfo ci
     ) {
-        if (MiapiClient.shaderModLoaded &&  stack.getItem() instanceof ModularItem) {
+        if (MiapiClient.shaderModLoaded &&  stack.getItem() instanceof VisualModularItem) {
             MiapiItemModel miapiModel = MiapiItemModel.getItemModel(stack);
             if (miapiModel != null) {
                 miapiModel.render(matrices, stack, renderMode, MinecraftClient.getInstance().getTickDelta(), vertexConsumers, ItemBakedModelReplacement.currentEntity, light, overlay);

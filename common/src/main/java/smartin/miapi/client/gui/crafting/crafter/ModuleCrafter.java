@@ -12,7 +12,7 @@ import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
 import smartin.miapi.client.gui.crafting.crafter.replace.CraftOption;
 import smartin.miapi.client.gui.crafting.crafter.replace.ReplaceView;
 import smartin.miapi.craft.CraftAction;
-import smartin.miapi.item.modular.ModularItem;
+import smartin.miapi.item.modular.VisualModularItem;
 import smartin.miapi.modules.edit_options.EditOption;
 import smartin.miapi.modules.material.Material;
 import smartin.miapi.modules.material.MaterialProperty;
@@ -94,7 +94,7 @@ public class ModuleCrafter extends InteractAbleWidget {
         if (mode != Mode.EDIT && editView != null) {
             editView.clearSlots();
         }
-        if (mode == Mode.DETAIL && !(stack.getItem() instanceof ModularItem)) {
+        if (mode == Mode.DETAIL && !(stack.getItem() instanceof VisualModularItem)) {
             Material material = MaterialProperty.getMaterialFromIngredient(stack);
             if (material != null) {
                 mode = Mode.MATERIAL;

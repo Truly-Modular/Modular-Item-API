@@ -15,7 +15,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import smartin.miapi.client.model.MiapiItemModel;
-import smartin.miapi.item.modular.ModularItem;
+import smartin.miapi.item.modular.VisualModularItem;
 import smartin.miapi.mixin.client.ElytraEntityModelAccessor;
 import smartin.miapi.mixin.client.ElytraFeatureRendererAccessor;
 
@@ -31,7 +31,7 @@ public class ModularElytraFeatureRenderer<T extends LivingEntity, M extends Enti
     @Override
     public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, LivingEntity livingEntity, float f, float g, float h, float j, float k, float l) {
         ItemStack itemStack = livingEntity.getEquippedStack(EquipmentSlot.CHEST);
-        if (itemStack.getItem() instanceof ModularItem) {
+        if (itemStack.getItem() instanceof VisualModularItem) {
             matrixStack.push();
             matrixStack.translate(0.0F, 0.0F, 0.125F);
             this.getContextModel().copyStateTo(this.elytra);

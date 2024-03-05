@@ -34,7 +34,7 @@ public class ModelTransformationProperty implements ModuleProperty {
     }
 
     public static void applyTransformation(ItemStack stack, ModelTransformationMode mode, MatrixStack matrices) {
-        Transformation transformation = ModularItemCache.get(stack,KEY, ModelTransformation.NONE).getTransformation(mode);
+        Transformation transformation = ModularItemCache.getVisualOnlyCache(stack,KEY, ModelTransformation.NONE).getTransformation(mode);
         boolean leftHanded = isLeftHanded(mode);
         matrices.translate(0.5f, 0.5f, 0.5f);
         transformation.apply(false, matrices);

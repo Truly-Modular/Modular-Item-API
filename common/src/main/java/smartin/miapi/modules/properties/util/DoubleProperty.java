@@ -7,6 +7,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
+import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.cache.ModularItemCache;
@@ -62,6 +63,9 @@ public abstract class DoubleProperty implements ModuleProperty {
         List<Double> addition = new ArrayList<>();
         List<Double> multiplyBase = new ArrayList<>();
         List<Double> multiplyTotal = new ArrayList<>();
+        if(!(itemStack.getItem() instanceof ModularItem)){
+            return null;
+        }
         for (ItemModule.ModuleInstance moduleInstance : ItemModule.getModules(itemStack).allSubModules()) {
             JsonElement element = moduleInstance.getProperties().get(property);
             if (element != null) {

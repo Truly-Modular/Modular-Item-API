@@ -1,15 +1,13 @@
 package smartin.miapi.modules.properties;
 
-import com.redpxnda.nucleus.math.MathUtil;
-import dev.architectury.event.events.common.TickEvent;
-import net.minecraft.enchantment.Enchantments;
-import net.minecraft.entity.EquipmentSlot;
+import dev.architectury.event.EventResult;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
-import smartin.miapi.item.FakeEnchantment;
+import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.modules.properties.util.DoubleProperty;
 
 /**
- * this property eats Xp continously and repears the item with it
+ * simple lifesteal property
  */
 public class LeechingProperty extends DoubleProperty {
     public static final String KEY = "leeching";
@@ -19,30 +17,18 @@ public class LeechingProperty extends DoubleProperty {
     public LeechingProperty() {
         super(KEY);
         property = this;
-        FakeEnchantment.addTransformer(Enchantments.FIRE_PROTECTION, (stack, level) -> {
-            int toLevel = (int) Math.ceil(getValueSafe(stack) / 4) + level;
-            return Math.min(toLevel + level, Math.max(4, level));
-        });
-        TickEvent.PLAYER_POST.register(player -> {
-            if(player.getWorld().isClient()){
-                return;
-            }
-            if (player.age % 20 * 45 == 0) {
-                for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
-                    ItemStack itemStack = player.getEquippedStack(equipmentSlot);
-                    double strength = getValueSafe(itemStack);
-                    if (strength > 0) {
-                        double chance = Math.min(1, strength * 0.05 + 0.05);
-                        if (MathUtil.random(0d, 1d) < chance) {
-                            int xpPoints = (int) MathUtil.random(1 + strength, 5 + strength);
-                            player.addExperience(-xpPoints);
-                            if (itemStack.isDamaged() && itemStack.isDamageable()) {
-                                itemStack.damage(-xpPoints, player, p -> p.equipStack(equipmentSlot, itemStack));
-                            }
-                        }
+
+        MiapiEvents.LIVING_HURT_AFTER .register((event) -> {
+            if (!event.livingEntity.getWorld().isClient()) {
+                if (event.damageSource.getAttacker() instanceof LivingEntity livingEntity) {
+                    double totalLevel = getForItems(livingEntity.getItemsEquipped());
+                    if (totalLevel > 0) {
+                        double healAmount = event.amount * totalLevel / 100;
+                        livingEntity.heal((float) healAmount);
                     }
                 }
             }
+            return EventResult.pass();
         });
     }
 

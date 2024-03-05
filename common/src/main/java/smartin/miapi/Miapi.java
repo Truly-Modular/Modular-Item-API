@@ -32,8 +32,8 @@ import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.injectors.PropertySubstitution;
 import smartin.miapi.item.ItemToModularConverter;
 import smartin.miapi.item.ModularItemStackConverter;
-import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.PropertyResolver;
+import smartin.miapi.item.modular.VisualModularItem;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.MiapiPermissions;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
@@ -125,7 +125,7 @@ public class Miapi {
             return map;
         });
         ModularItemCache.setSupplier(ItemModule.MODULE_KEY, itemStack -> {
-            if (itemStack.getItem() instanceof ModularItem) {
+            if (itemStack.getItem() instanceof VisualModularItem) {
                 NbtCompound tag = itemStack.getOrCreateNbt();
                 try {
                     String modulesString = tag.getString(ItemModule.MODULE_KEY);
@@ -138,7 +138,7 @@ public class Miapi {
         });
         ModularItemCache.setSupplier(ItemModule.PROPERTY_KEY,
                 itemStack -> ItemModule.getUnmergedProperties(
-                        ModularItemCache.get(itemStack, ItemModule.MODULE_KEY, new ItemModule.ModuleInstance(ItemModule.empty))));
+                        ModularItemCache.getVisualOnlyCache(itemStack, ItemModule.MODULE_KEY, new ItemModule.ModuleInstance(ItemModule.empty))));
         ModularItemStackConverter.converters.add(new ItemToModularConverter());
         if (Environment.isClient()) {
             MiapiClient.init();

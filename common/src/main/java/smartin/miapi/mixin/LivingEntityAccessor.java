@@ -14,4 +14,7 @@ public interface LivingEntityAccessor {
 
     @Invoker
     void callDamageArmor(DamageSource source, float amount);
+
+    @Accessor
+    float getLastDamageTaken();
 }

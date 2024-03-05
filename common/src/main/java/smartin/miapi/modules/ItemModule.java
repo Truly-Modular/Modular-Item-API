@@ -8,8 +8,8 @@ import com.google.gson.stream.JsonWriter;
 import net.minecraft.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.datapack.ReloadEvents;
-import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.PropertyResolver;
+import smartin.miapi.item.modular.VisualModularItem;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
@@ -24,7 +24,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static smartin.miapi.Miapi.*;
+import static smartin.miapi.Miapi.LOGGER;
+import static smartin.miapi.Miapi.gson;
 
 /**
  * An ItemModule represents a Module loaded from a JSON
@@ -262,7 +263,7 @@ public class ItemModule {
      * @return the module instance associated with the given ItemStack
      */
     public static ModuleInstance getModules(ItemStack stack) {
-        if (stack.getItem() instanceof ModularItem && !ReloadEvents.isInReload() && stack.getOrCreateNbt().get("modules") != null) {
+        if (stack.getItem() instanceof VisualModularItem && !ReloadEvents.isInReload() && stack.getOrCreateNbt().get("modules") != null) {
             ModuleInstance moduleInstance = ModularItemCache.getRaw(stack, MODULE_KEY);
             if (moduleInstance == null || moduleInstance.module == null) {
                 IllegalArgumentException exception = new IllegalArgumentException("Item has Invalid Module onReload - treating it like it has no modules");

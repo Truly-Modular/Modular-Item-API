@@ -34,7 +34,7 @@ public class ModularArmorMaterial implements ArmorMaterial {
 
     @Override
     public String getName() {
-        return "";
+        return "miapi_modular_armor";
     }
 
     @Override

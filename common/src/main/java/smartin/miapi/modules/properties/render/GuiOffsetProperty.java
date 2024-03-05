@@ -34,7 +34,7 @@ public class GuiOffsetProperty implements ModuleProperty {
         ModularItemCache.setSupplier(KEY + "_pure_gui", (stack -> new HashMap<>()));
         MiapiItemModel.modelTransformers.add((matrices, itemStack, mode, modelType, tickDelta) -> {
             if (mode.equals(ModelTransformationMode.GUI)) {
-                Map<String, float[]> cache = ModularItemCache.get(itemStack, KEY + "_pure_gui", new HashMap<>());
+                Map<String, float[]> cache = ModularItemCache.getVisualOnlyCache(itemStack, KEY + "_pure_gui", new HashMap<>());
                 float[] data = cache.computeIfAbsent(modelType, s -> getGuiOffsets(itemStack, modelType));
                 matrices.translate(data[0], data[1], 0);
                 matrices.scale(data[2], data[3], data[4]);

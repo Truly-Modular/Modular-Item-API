@@ -5,8 +5,6 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ArrowEntity;
 import net.minecraft.item.ItemStack;
@@ -77,7 +75,9 @@ abstract class LivingEntityMixin {
 
     @Inject(method = "damage", at = @At(value = "TAIL"))
     private void miapi$damageEventAfter(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
-        MiapiEvents.LivingHurtEvent livingHurtEvent = new MiapiEvents.LivingHurtEvent((LivingEntity) (Object) this, source, amount);
+        LivingEntity livingEntity = (LivingEntity) (Object) this;
+        float lastDamageTaken = ((LivingEntityAccessor) livingEntity).getLastDamageTaken();
+        MiapiEvents.LivingHurtEvent livingHurtEvent = new MiapiEvents.LivingHurtEvent((LivingEntity) (Object) this, source, lastDamageTaken);
         livingHurtEvent.isCritical = lastEvent.isCritical;
         MiapiEvents.LIVING_HURT_AFTER.invoker().hurt(livingHurtEvent);
     }

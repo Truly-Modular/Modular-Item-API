@@ -56,6 +56,7 @@ import smartin.miapi.craft.stat.CraftingStat;
 import smartin.miapi.effects.CryoStatusEffect;
 import smartin.miapi.entity.ItemProjectileEntity;
 import smartin.miapi.item.MaterialSmithingRecipe;
+import smartin.miapi.item.modular.ModularItemPart;
 import smartin.miapi.item.modular.PropertyResolver;
 import smartin.miapi.item.modular.items.*;
 import smartin.miapi.modules.ItemModule;
@@ -251,6 +252,8 @@ public class RegistryInventory {
         register(modularItems, "modular_item", ExampleModularItem::new, i -> {
             modularItem = i;
         });
+        register(modularItems, "modular_part", ModularItemPart::new);
+
         register(modularItems, "modular_handle", ModularWeapon::new);
         register(modularItems, "modular_sword", ModularSword::new);
         register(modularItems, "modular_katana", ModularSword::new);

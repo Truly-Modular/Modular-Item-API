@@ -7,7 +7,7 @@ import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.*;
 import net.minecraft.util.math.RotationAxis;
-import smartin.miapi.item.modular.ModularItem;
+import smartin.miapi.item.modular.VisualModularItem;
 
 public class ModularWorkBenchRenderer implements BlockEntityRenderer<ModularWorkBenchEntity> {
     private final BlockEntityRendererFactory.Context context;
@@ -25,7 +25,7 @@ public class ModularWorkBenchRenderer implements BlockEntityRenderer<ModularWork
         matrices.translate(8 / 16f, 16.5f/16, 8 / 16f);
         float rotAmnt = be.getCachedState().get(ModularWorkBench.FACING).asRotation();
         if (!(stack.getItem() instanceof Equipment) && (
-                stack.getItem() instanceof ModularItem ||
+                stack.getItem() instanceof VisualModularItem ||
                         stack.getItem() instanceof ToolItem ||
                         stack.getItem() instanceof SwordItem ||
                         stack.getItem() instanceof ArrowItem ||

@@ -9,15 +9,13 @@ import net.minecraft.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import smartin.miapi.datapack.ReloadEvents;
-import smartin.miapi.item.modular.ModularItem;
+import smartin.miapi.item.modular.VisualModularItem;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.WeakHashMap;
 
 public class MiapiItemModel implements MiapiModel {
     public static List<ModelSupplier> modelSuppliers = new ArrayList<>();
@@ -30,8 +28,6 @@ public class MiapiItemModel implements MiapiModel {
         ModularItemCache.setSupplier(CACHE_KEY, (MiapiItemModel::new));
     }
 
-    public static Map<ItemStack, MiapiItemModel> cacheTest = new WeakHashMap<>();
-
     @Nullable
     public static MiapiItemModel getItemModel(ItemStack stack) {
         return ModularItemCache.getRaw(stack, CACHE_KEY);
@@ -39,7 +35,7 @@ public class MiapiItemModel implements MiapiModel {
 
     private MiapiItemModel(ItemStack stack) {
         this.stack = stack;
-        if (stack.getItem() instanceof ModularItem) {
+        if (stack.getItem() instanceof VisualModularItem) {
             rootModel = new ModuleModel(ItemModule.getModules(stack), stack);
         } else {
             rootModel = null;
