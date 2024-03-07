@@ -47,9 +47,9 @@ public class DetailView extends InteractAbleWidget {
         int nextLevel;
         if (slot.slotType.equals(slotType)) {
             buttons.add(new SlotButton(0, 0, 50, 22, slot, level));
-            nextLevel = level;
-        } else {
             nextLevel = level + 1;
+        } else {
+            nextLevel = level;
         }
         if (slot.inSlot != null) {
             SlotProperty.getSlots(slot.inSlot).forEach((id, childSlot) -> {
