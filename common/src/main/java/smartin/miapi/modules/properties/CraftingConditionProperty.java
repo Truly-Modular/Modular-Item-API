@@ -1,6 +1,8 @@
 package smartin.miapi.modules.properties;
 
 import com.google.gson.JsonElement;
+import com.redpxnda.nucleus.event.PrioritizedEvent;
+import dev.architectury.event.EventResult;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
@@ -25,6 +27,7 @@ import java.util.function.Consumer;
 public class CraftingConditionProperty implements ModuleProperty, CraftingProperty {
     public static final String KEY = "crafting_condition";
     public static CraftingConditionProperty property;
+    public static PrioritizedEvent<CanCraft> CRAFT_CONDITION_EVENT = PrioritizedEvent.createEventResult();
 
     public CraftingConditionProperty() {
         property = this;
@@ -42,14 +45,19 @@ public class CraftingConditionProperty implements ModuleProperty, CraftingProper
     public static boolean isCraftable(SlotProperty.ModuleSlot slot, ItemModule module, PlayerEntity entity, BlockPos pos) {
         JsonElement element = module.getKeyedProperties().get(property);
         List<Text> reasons = new ArrayList<>();
+        ItemModule.ModuleInstance instance = slot == null ? null : slot.parent;
+        Map<ModuleProperty, JsonElement> elementMap = module.getKeyedProperties();
+        if (instance != null) {
+            elementMap = instance.getProperties();
+        }
         if (element != null) {
-            ItemModule.ModuleInstance instance = slot == null ? null : slot.parent;
-            Map<ModuleProperty, JsonElement> elementMap = module.getKeyedProperties();
-            if (instance != null) {
-                elementMap = instance.getProperties();
-            }
             CraftingConditionJson conditionJson = new CraftingConditionJson(element);
-            return conditionJson.getCraftAble().isAllowed(new ConditionManager.ModuleConditionContext(instance, pos, entity, elementMap, reasons));
+            if (!conditionJson.getCraftAble().isAllowed(new ConditionManager.ModuleConditionContext(instance, pos, entity, elementMap, reasons))) {
+                return false;
+            }
+        }
+        if (CRAFT_CONDITION_EVENT.invoker().craft(slot, module, new ConditionManager.ModuleConditionContext(instance, pos, entity, elementMap, reasons)).interruptsFurtherEvaluation()) {
+            return false;
         }
         return true;
     }
@@ -62,7 +70,7 @@ public class CraftingConditionProperty implements ModuleProperty, CraftingProper
         }
         test.accept(moduleInstance);
         moduleInstance.parent = null;
-        if(slot!=null && slot.parent!=null){
+        if (slot != null && slot.parent != null) {
             slot.inSlot = null;
         }
     }
@@ -70,14 +78,15 @@ public class CraftingConditionProperty implements ModuleProperty, CraftingProper
     public static List<Text> getReasonsForCraftable(SlotProperty.ModuleSlot slot, ItemModule module, PlayerEntity entity, BlockPos pos) {
         JsonElement element = module.getKeyedProperties().get(property);
         List<Text> reasons = new ArrayList<>();
+        ItemModule.ModuleInstance instance = slot == null ? null : slot.parent;
+        Map<ModuleProperty, JsonElement> elementMap = module.getKeyedProperties();
+        if (instance != null) {
+            elementMap = instance.getProperties();
+        }
         if (element != null) {
-            ItemModule.ModuleInstance instance = slot == null ? null : slot.parent;
-            Map<ModuleProperty, JsonElement> elementMap = module.getKeyedProperties();
-            if (instance != null) {
-                elementMap = instance.getProperties();
-            }
             new CraftingConditionJson(element).getCraftAble().isAllowed(new ConditionManager.ModuleConditionContext(instance, pos, entity, elementMap, reasons));
         }
+        CRAFT_CONDITION_EVENT.invoker().craft(slot, module, new ConditionManager.ModuleConditionContext(instance, pos, entity, elementMap, reasons));
         return reasons;
     }
 
@@ -117,6 +126,10 @@ public class CraftingConditionProperty implements ModuleProperty, CraftingProper
     @Override
     public ItemStack preview(ItemStack old, ItemStack crafting, PlayerEntity player, ModularWorkBenchEntity bench, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<String, String> data) {
         return crafting;
+    }
+
+    public interface CanCraft {
+        EventResult craft(SlotProperty.ModuleSlot slot, ItemModule module, ConditionManager.ModuleConditionContext context);
     }
 
     public static class CraftingConditionJson {

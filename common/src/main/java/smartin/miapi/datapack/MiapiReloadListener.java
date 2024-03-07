@@ -3,11 +3,11 @@ package smartin.miapi.datapack;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import dev.architectury.platform.Platform;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceReloader;
 import net.minecraft.resource.ResourceType;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.profiler.Profiler;
 import smartin.miapi.Miapi;
@@ -16,10 +16,7 @@ import smartin.miapi.modules.conditions.ConditionManager;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
@@ -101,6 +98,11 @@ public class MiapiReloadListener implements ResourceReloader {
                         @Override
                         public ConditionManager.ConditionContext copy() {
                             return this;
+                        }
+
+                        @Override
+                        public List<Text> getReasons() {
+                            return new ArrayList<>();
                         }
                     });
                     if (allowed) {

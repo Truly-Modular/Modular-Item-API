@@ -57,8 +57,7 @@ public class MiapiClient {
     public static boolean sodiumLoaded = Platform.isModLoaded("sodium");
     public static boolean jerLoaded = Platform.isModLoaded("jeresources");
     public static final MiapiRegistry<KeyBinding> KEY_BINDINGS = MiapiRegistry.getInstance(KeyBinding.class);
-    public static final KeyBinding HOVER_DETAIL_BINDING = KEY_BINDINGS.register("miapi:hover_detail", new KeyBinding("miapi.gui.item_detail", 42, "miapi.keybinds"));
-    public static boolean hoverPressed = false;
+    //public static final KeyBinding HOVER_DETAIL_BINDING = KEY_BINDINGS.register("miapi:hover_detail", new KeyBinding("miapi.gui.item_detail", 42, "miapi.keybinds"));
 
     private MiapiClient() {
     }

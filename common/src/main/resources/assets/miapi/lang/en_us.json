@@ -3,6 +3,8 @@
     "config.miapi_server.other": "Development",
     "config.miapi_server.enchants": "Enchantments",
     "miapi.keybinds": "Truly Modular",
+    "miapi.crafting_condition.false" : "Cannot craft",
+    "miapi.crafting_condition.cant_change_parent": "Cannot change this module because of submodule",
     "miapi.gui.item_detail": "Hover detail",
     "miapi.ui.material_detail.lower": "...⬇(shift)",
     "miapi.ui.material_detail.higher": "...⬆",

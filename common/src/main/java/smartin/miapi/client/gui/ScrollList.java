@@ -131,8 +131,21 @@ public class ScrollList extends InteractAbleWidget {
     @Override
     public void renderHover(DrawContext drawContext, int mouseX, int mouseY, float delta) {
         if (isMouseOver(mouseX, mouseY)) {
-            for (InteractAbleWidget widget : this.widgets) {
-                widget.renderHover(drawContext, mouseX, mouseY, delta);
+            int startY = this.getY() - this.scrollAmount;
+            for (ClickableWidget widget : this.widgets) {
+                if (startY + widget.getHeight() >= this.getY() && startY <= this.getY() + this.height - 1) {
+                    if(widget instanceof InteractAbleWidget interactAbleWidget){
+                        widget.setY(startY);
+                        widget.setX(this.getX());
+                        if (showScrollbar()) {
+                            widget.setWidth(this.width - barWidth);
+                        } else {
+                            widget.setWidth(this.width);
+                        }
+                        interactAbleWidget.renderHover(drawContext, mouseX, mouseY, delta);
+                    }
+                }
+                startY += widget.getHeight();
             }
         }
     }

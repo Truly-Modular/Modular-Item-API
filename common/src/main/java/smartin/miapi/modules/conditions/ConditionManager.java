@@ -30,6 +30,8 @@ public class ConditionManager {
 
     public interface ConditionContext {
         ConditionContext copy();
+
+        List<Text> getReasons();
     }
 
     public static class ModuleConditionContext implements ConditionContext {
@@ -46,15 +48,20 @@ public class ConditionManager {
             this.reasons = reasons;
         }
 
-        @Nullable ItemModule.ModuleInstance moduleInstance;
-        @Nullable BlockPos tablePos;
-        @Nullable PlayerEntity player;
-        @Nullable Map<ModuleProperty, JsonElement> propertyMap;
-        List<Text> reasons;
+        public @Nullable ItemModule.ModuleInstance moduleInstance;
+        public @Nullable BlockPos tablePos;
+        public @Nullable PlayerEntity player;
+        public @Nullable Map<ModuleProperty, JsonElement> propertyMap;
+        public List<Text> reasons;
 
         @Override
         public ModuleConditionContext copy() {
             return new ModuleConditionContext(moduleInstance, tablePos, player, propertyMap, reasons);
+        }
+
+        @Override
+        public List<Text> getReasons() {
+            return reasons;
         }
     }
 }

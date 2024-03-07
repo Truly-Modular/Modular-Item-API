@@ -21,6 +21,14 @@ public class BooleanProperty implements ModuleProperty {
 
     private Boolean isTruePrivate(ItemStack stack) {
         JsonElement element = ItemModule.getMergedProperty(stack, property);
+        return getValue(element);
+    }
+
+    public boolean isTrue(ItemStack stack) {
+        return ModularItemCache.get(stack, KEY_PRIVATE, defaultValueSaved);
+    }
+
+    public boolean getValue(JsonElement element){
         if (element != null) {
             try {
                 return element.getAsBoolean();
@@ -31,8 +39,9 @@ public class BooleanProperty implements ModuleProperty {
         return defaultValueSaved;
     }
 
-    public boolean isTrue(ItemStack stack) {
-        return ModularItemCache.get(stack, KEY_PRIVATE, defaultValueSaved);
+    public boolean isTrue(ItemModule.ModuleInstance moduleInstance) {
+        JsonElement element = moduleInstance.getProperties().get(this);
+        return getValue(element);
     }
 
     @Override
