@@ -69,11 +69,11 @@ public class HoverMaterialList extends InteractAbleWidget {
                 int start = scrollPosOne;
                 int end = Math.min(scrollPosOne + maxElements, materials.size());
                 if (end < materials.size() - 1) {
-                    drawContext.drawText(MinecraftClient.getInstance().textRenderer, "...⬇(scroll)", getX() + 3, currentY + 14 * (maxElements - 1), moreEntryColor, false);
+                    drawContext.drawText(MinecraftClient.getInstance().textRenderer, Text.translatable("miapi.ui.material_detail.lower.scroll"), getX() + 3, currentY + 14 * (maxElements - 1), moreEntryColor, false);
                     end--;
                 }
                 if (start != 0) {
-                    drawContext.drawText(MinecraftClient.getInstance().textRenderer, "...⬆", getX() + 3, currentY, moreEntryColor, false);
+                    drawContext.drawText(MinecraftClient.getInstance().textRenderer, Text.translatable("miapi.ui.material_detail.higher.scroll"), getX() + 3, currentY, moreEntryColor, false);
                     start++;
                     currentY += 14;
                 }
@@ -90,11 +90,11 @@ public class HoverMaterialList extends InteractAbleWidget {
                 int start = scrollPosTwo;
                 int end = Math.min(scrollPosTwo + maxElements - 1, materialList.size() - 1);
                 if (end < materialList.size() - 2) {
-                    drawContext.drawText(MinecraftClient.getInstance().textRenderer, "...⬇(shift)", getX() + sizeBaseList + 6, currentY + 14 * (maxElements - 1), moreEntryColor, false);
+                    drawContext.drawText(MinecraftClient.getInstance().textRenderer, Text.translatable("miapi.ui.material_detail.lower"), getX() + sizeBaseList + 6, currentY + 14 * (maxElements - 1), moreEntryColor, false);
                     end--;
                 }
                 if (start != 0) {
-                    drawContext.drawText(MinecraftClient.getInstance().textRenderer, "...⬆", getX() + sizeBaseList + 6, currentY, moreEntryColor, false);
+                    drawContext.drawText(MinecraftClient.getInstance().textRenderer, Text.translatable("miapi.ui.material_detail.higher"), getX() + sizeBaseList + 6, currentY, moreEntryColor, false);
                     start++;
                     currentY += 14;
                 }

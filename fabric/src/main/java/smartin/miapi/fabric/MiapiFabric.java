@@ -11,7 +11,7 @@ import smartin.miapi.registries.RegistryInventory;
 
 import static smartin.miapi.attributes.AttributeRegistry.SWIM_SPEED;
 
-public class TrulyModularFabric implements ModInitializer {
+public class MiapiFabric implements ModInitializer {
 
     @Override
     public void onInitialize() {
@@ -19,7 +19,7 @@ public class TrulyModularFabric implements ModInitializer {
 
         //DATA
         if(Environment.isClient()){
-            MiapiClient.setupClient();
+            MiapiClientFabric.setupClient();
         }
 
         //ATTRIBUTE REPLACEMENT

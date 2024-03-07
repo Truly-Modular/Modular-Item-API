@@ -12,6 +12,7 @@ import dev.architectury.registry.menu.MenuRegistry;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.item.Item;
@@ -41,6 +42,7 @@ import smartin.miapi.modules.material.palette.MaterialCommand;
 import smartin.miapi.modules.material.palette.MaterialRenderControllers;
 import smartin.miapi.modules.properties.render.colorproviders.ColorProvider;
 import smartin.miapi.network.Networking;
+import smartin.miapi.registries.MiapiRegistry;
 import smartin.miapi.registries.RegistryInventory;
 
 import static smartin.miapi.registries.RegistryInventory.Client.glintShader;
@@ -54,6 +56,9 @@ public class MiapiClient {
                     Platform.isModLoaded("oculus");
     public static boolean sodiumLoaded = Platform.isModLoaded("sodium");
     public static boolean jerLoaded = Platform.isModLoaded("jeresources");
+    public static final MiapiRegistry<KeyBinding> KEY_BINDINGS = MiapiRegistry.getInstance(KeyBinding.class);
+    public static final KeyBinding HOVER_DETAIL_BINDING = KEY_BINDINGS.register("miapi:hover_detail", new KeyBinding("miapi.gui.item_detail", 42, "miapi.keybinds"));
+    public static boolean hoverPressed = false;
 
     private MiapiClient() {
     }
@@ -69,7 +74,7 @@ public class MiapiClient {
         }));
         Networking.registerS2CPacket(MaterialCommand.SEND_MATERIAL_CLIENT, (buf -> {
             String materialId = buf.readString();
-            MinecraftClient.getInstance().execute(() ->{
+            MinecraftClient.getInstance().execute(() -> {
                 Material material = MaterialProperty.materials.get(materialId);
                 if (material != null) {
                     String raw = Miapi.gson.toJson(material.getDebugJson());
