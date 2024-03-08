@@ -4,7 +4,20 @@
 - added onKill Explosion property
 - updated config
 - added config option to customize glint coloring
-- added Material Extensions
+- added Material Extensions jsons
 - added hidden_groups field to materials
 - adjusted how Generated Materials are a colored
 - added Minecraft Ingredient as option for JsonMaterials
+- heavily Improved Material Coloring code and expandability
+  - refactored Material Coloring System into MaterialRenderController
+  - SpriteColorerer is the Main Coloring System, they transfrom origin Sprites, they include
+    - SpriteColoreres, this uses a Grayscale to recolor the Original Sprite, this is the main Coloring System
+    - SpriteOverlayer overlays an existing Sprite over the normal sprite keeping the original transparent parts
+    - SpriteFromJson is a PaletteColorerer, but uses a Texture from the Resourcepack(allows for animation)
+    - MaskColorer uses two SpriteColorers and a texture to blend between them 
+- added Spatial Interdiction effect blocking Teleportation
+- added Parentcrafting condition to allow Modules to block changes of their direct Parent Module
+- updated Workbench model to be the height of a Fullblock
+- added ability to render Entites on Items
+- updated Materialgeneration Code
+- fixed minor issues and bugs
