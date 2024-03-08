@@ -6,9 +6,6 @@
         "crystal",
         "gem"
     ],
-    "hidden_groups": [
-        "gem_melee"
-    ],
     "hardness": 5,
     "density": 0.5,
     "flexibility": 0,

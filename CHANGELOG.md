@@ -9,11 +9,12 @@
 - adjusted how Generated Materials are a colored
 - added Minecraft Ingredient as option for JsonMaterials
 - heavily Improved Material Coloring code and expandability
+  - this improved System allows for more rendering options and for far better expandability for the future 
   - refactored Material Coloring System into MaterialRenderController
   - SpriteColorerer is the Main Coloring System, they transform origin Sprites, they include
-    - SpriteColoreres, this uses a Grayscale to recolor the Original Sprite, this is the main Coloring System
+    - GrayscalepaletteColorer, this uses a Grayscale to recolor the Original Sprite, this is the main Coloring System
     - SpriteOverlayer overlays an existing Sprite over the normal sprite keeping the original transparent parts
-    - SpriteFromJson is a PaletteColorerer, but uses a Texture from the Resourcepack(allows for animation)
+    - SpriteFromJson, it uses a Texture from the Resourcepack(allows for animation)
     - MaskColorer uses two SpriteColorers and a texture to blend between them 
 - added Spatial Interdiction effect blocking Teleportation
 - added "allowChangeParent" condition to allow Modules to block changes of their direct Parent Module
