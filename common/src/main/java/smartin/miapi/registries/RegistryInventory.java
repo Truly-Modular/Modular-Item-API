@@ -54,6 +54,7 @@ import smartin.miapi.client.atlas.MaterialAtlasManager;
 import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
 import smartin.miapi.craft.stat.CraftingStat;
 import smartin.miapi.effects.CryoStatusEffect;
+import smartin.miapi.effects.TeleportBlockEffect;
 import smartin.miapi.entity.ItemProjectileEntity;
 import smartin.miapi.item.MaterialSmithingRecipe;
 import smartin.miapi.item.modular.ModularItemPart;
@@ -178,6 +179,7 @@ public class RegistryInventory {
     public static BlockEntityType<ModularWorkBenchEntity> modularWorkBenchEntityType;
     public static Item modularItem;
     public static StatusEffect cryoStatusEffect;
+    public static StatusEffect teleportBlockEffect;
     public static GameEvent statProviderCreatedEvent;
     public static GameEvent statProviderRemovedEvent;
     //public static SimpleCraftingStat exampleCraftingStat;
@@ -293,6 +295,7 @@ public class RegistryInventory {
 
         //STATUS EFFECTS
         register(statusEffects, "cryo", CryoStatusEffect::new, eff -> cryoStatusEffect = eff);
+        register(statusEffects, "teleport_block", TeleportBlockEffect::new,eff -> teleportBlockEffect = eff);
 
         //ATTRIBUTE
 

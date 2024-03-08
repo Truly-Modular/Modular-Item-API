@@ -3,6 +3,20 @@
     "translation": "miapi.material.custom.ender_pearl",
     "icon": "textures/item/ender_pearl.png",
     "color": "105D50",
+    "color_palette": {
+        "type": "grayscale_map",
+        "colors": {
+            "0": "000000",
+            "36": "032620",
+            "72": "063931",
+            "108": "0b4d42",
+            "144": "105e51",
+            "180": "349988",
+            "216": "2ccdb1",
+            "255": "8cf4e2"
+        },
+        "filler": "interpolate"
+    },
     "items": [
         {
             "item": "minecraft:ender_pearl",

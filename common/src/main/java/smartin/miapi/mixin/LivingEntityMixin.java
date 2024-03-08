@@ -17,9 +17,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.attributes.ElytraAttributes;
+import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.modules.properties.EquipmentSlotProperty;
+import smartin.miapi.registries.RegistryInventory;
 
 @Mixin(LivingEntity.class)
 abstract class LivingEntityMixin {
@@ -31,6 +33,14 @@ abstract class LivingEntityMixin {
             if (slot != null) {
                 cir.setReturnValue(slot);
             }
+        }
+    }
+
+    @Inject(method = "teleport(DDDZ)Z", at = @At("HEAD"), cancellable = true)
+    private void miapi$optionalTeleportBlockEffect(double x, double y, double z, boolean particleEffects, CallbackInfoReturnable<Boolean> cir) {
+        LivingEntity entity = (LivingEntity) (Object) this;
+        if (particleEffects &&  MiapiConfig.INSTANCE.server.other.blockAllTeleportsEffect && entity.hasStatusEffect(RegistryInventory.teleportBlockEffect)) {
+            cir.setReturnValue(false);
         }
     }
 

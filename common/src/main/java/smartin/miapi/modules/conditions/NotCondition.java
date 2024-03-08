@@ -28,7 +28,7 @@ public class NotCondition implements ModuleCondition {
     @Override
     public ModuleCondition load(JsonElement element) {
         NotCondition notCondition = new NotCondition(ConditionManager.get(element.getAsJsonObject().get("condition")));
-        notCondition.onFalse = ModuleProperty.getText(element.getAsJsonObject(), "reason", Text.translatable("miapi.crafting_condition.false"));
+        notCondition.onFalse = ModuleProperty.getText(element.getAsJsonObject(), "error", Text.translatable("miapi.crafting_condition.false"));
         return notCondition;
     }
 }

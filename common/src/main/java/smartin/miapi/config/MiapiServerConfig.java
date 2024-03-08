@@ -22,6 +22,13 @@ public class MiapiServerConfig {
         @AutoCodec.Name("development_mode")
         public boolean developmentMode = Platform.isDevelopmentEnvironment();
 
+        @Comment("""
+                If this is on the Block Teleports effect of Truly Modular will block most teleports,
+                if false it will only block default Enderman,Chorus fruit and Ender Pearls""")
+
+        @AutoCodec.Name("block_all_teleports_effects")
+        public boolean blockAllTeleportsEffect = true;
+
         @Comment("Whether a server reload should be automatically forced to fix Forge having buggy class loading")
         @AutoCodec.Name("forge_reload_mode")
         public boolean forgeReloadMode = Platform.isForge();
