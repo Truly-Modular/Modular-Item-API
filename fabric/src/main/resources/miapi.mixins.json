@@ -4,6 +4,7 @@
     "package": "smartin.miapi.fabric.mixin",
     "compatibilityLevel": "JAVA_17",
     "mixins": [
+        "smartin.miapi.forge.mixin.ItemStackMixinHighPriority"
     ],
     "client": [
         "EntityMixin",

@@ -18,13 +18,20 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
-import smartin.miapi.modules.properties.*;
+import smartin.miapi.modules.properties.DisplayNameProperty;
+import smartin.miapi.modules.properties.RarityProperty;
+import smartin.miapi.modules.properties.RepairPriority;
+import smartin.miapi.modules.properties.ToolOrWeaponProperty;
 import smartin.miapi.modules.properties.mining.MiningLevelProperty;
 
 public class ModularSword extends SwordItem implements ModularItem {
 
     public ModularSword() {
         super(new ModularToolMaterial(), 5, 5, new Settings().maxCount(1).maxDamage(500).rarity(Rarity.COMMON));
+    }
+
+    public Multimap<EntityAttribute, EntityAttributeModifier> getAttributeModifiers(EquipmentSlot slot) {
+        return ArrayListMultimap.create();
     }
 
     @Override
@@ -70,10 +77,6 @@ public class ModularSword extends SwordItem implements ModularItem {
             });
         }
         return true;
-    }
-
-    public Multimap<EntityAttribute, EntityAttributeModifier> getAttributeModifiers(EquipmentSlot slot) {
-        return ArrayListMultimap.create();
     }
 
     @Override

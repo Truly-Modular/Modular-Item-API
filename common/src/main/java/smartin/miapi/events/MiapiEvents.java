@@ -1,17 +1,20 @@
 package smartin.miapi.events;
 
+import com.google.common.collect.Multimap;
 import com.redpxnda.nucleus.event.PrioritizedEvent;
 import dev.architectury.event.EventResult;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
+import net.minecraft.entity.attribute.EntityAttribute;
+import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.loot.function.SetAttributesLootFunction;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.intprovider.IntProvider;
@@ -34,6 +37,7 @@ public class MiapiEvents {
     public static final PrioritizedEvent<EntityRide> START_RIDING = PrioritizedEvent.createLoop(); // only fires on successful rides, and is not cancellable (if I wanted to make it cancellable, i would add mixinextras)
     public static final PrioritizedEvent<EntityRide> STOP_RIDING = PrioritizedEvent.createLoop();
     public static final PrioritizedEvent<StatUpdateEvent> STAT_UPDATE_EVENT = PrioritizedEvent.createEventResult();
+    public static final PrioritizedEvent<ItemStackAttributeEvent> ITEM_STACK_ATTRIBUTE_EVENT = PrioritizedEvent.createEventResult();
     @Deprecated
     /**
      * @Deprecated use {@link MiapiEvents#GENERATE_MATERIAL_CONVERTERS} instead
@@ -69,6 +73,23 @@ public class MiapiEvents {
             }
             return ItemStack.EMPTY;
         }
+    }
+
+    public static class ItemStackAttributeEventHolder {
+        public ItemStack itemStack;
+        public EquipmentSlot equipmentSlot;
+        public Multimap<EntityAttribute, EntityAttributeModifier> attributeModifiers;
+
+        public ItemStackAttributeEventHolder(ItemStack itemStack, EquipmentSlot equipmentSlot, Multimap<EntityAttribute, EntityAttributeModifier> attributeModifiers) {
+            this.itemStack = itemStack;
+            this.equipmentSlot = equipmentSlot;
+            this.attributeModifiers = attributeModifiers;
+        }
+
+    }
+
+    public interface ItemStackAttributeEvent {
+        EventResult adjust(ItemStackAttributeEventHolder info);
     }
 
     public interface LivingAttackEvent {

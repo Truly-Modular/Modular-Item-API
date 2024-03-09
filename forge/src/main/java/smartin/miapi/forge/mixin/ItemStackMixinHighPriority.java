@@ -1,4 +1,4 @@
-package smartin.miapi.mixin;
+package smartin.miapi.forge.mixin;
 
 import com.google.common.collect.Multimap;
 import net.minecraft.entity.EquipmentSlot;
@@ -19,8 +19,7 @@ public abstract class ItemStackMixinHighPriority {
         ItemStack stack = (ItemStack) (Object) this;
 
         if (stack.getItem() instanceof ModularItem) {
-            Multimap<EntityAttribute, EntityAttributeModifier> attributes = AttributeProperty.mergeAttributes(AttributeProperty.equipmentSlotMultimapMap(stack).get(slot), cir.getReturnValue());
-            cir.setReturnValue(attributes);
+            cir.setReturnValue(AttributeProperty.sortMultimap(cir.getReturnValue()));
         }
     }
 }

@@ -22,7 +22,7 @@ public class ModularWorkBenchRenderer implements BlockEntityRenderer<ModularWork
         if (stack.isEmpty()) return;
 
         matrices.push();
-        matrices.translate(8 / 16f, 16.5f/16, 8 / 16f);
+        matrices.translate(8 / 16f, 16.5f / 16, 8 / 16f);
         float rotAmnt = be.getCachedState().get(ModularWorkBench.FACING).asRotation();
         if (!(stack.getItem() instanceof Equipment) && (
                 stack.getItem() instanceof VisualModularItem ||
@@ -38,13 +38,16 @@ public class ModularWorkBenchRenderer implements BlockEntityRenderer<ModularWork
         matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(90));
         matrices.scale(0.75f, 0.75f, 0.75f);
 
-        context.getItemRenderer().renderItem(
-                stack,
-                ModelTransformationMode.FIXED,
-                light, overlay,
-                matrices, vertexConsumers,
-                be.getWorld(), 1
-        );
+        try {
+            context.getItemRenderer().renderItem(
+                    stack,
+                    ModelTransformationMode.FIXED,
+                    light, overlay,
+                    matrices, vertexConsumers,
+                    be.getWorld(), 1
+            );
+        } catch (Exception ignored) {
+        }
         matrices.pop();
     }
 }

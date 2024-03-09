@@ -3,6 +3,7 @@ package smartin.miapi.modules.properties;
 import com.google.common.collect.*;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import dev.architectury.event.EventResult;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.attribute.*;
 import net.minecraft.item.ItemStack;
@@ -10,6 +11,7 @@ import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 import smartin.miapi.Miapi;
 import smartin.miapi.attributes.AttributeRegistry;
+import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.item.modular.items.ExampleModularItem;
@@ -60,6 +62,10 @@ public class AttributeProperty implements ModuleProperty {
         priorityMap.put(AttributeRegistry.BACK_STAB, -6.0f);
         priorityMap.put(AttributeRegistry.SHIELD_BREAK, -6.0f);
         priorityMap.put(AttributeRegistry.ARMOR_CRUSHING, -6.0f);
+        MiapiEvents.ITEM_STACK_ATTRIBUTE_EVENT.register((info -> {
+            info.attributeModifiers.putAll((AttributeProperty.equipmentSlotMultimapMap(info.itemStack).get(info.equipmentSlot)));
+            return EventResult.pass();
+        }));
     }
 
     @Override
@@ -273,7 +279,7 @@ public class AttributeProperty implements ModuleProperty {
                     }
                     for (EntityAttributeModifier entityAttributeModifier : collection) {
                         if (entityAttributeModifier.getOperation().equals(EntityAttributeModifier.Operation.MULTIPLY_TOTAL)) {
-                            multiply = (multiply + 1) * (entityAttributeModifier.getValue() + 1) -1;
+                            multiply = (multiply + 1) * (entityAttributeModifier.getValue() + 1) - 1;
                         }
                     }
                     if (!Double.isNaN(multiply) && multiply != 1) {
@@ -316,7 +322,7 @@ public class AttributeProperty implements ModuleProperty {
      * @param multimap
      * @return
      */
-    private static Multimap<EntityAttribute, EntityAttributeModifier> sortMultimap(Multimap<EntityAttribute, EntityAttributeModifier> multimap) {
+    public static Multimap<EntityAttribute, EntityAttributeModifier> sortMultimap(Multimap<EntityAttribute, EntityAttributeModifier> multimap) {
         Comparator<EntityAttribute> comparator = (attribute1, attribute2) -> {
             // Get the priority values for the attributes, using 0 as the default value
             float priority1 = priorityMap.getOrDefault(attribute1, 0f);
