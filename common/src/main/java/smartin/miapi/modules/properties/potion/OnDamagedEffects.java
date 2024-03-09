@@ -22,22 +22,22 @@ public class OnDamagedEffects extends PotionEffectProperty {
         super(KEY);
         property = this;
         MiapiEvents.LIVING_HURT.register((listener) -> {
-            if(!listener.livingEntity.getWorld().isClient()){
-                applyEffects(listener.livingEntity, listener.livingEntity, listener.livingEntity, this::isTargetSelf);
-                if (listener.damageSource.getAttacker() instanceof LivingEntity livingEntity ) {
-                    applyEffects(livingEntity, listener.livingEntity, livingEntity, this::isTargetOther);
+            if (!listener.livingEntity.getWorld().isClient()) {
+                applyEffects(listener.livingEntity, listener.livingEntity, listener.getCausingItemStack(), listener.livingEntity, this::isTargetSelf);
+                if (listener.damageSource.getAttacker() instanceof LivingEntity attacker) {
+                    applyEffects(attacker, listener.livingEntity, listener.getCausingItemStack(), attacker, this::isTargetOther);
                 }
             }
             return EventResult.pass();
         });
 
-        if(smartin.miapi.Environment.isClient()){
+        if (smartin.miapi.Environment.isClient()) {
             setupClient();
         }
     }
 
     @net.fabricmc.api.Environment(EnvType.CLIENT)
-    public void setupClient(){
+    public void setupClient() {
         LoreProperty.loreSuppliers.add(itemStack -> {
             List<Text> lines = new ArrayList<>();
             for (EffectHolder effectHolder : getStatusEffects(itemStack)) {

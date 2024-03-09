@@ -50,6 +50,17 @@ public abstract class PotionEffectProperty implements ModuleProperty {
         return ModularItemCache.get(itemStack, KEY + ".status_effects", new ArrayList<>());
     }
 
+    public List<EffectHolder> getStatusEffects(ItemStack itemStack, EffectPredicate predicate, LivingEntity livingEntity) {
+        List<EffectHolder> holders = new ArrayList<>();
+        getStatusEffects(itemStack)
+                .stream()
+                .filter(effectHolder -> isValidForSlot(EquipmentSlot.MAINHAND, effectHolder, livingEntity))
+                .filter(effectHolder -> predicate.filterHolder(effectHolder, EquipmentSlot.MAINHAND))
+                .forEach(holders::add);
+        return holders;
+    }
+
+
     public void applyEffects(LivingEntity target, LivingEntity itemsFromEntity, @Nullable LivingEntity causer) {
         List<EffectHolder> getFilteredEffects = getHoldersConditional(itemsFromEntity);
         for (EffectHolder effectHolder : getFilteredEffects) {
@@ -59,6 +70,32 @@ public abstract class PotionEffectProperty implements ModuleProperty {
 
     public void applyEffects(LivingEntity target, LivingEntity itemsFromEntity, @Nullable LivingEntity causer, EffectPredicate predicate) {
         List<EffectHolder> getFilteredEffects = getHoldersConditional(itemsFromEntity, predicate);
+        for (EffectHolder effectHolder : getFilteredEffects) {
+            target.addStatusEffect(effectHolder.effectInstance(), causer);
+        }
+    }
+
+    public void applyEffects(LivingEntity target, ItemStack itemStack, @Nullable LivingEntity causer, EffectPredicate predicate) {
+        List<EffectHolder> getFilteredEffects = getStatusEffects(itemStack);
+        for (EffectHolder effectHolder : getFilteredEffects) {
+            target.addStatusEffect(effectHolder.effectInstance(), causer);
+        }
+    }
+
+    /**
+     * uses Armor Items and supplied Attacking Itemstack. use this in most cases
+     *
+     * @param target
+     * @param itemStack
+     * @param causer
+     * @param predicate
+     */
+    public void applyEffects(LivingEntity target, LivingEntity itemsFromEntity, ItemStack itemStack, @Nullable LivingEntity causer, EffectPredicate predicate) {
+        List<EffectHolder> getFilteredEffects = getStatusEffects(itemStack, predicate, itemsFromEntity);
+        for (EffectHolder effectHolder : getFilteredEffects) {
+            target.addStatusEffect(effectHolder.effectInstance(), causer);
+        }
+        getFilteredEffects = getHoldersConditional(itemsFromEntity, predicate);
         for (EffectHolder effectHolder : getFilteredEffects) {
             target.addStatusEffect(effectHolder.effectInstance(), causer);
         }

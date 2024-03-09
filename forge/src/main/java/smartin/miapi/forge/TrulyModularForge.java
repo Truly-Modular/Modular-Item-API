@@ -1,8 +1,8 @@
 package smartin.miapi.forge;
 
 import dev.architectury.event.events.common.LifecycleEvent;
+import dev.architectury.platform.Platform;
 import dev.architectury.platform.forge.EventBuses;
-import ht.treechop.api.TreeChopAPI;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.common.MinecraftForge;
@@ -105,9 +105,11 @@ public class TrulyModularForge {
 
         @SubscribeEvent
         public static void enqueueIMC(InterModEnqueueEvent event) {
-            InterModComms.sendTo("treechop", "getTreeChopAPI", () -> (Consumer<TreeChopAPI>) response -> {
-                TreechopUtil.api = response;
-            });
+            if (Platform.isModLoaded("treechop")) {
+                InterModComms.sendTo("treechop", "getTreeChopAPI", () -> (Consumer<Object>) response -> {
+                    TreechopUtil.setTreechopApi(response);
+                });
+            }
         }
     }
 

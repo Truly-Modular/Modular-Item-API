@@ -28,6 +28,7 @@ import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.material.GeneratedMaterial;
 import smartin.miapi.modules.material.Material;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MiapiEvents {
@@ -72,6 +73,21 @@ public class MiapiEvents {
                 return attacker.getMainHandStack();
             }
             return ItemStack.EMPTY;
+        }
+
+        public Iterable<ItemStack> getCausingItemStackAndArmorOfAttacker() {
+            List<ItemStack> itemStacks = new ArrayList<>();
+            if (damageSource.getSource() instanceof ProjectileEntity projectile && (projectile instanceof ItemProjectileEntity itemProjectile)) {
+                itemStacks.add(itemProjectile.asItemStack());
+                if(itemProjectile.getOwner() instanceof LivingEntity attacker){
+                    attacker.getArmorItems().forEach(itemStacks::add);
+                }
+
+            }
+            if (damageSource.getAttacker() instanceof LivingEntity attacker) {
+                attacker.getArmorItems().forEach(itemStacks::add);
+            }
+            return itemStacks;
         }
     }
 

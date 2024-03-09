@@ -11,6 +11,10 @@ import smartin.miapi.registries.RegistryInventory;
 
 public class TreechopUtil {
 
+    public static void setTreechopApi(Object object){
+        api = (TreeChopAPI) object;
+    }
+
     public static TreeChopAPI api = null;
 
     static void setup() {

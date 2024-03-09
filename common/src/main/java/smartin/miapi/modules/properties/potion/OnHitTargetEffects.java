@@ -25,18 +25,18 @@ public class OnHitTargetEffects extends PotionEffectProperty {
 
         MiapiEvents.LIVING_HURT.register((listener) -> {
             if (listener.damageSource.getAttacker() instanceof LivingEntity livingEntity && !livingEntity.getWorld().isClient()) {
-                applyEffects(listener.livingEntity, livingEntity, livingEntity, this::isTargetOther);
-                applyEffects(livingEntity, livingEntity, livingEntity, this::isTargetSelf);
+                applyEffects(listener.livingEntity, livingEntity, listener.getCausingItemStack(), livingEntity, this::isTargetOther);
+                applyEffects(livingEntity, livingEntity, listener.getCausingItemStack(), livingEntity, this::isTargetSelf);
             }
             return EventResult.pass();
         });
-        if(Environment.isClient()){
+        if (Environment.isClient()) {
             clientInit();
         }
     }
 
     @net.fabricmc.api.Environment(EnvType.CLIENT)
-    public void clientInit(){
+    public void clientInit() {
         LoreProperty.loreSuppliers.add(itemStack -> {
             List<Text> lines = new ArrayList<>();
             for (EffectHolder effectHolder : getStatusEffects(itemStack)) {
