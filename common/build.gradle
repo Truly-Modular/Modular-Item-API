@@ -41,6 +41,10 @@ dependencies {
     modApi "com.redpxnda.nucleus:nucleus-pose-common:${rootProject.minecraft_version}+${rootProject.nucleus_pose_version}"
     modApi "com.redpxnda.nucleus:nucleus-facet-common:${rootProject.minecraft_version}+${rootProject.nucleus_facet_version}"
 
+    //https://modrinth.com/mod/treechop/version/tIdTnzkf
+
+    modImplementation "maven.modrinth:treechop:${rootProject.fabric_treechop_version}"
+
     //modImplementation files('libs/arsenal-local.jar')
     //modImplementation files('libs/archery-local.jar')
     //modImplementation files('libs/armory-local.jar')

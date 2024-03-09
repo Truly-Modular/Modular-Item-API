@@ -2,6 +2,7 @@ package smartin.miapi.forge;
 
 import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.platform.forge.EventBuses;
+import ht.treechop.api.TreeChopAPI;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.common.MinecraftForge;
@@ -9,7 +10,9 @@ import net.minecraftforge.event.ItemAttributeModifierEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.InterModComms;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import smartin.miapi.Environment;
 import smartin.miapi.Miapi;
@@ -20,10 +23,12 @@ import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.forge.compat.epic_fight.EpicFightCompatProperty;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.modules.properties.AttributeProperty;
+import smartin.miapi.modules.properties.compat.ht_treechop.TreechopUtil;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import static smartin.miapi.Miapi.MOD_ID;
 import static smartin.miapi.attributes.AttributeRegistry.SWIM_SPEED;
@@ -96,6 +101,13 @@ public class TrulyModularForge {
                 //AttributeProperty.equipmentSlotMultimapMap(event.getItemStack())
                 //        .get(event.getSlotType()).forEach((event::addModifier));
             }
+        }
+
+        @SubscribeEvent
+        public static void enqueueIMC(InterModEnqueueEvent event) {
+            InterModComms.sendTo("treechop", "getTreeChopAPI", () -> (Consumer<TreeChopAPI>) response -> {
+                TreechopUtil.api = response;
+            });
         }
     }
 

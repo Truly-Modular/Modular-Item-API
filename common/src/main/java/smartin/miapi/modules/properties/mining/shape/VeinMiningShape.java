@@ -29,6 +29,9 @@ public class VeinMiningShape implements MiningShape {
     @Override
     public List<BlockPos> getMiningBlocks(World world, BlockPos pos, Direction face) {
         List<BlockPos> miningBlocks = new ArrayList<>();
+        if(maxBlocks<1){
+            return miningBlocks;
+        }
         Queue<BlockPos> queue = new LinkedList<>();
         List<BlockPos> visited = new ArrayList<>();
 

@@ -81,6 +81,8 @@ dependencies {
         exclude(module: "fabric-api")
     }
 
+    modCompileOnly "maven.modrinth:treechop:${rootProject.fabric_treechop_version}"
+
     include api("org.mariuszgromada.math:MathParser.org-mXparser:${rootProject.mathparser_version}")
     include modApi("com.jamieswhiteshirt:reach-entity-attributes:$rootProject.fabric_reach_range_version")
 

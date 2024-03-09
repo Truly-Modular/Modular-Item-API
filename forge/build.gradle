@@ -57,6 +57,8 @@ dependencies {
     modApi(include("com.redpxnda.nucleus:nucleus-pose-forge:${rootProject.minecraft_version}+${rootProject.nucleus_pose_version}"))
     modApi(include("com.redpxnda.nucleus:nucleus-facet-forge:${rootProject.minecraft_version}+${rootProject.nucleus_facet_version}"))
 
+    modCompileOnly "maven.modrinth:treechop:${rootProject.forge_treechop_version}"
+
     modLocalRuntime files('libs/arsenal-local.jar')
     modLocalRuntime files('libs/archery-local.jar')
     modLocalRuntime files('libs/armory-local.jar')

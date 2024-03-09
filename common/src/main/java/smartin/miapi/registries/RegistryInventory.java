@@ -76,6 +76,7 @@ import smartin.miapi.modules.material.*;
 import smartin.miapi.modules.properties.*;
 import smartin.miapi.modules.properties.compat.apoli.ApoliPowersProperty;
 import smartin.miapi.modules.properties.compat.better_combat.BetterCombatProperty;
+import smartin.miapi.modules.properties.compat.ht_treechop.TreechopProperty;
 import smartin.miapi.modules.properties.damage_boosts.AquaticDamage;
 import smartin.miapi.modules.properties.damage_boosts.IllagerBane;
 import smartin.miapi.modules.properties.damage_boosts.SmiteDamage;
@@ -178,6 +179,8 @@ public class RegistryInventory {
     //public static Block exampleStatProviderBlock;
     public static BlockEntityType<ModularWorkBenchEntity> modularWorkBenchEntityType;
     public static Item modularItem;
+    public static Item modularAxe;
+    public static Item modularMattock;
     public static StatusEffect cryoStatusEffect;
     public static StatusEffect teleportBlockEffect;
     public static GameEvent statProviderCreatedEvent;
@@ -271,9 +274,9 @@ public class RegistryInventory {
         register(modularItems, "modular_shovel", ModularShovel::new);
         register(modularItems, "modular_pickaxe", ModularPickaxe::new);
         register(modularItems, "modular_hammer", ModularPickaxe::new);
-        register(modularItems, "modular_axe", ModularAxe::new);
+        register(modularItems, "modular_axe", ModularAxe::new, i -> modularAxe = i);
         register(modularItems, "modular_hoe", ModularHoe::new);
-        register(modularItems, "modular_mattock", ModularAxe::new);
+        register(modularItems, "modular_mattock", ModularAxe::new, i -> modularMattock = i);
 
         register(modularItems, "modular_bow", ModularBow::new);
         register(modularItems, "modular_small_bow", ModularBow::new);
@@ -295,7 +298,7 @@ public class RegistryInventory {
 
         //STATUS EFFECTS
         register(statusEffects, "cryo", CryoStatusEffect::new, eff -> cryoStatusEffect = eff);
-        register(statusEffects, "teleport_block", TeleportBlockEffect::new,eff -> teleportBlockEffect = eff);
+        register(statusEffects, "teleport_block", TeleportBlockEffect::new, eff -> teleportBlockEffect = eff);
 
         //ATTRIBUTE
 
@@ -515,6 +518,7 @@ public class RegistryInventory {
             //compat
             registerMiapi(moduleProperties, BetterCombatProperty.KEY, new BetterCombatProperty());
             registerMiapi(moduleProperties, ApoliPowersProperty.KEY, new ApoliPowersProperty());
+            registerMiapi(moduleProperties, TreechopProperty.KEY, new TreechopProperty());
 
             // CRAFTING STATS
             //registerMiapi(craftingStats, "hammering", new SimpleCraftingStat(0), stat -> exampleCraftingStat = stat);

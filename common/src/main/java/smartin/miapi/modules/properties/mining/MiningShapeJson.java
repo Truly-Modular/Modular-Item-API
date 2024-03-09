@@ -1,6 +1,5 @@
 package smartin.miapi.modules.properties.mining;
 
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -15,9 +14,7 @@ import smartin.miapi.modules.properties.mining.modifier.MiningModifier;
 import smartin.miapi.modules.properties.mining.shape.MiningShape;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class MiningShapeJson {
     public MiningCondition miningCondition;
@@ -54,7 +51,6 @@ public class MiningShapeJson {
         this.miningMode = mode.fromJson(modeJson, moduleInstance);
 
         if (element.has("modifiers")) {
-            Map<String, JsonElement> modifiers = new HashMap<>();
             element.get("modifiers").getAsJsonObject().asMap().forEach((id, jsonElement) -> {
                 MiningModifier modifier = MiningShapeProperty.miningModifierMap.get(id);
                 if (modifier != null) {
