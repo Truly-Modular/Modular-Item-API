@@ -12,9 +12,7 @@ import dev.architectury.event.events.common.CommandRegistrationEvent;
 import dev.architectury.event.events.common.EntityEvent;
 import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.event.events.common.PlayerEvent;
-import dev.architectury.platform.Platform;
 import dev.architectury.registry.ReloadListenerRegistry;
-import net.fabricmc.api.EnvType;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.server.MinecraftServer;
@@ -47,7 +45,10 @@ import smartin.miapi.network.NetworkingImplCommon;
 import smartin.miapi.registries.MiapiRegistry;
 import smartin.miapi.registries.RegistryInventory;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 public class Miapi {
@@ -157,7 +158,8 @@ public class Miapi {
 
     protected static void setupConfigs() {
         ConfigManager.register(ConfigBuilder.automatic(MiapiConfig.class)
-                .name("miapi")
+                .id(MOD_ID + ":merged")
+                .fileLocation("miapi")
                 .type(ConfigType.COMMON)
                 .creator(MiapiConfig::new)
                 .updateListener(c -> {
@@ -165,13 +167,8 @@ public class Miapi {
                     if (Environment.isClient()) {
                         GlintProperty.updateConfig();
                     }
-                }));
-
-        if (Platform.getEnv() == EnvType.CLIENT) {
-            ConfigManager.CONFIG_SCREENS_REGISTRY.register(r -> {
-                r.add("miapi", "miapi");
-            });
-        }
+                })
+                .automaticScreen());
     }
 
     public static void registerReloadHandler(
