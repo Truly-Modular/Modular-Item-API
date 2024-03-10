@@ -39,7 +39,7 @@ public class OnHitTargetEffects extends PotionEffectProperty {
     public void clientInit() {
         LoreProperty.loreSuppliers.add(itemStack -> {
             List<Text> lines = new ArrayList<>();
-            for (EffectHolder effectHolder : getStatusEffects(itemStack)) {
+            for (EffectHolder effectHolder : merge(getStatusEffects(itemStack))) {
                 if (effectHolder.isGuiVisibility()) {
                     Text text = effectHolder.getPotionDescription();
                     if (isTargetSelf(effectHolder)) {

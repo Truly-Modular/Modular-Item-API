@@ -18,7 +18,9 @@ import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * This is an abstract class to create properties that use Potion effects
@@ -63,6 +65,7 @@ public abstract class PotionEffectProperty implements ModuleProperty {
 
     public void applyEffects(LivingEntity target, LivingEntity itemsFromEntity, @Nullable LivingEntity causer) {
         List<EffectHolder> getFilteredEffects = getHoldersConditional(itemsFromEntity);
+        getFilteredEffects = merge(getFilteredEffects);
         for (EffectHolder effectHolder : getFilteredEffects) {
             target.addStatusEffect(effectHolder.effectInstance(), causer);
         }
@@ -70,6 +73,7 @@ public abstract class PotionEffectProperty implements ModuleProperty {
 
     public void applyEffects(LivingEntity target, LivingEntity itemsFromEntity, @Nullable LivingEntity causer, EffectPredicate predicate) {
         List<EffectHolder> getFilteredEffects = getHoldersConditional(itemsFromEntity, predicate);
+        getFilteredEffects = merge(getFilteredEffects);
         for (EffectHolder effectHolder : getFilteredEffects) {
             target.addStatusEffect(effectHolder.effectInstance(), causer);
         }
@@ -77,6 +81,7 @@ public abstract class PotionEffectProperty implements ModuleProperty {
 
     public void applyEffects(LivingEntity target, ItemStack itemStack, @Nullable LivingEntity causer, EffectPredicate predicate) {
         List<EffectHolder> getFilteredEffects = getStatusEffects(itemStack);
+        getFilteredEffects = merge(getFilteredEffects);
         for (EffectHolder effectHolder : getFilteredEffects) {
             target.addStatusEffect(effectHolder.effectInstance(), causer);
         }
@@ -92,12 +97,76 @@ public abstract class PotionEffectProperty implements ModuleProperty {
      */
     public void applyEffects(LivingEntity target, LivingEntity itemsFromEntity, ItemStack itemStack, @Nullable LivingEntity causer, EffectPredicate predicate) {
         List<EffectHolder> getFilteredEffects = getStatusEffects(itemStack, predicate, itemsFromEntity);
+        getFilteredEffects = merge(getFilteredEffects);
         for (EffectHolder effectHolder : getFilteredEffects) {
             target.addStatusEffect(effectHolder.effectInstance(), causer);
         }
         getFilteredEffects = getHoldersConditional(itemsFromEntity, predicate);
+        getFilteredEffects = merge(getFilteredEffects);
         for (EffectHolder effectHolder : getFilteredEffects) {
             target.addStatusEffect(effectHolder.effectInstance(), causer);
+        }
+    }
+
+    public List<EffectHolder> merge(List<EffectHolder> holders) {
+        List<EffectHolder> filtered = new ArrayList<>();
+        Map<EffectKey, EffectHolder> effectMap = new HashMap<>();
+
+        for (EffectHolder holder : holders) {
+            int amplifier = holder.effectInstance().getAmplifier();
+            StatusEffect effect = holder.statusEffect();
+            EffectKey key = new EffectKey(effect, amplifier);
+
+            if (effectMap.containsKey(key)) {
+                // Invoke merging logic
+                EffectHolder old = effectMap.get(key);
+                filtered.remove(old);
+                EffectHolder merged = mergeEffects(holder, old);
+                effectMap.put(key, merged);
+                filtered.add(merged);
+            } else {
+                effectMap.put(key, holder);
+                filtered.add(holder);
+            }
+        }
+        return filtered;
+    }
+
+    private EffectHolder mergeEffects(EffectHolder toMerge, EffectHolder existing) {
+        StatusEffectInstance oldInstance = existing.effectInstance();
+        StatusEffectInstance toMergeInstance = toMerge.effectInstance();
+
+        StatusEffectInstance instance = new StatusEffectInstance(
+                oldInstance.getEffectType(),
+                oldInstance.getDuration() + toMergeInstance.getDuration(),
+                oldInstance.getAmplifier(),
+                oldInstance.isAmbient() || toMergeInstance.isAmbient(),
+                oldInstance.shouldShowParticles() || toMergeInstance.shouldShowParticles());
+        return new EffectHolder(existing.statusEffect, existing.moduleInstance, existing.rawData, instance);
+    }
+
+    private static class EffectKey {
+        private StatusEffect effect;
+        private int amplifier;
+
+        public EffectKey(StatusEffect effect, int amplifier) {
+            this.effect = effect;
+            this.amplifier = amplifier;
+        }
+
+        @Override
+        public int hashCode() {
+            return effect.hashCode() + amplifier;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj)
+                return true;
+            if (obj == null || getClass() != obj.getClass())
+                return false;
+            EffectKey other = (EffectKey) obj;
+            return effect.equals(other.effect) && amplifier == other.amplifier;
         }
     }
 
@@ -189,16 +258,20 @@ public abstract class PotionEffectProperty implements ModuleProperty {
     }
 
     public EffectHolder getHolder(StatusEffect effect, JsonObject object, ItemModule.ModuleInstance moduleInstance) {
-        return new EffectHolder(effect, moduleInstance, object);
+        return new EffectHolder(effect, moduleInstance, object, null);
     }
 
     public record EffectHolder(StatusEffect statusEffect, ItemModule.ModuleInstance moduleInstance,
-                               JsonObject rawData) {
+                               JsonObject rawData, StatusEffectInstance instance) {
+
         public boolean isGuiVisibility() {
             return ModuleProperty.getBoolean(rawData(), "lore", moduleInstance(), true);
         }
 
         public StatusEffectInstance effectInstance() {
+            if (instance != null) {
+                return instance;
+            }
             int duration = ModuleProperty.getInteger(rawData(), "duration", moduleInstance(), 10);
             int amplifier = ModuleProperty.getInteger(rawData(), "amplifier", moduleInstance(), 0);
             boolean ambient = ModuleProperty.getBoolean(rawData(), "ambient", moduleInstance(), false);

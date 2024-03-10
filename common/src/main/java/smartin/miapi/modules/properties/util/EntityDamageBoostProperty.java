@@ -3,7 +3,6 @@ package smartin.miapi.modules.properties.util;
 import dev.architectury.event.EventResult;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.server.world.ServerWorld;
 import smartin.miapi.events.MiapiEvents;
 

@@ -40,7 +40,7 @@ public class OnDamagedEffects extends PotionEffectProperty {
     public void setupClient() {
         LoreProperty.loreSuppliers.add(itemStack -> {
             List<Text> lines = new ArrayList<>();
-            for (EffectHolder effectHolder : getStatusEffects(itemStack)) {
+            for (EffectHolder effectHolder :  merge(getStatusEffects(itemStack))) {
                 if (effectHolder.isGuiVisibility()) {
                     Text text = effectHolder.getPotionDescription();
                     if (isTargetSelf(effectHolder)) {

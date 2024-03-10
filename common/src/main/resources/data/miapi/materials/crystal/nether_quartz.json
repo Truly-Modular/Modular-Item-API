@@ -23,7 +23,7 @@
         }
     },
     "properties": {
-        "default": {
+        "handheld": {
             "durability": {
                 "operation": "**",
                 "value": "0.6"

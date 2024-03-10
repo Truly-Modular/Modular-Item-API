@@ -1,23 +1,21 @@
 package smartin.miapi.attributes;
 
 import dev.architectury.event.EventResult;
-import dev.architectury.event.events.common.EntityEvent;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.*;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.damage.DamageSources;
-import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.network.packet.s2c.play.EntityAnimationS2CPacket;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-import smartin.miapi.Miapi;
 import smartin.miapi.entity.ItemProjectileEntity;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.events.MiapiProjectileEvents;
@@ -179,10 +177,23 @@ public class AttributeRegistry {
                             !livingHurtEvent.livingEntity.getWorld().isClient()
             ) {
                 if (attacker.getAttributes().hasAttribute(CRITICAL_CHANCE) && !livingHurtEvent.isCritical) {
-                    double value = attacker.getAttributeValue(CRITICAL_CHANCE);
+                    attacker.getAttributes().getCustomInstance(CRITICAL_CHANCE).addTemporaryModifier(new EntityAttributeModifier(TEMP_CRIT_DMG_UUID, "temp_crit_base", 1, EntityAttributeModifier.Operation.ADDITION));
+                    double value = attacker.getAttributeValue(CRITICAL_CHANCE) - 1;
+                    attacker.getAttributes().getCustomInstance(CRITICAL_CHANCE).removeModifier(TEMP_CRIT_DMG_UUID);
                     if (attacker.getWorld().getRandom().nextDouble() < value) {
                         livingHurtEvent.isCritical = true;
                         livingHurtEvent.amount = livingHurtEvent.amount * 1.5f;
+                        attacker.getWorld().playSound((PlayerEntity) null, attacker.getX(), attacker.getY(), attacker.getZ(), SoundEvents.ENTITY_PLAYER_ATTACK_CRIT, attacker.getSoundCategory(), 1.0F, 1.0F);
+                        if (attacker instanceof PlayerEntity player) {
+                            player.addCritParticles(livingHurtEvent.livingEntity);
+                        }
+                        if (attacker.getWorld().isClient()) {
+                            MinecraftClient.getInstance().particleManager.addEmitter(livingHurtEvent.livingEntity, ParticleTypes.CRIT);
+                        } else {
+                            if (attacker.getWorld() instanceof ServerWorld serverWorld) {
+                                serverWorld.getChunkManager().sendToNearbyPlayers(attacker, new EntityAnimationS2CPacket(livingHurtEvent.livingEntity, 4));
+                            }
+                        }
                     }
                 }
                 if (
