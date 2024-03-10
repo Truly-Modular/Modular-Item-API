@@ -144,6 +144,7 @@ public class AllowedMaterial implements CraftingProperty, ModuleProperty {
         }
         assert newModule != null;
         MaterialProperty.setMaterial(newModule, material.getKey());
+        newModule.getRoot().writeToItem(crafting);
         //materialStack.setCount(1);
         MiapiEvents.MaterialCraftEventData eventData = new MiapiEvents.MaterialCraftEventData(crafting, materialStack, material, newModule, craftAction);
         MiapiEvents.MATERIAL_CRAFT_EVENT.invoker().craft(eventData);

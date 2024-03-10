@@ -18,8 +18,8 @@ public class MaterialInscribeProperty implements ModuleProperty {
 
     public MaterialInscribeProperty() {
         property = this;
-        MiapiEvents.MATERIAL_CRAFT_EVENT.register((listener)->{
-            listener.crafted = inscribe(listener.crafted,listener.materialStack);
+        MiapiEvents.MATERIAL_CRAFT_EVENT.register((listener) -> {
+            listener.crafted = inscribe(listener.crafted, listener.materialStack);
             return EventResult.pass();
         });
     }
