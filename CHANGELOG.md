@@ -22,3 +22,4 @@
 - added ability to render Entities on Items
 - updated Materialgeneration Code
 - fixed minor issues and bugs
+- added Compat for HT Treechop
