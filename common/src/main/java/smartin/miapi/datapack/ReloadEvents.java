@@ -10,11 +10,7 @@ import smartin.miapi.Miapi;
 import smartin.miapi.network.Networking;
 import smartin.miapi.registries.MiapiRegistry;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.*;
 
 /**
  * A utility class that handles event-based reloading of data packs and caches.
@@ -41,7 +37,7 @@ public class ReloadEvents {
     /**
      * A map that stores the paths of data packs to be synced.
      */
-    public static final Map<String, String> DATA_PACKS = new ConcurrentHashMap<>();
+    public static final Map<String, String> DATA_PACKS = Collections.synchronizedMap(new LinkedHashMap<>());
 
     /**
      * A map that stores the paths of data packs that have been synced.

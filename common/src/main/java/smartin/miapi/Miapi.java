@@ -47,9 +47,7 @@ import smartin.miapi.network.NetworkingImplCommon;
 import smartin.miapi.registries.MiapiRegistry;
 import smartin.miapi.registries.RegistryInventory;
 
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.*;
 import java.util.function.Consumer;
 
 public class Miapi {
@@ -80,7 +78,7 @@ public class Miapi {
                 List.of(new Identifier("minecraft:tags"), new Identifier("minecraft:recipes")));
         registerReloadHandler(ReloadEvents.MAIN, "modules", RegistryInventory.modules,
                 (isClient, path, data) -> ItemModule.loadFromData(path, data), -0.5f);
-        registerReloadHandler(ReloadEvents.MAIN, "module_extensions", new ConcurrentHashMap<>(),
+        registerReloadHandler(ReloadEvents.MAIN, "module_extensions", Collections.synchronizedMap(new LinkedHashMap<>()),
                 (isClient, path, data) -> ItemModule.loadModuleExtension(path, data), -0.4f);
 
         registerReloadHandler(ReloadEvents.MAIN, "injectors", bl -> PropertySubstitution.injectorsCount = 0,
@@ -102,13 +100,13 @@ public class Miapi {
         ReloadEvents.END.subscribe((isClient) -> ModularItemCache.discardCache());
         PlayerEvent.PLAYER_JOIN.register((player -> new Thread(() -> MiapiPermissions.getPerms(player)).start()));
         PropertyResolver.propertyProviderRegistry.register("module", (moduleInstance, oldMap) -> {
-            Map<ModuleProperty, JsonElement> map = new ConcurrentHashMap<>();
+            Map<ModuleProperty, JsonElement> map = Collections.synchronizedMap(new LinkedHashMap<>());
             moduleInstance.module.getProperties()
                     .forEach((key, jsonData) -> map.put(RegistryInventory.moduleProperties.get(key), jsonData));
             return map;
         });
         PropertyResolver.propertyProviderRegistry.register("moduleData", (moduleInstance, oldMap) -> {
-            Map<ModuleProperty, JsonElement> map = new ConcurrentHashMap<>();
+            Map<ModuleProperty, JsonElement> map = Collections.synchronizedMap(new LinkedHashMap<>());
             String properties = moduleInstance.moduleData.get("properties");
             if (properties != null) {
                 JsonObject moduleJson = gson.fromJson(properties, JsonObject.class);
