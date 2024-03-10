@@ -3,6 +3,7 @@ package smartin.miapi.forge;
 import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.platform.Platform;
 import dev.architectury.platform.forge.EventBuses;
+import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.common.MinecraftForge;
@@ -48,14 +49,8 @@ public class TrulyModularForge {
         RegistryInventory.moduleProperties.register(EpicFightCompatProperty.KEY, new EpicFightCompatProperty());
 
 
-        LifecycleEvent.SERVER_STARTING.register((instance -> {
-            AttributeRegistry.REACH = ForgeMod.BLOCK_REACH.get();
-            AttributeRegistry.ATTACK_RANGE = ForgeMod.ENTITY_REACH.get();
-            AttributeRegistry.SWIM_SPEED = ForgeMod.SWIM_SPEED.get();
-        }));
-        ReloadEvents.START.subscribe((isClient -> {
-            setupAttributes();
-        }));
+        LifecycleEvent.SERVER_STARTING.register((instance -> setupAttributes()));
+        ReloadEvents.START.subscribe((isClient -> setupAttributes()));
 
         LifecycleEvent.SERVER_STARTED.register((minecraftServer -> {
             if (!Environment.isClient() && MiapiConfig.INSTANCE.server.other.forgeReloadMode) {
@@ -114,6 +109,11 @@ public class TrulyModularForge {
     }
 
     public static class ClientEvents {
+        @SubscribeEvent
+        public static void entityRenderers(EntityRenderersEvent.RegisterRenderers event) {
+            //dont ask me, but this fixes registration for client
+            setupAttributes();
+        }
         @SubscribeEvent
         public void registerBindings(RegisterKeyMappingsEvent event) {
             MiapiClient.KEY_BINDINGS.addCallback(event::register);
