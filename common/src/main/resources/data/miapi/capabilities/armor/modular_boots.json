@@ -3,5 +3,9 @@
 	{
 		"stun_armor":0.3,
 		"weight":2.0
+	},
+	"asd": {
+		"nemesis": 1,
+		"material": "diamond"
 	}
 }

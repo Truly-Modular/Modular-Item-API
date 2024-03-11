@@ -64,7 +64,7 @@ public class MiapiEvents {
 
         }
 
-        public ItemStack getCausingItemStack() {
+        public static ItemStack getCausingItemStack(DamageSource damageSource) {
             if (damageSource.getSource() instanceof ProjectileEntity projectile && (projectile instanceof ItemProjectileEntity itemProjectile)) {
                 return itemProjectile.asItemStack();
 
@@ -75,11 +75,15 @@ public class MiapiEvents {
             return ItemStack.EMPTY;
         }
 
+        public ItemStack getCausingItemStack() {
+            return getCausingItemStack(this.damageSource);
+        }
+
         public Iterable<ItemStack> getCausingItemStackAndArmorOfAttacker() {
             List<ItemStack> itemStacks = new ArrayList<>();
             if (damageSource.getSource() instanceof ProjectileEntity projectile && (projectile instanceof ItemProjectileEntity itemProjectile)) {
                 itemStacks.add(itemProjectile.asItemStack());
-                if(itemProjectile.getOwner() instanceof LivingEntity attacker){
+                if (itemProjectile.getOwner() instanceof LivingEntity attacker) {
                     attacker.getArmorItems().forEach(itemStacks::add);
                 }
 
