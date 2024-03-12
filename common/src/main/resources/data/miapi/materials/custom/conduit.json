@@ -1,0 +1,27 @@
+{
+    "key": "conduit",
+    "translation": "miapi.material.custom.conduit",
+    "icon": "textures/item/heart_of_the_sea.png",
+    "enchantability": 30,
+    "color_palette": {
+        "type": "grayscale_map",
+        "colors": {
+            "0": "000000",
+            "36": "1b4864",
+            "72": "216c75",
+            "108": "2647be",
+            "144": "2570c2",
+            "180": "288ea3",
+            "216": "3cbbda",
+            "252": "14e6d7",
+            "255": "14e6d7"
+        },
+        "filler": "interpolate"
+    },
+    "items": [
+        {
+            "item": "minecraft:conduit",
+            "value": 1.0
+        }
+    ]
+}

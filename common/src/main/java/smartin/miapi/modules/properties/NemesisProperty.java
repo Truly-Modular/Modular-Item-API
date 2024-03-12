@@ -54,7 +54,7 @@ public class NemesisProperty extends DoubleProperty implements CraftingProperty 
                             compound.putInt("miapi_nemesis", value + 1);
                         } else {
                             //other type
-                            value = value - 2;
+                            value = value - 5;
                             if (value < 0) {
                                 compound.remove("miapi_nemesis_target");
                                 compound.putInt("miapi_nemesis", 0);
@@ -89,8 +89,9 @@ public class NemesisProperty extends DoubleProperty implements CraftingProperty 
                         if (attackedType.equals(targetType)) {
                             double factor = scale(value, nemesisScale);
                             listener.amount += (float) (factor) * listener.amount;
-                        }else{
+                        } else {
                             double factor = scale(value, nemesisScale);
+                            factor = Math.min(0.95, factor);
                             listener.amount -= (float) (factor) * listener.amount;
                         }
                     }
@@ -102,7 +103,7 @@ public class NemesisProperty extends DoubleProperty implements CraftingProperty 
     }
 
     @Environment(EnvType.CLIENT)
-    public void setupClient(){
+    public void setupClient() {
         LoreProperty.loreSuppliers.add(weapon -> {
             List<Text> lore = new ArrayList<>();
             Double nemesisScale = getValue(weapon);
