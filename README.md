@@ -17,3 +17,32 @@ The Truly Modular: miapi (Modular Item API) includes a comprehensive set of APIs
 - Complex 3D Capabilities: Tap into the advanced 3D capabilities provided by miapi, enabling you to create complex 3D models or even implement your own model types.
 
 And much more awaits you as you delve into the world of Truly Modular: miapi. Explore the limitless potential of modular item customization and elevate your modding projects to new heights.
+
+# for Developers
+##latest version can be checked https://github.com/Truly-Modular/Modular-Item-API/releases
+## Common
+```
+repositories {
+    maven {
+        url 'http://trulymodular.duckdns.org/maven'
+        allowInsecureProtocol = true
+    }
+}
+```
+```
+dependencies {
+    modApi("com.Truly-Modular.Modular-Item-API:Truly-Modular-miapi-common:${rootProject.miapi_version}")
+}
+```
+## Fabric
+```
+dependencies {
+    modApi("com.Truly-Modular.Modular-Item-API:Truly-Modular-miapi-fabric:${rootProject.miapi_version}")
+}
+```
+## Forge
+```
+dependencies {
+    modApi("com.Truly-Modular.Modular-Item-API:Truly-Modular-miapi-forge:${rootProject.miapi_version}")
+}
+```
