@@ -1,25 +1,5 @@
-## v1.1.13 (1.20.1)
-- added When Attacking, When Killing and onDeath Potion effects
-- added Damage Bonus property against Smite , aquatic and Arachnic Mobs
-- added onKill Explosion property
-- updated config
-- added config option to customize glint coloring
-- added Material Extensions jsons
-- added hidden_groups field to materials
-- adjusted how Generated Materials are a colored
-- added Minecraft Ingredient as option for JsonMaterials
-- heavily Improved Material Coloring code and expandability
-  - this improved System allows for more rendering options and for far better expandability for the future 
-  - refactored Material Coloring System into MaterialRenderController
-  - SpriteColorerer is the Main Coloring System, they transform origin Sprites, they include
-    - GrayscalepaletteColorer, this uses a Grayscale to recolor the Original Sprite, this is the main Coloring System
-    - SpriteOverlayer overlays an existing Sprite over the normal sprite keeping the original transparent parts
-    - SpriteFromJson, it uses a Texture from the Resourcepack(allows for animation)
-    - MaskColorer uses two SpriteColorers and a texture to blend between them 
-- added Spatial Interdiction effect blocking Teleportation
-- added "allowChangeParent" condition to allow Modules to block changes of their direct Parent Module
-- updated Workbench model to be the height of a Full Block
-- added ability to render Entities on Items
-- updated Materialgeneration Code
-- fixed minor issues and bugs
-- added Compat for HT Treechop
+## v1.1.14 (1.20.1)
+- fixed forge crash with HT Treechop ( appearently i shouldve testrun forge a second time lol)
+- added part-fix for glint issues with ImmediatelyFast (requires ImmediatelyFast to update as well)
+- added additional securities arround reload to prevent crashes
+- cleaned up internal dependencies to make addoncreation simpler

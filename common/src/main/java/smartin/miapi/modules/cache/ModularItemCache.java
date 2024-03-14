@@ -52,7 +52,7 @@ public class ModularItemCache {
 
     @Nullable
     public static <T> T getRaw(ItemStack stack, String key) {
-        if (!ReloadEvents.inReload && !stack.isEmpty() && stack.getItem() instanceof VisualModularItem) {
+        if (!ReloadEvents.isInReload() && !stack.isEmpty() && stack.getItem() instanceof VisualModularItem) {
             Cache itemCache = find(stack);
             return (T) itemCache.get(key);
         }
@@ -60,7 +60,7 @@ public class ModularItemCache {
     }
 
     public static <T> T get(ItemStack stack, String key, T fallback) {
-        if (!ReloadEvents.inReload && !stack.isEmpty() && stack.getItem() instanceof ModularItem) {
+        if (!ReloadEvents.isInReload() && !stack.isEmpty() && stack.getItem() instanceof ModularItem) {
             Cache itemCache = find(stack);
             T object = (T) itemCache.get(key);
             if (object == null) {
@@ -72,7 +72,7 @@ public class ModularItemCache {
     }
 
     public static <T> T getVisualOnlyCache(ItemStack stack, String key, T fallback) {
-        if (!ReloadEvents.inReload && !stack.isEmpty() && stack.getItem() instanceof VisualModularItem) {
+        if (!ReloadEvents.isInReload() && !stack.isEmpty() && stack.getItem() instanceof VisualModularItem) {
             Cache itemCache = find(stack);
             T object = (T) itemCache.get(key);
             if (object == null) {

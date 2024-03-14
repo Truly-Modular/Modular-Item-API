@@ -26,7 +26,7 @@ public class MiapiReloadListener implements ResourceReloader {
     static long timeStart;
 
     public CompletableFuture load(ResourceManager manager, Profiler profiler, Executor executor) {
-        ReloadEvents.inReload = true;
+        ReloadEvents.reloadCounter++;
         timeStart = System.nanoTime();
         ReloadEvents.START.fireEvent(false);
         Map<String, String> data = new LinkedHashMap<>();
@@ -123,7 +123,7 @@ public class MiapiReloadListener implements ResourceReloader {
             if (Miapi.server != null) {
                 Miapi.server.getPlayerManager().getPlayerList().forEach(ReloadEvents::triggerReloadOnClient);
             }
-            ReloadEvents.inReload = false;
+            ReloadEvents.reloadCounter--;
         });
     }
 

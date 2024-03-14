@@ -17,11 +17,6 @@ import java.util.*;
  */
 public class ReloadEvents {
     /**
-     * A flag indicating whether the class is currently in the process of reloading.
-     */
-    public static boolean inReload = false;
-
-    /**
      * This is to register DataSyncer. This can be used by addons to sync their own data from the server to the client.
      * This class will deal with all the default logic to sync the packet
      */
@@ -76,7 +71,7 @@ public class ReloadEvents {
     /**
      * This int counts the reloads, on reload start it gets increased, on reload end it decreases. if its 0 no reload is happening
      */
-    private static int reloadCounter = 0;
+    public static int reloadCounter = 0;
 
     public static void setup() {
         if (Environment.isClient()) {
@@ -173,7 +168,7 @@ public class ReloadEvents {
             if (receivedSyncer.isEmpty()) {
                 clientReloadTimeStart = System.nanoTime();
                 ReloadEvents.START.fireEvent(true);
-                inReload = true;
+                reloadCounter++;
             }
             String receivedID = buffer.readString();
             receivedSyncer.add(receivedID);
@@ -183,7 +178,7 @@ public class ReloadEvents {
                 MinecraftClient.getInstance().execute(() -> {
                     ReloadEvents.MAIN.fireEvent(true);
                     ReloadEvents.END.fireEvent(true);
-                    inReload = false;
+                    reloadCounter--;
                     Miapi.LOGGER.info("Client load took " + (double) (System.nanoTime() - clientReloadTimeStart) / 1000 / 1000 + " ms");
                 });
             }

@@ -9,6 +9,8 @@ import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.profiler.Profiler;
 import smartin.miapi.Miapi;
+import smartin.miapi.datapack.ReloadEvents;
+import smartin.miapi.modules.cache.ModularItemCache;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -43,7 +45,7 @@ public class MaterialAtlasManager extends SpriteAtlasHolder {
     public void afterReload(SpriteLoader.StitchResult invalidResult, Profiler profiler) {
         if (invalidResult != null)
             return;
-
+        ReloadEvents.reloadCounter++;
         List<SpriteContents> materialSprites = new ArrayList<>();
 
         ResourceManager manager = MinecraftClient.getInstance().getResourceManager();
@@ -80,6 +82,8 @@ public class MaterialAtlasManager extends SpriteAtlasHolder {
         Miapi.LOGGER.info("Created material atlas with size {}x{}", width, height);
         profiler.pop();
         profiler.endTick();
+        ModularItemCache.discardCache();
+        ReloadEvents.reloadCounter--;
     }
 
     public Sprite getMaterialSprite(Identifier id) {

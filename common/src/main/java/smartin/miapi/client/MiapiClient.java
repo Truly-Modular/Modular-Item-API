@@ -93,6 +93,7 @@ public class MiapiClient {
         ClientLifecycleEvent.CLIENT_LEVEL_LOAD.register(MiapiClient::clientLevelLoad);
         ClientPlayerEvent.CLIENT_PLAYER_JOIN.register(player -> new Thread(() -> MiapiPermissions.getPerms(player)).start());
         ClientPlayerEvent.CLIENT_PLAYER_JOIN.register(player -> {
+            ModularItemCache.discardCache();
             /*
             if (irisLoaded && MiapiConfig.CompatGroup.sendWarningOnWorldLoad.getInt()) {
                 player.sendMessage(Text.literal("Truly Modulars rendering is switched to Fallback."));
@@ -104,7 +105,7 @@ public class MiapiClient {
                 link = link.getWithStyle(Style.EMPTY.withClickEvent(event).withUnderline(true)).get(0);
                 player.sendMessage(link);
             }
-             */
+            */
             if (jerLoaded && Miapi.server == null) {
                 String version = Platform.getMod("jeresources").getVersion();
                 if (version.equals("1.4.0.238") || version.equals("1.4.0.246") || version.equals("1.4.0.247")) {
@@ -184,6 +185,7 @@ public class MiapiClient {
 
     protected static void clientLevelLoad(ClientWorld clientWorld) {
         SpriteLoader.clientStart();
+        ModularItemCache.discardCache();
     }
 
     public static void registerScreenHandler() {

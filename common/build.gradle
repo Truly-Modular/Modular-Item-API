@@ -43,35 +43,34 @@ dependencies {
 
     //https://modrinth.com/mod/treechop/version/tIdTnzkf
 
-    modImplementation "maven.modrinth:treechop:${rootProject.fabric_treechop_version}"
+    modCompileOnly "maven.modrinth:treechop:${rootProject.fabric_treechop_version}"
 
     //modImplementation files('libs/arsenal-local.jar')
     //modImplementation files('libs/archery-local.jar')
     //modImplementation files('libs/armory-local.jar')
 
-    modApi("dev.onyxstudios.cardinal-components-api:cardinal-components-base:${cca_version}") {
+    modCompileOnly("dev.onyxstudios.cardinal-components-api:cardinal-components-base:${cca_version}") {
         exclude(group: "net.fabricmc.fabric-api")
     }
-    modApi("dev.onyxstudios.cardinal-components-api:cardinal-components-entity:${cca_version}") {
+    modCompileOnly("dev.onyxstudios.cardinal-components-api:cardinal-components-entity:${cca_version}") {
         exclude(group: "net.fabricmc.fabric-api")
     }
 
-    modApi "com.github.apace100:calio:1.13.0"
-    modApi "com.github.apace100:apoli:${project.fabric_apoli_version}"
+    modCompileOnly "com.github.apace100:calio:1.13.0"
+    modCompileOnly "com.github.apace100:apoli:${project.fabric_apoli_version}"
     //include "com.github.apace100:apoli:${project.fabric_apoli_version}"
 
-    implementation "org.mariuszgromada.math:MathParser.org-mXparser:${rootProject.mathparser_version}"
-
-    modImplementation 'dev.kosmx.player-anim:player-animation-lib:1.0.2-rc1+1.20'
+    modCompileOnly 'dev.kosmx.player-anim:player-animation-lib:1.0.2-rc1+1.20'
     //modImplementation "maven.modrinth:better-combat:1.7.2+1.20.1-fabric"
-    modApi "curse.maven:bettercombat-639842:4597949"
-    modImplementation "maven.modrinth:archers:1.0.6+1.20.1"
+    modCompileOnly "curse.maven:bettercombat-639842:4597949"
+    modCompileOnly "maven.modrinth:archers:1.0.6+1.20.1"
 
     //modImplementation "curse.maven:epic-fight-mod-405076:4785528"
 
-    modApi("me.shedaniel.cloth:cloth-config-fabric:${rootProject.cloth_config_version}") {
+    modCompileOnly("me.shedaniel.cloth:cloth-config-fabric:${rootProject.cloth_config_version}") {
         exclude(group: "net.fabricmc.fabric-api")
     }
+    implementation "org.mariuszgromada.math:MathParser.org-mXparser:${rootProject.mathparser_version}"
 }
 
 architectury {

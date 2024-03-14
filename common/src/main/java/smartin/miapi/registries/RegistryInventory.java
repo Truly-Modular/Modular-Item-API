@@ -586,7 +586,7 @@ public class RegistryInventory {
         public static final Texturing ENTITY_GLINT_TEXTURING = new Texturing("miapi_glint_direct", () -> setupGlintTexturing(0.16f), () -> RenderSystem.resetTextureMatrix());
 
         public static final RenderLayer modularItemGlint = RenderLayer.of(
-                "miapi_glint_direct",
+                "miapi_glint_direct:immediatelyfast:renderlast",
                 VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL,
                 VertexFormat.DrawMode.QUADS,
                 256, true, true,
@@ -604,7 +604,8 @@ public class RegistryInventory {
                             //NativeImage.
                             return glintShader;
                         }))
-                        .texture(Textures.create().add(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, false, false).add(MaterialAtlasManager.MATERIAL_ID, false, false).build())
+                        .texture(Textures.create().add(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, false, false)
+                                .add(MaterialAtlasManager.MATERIAL_ID, false, false).build())
                         .depthTest(EQUAL_DEPTH_TEST)
                         .transparency(GLINT_TRANSPARENCY)
                         .lightmap(ENABLE_LIGHTMAP)

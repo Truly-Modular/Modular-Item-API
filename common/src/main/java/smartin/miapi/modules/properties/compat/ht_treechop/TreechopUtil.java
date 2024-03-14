@@ -13,12 +13,6 @@ public class TreechopUtil {
 
     public static void setTreechopApi(Object object){
         api = (TreeChopAPI) object;
-    }
-
-    public static TreeChopAPI api = null;
-
-    static void setup() {
-
         api.registerChoppingItemBehavior(RegistryInventory.modularAxe, new IChoppingItem() {
             @Override
             public boolean canChop(PlayerEntity playerEntity, ItemStack itemStack, World world, BlockPos blockPos, BlockState blockState) {
@@ -42,5 +36,10 @@ public class TreechopUtil {
                 return (int) TreechopProperty.property.getValueSafe(itemStack) + 1;
             }
         });
+    }
+
+    public static TreeChopAPI api = null;
+
+    static void setup() {
     }
 }

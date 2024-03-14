@@ -17,8 +17,8 @@ public class ExhaustionProperty extends DoubleProperty {
         property = this;
         MiapiEvents.PLAYER_TICK_START.register(playerEntity -> {
             if (playerEntity.isLogicalSideForUpdatingMovement() && playerEntity.age % 40 == 0) {
-                double getValue = getForItems(playerEntity.getItemsEquipped());
-                if (getValue > 0) {
+                double getValue = getForItems(playerEntity.getArmorItems());
+                if (getValue > 0.2) {
                     playerEntity.getHungerManager().addExhaustion((float) (getValue / 50.0f));
                 }
             }

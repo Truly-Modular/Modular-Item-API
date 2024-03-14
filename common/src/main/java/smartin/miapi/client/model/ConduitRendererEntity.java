@@ -106,8 +106,12 @@ public class ConduitRendererEntity implements MiapiModel {
         matrices.translate(0.5F, 0.3F + k * 0.2F, 0.5F);
         matrices.scale(0.5F, 0.5F, 0.5F);
         Matrix4f matrix4f = matrices.peek().getPositionMatrix();
+        float dir = matrix4f.getTranslation(new Vector3f()).x() > 0 ? 1 : -1;
+        //dir = -1;
         matrix4f.rotate(matrix4f.getUnnormalizedRotation(new Quaternionf()).invert());
         matrix4f.rotate((float) (Math.PI), new Vector3f(1, 0, 0));
+        //matrices.scale(dir, dir, dir);
+
         this.conduitEye.render(matrices, (conduitBlockEntity.isEyeOpen() ? OPEN_EYE_TEXTURE : CLOSED_EYE_TEXTURE).getVertexConsumer(vertexConsumers, RenderLayer::getEntityCutoutNoCull), LightmapTextureManager.MAX_LIGHT_COORDINATE, overlay);
         matrices.pop();
         matrices.pop();

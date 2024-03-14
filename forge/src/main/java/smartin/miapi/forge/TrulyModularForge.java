@@ -58,12 +58,12 @@ public class TrulyModularForge {
                 Miapi.LOGGER.info("Truly Modular will now go onto reload twice.");
                 Miapi.LOGGER.info("This is done because Forges classloading is buggy and stupid. Until we have a better fix, this is used");
                 Miapi.LOGGER.info("This can be turned off in Miapis config.json");
-                ReloadEvents.inReload = true;
+                ReloadEvents.reloadCounter++;
                 ReloadEvents.START.fireEvent(false);
                 ReloadEvents.DataPackLoader.trigger(cacheDatapack);
                 ReloadEvents.MAIN.fireEvent(false);
                 ReloadEvents.END.fireEvent(false);
-                ReloadEvents.inReload = false;
+                ReloadEvents.reloadCounter--;
             }
         }));
         AttributeProperty.replaceMap.put("miapi:generic.reach", ForgeMod.BLOCK_REACH);
