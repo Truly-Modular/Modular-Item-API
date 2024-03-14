@@ -23,7 +23,7 @@ latest version can be checked https://github.com/Truly-Modular/Modular-Item-API/
 We recommend the usage of any Architectury Template, depending on Architectury is also recommended since Truly Modular already depends on it
 the miapi_version needed is the same as the github release tag
 ## Common
-```
+```js
 repositories {
     maven {
         url 'http://trulymodular.duckdns.org/maven'
@@ -31,19 +31,19 @@ repositories {
     }
 }
 ```
-```
+```js
 dependencies {
     modApi("com.Truly-Modular.Modular-Item-API:Truly-Modular-miapi-common:${rootProject.miapi_version}")
 }
 ```
 ## Fabric
-```
+```js
 dependencies {
     modApi("com.Truly-Modular.Modular-Item-API:Truly-Modular-miapi-fabric:${rootProject.miapi_version}")
 }
 ```
 ## Forge
-```
+```js
 dependencies {
     modApi("com.Truly-Modular.Modular-Item-API:Truly-Modular-miapi-forge:${rootProject.miapi_version}")
 }
