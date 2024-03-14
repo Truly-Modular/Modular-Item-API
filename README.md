@@ -18,7 +18,7 @@ The Truly Modular: miapi (Modular Item API) includes a comprehensive set of APIs
 
 And much more awaits you as you delve into the world of Truly Modular: miapi. Explore the limitless potential of modular item customization and elevate your modding projects to new heights.
 
-# for Developers
+# For Developers
 ##latest version can be checked https://github.com/Truly-Modular/Modular-Item-API/releases
 ## Common
 ```
