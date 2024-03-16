@@ -72,11 +72,6 @@ dependencies {
     // Remove the next line if you don't want to depend on the API
     modApi "dev.architectury:architectury-fabric:${rootProject.architectury_version}"
 
-    //this will be replaced by nucleusConfig soon
-    include(modApi("me.shedaniel.cloth:cloth-config-fabric:${rootProject.cloth_config_version}")) {
-        exclude(group: "net.fabricmc.fabric-api")
-    }
-
     modApi("com.terraformersmc:modmenu:${rootProject.fabric_modmenu_version}") {
         exclude(module: "fabric-api")
     }
@@ -104,6 +99,11 @@ dependencies {
     //modLocalRuntime "maven.modrinth:sodium:mc1.20.1-0.5.3"
     //modLocalRuntime"maven.modrinth:iris:1.6.10+1.20.1"
 
+    if ("${rootProject.run_with_bettercombat}" == "true") {
+        modImplementation 'dev.kosmx.player-anim:player-animation-lib-fabric:1.0.2-rc1+1.20'
+        modImplementation "curse.maven:bettercombat-639842:4597949"
+        modImplementation "curse.maven:cloth-config-348521:4973440"
+    }
     //modLocalRuntime "curse.maven:cloth-348521:4554906"
     //modLocalRuntime "curse.maven:bettercombat-639842:4597949"
     //modLocalRuntime 'dev.kosmx.player-anim:player-animation-lib-fabric:1.0.2-rc1+1.20'

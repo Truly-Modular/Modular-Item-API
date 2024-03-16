@@ -30,6 +30,7 @@ configurations {
 repositories {
     maven { url 'https://maven.uuid.gg/releases' }
     maven { url 'https://jitpack.io' }
+    maven { url 'https://maven.kosmx.dev/' }
     maven { url 'https://maven.theillusivec4.top/' }
     maven {
         name = 'Modrinth'
@@ -48,7 +49,6 @@ dependencies {
     modApi "dev.architectury:architectury-forge:${rootProject.architectury_version}"
 
     forgeRuntimeLibrary(include("org.mariuszgromada.math:MathParser.org-mXparser:${rootProject.mathparser_version}"))
-    modImplementation("me.shedaniel.cloth:cloth-config-forge:${rootProject.cloth_config_version}")
     modApi("top.theillusivec4.caelus:caelus-forge:${rootProject.forge_caelus_version}")
 
     modApi(include("com.redpxnda.nucleus:nucleus-core-forge:${rootProject.minecraft_version}+${rootProject.nucleus_core_version}"))
@@ -68,8 +68,17 @@ dependencies {
 
     //modApi files('libs/apoli-forge-1.20.1-2.9.0.4-all.jar')
 
+    if ("${rootProject.run_with_bettercombat}" == "true") {
+        modImplementation "dev.kosmx.player-anim:player-animation-lib-forge:1.0.2-rc1+1.20"
+        modImplementation "curse.maven:bettercombat-639842:5065424"
+        modImplementation "curse.maven:cloth-config-348521:4973441"
+    }
     //forgeRuntimeLibrary(include("dev.kosmx.player-anim:player-animation-lib-forge:0.4.2"
     //modApi include("curse.maven:bettercombat-639842:4357578")
+
+    /*modImplementation("curse.maven:paragliders-289240:5046069")
+    modImplementation("curse.maven:better-paragliders-895261:5182153")*/
+
 
     //https://github.com/EdwinMindcraft/origins-architectury/releases/download/1.10.0.5/apoli-forge-1.20.1-2.9.0.4.jar
 

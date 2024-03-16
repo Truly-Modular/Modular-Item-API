@@ -60,16 +60,16 @@ dependencies {
     modCompileOnly "com.github.apace100:apoli:${project.fabric_apoli_version}"
     //include "com.github.apace100:apoli:${project.fabric_apoli_version}"
 
-    modCompileOnly 'dev.kosmx.player-anim:player-animation-lib:1.0.2-rc1+1.20'
-    //modImplementation "maven.modrinth:better-combat:1.7.2+1.20.1-fabric"
-    modCompileOnly "curse.maven:bettercombat-639842:4597949"
+    if ("${rootProject.run_with_bettercombat}" == "true") {
+        modImplementation 'dev.kosmx.player-anim:player-animation-lib:1.0.2-rc1+1.20'
+        modImplementation "curse.maven:bettercombat-639842:4597949"
+    } else {
+        modCompileOnly 'dev.kosmx.player-anim:player-animation-lib:1.0.2-rc1+1.20'
+        modCompileOnly "curse.maven:bettercombat-639842:4597949"
+    }
     modCompileOnly "maven.modrinth:archers:1.0.6+1.20.1"
 
     //modImplementation "curse.maven:epic-fight-mod-405076:4785528"
-
-    modCompileOnly("me.shedaniel.cloth:cloth-config-fabric:${rootProject.cloth_config_version}") {
-        exclude(group: "net.fabricmc.fabric-api")
-    }
     implementation "org.mariuszgromada.math:MathParser.org-mXparser:${rootProject.mathparser_version}"
 }
 
