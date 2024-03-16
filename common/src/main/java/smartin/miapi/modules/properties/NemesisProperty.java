@@ -113,15 +113,13 @@ public class NemesisProperty extends DoubleProperty implements CraftingProperty 
                 int value = compound.getInt("miapi_nemesis");
                 double factor = scale(value, nemesisScale) * 100;
                 Optional<EntityType<?>> entityType1 = EntityType.get(entityType);
-                Text entity = Text.translatable("miapi.lore.nemesis.no-entity");
+                Text entity = Text.translatable("miapi.lore.nemesis.no_entity");
                 if (entityType1.isPresent()) {
                     entity = entityType1.get().getName();
                 }
 
-                lore.add(Text.translatable("miapi.lore.nemesis.0"));
-                lore.add(Text.translatable("miapi.lore.nemesis.1", entity));
-                lore.add(Text.translatable("miapi.lore.nemesis.2", value));
-                lore.add(Text.translatable("miapi.lore.nemesis.3", modifierFormat.format(factor)));
+                lore.add(Text.translatable("miapi.lore.nemesis.0", value, entity));
+                lore.add(Text.translatable("miapi.lore.nemesis.1", modifierFormat.format(factor)));
             }
             return lore;
         });
