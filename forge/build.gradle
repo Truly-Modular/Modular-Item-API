@@ -63,8 +63,11 @@ dependencies {
     modLocalRuntime files('libs/archery-local.jar')
     modLocalRuntime files('libs/armory-local.jar')
 
-    //modCompileOnly "curse.maven:epic-fight-mod-405076:4785528"
-    //modImplementation "curse.maven:epic-fight-mod-405076:4785528"
+    if ("${rootProject.run_with_efm}" == "true") {
+        modImplementation "curse.maven:epic-fight-mod-405076:5159623"
+    } else {
+        modCompileOnly "curse.maven:epic-fight-mod-405076:5159623"
+    }
 
     //modApi files('libs/apoli-forge-1.20.1-2.9.0.4-all.jar')
 

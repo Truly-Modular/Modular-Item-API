@@ -46,7 +46,8 @@ public class TrulyModularForge {
         MinecraftForge.EVENT_BUS.register(new ServerEvents());
         Miapi.init();
 
-        RegistryInventory.moduleProperties.register(EpicFightCompatProperty.KEY, new EpicFightCompatProperty());
+        if (Platform.isModLoaded("epicfight"))
+            RegistryInventory.moduleProperties.register(EpicFightCompatProperty.KEY, new EpicFightCompatProperty());
 
 
         LifecycleEvent.SERVER_STARTING.register((instance -> setupAttributes()));
