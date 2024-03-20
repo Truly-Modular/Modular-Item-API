@@ -76,6 +76,11 @@ public class StatListWidget extends InteractAbleWidget {
 
     public static void onReload() {
         statDisplays.clear();
+        addStatDisplay(SinglePropertyStatDisplay
+                .builder(NemesisProperty.property)
+                .setMin(0)
+                .setMax(1)
+                .setTranslationKey(NemesisProperty.KEY).build());
         addStatDisplay(AttributeSingleDisplay
                 .builder(EntityAttributes.GENERIC_ATTACK_DAMAGE)
                 .setTranslationKey("damage")

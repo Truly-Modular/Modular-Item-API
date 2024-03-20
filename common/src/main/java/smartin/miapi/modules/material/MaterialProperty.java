@@ -204,6 +204,9 @@ public class MaterialProperty implements ModuleProperty {
                 return basicMaterial.getMaterial(instance);
             }
         }
+        if (CopyParentMaterialProperty.property.isTrue(instance) && instance.parent != null) {
+            return getMaterial(instance.parent);
+        }
         return null;
     }
 

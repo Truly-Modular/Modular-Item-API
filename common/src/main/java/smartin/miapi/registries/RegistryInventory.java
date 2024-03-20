@@ -516,6 +516,7 @@ public class RegistryInventory {
             registerMiapi(moduleProperties, OnKillExplosion.KEY, new OnKillExplosion());
             registerMiapi(moduleProperties, CanChangeParentModule.KEY, new CanChangeParentModule());
             registerMiapi(moduleProperties, NemesisProperty.KEY, new NemesisProperty());
+            registerMiapi(moduleProperties, CopyParentMaterialProperty.KEY, new CopyParentMaterialProperty());
             //compat
             registerMiapi(moduleProperties, BetterCombatProperty.KEY, new BetterCombatProperty());
             registerMiapi(moduleProperties, ApoliPowersProperty.KEY, new ApoliPowersProperty());

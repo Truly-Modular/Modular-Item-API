@@ -29,7 +29,7 @@ public class NemesisProperty extends DoubleProperty implements CraftingProperty 
     public static String KEY = "nemesis";
     public static NemesisProperty property;
 
-    public DecimalFormat modifierFormat = Util.make(new DecimalFormat("##.##"), (decimalFormat) -> {
+    public DecimalFormat modifierFormat = Util.make(new DecimalFormat("##.#"), (decimalFormat) -> {
         decimalFormat.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ROOT));
     });
 

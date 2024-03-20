@@ -45,6 +45,10 @@ public class ItemModule {
      */
     public static final String MODULE_KEY = "modules";
     /**
+     *
+     */
+    public static final String NBT_MODULE_KEY = "miapi_modules";
+    /**
      * The key for the raw properties in the Cache.
      */
     public static final String PROPERTY_KEY = "rawProperties";
@@ -268,7 +272,7 @@ public class ItemModule {
      * @return the module instance associated with the given ItemStack
      */
     public static ModuleInstance getModules(ItemStack stack) {
-        if (stack.getItem() instanceof VisualModularItem && !ReloadEvents.isInReload() && (stack.getOrCreateNbt().get(MODULE_KEY) != null || stack.getOrCreateNbt().get("miapi_modules") != null)) {
+        if (stack.getItem() instanceof VisualModularItem && !ReloadEvents.isInReload() && (stack.getOrCreateNbt().get(MODULE_KEY) != null || stack.getOrCreateNbt().get(ItemModule.NBT_MODULE_KEY) != null)) {
             ModuleInstance moduleInstance = ModularItemCache.getRaw(stack, MODULE_KEY);
             if (moduleInstance == null || moduleInstance.module == null) {
                 IllegalArgumentException exception = new IllegalArgumentException("Item has Invalid Module onReload - treating it like it has no modules");
@@ -654,10 +658,11 @@ public class ItemModule {
          * @param clearCache Determines whether to clear the cache after writing the module.
          */
         public void writeToItem(ItemStack stack, boolean clearCache) {
-            stack.getOrCreateNbt().putString("miapi_modules", this.toString());
+            stack.getOrCreateNbt().putString(ItemModule.NBT_MODULE_KEY, this.toString());
             if(stack.getOrCreateNbt().contains(MODULE_KEY)){
-                stack.getOrCreateNbt().remove(MODULE_KEY);
+                //stack.getOrCreateNbt().remove(MODULE_KEY);
             }
+            stack.getOrCreateNbt().putString(ItemModule.MODULE_KEY, this.toString());
             if (clearCache) {
                 ModularItemCache.clearUUIDFor(stack);
             }

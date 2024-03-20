@@ -128,8 +128,8 @@ public class Miapi {
                 NbtCompound tag = itemStack.getOrCreateNbt();
                 try {
                     String modulesString;
-                    if (tag.contains("miapi_modules") && tag.get("miapi_modules") != null) {
-                        modulesString = tag.getString("miapi_modules");
+                    if (tag.contains(ItemModule.NBT_MODULE_KEY) && tag.get(ItemModule.NBT_MODULE_KEY) != null) {
+                        modulesString = tag.getString(ItemModule.NBT_MODULE_KEY);
                     } else {
                         modulesString = tag.getString(ItemModule.MODULE_KEY);
                     }

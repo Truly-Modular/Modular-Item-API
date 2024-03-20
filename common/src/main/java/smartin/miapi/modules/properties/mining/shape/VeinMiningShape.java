@@ -5,7 +5,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
-import smartin.miapi.Miapi;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.mining.MiningShapeProperty;
 
@@ -21,15 +20,15 @@ public class VeinMiningShape implements MiningShape {
     @Override
     public MiningShape fromJson(JsonObject object, ItemModule.ModuleInstance moduleInstance) {
         VeinMiningShape veinMiningShape = new VeinMiningShape();
-        veinMiningShape.size = MiningShapeProperty.getInteger(object,"size",moduleInstance,5);
-        veinMiningShape.maxBlocks = MiningShapeProperty.getInteger(object,"max",moduleInstance,5);
+        veinMiningShape.size = MiningShapeProperty.getInteger(object, "size", moduleInstance, 5);
+        veinMiningShape.maxBlocks = MiningShapeProperty.getInteger(object, "max", moduleInstance, 5);
         return veinMiningShape;
     }
 
     @Override
     public List<BlockPos> getMiningBlocks(World world, BlockPos pos, Direction face) {
         List<BlockPos> miningBlocks = new ArrayList<>();
-        if(maxBlocks<1){
+        if (maxBlocks < 1) {
             return miningBlocks;
         }
         Queue<BlockPos> queue = new LinkedList<>();
@@ -48,10 +47,10 @@ public class VeinMiningShape implements MiningShape {
                 BlockPos neighborPos = currentPos.offset(direction);
 
                 // Check if neighbor position is within the size limit and hasn't been visited
-                int dx = neighborPos.getX() - pos.getX() + size;
-                int dy = neighborPos.getY() - pos.getY() + size;
-                int dz = neighborPos.getZ() - pos.getZ() + size;
-                if (Math.abs(dx - size) <= size && Math.abs(dy - size) <= size && Math.abs(dz - size) <= size
+                int dx1 = neighborPos.getX() - pos.getX() + size;
+                int dy1 = neighborPos.getY() - pos.getY() + size;
+                int dz1 = neighborPos.getZ() - pos.getZ() + size;
+                if (Math.abs(dx1 - size) <= size && Math.abs(dy1 - size) <= size && Math.abs(dz1 - size) <= size
                         && !visited.contains(neighborPos)) {
 
                     visited.add(neighborPos);
@@ -59,12 +58,7 @@ public class VeinMiningShape implements MiningShape {
                     BlockState neighborState = world.getBlockState(neighborPos);
                     if (neighborState.getBlock().equals(centerState.getBlock())) {
                         queue.add(neighborPos);
-                        Miapi.LOGGER.info("testing " + neighborPos);
-                    } else {
-                        Miapi.LOGGER.info("not-same " + neighborPos);
                     }
-                } else {
-                    Miapi.LOGGER.info("failed " + neighborPos + visited.contains(neighborPos));
                 }
             }
         }

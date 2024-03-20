@@ -23,6 +23,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
+import static smartin.miapi.modules.ItemModule.NBT_MODULE_KEY;
+
 /**
  * This class represents an action related to crafting an item with modules.
  * It contains the necessary information to perform the crafting action and to
@@ -239,8 +241,9 @@ public class CraftAction {
     private ItemStack craft() {
         ItemStack craftingStack = old.copy();
 
-        if (!old.hasNbt() || !old.getOrCreateNbt().contains("modules")) {
-            Miapi.LOGGER.error("old Item has no Modules - something went very wrong");
+        if (!old.hasNbt() || !(old.getOrCreateNbt().contains(ItemModule.MODULE_KEY) || old.getOrCreateNbt().contains(NBT_MODULE_KEY))) {
+            Exception exception = new IllegalArgumentException();
+            Miapi.LOGGER.error("old Item has no Modules - something went very wrong", exception);
             return old;
         }
         //remove CacheKey so new cache gets Generated

@@ -61,7 +61,7 @@ public class ItemToModularConverter implements ModularItemStackConverter.Modular
             if (Registries.ITEM.getId(stack.getItem()).toString().matches(entry.getKey())) {
                 ItemStack nextStack = entry.getValue().copy();
                 nextStack.setNbt(stack.copy().getNbt());
-                nextStack.getOrCreateNbt().put("modules", entry.getValue().getNbt().get("modules"));
+                nextStack.getOrCreateNbt().put(ItemModule.NBT_MODULE_KEY, entry.getValue().getNbt().get(ItemModule.NBT_MODULE_KEY));
                 EnchantmentHelper.get(stack).forEach((enchantment, integer) -> {
                     if (EnchantmentProperty.isAllowed(nextStack, enchantment)) {
                         nextStack.addEnchantment(enchantment, integer);
