@@ -9,7 +9,7 @@ import smartin.miapi.modules.properties.util.ModuleProperty;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CrystalModelProperty implements ModuleProperty {
+public class CrystalModelProperty implements ModuleProperty, RenderProperty {
     public static String KEY = "crystal_model";
     public static CrystalModelProperty property;
 

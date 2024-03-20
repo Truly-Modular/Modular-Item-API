@@ -12,14 +12,13 @@ import smartin.miapi.client.model.MiapiModel;
 import smartin.miapi.item.modular.Transform;
 import smartin.miapi.modules.material.MaterialInscribeDataProperty;
 import smartin.miapi.modules.properties.SlotProperty;
-import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
 @Environment(EnvType.CLIENT)
-public class BannerModelProperty implements ModuleProperty {
+public class BannerModelProperty implements RenderProperty {
     public static final String KEY = "banner";
     public static BannerModelProperty property;
 

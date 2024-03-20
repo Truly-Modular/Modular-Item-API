@@ -6,12 +6,11 @@ import smartin.miapi.client.model.ConduitRendererEntity;
 import smartin.miapi.client.model.MiapiItemModel;
 import smartin.miapi.client.model.MiapiModel;
 import smartin.miapi.item.modular.Transform;
-import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ConduitModelProperty implements ModuleProperty {
+public class ConduitModelProperty implements RenderProperty {
     public static String KEY = "conduit_model";
     public static ConduitModelProperty property;
 

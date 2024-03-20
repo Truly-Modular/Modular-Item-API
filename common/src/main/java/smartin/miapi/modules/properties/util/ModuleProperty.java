@@ -28,11 +28,18 @@ public interface ModuleProperty {
      * return false if this shouldn't be loaded
      * throw a detailed error of the data is broken in some way
      * This can be used to cache property data if necessary.
+     * if any clientOnly stuff needs implementing {@link ModuleProperty#load(String, JsonElement, boolean)}
      *
      * @param moduleKey the String key of the Module - can be used to cache data
      * @param data      the data associated with this Property
      */
     boolean load(String moduleKey, JsonElement data) throws Exception;
+
+
+    default boolean load(String moduleKey, JsonElement data, boolean isClient) throws Exception{
+        return load(moduleKey,data);
+    }
+
 
     /**
      * A overwriteable function for merging Property data for dynamic overwrite and merging behaviour

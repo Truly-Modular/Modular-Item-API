@@ -49,7 +49,7 @@ import java.util.function.Function;
 
 
 @Environment(EnvType.CLIENT)
-public class ModelProperty implements ModuleProperty {
+public class ModelProperty implements RenderProperty {
     public static ModuleProperty property;
     private static final String CACHE_KEY_MAP = Miapi.MOD_ID + ":modelMap";
     private static final String CACHE_KEY_ITEM = Miapi.MOD_ID + ":itemModelodel";

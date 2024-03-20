@@ -25,7 +25,7 @@ import java.util.Map;
  * This Property allows to have a simple way to change the gui position and size of an item
  */
 @Environment(EnvType.CLIENT)
-public class GuiOffsetProperty implements ModuleProperty {
+public class GuiOffsetProperty implements RenderProperty {
     public static final String KEY = "guiOffset";
     public static ModuleProperty property;
 

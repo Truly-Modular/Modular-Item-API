@@ -14,14 +14,13 @@ import smartin.miapi.client.model.MiapiModel;
 import smartin.miapi.item.modular.Transform;
 import smartin.miapi.item.modular.items.ModularCrossbow;
 import smartin.miapi.modules.material.MaterialInscribeDataProperty;
-import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
 @Environment(EnvType.CLIENT)
-public class ItemModelProperty implements ModuleProperty {
+public class ItemModelProperty implements RenderProperty {
     public static final String KEY = "item_model";
     public static ItemModelProperty property;
 

@@ -54,7 +54,7 @@ public class TrulyModularForge {
         ReloadEvents.START.subscribe((isClient -> setupAttributes()));
 
         LifecycleEvent.SERVER_STARTED.register((minecraftServer -> {
-            if (!Environment.isClient() && MiapiConfig.INSTANCE.server.other.forgeReloadMode) {
+            if (MiapiConfig.INSTANCE.server.other.forgeReloadMode) {
                 Map<String, String> cacheDatapack = new HashMap<>(ReloadEvents.DATA_PACKS);
                 Miapi.LOGGER.info("Truly Modular will now go onto reload twice.");
                 Miapi.LOGGER.info("This is done because Forges classloading is buggy and stupid. Until we have a better fix, this is used");

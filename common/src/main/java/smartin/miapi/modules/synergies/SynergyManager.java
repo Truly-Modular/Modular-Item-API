@@ -7,6 +7,7 @@ import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import net.minecraft.text.Text;
+import smartin.miapi.Environment;
 import smartin.miapi.Miapi;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.item.modular.PropertyResolver;
@@ -130,7 +131,7 @@ public class SynergyManager {
             ModuleProperty property1 = RegistryInventory.moduleProperties.get(propertyEntry.getKey());
             try {
                 assert property1 != null;
-                property1.load("synergy", propertyEntry.getValue());
+                property1.load("synergy", propertyEntry.getValue(), Environment.isClient());
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }

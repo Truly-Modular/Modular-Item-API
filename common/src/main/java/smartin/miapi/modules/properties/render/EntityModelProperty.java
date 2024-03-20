@@ -21,7 +21,7 @@ import smartin.miapi.modules.properties.util.ModuleProperty;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EntityModelProperty implements ModuleProperty {
+public class EntityModelProperty implements RenderProperty {
     public static String KEY = "entity_model";
     public static EntityModelProperty property;
     public static World fakeWorld;

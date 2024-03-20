@@ -4,6 +4,7 @@ import com.google.gson.*;
 import com.redpxnda.nucleus.util.InterfaceDispatcher;
 import org.jetbrains.annotations.Nullable;
 import org.mariuszgromada.math.mxparser.Expression;
+import smartin.miapi.Environment;
 import smartin.miapi.Miapi;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.TagProperty;
@@ -29,9 +30,11 @@ public class PropertySubstitution {
     public interface TargetSelector {
         void triggerTargetFrom(JsonElement element, JsonInjector injector);
     }
+
     public interface JsonInjector {
         JsonObject getReplacement(JsonObject json);
     }
+
     public interface ValueResolver {
         JsonElement resolve(JsonElement input, JsonElement originalTarget, Map<String, JsonElement> storedValues);
     }
@@ -54,10 +57,12 @@ public class PropertySubstitution {
                 TargetHolder holder = getValueFromLocator(replacement, removeLocation.getAsString());
                 if (holder.parent instanceof JsonObject object && holder.key != null) {
                     JsonElement removed = object.remove(holder.key);
-                    if (removed == null) Miapi.LOGGER.warn("Failed to remove key '" + removeLocation + "' (object fail) for PropertySubstitution!\nOriginal object: " + toReplace);
+                    if (removed == null)
+                        Miapi.LOGGER.warn("Failed to remove key '" + removeLocation + "' (object fail) for PropertySubstitution!\nOriginal object: " + toReplace);
                 } else if (holder.parent instanceof JsonArray arr) {
                     boolean bl = arr.remove(holder.target);
-                    if (!bl) Miapi.LOGGER.warn("Failed to remove key '" + removeLocation + "' (array fail) for PropertySubstitution!\nOriginal object: " + toReplace);
+                    if (!bl)
+                        Miapi.LOGGER.warn("Failed to remove key '" + removeLocation + "' (array fail) for PropertySubstitution!\nOriginal object: " + toReplace);
                 }
             });
         }
@@ -133,7 +138,8 @@ public class PropertySubstitution {
         return new TargetHolder(currentTarget, parentObject, targetIndex, targetKey);
     }
 
-    public record TargetHolder(JsonElement target, @Nullable JsonElement parent, @Nullable Integer index, @Nullable String key) {
+    public record TargetHolder(JsonElement target, @Nullable JsonElement parent, @Nullable Integer index,
+                               @Nullable String key) {
         public void set(JsonElement newValue) {
             if (parent instanceof JsonObject object && key != null) {
                 object.add(key, newValue);
@@ -217,7 +223,8 @@ public class PropertySubstitution {
         });
 
         targetSelectors.put("modules", (root, injector) -> {
-            if (!(root instanceof JsonObject object)) throw new JsonParseException("Failed to load Miapi module injection! Not a json object -> " + root);
+            if (!(root instanceof JsonObject object))
+                throw new JsonParseException("Failed to load Miapi module injection! Not a json object -> " + root);
 
             List<ItemModule> modules = new ArrayList<>();
 
@@ -257,7 +264,7 @@ public class PropertySubstitution {
                     if (property == null) return;
 
                     try {
-                        property.load(module.getName(), value);
+                        property.load(module.getName(), value, Environment.isClient());
                     } catch (Exception ex) {
                         Miapi.LOGGER.error("Property load error whilst loading PropertySubstitution injection data for a module!");
                         throw new RuntimeException(ex);

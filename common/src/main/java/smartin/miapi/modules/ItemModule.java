@@ -97,7 +97,7 @@ public class ItemModule {
      * @param path             the path of the JSON file
      * @param moduleJsonString the JSON string to load from
      */
-    public static void loadFromData(String path, String moduleJsonString) {
+    public static void loadFromData(String path, String moduleJsonString, boolean isClient) {
         try {
             JsonObject moduleJson = gson.fromJson(moduleJsonString, JsonObject.class);
             if (!path.startsWith(MODULE_KEY)) {
@@ -109,7 +109,7 @@ public class ItemModule {
             Map<String, JsonElement> moduleProperties = new HashMap<>();
             Map<String, JsonElement> rawProperties = gson.fromJson(moduleJsonString, type);
             rawProperties.forEach((key, json) -> {
-                if (isValidProperty(key, path, json)) {
+                if (isValidProperty(key, path, json, isClient)) {
                     moduleProperties.put(key, json);
                 }
             });
@@ -127,7 +127,7 @@ public class ItemModule {
      * @param path             the path of the JSON file
      * @param moduleJsonString the JSON string to load from
      */
-    public static void loadModuleExtension(String path, String moduleJsonString) {
+    public static void loadModuleExtension(String path, String moduleJsonString, boolean isClient) {
         try {
             //TODO:rework this into SynergyManagers implementation
             JsonObject moduleJson = gson.fromJson(moduleJsonString, JsonObject.class);
@@ -147,7 +147,7 @@ public class ItemModule {
                 });
             }
             if (moduleJson.has("merge")) {
-                Map<String, JsonElement> rawMergeProperties = getPropertiesFromJsonString(moduleJson.get("merge"), path);
+                Map<String, JsonElement> rawMergeProperties = getPropertiesFromJsonString(moduleJson.get("merge"), path, isClient);
                 rawMergeProperties.forEach((key, element) -> {
                     if (moduleProperties.containsKey(key)) {
                         ModuleProperty property = RegistryInventory.moduleProperties.get(key);
@@ -160,7 +160,7 @@ public class ItemModule {
                 });
             }
             if (moduleJson.has("replace")) {
-                Map<String, JsonElement> rawReplaceProperties = getPropertiesFromJsonString(moduleJson.get("replace"), path);
+                Map<String, JsonElement> rawReplaceProperties = getPropertiesFromJsonString(moduleJson.get("replace"), path, isClient);
                 moduleProperties.putAll(rawReplaceProperties);
             }
             moduleRegistry.getFlatMap().remove(name);
@@ -170,26 +170,26 @@ public class ItemModule {
         }
     }
 
-    protected static Map<String, JsonElement> getPropertiesFromJsonString(String jsonString, String debugPath) {
+    protected static Map<String, JsonElement> getPropertiesFromJsonString(String jsonString, String debugPath, boolean isClient) {
         Map<String, JsonElement> moduleProperties = new HashMap<>();
         Type type = new TypeToken<Map<String, JsonElement>>() {
         }.getType();
         Map<String, JsonElement> rawProperties = gson.fromJson(jsonString, type);
         rawProperties.forEach((key, json) -> {
-            if (isValidProperty(key, debugPath, json)) {
+            if (isValidProperty(key, debugPath, json, isClient)) {
                 moduleProperties.put(key, json);
             }
         });
         return moduleProperties;
     }
 
-    protected static Map<String, JsonElement> getPropertiesFromJsonString(JsonElement jsonString, String debugPath) {
+    protected static Map<String, JsonElement> getPropertiesFromJsonString(JsonElement jsonString, String debugPath, boolean isClient) {
         Map<String, JsonElement> moduleProperties = new HashMap<>();
         Type type = new TypeToken<Map<String, JsonElement>>() {
         }.getType();
         Map<String, JsonElement> rawProperties = gson.fromJson(jsonString, type);
         rawProperties.forEach((key, json) -> {
-            if (isValidProperty(key, debugPath, json)) {
+            if (isValidProperty(key, debugPath, json, isClient)) {
                 moduleProperties.put(key, json);
             }
         });
@@ -205,7 +205,7 @@ public class ItemModule {
      * @param path             the path of the JSON file
      * @param rawString        the raw JSON string
      */
-    protected static void processModuleJsonElement(JsonElement element, Map<String, JsonElement> moduleProperties, String name, String path, String rawString) {
+    protected static void processModuleJsonElement(JsonElement element, Map<String, JsonElement> moduleProperties, String name, String path, String rawString, boolean isClient) {
         if (element.isJsonObject()) {
             JsonObject jsonObject = element.getAsJsonObject();
             for (Map.Entry<String, JsonElement> entry : jsonObject.entrySet()) {
@@ -213,15 +213,15 @@ public class ItemModule {
                 JsonElement value = entry.getValue();
                 ModuleProperty property = RegistryInventory.moduleProperties.get(key);
                 if (property != null) {
-                    if (isValidProperty(key, name, value)) {
+                    if (isValidProperty(key, name, value, isClient)) {
                         moduleProperties.put(key, value);
                     }
                 } else if (value.isJsonObject()) {
-                    processModuleJsonElement(value, moduleProperties, name, path, rawString);
+                    processModuleJsonElement(value, moduleProperties, name, path, rawString, isClient);
                 } else if (value.isJsonArray()) {
                     JsonArray jsonArray = value.getAsJsonArray();
                     for (JsonElement jsonElement : jsonArray) {
-                        processModuleJsonElement(jsonElement, moduleProperties, name, path, rawString);
+                        processModuleJsonElement(jsonElement, moduleProperties, name, path, rawString, isClient);
                     }
                 } else {
                     LOGGER.error("Error while reading ModuleJson, module " + name + " key/property " + key + " in file " + path + " Please make sure there are no Typos in the Property Names");
@@ -239,11 +239,16 @@ public class ItemModule {
      * @return true if the module property is valid and can be loaded, false otherwise
      * @throws RuntimeException if an error occurs during loading
      */
-    protected static boolean isValidProperty(String key, String moduleKey, JsonElement data) {
+    protected static boolean isValidProperty(String key, String moduleKey, JsonElement data, boolean isClient) {
         ModuleProperty property = RegistryInventory.moduleProperties.get(key);
         if (property != null) {
             try {
                 return property.load(moduleKey, data);
+                //if (!(property instanceof RenderProperty) || isClient) {
+                //    return property.load(moduleKey, data, isClient);
+                //} else {
+                //    return true;
+                //}
             } catch (Exception e) {
                 RuntimeException exception = new RuntimeException("Failure during moduleLoad, Error in Module " + moduleKey + " with property " + key + " with data " + data + " with error " + e.getLocalizedMessage());
                 exception.addSuppressed(e);
@@ -263,7 +268,7 @@ public class ItemModule {
      * @return the module instance associated with the given ItemStack
      */
     public static ModuleInstance getModules(ItemStack stack) {
-        if (stack.getItem() instanceof VisualModularItem && !ReloadEvents.isInReload() && stack.getOrCreateNbt().get("modules") != null) {
+        if (stack.getItem() instanceof VisualModularItem && !ReloadEvents.isInReload() && (stack.getOrCreateNbt().get(MODULE_KEY) != null || stack.getOrCreateNbt().get("miapi_modules") != null)) {
             ModuleInstance moduleInstance = ModularItemCache.getRaw(stack, MODULE_KEY);
             if (moduleInstance == null || moduleInstance.module == null) {
                 IllegalArgumentException exception = new IllegalArgumentException("Item has Invalid Module onReload - treating it like it has no modules");
@@ -649,7 +654,10 @@ public class ItemModule {
          * @param clearCache Determines whether to clear the cache after writing the module.
          */
         public void writeToItem(ItemStack stack, boolean clearCache) {
-            stack.getOrCreateNbt().putString("modules", this.toString());
+            stack.getOrCreateNbt().putString("miapi_modules", this.toString());
+            if(stack.getOrCreateNbt().contains(MODULE_KEY)){
+                stack.getOrCreateNbt().remove(MODULE_KEY);
+            }
             if (clearCache) {
                 ModularItemCache.clearUUIDFor(stack);
             }

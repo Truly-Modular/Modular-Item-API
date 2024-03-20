@@ -13,12 +13,11 @@ import smartin.miapi.client.model.MiapiItemModel;
 import smartin.miapi.client.model.MiapiModel;
 import smartin.miapi.item.modular.Transform;
 import smartin.miapi.modules.material.MaterialIcons;
-import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class BlockModelProperty implements ModuleProperty {
+public class BlockModelProperty implements RenderProperty {
     public static String KEY = "block_model";
     public static BlockModelProperty property;
 

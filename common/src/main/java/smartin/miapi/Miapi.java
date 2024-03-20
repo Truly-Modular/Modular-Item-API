@@ -78,9 +78,9 @@ public class Miapi {
                 new Identifier(MOD_ID, "main_reload_listener"),
                 List.of(new Identifier("minecraft:tags"), new Identifier("minecraft:recipes")));
         registerReloadHandler(ReloadEvents.MAIN, "modules", RegistryInventory.modules,
-                (isClient, path, data) -> ItemModule.loadFromData(path, data), -0.5f);
+                (isClient, path, data) -> ItemModule.loadFromData(path, data, isClient), -0.5f);
         registerReloadHandler(ReloadEvents.MAIN, "module_extensions", Collections.synchronizedMap(new LinkedHashMap<>()),
-                (isClient, path, data) -> ItemModule.loadModuleExtension(path, data), -0.4f);
+                (isClient, path, data) -> ItemModule.loadModuleExtension(path, data, isClient), -0.4f);
 
         registerReloadHandler(ReloadEvents.MAIN, "injectors", bl -> PropertySubstitution.injectorsCount = 0,
                 (isClient, path, data) -> {
@@ -127,7 +127,13 @@ public class Miapi {
             if (itemStack.getItem() instanceof VisualModularItem) {
                 NbtCompound tag = itemStack.getOrCreateNbt();
                 try {
-                    String modulesString = tag.getString(ItemModule.MODULE_KEY);
+                    String modulesString;
+                    if (tag.contains("miapi_modules") && tag.get("miapi_modules") != null) {
+                        modulesString = tag.getString("miapi_modules");
+                    } else {
+                        modulesString = tag.getString(ItemModule.MODULE_KEY);
+                    }
+                    //String modulesString = tag.getString(ItemModule.MODULE_KEY);
                     return Miapi.gson.fromJson(modulesString, ItemModule.ModuleInstance.class);
                 } catch (Exception e) {
                     Miapi.LOGGER.error("could not resolve Modules", e);

@@ -29,15 +29,16 @@ public class NemesisProperty extends DoubleProperty implements CraftingProperty 
     public static String KEY = "nemesis";
     public static NemesisProperty property;
 
-    @Environment(EnvType.CLIENT)
     public DecimalFormat modifierFormat = Util.make(new DecimalFormat("##.##"), (decimalFormat) -> {
         decimalFormat.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ROOT));
     });
 
     public NemesisProperty() {
         super(KEY);
+        if(smartin.miapi.Environment.isClient()){
+            setupClient();
+        }
         property = this;
-        setupClient();
         EntityEvent.LIVING_DEATH.register((livingEntity, damageSource) -> {
             ItemStack weapon = MiapiEvents.LivingHurtEvent.getCausingItemStack(damageSource);
             if (weapon.getItem() instanceof ModularItem && !livingEntity.getWorld().isClient()) {

@@ -19,7 +19,7 @@ import smartin.miapi.modules.properties.util.ModuleProperty;
 import java.util.*;
 
 @Environment(EnvType.CLIENT)
-public class ModelTransformationProperty implements ModuleProperty {
+public class ModelTransformationProperty implements RenderProperty {
 
     public static final String KEY = "modelTransform";
     public static ModuleProperty property;
