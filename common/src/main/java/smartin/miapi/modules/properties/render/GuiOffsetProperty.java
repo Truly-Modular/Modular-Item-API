@@ -10,7 +10,7 @@ import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 import smartin.miapi.Miapi;
-import smartin.miapi.client.model.item.BakedSIngleModel;
+import smartin.miapi.client.model.item.BakedSingleModel;
 import smartin.miapi.client.model.MiapiItemModel;
 import smartin.miapi.item.modular.Transform;
 import smartin.miapi.modules.ItemModule;
@@ -44,7 +44,7 @@ public class GuiOffsetProperty implements RenderProperty {
         });
         ModelProperty.modelTransformers.add(new ModelProperty.ModelTransformer() {
             @Override
-            public Map<String, BakedSIngleModel> bakedTransform(Map<String, BakedSIngleModel> dynamicBakedModelmap, ItemStack stack) {
+            public Map<String, BakedSingleModel> bakedTransform(Map<String, BakedSingleModel> dynamicBakedModelmap, ItemStack stack) {
                 dynamicBakedModelmap.forEach((id, dynamicBakedModel) -> {
                     GuiOffsetJson guiOffsetJson = new GuiOffsetJson();
                     for (ItemModule.ModuleInstance instance : ItemModule.createFlatList(ItemModule.getModules(stack))) {

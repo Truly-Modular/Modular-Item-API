@@ -7,6 +7,10 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import org.joml.Matrix4f;
 
+/**
+ * default model to implement Module level Models.
+ * Should be registered at {@link MiapiItemModel#modelSuppliers}
+ */
 public interface MiapiModel {
     void render(MatrixStack matrices,
                 ItemStack stack,

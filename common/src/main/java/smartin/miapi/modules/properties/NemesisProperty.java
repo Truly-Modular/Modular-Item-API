@@ -118,7 +118,6 @@ public class NemesisProperty extends DoubleProperty implements CraftingProperty 
                 if (entityType1.isPresent()) {
                     entity = entityType1.get().getName();
                 }
-
                 lore.add(Text.translatable("miapi.lore.nemesis.0", value, entity));
                 lore.add(Text.translatable("miapi.lore.nemesis.1", modifierFormat.format(factor)));
             }

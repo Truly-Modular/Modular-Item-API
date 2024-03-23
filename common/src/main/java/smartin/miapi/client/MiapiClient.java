@@ -102,7 +102,7 @@ public class MiapiClient {
                 ClickEvent event = new ClickEvent(ClickEvent.Action.OPEN_URL, "https://github.com/IrisShaders/Iris/blob/1.20.1/docs/development/compatibility/core-shaders.md");
                 Text link = Text.literal("For more information you can read this");
                 player.sendMessage(Text.literal("You can disable this warning and switch back to the default renderer in the Config."));
-                link = link.getWithStyle(Style.EMPTY.withClickEvent(event).withUnderline(true)).get(0);
+                link = link.getWithStyle(Style.EMPTY.withClickEvent(event).withUnderline(true)).getVertexConsumer(0);
                 player.sendMessage(link);
             }
             */

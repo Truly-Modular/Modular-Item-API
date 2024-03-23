@@ -26,7 +26,7 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.model.*;
-import smartin.miapi.client.model.item.BakedSIngleModel;
+import smartin.miapi.client.model.item.BakedSingleModel;
 import smartin.miapi.client.renderer.TrimRenderer;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.item.modular.Transform;
@@ -46,6 +46,8 @@ import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
+
+import static smartin.miapi.Miapi.gson;
 
 
 @Environment(EnvType.CLIENT)
@@ -76,11 +78,9 @@ public class ModelProperty implements RenderProperty {
         });
     }
 
-    List<ModelHolder> getForModule(ItemModule.ModuleInstance instance, String key, ItemStack itemStack) {
-        Gson gson = Miapi.gson;
+    public static List<ModelJson> getJson(ItemModule.ModuleInstance moduleInstance) {
         List<ModelJson> modelJsonList = new ArrayList<>();
-        List<ModelHolder> models = new ArrayList<>();
-        JsonElement data = instance.getProperties().get(property);
+        JsonElement data = moduleInstance.getProperties().get(property);
         if (data == null) {
             return new ArrayList<>();
         }
@@ -96,44 +96,65 @@ public class ModelProperty implements RenderProperty {
             propertyJson.repair();
             modelJsonList.add(propertyJson);
         }
+        return modelJsonList;
+    }
+
+    public static List<ModelHolder> getForModule(ItemModule.ModuleInstance instance, String key, ItemStack itemStack) {
+        List<ModelJson> modelJsonList = getJson(instance);
+        List<ModelHolder> models = new ArrayList<>();
         for (ModelJson json : modelJsonList) {
-            int condition = Material.getColor(StatResolver.resolveString(json.condition, instance));
+            ModelHolder holder = bakedModel(instance,json,itemStack,key);
+            if(holder!=null){
+                models.add(holder);
+            }
+        }
+        return models;
+    }
+
+    @Nullable
+    public static ModelHolder bakedModel(ItemModule.ModuleInstance instance, ModelJson json, ItemStack itemStack, String key) {
+        int condition = Material.getColor(StatResolver.resolveString(json.condition, instance));
+        if(condition!=0){
             if (
                     json.transform.origin == null && key == null ||
                             json.transform.origin != null && json.transform.origin.equals(key) ||
                             ("item".equals(json.transform.origin) && key == null)) {
-                if (condition != 0) {
-                    Material material = MaterialProperty.getMaterial(instance);
-                    List<String> list = new ArrayList<>();
-                    if (material != null) {
-                        list.add(material.getKey());
-                        list = material.getTextureKeys();
-                    } else {
-                        list.add("default");
-                    }
-                    UnbakedModelHolder unbakedModel = null;
-                    for (String str : list) {
-                        String fullPath = json.path.replace("[material.texture]", str);
-                        if (modelCache.containsKey(fullPath)) {
-                            unbakedModel = modelCache.get(fullPath);
-                            break;
-                        }
-                    }
-                    BakedSIngleModel model = DynamicBakery.bakeModel(unbakedModel.model, textureGetter, ColorHelper.Argb.getArgb(255, 255, 255, 255), Transform.IDENTITY);
-                    if (model != null) {
-                        Matrix4f matrix4f = Transform.toModelTransformation(json.transform).toMatrix();
-                        String colorProviderId = unbakedModel.modelData.colorProvider != null ?
-                                unbakedModel.modelData.colorProvider : json.color_provider;
-                        ColorProvider colorProvider = ColorProvider.getProvider(colorProviderId, itemStack, instance);
-                        if (colorProvider == null) {
-                            throw new RuntimeException("colorProvider is null");
-                        }
-                        models.add(new ModelHolder(model.optimize(), matrix4f, colorProvider, json.getTrimMode(), json.entity_render));
-                    }
-                }
+                return bakedModel(instance, json, itemStack);
             }
         }
-        return models;
+        return null;
+    }
+
+    @Nullable
+    public static ModelHolder bakedModel(ItemModule.ModuleInstance instance, ModelJson json, ItemStack itemStack) {
+        Material material = MaterialProperty.getMaterial(instance);
+        List<String> list = new ArrayList<>();
+        if (material != null) {
+            list.add(material.getKey());
+            list = material.getTextureKeys();
+        } else {
+            list.add("default");
+        }
+        UnbakedModelHolder unbakedModel = null;
+        for (String str : list) {
+            String fullPath = json.path.replace("[material.texture]", str);
+            if (modelCache.containsKey(fullPath)) {
+                unbakedModel = modelCache.get(fullPath);
+                break;
+            }
+        }
+        BakedSingleModel model = DynamicBakery.bakeModel(unbakedModel.model, textureGetter, ColorHelper.Argb.getArgb(255, 255, 255, 255), Transform.IDENTITY);
+        if (model != null) {
+            Matrix4f matrix4f = Transform.toModelTransformation(json.transform).toMatrix();
+            String colorProviderId = unbakedModel.modelData.colorProvider != null ?
+                    unbakedModel.modelData.colorProvider : json.color_provider;
+            ColorProvider colorProvider = ColorProvider.getProvider(colorProviderId, itemStack, instance);
+            if (colorProvider == null) {
+                throw new RuntimeException("colorProvider is null");
+            }
+            return new ModelHolder(model.optimize(), matrix4f, colorProvider, json.getTrimMode(), json.entity_render);
+        }
+        return null;
     }
 
     public static boolean isAllowedKey(@Nullable String jsonKey, @Nullable String modelTypeKey) {
@@ -160,7 +181,7 @@ public class ModelProperty implements RenderProperty {
         for (ModelTransformer transformer : modelTransformers) {
             unbakedModels = transformer.unBakedTransform(unbakedModels, itemStack);
         }
-        Map<String, BakedSIngleModel> bakedModelMap = bakedModelMap(unbakedModels);
+        Map<String, BakedSingleModel> bakedModelMap = bakedModelMap(unbakedModels);
 
         for (ModelTransformer transformer : modelTransformers) {
             bakedModelMap = transformer.bakedTransform(bakedModelMap, itemStack);
@@ -169,7 +190,7 @@ public class ModelProperty implements RenderProperty {
         return optimizedMap;
     }
 
-    protected static Map<String, BakedModel> optimize(Map<String, BakedSIngleModel> bakedModelMap) {
+    protected static Map<String, BakedModel> optimize(Map<String, BakedSingleModel> bakedModelMap) {
         HashMap<String, BakedModel> map = new HashMap<>();
         bakedModelMap.forEach((id, dynamicModel) -> {
             map.put(id, dynamicModel.optimize());
@@ -177,13 +198,13 @@ public class ModelProperty implements RenderProperty {
         return map;
     }
 
-    protected static Map<String, BakedSIngleModel> bakedModelMap(List<TransformedUnbakedModel> unbakedModels) {
-        Map<String, BakedSIngleModel> bakedModelMap = new HashMap<>();
+    protected static Map<String, BakedSingleModel> bakedModelMap(List<TransformedUnbakedModel> unbakedModels) {
+        Map<String, BakedSingleModel> bakedModelMap = new HashMap<>();
         for (TransformedUnbakedModel unbakedModel : unbakedModels) {
             ModelBakeSettings settings = unbakedModel.transform.get().toModelBakeSettings();
-            BakedSIngleModel model = DynamicBakery.bakeModel(unbakedModel.unbakedModel, mirroredGetter, unbakedModel.color, unbakedModel.transform.get());
-            BakedSIngleModel bakedSIngleModel = bakedModelMap.computeIfAbsent(unbakedModel.transform.primary, (key) ->
-                    new BakedSIngleModel(new ArrayList<>())
+            BakedSingleModel model = DynamicBakery.bakeModel(unbakedModel.unbakedModel, mirroredGetter, unbakedModel.color, unbakedModel.transform.get());
+            BakedSingleModel bakedSIngleModel = bakedModelMap.computeIfAbsent(unbakedModel.transform.primary, (key) ->
+                    new BakedSingleModel(new ArrayList<>())
             );
             if (model != null) {
                 if (model.getOverrides() == null || model.getOverrides().equals(ModelOverrideList.EMPTY)) {
@@ -371,7 +392,7 @@ public class ModelProperty implements RenderProperty {
     }
 
     public interface ModelTransformer {
-        default Map<String, BakedSIngleModel> bakedTransform(Map<String, BakedSIngleModel> dynamicBakedModelMap, ItemStack stack) {
+        default Map<String, BakedSingleModel> bakedTransform(Map<String, BakedSingleModel> dynamicBakedModelMap, ItemStack stack) {
             return dynamicBakedModelMap;
         }
 
@@ -384,13 +405,14 @@ public class ModelProperty implements RenderProperty {
                                           ItemModule.ModuleInstance instance, int color) {
     }
 
-    static class ModelJson {
+    public static class ModelJson {
         public String path;
         public Transform transform = Transform.IDENTITY;
         public String condition = "1";
         public String color_provider = "material";
         public String trim_mode;
         public Boolean entity_render;
+        public String id = null;
 
         public void repair() {
             //this shouldn't be necessary as the values should be loaded from the class but anyways

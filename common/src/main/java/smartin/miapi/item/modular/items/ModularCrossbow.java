@@ -31,7 +31,6 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
-import smartin.miapi.Miapi;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.client.model.ModularModelPredicateProvider;
 import smartin.miapi.entity.ItemProjectileEntity;
@@ -194,6 +193,16 @@ public class ModularCrossbow extends CrossbowItem implements ModularItem, Custom
         nbtCompound.put("ChargedProjectiles", nbtList);
     }
 
+    private static void clearProjectiles(ItemStack crossbow) {
+        NbtCompound nbtCompound = crossbow.getNbt();
+        if (nbtCompound != null) {
+            NbtList nbtList = nbtCompound.getList("ChargedProjectiles", 9);
+            nbtList.clear();
+            nbtCompound.put("ChargedProjectiles", nbtList);
+        }
+        crossbow.setNbt(nbtCompound);
+    }
+
     private static void shoot(World world, LivingEntity shooter, Hand hand, ItemStack crossbow, ItemStack projectile, float soundPitch, boolean creative, float speed, float divergence, float simulated) {
         if (!world.isClient) {
             boolean bl = projectile.isOf(Items.FIREWORK_ROCKET);
@@ -286,16 +295,6 @@ public class ModularCrossbow extends CrossbowItem implements ModularItem, Custom
         }
 
         clearProjectiles(stack);
-    }
-
-    private static void clearProjectiles(ItemStack crossbow) {
-        NbtCompound nbtCompound = crossbow.getNbt();
-        if (nbtCompound != null) {
-            NbtList nbtList = nbtCompound.getList("ChargedProjectiles", 9);
-            nbtList.clear();
-            nbtCompound.put("ChargedProjectiles", nbtList);
-        }
-        crossbow.setNbt(nbtCompound);
     }
 
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {

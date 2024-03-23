@@ -182,7 +182,9 @@ public class GeneratedMaterial implements Material {
 
     public static void onReloadServer() {
         try {
-            Miapi.LOGGER.info("MIAPI STARTED MATERIAL GENERATION");
+            if (verboseLogging()) {
+                Miapi.LOGGER.info("MIAPI STARTED MATERIAL GENERATION");
+            }
             woodItems.clear();
             stoneItems.clear();
             generatedItems.clear();
@@ -212,7 +214,9 @@ public class GeneratedMaterial implements Material {
                                     GeneratedMaterial generatedMaterial = new GeneratedMaterial(toolMaterial, false);
                                     if (generatedMaterial.assignStats(toolItems, false)) {
                                         toRegister.add(generatedMaterial);
-                                        Miapi.LOGGER.info("FOUND MATERIAL " + generatedMaterial.getKey());
+                                        if (verboseLogging()) {
+                                            Miapi.LOGGER.info("FOUND MATERIAL " + generatedMaterial.getKey());
+                                        }
                                         generatedMaterials.add(new Pair<>(generatedMaterial.mainIngredient, generatedMaterial.swordItem.getDefaultStack()));
                                     }
                                 }
@@ -292,10 +296,16 @@ public class GeneratedMaterial implements Material {
                             }
                         }
                     });
-            Miapi.LOGGER.info("MIAPI FINISHED MATERIAL GENERATION");
+            if (verboseLogging()) {
+                Miapi.LOGGER.info("MIAPI FINISHED MATERIAL GENERATION");
+            }
         } catch (Exception e) {
             Miapi.LOGGER.error("MAJOR ISSUE DURING MATERIAL CREATION", e);
         }
+    }
+
+    public static boolean verboseLogging() {
+        return false;
     }
 
     public static boolean isValidItem(Item item) {
@@ -447,7 +457,9 @@ public class GeneratedMaterial implements Material {
                     ((SmithingTransformRecipeAccessor) smithingTransformRecipe).getAddition(),
                     this.key
             ));
-            Miapi.LOGGER.warn("added Smithing Recipe for " + sourceMaterial.getKey() + " to " + this.key + " via " + templateItem.getItem());
+            if (verboseLogging()) {
+                Miapi.LOGGER.warn("added Smithing Recipe for " + sourceMaterial.getKey() + " to " + this.key + " via " + templateItem.getItem());
+            }
             this.groups.clear();
             this.groups.add(this.key);
             this.groups.add("smithing");

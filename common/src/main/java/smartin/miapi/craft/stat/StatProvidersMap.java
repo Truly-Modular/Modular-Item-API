@@ -115,7 +115,7 @@ public class StatProvidersMap {
                 CraftingStat stat = RegistryInventory.craftingStats.get(str);
                 if (stat == null) return; // i could warn if the stat doesn't exist, but optional compat exists
 
-                ops.getStream(p.getSecond()).getOrThrow(false, s -> Miapi.LOGGER.error("Failed to get data as a list for stat '{}' in StatProvidersMapCodec! -> {}", str, s)).forEach(val -> {
+                ops.getStream(p.getSecond()).getOrThrow(false, s -> Miapi.LOGGER.error("Failed to getVertexConsumer data as a list for stat '{}' in StatProvidersMapCodec! -> {}", str, s)).forEach(val -> {
                     MapLike<T> details = ops.getMap(val).getOrThrow(false, s ->
                             Miapi.LOGGER.error("Failed to parse details for stat '{}' in StatProvidersMapCodec! -> {}", str, s));
 

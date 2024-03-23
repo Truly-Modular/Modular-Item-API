@@ -69,10 +69,10 @@ public abstract class SpriteColorer implements MaterialRenderController {
         Identifier replaceId = MaterialSpriteManager.getMaterialSprite(originalSprite, material, this);
         RenderLayer atlasRenderLayer = RenderLayer.getEntityTranslucentCull(replaceId);
         VertexConsumer atlasConsumer = ItemRenderer.getDirectItemGlintConsumer(vertexConsumers, atlasRenderLayer, true, false);
-        return get(atlasConsumer, originalSprite);
+        return getVertexConsumer(atlasConsumer, originalSprite);
     }
 
-    public RescaledVertexConsumer get(VertexConsumer vertexConsumer, Sprite sprite) {
+    public static RescaledVertexConsumer getVertexConsumer(VertexConsumer vertexConsumer, Sprite sprite) {
         RescaledVertexConsumer rescaled = lookupMap.computeIfAbsent(sprite, (s) -> new RescaledVertexConsumer(vertexConsumer, sprite));
         rescaled.delegate = vertexConsumer;
         return rescaled;

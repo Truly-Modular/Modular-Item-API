@@ -62,7 +62,7 @@ public class StatRequirementMap {
 
             map.entries().forEach(p -> {
                 String str = ops.getStringValue(p.getFirst()).getOrThrow(false, s ->
-                        Miapi.LOGGER.error("Failed to get string value in StatRequirementMapCodec! -> {}", s));
+                        Miapi.LOGGER.error("Failed to getVertexConsumer string value in StatRequirementMapCodec! -> {}", s));
 
                 CraftingStat stat = RegistryInventory.craftingStats.get(str);
                 T element = p.getSecond();

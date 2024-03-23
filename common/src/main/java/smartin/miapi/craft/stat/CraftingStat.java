@@ -111,7 +111,7 @@ public interface CraftingStat<T> {
     Text asText(T instance);
 
     /**
-     * A method used to get the "better" of two stat instances.
+     * A method used to getVertexConsumer the "better" of two stat instances.
      * If the first and second are equal, typically return the first. (If it matters)
      *
      * @param first  the first stat instance

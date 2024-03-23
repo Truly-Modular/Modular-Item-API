@@ -26,7 +26,7 @@ public interface MaterialRenderController {
             ModelTransformationMode mode);
 
     /**
-     * get a simple Color of the Material for other purposes, namely the material description gui
+     * getVertexConsumer a simple Color of the Material for other purposes, namely the material description gui
      */
     Color getAverageColor();
 }

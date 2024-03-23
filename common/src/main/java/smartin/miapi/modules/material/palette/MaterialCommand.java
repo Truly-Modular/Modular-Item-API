@@ -37,7 +37,7 @@ public class MaterialCommand {
 
     private static int executeMaterialCommand(CommandContext<ServerCommandSource> context) {
         String materialId = StringArgumentType.getString(context, "material_id");
-        List<String> materialOptions = getMaterialOptions(); // You need to define this method to get the list of material options
+        List<String> materialOptions = getMaterialOptions(); // You need to define this method to getVertexConsumer the list of material options
         if (materialOptions.contains(materialId)) {
             // Material ID is valid, perform desired action
             context.getSource().sendFeedback(() -> Text.literal("Material ID is valid: " + materialId), false);

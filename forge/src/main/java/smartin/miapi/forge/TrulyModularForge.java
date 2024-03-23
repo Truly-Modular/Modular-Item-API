@@ -3,6 +3,9 @@ package smartin.miapi.forge;
 import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.platform.Platform;
 import dev.architectury.platform.forge.EventBuses;
+import dev.architectury.registry.ReloadListenerRegistry;
+import net.minecraft.resource.ResourceType;
+import net.minecraft.util.Identifier;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 import net.minecraftforge.common.ForgeMod;
@@ -20,6 +23,7 @@ import smartin.miapi.Miapi;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.client.MiapiClient;
 import smartin.miapi.config.MiapiConfig;
+import smartin.miapi.datapack.MiapiReloadListener;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.forge.compat.epic_fight.EpicFightCompatProperty;
 import smartin.miapi.item.modular.ModularItem;
@@ -28,6 +32,7 @@ import smartin.miapi.modules.properties.compat.ht_treechop.TreechopUtil;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
@@ -52,6 +57,12 @@ public class TrulyModularForge {
 
         LifecycleEvent.SERVER_STARTING.register((instance -> setupAttributes()));
         ReloadEvents.START.subscribe((isClient -> setupAttributes()));
+
+        ReloadListenerRegistry.register(
+                ResourceType.SERVER_DATA,
+                new MiapiReloadListener(),
+                new Identifier(MOD_ID, "main_reload_listener"),
+                List.of(new Identifier("minecraft:tags"), new Identifier("minecraft:recipes")));
 
         LifecycleEvent.SERVER_STARTED.register((minecraftServer -> {
             if (MiapiConfig.INSTANCE.server.other.forgeReloadMode) {
@@ -95,7 +106,7 @@ public class TrulyModularForge {
         public void adjustAttributes(ItemAttributeModifierEvent event) {
             if (event.getItemStack().getItem() instanceof ModularItem) {
                 //AttributeProperty.equipmentSlotMultimapMap(event.getItemStack())
-                //        .get(event.getSlotType()).forEach((event::addModifier));
+                //        .getVertexConsumer(event.getSlotType()).forEach((event::addModifier));
             }
         }
 

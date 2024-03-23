@@ -21,7 +21,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.client.model.item.BakedSingleModelOverrides;
-import smartin.miapi.client.model.item.BakedSIngleModel;
+import smartin.miapi.client.model.item.BakedSingleModel;
 import smartin.miapi.item.modular.Transform;
 import smartin.miapi.modules.properties.render.ModelProperty;
 
@@ -40,14 +40,14 @@ public class DynamicBakery {
 
     private static final BakedQuadFactory QUAD_FACTORY = new BakedQuadFactory();
 
-    public static BakedSIngleModel bakeModel(JsonUnbakedModel unbakedModel, Function<SpriteIdentifier, Sprite> textureGetter, int color, Transform settings) {
+    public static BakedSingleModel bakeModel(JsonUnbakedModel unbakedModel, Function<SpriteIdentifier, Sprite> textureGetter, int color, Transform settings) {
         try {
             ModelLoader modelLoader = ModelLoadAccessor.getLoader();
             AtomicReference<JsonUnbakedModel> actualModel = new AtomicReference<>(unbakedModel);
             unbakedModel.getModelDependencies().stream().filter(identifier -> identifier.toString().equals("minecraft:item/generated") || identifier.toString().contains("handheld")).findFirst().ifPresent(identifier -> {
                 actualModel.set(ITEM_MODEL_GENERATOR.create(ModelProperty.textureGetter, unbakedModel));
             });
-            BakedSIngleModel model = DynamicBakery.bake(actualModel.get(), modelLoader, unbakedModel.getRootModel(), textureGetter, Transform.toModelTransformation(settings), new Identifier(unbakedModel.id), true, color);
+            BakedSingleModel model = DynamicBakery.bake(actualModel.get(), modelLoader, unbakedModel.getRootModel(), textureGetter, Transform.toModelTransformation(settings), new Identifier(unbakedModel.id), true, color);
             for (Direction direction : Direction.values()) {
                 if (!model.getQuads(null, direction, Random.create()).isEmpty()) {
                     return model;
@@ -66,7 +66,7 @@ public class DynamicBakery {
         }
     }
 
-    public static BakedSIngleModel bake(JsonUnbakedModel model, ModelLoader loader, JsonUnbakedModel parent, Function<SpriteIdentifier, Sprite> textureGetter, Transform settings, Identifier id, boolean hasDepth, int color) {
+    public static BakedSingleModel bake(JsonUnbakedModel model, ModelLoader loader, JsonUnbakedModel parent, Function<SpriteIdentifier, Sprite> textureGetter, Transform settings, Identifier id, boolean hasDepth, int color) {
         Sprite sprite = textureGetter.apply(model.resolveSprite("particle"));
         if (model.getRootModel() == ModelLoader.BLOCK_ENTITY_MARKER) {
             BakedModel model1 = new BuiltinBakedModel(model.getTransformations(), compileOverrides(model, loader, parent, textureGetter, ModelRotation.X0_Y0, color), sprite, model.getGuiLight().isSide());
@@ -132,8 +132,8 @@ public class DynamicBakery {
         return quads;
     }
 
-    public static BakedSIngleModel dynamicBakedModel(BakedModel model) {
-        if (model instanceof BakedSIngleModel bakedSIngleModel) {
+    public static BakedSingleModel dynamicBakedModel(BakedModel model) {
+        if (model instanceof BakedSingleModel bakedSIngleModel) {
             new Exception().printStackTrace();
             return bakedSIngleModel;
         }
@@ -142,7 +142,7 @@ public class DynamicBakery {
         for (Direction dir : Direction.values()) {
             quads.addAll(model.getQuads(null, dir, Random.create()));
         }
-        BakedSIngleModel model1 = new BakedSIngleModel(quads);
+        BakedSingleModel model1 = new BakedSingleModel(quads);
         model1.overrideList = model.getOverrides();
         return model1;
     }
@@ -186,9 +186,9 @@ public class DynamicBakery {
             for (int j = overrides.size() - 1; j >= 0; --j) {
                 ModelOverride modelOverride = overrides.get(j);
                 JsonUnbakedModel model = ModelProperty.modelCache.get(modelOverride.getModelId().toString()).model();
-                BakedSIngleModel bakedModel = bakeModel(model, textureGetter, color, Transform.IDENTITY);
+                BakedSingleModel bakedModel = bakeModel(model, textureGetter, color, Transform.IDENTITY);
                 assert bakedModel != null;
-                bakedModel = (BakedSIngleModel) ColorUtil.recolorModel(bakedModel, color);
+                bakedModel = (BakedSingleModel) ColorUtil.recolorModel(bakedModel, color);
                 InlinedCondition[] inlinedConditions = modelOverride.streamConditions().map((condition) -> {
                     int i = object2IntMap.getInt(condition.getType());
                     return new InlinedCondition(i, condition.getThreshold());

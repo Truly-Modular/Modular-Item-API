@@ -18,10 +18,7 @@ import smartin.miapi.registries.RegistryInventory;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static smartin.miapi.Miapi.LOGGER;
@@ -659,7 +656,7 @@ public class ItemModule {
          */
         public void writeToItem(ItemStack stack, boolean clearCache) {
             stack.getOrCreateNbt().putString(ItemModule.NBT_MODULE_KEY, this.toString());
-            if(stack.getOrCreateNbt().contains(MODULE_KEY)){
+            if (stack.getOrCreateNbt().contains(MODULE_KEY)) {
                 //stack.getOrCreateNbt().remove(MODULE_KEY);
             }
             stack.getOrCreateNbt().putString(ItemModule.MODULE_KEY, this.toString());
@@ -691,6 +688,29 @@ public class ItemModule {
                 moduleInstance.module = empty;
             }
             return moduleInstance;
+        }
+
+        @Nullable
+        public ModuleInstance parseTo(String[] data) {
+            if (data.length == 0) {
+                return this;
+            }
+            String[] newArray = Arrays.copyOfRange(data, 1, data.length);
+            if ("parent".equals(data[0])) {
+                if (this.parent != null) {
+                    return parent.parseTo(newArray);
+                }
+            } else {
+                try {
+                    int id = Integer.parseInt(data[0]);
+                    if (subModules.containsKey(id)) {
+                        subModules.get(0).parseTo(newArray);
+                    }
+                } catch (NumberFormatException ignored) {
+
+                }
+            }
+            return null;
         }
     }
 }

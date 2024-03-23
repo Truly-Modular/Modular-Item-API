@@ -79,7 +79,7 @@ public class MiapiItemModel implements MiapiModel {
     }
 
     public interface ModelSupplier {
-        List<MiapiModel> getModels(@Nullable String key, ItemModule.ModuleInstance model, ItemStack stack);
+        List<MiapiModel> getModels(@Nullable String key, ItemModule.ModuleInstance module, ItemStack stack);
     }
 
     public interface ModelTransformer {

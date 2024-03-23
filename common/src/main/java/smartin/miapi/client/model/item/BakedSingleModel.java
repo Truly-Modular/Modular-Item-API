@@ -27,14 +27,14 @@ import java.util.*;
  * A BakedModel made to be semi mutable and allow for more dynamic interactions
  */
 @Environment(EnvType.CLIENT)
-public class BakedSIngleModel implements BakedModel {
+public class BakedSingleModel implements BakedModel {
     public List<BakedQuad> quads;
     public ModelTransformation modelTransformation = ModelTransformation.NONE;
     public List<BakedModel> childModels = new ArrayList<>();
-    private BakedSIngleModel overrideModel;
+    private BakedSingleModel overrideModel;
     public ModelOverrideList overrideList;
 
-    public BakedSIngleModel(List<BakedQuad> quads) {
+    public BakedSingleModel(List<BakedQuad> quads) {
         this.quads = quads;
         overrideList = new DynamicOverrides();
     }
@@ -52,7 +52,7 @@ public class BakedSIngleModel implements BakedModel {
 
     public void addModel(BakedModel child) {
         if (overrideModel == null) {
-            overrideModel = new BakedSIngleModel(new ArrayList<>());
+            overrideModel = new BakedSingleModel(new ArrayList<>());
         }
         this.childModels.add(child);
     }
@@ -91,7 +91,7 @@ public class BakedSIngleModel implements BakedModel {
     public void setModelTransformation(ModelTransformation transformation) {
         modelTransformation = transformation;
         this.childModels.forEach(childModel -> {
-            if (childModel instanceof BakedSIngleModel bakedSIngleModel) {
+            if (childModel instanceof BakedSingleModel bakedSIngleModel) {
                 bakedSIngleModel.setModelTransformation(transformation);
             } else {
                 Miapi.LOGGER.warn("childModel is not a Dynamic Model. This should not happen");
@@ -137,7 +137,7 @@ public class BakedSIngleModel implements BakedModel {
         Map<BakedSingleModelOverrides.ConditionHolder,
                 Map<Direction, List<BakedQuad>>> completeList = new LinkedHashMap<>();
         childModels.forEach(child -> {
-            if (child instanceof BakedSIngleModel bakedSIngleModel) {
+            if (child instanceof BakedSingleModel bakedSIngleModel) {
                 putDirectionalQuads(bakedQuads, child);
                 if (bakedSIngleModel.overrideList instanceof DynamicBakery.DynamicOverrideList dynamicOverrideList) {
                     for (DynamicBakery.DynamicOverrideList.DynamicBakedOverride overrides : dynamicOverrideList.dynamicOverrides) {
@@ -151,7 +151,7 @@ public class BakedSIngleModel implements BakedModel {
             }
         });
         childModels.forEach(child -> {
-            if (child instanceof BakedSIngleModel bakedSIngleModel) {
+            if (child instanceof BakedSingleModel bakedSIngleModel) {
                 if (bakedSIngleModel.overrideList instanceof DynamicBakery.DynamicOverrideList dynamicOverrideList) {
                     completeList.forEach(((conditionHolder, directionBakedQuadHashMap) -> {
                         int index = -1;

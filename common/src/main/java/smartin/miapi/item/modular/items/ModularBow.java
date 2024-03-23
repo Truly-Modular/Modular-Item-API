@@ -86,9 +86,6 @@ public class ModularBow extends BowItem implements ModularItem {
 
     @Override
     public void onStoppedUsing(ItemStack bowStack, World world, LivingEntity user, int remainingUseTicks) {
-        //Multimap<EntityAttribute, EntityAttributeModifier> attributeModifiers = ArrayListMultimap.create();
-        //attributeModifiers.put(EntityAttributes.GENERIC_MOVEMENT_SPEED, new EntityAttributeModifier(bowMoveSpeedUUId, "bowMoveSpeed", 0, EntityAttributeModifier.Operation.MULTIPLY_TOTAL));
-        //user.getAttributes().removeModifiers(attributeModifiers);
         if (!(user instanceof PlayerEntity)) {
             return;
         }
@@ -108,10 +105,24 @@ public class ModularBow extends BowItem implements ModularItem {
         if (projectileStack.isEmpty()) {
             projectileStack = new ItemStack(Items.ARROW);
         }
-        float pullProgress = getPullProgress(this.getMaxUseTime(bowStack) - remainingUseTicks, bowStack);
+        float pullProgress = getPullProgress(bowStack.getItem().getMaxUseTime(bowStack) - remainingUseTicks, bowStack);
         if (pullProgress < 0.1) {
             return;
         }
+        shoot(bowStack, projectileStack, world, user, pullProgress, !consumeArrow, playerEntity.getPitch(), playerEntity.getYaw(), 0.0f);
+        if (consumeArrow) {
+            projectileStack.decrement(1);
+            if (projectileStack.isEmpty()) {
+                playerEntity.getInventory().removeOne(projectileStack);
+            }
+        }
+    }
+
+    public static void shoot(ItemStack bowStack, ItemStack projectileStack, World world, LivingEntity user, float pullProgress, boolean canPickup, float pitch, float yaw, float roll) {
+        if (!(user instanceof PlayerEntity)) {
+            return;
+        }
+        PlayerEntity playerEntity = (PlayerEntity) user;
         if (!world.isClient && projectileStack.getItem() instanceof ArrowItem arrowItem) {
             int punchLevel = EnchantmentHelper.getLevel(Enchantments.PUNCH, bowStack);
             int powerLevel = EnchantmentHelper.getLevel(Enchantments.POWER, bowStack);
@@ -128,7 +139,7 @@ public class ModularBow extends BowItem implements ModularItem {
             float speed = (float) Math.max(0.1, AttributeProperty.getActualValue(bowStack, EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_SPEED) + 3.0);
             float damage = (float) AttributeProperty.getActualValue(bowStack, EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_DAMAGE) / speed;
             itemProjectile.setDamage(damage + itemProjectile.getDamage());
-            itemProjectile.setVelocity(playerEntity, playerEntity.getPitch(), playerEntity.getYaw(), 0.0f, pullProgress * speed, divergence);
+            itemProjectile.setVelocity(playerEntity, pitch, yaw, roll, pullProgress * speed, divergence);
             if (pullProgress == 1.0f) {
                 itemProjectile.setCritical(true);
                 itemProjectile.isCritical();
@@ -143,7 +154,7 @@ public class ModularBow extends BowItem implements ModularItem {
                 itemProjectile.setOnFireFor(100);
             }
             bowStack.damage(1, playerEntity, p -> p.sendToolBreakStatus(playerEntity.getActiveHand()));
-            if (!consumeArrow) {
+            if (!canPickup) {
                 itemProjectile.pickupType = PersistentProjectileEntity.PickupPermission.CREATIVE_ONLY;
             } else {
                 itemProjectile.pickupType = PersistentProjectileEntity.PickupPermission.ALLOWED;
@@ -165,13 +176,7 @@ public class ModularBow extends BowItem implements ModularItem {
             }
         }
         world.playSound(null, playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), SoundEvents.ENTITY_ARROW_SHOOT, SoundCategory.PLAYERS, 1.0f, 1.0f / (world.getRandom().nextFloat() * 0.4f + 1.2f) + pullProgress * 0.5f);
-        if (consumeArrow) {
-            projectileStack.decrement(1);
-            if (projectileStack.isEmpty()) {
-                playerEntity.getInventory().removeOne(projectileStack);
-            }
-        }
-        playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
+        playerEntity.incrementStat(Stats.USED.getOrCreateStat(bowStack.getItem()));
     }
 
     @Override

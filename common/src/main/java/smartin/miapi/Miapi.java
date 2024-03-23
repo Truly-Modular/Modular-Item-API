@@ -12,11 +12,8 @@ import dev.architectury.event.events.common.CommandRegistrationEvent;
 import dev.architectury.event.events.common.EntityEvent;
 import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.event.events.common.PlayerEvent;
-import dev.architectury.registry.ReloadListenerRegistry;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.resource.ResourceType;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import org.apache.logging.log4j.util.TriConsumer;
 import org.slf4j.Logger;
@@ -25,7 +22,6 @@ import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.client.MiapiClient;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.craft.stat.StatActorType;
-import smartin.miapi.datapack.MiapiReloadListener;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.injectors.PropertySubstitution;
 import smartin.miapi.item.ItemToModularConverter;
@@ -47,7 +43,6 @@ import smartin.miapi.registries.RegistryInventory;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
@@ -72,11 +67,6 @@ public class Miapi {
             return EventResult.pass();
         });
         LifecycleEvent.SERVER_BEFORE_START.register(minecraftServer -> server = minecraftServer);
-        ReloadListenerRegistry.register(
-                ResourceType.SERVER_DATA,
-                new MiapiReloadListener(),
-                new Identifier(MOD_ID, "main_reload_listener"),
-                List.of(new Identifier("minecraft:tags"), new Identifier("minecraft:recipes")));
         registerReloadHandler(ReloadEvents.MAIN, "modules", RegistryInventory.modules,
                 (isClient, path, data) -> ItemModule.loadFromData(path, data, isClient), -0.5f);
         registerReloadHandler(ReloadEvents.MAIN, "module_extensions", Collections.synchronizedMap(new LinkedHashMap<>()),
