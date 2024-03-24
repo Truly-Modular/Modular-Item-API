@@ -31,7 +31,7 @@ import smartin.miapi.modules.properties.AttributeProperty;
 import smartin.miapi.modules.properties.compat.ht_treechop.TreechopUtil;
 import smartin.miapi.registries.RegistryInventory;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -66,7 +66,7 @@ public class TrulyModularForge {
 
         LifecycleEvent.SERVER_STARTED.register((minecraftServer -> {
             if (MiapiConfig.INSTANCE.server.other.forgeReloadMode) {
-                Map<String, String> cacheDatapack = new HashMap<>(ReloadEvents.DATA_PACKS);
+                Map<String, String> cacheDatapack = new LinkedHashMap<>(ReloadEvents.DATA_PACKS);
                 Miapi.LOGGER.info("Truly Modular will now go onto reload twice.");
                 Miapi.LOGGER.info("This is done because Forges classloading is buggy and stupid. Until we have a better fix, this is used");
                 Miapi.LOGGER.info("This can be turned off in Miapis config.json");

@@ -46,8 +46,8 @@ public class OverlayModelProperty extends CodecBasedProperty<OverlayModelPropert
                             ModelHolder holder = ModelProperty.bakedModel(moduleInstance, modelJson, stack, key);
                             if (holder != null) {
                                 ColorProvider colorProvider = holder.colorProvider();
-                                if (modelJson.entity_render) {
-                                    colorProvider = ColorProvider.getProvider("material", stack, modelData.useThisModule ? module : moduleInstance);
+                                if (modelData.useThisModule) {
+                                    colorProvider = ColorProvider.getProvider("material", stack, module);
                                 }
                                 Sprite overWriteSprite = modelData.resolveSprite();
                                 models.add(getBakedMiapiModel(
@@ -58,11 +58,7 @@ public class OverlayModelProperty extends CodecBasedProperty<OverlayModelPropert
                                         holder,
                                         colorProvider,
                                         overWriteSprite));
-                                Miapi.LOGGER.info("added Sprite Override");
                             }
-                            /*
-
-                             */
                         }
                     });
                 }
@@ -120,7 +116,6 @@ public class OverlayModelProperty extends CodecBasedProperty<OverlayModelPropert
     }
 
     public static class OverlayModelData {
-        public String target;
         public String texture;
         public String modelTargetType;
         public String modelTargetInfo;

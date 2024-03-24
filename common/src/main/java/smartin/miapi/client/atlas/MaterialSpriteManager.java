@@ -7,6 +7,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.util.Identifier;
+import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.modules.material.Material;
 import smartin.miapi.modules.material.palette.SpriteColorer;
 
@@ -56,13 +57,20 @@ public class MaterialSpriteManager {
         return identifier;
     }
 
+    public static void clear(){
+        materialSpriteCache.invalidateAll();
+        animated_Textures.clear();
+    }
+
     public static void tick() {
-        animated_Textures.forEach(((holder, nativeImageBackedTexture) -> {
-            holder.colorer.tick((nativeImage) -> {
-                nativeImageBackedTexture.setImage(nativeImage);
-                nativeImageBackedTexture.upload();
-            }, holder.sprite().getContents());
-        }));
+        if (!ReloadEvents.isInReload()) {
+            animated_Textures.forEach(((holder, nativeImageBackedTexture) -> {
+                holder.colorer.tick((nativeImage) -> {
+                    nativeImageBackedTexture.setImage(nativeImage);
+                    nativeImageBackedTexture.upload();
+                }, holder.sprite().getContents());
+            }));
+        }
     }
 
     public record Holder(Sprite sprite, Material material, SpriteColorer colorer) {

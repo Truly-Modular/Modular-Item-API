@@ -9,6 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Environment;
 import smartin.miapi.Miapi;
+import smartin.miapi.client.atlas.MaterialSpriteManager;
 import smartin.miapi.client.model.ModelTransformer;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.item.modular.ModularItem;
@@ -22,6 +23,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
+
+import static smartin.miapi.events.MiapiEvents.CACHE_CLEAR_EVENT;
 
 public class ModularItemCache {
     protected static Map<String, CacheObjectSupplier> supplierMap = new HashMap<>();
@@ -84,10 +87,12 @@ public class ModularItemCache {
     }
 
     public static void discardCache() {
+        CACHE_CLEAR_EVENT.invoker().onReload(Environment.isClient());
         cache.cleanUp();
         cache.invalidateAll();
         if (Environment.isClient()) {
             ModelTransformer.clearCaches();
+            MaterialSpriteManager.clear();
         }
     }
 

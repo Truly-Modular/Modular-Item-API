@@ -39,6 +39,7 @@ public class MiapiEvents {
     public static final PrioritizedEvent<EntityRide> STOP_RIDING = PrioritizedEvent.createLoop();
     public static final PrioritizedEvent<StatUpdateEvent> STAT_UPDATE_EVENT = PrioritizedEvent.createEventResult();
     public static final PrioritizedEvent<ItemStackAttributeEvent> ITEM_STACK_ATTRIBUTE_EVENT = PrioritizedEvent.createEventResult();
+    public static final PrioritizedEvent<ReloadEvent> CACHE_CLEAR_EVENT = PrioritizedEvent.createEventResult();
     @Deprecated
     /**
      * @Deprecated use {@link MiapiEvents#GENERATE_MATERIAL_CONVERTERS} instead
@@ -50,6 +51,10 @@ public class MiapiEvents {
     public static final PrioritizedEvent<MaterialCraftEvent> MATERIAL_CRAFT_EVENT = PrioritizedEvent.createLoop();
     public static final PrioritizedEvent<SmithingEvent> SMITHING_EVENT = PrioritizedEvent.createLoop();
     public static final PrioritizedEvent<LivingEntityAttributeBuild> LIVING_ENTITY_ATTRIBUTE_BUILD_EVENT = PrioritizedEvent.createLoop();
+
+    public interface ReloadEvent{
+        EventResult onReload(boolean isClient);
+    }
 
     public static class LivingHurtEvent {
         public final LivingEntity livingEntity;

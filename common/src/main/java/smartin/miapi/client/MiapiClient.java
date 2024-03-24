@@ -45,6 +45,9 @@ import smartin.miapi.network.Networking;
 import smartin.miapi.registries.MiapiRegistry;
 import smartin.miapi.registries.RegistryInventory;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import static smartin.miapi.registries.RegistryInventory.Client.glintShader;
 
 public class MiapiClient {
@@ -84,6 +87,18 @@ public class MiapiClient {
                 }
             });
         }));
+        ClientReloadShadersEvent.EVENT.register((resourceFactory, shadersSink) -> {
+            ModularItemCache.discardCache();
+            Map<String, String> cacheDatapack = new LinkedHashMap<>(ReloadEvents.DATA_PACKS);
+            ReloadEvents.reloadCounter++;
+            ReloadEvents.START.fireEvent(true);
+            ReloadEvents.DataPackLoader.trigger(cacheDatapack);
+            ReloadEvents.MAIN.fireEvent(true);
+            ReloadEvents.END.fireEvent(true);
+            ReloadEvents.reloadCounter--;
+            ModularItemCache.discardCache();
+        });
+
         registerShaders();
         MaterialRenderControllers.setup();
         MaterialIcons.setup();
@@ -94,18 +109,6 @@ public class MiapiClient {
         ClientPlayerEvent.CLIENT_PLAYER_JOIN.register(player -> new Thread(() -> MiapiPermissions.getPerms(player)).start());
         ClientPlayerEvent.CLIENT_PLAYER_JOIN.register(player -> {
             ModularItemCache.discardCache();
-            /*
-            if (irisLoaded && MiapiConfig.CompatGroup.sendWarningOnWorldLoad.getInt()) {
-                player.sendMessage(Text.literal("Truly Modulars rendering is switched to Fallback."));
-                player.sendMessage(Text.literal("This means Modular Items will look significantly worse than they are supposed to."));
-                player.sendMessage(Text.literal("This is due to Iris not allowing Mods to implement custom shaders."));
-                ClickEvent event = new ClickEvent(ClickEvent.Action.OPEN_URL, "https://github.com/IrisShaders/Iris/blob/1.20.1/docs/development/compatibility/core-shaders.md");
-                Text link = Text.literal("For more information you can read this");
-                player.sendMessage(Text.literal("You can disable this warning and switch back to the default renderer in the Config."));
-                link = link.getWithStyle(Style.EMPTY.withClickEvent(event).withUnderline(true)).getVertexConsumer(0);
-                player.sendMessage(link);
-            }
-            */
             if (jerLoaded && Miapi.server == null) {
                 String version = Platform.getMod("jeresources").getVersion();
                 if (version.equals("1.4.0.238") || version.equals("1.4.0.246") || version.equals("1.4.0.247")) {
@@ -119,9 +122,7 @@ public class MiapiClient {
         });
         ClientReloadShadersEvent.EVENT.register((resourceFactory, asd) -> ModularItemCache.discardCache());
         RegistryInventory.modularItems.addCallback((item -> {
-            ModularModelPredicateProvider.registerModelOverride(item, new Identifier(Miapi.MOD_ID, "damage"), (stack, world, entity, seed) -> {
-                return stack.isDamageable() && stack.getDamage() > 0 ? ((float) stack.getDamage() / stack.getMaxDamage()) : 0.0f;
-            });
+            ModularModelPredicateProvider.registerModelOverride(item, new Identifier(Miapi.MOD_ID, "damage"), (stack, world, entity, seed) -> stack.isDamageable() && stack.getDamage() > 0 ? ((float) stack.getDamage() / stack.getMaxDamage()) : 0.0f);
             ModularModelPredicateProvider.registerModelOverride(item, new Identifier(Miapi.MOD_ID, "damaged"), (stack, world, entity, seed) -> stack.isDamaged() ? 1.0F : 0.0F);
         }));
         ReloadEvents.START.subscribe(isClient -> {

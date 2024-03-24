@@ -3,3 +3,5 @@
 - added part-fix for glint issues with ImmediatelyFast (requires ImmediatelyFast to update as well)
 - added additional securities arround reload to prevent crashes
 - cleaned up internal dependencies to make addoncreation simpler
+- fixed crash with F3-T
+- added OverlayTextureProperty -> allowing to layer additional textures onto existing models
