@@ -8,7 +8,9 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.text.Style;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Util;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.craft.CraftAction;
@@ -35,7 +37,7 @@ public class NemesisProperty extends DoubleProperty implements CraftingProperty 
 
     public NemesisProperty() {
         super(KEY);
-        if(smartin.miapi.Environment.isClient()){
+        if (smartin.miapi.Environment.isClient()) {
             setupClient();
         }
         property = this;
@@ -112,14 +114,19 @@ public class NemesisProperty extends DoubleProperty implements CraftingProperty 
             if (nemesisScale != null && nemesisScale > 0) {
                 String entityType = compound.getString("miapi_nemesis_target");
                 int value = compound.getInt("miapi_nemesis");
-                double factor = scale(value, nemesisScale) * 100;
+                double factor = scale(value, nemesisScale) * 100 - 1;
                 Optional<EntityType<?>> entityType1 = EntityType.get(entityType);
                 Text entity = Text.translatable("miapi.lore.nemesis.no_entity");
                 if (entityType1.isPresent()) {
                     entity = entityType1.get().getName();
                 }
-                lore.add(Text.translatable("miapi.lore.nemesis.0", value, entity));
-                lore.add(Text.translatable("miapi.lore.nemesis.1", modifierFormat.format(factor)));
+                Text blueNumber = Text.literal(modifierFormat.format(factor)+"%").fillStyle(Style.EMPTY.withColor(Formatting.BLUE));
+                Text redNumber = Text.literal(modifierFormat.format(factor)+"%").fillStyle(Style.EMPTY.withColor(Formatting.RED));
+                Text whiteNumber = Text.literal(String.valueOf(value)).fillStyle(Style.EMPTY.withColor(Formatting.WHITE));
+                entity = Text.literal(entity.getString()).fillStyle(Style.EMPTY.withColor(Formatting.GRAY));
+                lore.add(Text.translatable("miapi.lore.nemesis.0", whiteNumber, entity));
+                lore.add(Text.translatable("miapi.lore.nemesis.1", blueNumber, Text.literal(entity.getString()).fillStyle(Style.EMPTY.withColor(Formatting.BLUE))));
+                lore.add(Text.translatable("miapi.lore.nemesis.2", redNumber, Text.literal(entity.getString()).fillStyle(Style.EMPTY.withColor(Formatting.RED))));
             }
             return lore;
         });
