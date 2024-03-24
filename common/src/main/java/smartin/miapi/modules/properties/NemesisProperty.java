@@ -120,13 +120,15 @@ public class NemesisProperty extends DoubleProperty implements CraftingProperty 
                 if (entityType1.isPresent()) {
                     entity = entityType1.get().getName();
                 }
-                Text blueNumber = Text.literal(modifierFormat.format(factor)+"%").fillStyle(Style.EMPTY.withColor(Formatting.BLUE));
-                Text redNumber = Text.literal(modifierFormat.format(factor)+"%").fillStyle(Style.EMPTY.withColor(Formatting.RED));
+                Text blueNumber = Text.literal(modifierFormat.format(factor) + "%").fillStyle(Style.EMPTY.withColor(Formatting.BLUE));
+                Text redNumber = Text.literal(modifierFormat.format(factor) + "%").fillStyle(Style.EMPTY.withColor(Formatting.RED));
                 Text whiteNumber = Text.literal(String.valueOf(value)).fillStyle(Style.EMPTY.withColor(Formatting.WHITE));
                 entity = Text.literal(entity.getString()).fillStyle(Style.EMPTY.withColor(Formatting.GRAY));
                 lore.add(Text.translatable("miapi.lore.nemesis.0", whiteNumber, entity));
-                lore.add(Text.translatable("miapi.lore.nemesis.1", blueNumber, Text.literal(entity.getString()).fillStyle(Style.EMPTY.withColor(Formatting.BLUE))));
-                lore.add(Text.translatable("miapi.lore.nemesis.2", redNumber, Text.literal(entity.getString()).fillStyle(Style.EMPTY.withColor(Formatting.RED))));
+                if (factor != 0) {
+                    lore.add(Text.translatable("miapi.lore.nemesis.1", blueNumber, Text.literal(entity.getString()).fillStyle(Style.EMPTY.withColor(Formatting.BLUE))));
+                    lore.add(Text.translatable("miapi.lore.nemesis.2", redNumber, Text.literal(entity.getString()).fillStyle(Style.EMPTY.withColor(Formatting.RED))));
+                }
             }
             return lore;
         });
