@@ -5,8 +5,6 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 import com.redpxnda.nucleus.codec.auto.AutoCodec;
 import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Style;
@@ -24,10 +22,7 @@ import smartin.miapi.modules.material.MaterialProperty;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.WeakHashMap;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -37,9 +32,9 @@ public class LoreProperty implements ModuleProperty {
     public static final String KEY = "itemLore";
     public static final Codec<LoreProperty.Holder> codec = AutoCodec.of(LoreProperty.Holder.class).codec();
     public static LoreProperty property;
-    public static List<LoreSupplier> bottomLoreSuppliers = new ArrayList<>();
-    public static List<LoreSupplier> loreSuppliers = new ArrayList<>();
-    public static Map<ItemStack, Material> materialLookupTable = new WeakHashMap<>();
+    public static List<LoreSupplier> bottomLoreSuppliers = Collections.synchronizedList(new ArrayList<>());
+    public static List<LoreSupplier> loreSuppliers = Collections.synchronizedList(new ArrayList<>());
+    public static Map<ItemStack, Material> materialLookupTable = Collections.synchronizedMap(new WeakHashMap<>());
 
     public LoreProperty() {
         super();
@@ -113,20 +108,16 @@ public class LoreProperty implements ModuleProperty {
         return text.getWithStyle(Style.EMPTY.withFormatting(formatting)).get(0);
     }
 
-    @Environment(EnvType.CLIENT)
+    //@Environment(EnvType.CLIENT)
     public void appendLoreTop(List<Text> oldLore, ItemStack itemStack) {
         loreSuppliers.forEach(loreSupplier -> oldLore.addAll(loreSupplier.getLore(itemStack)));
-        getHolders(itemStack).stream().filter(h -> h.position.equals("top")).forEach(holder -> {
-            oldLore.add(holder.getText());
-        });
+        getHolders(itemStack).stream().filter(h -> h.position.equals("top")).forEach(holder -> oldLore.add(holder.getText()));
     }
 
-    @Environment(EnvType.CLIENT)
+    //@Environment(EnvType.CLIENT)
     public void appendLoreBottom(List<Text> oldLore, ItemStack itemStack) {
         bottomLoreSuppliers.forEach(loreSupplier -> oldLore.addAll(loreSupplier.getLore(itemStack)));
-        getHolders(itemStack).stream().filter(h -> h.position.equals("bottom")).forEach(holder -> {
-            oldLore.add(holder.getText());
-        });
+        getHolders(itemStack).stream().filter(h -> h.position.equals("bottom")).forEach(holder -> oldLore.add(holder.getText()));
     }
 
     @Override
@@ -165,7 +156,7 @@ public class LoreProperty implements ModuleProperty {
         }
     }
 
-    @Environment(EnvType.CLIENT)
+    //@Environment(EnvType.CLIENT)
     public interface LoreSupplier {
         List<Text> getLore(ItemStack itemStack);
     }

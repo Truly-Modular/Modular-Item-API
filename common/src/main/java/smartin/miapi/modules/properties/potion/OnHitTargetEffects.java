@@ -1,13 +1,11 @@
 package smartin.miapi.modules.properties.potion;
 
 import dev.architectury.event.EventResult;
-import net.fabricmc.api.EnvType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import smartin.miapi.Environment;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.modules.properties.LoreProperty;
 import smartin.miapi.modules.properties.util.ModuleProperty;
@@ -30,13 +28,10 @@ public class OnHitTargetEffects extends PotionEffectProperty {
             }
             return EventResult.pass();
         });
-        if (Environment.isClient()) {
-            clientInit();
-        }
+        setupLore();
     }
 
-    @net.fabricmc.api.Environment(EnvType.CLIENT)
-    public void clientInit() {
+    public void setupLore() {
         LoreProperty.loreSuppliers.add(itemStack -> {
             List<Text> lines = new ArrayList<>();
             for (EffectHolder effectHolder : merge(getStatusEffects(itemStack))) {

@@ -38,7 +38,7 @@ public class NemesisProperty extends DoubleProperty implements CraftingProperty 
     public NemesisProperty() {
         super(KEY);
         if (smartin.miapi.Environment.isClient()) {
-            setupClient();
+            setupLore();
         }
         property = this;
         EntityEvent.LIVING_DEATH.register((livingEntity, damageSource) -> {
@@ -106,7 +106,7 @@ public class NemesisProperty extends DoubleProperty implements CraftingProperty 
     }
 
     @Environment(EnvType.CLIENT)
-    public void setupClient() {
+    public void setupLore() {
         LoreProperty.loreSuppliers.add(weapon -> {
             List<Text> lore = new ArrayList<>();
             Double nemesisScale = getValue(weapon);

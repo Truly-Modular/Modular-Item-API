@@ -418,7 +418,6 @@ public class RegistryInventory {
                 registerMiapi(moduleProperties, ModelMergeProperty.KEY, new ModelMergeProperty());
                 registerMiapi(moduleProperties, GuiOffsetProperty.KEY, new GuiOffsetProperty());
                 registerMiapi(moduleProperties, ItemModelProperty.KEY, new ItemModelProperty());
-                registerMiapi(moduleProperties, LoreProperty.KEY, new LoreProperty());
                 registerMiapi(moduleProperties, BannerModelProperty.KEY, new BannerModelProperty());
                 registerMiapi(moduleProperties, BlockModelProperty.KEY, new BlockModelProperty());
                 registerMiapi(moduleProperties, EntityModelProperty.KEY, new EntityModelProperty());
@@ -431,7 +430,7 @@ public class RegistryInventory {
                 registerMiapi(moduleProperties, "modelMerge", new ServerReplaceProperty());
                 registerMiapi(moduleProperties, "guiOffset", new ServerReplaceProperty());
                 registerMiapi(moduleProperties, "item_model", new ServerReplaceProperty());
-                registerMiapi(moduleProperties, "itemLore", new ServerReplaceProperty());
+                //registerMiapi(moduleProperties, "itemLore", new ServerReplaceProperty());
                 registerMiapi(moduleProperties, "banner", new ServerReplaceProperty());
                 registerMiapi(moduleProperties, "crystal_model", new ServerReplaceProperty());
                 registerMiapi(moduleProperties, "block_model", new ServerReplaceProperty());
@@ -439,6 +438,7 @@ public class RegistryInventory {
                 registerMiapi(moduleProperties, "conduit_model", new ServerReplaceProperty());
                 registerMiapi(moduleProperties, "overlay_texture_model", new ServerReplaceProperty());
             }
+            registerMiapi(moduleProperties, LoreProperty.KEY, new LoreProperty());
             registerMiapi(moduleProperties, NameProperty.KEY, new NameProperty());
             registerMiapi(moduleProperties, SlotProperty.KEY, new SlotProperty());
             registerMiapi(moduleProperties, AllowedSlots.KEY, new AllowedSlots());
