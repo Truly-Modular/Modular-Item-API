@@ -1,5 +1,6 @@
 package smartin.miapi.item.modular.items;
 
+import net.minecraft.client.item.TooltipContext;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -11,10 +12,15 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Rarity;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.modules.properties.DisplayNameProperty;
+import smartin.miapi.modules.properties.LoreProperty;
 import smartin.miapi.modules.properties.RarityProperty;
 import smartin.miapi.modules.properties.RepairPriority;
+
+import java.util.List;
 
 public class ModularChestPlate extends ArmorItem implements ModularItem {
     public ModularChestPlate() {
@@ -61,5 +67,10 @@ public class ModularChestPlate extends ArmorItem implements ModularItem {
     @Override
     public int getEnchantability() {
         return 1;
+    }
+
+    @Override
+    public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
+        LoreProperty.appendLoreTop(stack, world, tooltip, context);
     }
 }

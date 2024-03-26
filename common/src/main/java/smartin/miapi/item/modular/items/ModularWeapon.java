@@ -1,6 +1,7 @@
 package smartin.miapi.item.modular.items;
 
 import net.minecraft.block.BlockState;
+import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -12,10 +13,13 @@ import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
 import smartin.miapi.modules.properties.*;
 import smartin.miapi.modules.properties.mining.MiningLevelProperty;
+
+import java.util.List;
 
 public class ModularWeapon extends Item implements ModularItem {
     public ModularWeapon() {
@@ -143,5 +147,10 @@ public class ModularWeapon extends Item implements ModularItem {
     @Override
     public ActionResult useOnBlock(ItemUsageContext context) {
         return ItemAbilityManager.useOnBlock(context);
+    }
+
+    @Override
+    public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
+        LoreProperty.appendLoreTop(stack, world, tooltip, context);
     }
 }

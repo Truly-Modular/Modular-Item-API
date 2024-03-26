@@ -2,8 +2,7 @@ package smartin.miapi.modules.properties;
 
 import dev.architectury.event.EventResult;
 import dev.architectury.event.events.common.EntityEvent;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -12,6 +11,8 @@ import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Util;
+import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.craft.CraftAction;
 import smartin.miapi.events.MiapiEvents;
@@ -22,7 +23,10 @@ import smartin.miapi.modules.properties.util.DoubleProperty;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
-import java.util.*;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * Nemesis is a Complicated Property to deal bonus damage against certain targets
@@ -37,9 +41,7 @@ public class NemesisProperty extends DoubleProperty implements CraftingProperty 
 
     public NemesisProperty() {
         super(KEY);
-        if (smartin.miapi.Environment.isClient()) {
-            setupLore();
-        }
+        setupLore();
         property = this;
         EntityEvent.LIVING_DEATH.register((livingEntity, damageSource) -> {
             ItemStack weapon = MiapiEvents.LivingHurtEvent.getCausingItemStack(damageSource);
@@ -105,10 +107,8 @@ public class NemesisProperty extends DoubleProperty implements CraftingProperty 
         });
     }
 
-    @Environment(EnvType.CLIENT)
     public void setupLore() {
-        LoreProperty.loreSuppliers.add(weapon -> {
-            List<Text> lore = new ArrayList<>();
+        LoreProperty.loreSuppliers.add((ItemStack weapon, @Nullable World world, List<Text> tooltip, TooltipContext context) -> {
             Double nemesisScale = getValue(weapon);
             NbtCompound compound = weapon.getOrCreateNbt();
             if (nemesisScale != null && nemesisScale > 0) {
@@ -124,13 +124,12 @@ public class NemesisProperty extends DoubleProperty implements CraftingProperty 
                 Text redNumber = Text.literal(modifierFormat.format(factor) + "%").fillStyle(Style.EMPTY.withColor(Formatting.RED));
                 Text whiteNumber = Text.literal(String.valueOf(value)).fillStyle(Style.EMPTY.withColor(Formatting.WHITE));
                 entity = Text.literal(entity.getString()).fillStyle(Style.EMPTY.withColor(Formatting.GRAY));
-                lore.add(Text.translatable("miapi.lore.nemesis.0", whiteNumber, entity));
+                tooltip.add(Text.translatable("miapi.lore.nemesis.0", whiteNumber, entity));
                 if (factor != 0) {
-                    lore.add(Text.translatable("miapi.lore.nemesis.1", blueNumber, Text.literal(entity.getString()).fillStyle(Style.EMPTY.withColor(Formatting.BLUE))));
-                    lore.add(Text.translatable("miapi.lore.nemesis.2", redNumber, Text.literal(entity.getString()).fillStyle(Style.EMPTY.withColor(Formatting.RED))));
+                    tooltip.add(Text.translatable("miapi.lore.nemesis.1", blueNumber, Text.literal(entity.getString()).fillStyle(Style.EMPTY.withColor(Formatting.BLUE))));
+                    tooltip.add(Text.translatable("miapi.lore.nemesis.2", redNumber, Text.literal(entity.getString()).fillStyle(Style.EMPTY.withColor(Formatting.RED))));
                 }
             }
-            return lore;
         });
     }
 

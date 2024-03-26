@@ -362,6 +362,7 @@ public class ModularCrossbow extends CrossbowItem implements ModularItem, Custom
             }
 
         }
+        LoreProperty.appendLoreTop(stack, world, tooltip, context);
     }
 
     public Predicate<ItemStack> getProjectiles() {

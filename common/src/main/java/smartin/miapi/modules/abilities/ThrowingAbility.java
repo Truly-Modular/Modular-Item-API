@@ -1,7 +1,5 @@
 package smartin.miapi.modules.abilities;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -19,11 +17,9 @@ import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.entity.ItemProjectileEntity;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
-import smartin.miapi.modules.abilities.util.ItemUseAbility;
 import smartin.miapi.modules.abilities.util.ItemUseDefaultCooldownAbility;
 import smartin.miapi.modules.abilities.util.ItemUseMinHoldAbility;
 import smartin.miapi.modules.properties.AbilityMangerProperty;
-import smartin.miapi.modules.properties.AbilityProperty;
 import smartin.miapi.modules.properties.AttributeProperty;
 import smartin.miapi.modules.properties.LoreProperty;
 
@@ -36,13 +32,6 @@ import java.util.List;
 public class ThrowingAbility implements ItemUseDefaultCooldownAbility, ItemUseMinHoldAbility {
 
     public ThrowingAbility() {
-        if(smartin.miapi.Environment.isClient()){
-            clientSetup();
-        }
-    }
-
-    @Environment(EnvType.CLIENT)
-    public void clientSetup(){
         LoreProperty.bottomLoreSuppliers.add(itemStack -> {
             List<Text> texts = new ArrayList<>();
             if (AbilityMangerProperty.isPrimaryAbility(this, itemStack)) {

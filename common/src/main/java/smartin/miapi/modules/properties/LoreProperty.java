@@ -5,12 +5,16 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 import com.redpxnda.nucleus.codec.auto.AutoCodec;
 import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
-import net.minecraft.client.gui.screen.Screen;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.client.item.TooltipContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.crafting.crafter.replace.HoverMaterialList;
 import smartin.miapi.config.MiapiConfig;
@@ -33,38 +37,16 @@ public class LoreProperty implements ModuleProperty {
     public static final Codec<LoreProperty.Holder> codec = AutoCodec.of(LoreProperty.Holder.class).codec();
     public static LoreProperty property;
     public static List<LoreSupplier> bottomLoreSuppliers = Collections.synchronizedList(new ArrayList<>());
-    public static List<LoreSupplier> loreSuppliers = Collections.synchronizedList(new ArrayList<>());
+    public static List<ToolTipSupplierSupplier> loreSuppliers = Collections.synchronizedList(new ArrayList<>());
     public static Map<ItemStack, Material> materialLookupTable = Collections.synchronizedMap(new WeakHashMap<>());
 
     public LoreProperty() {
         super();
         property = this;
-        loreSuppliers.add(itemStack -> {
-            Material material = materialLookupTable.computeIfAbsent(itemStack, itemStack1 -> MaterialProperty.getMaterialFromIngredient(itemStack));
-            List<Text> descriptions = new ArrayList<>();
-            if (material != null) {
-                int i = material.getGroups().size();
-                if (i == 1) {
-                    if (MiapiConfig.INSTANCE.client.other.injectLoreWithoutGroup){
-                        descriptions.add(gray(Text.translatable("miapi.ui.material_desc")));
-                    }
-                } else {
-                    Text materialDesc = gray(Text.translatable("miapi.ui.material_desc_alt"));
-                    descriptions.add(materialDesc);
-                    if (Screen.hasAltDown()) {
-                        descriptions.add(gray(Text.translatable("miapi.ui.material_desc_alt_2")));
-                        for (i = 1; i < material.getGuiGroups().size(); i++) {
-                            String groupId = material.getGuiGroups().get(i);
-                            descriptions.add(gray(Text.literal(" - " + HoverMaterialList.getTranslation(groupId).getString())));
-                        }
-                    }
-                }
+        loreSuppliers.add((ItemStack itemStack, @Nullable World world, List<Text> tooltip, TooltipContext context) -> {
+            if (itemStack.getItem() instanceof ModularItem) {
+                tooltip.add(format(Text.translatable("miapi.ui.modular_item"), Formatting.GRAY));
             }
-            ItemStack converted = ModularItemStackConverter.getModularVersion(itemStack);
-            if (!ItemStack.areEqual(converted, itemStack) || itemStack.getItem() instanceof ModularItem) {
-                descriptions.add(format(Text.translatable("miapi.ui.modular_item"), Formatting.GRAY));
-            }
-            return descriptions;
         });
     }
 
@@ -108,13 +90,79 @@ public class LoreProperty implements ModuleProperty {
         return text.getWithStyle(Style.EMPTY.withFormatting(formatting)).get(0);
     }
 
-    //@Environment(EnvType.CLIENT)
-    public void appendLoreTop(List<Text> oldLore, ItemStack itemStack) {
-        loreSuppliers.forEach(loreSupplier -> oldLore.addAll(loreSupplier.getLore(itemStack)));
-        getHolders(itemStack).stream().filter(h -> h.position.equals("top")).forEach(holder -> oldLore.add(holder.getText()));
+    public void injectTooltipOnNonModularItems(List<Text> tooltip, ItemStack itemStack) {
+        synchronized (property) {
+            if (smartin.miapi.Environment.isClient()) {
+                tooltip.addAll(addToolTipsClient(itemStack));
+            } else {
+                tooltip.addAll(addToolTipsServer(itemStack));
+            }
+
+        }
+    }
+    @Environment(EnvType.CLIENT)
+    List<Text> addToolTipsClient(ItemStack itemStack) {
+        List<Text> lines = new ArrayList<>();
+        Material material = materialLookupTable.computeIfAbsent(itemStack, itemStack1 -> MaterialProperty.getMaterialFromIngredient(itemStack));
+        if (material != null) {
+            int i = material.getGroups().size();
+            if (i == 1) {
+                if (MiapiConfig.INSTANCE.client.other.injectLoreWithoutGroup) {
+                    lines.add(gray(Text.translatable("miapi.ui.material_desc")));
+                }
+            } else {
+                Text materialDesc = gray(Text.translatable("miapi.ui.material_desc_alt"));
+                lines.add(materialDesc);
+                if (smartin.miapi.Environment.isClient()) {
+                    lines.addAll(getAltClient(material));
+                }
+            }
+        }
+        ItemStack converted = ModularItemStackConverter.getModularVersion(itemStack);
+        if (!ItemStack.areEqual(converted, itemStack) || itemStack.getItem() instanceof ModularItem) {
+            lines.add(format(Text.translatable("miapi.ui.modular_item"), Formatting.GRAY));
+        }
+        return lines;
     }
 
-    //@Environment(EnvType.CLIENT)
+    @Environment(EnvType.CLIENT)
+    List<Text> getAltClient(Material material) {
+        List<Text> lines = new ArrayList<>();
+        if (net.minecraft.client.gui.screen.Screen.hasAltDown()) {
+            lines.add(gray(Text.translatable("miapi.ui.material_desc_alt_2")));
+            for (int i = 1; i < material.getGuiGroups().size(); i++) {
+                String groupId = material.getGuiGroups().get(i);
+                lines.add(gray(Text.literal(" - " + HoverMaterialList.getTranslation(groupId).getString())));
+            }
+        }
+        return lines;
+    }
+
+    List<Text> addToolTipsServer(ItemStack itemStack) {
+        List<Text> lines = new ArrayList<>();
+        Material material = materialLookupTable.computeIfAbsent(itemStack, itemStack1 -> MaterialProperty.getMaterialFromIngredient(itemStack));
+        if (material != null) {
+            int i = material.getGroups().size();
+            if (i == 1) {
+                if (MiapiConfig.INSTANCE.client.other.injectLoreWithoutGroup) {
+                    lines.add(gray(Text.translatable("miapi.ui.material_desc")));
+                }
+            } else {
+                Text materialDesc = gray(Text.translatable("miapi.ui.material_desc_alt"));
+                lines.add(materialDesc);
+            }
+        }
+        ItemStack converted = ModularItemStackConverter.getModularVersion(itemStack);
+        if (!ItemStack.areEqual(converted, itemStack) || itemStack.getItem() instanceof ModularItem) {
+            lines.add(format(Text.translatable("miapi.ui.modular_item"), Formatting.GRAY));
+        }
+        return lines;
+    }
+
+    public static void appendLoreTop(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
+        loreSuppliers.forEach(supplierSupplier -> supplierSupplier.getLore(stack, world, tooltip, context));
+    }
+
     public void appendLoreBottom(List<Text> oldLore, ItemStack itemStack) {
         bottomLoreSuppliers.forEach(loreSupplier -> oldLore.addAll(loreSupplier.getLore(itemStack)));
         getHolders(itemStack).stream().filter(h -> h.position.equals("bottom")).forEach(holder -> oldLore.add(holder.getText()));
@@ -159,5 +207,9 @@ public class LoreProperty implements ModuleProperty {
     //@Environment(EnvType.CLIENT)
     public interface LoreSupplier {
         List<Text> getLore(ItemStack itemStack);
+    }
+
+    public interface ToolTipSupplierSupplier {
+        void getLore(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context);
     }
 }

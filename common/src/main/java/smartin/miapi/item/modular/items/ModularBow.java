@@ -2,6 +2,7 @@ package smartin.miapi.item.modular.items;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.item.TooltipContext;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.EquipmentSlot;
@@ -20,17 +21,16 @@ import net.minecraft.util.Rarity;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.client.model.ModularModelPredicateProvider;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.entity.ItemProjectileEntity;
 import smartin.miapi.events.MiapiProjectileEvents;
 import smartin.miapi.item.modular.ModularItem;
-import smartin.miapi.modules.properties.AttributeProperty;
-import smartin.miapi.modules.properties.DisplayNameProperty;
-import smartin.miapi.modules.properties.RarityProperty;
-import smartin.miapi.modules.properties.RepairPriority;
+import smartin.miapi.modules.properties.*;
 
+import java.util.List;
 import java.util.UUID;
 import java.util.function.Predicate;
 
@@ -233,5 +233,10 @@ public class ModularBow extends BowItem implements ModularItem {
     @Override
     public Text getName(ItemStack stack) {
         return DisplayNameProperty.getDisplayText(stack);
+    }
+
+    @Override
+    public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
+        LoreProperty.appendLoreTop(stack, world, tooltip, context);
     }
 }

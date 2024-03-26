@@ -93,13 +93,9 @@ public abstract class ItemStackMixin {
     )
     public void miapi$injectLoreTop(PlayerEntity player, TooltipContext context, CallbackInfoReturnable<List<Text>> cir, List<Text> arg1) {
         ItemStack stack = (ItemStack) (Object) this;
-        /*
-        if (stack.getItem() instanceof ModularItem) {
-            Miapi.DEBUG_LOGGER.warn("topLoreInject");
-            LoreProperty.property.appendLoreTop(arg1, stack);
+        if (!(stack.getItem() instanceof ModularItem)) {
+            LoreProperty.property.injectTooltipOnNonModularItems(arg1, stack);
         }
-         */
-        LoreProperty.property.appendLoreTop(arg1, stack);
     }
 
     @Inject(

@@ -3,8 +3,6 @@ package smartin.miapi.modules.abilities;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.redpxnda.nucleus.pose.server.ServerPoseFacet;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
@@ -20,7 +18,6 @@ import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.modules.abilities.util.EntityAttributeAbility;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
 import smartin.miapi.modules.properties.AbilityMangerProperty;
-import smartin.miapi.modules.properties.AbilityProperty;
 import smartin.miapi.modules.properties.BlockProperty;
 import smartin.miapi.modules.properties.LoreProperty;
 
@@ -37,13 +34,6 @@ public class BlockAbility extends EntityAttributeAbility {
     UUID attributeUUID = UUID.fromString("3e91990e-4774-11ee-be56-0242ac120002");
 
     public BlockAbility() {
-        if (smartin.miapi.Environment.isClient()) {
-            clientSetup();
-        }
-    }
-
-    @Environment(EnvType.CLIENT)
-    public void clientSetup() {
         LoreProperty.bottomLoreSuppliers.add(itemStack -> {
             List<Text> texts = new ArrayList<>();
             if (AbilityMangerProperty.isPrimaryAbility(this, itemStack)) {

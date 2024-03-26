@@ -1,8 +1,6 @@
 package smartin.miapi.modules.abilities;
 
 import com.redpxnda.nucleus.network.clientbound.ParticleCreationPacket;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -34,13 +32,6 @@ import java.util.List;
 public class HeavyAttackAbility implements ItemUseDefaultCooldownAbility, ItemUseMinHoldAbility {
 
     public HeavyAttackAbility() {
-        if (smartin.miapi.Environment.isClient()) {
-            clientSetup();
-        }
-    }
-
-    @Environment(EnvType.CLIENT)
-    public void clientSetup() {
         LoreProperty.bottomLoreSuppliers.add(itemStack -> {
             List<Text> texts = new ArrayList<>();
             if (AbilityMangerProperty.isPrimaryAbility(this, itemStack)) {

@@ -2,11 +2,15 @@ package smartin.miapi.modules.properties.potion;
 
 import dev.architectury.event.EventResult;
 import dev.architectury.event.events.common.EntityEvent;
+import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 import smartin.miapi.modules.properties.LoreProperty;
 
 import java.util.ArrayList;
@@ -32,7 +36,7 @@ public class OnKillEffects extends PotionEffectProperty {
     }
 
     public void setupLore(){
-        LoreProperty.loreSuppliers.add(itemStack -> {
+        LoreProperty.loreSuppliers.add((ItemStack itemStack, @Nullable World world, List<Text> tooltip, TooltipContext context) -> {
             List<Text> lines = new ArrayList<>();
             for (EffectHolder effectHolder : merge(getStatusEffects(itemStack))) {
                 if (effectHolder.isGuiVisibility()) {
@@ -44,7 +48,7 @@ public class OnKillEffects extends PotionEffectProperty {
                 lines.add(0, Text.translatable("miapi.potion.kill.header").getWithStyle(Style.EMPTY.withColor(Formatting.GRAY)).get(0));
                 lines.add(0, Text.empty());
             }
-            return lines;
+            tooltip.addAll(lines);
         });
     }
 
