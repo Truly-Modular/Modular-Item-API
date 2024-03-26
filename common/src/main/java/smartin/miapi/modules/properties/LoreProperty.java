@@ -46,6 +46,7 @@ public class LoreProperty implements ModuleProperty {
         loreSuppliers.add((ItemStack itemStack, @Nullable World world, List<Text> tooltip, TooltipContext context) -> {
             if (itemStack.getItem() instanceof ModularItem) {
                 tooltip.add(format(Text.translatable("miapi.ui.modular_item"), Formatting.GRAY));
+                getHolders(itemStack).stream().filter(h -> h.position.equals("top")).forEach(holder -> tooltip.add(holder.getText()));
             }
         });
     }
@@ -58,9 +59,7 @@ public class LoreProperty implements ModuleProperty {
         List<Holder> holders = new ArrayList<>();
         if (element != null) {
             if (element.isJsonArray()) {
-                element.getAsJsonArray().forEach(element1 -> {
-                    holders.add(getFromSingleElement(element1));
-                });
+                element.getAsJsonArray().forEach(element1 -> holders.add(getFromSingleElement(element1)));
             } else {
                 holders.add(getFromSingleElement(element));
             }

@@ -28,17 +28,34 @@ public class RarityProperty implements ModuleProperty {
         try {
             JsonElement jsonElement = ItemModule.getMergedProperty(itemStack, property);
             if (jsonElement != null) {
-                return fromString(jsonElement.getAsString());
+                return applyEnchant(itemStack, fromString(jsonElement.getAsString()));
             }
         } catch (Exception ignored) {
 
         }
-        return Rarity.COMMON;
+        return applyEnchant(itemStack, Rarity.COMMON);
+    }
+
+    private static Rarity applyEnchant(ItemStack itemStack, Rarity old) {
+        if (!itemStack.hasEnchantments()) {
+            return old;
+        } else {
+            switch (old) {
+                case COMMON:
+                case UNCOMMON:
+                    return Rarity.RARE;
+                case RARE:
+                    return Rarity.EPIC;
+                case EPIC:
+                default:
+                    return old;
+            }
+        }
     }
 
     private static Rarity fromString(String string) {
-        for(Rarity rarity:Rarity.values()){
-            if(rarity.toString().equalsIgnoreCase(string)){
+        for (Rarity rarity : Rarity.values()) {
+            if (rarity.toString().equalsIgnoreCase(string)) {
                 return rarity;
             }
         }

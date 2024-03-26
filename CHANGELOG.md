@@ -5,3 +5,5 @@
 - cleaned up internal dependencies to make addon-creation simpler
 - fixed crash with F3-T
 - added OverlayTextureProperty -> allowing to layer additional textures onto existing models
+- reworked Lore internals to be more performant and threadsafe
+- fixed rarity not reacting to enchantments
