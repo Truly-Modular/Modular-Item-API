@@ -1,20 +1,14 @@
 {
     "schemaVersion": 1,
-    "id": "miapi",
+    "id": "${mod_id}",
     "version": "${version}",
-    "name": "Truly Modular",
-    "description": "Modular Item Api",
+    "name": "${mod_name}",
+    "description": "${mod_description}",
     "authors": [
-        "Smartin",
-        "Panda"
+        "${mod_author}"
     ],
     "contributors": [
-        "KawataroTB",
-        "Ace",
-        "Nytifx",
-        "Beniven",
-        "Repeat",
-        "RPGLordLight"
+        "${credits}"
     ],
     "contact": {
         "homepage": "https://github.com/Truly-Modular/Modular-Item-API",
@@ -34,11 +28,15 @@
         "miapi-common.mixins.json"
     ],
     "depends": {
-        "fabricloader": ">=0.15.0",
-        "minecraft": [
-            "<=1.20.1",
-            "1.20.1",
-            ">=1.20.1"
-        ]
+        "fabricloader": ">=${fabric_loader_version}",
+        "fabric-api": ">=${fabric_api_version}",
+        "minecraft": "${minecraft_version}"
+    },
+    "custom": {
+        "modmenu": {
+            "links": {
+                "discord": "https://discord.gg/m9AbjqvcGn"
+            }
+        }
     }
 }

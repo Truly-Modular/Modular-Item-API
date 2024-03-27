@@ -239,6 +239,30 @@ subprojects {
         options.release = 17
     }
 
+    processResources {
+        def expandProps = [
+                "version"                   : mod_version,
+                "group"                     : project.group, //Else we target the task's group.
+                "minecraft_version"         : minecraft_version,
+                "architectury_version"      : architectury_version,
+                "forge_version"             : forge_version,
+                "forge_loader_version_range": forge_loader_version_range,
+                "forge_version_range"       : forge_version_range,
+                "minecraft_version_range"   : minecraft_version,
+                "fabric_api_version"        : fabric_api_version,
+                "fabric_loader_version"     : fabric_loader_version,
+                "mod_name"                  : mod_name,
+                "mod_author"                : mod_author,
+                "mod_id"                    : mod_id,
+                "mod_description"           : mod_description,
+                "credits"                   : credits
+        ]
+
+        filesMatching(['pack.mcmeta', 'fabric.mod.json', 'META-INF/mods.toml', '*.mixins.json']) {
+            expand expandProps
+        }
+    }
+
     java {
         withSourcesJar()
     }
