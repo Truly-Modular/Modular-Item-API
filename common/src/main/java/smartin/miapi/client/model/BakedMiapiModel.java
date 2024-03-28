@@ -21,6 +21,7 @@ import org.joml.Matrix4f;
 import smartin.miapi.client.renderer.TrimRenderer;
 import smartin.miapi.item.modular.Transform;
 import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.properties.EmissiveProperty;
 import smartin.miapi.modules.properties.GlintProperty;
 import smartin.miapi.registries.RegistryInventory;
 
@@ -52,6 +53,13 @@ public class BakedMiapiModel implements MiapiModel {
             skyLight = -1;
             blockLight = -1;
         }
+
+        int[] propertyLight = EmissiveProperty.getLightValues(moduleInstance);
+        int propertySky = propertyLight[0];
+        int propertyBlock = propertyLight[1];
+
+        if (propertySky > skyLight) skyLight = propertySky;
+        if (propertyBlock > blockLight) blockLight = propertyBlock;
     }
 
     @Override
