@@ -2,6 +2,7 @@ package smartin.miapi.client.model;
 
 import com.redpxnda.nucleus.util.Color;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.model.BakedModel;
@@ -31,6 +32,8 @@ public class BakedMiapiModel implements MiapiModel {
     Random random = Random.create();
     float[] colors;
     GlintProperty.GlintSettings settings;
+    int skyLight;
+    int blockLight;
 
 
     public BakedMiapiModel(ModelHolder holder, ItemModule.ModuleInstance moduleInstance, ItemStack stack) {
@@ -41,12 +44,29 @@ public class BakedMiapiModel implements MiapiModel {
         this.modelMatrix = holder.matrix4f();
         this.model = holder.model();
         settings = GlintProperty.property.getGlintSettings(moduleInstance, stack);
+
+        if (holder.lightValues() != null) {
+            skyLight = holder.lightValues()[0];
+            blockLight = holder.lightValues()[1];
+        } else {
+            skyLight = -1;
+            blockLight = -1;
+        }
     }
 
     @Override
-    public void render(MatrixStack matrices, ItemStack stack, ModelTransformationMode transformationMode, float tickDelta, VertexConsumerProvider vertexConsumers, LivingEntity entity, int light, int overlay) {
+    public void render(MatrixStack matrices, ItemStack stack, ModelTransformationMode transformationMode, float tickDelta, VertexConsumerProvider vertexConsumers, LivingEntity entity, int packedLight, int overlay) {
         assert MinecraftClient.getInstance().world != null;
         matrices.push();
+
+        int sky = LightmapTextureManager.getSkyLightCoordinates(packedLight);
+        int block = LightmapTextureManager.getBlockLightCoordinates(packedLight);
+
+        if (skyLight != -1) sky = skyLight;
+        if (blockLight != -1) block = blockLight;
+
+        int light = LightmapTextureManager.pack(block, sky);
+
         Transform.applyPosition(matrices, modelMatrix);
         BakedModel currentModel = resolve(model, stack, entity, light);
         MinecraftClient.getInstance().world.getProfiler().push("BakedModel");

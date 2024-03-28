@@ -91,6 +91,7 @@ public class OverlayModelProperty extends CodecBasedProperty<OverlayModelPropert
                                 return this;
                             }
                         },
+                        new int[]{-1, -1},
                         holder.trimMode(),
                         holder.entityRendering()
                 ), modelData.useThisModule ? module : moduleInstance, stack);

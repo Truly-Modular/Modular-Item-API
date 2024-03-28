@@ -36,6 +36,7 @@ import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.material.Material;
 import smartin.miapi.modules.material.MaterialProperty;
+import smartin.miapi.modules.properties.EmissiveProperty;
 import smartin.miapi.modules.properties.GlintProperty;
 import smartin.miapi.modules.properties.SlotProperty;
 import smartin.miapi.modules.properties.render.colorproviders.ColorProvider;
@@ -152,7 +153,7 @@ public class ModelProperty implements RenderProperty {
             if (colorProvider == null) {
                 throw new RuntimeException("colorProvider is null");
             }
-            return new ModelHolder(model.optimize(), matrix4f, colorProvider, json.getTrimMode(), json.entity_render);
+            return new ModelHolder(model.optimize(), matrix4f, colorProvider, unbakedModel.modelData.lightValues, json.getTrimMode(), json.entity_render);
         }
         return null;
     }
@@ -450,7 +451,7 @@ public class ModelProperty implements RenderProperty {
     static class ModelDecoder implements ResourceMetadataReader<ModelData> {
 
         public static ModelData EMPTY() {
-            return new ModelData(null);
+            return new ModelData(null, null);
         }
 
         @Override
@@ -461,6 +462,7 @@ public class ModelProperty implements RenderProperty {
         @Override
         public ModelData fromJson(JsonObject json) {
             String data = null;
+            int[] light = null;
             if (json.has("modelProvider")) {
                 data = json.get("modelProvider").getAsString();
                 if (!ColorProvider.colorProviders.containsKey(data)) {
@@ -468,11 +470,14 @@ public class ModelProperty implements RenderProperty {
                     data = null;
                 }
             }
-            return new ModelData(data);
+            if (json.has("lightValues")) {
+                light = EmissiveProperty.getLightValues(json.get("lightValues"));
+            }
+            return new ModelData(data, light);
         }
     }
 
-    public record ModelData(String colorProvider) {
+    public record ModelData(String colorProvider, int[] lightValues) {
     }
 
     public record UnbakedModelHolder(JsonUnbakedModel model, ModelData modelData) {
