@@ -30,8 +30,8 @@ public class EmissiveProperty implements ModuleProperty {
     }
 
     public static int[] getLightValues(JsonElement element) {
-        int sky = 0;
-        int block = 0;
+        int sky = -1;
+        int block = -1;
 
         if (element instanceof JsonPrimitive primitive && primitive.isBoolean() && primitive.getAsBoolean()) {
             sky = 15;
