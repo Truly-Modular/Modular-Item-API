@@ -11,6 +11,8 @@ import com.redpxnda.nucleus.util.json.JsonUtil;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.math.random.Random;
 import smartin.miapi.Miapi;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ItemModule;
@@ -36,7 +38,7 @@ public class EdibleProperty implements ModuleProperty {
     }
 
     public static Holder createCache(ItemStack stack) {
-        Holder result = new Holder(0, 0, 1, false, new ArrayList<>());
+        Holder result = new Holder(0, 0, 1,0, false, new ArrayList<>());
         for (ItemModule.ModuleInstance subModule : ItemModule.getModules(stack).allSubModules()) {
             JsonElement element = subModule.getProperties().get(property);
             if (element == null) continue;
@@ -45,10 +47,11 @@ public class EdibleProperty implements ModuleProperty {
                 Miapi.LOGGER.error("Failed to decode using codec during cache creation for a CodecBasedProperty! -> " + s);
             }).toHolder(subModule);
 
-            result.hunger+=holder.hunger;
-            result.saturation+=holder.saturation;
-            result.eatingSpeed*=holder.eatingSpeed;
+            result.hunger += holder.hunger;
+            result.saturation += holder.saturation;
+            result.eatingSpeed *= holder.eatingSpeed;
             result.effects.addAll(holder.effects);
+            result.durabilityDamage += holder.durabilityDamage;
             if (holder.alwaysEdible) result.alwaysEdible = true;
         }
 
@@ -95,6 +98,7 @@ public class EdibleProperty implements ModuleProperty {
 
         public StatResolver.IntegerFromStat hunger; // todo perhaps make these number values similar to DoubleProperty's operation?
         public StatResolver.DoubleFromStat saturation;
+        public @CodecBehavior.Optional StatResolver.DoubleFromStat durability = new StatResolver.DoubleFromStat(0);
         public @CodecBehavior.Optional StatResolver.DoubleFromStat eatingSpeed = new StatResolver.DoubleFromStat(1);
         public @CodecBehavior.Optional boolean alwaysEdible = false;
         public @CodecBehavior.Optional List<StatusEffectHolder> effects = new ArrayList<>();
@@ -104,6 +108,7 @@ public class EdibleProperty implements ModuleProperty {
                     hunger.evaluate(instance),
                     saturation.evaluate(instance),
                     eatingSpeed.evaluate(instance),
+                    durability.evaluate(instance),
                     alwaysEdible,
                     effects.stream().map(e -> new StatusEffectInstance(e.effect, e.duration, e.amplifier, e.ambient, e.showParticles, e.showIcon)).toList());
         }
@@ -113,15 +118,25 @@ public class EdibleProperty implements ModuleProperty {
         public int hunger;
         public double saturation;
         public double eatingSpeed;
+        public double durabilityDamage;
         public boolean alwaysEdible;
         public List<StatusEffectInstance> effects;
 
-        public Holder(int hunger, double saturation, double eatingSpeed, boolean alwaysEdible, List<StatusEffectInstance> effects) {
+        public Holder(int hunger, double saturation, double eatingSpeed, double durabilityDamage, boolean alwaysEdible, List<StatusEffectInstance> effects) {
             this.hunger = hunger;
+            this.durabilityDamage = durabilityDamage;
             this.saturation = saturation;
             this.eatingSpeed = eatingSpeed;
             this.alwaysEdible = alwaysEdible;
             this.effects = effects;
+        }
+
+        public void finishedEat(ItemStack itemStack, Random random, ServerPlayerEntity serverPlayerEntity) {
+            if (this.durabilityDamage == 0) {
+                itemStack.decrement(1);
+            } else {
+                itemStack.damage((int) durabilityDamage, random, serverPlayerEntity);
+            }
         }
     }
 

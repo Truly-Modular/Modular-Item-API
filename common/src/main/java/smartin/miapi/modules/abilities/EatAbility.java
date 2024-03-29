@@ -4,6 +4,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Hand;
@@ -11,7 +12,6 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
 import net.minecraft.world.World;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
-import smartin.miapi.modules.abilities.util.ItemUseAbility;
 import smartin.miapi.modules.abilities.util.ItemUseDefaultCooldownAbility;
 import smartin.miapi.modules.abilities.util.ItemUseMinHoldAbility;
 import smartin.miapi.modules.properties.EdibleProperty;
@@ -22,7 +22,8 @@ import smartin.miapi.modules.properties.EdibleProperty;
 public class EatAbility implements ItemUseDefaultCooldownAbility, ItemUseMinHoldAbility {
     public static final String KEY = "eat";
 
-    public EatAbility() {}
+    public EatAbility() {
+    }
 
     @Override
     public boolean allowedOnItem(ItemStack itemStack, World world, PlayerEntity player, Hand hand, ItemAbilityManager.AbilityHitContext abilityHitContext) {
@@ -37,11 +38,11 @@ public class EatAbility implements ItemUseDefaultCooldownAbility, ItemUseMinHold
 
     @Override
     public int getMaxUseTime(ItemStack itemStack) {
-        return (int) (32*EdibleProperty.get(itemStack).eatingSpeed);
+        return (int) (32 * EdibleProperty.get(itemStack).eatingSpeed);
     }
 
     public int getMaxUseTime(EdibleProperty.Holder data) {
-        return (int) (32*data.eatingSpeed);
+        return (int) (32 * data.eatingSpeed);
     }
 
     @Override
@@ -68,6 +69,9 @@ public class EatAbility implements ItemUseDefaultCooldownAbility, ItemUseMinHold
                 if (!isClient && data != null) {
                     player.getHungerManager().add(data.hunger, (float) data.saturation);
                     data.effects.forEach(e -> player.addStatusEffect(new StatusEffectInstance(e)));
+                    if (player instanceof ServerPlayerEntity serverPlayerEntity) {
+                        data.finishedEat(stack, world.getRandom(), serverPlayerEntity);
+                    }
                 } else {
                     user.getWorld().playSound(user.getX(), user.getY(), user.getZ(), SoundEvents.ENTITY_PLAYER_BURP, SoundCategory.NEUTRAL, 0.5f, world.random.nextFloat() * 0.1f + 0.9f, true);
                 }
