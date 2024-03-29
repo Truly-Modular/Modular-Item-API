@@ -10,10 +10,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
-import org.jetbrains.annotations.Nullable;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Slice;
@@ -29,14 +26,7 @@ import smartin.miapi.modules.properties.mining.MiningLevelProperty;
 import java.util.List;
 
 @Mixin(value = ItemStack.class, priority = 2000)
-public abstract class ItemStackMixin {
-
-    @Shadow
-    @Final
-    private static String HIDE_FLAGS_KEY;
-
-    @Shadow
-    public abstract ItemStack setCustomName(@Nullable Text name);
+abstract class ItemStackMixin {
 
     //@Inject(method = "foo()V", at = @At(value = "INVOKE", item = "La/b/c/Something;doSomething()V", shift = At.Shift.AFTER))
     @Inject(

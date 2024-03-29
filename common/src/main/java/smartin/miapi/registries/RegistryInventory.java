@@ -378,6 +378,9 @@ public class RegistryInventory {
         registerAtt("generic.elytra_rocket_efficiency", true, () ->
                         new ClampedEntityAttribute("miapi.attribute.name.elytra_rocket_efficiency", 1.0, 0.0, 1024.0).setTracked(true),
                 att -> ELYTRA_ROCKET_EFFICIENCY = att);
+        registerAtt("generic.shielding_armor", true, () ->
+                        new ClampedEntityAttribute("miapi.attribute.name.shielding_armor", 0.0, 0.0, 1024.0).setTracked(true),
+                att -> SHIELDING_ARMOR = att);
 
 
         // GAME EVENTS
@@ -520,6 +523,7 @@ public class RegistryInventory {
             registerMiapi(moduleProperties, NemesisProperty.KEY, new NemesisProperty());
             registerMiapi(moduleProperties, CopyParentMaterialProperty.KEY, new CopyParentMaterialProperty());
             registerMiapi(moduleProperties, EmissiveProperty.KEY, new EmissiveProperty());
+            registerMiapi(moduleProperties, EnchantmentTransformerProperty.KEY, new EnchantmentTransformerProperty());
             //compat
             registerMiapi(moduleProperties, BetterCombatProperty.KEY, new BetterCombatProperty());
             registerMiapi(moduleProperties, ApoliPowersProperty.KEY, new ApoliPowersProperty());

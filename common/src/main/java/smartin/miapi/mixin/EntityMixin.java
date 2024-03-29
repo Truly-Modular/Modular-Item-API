@@ -1,21 +1,18 @@
 package smartin.miapi.mixin;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import smartin.miapi.events.MiapiEvents;
+import smartin.miapi.modules.properties.ExhaustionProperty;
 import smartin.miapi.modules.properties.StepCancelingProperty;
 
 @Mixin(Entity.class)
 public abstract class EntityMixin {
-    @Shadow
-    public abstract boolean equals(Object o);
 
     @Inject(method = "startRiding(Lnet/minecraft/entity/Entity;Z)Z", at = @At("TAIL"))
     private void miapi$startRidingEvent(Entity entity, boolean force, CallbackInfoReturnable<Boolean> cir) {
@@ -36,6 +33,7 @@ public abstract class EntityMixin {
             ordinal = 1)
     private boolean miapi$adjustMakeStepNoise(boolean value) {
         Entity entity = (Entity) (Object) (this);
+        ExhaustionProperty.step(entity);
         return StepCancelingProperty.makesStepNoise(entity, value);
     }
 }

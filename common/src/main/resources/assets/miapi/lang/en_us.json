@@ -210,7 +210,7 @@
     "miapi.stat.luminiousLearning": "Luminous Learning",
     "miapi.stat.luminiousLearning.description": "Increases Xp from Blockbreaking and Mob deaths",
     "miapi.stat.food_exhaustion": "Exhaustion",
-    "miapi.stat.food_exhaustion.description": "Passive Food\n drain while wearing Equipment with this.",
+    "miapi.stat.food_exhaustion.description": "Walking will drain food now.",
     "miapi.stat.swim_speed": "Swim Speed",
     "miapi.stat.swim_speed.description": "How fast you swim.\n 0 means you cannot move\n 1 is default swim Speed",
     "miapi.stat.magic_damage": "Magic Damage",

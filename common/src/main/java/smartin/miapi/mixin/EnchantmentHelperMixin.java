@@ -6,7 +6,6 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.EnchantmentLevelEntry;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.Util;
@@ -75,7 +74,7 @@ public class EnchantmentHelperMixin {
 
     @Inject(method = "onTargetDamaged(Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/entity/Entity;)V", at = @At("HEAD"), cancellable = true)
     private static void miapi$addMagicDamage(LivingEntity attacker, Entity target, CallbackInfo ci) {
-        if(target instanceof LivingEntity defender){
+        if (target instanceof LivingEntity defender) {
             MiapiEvents.LIVING_ATTACK.invoker().attack(attacker, defender);
         }
     }
@@ -152,5 +151,13 @@ public class EnchantmentHelperMixin {
             }
         }
         return list;
+    }
+
+    @Inject(
+            method = "forEachEnchantment(Lnet/minecraft/enchantment/EnchantmentHelper$Consumer;Lnet/minecraft/item/ItemStack;)V",
+            at = @At("TAIL"),
+            cancellable = true)
+    private static void miapi$addFakeEnchants(EnchantmentHelper.Consumer consumer, ItemStack stack, CallbackInfo ci) {
+        FakeEnchantment.addEnchantments(consumer, stack);
     }
 }

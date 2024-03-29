@@ -9,9 +9,6 @@ import net.minecraft.util.Identifier;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 import net.minecraftforge.common.ForgeMod;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.ItemAttributeModifierEvent;
-import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.InterModComms;
@@ -26,7 +23,6 @@ import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.datapack.MiapiReloadListener;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.forge.compat.epic_fight.EpicFightCompatProperty;
-import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.modules.properties.AttributeProperty;
 import smartin.miapi.modules.properties.compat.ht_treechop.TreechopUtil;
 import smartin.miapi.registries.RegistryInventory;
@@ -48,7 +44,8 @@ public class TrulyModularForge {
         if (Environment.isClient()) {
             bus.register(new ClientEvents());
         }
-        MinecraftForge.EVENT_BUS.register(new ServerEvents());
+        bus.register(new ServerEvents());
+        //MinecraftForge.EVENT_BUS.register(new ServerEvents());
         Miapi.init();
 
         if (Platform.isModLoaded("epicfight"))
@@ -102,20 +99,11 @@ public class TrulyModularForge {
     }
 
     public static class ServerEvents {
-        @SubscribeEvent(priority = EventPriority.HIGHEST)
-        public void adjustAttributes(ItemAttributeModifierEvent event) {
-            if (event.getItemStack().getItem() instanceof ModularItem) {
-                //AttributeProperty.equipmentSlotMultimapMap(event.getItemStack())
-                //        .getVertexConsumer(event.getSlotType()).forEach((event::addModifier));
-            }
-        }
-
         @SubscribeEvent
-        public static void enqueueIMC(InterModEnqueueEvent event) {
+        public void enqueueIMC(InterModEnqueueEvent event) {
+            Miapi.LOGGER.info("imc event");
             if (Platform.isModLoaded("treechop")) {
-                InterModComms.sendTo("treechop", "getTreeChopAPI", () -> (Consumer<Object>) response -> {
-                    TreechopUtil.setTreechopApi(response);
-                });
+                InterModComms.sendTo("treechop", "getTreeChopAPI", () -> (Consumer<Object>) TreechopUtil::setTreechopApi);
             }
         }
     }

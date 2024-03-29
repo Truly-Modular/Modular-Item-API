@@ -25,6 +25,8 @@ import smartin.miapi.registries.RegistryInventory;
 
 @Mixin(LivingEntity.class)
 abstract class LivingEntityMixin {
+    @Unique
+    public float currentShieldingArmor = 0;
 
     @Inject(method = "getPreferredEquipmentSlot", at = @At("HEAD"), cancellable = true)
     private static void miapi$onGetPreferredEquipmentSlot(ItemStack stack, CallbackInfoReturnable<EquipmentSlot> cir) {
@@ -39,7 +41,7 @@ abstract class LivingEntityMixin {
     @Inject(method = "teleport(DDDZ)Z", at = @At("HEAD"), cancellable = true)
     private void miapi$optionalTeleportBlockEffect(double x, double y, double z, boolean particleEffects, CallbackInfoReturnable<Boolean> cir) {
         LivingEntity entity = (LivingEntity) (Object) this;
-        if (particleEffects &&  MiapiConfig.INSTANCE.server.other.blockAllTeleportsEffect && entity.hasStatusEffect(RegistryInventory.teleportBlockEffect)) {
+        if (particleEffects && MiapiConfig.INSTANCE.server.other.blockAllTeleportsEffect && entity.hasStatusEffect(RegistryInventory.teleportBlockEffect)) {
             cir.setReturnValue(false);
         }
     }
@@ -76,6 +78,44 @@ abstract class LivingEntityMixin {
         lastEvent = livingHurtEvent;
         storedValue = livingHurtEvent.amount;
         storedDamageSource = livingHurtEvent.damageSource;
+    }
+
+    @ModifyVariable(
+            method = "modifyAppliedDamage(Lnet/minecraft/entity/damage/DamageSource;F)F",
+            at = @At(value = "HEAD"),
+            ordinal = 0)
+    private float miapi$modiyAppliedDamageEvent(float amount) {
+        float damage = Math.max(0, currentShieldingArmor);
+        amount -= damage;
+        currentShieldingArmor = currentShieldingArmor - Math.min(amount, damage);
+        /*
+        MiapiEvents.LivingHurtEvent livingHurtEvent = new MiapiEvents.LivingHurtEvent((LivingEntity) (Object) this, source, amount);
+        if (source.getAttacker() instanceof PlayerEntity entity) {
+            livingHurtEvent.isCritical = hasCrited(entity, (LivingEntity) (Object) this);
+        }
+        if (source.getAttacker() instanceof ArrowEntity arrowEntity) {
+            //livingHurtEvent.isCritical = arrowEntity.isCritical();
+        }
+        MiapiEvents.LIVING_HURT_AFTER_ARMOR.invoker().hurt(livingHurtEvent);
+         */
+        return amount;
+    }
+
+    @Inject(method = "Lnet/minecraft/entity/LivingEntity;tick()V", at = @At("TAIL"), cancellable = true)
+    private void miapi$tickShieldingArmor(CallbackInfo ci) {
+        LivingEntity livingEntity = (LivingEntity) (Object) this;
+        if (livingEntity.getLastAttackedTime() + 20 * 30 < livingEntity.age && livingEntity.age % 40 == 3) {
+            if (livingEntity.getAttributes().hasAttribute(AttributeRegistry.SHIELDING_ARMOR)) {
+                double maxArmor = livingEntity.getAttributeValue(AttributeRegistry.SHIELDING_ARMOR);
+                currentShieldingArmor = (float) Math.min(maxArmor, currentShieldingArmor + 1);
+                if (livingEntity instanceof PlayerEntity) {
+                    //Miapi.LOGGER.info("shielding armor grow " + maxArmor + " " + currentShieldingArmor);
+                }
+            }
+        }
+        if (livingEntity instanceof PlayerEntity) {
+            //Miapi.LOGGER.info("current SHIELDING ARMOR " + currentShieldingArmor);
+        }
     }
 
     @Unique

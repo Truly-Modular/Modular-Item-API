@@ -75,6 +75,8 @@ public class AttributeRegistry {
     public static EntityAttribute ELYTRA_GLIDE_EFFICIENCY;
     public static EntityAttribute ELYTRA_ROCKET_EFFICIENCY;
 
+    public static EntityAttribute SHIELDING_ARMOR;
+
     /**
      * Changing these can break savegames, so do not touch
      */
