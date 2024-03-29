@@ -121,7 +121,7 @@ public class NemesisProperty extends DoubleProperty implements CraftingProperty 
                     entity = entityType1.get().getName();
                 }
                 Text blueNumber = Text.literal(modifierFormat.format(factor) + "%").fillStyle(Style.EMPTY.withColor(Formatting.BLUE));
-                Text redNumber = Text.literal(modifierFormat.format(factor) + "%").fillStyle(Style.EMPTY.withColor(Formatting.RED));
+                Text redNumber = Text.literal(modifierFormat.format(factor/2) + "%").fillStyle(Style.EMPTY.withColor(Formatting.RED));
                 Text whiteNumber = Text.literal(String.valueOf(value)).fillStyle(Style.EMPTY.withColor(Formatting.WHITE));
                 entity = Text.literal(entity.getString()).fillStyle(Style.EMPTY.withColor(Formatting.GRAY));
                 tooltip.add(Text.translatable("miapi.lore.nemesis.0", whiteNumber, entity));
