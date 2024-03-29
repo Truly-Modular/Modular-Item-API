@@ -26,9 +26,7 @@ public class EnchantmentTransformerProperty implements ModuleProperty {
         FakeEnchantment.enchantmentTransformers.add(this::transform);
         FakeEnchantment.adder.add(stack -> {
             List<Enchantment> enchantments = new ArrayList<>();
-            getTransfomer(stack).forEach(transformer ->{
-                enchantments.add(transformer.enchantment);
-            });
+            getTransfomer(stack).forEach(transformer -> enchantments.add(transformer.enchantment));
             return enchantments;
         });
     }
