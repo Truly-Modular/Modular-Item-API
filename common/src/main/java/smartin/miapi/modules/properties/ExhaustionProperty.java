@@ -20,8 +20,8 @@ public class ExhaustionProperty extends DoubleProperty {
     public static void step(Entity entity){
         if (entity instanceof PlayerEntity playerEntity && playerEntity.isLogicalSideForUpdatingMovement()) {
             double getValue = property.getForItems(playerEntity.getArmorItems());
-            if (getValue > 0.2) {
-                playerEntity.getHungerManager().addExhaustion((float) (getValue / 50.0f));
+            if (playerEntity.getRandom().nextDouble() < 0.15 && getValue > 0.2) {
+                playerEntity.getHungerManager().addExhaustion((float) (getValue / 100.0f));
             }
         }
     }
