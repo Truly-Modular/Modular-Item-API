@@ -87,8 +87,8 @@ public class Miapi {
         ReloadEvents.END.subscribe(isClient -> {
             Miapi.LOGGER.info("Loaded " + PropertySubstitution.injectorsCount + " Injectors/Property Substitutors");
             Miapi.LOGGER.info("Loaded " + RegistryInventory.modules.getFlatMap().size() + " Modules");
+            ModularItemCache.discardCache();
         });
-        ReloadEvents.END.subscribe((isClient) -> ModularItemCache.discardCache());
         PlayerEvent.PLAYER_JOIN.register((player -> new Thread(() -> MiapiPermissions.getPerms(player)).start()));
         PropertyResolver.propertyProviderRegistry.register("module", (moduleInstance, oldMap) -> {
             Map<ModuleProperty, JsonElement> map = Collections.synchronizedMap(new LinkedHashMap<>());

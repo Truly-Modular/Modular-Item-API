@@ -90,14 +90,16 @@ public class MiapiClient {
         ClientReloadShadersEvent.EVENT.register((resourceFactory, shadersSink) -> {
             ModularItemCache.discardCache();
             if (MinecraftClient.getInstance().world != null) {
-                Map<String, String> cacheDatapack = new LinkedHashMap<>(ReloadEvents.DATA_PACKS);
-                ReloadEvents.reloadCounter++;
-                ReloadEvents.START.fireEvent(true);
-                ReloadEvents.DataPackLoader.trigger(cacheDatapack);
-                ReloadEvents.MAIN.fireEvent(true);
-                ReloadEvents.END.fireEvent(true);
-                ReloadEvents.reloadCounter--;
-                ModularItemCache.discardCache();
+                MinecraftClient.getInstance().execute(() -> {
+                    Map<String, String> cacheDatapack = new LinkedHashMap<>(ReloadEvents.DATA_PACKS);
+                    ReloadEvents.reloadCounter++;
+                    ReloadEvents.START.fireEvent(true);
+                    ReloadEvents.DataPackLoader.trigger(cacheDatapack);
+                    ReloadEvents.MAIN.fireEvent(true);
+                    ReloadEvents.END.fireEvent(true);
+                    ReloadEvents.reloadCounter--;
+                    ModularItemCache.discardCache();
+                });
             }
         });
 

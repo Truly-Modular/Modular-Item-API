@@ -167,7 +167,6 @@ public class ReloadEvents {
         Networking.registerS2CPacket(RELOAD_PACKET_ID, (buffer) -> {
             if (receivedSyncer.isEmpty()) {
                 clientReloadTimeStart = System.nanoTime();
-                ReloadEvents.START.fireEvent(true);
                 reloadCounter++;
             }
             String receivedID = buffer.readString();
@@ -176,6 +175,7 @@ public class ReloadEvents {
             if (receivedSyncer.size() == dataSyncerRegistry.getFlatMap().keySet().size()) {
                 receivedSyncer.clear();
                 MinecraftClient.getInstance().execute(() -> {
+                    ReloadEvents.START.fireEvent(true);
                     ReloadEvents.MAIN.fireEvent(true);
                     ReloadEvents.END.fireEvent(true);
                     reloadCounter--;
