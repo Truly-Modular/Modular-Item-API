@@ -20,6 +20,7 @@ import smartin.miapi.client.model.MiapiModel;
 import smartin.miapi.client.model.ModelHolder;
 import smartin.miapi.client.renderer.RescaledVertexConsumer;
 import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.material.MaterialProperty;
 import smartin.miapi.modules.properties.render.colorproviders.ColorProvider;
 import smartin.miapi.modules.properties.util.CodecBasedProperty;
 
@@ -45,10 +46,7 @@ public class OverlayModelProperty extends CodecBasedProperty<OverlayModelPropert
                         if (modelData.isValid(modelJson)) {
                             ModelHolder holder = ModelProperty.bakedModel(moduleInstance, modelJson, stack, key);
                             if (holder != null) {
-                                ColorProvider colorProvider = holder.colorProvider();
-                                if (modelData.useThisModule) {
-                                    colorProvider = ColorProvider.getProvider("material", stack, module);
-                                }
+                                ColorProvider colorProvider = modelData.getColorProvider(stack, module, moduleInstance, holder.colorProvider());
                                 Sprite overWriteSprite = modelData.resolveSprite();
                                 models.add(getBakedMiapiModel(
                                         module,
@@ -83,7 +81,7 @@ public class OverlayModelProperty extends CodecBasedProperty<OverlayModelPropert
                         new ColorProvider() {
                             @Override
                             public VertexConsumer getConsumer(VertexConsumerProvider vertexConsumers, Sprite sprite, ItemStack stack, ItemModule.ModuleInstance moduleInstance, ModelTransformationMode mode) {
-                                return new RescaledVertexConsumer(colorProvider.getConsumer(vertexConsumers, overWriteSprite, stack, modelData.useThisModule ? module : moduleInstance, mode), sprite);
+                                return new RescaledVertexConsumer(colorProvider.getConsumer(vertexConsumers, overWriteSprite, stack, modelData.useThisModule() ? module : moduleInstance, mode), sprite);
                             }
 
                             @Override
@@ -94,7 +92,7 @@ public class OverlayModelProperty extends CodecBasedProperty<OverlayModelPropert
                         new int[]{-1, -1},
                         holder.trimMode(),
                         holder.entityRendering()
-                ), modelData.useThisModule ? module : moduleInstance, stack);
+                ), modelData.useThisModule() ? module : moduleInstance, stack);
     }
 
     public static List<OverlayModelData> getData(ItemModule.ModuleInstance moduleInstance) {
@@ -120,7 +118,7 @@ public class OverlayModelProperty extends CodecBasedProperty<OverlayModelPropert
         public String texture;
         public String modelTargetType;
         public String modelTargetInfo;
-        public boolean useThisModule = true;
+        public String colorProvider;
 
         public Sprite resolveSprite() {
             return ModelProperty.textureGetter.apply(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(texture)));
@@ -128,6 +126,31 @@ public class OverlayModelProperty extends CodecBasedProperty<OverlayModelPropert
 
         public void loadSprite() {
             ModelProperty.textureGetter.apply(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(texture)));
+        }
+
+        public ColorProvider getColorProvider(ItemStack itemStack, ItemModule.ModuleInstance current, ItemModule.ModuleInstance other, ColorProvider otherColor) {
+            switch (colorProvider) {
+                case "this": {
+                    return ColorProvider.getProvider("material", itemStack, current);
+                }
+                case "other": {
+                    return otherColor;
+                }
+                default: {
+                    if (ColorProvider.colorProviders.containsKey(colorProvider)) {
+                        return ColorProvider.getProvider(colorProvider, itemStack, current);
+                    }
+                    if (colorProvider.startsWith("material:")) {
+                        String materialId = colorProvider.split(":")[1];
+                        return new ColorProvider.MaterialColorProvider(MaterialProperty.materials.get(materialId));
+                    }
+                }
+            }
+            return otherColor;
+        }
+
+        public boolean useThisModule(){
+            return !colorProvider.equals("other");
         }
 
         public boolean isValid(ModelProperty.ModelJson modelJson) {
