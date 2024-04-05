@@ -11,6 +11,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import smartin.miapi.Miapi;
+import smartin.miapi.client.gui.crafting.CraftingScreen;
 import smartin.miapi.entity.ShieldingArmorFacet;
 import smartin.miapi.mixin.InGameHudAccessor;
 
@@ -31,8 +32,8 @@ public class InGameHudMixin {
         int playerHealth = MathHelper.ceil(playerEntity.getHealth());
         int renderHealthValue = ((InGameHudAccessor) inGameHud).getRenderHealthValue();
         int scaledWidth = ((InGameHudAccessor) inGameHud).getScaledWidth();
-        int shieldingArmorMaxAmount = (int) facet.getMaxAmount();
-        int shieldingArmorCurrentAmount = (int) (facet.getCurrentAmount() * 2);
+        int shieldingArmorMaxAmount = (int) facet.getMaxAmount() / 2;
+        int shieldingArmorCurrentAmount = (int) (facet.getCurrentAmount());
         Miapi.LOGGER.info("current " + shieldingArmorCurrentAmount + " max " + shieldingArmorMaxAmount);
         int scaledHeight = ((InGameHudAccessor) inGameHud).getScaledHeight();
         float maxHealth = Math.max((float) playerEntity.getAttributeValue(EntityAttributes.GENERIC_MAX_HEALTH), (float) Math.max(renderHealthValue, playerHealth));
@@ -44,14 +45,12 @@ public class InGameHudMixin {
             int heartX = scaledWidth / 2 - 91 + (index % 10) * 8;
             int yOffset = (index / 10) * 10;
             int heartTextureIndex = index * 2 + 1;
-
             if (heartTextureIndex < shieldingArmorCurrentAmount) {
-                context.drawTexture(ICONS, heartX, startY - yOffset, 34, 9, 9, 9);
-                //context.drawTexture(ICONS, heartX, startY - yOffset, 25, 9, 9, 9);
+                context.drawTexture(CraftingScreen.BACKGROUND_TEXTURE, heartX, startY - yOffset, 430, 96, 9, 9,512, 512);
             } else if (heartTextureIndex == shieldingArmorCurrentAmount) {
-                context.drawTexture(ICONS, heartX, startY - yOffset, 25, 9, 9, 9);
+                context.drawTexture(CraftingScreen.BACKGROUND_TEXTURE, heartX, startY - yOffset, 439, 96, 9, 9,512, 512);
             } else {
-                context.drawTexture(ICONS, heartX, startY - yOffset, 16, 9, 9, 9);
+                context.drawTexture(CraftingScreen.BACKGROUND_TEXTURE, heartX, startY - yOffset, 448, 96, 9, 9,512, 512);
             }
         }
 
