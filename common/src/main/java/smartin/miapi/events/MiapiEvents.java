@@ -49,11 +49,12 @@ public class MiapiEvents {
     public static final PrioritizedEvent<CreateMaterialModularConvertersEvent> GENERATE_MATERIAL_CONVERTERS = PrioritizedEvent.createEventResult();
     public static final PrioritizedEvent<PlayerTickEvent> PLAYER_TICK_START = PrioritizedEvent.createLoop();
     public static final PrioritizedEvent<PlayerTickEvent> PLAYER_TICK_END = PrioritizedEvent.createLoop();
+    public static final PrioritizedEvent<LivingEntityTickEvent> LIVING_ENTITY_TICK_END = PrioritizedEvent.createLoop();
     public static final PrioritizedEvent<MaterialCraftEvent> MATERIAL_CRAFT_EVENT = PrioritizedEvent.createLoop();
     public static final PrioritizedEvent<SmithingEvent> SMITHING_EVENT = PrioritizedEvent.createLoop();
     public static final PrioritizedEvent<LivingEntityAttributeBuild> LIVING_ENTITY_ATTRIBUTE_BUILD_EVENT = PrioritizedEvent.createLoop();
 
-    public interface ReloadEvent{
+    public interface ReloadEvent {
         EventResult onReload(boolean isClient);
     }
 
@@ -161,6 +162,10 @@ public class MiapiEvents {
 
     public interface PlayerTickEvent {
         EventResult tick(PlayerEntity player);
+    }
+
+    public interface LivingEntityTickEvent {
+        EventResult tick(LivingEntity entity);
     }
 
     public interface GeneratedMaterialEvent {

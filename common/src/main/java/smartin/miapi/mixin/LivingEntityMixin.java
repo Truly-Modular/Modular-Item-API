@@ -2,13 +2,16 @@ package smartin.miapi.mixin;
 
 import dev.architectury.event.EventResult;
 import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.entity.LimbAnimator;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ArrowEntity;
 import net.minecraft.item.ItemStack;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -27,6 +30,10 @@ import smartin.miapi.registries.RegistryInventory;
 abstract class LivingEntityMixin {
     //@Unique
     //public float currentShieldingArmor = 0;
+
+    @Shadow
+    @Final
+    public LimbAnimator limbAnimator;
 
     @Inject(method = "getPreferredEquipmentSlot", at = @At("HEAD"), cancellable = true)
     private static void miapi$onGetPreferredEquipmentSlot(ItemStack stack, CallbackInfoReturnable<EquipmentSlot> cir) {
@@ -88,17 +95,15 @@ abstract class LivingEntityMixin {
         //float damage = Math.max(0, currentShieldingArmor);
         //amount -= damage;
         //currentShieldingArmor = currentShieldingArmor - Math.min(amount, damage);
-        /*
-        MiapiEvents.LivingHurtEvent livingHurtEvent = new MiapiEvents.LivingHurtEvent((LivingEntity) (Object) this, source, amount);
-        if (source.getAttacker() instanceof PlayerEntity entity) {
+        MiapiEvents.LivingHurtEvent livingHurtEvent = new MiapiEvents.LivingHurtEvent((LivingEntity) (Object) this, storedDamageSource, amount);
+        if (storedDamageSource.getAttacker() instanceof PlayerEntity entity) {
             livingHurtEvent.isCritical = hasCrited(entity, (LivingEntity) (Object) this);
         }
-        if (source.getAttacker() instanceof ArrowEntity arrowEntity) {
+        if (storedDamageSource.getAttacker() instanceof ArrowEntity arrowEntity) {
             //livingHurtEvent.isCritical = arrowEntity.isCritical();
         }
         MiapiEvents.LIVING_HURT_AFTER_ARMOR.invoker().hurt(livingHurtEvent);
-         */
-        return amount;
+        return livingHurtEvent.amount;
     }
 
     @Inject(method = "Lnet/minecraft/entity/LivingEntity;tick()V", at = @At("TAIL"), cancellable = true)
@@ -144,6 +149,7 @@ abstract class LivingEntityMixin {
     private void miapi$adjustElytraSpeed(CallbackInfo ci) {
         LivingEntity livingEntity = (LivingEntity) (Object) this;
         ElytraAttributes.movementUpdate(livingEntity);
+        MiapiEvents.LIVING_ENTITY_TICK_END.invoker().tick(livingEntity);
     }
 
     @ModifyVariable(method = "damage", at = @At(value = "HEAD"), ordinal = 0)

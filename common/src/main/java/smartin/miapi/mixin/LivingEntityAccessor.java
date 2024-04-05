@@ -24,4 +24,7 @@ public interface LivingEntityAccessor {
 
     @Invoker
     Map<EquipmentSlot, ItemStack> callGetEquipmentChanges();
+
+    @Accessor
+    int getLastAttackedTime();
 }

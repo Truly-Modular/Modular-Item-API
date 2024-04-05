@@ -114,7 +114,7 @@ public class ModularItemCache {
                 nbtCache.put(stack.getOrCreateNbt().copy(), uuid);
             }
         } else {
-            Miapi.LOGGER.error("this shouldnt not be called");
+            Miapi.LOGGER.error("this shouldn't not be called");
         }
     }
 

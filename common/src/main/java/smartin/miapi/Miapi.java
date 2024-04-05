@@ -7,9 +7,7 @@ import com.redpxnda.nucleus.config.ConfigBuilder;
 import com.redpxnda.nucleus.config.ConfigManager;
 import com.redpxnda.nucleus.config.ConfigType;
 import com.redpxnda.nucleus.registry.NucleusNamespaces;
-import dev.architectury.event.EventResult;
 import dev.architectury.event.events.common.CommandRegistrationEvent;
-import dev.architectury.event.events.common.EntityEvent;
 import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.event.events.common.PlayerEvent;
 import net.minecraft.nbt.NbtCompound;
@@ -44,6 +42,7 @@ import smartin.miapi.registries.RegistryInventory;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 public class Miapi {
@@ -63,9 +62,6 @@ public class Miapi {
         AttributeRegistry.setup();
         ConditionManager.setup();
         StatActorType.setup();
-        EntityEvent.LIVING_DEATH.register((livingEntity, damageSource) -> {
-            return EventResult.pass();
-        });
         LifecycleEvent.SERVER_BEFORE_START.register(minecraftServer -> server = minecraftServer);
         registerReloadHandler(ReloadEvents.MAIN, "modules", RegistryInventory.modules,
                 (isClient, path, data) -> ItemModule.loadFromData(path, data, isClient), -0.5f);
@@ -91,13 +87,13 @@ public class Miapi {
         });
         PlayerEvent.PLAYER_JOIN.register((player -> new Thread(() -> MiapiPermissions.getPerms(player)).start()));
         PropertyResolver.propertyProviderRegistry.register("module", (moduleInstance, oldMap) -> {
-            Map<ModuleProperty, JsonElement> map = Collections.synchronizedMap(new LinkedHashMap<>());
+            Map<ModuleProperty, JsonElement> map = new ConcurrentHashMap<>();
             moduleInstance.module.getProperties()
                     .forEach((key, jsonData) -> map.put(RegistryInventory.moduleProperties.get(key), jsonData));
             return map;
         });
         PropertyResolver.propertyProviderRegistry.register("moduleData", (moduleInstance, oldMap) -> {
-            Map<ModuleProperty, JsonElement> map = Collections.synchronizedMap(new LinkedHashMap<>());
+            Map<ModuleProperty, JsonElement> map = new ConcurrentHashMap<>();
             String properties = moduleInstance.moduleData.get("properties");
             if (properties != null) {
                 JsonObject moduleJson = gson.fromJson(properties, JsonObject.class);

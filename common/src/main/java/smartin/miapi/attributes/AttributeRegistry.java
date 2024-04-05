@@ -1,5 +1,6 @@
 package smartin.miapi.attributes;
 
+import com.redpxnda.nucleus.facet.FacetRegistry;
 import dev.architectury.event.EventResult;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.*;
@@ -17,6 +18,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import smartin.miapi.entity.ItemProjectileEntity;
+import smartin.miapi.entity.ShieldingArmorFacet;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.events.MiapiProjectileEvents;
 import smartin.miapi.mixin.LivingEntityAccessor;
@@ -86,6 +88,31 @@ public class AttributeRegistry {
 
 
     public static void setup() {
+        FacetRegistry.ENTITY_FACET_ATTACHMENT.register((entity, attacher) -> {
+            if (entity instanceof LivingEntity livingEntity){
+                attacher.add(ShieldingArmorFacet.KEY, new ShieldingArmorFacet(livingEntity));
+            }
+        });
+
+        MiapiEvents.LIVING_HURT_AFTER_ARMOR.register((livingHurt) -> {
+            ShieldingArmorFacet facet = ShieldingArmorFacet.KEY.get(livingHurt.livingEntity);
+            if (facet != null && !livingHurt.livingEntity.getWorld().isClient()) {
+                livingHurt.amount = facet.takeDamage(livingHurt.amount);
+                if (livingHurt.livingEntity instanceof ServerPlayerEntity player) {
+                    facet.sendToClient(player);
+                }
+            }
+            return EventResult.pass();
+        });
+
+        MiapiEvents.LIVING_ENTITY_TICK_END.register((entity) -> {
+            ShieldingArmorFacet facet = ShieldingArmorFacet.KEY.get(entity);
+            if (facet != null && !entity.getWorld().isClient()) {
+                facet.tick();
+            }
+            return EventResult.pass();
+        });
+
         MiapiEvents.LIVING_HURT.register((livingHurtEvent -> {
             if (livingHurtEvent.livingEntity.getAttributes().hasAttribute(DAMAGE_RESISTANCE)) {
                 livingHurtEvent.amount = (float) (livingHurtEvent.amount * (100 - livingHurtEvent.livingEntity.getAttributeValue(DAMAGE_RESISTANCE)) / 100);
