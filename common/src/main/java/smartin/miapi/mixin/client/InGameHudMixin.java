@@ -41,16 +41,19 @@ public class InGameHudMixin {
         int healthAbsorptionTotal = MathHelper.ceil((maxHealth + (float) absorptionAmount) / 2.0F / 10.0F);
         int numHearts = Math.max(10 - (healthAbsorptionTotal - 2), 3);
         int startY = scaledHeight - 39 - (healthAbsorptionTotal - 1) * numHearts - 10;
+        if (playerEntity.getArmor() > 0) {
+            startY -= 10;
+        }
         for (int index = 0; index < shieldingArmorMaxAmount; index++) {
             int heartX = scaledWidth / 2 - 91 + (index % 10) * 8;
             int yOffset = (index / 10) * 10;
             int heartTextureIndex = index * 2 + 1;
             if (heartTextureIndex < shieldingArmorCurrentAmount) {
-                context.drawTexture(CraftingScreen.BACKGROUND_TEXTURE, heartX, startY - yOffset, 430, 96, 9, 9,512, 512);
+                context.drawTexture(CraftingScreen.BACKGROUND_TEXTURE, heartX, startY - yOffset, 430, 96, 9, 9, 512, 512);
             } else if (heartTextureIndex == shieldingArmorCurrentAmount) {
-                context.drawTexture(CraftingScreen.BACKGROUND_TEXTURE, heartX, startY - yOffset, 439, 96, 9, 9,512, 512);
+                context.drawTexture(CraftingScreen.BACKGROUND_TEXTURE, heartX, startY - yOffset, 439, 96, 9, 9, 512, 512);
             } else {
-                context.drawTexture(CraftingScreen.BACKGROUND_TEXTURE, heartX, startY - yOffset, 448, 96, 9, 9,512, 512);
+                context.drawTexture(CraftingScreen.BACKGROUND_TEXTURE, heartX, startY - yOffset, 448, 96, 9, 9, 512, 512);
             }
         }
 

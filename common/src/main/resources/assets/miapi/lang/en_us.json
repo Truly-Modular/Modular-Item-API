@@ -74,6 +74,7 @@
     "miapi.ability.heavy_attack.lore": "Right Click for Charged Attack",
     "miapi.ability.block.lore": "Right Click to Block",
     "miapi.ability.throw.lore": "Throwable",
+    "miapi.attribute.name.shielding_armor": "Shielding Armor",
     "miapi.attribute.name.swim_speed": "Swim Speed",
     "miapi.attribute.name.durability": "Durability",
     "miapi.attribute.name.resistance": "Damage Ressistance",
