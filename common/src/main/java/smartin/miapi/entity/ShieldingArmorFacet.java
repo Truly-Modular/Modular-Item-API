@@ -3,6 +3,9 @@ package smartin.miapi.entity;
 import com.redpxnda.nucleus.facet.FacetKey;
 import com.redpxnda.nucleus.facet.FacetRegistry;
 import com.redpxnda.nucleus.facet.entity.EntityFacet;
+import com.redpxnda.nucleus.facet.network.clientbound.FacetSyncPacket;
+import com.redpxnda.nucleus.network.PlayerSendable;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
@@ -32,7 +35,6 @@ public class ShieldingArmorFacet implements EntityFacet<NbtCompound> {
     public float takeDamage(float originalDamage) {
         float reduction = Math.min(originalDamage, getCurrentAmount());
         currentAmount -= reduction;
-        //Miapi.LOGGER.info("reduced Damage by " + reduction + " due to shielding armor");
         return originalDamage - reduction;
     }
 
@@ -41,11 +43,11 @@ public class ShieldingArmorFacet implements EntityFacet<NbtCompound> {
     }
 
     public void tick() {
-        if (livingEntity.age % 20 == 17) {
+        if (livingEntity.age % 5 == 3) {
             if (
                     ticksSinceLastAttack() > 100
             ) {
-                currentAmount = Math.min(getCurrentAmount() + 1, getMaxAmount());
+                currentAmount = Math.min(getCurrentAmount() + 0.25f, getMaxAmount());
                 if (livingEntity instanceof PlayerEntity) {
                     Miapi.LOGGER.info("tick " + currentAmount + " max " + getMaxAmount());
                 }
@@ -80,5 +82,11 @@ public class ShieldingArmorFacet implements EntityFacet<NbtCompound> {
     @Override
     public void loadNbt(NbtCompound nbt) {
         currentAmount = nbt.getFloat("miapi:shielding_armor_current");
+    }
+
+    @Override
+    public PlayerSendable createPacket(Entity target) {
+        // The FacetSyncPacket requires 3 things: the entity holding the facet, the facet key, and the facet instance.
+        return new FacetSyncPacket<>(target, KEY, this);
     }
 }

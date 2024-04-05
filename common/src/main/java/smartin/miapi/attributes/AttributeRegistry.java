@@ -97,9 +97,13 @@ public class AttributeRegistry {
         MiapiEvents.LIVING_HURT_AFTER_ARMOR.register((livingHurt) -> {
             ShieldingArmorFacet facet = ShieldingArmorFacet.KEY.get(livingHurt.livingEntity);
             if (facet != null && !livingHurt.livingEntity.getWorld().isClient()) {
-                livingHurt.amount = facet.takeDamage(livingHurt.amount);
-                if (livingHurt.livingEntity instanceof ServerPlayerEntity player) {
-                    facet.sendToClient(player);
+                if(
+                        !livingHurt.damageSource.isIn(DamageTypeTags.BYPASSES_ARMOR)
+                ){
+                    livingHurt.amount = facet.takeDamage(livingHurt.amount);
+                    if (livingHurt.livingEntity instanceof ServerPlayerEntity player) {
+                        facet.sendToClient(player);
+                    }
                 }
             }
             return EventResult.pass();
