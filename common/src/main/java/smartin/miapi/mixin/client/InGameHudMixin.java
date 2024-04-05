@@ -10,7 +10,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.crafting.CraftingScreen;
 import smartin.miapi.entity.ShieldingArmorFacet;
 import smartin.miapi.mixin.InGameHudAccessor;
@@ -34,7 +33,6 @@ public class InGameHudMixin {
         int scaledWidth = ((InGameHudAccessor) inGameHud).getScaledWidth();
         int shieldingArmorMaxAmount = (int) facet.getMaxAmount() / 2;
         int shieldingArmorCurrentAmount = (int) (facet.getCurrentAmount());
-        Miapi.LOGGER.info("current " + shieldingArmorCurrentAmount + " max " + shieldingArmorMaxAmount);
         int scaledHeight = ((InGameHudAccessor) inGameHud).getScaledHeight();
         float maxHealth = Math.max((float) playerEntity.getAttributeValue(EntityAttributes.GENERIC_MAX_HEALTH), (float) Math.max(renderHealthValue, playerHealth));
         int absorptionAmount = MathHelper.ceil(playerEntity.getAbsorptionAmount());

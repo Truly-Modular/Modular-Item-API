@@ -2,6 +2,7 @@ package smartin.miapi.attributes;
 
 import com.redpxnda.nucleus.facet.FacetRegistry;
 import dev.architectury.event.EventResult;
+import dev.architectury.event.events.common.PlayerEvent;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.*;
 import net.minecraft.entity.attribute.EntityAttribute;
@@ -89,17 +90,18 @@ public class AttributeRegistry {
 
     public static void setup() {
         FacetRegistry.ENTITY_FACET_ATTACHMENT.register((entity, attacher) -> {
-            if (entity instanceof LivingEntity livingEntity){
-                attacher.add(ShieldingArmorFacet.KEY, new ShieldingArmorFacet(livingEntity));
+            if (entity instanceof LivingEntity livingEntity) {
+                ShieldingArmorFacet facet = new ShieldingArmorFacet(livingEntity);
+                attacher.add(ShieldingArmorFacet.KEY, facet);
             }
         });
 
         MiapiEvents.LIVING_HURT_AFTER_ARMOR.register((livingHurt) -> {
             ShieldingArmorFacet facet = ShieldingArmorFacet.KEY.get(livingHurt.livingEntity);
             if (facet != null && !livingHurt.livingEntity.getWorld().isClient()) {
-                if(
+                if (
                         !livingHurt.damageSource.isIn(DamageTypeTags.BYPASSES_ARMOR)
-                ){
+                ) {
                     livingHurt.amount = facet.takeDamage(livingHurt.amount);
                     if (livingHurt.livingEntity instanceof ServerPlayerEntity player) {
                         facet.sendToClient(player);
@@ -116,6 +118,13 @@ public class AttributeRegistry {
             }
             return EventResult.pass();
         });
+
+        PlayerEvent.PLAYER_JOIN.register((player -> {
+            ShieldingArmorFacet facet = ShieldingArmorFacet.KEY.get(player);
+            if (facet != null) {
+                facet.sendToClient(player);
+            }
+        }));
 
         MiapiEvents.LIVING_HURT.register((livingHurtEvent -> {
             if (livingHurtEvent.livingEntity.getAttributes().hasAttribute(DAMAGE_RESISTANCE)) {

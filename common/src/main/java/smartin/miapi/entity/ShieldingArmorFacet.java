@@ -48,12 +48,12 @@ public class ShieldingArmorFacet implements EntityFacet<NbtCompound> {
                     ticksSinceLastAttack() > 100
             ) {
                 currentAmount = Math.min(getCurrentAmount() + 0.25f, getMaxAmount());
-                if (livingEntity instanceof PlayerEntity) {
-                    Miapi.LOGGER.info("tick " + currentAmount + " max " + getMaxAmount());
+                if(livingEntity instanceof PlayerEntity player){
+                    Miapi.LOGGER.info("update Player!");
                 }
                 if (livingEntity instanceof ServerPlayerEntity serverPlayerEntity) {
-                    Miapi.LOGGER.info("sync to client");
                     this.sendToClient(serverPlayerEntity);
+                    Miapi.LOGGER.info("sync to client");
                 }
             }
         }
@@ -62,7 +62,7 @@ public class ShieldingArmorFacet implements EntityFacet<NbtCompound> {
     public int ticksSinceLastAttack() {
         int lastAttackedTime = ((LivingEntityAccessor) livingEntity).getLastAttackedTime();
         if (lastAttackedTime > livingEntity.age) {
-            //return livingEntity.age;
+            return livingEntity.age;
         }
         return livingEntity.age - lastAttackedTime;
     }
