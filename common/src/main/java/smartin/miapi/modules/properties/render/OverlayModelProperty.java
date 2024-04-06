@@ -1,9 +1,11 @@
 package smartin.miapi.modules.properties.render;
 
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 import com.redpxnda.nucleus.codec.auto.AutoCodec;
+import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
@@ -23,8 +25,10 @@ import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.material.MaterialProperty;
 import smartin.miapi.modules.properties.render.colorproviders.ColorProvider;
 import smartin.miapi.modules.properties.util.CodecBasedProperty;
+import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -68,7 +72,7 @@ public class OverlayModelProperty extends CodecBasedProperty<OverlayModelPropert
     }
 
     public boolean load(String moduleKey, JsonElement data) {
-        getData(data).forEach(OverlayModelData::loadSprite);
+        getData(new ItemModule.ModuleInstance(ItemModule.empty), data).forEach(OverlayModelData::loadSprite);
         return true;
     }
 
@@ -97,20 +101,23 @@ public class OverlayModelProperty extends CodecBasedProperty<OverlayModelPropert
 
     public static List<OverlayModelData> getData(ItemModule.ModuleInstance moduleInstance) {
         JsonElement element = moduleInstance.getProperties().get(property);
-        return getData(element);
+        return getData(moduleInstance, element);
     }
 
-    public static List<OverlayModelData> getData(JsonElement element) {
+    public static List<OverlayModelData> getData(ItemModule.ModuleInstance moduleInstance, JsonElement element) {
         List<OverlayModelData> data = new ArrayList<>();
         if (element != null && element.isJsonArray()) {
             element.getAsJsonArray().forEach(element1 -> {
                 try {
-                    data.add(CODEC.parse(JsonOps.INSTANCE, element1).getOrThrow(false, s ->
-                            Miapi.LOGGER.error("Failed to load OverlayModelData! -> {}", s)));
+                    OverlayModelData overlayModelData = CODEC.parse(JsonOps.INSTANCE, element1).getOrThrow(false, s ->
+                            Miapi.LOGGER.error("Failed to load OverlayModelData! -> {}", s));
+                    overlayModelData.getPriority(moduleInstance, element1.getAsJsonObject());
+                    data.add(overlayModelData);
                 } catch (Exception e) {
                 }
             });
         }
+        data.sort(Comparator.comparingDouble(a -> a.javaPriority));
         return data;
     }
 
@@ -119,6 +126,8 @@ public class OverlayModelProperty extends CodecBasedProperty<OverlayModelPropert
         public String modelTargetType;
         public String modelTargetInfo;
         public String colorProvider;
+        @CodecBehavior.Optional
+        public double javaPriority;
 
         public Sprite resolveSprite() {
             return ModelProperty.textureGetter.apply(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(texture)));
@@ -126,6 +135,11 @@ public class OverlayModelProperty extends CodecBasedProperty<OverlayModelPropert
 
         public void loadSprite() {
             ModelProperty.textureGetter.apply(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(texture)));
+        }
+
+        public double getPriority(ItemModule.ModuleInstance moduleInstance, JsonObject element) {
+            javaPriority = ModuleProperty.getDouble(element, "priority", moduleInstance, 0);
+            return javaPriority;
         }
 
         public ColorProvider getColorProvider(ItemStack itemStack, ItemModule.ModuleInstance current, ItemModule.ModuleInstance other, ColorProvider otherColor) {
@@ -149,7 +163,7 @@ public class OverlayModelProperty extends CodecBasedProperty<OverlayModelPropert
             return otherColor;
         }
 
-        public boolean useThisModule(){
+        public boolean useThisModule() {
             return !colorProvider.equals("other");
         }
 
