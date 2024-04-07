@@ -2,3 +2,4 @@
 - nerfed impact of Exhaustion
 - added Shielding Armor Attribute
 - improved OverlayModelProperty
+- fixed issue with generated materials were some generated Materials would crash out

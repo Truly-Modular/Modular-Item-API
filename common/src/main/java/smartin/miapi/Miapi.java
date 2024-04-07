@@ -135,7 +135,7 @@ public class Miapi {
             MiapiClient.init();
         }
 
-        NucleusNamespaces.addAddonNamespace("miapi");
+        NucleusNamespaces.addAddonNamespace(Miapi.MOD_ID);
 
         CommandRegistrationEvent.EVENT.register((serverCommandSourceCommandDispatcher, registryAccess, listener) -> {
             MaterialCommand.register(serverCommandSourceCommandDispatcher);
@@ -151,7 +151,7 @@ public class Miapi {
     protected static void setupConfigs() {
         ConfigManager.register(ConfigBuilder.automatic(MiapiConfig.class)
                 .id(MOD_ID + ":merged")
-                .fileLocation("miapi")
+                .fileLocation(Miapi.MOD_ID)
                 .type(ConfigType.COMMON)
                 .creator(MiapiConfig::new)
                 .updateListener(c -> {

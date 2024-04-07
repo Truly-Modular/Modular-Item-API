@@ -194,6 +194,9 @@ public class GeneratedMaterial implements Material {
             List<ToolItem> toolItems = Registries.ITEM.stream()
                     .filter(ToolItem.class::isInstance)
                     .map(ToolItem.class::cast)
+                    .filter(toolMaterial ->
+                            toolMaterial.getMaterial().getRepairIngredient() != null &&
+                                    toolMaterial.getMaterial().getRepairIngredient().getMatchingStacks() != null)
                     .toList();
             List<Material> toRegister = new ArrayList<>();
             if (MiapiConfig.INSTANCE.server.generatedMaterials.generateOtherMaterials) {
@@ -201,10 +204,10 @@ public class GeneratedMaterial implements Material {
                         .map(ToolItem::getMaterial)
                         .collect(Collectors.toSet())
                         .stream()
-                        .filter(toolMaterial -> toolMaterial.getRepairIngredient().getMatchingStacks().length > 0)
-                        .filter(toolMaterial -> !toolMaterial.getRepairIngredient().getMatchingStacks()[0].isIn(RegistryInventory.MIAPI_FORBIDDEN_TAG))
                         .filter(toolMaterial -> toolMaterial.getRepairIngredient() != null &&
                                 toolMaterial.getRepairIngredient().getMatchingStacks() != null)
+                        .filter(toolMaterial -> toolMaterial.getRepairIngredient().getMatchingStacks().length > 0)
+                        .filter(toolMaterial -> !toolMaterial.getRepairIngredient().getMatchingStacks()[0].isIn(RegistryInventory.MIAPI_FORBIDDEN_TAG))
                         .filter(toolMaterial -> Arrays.stream(toolMaterial.getRepairIngredient().getMatchingStacks())
                                 .allMatch(itemStack -> MaterialProperty.getMaterialFromIngredient(itemStack) == null && !itemStack.getItem().equals(Items.BARRIER)))
                         .limit(MiapiConfig.INSTANCE.server.generatedMaterials.maximumGeneratedMaterials)
@@ -279,9 +282,9 @@ public class GeneratedMaterial implements Material {
                     .map(ToolItem::getMaterial)
                     .collect(Collectors.toSet())
                     .stream()
+                    .filter(toolMaterial -> toolMaterial.getRepairIngredient() != null && toolMaterial.getRepairIngredient().getMatchingStacks() != null)
                     .filter(toolMaterial -> toolMaterial.getRepairIngredient().getMatchingStacks().length > 0)
                     .filter(toolMaterial -> !toolMaterial.getRepairIngredient().getMatchingStacks()[0].isIn(RegistryInventory.MIAPI_FORBIDDEN_TAG))
-                    .filter(toolMaterial -> toolMaterial.getRepairIngredient() != null && toolMaterial.getRepairIngredient().getMatchingStacks() != null)
                     .filter(toolMaterial -> Arrays.stream(toolMaterial.getRepairIngredient().getMatchingStacks()).allMatch(itemStack -> MaterialProperty.getMaterialFromIngredient(itemStack) != null && !itemStack.getItem().equals(Items.BARRIER)))
                     .forEach(toolMaterial -> {
                         Material material = MaterialProperty.getMaterialFromIngredient(toolMaterial.getRepairIngredient().getMatchingStacks()[0]);

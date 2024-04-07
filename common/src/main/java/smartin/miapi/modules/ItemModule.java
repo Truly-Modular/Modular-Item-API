@@ -77,9 +77,7 @@ public class ItemModule {
 
     public Map<ModuleProperty, JsonElement> getKeyedProperties() {
         HashMap<ModuleProperty, JsonElement> map = new HashMap<>();
-        getProperties().forEach((key, jsonData) -> {
-            map.put(RegistryInventory.moduleProperties.get(key), jsonData);
-        });
+        getProperties().forEach((key, jsonData) -> map.put(RegistryInventory.moduleProperties.get(key), jsonData));
         return map;
     }
 
@@ -114,7 +112,6 @@ public class ItemModule {
                     moduleProperties.put(key, json);
                 }
             });
-            //processModuleJsonElement(moduleJson, moduleProperties, name, path, moduleJsonString);
 
             moduleRegistry.register(name, new ItemModule(name, moduleProperties));
         } catch (Exception e) {
@@ -384,6 +381,10 @@ public class ItemModule {
         }
 
         return flatList;
+    }
+
+    public void asd(String asd){
+
     }
 
 
