@@ -31,6 +31,7 @@ public class DetailView extends InteractAbleWidget {
     final Map<SlotProperty.ModuleSlot, DetailView.SlotButton> buttonMap = new HashMap<>();
     SlotProperty.ModuleSlot selectedSlot;
     ScrollList scrollList;
+    public static int scrollPos = 0;
 
 
     public DetailView(int x, int y, int width, int height, SlotProperty.ModuleSlot baseSlot, SlotProperty.ModuleSlot selected, Consumer<SlotProperty.ModuleSlot> edit, Consumer<SlotProperty.ModuleSlot> replace, String slotType) {
@@ -39,6 +40,7 @@ public class DetailView extends InteractAbleWidget {
         if (baseSlot != null) {
             scrollList = new ScrollList(x, y, width, height, getButtons(baseSlot, new ArrayList<>(), 0, slotType));
             this.addChild(scrollList);
+            scrollList.setScrollAmount(scrollPos);
         }
         this.selectConsumer = edit;
     }
@@ -63,6 +65,7 @@ public class DetailView extends InteractAbleWidget {
     }
 
     public void select(SlotProperty.ModuleSlot slot) {
+        scrollPos = scrollList.getScrollAmount();
         selectedSlot = slot;
         selectConsumer.accept(slot);
     }

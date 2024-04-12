@@ -13,6 +13,7 @@ public class DurabilityProperty extends DoubleProperty {
     public DurabilityProperty() {
         super(KEY);
         property = this;
+        allowVisualOnly = true;
     }
 
     @Override

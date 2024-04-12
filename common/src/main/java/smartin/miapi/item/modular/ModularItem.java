@@ -9,7 +9,7 @@ import smartin.miapi.modules.properties.DurabilityProperty;
 public interface ModularItem extends VisualModularItem {
 
     static int getDurability(ItemStack stack){
-        if (stack.getItem() instanceof ModularItem) {
+        if (stack.getItem() instanceof VisualModularItem) {
             return (int) DurabilityProperty.property.getValueSafe(stack);
         }
         return stack.getMaxDamage();

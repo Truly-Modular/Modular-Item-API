@@ -7,7 +7,6 @@ import com.redpxnda.nucleus.facet.network.clientbound.FacetSyncPacket;
 import com.redpxnda.nucleus.network.PlayerSendable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
@@ -48,12 +47,8 @@ public class ShieldingArmorFacet implements EntityFacet<NbtCompound> {
                     ticksSinceLastAttack() > 100
             ) {
                 currentAmount = Math.min(getCurrentAmount() + 0.25f, getMaxAmount());
-                if(livingEntity instanceof PlayerEntity player){
-                    Miapi.LOGGER.info("update Player!");
-                }
                 if (livingEntity instanceof ServerPlayerEntity serverPlayerEntity) {
                     this.sendToClient(serverPlayerEntity);
-                    Miapi.LOGGER.info("sync to client");
                 }
             }
         }

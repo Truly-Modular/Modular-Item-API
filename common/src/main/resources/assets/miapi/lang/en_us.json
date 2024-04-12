@@ -7,6 +7,8 @@
     "miapi.condition.tag.error": "Item is missing ModuleTag",
     "miapi.crafting_condition.cant_change_parent": "Cannot change this module because of submodule",
     "miapi.gui.item_detail": "Hover detail",
+    "miapi.broken_item.name": "Broken %s",
+    "miapi.broken_item.tooltip": "§4Broken",
     "miapi.ui.material_detail.lower": "...⬇(shift)",
     "miapi.ui.material_detail.higher": "...⬆",
     "miapi.ui.material_detail.lower.scroll": "...⬇(scroll)",

@@ -18,6 +18,7 @@ import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.ParentHandledScreen;
 import smartin.miapi.client.gui.SimpleScreenHandlerListener;
 import smartin.miapi.client.gui.TransformableWidget;
+import smartin.miapi.client.gui.crafting.crafter.DetailView;
 import smartin.miapi.client.gui.crafting.crafter.ModuleCrafter;
 import smartin.miapi.client.gui.crafting.slotdisplay.SlotDisplay;
 import smartin.miapi.client.gui.crafting.slotdisplay.SmithDisplay;
@@ -45,7 +46,7 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
     private MinimizeButton minimizer;
     private SlotProperty.ModuleSlot baseSlot;
     @Nullable
-    public SlotProperty.ModuleSlot slot;
+    public static SlotProperty.ModuleSlot slot;
     @Nullable
     private static EditOption editOption;
     private TransformableWidget editHolder;
@@ -55,9 +56,12 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
 
     public CraftingScreen(CraftingScreenHandler handler, PlayerInventory inventory, Text title) {
         super(handler, inventory, Text.empty());
+        slot = null;
         this.backgroundWidth = 369 + 12 - 15;
 
         this.backgroundHeight = 223 - 9 - 15;
+
+        DetailView.scrollPos = 0;
     }
 
     public EditOption getEditOption() {
@@ -128,7 +132,7 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
             }
         }));
 
-        addChild(new EditOptionIcon(moduleCrafter.getX() - 36, moduleCrafter.getY() + 4, 32, 28, this::selectEditOption, this::getEditOption, BACKGROUND_TEXTURE, 339, 25, 512, 512,"miapi.ui.edit_option.hover.info", null));
+        addChild(new EditOptionIcon(moduleCrafter.getX() - 36, moduleCrafter.getY() + 4, 32, 28, this::selectEditOption, this::getEditOption, BACKGROUND_TEXTURE, 339, 25, 512, 512, "miapi.ui.edit_option.hover.info", null));
 
     }
 

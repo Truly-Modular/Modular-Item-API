@@ -22,7 +22,7 @@ public class DisplayNameProperty implements ModuleProperty {
     }
 
     public static Text getDisplayText(ItemStack stack) {
-        return ModularItemCache.get(stack, KEY, Text.empty());
+        return ModularItemCache.getVisualOnlyCache(stack, KEY, Text.empty());
     }
 
     private static Text resolveDisplayText(ItemStack itemStack) {

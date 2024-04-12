@@ -179,6 +179,7 @@ public class RegistryInventory {
     //public static Block exampleStatProviderBlock;
     public static BlockEntityType<ModularWorkBenchEntity> modularWorkBenchEntityType;
     public static Item modularItem;
+    public static Item visualOnlymodularItem;
     public static Item modularAxe;
     public static Item modularMattock;
     public static StatusEffect cryoStatusEffect;
@@ -254,6 +255,8 @@ public class RegistryInventory {
                 }));
 
         //ITEM
+        register(modularItems, "modular_broken_item", ModularVisualOnlyItem::new, i -> visualOnlymodularItem = i);
+
         register(modularItems, "modular_item", ExampleModularItem::new, i -> modularItem = i);
         register(modularItems, "modular_part", ModularItemPart::new);
 

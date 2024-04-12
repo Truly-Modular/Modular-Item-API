@@ -20,11 +20,12 @@ public class RepairPriority extends DoubleProperty {
     public RepairPriority() {
         super(KEY);
         property = this;
+        allowVisualOnly = true;
         ModularItemCache.setSupplier(KEY + "_materials", this::getRepairMaterialsPrivate);
     }
 
     public List<Material> getRepairMaterials(ItemStack itemStack) {
-        return ModularItemCache.get(itemStack, KEY + "_materials", new ArrayList<>());
+        return ModularItemCache.getVisualOnlyCache(itemStack, KEY + "_materials", new ArrayList<>());
     }
 
     public static double getRepairValue(ItemStack tool, ItemStack material) {

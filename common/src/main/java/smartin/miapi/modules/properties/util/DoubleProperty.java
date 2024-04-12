@@ -9,6 +9,7 @@ import net.minecraft.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.StatResolver;
+import smartin.miapi.item.modular.VisualModularItem;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.cache.ModularItemCache;
 
@@ -19,11 +20,19 @@ public abstract class DoubleProperty implements ModuleProperty {
     public ModuleProperty property;
     protected String privateKey;
     public double baseValue = 0;
+    public boolean allowVisualOnly = false;
 
     protected DoubleProperty(String key) {
         property = this;
         privateKey = key;
         ModularItemCache.setSupplier(key, (itemstack) -> createValue(itemstack, property));
+    }
+
+    public boolean isModularItem(ItemStack itemStack) {
+        if (allowVisualOnly) {
+            return itemStack.getItem() instanceof VisualModularItem;
+        }
+        return itemStack.getItem() instanceof ModularItem;
     }
 
     public abstract Double getValue(ItemStack stack);
@@ -63,7 +72,7 @@ public abstract class DoubleProperty implements ModuleProperty {
         List<Double> addition = new ArrayList<>();
         List<Double> multiplyBase = new ArrayList<>();
         List<Double> multiplyTotal = new ArrayList<>();
-        if(!(itemStack.getItem() instanceof ModularItem)){
+        if (!isModularItem(itemStack)) {
             return null;
         }
         for (ItemModule.ModuleInstance moduleInstance : ItemModule.getModules(itemStack).allSubModules()) {
@@ -102,7 +111,7 @@ public abstract class DoubleProperty implements ModuleProperty {
             value = currentValue * value;
         }
         if (hasValue) {
-            if(Double.isNaN(value)){
+            if (Double.isNaN(value)) {
                 return 0d;
             }
             return value;
@@ -195,6 +204,9 @@ public abstract class DoubleProperty implements ModuleProperty {
     }
 
     public double getValueSafeRaw(ItemStack itemStack) {
+        if(allowVisualOnly){
+            return ModularItemCache.getVisualOnlyCache(itemStack, privateKey, Double.valueOf(0));
+        }
         return ModularItemCache.get(itemStack, privateKey, Double.valueOf(0));
     }
 
