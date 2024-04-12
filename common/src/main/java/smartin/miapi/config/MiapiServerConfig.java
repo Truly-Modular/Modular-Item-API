@@ -29,6 +29,15 @@ public class MiapiServerConfig {
         @AutoCodec.Name("block_all_teleports_effects")
         public boolean blockAllTeleportsEffect = true;
 
+        @Comment("""
+                If this is true modular items will fully break.
+                If set to false Modular Item will instead to go into a Broken state
+                In this broken state they cant do anything but repaired.
+                WARNING: some anvil reworking mods break the repairing logic. Please report those issues to us.
+                """)
+        @AutoCodec.Name("full_break_modular_items")
+        public boolean fullBreakModularItems = true;
+
         @Comment("Whether a server reload should be automatically forced to fix Forge having buggy class loading")
         @AutoCodec.Name("forge_reload_mode")
         public boolean forgeReloadMode = Platform.isForge();

@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
-import smartin.miapi.Miapi;
+import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.VisualModularItem;
 import smartin.miapi.modules.edit_options.ReplaceOption;
@@ -115,14 +115,10 @@ abstract class ItemStackMixin {
 
     @Inject(method = "damage(ILnet/minecraft/entity/LivingEntity;Ljava/util/function/Consumer;)V", at = @At("HEAD"), cancellable = true)
     public <T extends LivingEntity> void miapi$takeDurabilityDamage(int amount, T entity, Consumer<T> breakCallback, CallbackInfo ci) {
-        Miapi.LOGGER.info("damage");
         ItemStack stack = (ItemStack) (Object) this;
-        Miapi.LOGGER.info("damage after");
-        if (stack.getItem() instanceof VisualModularItem && stack.isDamageable() && stack.getDamage() + amount +1 >= stack.getMaxDamage()) {
-            Miapi.LOGGER.info("wouldBreak");
+        if (!MiapiConfig.INSTANCE.server.other.fullBreakModularItems && stack.getItem() instanceof VisualModularItem && stack.isDamageable() && stack.getDamage() + amount + 1 >= stack.getMaxDamage()) {
             for (EquipmentSlot value : EquipmentSlot.values()) {
                 if (entity.getEquippedStack(value).equals(stack)) {
-                    Miapi.LOGGER.info("found Slot");
                     ItemStack brokenStack = new ItemStack(RegistryInventory.visualOnlymodularItem);
                     brokenStack.setNbt(stack.getNbt());
                     entity.equipStack(value, brokenStack);
