@@ -3,3 +3,5 @@
 - added Shielding Armor Attribute
 - improved OverlayModelProperty
 - fixed issue with generated materials were some generated Materials would crash out
+- added config option to allow Items to go into a Broken state instead of fully breaking, similar to vanillas elytra behaviour
+- fix module list scrolling to the top on gui update

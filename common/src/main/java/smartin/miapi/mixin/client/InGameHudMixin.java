@@ -4,6 +4,7 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import org.spongepowered.asm.mixin.Mixin;
@@ -11,6 +12,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import smartin.miapi.client.gui.crafting.CraftingScreen;
+import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.entity.ShieldingArmorFacet;
 import smartin.miapi.mixin.InGameHudAccessor;
 
@@ -38,11 +40,23 @@ public class InGameHudMixin {
         int absorptionAmount = MathHelper.ceil(playerEntity.getAbsorptionAmount());
         int healthAbsorptionTotal = MathHelper.ceil((maxHealth + (float) absorptionAmount) / 2.0F / 10.0F);
         int numHearts = Math.max(10 - (healthAbsorptionTotal - 2), 3);
-        int startY = scaledHeight - 39 - (healthAbsorptionTotal - 1) * numHearts - 10;
-        if (playerEntity.getArmor() > 0) {
+        int startY = scaledHeight - 39 - 10;
+        if (MiapiConfig.INSTANCE.client.shieldingArmor.respectHealth) {
+            startY -= (healthAbsorptionTotal - 1) * numHearts;
+        }
+        if (MiapiConfig.INSTANCE.client.shieldingArmor.respectArmor && playerEntity.getArmor() > 0) {
             startY -= 10;
         }
-        for (int index = 0; index < shieldingArmorMaxAmount; index++) {
+        startY -= MiapiConfig.INSTANCE.client.shieldingArmor.otherOffests * 10;
+        startY -= MiapiConfig.INSTANCE.client.shieldingArmor.attributesSingleLine.stream()
+                .filter(id -> Registries.ATTRIBUTE.containsId(id))
+                .map(id -> Registries.ATTRIBUTE.get(id))
+                .filter(entityAttribute -> playerEntity.getAttributes().hasAttribute(entityAttribute))
+                .filter(entityAttribute -> playerEntity.getAttributeValue(entityAttribute) > 1)
+                .count() * 10;
+        for (
+                int index = 0;
+                index < shieldingArmorMaxAmount; index++) {
             int heartX = scaledWidth / 2 - 91 + (index % 10) * 8;
             int yOffset = (index / 10) * 10;
             int heartTextureIndex = index * 2 + 1;

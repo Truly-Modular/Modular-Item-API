@@ -4,7 +4,9 @@ import com.redpxnda.nucleus.codec.auto.AutoCodec;
 import com.redpxnda.nucleus.codec.auto.ConfigAutoCodec;
 import com.redpxnda.nucleus.util.Color;
 import com.redpxnda.nucleus.util.Comment;
+import net.minecraft.util.Identifier;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @ConfigAutoCodec.ConfigClassMarker
@@ -13,6 +15,9 @@ public class MiapiClientConfig {
     public GuiColorsCategory guiColors = new GuiColorsCategory();
 
     public OtherCategory other = new OtherCategory();
+
+    @AutoCodec.Name("shielding_armor")
+    public ShieldingArmorCategory shieldingArmor = new ShieldingArmorCategory();
 
     @ConfigAutoCodec.ConfigClassMarker
     public static class GuiColorsCategory {
@@ -39,5 +44,21 @@ public class MiapiClientConfig {
         @Comment("Speed of Color Change on enchanting Glint")
         @AutoCodec.Name("enchanting_glint_speed")
         public float enchantingGlintSpeed = 1.0f;
+    }
+
+    @ConfigAutoCodec.ConfigClassMarker
+    public static class ShieldingArmorCategory {
+        @Comment("If the Health bar is used to offset the Armor Shielding Bar")
+        @AutoCodec.Name("respect_health")
+        public boolean respectHealth = true;
+        @Comment("If the Health bar is used to offset the Armor Shielding Bar")
+        @AutoCodec.Name("respect_armor")
+        public boolean respectArmor = true;
+        @Comment("the amount of other bars to be offset by")
+        @AutoCodec.Name("other_offest")
+        public int otherOffests = 0;
+        @Comment("other attributes that if the player has more than 0 will offset the Armor shielding for every 20")
+        @AutoCodec.Name("other_attributes")
+        public List<Identifier> attributesSingleLine = new ArrayList<>();
     }
 }
