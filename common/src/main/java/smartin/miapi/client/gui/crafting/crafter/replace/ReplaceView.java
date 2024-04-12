@@ -48,7 +48,9 @@ public class ReplaceView extends InteractAbleWidget {
         addChild(list);
         list.children().clear();
         ArrayList<InteractAbleWidget> toList = new ArrayList<>();
-        toList.add(new SlotButton(0, 0, this.width, 15, new CraftOption(ItemModule.empty, new HashMap<>())));
+        if (!(editContext.getInstance() != null && !CanChildBeEmpty.property.isTrue(editContext.getInstance()))) {
+            toList.add(new SlotButton(0, 0, this.width, 15, new CraftOption(ItemModule.empty, new HashMap<>())));
+        }
         List<CraftOption> craftOptions = new ArrayList<>();
         AllowedSlots.allowedIn(slot).stream()
                 .sorted(Comparator.comparingDouble(PriorityProperty::getFor))

@@ -77,6 +77,9 @@ public class SynergyManager {
                         loadSynergy(material, entry.getValue().getAsJsonObject());
                     }
                 }
+                if (type.equals("all")) {
+                    RegistryInventory.modules.getFlatMap().forEach((id, module) -> loadSynergy(module, entry.getValue().getAsJsonObject()));
+                }
             } else {
                 ItemModule property = RegistryInventory.modules.get(entry.getKey());
                 JsonObject entryData = entry.getValue().getAsJsonObject();

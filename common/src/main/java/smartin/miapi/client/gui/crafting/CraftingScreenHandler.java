@@ -239,13 +239,6 @@ public class CraftingScreenHandler extends ScreenHandler {
             final EquipmentSlot equipmentSlot = EQUIPMENT_SLOT_ORDER[i];
             int offset = i < 2 ? 0 : 1;
             this.addSlot(new Slot(playerInventory, 39 - i, 87 + i * 18 - offset - 15, 118 + 71 - 14) {
-
-                @Override
-                public void setStack(ItemStack stack) {
-                    //PlayerScreenHandler.onEquipStack(owner, equipmentSlot, stack, this.getStack());
-                    super.setStack(stack);
-                }
-
                 @Override
                 public int getMaxItemCount() {
                     return 1;
@@ -272,13 +265,6 @@ public class CraftingScreenHandler extends ScreenHandler {
             });
         }
         this.addSlot(new Slot(playerInventory, 40, 111 - 61 + 5 * 18 + 18 - 15, 118 + 71 - 14) {
-
-            @Override
-            public void setStack(ItemStack stack) {
-                //PlayerScreenHandler.onEquipStack(owner, EquipmentSlot.OFFHAND, stack, this.getStack());
-                super.setStack(stack);
-            }
-
             @Override
             public Pair<Identifier, Identifier> getBackgroundSprite() {
                 return Pair.of(BLOCK_ATLAS_TEXTURE, EMPTY_OFFHAND_ARMOR_SLOT);
@@ -294,6 +280,10 @@ public class CraftingScreenHandler extends ScreenHandler {
     @Override
     public void sendContentUpdates() {
         super.sendContentUpdates();
+        if (notClient()) {
+            blockEntity.setItem(inventory.getStack(0));
+            blockEntity.saveAndSync();
+        }
         if (blockEntity == null && delegate.get(0) == 1) {
             short xsh = (short) delegate.get(1);
             short xsl = (short) delegate.get(2);
@@ -390,6 +380,7 @@ public class CraftingScreenHandler extends ScreenHandler {
     }
 
     public ItemStack quickMove(PlayerEntity player, int index) {
+        inventory.markDirty();
         ItemStack itemStack = ItemStack.EMPTY;
         Slot slot = this.slots.get(index);
 
@@ -441,11 +432,6 @@ public class CraftingScreenHandler extends ScreenHandler {
             if (!(currentPlayerInv.player instanceof ServerPlayerEntity)) continue;
             currentPlayerInv.offerOrDrop(inventory.removeStack(i));
         }
-    }
-
-    @Override
-    public void onContentChanged(Inventory inventory) {
-        this.sendContentUpdates();
     }
 
     public static class ModifyingSlot extends Slot {

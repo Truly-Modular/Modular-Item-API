@@ -444,6 +444,7 @@ public class RegistryInventory {
                 registerMiapi(moduleProperties, "conduit_model", new ServerReplaceProperty());
                 registerMiapi(moduleProperties, "overlay_texture_model", new ServerReplaceProperty());
             }
+            registerMiapi(moduleProperties, CanChildBeEmpty.KEY, new CanChildBeEmpty());
             registerMiapi(moduleProperties, LoreProperty.KEY, new LoreProperty());
             registerMiapi(moduleProperties, NameProperty.KEY, new NameProperty());
             registerMiapi(moduleProperties, SlotProperty.KEY, new SlotProperty());
