@@ -78,7 +78,11 @@ public class SynergyManager {
                     }
                 }
                 if (type.equals("all")) {
-                    RegistryInventory.modules.getFlatMap().forEach((id, module) -> loadSynergy(module, entry.getValue().getAsJsonObject()));
+                    if(entry.getValue().isJsonObject()){
+                        RegistryInventory.modules.getFlatMap().forEach((id, module) -> {
+                            loadSynergy(module, entry.getValue().getAsJsonObject());
+                        });
+                    }
                 }
             } else {
                 ItemModule property = RegistryInventory.modules.get(entry.getKey());
