@@ -26,8 +26,12 @@ import static smartin.miapi.client.renderer.SpriteLoader.miapiModels;
 @Environment(EnvType.CLIENT)
 public class ItemBakedModelReplacement implements UnbakedModel, BakedModel {
     public static LivingEntity currentEntity = null;
+
     public static boolean isModularItem(Identifier identifier) {
-        return RegistryInventory.modularItems.get(identifier.toString().replace("item/", "")) != null;
+        if (identifier != null && identifier.toString() != null) {
+            return RegistryInventory.modularItems.get(identifier.toString().replace("item/", "")) != null;
+        }
+        return false;
     }
 
     private ItemBakedModelOverrides overrides;
