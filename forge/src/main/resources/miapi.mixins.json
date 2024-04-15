@@ -6,7 +6,6 @@
   "mixins": [
     "ItemAttributeModifierEventAccessor",
     "ItemAttributeModifierEventMixin",
-    "ItemCapabilityProviderMixin",
     "ItemStackMixinHighPriority"
   ],
   "client": [

@@ -22,10 +22,8 @@ import smartin.miapi.client.MiapiClient;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.datapack.MiapiReloadListener;
 import smartin.miapi.datapack.ReloadEvents;
-import smartin.miapi.forge.compat.epic_fight.EpicFightCompatProperty;
 import smartin.miapi.modules.properties.AttributeProperty;
 import smartin.miapi.modules.properties.compat.ht_treechop.TreechopUtil;
-import smartin.miapi.registries.RegistryInventory;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -48,8 +46,8 @@ public class TrulyModularForge {
         //MinecraftForge.EVENT_BUS.register(new ServerEvents());
         Miapi.init();
 
-        if (Platform.isModLoaded("epicfight"))
-            RegistryInventory.moduleProperties.register(EpicFightCompatProperty.KEY, new EpicFightCompatProperty());
+        //if (Platform.isModLoaded("epicfight"))
+            //RegistryInventory.moduleProperties.register(EpicFightCompatProperty.KEY, new EpicFightCompatProperty());
 
 
         LifecycleEvent.SERVER_STARTING.register((instance -> setupAttributes()));

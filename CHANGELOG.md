@@ -7,3 +7,5 @@
 - fix module list scrolling to the top on gui update
 - added config to shielding_armor positions
 - added "can_child_be_empty" property to allow blocking of the Empty Slot Crafting Option
+- removed EF property for now (EF is still supported, this was just a fancier way for support that we didn't use)
+- added tags to miapi, c, minecraft and forge for armor, helmets, chestplates, leggings, boots, swords, knifes, tools, axes, pickaxes, shovels, hoes, bows, crossbows 
