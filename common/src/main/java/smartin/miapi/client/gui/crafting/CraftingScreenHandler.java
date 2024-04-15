@@ -300,6 +300,7 @@ public class CraftingScreenHandler extends ScreenHandler {
             BlockEntity be = playerInventory.player.getWorld().getBlockEntity(new BlockPos(x, y, z));
             if (be instanceof ModularWorkBenchEntity casted) blockEntity = casted;
         }
+        updateBE();
     }
 
     /**
@@ -376,6 +377,13 @@ public class CraftingScreenHandler extends ScreenHandler {
         if (blockEntity != null) {
             blockEntity.setItem(stack);
             if (notClient()) blockEntity.saveAndSync();
+        }
+    }
+
+    private void updateBE() {
+        if (notClient()) {
+            blockEntity.setItem(inventory.getStack(0));
+            blockEntity.saveAndSync();
         }
     }
 
@@ -464,13 +472,6 @@ public class CraftingScreenHandler extends ScreenHandler {
                 blockEntity.saveAndSync();
             }
             this.markDirty();
-        }
-
-        @Override
-        public ItemStack getStack() {
-            ItemStack stack = super.getStack();
-            if (notClient() && !stack.isEmpty()) return blockEntity.getItem();
-            return stack;
         }
     }
 
