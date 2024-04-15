@@ -21,7 +21,6 @@ public class MiapiClientFabric {
             List<Identifier> ids = RegistryInventory.modularItems.getFlatMap().keySet().stream().map(string -> new Identifier(string.replace("item/", ""))).toList();
             pluginContext.addModels(ids);
             pluginContext.resolveModel().register((context) -> {
-                context.id();
                 if (ItemBakedModelReplacement.isModularItem(context.id())) {
                     return new ItemBakedModelReplacement();
                 } else {

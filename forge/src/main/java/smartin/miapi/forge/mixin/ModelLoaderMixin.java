@@ -19,11 +19,12 @@ import java.util.Objects;
 @Mixin(ModelLoader.class)
 public abstract class ModelLoaderMixin {
     @Shadow
-    private void putModel(Identifier id, UnbakedModel unbakedModel) {}
+    private void putModel(Identifier id, UnbakedModel unbakedModel) {
+    }
 
-    @Shadow @Final private Map<Identifier, UnbakedModel> unbakedModels;
-
-    @Shadow @Final private Map<Identifier, UnbakedModel> modelsToBake;
+    @Shadow
+    @Final
+    private Map<Identifier, UnbakedModel> unbakedModels;
 
     @Inject(at = @At("HEAD"), method = "loadModel", cancellable = true)
     private void miapi$loadModelHook(Identifier id, CallbackInfo ci) {
@@ -36,7 +37,10 @@ public abstract class ModelLoaderMixin {
         }
     }
 
-    private static boolean isModularItem(Identifier identifier){
-        return RegistryInventory.modularItems.get(identifier.toString().replace("item/","").replace("#inventory", ""))!=null;
+    private static boolean isModularItem(Identifier identifier) {
+        if (identifier != null && identifier.toString() != null) {
+            return RegistryInventory.modularItems.get(identifier.toString().replace("item/", "").replace("#inventory", "")) != null;
+        }
+        return false;
     }
 }
