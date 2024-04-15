@@ -1,6 +1,8 @@
 {
     "replace": false,
     "values": [
-        "miapi:modular_crossbow"
+        "miapi:modular_crossbow",
+        "miapi:modular_small_crossbow",
+        "miapi:modular_large_crossbow"
     ]
 }
