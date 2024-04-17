@@ -27,6 +27,7 @@ import smartin.miapi.item.ModularItemStackConverter;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.edit_options.EditOption;
 import smartin.miapi.modules.edit_options.EditOptionIcon;
+import smartin.miapi.modules.edit_options.ReplaceOption;
 import smartin.miapi.modules.properties.AllowedSlots;
 import smartin.miapi.modules.properties.SlotProperty;
 import smartin.miapi.registries.RegistryInventory;
@@ -83,6 +84,7 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
         this.editOption = editOption;
         moduleCrafter.setSelectedSlot(slot);
         moduleCrafter.setEditMode(editOption, get(editOption));
+        ReplaceOption.hoverStack = ItemStack.EMPTY;
     }
 
     public void init() {

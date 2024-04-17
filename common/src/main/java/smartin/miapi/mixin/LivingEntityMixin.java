@@ -6,6 +6,7 @@ import net.minecraft.entity.LimbAnimator;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ArrowEntity;
 import net.minecraft.item.ItemStack;
@@ -155,5 +156,18 @@ abstract class LivingEntityMixin {
     @ModifyVariable(method = "damage", at = @At(value = "HEAD"), ordinal = 0)
     private DamageSource miapi$damageEventSource(DamageSource value) {
         return storedDamageSource;
+    }
+
+    @Inject(method = "tickMovement()V", at = @At(value = "HEAD"), cancellable = true)
+    private void miapi$stopMovementTick(CallbackInfo ci) {
+        LivingEntity livingEntity = (LivingEntity) (Object) this;
+        if (livingEntity.hasStatusEffect(RegistryInventory.stunEffect)) {
+            if (livingEntity instanceof PlayerEntity playerEntity) {
+                if(!playerEntity.hasStatusEffect(StatusEffects.BLINDNESS)){
+                }
+            } else {
+                ci.cancel();
+            }
+        }
     }
 }

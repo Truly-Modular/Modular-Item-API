@@ -54,6 +54,8 @@ import smartin.miapi.client.atlas.MaterialAtlasManager;
 import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
 import smartin.miapi.craft.stat.CraftingStat;
 import smartin.miapi.effects.CryoStatusEffect;
+import smartin.miapi.effects.StunResistanceStatusEffect;
+import smartin.miapi.effects.StunStatusEffect;
 import smartin.miapi.effects.TeleportBlockEffect;
 import smartin.miapi.entity.ItemProjectileEntity;
 import smartin.miapi.item.MaterialSmithingRecipe;
@@ -184,6 +186,8 @@ public class RegistryInventory {
     public static Item modularMattock;
     public static StatusEffect cryoStatusEffect;
     public static StatusEffect teleportBlockEffect;
+    public static StatusEffect stunEffect;
+    public static StatusEffect stunResistanceEffect;
     public static GameEvent statProviderCreatedEvent;
     public static GameEvent statProviderRemovedEvent;
     //public static SimpleCraftingStat exampleCraftingStat;
@@ -260,6 +264,12 @@ public class RegistryInventory {
         register(modularItems, "modular_item", ExampleModularItem::new, i -> modularItem = i);
         register(modularItems, "modular_part", ModularItemPart::new);
 
+        register(modularItems, "modular_handheld", ModularWeapon::new);
+        register(modularItems, "modular_katars", ModularSword::new);
+        register(modularItems, "modular_gauntlets", ModularWeapon::new);
+        register(modularItems, "modular_knuckles", ModularWeapon::new);
+        register(modularItems, "modular_tonfa", ModularWeapon::new);
+
         register(modularItems, "modular_handle", ModularWeapon::new);
         register(modularItems, "modular_sword", ModularSword::new);
         register(modularItems, "modular_katana", ModularSword::new);
@@ -302,6 +312,8 @@ public class RegistryInventory {
         //STATUS EFFECTS
         register(statusEffects, "cryo", CryoStatusEffect::new, eff -> cryoStatusEffect = eff);
         register(statusEffects, "teleport_block", TeleportBlockEffect::new, eff -> teleportBlockEffect = eff);
+        register(statusEffects, "stun", StunStatusEffect::new, eff -> stunEffect = eff);
+        register(statusEffects, "stun_resistance", StunResistanceStatusEffect::new, eff -> stunResistanceEffect = eff);
 
         //ATTRIBUTE
 
@@ -343,6 +355,14 @@ public class RegistryInventory {
         registerAtt("generic.magic_damage", true, () ->
                         new ClampedEntityAttribute("miapi.attribute.name.magic_damage", 0.0, 0.0, 1024.0).setTracked(true),
                 att -> MAGIC_DAMAGE = att);
+
+        registerAtt("generic.stun_damage", true, () ->
+                        new ClampedEntityAttribute("miapi.attribute.name.stun_damage", 0.0, 0.0, 1024.0).setTracked(true),
+                att -> STUN_DAMAGE = att);
+
+        registerAtt("generic.stun_max_health", true, () ->
+                        new ClampedEntityAttribute("miapi.attribute.name.stun_max_health", 20.0, 0.0, 1024.0).setTracked(true),
+                att -> STUN_MAX_HEALTH = att);
 
         registerAtt("generic.crit_damage", true, () ->
                         new ClampedEntityAttribute("miapi.attribute.name.crit_damage", 0.0, 0.0, 1024.0).setTracked(true),

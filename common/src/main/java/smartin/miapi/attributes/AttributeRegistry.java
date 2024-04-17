@@ -20,6 +20,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import smartin.miapi.entity.ItemProjectileEntity;
 import smartin.miapi.entity.ShieldingArmorFacet;
+import smartin.miapi.entity.StunHealthFacet;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.events.MiapiProjectileEvents;
 import smartin.miapi.mixin.LivingEntityAccessor;
@@ -50,6 +51,9 @@ public class AttributeRegistry {
     public static EntityAttribute MINING_SPEED_HOE;
 
     public static EntityAttribute MAGIC_DAMAGE;
+    public static EntityAttribute STUN_DAMAGE;
+
+    public static EntityAttribute STUN_MAX_HEALTH;
 
     public static EntityAttribute CRITICAL_DAMAGE;
     public static EntityAttribute CRITICAL_CHANCE;
@@ -93,7 +97,24 @@ public class AttributeRegistry {
             if (entity instanceof LivingEntity livingEntity) {
                 ShieldingArmorFacet facet = new ShieldingArmorFacet(livingEntity);
                 attacher.add(ShieldingArmorFacet.KEY, facet);
+                StunHealthFacet stunHealthFacet = new StunHealthFacet(livingEntity);
+                attacher.add(StunHealthFacet.KEY, stunHealthFacet);
             }
+        });
+
+        MiapiEvents.LIVING_HURT_AFTER_ARMOR.register((livingHurt) -> {
+            StunHealthFacet facet = StunHealthFacet.KEY.get(livingHurt.livingEntity);
+            if (livingHurt.damageSource.getAttacker() != null && livingHurt.damageSource.getAttacker() instanceof LivingEntity attacker) {
+                if (facet != null && !livingHurt.livingEntity.getWorld().isClient()) {
+                    if (attacker.getAttributes().hasAttribute(STUN_DAMAGE)) {
+                        double currentStunDamage = attacker.getAttributeValue(STUN_DAMAGE);
+                        if (currentStunDamage > 0.1) {
+                            facet.takeStunDamage((float) currentStunDamage, attacker);
+                        }
+                    }
+                }
+            }
+            return EventResult.pass();
         });
 
         MiapiEvents.LIVING_HURT_AFTER_ARMOR.register((livingHurt) -> {
