@@ -17,6 +17,10 @@ import smartin.miapi.modules.properties.RepairPriority;
 import java.util.List;
 
 public class ModularBoots extends ArmorItem implements ModularItem {
+    public ModularBoots(Settings settings) {
+        super(new ModularArmorMaterial(), Type.BOOTS, settings);
+    }
+
     public ModularBoots() {
         super(new ModularArmorMaterial(), Type.BOOTS, new Settings());
     }

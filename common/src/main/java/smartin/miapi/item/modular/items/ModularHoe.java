@@ -26,6 +26,9 @@ import smartin.miapi.modules.properties.mining.MiningLevelProperty;
 import java.util.List;
 
 public class ModularHoe extends HoeItem implements ModularItem {
+    public ModularHoe(Settings settings) {
+        super(new ModularToolMaterial(), 5, 5, settings.maxCount(1).maxDamage(500));
+    }
 
     public ModularHoe() {
         super(new ModularToolMaterial(), 5, 5, new Settings().maxCount(1).maxDamage(500).rarity(Rarity.COMMON));

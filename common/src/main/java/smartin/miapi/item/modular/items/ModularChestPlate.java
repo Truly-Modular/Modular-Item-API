@@ -1,13 +1,7 @@
 package smartin.miapi.item.modular.items;
 
 import net.minecraft.client.item.TooltipContext;
-import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.FireworkRocketEntity;
 import net.minecraft.item.ArmorItem;
-import net.minecraft.item.ElytraItem;
-import net.minecraft.item.FireworkRocketItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Rarity;
@@ -23,14 +17,12 @@ import smartin.miapi.modules.properties.RepairPriority;
 import java.util.List;
 
 public class ModularChestPlate extends ArmorItem implements ModularItem {
+    public ModularChestPlate(Settings settings) {
+        super(new ModularArmorMaterial(), Type.CHESTPLATE, settings);
+    }
+
     public ModularChestPlate() {
-        super(new ModularArmorMaterial(), Type.CHESTPLATE,new Settings());
-        ElytraItem elytraItem;
-        LivingEntity livingEntity;
-        PlayerEntity player;
-        ClientPlayerEntity clientPlayerEntity;
-        FireworkRocketEntity fireworkRocketEntity;
-        FireworkRocketItem fireworkRocketItem;
+        super(new ModularArmorMaterial(), Type.CHESTPLATE, new Settings());
     }
 
     @Override

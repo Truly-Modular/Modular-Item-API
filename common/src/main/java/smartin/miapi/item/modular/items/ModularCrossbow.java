@@ -44,6 +44,12 @@ import java.util.function.Predicate;
 import static smartin.miapi.item.modular.items.ModularBow.projectile;
 
 public class ModularCrossbow extends CrossbowItem implements ModularItem, CustomDrawTimeItem {
+    public ModularCrossbow(Settings settings) {
+        super(settings.maxCount(1).maxDamage(50));
+        if (smartin.miapi.Environment.isClient()) {
+            registerAnimations();
+        }
+    }
 
     public ModularCrossbow() {
         super(new Item.Settings().maxCount(1).maxDamage(50));

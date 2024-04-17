@@ -23,7 +23,11 @@ import java.util.List;
 
 public class ModularWeapon extends Item implements ModularItem {
     public ModularWeapon() {
-        super(new Settings().maxCount(1).maxDamage(500).rarity(Rarity.COMMON));
+        this(new Settings(), true);
+    }
+
+    public ModularWeapon(Settings settings, boolean withDefaultSettings) {
+        super(withDefaultSettings ? settings.maxCount(1).maxDamage(500) : settings);
     }
 
     @Override

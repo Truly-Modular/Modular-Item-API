@@ -26,6 +26,9 @@ import smartin.miapi.modules.properties.mining.MiningLevelProperty;
 import java.util.List;
 
 public class ModularAxe extends AxeItem implements ModularItem {
+    public ModularAxe(Settings settings) {
+        super(new ModularToolMaterial(), 5, 5, settings.maxCount(1).maxDamage(500));
+    }
 
     public ModularAxe() {
         super(new ModularToolMaterial(), 5, 5, new Settings().maxCount(1).maxDamage(500).rarity(Rarity.COMMON));

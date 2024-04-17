@@ -17,6 +17,10 @@ import smartin.miapi.modules.properties.RepairPriority;
 import java.util.List;
 
 public class ModularLeggings extends ArmorItem implements ModularItem {
+    public ModularLeggings(Settings settings) {
+        super(new ModularArmorMaterial(),Type.LEGGINGS, settings);
+    }
+
     public ModularLeggings() {
         super(new ModularArmorMaterial(),Type.LEGGINGS,new Settings());
     }

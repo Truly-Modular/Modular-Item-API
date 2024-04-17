@@ -38,6 +38,13 @@ public class ModularBow extends BowItem implements ModularItem {
     public static Predicate<ItemStack> projectile = BOW_PROJECTILES;
     public static UUID bowMoveSpeedUUId = UUID.fromString("4de85d6c-7923-11ee-b962-0242ac120002");
 
+    public ModularBow(Settings settings) {
+        super(settings.maxCount(1).maxDamage(50));
+        if (smartin.miapi.Environment.isClient()) {
+            registerAnimations();
+        }
+    }
+
     public ModularBow() {
         super(new Item.Settings().maxCount(1).maxDamage(50));
         if (smartin.miapi.Environment.isClient()) {
