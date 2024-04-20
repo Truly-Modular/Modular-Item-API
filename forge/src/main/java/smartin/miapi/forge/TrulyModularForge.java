@@ -4,11 +4,15 @@ import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.platform.Platform;
 import dev.architectury.platform.forge.EventBuses;
 import dev.architectury.registry.ReloadListenerRegistry;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.util.Identifier;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 import net.minecraftforge.common.ForgeMod;
+import net.minecraftforge.event.entity.living.LivingDamageEvent;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.minecraftforge.event.entity.player.CriticalHitEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.InterModComms;
@@ -22,6 +26,7 @@ import smartin.miapi.client.MiapiClient;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.datapack.MiapiReloadListener;
 import smartin.miapi.datapack.ReloadEvents;
+import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.modules.properties.AttributeProperty;
 import smartin.miapi.modules.properties.compat.ht_treechop.TreechopUtil;
 
@@ -47,7 +52,7 @@ public class TrulyModularForge {
         Miapi.init();
 
         //if (Platform.isModLoaded("epicfight"))
-            //RegistryInventory.moduleProperties.register(EpicFightCompatProperty.KEY, new EpicFightCompatProperty());
+        //RegistryInventory.moduleProperties.register(EpicFightCompatProperty.KEY, new EpicFightCompatProperty());
 
 
         LifecycleEvent.SERVER_STARTING.register((instance -> setupAttributes()));
@@ -104,6 +109,27 @@ public class TrulyModularForge {
                 InterModComms.sendTo("treechop", "getTreeChopAPI", () -> (Consumer<Object>) TreechopUtil::setTreechopApi);
             }
         }
+
+        @SubscribeEvent
+        public void damageEvent(LivingHurtEvent hurtEvent) {
+            if(hurtEvent.getSource().getAttacker()!=null && !(hurtEvent.getSource().getAttacker() instanceof PlayerEntity)){
+                Miapi.LOGGER.info("damageEvent");
+                MiapiEvents.LivingHurtEvent event = new MiapiEvents.LivingHurtEvent(hurtEvent.getEntity(), hurtEvent.getSource(), hurtEvent.getAmount());
+                MiapiEvents.LIVING_HURT.invoker().hurt(event);
+                hurtEvent.setAmount(event.amount);
+            }
+        }
+
+        @SubscribeEvent
+        public void damageEventAfter(LivingDamageEvent hurtEvent) {
+            MiapiEvents.LivingHurtEvent event = new MiapiEvents.LivingHurtEvent(hurtEvent.getEntity(), hurtEvent.getSource(), hurtEvent.getAmount());
+            MiapiEvents.LIVING_HURT_AFTER.invoker().hurt(event);
+        }
+
+        @SubscribeEvent
+        public void damageEventAfter(CriticalHitEvent hurtEvent) {
+
+        }
     }
 
     public static class ClientEvents {
@@ -112,6 +138,7 @@ public class TrulyModularForge {
             //dont ask me, but this fixes registration for client
             setupAttributes();
         }
+
         @SubscribeEvent
         public void registerBindings(RegisterKeyMappingsEvent event) {
             MiapiClient.KEY_BINDINGS.addCallback(event::register);

@@ -12,6 +12,7 @@ import dev.architectury.registry.menu.MenuRegistry;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.world.ClientWorld;
@@ -21,6 +22,9 @@ import net.minecraft.text.ClickEvent;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.hit.EntityHitResult;
+import net.minecraft.util.hit.HitResult;
 import smartin.miapi.Miapi;
 import smartin.miapi.blocks.ModularWorkBenchRenderer;
 import smartin.miapi.client.atlas.MaterialAtlasManager;
@@ -34,6 +38,7 @@ import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.effects.CryoStatusEffect;
 import smartin.miapi.entity.ItemProjectileRenderer;
 import smartin.miapi.modules.MiapiPermissions;
+import smartin.miapi.modules.abilities.BoomerangThrowingAbility;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.material.Material;
 import smartin.miapi.modules.material.MaterialIcons;
@@ -72,6 +77,20 @@ public class MiapiClient {
                 MinecraftClient.getInstance().getProfiler().push("miapiMaterialAnimations");
                 MaterialSpriteManager.tick();
                 MinecraftClient.getInstance().getProfiler().pop();
+            }
+        }));
+        ClientTickEvent.CLIENT_PRE.register((instance -> {
+            if (BoomerangThrowingAbility.isHolding || true && instance.player != null) {
+                HitResult hitResult = instance.player.raycast(20, instance.getTickDelta(), false);
+                if (hitResult instanceof EntityHitResult entityHitResult) {
+                    Miapi.LOGGER.info("looking at" + entityHitResult.getEntity().getEntityName());
+                    BoomerangThrowingAbility.entities.add(entityHitResult.getEntity());
+                }
+                if (hitResult instanceof BlockHitResult) {
+                    ClientPlayerEntity entity;
+                    //Miapi.LOGGER.info("blockhit");
+                    //instance.cameraEntity.
+                }
             }
         }));
         Networking.registerS2CPacket(MaterialCommand.SEND_MATERIAL_CLIENT, (buf -> {
@@ -199,6 +218,7 @@ public class MiapiClient {
 
     public static void registerEntityRenderer() {
         EntityRendererRegistry.register(RegistryInventory.itemProjectileType, ItemProjectileRenderer::new);
+        EntityRendererRegistry.register(RegistryInventory.itemBoomerangProjectileType, ItemProjectileRenderer::new);
     }
 
     public static void registerBlockEntityRenderer() {

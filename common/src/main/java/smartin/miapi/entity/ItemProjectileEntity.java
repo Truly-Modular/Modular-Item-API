@@ -43,7 +43,7 @@ public class ItemProjectileEntity extends PersistentProjectileEntity {
     public static final TrackedData<Float> WATER_DRAG = DataTracker.registerData(ItemProjectileEntity.class, TrackedDataHandlerRegistry.FLOAT);
     public static final TrackedData<Integer> PREFERRED_SLOT = DataTracker.registerData(ItemProjectileEntity.class, TrackedDataHandlerRegistry.INTEGER);
     public ItemStack thrownStack = ItemStack.EMPTY;
-    private boolean dealtDamage;
+    protected boolean dealtDamage;
     public int returnTimer;
     public float waterDrag = 0.99f;
     public WrappedSoundEvent hitEntitySound = new WrappedSoundEvent(this.getHitSound(), 1.0f, 1.0f);
@@ -180,7 +180,7 @@ public class ItemProjectileEntity extends PersistentProjectileEntity {
         }
     }
 
-    private boolean isOwnerAlive() {
+    protected boolean isOwnerAlive() {
         Entity entity = this.getOwner();
         if (entity != null && entity.isAlive()) {
             return !(entity instanceof ServerPlayerEntity) || !entity.isSpectator();

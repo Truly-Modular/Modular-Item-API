@@ -34,8 +34,12 @@ import java.util.List;
 public class MiapiEvents {
     public static final PrioritizedEvent<LivingAttackEvent> LIVING_ATTACK = PrioritizedEvent.createEventResult();
     public static final PrioritizedEvent<LivingHurt> LIVING_HURT = PrioritizedEvent.createEventResult();
-    public static final PrioritizedEvent<LivingHurt> LIVING_HURT_AFTER_ARMOR = PrioritizedEvent.createEventResult();
+    /**
+     * the value in this Event reflects the Critical Multiplier instead
+     */
+    public static final PrioritizedEvent<LivingHurt> LIVING_HURT_CRITICAL_HIT = PrioritizedEvent.createEventResult();
     public static final PrioritizedEvent<LivingHurt> LIVING_HURT_AFTER = PrioritizedEvent.createEventResult();
+    public static final PrioritizedEvent<LivingHurt> LIVING_HURT_AFTER_ARMOR = PrioritizedEvent.createEventResult();
     public static final PrioritizedEvent<EntityRide> START_RIDING = PrioritizedEvent.createLoop(); // only fires on successful rides, and is not cancellable (if I wanted to make it cancellable, i would add mixinextras)
     public static final PrioritizedEvent<EntityRide> STOP_RIDING = PrioritizedEvent.createLoop();
     public static final PrioritizedEvent<StatUpdateEvent> STAT_UPDATE_EVENT = PrioritizedEvent.createEventResult();
@@ -56,6 +60,19 @@ public class MiapiEvents {
 
     public interface ReloadEvent {
         EventResult onReload(boolean isClient);
+    }
+
+    public static class IsCriticalHitEvent {
+        public LivingEntity livingEntity;
+        public float amount;
+        public boolean isCritical = false;
+
+        public IsCriticalHitEvent(LivingEntity livingEntity, float amount, boolean isCritical) {
+            this.livingEntity = livingEntity;
+            this.amount = amount;
+            this.isCritical = isCritical;
+        }
+
     }
 
     public static class LivingHurtEvent {
@@ -87,6 +104,10 @@ public class MiapiEvents {
         }
 
         public Iterable<ItemStack> getCausingItemStackAndArmorOfAttacker() {
+            return getCausingItemStackAndArmorOfAttacker(damageSource);
+        }
+
+        public static Iterable<ItemStack> getCausingItemStackAndArmorOfAttacker(DamageSource damageSource) {
             List<ItemStack> itemStacks = new ArrayList<>();
             if (damageSource.getSource() instanceof ProjectileEntity projectile && (projectile instanceof ItemProjectileEntity itemProjectile)) {
                 itemStacks.add(itemProjectile.asItemStack());

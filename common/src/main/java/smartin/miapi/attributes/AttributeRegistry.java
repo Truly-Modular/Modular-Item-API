@@ -143,7 +143,7 @@ public class AttributeRegistry {
         PlayerEvent.PLAYER_JOIN.register((player -> {
             ShieldingArmorFacet facet = ShieldingArmorFacet.KEY.get(player);
             if (facet != null) {
-                facet.sendToClient(player);
+                //facet.sendToClient(player);
             }
         }));
 

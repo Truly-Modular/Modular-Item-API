@@ -57,6 +57,7 @@ import smartin.miapi.effects.CryoStatusEffect;
 import smartin.miapi.effects.StunResistanceStatusEffect;
 import smartin.miapi.effects.StunStatusEffect;
 import smartin.miapi.effects.TeleportBlockEffect;
+import smartin.miapi.entity.BoomerangItemProjectileEntity;
 import smartin.miapi.entity.ItemProjectileEntity;
 import smartin.miapi.item.MaterialSmithingRecipe;
 import smartin.miapi.item.modular.ModularItemPart;
@@ -194,6 +195,8 @@ public class RegistryInventory {
     public static RecipeSerializer serializer;
     public static RegistrySupplier<EntityType<ItemProjectileEntity>> itemProjectileType = (RegistrySupplier) registerAndSupply(entityTypes, "thrown_item", () ->
             EntityType.Builder.create(ItemProjectileEntity::new, SpawnGroup.MISC).setDimensions(0.5F, 0.5F).maxTrackingRange(4).trackingTickInterval(20).build("miapi:thrown_item"));
+    public static RegistrySupplier<EntityType<BoomerangItemProjectileEntity>> itemBoomerangProjectileType = (RegistrySupplier) registerAndSupply(entityTypes, "thrown_boomerang_item", () ->
+            EntityType.Builder.create(BoomerangItemProjectileEntity::new, SpawnGroup.MISC).setDimensions(0.5F, 0.5F).maxTrackingRange(4).trackingTickInterval(20).build("miapi:thrown_boomerang_item"));
 
     static {
         itemProjectileType.listen(e -> {
@@ -558,6 +561,7 @@ public class RegistryInventory {
 
             // ABILITIES
             registerMiapi(useAbilityRegistry, "throw", new ThrowingAbility());
+            registerMiapi(useAbilityRegistry, "boomerang_throw", new BoomerangThrowingAbility());
             registerMiapi(useAbilityRegistry, "block", new BlockAbility());
             registerMiapi(useAbilityRegistry, RiptideProperty.KEY, new RiptideAbility());
             registerMiapi(useAbilityRegistry, HeavyAttackProperty.KEY, new HeavyAttackAbility());
