@@ -7,7 +7,6 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.ArrowItem;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Rarity;
@@ -24,7 +23,11 @@ import java.util.List;
 
 public class ModularArrow extends ArrowItem implements ModularItem {
     public ModularArrow() {
-        super(new Item.Settings().maxCount(64));
+        this(new Settings().maxCount(64));
+    }
+
+    public ModularArrow(Settings settings) {
+        super(settings);
         DispenserBlock.registerBehavior(this, new ProjectileDispenserBehavior() {
             @Override
             protected ProjectileEntity createProjectile(World world, Position position, ItemStack stack) {

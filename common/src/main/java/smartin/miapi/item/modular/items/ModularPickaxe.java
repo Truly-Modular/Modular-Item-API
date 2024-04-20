@@ -27,6 +27,10 @@ import java.util.List;
 
 public class ModularPickaxe extends PickaxeItem implements ModularItem {
 
+    public ModularPickaxe(Settings settings) {
+        super(new ModularToolMaterial(), 5, 5, settings.maxCount(1).maxDamage(500));
+    }
+
     public ModularPickaxe() {
         super(new ModularToolMaterial(), 5, 5, new Settings().maxCount(1).maxDamage(500).rarity(Rarity.COMMON));
     }

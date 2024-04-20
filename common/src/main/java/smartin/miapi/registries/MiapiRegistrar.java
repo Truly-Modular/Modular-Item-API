@@ -38,6 +38,10 @@ public class MiapiRegistrar<T> extends MiapiRegistry<T> implements Registrar<T> 
         return sup;
     }
 
+    public <E extends T> void registerWithoutRegistrar(Identifier id, E object) {
+        register(id.toString(), object);
+    }
+
     @Override
     public @Nullable Identifier getId(T obj) {
         return registrar.getId(obj);

@@ -17,6 +17,10 @@ import smartin.miapi.modules.properties.RepairPriority;
 import java.util.List;
 
 public class ModularHelmet extends ArmorItem implements ModularItem {
+    public ModularHelmet(Settings settings) {
+        super(new ModularArmorMaterial(), Type.HELMET, settings);
+    }
+
     public ModularHelmet() {
         super(new ModularArmorMaterial(), Type.HELMET, new Settings());
     }
