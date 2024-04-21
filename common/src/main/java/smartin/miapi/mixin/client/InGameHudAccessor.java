@@ -1,4 +1,4 @@
-package smartin.miapi.mixin;
+package smartin.miapi.mixin.client;
 
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.entity.LivingEntity;

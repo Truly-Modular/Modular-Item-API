@@ -1,4 +1,4 @@
-package smartin.miapi.mixin.client;
+package smartin.miapi.fabric.mixin.client;
 
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;
@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import smartin.miapi.client.gui.crafting.CraftingScreen;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.entity.ShieldingArmorFacet;
-import smartin.miapi.mixin.InGameHudAccessor;
+import smartin.miapi.mixin.client.InGameHudAccessor;
 
 @Mixin(InGameHud.class)
 public class InGameHudMixin {

@@ -8,7 +8,8 @@
     ],
     "client": [
         "EntityMixin",
-        "TextMixin"
+        "TextMixin",
+        "client.InGameHudMixin"
     ],
     "injectors": {
         "defaultRequire": 1

@@ -258,6 +258,7 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
         if (!editHolder.children().contains(editOption)) {
             editOption = null;
         }
+        ReplaceOption.setHoverStack(ItemStack.EMPTY, true);
         selectEditOption(editOption);
     }
 
