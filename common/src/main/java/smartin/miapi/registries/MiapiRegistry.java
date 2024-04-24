@@ -180,6 +180,7 @@ public class MiapiRegistry<T> {
 
     /**
      * Returns a flat map of all entries in this registry, with the entry names as keys and the entry values as values.
+     * this is the registries internal map, so this can be used to edit the entries.
      *
      * @return a map of all entries in this registry
      */

@@ -38,7 +38,7 @@ public class BlueprintProperty implements CraftingProperty, ModuleProperty {
         if (Environment.isClient()) {
             setupClient();
         }
-        PropertyResolver.propertyProviderRegistry.register("blueprint", (moduleInstance, oldMap) -> {
+        PropertyResolver.register("blueprint", (moduleInstance, oldMap) -> {
             if (moduleInstance != null && moduleInstance.moduleData.containsKey("blueprint")) {
                 Blueprint blueprint = Blueprint.blueprintRegistry.get(moduleInstance.moduleData.get("blueprint"));
                 if (blueprint != null && !blueprint.writeToItem) {

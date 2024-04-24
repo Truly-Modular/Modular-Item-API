@@ -12,7 +12,6 @@ import dev.architectury.registry.menu.MenuRegistry;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.world.ClientWorld;
@@ -22,9 +21,6 @@ import net.minecraft.text.ClickEvent;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.hit.EntityHitResult;
-import net.minecraft.util.hit.HitResult;
 import smartin.miapi.Miapi;
 import smartin.miapi.blocks.ModularWorkBenchRenderer;
 import smartin.miapi.client.atlas.MaterialAtlasManager;
@@ -38,7 +34,6 @@ import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.effects.CryoStatusEffect;
 import smartin.miapi.entity.ItemProjectileRenderer;
 import smartin.miapi.modules.MiapiPermissions;
-import smartin.miapi.modules.abilities.BoomerangThrowingAbility;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.material.Material;
 import smartin.miapi.modules.material.MaterialIcons;
@@ -79,20 +74,24 @@ public class MiapiClient {
                 MinecraftClient.getInstance().getProfiler().pop();
             }
         }));
+        /*
         ClientTickEvent.CLIENT_PRE.register((instance -> {
-            if (BoomerangThrowingAbility.isHolding || true && instance.player != null) {
-                HitResult hitResult = instance.player.raycast(20, instance.getTickDelta(), false);
-                if (hitResult instanceof EntityHitResult entityHitResult) {
-                    Miapi.LOGGER.info("looking at" + entityHitResult.getEntity().getEntityName());
-                    BoomerangThrowingAbility.entities.add(entityHitResult.getEntity());
-                }
-                if (hitResult instanceof BlockHitResult) {
-                    ClientPlayerEntity entity;
-                    //Miapi.LOGGER.info("blockhit");
-                    //instance.cameraEntity.
-                }
+            if (MinecraftClient.getInstance() != null && MinecraftClient.getInstance().player != null && MinecraftClient.getInstance().player.getWorld() != null) {
+                BoomerangThrowingAbility.getLookingEntity(200, instance.getTickDelta()).ifPresent(entity -> {
+                    BoomerangThrowingAbility.entities.add(entity);
+                    //Miapi.LOGGER.info("found" + entity.getDisplayName().getString());
+                });
             }
         }));
+        ClientTickEvent.CLIENT_PRE.register(client ->{
+            Miapi.LOGGER.info("currently tracking " +BoomerangThrowingAbility.entities+" entitites");
+            BoomerangThrowingAbility.entities.forEach(entity -> {
+                if (entity instanceof LivingEntity livingEntity) {
+                    livingEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.GLOWING, 20));
+                }
+            });
+        });
+         */
         Networking.registerS2CPacket(MaterialCommand.SEND_MATERIAL_CLIENT, (buf -> {
             String materialId = buf.readString();
             MinecraftClient.getInstance().execute(() -> {

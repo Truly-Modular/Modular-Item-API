@@ -165,8 +165,8 @@ public class ModularItemCache {
 
         public Cache(UUID uuid, ItemStack stack) {
             this.uuid = uuid;
-            this.stack = stack.copy();
-            setUUIDFor(stack.copy(), uuid);
+            this.stack = stack;
+            setUUIDFor(stack, uuid);
         }
 
         public void set(String key, Object object) {

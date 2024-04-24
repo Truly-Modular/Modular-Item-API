@@ -33,7 +33,7 @@ public class SynergyManager {
     public static Map<Material, List<Synergy>> materialSynergies = new ConcurrentHashMap<>();
 
     public static void setup() {
-        PropertyResolver.propertyProviderRegistry.register("synergies", (moduleInstance, oldMap) -> {
+        PropertyResolver.register("synergies", (moduleInstance, oldMap) -> {
             if (moduleInstance != null) {
                 List<Synergy> synergies = maps.get(moduleInstance.module);
                 if (synergies != null) {

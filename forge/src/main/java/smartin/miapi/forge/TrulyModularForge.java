@@ -142,14 +142,13 @@ public class TrulyModularForge {
 
     public static class ClientEvents {
         @SubscribeEvent
-        public void onRenderGameOverlayEventPre(RenderGuiEvent event)
-        {
+        public void onRenderGameOverlayEventPre(RenderGuiEvent event) {
             DrawContext context = event.getGuiGraphics();
             PlayerEntity playerEntity = MinecraftClient.getInstance().player;
-            if(playerEntity.isCreative()){
+            if (playerEntity.isCreative()) {
                 return;
             }
-            int heartBars = (int) Math.ceil(playerEntity.getAttributeValue(EntityAttributes.GENERIC_MAX_HEALTH) /20);
+            int heartBars = (int) Math.ceil(playerEntity.getAttributeValue(EntityAttributes.GENERIC_MAX_HEALTH) / 20);
             ShieldingArmorFacet facet = ShieldingArmorFacet.KEY.get(playerEntity);
             // Calculate health and absorption values
             int playerHealth = MathHelper.ceil(playerEntity.getHealth());
@@ -190,6 +189,7 @@ public class TrulyModularForge {
                     context.drawTexture(CraftingScreen.BACKGROUND_TEXTURE, heartX, startY - yOffset, 448, 96, 9, 9, 512, 512);
                 }
             }
+            smartin.miapi.events.ClientEvents.HUD_RENDER.invoker().render(context, MinecraftClient.getInstance().getTickDelta());
         }
     }
 }

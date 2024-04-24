@@ -14,11 +14,20 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import smartin.miapi.client.gui.crafting.CraftingScreen;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.entity.ShieldingArmorFacet;
+import smartin.miapi.events.ClientEvents;
 import smartin.miapi.mixin.client.InGameHudAccessor;
 
 @Mixin(InGameHud.class)
 public class InGameHudMixin {
     private static final Identifier ICONS = new Identifier("textures/gui/icons.png");
+
+    @Inject(
+            method = "render",
+            at = @At("TAIL")
+    )
+    private void miapi$customDrawContext(DrawContext context, float tickDelta, CallbackInfo ci) {
+        ClientEvents.HUD_RENDER.invoker().render(context, tickDelta);
+    }
 
     @Inject(
             method = "renderStatusBars(Lnet/minecraft/client/gui/DrawContext;)V",

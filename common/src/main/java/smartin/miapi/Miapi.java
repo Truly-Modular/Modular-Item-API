@@ -12,6 +12,7 @@ import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.event.events.common.PlayerEvent;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import org.apache.logging.log4j.util.TriConsumer;
 import org.slf4j.Logger;
@@ -86,13 +87,13 @@ public class Miapi {
             ModularItemCache.discardCache();
         });
         PlayerEvent.PLAYER_JOIN.register((player -> new Thread(() -> MiapiPermissions.getPerms(player)).start()));
-        PropertyResolver.propertyProviderRegistry.register("module", (moduleInstance, oldMap) -> {
+        PropertyResolver.register(new Identifier(Miapi.MOD_ID, "module"), (moduleInstance, oldMap) -> {
             Map<ModuleProperty, JsonElement> map = new ConcurrentHashMap<>();
             moduleInstance.module.getProperties()
                     .forEach((key, jsonData) -> map.put(RegistryInventory.moduleProperties.get(key), jsonData));
             return map;
         });
-        PropertyResolver.propertyProviderRegistry.register("moduleData", (moduleInstance, oldMap) -> {
+        PropertyResolver.register("module_data", (moduleInstance, oldMap) -> {
             Map<ModuleProperty, JsonElement> map = new ConcurrentHashMap<>();
             String properties = moduleInstance.moduleData.get("properties");
             if (properties != null) {
@@ -140,6 +141,18 @@ public class Miapi {
         CommandRegistrationEvent.EVENT.register((serverCommandSourceCommandDispatcher, registryAccess, listener) -> {
             MaterialCommand.register(serverCommandSourceCommandDispatcher);
         });
+    }
+
+    public static Identifier MiapiIdentifier(String string) {
+        String[] parts = string.split(":");
+        if (parts.length > 1) {
+            return new Identifier(parts[0], parts[1]);
+        }
+        return new Identifier(Miapi.MOD_ID, string);
+    }
+
+    public static Identifier MiapiIdentifier(String namespace, String id) {
+        return new Identifier(namespace, id);
     }
 
     protected static void setupNetworking() {

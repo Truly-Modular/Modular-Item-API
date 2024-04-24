@@ -28,7 +28,7 @@ public class SkinOptions implements EditOption {
 
     public SkinOptions() {
         defaultTab = SkinTab.fromJson(null);
-        PropertyResolver.propertyProviderRegistry.register("skin", (moduleInstance, oldMap) -> {
+        PropertyResolver.register("skin", (moduleInstance, oldMap) -> {
             if (moduleInstance != null) {
                 String skinKey = moduleInstance.moduleData.get("skin");
                 Map<String, Skin> moduleSkins = skins.get(moduleInstance.module);

@@ -12,8 +12,7 @@
     "client": [
         "ModelLoaderMixin",
         "TextMixin",
-        "TranslatableTextContentAccessor",
-        "client.InGameHudMixin"
+        "TranslatableTextContentAccessor"
     ],
     "injectors": {
         "defaultRequire": 1

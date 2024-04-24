@@ -573,8 +573,8 @@ public class RegistryInventory {
             registerMiapi(useAbilityRegistry, EatAbility.KEY, new EatAbility());
 
             Miapi.LOGGER.info("Registered Truly Modulars Property resolvers:");
-            PropertyResolver.propertyProviderRegistry.getFlatMap().forEach((id, resolver) -> {
-                Miapi.LOGGER.info("registered resolver: " + id);
+            PropertyResolver.registry.forEach((pair) -> {
+                Miapi.LOGGER.info("registered resolver: " + pair.getLeft().toString());
             });
         });
     }
