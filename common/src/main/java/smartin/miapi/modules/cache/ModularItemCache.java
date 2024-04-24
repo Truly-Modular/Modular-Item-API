@@ -127,10 +127,9 @@ public class ModularItemCache {
     }
 
     protected static Cache find(ItemStack stack) {
-        UUID lookUpUUId = lookUpTable.get(stack);
-        if (lookUpUUId == null) {
-            lookUpUUId = getUUIDFor(stack);
-        }
+        UUID lookUpUUId = null;//lookUpTable.get(stack);
+        //because i cant copy the Itemstack and the cache needs to refresh properly the check has been moved to nbt only.
+        lookUpUUId = getUUIDFor(stack);
         if (lookUpUUId == null) {
             lookUpUUId = getMissingUUID();
         }
