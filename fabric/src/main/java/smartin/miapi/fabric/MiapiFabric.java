@@ -15,7 +15,6 @@ import net.minecraft.util.profiler.Profiler;
 import smartin.miapi.Environment;
 import smartin.miapi.Miapi;
 import smartin.miapi.attributes.AttributeRegistry;
-import smartin.miapi.datapack.MiapiReloadListener;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.modules.properties.AttributeProperty;

@@ -2,20 +2,17 @@ package smartin.miapi.modules.conditions;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
-import com.redpxnda.nucleus.codec.misc.MiscCodecs;
-import com.redpxnda.nucleus.util.MiscUtil;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
+import net.minecraft.inventory.Inventory;
 import net.minecraft.predicate.NumberRange;
-import net.minecraft.registry.Registries;
+import net.minecraft.recipe.Ingredient;
 import net.minecraft.text.Text;
 import smartin.miapi.Miapi;
 
 import java.util.List;
 
 public class ItemInInventoryCondition implements ModuleCondition {
-    public Item item;
+    public Ingredient item;
     public NumberRange.IntRange count = NumberRange.IntRange.atLeast(1);
 
     public ItemInInventoryCondition() {
@@ -23,32 +20,47 @@ public class ItemInInventoryCondition implements ModuleCondition {
 
     @Override
     public boolean isAllowed(ConditionManager.ConditionContext conditionContext) {
-        if(conditionContext instanceof ConditionManager.ModuleConditionContext moduleConditionContext){
+        if (conditionContext instanceof ConditionManager.ModuleConditionContext moduleConditionContext) {
             PlayerEntity player = moduleConditionContext.player;
             List<Text> reasons = moduleConditionContext.reasons;
-            if (player != null && count.test(player.getInventory().count(item))) return true;
+            if (player != null && count.test(getCount(player.getInventory(), item))) return true;
 
             Text text;
 
             int min = count.getMin() == null ? 0 : count.getMin();
             Integer max = count.getMax();
+            String ingredientName = "";
+            if(item.getMatchingStacks()!=null && item.getMatchingStacks().length>1){
+                ingredientName = Text.translatable(item.getMatchingStacks()[0].getItem().getTranslationKey()).toString();
+            }
 
-            if (max != null) text = Text.translatable(Miapi.MOD_ID + ".condition.item_in_inventory.error.specific", min, max, Registries.ITEM.getId(item).toString());
-            else text = Text.translatable(Miapi.MOD_ID + ".condition.item_in_inventory.error.no_max", min, Registries.ITEM.getId(item).toString());
+            if (max != null)
+                text = Text.translatable(Miapi.MOD_ID + ".condition.item_in_inventory.error.specific", min, max, ingredientName);
+            else
+                text = Text.translatable(Miapi.MOD_ID + ".condition.item_in_inventory.error.no_max", min, ingredientName);
 
             reasons.add(text);
         }
         return false;
     }
 
+    public int getCount(Inventory inventory, Ingredient ingredient) {
+        int found = 0;
+        for (int i = 0; i < inventory.size(); i++) {
+            if (ingredient.test(inventory.getStack(i))) {
+                found += inventory.getStack(i).getCount();
+            }
+        }
+        return found;
+    }
+
     @Override
     public ModuleCondition load(JsonElement element) {
-        if (element instanceof JsonPrimitive primitive) {
-            Item item = MiscCodecs.quickParse(primitive, Registries.ITEM.getCodec(), s -> Miapi.LOGGER.error("Error parsing item for ItemInInventoryCondition -> " + s));
-            return MiscUtil.initialize(new ItemInInventoryCondition(), c -> c.item = item);
-        } else if (element instanceof JsonObject object) {
-            if (!object.has("item")) throw new RuntimeException("Expected key 'item' for ItemInInventoryCondition, but it was not found.");
-            Item item = MiscCodecs.quickParse(object.get("item"), Registries.ITEM.getCodec(), s -> Miapi.LOGGER.error("Error parsing item for ItemInInventoryCondition -> " + s));
+        try {
+            JsonObject object = element.getAsJsonObject();
+            if (!object.has("item"))
+                throw new RuntimeException("Expected key 'item' for ItemInInventoryCondition, but it was not found.");
+            Ingredient item = Ingredient.fromJson(object.get("item"));
 
             ItemInInventoryCondition condition = new ItemInInventoryCondition();
             condition.item = item;
@@ -59,8 +71,9 @@ public class ItemInInventoryCondition implements ModuleCondition {
             }
 
             return condition;
-        } else {
-            throw new RuntimeException("Expected either a JsonPrimitive(String) or JsonObject for ItemInInventoryCondition, but instead received a " + element.getClass() + ": " + element);
+        } catch (Exception e) {
+            Miapi.LOGGER.error("Could not load ItemInInventoryCondition ", e);
         }
+        return new TrueCondition();
     }
 }

@@ -3,9 +3,9 @@ package smartin.miapi.injectors;
 import com.google.gson.*;
 import com.redpxnda.nucleus.util.InterfaceDispatcher;
 import org.jetbrains.annotations.Nullable;
-import org.mariuszgromada.math.mxparser.Expression;
 import smartin.miapi.Environment;
 import smartin.miapi.Miapi;
+import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.TagProperty;
 import smartin.miapi.modules.properties.util.MergeType;
@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 
 public class PropertySubstitution {
     public static int injectorsCount = 0;
@@ -110,7 +111,7 @@ public class PropertySubstitution {
                 int pos = Integer.parseInt(segment.substring(1, segment.length() - 1));
                 if (pos >= array.size() || pos < 0) {
                     Miapi.LOGGER.error("Invalid path for PropertySubstitution found! Token '" + segment + "'(split #" + index + ") in '" + path + "' is invalid: Array index exceeds length of array." +
-                            "\nArray: " + array + "\nRoot object: " + root);
+                                       "\nArray: " + array + "\nRoot object: " + root);
                     throw new RuntimeException("Failed to parse PropertySubstitution! See above error.");
                 } else {
                     currentTarget = array.get(pos);
@@ -121,7 +122,7 @@ public class PropertySubstitution {
                 JsonElement element = obj.get(segment);
                 if (element == null) {
                     Miapi.LOGGER.error("Invalid path for PropertySubstitution found! Token '" + segment + "'(split #" + index + ") in '" + path + " does not match any element in target object.\n" +
-                            "Last target object: " + obj + "\nRoot object: " + root);
+                                       "Last target object: " + obj + "\nRoot object: " + root);
                     throw new RuntimeException("Failed to parse PropertySubstitution! See above error.");
                 } else {
                     currentTarget = element;
@@ -130,8 +131,8 @@ public class PropertySubstitution {
                 targetIndex = null;
             } else {
                 Miapi.LOGGER.warn("Expected path end for PropertySubstitution, but instead it continues! Cutting off early." +
-                        "\nCurrent segment: " + segment + "\nSegment Index: " + index + "\nWhole path: " + path + "\nCurrent target object: " + currentTarget +
-                        "\nRoot object: " + root);
+                                  "\nCurrent segment: " + segment + "\nSegment Index: " + index + "\nWhole path: " + path + "\nCurrent target object: " + currentTarget +
+                                  "\nRoot object: " + root);
                 break;
             }
         }
@@ -200,8 +201,7 @@ public class PropertySubstitution {
                 expression = expression.replace("[" + targetVariable + "]", value.getAsString());
             }
 
-            Expression ex = new Expression(expression);
-            return new JsonPrimitive(ex.calculate());
+            return new JsonPrimitive(StatResolver.resolveCalculation(expression));
         });
         valueResolvers.put("replace", (input, originalTarget, storedValues) -> { // replace mode replaces variables in strings using the stored variables
             if (!(input instanceof JsonObject object)) return originalTarget; // shouldn't ever return here

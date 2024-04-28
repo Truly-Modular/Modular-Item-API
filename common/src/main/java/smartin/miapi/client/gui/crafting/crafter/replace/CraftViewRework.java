@@ -36,7 +36,7 @@ import java.util.function.Consumer;
  */
 @Environment(EnvType.CLIENT)
 public class CraftViewRework extends InteractAbleWidget {
-    public static List<Slot> currentSlots = new ArrayList<>();
+    public List<Slot> currentSlots = new ArrayList<>();
     private int currentGuiIndex = 0;
     int backgroundWidth = 278;
     int backgroundHeight = 221;

@@ -2,7 +2,6 @@ package smartin.miapi.modules.abilities;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
@@ -25,7 +24,7 @@ import smartin.miapi.modules.properties.AttributeProperty;
 import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Stream;
 
 public class BoomerangThrowingAbility extends ThrowingAbility {
     public static boolean isHolding = false;
@@ -39,17 +38,20 @@ public class BoomerangThrowingAbility extends ThrowingAbility {
     }
 
     @Environment(EnvType.CLIENT)
-    public static Optional<Entity> getLookingEntity(double range,float deltaTick) {
-        PlayerEntity player = MinecraftClient.getInstance().player;
+    public static Stream<Entity> getLookingEntity(PlayerEntity player, double range, float deltaTick, double angleFilter) {
         List<Entity> foundEntites = player.getWorld().getOtherEntities(player, Box.from(player.getPos()).expand(range));
-        return foundEntites.stream().filter(target -> {
-            Vec3d vec3d = player.getRotationVec(deltaTick).normalize();
-            Vec3d vec3d2 = new Vec3d(target.getX() - player.getX(), target.getEyeY() - player.getEyeY(), target.getZ() - player.getZ());
-            double d = vec3d2.length();
-            vec3d2 = vec3d2.normalize();
-            double e = vec3d.dotProduct(vec3d2);
-            return e > 1.0 - 0.015 / d && player.canSee(target);
-        }).min(Comparator.comparing(a -> (int) a.distanceTo(player)));
+        return foundEntites.stream()
+                .filter(target -> isEntityLookedAtByPlayer(player, target, deltaTick, angleFilter))
+                .sorted(Comparator.comparing(a -> (int) a.distanceTo(player)));
+    }
+
+    public static boolean isEntityLookedAtByPlayer(PlayerEntity player, Entity target, float deltaTick, double angleFilter) {
+        Vec3d vec3d = player.getRotationVec(deltaTick).normalize();
+        Vec3d vec3d2 = new Vec3d(target.getX() - player.getX(), target.getEyeY() - player.getEyeY(), target.getZ() - player.getZ());
+        double d = vec3d2.length();
+        vec3d2 = vec3d2.normalize();
+        double e = vec3d.dotProduct(vec3d2);
+        return e > 1.0 - angleFilter / d && player.canSee(target);
     }
 
     @Override

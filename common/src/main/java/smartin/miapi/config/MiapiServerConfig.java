@@ -4,6 +4,11 @@ import com.redpxnda.nucleus.codec.auto.AutoCodec;
 import com.redpxnda.nucleus.codec.auto.ConfigAutoCodec;
 import com.redpxnda.nucleus.util.Comment;
 import dev.architectury.platform.Platform;
+import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.registry.Registries;
+import net.minecraft.util.Identifier;
+
+import java.util.List;
 
 @ConfigAutoCodec.ConfigClassMarker
 public class MiapiServerConfig {
@@ -11,6 +16,9 @@ public class MiapiServerConfig {
     public GeneratedMaterialsCategory generatedMaterials = new GeneratedMaterialsCategory();
 
     public EnchantmentsCategory enchants = new EnchantmentsCategory();
+
+    @AutoCodec.Name("stun_effect")
+    public StunEffectCategory stunEffectCategory = new StunEffectCategory();
 
     public OtherCategory other = new OtherCategory();
 
@@ -41,6 +49,33 @@ public class MiapiServerConfig {
         @Comment("Whether a server reload should be automatically forced to fix Forge having buggy class loading")
         @AutoCodec.Name("forge_reload_mode")
         public boolean forgeReloadMode = Platform.isForge();
+    }
+
+    @ConfigAutoCodec.ConfigClassMarker
+    public static class StunEffectCategory {
+        @Comment("List of StatusEffects the player will get when stunned")
+        @AutoCodec.Name("player_effects")
+        public List<Identifier> playerEffects = List.of(Registries.STATUS_EFFECT.getId(StatusEffects.BLINDNESS), Registries.STATUS_EFFECT.getId(StatusEffects.SLOWNESS));
+
+        @Comment("""
+                The Stunhealth of a default entity, the StunHealth determins how much stun damage is needed to stun.
+                requires restart to apply - may not correctly affect older worlds""")
+        @AutoCodec.Name("stun_health")
+        public double stunHealth = 20;
+
+        @Comment("The Time a Entity is stunned")
+        @AutoCodec.Name("stun_length")
+        public int stunLength = 20 * 5;
+
+        @Comment("The Time a Entity is immune to stuns after beeing stunned")
+        @AutoCodec.Name("stun_resistance_length")
+        public int stunResistanceLength = 20 * 30;
+
+        @Comment("""
+            Attackspeed reduction for players while beeing stunned as a Player
+            requires restart to apply""")
+        @AutoCodec.Name("attack_speed_factor")
+        public double attackSpeedFactor = 0.5;
     }
 
     @ConfigAutoCodec.ConfigClassMarker

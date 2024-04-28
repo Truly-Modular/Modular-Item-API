@@ -12,6 +12,7 @@ import org.joml.Matrix4f;
  * Should be registered at {@link MiapiItemModel#modelSuppliers}
  */
 public interface MiapiModel {
+
     void render(MatrixStack matrices,
                 ItemStack stack,
                 ModelTransformationMode transformationMode,

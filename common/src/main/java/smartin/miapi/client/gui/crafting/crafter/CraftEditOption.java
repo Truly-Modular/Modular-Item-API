@@ -31,6 +31,7 @@ public class CraftEditOption extends InteractAbleWidget {
                 this.children.clear();
                 CraftViewRework craftView = new CraftViewRework(this.getX(), this.getY(), this.width, this.height, 1, option, editContext, (backSlot) -> {
                     setMode(Mode.REPLACE);
+                    ReplaceOption.hoverStack = null;
                 });
                 addChild(craftView);
             }

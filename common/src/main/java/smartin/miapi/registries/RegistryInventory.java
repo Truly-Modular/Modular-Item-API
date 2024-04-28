@@ -52,6 +52,7 @@ import smartin.miapi.blueprint.BlueprintProperty;
 import smartin.miapi.client.MiapiClient;
 import smartin.miapi.client.atlas.MaterialAtlasManager;
 import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
+import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.craft.stat.CraftingStat;
 import smartin.miapi.effects.CryoStatusEffect;
 import smartin.miapi.effects.StunResistanceStatusEffect;
@@ -364,7 +365,7 @@ public class RegistryInventory {
                 att -> STUN_DAMAGE = att);
 
         registerAtt("generic.stun_max_health", true, () ->
-                        new ClampedEntityAttribute("miapi.attribute.name.stun_max_health", 20.0, 0.0, 1024.0).setTracked(true),
+                        new ClampedEntityAttribute("miapi.attribute.name.stun_max_health", MiapiConfig.INSTANCE.server.stunEffectCategory.stunHealth, 0.0, 1024.0).setTracked(true),
                 att -> STUN_MAX_HEALTH = att);
 
         registerAtt("generic.crit_damage", true, () ->

@@ -16,6 +16,10 @@ public abstract class ComplexBooleanProperty extends DoubleProperty {
         return value != null ? value > 0 : defaultValue;
     }
 
+    public boolean hasValue(ItemStack itemStack) {
+        return isTrue(itemStack) != defaultValue;
+    }
+
 
     public Double getValue(ItemStack stack) {
         return getValueRaw(stack);

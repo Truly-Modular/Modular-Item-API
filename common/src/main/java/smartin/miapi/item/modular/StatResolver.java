@@ -1,5 +1,6 @@
 package smartin.miapi.item.modular;
 
+import com.ezylang.evalex.Expression;
 import com.google.gson.JsonElement;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
@@ -7,20 +8,20 @@ import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
 import com.redpxnda.nucleus.codec.misc.CustomIntermediateCodec;
 import com.redpxnda.nucleus.codec.misc.IntermediateCodec;
 import net.minecraft.text.Text;
-import org.mariuszgromada.math.mxparser.Expression;
 import smartin.miapi.Miapi;
 import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.material.Material;
+import smartin.miapi.modules.material.MaterialProperty;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiFunction;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static smartin.miapi.modules.material.EvalExResolverStuff.configuration;
 
 /**
  * A utility class for resolving dynamic values in item stats and descriptions in relation to a {@link ItemModule.ModuleInstance}.
@@ -82,8 +83,8 @@ public class StatResolver {
         @Override
         public String toString() {
             return "DoubleFromStat{" +
-                    "start=" + start +
-                    '}';
+                   "start=" + start +
+                   '}';
         }
     }
 
@@ -113,8 +114,8 @@ public class StatResolver {
         @Override
         public String toString() {
             return "IntegerFromStat{" +
-                    "start=" + start +
-                    '}';
+                   "start=" + start +
+                   '}';
         }
     }
 
@@ -213,17 +214,52 @@ public class StatResolver {
             @Override
             public double resolveDouble(String data, ItemModule.ModuleInstance instance) {
                 double count = 0;
-                switch (data){
-                    case "module":{
+                switch (data) {
+                    case "module": {
                         count = instance.getRoot().allSubModules().size();
                         break;
                     }
-                    case "submodule":{
+                    case "submodule": {
                         count = instance.allSubModules().size();
                         break;
                     }
-                    default:{
-                        Miapi.LOGGER.warn("Statresolver count doesnt recognise "+data + " it only allows for module and submodules as keys");
+                    case "unique_materials": {
+                        count = instance.getRoot().allSubModules().stream()
+                                .filter(m -> MaterialProperty.getMaterial(m) != null)
+                                .map(MaterialProperty::getMaterial)
+                                .filter(Objects::nonNull).count();
+                        break;
+                    }
+                    case "root_material_matches": {
+                        Optional<Material> material =
+                                instance.getRoot().allSubModules().stream()
+                                        .filter(m -> MaterialProperty.getMaterial(m) != null)
+                                        .map(MaterialProperty::getMaterial)
+                                        .findFirst();
+                        if (material.isPresent()) {
+                            count = instance.getRoot().allSubModules().stream()
+                                    .filter(m -> MaterialProperty.getMaterial(m) != null)
+                                    .map(MaterialProperty::getMaterial)
+                                    .filter(m -> material.get().equals(m)).count();
+                        }
+                        break;
+                    }
+                    case "material_matches": {
+                        Optional<Material> material =
+                                instance.allSubModules().stream()
+                                        .filter(m -> MaterialProperty.getMaterial(m) != null)
+                                        .map(MaterialProperty::getMaterial)
+                                        .findFirst();
+                        if (material.isPresent()) {
+                            count = instance.getRoot().allSubModules().stream()
+                                    .filter(m -> MaterialProperty.getMaterial(m) != null)
+                                    .map(MaterialProperty::getMaterial)
+                                    .filter(m -> material.get().equals(m)).count();
+                        }
+                        break;
+                    }
+                    default: {
+                        Miapi.LOGGER.warn("Statresolver count doesnt recognise " + data + " it only allows for module and submodules as keys");
                     }
                 }
                 return count;
@@ -309,8 +345,7 @@ public class StatResolver {
                 }
             }
         }
-        Expression e = new Expression(resolved);
-        return e.calculate();
+        return resolveCalculation(resolved);
     }
 
     /**
@@ -366,5 +401,15 @@ public class StatResolver {
          * @return the resolved string value
          */
         String resolveString(String data, ItemModule.ModuleInstance instance);
+    }
+
+    public static double resolveCalculation(String string) {
+        try {
+            Expression e = new Expression(string, configuration);
+            return e.evaluate().getNumberValue().doubleValue();
+        } catch (Exception e) {
+            Miapi.LOGGER.error("could not evaluate " + string, e);
+            return 0;
+        }
     }
 }

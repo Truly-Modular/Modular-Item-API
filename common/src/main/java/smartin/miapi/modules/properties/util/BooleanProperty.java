@@ -24,6 +24,10 @@ public class BooleanProperty implements ModuleProperty {
         return getValue(element);
     }
 
+    public boolean hasValue(ItemStack stack){
+        return ItemModule.getMergedProperty(stack, property) != null;
+    }
+
     public boolean isTrue(ItemStack stack) {
         return ModularItemCache.get(stack, KEY_PRIVATE, defaultValueSaved);
     }

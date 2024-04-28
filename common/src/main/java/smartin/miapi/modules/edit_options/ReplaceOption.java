@@ -12,10 +12,13 @@ import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.crafting.CraftingScreen;
 import smartin.miapi.client.gui.crafting.crafter.CraftEditOption;
 import smartin.miapi.craft.CraftAction;
+import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.material.Material;
 import smartin.miapi.modules.material.MaterialProperty;
 import smartin.miapi.network.Networking;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -43,7 +46,22 @@ public class ReplaceOption implements EditOption {
             inventory.setStack(1, hoverStack);
         }
         action.linkInventory(inventory, 1);
-        return action.getPreview();
+
+        ItemStack preview = action.getPreview();
+        if (editContext.getInstance() != null) {
+            Material material = MaterialProperty.getMaterial(editContext.getInstance());
+            if (material != null) {
+                List<Integer> position = new ArrayList<>();
+                editContext.getInstance().calculatePosition(position);
+                ItemModule.ModuleInstance root = ItemModule.getModules(preview);
+                ItemModule.ModuleInstance editing = root.getPosition(position);
+                if (MaterialProperty.getMaterial(editing) == null) {
+                    MaterialProperty.setMaterial(editing, material.getKey());
+                    editing.getRoot().writeToItem(preview);
+                }
+            }
+        }
+        return preview;
     }
 
     public static void tryPreview() {
@@ -54,6 +72,12 @@ public class ReplaceOption implements EditOption {
 
             }
         }
+    }
+
+    public static void resetPreview(){
+        ReplaceOption.unsafeEditContext = null;
+        ReplaceOption.hoverStack = null;
+        ReplaceOption.unsafeCraftAction = null;
     }
 
     public static void setHoverStack(ItemStack itemStack, boolean safe) {

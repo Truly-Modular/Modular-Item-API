@@ -54,9 +54,9 @@ public class MiapiClient {
     public static MaterialAtlasManager materialAtlasManager;
     public static boolean shaderModLoaded =
             Platform.isModLoaded("iris") ||
-                    Platform.isModLoaded("optifine") ||
-                    Platform.isModLoaded("optifabric") ||
-                    Platform.isModLoaded("oculus");
+            Platform.isModLoaded("optifine") ||
+            Platform.isModLoaded("optifabric") ||
+            Platform.isModLoaded("oculus");
     public static boolean sodiumLoaded = Platform.isModLoaded("sodium");
     public static boolean jerLoaded = Platform.isModLoaded("jeresources");
     public static final MiapiRegistry<KeyBinding> KEY_BINDINGS = MiapiRegistry.getInstance(KeyBinding.class);
@@ -67,6 +67,7 @@ public class MiapiClient {
 
     public static void init() {
         RegistryInventory.modularItems.addCallback((MiapiClient::registerAnimations));
+        BoomerangClientRendering.setup();
         ClientTickEvent.CLIENT_PRE.register((instance -> {
             if (MiapiConfig.INSTANCE.client.other.animatedMaterials) {
                 MinecraftClient.getInstance().getProfiler().push("miapiMaterialAnimations");
@@ -74,24 +75,6 @@ public class MiapiClient {
                 MinecraftClient.getInstance().getProfiler().pop();
             }
         }));
-        /*
-        ClientTickEvent.CLIENT_PRE.register((instance -> {
-            if (MinecraftClient.getInstance() != null && MinecraftClient.getInstance().player != null && MinecraftClient.getInstance().player.getWorld() != null) {
-                BoomerangThrowingAbility.getLookingEntity(200, instance.getTickDelta()).ifPresent(entity -> {
-                    BoomerangThrowingAbility.entities.add(entity);
-                    //Miapi.LOGGER.info("found" + entity.getDisplayName().getString());
-                });
-            }
-        }));
-        ClientTickEvent.CLIENT_PRE.register(client ->{
-            Miapi.LOGGER.info("currently tracking " +BoomerangThrowingAbility.entities+" entitites");
-            BoomerangThrowingAbility.entities.forEach(entity -> {
-                if (entity instanceof LivingEntity livingEntity) {
-                    livingEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.GLOWING, 20));
-                }
-            });
-        });
-         */
         Networking.registerS2CPacket(MaterialCommand.SEND_MATERIAL_CLIENT, (buf -> {
             String materialId = buf.readString();
             MinecraftClient.getInstance().execute(() -> {

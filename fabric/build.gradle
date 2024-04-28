@@ -24,6 +24,14 @@ repositories {
             includeGroup "com.jamieswhiteshirt"
         }
     }
+    maven {
+        name = 'GeckoLib'
+        url 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/'
+        content {
+            includeGroupByRegex("software\\.bernie.*")
+            includeGroup("com.eliotlash.mclib")
+        }
+    }
     /*maven {
         // saps.dev Maven (KubeJS and Rhino)
         url "https://maven.saps.dev/minecraft"
@@ -85,11 +93,13 @@ dependencies {
 
     modCompileOnly "maven.modrinth:treechop:${rootProject.fabric_treechop_version}"
 
-    include api("org.mariuszgromada.math:MathParser.org-mXparser:${rootProject.mathparser_version}")
+    include api("com.ezylang:EvalEx:${rootProject.eval_ex_version}")
     include modApi("com.jamieswhiteshirt:reach-entity-attributes:$rootProject.fabric_reach_range_version")
 
     /*modApi "dev.latvian.mods:rhino-fabric:${rootProject.rhino_version}"
     modApi "dev.latvian.mods:kubejs-fabric:${rootProject.kjs_version}"*/
+
+    modImplementation "software.bernie.geckolib:geckolib-fabric-${minecraft_version}:${geckolib_version}"
 
     modApi(include("com.redpxnda.nucleus:nucleus-core-fabric:${rootProject.minecraft_version}+${rootProject.nucleus_core_version}"))
     modApi(include("com.redpxnda.nucleus:nucleus-codec-fabric:${rootProject.minecraft_version}+${rootProject.nucleus_codec_version}"))

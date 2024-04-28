@@ -13,6 +13,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import smartin.miapi.Miapi;
 import smartin.miapi.attributes.AttributeRegistry;
+import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.mixin.LivingEntityAccessor;
 import smartin.miapi.registries.RegistryInventory;
 
@@ -37,7 +38,7 @@ public class StunHealthFacet implements EntityFacet<NbtCompound> {
         currentAmount -= stunDamage;
         if (currentAmount <= 0) {
             if (!livingEntity.hasStatusEffect(RegistryInventory.stunResistanceEffect)) {
-                this.livingEntity.addStatusEffect(new StatusEffectInstance(RegistryInventory.stunEffect, 20 * 5, 0, false, true), attacker);
+                this.livingEntity.addStatusEffect(new StatusEffectInstance(RegistryInventory.stunEffect, MiapiConfig.INSTANCE.server.stunEffectCategory.stunLength, 0, false, true), attacker);
             }
             currentAmount = getMaxAmount();
         }

@@ -3,20 +3,18 @@ package smartin.miapi.forge;
 import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.platform.Platform;
 import dev.architectury.platform.forge.EventBuses;
-import dev.architectury.registry.ReloadListenerRegistry;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.registry.Registries;
-import net.minecraft.resource.ResourceType;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 import net.minecraftforge.client.event.RenderGuiEvent;
 import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -30,7 +28,6 @@ import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.client.MiapiClient;
 import smartin.miapi.client.gui.crafting.CraftingScreen;
 import smartin.miapi.config.MiapiConfig;
-import smartin.miapi.datapack.MiapiReloadListener;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.entity.ShieldingArmorFacet;
 import smartin.miapi.events.MiapiEvents;
@@ -38,7 +35,6 @@ import smartin.miapi.modules.properties.AttributeProperty;
 import smartin.miapi.modules.properties.compat.ht_treechop.TreechopUtil;
 
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
@@ -66,11 +62,12 @@ public class TrulyModularForge {
         LifecycleEvent.SERVER_STARTING.register((instance -> setupAttributes()));
         ReloadEvents.START.subscribe((isClient -> setupAttributes()));
 
-        ReloadListenerRegistry.register(
-                ResourceType.SERVER_DATA,
-                new MiapiReloadListener(),
-                new Identifier(MOD_ID, "main_reload_listener"),
-                List.of(new Identifier("minecraft:tags"), new Identifier("minecraft:recipes")));
+        //ReloadListenerRegistry.register(
+        //        ResourceType.SERVER_DATA,
+        //        new MiapiReloadListener(),
+        //        new Identifier(MOD_ID, "main_reload_listener"),
+        //        List.of(new Identifier("minecraft:tags"), new Identifier("minecraft:recipes")));
+
 
         LifecycleEvent.SERVER_STARTED.register((minecraftServer -> {
             if (MiapiConfig.INSTANCE.server.other.forgeReloadMode) {
@@ -138,6 +135,16 @@ public class TrulyModularForge {
             MiapiEvents.LIVING_HURT.invoker().hurt(event);
             hurtEvent.setAmount(event.amount);
         }
+
+        @SubscribeEvent
+        public void addReloadListeners(AddReloadListenerEvent addReloadListenerEvent) {
+            addReloadListenerEvent.addListener(new MiapiReloadListenerForge());
+        }
+    }
+
+    public static void triggerReloadPart2(){
+        ReloadEvents.MAIN.fireEvent(false);
+        ReloadEvents.END.fireEvent(false);
     }
 
     public static class ClientEvents {

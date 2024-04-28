@@ -157,11 +157,11 @@ public class MiningLevelStatDisplay extends InteractAbleWidget implements Single
         if (oldValue < compareToValue) {
             statBar.setPrimary((oldValue - min) / (max - min), ColorHelper.Argb.getArgb(255, 255, 255, 255));
             statBar.setSecondary((compareToValue - min) / (max - min), getGreen());
-            compareValue.textColor = ColorHelper.Argb.getArgb(255, 0, 255, 0);
+            compareValue.textColor = getGreen();
         } else {
             statBar.setPrimary((compareToValue - min) / (max - min), ColorHelper.Argb.getArgb(255, 255, 255, 255));
             statBar.setSecondary((oldValue - min) / (max - min), getRed());
-            compareValue.textColor = getGreen();
+            compareValue.textColor = getRed();
         }
         if (oldValue == compareToValue) {
             currentValue.setX(this.getX() - 3);

@@ -42,9 +42,8 @@ public class EditView extends InteractAbleWidget {
     Consumer<Object> back;
     List<Element> defaultChildren = new ArrayList<>();
     EditOption.EditContext editContext;
-    EditOption current;
     SlotProperty.ModuleSlot slot;
-    static List<Slot> currentSlots = new ArrayList<>();
+    List<Slot> currentSlots = new ArrayList<>();
 
     public EditView(int x, int y, int width, int height, ItemStack stack, @Nullable SlotProperty.ModuleSlot slot, Consumer<ItemStack> preview, Consumer<Object> back) {
         super(x, y, width, height, Text.empty());

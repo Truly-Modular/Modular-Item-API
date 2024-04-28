@@ -244,6 +244,7 @@ public class CraftAction {
         if (!old.hasNbt() || !(old.getOrCreateNbt().contains(ItemModule.MODULE_KEY) || old.getOrCreateNbt().contains(NBT_MODULE_KEY))) {
             Exception exception = new IllegalArgumentException();
             Miapi.LOGGER.error("old Item has no Modules - something went very wrong", exception);
+            Miapi.LOGGER.error(old.toString());
             return old;
         }
         //remove CacheKey so new cache gets Generated

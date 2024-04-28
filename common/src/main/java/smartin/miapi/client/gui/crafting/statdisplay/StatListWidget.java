@@ -317,6 +317,22 @@ public class StatListWidget extends InteractAbleWidget {
                 .setMax(5)
                 .setTranslationKey(SmiteDamage.KEY).build());
 
+        addStatDisplay(ComplexBooleanStatDisplay
+                .builder(CanWalkOnSnow.property)
+                .setTranslationKey(CanWalkOnSnow.KEY).build());
+        addStatDisplay(ComplexBooleanStatDisplay
+                .builder(FireProof.property)
+                .setTranslationKey(FireProof.KEY).build());
+        addStatDisplay(ComplexBooleanStatDisplay
+                .builder(IsCrossbowShootAble.property)
+                .setTranslationKey(IsCrossbowShootAble.KEY).build());
+        addStatDisplay(ComplexBooleanStatDisplay
+                .builder(IsPiglinGold.property)
+                .setTranslationKey(IsPiglinGold.KEY).build());
+        addStatDisplay(ComplexBooleanStatDisplay
+                .builder(StepCancelingProperty.property)
+                .setTranslationKey(StepCancelingProperty.KEY).build());
+
         addStatDisplay(SinglePropertyStatDisplay
                 .builder(PillagesGuard.property)
                 .setMax(3)

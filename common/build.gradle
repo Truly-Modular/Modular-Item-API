@@ -29,6 +29,14 @@ repositories {
             includeGroup "dev.latvian.mods"
         }
     }
+    maven {
+        name = 'GeckoLib'
+        url 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/'
+        content {
+            includeGroupByRegex("software\\.bernie.*")
+            includeGroup("com.eliotlash.mclib")
+        }
+    }
 }
 
 loom {
@@ -70,6 +78,8 @@ dependencies {
     modCompileOnly "dev.latvian.mods:rhino:${rootProject.rhino_version}"
     modCompileOnly "dev.latvian.mods:kubejs:${rootProject.kjs_version}"
 
+    modImplementation "software.bernie.geckolib:geckolib-fabric-${minecraft_version}:${geckolib_version}"
+
     if ("${rootProject.run_with_bettercombat}" == "true") {
         modImplementation 'dev.kosmx.player-anim:player-animation-lib:1.0.2-rc1+1.20'
         modImplementation "curse.maven:bettercombat-639842:4597949"
@@ -80,7 +90,8 @@ dependencies {
     modCompileOnly "maven.modrinth:archers:1.0.6+1.20.1"
 
     //modImplementation "curse.maven:epic-fight-mod-405076:4785528"
-    implementation "org.mariuszgromada.math:MathParser.org-mXparser:${rootProject.mathparser_version}"
+
+    implementation "com.ezylang:EvalEx:${rootProject.eval_ex_version}"
 }
 
 architectury {

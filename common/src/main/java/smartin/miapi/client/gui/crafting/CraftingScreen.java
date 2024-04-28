@@ -88,6 +88,8 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
     }
 
     public void init() {
+        slot = null;
+        editOption = null;
         List<String> allowedModules = new ArrayList<>();
         allowedModules.add("melee");
         baseSlot = new SlotProperty.ModuleSlot(allowedModules);
@@ -135,7 +137,10 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
         }));
 
         addChild(new EditOptionIcon(moduleCrafter.getX() - 36, moduleCrafter.getY() + 4, 32, 28, this::selectEditOption, this::getEditOption, BACKGROUND_TEXTURE, 339, 25, 512, 512, "miapi.ui.edit_option.hover.info", null));
-
+        selectEditOption(null);
+        selectSlot(null);
+        previewStack(handler.inventory.getStack(0));
+        ReplaceOption.resetPreview();
     }
 
     //could be the same as maximizeView()
