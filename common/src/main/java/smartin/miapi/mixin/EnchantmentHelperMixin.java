@@ -74,7 +74,7 @@ public class EnchantmentHelperMixin {
 
     @Inject(method = "onTargetDamaged(Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/entity/Entity;)V", at = @At("HEAD"), cancellable = true)
     private static void miapi$addMagicDamage(LivingEntity attacker, Entity target, CallbackInfo ci) {
-        if (target instanceof LivingEntity defender) {
+        if (target instanceof LivingEntity defender && attacker != null) {
             MiapiEvents.LIVING_ATTACK.invoker().attack(attacker, defender);
         }
     }
@@ -115,7 +115,7 @@ public class EnchantmentHelperMixin {
             for (Enchantment enchantment : Registries.ENCHANTMENT) {
                 if (
                         (!enchantment.isTreasure() || enchantment.isTreasure() && treasureAllowed) &&
-                                enchantment.isAvailableForRandomSelection() && enchantment.isAcceptableItem(stack)) {
+                        enchantment.isAvailableForRandomSelection() && enchantment.isAcceptableItem(stack)) {
                     for (int i = enchantment.getMaxLevel(); i > enchantment.getMinLevel() - 1; --i) {
                         if (power < enchantment.getMinPower(i) || power > enchantment.getMaxPower(i)) continue;
                         list.add(new EnchantmentLevelEntry(enchantment, i));
@@ -142,7 +142,7 @@ public class EnchantmentHelperMixin {
             for (Enchantment enchantment : Registries.ENCHANTMENT) {
                 if (
                         (!enchantment.isTreasure() || enchantment.isTreasure() && treasureAllowed) &&
-                                enchantment.isAvailableForRandomSelection() && enchantment.isAcceptableItem(stack)) {
+                        enchantment.isAvailableForRandomSelection() && enchantment.isAcceptableItem(stack)) {
                     for (int i = enchantment.getMaxLevel(); i > enchantment.getMinLevel() - 1; --i) {
                         if (power < enchantment.getMinPower(i) || power > enchantment.getMaxPower(i)) continue;
                         list.add(new EnchantmentLevelEntry(enchantment, i));
