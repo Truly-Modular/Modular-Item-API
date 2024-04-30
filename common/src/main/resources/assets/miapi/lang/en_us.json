@@ -232,6 +232,8 @@
     "miapi.stat.food_exhaustion.description": "Walking will drain food now.",
     "miapi.stat.swim_speed": "Swim Speed",
     "miapi.stat.swim_speed.description": "How fast you swim.\n 0 means you cannot move\n 1 is default swim Speed",
+    "miapi.stat.shielding_armor": "Shielding Armor",
+    "miapi.stat.shielding_armor.description": "Shield that takes damage before your hearts. Regenerates over time.",
     "miapi.stat.magic_damage": "Magic Damage",
     "miapi.stat.magic_damage.description": "Magic Damage.\nMagic Damage bypasses Armor points\nProtection does Protect against Magic Damage",
     "miapi.stat.dps": "DPS",
