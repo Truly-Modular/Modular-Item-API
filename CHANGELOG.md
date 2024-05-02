@@ -5,3 +5,5 @@
 - changed HurtEventlogic on forge slightly
 - added better logging to math issues
 - added boolean stat widgets for Snowwalking, Fire Proof, Silent walking and piglinarmor
+- fixed shielding armor bug where top half wasnt displayed
+- fixed crash related to beeing hit by a dead entity

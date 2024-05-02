@@ -67,7 +67,7 @@ public class MiapiClient {
 
     public static void init() {
         RegistryInventory.modularItems.addCallback((MiapiClient::registerAnimations));
-        BoomerangClientRendering.setup();
+        //BoomerangClientRendering.setup();
         ClientTickEvent.CLIENT_PRE.register((instance -> {
             if (MiapiConfig.INSTANCE.client.other.animatedMaterials) {
                 MinecraftClient.getInstance().getProfiler().push("miapiMaterialAnimations");

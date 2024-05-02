@@ -141,7 +141,7 @@ public class MiapiEvents {
     }
 
     public interface LivingAttackEvent {
-        EventResult attack(LivingEntity attacker, LivingEntity defender);
+        EventResult attack(@Nullable LivingEntity attacker,@Nullable LivingEntity defender);
     }
 
     public interface LivingEntityAttributeBuild {

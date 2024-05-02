@@ -154,7 +154,7 @@ public class AttributeRegistry {
             return EventResult.pass();
         }));
         MiapiEvents.LIVING_ATTACK.register(((attacker, defender) -> {
-            if (attacker.getAttributes().hasAttribute(MAGIC_DAMAGE)) {
+            if (attacker != null && defender != null && attacker.getAttributes().hasAttribute(MAGIC_DAMAGE)) {
                 double value = attacker.getAttributeValue(MAGIC_DAMAGE);
                 if (value > 0) {
                     defender.damage(attacker.getDamageSources().magic(), (float) value);
@@ -176,7 +176,7 @@ public class AttributeRegistry {
         }));
         MiapiEvents.LIVING_HURT.register((livingHurtEvent -> {
             if (livingHurtEvent.damageSource.isIn(DamageTypeTags.IS_PROJECTILE) &&
-                    livingHurtEvent.livingEntity.getAttributes().hasAttribute(PROJECTILE_ARMOR)) {
+                livingHurtEvent.livingEntity.getAttributes().hasAttribute(PROJECTILE_ARMOR)) {
                 double projectileArmor = livingHurtEvent.livingEntity.getAttributeValue(PROJECTILE_ARMOR);
                 if (projectileArmor > 0) {
                     double totalDamage = livingHurtEvent.amount * (1 - ((Math.max(20, projectileArmor)) / 25));
@@ -237,7 +237,7 @@ public class AttributeRegistry {
         MiapiEvents.LIVING_HURT.register(livingHurtEvent -> {
             if (
                     livingHurtEvent.damageSource.getAttacker() instanceof LivingEntity attacker &&
-                            !livingHurtEvent.livingEntity.getWorld().isClient()
+                    !livingHurtEvent.livingEntity.getWorld().isClient()
             ) {
                 if (attacker.getAttributes().hasAttribute(CRITICAL_CHANCE) && !livingHurtEvent.isCritical) {
                     attacker.getAttributes().getCustomInstance(CRITICAL_CHANCE).addTemporaryModifier(new EntityAttributeModifier(TEMP_CRIT_DMG_UUID, "temp_crit_base", 1, EntityAttributeModifier.Operation.ADDITION));
@@ -261,8 +261,8 @@ public class AttributeRegistry {
                 }
                 if (
                         attacker.getAttributes().hasAttribute(CRITICAL_DAMAGE) &&
-                                livingHurtEvent.isCritical &&
-                                attacker.getAttributes().getCustomInstance(CRITICAL_DAMAGE) != null) {
+                        livingHurtEvent.isCritical &&
+                        attacker.getAttributes().getCustomInstance(CRITICAL_DAMAGE) != null) {
                     attacker.getAttributeInstance(CRITICAL_DAMAGE);
                     attacker.getAttributes().getCustomInstance(CRITICAL_DAMAGE).addTemporaryModifier(new EntityAttributeModifier(TEMP_CRIT_DMG_UUID, "temp_crit_base_damage", livingHurtEvent.amount / 1.5, EntityAttributeModifier.Operation.ADDITION));
                     attacker.getAttributes().getCustomInstance(CRITICAL_DAMAGE).addTemporaryModifier(new EntityAttributeModifier(TEMP_CRIT_DMG_MULTIPLIER_UUID, "temp_crit_base_multiplier", 0.5, EntityAttributeModifier.Operation.MULTIPLY_BASE));

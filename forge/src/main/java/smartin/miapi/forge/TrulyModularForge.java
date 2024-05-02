@@ -55,6 +55,14 @@ public class TrulyModularForge {
         MinecraftForge.EVENT_BUS.register(new ServerEvents());
         Miapi.init();
 
+        try{
+            if (Platform.isModLoaded("epicfight")){
+                //RegistryInventory.moduleProperties.register(EpicFightCompatProperty.KEY, new EpicFightCompatProperty());
+            }
+        }catch (Exception e){
+            Miapi.LOGGER.info("couldnt load epic fight compat");
+        }
+
         //if (Platform.isModLoaded("epicfight"))
         //RegistryInventory.moduleProperties.register(EpicFightCompatProperty.KEY, new EpicFightCompatProperty());
 
@@ -161,7 +169,6 @@ public class TrulyModularForge {
             int playerHealth = MathHelper.ceil(playerEntity.getHealth());
             int renderHealthValue = playerHealth + MathHelper.ceil(playerEntity.getAbsorptionAmount());
             int scaledWidth = event.getWindow().getScaledWidth();
-            int shieldingArmorMaxAmount = (int) facet.getMaxAmount() / 2;
             int shieldingArmorCurrentAmount = (int) (facet.getCurrentAmount());
             int scaledHeight = event.getWindow().getScaledHeight();
             float maxHealth = Math.max((float) playerEntity.getAttributeValue(EntityAttributes.GENERIC_MAX_HEALTH), (float) Math.max(renderHealthValue, playerHealth));
@@ -184,7 +191,7 @@ public class TrulyModularForge {
                     .count() * 10;
             for (
                     int index = 0;
-                    index < shieldingArmorMaxAmount; index++) {
+                    index < ( (float) facet.getMaxAmount() ) / 2.0f; index++) {
                 int heartX = scaledWidth / 2 - 91 + (index % 10) * 8;
                 int yOffset = (index / 10) * 10;
                 int heartTextureIndex = index * 2 + 1;

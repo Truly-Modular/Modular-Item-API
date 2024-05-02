@@ -58,14 +58,14 @@ public class InGameHudMixin {
         }
         startY -= MiapiConfig.INSTANCE.client.shieldingArmor.otherOffests * 10;
         startY -= MiapiConfig.INSTANCE.client.shieldingArmor.attributesSingleLine.stream()
-                .filter(id -> Registries.ATTRIBUTE.containsId(id))
-                .map(id -> Registries.ATTRIBUTE.get(id))
-                .filter(entityAttribute -> playerEntity.getAttributes().hasAttribute(entityAttribute))
-                .filter(entityAttribute -> playerEntity.getAttributeValue(entityAttribute) > 1)
-                .count() * 10;
+                          .filter(id -> Registries.ATTRIBUTE.containsId(id))
+                          .map(id -> Registries.ATTRIBUTE.get(id))
+                          .filter(entityAttribute -> playerEntity.getAttributes().hasAttribute(entityAttribute))
+                          .filter(entityAttribute -> playerEntity.getAttributeValue(entityAttribute) > 1)
+                          .count() * 10;
         for (
                 int index = 0;
-                index < shieldingArmorMaxAmount; index++) {
+                index < ( (float) facet.getMaxAmount() ) / 2.0f; index++) {
             int heartX = scaledWidth / 2 - 91 + (index % 10) * 8;
             int yOffset = (index / 10) * 10;
             int heartTextureIndex = index * 2 + 1;

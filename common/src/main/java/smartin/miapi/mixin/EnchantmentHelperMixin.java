@@ -74,7 +74,7 @@ public class EnchantmentHelperMixin {
 
     @Inject(method = "onTargetDamaged(Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/entity/Entity;)V", at = @At("HEAD"), cancellable = true)
     private static void miapi$addMagicDamage(LivingEntity attacker, Entity target, CallbackInfo ci) {
-        if (target instanceof LivingEntity defender && attacker != null) {
+        if (target instanceof LivingEntity defender) {
             MiapiEvents.LIVING_ATTACK.invoker().attack(attacker, defender);
         }
     }
