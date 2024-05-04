@@ -31,6 +31,7 @@ public class AllowedMaterial implements CraftingProperty, ModuleProperty {
     public double materialCostClient = 0.0f;
     public double materialRequirementClient = 0.0f;
     public boolean wrongMaterial = false;
+    public boolean smithingMaterial = false;
     public int slotHeight = 130 - 14;
 
     public AllowedMaterial() {
@@ -70,6 +71,9 @@ public class AllowedMaterial implements CraftingProperty, ModuleProperty {
 
     public Text getWarning() {
         if (wrongMaterial) {
+            if(smithingMaterial){
+                Text.translatable(Miapi.MOD_ID + ".ui.craft.warning.material.wrong.smithing");
+            }
             return Text.translatable(Miapi.MOD_ID + ".ui.craft.warning.material.wrong");
         }
         return Text.translatable(Miapi.MOD_ID + ".ui.craft.warning.material");
@@ -94,7 +98,9 @@ public class AllowedMaterial implements CraftingProperty, ModuleProperty {
                 } else {
                     materialCostClient = 0.0f;
                 }
+                smithingMaterial = material.getGroups().contains("smithing");
             } else {
+                smithingMaterial = false;
                 wrongMaterial = false;
                 materialCostClient = 0.0f;
             }

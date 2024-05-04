@@ -419,11 +419,11 @@ public class RegistryInventory {
         LifecycleEvent.SETUP.register(() -> {
             //EDITPROPERTIES
             registerMiapi(editOptions, "replace", new ReplaceOption());
-            SynergyManager.setup();
             registerMiapi(editOptions, "dev", new PropertyInjectionDev());
             registerMiapi(editOptions, "skin", new SkinOptions());
             registerMiapi(editOptions, "create", new CreateItemOption());
             registerMiapi(editOptions, "cosmetic", new CosmeticEditOption());
+            SynergyManager.setup();
 
             //CONDITIONS
             registerMiapi(moduleConditionRegistry, "true", new TrueCondition());

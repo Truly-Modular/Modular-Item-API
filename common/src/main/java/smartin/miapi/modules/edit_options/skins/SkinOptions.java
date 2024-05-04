@@ -5,6 +5,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.util.Identifier;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.crafting.CraftingScreen;
@@ -16,6 +17,7 @@ import smartin.miapi.modules.edit_options.EditOptionIcon;
 import smartin.miapi.modules.edit_options.skins.gui.SkinGui;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -28,7 +30,7 @@ public class SkinOptions implements EditOption {
 
     public SkinOptions() {
         defaultTab = SkinTab.fromJson(null);
-        PropertyResolver.register("skin", (moduleInstance, oldMap) -> {
+        PropertyResolver.register(new Identifier("miapi", "skin"), (moduleInstance, oldMap) -> {
             if (moduleInstance != null) {
                 String skinKey = moduleInstance.moduleData.get("skin");
                 Map<String, Skin> moduleSkins = skins.get(moduleInstance.module);
@@ -37,7 +39,7 @@ public class SkinOptions implements EditOption {
                 }
             }
             return oldMap;
-        });
+        }, List.of(new Identifier("miapi", "synergy")));
         Miapi.registerReloadHandler(ReloadEvents.MAIN, "skins/module", skins, (isClient, path, data) -> {
             load(data);
         }, 1);
@@ -85,7 +87,7 @@ public class SkinOptions implements EditOption {
     @Override
     public boolean isVisible(EditContext context) {
         return context.getInstance() != null &&
-                skins.get(context.getInstance().module) != null;
+               skins.get(context.getInstance().module) != null;
     }
 
     @Environment(EnvType.CLIENT)

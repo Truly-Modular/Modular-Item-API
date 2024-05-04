@@ -33,6 +33,7 @@
     "miapi.ui.edit_option.hover.cosmetic": "Cosmetic Slots",
     "miapi.ui.craft.warning.material": "Insufficient Material",
     "miapi.ui.craft.warning.material.wrong": "Wrong Material",
+    "miapi.ui.craft.warning.material.wrong.smithing": "This Material should be applied in a smithing Table",
     "miapi.ui.craft.warning.crafting_stat": "Crafting Stat Requirement Unmet",
     "miapi.ui.craft.warning.flexibility": "Flexibility cannot go bellow 0",
     "miapi.ui.craft.warning.durability_negative": "Durability cant be negative",

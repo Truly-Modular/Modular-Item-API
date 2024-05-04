@@ -32,7 +32,10 @@ import smartin.miapi.craft.stat.StatProvidersMap;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.registries.RegistryInventory;
 
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -104,6 +107,7 @@ public class ModularWorkBenchEntity extends BlockEntity implements NamedScreenHa
     public void setItem(ItemStack stack) {
         this.stack = stack == null ? ItemStack.EMPTY : stack.copy();
     }
+
     public ItemStack getItem() {
         return stack;
     }
@@ -119,9 +123,7 @@ public class ModularWorkBenchEntity extends BlockEntity implements NamedScreenHa
         tag.put("Item", stack.writeNbt(new NbtCompound()));
 
         NbtCompound persisStatsNbt = new NbtCompound();
-        persistentStats.forEach((key, val) ->
-                persisStatsNbt.put(key, StatProvidersMap.MODULELESS_CODEC.encodeStart(NbtOps.INSTANCE, val)
-                        .getOrThrow(false, s -> Miapi.LOGGER.error("Failed to encode persistent StatProvidersMap for MWBE! -> {}", s))));
+        persistentStats.forEach((key, val) -> persisStatsNbt.put(key, StatProvidersMap.MODULELESS_CODEC.encodeStart(NbtOps.INSTANCE, val).getOrThrow(false, s -> Miapi.LOGGER.error("Failed to encode persistent StatProvidersMap for MWBE! -> {}", s))));
 
         NbtCompound statsNbt = new NbtCompound();
         stats.forEach((stat, inst) -> {
@@ -139,13 +141,11 @@ public class ModularWorkBenchEntity extends BlockEntity implements NamedScreenHa
         persistentStats.clear();
         stats.clear();
 
-        if (tag.contains("Item"))
-            stack = ItemStack.fromNbt(tag.getCompound("Item"));
+        if (tag.contains("Item")) stack = ItemStack.fromNbt(tag.getCompound("Item"));
 
         NbtCompound persisStatsNbt = tag.getCompound("PersistentStats");
         persisStatsNbt.getKeys().forEach(key -> {
-            persistentStats.put(key, MiscCodecs.quickParse(NbtOps.INSTANCE, persisStatsNbt.getCompound(key), StatProvidersMap.MODULELESS_CODEC,
-                    s -> Miapi.LOGGER.error("Failed to decode persistent StatProvidersMap for MWBE! -> {}", s)));
+            persistentStats.put(key, MiscCodecs.quickParse(NbtOps.INSTANCE, persisStatsNbt.getCompound(key), StatProvidersMap.MODULELESS_CODEC, s -> Miapi.LOGGER.error("Failed to decode persistent StatProvidersMap for MWBE! -> {}", s)));
         });
 
         NbtCompound statsNbt = tag.getCompound("Stats");
@@ -174,14 +174,23 @@ public class ModularWorkBenchEntity extends BlockEntity implements NamedScreenHa
 
     public void saveAndSync() {
         markDirty();
-        if (hasWorld())
-            world.updateListeners(pos, world.getBlockState(pos), getCachedState(), 3);
+        if (hasWorld()) world.updateListeners(pos, world.getBlockState(pos), getCachedState(), 3);
+        handlers.forEach(weakReference -> {
+            CraftingScreenHandler handler = weakReference.get();
+            if (handler != null) {
+                if (!ItemStack.areEqual(handler.inventory.getStack(0),getItem())) {
+                    handler.inventory.setStack(0, getItem());
+                }
+            }
+        });
     }
 
     @Override
     public Text getDisplayName() {
         return Text.literal("test");
     }
+
+    List<WeakReference<CraftingScreenHandler>> handlers = new ArrayList<>();
 
     @Nullable
     @Override
@@ -194,6 +203,7 @@ public class ModularWorkBenchEntity extends BlockEntity implements NamedScreenHa
         persistentStats.forEach((key, map) -> providers.putAll(map));
         stats.putAll(providers.evaluateAll());
         saveAndSync();
+        handlers.add(new WeakReference<>(handler));
 
         /*handler.addListener(new SimpleScreenHandlerListener((h, slotId, itemStack) -> {
             long currentWorldTime;

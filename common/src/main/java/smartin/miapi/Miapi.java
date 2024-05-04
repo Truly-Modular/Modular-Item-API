@@ -10,7 +10,6 @@ import com.redpxnda.nucleus.registry.NucleusNamespaces;
 import dev.architectury.event.events.common.CommandRegistrationEvent;
 import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.event.events.common.PlayerEvent;
-import dev.architectury.registry.ReloadListenerRegistry;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Identifier;
@@ -27,7 +26,6 @@ import smartin.miapi.injectors.PropertySubstitution;
 import smartin.miapi.item.ItemToModularConverter;
 import smartin.miapi.item.ModularItemStackConverter;
 import smartin.miapi.item.modular.PropertyResolver;
-import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.item.modular.VisualModularItem;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.MiapiPermissions;
@@ -65,7 +63,6 @@ public class Miapi {
         AttributeRegistry.setup();
         ConditionManager.setup();
         StatActorType.setup();
-        ReloadListenerRegistry registry;
 
         LifecycleEvent.SERVER_BEFORE_START.register(minecraftServer -> server = minecraftServer);
         registerReloadHandler(ReloadEvents.MAIN, "modules", RegistryInventory.modules,
