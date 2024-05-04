@@ -49,11 +49,13 @@ public class LivingEntityMixin {
         //amount -= damage;
         //currentShieldingArmor = currentShieldingArmor - Math.min(amount, damage);
         MiapiEvents.LivingHurtEvent livingHurtEvent = new MiapiEvents.LivingHurtEvent((LivingEntity) (Object) this, storedDamageSource, amount);
-        if (storedDamageSource.getAttacker() instanceof PlayerEntity entity) {
-            livingHurtEvent.isCritical = hasCrited(entity, (LivingEntity) (Object) this);
-        }
-        if (storedDamageSource.getAttacker() instanceof ArrowEntity arrowEntity) {
-            //livingHurtEvent.isCritical = arrowEntity.isCritical();
+        if(storedDamageSource!=null){
+            if (storedDamageSource.getAttacker() instanceof PlayerEntity entity) {
+                livingHurtEvent.isCritical = hasCrited(entity, (LivingEntity) (Object) this);
+            }
+            if (storedDamageSource.getAttacker() instanceof ArrowEntity arrowEntity) {
+                //livingHurtEvent.isCritical = arrowEntity.isCritical();
+            }
         }
         MiapiEvents.LIVING_HURT_AFTER_ARMOR.invoker().hurt(livingHurtEvent);
         return livingHurtEvent.amount;

@@ -10,6 +10,7 @@
     "flexibility": 1,
     "durability": 32,
     "enchantability": 22,
+    "axe_damage": -2,
     "color": "FFD700",
     "color_palette": {
         "type": "grayscale_map",

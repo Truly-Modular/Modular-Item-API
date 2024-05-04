@@ -104,7 +104,10 @@ public class AttributeRegistry {
 
         MiapiEvents.LIVING_HURT_AFTER_ARMOR.register((livingHurt) -> {
             StunHealthFacet facet = StunHealthFacet.KEY.get(livingHurt.livingEntity);
-            if (livingHurt.damageSource.getAttacker() != null && livingHurt.damageSource.getAttacker() instanceof LivingEntity attacker) {
+            if (
+                    livingHurt.damageSource!=null &&
+                    livingHurt.damageSource.getAttacker() != null &&
+                    livingHurt.damageSource.getAttacker() instanceof LivingEntity attacker) {
                 if (facet != null && !livingHurt.livingEntity.getWorld().isClient()) {
                     if (attacker.getAttributes().hasAttribute(STUN_DAMAGE)) {
                         double currentStunDamage = attacker.getAttributeValue(STUN_DAMAGE);
@@ -121,6 +124,7 @@ public class AttributeRegistry {
             ShieldingArmorFacet facet = ShieldingArmorFacet.KEY.get(livingHurt.livingEntity);
             if (facet != null && !livingHurt.livingEntity.getWorld().isClient()) {
                 if (
+                        livingHurt.damageSource!=null &&
                         !livingHurt.damageSource.isIn(DamageTypeTags.BYPASSES_ARMOR)
                 ) {
                     livingHurt.amount = facet.takeDamage(livingHurt.amount);
@@ -163,7 +167,9 @@ public class AttributeRegistry {
             return EventResult.pass();
         }));
         MiapiEvents.LIVING_HURT.register((livingHurtEvent -> {
-            if (livingHurtEvent.damageSource.getAttacker() instanceof LivingEntity attacker) {
+            if (
+                    livingHurtEvent.damageSource!=null &&
+                    livingHurtEvent.damageSource.getAttacker() instanceof LivingEntity attacker) {
                 if (attacker.getAttributes().hasAttribute(BACK_STAB)) {
                     if (livingHurtEvent.damageSource.getAttacker().getRotationVector().dotProduct(livingHurtEvent.livingEntity.getRotationVector()) > 0) {
                         attacker.getAttributes().getCustomInstance(BACK_STAB).addTemporaryModifier(new EntityAttributeModifier(TEMP_BACKSTAB_DMG_UUID, "temp_backstab_base_damage", livingHurtEvent.amount, EntityAttributeModifier.Operation.ADDITION));
@@ -175,8 +181,10 @@ public class AttributeRegistry {
             return EventResult.pass();
         }));
         MiapiEvents.LIVING_HURT.register((livingHurtEvent -> {
-            if (livingHurtEvent.damageSource.isIn(DamageTypeTags.IS_PROJECTILE) &&
-                livingHurtEvent.livingEntity.getAttributes().hasAttribute(PROJECTILE_ARMOR)) {
+            if (
+                    livingHurtEvent.damageSource!=null &&
+                    livingHurtEvent.damageSource.isIn(DamageTypeTags.IS_PROJECTILE) &&
+                    livingHurtEvent.livingEntity.getAttributes().hasAttribute(PROJECTILE_ARMOR)) {
                 double projectileArmor = livingHurtEvent.livingEntity.getAttributeValue(PROJECTILE_ARMOR);
                 if (projectileArmor > 0) {
                     double totalDamage = livingHurtEvent.amount * (1 - ((Math.max(20, projectileArmor)) / 25));
@@ -186,7 +194,9 @@ public class AttributeRegistry {
             return EventResult.pass();
         }));
         MiapiEvents.LIVING_HURT_AFTER.register((livingHurtEvent -> {
-            if (livingHurtEvent.damageSource.getAttacker() instanceof LivingEntity attacker) {
+            if (
+                    livingHurtEvent.damageSource!=null &&
+                    livingHurtEvent.damageSource.getAttacker() instanceof LivingEntity attacker) {
                 if (attacker.getAttributes().hasAttribute(SHIELD_BREAK)) {
                     double value = attacker.getAttributeValue(SHIELD_BREAK);
                     if (livingHurtEvent.livingEntity instanceof PlayerEntity player) {
@@ -201,7 +211,9 @@ public class AttributeRegistry {
             return EventResult.pass();
         }));
         MiapiEvents.LIVING_HURT.register((livingHurtEvent -> {
-            if (livingHurtEvent.damageSource.getAttacker() instanceof LivingEntity attacker) {
+            if (
+                    livingHurtEvent.damageSource!=null &&
+                    livingHurtEvent.damageSource.getAttacker() instanceof LivingEntity attacker) {
                 if (attacker.getAttributes().hasAttribute(ARMOR_CRUSHING)) {
                     double value = attacker.getAttributeValue(ARMOR_CRUSHING);
                     ((LivingEntityAccessor) livingHurtEvent.livingEntity).callDamageArmor(livingHurtEvent.damageSource, (float) (livingHurtEvent.livingEntity.getArmor() * value));
@@ -236,6 +248,7 @@ public class AttributeRegistry {
 
         MiapiEvents.LIVING_HURT.register(livingHurtEvent -> {
             if (
+                    livingHurtEvent.damageSource!=null &&
                     livingHurtEvent.damageSource.getAttacker() instanceof LivingEntity attacker &&
                     !livingHurtEvent.livingEntity.getWorld().isClient()
             ) {

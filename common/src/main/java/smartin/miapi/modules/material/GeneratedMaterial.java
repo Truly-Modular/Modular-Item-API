@@ -196,7 +196,7 @@ public class GeneratedMaterial implements Material {
                     .map(ToolItem.class::cast)
                     .filter(toolMaterial ->
                             toolMaterial.getMaterial().getRepairIngredient() != null &&
-                                    toolMaterial.getMaterial().getRepairIngredient().getMatchingStacks() != null)
+                            toolMaterial.getMaterial().getRepairIngredient().getMatchingStacks() != null)
                     .toList();
             List<Material> toRegister = new ArrayList<>();
             if (MiapiConfig.INSTANCE.server.generatedMaterials.generateOtherMaterials) {
@@ -205,7 +205,7 @@ public class GeneratedMaterial implements Material {
                         .collect(Collectors.toSet())
                         .stream()
                         .filter(toolMaterial -> toolMaterial.getRepairIngredient() != null &&
-                                toolMaterial.getRepairIngredient().getMatchingStacks() != null)
+                                                toolMaterial.getRepairIngredient().getMatchingStacks() != null)
                         .filter(toolMaterial -> toolMaterial.getRepairIngredient().getMatchingStacks().length > 0)
                         .filter(toolMaterial -> !toolMaterial.getRepairIngredient().getMatchingStacks()[0].isIn(RegistryInventory.MIAPI_FORBIDDEN_TAG))
                         .filter(toolMaterial -> Arrays.stream(toolMaterial.getRepairIngredient().getMatchingStacks())
@@ -232,7 +232,7 @@ public class GeneratedMaterial implements Material {
             if (MiapiConfig.INSTANCE.server.generatedMaterials.generateWoodMaterials) {
                 Registries.ITEM.stream()
                         .filter(item -> item.getDefaultStack().isIn(ItemTags.PLANKS) &&
-                                !item.getDefaultStack().isIn(RegistryInventory.MIAPI_FORBIDDEN_TAG))
+                                        !item.getDefaultStack().isIn(RegistryInventory.MIAPI_FORBIDDEN_TAG))
                         .limit(MiapiConfig.INSTANCE.server.generatedMaterials.maximumGeneratedMaterials)
                         .forEach(item -> {
                             try {
@@ -255,7 +255,7 @@ public class GeneratedMaterial implements Material {
             if (MiapiConfig.INSTANCE.server.generatedMaterials.generateStoneMaterials) {
                 Registries.ITEM.stream()
                         .filter(item -> item.getDefaultStack().isIn(ItemTags.STONE_TOOL_MATERIALS) &&
-                                !item.getDefaultStack().isIn(RegistryInventory.MIAPI_FORBIDDEN_TAG))
+                                        !item.getDefaultStack().isIn(RegistryInventory.MIAPI_FORBIDDEN_TAG))
                         .limit(MiapiConfig.INSTANCE.server.generatedMaterials.maximumGeneratedMaterials)
                         .forEach(item -> {
                             try {
@@ -396,10 +396,26 @@ public class GeneratedMaterial implements Material {
                 this.swordItem = foundSwordItem;
                 materialStats.put("hardness", (double) swordItem.getAttackDamage());
 
-                double firstPart = Math.floor(Math.pow((swordItem.getAttackDamage() - 3.4) * 2.3, 1.0 / 3.0)) + 7;
+                double calculatedDamage = Math.floor(Math.pow((swordItem.getAttackDamage() - 3.4) * 2.3, 1.0 / 3.0)) + 7;
 
-                materialStats.put("density", ((axeItem.getAttackDamage() - firstPart) / 2.0) * 4.0);
-                materialStats.put("flexibility", (double) (toolMaterial.getMiningSpeedMultiplier() / 4));
+                if (groups.contains("stone")) {
+                    materialStats.put("density", (double) swordItem.getAttackDamage());
+                } else if (groups.contains("crystal")) {
+                    materialStats.put("density", (double) axeItem.getAttackDamage());
+                } else {
+                    materialStats.put("density", (double) swordItem.getAttackDamage() / 3);
+                }
+
+                if (Math.abs(calculatedDamage - swordItem.getAttackDamage()) > 0.1) {
+                    materialStats.put("axe_damage", calculatedDamage - (double) swordItem.getAttackDamage());
+                }
+
+                if (groups.contains("crystal") || groups.contains("gemstone")) {
+                    materialStats.put("flexibility", 0.0);
+                } else {
+                    materialStats.put("flexibility", (double) (toolMaterial.getMiningSpeedMultiplier() / 4));
+                }
+
                 if (Platform.getEnvironment() == Env.CLIENT) {
                     generateTranslation(toolMaterials);
                 }

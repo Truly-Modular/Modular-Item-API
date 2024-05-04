@@ -11,6 +11,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
+import org.jetbrains.annotations.Nullable;
 import smartin.miapi.entity.ItemProjectileEntity;
 
 public final class MiapiProjectileEvents {
@@ -30,10 +31,11 @@ public final class MiapiProjectileEvents {
     public static class ModularProjectileEntityHitEvent {
         public EntityHitResult entityHitResult;
         public ItemProjectileEntity projectile;
+        @Nullable
         public DamageSource damageSource;
         public float damage;
 
-        public ModularProjectileEntityHitEvent(EntityHitResult entityHitResult, ItemProjectileEntity projectile, DamageSource damageSource, float damage) {
+        public ModularProjectileEntityHitEvent(EntityHitResult entityHitResult, ItemProjectileEntity projectile,@Nullable DamageSource damageSource, float damage) {
             this.entityHitResult = entityHitResult;
             this.projectile = projectile;
             this.damageSource = damageSource;

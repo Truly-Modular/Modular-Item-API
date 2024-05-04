@@ -266,6 +266,10 @@ public class ItemModule {
      * @return the module instance associated with the given ItemStack
      */
     public static ModuleInstance getModules(ItemStack stack) {
+        if(ReloadEvents.isInReload()){
+            LOGGER.warn("Item cannot have modules during a reload.");
+            return new ModuleInstance(new ItemModule("empty", new HashMap<>()));
+        }
         if (stack.getItem() instanceof VisualModularItem && !ReloadEvents.isInReload() && (stack.getOrCreateNbt().get(MODULE_KEY) != null || stack.getOrCreateNbt().get(ItemModule.NBT_MODULE_KEY) != null)) {
             ModuleInstance moduleInstance = ModularItemCache.getRaw(stack, MODULE_KEY);
             if (moduleInstance == null || moduleInstance.module == null) {
