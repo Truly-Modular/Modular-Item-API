@@ -29,7 +29,7 @@ public class ModularWorkBenchRenderer implements BlockEntityRenderer<ModularWork
                         stack.getItem() instanceof ToolItem ||
                         stack.getItem() instanceof SwordItem ||
                         stack.getItem() instanceof ArrowItem ||
-                        stack.getItem() instanceof CrossbowItem ||
+                        //stack.getItem() instanceof CrossbowItem ||
                         stack.getItem() instanceof RangedWeaponItem))
             rotAmnt -= 45;
         else

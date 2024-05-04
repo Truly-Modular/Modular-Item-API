@@ -195,6 +195,7 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
     }
 
     private void updateItem(ItemStack stack) {
+        ReplaceOption.resetPreview();
         stack = stack.copy();
         slotDisplay.setItem(stack);
         ItemStack converted = ModularItemStackConverter.getModularVersion(stack).copy();
