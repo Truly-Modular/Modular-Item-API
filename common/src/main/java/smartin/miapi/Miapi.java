@@ -30,9 +30,10 @@ import smartin.miapi.item.modular.VisualModularItem;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.MiapiPermissions;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
+import smartin.miapi.modules.cache.CacheCommands;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.conditions.ConditionManager;
-import smartin.miapi.modules.material.palette.MaterialCommand;
+import smartin.miapi.modules.material.MaterialCommand;
 import smartin.miapi.modules.properties.GlintProperty;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.network.Networking;
@@ -141,6 +142,7 @@ public class Miapi {
 
         CommandRegistrationEvent.EVENT.register((serverCommandSourceCommandDispatcher, registryAccess, listener) -> {
             MaterialCommand.register(serverCommandSourceCommandDispatcher);
+            CacheCommands.register(serverCommandSourceCommandDispatcher);
         });
     }
 

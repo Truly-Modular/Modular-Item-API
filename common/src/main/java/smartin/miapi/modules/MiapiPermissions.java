@@ -8,7 +8,6 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.WeakHashMap;
@@ -21,7 +20,8 @@ public class MiapiPermissions {
         if (MiapiConfig.INSTANCE.server.other.developmentMode) {
             return true;
         }
-        return MiapiPermissions.getPerms(player).contains(perm);
+        List<String> perms = MiapiPermissions.getPerms(player);
+        return perms.contains(perm) || perms.contains("broken");
     }
 
     public static boolean hasPerm(PlayerEntity player, List<String> perms) {
@@ -55,7 +55,7 @@ public class MiapiPermissions {
             return perms.permissions;
         } catch (Exception suppressed) {
             Miapi.LOGGER.warn("Couldnt retrieve Miapi Permissions");
-            return new ArrayList<>();
+            return List.of("broken");
         }
     }
 

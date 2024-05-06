@@ -241,7 +241,7 @@ public class CraftAction {
     private ItemStack craft() {
         ItemStack craftingStack = old.copy();
 
-        if (!old.hasNbt() || !(old.getOrCreateNbt().contains(ItemModule.MODULE_KEY) || old.getOrCreateNbt().contains(NBT_MODULE_KEY))) {
+        if (!old.hasNbt() || !(old.hasNbt() && old.getOrCreateNbt().contains(ItemModule.MODULE_KEY) || (old.hasNbt() && old.getOrCreateNbt().contains(NBT_MODULE_KEY)))) {
             Exception exception = new IllegalArgumentException();
             Miapi.LOGGER.error("old Item has no Modules - something went very wrong", exception);
             Miapi.LOGGER.error(old.toString());

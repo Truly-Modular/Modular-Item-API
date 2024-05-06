@@ -4,7 +4,7 @@
     "package": "smartin.miapi.mixin",
     "compatibilityLevel": "JAVA_17",
     "mixins": [
-        "AnvilScreenHandlerMixin",
+        "CraftingResultInventorMixin",
         "ApoliStackPowerMixin",
         "ArcheryHookMixin",
         "AxeItemAccessor",

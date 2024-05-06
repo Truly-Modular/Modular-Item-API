@@ -99,7 +99,7 @@ public class ModularItemCache {
     @Nullable
     public static UUID getUUIDFor(ItemStack stack) {
         try {
-            if (stack.getItem() instanceof VisualModularItem) {
+            if (stack.getItem() instanceof VisualModularItem && stack.hasNbt()) {
                 return nbtCache.get(stack.getOrCreateNbt());
             }
             return null;
@@ -119,7 +119,7 @@ public class ModularItemCache {
     }
 
     public static void clearUUIDFor(ItemStack stack) {
-        if (stack.getItem() instanceof VisualModularItem) {
+        if (stack.getItem() instanceof VisualModularItem && stack.hasNbt()) {
             nbtCache.invalidate(stack.getOrCreateNbt());
             UUID uuid = getUUIDFor(stack);
             cache.invalidate(uuid);
@@ -127,15 +127,20 @@ public class ModularItemCache {
     }
 
     protected static Cache find(ItemStack stack) {
-        UUID lookUpUUId = null;//lookUpTable.get(stack);
         //because i cant copy the Itemstack and the cache needs to refresh properly the check has been moved to nbt only.
-        lookUpUUId = getUUIDFor(stack);
+        UUID lookUpUUId = getUUIDFor(stack);
         if (lookUpUUId == null) {
             lookUpUUId = getMissingUUID();
         }
         UUID uuid = lookUpUUId;
         try {
-            return cache.get(lookUpUUId, () -> new Cache(uuid, stack));
+            Cache cacheEntry = cache.get(lookUpUUId, () -> new Cache(uuid, stack));
+            if(cacheEntry.stack.equals(stack)){
+                return cacheEntry;
+            }else{
+                UUID newUUID = getMissingUUID();
+                return cache.get(newUUID, () -> new Cache(newUUID, stack));
+            }
         } catch (ExecutionException ignored) {
             UUID uuid1 = getMissingUUID();
             Cache cache1 = new Cache(uuid1, stack);

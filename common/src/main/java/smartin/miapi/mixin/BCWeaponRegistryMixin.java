@@ -21,7 +21,7 @@ public class BCWeaponRegistryMixin {
             remap = true,
             require = -1)
     private static void miapi$getAttributes(ItemStack itemStack, CallbackInfoReturnable<WeaponAttributes> cir) {
-        if (itemStack.getItem() instanceof ModularItem && !itemStack.getOrCreateNbt().contains("weapon_attributes")) {
+        if (itemStack.getItem() instanceof ModularItem && itemStack.hasNbt() && !itemStack.getOrCreateNbt().contains("weapon_attributes")) {
             WeaponAttributes attributes = BetterCombatHelper.getAttributes(itemStack);
             if (attributes != null) {
                 cir.setReturnValue(attributes);

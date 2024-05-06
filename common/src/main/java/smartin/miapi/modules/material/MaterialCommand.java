@@ -1,4 +1,4 @@
-package smartin.miapi.modules.material.palette;
+package smartin.miapi.modules.material;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.StringReader;
@@ -13,7 +13,6 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
-import smartin.miapi.modules.material.MaterialProperty;
 import smartin.miapi.network.Networking;
 
 import java.util.Collection;

@@ -7,6 +7,7 @@ import net.minecraft.item.ItemStack;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.craft.CraftAction;
 import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.util.CraftingProperty;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
@@ -46,13 +47,16 @@ public class ItemIdProperty implements CraftingProperty, ModuleProperty {
             String translationKey = data.getAsString();
             Item item = RegistryInventory.modularItems.get(translationKey);
             if (item != null) {
+                ModularItemCache.clearUUIDFor(itemStack);
                 ItemStack newStack = new ItemStack(item);
                 newStack.setNbt(itemStack.getNbt());
                 newStack.setCount(itemStack.getCount());
                 root.writeToItem(newStack);
+                ModularItemCache.clearUUIDFor(newStack);
                 return newStack;
             }
         }
+        ModularItemCache.clearUUIDFor(itemStack);
         return itemStack;
     }
 
@@ -78,10 +82,12 @@ public class ItemIdProperty implements CraftingProperty, ModuleProperty {
             String translationKey = data.getAsString();
             Item item = RegistryInventory.modularItems.get(translationKey);
             if (item != null) {
+                ModularItemCache.clearUUIDFor(old);
                 ItemStack newStack = new ItemStack(item);
                 newStack.setNbt(crafting.getNbt());
                 newStack.setCount(crafting.getCount());
                 root.writeToItem(newStack);
+                ModularItemCache.clearUUIDFor(newStack);
                 return newStack;
             }
         }

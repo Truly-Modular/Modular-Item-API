@@ -99,7 +99,13 @@ public class ModularBow extends BowItem implements ModularItem {
         PlayerEntity playerEntity = (PlayerEntity) user;
         boolean consumeArrow = !playerEntity.getAbilities().creativeMode;
         ItemStack projectileStack = playerEntity.getProjectileType(bowStack);
-        if (EnchantmentHelper.getLevel(Enchantments.INFINITY, bowStack) > 0 && (projectileStack.isEmpty() || (projectileStack.getItem() instanceof ArrowItem && projectileStack.getOrCreateNbt().isEmpty()))) {
+        if (
+                EnchantmentHelper.getLevel(Enchantments.INFINITY, bowStack) > 0 &&
+                (
+                        projectileStack.isEmpty() ||
+                        (projectileStack.getItem() instanceof ArrowItem &&
+                         projectileStack.hasNbt() &&
+                         projectileStack.getOrCreateNbt().isEmpty()))) {
             if (projectileStack.isEmpty() || projectileStack.getItem() == Items.ARROW) {
                 consumeArrow = false;
                 projectileStack = new ItemStack(Items.ARROW);
@@ -116,7 +122,7 @@ public class ModularBow extends BowItem implements ModularItem {
         if (pullProgress < 0.1) {
             return;
         }
-        shoot(bowStack, projectileStack, world, user, pullProgress, !consumeArrow, playerEntity.getPitch(), playerEntity.getYaw(), 0.0f);
+        shoot(bowStack, projectileStack, world, user, pullProgress, consumeArrow, playerEntity.getPitch(), playerEntity.getYaw(), 0.0f);
         if (consumeArrow) {
             projectileStack.decrement(1);
             if (projectileStack.isEmpty()) {
@@ -192,9 +198,11 @@ public class ModularBow extends BowItem implements ModularItem {
         if (MiapiConfig.INSTANCE.server.enchants.betterInfinity) {
             ItemStack itemStack = user.getStackInHand(hand);
             ItemStack projectileStack = user.getProjectileType(itemStack);
-            NbtCompound compound = itemStack.getOrCreateNbt();
-            compound = compound.getCompound("BOW_PROJECTILE");
-            projectileStack.writeNbt(compound);
+            if(itemStack.hasNbt()){
+                NbtCompound compound = itemStack.getOrCreateNbt();
+                compound = compound.getCompound("BOW_PROJECTILE");
+                projectileStack.writeNbt(compound);
+            }
             boolean bl = !projectileStack.isEmpty();
             int infinityLevel = EnchantmentHelper.getLevel(Enchantments.INFINITY, itemStack);
             if (user.getAbilities().creativeMode || bl || infinityLevel > 0) {

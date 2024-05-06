@@ -34,11 +34,12 @@ import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.effects.CryoStatusEffect;
 import smartin.miapi.entity.ItemProjectileRenderer;
 import smartin.miapi.modules.MiapiPermissions;
+import smartin.miapi.modules.cache.CacheCommands;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.material.Material;
 import smartin.miapi.modules.material.MaterialIcons;
 import smartin.miapi.modules.material.MaterialProperty;
-import smartin.miapi.modules.material.palette.MaterialCommand;
+import smartin.miapi.modules.material.MaterialCommand;
 import smartin.miapi.modules.material.palette.MaterialRenderControllers;
 import smartin.miapi.modules.properties.render.colorproviders.ColorProvider;
 import smartin.miapi.network.Networking;
@@ -88,6 +89,10 @@ public class MiapiClient {
                 }
             });
         }));
+        Networking.registerS2CPacket(CacheCommands.SEND_MATERIAL_CLIENT, (buf -> {
+            MinecraftClient.getInstance().execute(ModularItemCache::discardCache);
+        }));
+
         ClientReloadShadersEvent.EVENT.register((resourceFactory, shadersSink) -> {
             ModularItemCache.discardCache();
             if (MinecraftClient.getInstance().world != null) {

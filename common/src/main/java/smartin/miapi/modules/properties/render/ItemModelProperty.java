@@ -29,7 +29,7 @@ public class ItemModelProperty implements RenderProperty {
         MiapiItemModel.modelSuppliers.add((key, model, stack) -> {
             JsonElement element = model.getProperties().get(property);
             List<MiapiModel> models = new ArrayList<>();
-            if (element != null) {
+            if (element != null && stack.hasNbt()) {
                 element.getAsJsonArray().forEach(element1 -> {
                     ModelJson modelJson = Miapi.gson.fromJson(element1, ModelJson.class);
                     Supplier<ItemStack> stackSupplier = switch (modelJson.type) {

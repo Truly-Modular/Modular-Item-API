@@ -27,7 +27,7 @@ public class BannerModelProperty implements RenderProperty {
         MiapiItemModel.modelSuppliers.add((key, moduleInstance, stack) -> {
             JsonElement element = moduleInstance.getProperties().get(property);
             List<MiapiModel> models = new ArrayList<>();
-            if (element != null) {
+            if (element != null && stack.hasNbt()) {
                 element.getAsJsonArray().forEach(element1 -> {
                     ModelJson modelJson = Miapi.gson.fromJson(element1, ModelJson.class);
                     if ("parent".equals(modelJson.modelType)) {
