@@ -56,7 +56,16 @@ public class MiapiItemModel implements MiapiModel {
         render(modelType, stack, matrices, mode, tickDelta, vertexConsumers, null, light, overlay);
     }
 
-    public void render(String modelType, ItemStack stack, MatrixStack matrices, ModelTransformationMode mode, float tickDelta, VertexConsumerProvider vertexConsumers, LivingEntity entity, int light, int overlay) {
+    public void render(
+            String modelType,
+            ItemStack stack,
+            MatrixStack matrices,
+            ModelTransformationMode mode,
+            float tickDelta,
+            VertexConsumerProvider vertexConsumers,
+            LivingEntity entity,
+            int light,
+            int overlay) {
         if (ReloadEvents.isInReload()) return;
         MinecraftClient.getInstance().world.getProfiler().push("modular_item");
         matrices.push();

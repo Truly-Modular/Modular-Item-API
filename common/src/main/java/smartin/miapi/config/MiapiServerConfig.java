@@ -31,6 +31,11 @@ public class MiapiServerConfig {
         public boolean developmentMode = Platform.isDevelopmentEnvironment();
 
         @Comment("""
+                Truly Modular Logs more aggressivly""")
+        @AutoCodec.Name("verbose_logging")
+        public boolean verboseLogging = false;
+
+        @Comment("""
                 If this is on the Block Teleports effect of Truly Modular will block most teleports,
                 if false it will only block default Enderman,Chorus fruit and Ender Pearls""")
 
@@ -46,9 +51,12 @@ public class MiapiServerConfig {
         @AutoCodec.Name("full_break_modular_items")
         public boolean fullBreakModularItems = true;
 
-        @Comment("Whether a server reload should be automatically forced to fix Forge having buggy class loading")
-        @AutoCodec.Name("forge_reload_mode")
-        public boolean forgeReloadMode = Platform.isForge();
+        @Comment("""
+                Whether a miapi reload should be automatically forced on serverstart
+                This is enabled for compat reasons, sometimes scanning recipes and other stuff during a reload isnt stable
+                """)
+        @AutoCodec.Name("reload_on_server_start")
+        public boolean doubleReload = true;
     }
 
     @ConfigAutoCodec.ConfigClassMarker
@@ -72,8 +80,8 @@ public class MiapiServerConfig {
         public int stunResistanceLength = 20 * 30;
 
         @Comment("""
-            Attackspeed reduction for players while beeing stunned as a Player
-            requires restart to apply""")
+                Attackspeed reduction for players while beeing stunned as a Player
+                requires restart to apply""")
         @AutoCodec.Name("attack_speed_factor")
         public double attackSpeedFactor = 0.5;
     }

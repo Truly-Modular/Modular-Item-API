@@ -244,6 +244,9 @@ public class GeneratedMaterial implements Material {
                                         toRegister.add(generatedMaterial);
                                         generatedMaterial.setupWood();
                                         materials.put(generatedMaterial.getKey(), generatedMaterial);
+                                        if (verboseLogging()) {
+                                            Miapi.LOGGER.info("FOUND WOOD MATERIAL " + generatedMaterial.getKey());
+                                        }
                                     }
                                 }
                             } catch (Exception e) {
@@ -267,6 +270,9 @@ public class GeneratedMaterial implements Material {
                                         generatedMaterial.setupStone();
                                         stoneItems.add(item);
                                         materials.put(generatedMaterial.getKey(), generatedMaterial);
+                                        if (verboseLogging()) {
+                                            Miapi.LOGGER.info("FOUND STONE MATERIAL " + generatedMaterial.getKey());
+                                        }
                                     }
                                 }
                             } catch (Exception e) {
@@ -308,7 +314,7 @@ public class GeneratedMaterial implements Material {
     }
 
     public static boolean verboseLogging() {
-        return false;
+        return MiapiConfig.INSTANCE.server.other.verboseLogging;
     }
 
     public static boolean isValidItem(Item item) {
@@ -701,7 +707,10 @@ public class GeneratedMaterial implements Material {
 
     @Override
     public double getValueOfItem(ItemStack item) {
-        if (toolMaterial.getRepairIngredient().test(item)) {
+        if (mainIngredient.getItem().equals(item.getItem())) {
+            return 1;
+        }
+        if (isComplex && toolMaterial.getRepairIngredient().test(item)) {
             return 1;
         }
         return isComplex && item.getItem().equals(mainIngredient.getItem()) ? 1 : 0;

@@ -38,8 +38,13 @@ public abstract class ModelLoaderMixin {
     }
 
     private static boolean isModularItem(Identifier identifier) {
-        if (identifier != null && identifier.toString() != null) {
-            return RegistryInventory.modularItems.get(identifier.toString().replace("item/", "").replace("#inventory", "")) != null;
+        try{
+            //this try catch blcok is only here because forge sucks and doesnt report the correct issue
+            if (identifier != null && identifier.toString() != null) {
+                return RegistryInventory.modularItems.get(identifier.toString().replace("item/", "").replace("#inventory", "")) != null;
+            }
+        }catch (Exception surpressed){
+
         }
         return false;
     }

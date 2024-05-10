@@ -7,8 +7,7 @@
         "ItemAttributeModifierEventAccessor",
         "ItemAttributeModifierEventMixin",
         "ItemStackMixinHighPriority",
-        "LivingEntityMixin",
-        "RecipeManagerMixin"
+        "LivingEntityMixin"
     ],
     "client": [
         "ModelLoaderMixin",

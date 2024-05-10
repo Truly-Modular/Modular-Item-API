@@ -13,6 +13,7 @@ import smartin.miapi.modules.material.AllowedMaterial;
 import smartin.miapi.modules.material.Material;
 import smartin.miapi.modules.material.MaterialProperty;
 
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,7 +33,10 @@ public class HoverMaterialList extends InteractAbleWidget {
         super(x, y, width, height, Text.empty());
         materialKeys = AllowedMaterial.property.getAllowedKeys(module);
         for (String key : materialKeys) {
-            materials.put(key, AllowedMaterial.property.getMaterials(key));
+            materials.put(key, AllowedMaterial.property.getMaterials(key)
+                    .stream()
+                    .sorted(Comparator.comparing(m -> m.getTranslation().getString()))
+                    .toList());
         }
     }
 

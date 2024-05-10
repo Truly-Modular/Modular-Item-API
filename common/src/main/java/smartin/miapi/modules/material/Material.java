@@ -6,6 +6,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
 import org.jetbrains.annotations.Nullable;
@@ -56,6 +57,10 @@ public interface Material {
 
     default Material getMaterialFromIngredient(ItemStack ingredient){
         return this;
+    }
+
+    default Text getTranslation(){
+        return Text.translatable(getData("translation"));
     }
 
     @Environment(EnvType.CLIENT)

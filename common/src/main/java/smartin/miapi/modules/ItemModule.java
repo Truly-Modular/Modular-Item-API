@@ -7,6 +7,7 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import net.minecraft.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
+import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.item.modular.PropertyResolver;
 import smartin.miapi.item.modular.VisualModularItem;
@@ -267,7 +268,9 @@ public class ItemModule {
      */
     public static ModuleInstance getModules(ItemStack stack) {
         if(ReloadEvents.isInReload()){
-            LOGGER.warn("Item cannot have modules during a reload.");
+            if(MiapiConfig.INSTANCE.server.other.verboseLogging){
+                //LOGGER.info("Item cannot have modules during a reload.");
+            }
             return new ModuleInstance(new ItemModule("empty", new HashMap<>()));
         }
         if (stack.getItem() instanceof VisualModularItem && !ReloadEvents.isInReload() && (stack.getOrCreateNbt().get(MODULE_KEY) != null || stack.getOrCreateNbt().get(ItemModule.NBT_MODULE_KEY) != null)) {
@@ -660,6 +663,9 @@ public class ItemModule {
          * @param clearCache Determines whether to clear the cache after writing the module.
          */
         public void writeToItem(ItemStack stack, boolean clearCache) {
+            if (clearCache) {
+                ModularItemCache.clearUUIDFor(stack);
+            }
             stack.getOrCreateNbt().putString(ItemModule.NBT_MODULE_KEY, this.toString());
             if (stack.getOrCreateNbt().contains(MODULE_KEY)) {
                 //stack.getOrCreateNbt().remove(MODULE_KEY);

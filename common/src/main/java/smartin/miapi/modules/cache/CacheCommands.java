@@ -15,7 +15,9 @@ import smartin.miapi.modules.material.MaterialProperty;
 import smartin.miapi.network.Networking;
 
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A command related to materials- used to fetch debug data of active materials
@@ -49,13 +51,18 @@ public class CacheCommands {
 
     private static int executeMiapiReload(CommandContext<ServerCommandSource> context) {
         context.getSource().sendFeedback(() -> Text.literal("starting reload"), false);
+        return 1; // Return success
+    }
+
+    public static void triggerServerReload(){
         ReloadEvents.reloadCounter++;
-        ReloadEvents.START.fireEvent(true);
-        ReloadEvents.MAIN.fireEvent(true);
-        ReloadEvents.END.fireEvent(true);
+        Map<String, String> cacheDatapack = new LinkedHashMap<>(ReloadEvents.DATA_PACKS);
+        ReloadEvents.START.fireEvent(false);
+        ReloadEvents.DataPackLoader.trigger(cacheDatapack);
+        ReloadEvents.MAIN.fireEvent(false);
+        ReloadEvents.END.fireEvent(false);
         ReloadEvents.reloadCounter--;
         Miapi.server.getPlayerManager().getPlayerList().forEach(ReloadEvents::triggerReloadOnClient);
-        return 1; // Return success
     }
 
     static ArgumentType<String> getArgumentType() {

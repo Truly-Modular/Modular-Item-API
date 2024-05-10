@@ -23,6 +23,10 @@ public class ExampleModularStrackableItem extends Item implements ModularItem {
         modularItem = this;
     }
 
+    public ExampleModularStrackableItem(Item.Settings settings) {
+        super(settings);
+    }
+
     @Override
     public Text getName(ItemStack stack) {
         return DisplayNameProperty.getDisplayText(stack);

@@ -66,6 +66,8 @@ public class Miapi {
         StatActorType.setup();
 
         LifecycleEvent.SERVER_BEFORE_START.register(minecraftServer -> server = minecraftServer);
+        PlayerEvent.PLAYER_JOIN.register((player -> new Thread(() -> MiapiPermissions.getPerms(player)).start()));
+
         registerReloadHandler(ReloadEvents.MAIN, "modules", RegistryInventory.modules,
                 (isClient, path, data) -> ItemModule.loadFromData(path, data, isClient), -0.5f);
         registerReloadHandler(ReloadEvents.MAIN, "module_extensions", Collections.synchronizedMap(new LinkedHashMap<>()),
@@ -88,7 +90,6 @@ public class Miapi {
             Miapi.LOGGER.info("Loaded " + RegistryInventory.modules.getFlatMap().size() + " Modules");
             ModularItemCache.discardCache();
         });
-        PlayerEvent.PLAYER_JOIN.register((player -> new Thread(() -> MiapiPermissions.getPerms(player)).start()));
         PropertyResolver.register(new Identifier(Miapi.MOD_ID, "module"), (moduleInstance, oldMap) -> {
             Map<ModuleProperty, JsonElement> map = new ConcurrentHashMap<>();
             moduleInstance.module.getProperties()
@@ -144,6 +145,15 @@ public class Miapi {
             MaterialCommand.register(serverCommandSourceCommandDispatcher);
             CacheCommands.register(serverCommandSourceCommandDispatcher);
         });
+
+        LifecycleEvent.SERVER_STARTED.register((minecraftServer -> {
+            if (MiapiConfig.INSTANCE.server.other.doubleReload) {
+                Miapi.LOGGER.info("Truly Modular will now go onto reload twice.");
+                Miapi.LOGGER.info("This is done because for compat reasons and because forge sometimes breaks badly");
+                Miapi.LOGGER.info("This can be turned off in Miapis config.json");
+                CacheCommands.triggerServerReload();
+            }
+        }));
     }
 
     public static Identifier MiapiIdentifier(String string) {

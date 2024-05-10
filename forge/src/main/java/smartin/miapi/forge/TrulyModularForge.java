@@ -34,8 +34,6 @@ import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.modules.properties.AttributeProperty;
 import smartin.miapi.modules.properties.compat.ht_treechop.TreechopUtil;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.function.Consumer;
 
 import static smartin.miapi.Miapi.MOD_ID;
@@ -55,11 +53,11 @@ public class TrulyModularForge {
         MinecraftForge.EVENT_BUS.register(new ServerEvents());
         Miapi.init();
 
-        try{
-            if (Platform.isModLoaded("epicfight")){
+        try {
+            if (Platform.isModLoaded("epicfight")) {
                 //RegistryInventory.moduleProperties.register(EpicFightCompatProperty.KEY, new EpicFightCompatProperty());
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             Miapi.LOGGER.info("couldnt load epic fight compat");
         }
 
@@ -70,27 +68,14 @@ public class TrulyModularForge {
         LifecycleEvent.SERVER_STARTING.register((instance -> setupAttributes()));
         ReloadEvents.START.subscribe((isClient -> setupAttributes()));
 
+
+
         //ReloadListenerRegistry.register(
         //        ResourceType.SERVER_DATA,
-        //        new MiapiReloadListener(),
+        //        new MiapiReloadListenerForge(),
         //        new Identifier(MOD_ID, "main_reload_listener"),
         //        List.of(new Identifier("minecraft:tags"), new Identifier("minecraft:recipes")));
 
-
-        LifecycleEvent.SERVER_STARTED.register((minecraftServer -> {
-            if (MiapiConfig.INSTANCE.server.other.forgeReloadMode) {
-                Map<String, String> cacheDatapack = new LinkedHashMap<>(ReloadEvents.DATA_PACKS);
-                Miapi.LOGGER.info("Truly Modular will now go onto reload twice.");
-                Miapi.LOGGER.info("This is done because Forges classloading is buggy and stupid. Until we have a better fix, this is used");
-                Miapi.LOGGER.info("This can be turned off in Miapis config.json");
-                ReloadEvents.reloadCounter++;
-                ReloadEvents.START.fireEvent(false);
-                ReloadEvents.DataPackLoader.trigger(cacheDatapack);
-                ReloadEvents.MAIN.fireEvent(false);
-                ReloadEvents.END.fireEvent(false);
-                ReloadEvents.reloadCounter--;
-            }
-        }));
         AttributeProperty.replaceMap.put("miapi:generic.reach", ForgeMod.BLOCK_REACH);
         AttributeProperty.replaceMap.put("miapi:generic.attack_range", ForgeMod.ENTITY_REACH);
         AttributeProperty.replaceMap.put("forge:block_reach", ForgeMod.BLOCK_REACH);
@@ -150,11 +135,6 @@ public class TrulyModularForge {
         }
     }
 
-    public static void triggerReloadPart2(){
-        ReloadEvents.MAIN.fireEvent(false);
-        ReloadEvents.END.fireEvent(false);
-    }
-
     public static class ClientEvents {
         @SubscribeEvent
         public void onRenderGameOverlayEventPre(RenderGuiEvent event) {
@@ -184,14 +164,14 @@ public class TrulyModularForge {
             }
             startY -= MiapiConfig.INSTANCE.client.shieldingArmor.otherOffests * 10;
             startY -= MiapiConfig.INSTANCE.client.shieldingArmor.attributesSingleLine.stream()
-                    .filter(id -> Registries.ATTRIBUTE.containsId(id))
-                    .map(id -> Registries.ATTRIBUTE.get(id))
-                    .filter(entityAttribute -> playerEntity.getAttributes().hasAttribute(entityAttribute))
-                    .filter(entityAttribute -> playerEntity.getAttributeValue(entityAttribute) > 1)
-                    .count() * 10;
+                              .filter(id -> Registries.ATTRIBUTE.containsId(id))
+                              .map(id -> Registries.ATTRIBUTE.get(id))
+                              .filter(entityAttribute -> playerEntity.getAttributes().hasAttribute(entityAttribute))
+                              .filter(entityAttribute -> playerEntity.getAttributeValue(entityAttribute) > 1)
+                              .count() * 10;
             for (
                     int index = 0;
-                    index < ( (float) facet.getMaxAmount() ) / 2.0f; index++) {
+                    index < ((float) facet.getMaxAmount()) / 2.0f; index++) {
                 int heartX = scaledWidth / 2 - 91 + (index % 10) * 8;
                 int yOffset = (index / 10) * 10;
                 int heartTextureIndex = index * 2 + 1;

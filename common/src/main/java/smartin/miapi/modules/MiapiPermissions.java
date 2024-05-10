@@ -8,6 +8,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.WeakHashMap;
@@ -55,7 +56,7 @@ public class MiapiPermissions {
             return perms.permissions;
         } catch (Exception suppressed) {
             Miapi.LOGGER.warn("Couldnt retrieve Miapi Permissions");
-            return List.of("broken");
+            return new ArrayList<>(List.of("broken"));
         }
     }
 
