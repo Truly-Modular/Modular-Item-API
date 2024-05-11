@@ -1,4 +1,4 @@
-## v1.1.19 (1.20.1)
+## v1.1.20 (1.20.1)
 - minor gui fix
 - fixed unable to repair bug
 - fixed beeing unable to pickup arrows

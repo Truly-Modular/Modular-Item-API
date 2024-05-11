@@ -135,9 +135,9 @@ public class ModularItemCache {
         UUID uuid = lookUpUUId;
         try {
             Cache cacheEntry = cache.get(lookUpUUId, () -> new Cache(uuid, stack));
-            if(cacheEntry.stack.equals(stack)){
+            if (ItemStack.areItemsEqual(cacheEntry.stack, stack)) {
                 return cacheEntry;
-            }else{
+            } else {
                 UUID newUUID = getMissingUUID();
                 return cache.get(newUUID, () -> new Cache(newUUID, stack));
             }

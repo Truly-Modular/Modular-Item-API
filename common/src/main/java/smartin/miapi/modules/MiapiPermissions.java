@@ -20,9 +20,12 @@ public class MiapiPermissions {
     public static boolean hasPerm(PlayerEntity player, String perm) {
         if (MiapiConfig.INSTANCE.server.other.developmentMode) {
             return true;
+        }try{
+            List<String> perms = MiapiPermissions.getPerms(player);
+            return perms.contains(perm) || perms.contains("broken");
+        }catch (Exception e){
+            return true;
         }
-        List<String> perms = MiapiPermissions.getPerms(player);
-        return perms.contains(perm) || perms.contains("broken");
     }
 
     public static boolean hasPerm(PlayerEntity player, List<String> perms) {
