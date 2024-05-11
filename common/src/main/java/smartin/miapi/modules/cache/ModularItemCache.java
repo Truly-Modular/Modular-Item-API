@@ -100,7 +100,7 @@ public class ModularItemCache {
     public static UUID getUUIDFor(ItemStack stack) {
         try {
             if (stack.getItem() instanceof VisualModularItem && stack.hasNbt()) {
-                return nbtCache.get(stack.getOrCreateNbt());
+                return lookUpTable.getOrDefault(stack, nbtCache.get(stack.getOrCreateNbt()));
             }
             return null;
         } catch (ExecutionException e) {
@@ -112,6 +112,7 @@ public class ModularItemCache {
         if (stack.getItem() instanceof VisualModularItem) {
             if (stack.hasNbt()) {
                 nbtCache.put(stack.getOrCreateNbt().copy(), uuid);
+                lookUpTable.put(stack, uuid);
             }
         } else {
             Miapi.LOGGER.error("this shouldn't not be called");
