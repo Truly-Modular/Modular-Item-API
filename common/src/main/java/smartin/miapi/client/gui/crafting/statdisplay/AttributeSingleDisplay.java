@@ -4,7 +4,6 @@ import com.google.common.collect.Multimap;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.attribute.AttributeContainer;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.item.ItemStack;
@@ -140,7 +139,10 @@ public class AttributeSingleDisplay extends SingleStatDisplayDouble {
     public boolean hasValue(Collection<EntityAttributeModifier> list) {
         list = list.stream().filter(attribute -> attribute.getOperation().equals(operation)).toList();
         if (operation.equals(EntityAttributeModifier.Operation.ADDITION)) {
-            if (AttributeProperty.getActualValue(list, attribute.getDefaultValue()) != attribute.getDefaultValue()) {
+            double value = AttributeProperty.getActualValue(list, attribute.getDefaultValue());
+            if (
+                    value != attribute.getDefaultValue() && !Double.isNaN(value)
+            ) {
                 return true;
             }
         } else {

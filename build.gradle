@@ -109,6 +109,7 @@ tasks.register('rebuildArsenal') {
     }
 }
 
+
 tasks.register('rebuildArchery') {
     ext.projectName = "archery"
     def project = gradle.includedBuild("archery")
