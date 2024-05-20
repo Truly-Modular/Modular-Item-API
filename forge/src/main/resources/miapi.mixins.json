@@ -7,7 +7,24 @@
         "ItemAttributeModifierEventAccessor",
         "ItemAttributeModifierEventMixin",
         "ItemStackMixinHighPriority",
-        "LivingEntityMixin"
+        "LivingEntityMixin",
+        "item.ExampleModularItemMixin",
+        "item.ExampleModularItemStackAbleMixin",
+        "item.ModularArrowMixin",
+        "item.ModularAxeMixin",
+        "item.ModularBoomerangItemMixin",
+        "item.ModularBootsMixin",
+        "item.ModularBowMixin",
+        "item.ModularChestplateMixin",
+        "item.ModularCrossbowMixin",
+        "item.ModularElytraMixin",
+        "item.ModularHelmetMixin",
+        "item.ModularHoeMixin",
+        "item.ModularLeggingsMixin",
+        "item.ModularPickaxeMixin",
+        "item.ModularShovelMixin",
+        "item.ModularSwordMixin",
+        "item.ModularWeaponMixin"
     ],
     "client": [
         "ModelLoaderMixin",
@@ -16,5 +33,5 @@
     ],
     "injectors": {
         "defaultRequire": 1
-  }
+    }
 }

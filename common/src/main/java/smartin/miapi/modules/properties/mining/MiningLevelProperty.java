@@ -92,6 +92,18 @@ public class MiningLevelProperty implements ModuleProperty {
         return false;
     }
 
+    public static boolean isSuitable(ItemStack stack, String type) {
+        Map<String, Float> mergedMap = ModularItemCache.get(stack, KEY, new HashMap<>());
+        Float level = mergedMap.get(type);
+        if (level != null) {
+            for (Map.Entry<TagKey<Block>, Integer> miningLevelEntry : miningLevels.entrySet()) {
+                return miningLevelEntry.getValue() <= level;
+            }
+            return true;
+        }
+        return false;
+    }
+
     public static boolean canMine(BlockState state, World world, BlockPos pos, PlayerEntity miner) {
         ItemStack stack = miner.getActiveItem();
         if (ToolOrWeaponProperty.isWeapon(stack)) {

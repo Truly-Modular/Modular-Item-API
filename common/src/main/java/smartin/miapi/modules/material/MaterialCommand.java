@@ -9,6 +9,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.Suggestion;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
@@ -30,8 +31,31 @@ public class MaterialCommand {
                         .then(CommandManager.argument("material_id", StringArgumentType.word())
                                 .suggests(MATERIAL_SUGGESTIONS) // Specify suggestion provider
                                 .executes(MaterialCommand::executeMaterialCommand)));
+        LiteralArgumentBuilder<ServerCommandSource> getHand = CommandManager.literal("miapi")
+                .then(CommandManager.literal("get-hand-material")
+                        .executes(MaterialCommand::executeMaterialCommand));
 
-        dispatcher.register(literal);
+        dispatcher.register(getHand);
+    }
+
+    private static int getHandMaterial(CommandContext<ServerCommandSource> context) {
+        if (context.getSource().isExecutedByPlayer()) {
+            PlayerEntity player = context.getSource().getPlayer();
+            Material material = MaterialProperty.getMaterialFromIngredient(player.getMainHandStack());
+            if(material!=null){
+                player.sendMessage(Text.literal("Handheld Material " + material.getKey()));
+                PacketByteBuf buf = Networking.createBuffer();
+                buf.writeString(material.getKey());
+                Networking.sendS2C(SEND_MATERIAL_CLIENT, context.getSource().getPlayer(), buf);
+            }else{
+                player.sendMessage(Text.literal("Handheld Material " + material.getKey()));
+            }
+            return 1; // Return success
+        } else {
+            // Material ID is not valid
+            context.getSource().sendError(Text.literal("Handheld Item is no Material"));
+            return 0; // Return failure
+        }
     }
 
     private static int executeMaterialCommand(CommandContext<ServerCommandSource> context) {
