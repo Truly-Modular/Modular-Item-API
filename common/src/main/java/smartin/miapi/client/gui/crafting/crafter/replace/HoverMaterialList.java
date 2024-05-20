@@ -63,7 +63,7 @@ public class HoverMaterialList extends InteractAbleWidget {
             int sizeDetailList = 0;
             if (materialList.size() > 1) {
                 for (Material m : materialList) {
-                    Text material = getTranslation(m.getKey());
+                    Text material = m.getTranslation();
                     sizeDetailList = Math.max(MinecraftClient.getInstance().textRenderer.getWidth(material), sizeDetailList);
                 }
             }

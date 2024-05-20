@@ -74,6 +74,11 @@ public class GeneratedMaterial implements Material {
             } else {
                 onReloadServer();
             }
+            materials.put(
+                    "nbt_runtime_material",
+                    new NBTMaterial(
+                            new JsonMaterial(new JsonObject(), isClient),
+                            new JsonObject(), isClient));
         }, -1);
         ReloadEvents.dataSyncerRegistry.register("generated_materials", new ReloadEvents.DataSyncer() {
             @Override

@@ -34,39 +34,26 @@ public class MaterialProperty implements ModuleProperty {
         StatResolver.registerResolver(KEY, new StatResolver.Resolver() {
             @Override
             public double resolveDouble(String data, ItemModule.ModuleInstance instance) {
-                JsonElement jsonData = instance.getKeyedProperties().get(KEY);
                 try {
-                    if (jsonData != null) {
-                        String materialKey = jsonData.getAsString();
-                        Material material = materials.get(materialKey);
-                        if (material != null) {
-                            return material.getDouble(data);
-                        }
+                    Material material = getMaterial(instance);
+                    if (material != null) {
+                        return material.getDouble(data);
                     }
                 } catch (Exception exception) {
-                    Miapi.LOGGER.warn("Error during Material Resolve");
-                    Miapi.LOGGER.error(exception.getMessage());
-                    exception.printStackTrace();
+                    Miapi.LOGGER.warn("Error during Material Resolve", exception);
                 }
                 return 0;
             }
 
             @Override
             public String resolveString(String data, ItemModule.ModuleInstance instance) {
-                JsonElement jsonData = instance.getProperties().get(property);
                 try {
-                    if (jsonData != null) {
-                        String materialKey = jsonData.getAsString();
-                        Material material = materials.get(materialKey);
-                        if (material != null) {
-                            return material.getData(data);
-                        } else {
-                            Miapi.LOGGER.warn("Material " + materialKey + " not found");
-                        }
+                    Material material = getMaterial(instance);
+                    if (material != null) {
+                        return material.getData(data);
                     }
                 } catch (Exception exception) {
-                    Miapi.LOGGER.warn("Error during Material Resolve");
-                    exception.printStackTrace();
+                    Miapi.LOGGER.warn("Error during Material Resolve", exception);
                 }
                 return "";
             }
@@ -80,6 +67,7 @@ public class MaterialProperty implements ModuleProperty {
             }
             materials.put(material.getKey(), material);
         }, -2f);
+
 
         Miapi.registerReloadHandler(ReloadEvents.MAIN, "material_extensions", (isClient) -> {
 

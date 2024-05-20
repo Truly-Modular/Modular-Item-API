@@ -46,10 +46,6 @@ public class MaterialProperties implements ModuleProperty {
         });
     }
 
-    public static void getMap(Material material) {
-
-    }
-
     @Override
     public boolean load(String moduleKey, JsonElement data) throws Exception {
         return true;
