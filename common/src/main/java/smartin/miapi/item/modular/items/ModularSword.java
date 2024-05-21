@@ -12,12 +12,14 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.item.SwordItem;
+import net.minecraft.item.ToolMaterial;
 import net.minecraft.text.Text;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
+import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
 import smartin.miapi.modules.properties.*;
@@ -25,7 +27,8 @@ import smartin.miapi.modules.properties.mining.MiningLevelProperty;
 
 import java.util.List;
 
-public class ModularSword extends SwordItem implements ModularItem {
+public class ModularSword extends SwordItem implements ModularItem, ModularSetableToolMaterial {
+    public ToolMaterial currentFakeToolmaterial = ModularToolMaterial.toolMaterial;
 
     public ModularSword(Settings settings) {
         super(new ModularToolMaterial(), 5, 5, settings.maxCount(1).maxDamage(500));
@@ -33,6 +36,18 @@ public class ModularSword extends SwordItem implements ModularItem {
 
     public ModularSword() {
         super(new ModularToolMaterial(), 5, 5, new Settings().maxCount(1).maxDamage(500).rarity(Rarity.COMMON));
+    }
+
+    public ToolMaterial getMaterial() {
+        if(MiapiConfig.INSTANCE.server.other.looseToolMaterial){
+            return currentFakeToolmaterial;
+        }
+        return super.getMaterial();
+    }
+
+    @Override
+    public void setToolMaterial(ToolMaterial toolMaterial){
+        this.currentFakeToolmaterial = toolMaterial;
     }
 
     public Multimap<EntityAttribute, EntityAttributeModifier> getAttributeModifiers(EquipmentSlot slot) {

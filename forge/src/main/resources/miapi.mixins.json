@@ -8,6 +8,7 @@
         "ItemAttributeModifierEventMixin",
         "ItemStackMixinHighPriority",
         "LivingEntityMixin",
+        "compat.ItemStackUtilMixin",
         "item.ExampleModularItemMixin",
         "item.ExampleModularItemStackAbleMixin",
         "item.ModularArrowMixin",

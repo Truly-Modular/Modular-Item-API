@@ -19,6 +19,7 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.VisualModularItem;
+import smartin.miapi.item.modular.items.ModularSetableToolMaterial;
 import smartin.miapi.modules.edit_options.ReplaceOption;
 import smartin.miapi.modules.properties.FakeItemTagProperty;
 import smartin.miapi.modules.properties.HideFlagsProperty;
@@ -31,6 +32,7 @@ import java.util.function.Consumer;
 
 @Mixin(value = ItemStack.class, priority = 2000)
 abstract class ItemStackMixin {
+
     @Inject(
             method = "getHideFlags()I",
             at = @At("TAIL"),
@@ -38,6 +40,16 @@ abstract class ItemStackMixin {
     private void miapi$adjustGetHideFlags(CallbackInfoReturnable<Integer> cir) {
         ItemStack stack = (ItemStack) (Object) this;
         cir.setReturnValue(HideFlagsProperty.getHideProperty(cir.getReturnValue(), stack));
+    }
+
+    @Inject(
+            method = "getItem",
+            at = @At("RETURN"))
+    private void miapi$getItemCallback(CallbackInfoReturnable<Item> cir) {
+        ItemStack stack = (ItemStack) (Object) this;
+        if (cir.getReturnValue() instanceof ModularSetableToolMaterial toolMaterial) {
+            //toolMaterial.setToolMaterial(stack);
+        }
     }
 
     @Inject(method = "getMaxDamage", at = @At("HEAD"), cancellable = true)

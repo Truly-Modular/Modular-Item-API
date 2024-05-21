@@ -43,6 +43,14 @@ public class MiapiServerConfig {
         public boolean blockAllTeleportsEffect = true;
 
         @Comment("""
+                This allows Truly Modular to dynamicly reset its Toolmaterial
+                Some mods might not like dynamic Toolmaterials and cause issues with it,
+                but overall it should increase compatibility and help with Tooldetection""")
+
+        @AutoCodec.Name("loose_tool_material")
+        public boolean looseToolMaterial = true;
+
+        @Comment("""
                 If this is true modular items will fully break.
                 If set to false Modular Item will instead to go into a Broken state
                 In this broken state they cant do anything but repaired.

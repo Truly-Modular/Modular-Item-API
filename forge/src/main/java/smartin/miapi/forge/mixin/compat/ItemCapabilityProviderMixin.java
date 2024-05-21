@@ -1,4 +1,4 @@
-package smartin.miapi.forge.mixin;
+package smartin.miapi.forge.mixin.compat;
 
 import net.minecraft.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;

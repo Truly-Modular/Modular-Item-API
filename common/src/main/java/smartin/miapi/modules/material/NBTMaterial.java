@@ -11,6 +11,7 @@ import smartin.miapi.Miapi;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.Optional;
 
@@ -21,12 +22,23 @@ public class NBTMaterial extends JsonMaterial {
     public static String KEY = "nbt_runtime_material";
     public JsonObject overWrite;
     public Material parent;
+    public double cost = 1.0;
 
     public NBTMaterial(Material parent, JsonObject overwrite, boolean isClient) {
         super(parent.getDebugJson().deepCopy(), isClient);
         this.parent = parent;
         this.overWrite = overwrite;
         this.mergeJson(overwrite, isClient);
+    }
+
+    public void mergeJson(JsonElement rootElement, boolean isClient) {
+        if (rootElement.isJsonObject()) {
+            JsonObject object = rootElement.getAsJsonObject();
+            if (object.has("cost")) {
+                cost = ModuleProperty.getDouble(object, "cost", null, cost);
+            }
+        }
+        super.mergeJson(rootElement, isClient);
     }
 
     @Override

@@ -36,8 +36,8 @@ public interface ModuleProperty {
     boolean load(String moduleKey, JsonElement data) throws Exception;
 
 
-    default boolean load(String moduleKey, JsonElement data, boolean isClient) throws Exception{
-        return load(moduleKey,data);
+    default boolean load(String moduleKey, JsonElement data, boolean isClient) throws Exception {
+        return load(moduleKey, data);
     }
 
 
@@ -169,6 +169,11 @@ public interface ModuleProperty {
         if (object != null) {
             JsonElement json = object.get(element);
             if (json != null && !json.isJsonNull()) {
+                if (moduleInstance == null) {
+                    if(json.isJsonPrimitive()){
+                        return json.getAsDouble();
+                    }
+                }
                 return StatResolver.resolveDouble(json, moduleInstance);
             }
         }

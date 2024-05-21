@@ -33,8 +33,8 @@ public class MaterialCommand {
                                 .executes(MaterialCommand::executeMaterialCommand)));
         LiteralArgumentBuilder<ServerCommandSource> getHand = CommandManager.literal("miapi")
                 .then(CommandManager.literal("get-hand-material")
-                        .executes(MaterialCommand::executeMaterialCommand));
-
+                        .executes(MaterialCommand::getHandMaterial));
+        dispatcher.register(literal);
         dispatcher.register(getHand);
     }
 
@@ -42,13 +42,13 @@ public class MaterialCommand {
         if (context.getSource().isExecutedByPlayer()) {
             PlayerEntity player = context.getSource().getPlayer();
             Material material = MaterialProperty.getMaterialFromIngredient(player.getMainHandStack());
-            if(material!=null){
+            if (material != null) {
                 player.sendMessage(Text.literal("Handheld Material " + material.getKey()));
                 PacketByteBuf buf = Networking.createBuffer();
                 buf.writeString(material.getKey());
                 Networking.sendS2C(SEND_MATERIAL_CLIENT, context.getSource().getPlayer(), buf);
-            }else{
-                player.sendMessage(Text.literal("Handheld Material " + material.getKey()));
+            } else {
+                player.sendMessage(Text.literal("Handheld Item is no Material"));
             }
             return 1; // Return success
         } else {

@@ -5,9 +5,13 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.SwordItem;
+import net.minecraft.item.ToolMaterial;
+import net.minecraft.recipe.Ingredient;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.math.BlockPos;
@@ -17,14 +21,14 @@ import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.AttributeProperty;
+import smartin.miapi.modules.properties.DurabilityProperty;
+import smartin.miapi.modules.properties.EnchantAbilityProperty;
 import smartin.miapi.modules.properties.ToolOrWeaponProperty;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.security.InvalidParameterException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * The Property controls mining speed and levels of tools
@@ -34,6 +38,7 @@ public class MiningLevelProperty implements ModuleProperty {
     public static final String KEY = "mining_level";
     public static Map<String, TagKey<Block>> miningCapabilities = new HashMap<>();
     public static Map<TagKey<Block>, Integer> miningLevels = new HashMap<>();
+    public static Item lastFakedItem;
 
     public MiningLevelProperty() {
         property = this;
@@ -74,6 +79,58 @@ public class MiningLevelProperty implements ModuleProperty {
         return 0;
     }
 
+    public static int getMiningLevelHighest(ItemStack stack) {
+        int highest = 0;
+        highest = Math.max(getMiningLevel("axe", stack), highest);
+        highest = Math.max(getMiningLevel("pickaxe", stack), highest);
+        highest = Math.max(getMiningLevel("shovel", stack), highest);
+        highest = Math.max(getMiningLevel("hoe", stack), highest);
+        return highest;
+    }
+
+    /**
+     * we cant use the normal caching since we need to avoid an Itemstack.getItem() call here
+     */
+    static Map<ItemStack, ToolMaterial> toolMaterialLookup = Collections.synchronizedMap(new WeakHashMap<>());
+
+    public static ToolMaterial getFakeToolMaterial(ItemStack itemStack) {
+        return toolMaterialLookup.getOrDefault(itemStack, getFakeToolMaterialCache(itemStack));
+    }
+
+    private static ToolMaterial getFakeToolMaterialCache(ItemStack itemStack) {
+        return new ToolMaterial() {
+            @Override
+            public int getDurability() {
+                return (int) DurabilityProperty.property.getValueSafe(itemStack);
+            }
+
+            @Override
+            public float getMiningSpeedMultiplier() {
+                return getHighestMiningSpeedMultiplier(itemStack);
+            }
+
+            @Override
+            public float getAttackDamage() {
+                return (float) AttributeProperty.getActualValue(itemStack, EquipmentSlot.MAINHAND, EntityAttributes.GENERIC_ATTACK_DAMAGE, 1);
+            }
+
+            @Override
+            public int getMiningLevel() {
+                return getMiningLevelHighest(itemStack);
+            }
+
+            @Override
+            public int getEnchantability() {
+                return (int) EnchantAbilityProperty.getEnchantAbility(itemStack);
+            }
+
+            @Override
+            public Ingredient getRepairIngredient() {
+                return Ingredient.EMPTY;
+            }
+        };
+    }
+
     public static boolean isSuitable(ItemStack stack, BlockState state) {
         Map<String, Float> mergedMap = ModularItemCache.get(stack, KEY, new HashMap<>());
         for (Map.Entry<String, TagKey<Block>> entry : miningCapabilities.entrySet()) {
@@ -93,12 +150,10 @@ public class MiningLevelProperty implements ModuleProperty {
     }
 
     public static boolean isSuitable(ItemStack stack, String type) {
-        Map<String, Float> mergedMap = ModularItemCache.get(stack, KEY, new HashMap<>());
-        Float level = mergedMap.get(type);
-        if (level != null) {
-            for (Map.Entry<TagKey<Block>, Integer> miningLevelEntry : miningLevels.entrySet()) {
-                return miningLevelEntry.getValue() <= level;
-            }
+        if (getMiningLevel(type, stack) > 0) {
+            return true;
+        }
+        if (getMiningSpeedMultiplier(stack, type) > 1) {
             return true;
         }
         return false;
@@ -110,6 +165,26 @@ public class MiningLevelProperty implements ModuleProperty {
             return !miner.isCreative();
         }
         return true;
+    }
+
+    public static float getMiningSpeedMultiplier(ItemStack stack, String type) {
+        switch (type) {
+            case "axe": {
+                return (float) AttributeProperty.getActualValue(stack, EquipmentSlot.MAINHAND, AttributeRegistry.MINING_SPEED_AXE, 1);
+            }
+            case "pickaxe": {
+                return (float) AttributeProperty.getActualValue(stack, EquipmentSlot.MAINHAND, AttributeRegistry.MINING_SPEED_PICKAXE, 1);
+            }
+            case "shovel": {
+                return (float) AttributeProperty.getActualValue(stack, EquipmentSlot.MAINHAND, AttributeRegistry.MINING_SPEED_SHOVEL, 1);
+            }
+            case "hoe": {
+                return (float) AttributeProperty.getActualValue(stack, EquipmentSlot.MAINHAND, AttributeRegistry.MINING_SPEED_HOE, 1);
+            }
+            default: {
+                return 1;
+            }
+        }
     }
 
     public static float getMiningSpeedMultiplier(ItemStack stack, BlockState state) {
@@ -137,6 +212,15 @@ public class MiningLevelProperty implements ModuleProperty {
             }
         }
         return 1.0f;
+    }
+
+    public static float getHighestMiningSpeedMultiplier(ItemStack stack) {
+        float start = 0.0f;
+        start = (float) Math.max(start, AttributeProperty.getActualValue(stack, EquipmentSlot.MAINHAND, AttributeRegistry.MINING_SPEED_PICKAXE, 1));
+        start = (float) Math.max(start, AttributeProperty.getActualValue(stack, EquipmentSlot.MAINHAND, AttributeRegistry.MINING_SPEED_AXE, 1));
+        start = (float) Math.max(start, AttributeProperty.getActualValue(stack, EquipmentSlot.MAINHAND, AttributeRegistry.MINING_SPEED_SHOVEL, 1));
+        start = (float) Math.max(start, AttributeProperty.getActualValue(stack, EquipmentSlot.MAINHAND, AttributeRegistry.MINING_SPEED_HOE, 1));
+        return start;
     }
 
     @Override
