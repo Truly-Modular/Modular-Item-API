@@ -25,6 +25,9 @@ public final class MiapiProjectileEvents {
     public static final PrioritizedEvent<ItemProjectileDataTracker> MODULAR_PROJECTILE_DATA_TRACKER_SET = PrioritizedEvent.createEventResult();
     public static final PrioritizedEvent<PlayerPickupEvent> MODULAR_PROJECTILE_PICK_UP = PrioritizedEvent.createEventResult();
 
+    public static final PrioritizedEvent<CrossbowWillShoot> MODULAR_CROSSBOW_PRE_SHOT = PrioritizedEvent.createEventResult();
+    public static final PrioritizedEvent<CrossbowWillShoot> MODULAR_CROSSBOW_POST_SHOT = PrioritizedEvent.createEventResult();
+
     public static final PrioritizedEvent<ModularBowShot> MODULAR_BOW_SHOT = PrioritizedEvent.createEventResult();
     public static final PrioritizedEvent<ModularBowShot> MODULAR_BOW_POST_SHOT = PrioritizedEvent.createEventResult();
 
@@ -35,7 +38,7 @@ public final class MiapiProjectileEvents {
         public DamageSource damageSource;
         public float damage;
 
-        public ModularProjectileEntityHitEvent(EntityHitResult entityHitResult, ItemProjectileEntity projectile,@Nullable DamageSource damageSource, float damage) {
+        public ModularProjectileEntityHitEvent(EntityHitResult entityHitResult, ItemProjectileEntity projectile, @Nullable DamageSource damageSource, float damage) {
             this.entityHitResult = entityHitResult;
             this.projectile = projectile;
             this.damageSource = damageSource;
@@ -63,6 +66,10 @@ public final class MiapiProjectileEvents {
             this.bowStack = bowStack;
             this.shooter = shooter;
         }
+    }
+
+    public interface CrossbowWillShoot {
+        EventResult shoot(LivingEntity player, ItemStack crossbow);
     }
 
     public interface ItemProjectileCompound {

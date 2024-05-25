@@ -57,8 +57,6 @@ dependencies {
     modApi(include("com.redpxnda.nucleus:nucleus-pose-forge:${rootProject.minecraft_version}+${rootProject.nucleus_pose_version}"))
     modApi(include("com.redpxnda.nucleus:nucleus-facet-forge:${rootProject.minecraft_version}+${rootProject.nucleus_facet_version}"))
 
-    modCompileOnly "maven.modrinth:treechop:${rootProject.forge_treechop_version}"
-
     modLocalRuntime files('libs/arsenal-local.jar')
     modLocalRuntime files('libs/archery-local.jar')
     modLocalRuntime files('libs/armory-local.jar')
@@ -70,6 +68,8 @@ dependencies {
     }
 
     modCompileOnly "curse.maven:minecolonies-245506:5355518"
+    modCompileOnly "curse.maven:apotheosis-313970:5317303"
+    modCompileOnly "maven.modrinth:treechop:${rootProject.forge_treechop_version}"
 
     //modApi files('libs/apoli-forge-1.20.1-2.9.0.4-all.jar')
 

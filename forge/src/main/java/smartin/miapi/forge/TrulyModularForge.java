@@ -33,6 +33,7 @@ import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.entity.ShieldingArmorFacet;
 import smartin.miapi.events.MiapiEvents;
+import smartin.miapi.forge.compat.ApotheosisCompat;
 import smartin.miapi.modules.properties.AttributeProperty;
 import smartin.miapi.modules.properties.compat.ht_treechop.TreechopUtil;
 import smartin.miapi.registries.RegistryInventory;
@@ -62,6 +63,13 @@ public class TrulyModularForge {
             }
         } catch (Exception e) {
             Miapi.LOGGER.info("couldnt load epic fight compat");
+        }
+        if (Platform.isModLoaded("apotheosis")) {
+            try {
+                ApotheosisCompat.setup();
+            } catch (RuntimeException surpressed) {
+                Miapi.LOGGER.warn("couldnt load Apotheosis compat", surpressed);
+            }
         }
 
         //if (Platform.isModLoaded("epicfight"))

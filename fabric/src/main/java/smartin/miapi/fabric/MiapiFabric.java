@@ -16,6 +16,7 @@ import smartin.miapi.Environment;
 import smartin.miapi.Miapi;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.events.MiapiEvents;
+import smartin.miapi.fabric.compat.ZenithCompat;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.modules.properties.AttributeProperty;
 import smartin.miapi.registries.RegistryInventory;
@@ -82,5 +83,13 @@ public class MiapiFabric implements ModInitializer {
         AttributeProperty.replaceMap.put("forge:entity_reach", () -> AttributeRegistry.ATTACK_RANGE);
         AttributeProperty.replaceMap.put("reach-entity-attributes:reach", () -> AttributeRegistry.REACH);
         AttributeProperty.replaceMap.put("reach-entity-attributes:attack_range", () -> AttributeRegistry.ATTACK_RANGE);
+
+        if (Platform.isModLoaded("zenith")) {
+            try {
+                ZenithCompat.setup();
+            } catch (RuntimeException surpressed) {
+                Miapi.LOGGER.warn("couldnt load Zenith compat", surpressed);
+            }
+        }
     }
 }

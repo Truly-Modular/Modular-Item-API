@@ -129,6 +129,7 @@ dependencies {
     //modLocalRuntime 'dev.kosmx.player-anim:player-animation-lib-fabric:1.0.2-rc1+1.20'
 
     modLocalRuntime "maven.modrinth:obsidian-equipment:kwMkZlFD"
+    modCompileOnly "maven.modrinth:zenith:1.1.9-1.20.1"
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }

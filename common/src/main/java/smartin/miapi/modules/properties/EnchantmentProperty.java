@@ -75,10 +75,12 @@ public class EnchantmentProperty implements CraftingProperty, ModuleProperty {
         addToReplaceMap("miapi:leggings", EnchantmentTarget.ARMOR_LEGS);
         addToReplaceMap("miapi:boots", EnchantmentTarget.ARMOR_FEET);
         addToReplaceMap("miapi:trident", EnchantmentTarget.TRIDENT);
+        addDefault("miapi:weapon", new String[]{"miapi:basic", "miapi:tool"}, Items.WOODEN_SWORD, Items.STONE_SWORD, Items.GOLDEN_SWORD, Items.DIAMOND_SWORD, Items.NETHERITE_SWORD);
         addDefault("miapi:axe", new String[]{"miapi:basic", "miapi:tool"}, Items.WOODEN_AXE, Items.STONE_AXE, Items.GOLDEN_AXE, Items.DIAMOND_AXE, Items.NETHERITE_AXE);
         addDefault("miapi:pickaxe", new String[]{"miapi:basic", "miapi:tool"}, Items.WOODEN_PICKAXE, Items.STONE_PICKAXE, Items.GOLDEN_PICKAXE, Items.DIAMOND_PICKAXE, Items.NETHERITE_PICKAXE);
         addDefault("miapi:shovel", new String[]{"miapi:basic", "miapi:tool"}, Items.WOODEN_SHOVEL, Items.STONE_SHOVEL, Items.GOLDEN_SHOVEL, Items.DIAMOND_SHOVEL, Items.NETHERITE_SHOVEL);
         addDefault("miapi:hoe", new String[]{"miapi:basic", "miapi:tool"}, Items.WOODEN_HOE, Items.STONE_HOE, Items.GOLDEN_HOE, Items.DIAMOND_HOE, Items.NETHERITE_HOE);
+        addDefault("miapi:edged", new String[]{"miapi:basic", "miapi:tool"}, Items.WOODEN_SWORD, Items.STONE_SWORD, Items.GOLDEN_SWORD, Items.DIAMOND_SWORD, Items.NETHERITE_SWORD, Items.WOODEN_AXE, Items.STONE_AXE, Items.GOLDEN_AXE, Items.DIAMOND_AXE, Items.NETHERITE_AXE);
     }
 
     public static void addDefault(String addToID, String[] removeIDs, Item... items) {

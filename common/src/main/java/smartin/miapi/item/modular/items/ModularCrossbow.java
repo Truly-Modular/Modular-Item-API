@@ -34,6 +34,7 @@ import org.joml.Vector3f;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.client.model.ModularModelPredicateProvider;
 import smartin.miapi.entity.ItemProjectileEntity;
+import smartin.miapi.events.MiapiProjectileEvents;
 import smartin.miapi.item.modular.CustomDrawTimeItem;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.modules.properties.*;
@@ -235,8 +236,18 @@ public class ModularCrossbow extends CrossbowItem implements ModularItem, Custom
             crossbow.damage(bl ? 3 : 1, shooter, (e) -> {
                 e.sendToolBreakStatus(hand);
             });
+            if (projectileEntity instanceof PersistentProjectileEntity persistentProjectileEntity) {
+                MiapiProjectileEvents.ModularBowShotEvent event = new MiapiProjectileEvents.ModularBowShotEvent(persistentProjectileEntity, crossbow, shooter);
+                if (MiapiProjectileEvents.MODULAR_BOW_SHOT.invoker().call(event).interruptsFurtherEvaluation()) {
+                    return;
+                }
+            }
             world.spawnEntity(projectileEntity);
             world.playSound(null, shooter.getX(), shooter.getY(), shooter.getZ(), SoundEvents.ITEM_CROSSBOW_SHOOT, SoundCategory.PLAYERS, 1.0F, soundPitch);
+            if (projectileEntity instanceof PersistentProjectileEntity persistentProjectileEntity) {
+                MiapiProjectileEvents.ModularBowShotEvent event = new MiapiProjectileEvents.ModularBowShotEvent(persistentProjectileEntity, crossbow, shooter);
+                MiapiProjectileEvents.MODULAR_BOW_POST_SHOT.invoker().call(event);
+            }
         }
     }
 
@@ -301,13 +312,18 @@ public class ModularCrossbow extends CrossbowItem implements ModularItem, Custom
         }
 
         clearProjectiles(stack);
+        setCharged(stack, false);
+        MiapiProjectileEvents.MODULAR_CROSSBOW_POST_SHOT.invoker().shoot(entity, stack);
     }
 
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         ItemStack itemStack = user.getStackInHand(hand);
         if (isCharged(itemStack)) {
+            //firedArrow
+            if (MiapiProjectileEvents.MODULAR_CROSSBOW_PRE_SHOT.invoker().shoot(user, itemStack).interruptsFurtherEvaluation()) {
+                return TypedActionResult.fail(itemStack);
+            }
             shootAll(world, user, hand, itemStack, getSpeed(itemStack), 1.0F);
-            setCharged(itemStack, false);
             itemStack.damage(1, user, p -> p.sendToolBreakStatus(user.getActiveHand()));
             return TypedActionResult.consume(itemStack);
         } else if (!user.getProjectileType(itemStack).isEmpty()) {
