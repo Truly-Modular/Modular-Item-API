@@ -61,13 +61,10 @@ public class SkinOptions implements EditOption {
 
     public static void load(String data) {
         JsonObject element = Miapi.gson.fromJson(data, JsonObject.class);
-        Skin skin = Skin.fromJson(element);
-
-        Map<String, Skin> skinMap = skins.computeIfAbsent(skin.module, (module) -> {
-            return new HashMap<>();
+        Skin.fromJson(element).forEach(skin -> {
+            Map<String, Skin> skinMap = skins.computeIfAbsent(skin.module, (module) -> new HashMap<>());
+            skinMap.put(skin.path, skin);
         });
-
-        skinMap.put(skin.path, skin);
     }
 
     public static void loadTabData(String data) {

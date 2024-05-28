@@ -201,6 +201,12 @@ public class StatListWidget extends InteractAbleWidget {
                 .setTranslationKey("bow_draw_time")
                 .inverseNumber(true)
                 .setFormat("##.##").build());
+        addStatDisplay(SinglePropertyStatDisplay
+                .builder(RapidfireCrossbowProperty.property)
+                .setMax(3)
+                .setFormat("##")
+                .setTranslationKey(RapidfireCrossbowProperty.KEY).build());
+
 
         addStatDisplay(SinglePropertyStatDisplay
                 .builder(DurabilityProperty.property)

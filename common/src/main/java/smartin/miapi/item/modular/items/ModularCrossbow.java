@@ -37,6 +37,7 @@ import smartin.miapi.entity.ItemProjectileEntity;
 import smartin.miapi.events.MiapiProjectileEvents;
 import smartin.miapi.item.modular.CustomDrawTimeItem;
 import smartin.miapi.item.modular.ModularItem;
+import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.*;
 
 import java.util.List;
@@ -145,19 +146,29 @@ public class ModularCrossbow extends CrossbowItem implements ModularItem, Custom
         int j = i == 0 ? 1 : 3;
         boolean isCreative = shooter instanceof PlayerEntity player && player.getAbilities().creativeMode;
         ItemStack itemStack = shooter.getProjectileType(crossbow);
-        ItemStack itemStack2 = itemStack.copy();
 
         for (int k = 0; k < j; ++k) {
             if (k > 0) {
-                itemStack = itemStack2.copy();
+                itemStack = itemStack.copy();
             }
 
             if (itemStack.isEmpty() && isCreative) {
                 itemStack = new ItemStack(Items.ARROW);
-                itemStack2 = itemStack.copy();
+            }
+            MiapiProjectileEvents.CrossbowLoadingContext context =
+                    new MiapiProjectileEvents.CrossbowLoadingContext(shooter, crossbow, itemStack);
+
+
+            if (MiapiProjectileEvents.MODULAR_CROSSBOW_LOAD.invoker().load(context).interruptsFurtherEvaluation()) {
+                return false;
             }
 
-            if (!loadProjectile(shooter, crossbow, itemStack, k > 0, isCreative)) {
+
+            if (!loadProjectile(shooter, crossbow, context.loadingProjectile, k > 0, isCreative)) {
+                return false;
+            }
+
+            if (MiapiProjectileEvents.MODULAR_CROSSBOW_LOAD_AFTER.invoker().load(context).interruptsFurtherEvaluation()) {
                 return false;
             }
         }
@@ -185,7 +196,7 @@ public class ModularCrossbow extends CrossbowItem implements ModularItem, Custom
         }
     }
 
-    private static void putProjectile(ItemStack crossbow, ItemStack projectile) {
+    public static void putProjectile(ItemStack crossbow, ItemStack projectile) {
         NbtCompound nbtCompound = crossbow.getOrCreateNbt();
         NbtList nbtList;
         if (nbtCompound.contains("ChargedProjectiles", 9)) {
@@ -198,6 +209,7 @@ public class ModularCrossbow extends CrossbowItem implements ModularItem, Custom
         projectile.writeNbt(nbtCompound2);
         nbtList.add(nbtCompound2);
         nbtCompound.put("ChargedProjectiles", nbtList);
+        ModularItemCache.clearUUIDFor(crossbow);
     }
 
     private static void clearProjectiles(ItemStack crossbow) {
@@ -208,6 +220,7 @@ public class ModularCrossbow extends CrossbowItem implements ModularItem, Custom
             nbtCompound.put("ChargedProjectiles", nbtList);
         }
         crossbow.setNbt(nbtCompound);
+        ModularItemCache.clearUUIDFor(crossbow);
     }
 
     private static void shoot(World world, LivingEntity shooter, Hand hand, ItemStack crossbow, ItemStack projectile, float soundPitch, boolean creative, float speed, float divergence, float simulated) {
@@ -313,6 +326,7 @@ public class ModularCrossbow extends CrossbowItem implements ModularItem, Custom
 
         clearProjectiles(stack);
         setCharged(stack, false);
+        ModularItemCache.getUUIDFor(stack);
         MiapiProjectileEvents.MODULAR_CROSSBOW_POST_SHOT.invoker().shoot(entity, stack);
     }
 

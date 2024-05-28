@@ -553,6 +553,7 @@ public class RegistryInventory {
             registerMiapi(moduleProperties, CopyParentMaterialProperty.KEY, new CopyParentMaterialProperty());
             registerMiapi(moduleProperties, EmissiveProperty.KEY, new EmissiveProperty());
             registerMiapi(moduleProperties, EnchantmentTransformerProperty.KEY, new EnchantmentTransformerProperty());
+            registerMiapi(moduleProperties, RapidfireCrossbowProperty.KEY, new RapidfireCrossbowProperty());
             //compat
             registerMiapi(moduleProperties, BetterCombatProperty.KEY, new BetterCombatProperty());
             registerMiapi(moduleProperties, ApoliPowersProperty.KEY, new ApoliPowersProperty());

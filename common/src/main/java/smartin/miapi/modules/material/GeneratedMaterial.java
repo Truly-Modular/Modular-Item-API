@@ -740,25 +740,33 @@ public class GeneratedMaterial implements Material {
         getTextureKeys().forEach(jsonElements::add);
         object.add("groups", jsonElements);
         materialStats.forEach((id, value) -> object.add(id, new JsonPrimitive(value)));
-        object.add("translation", new JsonPrimitive(langKey));
-        object.add("fake_translation", new JsonPrimitive(fakeTranslation));
-        object.add("icon", iconJson);
-        StringBuilder paletteBuilder = new StringBuilder();
-        paletteBuilder.append("{");
-        paletteBuilder.append("\"type\": \"").append("grayscale_map").append("\",");
-        paletteBuilder.append("\"colors\": ");
-        JsonObject innerPalette = new JsonObject();
-        for (int i = 0; i < palette.getColors().length; i++) {
-            int abgr = palette.getColors()[i];
-            innerPalette.addProperty(String.valueOf(i), new Color(
-                    ColorHelper.Abgr.getRed(abgr),
-                    ColorHelper.Abgr.getGreen(abgr),
-                    ColorHelper.Abgr.getBlue(abgr),
-                    ColorHelper.Abgr.getAlpha(abgr)).hex());
+        if (langKey != null) {
+            object.add("translation", new JsonPrimitive(langKey));
         }
-        paletteBuilder.append(Miapi.gson.toJson(innerPalette));
-        paletteBuilder.append("}");
-        object.add("palette", Miapi.gson.fromJson(paletteBuilder.toString(), JsonObject.class));
+        if (fakeTranslation != null) {
+            object.add("fake_translation", new JsonPrimitive(fakeTranslation));
+        }
+        if (iconJson != null) {
+            object.add("icon", iconJson);
+        }
+        if (palette != null) {
+            StringBuilder paletteBuilder = new StringBuilder();
+            paletteBuilder.append("{");
+            paletteBuilder.append("\"type\": \"").append("grayscale_map").append("\",");
+            paletteBuilder.append("\"colors\": ");
+            JsonObject innerPalette = new JsonObject();
+            for (int i = 0; i < palette.getColors().length; i++) {
+                int abgr = palette.getColors()[i];
+                innerPalette.addProperty(String.valueOf(i), new Color(
+                        ColorHelper.Abgr.getRed(abgr),
+                        ColorHelper.Abgr.getGreen(abgr),
+                        ColorHelper.Abgr.getBlue(abgr),
+                        ColorHelper.Abgr.getAlpha(abgr)).hex());
+            }
+            paletteBuilder.append(Miapi.gson.toJson(innerPalette));
+            paletteBuilder.append("}");
+            object.add("palette", Miapi.gson.fromJson(paletteBuilder.toString(), JsonObject.class));
+        }
         JsonArray ingredients = new JsonArray();
         JsonObject mainIngredientJson = new JsonObject();
         mainIngredientJson.add("item", new JsonPrimitive(Registries.ITEM.getId(this.mainIngredient.getItem()).toString()));

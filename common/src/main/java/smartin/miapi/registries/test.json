@@ -1,0 +1,19 @@
+{
+    "properties": {
+        "attribute_split": {
+            "minecraft:attack_damage": {
+                "slot": "mainhand",
+                "suplements": [
+                    {
+                        "attribute": "odysseynexus:ice_damage",
+                        "percentage": "50"
+                    },
+                    {
+                        "attribute": "odysseynexus:fire_damage",
+                        "percentage": "50"
+                    }
+                ]
+            }
+        }
+    }
+}

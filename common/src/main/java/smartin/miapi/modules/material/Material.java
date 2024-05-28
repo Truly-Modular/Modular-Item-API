@@ -95,6 +95,5 @@ public interface Material {
     @Nullable
     Double getPriorityOfIngredientItem(ItemStack itemStack);
 
-    @Environment(EnvType.CLIENT)
     JsonObject getDebugJson();
 }

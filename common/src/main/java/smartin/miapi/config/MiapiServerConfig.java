@@ -139,6 +139,6 @@ public class MiapiServerConfig {
                 Whether base modular items should have a say in valid enchantments
                 For example, if this is true, a modular pickaxe will automatically be allowed pickaxe enchantments regardless of its modules""")
         @AutoCodec.Name("lenient_enchantments")
-        public boolean lenientEnchantments = true;
+        public boolean lenientEnchantments = false;
     }
 }

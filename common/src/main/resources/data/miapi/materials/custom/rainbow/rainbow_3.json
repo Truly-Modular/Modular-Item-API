@@ -1,0 +1,27 @@
+{
+    "key": "rainbow_pride_3",
+    "color_palette": {
+        "type": "layered_mask",
+        "base": {
+            "type": "grayscale_map",
+            "colors": {
+                "24": "00000000",
+                "68": "00000000",
+                "107": "00000000",
+                "150": "00000000",
+                "190": "00000000",
+                "255": "00000000"
+            }
+        },
+        "layer": {
+            "type": "overlay_texture",
+            "atlas": "block",
+            "texture": "miapi:item/rainbow_animation_simple"
+        },
+        "mask": {
+            "type": "texture",
+            "atlas": "block",
+            "texture": "miapi:item/rainbow_animation_simple"
+        }
+    }
+}

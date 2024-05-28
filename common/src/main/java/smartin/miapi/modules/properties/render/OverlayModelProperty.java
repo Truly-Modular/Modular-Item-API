@@ -15,6 +15,8 @@ import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.joml.Matrix4f;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.model.BakedMiapiModel;
 import smartin.miapi.client.model.MiapiItemModel;
@@ -44,25 +46,27 @@ public class OverlayModelProperty extends CodecBasedProperty<OverlayModelPropert
             List<MiapiModel> models = new ArrayList<>();
             for (OverlayModelData modelData : getData(module)) {
                 for (ItemModule.ModuleInstance moduleInstance : ItemModule.getModules(stack).allSubModules()) {
-                    List<ModelProperty.ModelJson> list = ModelProperty.getJson(moduleInstance);
+                    if (!modelData.onlyOnSameModule() || moduleInstance.equals(module)) {
+                        List<ModelProperty.ModelJson> list = ModelProperty.getJson(moduleInstance);
 
-                    list.forEach(modelJson -> {
-                        if (modelData.isValid(modelJson)) {
-                            ModelHolder holder = ModelProperty.bakedModel(moduleInstance, modelJson, stack, key);
-                            if (holder != null) {
-                                ColorProvider colorProvider = modelData.getColorProvider(stack, module, moduleInstance, holder.colorProvider());
-                                Sprite overWriteSprite = modelData.resolveSprite();
-                                models.add(getBakedMiapiModel(
-                                        module,
-                                        stack,
-                                        modelData,
-                                        moduleInstance,
-                                        holder,
-                                        colorProvider,
-                                        overWriteSprite));
+                        list.forEach(modelJson -> {
+                            if (modelData.isValid(modelJson)) {
+                                ModelHolder holder = ModelProperty.bakedModel(moduleInstance, modelJson, stack, key);
+                                if (holder != null) {
+                                    ColorProvider colorProvider = modelData.getColorProvider(stack, module, moduleInstance, holder.colorProvider());
+                                    Sprite overWriteSprite = modelData.resolveSprite();
+                                    models.add(getBakedMiapiModel(
+                                            module,
+                                            stack,
+                                            modelData,
+                                            moduleInstance,
+                                            holder,
+                                            colorProvider,
+                                            overWriteSprite));
+                                }
                             }
-                        }
-                    });
+                        });
+                    }
                 }
             }
 
@@ -77,15 +81,15 @@ public class OverlayModelProperty extends CodecBasedProperty<OverlayModelPropert
     }
 
     @NotNull
-    private BakedMiapiModel getBakedMiapiModel(ItemModule.ModuleInstance module, ItemStack stack, OverlayModelData modelData, ItemModule.ModuleInstance moduleInstance, ModelHolder holder, ColorProvider colorProvider, Sprite overWriteSprite) {
+    private BakedMiapiModel getBakedMiapiModel(ItemModule.ModuleInstance module, ItemStack stack, OverlayModelData modelData, ItemModule.ModuleInstance moduleInstance, ModelHolder holder, ColorProvider colorProvider, @Nullable Sprite overWriteSprite) {
         return new BakedMiapiModel(
                 new ModelHolder(
                         holder.model(),
-                        holder.matrix4f(),
+                        new Matrix4f(holder.matrix4f()),
                         new ColorProvider() {
                             @Override
                             public VertexConsumer getConsumer(VertexConsumerProvider vertexConsumers, Sprite sprite, ItemStack stack, ItemModule.ModuleInstance moduleInstance, ModelTransformationMode mode) {
-                                return new RescaledVertexConsumer(colorProvider.getConsumer(vertexConsumers, overWriteSprite, stack, modelData.useThisModule() ? module : moduleInstance, mode), sprite);
+                                return new RescaledVertexConsumer(colorProvider.getConsumer(vertexConsumers, overWriteSprite == null ? sprite : overWriteSprite, stack, modelData.useThisModule() ? module : moduleInstance, mode), sprite);
                             }
 
                             @Override
@@ -122,19 +126,28 @@ public class OverlayModelProperty extends CodecBasedProperty<OverlayModelPropert
     }
 
     public static class OverlayModelData {
+        @CodecBehavior.Optional
         public String texture;
         public String modelTargetType;
         public String modelTargetInfo;
         public String colorProvider;
         @CodecBehavior.Optional
         public double javaPriority;
+        @CodecBehavior.Optional
+        public boolean allowOtherModules = false;
 
+        @Nullable
         public Sprite resolveSprite() {
+            if (texture == null) {
+                return null;
+            }
             return ModelProperty.textureGetter.apply(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(texture)));
         }
 
         public void loadSprite() {
-            ModelProperty.textureGetter.apply(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(texture)));
+            if (texture != null) {
+                ModelProperty.textureGetter.apply(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(texture)));
+            }
         }
 
         public double getPriority(ItemModule.ModuleInstance moduleInstance, JsonObject element) {
@@ -165,6 +178,10 @@ public class OverlayModelProperty extends CodecBasedProperty<OverlayModelPropert
 
         public boolean useThisModule() {
             return !colorProvider.equals("other");
+        }
+
+        public boolean onlyOnSameModule() {
+            return !allowOtherModules;
         }
 
         public boolean isValid(ModelProperty.ModelJson modelJson) {
