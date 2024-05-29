@@ -30,6 +30,7 @@ import smartin.miapi.modules.material.Material;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class MiapiEvents {
     public static final PrioritizedEvent<LivingAttackEvent> LIVING_ATTACK = PrioritizedEvent.createEventResult();
@@ -57,9 +58,14 @@ public class MiapiEvents {
     public static final PrioritizedEvent<MaterialCraftEvent> MATERIAL_CRAFT_EVENT = PrioritizedEvent.createLoop();
     public static final PrioritizedEvent<SmithingEvent> SMITHING_EVENT = PrioritizedEvent.createLoop();
     public static final PrioritizedEvent<LivingEntityAttributeBuild> LIVING_ENTITY_ATTRIBUTE_BUILD_EVENT = PrioritizedEvent.createLoop();
+    public static final PrioritizedEvent<PlayerEquip> PLAYER_EQUIP_EVENT = PrioritizedEvent.createLoop();
 
     public interface ReloadEvent {
         EventResult onReload(boolean isClient);
+    }
+
+    public interface PlayerEquip {
+        EventResult equip(PlayerEntity player, Map<EquipmentSlot,ItemStack> changes);
     }
 
     public static class IsCriticalHitEvent {
@@ -141,7 +147,7 @@ public class MiapiEvents {
     }
 
     public interface LivingAttackEvent {
-        EventResult attack(@Nullable LivingEntity attacker,@Nullable LivingEntity defender);
+        EventResult attack(@Nullable LivingEntity attacker, @Nullable LivingEntity defender);
     }
 
     public interface LivingEntityAttributeBuild {

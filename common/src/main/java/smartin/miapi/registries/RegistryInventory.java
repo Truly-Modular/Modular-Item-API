@@ -554,6 +554,8 @@ public class RegistryInventory {
             registerMiapi(moduleProperties, EmissiveProperty.KEY, new EmissiveProperty());
             registerMiapi(moduleProperties, EnchantmentTransformerProperty.KEY, new EnchantmentTransformerProperty());
             registerMiapi(moduleProperties, RapidfireCrossbowProperty.KEY, new RapidfireCrossbowProperty());
+            registerMiapi(moduleProperties, MagazineCrossbowShotDelay.KEY, new MagazineCrossbowShotDelay());
+            registerMiapi(moduleProperties, HandheldItemProperty.KEY, new HandheldItemProperty());
             //compat
             registerMiapi(moduleProperties, BetterCombatProperty.KEY, new BetterCombatProperty());
             registerMiapi(moduleProperties, ApoliPowersProperty.KEY, new ApoliPowersProperty());

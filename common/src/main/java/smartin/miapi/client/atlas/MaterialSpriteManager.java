@@ -7,36 +7,38 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.util.Identifier;
-import smartin.miapi.Miapi;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.modules.material.Material;
 import smartin.miapi.modules.material.palette.SpriteColorer;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.function.IntUnaryOperator;
 
 public class MaterialSpriteManager {
     static Map<Holder, NativeImageBackedTexture> animated_Textures = new HashMap<>();
 
-    public static final long CACHE_SIZE = 1000;
+    public static final long CACHE_SIZE = 10000;
     public static final long CACHE_LIFETIME = 10;
     public static final TimeUnit CACHE_LIFETIME_UNIT = TimeUnit.SECONDS;
+    protected static Map<Identifier, NativeImageBackedTexture> nativeImageBackedTextureMap = new HashMap<>();
+    //WARNING!! only access anything related to colorer ONLY from the RENDER THREAD!
     protected static final Cache<Holder, Identifier> materialSpriteCache = CacheBuilder.newBuilder()
             .maximumSize(CACHE_SIZE)
             .expireAfterAccess(CACHE_LIFETIME, CACHE_LIFETIME_UNIT)
             .removalListener(notification -> {
                 if (notification.wasEvicted()) {
                     if (notification.getValue() instanceof Identifier removeId) {
+                        NativeImageBackedTexture texture = nativeImageBackedTextureMap.get(removeId);
+                        if(texture!=null){
+                            texture.close();
+                        }
                         MinecraftClient.getInstance().getTextureManager().destroyTexture(removeId);
                     }
                     if (notification.getKey() instanceof Holder holder) {
+                        //the NativeImage should already be closed by the code above, this just kept track of the NativeImageBackedTexture to animate it
                         animated_Textures.remove(holder);
-                        Miapi.LOGGER.info("actual removal cache " + getCacheSize() + " " + notification.getCause());
                         try {
                             holder.colorer.close();
                         } catch (IOException e) {
@@ -97,10 +99,6 @@ public class MaterialSpriteManager {
             }));
             toRemove.forEach(materialSpriteCache::invalidate);
         }
-    }
-
-    public static int getCacheSize() {
-        return (int) materialSpriteCache.size();
     }
 
     public record Holder(Sprite sprite, Material material, SpriteColorer colorer) {

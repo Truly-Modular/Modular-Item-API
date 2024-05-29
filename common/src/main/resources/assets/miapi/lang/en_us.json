@@ -2,6 +2,7 @@
     "config.miapi_server": "Server Config",
     "config.miapi_server.other": "Development",
     "config.miapi_server.enchants": "Enchantments",
+    "miapi.handheld.tooltip": "Handheld (should be dual-wielded)",
     "miapi.keybinds": "Truly Modular",
     "miapi.crafting_condition.false": "Cannot craft",
     "miapi.condition.tag.error": "Item is missing ModuleTag",

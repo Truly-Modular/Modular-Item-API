@@ -22,6 +22,8 @@ import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.modules.properties.EquipmentSlotProperty;
 import smartin.miapi.registries.RegistryInventory;
 
+import java.util.Map;
+
 @Mixin(LivingEntity.class)
 abstract class LivingEntityMixin {
     //@Unique
@@ -37,6 +39,19 @@ abstract class LivingEntityMixin {
             EquipmentSlot slot = EquipmentSlotProperty.getSlot(stack);
             if (slot != null) {
                 cir.setReturnValue(slot);
+            }
+        }
+    }
+
+    @Inject(
+            method = "Lnet/minecraft/entity/LivingEntity;getEquipmentChanges()Ljava/util/Map;",
+            at = @At("RETURN"))
+    private void miapi$enEquipChange(CallbackInfoReturnable<Map<EquipmentSlot, ItemStack>> cir) {
+        LivingEntity player = (LivingEntity) (Object) this;
+        if (player instanceof PlayerEntity entity) {
+            Map<EquipmentSlot, ItemStack> map = cir.getReturnValue();
+            if (map!=null && !map.isEmpty()) {
+                MiapiEvents.PLAYER_EQUIP_EVENT.invoker().equip(entity, map);
             }
         }
     }
@@ -93,7 +108,7 @@ abstract class LivingEntityMixin {
         LivingEntity livingEntity = (LivingEntity) (Object) this;
         if (livingEntity.hasStatusEffect(RegistryInventory.stunEffect)) {
             if (livingEntity instanceof PlayerEntity playerEntity) {
-                if(!playerEntity.hasStatusEffect(StatusEffects.BLINDNESS)){
+                if (!playerEntity.hasStatusEffect(StatusEffects.BLINDNESS)) {
                 }
             } else {
                 ci.cancel();

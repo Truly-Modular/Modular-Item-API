@@ -7,6 +7,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import smartin.miapi.Miapi;
 import smartin.miapi.events.MiapiProjectileEvents;
@@ -66,6 +67,11 @@ public class RapidfireCrossbowProperty extends DoubleProperty {
                     }
                     writeProjectileListToCrossbow(crossbow, projectiles);
                     ModularCrossbow.setCharged(crossbow, true);
+                    if(player instanceof ServerPlayerEntity serverPlayerEntity){
+                        serverPlayerEntity.getItemCooldownManager().set(
+                                crossbow.getItem(),
+                                (int) MagazineCrossbowShotDelay.property.getValueSafe(crossbow));
+                    }
                 }
             }
             return EventResult.pass();
