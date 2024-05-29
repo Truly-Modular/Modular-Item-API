@@ -12,6 +12,7 @@ import smartin.miapi.client.gui.crafting.CraftingScreen;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.item.modular.PropertyResolver;
 import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.edit_options.EditOption;
 import smartin.miapi.modules.edit_options.EditOptionIcon;
 import smartin.miapi.modules.edit_options.skins.gui.SkinGui;
@@ -76,8 +77,10 @@ public class SkinOptions implements EditOption {
     @Override
     public ItemStack preview(PacketByteBuf buffer, EditContext context) {
         String skin = buffer.readString();
+        ModularItemCache.clearUUIDFor(context.getItemstack());
         context.getInstance().moduleData.put("skin", skin);
         context.getInstance().getRoot().writeToItem(context.getItemstack());
+        ModularItemCache.clearUUIDFor(context.getItemstack());
         return context.getItemstack();
     }
 

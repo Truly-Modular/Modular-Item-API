@@ -16,12 +16,12 @@
         "layer": {
             "type": "overlay_texture",
             "atlas": "block",
-            "texture": "miapi:item/rainbow_animation_simple"
+            "texture": "miapi:item/rainbow_animation_3"
         },
         "mask": {
             "type": "texture",
             "atlas": "block",
-            "texture": "miapi:item/rainbow_animation_simple"
+            "texture": "miapi:item/rainbow_animation_3"
         }
     }
 }

@@ -1,5 +1,5 @@
 {
-    "key": "rainbow_pride_2",
+    "key": "rainbow_pride_4",
     "color_palette": {
         "type": "layered_mask",
         "base": {
@@ -16,12 +16,12 @@
         "layer": {
             "type": "overlay_texture",
             "atlas": "block",
-            "texture": "miapi:item/rainbow_animation_2"
+            "texture": "miapi:item/rainbow_animation_4"
         },
         "mask": {
             "type": "texture",
             "atlas": "block",
-            "texture": "miapi:item/rainbow_animation_2"
+            "texture": "miapi:item/rainbow_animation_4"
         }
     }
 }
