@@ -7,13 +7,18 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.util.Identifier;
+import smartin.miapi.Miapi;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.modules.material.Material;
 import smartin.miapi.modules.material.palette.SpriteColorer;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.function.IntUnaryOperator;
 
 public class MaterialSpriteManager {
     static Map<Holder, NativeImageBackedTexture> animated_Textures = new HashMap<>();
@@ -25,9 +30,19 @@ public class MaterialSpriteManager {
             .maximumSize(CACHE_SIZE)
             .expireAfterAccess(CACHE_LIFETIME, CACHE_LIFETIME_UNIT)
             .removalListener(notification -> {
-                if (notification.getValue() instanceof Identifier removeId) {
-                    MinecraftClient.getInstance().getTextureManager().destroyTexture(removeId);
-                    animated_Textures.remove(notification.getKey());
+                if (notification.wasEvicted()) {
+                    if (notification.getValue() instanceof Identifier removeId) {
+                        MinecraftClient.getInstance().getTextureManager().destroyTexture(removeId);
+                    }
+                    if (notification.getKey() instanceof Holder holder) {
+                        animated_Textures.remove(holder);
+                        Miapi.LOGGER.info("actual removal cache " + getCacheSize() + " " + notification.getCause());
+                        try {
+                            holder.colorer.close();
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
                 }
             })
             .build(new CacheLoader<>() {
@@ -46,7 +61,10 @@ public class MaterialSpriteManager {
         Identifier identifier = materialSpriteCache.getIfPresent(holder);
         if (identifier == null) {
             var colorer = holder.colorer().createSpriteManager(holder.sprite().getContents());
-            NativeImageBackedTexture nativeImageBackedTexture = new NativeImageBackedTexture(colorer.recolor());
+            //important!
+            //the MaskColorer is responsible for managing any NativeImage it creates.
+            //BUT the NativeBackedTexture removes its old uploaded NativeImage, so we need to upload a copy
+            NativeImageBackedTexture nativeImageBackedTexture = new NativeImageBackedTexture(colorer.recolor().applyToCopy(IntUnaryOperator.identity()));
             Identifier spriteId = MinecraftClient.getInstance().getTextureManager().registerDynamicTexture("miapi/dynmaterialsprites", nativeImageBackedTexture);
             if (colorer.requireTick()) {
                 animated_Textures.put(holder, nativeImageBackedTexture);
@@ -57,20 +75,32 @@ public class MaterialSpriteManager {
         return identifier;
     }
 
-    public static void clear(){
+    public static void clear() {
         materialSpriteCache.invalidateAll();
-        animated_Textures.clear();
     }
 
     public static void tick() {
         if (!ReloadEvents.isInReload()) {
+            List<Holder> toRemove = new ArrayList<>();
             animated_Textures.forEach(((holder, nativeImageBackedTexture) -> {
-                holder.colorer.tick((nativeImage) -> {
-                    nativeImageBackedTexture.setImage(nativeImage);
-                    nativeImageBackedTexture.upload();
-                }, holder.sprite().getContents());
+                try {
+                    holder.colorer.tick((nativeImage) -> {
+                        //important!
+                        //the MaskColorer is responsible for managing any NativeImage it creates.
+                        //BUT the NativeBackedTexture removes its old uploaded NativeImage, so we need to upload a copy
+                        nativeImageBackedTexture.setImage(nativeImage.applyToCopy(IntUnaryOperator.identity()));
+                        nativeImageBackedTexture.upload();
+                    }, holder.sprite().getContents());
+                } catch (Exception e) {
+                    toRemove.add(holder);
+                }
             }));
+            toRemove.forEach(materialSpriteCache::invalidate);
         }
+    }
+
+    public static int getCacheSize() {
+        return (int) materialSpriteCache.size();
     }
 
     public record Holder(Sprite sprite, Material material, SpriteColorer colorer) {

@@ -8,11 +8,13 @@ import net.minecraft.client.texture.Sprite;
 import net.minecraft.item.ItemStack;
 import smartin.miapi.modules.ItemModule;
 
+import java.io.Closeable;
+
 /**
  * This takes control of the rendering with a Material
  * You probably want to extend the {@link SpritePixelReplacer} instead
  */
-public interface MaterialRenderController {
+public interface MaterialRenderController extends Closeable {
 
     /**
      * This allows Materials to pick their own Vertexconsumers, allowing for all kinds of fancy Animations.

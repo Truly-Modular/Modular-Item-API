@@ -9,6 +9,8 @@ import smartin.miapi.Miapi;
 import smartin.miapi.client.renderer.NativeImageGetter;
 import smartin.miapi.modules.material.Material;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -112,7 +114,14 @@ public class MaskColorer extends SpriteColorer {
         return base.doTick() || layer.doTick() || masker.isAnimated();
     }
 
-    public interface Masker {
+    @Override
+    public void close() throws IOException {
+        masker.close();
+        base.close();
+        layer.close();
+    }
+
+    public interface Masker extends  Closeable{
         /**
          * @param base the image created from the base colorer
          * @param other the image created from the layer colorer
@@ -138,27 +147,36 @@ public class MaskColorer extends SpriteColorer {
         boolean isAnimated();
     }
 
-    public static class SpriteMasker implements Masker {
+    public static class SpriteMasker implements Masker, Closeable {
         SpriteFromJson maskingSprite;
 
         public SpriteMasker(SpriteFromJson contents) {
             maskingSprite = contents;
         }
 
+        public NativeImage lastImage = null;
+
         @Override
         public NativeImage mask(NativeImage base, NativeImage other) {
             NativeImageGetter.ImageHolder nativeImage = maskingSprite.getNativeImage();
-            NativeImage image = new NativeImage(base.getWidth(), base.getHeight(), false);
+            if (lastImage == null) {
+                lastImage = new NativeImage(base.getWidth(), base.getHeight(), true);
+                lastImage.untrack();
+            }
+            if(lastImage!=null && (lastImage.getHeight()!= base.getHeight() || lastImage.getWidth()!= base.getWidth())){
+                lastImage.close();
+                lastImage = new NativeImage(base.getWidth(), base.getHeight(), true);
+                lastImage.untrack();
+            }
             for (int width = 0; width < base.getWidth(); width++) {
                 for (int height = 0; height < base.getHeight(); height++) {
                     int baseColor = base.getColor(width, height);
                     int otherColor = other.getColor(width, height);
                     int blendColor = nativeImage.getColor(width % nativeImage.getWidth(), height % nativeImage.getHeight());
-                    image.setColor(width, height, blend(baseColor, otherColor, blendColor));
+                    lastImage.setColor(width, height, blend(baseColor, otherColor, blendColor));
                 }
             }
-            image.untrack();
-            return image;
+            return lastImage;
         }
 
         public int blend(int base, int other, int blend) {
@@ -203,6 +221,14 @@ public class MaskColorer extends SpriteColorer {
         @Override
         public boolean isAnimated() {
             return maskingSprite.isAnimated();
+        }
+
+        @Override
+        public void close() throws IOException {
+            if(lastImage!=null){
+                lastImage.close();
+                lastImage = null;
+            }
         }
     }
 }
