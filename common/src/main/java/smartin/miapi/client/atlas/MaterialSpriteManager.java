@@ -88,7 +88,7 @@ public class MaterialSpriteManager {
                         //important!
                         //the MaskColorer is responsible for managing any NativeImage it creates.
                         //BUT the NativeBackedTexture removes its old uploaded NativeImage, so we need to upload a copy
-                        nativeImageBackedTexture.setImage(nativeImage.applyToCopy(IntUnaryOperator.identity()));
+                        nativeImageBackedTexture.getImage().copyFrom(nativeImage);
                         nativeImageBackedTexture.upload();
                     }, holder.sprite().getContents());
                 } catch (Exception e) {
