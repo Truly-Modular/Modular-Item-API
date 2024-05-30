@@ -110,6 +110,7 @@
     "miapi.attribute.name.elytra_rocket_efficiency": "Elytra Rocket Efficiency",
     "miapi.attribute.name.player_item_use_speed": "Using Slowdown",
     "miapi.attribute.name.magic_damage": "Magic Damage",
+    "miapi.attribute.name.armor_crushing": "Armor Crushing",
     "miapi.application_target.victim": "Victim",
     "miapi.application_target.attacker": "Attacker",
     "miapi.application_target.source": "Direct Source",
