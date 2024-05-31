@@ -29,6 +29,15 @@ repositories {
         url 'http://trulymodular.duckdns.org/maven'
         allowInsecureProtocol = true
     }
+    maven { url 'https://maven.uuid.gg/releases' }
+    maven { url 'https://maven.terraformersmc.com/' }
+    maven { url 'https://maven.theillusivec4.top/' }
+    maven {
+        url "https://maven.jamieswhiteshirt.com/libs-release"
+        content {
+            includeGroup "com.jamieswhiteshirt"
+        }
+    }
 }
 ```
 ```js
