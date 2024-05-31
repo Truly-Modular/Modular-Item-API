@@ -1,0 +1,18 @@
+{
+    "path": "game_breaker",
+    "header2": {
+        "texture": "miapi:textures/skin/pride/tab_header.png",
+        "color": "00000000",
+        "xSize": 1900,
+        "ySize": 140,
+        "scale": 10,
+        "borderSize": 0
+    },
+    "background2": {
+        "texture": "miapi:textures/skin/pride/tab_background.png",
+        "color": "00000000",
+        "xSize": 100,
+        "ySize": 100,
+        "borderSize": 0
+    }
+}

@@ -80,24 +80,31 @@ class SkinTabGui extends InteractAbleWidget implements SkinGui.SortAble {
         });
         currentList = new ArrayList<>(fullList);
         setChildren(true);
+        if (!this.isRoot) {
+            toggleOpen();
+        }
     }
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (mouseY < this.getY() + realHeight) {
-            if (isOpen) {
-                //close
-                currentList.clear();
-                height = realHeight;
-                setChildren(false);
-            } else {
-                currentList = new ArrayList<>(fullList);
-                setChildren(false);
-            }
-            isOpen = !isOpen;
+            toggleOpen();
             return true;
         }
         return super.mouseClicked(mouseX, mouseY, button);
+    }
+
+    public void toggleOpen() {
+        if (isOpen) {
+            //close
+            currentList.clear();
+            height = realHeight;
+            setChildren(false);
+        } else {
+            currentList = new ArrayList<>(fullList);
+            setChildren(false);
+        }
+        isOpen = !isOpen;
     }
 
     private boolean isMouseOverReal(double mouseX, double mouseY) {
@@ -128,10 +135,16 @@ class SkinTabGui extends InteractAbleWidget implements SkinGui.SortAble {
             //Header
             RenderSystem.setShaderTexture(0, tabInfo.header.texture());
             drawTextureWithEdgeAndScale(drawContext, tabInfo.header.texture(), getX(), getY(), 0, hover, tabInfo.header.xSize(), tabInfo.header.ySize(), this.width, realHeight, tabInfo.header.xSize(), tabInfo.header.ySize() * 3, tabInfo.header.borderSize(), tabInfo.header.scale());
+
             if (isOpen) {
                 //Background
-                RenderSystem.setShaderTexture(0, tabInfo.background.texture());
-                drawTextureWithEdgeAndScale(drawContext, tabInfo.background.texture(), getX(), getY() + realHeight, 0, 0, tabInfo.background.xSize(), tabInfo.background.ySize(), this.width, height - realHeight, tabInfo.background.xSize(), tabInfo.background.ySize(), tabInfo.background.borderSize(), tabInfo.background.scale());
+                if (tabInfo.background.keepScale()) {
+
+                    drawContext.drawRepeatingTexture(tabInfo.background.texture(), getX(), getY() + realHeight, this.width, height - realHeight, 0, 0, tabInfo.background.xSize(), tabInfo.background.ySize());
+                } else {
+                    RenderSystem.setShaderTexture(0, tabInfo.background.texture());
+                    drawTextureWithEdgeAndScale(drawContext, tabInfo.background.texture(), getX(), getY() + realHeight, 0, 0, tabInfo.background.xSize(), tabInfo.background.ySize(), this.width, height - realHeight, tabInfo.background.xSize(), tabInfo.background.ySize(), tabInfo.background.borderSize(), tabInfo.background.scale());
+                }
             }
             textWidget.setY(this.getY() + 2);
             textWidget.render(drawContext, mouseX, mouseY, delta);

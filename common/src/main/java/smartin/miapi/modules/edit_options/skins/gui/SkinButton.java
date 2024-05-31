@@ -25,6 +25,7 @@ class SkinButton extends InteractAbleWidget implements SkinGui.SortAble {
     public boolean isEnabled = true;
     public boolean isAllowed = true;
     public List<Text> reasons = new ArrayList<>();
+    public int timeHover = 0;
 
 
     public SkinButton(SkinGui skinGui, int x, int y, int width, String skinPath, Skin skin) {
@@ -75,6 +76,10 @@ class SkinButton extends InteractAbleWidget implements SkinGui.SortAble {
         if (!isAllowed) {
             if (isMouseOver(mouseX, mouseY)) {
                 drawContext.drawTooltip(MinecraftClient.getInstance().textRenderer, reasons, mouseX, mouseY);
+            }
+        } else {
+            if (isMouseOver(mouseX, mouseY) && skin.hoverDescription != null) {
+                drawContext.drawTooltip(MinecraftClient.getInstance().textRenderer, skin.hoverDescription, mouseX, mouseY);
             }
         }
     }
