@@ -5,7 +5,7 @@
     "animation": {
         "interpolate": true,
         "frametime": 2,
-        "width": 1,
-        "height": 1
+        "width": 32,
+        "height": 32
     }
 }
