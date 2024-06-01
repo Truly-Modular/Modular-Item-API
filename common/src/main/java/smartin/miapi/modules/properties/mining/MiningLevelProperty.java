@@ -1,10 +1,14 @@
 package smartin.miapi.modules.properties.mining;
 
+import com.google.common.collect.Multimap;
 import com.google.gson.JsonElement;
+import dev.architectury.platform.Platform;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.entity.attribute.EntityAttribute;
+import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -168,18 +172,24 @@ public class MiningLevelProperty implements ModuleProperty {
     }
 
     public static float getMiningSpeedMultiplier(ItemStack stack, String type) {
+        Multimap<EntityAttribute, EntityAttributeModifier> attributes;
+        if (Platform.isModLoaded("apotheosis")) {
+            attributes = AttributeProperty.equipmentSlotMultimapMap(stack).get(EquipmentSlot.MAINHAND);
+        } else {
+            attributes = stack.getAttributeModifiers(EquipmentSlot.MAINHAND);
+        }
         switch (type) {
             case "axe": {
-                return (float) AttributeProperty.getActualValue(stack, EquipmentSlot.MAINHAND, AttributeRegistry.MINING_SPEED_AXE, 1);
+                return (float) AttributeProperty.getActualValue(attributes, AttributeRegistry.MINING_SPEED_AXE, 1);
             }
             case "pickaxe": {
-                return (float) AttributeProperty.getActualValue(stack, EquipmentSlot.MAINHAND, AttributeRegistry.MINING_SPEED_PICKAXE, 1);
+                return (float) AttributeProperty.getActualValue(attributes, AttributeRegistry.MINING_SPEED_PICKAXE, 1);
             }
             case "shovel": {
-                return (float) AttributeProperty.getActualValue(stack, EquipmentSlot.MAINHAND, AttributeRegistry.MINING_SPEED_SHOVEL, 1);
+                return (float) AttributeProperty.getActualValue(attributes, AttributeRegistry.MINING_SPEED_SHOVEL, 1);
             }
             case "hoe": {
-                return (float) AttributeProperty.getActualValue(stack, EquipmentSlot.MAINHAND, AttributeRegistry.MINING_SPEED_HOE, 1);
+                return (float) AttributeProperty.getActualValue(attributes, AttributeRegistry.MINING_SPEED_HOE, 1);
             }
             default: {
                 return 1;
