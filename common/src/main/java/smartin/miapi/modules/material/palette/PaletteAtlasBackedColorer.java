@@ -3,6 +3,7 @@ package smartin.miapi.modules.material.palette;
 import com.google.gson.JsonElement;
 import com.redpxnda.nucleus.util.Color;
 import net.minecraft.client.texture.NativeImage;
+import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteContents;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
@@ -10,6 +11,7 @@ import net.minecraft.util.math.MathHelper;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.client.MiapiClient;
 import smartin.miapi.client.atlas.MaterialAtlasManager;
+import smartin.miapi.client.atlas.MaterialSpriteManager;
 import smartin.miapi.client.renderer.NativeImageGetter;
 import smartin.miapi.mixin.client.SpriteContentsAccessor;
 import smartin.miapi.modules.material.Material;
@@ -77,7 +79,11 @@ public class PaletteAtlasBackedColorer extends SpritePixelReplacer {
 
     @Override
     public NativeImage transform(SpriteContents originalSprite) {
-        if (contents == null) contents = MiapiClient.materialAtlasManager.getMaterialSprite(getSpriteId()).getContents();
+        if (contents == null) {
+            Sprite sprite = MiapiClient.materialAtlasManager.getMaterialSprite(getSpriteId());
+            MaterialSpriteManager.markTextureAsAnimatedInUse(sprite);
+            contents = sprite.getContents();
+        }
         image = NativeImageGetter.get(contents);
         NativeImage result = super.transform(originalSprite);
         image = null;

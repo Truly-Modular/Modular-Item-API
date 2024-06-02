@@ -173,7 +173,7 @@ public class MiningLevelProperty implements ModuleProperty {
 
     public static float getMiningSpeedMultiplier(ItemStack stack, String type) {
         Multimap<EntityAttribute, EntityAttributeModifier> attributes;
-        if (Platform.isModLoaded("apotheosis")) {
+        if (Platform.isModLoaded("apotheosis") || true) {
             attributes = AttributeProperty.equipmentSlotMultimapMap(stack).get(EquipmentSlot.MAINHAND);
         } else {
             attributes = stack.getAttributeModifiers(EquipmentSlot.MAINHAND);

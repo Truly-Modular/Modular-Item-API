@@ -55,6 +55,7 @@ public class SpriteOverlayer extends SpritePixelReplacer {
     @Override
     public NativeImage transform(SpriteContents sprite) {
         overlayImage = delegate.getNativeImage(); // temporarily saving overlay image for getReplacementColor
+        delegate.markUse();
         NativeImage result = super.transform(sprite);
         overlayImage = null;
         return result;

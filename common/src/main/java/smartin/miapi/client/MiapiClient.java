@@ -33,13 +33,14 @@ import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.effects.CryoStatusEffect;
 import smartin.miapi.entity.ItemProjectileRenderer;
+import smartin.miapi.events.ClientEvents;
 import smartin.miapi.modules.MiapiPermissions;
 import smartin.miapi.modules.cache.CacheCommands;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.material.Material;
+import smartin.miapi.modules.material.MaterialCommand;
 import smartin.miapi.modules.material.MaterialIcons;
 import smartin.miapi.modules.material.MaterialProperty;
-import smartin.miapi.modules.material.MaterialCommand;
 import smartin.miapi.modules.material.palette.MaterialRenderControllers;
 import smartin.miapi.modules.properties.render.colorproviders.ColorProvider;
 import smartin.miapi.network.Networking;
@@ -58,7 +59,7 @@ public class MiapiClient {
             Platform.isModLoaded("optifine") ||
             Platform.isModLoaded("optifabric") ||
             Platform.isModLoaded("oculus");
-    public static boolean sodiumLoaded = Platform.isModLoaded("sodium");
+    public static boolean sodiumLoaded = isSodiumLoaded();
     public static boolean jerLoaded = Platform.isModLoaded("jeresources");
     public static final MiapiRegistry<KeyBinding> KEY_BINDINGS = MiapiRegistry.getInstance(KeyBinding.class);
     //public static final KeyBinding HOVER_DETAIL_BINDING = KEY_BINDINGS.register("miapi:hover_detail", new KeyBinding("miapi.gui.item_detail", 42, "miapi.keybinds"));
@@ -145,6 +146,9 @@ public class MiapiClient {
                 StatListWidget.reloadEnd();
             }
         });
+        if(sodiumLoaded){
+            ClientEvents.HUD_RENDER.register((drawContext, deltaTick) -> MaterialSpriteManager.onHudRender(drawContext));
+        }
     }
 
     @Environment(EnvType.CLIENT)
@@ -157,6 +161,18 @@ public class MiapiClient {
                 return stack.isDamaged() ? 0.0f : 1.0f;
             });
         }
+    }
+
+    public static boolean isSodiumLoaded(){
+        if(
+                Platform.isModLoaded("sodium") ||
+                Platform.isModLoaded("embeddium") ||
+                Platform.isModLoaded("magnesium") ||
+                Platform.isModLoaded("rubidium")
+        ){
+            return true;
+        }
+        return false;
     }
 
     public static boolean isHigherVersion(String version, String compareToVersion) {

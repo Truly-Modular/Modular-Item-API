@@ -7,13 +7,16 @@ import com.redpxnda.nucleus.util.Color;
 import com.redpxnda.nucleus.util.MiscUtil;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.NativeImage;
+import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.texture.SpriteContents;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
+import org.jetbrains.annotations.Nullable;
 import smartin.miapi.client.atlas.MaterialAtlasManager;
+import smartin.miapi.client.atlas.MaterialSpriteManager;
 import smartin.miapi.client.renderer.NativeImageGetter;
 
 import java.io.InputStream;
@@ -30,6 +33,8 @@ public class SpriteFromJson {
 
     public Supplier<NativeImageGetter.ImageHolder> imageSupplier;
     public boolean isAnimated;
+    @Nullable
+    public Sprite rawSprite = null;
 
     public SpriteFromJson(JsonElement json) {
         if (!(json instanceof JsonObject obj))
@@ -44,7 +49,8 @@ public class SpriteFromJson {
             else atlasId = new Identifier(key);
 
             Identifier textureId = new Identifier(obj.get("texture").getAsString());
-            SpriteContents contents = MinecraftClient.getInstance().getSpriteAtlas(atlasId).apply(textureId).getContents();
+            rawSprite = MinecraftClient.getInstance().getSpriteAtlas(atlasId).apply(textureId);
+            SpriteContents contents = rawSprite.getContents();
             imageSupplier = () -> NativeImageGetter.get(contents);
             if (obj.has("forceTick"))
                 isAnimated = obj.get("forceTick").getAsBoolean();
@@ -75,6 +81,12 @@ public class SpriteFromJson {
         }
     }
 
+    public void markUse() {
+        if (isAnimated() && rawSprite != null) {
+            MaterialSpriteManager.markTextureAsAnimatedInUse(rawSprite);
+        }
+    }
+
     boolean isAnimated() {
         return isAnimated;
     }
@@ -100,6 +112,6 @@ public class SpriteFromJson {
             }
         }
 
-        return new Color(red/count, green/count, blue/count, 255);
+        return new Color(red / count, green / count, blue / count, 255);
     }
 }

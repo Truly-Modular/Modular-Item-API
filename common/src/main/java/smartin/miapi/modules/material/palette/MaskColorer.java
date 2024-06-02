@@ -176,6 +176,9 @@ public class MaskColorer extends SpriteColorer {
                     lastImage.setColor(width, height, blend(baseColor, otherColor, blendColor));
                 }
             }
+            if(maskingSprite!=null){
+                maskingSprite.markUse();
+            }
             return lastImage;
         }
 

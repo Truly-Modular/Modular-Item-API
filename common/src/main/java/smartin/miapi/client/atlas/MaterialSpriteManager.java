@@ -4,9 +4,16 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.item.ItemRenderer;
+import net.minecraft.client.render.model.BakedQuad;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.Direction;
+import smartin.miapi.client.MiapiClient;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.modules.material.Material;
 import smartin.miapi.modules.material.palette.SpriteColorer;
@@ -23,6 +30,7 @@ public class MaterialSpriteManager {
     public static final long CACHE_LIFETIME = 10;
     public static final TimeUnit CACHE_LIFETIME_UNIT = TimeUnit.SECONDS;
     protected static Map<Identifier, NativeImageBackedTexture> nativeImageBackedTextureMap = new HashMap<>();
+    public static Set<Sprite> animated = new HashSet<>();
     //WARNING!! only access anything related to colorer ONLY from the RENDER THREAD!
     protected static final Cache<Holder, Identifier> materialSpriteCache = CacheBuilder.newBuilder()
             .maximumSize(CACHE_SIZE)
@@ -31,7 +39,7 @@ public class MaterialSpriteManager {
                 if (notification.wasEvicted()) {
                     if (notification.getValue() instanceof Identifier removeId) {
                         NativeImageBackedTexture texture = nativeImageBackedTextureMap.get(removeId);
-                        if(texture!=null){
+                        if (texture != null) {
                             texture.close();
                         }
                         MinecraftClient.getInstance().getTextureManager().destroyTexture(removeId);
@@ -99,6 +107,23 @@ public class MaterialSpriteManager {
             }));
             toRemove.forEach(materialSpriteCache::invalidate);
         }
+    }
+
+    public static void markTextureAsAnimatedInUse(Sprite sprite) {
+        if (MiapiClient.isSodiumLoaded()) {
+            animated.add(sprite);
+        }
+    }
+
+    public static void onHudRender(DrawContext drawContext) {
+        VertexConsumer consumer =
+                ItemRenderer.getItemGlintConsumer(drawContext.getVertexConsumers(), RenderLayer.getGui(), false, false);
+        int[] quadData = new int[32];
+        for (Sprite sprite : animated) {
+            BakedQuad bakedQuad = new BakedQuad(quadData, 0, Direction.DOWN, sprite, false);
+            consumer.quad(drawContext.getMatrices().peek(), bakedQuad, 0, 0, 0, 0, 0);
+        }
+        animated.clear();
     }
 
     public record Holder(Sprite sprite, Material material, SpriteColorer colorer) {
