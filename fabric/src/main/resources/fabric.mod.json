@@ -13,7 +13,8 @@
     "contact": {
         "homepage": "https://github.com/Truly-Modular/Modular-Item-API",
         "issues": "https://github.com/Truly-Modular/Modular-Item-API/issues",
-        "sources": "https://github.com/Truly-Modular/Modular-Item-API"
+        "sources": "https://github.com/Truly-Modular/Modular-Item-API",
+        "patreon": "https://www.patreon.com/Smartinb"
     },
     "license": "CC-BY-NC-4.0",
     "icon": "icon.png",
@@ -35,7 +36,8 @@
     "custom": {
         "modmenu": {
             "links": {
-                "discord": "https://discord.gg/m9AbjqvcGn"
+                "modmenu.discord": "https://discord.gg/m9AbjqvcGn",
+                "modmenu.patreon": "https://www.patreon.com/Smartinb"
             }
         }
     }
