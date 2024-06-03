@@ -10,7 +10,10 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.SpriteContents;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.Registries;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.renderer.NativeImageGetter;
@@ -33,7 +36,11 @@ public class GrayscalePaletteColorer extends SpritePixelReplacer {
     /**
      * Create a GrayscalePaletteColorer from a sprite(or rather, the json representing it)
      */
-    public static GrayscalePaletteColorer createForImageJson(Material material, JsonElement json) {
+    public static GrayscalePaletteColorer createForImageJson(Material material, JsonElement json, boolean isItem) {
+        if (isItem) {
+            Item item = Registries.ITEM.get(new Identifier(json.getAsJsonObject().get("item").getAsString()));
+            return createForGeneratedMaterial(material, item.getDefaultStack());
+        }
         return new GrayscalePaletteColorer(material, createImagePalette(new SpriteFromJson(json).imageSupplier.get()));
     }
 
@@ -162,15 +169,15 @@ public class GrayscalePaletteColorer extends SpritePixelReplacer {
     public static Color createAverageColor(Map<Integer, Color> colors) {
         Color color = new Color();
         colors.forEach((pos, col) -> {
-            color.x+=col.x;
-            color.y+=col.y;
-            color.z+=col.z;
-            color.w+=col.w;
+            color.x += col.x;
+            color.y += col.y;
+            color.z += col.z;
+            color.w += col.w;
         });
-        color.x/=colors.size();
-        color.y/=colors.size();
-        color.z/=colors.size();
-        color.w/=colors.size();
+        color.x /= colors.size();
+        color.y /= colors.size();
+        color.z /= colors.size();
+        color.w /= colors.size();
         return color;
     }
 

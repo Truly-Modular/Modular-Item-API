@@ -1,3 +1,3 @@
-## v1.1.22 (1.20.1)
-- deprecated use of Mining speed Attributes outside of Miapi's internals due to crashes with various forge mods
-- fixed issue were sodium (and sodium forks) wouldn't detect miapi's animated textures and freeze them
+## v1.1.23 (1.20.1)
+- minor cache adjustments
+- added "image_generated_item" MaterialColorer to simplify generated Palettes for addon developers

@@ -91,7 +91,6 @@ public class RapidfireCrossbowProperty extends DoubleProperty {
         for (ItemStack itemStack : projectiles) {
             list.add(itemStack.writeNbt(new NbtCompound()));
         }
-        Miapi.LOGGER.info(list.toString());
         crossbow.getOrCreateNbt().put(NBTKEY, list);
     }
 

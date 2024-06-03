@@ -121,9 +121,10 @@ public class ModularItemCache {
 
     public static void clearUUIDFor(ItemStack stack) {
         if (stack.getItem() instanceof VisualModularItem && stack.hasNbt()) {
-            nbtCache.invalidate(stack.getOrCreateNbt());
             UUID uuid = getUUIDFor(stack);
+            nbtCache.invalidate(stack.getOrCreateNbt());
             cache.invalidate(uuid);
+            lookUpTable.remove(stack);
         }
     }
 
@@ -139,6 +140,7 @@ public class ModularItemCache {
             if (ItemStack.areItemsEqual(cacheEntry.stack, stack)) {
                 return cacheEntry;
             } else {
+                cache.invalidate(uuid);
                 UUID newUUID = getMissingUUID();
                 return cache.get(newUUID, () -> new Cache(newUUID, stack));
             }

@@ -7,9 +7,11 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Slice;
@@ -20,6 +22,7 @@ import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.VisualModularItem;
 import smartin.miapi.item.modular.items.ModularSetableToolMaterial;
+import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.edit_options.ReplaceOption;
 import smartin.miapi.modules.properties.FakeItemTagProperty;
 import smartin.miapi.modules.properties.HideFlagsProperty;
@@ -33,6 +36,9 @@ import java.util.function.Consumer;
 @Mixin(value = ItemStack.class, priority = 2000)
 abstract class ItemStackMixin {
 
+    @Shadow
+    public abstract ItemStack setCustomName(Text name);
+
     @Inject(
             method = "getHideFlags()I",
             at = @At("TAIL"),
@@ -40,6 +46,24 @@ abstract class ItemStackMixin {
     private void miapi$adjustGetHideFlags(CallbackInfoReturnable<Integer> cir) {
         ItemStack stack = (ItemStack) (Object) this;
         cir.setReturnValue(HideFlagsProperty.getHideProperty(cir.getReturnValue(), stack));
+    }
+
+    @Inject(
+            method = "setNbt(Lnet/minecraft/nbt/NbtCompound;)V",
+            at = @At("TAIL"),
+            cancellable = true)
+    private void miapi$cacheMaintanaince(NbtCompound nbt, CallbackInfo ci) {
+        ItemStack stack = (ItemStack) (Object) this;
+        ModularItemCache.clearUUIDFor(stack);
+    }
+
+    @Inject(
+            method = "setNbt(Lnet/minecraft/nbt/NbtCompound;)V",
+            at = @At("HEAD"),
+            cancellable = true)
+    private void miapi$cacheMaintanaince2(NbtCompound nbt, CallbackInfo ci) {
+        ItemStack stack = (ItemStack) (Object) this;
+        ModularItemCache.clearUUIDFor(stack);
     }
 
     @Inject(

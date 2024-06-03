@@ -2,7 +2,6 @@ package smartin.miapi.modules.properties.mining;
 
 import com.google.common.collect.Multimap;
 import com.google.gson.JsonElement;
-import dev.architectury.platform.Platform;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -173,11 +172,10 @@ public class MiningLevelProperty implements ModuleProperty {
 
     public static float getMiningSpeedMultiplier(ItemStack stack, String type) {
         Multimap<EntityAttribute, EntityAttributeModifier> attributes;
-        if (Platform.isModLoaded("apotheosis") || true) {
-            attributes = AttributeProperty.equipmentSlotMultimapMap(stack).get(EquipmentSlot.MAINHAND);
-        } else {
-            attributes = stack.getAttributeModifiers(EquipmentSlot.MAINHAND);
-        }
+        attributes = AttributeProperty.equipmentSlotMultimapMap(stack).get(EquipmentSlot.MAINHAND);
+        //attributes = stack.getAttributeModifiers(EquipmentSlot.MAINHAND);
+        //deprecated actual attribute check because checking attributes to get mining speed is a bad idea for forge mods,
+        //as they check the mining speed during attribute resolve, creating a circular deadlock
         switch (type) {
             case "axe": {
                 return (float) AttributeProperty.getActualValue(attributes, AttributeRegistry.MINING_SPEED_AXE, 1);

@@ -44,16 +44,47 @@ public class OverlayModelProperty extends CodecBasedProperty<OverlayModelPropert
         property = this;
         MiapiItemModel.modelSuppliers.add((key, module, stack) -> {
             List<MiapiModel> models = new ArrayList<>();
-            for (OverlayModelData modelData : getData(module)) {
-                for (ItemModule.ModuleInstance moduleInstance : ItemModule.getModules(stack).allSubModules()) {
-                    if (!modelData.onlyOnSameModule() || moduleInstance.equals(module)) {
+            if(false){
+                for (OverlayModelData modelData : getData(module)) {
+                    for (ItemModule.ModuleInstance moduleInstance : ItemModule.getModules(stack).allSubModules()) {
+                        if (!modelData.onlyOnSameModule() || moduleInstance.equals(module)) {
+                            List<ModelProperty.ModelJson> list = ModelProperty.getJson(moduleInstance);
+
+                            list.forEach(modelJson -> {
+                                if (modelData.isValid(modelJson)) {
+                                    ModelHolder holder = ModelProperty.bakedModel(moduleInstance, modelJson, stack, key);
+                                    if (holder != null) {
+                                        ColorProvider colorProvider = modelData.getColorProvider(stack, module, moduleInstance, holder.colorProvider());
+                                        Sprite overWriteSprite = modelData.resolveSprite();
+                                        models.add(getBakedMiapiModel(
+                                                module,
+                                                stack,
+                                                modelData,
+                                                moduleInstance,
+                                                holder,
+                                                colorProvider,
+                                                overWriteSprite));
+                                    }
+                                }
+                            });
+                        }
+                    }
+                }
+
+            }
+
+            ItemModule.ModuleInstance moduleInstance = module;
+
+            for (ItemModule.ModuleInstance module2 : ItemModule.getModules(stack).allSubModules()) {
+                for (OverlayModelData modelData : getData(module2)) {
+                    if (!modelData.onlyOnSameModule() || moduleInstance.equals(module2)) {
                         List<ModelProperty.ModelJson> list = ModelProperty.getJson(moduleInstance);
 
                         list.forEach(modelJson -> {
                             if (modelData.isValid(modelJson)) {
                                 ModelHolder holder = ModelProperty.bakedModel(moduleInstance, modelJson, stack, key);
                                 if (holder != null) {
-                                    ColorProvider colorProvider = modelData.getColorProvider(stack, module, moduleInstance, holder.colorProvider());
+                                    ColorProvider colorProvider = modelData.getColorProvider(stack, module2, moduleInstance, holder.colorProvider());
                                     Sprite overWriteSprite = modelData.resolveSprite();
                                     models.add(getBakedMiapiModel(
                                             module,
