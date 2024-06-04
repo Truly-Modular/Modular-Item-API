@@ -34,6 +34,7 @@ import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.entity.ShieldingArmorFacet;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.forge.compat.ApotheosisCompat;
+import smartin.miapi.forge.compat.QuarkCompat;
 import smartin.miapi.modules.properties.AttributeProperty;
 import smartin.miapi.modules.properties.compat.ht_treechop.TreechopUtil;
 import smartin.miapi.registries.RegistryInventory;
@@ -52,6 +53,13 @@ public class TrulyModularForge {
         if (Environment.isClient()) {
             bus.register(new ClientModEvents());
             MinecraftForge.EVENT_BUS.register(new ClientEvents());
+        }
+        if(Platform.isModLoaded("quark")){
+            try{
+                QuarkCompat.setup();
+            }catch (Exception e){
+                Miapi.LOGGER.info("couldnt load quark compat",e);
+            }
         }
         bus.register(new ModEvents());
         MinecraftForge.EVENT_BUS.register(new ServerEvents());

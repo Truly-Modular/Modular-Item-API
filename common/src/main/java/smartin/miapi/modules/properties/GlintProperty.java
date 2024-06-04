@@ -3,7 +3,9 @@ package smartin.miapi.modules.properties;
 import com.google.gson.JsonElement;
 import com.mojang.serialization.JsonOps;
 import com.redpxnda.nucleus.codec.misc.MiscCodecs;
+import com.redpxnda.nucleus.event.PrioritizedEvent;
 import com.redpxnda.nucleus.util.Color;
+import dev.architectury.event.EventResult;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Util;
 import smartin.miapi.Miapi;
@@ -16,24 +18,25 @@ import smartin.miapi.registries.RegistryInventory;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * This property manages the Glint on the item
  */
 public class GlintProperty implements ModuleProperty {
     //TODO:add gui implementation
-    //TODO:fix me
-    //this should be re-thought for shader support
     public static GlintProperty property;
     public static final String KEY = "glint_settings";
 
     public static Map<String, GlintSettings> glintSettingsMap = new HashMap<>();
+    public static PrioritizedEvent<GlintGetter> GLINT_RESOLVE = PrioritizedEvent.createLoop();
 
-    public static GlintSettings defaultSettings = new RainbowGlintSettings();
+
+    public static GlintSettings defaultSettings = new SettingsControlledGlint();
 
     public GlintProperty() {
         property = this;
-        glintSettingsMap.put("rainbow", new RainbowGlintSettings());
+        glintSettingsMap.put("rainbow", new SettingsControlledGlint());
     }
 
     @Override
@@ -53,7 +56,9 @@ public class GlintProperty implements ModuleProperty {
                 return glintSettingsMap.get("type").get(instance, stack);
             }
         }
-        return defaultSettings;
+        AtomicReference<GlintSettings> reference = new AtomicReference<>(defaultSettings);
+        GLINT_RESOLVE.invoker().get(stack, instance, reference);
+        return reference.get();
     }
 
 
@@ -118,7 +123,7 @@ public class GlintProperty implements ModuleProperty {
         for (int i = 0; i < newColors.length; i++) {
             newColors[i] = MiapiConfig.INSTANCE.client.other.enchantColors.get(i);
         }
-        RainbowGlintSettings glintSettings = new RainbowGlintSettings();
+        SettingsControlledGlint glintSettings = new SettingsControlledGlint();
         glintSettings.colors = newColors;
         glintSettings.rainbowSpeed = MiapiConfig.INSTANCE.client.other.enchantingGlintSpeed;
         defaultSettings = glintSettings;
@@ -126,18 +131,16 @@ public class GlintProperty implements ModuleProperty {
     }
 
 
-    public static class RainbowGlintSettings implements GlintSettings {
+    public static class SettingsControlledGlint extends RainbowGlintSettings {
 
-        public float speed = 1;
-        public float rainbowSpeed = 1;
-        public float strength = 1;
-        public boolean shouldRenderGlint;
-        public Color[] colors;
+        public SettingsControlledGlint() {
+            super();
+        }
 
         @Override
         public GlintSettings get(ItemModule.ModuleInstance instance, ItemStack stack) {
             JsonElement element = instance.getProperties().get(property);
-            RainbowGlintSettings rainbowGlintSettings = new RainbowGlintSettings();
+            SettingsControlledGlint rainbowGlintSettings = new SettingsControlledGlint();
             rainbowGlintSettings.shouldRenderGlint = stack.hasGlint();
             if (element != null) {
                 if (element.getAsJsonObject().has("rainbowSpeed")) {
@@ -154,6 +157,26 @@ public class GlintProperty implements ModuleProperty {
                 }
             }
             return rainbowGlintSettings;
+        }
+    }
+
+    public static abstract class RainbowGlintSettings implements GlintSettings {
+
+        public float speed = 1;
+        public float rainbowSpeed = 1;
+        public float strength = 1;
+        public boolean shouldRenderGlint;
+        public Color[] colors;
+
+        public RainbowGlintSettings(float speed, float rainbowSpeed, float strength, boolean shouldRenderGlint, Color[] colors) {
+            this.speed = speed;
+            this.rainbowSpeed = rainbowSpeed;
+            this.strength = strength;
+            this.shouldRenderGlint = shouldRenderGlint;
+            this.colors = colors;
+        }
+
+        public RainbowGlintSettings() {
         }
 
         @Override
@@ -243,5 +266,9 @@ public class GlintProperty implements ModuleProperty {
         }
 
         boolean shouldRender();
+    }
+
+    public interface GlintGetter {
+        EventResult get(ItemStack itemStack, ItemModule.ModuleInstance moduleInstance, AtomicReference<GlintSettings> currentSettings);
     }
 }

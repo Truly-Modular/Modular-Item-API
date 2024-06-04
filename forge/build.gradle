@@ -69,6 +69,8 @@ dependencies {
 
     modCompileOnly "curse.maven:minecolonies-245506:5355518"
     modCompileOnly "curse.maven:apotheosis-313970:5317303"
+    modCompileOnly "curse.maven:quark-243121:5390424"
+    modCompileOnly "curse.maven:zenith-968868:5254672"
     modCompileOnly "maven.modrinth:treechop:${rootProject.forge_treechop_version}"
 
     //modApi files('libs/apoli-forge-1.20.1-2.9.0.4-all.jar')

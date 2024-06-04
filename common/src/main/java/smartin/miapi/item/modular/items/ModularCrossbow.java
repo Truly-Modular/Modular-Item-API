@@ -404,6 +404,7 @@ public class ModularCrossbow extends CrossbowItem implements ModularItem, Custom
         LoreProperty.appendLoreTop(stack, world, tooltip, context);
     }
 
+    @Override
     public Predicate<ItemStack> getProjectiles() {
         return itemStack -> projectile.test(itemStack) || IsCrossbowShootAble.canCrossbowShoot(itemStack);
     }
