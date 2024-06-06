@@ -20,7 +20,7 @@ public class ItemStackUtilMixin {
             require = -1
     )
     private static void miapi$adjustMiningLevel(ItemStack stack, IToolType toolType, CallbackInfoReturnable<Integer> cir) {
-        if (stack.getItem() instanceof ModularItem && toolType != null) {
+        if (stack.getItem() instanceof ModularItem && toolType != null && false) {
             int level = MiningLevelProperty.getMiningLevel(toolType.getName(), stack);
             if (level == 0) {
                 level = MiningLevelProperty.isSuitable(stack, toolType.getName()) ? 0 : -1;

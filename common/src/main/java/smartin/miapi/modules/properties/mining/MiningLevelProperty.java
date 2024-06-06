@@ -189,6 +189,9 @@ public class MiningLevelProperty implements ModuleProperty {
             case "hoe": {
                 return (float) AttributeProperty.getActualValue(attributes, AttributeRegistry.MINING_SPEED_HOE, 1);
             }
+            case "sword": {
+                return stack.getItem() instanceof SwordItem ? 1.5f : 0;
+            }
             default: {
                 return 1;
             }

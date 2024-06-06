@@ -1,16 +1,24 @@
 package smartin.miapi.forge.compat;
 
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
 import net.minecraft.block.BlockState;
+import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.entity.attribute.EntityAttribute;
+import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.ToolAction;
 import net.minecraftforge.common.ToolActions;
 import net.minecraftforge.common.extensions.IForgeItem;
+import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.modules.abilities.toolabilities.AxeAbility;
 import smartin.miapi.modules.abilities.toolabilities.HoeAbility;
 import smartin.miapi.modules.abilities.toolabilities.ShovelAbility;
 import smartin.miapi.modules.properties.AbilityMangerProperty;
 import smartin.miapi.modules.properties.mining.MiningLevelProperty;
+
+import static smartin.miapi.events.MiapiEvents.ITEM_STACK_ATTRIBUTE_EVENT;
 
 public interface ModularItemInject extends IForgeItem {
 
@@ -50,4 +58,12 @@ public interface ModularItemInject extends IForgeItem {
     default boolean isCorrectToolForDropsModular(ItemStack itemStack, BlockState blockState) {
         return MiningLevelProperty.isSuitable(itemStack, blockState);
     }
+
+    default Multimap<EntityAttribute, EntityAttributeModifier> getModularAttributeModifiers(EquipmentSlot slot, ItemStack stack)
+    {
+        Multimap<EntityAttribute, EntityAttributeModifier> attributes = ArrayListMultimap.create();
+        ITEM_STACK_ATTRIBUTE_EVENT.invoker().adjust(new MiapiEvents.ItemStackAttributeEventHolder(stack, slot, attributes));
+        return attributes;
+    }
+
 }

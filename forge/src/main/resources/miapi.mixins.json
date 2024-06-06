@@ -4,9 +4,6 @@
     "package": "smartin.miapi.forge.mixin",
     "compatibilityLevel": "JAVA_17",
     "mixins": [
-        "ItemAttributeModifierEventAccessor",
-        "ItemAttributeModifierEventMixin",
-        "ItemStackMixinHighPriority",
         "LivingEntityMixin",
         "compat.ItemStackUtilMixin",
         "item.ExampleModularItemMixin",
