@@ -37,6 +37,12 @@ public class MiapiClientConfig {
         @Comment("Whether Miapi displays \"Modular Material\" when no groups are present")
         @AutoCodec.Name("inject_lore_without_material_group")
         public boolean injectLoreWithoutGroup = false;
+        @Comment("Whether Miapi displays \"Modular Item\" at all")
+        @AutoCodec.Name("inject_lore_modular item")
+        public boolean injectLoreModularItem = true;
+        @Comment("Whether Miapi displays \"Modular Material\" at all")
+        @AutoCodec.Name("inject_lore_material")
+        public boolean injectLoreModularMaterial = true;
         @Comment("The color Miapi uses for its enchanting glint")
         @AutoCodec.Name("enchanting_glint_colors")
         public List<Color> enchantColors = List.of(Color.MAGENTA);

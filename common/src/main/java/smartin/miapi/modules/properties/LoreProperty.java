@@ -99,27 +99,32 @@ public class LoreProperty implements ModuleProperty {
 
         }
     }
+
     @Environment(EnvType.CLIENT)
     List<Text> addToolTipsClient(ItemStack itemStack) {
         List<Text> lines = new ArrayList<>();
-        Material material = materialLookupTable.computeIfAbsent(itemStack, itemStack1 -> MaterialProperty.getMaterialFromIngredient(itemStack));
-        if (material != null) {
-            int i = material.getGroups().size();
-            if (i == 1) {
-                if (MiapiConfig.INSTANCE.client.other.injectLoreWithoutGroup) {
-                    lines.add(gray(Text.translatable("miapi.ui.material_desc")));
-                }
-            } else {
-                Text materialDesc = gray(Text.translatable("miapi.ui.material_desc_alt"));
-                lines.add(materialDesc);
-                if (smartin.miapi.Environment.isClient()) {
-                    lines.addAll(getAltClient(material));
+        if (MiapiConfig.INSTANCE.client.other.injectLoreModularMaterial) {
+            Material material = materialLookupTable.computeIfAbsent(itemStack, itemStack1 -> MaterialProperty.getMaterialFromIngredient(itemStack));
+            if (material != null) {
+                int i = material.getGroups().size();
+                if (i == 1) {
+                    if (MiapiConfig.INSTANCE.client.other.injectLoreWithoutGroup) {
+                        lines.add(gray(Text.translatable("miapi.ui.material_desc")));
+                    }
+                } else {
+                    Text materialDesc = gray(Text.translatable("miapi.ui.material_desc_alt"));
+                    lines.add(materialDesc);
+                    if (smartin.miapi.Environment.isClient()) {
+                        lines.addAll(getAltClient(material));
+                    }
                 }
             }
         }
-        ItemStack converted = ModularItemStackConverter.getModularVersion(itemStack);
-        if (!ItemStack.areEqual(converted, itemStack) || itemStack.getItem() instanceof ModularItem) {
-            lines.add(format(Text.translatable("miapi.ui.modular_item"), Formatting.GRAY));
+        if (MiapiConfig.INSTANCE.client.other.injectLoreModularItem) {
+            ItemStack converted = ModularItemStackConverter.getModularVersion(itemStack);
+            if (!ItemStack.areEqual(converted, itemStack) || itemStack.getItem() instanceof ModularItem) {
+                lines.add(format(Text.translatable("miapi.ui.modular_item"), Formatting.GRAY));
+            }
         }
         return lines;
     }
@@ -139,21 +144,25 @@ public class LoreProperty implements ModuleProperty {
 
     List<Text> addToolTipsServer(ItemStack itemStack) {
         List<Text> lines = new ArrayList<>();
-        Material material = materialLookupTable.computeIfAbsent(itemStack, itemStack1 -> MaterialProperty.getMaterialFromIngredient(itemStack));
-        if (material != null) {
-            int i = material.getGroups().size();
-            if (i == 1) {
-                if (MiapiConfig.INSTANCE.client.other.injectLoreWithoutGroup) {
-                    lines.add(gray(Text.translatable("miapi.ui.material_desc")));
+        if (MiapiConfig.INSTANCE.client.other.injectLoreModularMaterial) {
+            Material material = materialLookupTable.computeIfAbsent(itemStack, itemStack1 -> MaterialProperty.getMaterialFromIngredient(itemStack));
+            if (material != null) {
+                int i = material.getGroups().size();
+                if (i == 1) {
+                    if (MiapiConfig.INSTANCE.client.other.injectLoreWithoutGroup) {
+                        lines.add(gray(Text.translatable("miapi.ui.material_desc")));
+                    }
+                } else {
+                    Text materialDesc = gray(Text.translatable("miapi.ui.material_desc_alt"));
+                    lines.add(materialDesc);
                 }
-            } else {
-                Text materialDesc = gray(Text.translatable("miapi.ui.material_desc_alt"));
-                lines.add(materialDesc);
             }
         }
-        ItemStack converted = ModularItemStackConverter.getModularVersion(itemStack);
-        if (!ItemStack.areEqual(converted, itemStack) || itemStack.getItem() instanceof ModularItem) {
-            lines.add(format(Text.translatable("miapi.ui.modular_item"), Formatting.GRAY));
+        if (MiapiConfig.INSTANCE.client.other.injectLoreModularItem) {
+            ItemStack converted = ModularItemStackConverter.getModularVersion(itemStack);
+            if (!ItemStack.areEqual(converted, itemStack) || itemStack.getItem() instanceof ModularItem) {
+                lines.add(format(Text.translatable("miapi.ui.modular_item"), Formatting.GRAY));
+            }
         }
         return lines;
     }
