@@ -128,7 +128,7 @@ public class EnchantmentHelperMixin {
 
     @Inject(
             method = "getLevel(Lnet/minecraft/enchantment/Enchantment;Lnet/minecraft/item/ItemStack;)I",
-            at = @At("TAIL"),
+            at = @At("RETURN"),
             cancellable = true)
     private static void miapi$modifyPossibleEntries(Enchantment enchantment, ItemStack stack, CallbackInfoReturnable<Integer> cir) {
         if (stack.getItem() instanceof ModularItem) {

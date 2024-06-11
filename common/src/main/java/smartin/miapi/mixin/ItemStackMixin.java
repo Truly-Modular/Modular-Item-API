@@ -11,7 +11,6 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Slice;
@@ -35,9 +34,6 @@ import java.util.function.Consumer;
 
 @Mixin(value = ItemStack.class, priority = 2000)
 abstract class ItemStackMixin {
-
-    @Shadow
-    public abstract ItemStack setCustomName(Text name);
 
     @Inject(
             method = "getHideFlags()I",
@@ -72,7 +68,7 @@ abstract class ItemStackMixin {
     private void miapi$getItemCallback(CallbackInfoReturnable<Item> cir) {
         ItemStack stack = (ItemStack) (Object) this;
         if (cir.getReturnValue() instanceof ModularSetableToolMaterial toolMaterial) {
-            //toolMaterial.setToolMaterial(stack);
+            toolMaterial.setToolMaterial(stack);
         }
     }
 

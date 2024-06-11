@@ -14,6 +14,7 @@ import smartin.miapi.client.gui.crafting.crafter.replace.MaterialCraftingWidget;
 import smartin.miapi.craft.CraftAction;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.properties.DurabilityProperty;
 import smartin.miapi.modules.properties.util.CraftingProperty;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
@@ -71,7 +72,7 @@ public class AllowedMaterial implements CraftingProperty, ModuleProperty {
 
     public Text getWarning() {
         if (wrongMaterial) {
-            if(smithingMaterial){
+            if (smithingMaterial) {
                 Text.translatable(Miapi.MOD_ID + ".ui.craft.warning.material.wrong.smithing");
             }
             return Text.translatable(Miapi.MOD_ID + ".ui.craft.warning.material.wrong");
@@ -150,6 +151,12 @@ public class AllowedMaterial implements CraftingProperty, ModuleProperty {
         }
         assert newModule != null;
         MaterialProperty.setMaterial(newModule, material.getKey());
+        int durability = DurabilityProperty.property.getValueForModule(newModule, 0.0).intValue();
+        if (crafting.isDamageable()) {
+            int healDmg = crafting.getDamage() - Math.min(durability, crafting.getDamage());
+            crafting.setDamage(healDmg);
+        }
+
         newModule.getRoot().writeToItem(crafting);
         //materialStack.setCount(1);
         MiapiEvents.MaterialCraftEventData eventData = new MiapiEvents.MaterialCraftEventData(crafting, materialStack, material, newModule, craftAction);

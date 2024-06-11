@@ -3,3 +3,6 @@
 - improved better combat range calculations
 - added config to toggle lore on Modular Items/Materials
 - minor fix for nbt materials
+- improved enchantability detection
+- swapping modules will now repair modular items
+- silent step will also block the sound, not just the event now
