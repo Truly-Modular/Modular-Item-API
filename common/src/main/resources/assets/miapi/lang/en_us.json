@@ -88,6 +88,8 @@
     "miapi.ability.heavy_attack.lore": "Right Click for Charged Attack",
     "miapi.ability.block.lore": "Right Click to Block",
     "miapi.ability.throw.lore": "Throwable",
+    "miapi.ability.area_harvest_ability.title": "AoE Harvest",
+    "miapi.ability.area_harvest_ability.description": "Will instantly harvest all crops and replant them in area on rightclicking a crop",
     "miapi.attribute.name.stun_max_health": "Stun Protection",
     "miapi.attribute.name.stun_damage": "Stun",
     "miapi.attribute.name.shielding_armor": "Shielding Armor",

@@ -577,6 +577,7 @@ public class RegistryInventory {
             registerMiapi(useAbilityRegistry, HoeAbility.KEY, new HoeAbility());
             registerMiapi(useAbilityRegistry, ShovelAbility.KEY, new ShovelAbility());
             registerMiapi(useAbilityRegistry, EatAbility.KEY, new EatAbility());
+            registerMiapi(useAbilityRegistry, AreaHarvestReplant.KEY, new AreaHarvestReplant());
 
             Miapi.LOGGER.info("Registered Truly Modulars Property resolvers:");
             PropertyResolver.registry.forEach((pair) -> {

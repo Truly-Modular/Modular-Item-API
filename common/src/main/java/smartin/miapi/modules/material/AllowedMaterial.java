@@ -151,17 +151,19 @@ public class AllowedMaterial implements CraftingProperty, ModuleProperty {
         }
         assert newModule != null;
         MaterialProperty.setMaterial(newModule, material.getKey());
-        int durability = DurabilityProperty.property.getValueForModule(newModule, 0.0).intValue();
-        if (crafting.isDamageable()) {
-            int healDmg = crafting.getDamage() - Math.min(durability, crafting.getDamage());
-            crafting.setDamage(healDmg);
-        }
 
         newModule.getRoot().writeToItem(crafting);
         //materialStack.setCount(1);
         MiapiEvents.MaterialCraftEventData eventData = new MiapiEvents.MaterialCraftEventData(crafting, materialStack, material, newModule, craftAction);
         MiapiEvents.MATERIAL_CRAFT_EVENT.invoker().craft(eventData);
         crafting = eventData.crafted;
+        if (crafting.isDamageable()) {
+            Miapi.LOGGER.info("dmg " + crafting.getDamage());
+            int durability = DurabilityProperty.property.getValueForModule(craftAction.getModifyingModuleInstance(crafting), 0.0).intValue();
+            Miapi.LOGGER.info("set dmg to " + (crafting.getDamage() - durability));
+            crafting.setDamage(crafting.getDamage() - durability);
+            Miapi.LOGGER.info("set dmg end " + crafting.getDamage());
+        }
         results.add(crafting);
         results.add(input);
         return results;
