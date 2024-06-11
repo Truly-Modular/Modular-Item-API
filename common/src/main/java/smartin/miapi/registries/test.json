@@ -1,19 +1,41 @@
 {
     "properties": {
         "attribute_split": {
-            "minecraft:attack_damage": {
+            "miapi:generic.mining_speed.pickaxe": {
                 "slot": "mainhand",
-                "suplements": [
+                "supplements": [
                     {
-                        "attribute": "odysseynexus:ice_damage",
-                        "percentage": "50"
+                        "attribute": "miapi:generic.magic_damage",
+                        "percentage": "1.0"
                     },
                     {
-                        "attribute": "odysseynexus:fire_damage",
-                        "percentage": "50"
+                        "attribute": "miapi:generic.mining_speed.pickaxe",
+                        "percentage": "-1.0"
                     }
                 ]
             }
-        }
+        },
+        "material": "iron"
+    },
+    "test2": {
+        "ability_context": {
+            "area_harvest_ability": {
+                "block_range": "[material.mining_level]"
+            }
+        },
+        "gui_stat": {
+            "area_harvest_ability": {
+                "value": "[material.mining_level]",
+                "min": 0,
+                "max": 4,
+                "header": {
+                    "translate": "miapi.ability.area_harvest_ability.title"
+                },
+                "description": {
+                    "translate": "miapi.ability.area_harvest_ability.header"
+                }
+            }
+        },
+        "material": "iron"
     }
 }

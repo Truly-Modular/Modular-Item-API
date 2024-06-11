@@ -23,7 +23,7 @@ public class EnchantAbilityProperty extends DoubleProperty {
         List<ItemModule.ModuleInstance> moduleInstances = ItemModule.getModules(itemStack).allSubModules();
         List<Double> enchantAbilities = moduleInstances.stream().map(moduleInstance -> getEnchantAbility(moduleInstance)).sorted().collect(Collectors.toList());
         if (enchantAbilities.isEmpty()) {
-            return 1.0;
+            return 15.0;
         }
         if (enchantAbilities.size() > 1) {
             enchantAbilities.remove(0);
@@ -31,18 +31,18 @@ public class EnchantAbilityProperty extends DoubleProperty {
         return enchantAbilities.stream()
                 .mapToDouble(Double::doubleValue)
                 .average()
-                .orElse(1.0);
+                .orElse(15.0);
     }
 
     public static double getEnchantAbility(ItemModule.ModuleInstance instance) {
         if (instance.getProperties().containsKey(property)) {
-            return Math.max(1, property.getValueForModule(instance, 1.0));
+            return Math.max(1, property.getValueForModule(instance, 15.0));
         }
         Material material = MaterialProperty.getMaterial(instance);
         if (material != null) {
             return Math.max(1, material.getDouble("enchantability"));
         }
-        return 1.0;
+        return 15.0;
     }
 
     @Override

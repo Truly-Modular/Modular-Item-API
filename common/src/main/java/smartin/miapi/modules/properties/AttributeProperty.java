@@ -500,35 +500,7 @@ public class AttributeProperty implements ModuleProperty {
             return uuidCache.get(equipmentSlot);
         }
         String slotidString = equipmentSlot.getName() + "-" + equipmentSlot.getEntitySlotId() + "-" + equipmentSlot.getArmorStandSlotId();
-        try {
-            // Create a MessageDigest instance with the desired hashing algorithm (e.g., MD5 or SHA-1).
-            MessageDigest md = MessageDigest.getInstance("MD5");
-
-            // Update the digest with the bytes of the input string.
-            md.update(slotidString.getBytes());
-
-            // Get the hash bytes and convert them to a long.
-            byte[] hashBytes = md.digest();
-            long mostSigBits = 0;
-            long leastSigBits = 0;
-
-            for (int i = 0; i < 8; i++) {
-                mostSigBits = (mostSigBits << 8) | (hashBytes[i] & 0xff);
-            }
-
-            for (int i = 8; i < 16; i++) {
-                leastSigBits = (leastSigBits << 8) | (hashBytes[i] & 0xff);
-            }
-
-            // Create a UUID using the most and least significant bits.
-            UUID uuid = new UUID(mostSigBits, leastSigBits);
-            uuidCache.put(equipmentSlot, uuid);
-            return uuid;
-
-        } catch (NoSuchAlgorithmException e) {
-            Miapi.LOGGER.warn("could not onReload UUID generator - Attributes are likely to be broken now");
-            return UUID.fromString("d3b89c4c-68ff-11ee-8c99-0242ac120002");
-        }
+        return getUUIDForSlot(slotidString);
     }
 
     public static Map<EquipmentSlot, Map<EntityAttributeModifier.Operation, UUID>> slotCacheLookUP = new HashMap<>();
@@ -543,7 +515,28 @@ public class AttributeProperty implements ModuleProperty {
         if (slotCacheLookUP.containsKey(equipmentSlot) && slotCacheLookUP.get(equipmentSlot).containsKey(operation)) {
             return slotCacheLookUP.get(equipmentSlot).get(operation);
         }
-        String slotidString = equipmentSlot.getName() + "-" + equipmentSlot.getEntitySlotId() + "-" + equipmentSlot.getArmorStandSlotId() + "-" + operation.toString();
+        UUID uuid = getUUIDForSlot(equipmentSlot, operation, "");
+        Map<EntityAttributeModifier.Operation, UUID> cache = slotCacheLookUP.getOrDefault(equipmentSlot, new HashMap<>());
+        cache.put(operation, uuid);
+        slotCacheLookUP.put(equipmentSlot, cache);
+        return uuid;
+    }
+
+    /**
+     * Generates a unique uuid for the slot to prevent collisions
+     *
+     * @param equipmentSlot
+     * @return a unique UUID for the slot
+     */
+    public static UUID getUUIDForSlot(EquipmentSlot equipmentSlot, EntityAttributeModifier.Operation operation, String context) {
+        if (slotCacheLookUP.containsKey(equipmentSlot) && slotCacheLookUP.get(equipmentSlot).containsKey(operation)) {
+            return slotCacheLookUP.get(equipmentSlot).get(operation);
+        }
+        String slotidString = equipmentSlot.getName() + "-" + equipmentSlot.getEntitySlotId() + "-" + equipmentSlot.getArmorStandSlotId() + "-" + operation.toString() + context;
+        return getUUIDForSlot(slotidString);
+    }
+
+    public static UUID getUUIDForSlot(String slotidString) {
         try {
             // Create a MessageDigest instance with the desired hashing algorithm (e.g., MD5 or SHA-1).
             MessageDigest md = MessageDigest.getInstance("MD5");
@@ -563,13 +556,7 @@ public class AttributeProperty implements ModuleProperty {
             for (int i = 8; i < 16; i++) {
                 leastSigBits = (leastSigBits << 8) | (hashBytes[i] & 0xff);
             }
-
-            // Create a UUID using the most and least significant bits.
-            UUID uuid = new UUID(mostSigBits, leastSigBits);
-            Map<EntityAttributeModifier.Operation, UUID> cache = slotCacheLookUP.getOrDefault(equipmentSlot, new HashMap<>());
-            cache.put(operation, uuid);
-            slotCacheLookUP.put(equipmentSlot, cache);
-            return uuid;
+            return new UUID(mostSigBits, leastSigBits);
 
         } catch (NoSuchAlgorithmException e) {
             Miapi.LOGGER.warn("could not onReload UUID generator - Attributes are likely to be broken now");

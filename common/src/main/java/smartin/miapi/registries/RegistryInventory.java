@@ -556,6 +556,7 @@ public class RegistryInventory {
             registerMiapi(moduleProperties, RapidfireCrossbowProperty.KEY, new RapidfireCrossbowProperty());
             registerMiapi(moduleProperties, MagazineCrossbowShotDelay.KEY, new MagazineCrossbowShotDelay());
             registerMiapi(moduleProperties, HandheldItemProperty.KEY, new HandheldItemProperty());
+            registerMiapi(moduleProperties, AttributeSplitProperty.KEY, new AttributeSplitProperty());
             //compat
             registerMiapi(moduleProperties, BetterCombatProperty.KEY, new BetterCombatProperty());
             registerMiapi(moduleProperties, ApoliPowersProperty.KEY, new ApoliPowersProperty());
@@ -577,6 +578,7 @@ public class RegistryInventory {
             registerMiapi(useAbilityRegistry, HoeAbility.KEY, new HoeAbility());
             registerMiapi(useAbilityRegistry, ShovelAbility.KEY, new ShovelAbility());
             registerMiapi(useAbilityRegistry, EatAbility.KEY, new EatAbility());
+            registerMiapi(useAbilityRegistry, AreaHarvestReplant.KEY, new AreaHarvestReplant());
 
             Miapi.LOGGER.info("Registered Truly Modulars Property resolvers:");
             PropertyResolver.registry.forEach((pair) -> {

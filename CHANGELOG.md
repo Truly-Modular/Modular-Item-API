@@ -6,3 +6,5 @@
 - improved enchantability detection
 - swapping modules will now repair modular items
 - silent step will also block the sound, not just the event now
+- added harvest ability
+- added attribute split property
