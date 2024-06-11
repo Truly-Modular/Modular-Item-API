@@ -1,5 +1,6 @@
 package smartin.miapi.client;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.redpxnda.nucleus.impl.ShaderRegistry;
 import dev.architectury.event.events.client.ClientLifecycleEvent;
 import dev.architectury.event.events.client.ClientPlayerEvent;
@@ -146,7 +147,7 @@ public class MiapiClient {
                 StatListWidget.reloadEnd();
             }
         });
-        if(sodiumLoaded){
+        if (sodiumLoaded) {
             ClientEvents.HUD_RENDER.register((drawContext, deltaTick) -> MaterialSpriteManager.onHudRender(drawContext));
         }
     }
@@ -163,13 +164,13 @@ public class MiapiClient {
         }
     }
 
-    public static boolean isSodiumLoaded(){
-        if(
+    public static boolean isSodiumLoaded() {
+        if (
                 Platform.isModLoaded("sodium") ||
                 Platform.isModLoaded("embeddium") ||
                 Platform.isModLoaded("magnesium") ||
                 Platform.isModLoaded("rubidium")
-        ){
+        ) {
             return true;
         }
         return false;
@@ -195,19 +196,32 @@ public class MiapiClient {
     }
 
     protected static void clientSetup(MinecraftClient client) {
-        MinecraftClient mc = MinecraftClient.getInstance();
-        mc.getTextureManager();
-        SpriteLoader.setup();
+        runOnClientEnsured(() -> {
+            MinecraftClient mc = MinecraftClient.getInstance();
+            mc.getTextureManager();
+            SpriteLoader.setup();
+        });
+    }
+
+    public static void runOnClientEnsured(Runnable runnable) {
+        if (RenderSystem.isOnRenderThreadOrInit()) {
+            runnable.run();
+        } else {
+            MinecraftClient mc = MinecraftClient.getInstance();
+            mc.execute(runnable);
+        }
     }
 
     protected static void clientStart(MinecraftClient client) {
-        MinecraftClient mc = MinecraftClient.getInstance();
-        //Load StatDisplayClass
-        mc.getTextureManager();
-        materialAtlasManager = new MaterialAtlasManager(mc.getTextureManager());
-        ((ReloadableResourceManagerImpl) mc.getResourceManager()).registerReloader(materialAtlasManager);
-        //((ReloadableResourceManagerImpl) mc.getResourceManager()).registerReloader(new AltModelAtlasManager(mc.getTextureManager()));
-        CryoStatusEffect.setupOnClient();
+        runOnClientEnsured(() -> {
+            MinecraftClient mc = MinecraftClient.getInstance();
+            //Load StatDisplayClass
+            mc.getTextureManager();
+            materialAtlasManager = new MaterialAtlasManager(mc.getTextureManager());
+            ((ReloadableResourceManagerImpl) mc.getResourceManager()).registerReloader(materialAtlasManager);
+            //((ReloadableResourceManagerImpl) mc.getResourceManager()).registerReloader(new AltModelAtlasManager(mc.getTextureManager()));
+            CryoStatusEffect.setupOnClient();
+        });
     }
 
     protected static void clientLevelLoad(ClientWorld clientWorld) {
@@ -232,11 +246,14 @@ public class MiapiClient {
         /*ShaderRegistry.register(
                 new Identifier(Miapi.MOD_ID, "rendertype_translucent_material"),
                 VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL, s -> RegistryInventory.Client.translucentMaterialShader = s);*/
-        ShaderRegistry.register(
-                new Identifier(Miapi.MOD_ID, "rendertype_entity_translucent_material"),
-                VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL, s -> RegistryInventory.Client.entityTranslucentMaterialShader = s);
-        ShaderRegistry.register(
-                new Identifier(Miapi.MOD_ID, "rendertype_item_glint"),
-                VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL, s -> glintShader = s);
+
+        runOnClientEnsured(() -> {
+            ShaderRegistry.register(
+                    new Identifier(Miapi.MOD_ID, "rendertype_entity_translucent_material"),
+                    VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL, s -> RegistryInventory.Client.entityTranslucentMaterialShader = s);
+            ShaderRegistry.register(
+                    new Identifier(Miapi.MOD_ID, "rendertype_item_glint"),
+                    VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL, s -> glintShader = s);
+        });
     }
 }

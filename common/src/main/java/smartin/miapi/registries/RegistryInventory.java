@@ -593,47 +593,16 @@ public class RegistryInventory {
         public static ShaderProgram entityTranslucentMaterialShader;
         public static ShaderProgram glintShader;
 
-        /*public static final RenderLayer translucentMaterialRenderType = RenderLayer.of(
-                "miapi_translucent_material", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL, VertexFormat.DrawMode.QUADS,
-                0x200000, true, true,
-                RenderLayer.MultiPhaseParameters.builder()
-                        .lightmap(ENABLE_LIGHTMAP).program(new RenderPhase.ShaderProgram(() -> translucentMaterialShader))
-                        .texture(MIPMAP_BLOCK_ATLAS_TEXTURE)
-                        .transparency(TRANSLUCENT_TRANSPARENCY)
-                        .target(TRANSLUCENT_TARGET).build(true));*/
-        public static final RenderLayer entityTranslucentMaterialRenderType = RenderLayer.of(
-                "miapi_entity_translucent_material",
-                VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL,
-                VertexFormat.DrawMode.QUADS,
-                256, true, true,
-                RenderLayer.MultiPhaseParameters.builder()
-                        /*.program(new RenderPhase.ShaderProgram(() -> {
-                            int id = 10*//*MinecraftClient.getInstance().getTextureManager().getTexture(MaterialAtlasManager.MATERIAL_ATLAS_ID).getGlId()*//*;
-                            RenderSystem.setShaderTexture(id, MaterialAtlasManager.MATERIAL_ATLAS_ID);
-                            RenderSystem.bindTexture(id);
-                            int j = RenderSystem.getShaderTexture(id);
-                            entityTranslucentMaterialShader.addSampler("MaterialAtlas", j);
-                            //entityTranslucentMaterialShader.getUniform("materialUV").set(0, 3);
-                            //entityTranslucentMaterialShader.getUniformOrDefault("materialUV").set(0,5);
-                            return entityTranslucentMaterialShader;
-                        }))*/
-                        .program(new RenderPhase.ShaderProgram(() -> entityTranslucentMaterialShader))
-                        .texture(Textures.create().add(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, false, false).add(MaterialAtlasManager.MATERIAL_ATLAS_ID, false, false).build())
-                        .transparency(TRANSLUCENT_TRANSPARENCY)
-                        .overlay(DISABLE_OVERLAY_COLOR)
-                        .depthTest(LEQUAL_DEPTH_TEST)
-                        .lightmap(ENABLE_LIGHTMAP).build(true)
-        );
-
-        public static final Texturing ENTITY_GLINT_TEXTURING = new Texturing("miapi_glint_direct", () -> setupGlintTexturing(0.16f), () -> RenderSystem.resetTextureMatrix());
-
         public static final RenderLayer modularItemGlint = RenderLayer.of(
-                "miapi_glint_direct:immediatelyfast:renderlast",
+                "miapi_glint_direct|immediatelyfast:renderlast",
                 VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL,
                 VertexFormat.DrawMode.QUADS,
                 256, true, true,
                 RenderLayer.MultiPhaseParameters.builder()
                         .program(new RenderPhase.ShaderProgram(() -> {
+                            if (!RenderSystem.isOnRenderThreadOrInit()) {
+                                throw new RuntimeException("attempted miapi glint setup on-non-render thread. Please report this to Truly Modular");
+                            }
                             glintShader.bind();
                             //glintShader.addSampler("CustomGlintTexture",BLOCK_ATLAS_TEXTURE);
                             int id = 10;
