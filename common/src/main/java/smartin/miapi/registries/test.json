@@ -1,21 +1,20 @@
 {
     "properties": {
         "attribute_split": {
-            "miapi:generic.mining_speed.pickaxe": {
+            "minecraft:attack_damage": {
                 "slot": "mainhand",
-                "supplements": [
+                "suplements": [
                     {
-                        "attribute": "miapi:generic.magic_damage",
-                        "percentage": "1.0"
+                        "attribute": "odysseynexus:ice_damage",
+                        "percentage": "50"
                     },
                     {
-                        "attribute": "miapi:generic.mining_speed.pickaxe",
-                        "percentage": "-1.0"
+                        "attribute": "odysseynexus:fire_damage",
+                        "percentage": "50"
                     }
                 ]
             }
-        },
-        "material": "iron"
+        }
     },
     "test2": {
         "ability_context": {
