@@ -1,40 +1,36 @@
 {
-    "properties": {
-        "attribute_split": {
-            "minecraft:attack_damage": {
-                "slot": "mainhand",
-                "suplements": [
-                    {
-                        "attribute": "odysseynexus:ice_damage",
-                        "percentage": "50"
-                    },
-                    {
-                        "attribute": "odysseynexus:fire_damage",
-                        "percentage": "50"
-                    }
-                ]
-            }
-        }
-    },
-    "test2": {
-        "ability_context": {
-            "area_harvest_ability": {
-                "block_range": "[material.mining_level]"
-            }
+    "type": "tag",
+    "blade": {
+        "condition": {
+            "type": "true"
         },
-        "gui_stat": {
-            "area_harvest_ability": {
-                "value": "[material.mining_level]",
-                "min": 0,
-                "max": 4,
-                "header": {
-                    "translate": "miapi.ability.area_harvest_ability.title"
-                },
-                "description": {
-                    "translate": "miapi.ability.area_harvest_ability.header"
+        "merge": {
+            "attribute_split": {
+                "minecraft:generic.attack_damage": {
+                    "mainhand": [
+                        {
+                            "attribute": "minecraft:generic.attack_damage",
+                            "percentage": "[material.alembic:physical_damage]"
+                        },
+                        {
+                            "attribute": "alembic:alchemical_damage",
+                            "percentage": "[material.alembic:alchemical_damage]"
+                        },
+                        {
+                            "attribute": "alembic:arcane_damage",
+                            "percentage": "[material.alembic:arcane_damage]"
+                        },
+                        {
+                            "attribute": "alembic:fire_damage",
+                            "percentage": "[material.alembic:fire_damage]"
+                        },
+                        {
+                            "attribute": "alembic:true_damage",
+                            "percentage": "[material.alembic:true_damage]"
+                        }
+                    ]
                 }
             }
-        },
-        "material": "iron"
+        }
     }
 }

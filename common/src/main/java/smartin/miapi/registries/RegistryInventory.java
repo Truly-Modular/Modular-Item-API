@@ -15,7 +15,6 @@ import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.MapColor;
 import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.block.enums.Instrument;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.ShaderProgram;
@@ -24,6 +23,8 @@ import net.minecraft.client.render.RenderPhase;
 import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.texture.SpriteAtlasTexture;
+import net.minecraft.component.Component;
+import net.minecraft.component.ComponentType;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.entity.attribute.ClampedEntityAttribute;
@@ -108,6 +109,7 @@ public class RegistryInventory {
 
     public static final MiapiRegistrar<Item> modularItems = MiapiRegistrar.of(registrar.get().get(RegistryKeys.ITEM));
     public static final Registrar<Item> items = registrar.get().get(RegistryKeys.ITEM);
+    public static final Registrar<ComponentType<?>> components = registrar.get().get(RegistryKeys.DATA_COMPONENT_TYPE);
     public static final Registrar<Block> blocks = registrar.get().get(RegistryKeys.BLOCK);
     public static final Registrar<BlockEntityType<?>> blockEntities = registrar.get().get(RegistryKeys.BLOCK_ENTITY_TYPE);
     public static final Registrar<EntityAttribute> attributes = registrar.get().get(RegistryKeys.ATTRIBUTE);
@@ -121,14 +123,14 @@ public class RegistryInventory {
     public static final MiapiRegistry<ItemModule> modules = MiapiRegistry.getInstance(ItemModule.class);
     public static final MiapiRegistry<EditOption> editOptions = MiapiRegistry.getInstance(EditOption.class);
     public static final MiapiRegistry<CraftingStat> craftingStats = MiapiRegistry.getInstance(CraftingStat.class);
-    public static final TagKey<Item> MIAPI_FORBIDDEN_TAG = TagKey.of(RegistryKeys.ITEM, new Identifier("miapi_forbidden"));
+    public static final TagKey<Item> MIAPI_FORBIDDEN_TAG = TagKey.of(RegistryKeys.ITEM, Identifier.of("miapi_forbidden"));
 
     public static <T> RegistrySupplier<T> registerAndSupply(Registrar<T> rg, Identifier id, Supplier<T> object) {
         return rg.register(id, object);
     }
 
     public static <T> RegistrySupplier<T> registerAndSupply(Registrar<T> rg, String id, Supplier<T> object) {
-        return registerAndSupply(rg, new Identifier(MOD_ID, id), object);
+        return registerAndSupply(rg, Identifier.of(MOD_ID, id), object);
     }
 
     public static <T, E extends T> void register(Registrar<T> rg, Identifier id, Supplier<E> object, Consumer<E> onRegister) {
@@ -136,7 +138,7 @@ public class RegistryInventory {
     }
 
     public static <T, E extends T> void register(Registrar<T> rg, String id, Supplier<E> object, Consumer<E> onRegister) {
-        register(rg, new Identifier(MOD_ID, id), object, onRegister);
+        register(rg, Identifier.of(MOD_ID, id), object, onRegister);
     }
 
     public static <T> void register(Registrar<T> rg, Identifier id, Supplier<T> object) {
@@ -144,7 +146,7 @@ public class RegistryInventory {
     }
 
     public static <T> void register(Registrar<T> rg, String id, Supplier<T> object) {
-        register(rg, new Identifier(MOD_ID, id), object);
+        register(rg, Identifier.of(MOD_ID, id), object);
     }
 
     public static <T> void registerMiapi(MiapiRegistry<T> rg, String id, T object) {
@@ -169,7 +171,7 @@ public class RegistryInventory {
      * @param onRegister Callback for after the attribute is actually registered. Use this to set static fields
      */
     public static void registerAtt(String id, boolean attach, Supplier<EntityAttribute> sup, Consumer<EntityAttribute> onRegister) {
-        Identifier rl = new Identifier(MOD_ID, id);
+        Identifier rl = Identifier.of(MOD_ID, id);
         String stringId = rl.toString();
 
         RegistrySupplier<EntityAttribute> obj = attributes.register(rl, sup); // actually register the object
@@ -209,6 +211,7 @@ public class RegistryInventory {
     public static ScreenHandlerType<CraftingScreenHandler> craftingScreenHandler;
 
     public static void setup() {
+
         //SCREEN
         register(screenHandlers, "default_crafting", () ->
                         new ScreenHandlerType<>(CraftingScreenHandler::new, FeatureSet.empty()),
@@ -589,7 +592,7 @@ public class RegistryInventory {
 
     @Environment(EnvType.CLIENT)
     public static class Client {
-        public static final Identifier customGlintTexture = new Identifier(MOD_ID, "textures/custom_glint.png");
+        public static final Identifier customGlintTexture = Identifier.of(MOD_ID, "textures/custom_glint.png");
 
         //public static ShaderProgram translucentMaterialShader;
         public static ShaderProgram entityTranslucentMaterialShader;

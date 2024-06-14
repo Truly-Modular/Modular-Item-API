@@ -50,11 +50,11 @@ dependencies {
     // Remove the next line if you don't want to depend on the API
     modApi "dev.architectury:architectury:${rootProject.architectury_version}"
 
-    modApi "com.redpxnda.nucleus:nucleus-core-common:${rootProject.minecraft_version}+${rootProject.nucleus_core_version}"
-    modApi "com.redpxnda.nucleus:nucleus-codec-common:${rootProject.minecraft_version}+${rootProject.nucleus_codec_version}"
-    modApi "com.redpxnda.nucleus:nucleus-config-common:${rootProject.minecraft_version}+${rootProject.nucleus_config_version}"
-    modApi "com.redpxnda.nucleus:nucleus-pose-common:${rootProject.minecraft_version}+${rootProject.nucleus_pose_version}"
-    modApi "com.redpxnda.nucleus:nucleus-facet-common:${rootProject.minecraft_version}+${rootProject.nucleus_facet_version}"
+    //modApi "com.redpxnda.nucleus:nucleus-core-common:${rootProject.minecraft_version}+${rootProject.nucleus_core_version}"
+    //modApi "com.redpxnda.nucleus:nucleus-codec-common:${rootProject.minecraft_version}+${rootProject.nucleus_codec_version}"
+    //modApi "com.redpxnda.nucleus:nucleus-config-common:${rootProject.minecraft_version}+${rootProject.nucleus_config_version}"
+    //modApi "com.redpxnda.nucleus:nucleus-pose-common:${rootProject.minecraft_version}+${rootProject.nucleus_pose_version}"
+    //modApi "com.redpxnda.nucleus:nucleus-facet-common:${rootProject.minecraft_version}+${rootProject.nucleus_facet_version}"
 
     //https://modrinth.com/mod/treechop/version/tIdTnzkf
 
@@ -78,7 +78,7 @@ dependencies {
     modCompileOnly "dev.latvian.mods:rhino:${rootProject.rhino_version}"
     modCompileOnly "dev.latvian.mods:kubejs:${rootProject.kjs_version}"
 
-    modImplementation "software.bernie.geckolib:geckolib-fabric-${minecraft_version}:${geckolib_version}"
+    modImplementation "software.bernie.geckolib:geckolib-fabric-1.20.1:${geckolib_version}"
 
     if ("${rootProject.run_with_bettercombat}" == "true") {
         modImplementation 'dev.kosmx.player-anim:player-animation-lib:1.0.2-rc1+1.20'
@@ -95,7 +95,7 @@ dependencies {
 }
 
 architectury {
-    common("fabric", "forge")
+    common("fabric", "neoforge")
 }
 
 tasks.register('githubPublish') {

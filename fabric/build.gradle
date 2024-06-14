@@ -99,13 +99,14 @@ dependencies {
     /*modApi "dev.latvian.mods:rhino-fabric:${rootProject.rhino_version}"
     modApi "dev.latvian.mods:kubejs-fabric:${rootProject.kjs_version}"*/
 
-    modImplementation "software.bernie.geckolib:geckolib-fabric-${minecraft_version}:${geckolib_version}"
+    modImplementation "software.bernie.geckolib:geckolib-fabric-1.20.1:${geckolib_version}"
 
-    modApi(include("com.redpxnda.nucleus:nucleus-core-fabric:${rootProject.minecraft_version}+${rootProject.nucleus_core_version}"))
-    modApi(include("com.redpxnda.nucleus:nucleus-codec-fabric:${rootProject.minecraft_version}+${rootProject.nucleus_codec_version}"))
-    modApi(include("com.redpxnda.nucleus:nucleus-config-fabric:${rootProject.minecraft_version}+${rootProject.nucleus_config_version}"))
-    modApi(include("com.redpxnda.nucleus:nucleus-pose-fabric:${rootProject.minecraft_version}+${rootProject.nucleus_pose_version}"))
-    modApi(include("com.redpxnda.nucleus:nucleus-facet-fabric:${rootProject.minecraft_version}+${rootProject.nucleus_facet_version}"))
+    //modApi(include("com.redpxnda.nucleus:nucleus-core-fabric:${rootProject.minecraft_version}+${rootProject.nucleus_core_version}"))
+    //modApi(include("com.redpxnda.nucleus:nucleus-codec-fabric:${rootProject.minecraft_version}+${rootProject.nucleus_codec_version}"))
+    //modApi(include("com.redpxnda.nucleus:nucleus-config-fabric:${rootProject.minecraft_version}+${rootProject.nucleus_config_version}"))
+    //modApi(include("com.redpxnda.nucleus:nucleus-pose-fabric:${rootProject.minecraft_version}+${rootProject.nucleus_pose_version}"))
+    //modApi(include("com.redpxnda.nucleus:nucleus-facet-fabric:${rootProject.minecraft_version}+${rootProject.nucleus_facet_version}"))
+
 
     //modLocalRuntime tasks.getByName("buildWithArsenal").outputs.files
     //modLocalRuntime tasks.getByName("buildWithArchery").outputs.files

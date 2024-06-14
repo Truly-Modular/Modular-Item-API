@@ -1,6 +1,6 @@
 plugins {
     id "architectury-plugin" version "3.4-SNAPSHOT"
-    id "dev.architectury.loom" version "1.6.397" apply false
+    id "dev.architectury.loom" version "1.6-SNAPSHOT" apply false
 }
 architectury {
     minecraft = rootProject.minecraft_version
@@ -219,7 +219,7 @@ subprojects {
 
     dependencies {
         minecraft "com.mojang:minecraft:${rootProject.minecraft_version}"
-        mappings "net.fabricmc:yarn:1.20.1+build.10:v2"
+        mappings "net.fabricmc:yarn:${rootProject.yarn_mappings}"
     }
     apply plugin: "java"
     apply plugin: "architectury-plugin"
@@ -236,7 +236,7 @@ subprojects {
     }
     tasks.withType(JavaCompile) {
         options.encoding = "UTF-8"
-        options.release = 17
+        options.release = 21
     }
 
     processResources {

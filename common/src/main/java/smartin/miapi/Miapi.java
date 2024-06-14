@@ -11,6 +11,7 @@ import dev.architectury.event.events.common.CommandRegistrationEvent;
 import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.event.events.common.PlayerEvent;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.Registries;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
@@ -67,6 +68,10 @@ public class Miapi {
         StatActorType.setup();
         NBTMaterial.setup();
 
+        Registries.DATA_COMPONENT_TYPE.get();
+
+
+
         LifecycleEvent.SERVER_BEFORE_START.register(minecraftServer -> server = minecraftServer);
         PlayerEvent.PLAYER_JOIN.register((player -> new Thread(() -> MiapiPermissions.getPerms(player)).start()));
 
@@ -92,7 +97,7 @@ public class Miapi {
             Miapi.LOGGER.info("Loaded " + RegistryInventory.modules.getFlatMap().size() + " Modules");
             ModularItemCache.discardCache();
         });
-        PropertyResolver.register(new Identifier(Miapi.MOD_ID, "module"), (moduleInstance, oldMap) -> {
+        PropertyResolver.register(Identifier.of(Miapi.MOD_ID, "module"), (moduleInstance, oldMap) -> {
             Map<ModuleProperty, JsonElement> map = new ConcurrentHashMap<>();
             moduleInstance.module.getProperties()
                     .forEach((key, jsonData) -> map.put(RegistryInventory.moduleProperties.get(key), jsonData));
@@ -161,13 +166,13 @@ public class Miapi {
     public static Identifier MiapiIdentifier(String string) {
         String[] parts = string.split(":");
         if (parts.length > 1) {
-            return new Identifier(parts[0], parts[1]);
+            return Identifier.of(parts[0], parts[1]);
         }
-        return new Identifier(Miapi.MOD_ID, string);
+        return Identifier.of(Miapi.MOD_ID, string);
     }
 
     public static Identifier MiapiIdentifier(String namespace, String id) {
-        return new Identifier(namespace, id);
+        return Identifier.of(namespace, id);
     }
 
     protected static void setupNetworking() {

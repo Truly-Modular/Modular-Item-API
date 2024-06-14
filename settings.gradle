@@ -10,7 +10,7 @@ rootProject.name = 'miapi'
 
 include("common")
 include("fabric")
-include("forge")
+//include("neoforge")
 
 includeBuild("./archery")
 includeBuild("./armory")
