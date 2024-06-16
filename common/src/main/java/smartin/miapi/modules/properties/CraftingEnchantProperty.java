@@ -1,17 +1,16 @@
 package smartin.miapi.modules.properties;
 
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.JsonOps;
 import dev.architectury.event.EventResult;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtList;
-import net.minecraft.registry.Registries;
-import net.minecraft.util.Identifier;
+import net.minecraft.registry.entry.RegistryEntry;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
@@ -28,9 +27,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static net.minecraft.enchantment.EnchantmentHelper.getEnchantmentId;
-import static net.minecraft.enchantment.EnchantmentHelper.getIdFromNbt;
-
 public class CraftingEnchantProperty implements ModuleProperty, CraftingProperty {
     public static final String KEY = "crafting_enchants";
     public static CraftingEnchantProperty property;
@@ -45,17 +41,23 @@ public class CraftingEnchantProperty implements ModuleProperty, CraftingProperty
         });
     }
 
-    private static List<Pair<Enchantment, Integer>> getEnchantsCache(ItemStack itemStack) {
-        List<Pair<Enchantment, Integer>> enchants = new ArrayList<>();
+    private static List<Pair<RegistryEntry<Enchantment>, Integer>> getEnchantsCache(ItemStack itemStack) {
+        List<Pair<RegistryEntry<Enchantment>, Integer>> enchants = new ArrayList<>();
 
         JsonElement list = ItemModule.getMergedProperty(itemStack, property, MergeType.SMART);
         ItemModule.getMergedProperty(ItemModule.getModules(itemStack), property);
         Map<String, Integer> map = Miapi.gson.fromJson(list, type);
         if (map != null) {
             map.forEach((id, level) -> {
-                Enchantment enchantment = Registries.ENCHANTMENT.get(new Identifier(id));
-                if (enchantment != null && enchantment.isAcceptableItem(itemStack)) {
-                    enchants.add(new Pair<>(enchantment, level));
+                JsonObject object = new JsonObject();
+                object.addProperty("string", id);
+                try {
+                    RegistryEntry<Enchantment> entry = Enchantment.ENTRY_CODEC.parse(JsonOps.INSTANCE, object.get("string")).getOrThrow();
+                    if (entry.comp_349().isAcceptableItem(itemStack)) {
+                        enchants.add(new Pair<>(entry, level));
+                    }
+                } catch (Exception e) {
+                    Miapi.LOGGER.info("Unkown enchantment : " + id);
                 }
             });
         }
@@ -102,9 +104,9 @@ public class CraftingEnchantProperty implements ModuleProperty, CraftingProperty
 
     public ItemStack applyEnchants(ItemStack crafting) {
         getEnchantsCache(crafting).forEach((enchantmentIntegerPair -> {
-            Enchantment enchantment = enchantmentIntegerPair.getFirst();
+            RegistryEntry<Enchantment> enchantment = enchantmentIntegerPair.getFirst();
             int level = enchantmentIntegerPair.getSecond();
-            if (enchantment.isAcceptableItem(crafting)) {
+            if (enchantment.comp_349().isAcceptableItem(crafting)) {
                 int prevLevel = EnchantmentHelper.getLevel(enchantment, crafting);
                 if (level > prevLevel) {
                     if (prevLevel > 0) {
@@ -117,21 +119,11 @@ public class CraftingEnchantProperty implements ModuleProperty, CraftingProperty
         return crafting;
     }
 
-    public static int removeEnchant(Enchantment enchantment, ItemStack stack) {
+    public static int removeEnchant(RegistryEntry<Enchantment> enchantment, ItemStack stack) {
         if (stack.isEmpty()) {
             return 0;
         } else {
-            Identifier identifier = getEnchantmentId(enchantment);
-            NbtList nbtList = stack.getEnchantments();
-
-            for (int i = 0; i < nbtList.size(); ++i) {
-                NbtCompound nbtCompound = nbtList.getCompound(i);
-                Identifier identifier2 = getIdFromNbt(nbtCompound);
-                if (identifier2 != null && identifier2.equals(identifier)) {
-                    nbtList.remove(nbtCompound);
-                }
-            }
-
+            EnchantmentHelper.getEnchantments(stack).getEnchantments().remove(enchantment);
             return 0;
         }
     }

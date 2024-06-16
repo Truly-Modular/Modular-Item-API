@@ -329,16 +329,16 @@ public class RegistryInventory {
         //ATTRIBUTE
 
         // mining
-        registerAtt("generic.mining_speed.pickaxe", false, () ->
+        registerAtt("remove.mining_speed.pickaxe", false, () ->
                         new ClampedEntityAttribute("miapi.attribute.name.mining_speed.pickaxe", 0.0, 0.0, 1024.0).setTracked(true),
                 att -> MINING_SPEED_PICKAXE = att);
-        registerAtt("generic.mining_speed.axe", false, () ->
+        registerAtt("remove.mining_speed.axe", false, () ->
                         new ClampedEntityAttribute("miapi.attribute.name.mining_speed.axe", 0.0, 0.0, 1024.0).setTracked(true),
                 att -> MINING_SPEED_AXE = att);
-        registerAtt("generic.mining_speed.shovel", false, () ->
+        registerAtt("remove.mining_speed.shovel", false, () ->
                         new ClampedEntityAttribute("miapi.attribute.name.mining_speed.shovel", 0.0, 0.0, 1024.0).setTracked(true),
                 att -> MINING_SPEED_SHOVEL = att);
-        registerAtt("generic.mining_speed.hoe", false, () ->
+        registerAtt("remove.mining_speed.hoe", false, () ->
                         new ClampedEntityAttribute("miapi.attribute.name.mining_speed.hoe", 0.0, 0.0, 1024.0).setTracked(true),
                 att -> MINING_SPEED_HOE = att);
 
