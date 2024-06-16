@@ -13,6 +13,7 @@ import smartin.miapi.client.gui.crafting.CraftingScreen;
 import smartin.miapi.client.gui.crafting.crafter.CraftEditOption;
 import smartin.miapi.craft.CraftAction;
 import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.material.Material;
 import smartin.miapi.modules.material.MaterialProperty;
 import smartin.miapi.network.Networking;
@@ -53,8 +54,8 @@ public class ReplaceOption implements EditOption {
             if (material != null) {
                 List<Integer> position = new ArrayList<>();
                 editContext.getInstance().calculatePosition(position);
-                ItemModule.ModuleInstance root = ItemModule.getModules(preview);
-                ItemModule.ModuleInstance editing = root.getPosition(position);
+                ModuleInstance root = ItemModule.getModules(preview);
+                ModuleInstance editing = root.getPosition(position);
                 if (MaterialProperty.getMaterial(editing) == null) {
                     MaterialProperty.setMaterial(editing, material.getKey());
                     editing.getRoot().writeToItem(preview);

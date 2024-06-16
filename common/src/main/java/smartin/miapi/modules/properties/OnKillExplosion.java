@@ -6,6 +6,7 @@ import dev.architectury.event.events.common.EntityEvent;
 import net.minecraft.entity.LivingEntity;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
 public class OnKillExplosion implements ModuleProperty {
@@ -30,7 +31,7 @@ public class OnKillExplosion implements ModuleProperty {
 
     @Override
     public boolean load(String moduleKey, JsonElement data) throws Exception {
-        ExplosionProperty.ExplosionInfo info = new ExplosionProperty.ExplosionInfo(data.getAsJsonObject(), new ItemModule.ModuleInstance(ItemModule.empty));
+        ExplosionProperty.ExplosionInfo info = new ExplosionProperty.ExplosionInfo(data.getAsJsonObject(), new ModuleInstance(ItemModule.empty));
         return true;
     }
 }

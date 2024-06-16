@@ -255,22 +255,22 @@ public class PropertySubstitution {
 
             modules.forEach(module -> {
                 JsonObject moduleJson = new JsonObject();
-                module.getProperties().forEach(moduleJson::add);
+                module.properties().forEach(moduleJson::add);
 
                 JsonObject replacement = injector.getReplacement(moduleJson);
-                module.getProperties().clear();
+                module.properties().clear();
                 replacement.asMap().forEach((key, value) -> {
                     ModuleProperty property = RegistryInventory.moduleProperties.get(key);
                     if (property == null) return;
 
                     try {
-                        property.load(module.getName(), value, Environment.isClient());
+                        property.load(module.name(), value, Environment.isClient());
                     } catch (Exception ex) {
                         Miapi.LOGGER.error("Property load error whilst loading PropertySubstitution injection data for a module!");
                         throw new RuntimeException(ex);
                     }
 
-                    module.getProperties().put(key, value);
+                    module.properties().put(key, value);
                 });
             });
         });

@@ -21,7 +21,7 @@ import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.client.gui.*;
 import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
 import smartin.miapi.item.modular.StatResolver;
-import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.edit_options.EditOption;
 import smartin.miapi.modules.properties.SlotProperty;
 import smartin.miapi.network.Networking;
@@ -37,7 +37,7 @@ import java.util.function.Consumer;
 @Environment(EnvType.CLIENT)
 public class EditView extends InteractAbleWidget {
     ItemStack stack;
-    ItemModule.ModuleInstance instance;
+    ModuleInstance instance;
     Consumer<ItemStack> previewConsumer;
     Consumer<Object> back;
     List<Element> defaultChildren = new ArrayList<>();
@@ -88,7 +88,7 @@ public class EditView extends InteractAbleWidget {
             }
 
             @Override
-            public @Nullable ItemModule.ModuleInstance getInstance() {
+            public @Nullable ModuleInstance getInstance() {
                 return instance;
             }
 
@@ -123,7 +123,7 @@ public class EditView extends InteractAbleWidget {
         };
         RegistryInventory.editOptions.getFlatMap().forEach((s, editOption) -> {
             if (editOption.isVisible(editContext)) {
-                ItemModule.ModuleInstance moduleInstance = null;
+                ModuleInstance moduleInstance = null;
                 if (instance != null) {
                     moduleInstance = instance.copy();
                 }
@@ -154,7 +154,7 @@ public class EditView extends InteractAbleWidget {
             public void craft(PacketByteBuf packetByteBuf) {
                 ScreenHandler screenHandler = this.getScreenHandler();
                 if (screenHandler instanceof CraftingScreenHandler screenHandler1) {
-                    ItemModule.ModuleInstance toCrafter = instance;
+                    ModuleInstance toCrafter = instance;
                     PacketByteBuf buf = Networking.createBuffer();
                     buf.writeString(RegistryInventory.editOptions.findKey(option));
                     List<Integer> position = new ArrayList<>();
@@ -192,7 +192,7 @@ public class EditView extends InteractAbleWidget {
             }
 
             @Override
-            public @Nullable ItemModule.ModuleInstance getInstance() {
+            public @Nullable ModuleInstance getInstance() {
                 return instance;
             }
 
@@ -251,7 +251,7 @@ public class EditView extends InteractAbleWidget {
         private final EditOption option;
 
 
-        public SlotButton(int x, int y, int width, int height, String editName, EditOption option, ItemModule.ModuleInstance instance) {
+        public SlotButton(int x, int y, int width, int height, String editName, EditOption option, ModuleInstance instance) {
             super(x, y, width, height, Text.empty());
             Text translated = StatResolver.translateAndResolve(Miapi.MOD_ID + ".edit.option." + editName, instance);
             textWidget = new ScrollingTextWidget(0, 0, this.width, translated, ColorHelper.Argb.getArgb(255, 255, 255, 255));

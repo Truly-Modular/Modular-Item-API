@@ -13,6 +13,7 @@ import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.ModuleInstance;
 
 import java.lang.reflect.Type;
 import java.util.*;
@@ -133,7 +134,7 @@ public interface ModuleProperty {
     }
 
     @Nullable
-    default JsonElement getJsonElement(ItemModule.ModuleInstance moduleInstance) {
+    default JsonElement getJsonElement(ModuleInstance moduleInstance) {
         return moduleInstance.getProperties().get(this);
     }
 
@@ -152,7 +153,7 @@ public interface ModuleProperty {
         return defaultValue;
     }
 
-    static boolean getBoolean(JsonObject object, String element, ItemModule.ModuleInstance moduleInstance, boolean defaultValue) {
+    static boolean getBoolean(JsonObject object, String element, ModuleInstance moduleInstance, boolean defaultValue) {
         if (object != null) {
             JsonElement json = object.get(element);
             if (json != null && !json.isJsonNull()) {
@@ -165,7 +166,7 @@ public interface ModuleProperty {
         return defaultValue;
     }
 
-    static double getDouble(JsonObject object, String element, ItemModule.ModuleInstance moduleInstance, double defaultValue) {
+    static double getDouble(JsonObject object, String element, ModuleInstance moduleInstance, double defaultValue) {
         if (object != null) {
             JsonElement json = object.get(element);
             if (json != null && !json.isJsonNull()) {
@@ -180,7 +181,7 @@ public interface ModuleProperty {
         return defaultValue;
     }
 
-    static int getInteger(JsonObject object, String element, ItemModule.ModuleInstance moduleInstance, int defaultValue) {
+    static int getInteger(JsonObject object, String element, ModuleInstance moduleInstance, int defaultValue) {
         if (object != null) {
             JsonElement json = object.get(element);
             if (json != null && !json.isJsonNull()) {
@@ -190,7 +191,7 @@ public interface ModuleProperty {
         return defaultValue;
     }
 
-    static String getString(JsonObject object, String element, ItemModule.ModuleInstance moduleInstance, String defaultValue) {
+    static String getString(JsonObject object, String element, ModuleInstance moduleInstance, String defaultValue) {
         if (object != null) {
             JsonElement json = object.get(element);
             if (json != null && !json.isJsonNull()) {
@@ -200,7 +201,7 @@ public interface ModuleProperty {
         return defaultValue;
     }
 
-    static Text getText(JsonObject object, String element, ItemModule.ModuleInstance moduleInstance, Text defaultValue) {
+    static Text getText(JsonObject object, String element, ModuleInstance moduleInstance, Text defaultValue) {
         if (object != null) {
             JsonElement json = object.get(element);
             if (json != null && !json.isJsonNull()) {
@@ -220,8 +221,8 @@ public interface ModuleProperty {
         return defaultValue;
     }
 
-    default Map<ItemModule.ModuleInstance, JsonElement> nonNullJsonElements(ItemStack itemStack) {
-        Map<ItemModule.ModuleInstance, JsonElement> maps = new LinkedHashMap<>();
+    default Map<ModuleInstance, JsonElement> nonNullJsonElements(ItemStack itemStack) {
+        Map<ModuleInstance, JsonElement> maps = new LinkedHashMap<>();
         ItemModule.getModules(itemStack).allSubModules().forEach(moduleInstance -> {
             if (moduleInstance.getProperties().containsKey(this)) {
                 maps.put(moduleInstance, moduleInstance.getProperties().get(this));
@@ -231,11 +232,11 @@ public interface ModuleProperty {
     }
 
     @Nullable
-    default Pair<ItemModule.ModuleInstance, JsonElement> highestPriorityJsonElement(ItemStack itemStack) {
-        Map<ItemModule.ModuleInstance, JsonElement> maps = new LinkedHashMap<>();
-        ItemModule.ModuleInstance moduleInstance = null;
+    default Pair<ModuleInstance, JsonElement> highestPriorityJsonElement(ItemStack itemStack) {
+        Map<ModuleInstance, JsonElement> maps = new LinkedHashMap<>();
+        ModuleInstance moduleInstance = null;
         JsonElement element = null;
-        for (ItemModule.ModuleInstance instance : ItemModule.getModules(itemStack).allSubModules()) {
+        for (ModuleInstance instance : ItemModule.getModules(itemStack).allSubModules()) {
             if (instance.getProperties().containsKey(this)) {
                 moduleInstance = instance;
                 element = instance.getProperties().get(this);

@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import net.minecraft.util.Pair;
 import net.minecraft.item.ItemStack;
 import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
@@ -24,7 +25,7 @@ public class RiptideProperty implements ModuleProperty {
 
     @Override
     public boolean load(String moduleKey, JsonElement data) throws Exception {
-        new RiptideJson(data.getAsJsonObject(), new ItemModule.ModuleInstance(ItemModule.empty));
+        new RiptideJson(data.getAsJsonObject(), new ModuleInstance(ItemModule.empty));
         return true;
     }
 
@@ -34,7 +35,7 @@ public class RiptideProperty implements ModuleProperty {
             return new RiptideJson(context.contextJson, context.contextInstance);
         }
 
-        Pair<ItemModule.ModuleInstance, JsonElement> element = property.highestPriorityJsonElement(itemStack);
+        Pair<ModuleInstance, JsonElement> element = property.highestPriorityJsonElement(itemStack);
         if (element != null) {
             return new RiptideJson(element.getRight().getAsJsonObject(), element.getLeft());
         }
@@ -61,7 +62,7 @@ public class RiptideProperty implements ModuleProperty {
         public double riptideStrength = 3;
         public double cooldown = 0;
 
-        public RiptideJson(JsonObject object, ItemModule.ModuleInstance moduleInstance) {
+        public RiptideJson(JsonObject object, ModuleInstance moduleInstance) {
             needsWater = ModuleProperty.getBoolean(object, "needsWater", needsWater);
             allowLava = ModuleProperty.getBoolean(object, "allowLave", allowLava);
             needRiptideEnchant = ModuleProperty.getBoolean(object, "needRiptideEnchant", needRiptideEnchant);

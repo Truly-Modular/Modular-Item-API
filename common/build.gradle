@@ -64,6 +64,12 @@ dependencies {
     //modImplementation files('libs/archery-local.jar')
     //modImplementation files('libs/armory-local.jar')
 
+    modApi files('libs/nucleus-codec-local.jar')
+    modApi files('libs/nucleus-config-local.jar')
+    modApi files('libs/nucleus-core-local.jar')
+    modApi files('libs/nucleus-facet-local.jar')
+    modApi files('libs/nucleus-pose-local.jar')
+
     modCompileOnly("dev.onyxstudios.cardinal-components-api:cardinal-components-base:${cca_version}") {
         exclude(group: "net.fabricmc.fabric-api")
     }

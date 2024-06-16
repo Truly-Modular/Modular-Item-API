@@ -42,7 +42,7 @@ public class AllowedSlots implements ModuleProperty {
      * @return List of slotIds
      */
     public static List<String> getAllowedSlots(ItemModule module) {
-        JsonElement data = module.getProperties().get(KEY);
+        JsonElement data = module.properties().get(KEY);
         Gson gson = new Gson();
         Type type = new TypeToken<List<String>>() {
         }.getType();

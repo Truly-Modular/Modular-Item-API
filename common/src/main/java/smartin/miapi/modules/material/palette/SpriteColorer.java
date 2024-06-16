@@ -15,7 +15,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import smartin.miapi.client.atlas.MaterialSpriteManager;
 import smartin.miapi.client.renderer.RescaledVertexConsumer;
-import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.material.Material;
 
 import java.util.Map;
@@ -65,7 +65,7 @@ public abstract class SpriteColorer implements MaterialRenderController {
     public abstract boolean doTick();
 
     @Environment(EnvType.CLIENT)
-    public VertexConsumer getVertexConsumer(VertexConsumerProvider vertexConsumers, Sprite originalSprite, ItemStack stack, ItemModule.ModuleInstance moduleInstance, ModelTransformationMode mode) {
+    public VertexConsumer getVertexConsumer(VertexConsumerProvider vertexConsumers, Sprite originalSprite, ItemStack stack, ModuleInstance moduleInstance, ModelTransformationMode mode) {
         Identifier replaceId = MaterialSpriteManager.getMaterialSprite(originalSprite, material, this);
         RenderLayer atlasRenderLayer = RenderLayer.getEntityTranslucentCull(replaceId);
         VertexConsumer atlasConsumer = ItemRenderer.getDirectItemGlintConsumer(vertexConsumers, atlasRenderLayer, true, false);

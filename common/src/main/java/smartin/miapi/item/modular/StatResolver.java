@@ -9,7 +9,7 @@ import com.redpxnda.nucleus.codec.misc.CustomIntermediateCodec;
 import com.redpxnda.nucleus.codec.misc.IntermediateCodec;
 import net.minecraft.text.Text;
 import smartin.miapi.Miapi;
-import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.material.Material;
 import smartin.miapi.modules.material.MaterialProperty;
 
@@ -24,22 +24,22 @@ import java.util.stream.Stream;
 import static smartin.miapi.modules.material.EvalExResolverStuff.configuration;
 
 /**
- * A utility class for resolving dynamic values in item stats and descriptions in relation to a {@link ItemModule.ModuleInstance}.
+ * A utility class for resolving dynamic values in item stats and descriptions in relation to a {@link ModuleInstance}.
  */
 public class StatResolver {
     public static final class Codecs {
-        public static Codec<String> STRING(ItemModule.ModuleInstance instance) {
+        public static Codec<String> STRING(ModuleInstance instance) {
             return Codec.STRING.xmap(s -> resolveString(s, instance), s -> s);
         }
 
-        public static Codec<Double> DOUBLE(ItemModule.ModuleInstance instance) {
+        public static Codec<Double> DOUBLE(ModuleInstance instance) {
             return Codec.either(Codec.DOUBLE, Codec.STRING.xmap(s -> resolveDouble(s, instance), String::valueOf)).xmap(e -> {
                 if (e.left().isPresent()) return e.left().get();
                 else return e.right().get();
             }, Either::left);
         }
 
-        public static Codec<Integer> INTEGER(ItemModule.ModuleInstance instance) {
+        public static Codec<Integer> INTEGER(ModuleInstance instance) {
             return Codec.either(Codec.INT, DOUBLE(instance).xmap(Double::intValue, Integer::doubleValue)).xmap(e -> {
                 if (e.left().isPresent()) return e.left().get();
                 else return e.right().get();
@@ -48,8 +48,8 @@ public class StatResolver {
     }
 
     @CodecBehavior.Override("codec")
-    public static class StringFromStat extends IntermediateCodec.Median<String, ItemModule.ModuleInstance, String> {
-        public static BiFunction<String, ItemModule.ModuleInstance, String> func = StatResolver::resolveString;
+    public static class StringFromStat extends IntermediateCodec.Median<String, ModuleInstance, String> {
+        public static BiFunction<String, ModuleInstance, String> func = StatResolver::resolveString;
         public static Codec<StringFromStat> codec = new CustomIntermediateCodec<>(Codec.STRING, func, (s, b) -> new StringFromStat(s));
 
         public StringFromStat(String start) {
@@ -58,8 +58,8 @@ public class StatResolver {
     }
 
     @CodecBehavior.Override("fullCodec")
-    public static class DoubleFromStat extends IntermediateCodec.Median<String, ItemModule.ModuleInstance, Double> {
-        public static BiFunction<String, ItemModule.ModuleInstance, Double> func = StatResolver::resolveDouble;
+    public static class DoubleFromStat extends IntermediateCodec.Median<String, ModuleInstance, Double> {
+        public static BiFunction<String, ModuleInstance, Double> func = StatResolver::resolveDouble;
         public static Codec<DoubleFromStat> codec = new CustomIntermediateCodec<>(Codec.STRING, func, (s, b) -> new DoubleFromStat(s));
         public static Codec<DoubleFromStat> fullCodec =
                 Codec.either(
@@ -89,8 +89,8 @@ public class StatResolver {
     }
 
     @CodecBehavior.Override("fullCodec")
-    public static class IntegerFromStat extends IntermediateCodec.Median<String, ItemModule.ModuleInstance, Integer> {
-        public static BiFunction<String, ItemModule.ModuleInstance, Integer> func = (raw, input) -> (int) resolveDouble(raw, input);
+    public static class IntegerFromStat extends IntermediateCodec.Median<String, ModuleInstance, Integer> {
+        public static BiFunction<String, ModuleInstance, Integer> func = (raw, input) -> (int) resolveDouble(raw, input);
         public static Codec<IntegerFromStat> codec = new CustomIntermediateCodec<>(Codec.STRING, func, (s, b) -> new IntegerFromStat(s));
         public static Codec<IntegerFromStat> fullCodec =
                 Codec.either(
@@ -127,18 +127,18 @@ public class StatResolver {
     static {
         StatResolver.registerResolver("translation", new StatResolver.Resolver() {
             @Override
-            public double resolveDouble(String data, ItemModule.ModuleInstance instance) {
+            public double resolveDouble(String data, ModuleInstance instance) {
                 return Double.parseDouble(Text.translatable(data).getString());
             }
 
             @Override
-            public String resolveString(String data, ItemModule.ModuleInstance instance) {
+            public String resolveString(String data, ModuleInstance instance) {
                 return Text.translatable(data).getString();
             }
         });
         StatResolver.registerResolver("collect", new StatResolver.Resolver() {
             @Override
-            public double resolveDouble(String data, ItemModule.ModuleInstance instance) {
+            public double resolveDouble(String data, ModuleInstance instance) {
                 if (data.contains(".")) {
                     String[] parts = data.split("\\.", 2);
                     Stream<Double> numbers = instance.getRoot().allSubModules().stream().map(module -> StatResolver.resolveDouble(parts[1], module));
@@ -166,14 +166,14 @@ public class StatResolver {
             }
 
             @Override
-            public String resolveString(String data, ItemModule.ModuleInstance instance) {
+            public String resolveString(String data, ModuleInstance instance) {
                 return null;
             }
         });
         StatResolver.registerResolver("material-module", new StatResolver.Resolver() {
 
             @Override
-            public double resolveDouble(String data, ItemModule.ModuleInstance instance) {
+            public double resolveDouble(String data, ModuleInstance instance) {
                 double firstResult = StatResolver.resolveDouble("material." + data, instance);
                 if (firstResult == 0) {
                     return StatResolver.resolveDouble("module." + data, instance);
@@ -182,7 +182,7 @@ public class StatResolver {
             }
 
             @Override
-            public String resolveString(String data, ItemModule.ModuleInstance instance) {
+            public String resolveString(String data, ModuleInstance instance) {
                 String firstResult = StatResolver.resolveString("material." + data, instance);
                 if (firstResult == null || firstResult.isEmpty()) {
                     return StatResolver.resolveString("module." + data, instance);
@@ -193,7 +193,7 @@ public class StatResolver {
         StatResolver.registerResolver("module-material", new StatResolver.Resolver() {
 
             @Override
-            public double resolveDouble(String data, ItemModule.ModuleInstance instance) {
+            public double resolveDouble(String data, ModuleInstance instance) {
                 double firstResult = StatResolver.resolveDouble("module." + data, instance);
                 if (firstResult == 0) {
                     return StatResolver.resolveDouble("material." + data, instance);
@@ -202,7 +202,7 @@ public class StatResolver {
             }
 
             @Override
-            public String resolveString(String data, ItemModule.ModuleInstance instance) {
+            public String resolveString(String data, ModuleInstance instance) {
                 String firstResult = StatResolver.resolveString("module." + data, instance);
                 if (firstResult == null || firstResult.isEmpty()) {
                     return StatResolver.resolveString("material." + data, instance);
@@ -212,7 +212,7 @@ public class StatResolver {
         });
         StatResolver.registerResolver("count", new StatResolver.Resolver() {
             @Override
-            public double resolveDouble(String data, ItemModule.ModuleInstance instance) {
+            public double resolveDouble(String data, ModuleInstance instance) {
                 double count = 0;
                 switch (data) {
                     case "module": {
@@ -266,7 +266,7 @@ public class StatResolver {
             }
 
             @Override
-            public String resolveString(String data, ItemModule.ModuleInstance instance) {
+            public String resolveString(String data, ModuleInstance instance) {
                 return null;
             }
         });
@@ -279,7 +279,7 @@ public class StatResolver {
      * @param instance the module instance for which to resolve values
      * @return the resolved string
      */
-    public static String resolveString(String raw, ItemModule.ModuleInstance instance) {
+    public static String resolveString(String raw, ModuleInstance instance) {
         String resolved = raw;
         Pattern pattern = Pattern.compile("\\[([^\\[]*?)\\]"); // regex pattern to match text inside square brackets
         Matcher matcher = pattern.matcher(raw);
@@ -306,7 +306,7 @@ public class StatResolver {
         return resolved;
     }
 
-    public static double resolveDouble(JsonElement raw, ItemModule.ModuleInstance instance) {
+    public static double resolveDouble(JsonElement raw, ModuleInstance instance) {
         try {
             return raw.getAsDouble();
         } catch (Exception exception) {
@@ -321,7 +321,7 @@ public class StatResolver {
      * @param instance the module instance for which to resolve values
      * @return the evaluated result
      */
-    public static double resolveDouble(String raw, ItemModule.ModuleInstance instance) {
+    public static double resolveDouble(String raw, ModuleInstance instance) {
         try {
             return Double.parseDouble(raw);
         } catch (Exception exception) {
@@ -355,7 +355,7 @@ public class StatResolver {
      * @param instance the module instance for which to resolve values
      * @return the translated and resolved text
      */
-    public static Text translateAndResolve(String raw, ItemModule.ModuleInstance instance) {
+    public static Text translateAndResolve(String raw, ModuleInstance instance) {
         String old = "";
         String newString = raw;
         for (int i = 0; i < 100 && !old.equals(newString); i++) {
@@ -391,7 +391,7 @@ public class StatResolver {
          * @param instance the module instance for which to resolve the value
          * @return the resolved double value
          */
-        double resolveDouble(String data, ItemModule.ModuleInstance instance);
+        double resolveDouble(String data, ModuleInstance instance);
 
         /**
          * Resolves a string value from the given data string.
@@ -400,7 +400,7 @@ public class StatResolver {
          * @param instance the module instance for which to resolve the value
          * @return the resolved string value
          */
-        String resolveString(String data, ItemModule.ModuleInstance instance);
+        String resolveString(String data, ModuleInstance instance);
     }
 
     public static double resolveCalculation(String string) {

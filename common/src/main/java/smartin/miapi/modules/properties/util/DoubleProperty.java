@@ -11,6 +11,7 @@ import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.item.modular.VisualModularItem;
 import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.cache.ModularItemCache;
 
 import java.util.ArrayList;
@@ -75,7 +76,7 @@ public abstract class DoubleProperty implements ModuleProperty {
         if (!isModularItem(itemStack)) {
             return null;
         }
-        for (ItemModule.ModuleInstance moduleInstance : ItemModule.getModules(itemStack).allSubModules()) {
+        for (ModuleInstance moduleInstance : ItemModule.getModules(itemStack).allSubModules()) {
             JsonElement element = moduleInstance.getProperties().get(property);
             if (element != null) {
                 if (element.isJsonArray()) {
@@ -120,7 +121,7 @@ public abstract class DoubleProperty implements ModuleProperty {
         }
     }
 
-    public Double getValueForModule(ItemModule.ModuleInstance moduleInstance, @Nullable Double fallback) {
+    public Double getValueForModule(ModuleInstance moduleInstance, @Nullable Double fallback) {
         double value = 0;
         boolean hasValue = false;
         List<Double> addition = new ArrayList<>();
@@ -212,16 +213,16 @@ public abstract class DoubleProperty implements ModuleProperty {
 
     @Override
     public boolean load(String moduleKey, JsonElement data) throws Exception {
-        new Operation(data, new ItemModule.ModuleInstance(ItemModule.empty));
+        new Operation(data, new ModuleInstance(ItemModule.empty));
         return true;
     }
 
     private static class Operation {
         public EntityAttributeModifier.Operation attributeOperation;
         public String value;
-        public ItemModule.ModuleInstance instance;
+        public ModuleInstance instance;
 
-        public Operation(JsonElement toLoad, ItemModule.ModuleInstance instance) {
+        public Operation(JsonElement toLoad, ModuleInstance instance) {
             if (toLoad.isJsonObject()) {
                 JsonObject object = toLoad.getAsJsonObject();
                 this.attributeOperation = getOperation(object.get("operation").getAsString());

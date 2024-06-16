@@ -10,6 +10,7 @@ import net.minecraft.util.math.BlockPos;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.craft.CraftAction;
 import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.conditions.ConditionManager;
 import smartin.miapi.modules.conditions.ModuleCondition;
 import smartin.miapi.modules.properties.util.CraftingProperty;
@@ -45,7 +46,7 @@ public class CraftingConditionProperty implements ModuleProperty, CraftingProper
     public static boolean isCraftable(SlotProperty.ModuleSlot slot, ItemModule module, PlayerEntity entity, BlockPos pos) {
         JsonElement element = module.getKeyedProperties().get(property);
         List<Text> reasons = new ArrayList<>();
-        ItemModule.ModuleInstance instance = slot == null ? null : slot.parent;
+        ModuleInstance instance = slot == null ? null : slot.parent;
         Map<ModuleProperty, JsonElement> elementMap = module.getKeyedProperties();
         if (instance != null) {
             elementMap = instance.getProperties();
@@ -62,8 +63,8 @@ public class CraftingConditionProperty implements ModuleProperty, CraftingProper
         return true;
     }
 
-    public static void inSlotPlaced(SlotProperty.ModuleSlot slot, ItemModule module, Consumer<ItemModule.ModuleInstance> test) {
-        ItemModule.ModuleInstance moduleInstance = new ItemModule.ModuleInstance(module);
+    public static void inSlotPlaced(SlotProperty.ModuleSlot slot, ItemModule module, Consumer<ModuleInstance> test) {
+        ModuleInstance moduleInstance = new ModuleInstance(module);
         if (slot != null && slot.parent != null) {
             slot.inSlot = moduleInstance;
             moduleInstance.parent = slot.parent;
@@ -78,7 +79,7 @@ public class CraftingConditionProperty implements ModuleProperty, CraftingProper
     public static List<Text> getReasonsForCraftable(SlotProperty.ModuleSlot slot, ItemModule module, PlayerEntity entity, BlockPos pos) {
         JsonElement element = module.getKeyedProperties().get(property);
         List<Text> reasons = new ArrayList<>();
-        ItemModule.ModuleInstance instance = slot == null ? null : slot.parent;
+        ModuleInstance instance = slot == null ? null : slot.parent;
         Map<ModuleProperty, JsonElement> elementMap = module.getKeyedProperties();
         if (instance != null) {
             elementMap = instance.getProperties();
@@ -101,7 +102,7 @@ public class CraftingConditionProperty implements ModuleProperty, CraftingProper
     }
 
     @Override
-    public boolean shouldExecuteOnCraft(ItemModule.ModuleInstance module, ItemModule.ModuleInstance root, ItemStack stack) {
+    public boolean shouldExecuteOnCraft(ModuleInstance module, ModuleInstance root, ItemStack stack) {
         return true;
     }
 
@@ -112,7 +113,7 @@ public class CraftingConditionProperty implements ModuleProperty, CraftingProper
 
     @Override
     public boolean canPerform(ItemStack old, ItemStack crafting, ModularWorkBenchEntity bench, PlayerEntity player, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<String, String> data) {
-        ItemModule.ModuleInstance newModule = craftAction.getModifyingModuleInstance(crafting);
+        ModuleInstance newModule = craftAction.getModifyingModuleInstance(crafting);
         if (newModule != null) {
             JsonElement element = newModule.getProperties().get(property);
             if (element != null) {

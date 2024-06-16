@@ -9,6 +9,7 @@ import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.craft.CraftAction;
 import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.edit_options.EditOption;
 
 import java.util.ArrayList;
@@ -48,7 +49,7 @@ public interface CraftingProperty {
     /**
      * If the Property should be executed on craft, for most Properties this should only happen when they are involved
      */
-    default boolean shouldExecuteOnCraft(@Nullable ItemModule.ModuleInstance module, ItemModule.ModuleInstance root, ItemStack stack) {
+    default boolean shouldExecuteOnCraft(@Nullable ModuleInstance module, ModuleInstance root, ItemStack stack) {
         return module != null && module.getProperties().containsKey(this);
     }
 

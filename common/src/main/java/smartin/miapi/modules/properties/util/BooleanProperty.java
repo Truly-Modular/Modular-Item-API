@@ -4,6 +4,7 @@ import com.google.gson.JsonElement;
 import net.minecraft.item.ItemStack;
 import smartin.miapi.Miapi;
 import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.cache.ModularItemCache;
 
 public class BooleanProperty implements ModuleProperty {
@@ -43,7 +44,7 @@ public class BooleanProperty implements ModuleProperty {
         return defaultValueSaved;
     }
 
-    public boolean isTrue(ItemModule.ModuleInstance moduleInstance) {
+    public boolean isTrue(ModuleInstance moduleInstance) {
         JsonElement element = moduleInstance.getProperties().get(this);
         return getValue(element);
     }

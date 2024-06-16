@@ -10,8 +10,6 @@ import com.redpxnda.nucleus.registry.NucleusNamespaces;
 import dev.architectury.event.events.common.CommandRegistrationEvent;
 import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.event.events.common.PlayerEvent;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.Registries;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
@@ -30,6 +28,7 @@ import smartin.miapi.item.modular.PropertyResolver;
 import smartin.miapi.item.modular.VisualModularItem;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.MiapiPermissions;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
 import smartin.miapi.modules.cache.CacheCommands;
 import smartin.miapi.modules.cache.ModularItemCache;
@@ -68,8 +67,6 @@ public class Miapi {
         StatActorType.setup();
         NBTMaterial.setup();
 
-        Registries.DATA_COMPONENT_TYPE.get();
-
 
 
         LifecycleEvent.SERVER_BEFORE_START.register(minecraftServer -> server = minecraftServer);
@@ -99,7 +96,7 @@ public class Miapi {
         });
         PropertyResolver.register(Identifier.of(Miapi.MOD_ID, "module"), (moduleInstance, oldMap) -> {
             Map<ModuleProperty, JsonElement> map = new ConcurrentHashMap<>();
-            moduleInstance.module.getProperties()
+            moduleInstance.module.properties()
                     .forEach((key, jsonData) -> map.put(RegistryInventory.moduleProperties.get(key), jsonData));
             return map;
         });
@@ -122,16 +119,8 @@ public class Miapi {
         });
         ModularItemCache.setSupplier(ItemModule.MODULE_KEY, itemStack -> {
             if (itemStack.getItem() instanceof VisualModularItem) {
-                NbtCompound tag = itemStack.getOrCreateNbt();
                 try {
-                    String modulesString;
-                    if (tag.contains(ItemModule.NBT_MODULE_KEY) && tag.get(ItemModule.NBT_MODULE_KEY) != null) {
-                        modulesString = tag.getString(ItemModule.NBT_MODULE_KEY);
-                    } else {
-                        modulesString = tag.getString(ItemModule.MODULE_KEY);
-                    }
-                    //String modulesString = tag.getString(ItemModule.MODULE_KEY);
-                    return Miapi.gson.fromJson(modulesString, ItemModule.ModuleInstance.class);
+                    return ItemModule.getModules(itemStack);
                 } catch (Exception e) {
                     Miapi.LOGGER.error("could not resolve Modules", e);
                 }
@@ -140,7 +129,7 @@ public class Miapi {
         });
         ModularItemCache.setSupplier(ItemModule.PROPERTY_KEY,
                 itemStack -> ItemModule.getUnmergedProperties(
-                        ModularItemCache.getVisualOnlyCache(itemStack, ItemModule.MODULE_KEY, new ItemModule.ModuleInstance(ItemModule.empty))));
+                        ModularItemCache.getVisualOnlyCache(itemStack, ItemModule.MODULE_KEY, new ModuleInstance(ItemModule.empty))));
         ModularItemStackConverter.converters.add(new ItemToModularConverter());
         if (Environment.isClient()) {
             MiapiClient.init();

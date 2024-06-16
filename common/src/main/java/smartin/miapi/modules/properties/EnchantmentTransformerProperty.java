@@ -9,6 +9,7 @@ import net.minecraft.util.Identifier;
 import smartin.miapi.item.FakeEnchantment;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
@@ -64,9 +65,9 @@ public class EnchantmentTransformerProperty implements ModuleProperty {
     public static class EnchantMentTransformerData {
         public Enchantment enchantment;
         public JsonObject json;
-        public ItemModule.ModuleInstance moduleInstance;
+        public ModuleInstance moduleInstance;
 
-        public EnchantMentTransformerData(JsonElement element, ItemModule.ModuleInstance moduleInstance) {
+        public EnchantMentTransformerData(JsonElement element, ModuleInstance moduleInstance) {
             json = element.getAsJsonObject();
             this.moduleInstance = moduleInstance;
             enchantment = Registries.ENCHANTMENT.get(new Identifier(ModuleProperty.getString(json, "enchantment", moduleInstance, "")));

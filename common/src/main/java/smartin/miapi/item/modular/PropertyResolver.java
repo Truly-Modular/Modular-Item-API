@@ -4,7 +4,7 @@ import com.google.gson.JsonElement;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
 import smartin.miapi.Miapi;
-import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
@@ -18,12 +18,12 @@ public class PropertyResolver {
     public static List<Pair<Identifier, PropertyProvider>> registry = Collections.synchronizedList(new ArrayList<>());
 
     /**
-     * Resolves {@link ModuleProperty} maps for an {@link ItemModule.ModuleInstance}
+     * Resolves {@link ModuleProperty} maps for an {@link ModuleInstance}
      *
-     * @param moduleInstance the {@link ItemModule.ModuleInstance} to resolve for
+     * @param moduleInstance the {@link ModuleInstance} to resolve for
      * @return a map of {@link ModuleProperty} and their related Data
      */
-    public static void resolve(ItemModule.ModuleInstance moduleInstance) {
+    public static void resolve(ModuleInstance moduleInstance) {
         moduleInstance.allSubModules().forEach(instance -> {
             if (instance.rawProperties == null) {
                 instance.rawProperties = new ConcurrentHashMap<>();
@@ -93,6 +93,6 @@ public class PropertyResolver {
      * This interface allows other classes to add Properties to items
      */
     public interface PropertyProvider {
-        Map<ModuleProperty, JsonElement> resolve(ItemModule.ModuleInstance moduleInstance, Map<ModuleProperty, JsonElement> oldMap);
+        Map<ModuleProperty, JsonElement> resolve(ModuleInstance moduleInstance, Map<ModuleProperty, JsonElement> oldMap);
     }
 }

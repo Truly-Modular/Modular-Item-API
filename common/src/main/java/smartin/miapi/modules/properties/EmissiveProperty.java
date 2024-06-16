@@ -4,7 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import net.minecraft.item.ItemStack;
-import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
@@ -25,7 +25,7 @@ public class EmissiveProperty implements ModuleProperty {
         return getLightValues(property.getJsonElement(stack));
     }
 
-    public static int[] getLightValues(ItemModule.ModuleInstance instance) {
+    public static int[] getLightValues(ModuleInstance instance) {
         return getLightValues(property.getJsonElement(instance));
     }
 

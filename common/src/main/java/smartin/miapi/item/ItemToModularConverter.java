@@ -8,6 +8,7 @@ import net.minecraft.registry.Registries;
 import smartin.miapi.Miapi;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.EnchantmentProperty;
 import smartin.miapi.modules.properties.ItemIdProperty;
 import smartin.miapi.registries.RegistryInventory;
@@ -21,8 +22,8 @@ public class ItemToModularConverter implements ModularItemStackConverter.Modular
 
     public ItemToModularConverter() {
         Miapi.registerReloadHandler(ReloadEvents.MAIN, "modular_converter", regexes, (isClient, path, data) -> {
-            Map<String, ItemModule.ModuleInstance> dataMap;
-            TypeToken<Map<String, ItemModule.ModuleInstance>> token = new TypeToken<>() {
+            Map<String, ModuleInstance> dataMap;
+            TypeToken<Map<String, ModuleInstance>> token = new TypeToken<>() {
             };
 
             dataMap = Miapi.gson.fromJson(data, token.getType());

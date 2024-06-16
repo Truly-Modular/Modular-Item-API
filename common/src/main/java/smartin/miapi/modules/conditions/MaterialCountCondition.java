@@ -3,7 +3,7 @@ package smartin.miapi.modules.conditions;
 import com.google.gson.JsonElement;
 import net.minecraft.text.Text;
 import smartin.miapi.Miapi;
-import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.material.Material;
 import smartin.miapi.modules.material.MaterialProperty;
 import smartin.miapi.modules.properties.util.ModuleProperty;
@@ -47,9 +47,9 @@ public class MaterialCountCondition implements ModuleCondition {
         return false;
     }
 
-    public int getCount(ItemModule.ModuleInstance moduleInstance, Material material) {
+    public int getCount(ModuleInstance moduleInstance, Material material) {
         if (moduleInstance != null) {
-            List<ItemModule.ModuleInstance> moduleInstances = moduleInstance.getRoot().allSubModules().stream().filter(moduleInstance1 -> material.equals(MaterialProperty.getMaterial(moduleInstance1))).toList();
+            List<ModuleInstance> moduleInstances = moduleInstance.getRoot().allSubModules().stream().filter(moduleInstance1 -> material.equals(MaterialProperty.getMaterial(moduleInstance1))).toList();
             for (int i = 0; i < moduleInstances.size(); i++) {
                 if (moduleInstance.equals(moduleInstances.get(i))) {
                     return i;

@@ -33,7 +33,7 @@ public class MaterialProperties implements ModuleProperty {
                     keys.add("default");
                 }
                 if (moduleInstance.module != null) {
-                    keys.add(moduleInstance.module.getName());
+                    keys.add(moduleInstance.module.name());
                 }
                 for (String key : keys) {
                     Map<ModuleProperty, JsonElement> materialProperties = material.materialProperties(key);

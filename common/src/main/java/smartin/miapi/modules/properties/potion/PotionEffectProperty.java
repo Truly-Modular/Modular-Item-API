@@ -14,6 +14,7 @@ import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
@@ -37,7 +38,7 @@ public abstract class PotionEffectProperty implements ModuleProperty {
 
     @Override
     public boolean load(String moduleKey, JsonElement data) throws Exception {
-        getPotions(data, new ItemModule.ModuleInstance(ItemModule.empty));
+        getPotions(data, new ModuleInstance(ItemModule.empty));
         return true;
     }
 
@@ -242,7 +243,7 @@ public abstract class PotionEffectProperty implements ModuleProperty {
         return potions;
     }
 
-    public List<EffectHolder> getPotions(JsonElement jsonElement, ItemModule.ModuleInstance moduleInstance) {
+    public List<EffectHolder> getPotions(JsonElement jsonElement, ModuleInstance moduleInstance) {
         List<EffectHolder> potions = new ArrayList<>();
         jsonElement.getAsJsonArray().forEach(element -> {
             JsonObject object = element.getAsJsonObject();
@@ -257,11 +258,11 @@ public abstract class PotionEffectProperty implements ModuleProperty {
         return potions;
     }
 
-    public EffectHolder getHolder(StatusEffect effect, JsonObject object, ItemModule.ModuleInstance moduleInstance) {
+    public EffectHolder getHolder(StatusEffect effect, JsonObject object, ModuleInstance moduleInstance) {
         return new EffectHolder(effect, moduleInstance, object, null);
     }
 
-    public record EffectHolder(StatusEffect statusEffect, ItemModule.ModuleInstance moduleInstance,
+    public record EffectHolder(StatusEffect statusEffect, ModuleInstance moduleInstance,
                                JsonObject rawData, StatusEffectInstance instance) {
 
         public boolean isGuiVisibility() {

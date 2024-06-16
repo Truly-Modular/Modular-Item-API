@@ -33,6 +33,7 @@ import smartin.miapi.item.modular.Transform;
 import smartin.miapi.item.modular.TransformMap;
 import smartin.miapi.mixin.client.ModelLoaderInterfaceAccessor;
 import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.material.Material;
 import smartin.miapi.modules.material.MaterialProperty;
@@ -77,7 +78,7 @@ public class ModelProperty implements RenderProperty {
         });
     }
 
-    public static List<ModelJson> getJson(ItemModule.ModuleInstance moduleInstance) {
+    public static List<ModelJson> getJson(ModuleInstance moduleInstance) {
         List<ModelJson> modelJsonList = new ArrayList<>();
         JsonElement data = moduleInstance.getProperties().get(property);
         if (data == null) {
@@ -98,7 +99,7 @@ public class ModelProperty implements RenderProperty {
         return modelJsonList;
     }
 
-    public static List<ModelHolder> getForModule(ItemModule.ModuleInstance instance, String key, ItemStack itemStack) {
+    public static List<ModelHolder> getForModule(ModuleInstance instance, String key, ItemStack itemStack) {
         List<ModelJson> modelJsonList = getJson(instance);
         List<ModelHolder> models = new ArrayList<>();
         for (ModelJson json : modelJsonList) {
@@ -111,7 +112,7 @@ public class ModelProperty implements RenderProperty {
     }
 
     @Nullable
-    public static ModelHolder bakedModel(ItemModule.ModuleInstance instance, ModelJson json, ItemStack itemStack, String key) {
+    public static ModelHolder bakedModel(ModuleInstance instance, ModelJson json, ItemStack itemStack, String key) {
         int condition = Material.getColor(StatResolver.resolveString(json.condition, instance));
         if(condition!=0){
             if (
@@ -125,7 +126,7 @@ public class ModelProperty implements RenderProperty {
     }
 
     @Nullable
-    public static ModelHolder bakedModel(ItemModule.ModuleInstance instance, ModelJson json, ItemStack itemStack) {
+    public static ModelHolder bakedModel(ModuleInstance instance, ModelJson json, ItemStack itemStack) {
         Material material = MaterialProperty.getMaterial(instance);
         List<String> list = new ArrayList<>();
         if (material != null) {
@@ -173,7 +174,7 @@ public class ModelProperty implements RenderProperty {
     }
 
     protected static Map<String, BakedModel> generateModels(ItemStack itemStack) {
-        ItemModule.ModuleInstance root = ItemModule.getModules(itemStack);
+        ModuleInstance root = ItemModule.getModules(itemStack);
 
         List<TransformedUnbakedModel> unbakedModels = resolveUnbakedModel(root);
 
@@ -221,10 +222,10 @@ public class ModelProperty implements RenderProperty {
         return bakedModelMap;
     }
 
-    protected static List<TransformedUnbakedModel> resolveUnbakedModel(ItemModule.ModuleInstance root) {
+    protected static List<TransformedUnbakedModel> resolveUnbakedModel(ModuleInstance root) {
         List<TransformedUnbakedModel> unbakedModels = new ArrayList<>();
         AtomicReference<Float> scaleAdder = new AtomicReference<>(1.0f);
-        for (ItemModule.ModuleInstance moduleI : root.allSubModules()) {
+        for (ModuleInstance moduleI : root.allSubModules()) {
             Gson gson = Miapi.gson;
             List<ModelJson> modelJsonList = new ArrayList<>();
             JsonElement data = moduleI.getProperties().get(property);
@@ -244,7 +245,7 @@ public class ModelProperty implements RenderProperty {
                 modelJsonList.add(propertyJson);
             }
             if (modelJsonList == null) {
-                Miapi.LOGGER.warn("Module " + moduleI.module.getName() + " has no Model Attached, is this intentional?");
+                Miapi.LOGGER.warn("Module " + moduleI.module.name() + " has no Model Attached, is this intentional?");
                 return new ArrayList<>();
             }
             for (ModelJson json : modelJsonList) {
@@ -401,7 +402,7 @@ public class ModelProperty implements RenderProperty {
     }
 
     public record TransformedUnbakedModel(TransformMap transform, JsonUnbakedModel unbakedModel,
-                                          ItemModule.ModuleInstance instance, int color) {
+                                          ModuleInstance instance, int color) {
     }
 
     public static class ModelJson {

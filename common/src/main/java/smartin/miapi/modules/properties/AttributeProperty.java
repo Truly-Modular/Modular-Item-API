@@ -16,6 +16,7 @@ import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.item.modular.items.ExampleModularItem;
 import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
@@ -40,12 +41,12 @@ public class AttributeProperty implements ModuleProperty {
         property = this;
         ModularItemCache.setSupplier(KEY, (AttributeProperty::createAttributeCache));
         ModularItemCache.setSupplier(KEY + "_unmodifieable", (AttributeProperty::equipmentSlotMultimapMapGenerate));
-        priorityMap.put(EntityAttributes.GENERIC_ARMOR, -15.0f);
-        priorityMap.put(EntityAttributes.GENERIC_ARMOR_TOUGHNESS, -14.0f);
-        priorityMap.put(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, -13.0f);
-        priorityMap.put(EntityAttributes.GENERIC_ATTACK_DAMAGE, -12.0f);
+        priorityMap.put(EntityAttributes.GENERIC_ARMOR.comp_349(), -15.0f);
+        priorityMap.put(EntityAttributes.GENERIC_ARMOR_TOUGHNESS.comp_349(), -14.0f);
+        priorityMap.put(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE.comp_349(), -13.0f);
+        priorityMap.put(EntityAttributes.GENERIC_ATTACK_DAMAGE.comp_349(), -12.0f);
         priorityMap.put(AttributeRegistry.MAGIC_DAMAGE, -11.5f);
-        priorityMap.put(EntityAttributes.GENERIC_ATTACK_SPEED, -11.0f);
+        priorityMap.put(EntityAttributes.GENERIC_ATTACK_SPEED.comp_349(), -11.0f);
         priorityMap.put(AttributeRegistry.CRITICAL_DAMAGE, -10.9f);
         priorityMap.put(AttributeRegistry.CRITICAL_CHANCE, -10.8f);
         priorityMap.put(AttributeRegistry.PROJECTILE_DAMAGE, -10.0f);
@@ -74,34 +75,24 @@ public class AttributeProperty implements ModuleProperty {
         for (JsonElement attributeElement : element.getAsJsonArray()) {
             JsonObject attributeJson = attributeElement.getAsJsonObject();
             String attributeName = attributeJson.get("attribute").getAsString();
-            double value = StatResolver.resolveDouble(attributeJson.get("value").getAsString(), new ItemModule.ModuleInstance(ItemModule.empty));
+            double value = StatResolver.resolveDouble(attributeJson.get("value").getAsString(), new ModuleInstance(ItemModule.empty));
             EntityAttributeModifier.Operation operation = getOperation(attributeJson.get("operation").getAsString());
             EquipmentSlot slot = getSlot(attributeJson.get("slot").getAsString());
 
-            EntityAttribute attribute = replaceMap.getOrDefault(attributeName, () -> Registries.ATTRIBUTE.get(new Identifier(attributeName))).get();
+            EntityAttribute attribute = replaceMap.getOrDefault(attributeName, () -> Registries.ATTRIBUTE.get(Identifier.of(attributeName))).get();
 
-            UUID uuid = null;
+            Identifier identifier = Miapi.MiapiIdentifier("modular_attributes");
 
-            if (attributeJson.has("uuid")) {
-                uuid = UUID.fromString(attributeJson.get("uuid").getAsString());
+            if (attributeJson.has("id")) {
+                identifier = Identifier.of(attributeJson.get("uuid").getAsString());
             }
-            String modifierName = attributeName;
-            if (attributeJson.has("name")) {
-                modifierName = attributeJson.get("name").getAsString();
-            }
-            EntityAttributeModifier.Operation targetOperation = EntityAttributeModifier.Operation.ADDITION;
+            EntityAttributeModifier.Operation targetOperation = EntityAttributeModifier.Operation.ADD_VALUE;
             if (attributeJson.has("target_operation")) {
                 targetOperation = getOperation(attributeJson.get("target_operation").getAsString());
             }
 
             if (attribute != null) {
-                if (uuid != null) {
-                    // Use constructor with UUID
-                    attributeModifiers.put(attribute, new EntityAttributeModifierHolder(new EntityAttributeModifier(uuid, modifierName, value, operation), slot, true, targetOperation));
-                } else {
-                    // Use constructor without UUID
-                    attributeModifiers.put(attribute, new EntityAttributeModifierHolder(new EntityAttributeModifier(modifierName, value, operation), slot, true, targetOperation));
-                }
+                attributeModifiers.put(attribute, new EntityAttributeModifierHolder(new EntityAttributeModifier(identifier, value, operation), slot, true, targetOperation));
             }
         }
         return true;
@@ -213,24 +204,7 @@ public class AttributeProperty implements ModuleProperty {
 
             toMerge.forEach((entityAttribute, entityAttributeModifier) -> {
                 if (entityAttributeModifier.slot().equals(slot)) {
-                    if (entityAttributeModifier.seperateOnItem) {
-                        merged.put(entityAttribute, entityAttributeModifier.attributeModifier());
-                    } else {
-                        switch (entityAttributeModifier.mergeTo) {
-                            case ADDITION -> {
-                                Multimap<EntityAttribute, EntityAttributeModifier> multimap = mergedAdditive.computeIfAbsent(entityAttributeModifier.attributeModifier().getId(), (id) -> ArrayListMultimap.create());
-                                multimap.put(entityAttribute, entityAttributeModifier.attributeModifier());
-                            }
-                            case MULTIPLY_BASE -> {
-                                Multimap<EntityAttribute, EntityAttributeModifier> multimap = mergedMultiBase.computeIfAbsent(entityAttributeModifier.attributeModifier().getId(), (id) -> ArrayListMultimap.create());
-                                multimap.put(entityAttribute, entityAttributeModifier.attributeModifier());
-                            }
-                            case MULTIPLY_TOTAL -> {
-                                Multimap<EntityAttribute, EntityAttributeModifier> multimap = mergedMultiTotal.computeIfAbsent(entityAttributeModifier.attributeModifier().getId(), (id) -> ArrayListMultimap.create());
-                                multimap.put(entityAttribute, entityAttributeModifier.attributeModifier());
-                            }
-                        }
-                    }
+                    merged.put(entityAttribute, entityAttributeModifier.attributeModifier());
                 }
             });
 
@@ -244,23 +218,23 @@ public class AttributeProperty implements ModuleProperty {
                     double multiply = 1;
                     boolean hasValue = false;
                     for (EntityAttributeModifier entityAttributeModifier : collection) {
-                        if (entityAttributeModifier.getOperation().equals(EntityAttributeModifier.Operation.ADDITION)) {
-                            startValue += entityAttributeModifier.getValue();
+                        if (entityAttributeModifier.comp_2450().equals(EntityAttributeModifier.Operation.ADD_VALUE)) {
+                            startValue += entityAttributeModifier.value();
                             hasValue = true;
                         }
-                        if (entityAttributeModifier.getOperation().equals(EntityAttributeModifier.Operation.MULTIPLY_BASE)) {
-                            multiply += entityAttributeModifier.getValue();
+                        if (entityAttributeModifier.comp_2450().equals(EntityAttributeModifier.Operation.ADD_MULTIPLIED_BASE)) {
+                            multiply += entityAttributeModifier.value();
                         }
                     }
                     startValue = startValue * multiply;
                     for (EntityAttributeModifier entityAttributeModifier : collection) {
-                        if (entityAttributeModifier.getOperation().equals(EntityAttributeModifier.Operation.MULTIPLY_TOTAL)) {
-                            startValue = startValue * entityAttributeModifier.getValue();
+                        if (entityAttributeModifier.comp_2450().equals(EntityAttributeModifier.Operation.ADD_MULTIPLIED_TOTAL)) {
+                            startValue = startValue * entityAttributeModifier.value();
                         }
                     }
                     startValue = startValue - key.getDefaultValue();
                     if ((startValue != 0 || hasValue) && !Double.isNaN(startValue)) {
-                        EntityAttributeModifier entityAttributeModifier = new EntityAttributeModifier(uuid, "generic.miapi." + key.getTranslationKey(), startValue, EntityAttributeModifier.Operation.ADDITION);
+                        EntityAttributeModifier entityAttributeModifier = new EntityAttributeModifier(uuid, "generic.miapi." + key.getTranslationKey(), startValue, EntityAttributeModifier.Operation.ADD_VALUE);
                         toAdding.put(key, entityAttributeModifier);
                     }
                 });
@@ -270,20 +244,20 @@ public class AttributeProperty implements ModuleProperty {
                 entityAttributeEntityAttributeModifierMultimap.asMap().forEach((key, collection) -> {
                     double multiply = 0;
                     for (EntityAttributeModifier entityAttributeModifier : collection) {
-                        if (entityAttributeModifier.getOperation().equals(EntityAttributeModifier.Operation.MULTIPLY_BASE)) {
-                            multiply += entityAttributeModifier.getValue();
+                        if (entityAttributeModifier.comp_2450().equals(EntityAttributeModifier.Operation.ADD_MULTIPLIED_BASE)) {
+                            multiply += entityAttributeModifier.value();
                         }
-                        if (entityAttributeModifier.getOperation().equals(EntityAttributeModifier.Operation.ADDITION)) {
+                        if (entityAttributeModifier.comp_2450().equals(EntityAttributeModifier.Operation.ADD_VALUE)) {
                             Miapi.LOGGER.warn("Operation Addition(+) is not supported to be merged to Multiply Base(*)");
                         }
                     }
                     for (EntityAttributeModifier entityAttributeModifier : collection) {
-                        if (entityAttributeModifier.getOperation().equals(EntityAttributeModifier.Operation.MULTIPLY_TOTAL)) {
-                            multiply = (multiply + 1) * (entityAttributeModifier.getValue() + 1) - 1;
+                        if (entityAttributeModifier.comp_2450().equals(EntityAttributeModifier.Operation.ADD_MULTIPLIED_TOTAL)) {
+                            multiply = (multiply + 1) * (entityAttributeModifier.value() + 1) - 1;
                         }
                     }
                     if (!Double.isNaN(multiply) && multiply != 1) {
-                        EntityAttributeModifier entityAttributeModifier = new EntityAttributeModifier(uuid, "generic.miapi." + key.getTranslationKey(), multiply, EntityAttributeModifier.Operation.MULTIPLY_BASE);
+                        EntityAttributeModifier entityAttributeModifier = new EntityAttributeModifier(uuid, "generic.miapi." + key.getTranslationKey(), multiply, EntityAttributeModifier.Operation.ADD_MULTIPLIED_BASE);
                         toAdding.put(key, entityAttributeModifier);
                     }
                 });
@@ -293,18 +267,18 @@ public class AttributeProperty implements ModuleProperty {
                 entityAttributeEntityAttributeModifierMultimap.asMap().forEach((key, collection) -> {
                     double multiply = 1;
                     for (EntityAttributeModifier entityAttributeModifier : collection) {
-                        if (entityAttributeModifier.getOperation().equals(EntityAttributeModifier.Operation.MULTIPLY_TOTAL)) {
-                            multiply = multiply * entityAttributeModifier.getValue();
+                        if (entityAttributeModifier.comp_2450().equals(EntityAttributeModifier.Operation.ADD_MULTIPLIED_TOTAL)) {
+                            multiply = multiply * entityAttributeModifier.value();
                         }
-                        if (entityAttributeModifier.getOperation().equals(EntityAttributeModifier.Operation.ADDITION)) {
+                        if (entityAttributeModifier.comp_2450().equals(EntityAttributeModifier.Operation.ADD_VALUE)) {
                             Miapi.LOGGER.warn("Operation Addition(+) is not supported to be merged to Multiply Total(**)");
                         }
-                        if (entityAttributeModifier.getOperation().equals(EntityAttributeModifier.Operation.ADDITION)) {
+                        if (entityAttributeModifier.comp_2450().equals(EntityAttributeModifier.Operation.ADD_VALUE)) {
                             Miapi.LOGGER.warn("Operation Multiply Base(*) is not supported to be merged to Multiply Total(**)");
                         }
                     }
                     if (!Double.isNaN(multiply)) {
-                        EntityAttributeModifier entityAttributeModifier = new EntityAttributeModifier(uuid, "generic.miapi." + key.getTranslationKey(), multiply, EntityAttributeModifier.Operation.MULTIPLY_TOTAL);
+                        EntityAttributeModifier entityAttributeModifier = new EntityAttributeModifier(uuid, "generic.miapi." + key.getTranslationKey(), multiply, EntityAttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
                         toAdding.put(key, entityAttributeModifier);
                     }
                 });
@@ -408,10 +382,10 @@ public class AttributeProperty implements ModuleProperty {
         List<Double> multiplyBase = new ArrayList<>();
         List<Double> multiplyTotal = new ArrayList<>();
         attributes.forEach(attribute -> {
-            switch (attribute.getOperation()) {
-                case ADDITION -> addition.add(attribute.getValue());
-                case MULTIPLY_BASE -> multiplyBase.add(attribute.getValue());
-                case MULTIPLY_TOTAL -> multiplyTotal.add(attribute.getValue());
+            switch (attribute.comp_2450()) {
+                case ADD_VALUE -> addition.add(attribute.value());
+                case ADD_MULTIPLIED_BASE -> multiplyBase.add(attribute.value());
+                case ADD_MULTIPLIED_TOTAL -> multiplyTotal.add(attribute.value());
             }
         });
         double value = fallback;
@@ -449,15 +423,15 @@ public class AttributeProperty implements ModuleProperty {
     }
 
     public static Multimap<EntityAttribute, EntityAttributeModifierHolder> createAttributeMap(ItemStack itemStack, UUIDGetter defaultUUID) {
-        ItemModule.ModuleInstance rootInstance = ItemModule.getModules(itemStack);
+        ModuleInstance rootInstance = ItemModule.getModules(itemStack);
         Multimap<EntityAttribute, EntityAttributeModifierHolder> attributeModifiers = ArrayListMultimap.create();
-        for (ItemModule.ModuleInstance instance : rootInstance.allSubModules()) {
+        for (ModuleInstance instance : rootInstance.allSubModules()) {
             getAttributeModifiers(defaultUUID, instance, attributeModifiers);
         }
         return attributeModifiers;
     }
 
-    public static void getAttributeModifiers(UUIDGetter defaultUUID, ItemModule.ModuleInstance instance, Multimap<EntityAttribute, EntityAttributeModifierHolder> attributeModifiers) {
+    public static void getAttributeModifiers(UUIDGetter defaultUUID, ModuleInstance instance, Multimap<EntityAttribute, EntityAttributeModifierHolder> attributeModifiers) {
         JsonElement element = instance.getProperties().get(property);
         if (element == null) {
             return;
@@ -472,10 +446,10 @@ public class AttributeProperty implements ModuleProperty {
             double value = StatResolver.resolveDouble(attributeJson.value, instance);
             EntityAttributeModifier.Operation operation = getOperation(attributeJson.operation);
             EntityAttributeModifier.Operation baseTarget = getOperation(attributeJson.target_operation);
-            EntityAttribute attribute = replaceMap.getOrDefault(attributeName, () -> Registries.ATTRIBUTE.get(new Identifier(attributeName))).get();
+            EntityAttribute attribute = replaceMap.getOrDefault(attributeName, () -> Registries.ATTRIBUTE.get(Identifier.of(attributeName))).get();
             if (attribute == null) {
-                Miapi.LOGGER.warn(String.valueOf(Registries.ATTRIBUTE.get(new Identifier(attributeName))));
-                Miapi.LOGGER.warn("Attribute is null " + attributeName + " on module " + instance.module.getName() + " this should not have happened.");
+                Miapi.LOGGER.warn(String.valueOf(Registries.ATTRIBUTE.get(Identifier.of(attributeName))));
+                Miapi.LOGGER.warn("Attribute is null " + attributeName + " on module " + instance.module.name() + " this should not have happened.");
             } else {
                 UUID uuid = attributeJson.uuid == null ? defaultUUID.fromSlot(slot, baseTarget) : UUID.fromString(attributeJson.uuid);
                 if (uuid.equals(ExampleModularItem.attackDamageUUID())) {
@@ -566,12 +540,12 @@ public class AttributeProperty implements ModuleProperty {
 
     private static EntityAttributeModifier.Operation getOperation(String operationString) {
         if (operationString == null) {
-            return EntityAttributeModifier.Operation.ADDITION;
+            return EntityAttributeModifier.Operation.ADD_VALUE;
         }
         return switch (operationString) {
-            case "*" -> EntityAttributeModifier.Operation.MULTIPLY_BASE;
-            case "**" -> EntityAttributeModifier.Operation.MULTIPLY_TOTAL;
-            default -> EntityAttributeModifier.Operation.ADDITION;
+            case "*" -> EntityAttributeModifier.Operation.ADD_MULTIPLIED_BASE;
+            case "**" -> EntityAttributeModifier.Operation.ADD_MULTIPLIED_TOTAL;
+            default -> EntityAttributeModifier.Operation.ADD_VALUE;
         };
     }
 

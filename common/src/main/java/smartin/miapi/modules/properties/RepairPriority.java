@@ -2,6 +2,7 @@ package smartin.miapi.modules.properties;
 
 import net.minecraft.item.ItemStack;
 import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.material.Material;
 import smartin.miapi.modules.material.MaterialProperty;
@@ -40,14 +41,14 @@ public class RepairPriority extends DoubleProperty {
     private List<Material> getRepairMaterialsPrivate(ItemStack itemStack) {
         double lowest = Double.MAX_VALUE;
         List<Material> materials = new ArrayList<>();
-        for (ItemModule.ModuleInstance moduleInstance : ItemModule.getModules(itemStack).allSubModules()) {
+        for (ModuleInstance moduleInstance : ItemModule.getModules(itemStack).allSubModules()) {
             Double value = getValueForModule(moduleInstance, null);
             Material material = MaterialProperty.getMaterial(moduleInstance);
             if (value != null && material != null && lowest > value) {
                 lowest = value;
             }
         }
-        for (ItemModule.ModuleInstance moduleInstance : ItemModule.getModules(itemStack).allSubModules()) {
+        for (ModuleInstance moduleInstance : ItemModule.getModules(itemStack).allSubModules()) {
             Double value = getValueForModule(moduleInstance, null);
             Material material = MaterialProperty.getMaterial(moduleInstance);
             if (value != null && material != null && Math.abs(lowest - value) < 0.001) {

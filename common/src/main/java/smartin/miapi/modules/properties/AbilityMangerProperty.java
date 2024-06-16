@@ -6,12 +6,12 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
 import smartin.miapi.modules.abilities.util.ItemUseAbility;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.conditions.ConditionManager;
 import smartin.miapi.modules.conditions.ModuleCondition;
-import smartin.miapi.modules.properties.util.CodecBasedProperty;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
@@ -69,7 +69,7 @@ public class AbilityMangerProperty implements ModuleProperty {
     @Nullable
     public static AbilityContext getContext(ItemStack itemStack, String key) {
         AbilityContext context = null;
-        for (ItemModule.ModuleInstance moduleInstance : ItemModule.getModules(itemStack).allSubModules()) {
+        for (ModuleInstance moduleInstance : ItemModule.getModules(itemStack).allSubModules()) {
             JsonElement element = moduleInstance.getProperties().get(property);
             if (element != null) {
                 Map<String, JsonElement> jsonElementMap = element.getAsJsonObject().asMap();
@@ -90,7 +90,7 @@ public class AbilityMangerProperty implements ModuleProperty {
 
     public static class AbilityContext {
         public JsonObject contextJson;
-        public ItemModule.ModuleInstance contextInstance;
+        public ModuleInstance contextInstance;
         public ItemStack contextStack;
         public ModuleCondition moduleCondition;
         public double priority = 0.0f;
@@ -101,7 +101,7 @@ public class AbilityMangerProperty implements ModuleProperty {
         private Map<String, String> stringCache = new HashMap<>();
         private Map<String, Text> textCache = new HashMap<>();
 
-        public AbilityContext(JsonObject element, ItemModule.ModuleInstance moduleInstance, ItemStack itemStack) {
+        public AbilityContext(JsonObject element, ModuleInstance moduleInstance, ItemStack itemStack) {
             this.contextInstance = moduleInstance;
             this.contextJson = element;
             this.contextStack = itemStack;

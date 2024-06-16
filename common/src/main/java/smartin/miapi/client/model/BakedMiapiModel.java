@@ -20,13 +20,13 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import smartin.miapi.client.renderer.TrimRenderer;
 import smartin.miapi.item.modular.Transform;
-import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.EmissiveProperty;
 import smartin.miapi.modules.properties.GlintProperty;
 import smartin.miapi.registries.RegistryInventory;
 
 public class BakedMiapiModel implements MiapiModel {
-    ItemModule.ModuleInstance instance;
+    ModuleInstance instance;
     BakedModel model;
     Matrix4f modelMatrix;
     ModelHolder modelHolder;
@@ -37,7 +37,7 @@ public class BakedMiapiModel implements MiapiModel {
     int blockLight;
 
 
-    public BakedMiapiModel(ModelHolder holder, ItemModule.ModuleInstance moduleInstance, ItemStack stack) {
+    public BakedMiapiModel(ModelHolder holder, ModuleInstance moduleInstance, ItemStack stack) {
         this.modelHolder = holder;
         this.instance = moduleInstance;
         Color color = holder.colorProvider().getVertexColor();

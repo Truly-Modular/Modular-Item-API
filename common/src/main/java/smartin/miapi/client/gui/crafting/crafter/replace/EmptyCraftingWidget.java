@@ -15,7 +15,7 @@ import smartin.miapi.client.gui.TransformableWidget;
 import smartin.miapi.client.gui.crafting.CraftingScreen;
 import smartin.miapi.craft.CraftAction;
 import smartin.miapi.item.modular.StatResolver;
-import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.ModuleInstance;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -30,9 +30,9 @@ public class EmptyCraftingWidget extends InteractAbleWidget {
     public EmptyCraftingWidget(int x, int y, int width, int height, CraftAction action) {
         super(x, y, width, height, Text.empty());
 
-        ItemModule.ModuleInstance moduleInstance = new ItemModule.ModuleInstance(action.toAdd);
-        Text displayText = StatResolver.translateAndResolve(Miapi.MOD_ID + ".module." + moduleInstance.module.getName(), moduleInstance);
-        Text descriptionText = StatResolver.translateAndResolve(Miapi.MOD_ID + ".module." + moduleInstance.module.getName() + ".description", moduleInstance);
+        ModuleInstance moduleInstance = new ModuleInstance(action.toAdd);
+        Text displayText = StatResolver.translateAndResolve(Miapi.MOD_ID + ".module." + moduleInstance.module.name(), moduleInstance);
+        Text descriptionText = StatResolver.translateAndResolve(Miapi.MOD_ID + ".module." + moduleInstance.module.name() + ".description", moduleInstance);
 
         float headerScale = 1.5f;
 

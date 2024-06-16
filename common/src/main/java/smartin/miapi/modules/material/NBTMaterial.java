@@ -10,7 +10,7 @@ import smartin.miapi.Environment;
 import smartin.miapi.Miapi;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.events.MiapiEvents;
-import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.Optional;
@@ -64,7 +64,7 @@ public class NBTMaterial extends JsonMaterial {
         });
     }
 
-    public Material getMaterial(ItemModule.ModuleInstance moduleInstance) {
+    public Material getMaterial(ModuleInstance moduleInstance) {
         String data = moduleInstance.moduleData.get("miapi:nbt_material_data");
         try {
             JsonObject object = Miapi.gson.fromJson(data, JsonObject.class);
@@ -76,7 +76,7 @@ public class NBTMaterial extends JsonMaterial {
         return this;
     }
 
-    public void writeMaterial(ItemModule.ModuleInstance moduleInstance) {
+    public void writeMaterial(ModuleInstance moduleInstance) {
         JsonObject object1 = this.overWrite.deepCopy();
         object1.addProperty("parent", this.parent.getKey());
 

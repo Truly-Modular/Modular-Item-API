@@ -6,7 +6,7 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.item.ItemStack;
-import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.ModuleInstance;
 
 import java.io.Closeable;
 
@@ -24,7 +24,7 @@ public interface MaterialRenderController extends Closeable {
             VertexConsumerProvider vertexConsumers,
             Sprite originalSprite,
             ItemStack stack,
-            ItemModule.ModuleInstance moduleInstance,
+            ModuleInstance moduleInstance,
             ModelTransformationMode mode);
 
     /**

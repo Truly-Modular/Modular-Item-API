@@ -7,6 +7,7 @@ import net.minecraft.item.ItemStack;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.craft.CraftAction;
 import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.util.CraftingProperty;
 import smartin.miapi.modules.properties.util.MergeType;
@@ -36,12 +37,12 @@ public class ItemIdProperty implements CraftingProperty, ModuleProperty {
     }
 
     @Override
-    public boolean shouldExecuteOnCraft(ItemModule.ModuleInstance module, ItemModule.ModuleInstance root, ItemStack stack) {
+    public boolean shouldExecuteOnCraft(ModuleInstance module, ModuleInstance root, ItemStack stack) {
         return true;
     }
 
     public static ItemStack changeId(ItemStack itemStack){
-        ItemModule.ModuleInstance root = ItemModule.getModules(itemStack);
+        ModuleInstance root = ItemModule.getModules(itemStack);
         JsonElement data = ItemModule.getMergedProperty(root, property);
         if (data != null) {
             String translationKey = data.getAsString();
@@ -76,7 +77,7 @@ public class ItemIdProperty implements CraftingProperty, ModuleProperty {
 
     @Override
     public ItemStack preview(ItemStack old, ItemStack crafting, PlayerEntity player, ModularWorkBenchEntity bench, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<String,String> dataMap) {
-        ItemModule.ModuleInstance root = ItemModule.getModules(crafting);
+        ModuleInstance root = ItemModule.getModules(crafting);
         JsonElement data = ItemModule.getMergedProperty(root, property);
         if (data != null) {
             String translationKey = data.getAsString();

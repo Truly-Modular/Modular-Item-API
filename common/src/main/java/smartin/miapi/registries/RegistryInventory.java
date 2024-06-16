@@ -15,6 +15,7 @@ import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.MapColor;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.block.enums.NoteBlockInstrument;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.ShaderProgram;
@@ -23,7 +24,6 @@ import net.minecraft.client.render.RenderPhase;
 import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.texture.SpriteAtlasTexture;
-import net.minecraft.component.Component;
 import net.minecraft.component.ComponentType;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
@@ -101,6 +101,7 @@ import java.util.function.Supplier;
 import static net.minecraft.client.render.RenderPhase.*;
 import static smartin.miapi.Miapi.MOD_ID;
 import static smartin.miapi.attributes.AttributeRegistry.*;
+import static smartin.miapi.modules.ItemModule.componentType;
 import static smartin.miapi.modules.abilities.util.ItemAbilityManager.useAbilityRegistry;
 import static smartin.miapi.modules.conditions.ConditionManager.moduleConditionRegistry;
 
@@ -197,9 +198,9 @@ public class RegistryInventory {
     //public static SimpleCraftingStat exampleCraftingStat;
     public static RecipeSerializer serializer;
     public static RegistrySupplier<EntityType<ItemProjectileEntity>> itemProjectileType = (RegistrySupplier) registerAndSupply(entityTypes, "thrown_item", () ->
-            EntityType.Builder.create(ItemProjectileEntity::new, SpawnGroup.MISC).setDimensions(0.5F, 0.5F).maxTrackingRange(4).trackingTickInterval(20).build("miapi:thrown_item"));
+            EntityType.Builder.create(ItemProjectileEntity::new, SpawnGroup.MISC).dimensions(0.5F, 0.5F).maxTrackingRange(4).trackingTickInterval(20).build("miapi:thrown_item"));
     public static RegistrySupplier<EntityType<BoomerangItemProjectileEntity>> itemBoomerangProjectileType = (RegistrySupplier) registerAndSupply(entityTypes, "thrown_boomerang_item", () ->
-            EntityType.Builder.create(BoomerangItemProjectileEntity::new, SpawnGroup.MISC).setDimensions(0.5F, 0.5F).maxTrackingRange(4).trackingTickInterval(20).build("miapi:thrown_boomerang_item"));
+            EntityType.Builder.create(BoomerangItemProjectileEntity::new, SpawnGroup.MISC).dimensions(0.5F, 0.5F).maxTrackingRange(4).trackingTickInterval(20).build("miapi:thrown_boomerang_item"));
 
     static {
         itemProjectileType.listen(e -> {
@@ -211,7 +212,6 @@ public class RegistryInventory {
     public static ScreenHandlerType<CraftingScreenHandler> craftingScreenHandler;
 
     public static void setup() {
-
         //SCREEN
         register(screenHandlers, "default_crafting", () ->
                         new ScreenHandlerType<>(CraftingScreenHandler::new, FeatureSet.empty()),
@@ -219,6 +219,9 @@ public class RegistryInventory {
                     craftingScreenHandler = (ScreenHandlerType<CraftingScreenHandler>) scr;
                     if (Platform.getEnvironment() == Env.CLIENT) MiapiClient.registerScreenHandler();
                 });
+
+        RegistryInventory.components.register(
+                Miapi.MiapiIdentifier("item_module"),() -> componentType);
 
         //ENTITY
         // commented out because RegistrySupplier is needed... see itemProjectileType field definition above
@@ -234,7 +237,7 @@ public class RegistryInventory {
         register(blocks, "modular_work_bench", () -> new ModularWorkBench(
                 AbstractBlock.Settings.create().
                         mapColor(MapColor.IRON_GRAY).
-                        instrument(Instrument.IRON_XYLOPHONE).
+                        instrument(NoteBlockInstrument.IRON_XYLOPHONE).
                         requiresTool().
                         strength(2.5F, 6.0F).
                         sounds(BlockSoundGroup.METAL).
@@ -415,8 +418,8 @@ public class RegistryInventory {
 
 
         // GAME EVENTS
-        register(gameEvents, "stat_provider_added", () -> new GameEvent(MOD_ID + ":stat_provider_added", 16), ev -> statProviderCreatedEvent = ev);
-        register(gameEvents, "stat_provider_removed", () -> new GameEvent(MOD_ID + ":stat_provider_removed", 16), ev -> statProviderRemovedEvent = ev);
+        register(gameEvents, "stat_provider_added", () -> new GameEvent(16), ev -> statProviderCreatedEvent = ev);
+        register(gameEvents, "stat_provider_removed", () -> new GameEvent(16), ev -> statProviderRemovedEvent = ev);
 
 
         LifecycleEvent.SETUP.register(() -> {

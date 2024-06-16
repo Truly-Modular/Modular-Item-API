@@ -11,6 +11,7 @@ import smartin.miapi.client.gui.crafting.statdisplay.SingleStatDisplay;
 import smartin.miapi.client.gui.crafting.statdisplay.SingleStatDisplayDouble;
 import smartin.miapi.client.gui.crafting.statdisplay.StatListWidget;
 import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
@@ -63,7 +64,7 @@ public class GuiStatProperty implements ModuleProperty {
 
     private static Map<String, GuiInfo> getInfoCache(ItemStack itemStack) {
         Map<String, GuiInfo> infoMap = new HashMap<>();
-        for (ItemModule.ModuleInstance moduleInstance : ItemModule.getModules(itemStack).allSubModules()) {
+        for (ModuleInstance moduleInstance : ItemModule.getModules(itemStack).allSubModules()) {
             if (moduleInstance.getProperties().containsKey(property)) {
                 JsonElement element = moduleInstance.getProperties().get(property);
                 element.getAsJsonObject().asMap().forEach((id, innerJson) -> {
@@ -104,7 +105,7 @@ public class GuiStatProperty implements ModuleProperty {
         public Text header;
         public Text description;
 
-        public GuiInfo(JsonObject json, ItemModule.ModuleInstance moduleInstance) {
+        public GuiInfo(JsonObject json, ModuleInstance moduleInstance) {
             min = ModuleProperty.getDouble(json, "min", moduleInstance, 0.0);
             max = ModuleProperty.getDouble(json, "max", moduleInstance, 3.0);
             value = ModuleProperty.getDouble(json, "value", moduleInstance, 0.0);

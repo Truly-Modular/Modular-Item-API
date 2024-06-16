@@ -34,6 +34,7 @@ import org.jetbrains.annotations.Nullable;
 import smartin.miapi.entity.ItemProjectileEntity;
 import smartin.miapi.events.MiapiProjectileEvents;
 import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.util.CodecBasedProperty;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
@@ -54,7 +55,7 @@ public class ExplosionProperty extends CodecBasedProperty<ExplosionProperty.Expl
         super(KEY, codec);
         property = this;
         MiapiProjectileEvents.MODULAR_PROJECTILE_ENTITY_HIT.register(event -> {
-            @Nullable Pair<ItemModule.ModuleInstance, JsonElement> jsonElement = this.highestPriorityJsonElement(event.projectile.asItemStack());
+            @Nullable Pair<ModuleInstance, JsonElement> jsonElement = this.highestPriorityJsonElement(event.projectile.asItemStack());
             if (jsonElement != null) {
                 ExplosionInfo info = new ExplosionInfo(jsonElement.getRight().getAsJsonObject(), jsonElement.getLeft());
                 if (!event.projectile.getWorld().isClient()) {
@@ -125,7 +126,7 @@ public class ExplosionProperty extends CodecBasedProperty<ExplosionProperty.Expl
 
     public ExplosionProperty.ExplosionInfo getInfo(ItemStack itemStack, ModuleProperty property) {
         ExplosionProperty.ExplosionInfo info = null;
-        for (ItemModule.ModuleInstance moduleInstance : ItemModule.getModules(itemStack).allSubModules()) {
+        for (ModuleInstance moduleInstance : ItemModule.getModules(itemStack).allSubModules()) {
             if (moduleInstance.getProperties().containsKey(property)) {
                 info = new ExplosionProperty.ExplosionInfo(moduleInstance.getProperties().get(property).getAsJsonObject(), moduleInstance);
             }
@@ -335,7 +336,7 @@ public class ExplosionProperty extends CodecBasedProperty<ExplosionProperty.Expl
         @CodecBehavior.Optional
         public double entityRadius;
 
-        public ExplosionInfo(JsonObject element, ItemModule.ModuleInstance moduleInstance) {
+        public ExplosionInfo(JsonObject element, ModuleInstance moduleInstance) {
             destroyBlocks = ModuleProperty.getBoolean(element, "destroyBlocks", false);
             chance = ModuleProperty.getDouble(element, "chance", moduleInstance, 1.0);
             strength = ModuleProperty.getDouble(element, "strength", moduleInstance, 1.0);

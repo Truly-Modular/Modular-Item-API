@@ -12,6 +12,7 @@ import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 import smartin.miapi.Miapi;
 import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
@@ -102,7 +103,7 @@ public class AttributeSplitProperty implements ModuleProperty {
         return finishedMap;
     }
 
-    public Map<Context, List<SplitContext>> getMap(ItemModule.ModuleInstance moduleInstance) {
+    public Map<Context, List<SplitContext>> getMap(ModuleInstance moduleInstance) {
         JsonElement element = moduleInstance.getProperties().get(this);
         if (element != null) {
             return getMap(element, moduleInstance);
@@ -110,7 +111,7 @@ public class AttributeSplitProperty implements ModuleProperty {
         return new HashMap<>();
     }
 
-    public Map<Context, List<SplitContext>> getMap(JsonElement jsonElement, ItemModule.ModuleInstance moduleInstance) {
+    public Map<Context, List<SplitContext>> getMap(JsonElement jsonElement, ModuleInstance moduleInstance) {
         JsonObject object = jsonElement.getAsJsonObject();
         Map<Context, List<SplitContext>> contextListMap = new HashMap<>();
         object.asMap().forEach((attributeKey, innerJson) -> {

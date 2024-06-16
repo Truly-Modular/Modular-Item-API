@@ -5,7 +5,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import org.jetbrains.annotations.Nullable;
-import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.registries.MiapiRegistry;
 
@@ -36,7 +36,7 @@ public class ConditionManager {
 
     public static class ModuleConditionContext implements ConditionContext {
 
-        public ModuleConditionContext(@Nullable ItemModule.ModuleInstance moduleInstance,
+        public ModuleConditionContext(@Nullable ModuleInstance moduleInstance,
                                       @Nullable BlockPos tablePos,
                                       @Nullable PlayerEntity player,
                                       @Nullable Map<ModuleProperty, JsonElement> propertyMap,
@@ -48,7 +48,7 @@ public class ConditionManager {
             this.reasons = reasons;
         }
 
-        public @Nullable ItemModule.ModuleInstance moduleInstance;
+        public @Nullable ModuleInstance moduleInstance;
         public @Nullable BlockPos tablePos;
         public @Nullable PlayerEntity player;
         public @Nullable Map<ModuleProperty, JsonElement> propertyMap;

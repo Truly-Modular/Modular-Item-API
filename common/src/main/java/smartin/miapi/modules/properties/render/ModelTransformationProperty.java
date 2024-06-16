@@ -15,6 +15,7 @@ import smartin.miapi.Miapi;
 import smartin.miapi.client.model.MiapiItemModel;
 import smartin.miapi.item.modular.Transform;
 import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
@@ -47,7 +48,7 @@ public class ModelTransformationProperty implements RenderProperty {
 
     public static ModelTransformation getTransformation(ItemStack stack) {
         ModelTransformation transformation = ModelTransformation.NONE;
-        for (ItemModule.ModuleInstance instance : ItemModule.createFlatList(ItemModule.getModules(stack))) {
+        for (ModuleInstance instance : ItemModule.createFlatList(ItemModule.getModules(stack))) {
             JsonElement element = instance.getProperties().get(property);
             if (element != null) {
                 Map<ModelTransformationMode, Transformation> map = new HashMap<>();

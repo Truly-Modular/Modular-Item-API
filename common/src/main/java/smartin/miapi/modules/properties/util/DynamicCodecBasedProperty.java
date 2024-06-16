@@ -8,6 +8,7 @@ import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.cache.ModularItemCache;
 
 import java.util.ArrayList;
@@ -31,8 +32,8 @@ public abstract class DynamicCodecBasedProperty<T, A> implements ModuleProperty 
 
     public A createCache(ItemStack stack) {
         A holder = createNewHolder();
-        ItemModule.ModuleInstance rootInstance = ItemModule.getModules(stack);
-        for (ItemModule.ModuleInstance subModule : rootInstance.allSubModules()) {
+        ModuleInstance rootInstance = ItemModule.getModules(stack);
+        for (ModuleInstance subModule : rootInstance.allSubModules()) {
             JsonElement element = subModule.getProperties().get(this);
             if (element == null) continue;
             T deserialized = getDataFromSubModule(element, subModule);
@@ -42,10 +43,10 @@ public abstract class DynamicCodecBasedProperty<T, A> implements ModuleProperty 
         return holder;
     }
 
-    public abstract void addTo(ItemModule.ModuleInstance module, T object, A holder);
+    public abstract void addTo(ModuleInstance module, T object, A holder);
     public abstract A createNewHolder();
-    public abstract Codec<T> codec(ItemModule.ModuleInstance instance);
-    public T getDataFromSubModule(JsonElement element, ItemModule.ModuleInstance module) {
+    public abstract Codec<T> codec(ModuleInstance instance);
+    public T getDataFromSubModule(JsonElement element, ModuleInstance module) {
         return codec(module).parse(JsonOps.INSTANCE, element).getOrThrow(false, s ->
                 Miapi.LOGGER.error("Failed to deserialize module data for DynamicCodecBasedProperty! -> {}", s));
     }
@@ -57,7 +58,7 @@ public abstract class DynamicCodecBasedProperty<T, A> implements ModuleProperty 
 
     @Override
     public boolean load(String moduleKey, JsonElement data) throws Exception {
-        codec(new ItemModule.ModuleInstance(ItemModule.empty)).parse(JsonOps.INSTANCE, data).getOrThrow(false, s ->
+        codec(new ModuleInstance(ItemModule.empty)).parse(JsonOps.INSTANCE, data).getOrThrow(false, s ->
                 Miapi.LOGGER.error("Failed to load DynamicCodecBasedProperty! -> {}", s));
         return true;
     }
@@ -73,7 +74,7 @@ public abstract class DynamicCodecBasedProperty<T, A> implements ModuleProperty 
         }
 
         @Override
-        public void addTo(ItemModule.ModuleInstance module, T object, List<T> holder) {
+        public void addTo(ModuleInstance module, T object, List<T> holder) {
             holder.add(object);
         }
 
@@ -94,7 +95,7 @@ public abstract class DynamicCodecBasedProperty<T, A> implements ModuleProperty 
         }
 
         @Override
-        public void addTo(ItemModule.ModuleInstance module, List<T> object, List<T> holder) {
+        public void addTo(ModuleInstance module, List<T> object, List<T> holder) {
             holder.addAll(object);
         }
 
@@ -121,21 +122,21 @@ public abstract class DynamicCodecBasedProperty<T, A> implements ModuleProperty 
      */
     public static class IntermediateList<I, O> extends FlattenedList<O> {
         protected final Codec<List<I>> codec;
-        protected final BiFunction<I, ItemModule.ModuleInstance, O> converter;
+        protected final BiFunction<I, ModuleInstance, O> converter;
 
-        public IntermediateList(String key, Codec<List<I>> codec, BiFunction<I, ItemModule.ModuleInstance, O> converter) {
+        public IntermediateList(String key, Codec<List<I>> codec, BiFunction<I, ModuleInstance, O> converter) {
             super(key);
             this.codec = codec;
             this.converter = converter;
         }
 
         @Override
-        public Codec<List<O>> codec(ItemModule.ModuleInstance instance) {
+        public Codec<List<O>> codec(ModuleInstance instance) {
             return null;
         }
 
         @Override
-        public List<O> getDataFromSubModule(JsonElement element, ItemModule.ModuleInstance module) {
+        public List<O> getDataFromSubModule(JsonElement element, ModuleInstance module) {
             List<I> input = codec.parse(JsonOps.INSTANCE, element).getOrThrow(false, s ->
                     Miapi.LOGGER.error("Failed to deserialize module data for DynamicCodecBasedProperty.IntermediateList! -> {}", s));
             return input.stream().map(i -> converter.apply(i, module)).toList();

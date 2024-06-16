@@ -8,7 +8,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import org.joml.Matrix4f;
 import smartin.miapi.item.modular.Transform;
-import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.SlotProperty;
 
 import java.util.ArrayList;
@@ -19,11 +19,11 @@ import java.util.Map;
 public class ModuleModel {
     public List<Pair<Matrix4f, MiapiModel>> models;
     public Map<String, List<Pair<Matrix4f, MiapiModel>>> otherModels;
-    public final ItemModule.ModuleInstance instance;
+    public final ModuleInstance instance;
     public Map<Integer, ModuleModel> subModuleModels = new HashMap<>();
     public ItemStack stack;
 
-    public ModuleModel(ItemModule.ModuleInstance instance, ItemStack stack) {
+    public ModuleModel(ModuleInstance instance, ItemStack stack) {
         this.instance = instance;
         this.stack = stack;
         models = generateModel(null);

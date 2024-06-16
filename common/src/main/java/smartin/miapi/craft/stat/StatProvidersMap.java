@@ -12,7 +12,7 @@ import net.minecraft.nbt.NbtOps;
 import net.minecraft.util.dynamic.Codecs;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
-import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.util.ArrayList;
@@ -92,13 +92,13 @@ public class StatProvidersMap {
     }
 
     public static class Codec implements com.mojang.serialization.Codec<StatProvidersMap> {
-        private final @Nullable ItemModule.ModuleInstance modules;
+        private final @Nullable ModuleInstance modules;
 
         public Codec() {
             this.modules = null;
         }
 
-        public Codec(@Nullable ItemModule.ModuleInstance modules) {
+        public Codec(@Nullable ModuleInstance modules) {
             this.modules = modules;
         }
 

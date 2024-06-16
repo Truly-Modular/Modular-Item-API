@@ -1,7 +1,7 @@
 package smartin.miapi.modules.conditions;
 
 import com.google.gson.JsonElement;
-import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.ModuleInstance;
 
 public class OtherModuleModuleCondition implements ModuleCondition {
     public ModuleCondition condition;
@@ -16,9 +16,9 @@ public class OtherModuleModuleCondition implements ModuleCondition {
     @Override
     public boolean isAllowed(ConditionManager.ConditionContext conditionContext) {
         if (conditionContext instanceof ConditionManager.ModuleConditionContext moduleConditionContext) {
-            ItemModule.ModuleInstance moduleInstance = moduleConditionContext.moduleInstance;
+            ModuleInstance moduleInstance = moduleConditionContext.moduleInstance;
             if(moduleInstance!=null){
-                for (ItemModule.ModuleInstance otherInstance : moduleInstance.getRoot().allSubModules()) {
+                for (ModuleInstance otherInstance : moduleInstance.getRoot().allSubModules()) {
                     ConditionManager.ModuleConditionContext copy = moduleConditionContext.copy();
                     copy.moduleInstance = otherInstance;
                     copy.propertyMap = otherInstance.getProperties();

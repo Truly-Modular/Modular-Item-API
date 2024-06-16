@@ -24,6 +24,7 @@ import smartin.miapi.client.model.MiapiModel;
 import smartin.miapi.client.model.ModelHolder;
 import smartin.miapi.client.renderer.RescaledVertexConsumer;
 import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.material.MaterialProperty;
 import smartin.miapi.modules.properties.render.colorproviders.ColorProvider;
 import smartin.miapi.modules.properties.util.CodecBasedProperty;
@@ -46,7 +47,7 @@ public class OverlayModelProperty extends CodecBasedProperty<OverlayModelPropert
             List<MiapiModel> models = new ArrayList<>();
             if(false){
                 for (OverlayModelData modelData : getData(module)) {
-                    for (ItemModule.ModuleInstance moduleInstance : ItemModule.getModules(stack).allSubModules()) {
+                    for (ModuleInstance moduleInstance : ItemModule.getModules(stack).allSubModules()) {
                         if (!modelData.onlyOnSameModule() || moduleInstance.equals(module)) {
                             List<ModelProperty.ModelJson> list = ModelProperty.getJson(moduleInstance);
 
@@ -73,9 +74,9 @@ public class OverlayModelProperty extends CodecBasedProperty<OverlayModelPropert
 
             }
 
-            ItemModule.ModuleInstance moduleInstance = module;
+            ModuleInstance moduleInstance = module;
 
-            for (ItemModule.ModuleInstance module2 : ItemModule.getModules(stack).allSubModules()) {
+            for (ModuleInstance module2 : ItemModule.getModules(stack).allSubModules()) {
                 for (OverlayModelData modelData : getData(module2)) {
                     if (!modelData.onlyOnSameModule() || moduleInstance.equals(module2)) {
                         List<ModelProperty.ModelJson> list = ModelProperty.getJson(moduleInstance);
@@ -107,24 +108,24 @@ public class OverlayModelProperty extends CodecBasedProperty<OverlayModelPropert
     }
 
     public boolean load(String moduleKey, JsonElement data) {
-        getData(new ItemModule.ModuleInstance(ItemModule.empty), data).forEach(OverlayModelData::loadSprite);
+        getData(new ModuleInstance(ItemModule.empty), data).forEach(OverlayModelData::loadSprite);
         return true;
     }
 
     @NotNull
-    private BakedMiapiModel getBakedMiapiModel(ItemModule.ModuleInstance module, ItemStack stack, OverlayModelData modelData, ItemModule.ModuleInstance moduleInstance, ModelHolder holder, ColorProvider colorProvider, @Nullable Sprite overWriteSprite) {
+    private BakedMiapiModel getBakedMiapiModel(ModuleInstance module, ItemStack stack, OverlayModelData modelData, ModuleInstance moduleInstance, ModelHolder holder, ColorProvider colorProvider, @Nullable Sprite overWriteSprite) {
         return new BakedMiapiModel(
                 new ModelHolder(
                         holder.model(),
                         new Matrix4f(holder.matrix4f()),
                         new ColorProvider() {
                             @Override
-                            public VertexConsumer getConsumer(VertexConsumerProvider vertexConsumers, Sprite sprite, ItemStack stack, ItemModule.ModuleInstance moduleInstance, ModelTransformationMode mode) {
+                            public VertexConsumer getConsumer(VertexConsumerProvider vertexConsumers, Sprite sprite, ItemStack stack, ModuleInstance moduleInstance, ModelTransformationMode mode) {
                                 return new RescaledVertexConsumer(colorProvider.getConsumer(vertexConsumers, overWriteSprite == null ? sprite : overWriteSprite, stack, modelData.useThisModule() ? module : moduleInstance, mode), sprite);
                             }
 
                             @Override
-                            public ColorProvider getInstance(ItemStack stack, ItemModule.ModuleInstance instance) {
+                            public ColorProvider getInstance(ItemStack stack, ModuleInstance instance) {
                                 return this;
                             }
                         },
@@ -134,12 +135,12 @@ public class OverlayModelProperty extends CodecBasedProperty<OverlayModelPropert
                 ), modelData.useThisModule() ? module : moduleInstance, stack);
     }
 
-    public static List<OverlayModelData> getData(ItemModule.ModuleInstance moduleInstance) {
+    public static List<OverlayModelData> getData(ModuleInstance moduleInstance) {
         JsonElement element = moduleInstance.getProperties().get(property);
         return getData(moduleInstance, element);
     }
 
-    public static List<OverlayModelData> getData(ItemModule.ModuleInstance moduleInstance, JsonElement element) {
+    public static List<OverlayModelData> getData(ModuleInstance moduleInstance, JsonElement element) {
         List<OverlayModelData> data = new ArrayList<>();
         if (element != null && element.isJsonArray()) {
             element.getAsJsonArray().forEach(element1 -> {
@@ -181,12 +182,12 @@ public class OverlayModelProperty extends CodecBasedProperty<OverlayModelPropert
             }
         }
 
-        public double getPriority(ItemModule.ModuleInstance moduleInstance, JsonObject element) {
+        public double getPriority(ModuleInstance moduleInstance, JsonObject element) {
             javaPriority = ModuleProperty.getDouble(element, "priority", moduleInstance, 0);
             return javaPriority;
         }
 
-        public ColorProvider getColorProvider(ItemStack itemStack, ItemModule.ModuleInstance current, ItemModule.ModuleInstance other, ColorProvider otherColor) {
+        public ColorProvider getColorProvider(ItemStack itemStack, ModuleInstance current, ModuleInstance other, ColorProvider otherColor) {
             switch (colorProvider) {
                 case "this": {
                     return ColorProvider.getProvider("material", itemStack, current);

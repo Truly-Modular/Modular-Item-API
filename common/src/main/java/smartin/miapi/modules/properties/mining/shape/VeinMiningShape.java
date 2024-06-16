@@ -5,7 +5,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
-import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.mining.MiningShapeProperty;
 
 import java.util.ArrayList;
@@ -18,7 +18,7 @@ public class VeinMiningShape implements MiningShape {
     public int maxBlocks = 15;
 
     @Override
-    public MiningShape fromJson(JsonObject object, ItemModule.ModuleInstance moduleInstance) {
+    public MiningShape fromJson(JsonObject object, ModuleInstance moduleInstance) {
         VeinMiningShape veinMiningShape = new VeinMiningShape();
         veinMiningShape.size = MiningShapeProperty.getInteger(object, "size", moduleInstance, 5);
         veinMiningShape.maxBlocks = MiningShapeProperty.getInteger(object, "max", moduleInstance, 5);

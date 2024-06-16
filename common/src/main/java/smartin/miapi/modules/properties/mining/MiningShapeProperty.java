@@ -11,6 +11,7 @@ import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.Direction;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.mining.condition.AlwaysMiningCondition;
 import smartin.miapi.modules.properties.mining.condition.BlockTagCondition;
@@ -97,13 +98,13 @@ public class MiningShapeProperty implements ModuleProperty {
         return miningShapeJsons;
     }
 
-    public static List<MiningShapeJson> get(JsonElement element, ItemModule.ModuleInstance moduleInstance) {
+    public static List<MiningShapeJson> get(JsonElement element, ModuleInstance moduleInstance) {
         return element.getAsJsonArray().asList().stream().map(subElement -> new MiningShapeJson(subElement.getAsJsonObject(), moduleInstance)).toList();
     }
 
     @Override
     public boolean load(String moduleKey, JsonElement data) throws Exception {
-        get(data, new ItemModule.ModuleInstance(ItemModule.empty));
+        get(data, new ModuleInstance(ItemModule.empty));
         return true;
     }
 
@@ -127,7 +128,7 @@ public class MiningShapeProperty implements ModuleProperty {
         return defaultValue;
     }
 
-    public static int getInteger(JsonObject object, String element, ItemModule.ModuleInstance moduleInstance, int defaultValue) {
+    public static int getInteger(JsonObject object, String element, ModuleInstance moduleInstance, int defaultValue) {
         if (object != null) {
             JsonElement json = object.get(element);
             if (json != null && !json.isJsonNull()) {
@@ -137,7 +138,7 @@ public class MiningShapeProperty implements ModuleProperty {
         return defaultValue;
     }
 
-    public static double getDouble(JsonObject object, String element, ItemModule.ModuleInstance moduleInstance, int defaultValue) {
+    public static double getDouble(JsonObject object, String element, ModuleInstance moduleInstance, int defaultValue) {
         if (object != null) {
             JsonElement json = object.get(element);
             if (json != null && !json.isJsonNull()) {
