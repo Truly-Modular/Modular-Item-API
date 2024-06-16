@@ -4,6 +4,7 @@ import com.google.gson.JsonElement;
 import dev.architectury.event.EventResult;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.server.world.ServerWorld;
 import smartin.miapi.entity.ItemProjectileEntity;
 import smartin.miapi.entity.arrowhitbehaviours.EntityStickBehaviour;
 import smartin.miapi.events.MiapiProjectileEvents;
@@ -36,8 +37,15 @@ public class ArrowProperty implements ModuleProperty {
         });
         MiapiProjectileEvents.MODULAR_PROJECTILE_ENTITY_HIT.register(event -> {
             JsonElement element = ItemModule.getMergedProperty(event.projectile.asItemStack(), property);
-            if (element != null && element.getAsBoolean() && event.entityHitResult.getEntity() instanceof LivingEntity livingEntity) {
-                if (EnchantmentHelper.getLoyalty(event.projectile.asItemStack()) < 1) {
+            if (
+                    element != null &&
+                    element.getAsBoolean() &&
+                    event.entityHitResult.getEntity() instanceof LivingEntity livingEntity &&
+                    livingEntity.getWorld() instanceof ServerWorld serverWorld
+            ) {
+                if (event.projectile.getOwner() != null && EnchantmentHelper.getTridentReturnAcceleration(serverWorld, event.projectile.asItemStack(), event.projectile.getOwner()) > 0) {
+
+                } else {
                     event.projectile.projectileHitBehaviour = entityStickBehaviour;
                 }
             }

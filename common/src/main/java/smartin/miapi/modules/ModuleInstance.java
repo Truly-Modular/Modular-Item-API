@@ -19,7 +19,7 @@ import static smartin.miapi.Miapi.LOGGER;
 /**
  * A class representing a single module instance that belongs to an item.
  */
-@JsonAdapter(ItemModule.ModuleInstanceJsonAdapter.class)
+@JsonAdapter(ModuleInstanceJsonAdapter.class)
 public class ModuleInstance {
     /**
      * The item module represented by this module instance.

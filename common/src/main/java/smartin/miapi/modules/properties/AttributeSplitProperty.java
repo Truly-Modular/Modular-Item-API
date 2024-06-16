@@ -37,26 +37,26 @@ public class AttributeSplitProperty implements ModuleProperty {
                 Collection<AttributeProperty.EntityAttributeModifierHolder> list = oldMap.get(currentAttribute);
 
                 double totalValue = list.stream()
-                        .filter(attributeEntry -> attributeEntry.mergeTo().equals(EntityAttributeModifier.Operation.ADDITION))
+                        .filter(attributeEntry -> attributeEntry.mergeTo().equals(EntityAttributeModifier.Operation.ADD_VALUE))
                         .filter(attributeEntry -> attributeEntry.slot().equals(equipmentSlot))
-                        .mapToDouble(entityAttributeModifierHolder -> entityAttributeModifierHolder.attributeModifier().getValue())
+                        .mapToDouble(entityAttributeModifierHolder -> entityAttributeModifierHolder.attributeModifier().value())
                         .sum();
                 ratios.forEach(((entityAttribute) -> {
                     Collection<AttributeProperty.EntityAttributeModifierHolder> foundAttributes = oldMap.get(entityAttribute.entityAttribute());
 
                     double baseValue = 0.0;
 
-                    UUID uuid = AttributeProperty.getUUIDForSlot(equipmentSlot, EntityAttributeModifier.Operation.ADDITION, "miapi:attribute_split");
+                    Identifier id = AttributeProperty.getIDforSlot(equipmentSlot, entityAttribute.entityAttribute(), EntityAttributeModifier.Operation.ADD_VALUE, "miapi:attribute_split");
 
                     if (foundAttributes != null && !foundAttributes.isEmpty()) {
                         Optional<AttributeProperty.EntityAttributeModifierHolder> holder = foundAttributes.stream()
-                                .filter(attributeEntry -> attributeEntry.mergeTo().equals(EntityAttributeModifier.Operation.ADDITION))
+                                .filter(attributeEntry -> attributeEntry.mergeTo().equals(EntityAttributeModifier.Operation.ADD_VALUE))
                                 .filter(attributeEntry -> attributeEntry.slot().equals(equipmentSlot))
                                 .findFirst();
 
                         if (holder.isPresent()) {
-                            baseValue = holder.get().attributeModifier().getValue();
-                            uuid = holder.get().attributeModifier().getId();
+                            baseValue = holder.get().attributeModifier().value();
+                            id = holder.get().attributeModifier().comp_2447();
                             map.remove(entityAttribute.entityAttribute(), holder.get());
                         }
                     }
@@ -66,10 +66,9 @@ public class AttributeSplitProperty implements ModuleProperty {
                         map.put(
                                 entityAttribute.entityAttribute(),
                                 new AttributeProperty.EntityAttributeModifierHolder(
-                                        new EntityAttributeModifier(uuid, "miapi:attribute_split", baseValue + totalValue * entityAttribute.percent, EntityAttributeModifier.Operation.ADDITION),
+                                        new EntityAttributeModifier(id, baseValue + totalValue * entityAttribute.percent, EntityAttributeModifier.Operation.ADD_VALUE),
                                         equipmentSlot,
-                                        false,
-                                        EntityAttributeModifier.Operation.ADDITION
+                                        EntityAttributeModifier.Operation.ADD_VALUE
                                 ));
                     }
                 }));
@@ -115,7 +114,7 @@ public class AttributeSplitProperty implements ModuleProperty {
         JsonObject object = jsonElement.getAsJsonObject();
         Map<Context, List<SplitContext>> contextListMap = new HashMap<>();
         object.asMap().forEach((attributeKey, innerJson) -> {
-            EntityAttribute attribute = Registries.ATTRIBUTE.get(new Identifier(attributeKey));
+            EntityAttribute attribute = Registries.ATTRIBUTE.get(Identifier.of(attributeKey));
             if (attribute == null) {
                 Miapi.LOGGER.info("could not find attribute " + attributeKey);
             } else {
@@ -124,7 +123,7 @@ public class AttributeSplitProperty implements ModuleProperty {
                         EquipmentSlot equipmentSlot = EquipmentSlot.byName(slotKey);
                         List<SplitContext> splitContexts = data.getAsJsonArray().asList().stream().map(json -> {
                             String key = json.getAsJsonObject().get("attribute").getAsString();
-                            EntityAttribute targetAttribute = Registries.ATTRIBUTE.get(new Identifier(key));
+                            EntityAttribute targetAttribute = Registries.ATTRIBUTE.get(Identifier.of(key));
                             if (targetAttribute == null) {
                                 Miapi.LOGGER.info("could not find attribute " + attributeKey);
                                 return null;

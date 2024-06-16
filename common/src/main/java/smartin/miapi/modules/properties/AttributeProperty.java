@@ -4,6 +4,7 @@ import com.google.common.collect.*;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.architectury.event.EventResult;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.attribute.*;
 import net.minecraft.item.ItemStack;
@@ -14,15 +15,12 @@ import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.StatResolver;
-import smartin.miapi.item.modular.items.ExampleModularItem;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.*;
 import java.util.function.Supplier;
 
@@ -35,7 +33,6 @@ public class AttributeProperty implements ModuleProperty {
     public static final Map<String, Supplier<EntityAttribute>> replaceMap = new HashMap<>();
     public static final Map<EntityAttribute, Float> priorityMap = new HashMap<>();
     public static final List<AttributeTransformer> attributeTransformers = new ArrayList<>();
-    public static Map<EquipmentSlot, UUID> uuidCache = new HashMap<>();
 
     public AttributeProperty() {
         property = this;
@@ -84,7 +81,7 @@ public class AttributeProperty implements ModuleProperty {
             Identifier identifier = Miapi.MiapiIdentifier("modular_attributes");
 
             if (attributeJson.has("id")) {
-                identifier = Identifier.of(attributeJson.get("uuid").getAsString());
+                identifier = Identifier.of(attributeJson.get("id").getAsString());
             }
             EntityAttributeModifier.Operation targetOperation = EntityAttributeModifier.Operation.ADD_VALUE;
             if (attributeJson.has("target_operation")) {
@@ -92,7 +89,7 @@ public class AttributeProperty implements ModuleProperty {
             }
 
             if (attribute != null) {
-                attributeModifiers.put(attribute, new EntityAttributeModifierHolder(new EntityAttributeModifier(identifier, value, operation), slot, true, targetOperation));
+                attributeModifiers.put(attribute, new EntityAttributeModifierHolder(new EntityAttributeModifier(identifier, value, operation), slot, targetOperation));
             }
         }
         return true;
@@ -195,9 +192,9 @@ public class AttributeProperty implements ModuleProperty {
         if (itemStack.getItem() instanceof ModularItem) {
             Multimap<EntityAttribute, AttributeProperty.EntityAttributeModifierHolder> toMerge = AttributeProperty.getAttributeModifiers(itemStack);
             Multimap<EntityAttribute, EntityAttributeModifier> merged = ArrayListMultimap.create();
-            Map<UUID, Multimap<EntityAttribute, EntityAttributeModifier>> mergedAdditive = new HashMap<>();
-            Map<UUID, Multimap<EntityAttribute, EntityAttributeModifier>> mergedMultiBase = new HashMap<>();
-            Map<UUID, Multimap<EntityAttribute, EntityAttributeModifier>> mergedMultiTotal = new HashMap<>();
+            Map<Identifier, Multimap<EntityAttribute, EntityAttributeModifier>> mergedAdditive = new HashMap<>();
+            Map<Identifier, Multimap<EntityAttribute, EntityAttributeModifier>> mergedMultiBase = new HashMap<>();
+            Map<Identifier, Multimap<EntityAttribute, EntityAttributeModifier>> mergedMultiTotal = new HashMap<>();
 
             // Add existing modifiers from original to merged
             toAdding.entries().forEach(entry -> merged.put(entry.getKey(), entry.getValue()));
@@ -212,7 +209,7 @@ public class AttributeProperty implements ModuleProperty {
             toAdding.clear();
             toAdding.putAll(merged);
 
-            mergedAdditive.forEach((uuid, entityAttributeEntityAttributeModifierMultimap) -> {
+            mergedAdditive.forEach((id, entityAttributeEntityAttributeModifierMultimap) -> {
                 entityAttributeEntityAttributeModifierMultimap.asMap().forEach((key, collection) -> {
                     double startValue = key.getDefaultValue();
                     double multiply = 1;
@@ -234,13 +231,13 @@ public class AttributeProperty implements ModuleProperty {
                     }
                     startValue = startValue - key.getDefaultValue();
                     if ((startValue != 0 || hasValue) && !Double.isNaN(startValue)) {
-                        EntityAttributeModifier entityAttributeModifier = new EntityAttributeModifier(uuid, "generic.miapi." + key.getTranslationKey(), startValue, EntityAttributeModifier.Operation.ADD_VALUE);
+                        EntityAttributeModifier entityAttributeModifier = new EntityAttributeModifier(id, startValue, EntityAttributeModifier.Operation.ADD_VALUE);
                         toAdding.put(key, entityAttributeModifier);
                     }
                 });
             });
 
-            mergedMultiBase.forEach((uuid, entityAttributeEntityAttributeModifierMultimap) -> {
+            mergedMultiBase.forEach((id, entityAttributeEntityAttributeModifierMultimap) -> {
                 entityAttributeEntityAttributeModifierMultimap.asMap().forEach((key, collection) -> {
                     double multiply = 0;
                     for (EntityAttributeModifier entityAttributeModifier : collection) {
@@ -257,13 +254,13 @@ public class AttributeProperty implements ModuleProperty {
                         }
                     }
                     if (!Double.isNaN(multiply) && multiply != 1) {
-                        EntityAttributeModifier entityAttributeModifier = new EntityAttributeModifier(uuid, "generic.miapi." + key.getTranslationKey(), multiply, EntityAttributeModifier.Operation.ADD_MULTIPLIED_BASE);
+                        EntityAttributeModifier entityAttributeModifier = new EntityAttributeModifier(id, multiply, EntityAttributeModifier.Operation.ADD_MULTIPLIED_BASE);
                         toAdding.put(key, entityAttributeModifier);
                     }
                 });
             });
 
-            mergedMultiTotal.forEach((uuid, entityAttributeEntityAttributeModifierMultimap) -> {
+            mergedMultiTotal.forEach((id, entityAttributeEntityAttributeModifierMultimap) -> {
                 entityAttributeEntityAttributeModifierMultimap.asMap().forEach((key, collection) -> {
                     double multiply = 1;
                     for (EntityAttributeModifier entityAttributeModifier : collection) {
@@ -278,7 +275,7 @@ public class AttributeProperty implements ModuleProperty {
                         }
                     }
                     if (!Double.isNaN(multiply)) {
-                        EntityAttributeModifier entityAttributeModifier = new EntityAttributeModifier(uuid, "generic.miapi." + key.getTranslationKey(), multiply, EntityAttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
+                        EntityAttributeModifier entityAttributeModifier = new EntityAttributeModifier(id, multiply, EntityAttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
                         toAdding.put(key, entityAttributeModifier);
                     }
                 });
@@ -351,6 +348,7 @@ public class AttributeProperty implements ModuleProperty {
      * @return the double value of the attribute according to the Itemstack
      */
     public static double getActualValue(ItemStack stack, EquipmentSlot slot, EntityAttribute entityAttribute, double fallback) {
+        //TODO: ive got 0 clue what todo with this
         Collection<EntityAttributeModifier> attributes = stack.getAttributeModifiers(slot).get(entityAttribute);
         return getActualValue(attributes, fallback);
     }
@@ -419,19 +417,20 @@ public class AttributeProperty implements ModuleProperty {
     }
 
     private static Multimap<EntityAttribute, EntityAttributeModifierHolder> createAttributeCache(ItemStack itemStack) {
-        return createAttributeMap(itemStack, AttributeProperty::getUUIDForSlot);
+        return createAttributeMap(itemStack, AttributeProperty::getIDforSlot);
     }
 
-    public static Multimap<EntityAttribute, EntityAttributeModifierHolder> createAttributeMap(ItemStack itemStack, UUIDGetter defaultUUID) {
+
+    public static Multimap<EntityAttribute, EntityAttributeModifierHolder> createAttributeMap(ItemStack itemStack, IdentifierGetter defaultID) {
         ModuleInstance rootInstance = ItemModule.getModules(itemStack);
         Multimap<EntityAttribute, EntityAttributeModifierHolder> attributeModifiers = ArrayListMultimap.create();
         for (ModuleInstance instance : rootInstance.allSubModules()) {
-            getAttributeModifiers(defaultUUID, instance, attributeModifiers);
+            getAttributeModifiers(defaultID, instance, attributeModifiers);
         }
         return attributeModifiers;
     }
 
-    public static void getAttributeModifiers(UUIDGetter defaultUUID, ModuleInstance instance, Multimap<EntityAttribute, EntityAttributeModifierHolder> attributeModifiers) {
+    public static void getAttributeModifiers(IdentifierGetter defaultID, ModuleInstance instance, Multimap<EntityAttribute, EntityAttributeModifierHolder> attributeModifiers) {
         JsonElement element = instance.getProperties().get(property);
         if (element == null) {
             return;
@@ -451,91 +450,45 @@ public class AttributeProperty implements ModuleProperty {
                 Miapi.LOGGER.warn(String.valueOf(Registries.ATTRIBUTE.get(Identifier.of(attributeName))));
                 Miapi.LOGGER.warn("Attribute is null " + attributeName + " on module " + instance.module.name() + " this should not have happened.");
             } else {
-                UUID uuid = attributeJson.uuid == null ? defaultUUID.fromSlot(slot, baseTarget) : UUID.fromString(attributeJson.uuid);
-                if (uuid.equals(ExampleModularItem.attackDamageUUID())) {
-                    uuid = ExampleModularItem.attackDamageUUID();
+                Identifier identifier = getIDforSlot(slot, attribute, operation);
+                //TODO:verify i dont need todo this anymoey
+                /*
+                if (identifier.equals(ExampleModularItem.attackDamageUUID())) {
+                    identifier = ExampleModularItem.attackSpeedUUID();
                 }
-                if (uuid.equals(ExampleModularItem.attackSpeedUUID())) {
-                    uuid = ExampleModularItem.attackSpeedUUID();
+                if (identifier.equals(ExampleModularItem.attackSpeedUUID())) {
+                    identifier = ExampleModularItem.attackSpeedUUID();
                 }
-                attributeModifiers.put(attribute, new EntityAttributeModifierHolder(new EntityAttributeModifier(uuid, attributeName, value, operation), slot, attributeJson.seperateOnItem, baseTarget));
+
+                 */
+                attributeModifiers.put(attribute, new EntityAttributeModifierHolder(new EntityAttributeModifier(identifier, value, operation), slot, baseTarget));
             }
         }
     }
 
     /**
-     * Generates a unique uuid for the slot to prevent collisions
+     * Generates a unique id for the slot to prevent collisions
      *
      * @param equipmentSlot
-     * @return a unique UUID for the slot
+     * @return a unique ID for the slot
      */
-    public static UUID getUUIDForSlot(EquipmentSlot equipmentSlot) {
-        if (uuidCache.containsKey(equipmentSlot)) {
-            return uuidCache.get(equipmentSlot);
-        }
-        String slotidString = equipmentSlot.getName() + "-" + equipmentSlot.getEntitySlotId() + "-" + equipmentSlot.getArmorStandSlotId();
-        return getUUIDForSlot(slotidString);
-    }
-
-    public static Map<EquipmentSlot, Map<EntityAttributeModifier.Operation, UUID>> slotCacheLookUP = new HashMap<>();
-
-    /**
-     * Generates a unique uuid for the slot to prevent collisions
-     *
-     * @param equipmentSlot
-     * @return a unique UUID for the slot
-     */
-    public static UUID getUUIDForSlot(EquipmentSlot equipmentSlot, EntityAttributeModifier.Operation operation) {
-        if (slotCacheLookUP.containsKey(equipmentSlot) && slotCacheLookUP.get(equipmentSlot).containsKey(operation)) {
-            return slotCacheLookUP.get(equipmentSlot).get(operation);
-        }
-        UUID uuid = getUUIDForSlot(equipmentSlot, operation, "");
-        Map<EntityAttributeModifier.Operation, UUID> cache = slotCacheLookUP.getOrDefault(equipmentSlot, new HashMap<>());
-        cache.put(operation, uuid);
-        slotCacheLookUP.put(equipmentSlot, cache);
-        return uuid;
+    public static Identifier getIDforSlot(EquipmentSlot equipmentSlot, EntityAttribute attribute, EntityAttributeModifier.Operation operation) {
+        return getIDforSlot(equipmentSlot, attribute, operation, "");
     }
 
     /**
-     * Generates a unique uuid for the slot to prevent collisions
+     * Generates a unique id for the slot to prevent collisions
      *
      * @param equipmentSlot
-     * @return a unique UUID for the slot
+     * @return a unique ID for the slot
      */
-    public static UUID getUUIDForSlot(EquipmentSlot equipmentSlot, EntityAttributeModifier.Operation operation, String context) {
-        if (slotCacheLookUP.containsKey(equipmentSlot) && slotCacheLookUP.get(equipmentSlot).containsKey(operation)) {
-            return slotCacheLookUP.get(equipmentSlot).get(operation);
-        }
-        String slotidString = equipmentSlot.getName() + "-" + equipmentSlot.getEntitySlotId() + "-" + equipmentSlot.getArmorStandSlotId() + "-" + operation.toString() + context;
-        return getUUIDForSlot(slotidString);
+    public static Identifier getIDforSlot(EquipmentSlot equipmentSlot, EntityAttribute attribute, EntityAttributeModifier.Operation operation, String context) {
+        String slotidString = equipmentSlot.getName() + "-" + attribute.getTranslationKey() + "-" + equipmentSlot.getEntitySlotId() + "-" + equipmentSlot.getArmorStandSlotId() + "-" + operation.toString() + context;
+        return getIDforSlot(slotidString);
     }
 
-    public static UUID getUUIDForSlot(String slotidString) {
-        try {
-            // Create a MessageDigest instance with the desired hashing algorithm (e.g., MD5 or SHA-1).
-            MessageDigest md = MessageDigest.getInstance("MD5");
-
-            // Update the digest with the bytes of the input string.
-            md.update(slotidString.getBytes());
-
-            // Get the hash bytes and convert them to a long.
-            byte[] hashBytes = md.digest();
-            long mostSigBits = 0;
-            long leastSigBits = 0;
-
-            for (int i = 0; i < 8; i++) {
-                mostSigBits = (mostSigBits << 8) | (hashBytes[i] & 0xff);
-            }
-
-            for (int i = 8; i < 16; i++) {
-                leastSigBits = (leastSigBits << 8) | (hashBytes[i] & 0xff);
-            }
-            return new UUID(mostSigBits, leastSigBits);
-
-        } catch (NoSuchAlgorithmException e) {
-            Miapi.LOGGER.warn("could not onReload UUID generator - Attributes are likely to be broken now");
-            return UUID.fromString("d3b89c4c-68ff-11ee-8c99-0242ac120002");
-        }
+    public static Identifier getIDforSlot(String slotidString) {
+        return Miapi.MiapiIdentifier(slotidString);
     }
 
     private static EntityAttributeModifier.Operation getOperation(String operationString) {
@@ -563,15 +516,15 @@ public class AttributeProperty implements ModuleProperty {
     }
 
     public record EntityAttributeModifierHolder(EntityAttributeModifier attributeModifier, EquipmentSlot slot,
-                                                boolean seperateOnItem, EntityAttributeModifier.Operation mergeTo) {
+                                                EntityAttributeModifier.Operation mergeTo) {
     }
 
     public interface AttributeTransformer {
         Multimap<EntityAttribute, EntityAttributeModifierHolder> transform(Multimap<EntityAttribute, EntityAttributeModifierHolder> map, ItemStack itemstack);
     }
 
-    public interface UUIDGetter {
-        UUID fromSlot(EquipmentSlot equipmentSlot, EntityAttributeModifier.Operation operation);
+    public interface IdentifierGetter {
+        Identifier fromSlot(EquipmentSlot equipmentSlot, EntityAttribute attribute, EntityAttributeModifier.Operation operation);
     }
 
     public static class AttributeJson {
@@ -579,8 +532,7 @@ public class AttributeProperty implements ModuleProperty {
         public String value;
         public String operation;
         public String slot;
-        public String uuid;
-        public boolean seperateOnItem;
+        public String id;
         public String target_operation;
     }
 }

@@ -58,7 +58,7 @@ tasks.register('buildBoth') {
         println "Builds completed"
     }
 }
-
+/*
 tasks.register('rebuildArsenal') {
     ext.projectName = "arsenal"
     def project = gradle.includedBuild("arsenal")
@@ -108,7 +108,6 @@ tasks.register('rebuildArsenal') {
         println "Builds Copied"
     }
 }
-
 
 tasks.register('rebuildArchery') {
     ext.projectName = "archery"
@@ -210,6 +209,8 @@ tasks.register('rebuildArmory') {
     }
 }
 
+
+ */
 subprojects {
     apply plugin: "dev.architectury.loom"
 
