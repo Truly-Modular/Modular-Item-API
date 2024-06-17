@@ -10,6 +10,7 @@
     "density": 2.9,
     "flexibility": 0,
     "durability": 830,
+    "armor_durability_offset": -400,
     "mining_speed": 7.5,
     "mining_level": 3,
     "enchantability": 12,
