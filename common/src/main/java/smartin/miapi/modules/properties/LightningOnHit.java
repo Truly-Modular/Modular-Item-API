@@ -19,7 +19,7 @@ public class LightningOnHit extends DoubleProperty {
         property = this;
         MiapiEvents.LIVING_HURT.register((listener) -> {
             if (!listener.livingEntity.getWorld().isClient() && listener.damageSource.getAttacker() instanceof LivingEntity attacker) {
-                double lightningStrength = getForItems(attacker.getItemsEquipped());
+                double lightningStrength = getForItems(attacker.getEquippedItems());
                 for (int i = 0; i < lightningStrength; i++) {
                     LightningEntity lightningEntity = EntityType.LIGHTNING_BOLT.create(listener.livingEntity.getWorld());
                     assert lightningEntity != null;

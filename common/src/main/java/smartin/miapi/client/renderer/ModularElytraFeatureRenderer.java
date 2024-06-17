@@ -20,7 +20,7 @@ import smartin.miapi.mixin.client.ElytraEntityModelAccessor;
 import smartin.miapi.mixin.client.ElytraFeatureRendererAccessor;
 
 public class ModularElytraFeatureRenderer<T extends LivingEntity, M extends EntityModel<T>> extends ElytraFeatureRenderer {
-    private static final Identifier SKIN = new Identifier("textures/entity/elytra.png");
+    private static final Identifier SKIN = Identifier.of("textures/entity/elytra.png");
     private final ElytraEntityModel<T> elytra;
 
     public ModularElytraFeatureRenderer(FeatureRendererContext<T, M> context, EntityModelLoader loader) {

@@ -6,6 +6,7 @@ import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
+import smartin.miapi.registries.RegistryInventory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,7 +48,7 @@ public class TagProperty implements ModuleProperty {
 
     public static List<ItemModule> getModulesWithTag(String tag) {
         List<ItemModule> modules = new ArrayList<>();
-        ItemModule.moduleRegistry.getFlatMap().forEach((key, module) -> {
+        RegistryInventory.modules.getFlatMap().forEach((key, module) -> {
             if (getTags(module.getKeyedProperties()).contains(tag)) modules.add(module);
         });
         return modules;

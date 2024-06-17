@@ -73,9 +73,12 @@ public class GlintProperty implements ModuleProperty {
             JsonElement element = instance.getProperties().get(property);
             if (element != null) {
                 if (element.getAsJsonObject().has("color")) {
-                    this.color = MiscCodecs.COLOR.parse(JsonOps.INSTANCE, element.getAsJsonObject().get("color")).getOrThrow(false, s -> {
-                        Miapi.LOGGER.error("Failed to decode using color for GlintProperty! -> " + s);
-                    });
+                    try{
+                        this.color = MiscCodecs.COLOR.parse(JsonOps.INSTANCE, element.getAsJsonObject().get("color")).getOrThrow();
+                    }catch (Exception e){
+                        Miapi.LOGGER.error("Failed to decode using color for GlintProperty! -> " + e);
+                        this.color = Color.BLACK;
+                    }
                     a = color.a() * 2;
                 }
                 if (element.getAsJsonObject().has("speed")) {

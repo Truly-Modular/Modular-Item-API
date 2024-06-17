@@ -17,7 +17,7 @@ public class WaterGravityProperty extends DoubleProperty {
         property = this;
         MiapiEvents.PLAYER_TICK_START.register((player -> {
             if (player.isSubmergedInWater() && player.isLogicalSideForUpdatingMovement()) {
-                double speed = property.getForItems(player.getItemsEquipped()) / 100;
+                double speed = property.getForItems(player.getEquippedItems()) / 100;
                 if (player.getVelocity().y < speed) {
                     player.addVelocity(0, -speed / 20, 0);
                 }
