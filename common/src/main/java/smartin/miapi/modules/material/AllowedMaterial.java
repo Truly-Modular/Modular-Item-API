@@ -11,9 +11,11 @@ import smartin.miapi.Miapi;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.crafting.crafter.replace.MaterialCraftingWidget;
+import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.craft.CraftAction;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.DurabilityProperty;
 import smartin.miapi.modules.properties.util.CraftingProperty;
 import smartin.miapi.modules.properties.util.ModuleProperty;
@@ -131,6 +133,16 @@ public class AllowedMaterial implements CraftingProperty, ModuleProperty {
                 crafting = eventData.crafted;
             }
         }
+        if (crafting.isDamageable()) {
+            //Miapi.LOGGER.info("dmg " + crafting.getDamage());
+            ModularItemCache.clearUUIDFor(crafting);
+            ItemModule.ModuleInstance moduleInstance = craftAction.getModifyingModuleInstance(crafting);
+            Double scannedDurability = DurabilityProperty.property.getValueForModule(moduleInstance, 0.0);
+            int durability = (int) (scannedDurability.intValue() * MiapiConfig.INSTANCE.server.other.repairRatio);
+            //Miapi.LOGGER.info("set dmg to " + (crafting.getDamage() - durability));
+            crafting.setDamage(crafting.getDamage() - durability);
+            //Miapi.LOGGER.info("set dmg end " + crafting.getDamage());
+        }
         return crafting;
     }
 
@@ -159,7 +171,7 @@ public class AllowedMaterial implements CraftingProperty, ModuleProperty {
         crafting = eventData.crafted;
         if (crafting.isDamageable()) {
             //Miapi.LOGGER.info("dmg " + crafting.getDamage());
-            int durability = DurabilityProperty.property.getValueForModule(craftAction.getModifyingModuleInstance(crafting), 0.0).intValue();
+            int durability = (int) (DurabilityProperty.property.getValueForModule(craftAction.getModifyingModuleInstance(crafting), 0.0).intValue() * MiapiConfig.INSTANCE.server.other.repairRatio);
             //Miapi.LOGGER.info("set dmg to " + (crafting.getDamage() - durability));
             crafting.setDamage(crafting.getDamage() - durability);
             //Miapi.LOGGER.info("set dmg end " + crafting.getDamage());

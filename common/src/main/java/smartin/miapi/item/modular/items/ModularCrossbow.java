@@ -38,6 +38,7 @@ import smartin.miapi.entity.ItemProjectileEntity;
 import smartin.miapi.events.MiapiProjectileEvents;
 import smartin.miapi.item.modular.CustomDrawTimeItem;
 import smartin.miapi.item.modular.ModularItem;
+import smartin.miapi.item.modular.PlatformModularItemMethods;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.*;
 
@@ -46,7 +47,7 @@ import java.util.function.Predicate;
 
 import static smartin.miapi.item.modular.items.ModularBow.projectile;
 
-public class ModularCrossbow extends CrossbowItem implements ModularItem, CustomDrawTimeItem {
+public class ModularCrossbow extends CrossbowItem implements PlatformModularItemMethods, ModularItem, CustomDrawTimeItem {
     public ModularCrossbow(Settings settings) {
         super(settings.maxCount(1).maxDamage(50));
         if (smartin.miapi.Environment.isClient()) {

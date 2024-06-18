@@ -65,6 +65,12 @@ public class MiapiServerConfig {
                 """)
         @AutoCodec.Name("reload_on_server_start")
         public boolean doubleReload = true;
+
+        @Comment("""
+                How much of a Modules Durability is used to repair the Item
+                """)
+        @AutoCodec.Name("repair_ratio")
+        public double repairRatio = 1.0;
     }
 
     @ConfigAutoCodec.ConfigClassMarker

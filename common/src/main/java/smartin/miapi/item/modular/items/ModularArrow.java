@@ -15,13 +15,14 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.entity.ItemProjectileEntity;
 import smartin.miapi.item.modular.ModularItem;
+import smartin.miapi.item.modular.PlatformModularItemMethods;
 import smartin.miapi.modules.properties.DisplayNameProperty;
 import smartin.miapi.modules.properties.LoreProperty;
 import smartin.miapi.modules.properties.RarityProperty;
 
 import java.util.List;
 
-public class ModularArrow extends ArrowItem implements ModularItem {
+public class ModularArrow extends ArrowItem implements PlatformModularItemMethods,ModularItem {
     public ModularArrow() {
         this(new Settings().maxCount(64));
     }

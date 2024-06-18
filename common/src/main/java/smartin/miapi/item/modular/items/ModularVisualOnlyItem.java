@@ -8,6 +8,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Rarity;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
+import smartin.miapi.item.modular.PlatformModularItemMethods;
 import smartin.miapi.item.modular.VisualModularItem;
 import smartin.miapi.modules.properties.DisplayNameProperty;
 import smartin.miapi.modules.properties.RarityProperty;
@@ -15,7 +16,7 @@ import smartin.miapi.modules.properties.RepairPriority;
 
 import java.util.List;
 
-public class ModularVisualOnlyItem extends Item implements VisualModularItem {
+public class ModularVisualOnlyItem extends Item implements PlatformModularItemMethods, VisualModularItem {
     public ModularVisualOnlyItem() {
         super(new Settings().maxCount(1).maxDamage(1000));
     }

@@ -15,13 +15,14 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.item.modular.ModularItem;
+import smartin.miapi.item.modular.PlatformModularItemMethods;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
 import smartin.miapi.modules.properties.*;
 import smartin.miapi.modules.properties.mining.MiningLevelProperty;
 
 import java.util.List;
 
-public class ModularWeapon extends Item implements ModularItem {
+public class ModularWeapon extends Item implements PlatformModularItemMethods, ModularItem {
     public ModularWeapon() {
         this(new Settings(), true);
     }
