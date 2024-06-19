@@ -148,9 +148,6 @@ shadowJar {
 
     configurations = [project.configurations.shadowCommon]
     archiveClassifier = "dev-shadow"
-
-    exclude "smartin/miapi/item/modular/PlatformModularItemMethods.class"
-    relocate "smartin.miapi.fabric.PlatformModularItemMethods", "smartin.miapi.item.modular.PlatformModularItemMethods"
 }
 
 remapJar {

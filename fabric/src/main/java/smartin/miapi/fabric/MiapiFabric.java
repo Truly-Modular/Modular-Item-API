@@ -3,7 +3,6 @@ package smartin.miapi.fabric;
 import com.jamieswhiteshirt.reachentityattributes.ReachEntityAttributes;
 import dev.architectury.platform.Platform;
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.item.v1.ModifyItemAttributeModifiersCallback;
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.ResourceReloadListenerKeys;
@@ -15,9 +14,7 @@ import net.minecraft.util.profiler.Profiler;
 import smartin.miapi.Environment;
 import smartin.miapi.Miapi;
 import smartin.miapi.attributes.AttributeRegistry;
-import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.fabric.compat.ZenithCompat;
-import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.modules.properties.AttributeProperty;
 import smartin.miapi.registries.RegistryInventory;
 
@@ -28,7 +25,6 @@ import java.util.concurrent.Executor;
 
 import static smartin.miapi.Miapi.MOD_ID;
 import static smartin.miapi.attributes.AttributeRegistry.SWIM_SPEED;
-import static smartin.miapi.events.MiapiEvents.ITEM_STACK_ATTRIBUTE_EVENT;
 
 public class MiapiFabric implements ModInitializer {
 
@@ -40,12 +36,6 @@ public class MiapiFabric implements ModInitializer {
         if (Environment.isClient()) {
             MiapiClientFabric.setupClient();
         }
-
-        ModifyItemAttributeModifiersCallback.EVENT.register((stack, slot, attributeModifiers) -> {
-            if (stack.getItem() instanceof ModularItem) {
-                ITEM_STACK_ATTRIBUTE_EVENT.invoker().adjust(new MiapiEvents.ItemStackAttributeEventHolder(stack, slot, attributeModifiers));
-            }
-        });
 
         //ATTRIBUTE REPLACEMENT
         AttributeRegistry.ATTACK_RANGE = ReachEntityAttributes.ATTACK_RANGE;
