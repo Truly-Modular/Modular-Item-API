@@ -2,6 +2,7 @@ package smartin.miapi.client.gui.crafting.crafter;
 
 import net.minecraft.text.Text;
 import smartin.miapi.client.gui.InteractAbleWidget;
+import smartin.miapi.client.gui.PreviewManager;
 import smartin.miapi.client.gui.crafting.crafter.replace.CraftOption;
 import smartin.miapi.client.gui.crafting.crafter.replace.CraftViewRework;
 import smartin.miapi.client.gui.crafting.crafter.replace.ReplaceView;
@@ -31,7 +32,7 @@ public class CraftEditOption extends InteractAbleWidget {
                 this.children.clear();
                 CraftViewRework craftView = new CraftViewRework(this.getX(), this.getY(), this.width, this.height, 1, option, editContext, (backSlot) -> {
                     setMode(Mode.REPLACE);
-                    ReplaceOption.hoverStack = null;
+                    PreviewManager.resetCursorStack();
                 });
                 addChild(craftView);
             }

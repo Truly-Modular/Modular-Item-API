@@ -14,10 +14,7 @@ import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
-import smartin.miapi.client.gui.InteractAbleWidget;
-import smartin.miapi.client.gui.ParentHandledScreen;
-import smartin.miapi.client.gui.SimpleScreenHandlerListener;
-import smartin.miapi.client.gui.TransformableWidget;
+import smartin.miapi.client.gui.*;
 import smartin.miapi.client.gui.crafting.crafter.DetailView;
 import smartin.miapi.client.gui.crafting.crafter.ModuleCrafter;
 import smartin.miapi.client.gui.crafting.slotdisplay.SlotDisplay;
@@ -27,7 +24,6 @@ import smartin.miapi.item.ModularItemStackConverter;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.edit_options.EditOption;
 import smartin.miapi.modules.edit_options.EditOptionIcon;
-import smartin.miapi.modules.edit_options.ReplaceOption;
 import smartin.miapi.modules.properties.AllowedSlots;
 import smartin.miapi.modules.properties.SlotProperty;
 import smartin.miapi.registries.RegistryInventory;
@@ -84,7 +80,7 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
         this.editOption = editOption;
         moduleCrafter.setSelectedSlot(slot);
         moduleCrafter.setEditMode(editOption, get(editOption));
-        ReplaceOption.hoverStack = ItemStack.EMPTY;
+        PreviewManager.resetCursorStack();
     }
 
     public void init() {
@@ -140,7 +136,8 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
         selectEditOption(null);
         selectSlot(null);
         previewStack(handler.inventory.getStack(0));
-        ReplaceOption.resetPreview();
+        PreviewManager.resetCursorStack();
+        PreviewManager.resetPreview();
     }
 
     //could be the same as maximizeView()
@@ -195,7 +192,7 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
     }
 
     private void updateItem(ItemStack stack) {
-        ReplaceOption.resetPreview();
+        PreviewManager.resetCursorStack();
         stack = stack.copy();
         slotDisplay.setItem(stack);
         ItemStack converted = ModularItemStackConverter.getModularVersion(stack).copy();
@@ -264,7 +261,7 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
         if (!editHolder.children().contains(editOption)) {
             editOption = null;
         }
-        ReplaceOption.setHoverStack(ItemStack.EMPTY, true);
+        PreviewManager.resetCursorStack();
         selectEditOption(editOption);
     }
 
@@ -377,6 +374,7 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
             this.renderHover(drawContext, mouseX, mouseY, delta);
         });
         drawContext.getMatrices().pop();
+        PreviewManager.tick();
     }
 
     @Override

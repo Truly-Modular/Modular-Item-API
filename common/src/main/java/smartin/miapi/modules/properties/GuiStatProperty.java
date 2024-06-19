@@ -79,7 +79,7 @@ public class GuiStatProperty implements ModuleProperty {
     }
 
     public static double getValue(ItemStack itemStack, String key) {
-        Map<String, GuiInfo> infoMap = getInfo(itemStack);
+        Map<String, GuiInfo> infoMap = getInfoCache(itemStack);
         if (infoMap.containsKey(key)) {
             return infoMap.get(key).value;
         }

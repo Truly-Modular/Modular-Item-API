@@ -449,7 +449,8 @@ public class StatListWidget extends InteractAbleWidget {
     public static <T extends InteractAbleWidget & SingleStatDisplay> void addStatDisplay(T statDisplay) {
         statDisplays.add(statDisplay);
     }
-    public static <T extends InteractAbleWidget & SingleStatDisplay> void addStatDisplay(T ...statDisplay) {
+
+    public static <T extends InteractAbleWidget & SingleStatDisplay> void addStatDisplay(T... statDisplay) {
         statDisplays.addAll(Arrays.asList(statDisplay));
     }
 

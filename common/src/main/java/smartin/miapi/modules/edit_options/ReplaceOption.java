@@ -9,6 +9,7 @@ import net.minecraft.network.PacketByteBuf;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.InteractAbleWidget;
+import smartin.miapi.client.gui.PreviewManager;
 import smartin.miapi.client.gui.crafting.CraftingScreen;
 import smartin.miapi.client.gui.crafting.crafter.CraftEditOption;
 import smartin.miapi.craft.CraftAction;
@@ -23,8 +24,6 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class ReplaceOption implements EditOption {
-    public static ItemStack hoverStack = ItemStack.EMPTY;
-    public static int updateCount = 0;
     @Nullable
     public static EditContext unsafeEditContext;
     @Nullable
@@ -39,16 +38,19 @@ public class ReplaceOption implements EditOption {
         ItemStack itemStack = editContext.getLinkedInventory().getStack(0);
         action.setItem(itemStack);
         Inventory inventory = editContext.getLinkedInventory();
-        if (hoverStack != null && !hoverStack.isEmpty()) {
-            boolean emptyMaterial = editContext.getLinkedInventory().getStack(1).isEmpty();
-
+        boolean hasPreviewMaterial = false;
+        if (
+                PreviewManager.currentPreviewMaterial != null
+        ) {
+            hasPreviewMaterial = true;
             inventory = new SimpleInventory(2);
-            inventory.setStack(1, hoverStack);
+            PreviewManager.currentPreviewMaterialStack.getDamage();
+            inventory.setStack(1, PreviewManager.currentPreviewMaterialStack);
         }
         action.linkInventory(inventory, 1);
 
         ItemStack preview = action.getPreview();
-        if (editContext.getInstance() != null) {
+        if (editContext.getInstance() != null && !hasPreviewMaterial) {
             Material material = MaterialProperty.getMaterial(editContext.getInstance());
             if (material != null) {
                 List<Integer> position = new ArrayList<>();
@@ -65,6 +67,7 @@ public class ReplaceOption implements EditOption {
     }
 
     public static void tryPreview() {
+        Miapi.LOGGER.info("try preview " + (unsafeEditContext != null) + " " + (unsafeCraftAction != null));
         if (unsafeEditContext != null && unsafeCraftAction != null) {
             try {
                 unsafeEditContext.preview(unsafeCraftAction.toPacket(Networking.createBuffer()));
@@ -74,31 +77,9 @@ public class ReplaceOption implements EditOption {
         }
     }
 
-    public static void resetPreview(){
+    public static void resetPreview() {
         ReplaceOption.unsafeEditContext = null;
-        ReplaceOption.hoverStack = null;
         ReplaceOption.unsafeCraftAction = null;
-    }
-
-    public static void setHoverStack(ItemStack itemStack, boolean safe) {
-        updateCount = 2;
-        if (itemStack != null && hoverStack != null) {
-            if (ItemStack.areEqual(itemStack, hoverStack)) {
-                return;
-            }
-        }
-        if (!itemStack.isEmpty()) {
-            Material material = MaterialProperty.getMaterialFromIngredient(itemStack);
-            if (material != null) {
-                hoverStack = itemStack;
-                tryPreview();
-                return;
-            }
-        }
-        if (!safe) {
-            hoverStack = itemStack;
-            tryPreview();
-        }
     }
 
     @Override
@@ -122,7 +103,6 @@ public class ReplaceOption implements EditOption {
     @Environment(EnvType.CLIENT)
     @Override
     public InteractAbleWidget getGui(int x, int y, int width, int height, EditContext editContext) {
-        hoverStack = null;
         unsafeEditContext = editContext;
         return new CraftEditOption(x, y, width, height, editContext);
     }
@@ -130,7 +110,6 @@ public class ReplaceOption implements EditOption {
     @Environment(EnvType.CLIENT)
     @Override
     public InteractAbleWidget getIconGui(int x, int y, int width, int height, Consumer<EditOption> select, Supplier<EditOption> getSelected) {
-        hoverStack = null;
         unsafeEditContext = null;
         return new EditOptionIcon(x, y, width, height, select, getSelected, CraftingScreen.BACKGROUND_TEXTURE, 339 + 32, 25, 512, 512, "miapi.ui.edit_option.hover.replace", this);
     }

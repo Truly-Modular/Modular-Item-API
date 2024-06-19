@@ -128,12 +128,13 @@ public class AllowedMaterial implements CraftingProperty, ModuleProperty {
                 if (isAllowed) {
                     MaterialProperty.setMaterial(newModule, material.getKey());
                 }
+                newModule.getRoot().writeToItem(crafting);
                 MiapiEvents.MaterialCraftEventData eventData = new MiapiEvents.MaterialCraftEventData(crafting, materialStack, material, newModule, craftAction);
                 MiapiEvents.MATERIAL_CRAFT_EVENT.invoker().craft(eventData);
                 crafting = eventData.crafted;
             }
         }
-        if (crafting.isDamageable()) {
+        if (crafting.isDamageable() && crafting.getDamage() > 0) {
             //Miapi.LOGGER.info("dmg " + crafting.getDamage());
             ModularItemCache.clearUUIDFor(crafting);
             ItemModule.ModuleInstance moduleInstance = craftAction.getModifyingModuleInstance(crafting);

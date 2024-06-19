@@ -8,3 +8,5 @@
 - silent step will also block the sound, not just the event now
 - added harvest ability
 - added attribute split property
+- improved hover previews, they should work more reliably now
+- improved tool detection on Forge and Fabric to have less cases of mods not correctly identifing modular tools

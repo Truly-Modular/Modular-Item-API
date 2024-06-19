@@ -17,18 +17,17 @@ import static smartin.miapi.events.MiapiEvents.ITEM_STACK_ATTRIBUTE_EVENT;
 
 /**
  * This class overwrites the FabricItem methods for Modular items.
- *
  */
 @Mixin(PlatformModularItemMethods.class)
-public class PlatformModularItemMethodsMixin implements FabricItem {
+public interface PlatformModularItemMethodsMixin extends FabricItem {
 
-    public Multimap<EntityAttribute, EntityAttributeModifier> getAttributeModifiers(ItemStack stack, EquipmentSlot slot) {
-        Multimap < EntityAttribute, EntityAttributeModifier> attributeModifiers = ArrayListMultimap.create();
+    default Multimap<EntityAttribute, EntityAttributeModifier> getAttributeModifiers(ItemStack stack, EquipmentSlot slot) {
+        Multimap<EntityAttribute, EntityAttributeModifier> attributeModifiers = ArrayListMultimap.create();
         ITEM_STACK_ATTRIBUTE_EVENT.invoker().adjust(new MiapiEvents.ItemStackAttributeEventHolder(stack, slot, attributeModifiers));
         return attributeModifiers;
     }
 
-    public boolean isSuitableFor(ItemStack stack, BlockState state) {
+    default boolean isSuitableFor(ItemStack stack, BlockState state) {
         return MiningLevelProperty.isSuitable(stack, state);
     }
 }

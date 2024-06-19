@@ -17,12 +17,12 @@ import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
+import smartin.miapi.client.gui.PreviewManager;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.VisualModularItem;
 import smartin.miapi.item.modular.items.ModularSetableToolMaterial;
 import smartin.miapi.modules.cache.ModularItemCache;
-import smartin.miapi.modules.edit_options.ReplaceOption;
 import smartin.miapi.modules.properties.FakeItemTagProperty;
 import smartin.miapi.modules.properties.HideFlagsProperty;
 import smartin.miapi.modules.properties.LoreProperty;
@@ -125,7 +125,7 @@ abstract class ItemStackMixin {
     )
     public void miapi$injectLoreBottom(PlayerEntity player, TooltipContext context, CallbackInfoReturnable<List<Text>> cir, List<Text> arg1) {
         ItemStack stack = (ItemStack) (Object) this;
-        ReplaceOption.setHoverStack(stack, true);
+        PreviewManager.setCursorItemstack(stack);
         /*
         if (stack.getItem() instanceof ModularItem) {
             LoreProperty.property.appendLoreBottom(arg1, stack);
