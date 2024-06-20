@@ -10,10 +10,30 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.ToolAction;
 import org.spongepowered.asm.mixin.Mixin;
 import smartin.miapi.forge.compat.ModularItemInject;
-import smartin.miapi.item.modular.items.ModularElytraItem;
+import smartin.miapi.item.modular.items.*;
 
-@Mixin(value = ModularElytraItem.class)
-public abstract class ModularElytraMixin implements ModularItemInject {
+@Mixin(
+        value = {
+                ExampleModularItem.class,
+                ExampleModularStrackableItem.class,
+                ModularArrow.class,
+                ModularAxe.class,
+                ModularBoomerangItem.class,
+                ModularBoots.class,
+                ModularBow.class,
+                ModularChestPlate.class,
+                ModularCrossbow.class,
+                ModularElytraItem.class,
+                ModularHelmet.class,
+                ModularHoe.class,
+                ModularLeggings.class,
+                ModularPickaxe.class,
+                ModularShovel.class,
+                ModularSword.class,
+                ModularWeapon.class
+        })
+public abstract class ModularItemMixin implements ModularItemInject {
+
     public boolean makesPiglinsNeutral(ItemStack stack, LivingEntity wearer) {
         return makesPiglinsNeutralModular(stack, wearer);
     }

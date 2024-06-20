@@ -6,23 +6,7 @@
     "mixins": [
         "LivingEntityMixin",
         "compat.ItemStackUtilMixin",
-        "item.ExampleModularItemMixin",
-        "item.ExampleModularItemStackAbleMixin",
-        "item.ModularArrowMixin",
-        "item.ModularAxeMixin",
-        "item.ModularBoomerangItemMixin",
-        "item.ModularBootsMixin",
-        "item.ModularBowMixin",
-        "item.ModularChestplateMixin",
-        "item.ModularCrossbowMixin",
-        "item.ModularElytraMixin",
-        "item.ModularHelmetMixin",
-        "item.ModularHoeMixin",
-        "item.ModularLeggingsMixin",
-        "item.ModularPickaxeMixin",
-        "item.ModularShovelMixin",
-        "item.ModularSwordMixin",
-        "item.ModularWeaponMixin"
+        "item.ModularItemMixin"
     ],
     "client": [
         "ModelLoaderMixin",
