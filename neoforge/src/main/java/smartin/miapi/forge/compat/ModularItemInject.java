@@ -4,6 +4,7 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.item.ItemStack;
@@ -15,12 +16,42 @@ import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.modules.abilities.toolabilities.AxeAbility;
 import smartin.miapi.modules.abilities.toolabilities.HoeAbility;
 import smartin.miapi.modules.abilities.toolabilities.ShovelAbility;
-import smartin.miapi.modules.properties.AbilityMangerProperty;
+import smartin.miapi.modules.properties.*;
 import smartin.miapi.modules.properties.mining.MiningLevelProperty;
 
 import static smartin.miapi.events.MiapiEvents.ITEM_STACK_ATTRIBUTE_EVENT;
 
 public interface ModularItemInject extends IForgeItem {
+
+
+    default Multimap<EntityAttribute, EntityAttributeModifier> getAttributeModifiersModular(EquipmentSlot slot, ItemStack stack) {
+        Multimap < EntityAttribute, EntityAttributeModifier> attributeModifiers = ArrayListMultimap.create();
+        ITEM_STACK_ATTRIBUTE_EVENT.invoker().adjust(new MiapiEvents.ItemStackAttributeEventHolder(stack, slot, attributeModifiers));
+        return attributeModifiers;
+    }
+
+
+    default boolean makesPiglinsNeutralModular(ItemStack stack, LivingEntity wearer) {
+        return IsPiglinGold.isPiglinGoldItem(stack);
+    }
+
+
+    default EquipmentSlot getEquipmentSlotModular(ItemStack stack) {
+        return EquipmentSlotProperty.getSlot(stack);
+    }
+
+
+    default int getMaxDamageModular(ItemStack stack)
+    {
+        return (int) DurabilityProperty.property.getValueSafe(stack);
+
+    }
+
+
+    default boolean isCorrectToolForDropsModular(ItemStack stack, BlockState state) {
+        return MiningLevelProperty.isSuitable(stack, state);
+    }
+
 
     default boolean canPerformActionModular(ItemStack stack, ToolAction toolAction) {
         if (stack.getItem() instanceof ModularItem) {
@@ -55,15 +86,9 @@ public interface ModularItemInject extends IForgeItem {
         return false;
     }
 
-    default boolean isCorrectToolForDropsModular(ItemStack itemStack, BlockState blockState) {
-        return MiningLevelProperty.isSuitable(itemStack, blockState);
-    }
 
-    default Multimap<EntityAttribute, EntityAttributeModifier> getModularAttributeModifiers(EquipmentSlot slot, ItemStack stack)
+    default int getEnchantmentValueModular(ItemStack stack)
     {
-        Multimap<EntityAttribute, EntityAttributeModifier> attributes = ArrayListMultimap.create();
-        ITEM_STACK_ATTRIBUTE_EVENT.invoker().adjust(new MiapiEvents.ItemStackAttributeEventHolder(stack, slot, attributes));
-        return attributes;
+        return (int) EnchantAbilityProperty.getEnchantAbility(stack);
     }
-
 }

@@ -21,13 +21,14 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.item.modular.ModularItem;
+import smartin.miapi.item.modular.PlatformModularItemMethods;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
 import smartin.miapi.modules.properties.*;
 import smartin.miapi.modules.properties.mining.MiningLevelProperty;
 
 import java.util.List;
 
-public class ModularAxe extends AxeItem implements ModularItem, ModularSetableToolMaterial {
+public class ModularAxe extends AxeItem implements PlatformModularItemMethods, ModularItem, ModularSetableToolMaterial {
     public ToolMaterial currentFakeToolmaterial = ModularToolMaterial.toolMaterial;
 
     public ModularAxe(Settings settings) {
@@ -39,14 +40,14 @@ public class ModularAxe extends AxeItem implements ModularItem, ModularSetableTo
     }
 
     public ToolMaterial getMaterial() {
-        if(MiapiConfig.INSTANCE.server.other.looseToolMaterial){
+        if (MiapiConfig.INSTANCE.server.other.looseToolMaterial) {
             return currentFakeToolmaterial;
         }
         return super.getMaterial();
     }
 
     @Override
-    public void setToolMaterial(ToolMaterial toolMaterial){
+    public void setToolMaterial(ToolMaterial toolMaterial) {
         this.currentFakeToolmaterial = toolMaterial;
     }
 

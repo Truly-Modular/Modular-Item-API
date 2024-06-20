@@ -9,6 +9,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.item.modular.ModularItem;
+import smartin.miapi.item.modular.PlatformModularItemMethods;
 import smartin.miapi.modules.properties.DisplayNameProperty;
 import smartin.miapi.modules.properties.LoreProperty;
 import smartin.miapi.modules.properties.RarityProperty;
@@ -16,7 +17,7 @@ import smartin.miapi.modules.properties.RepairPriority;
 
 import java.util.List;
 
-public class ModularLeggings extends ArmorItem implements ModularItem {
+public class ModularLeggings extends ArmorItem implements PlatformModularItemMethods, ModularItem {
     public ModularLeggings(Settings settings) {
         super(new ModularArmorMaterial(),Type.LEGGINGS, settings);
     }

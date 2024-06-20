@@ -4,15 +4,11 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.ColorHelper;
 import smartin.miapi.Miapi;
-import smartin.miapi.client.gui.InteractAbleWidget;
-import smartin.miapi.client.gui.MultiLineTextWidget;
-import smartin.miapi.client.gui.ScrollingTextWidget;
-import smartin.miapi.client.gui.TransformableWidget;
+import smartin.miapi.client.gui.*;
 import smartin.miapi.client.gui.crafting.CraftingScreen;
 import smartin.miapi.craft.CraftAction;
 import smartin.miapi.item.modular.StatResolver;
@@ -63,13 +59,11 @@ public class MaterialCraftingWidget extends InteractAbleWidget {
     public void render(DrawContext drawContext, int mouseX, int mouseY, float delta) {
         RenderSystem.enableDepthTest();
         ReplaceOption.unsafeCraftAction = action;
-        if (ReplaceOption.updateCount < 1 &&
+        if (
                 ReplaceOption.unsafeEditContext != null &&
                 !ReplaceOption.unsafeEditContext.getScreenHandler().inventory.getStack(1).isEmpty()) {
-            ReplaceOption.setHoverStack(ItemStack.EMPTY, false);
-        }
-        else{
-            ReplaceOption.updateCount--;
+            PreviewManager.resetCursorStack();
+
         }
 
 

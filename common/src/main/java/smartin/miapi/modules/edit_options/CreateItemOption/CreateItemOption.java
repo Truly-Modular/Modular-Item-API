@@ -15,6 +15,7 @@ import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.client.gui.InteractAbleWidget;
+import smartin.miapi.client.gui.PreviewManager;
 import smartin.miapi.client.gui.crafting.CraftingScreen;
 import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
 import smartin.miapi.client.gui.crafting.crafter.create_module.CreateListView;
@@ -25,7 +26,6 @@ import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.edit_options.EditOption;
 import smartin.miapi.modules.edit_options.EditOptionIcon;
 import smartin.miapi.modules.edit_options.ReplaceOption;
-import smartin.miapi.modules.material.MaterialProperty;
 import smartin.miapi.modules.properties.SlotProperty;
 import smartin.miapi.network.Networking;
 import smartin.miapi.registries.RegistryInventory;
@@ -65,9 +65,12 @@ public class CreateItemOption implements EditOption {
         instance.writeToItem(itemStack);
         CraftAction action = new CraftAction(buffer, editContext.getWorkbench());
         Inventory inventory = editContext.getLinkedInventory();
-        if (ReplaceOption.hoverStack != null && !ReplaceOption.hoverStack.isEmpty() && MaterialProperty.getMaterialFromIngredient(ReplaceOption.hoverStack)!=null) {
+        if (
+                PreviewManager.currentPreviewMaterial != null
+        ) {
             inventory = new SimpleInventory(2);
-            inventory.setStack(1, ReplaceOption.hoverStack);
+            PreviewManager.currentPreviewMaterialStack.getDamage();
+            inventory.setStack(1, PreviewManager.currentPreviewMaterialStack);
         }
         action.linkInventory(inventory, 1);
         action.setItem(itemStack);
@@ -102,7 +105,7 @@ public class CreateItemOption implements EditOption {
     @Environment(EnvType.CLIENT)
     @Override
     public InteractAbleWidget getGui(int x, int y, int width, int height, EditContext editContext) {
-        ReplaceOption.hoverStack = null;
+        PreviewManager.resetCursorStack();
         ReplaceOption.unsafeEditContext = editContext;
         return new CreateListView(x, y, width, height, editContext);
     }

@@ -9,6 +9,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.item.modular.ModularItem;
+import smartin.miapi.item.modular.PlatformModularItemMethods;
 import smartin.miapi.modules.properties.DisplayNameProperty;
 import smartin.miapi.modules.properties.LoreProperty;
 import smartin.miapi.modules.properties.RarityProperty;
@@ -16,7 +17,7 @@ import smartin.miapi.modules.properties.RepairPriority;
 
 import java.util.List;
 
-public class ModularBoots extends ArmorItem implements ModularItem {
+public class ModularBoots extends ArmorItem implements PlatformModularItemMethods, ModularItem {
     public ModularBoots(Settings settings) {
         super(new ModularArmorMaterial(), Type.BOOTS, settings);
     }
@@ -31,7 +32,7 @@ public class ModularBoots extends ArmorItem implements ModularItem {
     }
 
     @Override
-    public boolean isEnchantable(ItemStack itemStack){
+    public boolean isEnchantable(ItemStack itemStack) {
         return true;
     }
 
@@ -47,12 +48,12 @@ public class ModularBoots extends ArmorItem implements ModularItem {
 
     @Override
     public int getItemBarStep(ItemStack stack) {
-        return Math.round(13.0F - (float)stack.getDamage() * 13.0F / ModularItem.getDurability(stack));
+        return Math.round(13.0F - (float) stack.getDamage() * 13.0F / ModularItem.getDurability(stack));
     }
 
     @Override
     public int getItemBarColor(ItemStack stack) {
-        float f = Math.max(0.0F, ((float) ModularItem.getDurability(stack) - (float)stack.getDamage()) / ModularItem.getDurability(stack));
+        float f = Math.max(0.0F, ((float) ModularItem.getDurability(stack) - (float) stack.getDamage()) / ModularItem.getDurability(stack));
         return MathHelper.hsvToRgb(f / 3.0F, 1.0F, 1.0F);
     }
 

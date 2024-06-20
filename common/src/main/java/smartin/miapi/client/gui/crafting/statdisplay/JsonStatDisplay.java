@@ -25,11 +25,16 @@ public class JsonStatDisplay extends SingleStatDisplayDouble {
     public boolean shouldRender(ItemStack original, ItemStack compareTo) {
         super.shouldRender(original, compareTo);
         if (statReader.hasValue(original)) {
+            textWidget.setText(text.resolve(original));
+            hoverDescription.setText(hover.resolve(original));
             return true;
         }
-        textWidget.setText(text.resolve(compareTo));
-        hoverDescription.setText(hover.resolve(compareTo));
-        return statReader.hasValue(compareTo);
+        if (statReader.hasValue(compareTo)) {
+            textWidget.setText(text.resolve(compareTo));
+            hoverDescription.setText(hover.resolve(compareTo));
+            return true;
+        }
+        return false;
     }
 
     public static Builder getBuilder() {

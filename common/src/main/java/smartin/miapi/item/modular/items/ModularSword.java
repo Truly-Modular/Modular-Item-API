@@ -21,13 +21,14 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.item.modular.ModularItem;
+import smartin.miapi.item.modular.PlatformModularItemMethods;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
 import smartin.miapi.modules.properties.*;
 import smartin.miapi.modules.properties.mining.MiningLevelProperty;
 
 import java.util.List;
 
-public class ModularSword extends SwordItem implements ModularItem, ModularSetableToolMaterial {
+public class ModularSword extends SwordItem implements PlatformModularItemMethods, ModularItem, ModularSetableToolMaterial {
     public ToolMaterial currentFakeToolmaterial = ModularToolMaterial.toolMaterial;
 
     public ModularSword(Settings settings) {

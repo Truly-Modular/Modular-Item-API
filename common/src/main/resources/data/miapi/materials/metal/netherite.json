@@ -10,6 +10,7 @@
     "flexibility": 3,
     "enchantability": 15,
     "durability": 2031,
+    "armor_durability_offset": -1439,
     "color": "695e5f",
     "color_palette": {
         "type": "grayscale_map",

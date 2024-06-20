@@ -28,13 +28,14 @@ import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.entity.ItemProjectileEntity;
 import smartin.miapi.events.MiapiProjectileEvents;
 import smartin.miapi.item.modular.ModularItem;
+import smartin.miapi.item.modular.PlatformModularItemMethods;
 import smartin.miapi.modules.properties.*;
 
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Predicate;
 
-public class ModularBow extends BowItem implements ModularItem {
+public class ModularBow extends BowItem implements PlatformModularItemMethods, ModularItem {
     public static Predicate<ItemStack> projectile = BOW_PROJECTILES;
     public static UUID bowMoveSpeedUUId = UUID.fromString("4de85d6c-7923-11ee-b962-0242ac120002");
 
@@ -198,7 +199,7 @@ public class ModularBow extends BowItem implements ModularItem {
         if (MiapiConfig.INSTANCE.server.enchants.betterInfinity) {
             ItemStack itemStack = user.getStackInHand(hand);
             ItemStack projectileStack = user.getProjectileType(itemStack);
-            if(itemStack.hasNbt()){
+            if (itemStack.hasNbt()) {
                 NbtCompound compound = itemStack.getOrCreateNbt();
                 compound = compound.getCompound("BOW_PROJECTILE");
                 projectileStack.writeNbt(compound);
