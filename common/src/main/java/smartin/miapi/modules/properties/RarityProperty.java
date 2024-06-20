@@ -1,30 +1,29 @@
 package smartin.miapi.modules.properties;
 
 import com.google.gson.JsonElement;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Rarity;
-import smartin.miapi.item.modular.ModularItem;
+import smartin.miapi.blocks.ModularWorkBenchEntity;
+import smartin.miapi.craft.CraftAction;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.cache.ModularItemCache;
+import smartin.miapi.modules.properties.util.CraftingProperty;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
-public class RarityProperty implements ModuleProperty {
+import java.util.List;
+import java.util.Map;
+
+public class RarityProperty implements CraftingProperty, ModuleProperty {
     public static String KEY = "rarity";
     public static RarityProperty property;
 
     public RarityProperty() {
         property = this;
-        ModularItemCache.setSupplier(KEY, RarityProperty::getRarityForCache);
     }
 
     public static Rarity getRarity(ItemStack itemStack) {
-        if (itemStack.getItem() instanceof ModularItem) {
-            return ModularItemCache.get(itemStack, KEY, Rarity.COMMON);
-        }
-        return Rarity.COMMON;
-    }
-
-    private static Rarity getRarityForCache(ItemStack itemStack) {
         try {
             JsonElement jsonElement = ItemModule.getMergedProperty(itemStack, property);
             if (jsonElement != null) {
@@ -35,6 +34,7 @@ public class RarityProperty implements ModuleProperty {
         }
         return applyEnchant(itemStack, Rarity.COMMON);
     }
+
 
     private static Rarity applyEnchant(ItemStack itemStack, Rarity old) {
         if (!itemStack.hasEnchantments()) {
@@ -67,5 +67,13 @@ public class RarityProperty implements ModuleProperty {
     public boolean load(String moduleKey, JsonElement data) throws Exception {
         data.getAsString();
         return true;
+    }
+
+    @Override
+    public ItemStack preview(ItemStack old, ItemStack crafting, PlayerEntity player, ModularWorkBenchEntity bench, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<String, String> data) {
+        ModularItemCache.clearUUIDFor(crafting);
+        Rarity rarity = getRarity(crafting);
+        crafting.set(DataComponentTypes.RARITY, rarity);
+        return crafting;
     }
 }

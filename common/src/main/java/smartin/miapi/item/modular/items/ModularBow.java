@@ -10,6 +10,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.item.*;
+import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -77,11 +78,6 @@ public class ModularBow extends BowItem implements PlatformModularItemMethods, M
     @Override
     public boolean canRepair(ItemStack stack, ItemStack ingredient) {
         return RepairPriority.getRepairValue(stack, ingredient) > 0;
-    }
-
-    @Override
-    public Rarity getRarity(ItemStack stack) {
-        return RarityProperty.getRarity(stack);
     }
 
     public void usageTick(World world, LivingEntity user, ItemStack stack, int remainingUseTicks) {
@@ -252,7 +248,7 @@ public class ModularBow extends BowItem implements PlatformModularItemMethods, M
     }
 
     @Override
-    public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
-        LoreProperty.appendLoreTop(stack, world, tooltip, context);
+    public void appendTooltip(ItemStack itemStack, TooltipContext tooltipContext, List<Text> list, TooltipType tooltipType) {
+        LoreProperty.appendLoreTop(itemStack, list, tooltipContext, tooltipType);
     }
 }

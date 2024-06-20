@@ -35,7 +35,7 @@ public class EntityModelProperty implements RenderProperty {
                 if (element != null && element.isJsonArray()) {
                     element.getAsJsonArray().forEach(jsonElement -> {
                         JsonObject object = jsonElement.getAsJsonObject();
-                        Identifier identifier = new Identifier(object.get("id").getAsString());
+                        Identifier identifier = Identifier.of(object.get("id").getAsString());
                         EntityType entityType = Registries.ENTITY_TYPE.get(identifier);
                         Transform transform = Miapi.gson.fromJson(object.get("transform"), Transform.class);
                         if (entityType != null) {

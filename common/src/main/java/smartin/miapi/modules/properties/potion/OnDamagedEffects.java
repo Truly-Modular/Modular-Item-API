@@ -1,15 +1,14 @@
 package smartin.miapi.modules.properties.potion;
 
 import dev.architectury.event.EventResult;
-import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import net.minecraft.world.World;
-import org.jetbrains.annotations.Nullable;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.modules.properties.LoreProperty;
 import smartin.miapi.modules.properties.util.ModuleProperty;
@@ -36,11 +35,11 @@ public class OnDamagedEffects extends PotionEffectProperty {
 
         setupLore();
     }
-    
+
     public void setupLore() {
-        LoreProperty.loreSuppliers.add((ItemStack itemStack, @Nullable World world, List<Text> tooltip, TooltipContext context) -> {
+        LoreProperty.loreSuppliers.add((ItemStack itemStack, List<Text> tooltip, Item.TooltipContext context, TooltipType tooltipType) -> {
             List<Text> lines = new ArrayList<>();
-            for (EffectHolder effectHolder :  merge(getStatusEffects(itemStack))) {
+            for (EffectHolder effectHolder : merge(getStatusEffects(itemStack))) {
                 if (effectHolder.isGuiVisibility()) {
                     Text text = effectHolder.getPotionDescription();
                     if (isTargetSelf(effectHolder)) {

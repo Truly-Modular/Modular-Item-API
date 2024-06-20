@@ -64,17 +64,17 @@ public class ModularCrossbow extends CrossbowItem implements PlatformModularItem
 
     @Environment(EnvType.CLIENT)
     public void registerAnimations() {
-        ModularModelPredicateProvider.registerModelOverride(this, new Identifier("pull"), (stack, world, entity, seed) -> {
+        ModularModelPredicateProvider.registerModelOverride(this, Identifier.of("pull"), (stack, world, entity, seed) -> {
             if (entity == null) {
                 return 0.0F;
             } else {
-                return entity.getActiveItem() != stack ? 0.0F : getPullProgress((stack.getMaxUseTime() - entity.getItemUseTimeLeft()), stack);
+                return entity.getActiveItem() != stack ? 0.0F : getPullProgress((stack.getMaxUseTime(entity) - entity.getItemUseTimeLeft()), stack);
             }
         });
-        ModularModelPredicateProvider.registerModelOverride(this, new Identifier("pulling"), (stack, world, entity, seed) -> {
+        ModularModelPredicateProvider.registerModelOverride(this, Identifier.of("pulling"), (stack, world, entity, seed) -> {
             return entity != null && entity.isUsingItem() && entity.getActiveItem() == stack ? 1.0F : 0.0F;
         });
-        ModularModelPredicateProvider.registerModelOverride(this, new Identifier("charged"), (stack, world, entity, seed) -> {
+        ModularModelPredicateProvider.registerModelOverride(this,Identifier.of("charged"), (stack, world, entity, seed) -> {
             return entity != null && isCharged(stack) ? 1.0F : 0.0F;
         });
     }

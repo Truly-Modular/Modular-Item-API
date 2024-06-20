@@ -1,14 +1,12 @@
 package smartin.miapi.item.modular.items;
 
 import dev.architectury.injectables.annotations.ExpectPlatform;
-import net.minecraft.client.item.TooltipContext;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.text.Text;
 import net.minecraft.util.Rarity;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.World;
-import org.jetbrains.annotations.Nullable;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.PlatformModularItemMethods;
 import smartin.miapi.modules.properties.DisplayNameProperty;
@@ -45,11 +43,6 @@ public class ModularElytraItem extends ArmorItem implements PlatformModularItemM
     }
 
     @Override
-    public Rarity getRarity(ItemStack stack) {
-        return RarityProperty.getRarity(stack);
-    }
-
-    @Override
     public int getEnchantability() {
         return 1;
     }
@@ -66,7 +59,7 @@ public class ModularElytraItem extends ArmorItem implements PlatformModularItemM
     }
 
     @Override
-    public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
-        LoreProperty.appendLoreTop(stack, world, tooltip, context);
+    public void appendTooltip(ItemStack itemStack, TooltipContext tooltipContext, List<Text> list, TooltipType tooltipType) {
+        LoreProperty.appendLoreTop(itemStack, list, tooltipContext, tooltipType);
     }
 }

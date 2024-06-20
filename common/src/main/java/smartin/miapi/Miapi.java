@@ -10,6 +10,7 @@ import com.redpxnda.nucleus.registry.NucleusNamespaces;
 import dev.architectury.event.events.common.CommandRegistrationEvent;
 import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.event.events.common.PlayerEvent;
+import net.minecraft.item.Items;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
@@ -66,6 +67,7 @@ public class Miapi {
         ConditionManager.setup();
         StatActorType.setup();
         NBTMaterial.setup();
+        Items.DIAMOND_AXE axe;
 
 
 

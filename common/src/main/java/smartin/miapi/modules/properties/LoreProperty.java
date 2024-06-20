@@ -7,8 +7,9 @@ import com.redpxnda.nucleus.codec.auto.AutoCodec;
 import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.item.TooltipContext;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -27,6 +28,7 @@ import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -76,9 +78,12 @@ public class LoreProperty implements ModuleProperty {
     }
 
     private Holder getFromSingleElement(JsonElement element) {
-        return codec.parse(JsonOps.INSTANCE, element).getOrThrow(false, s -> {
-            Miapi.LOGGER.error("Failed to decode using codec during cache creation for a CodecBasedProperty! -> " + s);
-        });
+        try{
+            return codec.parse(JsonOps.INSTANCE, element).getOrThrow((Function<String, Throwable>) s -> new IllegalArgumentException("could not parse Lore Context" + s));
+        }catch (Throwable e){
+            Miapi.LOGGER.error("",e);
+            return new Holder();
+        }
     }
 
     private Text gray(Text text) {
@@ -167,8 +172,8 @@ public class LoreProperty implements ModuleProperty {
         return lines;
     }
 
-    public static void appendLoreTop(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
-        loreSuppliers.forEach(supplierSupplier -> supplierSupplier.getLore(stack, world, tooltip, context));
+    public static void appendLoreTop(ItemStack stackList, List<Text> tooltip, Item.TooltipContext context, TooltipType tooltipType) {
+        loreSuppliers.forEach(supplierSupplier -> supplierSupplier.getLore(stack, tooltip, context, tooltip));
     }
 
     public void appendLoreBottom(List<Text> oldLore, ItemStack itemStack) {
@@ -218,6 +223,6 @@ public class LoreProperty implements ModuleProperty {
     }
 
     public interface ToolTipSupplierSupplier {
-        void getLore(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context);
+        void getLore(ItemStack stackList, List<Text> tooltip, Item.TooltipContext context, TooltipType tooltipType);
     }
 }

@@ -29,7 +29,7 @@ public class ItemModelProperty implements RenderProperty {
         MiapiItemModel.modelSuppliers.add((key, model, stack) -> {
             JsonElement element = model.getProperties().get(property);
             List<MiapiModel> models = new ArrayList<>();
-            if (element != null && stack.hasNbt()) {
+            if (element != null) {
                 element.getAsJsonArray().forEach(element1 -> {
                     ModelJson modelJson = Miapi.gson.fromJson(element1, ModelJson.class);
                     Supplier<ItemStack> stackSupplier = switch (modelJson.type) {
@@ -48,7 +48,7 @@ public class ItemModelProperty implements RenderProperty {
                         }
                         case "item": {
                             if (ModelProperty.isAllowedKey(modelJson.modelType, key)) {
-                                yield () -> new ItemStack(Registries.ITEM.get(new Identifier(modelJson.model)));
+                                yield () -> new ItemStack(Registries.ITEM.get(Identifier.of(modelJson.model)));
                             }
                             yield () -> ItemStack.EMPTY;
                         }

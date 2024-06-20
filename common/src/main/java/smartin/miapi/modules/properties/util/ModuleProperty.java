@@ -4,11 +4,11 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
-import net.minecraft.util.Pair;
 import com.mojang.serialization.JsonOps;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
-import net.minecraft.util.dynamic.Codecs;
+import net.minecraft.text.TextCodecs;
+import net.minecraft.util.Pair;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.item.modular.StatResolver;
@@ -205,7 +205,7 @@ public interface ModuleProperty {
         if (object != null) {
             JsonElement json = object.get(element);
             if (json != null && !json.isJsonNull()) {
-                return Codecs.TEXT.parse(JsonOps.INSTANCE, json).result().orElse(defaultValue);
+                return TextCodecs.CODEC.parse(JsonOps.INSTANCE, json).result().orElse(defaultValue);
             }
         }
         return defaultValue;
@@ -215,7 +215,7 @@ public interface ModuleProperty {
         if (object != null) {
             JsonElement json = object.get(element);
             if (json != null && !json.isJsonNull()) {
-                return Codecs.TEXT.parse(JsonOps.INSTANCE, json).result().orElse(defaultValue);
+                return TextCodecs.CODEC.parse(JsonOps.INSTANCE, json).result().orElse(defaultValue);
             }
         }
         return defaultValue;

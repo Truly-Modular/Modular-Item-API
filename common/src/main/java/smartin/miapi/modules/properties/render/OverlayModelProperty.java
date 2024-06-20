@@ -45,7 +45,7 @@ public class OverlayModelProperty extends CodecBasedProperty<OverlayModelPropert
         property = this;
         MiapiItemModel.modelSuppliers.add((key, module, stack) -> {
             List<MiapiModel> models = new ArrayList<>();
-            if(false){
+            if (false) {
                 for (OverlayModelData modelData : getData(module)) {
                     for (ModuleInstance moduleInstance : ItemModule.getModules(stack).allSubModules()) {
                         if (!modelData.onlyOnSameModule() || moduleInstance.equals(module)) {
@@ -145,11 +145,11 @@ public class OverlayModelProperty extends CodecBasedProperty<OverlayModelPropert
         if (element != null && element.isJsonArray()) {
             element.getAsJsonArray().forEach(element1 -> {
                 try {
-                    OverlayModelData overlayModelData = CODEC.parse(JsonOps.INSTANCE, element1).getOrThrow(false, s ->
-                            Miapi.LOGGER.error("Failed to load OverlayModelData! -> {}", s));
+                    OverlayModelData overlayModelData = CODEC.parse(JsonOps.INSTANCE, element1).getOrThrow();
                     overlayModelData.getPriority(moduleInstance, element1.getAsJsonObject());
                     data.add(overlayModelData);
                 } catch (Exception e) {
+                    Miapi.LOGGER.error("Failed to load OverlayModelData! -> {}", e);
                 }
             });
         }
@@ -173,12 +173,12 @@ public class OverlayModelProperty extends CodecBasedProperty<OverlayModelPropert
             if (texture == null) {
                 return null;
             }
-            return ModelProperty.textureGetter.apply(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(texture)));
+            return ModelProperty.textureGetter.apply(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, Identifier.of(texture)));
         }
 
         public void loadSprite() {
             if (texture != null) {
-                ModelProperty.textureGetter.apply(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(texture)));
+                ModelProperty.textureGetter.apply(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, Identifier.of(texture)));
             }
         }
 

@@ -3,6 +3,7 @@ package smartin.miapi.item.modular.items;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.text.Text;
 import net.minecraft.util.Rarity;
 import net.minecraft.util.math.MathHelper;
@@ -42,11 +43,6 @@ public class ModularHelmet extends ArmorItem implements PlatformModularItemMetho
     }
 
     @Override
-    public Rarity getRarity(ItemStack stack) {
-        return RarityProperty.getRarity(stack);
-    }
-
-    @Override
     public int getItemBarStep(ItemStack stack) {
         return Math.round(13.0F - (float)stack.getDamage() * 13.0F / ModularItem.getDurability(stack));
     }
@@ -63,7 +59,7 @@ public class ModularHelmet extends ArmorItem implements PlatformModularItemMetho
     }
 
     @Override
-    public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
-        LoreProperty.appendLoreTop(stack, world, tooltip, context);
+    public void appendTooltip(ItemStack itemStack, TooltipContext tooltipContext, List<Text> list, TooltipType tooltipType) {
+        LoreProperty.appendLoreTop(itemStack, list, tooltipContext, tooltipType);
     }
 }

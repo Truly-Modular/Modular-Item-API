@@ -8,8 +8,8 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.texture.Sprite;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.ItemStack;
-import net.minecraft.potion.PotionUtil;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.material.Material;
 import smartin.miapi.modules.material.MaterialProperty;
@@ -114,7 +114,7 @@ public interface ColorProvider {
         }
 
         public PotionColorProvider(ItemStack stack) {
-            potioncolor = new Color(PotionUtil.getColor(stack));
+            potioncolor = new Color( stack.getComponents().get(DataComponentTypes.POTION_CONTENTS).getColor());
         }
 
         @Override
