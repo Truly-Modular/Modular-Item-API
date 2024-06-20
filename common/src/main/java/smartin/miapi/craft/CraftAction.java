@@ -5,7 +5,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
@@ -23,8 +22,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
-
-import static smartin.miapi.modules.ItemModule.NBT_MODULE_KEY;
 
 /**
  * This class represents an action related to crafting an item with modules.
@@ -182,9 +179,6 @@ public class CraftAction {
                 instance = instance.parent;
             }
             if (!stack.isEmpty()) {
-                if (!stack.hasNbt()) {
-                    stack.setNbt(new NbtCompound());
-                }
                 instance.writeToItem(stack);
             }
         }
@@ -242,13 +236,6 @@ public class CraftAction {
     private ItemStack craft() {
         ItemStack craftingStack = old.copy();
 
-        if (slotId.size() == 1) {
-        } else if (!old.hasNbt() || !(old.hasNbt() && old.getOrCreateNbt().contains(ItemModule.MODULE_KEY) || (old.hasNbt() && old.getOrCreateNbt().contains(NBT_MODULE_KEY)))) {
-            Exception exception = new IllegalArgumentException();
-            Miapi.LOGGER.error("old Item has no Modules - something went very wrong", exception);
-            Miapi.LOGGER.error(old.toString());
-            return old;
-        }
         //remove CacheKey so new cache gets Generated
         ModuleInstance oldBaseModule = ItemModule.getModules(old);
         ModuleInstance newBaseModule = ModuleInstance.fromString(oldBaseModule.toString());

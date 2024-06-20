@@ -1,7 +1,9 @@
 package smartin.miapi.blocks;
 
+import com.redpxnda.nucleus.codec.auto.AutoCodec;
 import com.redpxnda.nucleus.codec.misc.MiscCodecs;
 import com.redpxnda.nucleus.util.MiscUtil;
+import net.minecraft.block.AnvilBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -13,6 +15,7 @@ import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.PropertyDelegate;
 import net.minecraft.screen.ScreenHandler;
@@ -62,7 +65,7 @@ public class ModularWorkBenchEntity extends BlockEntity implements NamedScreenHa
     });
 
     protected final PropertyDelegate propertyDelegate;
-    private ItemStack stack;
+    public ItemStack stack;
     public final Map<String, StatProvidersMap> persistentStats = new HashMap<>();
     protected final Map<CraftingStat, Object> stats = new HashMap<>();
     public int x;
@@ -102,6 +105,7 @@ public class ModularWorkBenchEntity extends BlockEntity implements NamedScreenHa
             }
         };
         this.markDirty();
+        AnvilBlock block;
     }
 
     public void setItem(ItemStack stack) {
@@ -230,11 +234,12 @@ public class ModularWorkBenchEntity extends BlockEntity implements NamedScreenHa
         return 16;
     }
 
+
     @Override
-    public boolean listen(ServerWorld world, GameEvent event, GameEvent.Emitter emitter, Vec3d emitterPos) {
-        CustomGameEventHandler handler = gameEventHandlers.get(event);
+    public boolean listen(ServerWorld world, RegistryEntry<GameEvent> registryEntry, GameEvent.Emitter emitter, Vec3d emitterPos) {
+        CustomGameEventHandler handler = gameEventHandlers.get(registryEntry.comp_349());
         if (handler == null) return false;
-        return handler.handle(this, world, event, emitter, emitterPos);
+        return handler.handle(this, world, registryEntry.comp_349(), emitter, emitterPos);
     }
 
     public interface CustomGameEventHandler {

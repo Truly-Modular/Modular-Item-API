@@ -66,6 +66,7 @@ import smartin.miapi.item.modular.ModularItemPart;
 import smartin.miapi.item.modular.PropertyResolver;
 import smartin.miapi.item.modular.items.*;
 import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.abilities.*;
 import smartin.miapi.modules.abilities.toolabilities.AxeAbility;
 import smartin.miapi.modules.abilities.toolabilities.HoeAbility;
@@ -101,7 +102,6 @@ import java.util.function.Supplier;
 import static net.minecraft.client.render.RenderPhase.*;
 import static smartin.miapi.Miapi.MOD_ID;
 import static smartin.miapi.attributes.AttributeRegistry.*;
-import static smartin.miapi.modules.ItemModule.componentType;
 import static smartin.miapi.modules.abilities.util.ItemAbilityManager.useAbilityRegistry;
 import static smartin.miapi.modules.conditions.ConditionManager.moduleConditionRegistry;
 
@@ -221,7 +221,7 @@ public class RegistryInventory {
                 });
 
         RegistryInventory.components.register(
-                Miapi.MiapiIdentifier("item_module"),() -> componentType);
+                Miapi.MiapiIdentifier("item_module"),() -> ModuleInstance.componentType);
 
         //ENTITY
         // commented out because RegistrySupplier is needed... see itemProjectileType field definition above

@@ -33,29 +33,6 @@ import static smartin.miapi.Miapi.gson;
  * @param properties The map of properties for the module.
  */
 public record ItemModule(String name, Map<String, JsonElement> properties) {
-    public static Codec<ModuleInstance> CODEC;
-    public static ComponentType<ModuleInstance> componentType;
-
-
-    static {
-        Codec<Map<Integer, ModuleInstance>> mapCodec =
-                Codec.unboundedMap(Codec.INT, CODEC).xmap((i) -> i, Function.identity());
-        Codec<Map<String, String>> dataCodec = Codec.unboundedMap(Codec.STRING, Codec.STRING).xmap((i) -> i, Function.identity());
-
-        CODEC = RecordCodecBuilder.create((instance) ->
-                instance.group(
-                        Codec.STRING.fieldOf("key").forGetter((moduleInstance) -> moduleInstance.module.name()),
-                        mapCodec.fieldOf("child").forGetter((moduleInstance) -> moduleInstance.subModules),
-                        dataCodec.fieldOf("data").forGetter((moduleInstance) -> moduleInstance.moduleData)
-                ).apply(instance, (module, children, data) -> {
-                    ModuleInstance moduleInstance = new ModuleInstance(RegistryInventory.modules.get(module));
-                    moduleInstance.moduleData = data;
-                    moduleInstance.subModules = children;
-                    moduleInstance.subModules.values().forEach(childInstance -> childInstance.parent = moduleInstance);
-                    return moduleInstance;
-                }));
-        componentType = ComponentType.<ModuleInstance>builder().codec(CODEC).build();
-    }
 
     /**
      * The key for the properties in the Cache.
@@ -263,7 +240,7 @@ public record ItemModule(String name, Map<String, JsonElement> properties) {
             return new ModuleInstance(ItemModule.empty);
         }
         if (stack.getItem() instanceof VisualModularItem && !ReloadEvents.isInReload()) {
-            return stack.getComponents().get(componentType);
+            return stack.getComponents().get(ModuleInstance.componentType);
         }
         return new ModuleInstance(ItemModule.empty);
     }

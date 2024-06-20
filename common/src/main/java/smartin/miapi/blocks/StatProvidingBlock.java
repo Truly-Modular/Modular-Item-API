@@ -3,6 +3,7 @@ package smartin.miapi.blocks;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.piston.PistonBehavior;
+import net.minecraft.registry.Registries;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -23,12 +24,18 @@ public class StatProvidingBlock extends Block implements IStatProvidingBlock {
 
     @Override
     public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
-        world.emitGameEvent(RegistryInventory.statProviderCreatedEvent, pos, new GameEvent.Emitter(null, state));
+        world.emitGameEvent(
+                Registries.GAME_EVENT.getEntry(RegistryInventory.statProviderCreatedEvent),
+                pos,
+                new GameEvent.Emitter(null, state));
     }
 
     @Override
     public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
-        if (!state.isOf(newState.getBlock())) world.emitGameEvent(RegistryInventory.statProviderRemovedEvent, pos, new GameEvent.Emitter(null, state));
+        if (!state.isOf(newState.getBlock())) world.emitGameEvent(
+                Registries.GAME_EVENT.getEntry(RegistryInventory.statProviderCreatedEvent),
+                pos,
+                new GameEvent.Emitter(null, state));
     }
 
     /*@Override

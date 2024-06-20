@@ -3,6 +3,9 @@ package smartin.miapi.modules;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.annotations.JsonAdapter;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.component.ComponentType;
 import net.minecraft.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.item.modular.PropertyResolver;
@@ -13,6 +16,7 @@ import smartin.miapi.registries.RegistryInventory;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 
 import static smartin.miapi.Miapi.LOGGER;
 
@@ -21,6 +25,29 @@ import static smartin.miapi.Miapi.LOGGER;
  */
 @JsonAdapter(ModuleInstanceJsonAdapter.class)
 public class ModuleInstance {
+    public static Codec<ModuleInstance> CODEC;
+    public static ComponentType<ModuleInstance> componentType;
+
+
+    static {
+        Codec<Map<Integer, ModuleInstance>> mapCodec =
+                Codec.unboundedMap(Codec.INT, CODEC).xmap((i) -> i, Function.identity());
+        Codec<Map<String, String>> dataCodec = Codec.unboundedMap(Codec.STRING, Codec.STRING).xmap((i) -> i, Function.identity());
+
+        CODEC = RecordCodecBuilder.create((instance) ->
+                instance.group(
+                        Codec.STRING.fieldOf("key").forGetter((moduleInstance) -> moduleInstance.module.name()),
+                        mapCodec.fieldOf("child").forGetter((moduleInstance) -> moduleInstance.subModules),
+                        dataCodec.fieldOf("data").forGetter((moduleInstance) -> moduleInstance.moduleData)
+                ).apply(instance, (module, children, data) -> {
+                    ModuleInstance moduleInstance = new ModuleInstance(RegistryInventory.modules.get(module));
+                    moduleInstance.moduleData = data;
+                    moduleInstance.subModules = children;
+                    moduleInstance.subModules.values().forEach(childInstance -> childInstance.parent = moduleInstance);
+                    return moduleInstance;
+                }));
+        componentType = ComponentType.<ModuleInstance>builder().codec(CODEC).build();
+    }
     /**
      * The item module represented by this module instance.
      */
@@ -40,7 +67,9 @@ public class ModuleInstance {
     public Map<String, String> moduleData = new HashMap<>();
 
     /**
-     * A map of the raw properties. Only access this when you know what you are doing.
+     * A map of the raw properties.
+     * Only access this when you know what you are doing.
+     * Use {@link ModuleInstance#getProperties()} instead to trigger the Property resolver
      */
     @Nullable
     public Map<ModuleProperty, JsonElement> rawProperties;
@@ -222,7 +251,7 @@ public class ModuleInstance {
         if (clearCache) {
             ModularItemCache.clearUUIDFor(stack);
         }
-        stack.apply(ItemModule.componentType, this, (component) -> component);
+        stack.apply(ModuleInstance.componentType, this, (component) -> component);
     }
 
     /**

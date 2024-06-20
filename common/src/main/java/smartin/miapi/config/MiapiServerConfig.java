@@ -77,7 +77,7 @@ public class MiapiServerConfig {
     public static class StunEffectCategory {
         @Comment("List of StatusEffects the player will get when stunned")
         @AutoCodec.Name("player_effects")
-        public List<Identifier> playerEffects = List.of(Registries.STATUS_EFFECT.getId(StatusEffects.BLINDNESS), Registries.STATUS_EFFECT.getId(StatusEffects.SLOWNESS));
+        public List<Identifier> playerEffects = List.of(Registries.STATUS_EFFECT.getId(StatusEffects.BLINDNESS.comp_349()), Registries.STATUS_EFFECT.getId(StatusEffects.SLOWNESS.comp_349()));
 
         @Comment("""
                 The Stunhealth of a default entity, the StunHealth determins how much stun damage is needed to stun.

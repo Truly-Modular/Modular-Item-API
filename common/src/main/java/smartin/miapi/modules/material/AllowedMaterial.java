@@ -43,7 +43,7 @@ public class AllowedMaterial implements CraftingProperty, ModuleProperty {
     }
 
     public List<String> getAllowedKeys(ItemModule module) {
-        JsonElement element = module.getProperties().get(KEY);
+        JsonElement element = module.properties().get(KEY);
         if (element != null) {
             AllowedMaterialJson json = Miapi.gson.fromJson(element, AllowedMaterialJson.class);
             return json.allowedMaterials;
@@ -138,7 +138,7 @@ public class AllowedMaterial implements CraftingProperty, ModuleProperty {
         if (crafting.isDamageable() && crafting.getDamage() > 0) {
             //Miapi.LOGGER.info("dmg " + crafting.getDamage());
             ModularItemCache.clearUUIDFor(crafting);
-            ItemModule.ModuleInstance moduleInstance = craftAction.getModifyingModuleInstance(crafting);
+            ModuleInstance moduleInstance = craftAction.getModifyingModuleInstance(crafting);
             Double scannedDurability = DurabilityProperty.property.getValueForModule(moduleInstance, 0.0);
             int durability = (int) (scannedDurability.intValue() * MiapiConfig.INSTANCE.server.other.repairRatio);
             //Miapi.LOGGER.info("set dmg to " + (crafting.getDamage() - durability));
