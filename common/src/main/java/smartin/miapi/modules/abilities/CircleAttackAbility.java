@@ -12,17 +12,15 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
 import net.minecraft.world.World;
-import smartin.miapi.modules.abilities.util.AttackUtil;
-import smartin.miapi.modules.abilities.util.ItemAbilityManager;
-import smartin.miapi.modules.abilities.util.ItemUseAbility;
+import smartin.miapi.modules.abilities.util.*;
 import smartin.miapi.modules.properties.CircleAttackProperty;
 
 /**
  * An ability that attacks everything in a designated radius arround the Caster
  */
-public class CircleAttackAbility implements ItemUseAbility {
+public class CircleAttackAbility implements ItemUseDefaultCooldownAbility, ItemUseMinHoldAbility {
     @Override
-    public boolean allowedOnItem(ItemStack itemStack, World world, PlayerEntity player, Hand hand, ItemAbilityManager.AbilityContext abilityContext) {
+    public boolean allowedOnItem(ItemStack itemStack, World world, PlayerEntity player, Hand hand, ItemAbilityManager.AbilityHitContext abilityHitContext) {
         return CircleAttackProperty.property.hasCircleAttack(itemStack);
     }
 
@@ -47,7 +45,7 @@ public class CircleAttackAbility implements ItemUseAbility {
 
 
     @Override
-    public void onStoppedUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
+    public void onStoppedUsingAfter(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
         CircleAttackProperty.CircleAttackJson json = CircleAttackProperty.property.get(stack);
         double damage = json.damage;
         double range = json.range;

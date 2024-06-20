@@ -21,7 +21,7 @@ import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
 /**
- * This property gives a projectile ender pearl behaviour
+ * replaces the projectile with another projectile on impact
  */
 public class ProjectileTriggerProperty implements ModuleProperty {
     public static final String KEY = "replace_projectile";
@@ -46,7 +46,7 @@ public class ProjectileTriggerProperty implements ModuleProperty {
     public static boolean isTriggered(ItemProjectileEntity projectile, HitResult hitResult) {
         ItemStack itemStack = projectile.asItemStack();
         JsonElement element = ItemModule.getMergedProperty(itemStack, property);
-        if (element != null) {
+        if (element != null && itemStack.hasNbt()) {
             NbtCompound itemCompound = itemStack.getOrCreateNbt().getCompound(element.getAsString());
             if (!itemCompound.isEmpty()) {
                 ItemStack storedStack = ItemStack.fromNbt(itemCompound);

@@ -1,20 +1,12 @@
 package smartin.miapi.modules.material;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.mojang.blaze3d.systems.RenderSystem;
+import dev.architectury.event.events.common.LifecycleEvent;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.ToolItem;
-import net.minecraft.item.ToolMaterials;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.tag.ItemTags;
-import net.minecraft.registry.tag.TagKey;
-import net.minecraft.resource.ResourceReloader;
-import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.MiapiClient;
@@ -25,9 +17,8 @@ import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
-import java.util.stream.Collectors;
 
 /**
  * This is the Property relating to materials of a Module
@@ -35,46 +26,34 @@ import java.util.stream.Collectors;
 public class MaterialProperty implements ModuleProperty {
     public static final String KEY = "material";
     public static ModuleProperty property;
-    public static Map<String, Material> materials = new HashMap<>();
+    public static Map<String, Material> materials = new ConcurrentHashMap<>() {
+    };
 
     public MaterialProperty() {
         property = this;
         StatResolver.registerResolver(KEY, new StatResolver.Resolver() {
             @Override
             public double resolveDouble(String data, ItemModule.ModuleInstance instance) {
-                JsonElement jsonData = instance.getKeyedProperties().get(KEY);
                 try {
-                    if (jsonData != null) {
-                        String materialKey = jsonData.getAsString();
-                        Material material = materials.get(materialKey);
-                        if (material != null) {
-                            return material.getDouble(data);
-                        }
+                    Material material = getMaterial(instance);
+                    if (material != null) {
+                        return material.getDouble(data);
                     }
                 } catch (Exception exception) {
-                    Miapi.LOGGER.warn("Error during Material Resolve");
-                    Miapi.LOGGER.error(exception.getMessage());
-                    exception.printStackTrace();
+                    Miapi.LOGGER.warn("Error during Material Resolve", exception);
                 }
                 return 0;
             }
 
             @Override
             public String resolveString(String data, ItemModule.ModuleInstance instance) {
-                JsonElement jsonData = instance.getProperties().get(property);
                 try {
-                    if (jsonData != null) {
-                        String materialKey = jsonData.getAsString();
-                        Material material = materials.get(materialKey);
-                        if (material != null) {
-                            return material.getData(data);
-                        } else {
-                            Miapi.LOGGER.warn("Material " + materialKey + " not found");
-                        }
+                    Material material = getMaterial(instance);
+                    if (material != null) {
+                        return material.getData(data);
                     }
                 } catch (Exception exception) {
-                    Miapi.LOGGER.warn("Error during Material Resolve");
-                    exception.printStackTrace();
+                    Miapi.LOGGER.warn("Error during Material Resolve", exception);
                 }
                 return "";
             }
@@ -82,61 +61,41 @@ public class MaterialProperty implements ModuleProperty {
         Miapi.registerReloadHandler(ReloadEvents.MAIN, "materials", materials, (isClient, path, data) -> {
             JsonParser parser = new JsonParser();
             JsonObject obj = parser.parse(data).getAsJsonObject();
-            JsonMaterial material = new JsonMaterial(obj);
+            JsonMaterial material = new JsonMaterial(obj, isClient);
             if (materials.containsKey(material.getKey())) {
-                Miapi.LOGGER.warn("Overwriting Materials isnt supported yet and may cause issues. Material from  " + path + " is overwriting " + material.getKey());
+                Miapi.LOGGER.warn("Overwriting Materials isnt 100% safe. The ordering might be wrong, please set the overwrite material in the same path as the origin Material" + path + " is overwriting " + material.getKey());
             }
             materials.put(material.getKey(), material);
         }, -2f);
-        ReloadEvents.MAIN.subscribe((isClient) -> {
-            List<ToolItem> toolItems = Registries.ITEM.stream()
-                    .filter(ToolItem.class::isInstance)
-                    .map(ToolItem.class::cast)
-                    .toList();
-            toolItems.stream()
-                    .map(toolItem -> toolItem.getMaterial())
-                    .collect(Collectors.toSet())
-                    .stream()
-                    .filter(toolMaterial -> toolMaterial.getRepairIngredient().getMatchingStacks().length > 0)
-                    .filter(toolMaterial -> Arrays.stream(toolMaterial.getRepairIngredient().getMatchingStacks()).allMatch(itemStack -> getMaterial(itemStack) == null))
-                    .collect(Collectors.toSet()).forEach(toolMaterial -> {
-                        GeneratedMaterial generatedMaterial = new GeneratedMaterial(toolMaterial);
-                        if (generatedMaterial.assignStats(toolItems)) {
-                            materials.put(generatedMaterial.getKey(), generatedMaterial);
-                        } else {
-                            Miapi.LOGGER.warn("Couldn't correctly onReload material for " + generatedMaterial.mainIngredient.getItem());
-                        }
-                    });
-            Registries.ITEM.stream().filter(item -> item.getDefaultStack().isIn(ItemTags.PLANKS)).forEach(item -> {
-                if (getMaterial(item.getDefaultStack()) == null) {
-                    GeneratedMaterial generatedMaterial = new GeneratedMaterial(ToolMaterials.WOOD, item.getDefaultStack());
-                    materials.put(generatedMaterial.getKey(), generatedMaterial);
-                    generatedMaterial.copyStatsFrom(materials.get("wood"));
+
+
+        Miapi.registerReloadHandler(ReloadEvents.MAIN, "material_extensions", (isClient) -> {
+
+        }, (isClient, path, data) -> {
+            JsonParser parser = new JsonParser();
+            JsonObject obj = parser.parse(data).getAsJsonObject();
+            Material material = materials.get(obj.get("key").getAsString());
+            if (material != null) {
+                if (material instanceof JsonMaterial jsonMaterial) {
+                    jsonMaterial.mergeJson(obj, isClient);
                 }
-            });
-            Registries.ITEM.stream().filter(item -> item.getDefaultStack().isIn(ItemTags.STONE_TOOL_MATERIALS)).forEach(item -> {
-                if (getMaterial(item.getDefaultStack()) == null) {
-                    GeneratedMaterial generatedMaterial = new GeneratedMaterial(ToolMaterials.STONE, item.getDefaultStack());
-                    materials.put(generatedMaterial.getKey(), generatedMaterial);
-                    generatedMaterial.copyStatsFrom(materials.get("stone"));
-                }
-            });
-        }, -1f);
+            } else {
+                Miapi.LOGGER.error("Miapi could not find Material for Material extension " + path);
+            }
+        }, -1.5f);
+
+        GeneratedMaterial.setup();
+
+        LifecycleEvent.SERVER_BEFORE_START.register(server -> {
+            MaterialProperty.materials.values().stream()
+                    .filter(GeneratedMaterial.class::isInstance)
+                    .forEach(generatedMaterial -> ((GeneratedMaterial) generatedMaterial).testForSmithingMaterial(false));
+        });
         ReloadEvents.END.subscribe((isClient) -> {
             if (isClient) {
                 MinecraftClient.getInstance().execute(() -> {
-                    Executor prepare = new CurrentThreadExecutor();
-                    Executor done = new CurrentThreadExecutor();
                     RenderSystem.assertOnRenderThread();
-                    MinecraftClient.getInstance().getTextureManager();
-                    ResourceReloader.Synchronizer synchronizer = new ResourceReloader.Synchronizer() {
-                        @Override
-                        public <T> CompletableFuture<T> whenPrepared(T preparedObject) {
-                            return CompletableFuture.completedFuture(preparedObject);
-                        }
-                    };
-
-                    MiapiClient.materialAtlasManager.reload(synchronizer, MinecraftClient.getInstance().getResourceManager(), MinecraftClient.getInstance().getProfiler(), MinecraftClient.getInstance().getProfiler(), prepare, done);
+                    MiapiClient.materialAtlasManager.afterReload(null, MinecraftClient.getInstance().getProfiler());
                 });
 
             }
@@ -157,13 +116,7 @@ public class MaterialProperty implements ModuleProperty {
         textureKeys.add("base");
         for (Material material : materials.values()) {
             textureKeys.add(material.getKey());
-            JsonElement textureJson = material.getRawElement("textures");
-            if (textureJson != null && textureJson.isJsonArray()) {
-                JsonArray textures = material.getRawElement("textures").getAsJsonArray();
-                for (JsonElement texture : textures) {
-                    textureKeys.add(texture.getAsString());
-                }
-            }
+            textureKeys.addAll(material.getTextureKeys());
         }
         return new ArrayList<>(textureKeys);
     }
@@ -186,39 +139,36 @@ public class MaterialProperty implements ModuleProperty {
         return old;
     }
 
+    /**
+     * Resolves a Material form an Itemstack. if no Material is set for the Itemstack, returns null
+     *
+     * @param item
+     * @return
+     */
     @Nullable
-    public static Material getMaterial(ItemStack item) {
+    public static Material getMaterialFromIngredient(ItemStack item) {
+        double lowestPrio = Double.MAX_VALUE;
+        Material foundMaterial = null;
         for (Material material : materials.values()) {
-            if (material.getRawElement("items") != null && material.getRawElement("items").isJsonArray()) {
-                JsonArray items = material.getRawElement("items").getAsJsonArray();
-
-                for (JsonElement element : items) {
-                    JsonObject itemObj = element.getAsJsonObject();
-
-                    if (itemObj.has("item")) {
-                        String itemId = itemObj.get("item").getAsString();
-                        if (Registries.ITEM.getId(item.getItem()).toString().equals(itemId)) {
-                            return material;
-                        }
-                    }
-                }
-
-                for (JsonElement element : items) {
-                    JsonObject itemObj = element.getAsJsonObject();
-
-                    if (itemObj.has("tag")) {
-                        String tagId = itemObj.get("tag").getAsString();
-                        TagKey<Item> tag = TagKey.of(Registries.ITEM.getKey(), new Identifier(tagId));
-                        if (tag != null && item.isIn(tag)) {
-                            return material;
-                        }
-                    }
-                }
+            Double matPrio = material.getPriorityOfIngredientItem(item);
+            if (matPrio != null && matPrio < lowestPrio) {
+                lowestPrio = matPrio;
+                foundMaterial = material;
             }
         }
-        return null;
+        if (foundMaterial != null) {
+            return foundMaterial.getMaterialFromIngredient(item);
+        } else {
+            return null;
+        }
     }
 
+    /**
+     * This call should only used if no valid moduleinstance is known and only the Key of the material is important
+     *
+     * @param element
+     * @return
+     */
     @Nullable
     public static Material getMaterial(JsonElement element) {
         if (element != null) {
@@ -227,15 +177,33 @@ public class MaterialProperty implements ModuleProperty {
         return null;
     }
 
+    /**
+     * Gets the used Material of a ModuleInstance
+     *
+     * @param instance
+     * @return
+     */
     @Nullable
     public static Material getMaterial(ItemModule.ModuleInstance instance) {
         JsonElement element = instance.getProperties().get(property);
         if (element != null) {
-            return materials.get(element.getAsString());
+            Material basicMaterial = materials.get(element.getAsString());
+            if (basicMaterial != null) {
+                return basicMaterial.getMaterial(instance);
+            }
+        }
+        if (CopyParentMaterialProperty.property.isTrue(instance) && instance.parent != null) {
+            return getMaterial(instance.parent);
         }
         return null;
     }
 
+    /**
+     * Sets a material of a MOduleinstance via Stringkey
+     *
+     * @param instance
+     * @param material
+     */
     public static void setMaterial(ItemModule.ModuleInstance instance, String material) {
         String propertyString = instance.moduleData.computeIfAbsent("properties", (key) -> {
             return "{material:empty}";

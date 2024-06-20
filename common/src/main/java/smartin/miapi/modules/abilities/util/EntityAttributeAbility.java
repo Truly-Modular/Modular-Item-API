@@ -20,7 +20,7 @@ import java.util.Map;
  * It provides functionality to give the player attributes while holding right-click.
  * Extend this class and implement the getAttributes() method to define the attributes to be applied.
  */
-public abstract class EntityAttributeAbility implements ItemUseAbility {
+public abstract class EntityAttributeAbility implements ItemUseDefaultCooldownAbility, ItemUseMinHoldAbility {
     Map<LivingEntity, Multimap<EntityAttribute, EntityAttributeModifier>> playerEntityMultimapMap = new HashMap<>();
 
     /**
@@ -58,7 +58,7 @@ public abstract class EntityAttributeAbility implements ItemUseAbility {
         return stack;
     }
 
-    public void onStoppedUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
+    public void onStoppedUsingAfter(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
         remove(stack, user);
     }
 

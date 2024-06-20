@@ -1,0 +1,27 @@
+{
+    "key": "end_crystal",
+    "translation": "miapi.material.custom.end_crystal",
+    "icon": "textures/item/end_crystal.png",
+    "enchantability": 30,
+    "color_palette": {
+        "type": "grayscale_map",
+        "colors": {
+            "0": "000000",
+            "36": "181818",
+            "72": "444444",
+            "108": "6b6b6b",
+            "144": "969696",
+            "180": "c770c7",
+            "216": "cd94d3",
+            "252": "ffffff",
+            "255": "ffffff"
+        },
+        "filler": "interpolate"
+    },
+    "items": [
+        {
+            "item": "minecraft:end_crystal",
+            "value": 1.0
+        }
+    ]
+}

@@ -4,10 +4,11 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.mojang.serialization.Codec;
-import com.redpxnda.nucleus.codec.AutoCodec;
-import com.redpxnda.nucleus.codec.InterfaceDispatcher;
-import com.redpxnda.nucleus.codec.MiscCodecs;
-import com.redpxnda.nucleus.codec.PolyCodec;
+import com.redpxnda.nucleus.codec.auto.AutoCodec;
+import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
+import com.redpxnda.nucleus.util.InterfaceDispatcher;
+import com.redpxnda.nucleus.codec.misc.MiscCodecs;
+import com.redpxnda.nucleus.codec.misc.PolyCodec;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -98,16 +99,15 @@ public class MaterialIcons {
     }
 
     public static class EntityIconHolder {
-        public static final Codec<EntityType<?>> entityTypeCodec = Registries.ENTITY_TYPE.getCodec();
         public static final Codec<EntityIconHolder> codec = AutoCodec.of(EntityIconHolder.class).codec();
 
         public @AutoCodec.Ignored Entity actual = null;
-        public @AutoCodec.Override("entityTypeCodec") EntityType<?> entity;
-        public @AutoCodec.Optional int offset = 16;
-        public @AutoCodec.Optional float x = 0;
-        public @AutoCodec.Optional float y = 0;
-        public @AutoCodec.Optional float scale = 0.85f;
-        public @AutoCodec.Optional SpinSettings spin = null;
+        public EntityType<?> entity;
+        public @CodecBehavior.Optional int offset = 16;
+        public @CodecBehavior.Optional float x = 0;
+        public @CodecBehavior.Optional float y = 0;
+        public @CodecBehavior.Optional float scale = 0.85f;
+        public @CodecBehavior.Optional SpinSettings spin = null;
     }
     public record EntityMaterialIcon(EntityIconHolder holder) implements MaterialIcon {
         @Environment(EnvType.CLIENT)
@@ -137,8 +137,8 @@ public class MaterialIcons {
         }
     }
 
-    @AutoCodec.Override("codec")
-    @AutoCodec.Settings(optionalByDefault = true)
+    @CodecBehavior.Override("codec")
+    @AutoCodec.Settings(defaultOptionalBehavior = @CodecBehavior.Optional)
     public static class SpinSettings {
         public static final Codec<SpinSettings> codec = AutoCodec.of(SpinSettings.class).codec();
 

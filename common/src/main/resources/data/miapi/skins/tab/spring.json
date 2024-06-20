@@ -1,0 +1,11 @@
+{
+    "path": "spring",
+    "background": {
+        "texture": "miapi:textures/skin/season/spring.png",
+        "color": "00000000",
+        "xSize": 100,
+        "ySize": 40,
+        "borderSize": 0,
+        "keepScale": true
+    }
+}

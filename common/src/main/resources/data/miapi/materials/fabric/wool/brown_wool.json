@@ -12,6 +12,7 @@
     "density": 2,
     "flexibility": 5,
     "durability": 150,
+    "enchantability": 6,
     "color": "815331",
     "color_palette": {
         "type": "grayscale_map",
@@ -26,6 +27,11 @@
     "textures": [
         "fabric"
     ],
+    "properties": {
+        "boot": {
+            "step_noise_cancel": true
+        }
+    },
     "items": [
         {
             "item": "minecraft:brown_wool",

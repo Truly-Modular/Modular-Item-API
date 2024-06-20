@@ -4,34 +4,25 @@ import dev.architectury.event.events.common.PlayerEvent;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
 import smartin.miapi.Environment;
 import smartin.miapi.Miapi;
 import smartin.miapi.network.Networking;
+import smartin.miapi.registries.MiapiRegistry;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.*;
 
 /**
  * A utility class that handles event-based reloading of data packs and caches.
  */
 public class ReloadEvents {
     /**
-     * The size of the data pack.
+     * This is to register DataSyncer. This can be used by addons to sync their own data from the server to the client.
+     * This class will deal with all the default logic to sync the packet
      */
-    private static int dataPackSize = Integer.MAX_VALUE;
+    public static MiapiRegistry<DataSyncer> dataSyncerRegistry = MiapiRegistry.getInstance(DataSyncer.class);
 
-    /**
-     * A flag indicating whether the class is currently in the process of reloading.
-     */
-    public static boolean inReload = false;
-
-    /**
-     * A map that stores the data packs to be synced on the server.
-     */
-    private static Map<String, String> SERVER_DATA_PACKS = new HashMap<>();
+    private static List<String> receivedSyncer = new ArrayList<>();
 
     /**
      * The packet ID for triggering a server-to-client reload.
@@ -39,19 +30,9 @@ public class ReloadEvents {
     protected static final String RELOAD_PACKET_ID = Miapi.MOD_ID + ":events_reload_s2c";
 
     /**
-     * The packet ID for sending data during a server-to-client reload.
-     */
-    protected static final String RELOAD_DATA_PACKET_ID = Miapi.MOD_ID + ":events_reload_s2c_data";
-
-    /**
      * A map that stores the paths of data packs to be synced.
      */
-    public static final Map<String, String> DATA_PACKS = new ConcurrentHashMap<>();
-
-    /**
-     * Reloading Datapack.
-     */
-    public static final Map<String, String> RELOADING_DATA_PACKS = new ConcurrentHashMap<>();
+    public static final Map<String, String> DATA_PACKS = Collections.synchronizedMap(new LinkedHashMap<>());
 
     /**
      * A map that stores the paths of data packs that have been synced.
@@ -90,9 +71,7 @@ public class ReloadEvents {
     /**
      * This int counts the reloads, on reload start it gets increased, on reload end it decreases. if its 0 no reload is happening
      */
-    private static int reloadCounter = 0;
-
-    private static long clientReloadTimeStart = 0;
+    public static int reloadCounter = 0;
 
     public static void setup() {
         if (Environment.isClient()) {
@@ -102,22 +81,48 @@ public class ReloadEvents {
         Networking.registerC2SPacket(RELOAD_PACKET_ID, ((buf, serverPlayerEntity) -> {
             boolean allowHandshake = buf.readBoolean();
             if (!allowHandshake) {
-                Miapi.LOGGER.warn("Client " + serverPlayerEntity.getUuid() + " rejected reload? this should never happen");
-                return;
+                Miapi.LOGGER.warn("Client " + serverPlayerEntity.getUuid() + " rejected reload? this should never happen!");
+                Miapi.server.sendMessage(Text.literal("Client " + serverPlayerEntity.getDisplayName() + " failed to reload."));
+            } else {
+                triggerReloadOnClient(serverPlayerEntity);
             }
-            HashMap<String, String> staticData = new HashMap<>(SERVER_DATA_PACKS);
-            Thread workerThread = new Thread(() -> staticData.forEach((key, data) -> {
-                PacketByteBuf buffer = Networking.createBuffer();
-                buffer.writeString(key);
-                buffer.writeString(data);
-                Networking.sendS2C(RELOAD_DATA_PACKET_ID, serverPlayerEntity, buffer);
-            }));
-            workerThread.setName("miapi-handshake-thread");
-            workerThread.start();
         }));
+
+        dataSyncerRegistry.register("data_packs", new DataSyncer() {
+            @Override
+            public PacketByteBuf createDataServer() {
+                PacketByteBuf buf = Networking.createBuffer();
+                buf.writeInt(DATA_PACKS.size());
+                for (String key : DATA_PACKS.keySet()) {
+                    buf.writeString(key);
+                    buf.writeString(DATA_PACKS.get(key));
+                }
+                return buf;
+            }
+
+            @Override
+            public void interpretDataClient(PacketByteBuf buffer) {
+                int dataPackSize = buffer.readInt();
+                Map<String, String> tempDataPack = new HashMap<>(dataPackSize);
+                for (int i = 0; i < dataPackSize; i++) {
+                    String key = buffer.readString();
+                    String value = buffer.readString();
+                    tempDataPack.put(key, value);
+                }
+                MinecraftClient.getInstance().execute(() -> {
+                    synchronized (DATA_PACKS) {
+                        DATA_PACKS.clear();
+                        DATA_PACKS.putAll(tempDataPack);
+                    }
+                    DataPackLoader.trigger(tempDataPack);
+                    tempDataPack.clear();
+                });
+            }
+        });
 
         //scedule join?
         PlayerEvent.PLAYER_JOIN.register((ReloadEvents::triggerReloadOnClient));
+
 
         START.subscribe(isClient -> {
             reloadCounter++;
@@ -141,10 +146,12 @@ public class ReloadEvents {
      * @param entity The player entity to send the packet to.
      */
     public static void triggerReloadOnClient(ServerPlayerEntity entity) {
-        SERVER_DATA_PACKS = new HashMap<>(DATA_PACKS);
-        PacketByteBuf buf = Networking.createBuffer();
-        buf.writeInt(DATA_PACKS.size());
-        Networking.sendS2C(RELOAD_PACKET_ID, entity, buf);
+        dataSyncerRegistry.getFlatMap().forEach((id, syncer) -> {
+            PacketByteBuf buf = Networking.createBuffer();
+            buf.writeString(id);
+            buf.writeBytes(syncer.createDataServer().copy());
+            Networking.sendS2C(RELOAD_PACKET_ID, entity, buf);
+        });
     }
 
     /**
@@ -154,55 +161,27 @@ public class ReloadEvents {
         return reloadCounter != 0;
     }
 
+    private static long clientReloadTimeStart = System.nanoTime();
+
     private static void clientSetup() {
-        Map<String, String> dataTemp = new HashMap<>();
-        Networking.registerS2CPacket(RELOAD_DATA_PACKET_ID, (buffer) -> {
-            //make this previewStack on main thread maybe
-            String key = buffer.readString();
-            String data = buffer.readString();
-            dataTemp.put(key, data);
-            if (dataTemp.size() == dataPackSize) {
-                Miapi.DEBUG_LOGGER.warn("load complete?"+dataTemp.size());
-                dataPackSize = Integer.MAX_VALUE;
-                synchronized (DATA_PACKS) {
-                    DATA_PACKS.clear();
-                    DATA_PACKS.putAll(dataTemp);
-                    dataTemp.clear();
-                }
+        Networking.registerS2CPacket(RELOAD_PACKET_ID, (buffer) -> {
+            if (receivedSyncer.isEmpty()) {
+                clientReloadTimeStart = System.nanoTime();
+            }
+            String receivedID = buffer.readString();
+            receivedSyncer.add(receivedID);
+            dataSyncerRegistry.get(receivedID).interpretDataClient(buffer);
+            if (receivedSyncer.size() == dataSyncerRegistry.getFlatMap().keySet().size()) {
+                receivedSyncer.clear();
                 MinecraftClient.getInstance().execute(() -> {
-                    DataPackLoader.trigger(new ConcurrentHashMap<>(DATA_PACKS));
+                    reloadCounter++;
+                    ReloadEvents.START.fireEvent(true);
                     ReloadEvents.MAIN.fireEvent(true);
                     ReloadEvents.END.fireEvent(true);
+                    reloadCounter--;
                     Miapi.LOGGER.info("Client load took " + (double) (System.nanoTime() - clientReloadTimeStart) / 1000 / 1000 + " ms");
-                    inReload = false;
                 });
             }
-        });
-        Networking.registerS2CPacket(RELOAD_PACKET_ID, (buffer) -> {
-            if (inReload) {
-                Miapi.LOGGER.error("Cannot trigger a Reload during another reload");
-                return;
-            }
-            int counterinit = 0;
-            while (MinecraftClient.getInstance().getNetworkHandler() == null) {
-                counterinit++;
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException e) {
-                }
-                if (counterinit > 200) {
-                    throw new RuntimeException("Miapi waited 2 Minutes and still could not establish a Connection with the server and is unable to force disconnect");
-                }
-            }
-            inReload = true;
-            dataPackSize = buffer.readInt();
-            clientReloadTimeStart = System.nanoTime();
-            PacketByteBuf buf = Networking.createBuffer();
-            buf.writeBoolean(true);
-            DATA_PACKS.clear();
-            dataTemp.clear();
-            ReloadEvents.START.fireEvent(true);
-            Networking.sendC2S(RELOAD_PACKET_ID, buf);
         });
     }
 
@@ -335,5 +314,29 @@ public class ReloadEvents {
              */
             void onEvent(Map<String, String> dataPack);
         }
+    }
+
+    /**
+     * This interface can be used to sync custom data from server to client within Truly Modulars reload logic to ensure the sync happens at a predictable time
+     */
+    public interface DataSyncer {
+        /**
+         * This will be called when truly modular syncs its data to the client
+         *
+         * @return the PacketBuffer to be synced
+         */
+        PacketByteBuf createDataServer();
+
+        /**
+         * Be aware that this will trigger between the
+         * {@link ReloadEvents#START} and {@link ReloadEvents#MAIN}
+         * This should be used to setup data and not process the data.
+         * For processing the data {@link ReloadEvents#MAIN} should be used
+         * <p>
+         * !Be aware this is executed on the Networking thread!
+         *
+         * @param buf the buffer recieved from the server
+         */
+        void interpretDataClient(PacketByteBuf buf);
     }
 }

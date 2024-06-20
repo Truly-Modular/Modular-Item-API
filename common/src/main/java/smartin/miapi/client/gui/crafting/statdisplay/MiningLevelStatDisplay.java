@@ -17,7 +17,7 @@ import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.client.gui.*;
 import smartin.miapi.client.gui.crafting.CraftingScreen;
 import smartin.miapi.config.MiapiConfig;
-import smartin.miapi.modules.properties.MiningLevelProperty;
+import smartin.miapi.modules.properties.mining.MiningLevelProperty;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -48,8 +48,6 @@ public class MiningLevelStatDisplay extends InteractAbleWidget implements Single
     EntityAttribute attribute;
     double defaultValue;
     EquipmentSlot slot;
-    int red = MiapiConfig.ColorGroup.red.getValue().intValue();
-    int green = MiapiConfig.ColorGroup.green.getValue().intValue();
 
     public MiningLevelStatDisplay(String type, StatListWidget.TextGetter title, StatListWidget.TextGetter hover) {
         super(0, 0, 76, 19, Text.empty());
@@ -110,6 +108,14 @@ public class MiningLevelStatDisplay extends InteractAbleWidget implements Single
         return 76 * size;
     }
 
+    public int getRed(){
+        return MiapiConfig.INSTANCE.client.guiColors.red.argb();
+    }
+
+    public int getGreen(){
+        return MiapiConfig.INSTANCE.client.guiColors.green.argb();
+    }
+
     @Override
     public InteractAbleWidget getHoverWidget() {
         return null ;
@@ -143,19 +149,19 @@ public class MiningLevelStatDisplay extends InteractAbleWidget implements Single
         integerStatBar.setHeight(1);
         if (oldMining < compareMining) {
             integerStatBar.setPrimary(oldMining, ColorHelper.Argb.getArgb(255, 255, 255, 255));
-            integerStatBar.setSecondary(compareMining, green);
+            integerStatBar.setSecondary(compareMining, getGreen());
         } else {
             integerStatBar.setPrimary(compareMining, ColorHelper.Argb.getArgb(255, 255, 255, 255));
-            integerStatBar.setSecondary(oldMining, red);
+            integerStatBar.setSecondary(oldMining,getRed());
         }
         if (oldValue < compareToValue) {
             statBar.setPrimary((oldValue - min) / (max - min), ColorHelper.Argb.getArgb(255, 255, 255, 255));
-            statBar.setSecondary((compareToValue - min) / (max - min), green);
-            compareValue.textColor = ColorHelper.Argb.getArgb(255, 0, 255, 0);
+            statBar.setSecondary((compareToValue - min) / (max - min), getGreen());
+            compareValue.textColor = getGreen();
         } else {
             statBar.setPrimary((compareToValue - min) / (max - min), ColorHelper.Argb.getArgb(255, 255, 255, 255));
-            statBar.setSecondary((oldValue - min) / (max - min), red);
-            compareValue.textColor = green;
+            statBar.setSecondary((oldValue - min) / (max - min), getRed());
+            compareValue.textColor = getRed();
         }
         if (oldValue == compareToValue) {
             currentValue.setX(this.getX() - 3);
@@ -163,7 +169,7 @@ public class MiningLevelStatDisplay extends InteractAbleWidget implements Single
             currentValue.setWidth(this.getWidth());
             currentValue.setText(Text.literal(modifierFormat.format(oldValue)));
             currentValue.setOrientation(ScrollingTextWidget.Orientation.RIGHT);
-            compareValue.textColor = red;
+            compareValue.textColor = getRed();
             currentValue.render(drawContext, mouseX, mouseY, delta);
         } else {
             compareValue.setX(this.getX() - 3);

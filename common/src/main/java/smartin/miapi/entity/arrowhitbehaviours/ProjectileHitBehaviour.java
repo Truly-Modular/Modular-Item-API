@@ -1,6 +1,7 @@
 package smartin.miapi.entity.arrowhitbehaviours;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import smartin.miapi.entity.ItemProjectileEntity;
 
@@ -10,4 +11,8 @@ import smartin.miapi.entity.ItemProjectileEntity;
  */
 public interface ProjectileHitBehaviour {
     void onHit(ItemProjectileEntity projectile, Entity hit, EntityHitResult hitResult);
+
+    default void onBlockHit(ItemProjectileEntity projectile, BlockHitResult hitResult){
+
+    }
 }

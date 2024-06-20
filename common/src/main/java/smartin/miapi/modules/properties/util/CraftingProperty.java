@@ -2,7 +2,6 @@ package smartin.miapi.modules.properties.util;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.Vec2f;
 import org.jetbrains.annotations.Nullable;
@@ -10,9 +9,11 @@ import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.craft.CraftAction;
 import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.edit_options.EditOption;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * This is an abstract Class for Crafting properties.
@@ -54,10 +55,10 @@ public interface CraftingProperty {
     /**
      * Write a buffer from gui to be sent to server
      *
-     * @param buf        the buffer to write to
+     * @param data       A dataMap to write additional data to, its recommended to use the Properties key to avoid collisions
      * @param createdGui the gui created on the client, return value of {@link #createGui}
      */
-    default void writeCraftingBuffer(PacketByteBuf buf, InteractAbleWidget createdGui) {
+    default void writeData(Map<String, String> data, @Nullable InteractAbleWidget createdGui, EditOption.EditContext editContext) {
 
     }
 
@@ -77,13 +78,13 @@ public interface CraftingProperty {
      * @param crafting  the newly Crafted Itemstack
      * @param player    the player crafting
      * @param bench     the workbench block entity (null on client)
-     * @param newModule the new ModuleInstance
+     * @param craftAction CraftAction in question. can be used to access other stuff
      * @param module    the new Module
      * @param inventory Linked Inventory, length of {@link #getSlotPositions()}
-     * @param buf       the writen buffer from {@link #writeCraftingBuffer(PacketByteBuf, InteractAbleWidget)}
+     * @param data      a map including Data send from the Client for additional Craftinginfo
      * @return if the crafting can happen
      */
-    default boolean canPerform(ItemStack old, ItemStack crafting, @Nullable ModularWorkBenchEntity bench, PlayerEntity player, @Nullable ItemModule.ModuleInstance newModule, ItemModule module, List<ItemStack> inventory, PacketByteBuf buf) {
+    default boolean canPerform(ItemStack old, ItemStack crafting, @Nullable ModularWorkBenchEntity bench, PlayerEntity player, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<String, String> data) {
         return true;
     }
 
@@ -98,13 +99,13 @@ public interface CraftingProperty {
      * @param crafting  the newly Crafted Itemstack
      * @param player    the player crafting
      * @param bench     the modular workbench block entity (null on client)
-     * @param newModule the new ModuleInstance
+     * @param craftAction CraftAction in question. can be used to access other stuff
      * @param module    the new Module
      * @param inventory Linked Inventory, length of {@link #getSlotPositions()}
-     * @param buf       the writen buffer from {@link #writeCraftingBuffer(PacketByteBuf, InteractAbleWidget)}
+     * @param data      a map including Data send from the Client for additional Craftinginfo
      * @return the previewStack Itemstack
      */
-    ItemStack preview(ItemStack old, ItemStack crafting, PlayerEntity player, ModularWorkBenchEntity bench, @Nullable ItemModule.ModuleInstance newModule, ItemModule module, List<ItemStack> inventory, PacketByteBuf buf);
+    ItemStack preview(ItemStack old, ItemStack crafting, PlayerEntity player, ModularWorkBenchEntity bench, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<String, String> data);
 
     /**
      * the actual CraftAction
@@ -113,15 +114,15 @@ public interface CraftingProperty {
      * @param crafting  the newly Crafted Itemstack
      * @param player    the player crafting
      * @param bench     the modular workbench block entity (null on client)
-     * @param newModule the new ModuleInstance
+     * @param craftAction CraftAction in question. can be used to access other stuff
      * @param module    the new Module
      * @param inventory Linked Inventory, length of {@link #getSlotPositions()}
-     * @param buf       the writen buffer from {@link #writeCraftingBuffer(PacketByteBuf, InteractAbleWidget)}
+     * @param data      a map including Data send from the Client for additional Craftinginfo
      * @return a List of Itemstacks, first is the CraftedItem, followed by a List of Itemstacks to replace Inventory slots registered by {@link #getSlotPositions()}
      */
-    default List<ItemStack> performCraftAction(ItemStack old, ItemStack crafting, PlayerEntity player, @Nullable ModularWorkBenchEntity bench, @Nullable ItemModule.ModuleInstance newModule, ItemModule module, List<ItemStack> inventory, PacketByteBuf buf) {
+    default List<ItemStack> performCraftAction(ItemStack old, ItemStack crafting, PlayerEntity player, @Nullable ModularWorkBenchEntity bench, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<String, String> data) {
         List<ItemStack> stacks = new ArrayList<>();
-        stacks.add(this.preview(old, crafting, player, bench, newModule, module, inventory, buf));
+        stacks.add(this.preview(old, crafting, player, bench, craftAction, module, inventory, data));
         stacks.addAll(inventory);
         return stacks;
     }

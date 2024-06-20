@@ -3,11 +3,14 @@
     "translation": "miapi.material.metal.netherite",
     "icon": "textures/item/netherite_ingot.png",
     "groups": [
+        "smithing"
     ],
     "hardness": 7,
     "density": 2.8,
     "flexibility": 3,
+    "enchantability": 15,
     "durability": 2031,
+    "armor_durability_offset": -1439,
     "color": "695e5f",
     "color_palette": {
         "type": "grayscale_map",
@@ -28,7 +31,7 @@
     },
     "textures": [
         "netherite",
-        "metalic"
+        "metallic"
     ],
     "mining_speed": 9,
     "mining_level": 4,

@@ -1,0 +1,1 @@
+smartin.miapi.compat.kubejs.KubeJSMiapiPlugin

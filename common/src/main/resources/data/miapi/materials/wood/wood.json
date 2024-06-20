@@ -9,6 +9,7 @@
   "hardness": 3,
   "density": 1.7,
   "flexibility": 3,
+  "enchantability": 15,
   "durability": 59,
   "color": "8B6B45",
   "color_palette": {
@@ -34,7 +35,7 @@
       "item": "minecraft:stick",
       "value": 0.5
     },{
-      "tag": "minecraft:planks2",
+      "tag": "minecraft:planks",
       "value": 1.0
     }
   ]

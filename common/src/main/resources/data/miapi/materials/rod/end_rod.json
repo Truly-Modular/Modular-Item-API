@@ -10,6 +10,7 @@
   "density": 1.5,
   "flexibility": 0.5,
   "durability": 587,
+  "enchantability": 21,
   "color": "A39983",
   "mining_speed": 5,
   "mining_level": 1,

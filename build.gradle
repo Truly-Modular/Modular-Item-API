@@ -1,23 +1,13 @@
 plugins {
     id "architectury-plugin" version "3.4-SNAPSHOT"
-    id "dev.architectury.loom" version "1.3-SNAPSHOT" apply false
-    //id "com.github.johnrengelman.shadow" version '7.1.2' apply true
-
-    // Plugin to create merged jars
-    id "io.github.pacifistmc.forgix" version "1.2.6"
-
+    id "dev.architectury.loom" version "1.6.397" apply false
 }
 architectury {
     minecraft = rootProject.minecraft_version
 }
 
-forgix {
-    group = "smartin.miapi"
-    mergedJarName = "Truly-Modular-miapi-${rootProject.mod_version}-${rootProject.minecraft_version}.jar"
-}
-
 tasks.register('clean-builds') {
-    dependsOn(':forge:clean',':fabric:clean')
+    dependsOn(':forge:clean', ':fabric:clean')
     doLast {
         println "Cleaned previous build"
     }
@@ -25,6 +15,7 @@ tasks.register('clean-builds') {
 
 tasks.register('buildBoth') {
     dependsOn('clean-builds', ':fabric:build', ':forge:build')
+    group = '_tm_tasks'
     doLast {
         def modVersion = rootProject.mod_version
         def minecraftVersion = rootProject.minecraft_version
@@ -38,7 +29,7 @@ tasks.register('buildBoth') {
                 from fabricJar
                 into project.file('Merged')
                 rename { fileName ->
-                    "Truly-Modular-miapi-${modVersion}-${minecraftVersion}-fabric.jar"
+                    "Truly-Modular-miapi-${modVersion}-${minecraftVersion}-snapshot-fabric.jar"
                 }
             }
         }
@@ -48,31 +39,176 @@ tasks.register('buildBoth') {
                 from forgeJar
                 into project.file('Merged')
                 rename { fileName ->
-                    "Truly-Modular-miapi-${modVersion}-${minecraftVersion}-forge.jar"
+                    "Truly-Modular-miapi-${modVersion}-${minecraftVersion}-snapshot-forge.jar"
                 }
             }
         }
 
+        /*
+        def cacheDir = file("${gradle.gradleUserHomeDir}/caches/modules-2/files-2.1/${group}/${artifact}/${version}")
+        def jarFile = cacheDir.listFiles().find { it.name == jarName }
+        if (jarFile) {
+            jarFile.delete()
+            println "Deleted ${jarName} from the Gradle cache."
+        } else {
+            println "${jarName} not found in the Gradle cache."
+        }
+         */
+
         println "Builds completed"
     }
 }
 
-tasks.register('buildMerged') {
-    dependsOn('clean-builds',':fabric:build', ':forge:build')
+tasks.register('rebuildArsenal') {
+    ext.projectName = "arsenal"
+    def project = gradle.includedBuild("arsenal")
+    dependsOn project.task(":buildBoth")
+    group = '_tm_tasks'
     doLast {
-        println "Builds completed"
+        def mergedBuildDir = rootProject.file(ext.projectName + '/Merged')
+        println mergedBuildDir
+        def fabricJars = mergedBuildDir.listFiles().findAll { it.name.endsWith("fabric.jar") }
+        def forgeJars = mergedBuildDir.listFiles().findAll { it.name.endsWith("forge.jar") }
+
+        def fabricJar = fabricJars.max { it.lastModified() }
+        def forgeJar = forgeJars.max { it.lastModified() }
+
+        if (forgeJar) {
+            copy {
+                from forgeJar
+                into rootProject.file('forge/libs')
+                rename { fileName -> projectName + "-local.jar" }
+            }
+            copy {
+                from forgeJar
+                into rootProject.file('Merged')
+            }
+            copy {
+                from forgeJar
+                into rootProject.file('common/libs')
+                rename { fileName -> projectName + "-local.jar" }
+            }
+        }
+        if (fabricJar) {
+            copy {
+                from fabricJar
+                into rootProject.file('fabric/libs')
+                rename { fileName -> projectName + "-local.jar" }
+            }
+            copy {
+                from fabricJar
+                into rootProject.file('Merged')
+            }
+            copy {
+                from fabricJar
+                into rootProject.file('common/libs')
+                rename { fileName -> projectName + "-local.jar" }
+            }
+        }
+        println "Builds Copied"
     }
-    finalizedBy ':mergeJars'
 }
 
-tasks.register('buildAll') {
-    dependsOn('buildBoth')
+
+tasks.register('rebuildArchery') {
+    ext.projectName = "archery"
+    def project = gradle.includedBuild("archery")
+    dependsOn project.task(":buildBoth")
+    group = '_tm_tasks'
     doLast {
-        println "Merging..."
+        def mergedBuildDir = rootProject.file(ext.projectName + '/Merged')
+        println mergedBuildDir
+        def fabricJars = mergedBuildDir.listFiles().findAll { it.name.endsWith("fabric.jar") }
+        def forgeJars = mergedBuildDir.listFiles().findAll { it.name.endsWith("forge.jar") }
+
+        def fabricJar = fabricJars.max { it.lastModified() }
+        def forgeJar = forgeJars.max { it.lastModified() }
+
+        if (forgeJar) {
+            copy {
+                from forgeJar
+                into rootProject.file('forge/libs')
+                rename { fileName -> projectName + "-local.jar" }
+            }
+            copy {
+                from forgeJar
+                into rootProject.file('Merged')
+            }
+            copy {
+                from forgeJar
+                into rootProject.file('common/libs')
+                rename { fileName -> projectName + "-local.jar" }
+            }
+        }
+        if (fabricJar) {
+            copy {
+                from fabricJar
+                into rootProject.file('fabric/libs')
+                rename { fileName -> projectName + "-local.jar" }
+            }
+            copy {
+                from fabricJar
+                into rootProject.file('Merged')
+            }
+            copy {
+                from fabricJar
+                into rootProject.file('common/libs')
+                rename { fileName -> projectName + "-local.jar" }
+            }
+        }
+        println "Builds Copied"
     }
-    finalizedBy ':mergeJars'
 }
 
+tasks.register('rebuildArmory') {
+    ext.projectName = "armory"
+    def project = gradle.includedBuild("armory")
+    dependsOn project.task(":buildBoth")
+    group = '_tm_tasks'
+    doLast {
+        def mergedBuildDir = rootProject.file(ext.projectName + '/Merged')
+        println mergedBuildDir
+        def fabricJars = mergedBuildDir.listFiles().findAll { it.name.endsWith("fabric.jar") }
+        def forgeJars = mergedBuildDir.listFiles().findAll { it.name.endsWith("forge.jar") }
+
+        def fabricJar = fabricJars.max { it.lastModified() }
+        def forgeJar = forgeJars.max { it.lastModified() }
+
+        if (forgeJar) {
+            copy {
+                from forgeJar
+                into rootProject.file('forge/libs')
+                rename { fileName -> projectName + "-local.jar" }
+            }
+            copy {
+                from forgeJar
+                into rootProject.file('Merged')
+            }
+            copy {
+                from forgeJar
+                into rootProject.file('common/libs')
+                rename { fileName -> projectName + "-local.jar" }
+            }
+        }
+        if (fabricJar) {
+            copy {
+                from fabricJar
+                into rootProject.file('fabric/libs')
+                rename { fileName -> projectName + "-local.jar" }
+            }
+            copy {
+                from fabricJar
+                into rootProject.file('Merged')
+            }
+            copy {
+                from fabricJar
+                into rootProject.file('common/libs')
+                rename { fileName -> projectName + "-local.jar" }
+            }
+        }
+        println "Builds Copied"
+    }
+}
 
 subprojects {
     apply plugin: "dev.architectury.loom"
@@ -84,11 +220,7 @@ subprojects {
     dependencies {
         minecraft "com.mojang:minecraft:${rootProject.minecraft_version}"
         mappings "net.fabricmc:yarn:1.20.1+build.10:v2"
-        implementation "org.mariuszgromada.math:MathParser.org-mXparser:${rootProject.mathparser_version}"
     }
-}
-
-allprojects {
     apply plugin: "java"
     apply plugin: "architectury-plugin"
     apply plugin: "maven-publish"
@@ -107,7 +239,35 @@ allprojects {
         options.release = 17
     }
 
+    processResources {
+        def expandProps = [
+                "version"                   : mod_version,
+                "group"                     : project.group, //Else we target the task's group.
+                "minecraft_version"         : minecraft_version,
+                "architectury_version"      : architectury_version,
+                "forge_version"             : forge_version,
+                "forge_loader_version_range": forge_loader_version_range,
+                "forge_version_range"       : forge_version_range,
+                "minecraft_version_range"   : minecraft_version,
+                "fabric_api_version"        : fabric_api_version,
+                "fabric_loader_version"     : fabric_loader_version,
+                "mod_name"                  : mod_name,
+                "mod_author"                : mod_author,
+                "mod_id"                    : mod_id,
+                "mod_description"           : mod_description,
+                "credits"                   : credits
+        ]
+
+        filesMatching(['pack.mcmeta', 'fabric.mod.json', 'META-INF/mods.toml', '*.mixins.json']) {
+            expand expandProps
+        }
+    }
+
     java {
         withSourcesJar()
     }
+}
+
+allprojects {
+    apply plugin: "java"
 }

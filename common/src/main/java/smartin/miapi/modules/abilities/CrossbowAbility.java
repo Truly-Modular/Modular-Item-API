@@ -29,6 +29,8 @@ import org.joml.Vector3f;
 import smartin.miapi.Miapi;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
 import smartin.miapi.modules.abilities.util.ItemUseAbility;
+import smartin.miapi.modules.abilities.util.ItemUseDefaultCooldownAbility;
+import smartin.miapi.modules.abilities.util.ItemUseMinHoldAbility;
 import smartin.miapi.modules.properties.CrossbowProperty;
 
 import java.util.List;
@@ -37,7 +39,7 @@ import java.util.function.Predicate;
 /**
  * An ability that allows the usage of the Item like a crossbow
  */
-public class CrossbowAbility implements ItemUseAbility {
+public class CrossbowAbility implements ItemUseDefaultCooldownAbility, ItemUseMinHoldAbility {
     private boolean charged = false;
     private boolean loaded = false;
     private static final String PROJECTILE_KEY = "ChargedProjectiles";
@@ -46,7 +48,7 @@ public class CrossbowAbility implements ItemUseAbility {
     }
 
     @Override
-    public boolean allowedOnItem(ItemStack itemStack, World world, PlayerEntity player, Hand hand, ItemAbilityManager.AbilityContext abilityContext) {
+    public boolean allowedOnItem(ItemStack itemStack, World world, PlayerEntity player, Hand hand, ItemAbilityManager.AbilityHitContext abilityHitContext) {
         CrossbowProperty.CrossbowAbilityConfig config = CrossbowProperty.getConfig(itemStack);
         if (true) {
             Miapi.LOGGER.warn("testing if ALLOWED");
@@ -124,7 +126,7 @@ public class CrossbowAbility implements ItemUseAbility {
     }
 
     @Override
-    public void onStoppedUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
+    public void onStoppedUsingAfter(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
         Miapi.LOGGER.warn("Stop Using");
         int i = this.getMaxUseTime(stack) - remainingUseTicks;
         float f = getPullProgress(i, stack);

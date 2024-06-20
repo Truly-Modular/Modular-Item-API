@@ -1,12 +1,17 @@
 package smartin.miapi.client.gui.crafting.statdisplay;
 
+import com.google.common.collect.Multimap;
+import com.google.gson.JsonElement;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.entity.attribute.EntityAttribute;
+import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.item.CrossbowItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
 import net.minecraft.text.MutableText;
@@ -19,19 +24,23 @@ import smartin.miapi.client.gui.BoxList;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.ScrollList;
 import smartin.miapi.client.gui.TransformableWidget;
+import smartin.miapi.item.modular.CustomDrawTimeItem;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.*;
+import smartin.miapi.modules.properties.damage_boosts.AquaticDamage;
+import smartin.miapi.modules.properties.damage_boosts.IllagerBane;
+import smartin.miapi.modules.properties.damage_boosts.SmiteDamage;
+import smartin.miapi.modules.properties.damage_boosts.SpiderDamage;
 import smartin.miapi.modules.properties.util.GuiWidgetSupplier;
+import smartin.miapi.registries.RegistryInventory;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Environment(EnvType.CLIENT)
 public class StatListWidget extends InteractAbleWidget {
     private static final List<InteractAbleWidget> statDisplays = new ArrayList<>();
     private static final List<StatWidgetSupplier> statWidgetSupplier = new ArrayList<>();
+    public static final Map<String, JsonConverter> jsonConverterMap = new HashMap<>();
     private final BoxList boxList;
     private TransformableWidget transformableWidget;
     private TransformableWidget hoverText;
@@ -67,10 +76,11 @@ public class StatListWidget extends InteractAbleWidget {
 
     public static void onReload() {
         statDisplays.clear();
-        addStatDisplay(new FlattenedListPropertyStatDisplay<>(
-                PotionEffectProperty.property,
-                stk -> statTranslation("tipped"))
-                .withLimitedDescSize(350).withArrowsInTitle());
+        addStatDisplay(SinglePropertyStatDisplay
+                .builder(NemesisProperty.property)
+                .setMin(0)
+                .setMax(1)
+                .setTranslationKey(NemesisProperty.KEY).build());
         addStatDisplay(AttributeSingleDisplay
                 .builder(EntityAttributes.GENERIC_ATTACK_DAMAGE)
                 .setTranslationKey("damage")
@@ -98,13 +108,13 @@ public class StatListWidget extends InteractAbleWidget {
                 .builder(AttributeRegistry.REACH)
                 .setTranslationKey("reach")
                 .setDefault(0)
-                .setFormat("##.#")
+                .setFormat("##.##")
                 .setMax(2).build());
         addStatDisplay(AttributeSingleDisplay
                 .builder(AttributeRegistry.ATTACK_RANGE)
                 .setTranslationKey("attack_range")
                 .setDefault(0)
-                .setFormat("##.#")
+                .setFormat("##.##")
                 .setMax(2).build());
         addStatDisplay(AttributeSingleDisplay
                 .builder(AttributeRegistry.PROJECTILE_DAMAGE)
@@ -179,10 +189,24 @@ public class StatListWidget extends InteractAbleWidget {
                 .setMax(100)
                 .setMin(1)
                 .setDefault(20)
-                .setValueGetter((stack) -> 20 - AttributeProperty.getActualValue(stack, EquipmentSlot.MAINHAND, AttributeRegistry.BOW_DRAW_TIME))
+                .setValueGetter((stack) -> {
+                    if (stack.getItem() instanceof CustomDrawTimeItem customDrawTimeItem) {
+                        return customDrawTimeItem.getActualDrawTime(stack);
+                    }
+                    if (stack.getItem() instanceof CrossbowItem) {
+                        return 25 - AttributeProperty.getActualValue(stack, EquipmentSlot.MAINHAND, AttributeRegistry.BOW_DRAW_TIME);
+                    }
+                    return 20 - AttributeProperty.getActualValue(stack, EquipmentSlot.MAINHAND, AttributeRegistry.BOW_DRAW_TIME);
+                })
                 .setTranslationKey("bow_draw_time")
                 .inverseNumber(true)
                 .setFormat("##.##").build());
+        addStatDisplay(SinglePropertyStatDisplay
+                .builder(RapidfireCrossbowProperty.property)
+                .setMax(3)
+                .setFormat("##")
+                .setTranslationKey(RapidfireCrossbowProperty.KEY).build());
+
 
         addStatDisplay(SinglePropertyStatDisplay
                 .builder(DurabilityProperty.property)
@@ -214,6 +238,10 @@ public class StatListWidget extends InteractAbleWidget {
                 .setTranslationKey("armor")
                 .setMax(8).build());
         addStatDisplay(AttributeSingleDisplay
+                .builder(AttributeRegistry.PROJECTILE_ARMOR)
+                .setTranslationKey("projectile_armor")
+                .setMax(8).build());
+        addStatDisplay(AttributeSingleDisplay
                 .builder(EntityAttributes.GENERIC_ARMOR_TOUGHNESS)
                 .setTranslationKey("armor_toughness")
                 .setMax(3).build());
@@ -221,6 +249,12 @@ public class StatListWidget extends InteractAbleWidget {
                 .builder(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE)
                 .setTranslationKey("knockback_resistance")
                 .setMax(1).build());
+        addStatDisplay(AttributeSingleDisplay
+                .builder(AttributeRegistry.SWIM_SPEED)
+                .setTranslationKey("swim_speed")
+                .setMax(1.5)
+                .setDefault(1)
+                .setMin(0).build());
         addStatDisplay(AttributeSingleDisplay
                 .builder(AttributeRegistry.ELYTRA_GLIDE_EFFICIENCY)
                 .setTranslationKey("elytra_glide")
@@ -236,12 +270,97 @@ public class StatListWidget extends InteractAbleWidget {
                 .setTranslationKey("rocket_efficiency")
                 .setMax(5)
                 .setMin(-5).build());
+        addStatDisplay(AttributeSingleDisplay
+                .builder(AttributeRegistry.PLAYER_ITEM_USE_MOVEMENT_SPEED)
+                .setTranslationKey("player_item_use_speed")
+                .setMax(0)
+                .inverseNumber(true)
+                .setMin(-1).build());
+        addStatDisplay(AttributeSingleDisplay
+                .builder(AttributeRegistry.CRITICAL_DAMAGE)
+                .setTranslationKey("crit_damage")
+                .setMax(3)
+                .setMin(0).build());
+        addStatDisplay(AttributeSingleDisplay
+                .builder(AttributeRegistry.CRITICAL_CHANCE)
+                .setTranslationKey("crit_chance")
+                .setMax(1)
+                .setMin(0).build());
+
+        addStatDisplay(SinglePropertyStatDisplay
+                .builder(IllagerBane.property)
+                .setMax(3)
+                .setFormat("##.#")
+                .setTranslationKey(IllagerBane.KEY).build());
+
+        addStatDisplay(SinglePropertyStatDisplay
+                .builder(LuminousLearningProperty.property)
+                .setMax(2)
+                .setFormat("##.#")
+                .setTranslationKey(LuminousLearningProperty.KEY).build());
+
+        addStatDisplay(SinglePropertyStatDisplay
+                .builder(ExhaustionProperty.property)
+                .setMax(50)
+                .setFormat("##.#")
+                .setTranslationKey(ExhaustionProperty.KEY).build());
+        addStatDisplay(SinglePropertyStatDisplay
+                .builder(WaterGravityProperty.property)
+                .setMax(100)
+                .setFormat("##.#")
+                .setTranslationKey(WaterGravityProperty.KEY).build());
+
+        addStatDisplay(SinglePropertyStatDisplay
+                .builder(AquaticDamage.property)
+                .setMax(5)
+                .setTranslationKey(AquaticDamage.KEY).build());
+        addStatDisplay(SinglePropertyStatDisplay
+                .builder(SpiderDamage.property)
+                .setMax(5)
+                .setTranslationKey(SpiderDamage.KEY).build());
+        addStatDisplay(SinglePropertyStatDisplay
+                .builder(SmiteDamage.property)
+                .setMax(5)
+                .setTranslationKey(SmiteDamage.KEY).build());
+
+        addStatDisplay(ComplexBooleanStatDisplay
+                .builder(CanWalkOnSnow.property)
+                .setTranslationKey(CanWalkOnSnow.KEY).build());
+        addStatDisplay(ComplexBooleanStatDisplay
+                .builder(FireProof.property)
+                .setTranslationKey(FireProof.KEY).build());
+        addStatDisplay(ComplexBooleanStatDisplay
+                .builder(IsCrossbowShootAble.property)
+                .setTranslationKey(IsCrossbowShootAble.KEY).build());
+        addStatDisplay(ComplexBooleanStatDisplay
+                .builder(IsPiglinGold.property)
+                .setTranslationKey(IsPiglinGold.KEY).build());
+        addStatDisplay(ComplexBooleanStatDisplay
+                .builder(StepCancelingProperty.property)
+                .setTranslationKey(StepCancelingProperty.KEY).build());
+
+        addStatDisplay(SinglePropertyStatDisplay
+                .builder(PillagesGuard.property)
+                .setMax(3)
+                .setFormat("##.#")
+                .setTranslationKey(PillagesGuard.KEY)
+                .setHoverDescription(
+                        (stack -> {
+                            double value = PillagesGuard.valueRemap(PillagesGuard.property.getValueSafe(stack));
+                            value = (double) Math.round((1 - value) * 1000) / 10;
+                            return Text.translatable("miapi.stat.pillagerGuard.description", value);
+                        })).build());
 
         AttributeSingleDisplay.attributesWithDisplay.add(AttributeRegistry.MINING_SPEED_AXE);
         AttributeSingleDisplay.attributesWithDisplay.add(AttributeRegistry.MINING_SPEED_PICKAXE);
         AttributeSingleDisplay.attributesWithDisplay.add(AttributeRegistry.MINING_SPEED_HOE);
         AttributeSingleDisplay.attributesWithDisplay.add(AttributeRegistry.MINING_SPEED_SHOVEL);
         AttributeSingleDisplay.attributesWithDisplay.add(AttributeRegistry.ARMOR_CRUSHING);
+        RegistryInventory.moduleProperties.getFlatMap().values().stream()
+                .filter(StatWidgetSupplier.class::isInstance)
+                .map(StatWidgetSupplier.class::cast)
+                .filter(statWidgetSupplier::contains)
+                .forEach(statWidgetSupplier::add);
     }
 
     public static void reloadEnd() {
@@ -295,11 +414,17 @@ public class StatListWidget extends InteractAbleWidget {
     }
 
     private <T extends InteractAbleWidget & SingleStatDisplay> void update() {
+        for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
+            Multimap<EntityAttribute, EntityAttributeModifier> oldAttr = original.getAttributeModifiers(equipmentSlot);
+            Multimap<EntityAttribute, EntityAttributeModifier> compAttr = compareTo.getAttributeModifiers(equipmentSlot);
+            AttributeSingleDisplay.oldItemCache.put(equipmentSlot, oldAttr);
+            AttributeSingleDisplay.compareItemCache.put(equipmentSlot, compAttr);
+        }
         List<ClickableWidget> widgets = new ArrayList<>();
         for (StatWidgetSupplier supplier : statWidgetSupplier) {
             List<T> statWidgets = supplier.currentList(original, compareTo);
             for (T statDisplay : statWidgets) {
-                if(statDisplay.shouldRender(original,compareTo)){
+                if (statDisplay.shouldRender(original, compareTo)) {
                     statDisplay.setHeight(statDisplay.getHeightDesired());
                     statDisplay.setWidth(statDisplay.getWidthDesired());
                     widgets.add(statDisplay);
@@ -325,6 +450,10 @@ public class StatListWidget extends InteractAbleWidget {
         statDisplays.add(statDisplay);
     }
 
+    public static <T extends InteractAbleWidget & SingleStatDisplay> void addStatDisplay(T... statDisplay) {
+        statDisplays.addAll(Arrays.asList(statDisplay));
+    }
+
     public static void addStatDisplaySupplier(StatWidgetSupplier supplier) {
         statWidgetSupplier.add(supplier);
     }
@@ -345,5 +474,9 @@ public class StatListWidget extends InteractAbleWidget {
 
     public interface MultiTextGetter {
         List<Text> resolve(ItemStack stack);
+    }
+
+    public interface JsonConverter<T extends InteractAbleWidget & SingleStatDisplay> {
+        T fromJson(JsonElement element, SingleStatDisplayDouble.StatReaderHelper statReader);
     }
 }

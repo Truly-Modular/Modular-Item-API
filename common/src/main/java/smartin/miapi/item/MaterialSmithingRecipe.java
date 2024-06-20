@@ -2,9 +2,7 @@ package smartin.miapi.item;
 
 import com.google.gson.JsonObject;
 import net.minecraft.inventory.Inventory;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.RecipeSerializer;
@@ -13,7 +11,8 @@ import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.world.World;
-import smartin.miapi.item.modular.ModularItem;
+import smartin.miapi.events.MiapiEvents;
+import smartin.miapi.item.modular.VisualModularItem;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.material.Material;
 import smartin.miapi.modules.material.MaterialProperty;
@@ -30,8 +29,8 @@ public class MaterialSmithingRecipe implements SmithingRecipe {
     final Ingredient addition;
     final Identifier id;
 
-    public MaterialSmithingRecipe(Identifier id, Ingredient template, String base, Ingredient addition, String resultMaterial) {
-        this.startMaterial = base;
+    public MaterialSmithingRecipe(Identifier id, Ingredient template, String baseMaterial, Ingredient addition, String resultMaterial) {
+        this.startMaterial = baseMaterial;
         this.resultMaterial = resultMaterial;
         smithingTemplate = template;
         this.addition = addition;
@@ -46,8 +45,7 @@ public class MaterialSmithingRecipe implements SmithingRecipe {
      */
     @Override
     public boolean testTemplate(ItemStack stack) {
-        Item netherIteUpgradeTemplate = Items.NETHERITE_UPGRADE_SMITHING_TEMPLATE;
-        return stack.getItem().equals(netherIteUpgradeTemplate);
+        return smithingTemplate.test(stack);
     }
 
     /**
@@ -58,7 +56,7 @@ public class MaterialSmithingRecipe implements SmithingRecipe {
      */
     @Override
     public boolean testBase(ItemStack stack) {
-        if (stack.getItem() instanceof ModularItem) {
+        if (stack.getItem() instanceof VisualModularItem) {
             ItemModule.ModuleInstance instance = ItemModule.getModules(stack);
             return instance.allSubModules().stream().anyMatch(module -> {
                 Material material = MaterialProperty.getMaterial(module);
@@ -72,7 +70,7 @@ public class MaterialSmithingRecipe implements SmithingRecipe {
     }
 
     /**
-     * if the Material to be added is the correct ingrediant {@link MaterialSmithingRecipe#addition}
+     * if the Material to be added is the correct ingredient {@link MaterialSmithingRecipe#addition}
      *
      * @param stack the stack to be tested
      * @return if the stack is of the right ingredient
@@ -104,18 +102,20 @@ public class MaterialSmithingRecipe implements SmithingRecipe {
     @Override
     public ItemStack craft(Inventory inventory, DynamicRegistryManager registryManager) {
         ItemStack old = inventory.getStack(1).copy();
-        if (old.getItem() instanceof ModularItem) {
+        if (old.getItem() instanceof VisualModularItem) {
             ItemModule.ModuleInstance instance = ItemModule.getModules(old).copy();
             instance.allSubModules().forEach(module -> {
                 Material material = MaterialProperty.getMaterial(module);
                 if (material != null && material.getKey().equals(startMaterial)) {
-                        MaterialProperty.setMaterial(module, resultMaterial);
+                    MaterialProperty.setMaterial(module, resultMaterial);
 
                 }
             });
             instance.writeToItem(old);
         }
-        return old;
+        MiapiEvents.MaterialCraft data = new MiapiEvents.MaterialCraft(old);
+        MiapiEvents.SMITHING_EVENT.invoker().craft(data);
+        return data.itemStack;
     }
 
     /**

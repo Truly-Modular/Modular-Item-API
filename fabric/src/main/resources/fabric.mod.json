@@ -1,35 +1,27 @@
 {
     "schemaVersion": 1,
-    "id": "miapi",
+    "id": "${mod_id}",
     "version": "${version}",
-    "name": "Truly Modular",
-    "description": "Modular Item Api",
+    "name": "${mod_name}",
+    "description": "${mod_description}",
     "authors": [
-        "Smartin",
-        "Panda"
+        "${mod_author}"
     ],
-    "accessWidener": "miapi.accesswidener",
     "contributors": [
-        "KawataroTB",
-        "Ace",
-        "Nytifx",
-        "Beniven",
-        "Repeat"
+        "${credits}"
     ],
     "contact": {
         "homepage": "https://github.com/Truly-Modular/Modular-Item-API",
         "issues": "https://github.com/Truly-Modular/Modular-Item-API/issues",
-        "sources": "https://github.com/Truly-Modular/Modular-Item-API"
+        "sources": "https://github.com/Truly-Modular/Modular-Item-API",
+        "patreon": "https://www.patreon.com/Smartinb"
     },
     "license": "CC-BY-NC-4.0",
     "icon": "icon.png",
     "environment": "*",
     "entrypoints": {
         "main": [
-            "smartin.miapi.fabric.TrulyModularFabric"
-        ],
-        "modmenu": [
-            "smartin.miapi.fabric.ModMenuIntegration"
+            "smartin.miapi.fabric.MiapiFabric"
         ]
     },
     "mixins": [
@@ -37,11 +29,16 @@
         "miapi-common.mixins.json"
     ],
     "depends": {
-        "fabricloader": ">=0.14.17",
-        "minecraft": [
-            "<=1.20.1",
-            "1.20.1",
-            ">=1.20.1"
-        ]
+        "fabricloader": ">=${fabric_loader_version}",
+        "fabric-api": ">=${fabric_api_version}",
+        "minecraft": "${minecraft_version}"
+    },
+    "custom": {
+        "modmenu": {
+            "links": {
+                "modmenu.discord": "https://discord.gg/m9AbjqvcGn",
+                "modmenu.patreon": "https://www.patreon.com/Smartinb"
+            }
+        }
     }
 }

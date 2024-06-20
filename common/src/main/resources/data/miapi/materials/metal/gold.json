@@ -9,6 +9,9 @@
     "density": 4.6,
     "flexibility": 1,
     "durability": 32,
+    "armor_durability_offset": 100,
+    "enchantability": 22,
+    "axe_damage": -2,
     "color": "FFD700",
     "color_palette": {
         "type": "grayscale_map",
@@ -25,17 +28,25 @@
     },
     "properties": {
         "default": {
+            "fake_item_tag": [
+                "minecraft:piglin_loved"
+            ],
             "durability": {
                 "operation": "**",
-                "value": "0.65"
+                "value": "0.85"
             }
         },
         "armor": {
-            "isPiglinGold": true
+            "isPiglinGold": true,
+            "durability": {
+                "operation": "**",
+                "value": "1.10"
+            }
         }
     },
     "textures": [
-        "metalic"
+        "metallic",
+        "contrast"
     ],
     "mining_speed": 12,
     "mining_level": 1,

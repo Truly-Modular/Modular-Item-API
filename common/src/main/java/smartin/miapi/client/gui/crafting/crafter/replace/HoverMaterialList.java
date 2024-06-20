@@ -13,6 +13,7 @@ import smartin.miapi.modules.material.AllowedMaterial;
 import smartin.miapi.modules.material.Material;
 import smartin.miapi.modules.material.MaterialProperty;
 
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,7 +33,10 @@ public class HoverMaterialList extends InteractAbleWidget {
         super(x, y, width, height, Text.empty());
         materialKeys = AllowedMaterial.property.getAllowedKeys(module);
         for (String key : materialKeys) {
-            materials.put(key, AllowedMaterial.property.getMaterials(key));
+            materials.put(key, AllowedMaterial.property.getMaterials(key)
+                    .stream()
+                    .sorted(Comparator.comparing(m -> m.getTranslation().getString()))
+                    .toList());
         }
     }
 
@@ -59,7 +63,7 @@ public class HoverMaterialList extends InteractAbleWidget {
             int sizeDetailList = 0;
             if (materialList.size() > 1) {
                 for (Material m : materialList) {
-                    Text material = getTranslation(m.getKey());
+                    Text material = m.getTranslation();
                     sizeDetailList = Math.max(MinecraftClient.getInstance().textRenderer.getWidth(material), sizeDetailList);
                 }
             }
@@ -69,11 +73,11 @@ public class HoverMaterialList extends InteractAbleWidget {
                 int start = scrollPosOne;
                 int end = Math.min(scrollPosOne + maxElements, materials.size());
                 if (end < materials.size() - 1) {
-                    drawContext.drawText(MinecraftClient.getInstance().textRenderer, "...⬇(scroll)", getX() + 3, currentY + 14 * (maxElements - 1), moreEntryColor, false);
+                    drawContext.drawText(MinecraftClient.getInstance().textRenderer, Text.translatable("miapi.ui.material_detail.lower.scroll"), getX() + 3, currentY + 14 * (maxElements - 1), moreEntryColor, false);
                     end--;
                 }
                 if (start != 0) {
-                    drawContext.drawText(MinecraftClient.getInstance().textRenderer, "...⬆", getX() + 3, currentY, moreEntryColor, false);
+                    drawContext.drawText(MinecraftClient.getInstance().textRenderer, Text.translatable("miapi.ui.material_detail.higher.scroll"), getX() + 3, currentY, moreEntryColor, false);
                     start++;
                     currentY += 14;
                 }
@@ -90,11 +94,11 @@ public class HoverMaterialList extends InteractAbleWidget {
                 int start = scrollPosTwo;
                 int end = Math.min(scrollPosTwo + maxElements - 1, materialList.size() - 1);
                 if (end < materialList.size() - 2) {
-                    drawContext.drawText(MinecraftClient.getInstance().textRenderer, "...⬇(shift)", getX() + sizeBaseList + 6, currentY + 14 * (maxElements - 1), moreEntryColor, false);
+                    drawContext.drawText(MinecraftClient.getInstance().textRenderer, Text.translatable("miapi.ui.material_detail.lower"), getX() + sizeBaseList + 6, currentY + 14 * (maxElements - 1), moreEntryColor, false);
                     end--;
                 }
                 if (start != 0) {
-                    drawContext.drawText(MinecraftClient.getInstance().textRenderer, "...⬆", getX() + sizeBaseList + 6, currentY, moreEntryColor, false);
+                    drawContext.drawText(MinecraftClient.getInstance().textRenderer, Text.translatable("miapi.ui.material_detail.higher"), getX() + sizeBaseList + 6, currentY, moreEntryColor, false);
                     start++;
                     currentY += 14;
                 }
@@ -112,7 +116,7 @@ public class HoverMaterialList extends InteractAbleWidget {
         }
     }
 
-    public Text getTranslation(String materialOrGroupKey) {
+    public static Text getTranslation(String materialOrGroupKey) {
         if (MaterialProperty.materials.containsKey(materialOrGroupKey)) {
             Material material = MaterialProperty.materials.get(materialOrGroupKey);
             return Text.translatable(material.getData("translation"));

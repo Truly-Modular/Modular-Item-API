@@ -3,10 +3,7 @@ package smartin.miapi.client.gui.crafting.crafter.replace;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.item.ItemStack;
-import net.minecraft.screen.slot.Slot;
 import net.minecraft.text.Text;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.ColorHelper;
@@ -18,7 +15,6 @@ import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.edit_options.ReplaceOption;
 import smartin.miapi.modules.material.AllowedMaterial;
-import smartin.miapi.network.Networking;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -62,18 +58,12 @@ public class MaterialCraftingWidget extends InteractAbleWidget {
 
     public void render(DrawContext drawContext, int mouseX, int mouseY, float delta) {
         RenderSystem.enableDepthTest();
-        if (MinecraftClient.getInstance().currentScreen instanceof ParentHandledScreen<?> parentHandledScreen) {
-            Slot focusSlot = parentHandledScreen.getFocusSlot();
-            if(focusSlot!=null){
-                if(ReplaceOption.hoverStack == null || !ItemStack.areEqual(ReplaceOption.hoverStack,focusSlot.getStack())){
-                    ReplaceOption.hoverStack = focusSlot.getStack();
-                    ReplaceOption.tryPreview(action.toPacket(Networking.createBuffer()));
-                }
-            }
-            else{
-                ReplaceOption.hoverStack = ItemStack.EMPTY;
-                ReplaceOption.tryPreview(action.toPacket(Networking.createBuffer()));
-            }
+        ReplaceOption.unsafeCraftAction = action;
+        if (
+                ReplaceOption.unsafeEditContext != null &&
+                !ReplaceOption.unsafeEditContext.getScreenHandler().inventory.getStack(1).isEmpty()) {
+            PreviewManager.resetCursorStack();
+
         }
 
 

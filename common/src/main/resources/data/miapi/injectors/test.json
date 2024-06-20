@@ -14,5 +14,13 @@
   },
   "remove__disabled": [
     ""
-  ]
+  ],
+  "test": {
+    "apoli_powers": [{
+      "powerId" : "origins:fall_immunity",
+      "slot" : "mainhand",
+      "isHidden" : false,
+      "isNegative" : false
+    }]
+  }
 }

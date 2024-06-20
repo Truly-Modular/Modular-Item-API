@@ -12,7 +12,7 @@ import smartin.miapi.registries.FakeTranslation;
 public interface TextMixin {
 
     @Inject(
-            method = "Lnet/minecraft/text/Text;translatable(Ljava/lang/String;)Lnet/minecraft/text/MutableText;",
+            method = "translatable(Ljava/lang/String;)Lnet/minecraft/text/MutableText;",
             at = @At(value = "HEAD"),
             cancellable = true
     )

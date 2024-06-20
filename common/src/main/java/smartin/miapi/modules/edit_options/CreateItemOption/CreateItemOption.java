@@ -4,6 +4,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
+import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.registry.Registries;
@@ -14,6 +15,7 @@ import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.client.gui.InteractAbleWidget;
+import smartin.miapi.client.gui.PreviewManager;
 import smartin.miapi.client.gui.crafting.CraftingScreen;
 import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
 import smartin.miapi.client.gui.crafting.crafter.create_module.CreateListView;
@@ -22,6 +24,7 @@ import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.edit_options.EditOption;
 import smartin.miapi.modules.edit_options.EditOptionIcon;
+import smartin.miapi.modules.edit_options.ReplaceOption;
 import smartin.miapi.modules.properties.SlotProperty;
 import smartin.miapi.network.Networking;
 import smartin.miapi.registries.RegistryInventory;
@@ -60,8 +63,16 @@ public class CreateItemOption implements EditOption {
         ItemModule.ModuleInstance instance = new ItemModule.ModuleInstance(RegistryInventory.modules.get(module));
         instance.writeToItem(itemStack);
         CraftAction action = new CraftAction(buffer, editContext.getWorkbench());
+        Inventory inventory = editContext.getLinkedInventory();
+        if (
+                PreviewManager.currentPreviewMaterial != null
+        ) {
+            inventory = new SimpleInventory(2);
+            PreviewManager.currentPreviewMaterialStack.getDamage();
+            inventory.setStack(1, PreviewManager.currentPreviewMaterialStack);
+        }
+        action.linkInventory(inventory, 1);
         action.setItem(itemStack);
-        action.linkInventory(editContext.getLinkedInventory(), 1);
         return action.getPreview();
     }
 
@@ -93,13 +104,15 @@ public class CreateItemOption implements EditOption {
     @Environment(EnvType.CLIENT)
     @Override
     public InteractAbleWidget getGui(int x, int y, int width, int height, EditContext editContext) {
+        PreviewManager.resetCursorStack();
+        ReplaceOption.unsafeEditContext = editContext;
         return new CreateListView(x, y, width, height, editContext);
     }
 
     @Environment(EnvType.CLIENT)
     @Override
     public InteractAbleWidget getIconGui(int x, int y, int width, int height, Consumer<EditOption> select, Supplier<EditOption> getSelected) {
-        return new EditOptionIcon(x, y, width, height, select, getSelected, CraftingScreen.BACKGROUND_TEXTURE, 339 + 32, 25+140, 512, 512, this);
+        return new EditOptionIcon(x, y, width, height, select, getSelected, CraftingScreen.BACKGROUND_TEXTURE, 339 + 32, 25+140, 512, 512,"miapi.ui.edit_option.hover.create", this);
     }
 
     @Environment(EnvType.CLIENT)

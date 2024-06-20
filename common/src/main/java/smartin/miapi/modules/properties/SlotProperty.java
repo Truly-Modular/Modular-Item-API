@@ -6,9 +6,9 @@ import com.google.gson.reflect.TypeToken;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import org.jetbrains.annotations.Nullable;
-import smartin.miapi.modules.ItemModule;
 import smartin.miapi.item.modular.Transform;
 import smartin.miapi.item.modular.TransformMap;
+import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.registries.RegistryInventory;
 
@@ -77,10 +77,10 @@ public class SlotProperty implements ModuleProperty {
                 mergedTransform.set(stack.primary, mergedTransform.get(null));
                 mergedTransform.set(null, Transform.IDENTITY);
             }
-            mergedTransform = TransformMap.merge(getLocalTransformStack(current),mergedTransform);
+            mergedTransform = TransformMap.merge(stack, mergedTransform);
             current = current.parent;
         }
-        mergedTransform = TransformMap.merge(moduleSlot.getTransformStack(),mergedTransform);
+        mergedTransform = TransformMap.merge(moduleSlot.getTransformStack(), mergedTransform);
         return mergedTransform;
     }
 
@@ -97,6 +97,12 @@ public class SlotProperty implements ModuleProperty {
                 slot.inSlot = instance.subModules.get(number);
                 slot.parent = instance;
                 slot.id = number;
+                if (slot.translationKey == null) {
+                    slot.translationKey = "miapi.module.empty.name";
+                }
+                if (slot.slotType == null) {
+                    slot.slotType = "default";
+                }
             });
             return slots;
         }
@@ -158,6 +164,9 @@ public class SlotProperty implements ModuleProperty {
             if (slot != null && slot.transform.origin != null && slot.transform.origin.equals("")) {
                 slot.transform.origin = null;
             }
+            if (slot != null && slot.translationKey == null) {
+                slot.translationKey = "miapi.module.empty.name";
+            }
             return slot;
         }
         return null;
@@ -179,11 +188,12 @@ public class SlotProperty implements ModuleProperty {
         }
 
         public List<String> allowed;
-        @Environment(EnvType.CLIENT)
         public Transform transform = Transform.IDENTITY;
         @Nullable
         public ItemModule.ModuleInstance inSlot;
         public ItemModule.ModuleInstance parent;
+        public String translationKey = "miapi.module.empty.name";
+        public String slotType = "default";
         public int id;
 
         public boolean allowedIn(ItemModule.ModuleInstance instance) {

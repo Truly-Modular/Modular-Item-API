@@ -7,7 +7,7 @@ import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.*;
 import net.minecraft.util.math.RotationAxis;
-import smartin.miapi.item.modular.ModularItem;
+import smartin.miapi.item.modular.VisualModularItem;
 
 public class ModularWorkBenchRenderer implements BlockEntityRenderer<ModularWorkBenchEntity> {
     private final BlockEntityRendererFactory.Context context;
@@ -22,14 +22,14 @@ public class ModularWorkBenchRenderer implements BlockEntityRenderer<ModularWork
         if (stack.isEmpty()) return;
 
         matrices.push();
-        matrices.translate(8 / 16f, 11.5 / 16f, 8 / 16f);
+        matrices.translate(8 / 16f, 16.5f / 16, 8 / 16f);
         float rotAmnt = be.getCachedState().get(ModularWorkBench.FACING).asRotation();
         if (!(stack.getItem() instanceof Equipment) && (
-                stack.getItem() instanceof ModularItem ||
+                stack.getItem() instanceof VisualModularItem ||
                         stack.getItem() instanceof ToolItem ||
                         stack.getItem() instanceof SwordItem ||
                         stack.getItem() instanceof ArrowItem ||
-                        stack.getItem() instanceof CrossbowItem ||
+                        //stack.getItem() instanceof CrossbowItem ||
                         stack.getItem() instanceof RangedWeaponItem))
             rotAmnt -= 45;
         else
@@ -38,13 +38,16 @@ public class ModularWorkBenchRenderer implements BlockEntityRenderer<ModularWork
         matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(90));
         matrices.scale(0.75f, 0.75f, 0.75f);
 
-        context.getItemRenderer().renderItem(
-                stack,
-                ModelTransformationMode.FIXED,
-                light, overlay,
-                matrices, vertexConsumers,
-                be.getWorld(), 1
-        );
+        try {
+            context.getItemRenderer().renderItem(
+                    stack,
+                    ModelTransformationMode.FIXED,
+                    light, overlay,
+                    matrices, vertexConsumers,
+                    be.getWorld(), 1
+            );
+        } catch (Exception ignored) {
+        }
         matrices.pop();
     }
 }

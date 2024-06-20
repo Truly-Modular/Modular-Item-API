@@ -14,10 +14,8 @@ import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
-import smartin.miapi.client.gui.InteractAbleWidget;
-import smartin.miapi.client.gui.ParentHandledScreen;
-import smartin.miapi.client.gui.SimpleScreenHandlerListener;
-import smartin.miapi.client.gui.TransformableWidget;
+import smartin.miapi.client.gui.*;
+import smartin.miapi.client.gui.crafting.crafter.DetailView;
 import smartin.miapi.client.gui.crafting.crafter.ModuleCrafter;
 import smartin.miapi.client.gui.crafting.slotdisplay.SlotDisplay;
 import smartin.miapi.client.gui.crafting.slotdisplay.SmithDisplay;
@@ -45,7 +43,7 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
     private MinimizeButton minimizer;
     private SlotProperty.ModuleSlot baseSlot;
     @Nullable
-    public SlotProperty.ModuleSlot slot;
+    public static SlotProperty.ModuleSlot slot;
     @Nullable
     private static EditOption editOption;
     private TransformableWidget editHolder;
@@ -55,9 +53,12 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
 
     public CraftingScreen(CraftingScreenHandler handler, PlayerInventory inventory, Text title) {
         super(handler, inventory, Text.empty());
+        slot = null;
         this.backgroundWidth = 369 + 12 - 15;
 
         this.backgroundHeight = 223 - 9 - 15;
+
+        DetailView.scrollPos = 0;
     }
 
     public EditOption getEditOption() {
@@ -79,9 +80,12 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
         this.editOption = editOption;
         moduleCrafter.setSelectedSlot(slot);
         moduleCrafter.setEditMode(editOption, get(editOption));
+        PreviewManager.resetCursorStack();
     }
 
     public void init() {
+        slot = null;
+        editOption = null;
         List<String> allowedModules = new ArrayList<>();
         allowedModules.add("melee");
         baseSlot = new SlotProperty.ModuleSlot(allowedModules);
@@ -128,8 +132,12 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
             }
         }));
 
-        addChild(new EditOptionIcon(moduleCrafter.getX() - 36, moduleCrafter.getY() + 4, 32, 28, this::selectEditOption, this::getEditOption, BACKGROUND_TEXTURE, 339, 25, 512, 512, null));
-
+        addChild(new EditOptionIcon(moduleCrafter.getX() - 36, moduleCrafter.getY() + 4, 32, 28, this::selectEditOption, this::getEditOption, BACKGROUND_TEXTURE, 339, 25, 512, 512, "miapi.ui.edit_option.hover.info", null));
+        selectEditOption(null);
+        selectSlot(null);
+        previewStack(handler.inventory.getStack(0));
+        PreviewManager.resetCursorStack();
+        PreviewManager.resetPreview();
     }
 
     //could be the same as maximizeView()
@@ -184,6 +192,7 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
     }
 
     private void updateItem(ItemStack stack) {
+        PreviewManager.resetCursorStack();
         stack = stack.copy();
         slotDisplay.setItem(stack);
         ItemStack converted = ModularItemStackConverter.getModularVersion(stack).copy();
@@ -252,6 +261,7 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
         if (!editHolder.children().contains(editOption)) {
             editOption = null;
         }
+        PreviewManager.resetCursorStack();
         selectEditOption(editOption);
     }
 
@@ -324,6 +334,7 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
     @Override
     public void render(DrawContext drawContext, int mouseX, int mouseY, float delta) {
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+        renderBackground(drawContext);
         int i = (this.width - this.backgroundWidth) / 2;
         int j = (this.height - this.backgroundHeight) / 2;
         //InteractAbleWidget.drawSquareBorder(drawContext, i, j, this.backgroundWidth, this.backgroundHeight, 1, ColorHelper.Argb.getArgb(255, 255, 0, 0));
@@ -363,10 +374,10 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
             this.renderHover(drawContext, mouseX, mouseY, delta);
         });
         drawContext.getMatrices().pop();
+        PreviewManager.tick();
     }
 
     @Override
     protected void drawBackground(DrawContext context, float delta, int mouseX, int mouseY) {
-
     }
 }

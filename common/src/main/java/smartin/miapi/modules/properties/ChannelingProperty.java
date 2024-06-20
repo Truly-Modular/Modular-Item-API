@@ -1,32 +1,21 @@
 package smartin.miapi.modules.properties;
 
-import com.google.gson.JsonElement;
 import net.minecraft.item.ItemStack;
-import smartin.miapi.modules.ItemModule;
-import smartin.miapi.modules.properties.util.ModuleProperty;
+import smartin.miapi.modules.properties.util.ComplexBooleanProperty;
 
 /**
- * This property gives a projectile ender pearl behaviour
+ * This property gives a fake channeling to Modular Projectiles
  */
-public class ChannelingProperty implements ModuleProperty {
+public class ChannelingProperty extends ComplexBooleanProperty {
     public static final String KEY = "channeling";
     public static ChannelingProperty property;
 
     public ChannelingProperty() {
+        super(KEY,false);
         property = this;
     }
 
     public static boolean hasChanneling(ItemStack itemStack) {
-        JsonElement element = ItemModule.getMergedProperty(itemStack, property);
-        if (element != null) {
-            return element.getAsBoolean();
-        }
-        return false;
-    }
-
-    @Override
-    public boolean load(String moduleKey, JsonElement data) throws Exception {
-        data.getAsBoolean();
-        return true;
+        return property.isTrue(itemStack);
     }
 }

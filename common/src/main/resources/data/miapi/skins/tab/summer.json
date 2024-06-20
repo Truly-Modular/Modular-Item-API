@@ -1,0 +1,11 @@
+{
+    "path": "summer",
+    "background": {
+        "texture": "miapi:textures/skin/season/summer.png",
+        "color": "00000000",
+        "xSize": 100,
+        "ySize": 40,
+        "borderSize": 0,
+        "keepScale": true
+    }
+}

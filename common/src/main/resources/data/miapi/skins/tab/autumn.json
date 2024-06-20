@@ -1,0 +1,11 @@
+{
+    "path": "autumn",
+    "background": {
+        "texture": "miapi:textures/skin/season/autumn.png",
+        "color": "00000000",
+        "xSize": 100,
+        "ySize": 40,
+        "borderSize": 0,
+        "keepScale": true
+    }
+}

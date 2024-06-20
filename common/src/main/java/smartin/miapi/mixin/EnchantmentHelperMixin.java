@@ -4,7 +4,8 @@ import com.google.common.collect.Lists;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.EnchantmentLevelEntry;
-import net.minecraft.item.Item;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.Util;
@@ -14,10 +15,13 @@ import net.minecraft.util.math.random.Random;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.item.FakeEnchantment;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.modules.properties.ChannelingProperty;
+import smartin.miapi.modules.properties.EnchantAbilityProperty;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -68,12 +72,18 @@ public class EnchantmentHelperMixin {
         }
     }
 
+    @Inject(method = "onTargetDamaged(Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/entity/Entity;)V", at = @At("HEAD"), cancellable = true)
+    private static void miapi$addMagicDamage(LivingEntity attacker, Entity target, CallbackInfo ci) {
+        if (target instanceof LivingEntity defender) {
+            MiapiEvents.LIVING_ATTACK.invoker().attack(attacker, defender);
+        }
+    }
+
     @Inject(method = "generateEnchantments(Lnet/minecraft/util/math/random/Random;Lnet/minecraft/item/ItemStack;IZ)Ljava/util/List;", at = @At("HEAD"), cancellable = true)
     private static void miapi$modifyGenerateEnchantments(Random random, ItemStack stack, int level, boolean treasureAllowed, CallbackInfoReturnable<List<EnchantmentLevelEntry>> cir) {
         if (stack.getItem() instanceof ModularItem) {
             ArrayList<EnchantmentLevelEntry> list = Lists.newArrayList();
-            Item item = stack.getItem();
-            int i = item.getEnchantability();
+            int i = (int) Math.ceil(EnchantAbilityProperty.getEnchantAbility(stack));
             if (i <= 0) {
                 cir.setReturnValue(list);
             }
@@ -105,7 +115,7 @@ public class EnchantmentHelperMixin {
             for (Enchantment enchantment : Registries.ENCHANTMENT) {
                 if (
                         (!enchantment.isTreasure() || enchantment.isTreasure() && treasureAllowed) &&
-                                enchantment.isAvailableForRandomSelection() && enchantment.isAcceptableItem(stack)) {
+                        enchantment.isAvailableForRandomSelection() && enchantment.isAcceptableItem(stack)) {
                     for (int i = enchantment.getMaxLevel(); i > enchantment.getMinLevel() - 1; --i) {
                         if (power < enchantment.getMinPower(i) || power > enchantment.getMaxPower(i)) continue;
                         list.add(new EnchantmentLevelEntry(enchantment, i));
@@ -118,7 +128,7 @@ public class EnchantmentHelperMixin {
 
     @Inject(
             method = "getLevel(Lnet/minecraft/enchantment/Enchantment;Lnet/minecraft/item/ItemStack;)I",
-            at = @At("TAIL"),
+            at = @At("RETURN"),
             cancellable = true)
     private static void miapi$modifyPossibleEntries(Enchantment enchantment, ItemStack stack, CallbackInfoReturnable<Integer> cir) {
         if (stack.getItem() instanceof ModularItem) {
@@ -132,7 +142,7 @@ public class EnchantmentHelperMixin {
             for (Enchantment enchantment : Registries.ENCHANTMENT) {
                 if (
                         (!enchantment.isTreasure() || enchantment.isTreasure() && treasureAllowed) &&
-                                enchantment.isAvailableForRandomSelection() && enchantment.isAcceptableItem(stack)) {
+                        enchantment.isAvailableForRandomSelection() && enchantment.isAcceptableItem(stack)) {
                     for (int i = enchantment.getMaxLevel(); i > enchantment.getMinLevel() - 1; --i) {
                         if (power < enchantment.getMinPower(i) || power > enchantment.getMaxPower(i)) continue;
                         list.add(new EnchantmentLevelEntry(enchantment, i));
@@ -141,5 +151,13 @@ public class EnchantmentHelperMixin {
             }
         }
         return list;
+    }
+
+    @Inject(
+            method = "forEachEnchantment(Lnet/minecraft/enchantment/EnchantmentHelper$Consumer;Lnet/minecraft/item/ItemStack;)V",
+            at = @At("TAIL"),
+            cancellable = true)
+    private static void miapi$addFakeEnchants(EnchantmentHelper.Consumer consumer, ItemStack stack, CallbackInfo ci) {
+        FakeEnchantment.addEnchantments(consumer, stack);
     }
 }

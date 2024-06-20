@@ -1,14 +1,35 @@
 {
-  "required": true,
-  "minVersion": "0.8",
-  "package": "smartin.miapi.forge.mixin",
-  "compatibilityLevel": "JAVA_17",
-  "mixins": [
-  ],
-  "client": [
-    "ModelLoaderMixin"
-  ],
-  "injectors": {
-    "defaultRequire": 1
-  }
+    "required": true,
+    "minVersion": "0.8",
+    "package": "smartin.miapi.forge.mixin",
+    "compatibilityLevel": "JAVA_17",
+    "mixins": [
+        "LivingEntityMixin",
+        "compat.ItemStackUtilMixin",
+        "item.ExampleModularItemMixin",
+        "item.ExampleModularItemStackAbleMixin",
+        "item.ModularArrowMixin",
+        "item.ModularAxeMixin",
+        "item.ModularBoomerangItemMixin",
+        "item.ModularBootsMixin",
+        "item.ModularBowMixin",
+        "item.ModularChestplateMixin",
+        "item.ModularCrossbowMixin",
+        "item.ModularElytraMixin",
+        "item.ModularHelmetMixin",
+        "item.ModularHoeMixin",
+        "item.ModularLeggingsMixin",
+        "item.ModularPickaxeMixin",
+        "item.ModularShovelMixin",
+        "item.ModularSwordMixin",
+        "item.ModularWeaponMixin"
+    ],
+    "client": [
+        "ModelLoaderMixin",
+        "TextMixin",
+        "TranslatableTextContentAccessor"
+    ],
+    "injectors": {
+        "defaultRequire": 1
+    }
 }

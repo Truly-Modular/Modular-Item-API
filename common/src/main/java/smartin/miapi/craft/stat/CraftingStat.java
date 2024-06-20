@@ -1,29 +1,20 @@
 package smartin.miapi.craft.stat;
 
 import com.google.gson.JsonElement;
-import com.mojang.datafixers.util.Pair;
-import com.mojang.serialization.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtOps;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
-import smartin.miapi.Miapi;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
-import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.StatProvisionProperty;
 import smartin.miapi.modules.properties.StatRequirementProperty;
 import smartin.miapi.modules.properties.util.CraftingProperty;
-import smartin.miapi.registries.RegistryInventory;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.BiConsumer;
 
 /**
  * {@link CraftingStat}s are simple ways to require certain attributes, of which are provided by
@@ -87,7 +78,7 @@ public interface CraftingStat<T> {
      * @param newModule the new ModuleInstance
      * @param module    the new Module
      * @param inventory Linked Inventory, length of {@link CraftingProperty#getSlotPositions()}
-     * @param buf       the writen buffer from {@link CraftingProperty#writeCraftingBuffer(PacketByteBuf, InteractAbleWidget)}
+     * @param data      A map for properties to send addtional Data
      * @return if the crafting can happen
      */
     default boolean canCraft(
@@ -100,8 +91,8 @@ public interface CraftingStat<T> {
             ItemModule.ModuleInstance newModule,
             ItemModule module,
             List<ItemStack> inventory,
-            PacketByteBuf buf) {
-        return instance.equals(expected);
+            Map<String,String> data) {
+        return instance.equals(getBetter(instance, expected));
     }
 
     /**
@@ -120,90 +111,33 @@ public interface CraftingStat<T> {
     Text asText(T instance);
 
     /**
-     * A method used to merge two stat instances of this crafting stat.
-     * Imagine you have two hammers in your inventory, this method will determine what to do with the provided
-     * stat instances of those two hammers. In this example, as with most cases, you'll likely want to pick the
-     * "higher" or "better" stat instance.
+     * A method used to getVertexConsumer the "better" of two stat instances.
+     * If the first and second are equal, typically return the first. (If it matters)
      *
-     * @param bench   the workbench block entity (null on client)
-     * @param old     the old stat instance
-     * @param toMerge the stat instance being added on
-     * @return the merged result
+     * @param first  the first stat instance
+     * @param second the second stat instance
+     * @return the value which is "higher" or "better"
      */
-    T merge(@Nullable ModularWorkBenchEntity bench, T old, T toMerge);
+    T getBetter(T first, T second);
 
-    /* crafting stat to stat instance map that enforces the instance is of the correct stat.
-    Only create instances of this class with a complete wildcard as the type parameter, otherwise severe issues may arise.*/
-    class StatMap<T> extends HashMap<CraftingStat<T>, T> {
-        public static <T> void forEach(StatMap<?> map, BiConsumer<CraftingStat<T>, T> consumer) {
-            if (map == null) return;
-            map.forEach((k, v) -> consumer.accept((CraftingStat<T>) k, (T) v));
-        }
+    /**
+     * Multiply the two parameters, and return the result. <br>
+     * Note: in some instances, you may not be able to multiply with this stat, because there simply is no way to do that.
+     * In those circumstances, just return the second or first. This stat will likely never be used in multiplication anyway.
+     * @param first  the left operand
+     * @param second the right operand
+     * @return the multiplied result
+     */
+    T multiply(T first, T second);
 
-        public <E> E get(CraftingStat<E> key) {
-            return (E) super.get(key);
-        }
+    /**
+     * Add the two parameters, and return the result. <br>
+     * Note: in some instances, you may not be able to add with this stat, because there simply is no way to do that.
+     * In those circumstances, just return the second or first. This stat will likely never be used in addition anyway.
+     * @param first  the left operand
+     * @param second the right operand
+     * @return the summed result
+     */
+    T add(T first, T second);
 
-        public <E> StatMap<T> set(CraftingStat<E> key, E val) {
-            this.put((CraftingStat<T>) key, (T) val);
-            return this;
-        }
-
-        public <E> E getOrDefault(CraftingStat<E> stat) {
-            E val = get(stat);
-            if (val == null) return stat.getDefault();
-            return val;
-        }
-
-        public static class StatMapCodec implements Codec<StatMap<?>> {
-            private final ItemModule.ModuleInstance modules;
-
-            public StatMapCodec(ItemModule.ModuleInstance modules) {
-                this.modules = modules;
-            }
-
-            @Override
-            public <T> DataResult<Pair<StatMap<?>, T>> decode(DynamicOps<T> ops, T input) {
-                StatMap<?> stats = new StatMap<>();
-                MapLike<T> map = ops.getMap(input).getOrThrow(false, s -> Miapi.LOGGER.error("Failed to create map in StatMapCodec! -> {}", s));
-                map.entries().forEach(p -> {
-                    String str = ops.getStringValue(p.getFirst()).getOrThrow(false, s -> Miapi.LOGGER.error("Failed to getRaw string in StatMapCodec! -> {}", s));
-                    CraftingStat stat = RegistryInventory.craftingStats.get(str);
-                    T element = p.getSecond();
-                    if (stat != null) {
-                        if (element instanceof JsonElement json)
-                            stats.set(stat, stat.createFromJson(json, modules));
-                        else if (element instanceof NbtElement nbt)
-                            stats.set(stat, stat.createFromNbt(nbt)); // nbt doesn't getRaw the modules cuz nbt is usually for syncing not parsing
-                        else // hardcoding this codec nbt and json probably isn't the best thing to do, but smartin would prob getRaw mad if I forced the use of codecs in crafting stats
-                            Miapi.LOGGER.warn("Only Json and Nbt deserialization is supported with the StatMapCodec!");
-                    } // I could warn if the stat id is invalid, but optional compat is a thing and spamming console with invalid id warns is obnoxious af
-                });
-
-                return DataResult.success(Pair.of(stats, input));
-            }
-
-            @Override // i probably don't even need to define encoding cuz it will likely never be used, but i will anyways
-            public <T> DataResult<T> encode(StatMap<?> input, DynamicOps<T> ops, T prefix) {
-                Map<T, T> map = new HashMap<>();
-
-                input.forEach((stat, inst) -> {
-                    T obj;
-
-                    if (ops instanceof JsonOps)
-                        obj = (T) stat.saveToJson(inst);
-                    else if (ops instanceof NbtOps)
-                        obj = (T) stat.saveToNbt(inst);
-                    else {
-                        Miapi.LOGGER.warn("Only Json and Nbt serialization is supported with the StatMapCodec!");
-                        throw new IllegalArgumentException();
-                    }
-
-                    map.put(ops.createString(RegistryInventory.craftingStats.findKey(stat)), obj);
-                });
-
-                return DataResult.success(ops.createMap(map));
-            }
-        }
-    }
 }

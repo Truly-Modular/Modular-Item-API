@@ -114,7 +114,7 @@ public class ScrollingTextWidget extends InteractAbleWidget implements Drawable,
             boolean stallScrollPos = false;
             if (scrollPosition < string.length()) {
                 String sub = string.substring(0, scrollPosition);
-                String remaining = string.substring(Math.min(string.length()-1, scrollPosition+1));
+                String remaining = string.substring(Math.min(string.length() - 1, scrollPosition + 1));
                 int subLength = MinecraftClient.getInstance().textRenderer.getWidth(sub);
                 int remainingLength = MinecraftClient.getInstance().textRenderer.getWidth(remaining);
                 offsetAmount = -subLength;
@@ -132,16 +132,17 @@ public class ScrollingTextWidget extends InteractAbleWidget implements Drawable,
                 timer = -firstLetterExtraTime;
             }
 
-            textStart+=offsetAmount;
+            textStart += offsetAmount;
             Vector4f corner1 = TransformableWidget.transFormMousePos(getX(), getY(), context.getMatrices().peek().getPositionMatrix());
-            Vector4f corner2 = TransformableWidget.transFormMousePos(getX()+width, getY()+height, context.getMatrices().peek().getPositionMatrix());
-            context.enableScissor((int) corner1.x, (int) corner1.y, (int) corner2.x+1, (int) corner2.y);
+            Vector4f corner2 = TransformableWidget.transFormMousePos(getX() + width, getY() + height, context.getMatrices().peek().getPositionMatrix());
+            context.enableScissor((int) corner1.x, (int) corner1.y, (int) corner2.x + 1, (int) corner2.y);
             scissorEnabled = true;
         }
-        if(text!=null){
+        if (text != null) {
             context.drawText(MinecraftClient.getInstance().textRenderer, text, textStart, getY(), textColor, hasTextShadow);
         }
         if (scissorEnabled) context.disableScissor();
+        super.render(context, mouseX, mouseY, delta);
     }
 
     public int getRequiredWidth() {

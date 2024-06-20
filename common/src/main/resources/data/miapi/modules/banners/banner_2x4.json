@@ -1,0 +1,36 @@
+{
+    "name": "banner_2x4",
+    "inscribe_data_on_craft": "banner",
+    "allowedInSlots": [
+        "banner_2x4",
+        "cosmetic_2x4"
+    ],
+    "banner": [{
+        "type": "module_data",
+        "model": "model",
+        "modelType": "parent",
+        "transform": {
+            "rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "translation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "scale": {
+                "x": 2.0,
+                "y": 2.0,
+                "z": 2.0
+            }
+        }
+    }],
+    "allowedMaterial": {
+        "allowedMaterials": [
+            "banner"
+        ],
+        "cost": 1
+    }
+}

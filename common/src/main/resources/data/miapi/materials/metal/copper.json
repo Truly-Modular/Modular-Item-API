@@ -9,6 +9,7 @@
     "density": 3.6,
     "flexibility": 1,
     "durability": 200,
+    "enchantability": 13,
     "color": "E47B55",
     "color_palette": {
         "type": "grayscale_map",
@@ -23,7 +24,7 @@
         }
     },
     "textures": [
-        "metalic"
+        "metallic"
     ],
     "mining_speed": 5,
     "mining_level": 2,

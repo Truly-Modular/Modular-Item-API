@@ -12,6 +12,7 @@
     "durability": 196,
     "mining_speed": 4,
     "mining_level": 0,
+    "enchantability": 20,
     "color": "1C52A6",
     "color_palette": {
         "type": "grayscale_map",
@@ -28,6 +29,14 @@
     "textures": [
         "shiny"
     ],
+    "properties": {
+        "tool": {
+            "luminiousLearning": "1"
+        },
+        "handheld": {
+            "luminiousLearning": "0.3"
+        }
+    },
     "items": [
         {
             "item": "minecraft:lapis_lazuli",

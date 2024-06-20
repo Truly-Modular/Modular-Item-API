@@ -1,13 +1,15 @@
 package smartin.miapi.blocks;
 
-import dev.architectury.event.EventResult;
+import com.redpxnda.nucleus.codec.misc.MiscCodecs;
+import com.redpxnda.nucleus.util.MiscUtil;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
@@ -23,24 +25,50 @@ import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.event.PositionSource;
 import net.minecraft.world.event.listener.GameEventListener;
 import org.jetbrains.annotations.Nullable;
-import smartin.miapi.client.gui.SimpleScreenHandlerListener;
+import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
 import smartin.miapi.craft.stat.CraftingStat;
+import smartin.miapi.craft.stat.StatProvidersMap;
 import smartin.miapi.events.MiapiEvents;
-import smartin.miapi.item.StatProvidingItem;
-import smartin.miapi.modules.properties.StatProvisionProperty;
 import smartin.miapi.registries.RegistryInventory;
 
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 public class ModularWorkBenchEntity extends BlockEntity implements NamedScreenHandlerFactory, GameEventListener {
+    public static final Map<GameEvent, CustomGameEventHandler> gameEventHandlers = MiscUtil.initialize(new ConcurrentHashMap<>(), map -> {
+        map.put(RegistryInventory.statProviderCreatedEvent, (bench, world, event, emitter, emitterPos) -> {
+            if (emitter.affectedState() != null) {
+                BlockPos pos = new BlockPos((int) emitterPos.x, (int) emitterPos.y, (int) emitterPos.z);
+                Block block = emitter.affectedState().getBlock();
+                if (block instanceof IStatProvidingBlock statProvider) {
+                    bench.persistentStats.computeIfAbsent(pos.toString(), s -> new StatProvidersMap());
+                    bench.persistentStats.get(pos.toString()).putAll(statProvider.getProviders(bench, emitter.affectedState(), pos, world));
+                }
+            }
+            return false;
+        });
+        map.put(RegistryInventory.statProviderRemovedEvent, (bench, world, event, emitter, emitterPos) -> {
+            if (emitter.affectedState() != null) {
+                BlockPos pos = new BlockPos((int) emitterPos.x, (int) emitterPos.y, (int) emitterPos.z);
+                bench.persistentStats.remove(pos.toString());
+            }
+            return false;
+        });
+    });
+
     protected final PropertyDelegate propertyDelegate;
     private ItemStack stack;
-    public final CraftingStat.StatMap<?> blockStats = new CraftingStat.StatMap<>();
-    public final CraftingStat.StatMap<?> itemStats = new CraftingStat.StatMap<>();
+    public final Map<String, StatProvidersMap> persistentStats = new HashMap<>();
+    protected final Map<CraftingStat, Object> stats = new HashMap<>();
     public int x;
     public int y;
     public int z;
     protected BlockPositionSource blockPositionSource;
-    public long lastItemStatUpdate = -100;
 
     public ModularWorkBenchEntity(BlockPos pos, BlockState state) {
         super(RegistryInventory.modularWorkBenchEntityType, pos, state);
@@ -79,32 +107,13 @@ public class ModularWorkBenchEntity extends BlockEntity implements NamedScreenHa
     public void setItem(ItemStack stack) {
         this.stack = stack == null ? ItemStack.EMPTY : stack.copy();
     }
+
     public ItemStack getItem() {
         return stack;
     }
 
-    public <T> T getBlockStat(CraftingStat<T> stat) {
-        return blockStats.getOrDefault(stat);
-    }
-    public <T> T getItemStat(CraftingStat<T> stat) {
-        return itemStats.getOrDefault(stat);
-    }
     public <T> T getStat(CraftingStat<T> stat) {
-        return stat.merge(this, getItemStat(stat), getBlockStat(stat));
-    }
-    public <T> void setBlockStat(CraftingStat<T> stat, T val) {
-        T old = getBlockStat(stat);
-        blockStats.set(stat, stat.merge(this, old, val));
-    }
-    public <T> void setItemStat(CraftingStat<T> stat, T val) {
-        T old = getItemStat(stat);
-        itemStats.set(stat, stat.merge(this, old, val));
-    }
-    public <T> void overrideBlockStat(CraftingStat<T> stat, T val) {
-        blockStats.set(stat, val);
-    }
-    public <T> void overrideItemStat(CraftingStat<T> stat, T val) {
-        itemStats.set(stat, val);
+        return (T) stats.get(stat);
     }
 
     @Override
@@ -113,41 +122,40 @@ public class ModularWorkBenchEntity extends BlockEntity implements NamedScreenHa
 
         tag.put("Item", stack.writeNbt(new NbtCompound()));
 
-        NbtCompound statsBlock = new NbtCompound();
-        blockStats.forEach((stat, val) -> {
-            statsBlock.put(RegistryInventory.craftingStats.findKey(stat), stat.saveToNbt(val));
+        NbtCompound persisStatsNbt = new NbtCompound();
+        persistentStats.forEach((key, val) -> persisStatsNbt.put(key, StatProvidersMap.MODULELESS_CODEC.encodeStart(NbtOps.INSTANCE, val).getOrThrow(false, s -> Miapi.LOGGER.error("Failed to encode persistent StatProvidersMap for MWBE! -> {}", s))));
+
+        NbtCompound statsNbt = new NbtCompound();
+        stats.forEach((stat, inst) -> {
+            statsNbt.put(RegistryInventory.craftingStats.findKey(stat), stat.saveToNbt(inst));
         });
-        NbtCompound statsItem = new NbtCompound();
-        itemStats.forEach((stat, val) -> {
-            statsItem.put(RegistryInventory.craftingStats.findKey(stat), stat.saveToNbt(val));
-        });
-        tag.put("BlockStats", statsBlock);
-        tag.put("ItemStats", statsItem);
+
+        tag.put("PersistentStats", persisStatsNbt);
+        tag.put("Stats", statsNbt);
     }
 
 
     @Override
     public void readNbt(NbtCompound tag) {
         super.readNbt(tag);
-        blockStats.clear();
-        itemStats.clear();
+        persistentStats.clear();
+        stats.clear();
 
-        if (tag.contains("Item"))
-            stack = ItemStack.fromNbt(tag.getCompound("Item"));
+        if (tag.contains("Item")) stack = ItemStack.fromNbt(tag.getCompound("Item"));
 
-        NbtCompound blocks = tag.getCompound("BlockStats");
-        blocks.getKeys().forEach(key -> {
-            NbtElement val = blocks.get(key);
-            CraftingStat stat = RegistryInventory.craftingStats.get(key);
-            if (stat != null)
-                blockStats.set(stat, stat.createFromNbt(val));
+        NbtCompound persisStatsNbt = tag.getCompound("PersistentStats");
+        persisStatsNbt.getKeys().forEach(key -> {
+            persistentStats.put(key, MiscCodecs.quickParse(NbtOps.INSTANCE, persisStatsNbt.getCompound(key), StatProvidersMap.MODULELESS_CODEC, s -> Miapi.LOGGER.error("Failed to decode persistent StatProvidersMap for MWBE! -> {}", s)));
         });
-        NbtCompound items = tag.getCompound("ItemStats");
-        items.getKeys().forEach(key -> {
-            NbtElement val = items.get(key);
+
+        NbtCompound statsNbt = tag.getCompound("Stats");
+        statsNbt.getKeys().forEach(key -> {
             CraftingStat stat = RegistryInventory.craftingStats.get(key);
-            if (stat != null)
-                blockStats.set(stat, stat.createFromNbt(val));
+            if (stat == null) {
+                Miapi.LOGGER.warn("Found unknown CraftingStat id '{}'!", key);
+                return;
+            }
+            stats.put(stat, stat.createFromNbt(statsNbt.get(key)));
         });
     }
 
@@ -166,8 +174,15 @@ public class ModularWorkBenchEntity extends BlockEntity implements NamedScreenHa
 
     public void saveAndSync() {
         markDirty();
-        if (hasWorld())
-            world.updateListeners(pos, world.getBlockState(pos), getCachedState(), 3);
+        if (hasWorld()) world.updateListeners(pos, world.getBlockState(pos), getCachedState(), 3);
+        handlers.forEach(weakReference -> {
+            CraftingScreenHandler handler = weakReference.get();
+            if (handler != null) {
+                if (!ItemStack.areEqual(handler.inventory.getStack(0),getItem())) {
+                    handler.inventory.setStack(0, getItem());
+                }
+            }
+        });
     }
 
     @Override
@@ -175,41 +190,22 @@ public class ModularWorkBenchEntity extends BlockEntity implements NamedScreenHa
         return Text.literal("test");
     }
 
-    // Set player to null if you don't have one. This will make items that try to provide stats without the StatProvisionProperty ignored.
-    public void updateStatsFromItems(Iterable<ItemStack> inventory, @Nullable PlayerEntity player) {
-        EventResult result = MiapiEvents.ITEM_STAT_UPDATE.invoker().call(this, inventory, player);
-        if (result.interruptsFurtherEvaluation()) return;
-        itemStats.clear();
-        inventory.forEach(itemStack -> {
-            CraftingStat.StatMap<?> stats = StatProvisionProperty.property.get(itemStack);
-            if (stats == null) {
-                if (player != null && itemStack.getItem() instanceof StatProvidingItem item)
-                    stats = item.getStats(this, player, itemStack);
-                else return;
-            }
-            stats.forEach((stat, inst) -> setItemStat((CraftingStat<Object>) stat, inst)); // casting here weirdly because uh java is weird
-        });
-    }
-    public void updateBlockStats(@Nullable PlayerEntity player) {
-        EventResult result = MiapiEvents.BLOCK_STAT_UPDATE.invoker().call(this, player);
-        if (result.interruptsFurtherEvaluation()) return;
-        blockStats.clear();
-        world.emitGameEvent(RegistryInventory.statUpdateEvent, pos, new GameEvent.Emitter(player, getCachedState()));
-    }
-    public void updateAllStats(Iterable<ItemStack> inventory, PlayerEntity player) {
-        if (hasWorld() && !world.isClient) {
-            updateBlockStats(player);
-            updateStatsFromItems(inventory, player);
-            world.updateListeners(pos, world.getBlockState(pos), getCachedState(), 3);
-        }
-    }
+    List<WeakReference<CraftingScreenHandler>> handlers = new ArrayList<>();
 
     @Nullable
     @Override
     public ScreenHandler createMenu(int syncId, PlayerInventory playerInventory, PlayerEntity player) {
-        updateBlockStats(player);
         CraftingScreenHandler handler = new CraftingScreenHandler(syncId, playerInventory, this, propertyDelegate);
-        handler.addListener(new SimpleScreenHandlerListener((h, slotId, itemStack) -> {
+
+        stats.clear();
+        StatProvidersMap providers = new StatProvidersMap();
+        MiapiEvents.STAT_UPDATE_EVENT.invoker().update(this, providers, syncId, playerInventory, player, handler);
+        persistentStats.forEach((key, map) -> providers.putAll(map));
+        stats.putAll(providers.evaluateAll());
+        saveAndSync();
+        handlers.add(new WeakReference<>(handler));
+
+        /*handler.addListener(new SimpleScreenHandlerListener((h, slotId, itemStack) -> {
             long currentWorldTime;
             if (
                     hasWorld() && !world.isClient &&
@@ -219,7 +215,7 @@ public class ModularWorkBenchEntity extends BlockEntity implements NamedScreenHa
                 lastItemStatUpdate = currentWorldTime;
                 world.updateListeners(pos, world.getBlockState(pos), getCachedState(), 3);
             }
-        }));
+        }));*/
         return handler;
     }
 
@@ -236,14 +232,12 @@ public class ModularWorkBenchEntity extends BlockEntity implements NamedScreenHa
 
     @Override
     public boolean listen(ServerWorld world, GameEvent event, GameEvent.Emitter emitter, Vec3d emitterPos) {
-        if (event.equals(RegistryInventory.statProviderUpdatedEvent)) {
-            if (hasWorld()) {
-                blockStats.clear();
-                updateBlockStats(null);
-                this.world.updateListeners(pos, world.getBlockState(pos), getCachedState(), 3);
-                return true;
-            }
-        }
-        return false;
+        CustomGameEventHandler handler = gameEventHandlers.get(event);
+        if (handler == null) return false;
+        return handler.handle(this, world, event, emitter, emitterPos);
+    }
+
+    public interface CustomGameEventHandler {
+        boolean handle(ModularWorkBenchEntity bench, ServerWorld world, GameEvent event, GameEvent.Emitter emitter, Vec3d emitterPos);
     }
 }

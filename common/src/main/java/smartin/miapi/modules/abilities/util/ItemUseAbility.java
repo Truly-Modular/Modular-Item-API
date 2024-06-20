@@ -1,5 +1,6 @@
 package smartin.miapi.modules.abilities.util;
 
+import com.google.gson.JsonObject;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -9,13 +10,16 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
 import net.minecraft.world.World;
+import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.cache.ModularItemCache;
+import smartin.miapi.modules.properties.AbilityMangerProperty;
 
 /**
  * Implement this interface to provide custom behavior for item usage and handling.
  * This class allows Modular Items to swap their Actions on RightClick (UseKey).
  * Register implementations in the {@link ItemAbilityManager#useAbilityRegistry} to be used.
  */
-public interface ItemUseAbility {
+public interface ItemUseAbility<T> {
     /**
      * Checks if this {@link ItemUseAbility} is allowed on the specified item stack, world, player, and hand.
      *
@@ -25,7 +29,7 @@ public interface ItemUseAbility {
      * @param hand      The hand with which the item is being used.
      * @return true if the item is allowed to be used, false otherwise.
      */
-    boolean allowedOnItem(ItemStack itemStack, World world, PlayerEntity player, Hand hand, ItemAbilityManager.AbilityContext abilityContext);
+    boolean allowedOnItem(ItemStack itemStack, World world, PlayerEntity player, Hand hand, ItemAbilityManager.AbilityHitContext abilityHitContext);
 
     /**
      * Gets the use action of the specified item stack.
@@ -114,5 +118,29 @@ public interface ItemUseAbility {
 
     default void usageTick(World world, LivingEntity user, ItemStack stack, int remainingUseTicks) {
 
+    }
+
+    default AbilityMangerProperty.AbilityContext getAbilityContext(ItemStack itemStack) {
+        String key = ItemAbilityManager.useAbilityRegistry.findKey(this);
+        if (key != null) {
+            AbilityMangerProperty.AbilityContext context1 = AbilityMangerProperty.getContext(itemStack, key);
+            if(context1!=null){
+                return context1;
+            }
+        }
+        return new AbilityMangerProperty.AbilityContext(new JsonObject(), ItemModule.getModules(itemStack), itemStack);
+    }
+
+    /**
+     * This can be implemented for caching related context, abilities should use this if they are highly complex
+     * @param jsonObject
+     * @return
+     */
+    default T fromJson(JsonObject jsonObject) {
+        return null;
+    }
+
+    default T getSpecialContext(ItemStack itemStack, T defaultValue) {
+        return ModularItemCache.get(itemStack, AbilityMangerProperty.KEY + "_" + ItemAbilityManager.useAbilityRegistry.findKey(this), defaultValue);
     }
 }

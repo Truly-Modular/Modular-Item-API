@@ -11,6 +11,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
+import org.jetbrains.annotations.Nullable;
 import smartin.miapi.entity.ItemProjectileEntity;
 
 public final class MiapiProjectileEvents {
@@ -24,16 +25,22 @@ public final class MiapiProjectileEvents {
     public static final PrioritizedEvent<ItemProjectileDataTracker> MODULAR_PROJECTILE_DATA_TRACKER_SET = PrioritizedEvent.createEventResult();
     public static final PrioritizedEvent<PlayerPickupEvent> MODULAR_PROJECTILE_PICK_UP = PrioritizedEvent.createEventResult();
 
+    public static final PrioritizedEvent<CrossbowContext> MODULAR_CROSSBOW_PRE_SHOT = PrioritizedEvent.createEventResult();
+    public static final PrioritizedEvent<CrossbowContextEvent> MODULAR_CROSSBOW_LOAD = PrioritizedEvent.createEventResult();
+    public static final PrioritizedEvent<CrossbowContextEvent> MODULAR_CROSSBOW_LOAD_AFTER = PrioritizedEvent.createEventResult();
+    public static final PrioritizedEvent<CrossbowContext> MODULAR_CROSSBOW_POST_SHOT = PrioritizedEvent.createEventResult();
+
     public static final PrioritizedEvent<ModularBowShot> MODULAR_BOW_SHOT = PrioritizedEvent.createEventResult();
     public static final PrioritizedEvent<ModularBowShot> MODULAR_BOW_POST_SHOT = PrioritizedEvent.createEventResult();
 
     public static class ModularProjectileEntityHitEvent {
         public EntityHitResult entityHitResult;
         public ItemProjectileEntity projectile;
+        @Nullable
         public DamageSource damageSource;
         public float damage;
 
-        public ModularProjectileEntityHitEvent(EntityHitResult entityHitResult, ItemProjectileEntity projectile, DamageSource damageSource, float damage) {
+        public ModularProjectileEntityHitEvent(EntityHitResult entityHitResult, ItemProjectileEntity projectile, @Nullable DamageSource damageSource, float damage) {
             this.entityHitResult = entityHitResult;
             this.projectile = projectile;
             this.damageSource = damageSource;
@@ -60,6 +67,26 @@ public final class MiapiProjectileEvents {
             this.projectile = projectile;
             this.bowStack = bowStack;
             this.shooter = shooter;
+        }
+    }
+
+    public interface CrossbowContext {
+        EventResult shoot(LivingEntity player, ItemStack crossbow);
+    }
+
+    public interface CrossbowContextEvent {
+        EventResult load(CrossbowLoadingContext context);
+    }
+
+    public static class CrossbowLoadingContext {
+        public LivingEntity player;
+        public ItemStack crossbow;
+        public ItemStack loadingProjectile;
+
+        public CrossbowLoadingContext(LivingEntity player, ItemStack crossbow, ItemStack loadingProjectile) {
+            this.player = player;
+            this.crossbow = crossbow;
+            this.loadingProjectile = loadingProjectile;
         }
     }
 

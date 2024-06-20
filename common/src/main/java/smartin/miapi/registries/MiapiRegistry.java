@@ -17,17 +17,17 @@ public class MiapiRegistry<T> {
     /**
      * The map of entries stored in this registry, indexed by name.
      */
-    protected final Map<String, T> entries = new LinkedHashMap<>();
+    protected final Map<String, T> entries = Collections.synchronizedMap(new LinkedHashMap<>());
     /**
      * The map of all MiapiRegistry instances, indexed by class type.
      */
-    protected static final Map<Class<?>, MiapiRegistry<?>> REGISTRY_MAP = new LinkedHashMap<>();
+    protected static final Map<Class<?>, MiapiRegistry<?>> REGISTRY_MAP = Collections.synchronizedMap(new LinkedHashMap<>());
     /**
      * The list of callbacks to invoke when new entries are added to the registry.
      */
     protected final List<Consumer<T>> callbacks = new ArrayList<>();
 
-    protected final Map<String, Supplier<T>> suppliers = new LinkedHashMap<>();
+    protected final Map<String, Supplier<T>> suppliers = Collections.synchronizedMap(new LinkedHashMap<>());
 
     /**
      * Protected constructor to prevent direct instantiation of the registry.
@@ -180,6 +180,7 @@ public class MiapiRegistry<T> {
 
     /**
      * Returns a flat map of all entries in this registry, with the entry names as keys and the entry values as values.
+     * this is the registries internal map, so this can be used to edit the entries.
      *
      * @return a map of all entries in this registry
      */

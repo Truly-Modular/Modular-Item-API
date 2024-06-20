@@ -1,0 +1,112 @@
+name: Maven Release
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Setup Java
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'adopt'
+          java-version: '17'
+
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2.4.2
+
+      - name: Read Gradle Properties
+        uses: BrycensRanch/read-properties-action@v1
+        id: all
+        with:
+          file: gradle.properties
+          all: true
+
+      - name: Gradle chmod
+        run: chmod +x ./gradlew
+
+      - name: Build with Gradle
+        run: ./gradlew githubPublish
+        
+      - name: Create Github Release
+        uses: ncipollo/release-action@v1
+        with:
+          bodyFile: CHANGELOG.md
+          tag: ${{ steps.all.outputs.mod_version }}-${{ steps.all.outputs.minecraft_version }}
+          name: Truly Modular - Modular-Item-API v${{ steps.all.outputs.mod_version }}-${{ steps.all.outputs.minecraft_version }}
+
+      - name: Upload Fabric Jar to Github Release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: build/repository/com/Truly-Modular/Modular-Item-API/Truly-Modular-miapi-fabric/${{ steps.all.outputs.mod_version }}-${{ steps.all.outputs.minecraft_version }}/Truly-Modular-miapi-fabric-${{ steps.all.outputs.mod_version }}-${{ steps.all.outputs.minecraft_version }}.jar
+          tag: ${{ steps.all.outputs.mod_version }}-${{ steps.all.outputs.minecraft_version }}
+          overwrite: true
+
+      - name: Upload Fabric Sources Jar to Github Release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: build/repository/com/Truly-Modular/Modular-Item-API/Truly-Modular-miapi-fabric/${{ steps.all.outputs.mod_version }}-${{ steps.all.outputs.minecraft_version }}/Truly-Modular-miapi-fabric-${{ steps.all.outputs.mod_version }}-${{ steps.all.outputs.minecraft_version }}-sources.jar
+          tag: ${{ steps.all.outputs.mod_version }}-${{ steps.all.outputs.minecraft_version }}
+          overwrite: true
+
+      - name: Upload Fabric Pom to Github Release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: build/repository/com/Truly-Modular/Modular-Item-API/Truly-Modular-miapi-fabric/${{ steps.all.outputs.mod_version }}-${{ steps.all.outputs.minecraft_version }}/Truly-Modular-miapi-fabric-${{ steps.all.outputs.mod_version }}-${{ steps.all.outputs.minecraft_version }}.pom
+          tag: ${{ steps.all.outputs.mod_version }}-${{ steps.all.outputs.minecraft_version }}
+          overwrite: true
+
+      - name: Upload Forge Jar to Github Release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: build/repository/com/Truly-Modular/Modular-Item-API/Truly-Modular-miapi-forge/${{ steps.all.outputs.mod_version }}-${{ steps.all.outputs.minecraft_version }}/Truly-Modular-miapi-forge-${{ steps.all.outputs.mod_version }}-${{ steps.all.outputs.minecraft_version }}.jar
+          tag: ${{ steps.all.outputs.mod_version }}-${{ steps.all.outputs.minecraft_version }}
+          overwrite: true
+
+      - name: Upload Forge Sources Jar to Github Release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: build/repository/com/Truly-Modular/Modular-Item-API/Truly-Modular-miapi-forge/${{ steps.all.outputs.mod_version }}-${{ steps.all.outputs.minecraft_version }}/Truly-Modular-miapi-forge-${{ steps.all.outputs.mod_version }}-${{ steps.all.outputs.minecraft_version }}-sources.jar
+          tag: ${{ steps.all.outputs.mod_version }}-${{ steps.all.outputs.minecraft_version }}
+          overwrite: true
+
+      - name: Upload Forge Pom to Github Release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: build/repository/com/Truly-Modular/Modular-Item-API/Truly-Modular-miapi-forge/${{ steps.all.outputs.mod_version }}-${{ steps.all.outputs.minecraft_version }}/Truly-Modular-miapi-forge-${{ steps.all.outputs.mod_version }}-${{ steps.all.outputs.minecraft_version }}.pom
+          tag: ${{ steps.all.outputs.mod_version }}-${{ steps.all.outputs.minecraft_version }}
+          overwrite: true
+
+      - name: Upload Common Jar to Github Release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: build/repository/com/Truly-Modular/Modular-Item-API/Truly-Modular-miapi-common/${{ steps.all.outputs.mod_version }}-${{ steps.all.outputs.minecraft_version }}/Truly-Modular-miapi-common-${{ steps.all.outputs.mod_version }}-${{ steps.all.outputs.minecraft_version }}.jar
+          tag: ${{ steps.all.outputs.mod_version }}-${{ steps.all.outputs.minecraft_version }}
+          overwrite: true
+
+      - name: Upload Common Sources Jar to Github Release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: build/repository/com/Truly-Modular/Modular-Item-API/Truly-Modular-miapi-common/${{ steps.all.outputs.mod_version }}-${{ steps.all.outputs.minecraft_version }}/Truly-Modular-miapi-common-${{ steps.all.outputs.mod_version }}-${{ steps.all.outputs.minecraft_version }}-sources.jar
+          tag: ${{ steps.all.outputs.mod_version }}-${{ steps.all.outputs.minecraft_version }}
+          overwrite: true
+
+      - name: Upload Common Pom to Github Release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: build/repository/com/Truly-Modular/Modular-Item-API/Truly-Modular-miapi-common/${{ steps.all.outputs.mod_version }}-${{ steps.all.outputs.minecraft_version }}/Truly-Modular-miapi-common-${{ steps.all.outputs.mod_version }}-${{ steps.all.outputs.minecraft_version }}.pom
+          tag: ${{ steps.all.outputs.mod_version }}-${{ steps.all.outputs.minecraft_version }}
+          overwrite: true

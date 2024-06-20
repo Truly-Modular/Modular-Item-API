@@ -7,6 +7,8 @@
   "density": 3.8,
   "flexibility": 1,
   "durability": 250,
+  "armor_durability_offset": -10,
+  "enchantability": 14,
   "color": "FCFCFC",
   "color_palette": {
     "type": "grayscale_map",
@@ -22,7 +24,8 @@
     "filler": "interpolate"
   },
   "textures": [
-    "metalic"
+    "metallic",
+    "bright"
   ],
   "mining_speed": 6,
   "mining_level": 2,

@@ -1,6 +1,7 @@
 package smartin.miapi.item.modular.items;
 
 import net.minecraft.block.BlockState;
+import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -12,16 +13,22 @@ import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 import smartin.miapi.item.modular.ModularItem;
+import smartin.miapi.item.modular.PlatformModularItemMethods;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
-import smartin.miapi.modules.properties.DisplayNameProperty;
-import smartin.miapi.modules.properties.MiningLevelProperty;
-import smartin.miapi.modules.properties.RepairPriority;
-import smartin.miapi.modules.properties.ToolOrWeaponProperty;
+import smartin.miapi.modules.properties.*;
+import smartin.miapi.modules.properties.mining.MiningLevelProperty;
 
-public class ModularWeapon extends Item implements ModularItem {
+import java.util.List;
+
+public class ModularWeapon extends Item implements PlatformModularItemMethods, ModularItem {
     public ModularWeapon() {
-        super(new Settings().maxCount(1).maxDamage(500).rarity(Rarity.COMMON));
+        this(new Settings(), true);
+    }
+
+    public ModularWeapon(Settings settings, boolean withDefaultSettings) {
+        super(withDefaultSettings ? settings.maxCount(1).maxDamage(500) : settings);
     }
 
     @Override
@@ -122,6 +129,11 @@ public class ModularWeapon extends Item implements ModularItem {
     }
 
     @Override
+    public Rarity getRarity(ItemStack stack) {
+        return RarityProperty.getRarity(stack);
+    }
+
+    @Override
     public void usageTick(World world, LivingEntity user, ItemStack stack, int remainingUseTicks) {
         ItemAbilityManager.usageTick(world, user, stack, remainingUseTicks);
     }
@@ -140,5 +152,10 @@ public class ModularWeapon extends Item implements ModularItem {
     @Override
     public ActionResult useOnBlock(ItemUsageContext context) {
         return ItemAbilityManager.useOnBlock(context);
+    }
+
+    @Override
+    public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
+        LoreProperty.appendLoreTop(stack, world, tooltip, context);
     }
 }

@@ -11,6 +11,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
+import smartin.miapi.item.modular.Transform;
 
 public class ItemProjectileRenderer extends EntityRenderer<ItemProjectileEntity> {
 
@@ -33,6 +34,9 @@ public class ItemProjectileRenderer extends EntityRenderer<ItemProjectileEntity>
             matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(MathHelper.lerp(tickDelta, entity.prevPitch, entity.getPitch()) + 90.0F));
             matrixStack.peek().getPositionMatrix().rotateXYZ(0, 0, (float) (Math.PI / 4) * 5);
             if (MinecraftClient.getInstance().player != null) {
+                //Transform transform;
+                //transform.toMatrix();
+                //matrixStack.multiplyPositionMatrix(transform.toMatrix());
                 MinecraftClient.getInstance().getItemRenderer().renderItem(
                         itemStack, ModelTransformationMode.GROUND, light,
                         OverlayTexture.DEFAULT_UV, matrixStack, vertexConsumers,

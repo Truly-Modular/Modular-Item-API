@@ -26,7 +26,7 @@ public class ModularElytraItemImpl extends ModularElytraItem {
                                         uuid,
                                         "miapi_elytra",
                                         1,
-                                        EntityAttributeModifier.Operation.ADDITION), EquipmentSlot.CHEST, false));
+                                        EntityAttributeModifier.Operation.ADDITION), EquipmentSlot.CHEST, false, EntityAttributeModifier.Operation.ADDITION));
             }
             return map;
         });

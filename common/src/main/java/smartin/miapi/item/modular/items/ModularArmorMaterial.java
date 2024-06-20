@@ -19,7 +19,7 @@ public class ModularArmorMaterial implements ArmorMaterial {
 
     @Override
     public int getEnchantability() {
-        return 0;
+        return 15;
     }
 
     @Override
@@ -34,7 +34,7 @@ public class ModularArmorMaterial implements ArmorMaterial {
 
     @Override
     public String getName() {
-        return "";
+        return "miapi_modular_armor";
     }
 
     @Override

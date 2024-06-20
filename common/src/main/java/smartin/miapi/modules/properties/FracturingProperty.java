@@ -9,6 +9,9 @@ import smartin.miapi.modules.properties.util.DoubleProperty;
 import java.util.ArrayList;
 import java.util.UUID;
 
+/**
+ * This property increases the Attackdamage of a weapon the lower the durability and the higher its value is.
+ */
 public class FracturingProperty extends DoubleProperty {
     public static final String KEY = "fracturing";
     public static FracturingProperty property;
@@ -30,7 +33,8 @@ public class FracturingProperty extends DoubleProperty {
                                         percentageIncrease + 1,
                                         EntityAttributeModifier.Operation.MULTIPLY_TOTAL),
                                 EquipmentSlot.MAINHAND,
-                                false));
+                                false,
+                                EntityAttributeModifier.Operation.ADDITION));
 
             }
             return map;

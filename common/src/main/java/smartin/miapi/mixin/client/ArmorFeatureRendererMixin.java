@@ -14,8 +14,8 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import smartin.miapi.client.ArmorModelManager;
-import smartin.miapi.item.modular.ModularItem;
+import smartin.miapi.client.atlas.ArmorModelManager;
+import smartin.miapi.item.modular.VisualModularItem;
 
 @Mixin(value = ArmorFeatureRenderer.class, priority = 700)
 public abstract class ArmorFeatureRendererMixin<T extends LivingEntity, M extends BipedEntityModel<T>, A extends BipedEntityModel<T>> extends FeatureRenderer<T, M> {
@@ -29,7 +29,7 @@ public abstract class ArmorFeatureRendererMixin<T extends LivingEntity, M extend
         ItemStack itemStack = entity.getEquippedStack(armorSlot);
         ArmorFeatureRenderer renderer = (ArmorFeatureRenderer) (Object) this;
 
-        if (itemStack.getItem() instanceof ModularItem) {
+        if (itemStack.getItem() instanceof VisualModularItem) {
             renderPieces(matrices, vertexConsumers, light, armorSlot, itemStack, entity, model, ((FeatureRendererAccessor) renderer).getContext());
             ci.cancel();
         }

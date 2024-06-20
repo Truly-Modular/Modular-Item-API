@@ -1,13 +1,27 @@
 package smartin.miapi.item.modular.items;
 
-import net.minecraft.item.*;
+import net.minecraft.client.item.TooltipContext;
+import net.minecraft.item.ArmorItem;
+import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
+import net.minecraft.util.Rarity;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 import smartin.miapi.item.modular.ModularItem;
+import smartin.miapi.item.modular.PlatformModularItemMethods;
 import smartin.miapi.modules.properties.DisplayNameProperty;
+import smartin.miapi.modules.properties.LoreProperty;
+import smartin.miapi.modules.properties.RarityProperty;
 import smartin.miapi.modules.properties.RepairPriority;
 
-public class ModularHelmet extends ArmorItem implements ModularItem {
+import java.util.List;
+
+public class ModularHelmet extends ArmorItem implements PlatformModularItemMethods, ModularItem {
+    public ModularHelmet(Settings settings) {
+        super(new ModularArmorMaterial(), Type.HELMET, settings);
+    }
+
     public ModularHelmet() {
         super(new ModularArmorMaterial(), Type.HELMET, new Settings());
     }
@@ -28,6 +42,11 @@ public class ModularHelmet extends ArmorItem implements ModularItem {
     }
 
     @Override
+    public Rarity getRarity(ItemStack stack) {
+        return RarityProperty.getRarity(stack);
+    }
+
+    @Override
     public int getItemBarStep(ItemStack stack) {
         return Math.round(13.0F - (float)stack.getDamage() * 13.0F / ModularItem.getDurability(stack));
     }
@@ -41,5 +60,10 @@ public class ModularHelmet extends ArmorItem implements ModularItem {
     @Override
     public int getEnchantability() {
         return 1;
+    }
+
+    @Override
+    public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
+        LoreProperty.appendLoreTop(stack, world, tooltip, context);
     }
 }

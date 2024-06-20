@@ -1,35 +1,40 @@
 {
-  "key": "diamond",
-  "translation": "miapi.material.crystal.diamond",
-  "icon": "textures/item/diamond.png",
-  "groups": ["crystal","gem"],
-  "hardness": 6,
-  "density": 3.0,
-  "flexibility": 0,
-  "durability": 1560,
-  "mining_speed": 8,
-  "mining_level": 3,
-  "color": "49EAD6",
-  "color_palette": {
-    "type": "grayscale_map",
-    "colors": {
-      "24": "082420",
-      "68": "0e3f36",
-      "107": "156355",
-      "150": "1e8a77",
-      "190": "2bc7ac",
-      "216": "33ebcb",
-      "255": "a4fdf0"
+    "key": "diamond",
+    "translation": "miapi.material.crystal.diamond",
+    "icon": "textures/item/diamond.png",
+    "groups": [
+        "crystal",
+        "gem"
+    ],
+    "hardness": 6,
+    "density": 3.0,
+    "flexibility": 0,
+    "durability": 1560,
+    "armor_durability_offset": -1032,
+    "mining_speed": 8,
+    "mining_level": 3,
+    "enchantability": 10,
+    "color": "49EAD6",
+    "color_palette": {
+        "type": "grayscale_map",
+        "colors": {
+            "24": "082420",
+            "68": "0e3f36",
+            "107": "156355",
+            "150": "1e8a77",
+            "190": "2bc7ac",
+            "216": "33ebcb",
+            "255": "a4fdf0"
+        },
+        "filler": "interpolate"
     },
-    "filler": "interpolate"
-  },
-  "textures": [
-    "bright"
-  ],
-  "items": [
-    {
-      "item": "minecraft:diamond",
-      "value": 1.0
-    }
-  ]
+    "textures": [
+        "bright"
+    ],
+    "items": [
+        {
+            "item": "minecraft:diamond",
+            "value": 1.0
+        }
+    ]
 }

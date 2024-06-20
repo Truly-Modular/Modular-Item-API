@@ -46,7 +46,7 @@ public class SmithDisplay extends InteractAbleWidget {
             this.armorStand.equipStack(equipmentSlot, ItemStack.EMPTY);
         }
         if (!stack.isEmpty()) {
-            ItemStack itemStack = stack.copy();
+            ItemStack itemStack = stack;
             Item item = stack.getItem();
             if (item instanceof ArmorItem) {
                 ArmorItem armorItem = (ArmorItem) item;
@@ -60,7 +60,7 @@ public class SmithDisplay extends InteractAbleWidget {
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         //context.enableScissor(getX(),getY(),getX()+getWidth(),getY()+getHeight());
-        InventoryScreen.drawEntity(context, this.getX() + getWidth() / 2 + 10, this.getY() + this.height - 10, 30, ARMOR_STAND_ROTATION, null, (LivingEntity) this.armorStand);
+        InventoryScreen.drawEntity(context, this.getX() + getWidth() / 2 + 3, this.getY() + this.height - 10, 30, ARMOR_STAND_ROTATION, null, (LivingEntity) this.armorStand);
         //context.disableScissor();
         super.render(context, mouseX, mouseY, delta);
     }

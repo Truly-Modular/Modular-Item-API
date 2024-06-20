@@ -1,21 +1,26 @@
 package smartin.miapi.client.gui.crafting.crafter;
 
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Text;
 import smartin.miapi.client.gui.InteractAbleWidget;
+import smartin.miapi.client.gui.PreviewManager;
+import smartin.miapi.client.gui.crafting.crafter.replace.CraftOption;
 import smartin.miapi.client.gui.crafting.crafter.replace.CraftViewRework;
 import smartin.miapi.client.gui.crafting.crafter.replace.ReplaceView;
 import smartin.miapi.craft.CraftAction;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.edit_options.EditOption;
+import smartin.miapi.modules.edit_options.ReplaceOption;
 import smartin.miapi.network.Networking;
+
+import java.util.HashMap;
 
 public class CraftEditOption extends InteractAbleWidget {
     EditOption.EditContext editContext;
-    ItemModule module;
+    CraftOption option = new CraftOption(ItemModule.empty,new HashMap<>());
 
     public CraftEditOption(int x, int y, int width, int height, EditOption.EditContext context) {
         super(x, y, width, height, Text.empty());
+        ReplaceOption.unsafeEditContext = context;
         this.editContext = context;
         setMode(Mode.REPLACE);
 
@@ -25,19 +30,21 @@ public class CraftEditOption extends InteractAbleWidget {
         switch (mode) {
             case CRAFT -> {
                 this.children.clear();
-                CraftViewRework craftView = new CraftViewRework(this.getX(), this.getY(), this.width, this.height, 1, module, editContext, (backSlot) -> {
+                CraftViewRework craftView = new CraftViewRework(this.getX(), this.getY(), this.width, this.height, 1, option, editContext, (backSlot) -> {
                     setMode(Mode.REPLACE);
+                    PreviewManager.resetCursorStack();
                 });
                 addChild(craftView);
             }
             case REPLACE -> {
                 this.children.clear();
-                ReplaceView view = new ReplaceView(this.getX(), this.getY(), this.width, this.height, editContext.getSlot(), (moduleSlot -> {
-                }), (itemModule -> {
-                    this.module = itemModule;
+                ReplaceView view = new ReplaceView(this.getX(), this.getY(), this.width, this.height, editContext.getSlot(),editContext, (moduleSlot -> {
+                }), (craftOption -> {
+                    option = craftOption;
                     setMode(Mode.CRAFT);
-                }), (itemModule -> {
-                    CraftAction action = new CraftAction(editContext.getItemstack(), editContext.getSlot(), itemModule, editContext.getPlayer(), editContext.getWorkbench(), new PacketByteBuf[0]);
+                }), (craftOption -> {
+                    option = craftOption;
+                    CraftAction action = new CraftAction(editContext.getItemstack(), editContext.getSlot(), option.module(), editContext.getPlayer(), editContext.getWorkbench(), craftOption.data());
                     action.setItem(editContext.getLinkedInventory().getStack(0));
                     action.linkInventory(editContext.getLinkedInventory(), 1);
                     editContext.preview(action.toPacket(Networking.createBuffer()));

@@ -11,7 +11,7 @@ import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
 /**
- * This property is responsible for teleporting a hit target of projectiles
+ * This property is responsible for designating a Projectile as an arrow, having subtle changes to its behaviour
  */
 public class ArrowProperty implements ModuleProperty {
     public static final String KEY = "is_arrow";

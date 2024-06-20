@@ -1,54 +1,72 @@
 package smartin.miapi.modules.properties;
 
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import net.minecraft.util.Pair;
 import net.minecraft.item.ItemStack;
-import smartin.miapi.Miapi;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
 /**
  * The Property controling {@link smartin.miapi.modules.abilities.RiptideAbility}
+ * will be replaced by {@link smartin.miapi.modules.abilities.RiptideAbility}
  */
+@Deprecated
 public class RiptideProperty implements ModuleProperty {
     public static RiptideProperty property;
     public static final String KEY = "riptide";
 
-    public RiptideProperty(){
+    public RiptideProperty() {
         property = this;
     }
 
 
     @Override
     public boolean load(String moduleKey, JsonElement data) throws Exception {
+        new RiptideJson(data.getAsJsonObject(), new ItemModule.ModuleInstance(ItemModule.empty));
         return true;
     }
 
-    public static RiptideJson getData(ItemStack itemStack){
-        JsonElement element = ItemModule.getMergedProperty(itemStack,property);
-        if(element == null){
-            return null;
+    public static RiptideJson getData(ItemStack itemStack) {
+        AbilityMangerProperty.AbilityContext context = AbilityMangerProperty.getContext(itemStack, KEY);
+        if (context != null && context.isFullContext) {
+            return new RiptideJson(context.contextJson, context.contextInstance);
         }
-        return Miapi.gson.fromJson(element,RiptideJson.class);
+
+        Pair<ItemModule.ModuleInstance, JsonElement> element = property.highestPriorityJsonElement(itemStack);
+        if (element != null) {
+            return new RiptideJson(element.getRight().getAsJsonObject(), element.getLeft());
+        }
+        return null;
     }
 
     @Override
     public JsonElement merge(JsonElement old, JsonElement toMerge, MergeType type) {
-        switch (type){
+        switch (type) {
             case OVERWRITE -> {
                 return toMerge;
             }
-            case EXTEND,SMART -> {
+            case EXTEND, SMART -> {
                 return old;
             }
         }
         return old;
     }
 
-    public static class RiptideJson{
+    public static class RiptideJson {
         public boolean needsWater = false;
         public boolean allowLava = false;
         public boolean needRiptideEnchant = true;
         public double riptideStrength = 3;
+        public double cooldown = 0;
+
+        public RiptideJson(JsonObject object, ItemModule.ModuleInstance moduleInstance) {
+            needsWater = ModuleProperty.getBoolean(object, "needsWater", needsWater);
+            allowLava = ModuleProperty.getBoolean(object, "allowLave", allowLava);
+            needRiptideEnchant = ModuleProperty.getBoolean(object, "needRiptideEnchant", needRiptideEnchant);
+            riptideStrength = ModuleProperty.getDouble(object, "riptideStrength", moduleInstance, riptideStrength);
+            cooldown = ModuleProperty.getDouble(object, "cooldown", moduleInstance, cooldown);
+        }
     }
 }

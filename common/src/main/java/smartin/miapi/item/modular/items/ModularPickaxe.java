@@ -3,6 +3,7 @@ package smartin.miapi.item.modular.items;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import net.minecraft.block.BlockState;
+import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttribute;
@@ -11,19 +12,27 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.item.PickaxeItem;
+import net.minecraft.item.ToolMaterial;
 import net.minecraft.text.Text;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
+import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.item.modular.ModularItem;
+import smartin.miapi.item.modular.PlatformModularItemMethods;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
-import smartin.miapi.modules.properties.DisplayNameProperty;
-import smartin.miapi.modules.properties.MiningLevelProperty;
-import smartin.miapi.modules.properties.RepairPriority;
-import smartin.miapi.modules.properties.ToolOrWeaponProperty;
+import smartin.miapi.modules.properties.*;
+import smartin.miapi.modules.properties.mining.MiningLevelProperty;
 
-public class ModularPickaxe extends PickaxeItem implements ModularItem {
+import java.util.List;
+
+public class ModularPickaxe extends PickaxeItem implements PlatformModularItemMethods, ModularItem, ModularSetableToolMaterial {
+    public ToolMaterial currentFakeToolmaterial = ModularToolMaterial.toolMaterial;
+    public ModularPickaxe(Settings settings) {
+        super(new ModularToolMaterial(), 5, 5, settings.maxCount(1).maxDamage(500));
+    }
 
     public ModularPickaxe() {
         super(new ModularToolMaterial(), 5, 5, new Settings().maxCount(1).maxDamage(500).rarity(Rarity.COMMON));
@@ -32,6 +41,18 @@ public class ModularPickaxe extends PickaxeItem implements ModularItem {
     @Override
     public int getItemBarStep(ItemStack stack) {
         return Math.round(13.0F - (float) stack.getDamage() * 13.0F / ModularItem.getDurability(stack));
+    }
+
+    public ToolMaterial getMaterial() {
+        if(MiapiConfig.INSTANCE.server.other.looseToolMaterial){
+            return currentFakeToolmaterial;
+        }
+        return super.getMaterial();
+    }
+
+    @Override
+    public void setToolMaterial(ToolMaterial toolMaterial){
+        this.currentFakeToolmaterial = toolMaterial;
     }
 
     @Override
@@ -131,6 +152,11 @@ public class ModularPickaxe extends PickaxeItem implements ModularItem {
     }
 
     @Override
+    public Rarity getRarity(ItemStack stack) {
+        return RarityProperty.getRarity(stack);
+    }
+
+    @Override
     public void usageTick(World world, LivingEntity user, ItemStack stack, int remainingUseTicks) {
         ItemAbilityManager.usageTick(world, user, stack, remainingUseTicks);
     }
@@ -149,5 +175,10 @@ public class ModularPickaxe extends PickaxeItem implements ModularItem {
     @Override
     public ActionResult useOnBlock(ItemUsageContext context) {
         return ItemAbilityManager.useOnBlock(context);
+    }
+
+    @Override
+    public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
+        LoreProperty.appendLoreTop(stack, world, tooltip, context);
     }
 }

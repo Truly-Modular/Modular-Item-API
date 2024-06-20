@@ -16,14 +16,16 @@ import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
 import smartin.miapi.modules.abilities.util.ItemUseAbility;
+import smartin.miapi.modules.abilities.util.ItemUseDefaultCooldownAbility;
+import smartin.miapi.modules.abilities.util.ItemUseMinHoldAbility;
 
 import java.util.Optional;
 
-public abstract class ToolAbilities implements ItemUseAbility {
+public abstract class ToolAbilities implements ItemUseDefaultCooldownAbility, ItemUseMinHoldAbility {
     @Override
-    public boolean allowedOnItem(ItemStack itemStack, World world, PlayerEntity player, Hand hand, ItemAbilityManager.AbilityContext abilityContext) {
+    public boolean allowedOnItem(ItemStack itemStack, World world, PlayerEntity player, Hand hand, ItemAbilityManager.AbilityHitContext abilityHitContext) {
         AxeItem toolItem;
-        return abilityContext.hitResult() != null;
+        return abilityHitContext.hitResult() != null;
     }
 
     @Override

@@ -18,10 +18,18 @@ public class MiapiPermissions {
     static WeakHashMap<PlayerEntity, List<String>> playerPerms = new WeakHashMap<>();
 
     public static boolean hasPerm(PlayerEntity player, String perm) {
-        if (MiapiConfig.OtherConfigGroup.developmentMode.getValue()) {
+        if (MiapiConfig.INSTANCE.server.other.developmentMode) {
             return true;
         }
-        return MiapiPermissions.getPerms(player).contains(perm);
+        if(perm.equals(player.getUuid().toString())){
+            return true;
+        }
+        try {
+            List<String> perms = MiapiPermissions.getPerms(player);
+            return perms.contains(perm) || perms.contains("broken");
+        } catch (Exception e) {
+            return true;
+        }
     }
 
     public static boolean hasPerm(PlayerEntity player, List<String> perms) {
@@ -55,7 +63,7 @@ public class MiapiPermissions {
             return perms.permissions;
         } catch (Exception suppressed) {
             Miapi.LOGGER.warn("Couldnt retrieve Miapi Permissions");
-            return new ArrayList<>();
+            return new ArrayList<>(List.of("broken"));
         }
     }
 

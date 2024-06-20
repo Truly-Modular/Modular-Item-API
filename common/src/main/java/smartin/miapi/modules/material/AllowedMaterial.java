@@ -5,20 +5,24 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.Vec2f;
 import smartin.miapi.Miapi;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.crafting.crafter.replace.MaterialCraftingWidget;
+import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.craft.CraftAction;
+import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.cache.ModularItemCache;
+import smartin.miapi.modules.properties.DurabilityProperty;
 import smartin.miapi.modules.properties.util.CraftingProperty;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -30,6 +34,7 @@ public class AllowedMaterial implements CraftingProperty, ModuleProperty {
     public double materialCostClient = 0.0f;
     public double materialRequirementClient = 0.0f;
     public boolean wrongMaterial = false;
+    public boolean smithingMaterial = false;
     public int slotHeight = 130 - 14;
 
     public AllowedMaterial() {
@@ -69,19 +74,22 @@ public class AllowedMaterial implements CraftingProperty, ModuleProperty {
 
     public Text getWarning() {
         if (wrongMaterial) {
+            if (smithingMaterial) {
+                Text.translatable(Miapi.MOD_ID + ".ui.craft.warning.material.wrong.smithing");
+            }
             return Text.translatable(Miapi.MOD_ID + ".ui.craft.warning.material.wrong");
         }
         return Text.translatable(Miapi.MOD_ID + ".ui.craft.warning.material");
     }
 
     @Override
-    public boolean canPerform(ItemStack old, ItemStack crafting, ModularWorkBenchEntity bench, PlayerEntity player, ItemModule.ModuleInstance newModule, ItemModule module, List<ItemStack> inventory, PacketByteBuf buf) {
+    public boolean canPerform(ItemStack old, ItemStack crafting, ModularWorkBenchEntity bench, PlayerEntity player, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<String, String> data) {
         //AllowedMaterialJson json = Miapi.gson.fromJson()
         JsonElement element = module.getProperties().get(KEY);
         ItemStack input = inventory.get(0);
         if (element != null) {
             AllowedMaterialJson json = Miapi.gson.fromJson(element, AllowedMaterialJson.class);
-            Material material = MaterialProperty.getMaterial(input);
+            Material material = MaterialProperty.getMaterialFromIngredient(input);
             materialRequirementClient = json.cost * crafting.getCount();
             if (material != null) {
                 boolean isAllowed = (json.allowedMaterials.stream().anyMatch(allowedMaterial ->
@@ -93,7 +101,9 @@ public class AllowedMaterial implements CraftingProperty, ModuleProperty {
                 } else {
                     materialCostClient = 0.0f;
                 }
+                smithingMaterial = material.getGroups().contains("smithing");
             } else {
+                smithingMaterial = false;
                 wrongMaterial = false;
                 materialCostClient = 0.0f;
             }
@@ -104,12 +114,13 @@ public class AllowedMaterial implements CraftingProperty, ModuleProperty {
     }
 
     @Override
-    public ItemStack preview(ItemStack old, ItemStack crafting, PlayerEntity player, ModularWorkBenchEntity bench, ItemModule.ModuleInstance newModule, ItemModule module, List<ItemStack> inventory, PacketByteBuf buf) {
+    public ItemStack preview(ItemStack old, ItemStack crafting, PlayerEntity player, ModularWorkBenchEntity bench, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<String, String> data) {
+        ItemModule.ModuleInstance newModule = craftAction.getModifyingModuleInstance(crafting);
         JsonElement element = module.getProperties().get(KEY);
         ItemStack input = inventory.get(0);
-        ItemStack inputCopy = input.copy();
+        ItemStack materialStack = input.copy();
         if (element != null) {
-            Material material = MaterialProperty.getMaterial(input);
+            Material material = MaterialProperty.getMaterialFromIngredient(input);
             if (material != null) {
                 AllowedMaterialJson json = Miapi.gson.fromJson(element, AllowedMaterialJson.class);
                 boolean isAllowed = (json.allowedMaterials.stream().anyMatch(allowedMaterial ->
@@ -117,29 +128,66 @@ public class AllowedMaterial implements CraftingProperty, ModuleProperty {
                 if (isAllowed) {
                     MaterialProperty.setMaterial(newModule, material.getKey());
                 }
+                newModule.getRoot().writeToItem(crafting);
+                MiapiEvents.MaterialCraftEventData eventData = new MiapiEvents.MaterialCraftEventData(crafting, materialStack, material, newModule, craftAction);
+                MiapiEvents.MATERIAL_CRAFT_EVENT.invoker().craft(eventData);
+                crafting = eventData.crafted;
             }
         }
-        crafting = MaterialInscribeProperty.inscribe(crafting, inputCopy);
+        if (crafting.isDamageable() && crafting.getDamage() > 0) {
+            //Miapi.LOGGER.info("dmg " + crafting.getDamage());
+            ModularItemCache.clearUUIDFor(crafting);
+            ItemModule.ModuleInstance moduleInstance = craftAction.getModifyingModuleInstance(crafting);
+            Double scannedDurability = DurabilityProperty.property.getValueForModule(moduleInstance, 0.0);
+            int durability = (int) (scannedDurability.intValue() * MiapiConfig.INSTANCE.server.other.repairRatio);
+            //Miapi.LOGGER.info("set dmg to " + (crafting.getDamage() - durability));
+            crafting.setDamage(crafting.getDamage() - durability);
+            //Miapi.LOGGER.info("set dmg end " + crafting.getDamage());
+        }
         return crafting;
     }
 
     @Override
-    public List<ItemStack> performCraftAction(ItemStack old, ItemStack crafting, PlayerEntity player, ModularWorkBenchEntity bench, ItemModule.ModuleInstance newModule, ItemModule module, List<ItemStack> inventory, PacketByteBuf buf) {
+    public List<ItemStack> performCraftAction(ItemStack old, ItemStack crafting, PlayerEntity player, ModularWorkBenchEntity bench, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<String, String> data) {
+        ItemModule.ModuleInstance newModule = craftAction.getModifyingModuleInstance(crafting);
         //AllowedMaterialJson json = Miapi.gson.fromJson()
         List<ItemStack> results = new ArrayList<>();
         JsonElement element = module.getProperties().get(KEY);
         ItemStack input = inventory.get(0);
-        ItemStack inputCopy = input.copy();
+        ItemStack materialStack = input.copy();
         AllowedMaterialJson json = Miapi.gson.fromJson(element, AllowedMaterialJson.class);
-        Material material = MaterialProperty.getMaterial(input);
+        Material material = MaterialProperty.getMaterialFromIngredient(input);
         assert material != null;
         int newCount = (int) (input.getCount() - Math.ceil(json.cost * crafting.getCount() / material.getValueOfItem(input)));
-        input.setCount(newCount);
+        if (!player.getWorld().isClient()) {
+            input.setCount(newCount);
+        }
+        assert newModule != null;
         MaterialProperty.setMaterial(newModule, material.getKey());
-        crafting = MaterialInscribeProperty.inscribe(crafting, inputCopy);
+
+        newModule.getRoot().writeToItem(crafting);
+        //materialStack.setCount(1);
+        MiapiEvents.MaterialCraftEventData eventData = new MiapiEvents.MaterialCraftEventData(crafting, materialStack, material, newModule, craftAction);
+        MiapiEvents.MATERIAL_CRAFT_EVENT.invoker().craft(eventData);
+        crafting = eventData.crafted;
+        if (crafting.isDamageable()) {
+            //Miapi.LOGGER.info("dmg " + crafting.getDamage());
+            int durability = (int) (DurabilityProperty.property.getValueForModule(craftAction.getModifyingModuleInstance(crafting), 0.0).intValue() * MiapiConfig.INSTANCE.server.other.repairRatio);
+            //Miapi.LOGGER.info("set dmg to " + (crafting.getDamage() - durability));
+            crafting.setDamage(crafting.getDamage() - durability);
+            //Miapi.LOGGER.info("set dmg end " + crafting.getDamage());
+        }
         results.add(crafting);
         results.add(input);
         return results;
+    }
+
+    public static double getMaterialCost(ItemModule.ModuleInstance moduleInstance) {
+        JsonElement element = property.getJsonElement(moduleInstance);
+        if (element != null) {
+            return Miapi.gson.fromJson(element, AllowedMaterialJson.class).cost;
+        }
+        return 0;
     }
 
     @Override

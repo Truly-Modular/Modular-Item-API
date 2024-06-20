@@ -3,7 +3,9 @@ package smartin.miapi.item.modular.items;
 import net.minecraft.item.ToolMaterial;
 import net.minecraft.recipe.Ingredient;
 
-public class ModularToolMaterial implements ToolMaterial {
+public class ModularToolMaterial implements ToolMaterial{
+    public static ModularToolMaterial toolMaterial = new ModularToolMaterial();
+
     @Override
     public int getDurability() {
         return 50;
@@ -26,7 +28,7 @@ public class ModularToolMaterial implements ToolMaterial {
 
     @Override
     public int getEnchantability() {
-        return 5;
+        return 15;
     }
 
     @Override

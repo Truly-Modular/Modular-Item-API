@@ -7,15 +7,24 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import smartin.miapi.Environment;
 import smartin.miapi.Miapi;
+import smartin.miapi.client.atlas.MaterialSpriteManager;
+import smartin.miapi.client.model.ModelTransformer;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.item.modular.ModularItem;
+import smartin.miapi.item.modular.VisualModularItem;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
+
+import static smartin.miapi.events.MiapiEvents.CACHE_CLEAR_EVENT;
 
 public class ModularItemCache {
     protected static Map<String, CacheObjectSupplier> supplierMap = new HashMap<>();
@@ -46,7 +55,7 @@ public class ModularItemCache {
 
     @Nullable
     public static <T> T getRaw(ItemStack stack, String key) {
-        if (!ReloadEvents.inReload && !stack.isEmpty() && stack.getItem() instanceof ModularItem) {
+        if (!ReloadEvents.isInReload() && !stack.isEmpty() && stack.getItem() instanceof VisualModularItem) {
             Cache itemCache = find(stack);
             return (T) itemCache.get(key);
         }
@@ -54,7 +63,19 @@ public class ModularItemCache {
     }
 
     public static <T> T get(ItemStack stack, String key, T fallback) {
-        if (!ReloadEvents.inReload && !stack.isEmpty() && stack.getItem() instanceof ModularItem) {
+        if (!ReloadEvents.isInReload() && !stack.isEmpty() && stack.getItem() instanceof ModularItem) {
+            Cache itemCache = find(stack);
+            T object = (T) itemCache.get(key);
+            if (object == null) {
+                return fallback;
+            }
+            return object;
+        }
+        return fallback;
+    }
+
+    public static <T> T getVisualOnlyCache(ItemStack stack, String key, T fallback) {
+        if (!ReloadEvents.isInReload() && !stack.isEmpty() && stack.getItem() instanceof VisualModularItem) {
             Cache itemCache = find(stack);
             T object = (T) itemCache.get(key);
             if (object == null) {
@@ -66,46 +87,63 @@ public class ModularItemCache {
     }
 
     public static void discardCache() {
+        CACHE_CLEAR_EVENT.invoker().onReload(Environment.isClient());
         cache.cleanUp();
         cache.invalidateAll();
+        if (Environment.isClient()) {
+            ModelTransformer.clearCaches();
+            MaterialSpriteManager.clear();
+        }
     }
 
     @Nullable
     public static UUID getUUIDFor(ItemStack stack) {
         try {
-            return nbtCache.get(stack.getOrCreateNbt());
+            if (stack.getItem() instanceof VisualModularItem && stack.hasNbt()) {
+                return lookUpTable.getOrDefault(stack, nbtCache.get(stack.getOrCreateNbt()));
+            }
+            return null;
         } catch (ExecutionException e) {
             throw new RuntimeException(e);
         }
     }
 
     public static void setUUIDFor(ItemStack stack, UUID uuid) {
-        if (stack.getItem() instanceof ModularItem) {
+        if (stack.getItem() instanceof VisualModularItem) {
             if (stack.hasNbt()) {
                 nbtCache.put(stack.getOrCreateNbt().copy(), uuid);
+                lookUpTable.put(stack, uuid);
             }
         } else {
-            Miapi.LOGGER.error("this shouldnt not be called");
+            Miapi.LOGGER.error("this shouldn't not be called");
         }
     }
 
     public static void clearUUIDFor(ItemStack stack) {
-        if (stack.getItem() instanceof ModularItem) {
+        if (stack.getItem() instanceof VisualModularItem && stack.hasNbt()) {
+            UUID uuid = getUUIDFor(stack);
             nbtCache.invalidate(stack.getOrCreateNbt());
+            cache.invalidate(uuid);
+            lookUpTable.remove(stack);
         }
     }
 
     protected static Cache find(ItemStack stack) {
-        UUID lookUpUUId = lookUpTable.get(stack);
-        if (lookUpUUId == null) {
-            lookUpUUId = getUUIDFor(stack);
-        }
+        //because i cant copy the Itemstack and the cache needs to refresh properly the check has been moved to nbt only.
+        UUID lookUpUUId = getUUIDFor(stack);
         if (lookUpUUId == null) {
             lookUpUUId = getMissingUUID();
         }
         UUID uuid = lookUpUUId;
         try {
-            return cache.get(lookUpUUId, () -> new Cache(uuid, stack));
+            Cache cacheEntry = cache.get(uuid, () -> new Cache(uuid, stack));
+            if (ItemStack.areItemsEqual(cacheEntry.stack, stack)) {
+                return cacheEntry;
+            } else {
+                cache.invalidate(uuid);
+                UUID newUUID = getMissingUUID();
+                return cache.get(newUUID, () -> new Cache(newUUID, stack));
+            }
         } catch (ExecutionException ignored) {
             UUID uuid1 = getMissingUUID();
             Cache cache1 = new Cache(uuid1, stack);
@@ -134,8 +172,8 @@ public class ModularItemCache {
 
         public Cache(UUID uuid, ItemStack stack) {
             this.uuid = uuid;
-            this.stack = stack.copy();
-            setUUIDFor(stack.copy(), uuid);
+            this.stack = stack;
+            setUUIDFor(stack, uuid);
         }
 
         public void set(String key, Object object) {

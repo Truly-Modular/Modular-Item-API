@@ -12,6 +12,7 @@
     "density": 2,
     "flexibility": 5,
     "durability": 150,
+    "enchantability": 6,
     "color": "635C50",
     "color_palette": {
         "type": "grayscale_map",
@@ -20,6 +21,11 @@
             "255": "F7F7F7"
         },
         "filler": "interpolate"
+    },
+    "properties": {
+        "boot": {
+            "step_noise_cancel": true
+        }
     },
     "mining_speed": 0,
     "mining_level": 0,

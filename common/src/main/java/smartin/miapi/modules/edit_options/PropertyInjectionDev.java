@@ -2,7 +2,6 @@ package smartin.miapi.modules.edit_options;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import dev.architectury.platform.Platform;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -44,7 +43,7 @@ public class PropertyInjectionDev implements EditOption {
 
     @Override
     public boolean isVisible(EditContext context) {
-        return MiapiConfig.OtherConfigGroup.developmentMode.getValue() && context.getInstance() != null;
+        return MiapiConfig.INSTANCE.server.other.developmentMode && context.getInstance() != null;
     }
 
     @Environment(EnvType.CLIENT)
@@ -83,7 +82,7 @@ public class PropertyInjectionDev implements EditOption {
                                 ModuleProperty property = RegistryInventory.moduleProperties.get(stringJsonElementEntry.getKey());
                                 try {
                                     assert property != null;
-                                    property.load(moduleInstance.module.getName(), stringJsonElementEntry.getValue());
+                                    property.load(moduleInstance.module.getName(), stringJsonElementEntry.getValue(), true);
                                 } catch (Exception e) {
                                     error.setText(Text.of(e.getMessage()));
                                     error.textColor = ColorHelper.Argb.getArgb(255, 255, 0, 0);

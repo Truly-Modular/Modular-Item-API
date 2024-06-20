@@ -12,7 +12,8 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
-import smartin.miapi.events.property.ApplicationEvents;
+import smartin.miapi.modules.cache.ModularItemCache;
+import smartin.miapi.modules.properties.AbilityMangerProperty;
 import smartin.miapi.modules.properties.AbilityProperty;
 import smartin.miapi.registries.MiapiRegistry;
 
@@ -45,14 +46,13 @@ public class ItemAbilityManager {
                 activeItems.put(playerEntity, playerItem);
                 if (oldItem != null) {
                     ItemUseAbility ability = getAbility(oldItem);
-                    if (ability != emptyAbility) {
-                        ApplicationEvents.ABILITY_STOP_HOLDING.invoker().call(playerItem, playerEntity.getWorld(), playerEntity, playerEntity.getItemUseTimeLeft(), ability);
-                        ApplicationEvents.ABILITY_STOP.invoker().call(playerItem, playerEntity.getWorld(), playerEntity, playerEntity.getItemUseTimeLeft(), ability);
-                    }
                     ability.onStoppedHolding(oldItem, playerEntity.getWorld(), playerEntity);
                     abilityMap.remove(oldItem);
                 }
             }
+        });
+        useAbilityRegistry.addCallback(ability -> {
+            ModularItemCache.setSupplier(AbilityMangerProperty.KEY + "_" + ItemAbilityManager.useAbilityRegistry.findKey(ability), (itemStack -> ability.fromJson(AbilityMangerProperty.getContext(itemStack, ability).contextJson)));
         });
         useAbilityRegistry.register("empty", emptyAbility);
     }
@@ -66,9 +66,9 @@ public class ItemAbilityManager {
         return useAbility == null ? emptyAbility : useAbility;
     }
 
-    private static ItemUseAbility getAbility(ItemStack itemStack, World world, PlayerEntity player, Hand hand, AbilityContext abilityContext) {
-        for (ItemUseAbility ability : AbilityProperty.get(itemStack)) {
-            if (ability.allowedOnItem(itemStack, world, player, hand, abilityContext)) {
+    private static ItemUseAbility getAbility(ItemStack itemStack, World world, PlayerEntity player, Hand hand, AbilityHitContext abilityHitContext) {
+        for (ItemUseAbility ability : AbilityMangerProperty.get(itemStack)) {
+            if (ability.allowedOnItem(itemStack, world, player, hand, abilityHitContext)) {
                 return ability;
             }
         }
@@ -85,7 +85,7 @@ public class ItemAbilityManager {
 
     public static TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         ItemStack itemStack = user.getStackInHand(hand);
-        ItemUseAbility ability = getAbility(itemStack, world, user, hand, new AbilityContext() {
+        ItemUseAbility ability = getAbility(itemStack, world, user, hand, new AbilityHitContext() {
             @Override
             public @Nullable ItemUsageContext hitResult() {
                 return null;
@@ -98,9 +98,6 @@ public class ItemAbilityManager {
         });
         abilityMap.put(itemStack, ability);
 
-        if (ability != emptyAbility)
-            ApplicationEvents.ABILITY_START.invoker().call(itemStack, world, user, user.getItemUseTimeLeft(), ability);
-
         return ability.use(world, user, hand);
     }
 
@@ -109,33 +106,25 @@ public class ItemAbilityManager {
         ItemStack itemStack = ability.finishUsing(stack, world, user);
         abilityMap.remove(stack);
 
-        if (ability != emptyAbility)
-            ApplicationEvents.ABILITY_FINISH.invoker().call(itemStack, world, user, user.getItemUseTimeLeft(), ability);
-
         return itemStack;
     }
 
     public static void onStoppedUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
         ItemUseAbility ability = getAbility(stack);
         ability.onStoppedUsing(stack, world, user, remainingUseTicks);
-
-        if (ability != emptyAbility) {
-            ApplicationEvents.ABILITY_STOP_USING.invoker().call(stack, world, user, remainingUseTicks, ability);
-            ApplicationEvents.ABILITY_STOP.invoker().call(stack, world, user, remainingUseTicks, ability);
+        if (ability instanceof ItemUseDefaultCooldownAbility itemUseDefaultCooldownAbility) {
+            itemUseDefaultCooldownAbility.afterStopAbility(stack, world, user, remainingUseTicks);
         }
-
         abilityMap.remove(stack);
     }
 
     public static void usageTick(World world, LivingEntity user, ItemStack stack, int remainingUseTicks) {
         ItemUseAbility ability = getAbility(stack);
-        if (ability != emptyAbility)
-            ApplicationEvents.ABILITY_TICK.invoker().call(stack, world, user, remainingUseTicks, ability);
         ability.usageTick(world, user, stack, remainingUseTicks);
     }
 
     public static ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
-        ItemUseAbility ability = getAbility(stack, user.getWorld(), user, hand, new AbilityContext() {
+        ItemUseAbility ability = getAbility(stack, user.getWorld(), user, hand, new AbilityHitContext() {
             @Override
             public @Nullable ItemUsageContext hitResult() {
                 return null;
@@ -151,7 +140,7 @@ public class ItemAbilityManager {
     }
 
     public static ActionResult useOnBlock(ItemUsageContext context) {
-        ItemUseAbility ability = getAbility(context.getStack(), context.getWorld(), context.getPlayer(), context.getHand(), new AbilityContext() {
+        ItemUseAbility ability = getAbility(context.getStack(), context.getWorld(), context.getPlayer(), context.getHand(), new AbilityHitContext() {
             @Override
             public @Nullable ItemUsageContext hitResult() {
                 return context;
@@ -166,7 +155,7 @@ public class ItemAbilityManager {
         return getAbility(context.getStack()).useOnBlock(context);
     }
 
-    public interface AbilityContext {
+    public interface AbilityHitContext {
         @Nullable
         ItemUsageContext hitResult();
 
@@ -177,7 +166,7 @@ public class ItemAbilityManager {
     static class EmptyAbility implements ItemUseAbility {
 
         @Override
-        public boolean allowedOnItem(ItemStack itemStack, World world, PlayerEntity player, Hand hand, ItemAbilityManager.AbilityContext abilityContext) {
+        public boolean allowedOnItem(ItemStack itemStack, World world, PlayerEntity player, Hand hand, AbilityHitContext abilityHitContext) {
             return true;
         }
 

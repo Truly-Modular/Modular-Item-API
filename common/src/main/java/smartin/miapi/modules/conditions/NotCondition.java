@@ -1,18 +1,12 @@
 package smartin.miapi.modules.conditions;
 
 import com.google.gson.JsonElement;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.Text;
-import net.minecraft.util.math.BlockPos;
-import org.jetbrains.annotations.Nullable;
-import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.util.ModuleProperty;
-
-import java.util.List;
-import java.util.Map;
 
 public class NotCondition implements ModuleCondition {
     ModuleCondition conditions;
+    Text onFalse = null;
 
     public NotCondition() {
 
@@ -23,13 +17,18 @@ public class NotCondition implements ModuleCondition {
     }
 
     @Override
-    public boolean isAllowed(ItemModule.ModuleInstance moduleInstance, @Nullable BlockPos tablePos, @Nullable PlayerEntity player, Map<ModuleProperty, JsonElement> propertyMap, List<Text> reasons) {
-        reasons.add(Text.literal("Just no"));
-        return !conditions.isAllowed(moduleInstance, tablePos, player, propertyMap, reasons);
+    public boolean isAllowed(ConditionManager.ConditionContext conditionContext) {
+        if (!conditions.isAllowed(conditionContext)) {
+            conditionContext.getReasons().add(onFalse);
+            return true;
+        }
+        return false;
     }
 
     @Override
     public ModuleCondition load(JsonElement element) {
-        return new NotCondition(ConditionManager.get(element.getAsJsonObject().get("condition")));
+        NotCondition notCondition = new NotCondition(ConditionManager.get(element.getAsJsonObject().get("condition")));
+        notCondition.onFalse = ModuleProperty.getText(element.getAsJsonObject(), "error", Text.translatable("miapi.crafting_condition.false"));
+        return notCondition;
     }
 }

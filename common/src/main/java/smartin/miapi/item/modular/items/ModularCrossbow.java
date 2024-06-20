@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.advancement.criterion.Criteria;
+import net.minecraft.client.item.TooltipContext;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.CrossbowUser;
@@ -16,35 +17,43 @@ import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.*;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.screen.ScreenTexts;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.text.Text;
-import net.minecraft.util.Hand;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.TypedActionResult;
+import net.minecraft.util.*;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
+import smartin.miapi.Miapi;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.client.model.ModularModelPredicateProvider;
 import smartin.miapi.entity.ItemProjectileEntity;
+import smartin.miapi.events.MiapiProjectileEvents;
+import smartin.miapi.item.modular.CustomDrawTimeItem;
 import smartin.miapi.item.modular.ModularItem;
-import smartin.miapi.modules.properties.AttributeProperty;
-import smartin.miapi.modules.properties.DisplayNameProperty;
-import smartin.miapi.modules.properties.IsCrossbowShootAble;
-import smartin.miapi.modules.properties.RepairPriority;
+import smartin.miapi.item.modular.PlatformModularItemMethods;
+import smartin.miapi.modules.cache.ModularItemCache;
+import smartin.miapi.modules.properties.*;
 
 import java.util.List;
 import java.util.function.Predicate;
 
 import static smartin.miapi.item.modular.items.ModularBow.projectile;
 
-public class ModularCrossbow extends CrossbowItem implements ModularItem {
+public class ModularCrossbow extends CrossbowItem implements PlatformModularItemMethods, ModularItem, CustomDrawTimeItem {
+    public ModularCrossbow(Settings settings) {
+        super(settings.maxCount(1).maxDamage(50));
+        if (smartin.miapi.Environment.isClient()) {
+            registerAnimations();
+        }
+    }
 
     public ModularCrossbow() {
         super(new Item.Settings().maxCount(1).maxDamage(50));
@@ -73,6 +82,11 @@ public class ModularCrossbow extends CrossbowItem implements ModularItem {
     @Override
     public int getItemBarStep(ItemStack stack) {
         return Math.round(13.0F - (float) stack.getDamage() * 13.0F / ModularItem.getDurability(stack));
+    }
+
+    @Override
+    public Rarity getRarity(ItemStack stack) {
+        return RarityProperty.getRarity(stack);
     }
 
     @Override
@@ -112,18 +126,21 @@ public class ModularCrossbow extends CrossbowItem implements ModularItem {
 
     }
 
-    private static float getPullProgress(int useTicks, ItemStack stack) {
-        float f = (float) useTicks / (float) getPullTime(stack);
-        if (f > 1.0F) {
-            f = 1.0F;
-        }
+    public int getMaxUseTime(ItemStack stack) {
+        return getPullTime(stack) + 3;
+    }
 
-        return f;
+    private static float getPullProgress(int useTicks, ItemStack stack) {
+        float progress = (float) useTicks / (float) getPullTime(stack);
+        return Math.max(0, Math.min(1, progress));
     }
 
     public static int getPullTime(ItemStack stack) {
         int i = EnchantmentHelper.getLevel(Enchantments.QUICK_CHARGE, stack);
-        return i == 0 ? 25 : (int) (25 - AttributeProperty.getActualValue(stack, EquipmentSlot.MAINHAND, AttributeRegistry.BOW_DRAW_TIME) - 5 * i);
+        double drawTime = (25 - AttributeProperty.getActualValue(stack, EquipmentSlot.MAINHAND, AttributeRegistry.BOW_DRAW_TIME));
+        drawTime = Math.max(5, drawTime - drawTime / 5 * i);
+        if (Double.isNaN(drawTime)) return 5;
+        return (int) drawTime;
     }
 
     private static boolean loadProjectiles(LivingEntity shooter, ItemStack crossbow) {
@@ -131,19 +148,29 @@ public class ModularCrossbow extends CrossbowItem implements ModularItem {
         int j = i == 0 ? 1 : 3;
         boolean isCreative = shooter instanceof PlayerEntity player && player.getAbilities().creativeMode;
         ItemStack itemStack = shooter.getProjectileType(crossbow);
-        ItemStack itemStack2 = itemStack.copy();
 
         for (int k = 0; k < j; ++k) {
             if (k > 0) {
-                itemStack = itemStack2.copy();
+                itemStack = itemStack.copy();
             }
 
             if (itemStack.isEmpty() && isCreative) {
                 itemStack = new ItemStack(Items.ARROW);
-                itemStack2 = itemStack.copy();
+            }
+            MiapiProjectileEvents.CrossbowLoadingContext context =
+                    new MiapiProjectileEvents.CrossbowLoadingContext(shooter, crossbow, itemStack);
+
+
+            if (MiapiProjectileEvents.MODULAR_CROSSBOW_LOAD.invoker().load(context).interruptsFurtherEvaluation()) {
+                return false;
             }
 
-            if (!loadProjectile(shooter, crossbow, itemStack, k > 0, isCreative)) {
+
+            if (!loadProjectile(shooter, crossbow, context.loadingProjectile, k > 0, isCreative)) {
+                return false;
+            }
+
+            if (MiapiProjectileEvents.MODULAR_CROSSBOW_LOAD_AFTER.invoker().load(context).interruptsFurtherEvaluation()) {
                 return false;
             }
         }
@@ -171,7 +198,7 @@ public class ModularCrossbow extends CrossbowItem implements ModularItem {
         }
     }
 
-    private static void putProjectile(ItemStack crossbow, ItemStack projectile) {
+    public static void putProjectile(ItemStack crossbow, ItemStack projectile) {
         NbtCompound nbtCompound = crossbow.getOrCreateNbt();
         NbtList nbtList;
         if (nbtCompound.contains("ChargedProjectiles", 9)) {
@@ -184,6 +211,18 @@ public class ModularCrossbow extends CrossbowItem implements ModularItem {
         projectile.writeNbt(nbtCompound2);
         nbtList.add(nbtCompound2);
         nbtCompound.put("ChargedProjectiles", nbtList);
+        ModularItemCache.clearUUIDFor(crossbow);
+    }
+
+    private static void clearProjectiles(ItemStack crossbow) {
+        NbtCompound nbtCompound = crossbow.getNbt();
+        if (nbtCompound != null) {
+            NbtList nbtList = nbtCompound.getList("ChargedProjectiles", 9);
+            nbtList.clear();
+            nbtCompound.put("ChargedProjectiles", nbtList);
+        }
+        crossbow.setNbt(nbtCompound);
+        ModularItemCache.clearUUIDFor(crossbow);
     }
 
     private static void shoot(World world, LivingEntity shooter, Hand hand, ItemStack crossbow, ItemStack projectile, float soundPitch, boolean creative, float speed, float divergence, float simulated) {
@@ -212,8 +251,18 @@ public class ModularCrossbow extends CrossbowItem implements ModularItem {
             crossbow.damage(bl ? 3 : 1, shooter, (e) -> {
                 e.sendToolBreakStatus(hand);
             });
+            if (projectileEntity instanceof PersistentProjectileEntity persistentProjectileEntity) {
+                MiapiProjectileEvents.ModularBowShotEvent event = new MiapiProjectileEvents.ModularBowShotEvent(persistentProjectileEntity, crossbow, shooter);
+                if (MiapiProjectileEvents.MODULAR_BOW_SHOT.invoker().call(event).interruptsFurtherEvaluation()) {
+                    return;
+                }
+            }
             world.spawnEntity(projectileEntity);
             world.playSound(null, shooter.getX(), shooter.getY(), shooter.getZ(), SoundEvents.ITEM_CROSSBOW_SHOOT, SoundCategory.PLAYERS, 1.0F, soundPitch);
+            if (projectileEntity instanceof PersistentProjectileEntity persistentProjectileEntity) {
+                MiapiProjectileEvents.ModularBowShotEvent event = new MiapiProjectileEvents.ModularBowShotEvent(persistentProjectileEntity, crossbow, shooter);
+                MiapiProjectileEvents.MODULAR_BOW_POST_SHOT.invoker().call(event);
+            }
         }
     }
 
@@ -233,7 +282,7 @@ public class ModularCrossbow extends CrossbowItem implements ModularItem {
         persistentProjectileEntity.setShotFromCrossbow(true);
         int i = EnchantmentHelper.getLevel(Enchantments.PIERCING, crossbow);
         if (i > 0) {
-            persistentProjectileEntity.setPierceLevel((byte) i);
+            persistentProjectileEntity.setPierceLevel((byte) ((byte) i + AttributeProperty.getActualValue(arrow, EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_PIERCING)));
         }
 
         return persistentProjectileEntity;
@@ -278,24 +327,21 @@ public class ModularCrossbow extends CrossbowItem implements ModularItem {
         }
 
         clearProjectiles(stack);
-    }
-
-    private static void clearProjectiles(ItemStack crossbow) {
-        NbtCompound nbtCompound = crossbow.getNbt();
-        if (nbtCompound != null) {
-            NbtList nbtList = nbtCompound.getList("ChargedProjectiles", 9);
-            nbtList.clear();
-            nbtCompound.put("ChargedProjectiles", nbtList);
-        }
-
+        setCharged(stack, false);
+        ModularItemCache.getUUIDFor(stack);
+        MiapiProjectileEvents.MODULAR_CROSSBOW_POST_SHOT.invoker().shoot(entity, stack);
     }
 
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         ItemStack itemStack = user.getStackInHand(hand);
         if (isCharged(itemStack)) {
+            //firedArrow
+            if (MiapiProjectileEvents.MODULAR_CROSSBOW_PRE_SHOT.invoker().shoot(user, itemStack).interruptsFurtherEvaluation()) {
+                return TypedActionResult.fail(itemStack);
+            }
             shootAll(world, user, hand, itemStack, getSpeed(itemStack), 1.0F);
-            setCharged(itemStack, false);
             itemStack.damage(1, user, p -> p.sendToolBreakStatus(user.getActiveHand()));
+            Miapi.LOGGER.info("do shoot crossbow");
             return TypedActionResult.consume(itemStack);
         } else if (!user.getProjectileType(itemStack).isEmpty()) {
             if (!isCharged(itemStack)) {
@@ -303,9 +349,10 @@ public class ModularCrossbow extends CrossbowItem implements ModularItem {
                 this.loaded = false;
                 user.setCurrentHand(hand);
             }
-
+            Miapi.LOGGER.info("do load crossbow");
             return TypedActionResult.consume(itemStack);
         } else {
+            Miapi.LOGGER.info("do nothing crossbow");
             return TypedActionResult.fail(itemStack);
         }
     }
@@ -337,7 +384,34 @@ public class ModularCrossbow extends CrossbowItem implements ModularItem {
         return list;
     }
 
+    public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
+        List<ItemStack> list = getProjectiles(stack);
+        if (isCharged(stack) && !list.isEmpty()) {
+            ItemStack itemStack = (ItemStack) list.get(0);
+            tooltip.add(Text.translatable("item.minecraft.crossbow.projectile").append(ScreenTexts.SPACE).append(itemStack.toHoverableText()));
+            if (context.isAdvanced() && itemStack.isOf(Items.FIREWORK_ROCKET)) {
+                List<Text> list2 = Lists.newArrayList();
+                Items.FIREWORK_ROCKET.appendTooltip(itemStack, world, list2, context);
+                if (!list2.isEmpty()) {
+                    for (int i = 0; i < list2.size(); ++i) {
+                        list2.set(i, Text.literal("  ").append((Text) list2.get(i)).formatted(Formatting.GRAY));
+                    }
+
+                    tooltip.addAll(list2);
+                }
+            }
+
+        }
+        LoreProperty.appendLoreTop(stack, world, tooltip, context);
+    }
+
+    @Override
     public Predicate<ItemStack> getProjectiles() {
         return itemStack -> projectile.test(itemStack) || IsCrossbowShootAble.canCrossbowShoot(itemStack);
+    }
+
+    @Override
+    public double getBaseDrawTime(ItemStack itemStack) {
+        return 25;
     }
 }

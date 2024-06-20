@@ -1,0 +1,9 @@
+[submodule "arsenal"]
+	path = arsenal
+	url = https://github.com/Truly-Modular/Arsenal
+[submodule "archery"]
+	path = archery
+	url = https://github.com/Truly-Modular/Archery
+[submodule "armory"]
+	path = armory
+	url = https://github.com/Truly-Modular/Armory

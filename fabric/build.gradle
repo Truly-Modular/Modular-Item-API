@@ -3,6 +3,7 @@ plugins {
 }
 repositories {
     mavenCentral()
+    maven { url 'https://maven.uuid.gg/releases' }
     maven { url 'https://maven.kosmx.dev/' }
     maven { url 'https://maven.shedaniel.me/' }
     maven { url 'https://maven.fabricmc.net/' }
@@ -23,6 +24,21 @@ repositories {
             includeGroup "com.jamieswhiteshirt"
         }
     }
+    maven {
+        name = 'GeckoLib'
+        url 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/'
+        content {
+            includeGroupByRegex("software\\.bernie.*")
+            includeGroup("com.eliotlash.mclib")
+        }
+    }
+    /*maven {
+        // saps.dev Maven (KubeJS and Rhino)
+        url "https://maven.saps.dev/minecraft"
+        content {
+            includeGroup "dev.latvian.mods"
+        }
+    }*/
 }
 architectury {
     platformSetupLoomIde()
@@ -41,36 +57,79 @@ configurations {
     developmentFabric.extendsFrom common
 }
 
+// Add the Archery project dependency and a custom task
+/*
+tasks.register('buildWithArsenal', Jar) {
+    def project = gradle.includedBuild("arsenal")
+    //dependsOn project.task(":fabric:build")
+    //dependsOn ":rebuildArsenal"
+    outputs.file("libs/arsenal-local.jar")
+}
+
+tasks.register('buildWithArchery', Jar) {
+    def project = gradle.includedBuild("archery")
+    //dependsOn project.task(":fabric:build")
+    //dependsOn ":rebuildArchery"
+    outputs.file("libs/archery-local.jar")
+}
+
+tasks.register('buildWithArmory', Jar) {
+    def project = gradle.includedBuild("armory")
+    //dependsOn project.task(":fabric:build")
+    //dependsOn ":rebuildArmory"
+    outputs.file("libs/armory-local.jar")
+}
+ */
+
 dependencies {
     modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
     modApi "net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_api_version}"
     // Remove the next line if you don't want to depend on the API
     modApi "dev.architectury:architectury-fabric:${rootProject.architectury_version}"
 
-    //modImplementation files('libs/nbteditor.jar')
-    //modImplementation files('libs/dummy.jar')
-    //modImplementation files('libs/moonlight.jar')
-
-    include(modApi("me.shedaniel.cloth:cloth-config-fabric:${rootProject.cloth_config_version}")) {
-        exclude(group: "net.fabricmc.fabric-api")
-    }
-
     modApi("com.terraformersmc:modmenu:${rootProject.fabric_modmenu_version}") {
         exclude(module: "fabric-api")
     }
-    include modImplementation("com.jamieswhiteshirt:reach-entity-attributes:$rootProject.fabric_reach_range_version")
-    implementation(include("org.mariuszgromada.math:MathParser.org-mXparser:${rootProject.mathparser_version}"))
-    modApi(include("com.github.RedPxnda.Nucleus:nucleus-fabric:${rootProject.nucleus_version}"))
 
-    modApi "maven.modrinth:truly-modular-arsenal:${arsenal_version}-fabric"
-    modApi "maven.modrinth:truly-modular-archery:${archery_version}-fabric"
-    modApi "maven.modrinth:truly-modular-armory:${armory_version}-fabric"
+    modCompileOnly "maven.modrinth:treechop:${rootProject.fabric_treechop_version}"
 
-    //modImplementation "curse.maven:cloth-348521:4554906"
-    //modImplementation "curse.maven:bettercombat-639842:4597949"
-    //modImplementation 'dev.kosmx.player-anim:player-animation-lib-fabric:1.0.2-rc1+1.20'
+    include api("com.ezylang:EvalEx:${rootProject.eval_ex_version}")
+    include modApi("com.jamieswhiteshirt:reach-entity-attributes:$rootProject.fabric_reach_range_version")
 
-    modImplementation "maven.modrinth:obsidian-equipment:kwMkZlFD"
+    /*modApi "dev.latvian.mods:rhino-fabric:${rootProject.rhino_version}"
+    modApi "dev.latvian.mods:kubejs-fabric:${rootProject.kjs_version}"*/
+
+    modImplementation "software.bernie.geckolib:geckolib-fabric-${minecraft_version}:${geckolib_version}"
+
+    modApi(include("com.redpxnda.nucleus:nucleus-core-fabric:${rootProject.minecraft_version}+${rootProject.nucleus_core_version}"))
+    modApi(include("com.redpxnda.nucleus:nucleus-codec-fabric:${rootProject.minecraft_version}+${rootProject.nucleus_codec_version}"))
+    modApi(include("com.redpxnda.nucleus:nucleus-config-fabric:${rootProject.minecraft_version}+${rootProject.nucleus_config_version}"))
+    modApi(include("com.redpxnda.nucleus:nucleus-pose-fabric:${rootProject.minecraft_version}+${rootProject.nucleus_pose_version}"))
+    modApi(include("com.redpxnda.nucleus:nucleus-facet-fabric:${rootProject.minecraft_version}+${rootProject.nucleus_facet_version}"))
+
+    //modLocalRuntime tasks.getByName("buildWithArsenal").outputs.files
+    //modLocalRuntime tasks.getByName("buildWithArchery").outputs.files
+    //modLocalRuntime tasks.getByName("buildWithArmory").outputs.files
+
+    modLocalRuntime files('libs/arsenal-local.jar')
+    modLocalRuntime files('libs/archery-local.jar')
+    modLocalRuntime files('libs/armory-local.jar')
+
+
+    //modLocalRuntime "maven.modrinth:sodium:mc1.20.1-0.5.3"
+    //modLocalRuntime"maven.modrinth:iris:1.6.10+1.20.1"
+
+    if ("${rootProject.run_with_bettercombat}" == "true") {
+        modImplementation 'dev.kosmx.player-anim:player-animation-lib-fabric:1.0.2-rc1+1.20'
+        modImplementation "curse.maven:bettercombat-639842:4597949"
+        modImplementation "curse.maven:cloth-config-348521:4973440"
+    }
+    //modLocalRuntime "curse.maven:cloth-348521:4554906"
+    //modLocalRuntime "curse.maven:bettercombat-639842:4597949"
+    //modLocalRuntime 'dev.kosmx.player-anim:player-animation-lib-fabric:1.0.2-rc1+1.20'
+
+    modLocalRuntime "maven.modrinth:obsidian-equipment:kwMkZlFD"
+    modCompileOnly "maven.modrinth:zenith:1.1.9-1.20.1"
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }
@@ -85,11 +144,14 @@ processResources {
 }
 
 shadowJar {
+    exclude "architectury.common.json"
+
     configurations = [project.configurations.shadowCommon]
     archiveClassifier = "dev-shadow"
 }
 
 remapJar {
+    injectAccessWidener = true
     input.set shadowJar.archiveFile
     dependsOn shadowJar
     archiveClassifier = null
@@ -111,16 +173,27 @@ components.java {
     }
 }
 
+tasks.register('githubPublish') {
+    finalizedBy ':fabric:publish'
+    group = 'publishing'
+
+    doLast {
+        publishing.publications.mavenFabric.groupId = "com.${rootProject.github}"
+    }
+}
+
 publishing {
     publications {
         mavenFabric(MavenPublication) {
-            artifactId = rootProject.archives_base_name + "-" + project.name + "-fabric"
+            artifactId = rootProject.archives_base_name + "-" + project.name
+            version = rootProject.mod_version + "-" + rootProject.minecraft_version
+
             from components.java
         }
     }
 
     // See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
     repositories {
-        // Add repositories to publish to here.
+        maven { url uri(file("$rootDir/build/repository")) }
     }
 }

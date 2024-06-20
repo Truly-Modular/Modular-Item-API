@@ -39,10 +39,11 @@ public class CryoStatusEffect extends RenderingMobEffect {
     public CryoStatusEffect() {
         super(StatusEffectCategory.HARMFUL, 1160409);
 
-        super.addAttributeModifier(EntityAttributes.GENERIC_MOVEMENT_SPEED, "309da7c1-944e-4d5e-aad1-be2491a44695", -0.4, EntityAttributeModifier.Operation.MULTIPLY_TOTAL);
+        super.addAttributeModifier(EntityAttributes.GENERIC_MOVEMENT_SPEED, "309da7c1-944e-4d5e-aad1-be2491a44695", -0.2, EntityAttributeModifier.Operation.MULTIPLY_TOTAL);
 
         MiscEvents.LIVING_JUMP_POWER.register(player -> {
-            if (player.hasStatusEffect(this)) return CompoundEventResult.interruptFalse(0.2f);
+            StatusEffectInstance instance = player.getStatusEffect(this);
+            if (instance != null) return CompoundEventResult.interruptFalse(0.4f - Math.min(0.4f, (instance.getAmplifier()+1)*0.04f));
             return CompoundEventResult.pass();
         });
         MiapiEvents.LIVING_HURT_AFTER.register(event -> {
@@ -52,7 +53,7 @@ public class CryoStatusEffect extends RenderingMobEffect {
                     event.livingEntity.removeStatusEffect(this);
                     event.livingEntity.addStatusEffect(
                             new StatusEffectInstance(
-                                    this, instance.getDuration()-20, instance.getAmplifier(),
+                                    this, instance.getDuration()-30, instance.getAmplifier(),
                                     instance.isAmbient(), instance.shouldShowParticles(), instance.shouldShowIcon()));
                 }
             }
@@ -70,7 +71,7 @@ public class CryoStatusEffect extends RenderingMobEffect {
             if (mc.player != null && mc.player.hasStatusEffect(RegistryInventory.cryoStatusEffect) && (motion.x != 0 || motion.y != 0)) {
                 int amplifier =  mc.player.getStatusEffect(RegistryInventory.cryoStatusEffect).getAmplifier();
                 motion.normalize();
-                motion.div(Math.max(amplifier/2f, 2.25));
+                motion.div(Math.min((amplifier+6)/5f, 2.25));
             }
         });
     }

@@ -3,13 +3,12 @@ package smartin.miapi.modules.properties;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
-import smartin.miapi.craft.stat.CraftingStat;
+import smartin.miapi.craft.stat.StatRequirementMap;
 import smartin.miapi.modules.ItemModule;
-import smartin.miapi.modules.properties.util.CodecBasedProperty;
 import smartin.miapi.modules.properties.util.DynamicCodecBasedProperty;
 import smartin.miapi.modules.properties.util.MergeType;
 
-public class StatProvisionProperty extends DynamicCodecBasedProperty<CraftingStat.StatMap<?>, CraftingStat.StatMap<?>> {
+public class StatProvisionProperty extends DynamicCodecBasedProperty<StatRequirementMap, StatRequirementMap> {
     public static final String KEY = "provideStats";
     public static StatProvisionProperty property;
 
@@ -19,18 +18,18 @@ public class StatProvisionProperty extends DynamicCodecBasedProperty<CraftingSta
     }
 
     @Override
-    public void addTo(ItemModule.ModuleInstance module, CraftingStat.StatMap<?> object, CraftingStat.StatMap<?> holder) {
-        holder.putAll((CraftingStat.StatMap) object);
+    public void addTo(ItemModule.ModuleInstance module, StatRequirementMap object, StatRequirementMap holder) {
+        holder.putAll(object);
     }
 
     @Override
-    public CraftingStat.StatMap<?> createNewHolder() {
-        return new CraftingStat.StatMap<>();
+    public StatRequirementMap createNewHolder() {
+        return new StatRequirementMap();
     }
 
     @Override
-    public Codec<CraftingStat.StatMap<?>> codec(ItemModule.ModuleInstance instance) {
-        return new CraftingStat.StatMap.StatMapCodec(instance);
+    public Codec<StatRequirementMap> codec(ItemModule.ModuleInstance instance) {
+        return new StatRequirementMap.Codec(instance);
     }
 
     @Override

@@ -1,0 +1,8 @@
+{
+    "replace": false,
+    "values": [
+        "miapi:modular_pickaxe",
+        "miapi:modular_hammer",
+        "miapi:modular_mattock"
+    ]
+}

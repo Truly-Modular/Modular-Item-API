@@ -2,6 +2,7 @@ package smartin.miapi.item.modular;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * A map of Transforms, represented as a mapping of strings to {@link Transform}.
@@ -11,7 +12,7 @@ public class TransformMap {
     /**
      * The stack of {@link Transform}, represented as a mapping of strings to {@link Transform}s.
      */
-    protected Map<String,Transform> stack = new HashMap<>();
+    protected Map<String, Transform> stack = new HashMap<>();
     /**
      * The ID of the primary {@link Transform} in the stack.
      */
@@ -24,8 +25,8 @@ public class TransformMap {
      * @param id the ID of the {@link Transform} to retrieve
      * @return the {@link Transform} associated with the specified ID
      */
-    public Transform get(String id){
-        return stack.computeIfAbsent(id,(key)->Transform.IDENTITY);
+    public Transform get(String id) {
+        return stack.computeIfAbsent(id, (key) -> Transform.IDENTITY);
     }
 
     /**
@@ -34,15 +35,13 @@ public class TransformMap {
      *
      * @return the primary {@link Transform}
      */
-    public Transform get(){
-        return stack.computeIfAbsent(primary,(key)->Transform.IDENTITY);
+    public Transform get() {
+        return stack.computeIfAbsent(primary, (key) -> Transform.IDENTITY);
     }
 
-    public static TransformMap merge(TransformMap parent, TransformMap toMerge){
+    public static TransformMap merge(TransformMap parent, TransformMap toMerge) {
         TransformMap merged = parent.copy();
-        toMerge.stack.forEach((id,transform)->{
-            merged.add(id,transform);
-        });
+        toMerge.stack.forEach(merged::add);
         return merged;
     }
 
@@ -52,29 +51,29 @@ public class TransformMap {
      * @param id the ID to check for
      * @return `true` if the specified ID is present in the stack, `false` otherwise
      */
-    public boolean isPresent(String id){
+    public boolean isPresent(String id) {
         return stack.containsKey(id);
     }
 
     /**
      * Sets the {@link Transform} associated with the specified ID to the specified {@link Transform}.
      *
-     * @param id the ID of the {@link Transform} to set
+     * @param id        the ID of the {@link Transform} to set
      * @param transform the {@link Transform} to set
      */
-    public void set(String id,Transform transform){
-        stack.put(id,transform);
+    public void set(String id, Transform transform) {
+        stack.put(id, transform);
     }
 
     /**
      * Adds the specified {@link Transform} to the {@link Transform} associated with the specified ID.
      *
-     * @param id the ID of the {@link Transform} to add to
+     * @param id        the ID of the {@link Transform} to add to
      * @param transform the `{@link Transform} to add
      */
-    public void add(String id,Transform transform){
+    public void add(String id, Transform transform) {
         Transform old = get(id);
-        set(id,Transform.merge(old,transform));
+        set(id, Transform.merge(old, transform));
     }
 
     /**
@@ -82,21 +81,20 @@ public class TransformMap {
      *
      * @param transform the `{@link Transform} to add
      */
-    public void add(Transform transform){
-        add(transform.origin,transform);
-        if(transform.origin!=null){
+    public void add(Transform transform) {
+        add(transform.origin, transform);
+        if (transform.origin != null) {
             primary = transform.origin;
         }
     }
 
     /**
-     *
      * @return a deep copy of the TransformMap
      */
-    public TransformMap copy(){
+    public TransformMap copy() {
         TransformMap newStack = new TransformMap();
-        stack.forEach((id,transform)->{
-            newStack.add(id,transform.copy());
+        stack.forEach((id, transform) -> {
+            newStack.add(id, transform.copy());
         });
         return newStack;
     }

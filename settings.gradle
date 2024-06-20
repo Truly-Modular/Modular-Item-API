@@ -6,7 +6,12 @@ pluginManagement {
         gradlePluginPortal()
     }
 }
+rootProject.name = 'miapi'
 
 include("common")
 include("fabric")
 include("forge")
+
+includeBuild("./archery")
+includeBuild("./armory")
+includeBuild("./arsenal")

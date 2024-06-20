@@ -1,7 +1,6 @@
 package smartin.miapi.entity;
 
 import dev.architectury.event.EventResult;
-import net.minecraft.block.BlockState;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -44,12 +43,11 @@ public class ItemProjectileEntity extends PersistentProjectileEntity {
     public static final TrackedData<Float> WATER_DRAG = DataTracker.registerData(ItemProjectileEntity.class, TrackedDataHandlerRegistry.FLOAT);
     public static final TrackedData<Integer> PREFERRED_SLOT = DataTracker.registerData(ItemProjectileEntity.class, TrackedDataHandlerRegistry.INTEGER);
     public ItemStack thrownStack = ItemStack.EMPTY;
-    private boolean dealtDamage;
+    protected boolean dealtDamage;
     public int returnTimer;
     public float waterDrag = 0.99f;
     public WrappedSoundEvent hitEntitySound = new WrappedSoundEvent(this.getHitSound(), 1.0f, 1.0f);
     public ProjectileHitBehaviour projectileHitBehaviour = new EntityBounceBehaviour();
-    private BlockState inBlockState;
 
     public ItemProjectileEntity(EntityType<? extends Entity> entityType, World world) {
         super((EntityType<? extends PersistentProjectileEntity>) entityType, world);
@@ -63,6 +61,7 @@ public class ItemProjectileEntity extends PersistentProjectileEntity {
         this.dataTracker.set(THROWING_STACK, thrownStack);
         this.dataTracker.set(LOYALTY, (byte) EnchantmentHelper.getLoyalty(stack));
         this.dataTracker.set(ENCHANTED, stack.hasGlint());
+        this.checkDespawn();
         setup();
     }
 
@@ -133,7 +132,7 @@ public class ItemProjectileEntity extends PersistentProjectileEntity {
             this.setVelocity(new Vec3d(0, 0, 0));
             this.dealtDamage = true;
         }
-        if (this.getBlockPos().getY() < this.getWorld().getBottomY() - 50 && MiapiConfig.EnchantmentGroup.betterLoyalty.getValue()) {
+        if (this.getBlockPos().getY() < this.getWorld().getBottomY() - 50 && MiapiConfig.INSTANCE.server.enchants.betterLoyalty) {
             //loyalty in void
             this.dealtDamage = true;
         }
@@ -175,7 +174,13 @@ public class ItemProjectileEntity extends PersistentProjectileEntity {
         super.tick();
     }
 
-    private boolean isOwnerAlive() {
+    protected void age() {
+        if (this.age >= 1200 * 20) {
+            this.discard();
+        }
+    }
+
+    protected boolean isOwnerAlive() {
         Entity entity = this.getOwner();
         if (entity != null && entity.isAlive()) {
             return !(entity instanceof ServerPlayerEntity) || !entity.isSpectator();
@@ -227,6 +232,9 @@ public class ItemProjectileEntity extends PersistentProjectileEntity {
                         damage);
         EventResult result = MiapiProjectileEvents.MODULAR_PROJECTILE_ENTITY_HIT.invoker().hit(event);
         if (result.interruptsFurtherEvaluation()) {
+            if (this.projectileHitBehaviour != null) {
+                projectileHitBehaviour.onHit(this, entityHitResult.getEntity(), entityHitResult);
+            }
             return;
         }
         damage = event.damage;
@@ -266,7 +274,13 @@ public class ItemProjectileEntity extends PersistentProjectileEntity {
     protected void onBlockHit(BlockHitResult blockHitResult) {
         if (MiapiProjectileEvents.MODULAR_PROJECTILE_BLOCK_HIT.invoker().hit(
                 new MiapiProjectileEvents.ModularProjectileBlockHitEvent(blockHitResult, this)).interruptsFurtherEvaluation()) {
+            if (this.projectileHitBehaviour != null) {
+                projectileHitBehaviour.onBlockHit(this, blockHitResult);
+            }
             return;
+        }
+        if (this.projectileHitBehaviour != null) {
+            projectileHitBehaviour.onBlockHit(this, blockHitResult);
         }
         super.onBlockHit(blockHitResult);
     }
@@ -295,6 +309,9 @@ public class ItemProjectileEntity extends PersistentProjectileEntity {
                 return false;
             }
             case CREATIVE_ONLY -> {
+                if (EnchantmentHelper.getLoyalty(this.asItemStack()) > 0 && this.isOwner(player)) {
+                    return true;
+                }
                 return player.getAbilities().creativeMode;
             }
             case ALLOWED -> {
@@ -371,15 +388,6 @@ public class ItemProjectileEntity extends PersistentProjectileEntity {
         nbt.putBoolean("SpeedDamage", this.dataTracker.get(SPEED_DAMAGE));
         nbt.putInt("PreferredSlot", this.dataTracker.get(PREFERRED_SLOT));
         MiapiProjectileEvents.MODULAR_PROJECTILE_NBT_WRITE.invoker().nbtEvent(this, nbt);
-    }
-
-    @Override
-    public void age() {
-        int i = this.dataTracker.get(LOYALTY);
-        if (this.pickupType != PickupPermission.ALLOWED || i <= 0) {
-            super.age();
-        }
-
     }
 
     @Override

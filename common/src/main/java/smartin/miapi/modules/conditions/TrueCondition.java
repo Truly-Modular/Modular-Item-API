@@ -14,7 +14,7 @@ import java.util.Map;
 public class TrueCondition implements ModuleCondition {
 
     @Override
-    public boolean isAllowed(ItemModule.ModuleInstance moduleInstance, @Nullable BlockPos tablePos, @Nullable PlayerEntity player, Map<ModuleProperty, JsonElement> propertyMap, List<Text> reasons) {
+    public boolean isAllowed(ConditionManager.ConditionContext conditionContext) {
         return true;
     }
 

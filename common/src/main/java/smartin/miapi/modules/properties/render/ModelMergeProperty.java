@@ -20,7 +20,7 @@ import java.util.List;
  * This Property allows to merge different Modelparts together
  */
 @Environment(EnvType.CLIENT)
-public class ModelMergeProperty implements ModuleProperty {
+public class ModelMergeProperty implements RenderProperty {
     public static final String KEY = "modelMerge";
     public static ModuleProperty property;
 

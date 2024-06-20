@@ -7,11 +7,14 @@ import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.ScrollList;
 import smartin.miapi.client.gui.ScrollingTextWidget;
 import smartin.miapi.client.gui.crafting.CraftingScreen;
+import smartin.miapi.client.gui.crafting.crafter.replace.CraftOption;
 import smartin.miapi.client.gui.crafting.crafter.replace.CraftViewRework;
 import smartin.miapi.modules.edit_options.CreateItemOption.CreateItemOption;
 import smartin.miapi.modules.edit_options.EditOption;
+import smartin.miapi.modules.edit_options.ReplaceOption;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class CreateListView extends InteractAbleWidget {
@@ -31,14 +34,16 @@ public class CreateListView extends InteractAbleWidget {
 
     public void create(CreateItemOption.CreateItem createItem) {
         CreateItemOption.selected = createItem;
+        EditOption.EditContext editContext1 = CreateItemOption.transform(editContext, createItem);
+        ReplaceOption.unsafeEditContext = editContext1;
         CraftViewRework craftView = new CraftViewRework(
                 this.getX(),
                 this.getY(),
                 this.width,
                 this.height,
                 1,
-                createItem.getBaseModule(),
-                CreateItemOption.transform(editContext,createItem),
+                new CraftOption(createItem.getBaseModule(), new HashMap<>()),
+                editContext1,
                 (backSlot) -> {
                     this.children().clear();
                     this.addChild(scrollList);
@@ -67,7 +72,7 @@ public class CreateListView extends InteractAbleWidget {
             if (isMouseOver(mouseX, mouseY)) {
                 hoverOffset = 14;
             }
-            drawTextureWithEdge(drawContext, CraftingScreen.BACKGROUND_TEXTURE, getX(), getY(), 404, 54+hoverOffset, 108, 14, getWidth(), getHeight(), 512, 512, 3);
+            drawTextureWithEdge(drawContext, CraftingScreen.BACKGROUND_TEXTURE, getX(), getY(), 404, 54 + hoverOffset, 108, 14, getWidth(), getHeight(), 512, 512, 3);
             textWidget.setX(this.getX() + 2);
             textWidget.setY(this.getY() + 3);
             textWidget.setWidth(this.getWidth() - 10);

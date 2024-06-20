@@ -19,7 +19,7 @@ public class MaterialProperties implements ModuleProperty {
 
     public MaterialProperties() {
         property = this;
-        PropertyResolver.propertyProviderRegistry.register(KEY, (moduleInstance, oldMap) -> {
+        PropertyResolver.register("material_property", (moduleInstance, oldMap) -> {
             Material material = MaterialProperty.getMaterial(oldMap.get(MaterialProperty.property));
             Map<ModuleProperty, JsonElement> returnMap = new HashMap<>(oldMap);
             if (material != null) {
@@ -29,12 +29,15 @@ public class MaterialProperties implements ModuleProperty {
                         keys.add(element.getAsString());
                     }
                 }
-                if(keys.isEmpty()){
+                if (keys.isEmpty()) {
                     keys.add("default");
+                }
+                if (moduleInstance.module != null) {
+                    keys.add(moduleInstance.module.getName());
                 }
                 for (String key : keys) {
                     Map<ModuleProperty, JsonElement> materialProperties = material.materialProperties(key);
-                    if(!materialProperties.isEmpty()){
+                    if (!materialProperties.isEmpty()) {
                         returnMap = PropertyResolver.merge(oldMap, materialProperties, MergeType.SMART);
                     }
                 }

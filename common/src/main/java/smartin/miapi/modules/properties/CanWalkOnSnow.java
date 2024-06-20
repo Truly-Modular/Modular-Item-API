@@ -4,8 +4,7 @@ import net.minecraft.item.ItemStack;
 import smartin.miapi.modules.properties.util.ComplexBooleanProperty;
 
 /**
- * This Property allows to designate the Item as Tool or Weapon,
- * mainly affecting durability calculations
+ * This Property determins if boots can walk on powdered snow
  */
 public class CanWalkOnSnow extends ComplexBooleanProperty {
     public static final String KEY = "canWalkOnSnow";

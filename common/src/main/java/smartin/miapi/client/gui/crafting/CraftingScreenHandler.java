@@ -94,36 +94,43 @@ public class CraftingScreenHandler extends ScreenHandler {
         if (playerInventory.player instanceof ServerPlayerEntity) {
             Networking.registerC2SPacket(packetID, (buffer, player) -> {
                 CraftAction action = new CraftAction(buffer, blockEntity);
-                action.setItem(inventory.getStack(0));
-                action.linkInventory(inventory, 1);
-                if (action.canPerform()) {
-                    ItemStack stack = action.perform();
-                    inventory.setStack(0, stack);
-                    if (blockEntity != null) {
-                        blockEntity.setItem(stack);
-                        blockEntity.saveAndSync();
+                Miapi.server.execute(() -> {
+                    action.setItem(inventory.getStack(0));
+                    action.linkInventory(inventory, 1);
+                    if (action.canPerform()) {
+                        ItemStack stack = action.perform();
+                        inventory.setStack(0, stack);
+                        if (blockEntity != null) {
+                            blockEntity.setItem(stack);
+                            blockEntity.saveAndSync();
+                        }
+                        this.onContentChanged(inventory);
                     }
-                    this.onContentChanged(inventory);
-                }
+                });
             });
             Networking.registerC2SPacket(packetIDSlotAdd, (buffer, player) -> {
                 int invId = buffer.readInt();
                 int slotId = buffer.readInt();
-                Slot slot = new Slot(inventory, invId, 0, 0);
-                slot.id = slotId;
-                mutableSlots.add(slot);
-                this.addSlot(slot);
-                slot.id = slotId;
+                Miapi.server.execute(() -> {
+                    Slot slot = new Slot(inventory, invId, 0, 0);
+                    slot.id = slotId;
+                    mutableSlots.add(slot);
+                    this.addSlot(slot);
+                    slot.id = slotId;
+                });
             });
             Networking.registerC2SPacket(packetIDSlotRemove, (buffer, player) -> {
                 int slotId = buffer.readInt();
-                Slot slot = this.getSlot(slotId);
-                mutableSlots.remove(slot);
-                quickMove(playerInventory.player, slotId);
+                Miapi.server.execute(() -> {
+                    Slot slot = this.getSlot(slotId);
+                    mutableSlots.remove(slot);
+                    quickMove(playerInventory.player, slotId);
+                });
             });
             Networking.registerC2SPacket(editPacketID, (buffer, player) -> {
                 EditOption option = RegistryInventory.editOptions.get(buffer.readString());
                 int[] intArray = buffer.readIntArray();
+                //Miapi.server.execute(()->{
                 ItemStack stack = ModularItemStackConverter.getModularVersion(inventory.getStack(0));
                 ItemModule.ModuleInstance root = ItemModule.getModules(stack);
                 List<Integer> position = new ArrayList<>();
@@ -187,18 +194,21 @@ public class CraftingScreenHandler extends ScreenHandler {
                 };
                 if (option.isVisible(editContext)) {
                     ItemStack editedStack = option.execute(buffer, editContext);
-                    inventory.setStack(0, editedStack);
-                    if (blockEntity != null) {
-                        blockEntity.setItem(editedStack);
-                        blockEntity.saveAndSync();
-                    }
-                    inventory.markDirty();
-                    this.onContentChanged(inventory);
+                    Miapi.server.execute(() -> {
+                        inventory.setStack(0, editedStack);
+                        if (blockEntity != null) {
+                            blockEntity.setItem(editedStack);
+                            blockEntity.saveAndSync();
+                        }
+                        inventory.markDirty();
+                        this.onContentChanged(inventory);
+                    });
                 } else {
                     Miapi.LOGGER.warn("ERROR - Couldn`t verify craft action from client " + player.getUuidAsString() + " " + player.getDisplayName().getString() + " This might be a bug or somebody is trying to exploit");
-                    Miapi.DEBUG_LOGGER.warn(String.valueOf(current));
-                    Miapi.DEBUG_LOGGER.warn(position.toString());
+                    Miapi.LOGGER.warn(String.valueOf(current));
+                    Miapi.LOGGER.warn(position.toString());
                 }
+                //});
             });
         }
         this.context = context;
@@ -229,13 +239,6 @@ public class CraftingScreenHandler extends ScreenHandler {
             final EquipmentSlot equipmentSlot = EQUIPMENT_SLOT_ORDER[i];
             int offset = i < 2 ? 0 : 1;
             this.addSlot(new Slot(playerInventory, 39 - i, 87 + i * 18 - offset - 15, 118 + 71 - 14) {
-
-                @Override
-                public void setStack(ItemStack stack) {
-                    //PlayerScreenHandler.onEquipStack(owner, equipmentSlot, stack, this.getStack());
-                    super.setStack(stack);
-                }
-
                 @Override
                 public int getMaxItemCount() {
                     return 1;
@@ -262,13 +265,6 @@ public class CraftingScreenHandler extends ScreenHandler {
             });
         }
         this.addSlot(new Slot(playerInventory, 40, 111 - 61 + 5 * 18 + 18 - 15, 118 + 71 - 14) {
-
-            @Override
-            public void setStack(ItemStack stack) {
-                //PlayerScreenHandler.onEquipStack(owner, EquipmentSlot.OFFHAND, stack, this.getStack());
-                super.setStack(stack);
-            }
-
             @Override
             public Pair<Identifier, Identifier> getBackgroundSprite() {
                 return Pair.of(BLOCK_ATLAS_TEXTURE, EMPTY_OFFHAND_ARMOR_SLOT);
@@ -284,6 +280,10 @@ public class CraftingScreenHandler extends ScreenHandler {
     @Override
     public void sendContentUpdates() {
         super.sendContentUpdates();
+        if (notClient()) {
+            blockEntity.setItem(inventory.getStack(0));
+            blockEntity.saveAndSync();
+        }
         if (blockEntity == null && delegate.get(0) == 1) {
             short xsh = (short) delegate.get(1);
             short xsl = (short) delegate.get(2);
@@ -300,6 +300,7 @@ public class CraftingScreenHandler extends ScreenHandler {
             BlockEntity be = playerInventory.player.getWorld().getBlockEntity(new BlockPos(x, y, z));
             if (be instanceof ModularWorkBenchEntity casted) blockEntity = casted;
         }
+        updateBE();
     }
 
     /**
@@ -379,7 +380,15 @@ public class CraftingScreenHandler extends ScreenHandler {
         }
     }
 
+    private void updateBE() {
+        if (notClient()) {
+            blockEntity.setItem(inventory.getStack(0));
+            blockEntity.saveAndSync();
+        }
+    }
+
     public ItemStack quickMove(PlayerEntity player, int index) {
+        inventory.markDirty();
         ItemStack itemStack = ItemStack.EMPTY;
         Slot slot = this.slots.get(index);
 
@@ -433,11 +442,6 @@ public class CraftingScreenHandler extends ScreenHandler {
         }
     }
 
-    @Override
-    public void onContentChanged(Inventory inventory) {
-        this.sendContentUpdates();
-    }
-
     public static class ModifyingSlot extends Slot {
         protected final ModularWorkBenchEntity blockEntity;
 
@@ -468,13 +472,6 @@ public class CraftingScreenHandler extends ScreenHandler {
                 blockEntity.saveAndSync();
             }
             this.markDirty();
-        }
-
-        @Override
-        public ItemStack getStack() {
-            ItemStack stack = super.getStack();
-            if (notClient() && !stack.isEmpty()) return blockEntity.getItem();
-            return stack;
         }
     }
 

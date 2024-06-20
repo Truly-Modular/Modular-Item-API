@@ -5,20 +5,19 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.text.Text;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
-import smartin.miapi.client.gui.crafting.crafter.replace.CraftView;
+import smartin.miapi.client.gui.crafting.crafter.replace.CraftOption;
 import smartin.miapi.client.gui.crafting.crafter.replace.ReplaceView;
 import smartin.miapi.craft.CraftAction;
-import smartin.miapi.item.modular.ModularItem;
-import smartin.miapi.modules.ItemModule;
+import smartin.miapi.item.modular.VisualModularItem;
 import smartin.miapi.modules.edit_options.EditOption;
-import smartin.miapi.modules.properties.SlotProperty;
 import smartin.miapi.modules.material.Material;
 import smartin.miapi.modules.material.MaterialProperty;
+import smartin.miapi.modules.properties.SlotProperty;
+import smartin.miapi.network.Networking;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,13 +29,11 @@ import java.util.function.Consumer;
 @Environment(EnvType.CLIENT)
 public class ModuleCrafter extends InteractAbleWidget {
     public ItemStack stack;
-    public ItemModule module;
     public SlotProperty.ModuleSlot slot;
     private final Consumer<ItemStack> preview;
     private SlotProperty.ModuleSlot baseSlot = new SlotProperty.ModuleSlot(new ArrayList<>());
     private String paketIdentifier;
     private Inventory linkedInventory;
-    CraftView craftView;
     EditView editView;
     Consumer<Slot> removeSlot;
     Consumer<Slot> addSlot;
@@ -45,6 +42,8 @@ public class ModuleCrafter extends InteractAbleWidget {
     Consumer<SlotProperty.ModuleSlot> selected;
     public EditOption.EditContext editContext;
     Mode currentMode = Mode.DETAIL;
+    CraftOption craftOption;
+    public String moduleType = "default";
 
     public ModuleCrafter(int x, int y, int width, int height, Consumer<SlotProperty.ModuleSlot> selected, Consumer<ItemStack> craftedItem, Inventory linkedInventory, Consumer<Slot> addSlot, Consumer<Slot> removeSlot) {
         super(x, y, width, height, Text.empty());
@@ -53,7 +52,6 @@ public class ModuleCrafter extends InteractAbleWidget {
         this.preview = craftedItem;
         this.removeSlot = removeSlot;
         this.addSlot = addSlot;
-        CraftView.currentSlots.forEach(removeSlot);
     }
 
     public ModuleCrafter(int x, int y, int width, int height, ModuleCrafter other) {
@@ -63,7 +61,6 @@ public class ModuleCrafter extends InteractAbleWidget {
         this.preview = other.preview;
         this.removeSlot = other.removeSlot;
         this.addSlot = other.addSlot;
-        CraftView.currentSlots.forEach(removeSlot);
     }
 
     public void setItem(ItemStack stack) {
@@ -94,15 +91,11 @@ public class ModuleCrafter extends InteractAbleWidget {
 
     public void setMode(Mode mode) {
         currentMode = mode;
-        if (craftView != null) {
-            craftView.closeSlot();
-            craftView = null;
-        }
         if (mode != Mode.EDIT && editView != null) {
             editView.clearSlots();
         }
-        if (mode == Mode.DETAIL && !(stack.getItem() instanceof ModularItem)) {
-            Material material = MaterialProperty.getMaterial(stack);
+        if (mode == Mode.DETAIL && !(stack.getItem() instanceof VisualModularItem)) {
+            Material material = MaterialProperty.getMaterialFromIngredient(stack);
             if (material != null) {
                 mode = Mode.MATERIAL;
             }
@@ -110,7 +103,6 @@ public class ModuleCrafter extends InteractAbleWidget {
         switch (mode) {
             case DETAIL -> {
                 this.children().clear();
-                module = ItemModule.empty;
                 DetailView detailView = new DetailView(this.getX(), this.getY(), this.width, this.height, this.baseSlot, this.slot,
                         toEdit -> {
                             selected.accept(toEdit);
@@ -124,24 +116,8 @@ public class ModuleCrafter extends InteractAbleWidget {
                             }
                             slot = toReplace;
                             setMode(Mode.REPLACE);
-                        });
+                        }, moduleType);
                 this.children.add(detailView);
-            }
-            case CRAFT -> {
-                ItemModule replaceModule = module;
-                if (module == null) {
-                    module = ItemModule.empty;
-                }
-                craftView = new CraftView(this.getX(), this.getY(), this.width, this.height, paketIdentifier, module, stack, linkedInventory, 1, slot, (backSlot) -> {
-                    slot = backSlot;
-                    setMode(Mode.REPLACE);
-                }, (replaceItem) -> {
-                    if (currentMode == Mode.CRAFT) {
-                        preview.accept(replaceItem);
-                    }
-                }, addSlot, removeSlot, handler);
-                this.children().clear();
-                this.addChild(craftView);
             }
             case EDIT -> {
                 editView = new EditView(this.getX(), this.getY(), this.width, this.height, stack, slot, (previewItem) -> {
@@ -159,15 +135,14 @@ public class ModuleCrafter extends InteractAbleWidget {
             }
             case REPLACE -> {
                 this.children.clear();
-                ReplaceView view = new ReplaceView(this.getX(), this.getY(), this.width, this.height, slot, this::setSelectedSlot, (itemModule -> {
-                    this.module = itemModule;
+                ReplaceView view = new ReplaceView(this.getX(), this.getY(), this.width, this.height, slot, editContext, this::setSelectedSlot, option -> {
+                    this.craftOption = option;
                     setMode(Mode.CRAFT);
-                }), (itemModule -> {
-                    CraftAction action = new CraftAction(stack, slot, itemModule, null, handler.blockEntity, new PacketByteBuf[0]);
-                    action.linkInventory(linkedInventory, 1);
-                    if (currentMode == Mode.REPLACE) {
-                        preview.accept(action.getPreview());
-                    }
+                }, (option -> {
+                    CraftAction action = new CraftAction(editContext.getItemstack(), editContext.getSlot(), option.module(), editContext.getPlayer(), editContext.getWorkbench(), option.data());
+                    action.setItem(editContext.getLinkedInventory().getStack(0));
+                    action.linkInventory(editContext.getLinkedInventory(), 1);
+                    editContext.preview(action.toPacket(Networking.createBuffer()));
                 }));
                 addChild(view);
             }

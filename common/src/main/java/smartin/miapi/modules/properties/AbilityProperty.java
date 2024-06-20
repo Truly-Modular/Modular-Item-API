@@ -14,8 +14,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This property manages the active {@link ItemUseAbility}
+ * @deprecated use {@link AbilityMangerProperty} instead. it also contains context for those abilities
  */
+@Deprecated
 public class AbilityProperty implements ModuleProperty {
     public static final String KEY = "abilities";
     public static AbilityProperty property;
@@ -38,11 +39,6 @@ public class AbilityProperty implements ModuleProperty {
             });
         }
         return abilities;
-    }
-
-    public boolean isPrimaryAbility(ItemUseAbility itemUseAbility, ItemStack itemStack) {
-        List<ItemUseAbility> abilities = get(itemStack);
-        return !abilities.isEmpty() && itemUseAbility == abilities.get(0);
     }
 
     @Override

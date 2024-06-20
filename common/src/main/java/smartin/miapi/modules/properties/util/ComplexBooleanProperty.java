@@ -4,6 +4,7 @@ import net.minecraft.item.ItemStack;
 
 public abstract class ComplexBooleanProperty extends DoubleProperty {
     boolean defaultValue;
+    //TODO:add a gui to this and all its inheritors
 
     protected ComplexBooleanProperty(String key, boolean defaultValue) {
         super(key);
@@ -13,6 +14,10 @@ public abstract class ComplexBooleanProperty extends DoubleProperty {
     public boolean isTrue(ItemStack itemStack) {
         Double value = getValueRaw(itemStack);
         return value != null ? value > 0 : defaultValue;
+    }
+
+    public boolean hasValue(ItemStack itemStack) {
+        return isTrue(itemStack) != defaultValue;
     }
 
 

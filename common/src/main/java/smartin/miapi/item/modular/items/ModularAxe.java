@@ -3,6 +3,7 @@ package smartin.miapi.item.modular.items;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import net.minecraft.block.BlockState;
+import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttribute;
@@ -11,22 +12,43 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.AxeItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
+import net.minecraft.item.ToolMaterial;
 import net.minecraft.text.Text;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
+import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.item.modular.ModularItem;
+import smartin.miapi.item.modular.PlatformModularItemMethods;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
-import smartin.miapi.modules.properties.DisplayNameProperty;
-import smartin.miapi.modules.properties.MiningLevelProperty;
-import smartin.miapi.modules.properties.RepairPriority;
-import smartin.miapi.modules.properties.ToolOrWeaponProperty;
+import smartin.miapi.modules.properties.*;
+import smartin.miapi.modules.properties.mining.MiningLevelProperty;
 
-public class ModularAxe extends AxeItem implements ModularItem {
+import java.util.List;
+
+public class ModularAxe extends AxeItem implements PlatformModularItemMethods, ModularItem, ModularSetableToolMaterial {
+    public ToolMaterial currentFakeToolmaterial = ModularToolMaterial.toolMaterial;
+
+    public ModularAxe(Settings settings) {
+        super(new ModularToolMaterial(), 5, 5, settings.maxCount(1).maxDamage(500));
+    }
 
     public ModularAxe() {
         super(new ModularToolMaterial(), 5, 5, new Settings().maxCount(1).maxDamage(500).rarity(Rarity.COMMON));
+    }
+
+    public ToolMaterial getMaterial() {
+        if (MiapiConfig.INSTANCE.server.other.looseToolMaterial) {
+            return currentFakeToolmaterial;
+        }
+        return super.getMaterial();
+    }
+
+    @Override
+    public void setToolMaterial(ToolMaterial toolMaterial) {
+        this.currentFakeToolmaterial = toolMaterial;
     }
 
     @Override
@@ -49,6 +71,11 @@ public class ModularAxe extends AxeItem implements ModularItem {
     @Override
     public boolean canRepair(ItemStack stack, ItemStack ingredient) {
         return RepairPriority.getRepairValue(stack, ingredient) > 0;
+    }
+
+    @Override
+    public Rarity getRarity(ItemStack stack) {
+        return RarityProperty.getRarity(stack);
     }
 
     @Override
@@ -150,5 +177,10 @@ public class ModularAxe extends AxeItem implements ModularItem {
     @Override
     public ActionResult useOnBlock(ItemUsageContext context) {
         return ItemAbilityManager.useOnBlock(context);
+    }
+
+    @Override
+    public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
+        LoreProperty.appendLoreTop(stack, world, tooltip, context);
     }
 }

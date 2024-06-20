@@ -8,6 +8,7 @@
     "hardness": 3,
     "density": 1.5,
     "flexibility": 5,
+    "enchantability": 10,
     "durability": 150,
     "color": "D46A42",
     "color_palette": {

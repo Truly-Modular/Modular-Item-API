@@ -4,11 +4,12 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.minecraft.util.Identifier;
 
-public record TextureOptions(Identifier texture, int xSize, int ySize, int borderSize, int color, int scale) {
+public record TextureOptions(Identifier texture, int xSize, int ySize, int borderSize, int color, int scale,
+                             boolean keepScale) {
 
     public static TextureOptions fromJson(JsonElement element, Identifier texture, int xSize, int ySize, int borderSize, int color) {
         if (element == null) {
-            return new TextureOptions(texture, xSize, ySize, borderSize, color, 1);
+            return new TextureOptions(texture, xSize, ySize, borderSize, color, 1, false);
         }
         JsonObject jsonObject = element.getAsJsonObject();
 
@@ -21,6 +22,7 @@ public record TextureOptions(Identifier texture, int xSize, int ySize, int borde
             color = (int) (longValue & 0xffffffffL);
         }
         int scale = jsonObject.has("scale") ? jsonObject.get("scale").getAsInt() : 1;
-        return new TextureOptions(textureValue, xSizeValue, ySizeValue, borderSizeValue, color, scale);
+        boolean keepScale = jsonObject.has("keepScale") ? jsonObject.get("keepScale").getAsBoolean() : false;
+        return new TextureOptions(textureValue, xSizeValue, ySizeValue, borderSizeValue, color, scale, keepScale);
     }
 }

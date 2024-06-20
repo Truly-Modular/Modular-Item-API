@@ -1,0 +1,8 @@
+{
+    "replace": false,
+    "values": [
+        "miapi:modular_hoe",
+        "miapi:modular_scythe",
+        "miapi:modular_sickle"
+    ]
+}

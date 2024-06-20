@@ -20,7 +20,9 @@ import java.util.List;
 /**
  * This property controls {@link smartin.miapi.modules.abilities.CircleAttackAbility}
  */
+@Deprecated
 public class CircleAttackProperty implements ModuleProperty {
+    //TODO:Delete this class and think of a better Solution for special attacks
     public static String KEY = "circleAttack";
     public static CircleAttackProperty property;
 

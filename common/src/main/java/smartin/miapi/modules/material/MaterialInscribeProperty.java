@@ -1,8 +1,10 @@
 package smartin.miapi.modules.material;
 
 import com.google.gson.JsonElement;
+import dev.architectury.event.EventResult;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
@@ -16,6 +18,10 @@ public class MaterialInscribeProperty implements ModuleProperty {
 
     public MaterialInscribeProperty() {
         property = this;
+        MiapiEvents.MATERIAL_CRAFT_EVENT.register((listener) -> {
+            listener.crafted = inscribe(listener.crafted, listener.materialStack);
+            return EventResult.pass();
+        });
     }
 
     public static ItemStack inscribe(ItemStack raw, ItemStack materialStack) {
@@ -25,7 +31,9 @@ public class MaterialInscribeProperty implements ModuleProperty {
             materialStack = materialStack.copy();
             materialStack.setCount(1);
             compound.put(element.getAsString(), materialStack.writeNbt(new NbtCompound()));
-            compound.copyFrom(materialStack.getOrCreateNbt());
+            if(materialStack.hasNbt()){
+                compound.copyFrom(materialStack.getOrCreateNbt());
+            }
             raw.setNbt(compound);
         }
         return raw;

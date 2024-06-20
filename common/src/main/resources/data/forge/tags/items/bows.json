@@ -1,0 +1,8 @@
+{
+    "replace": false,
+    "values": [
+        "miapi:modular_bow",
+        "miapi:modular_small_bow",
+        "miapi:modular_large_bow"
+    ]
+}

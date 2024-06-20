@@ -35,7 +35,6 @@ public abstract class InteractAbleWidget extends ClickableWidget implements Draw
     protected final List<Element> children = new ArrayList<>();
     protected final List<InteractAbleWidget> hoverElements = new ArrayList<>();
     public boolean debug = false;
-    public static boolean globalDebug = MiapiConfig.OtherConfigGroup.developmentMode.getValue();
     public int randomColor = ColorHelper.Argb.getArgb(180, (int) (Math.random()*255), (int) (Math.random()*255), (int) (Math.random()*255));
 
     /**
@@ -381,7 +380,7 @@ public abstract class InteractAbleWidget extends ClickableWidget implements Draw
      */
     @Override
     public void render(DrawContext drawContext, int mouseX, int mouseY, float delta) {
-        if ((debug || globalDebug) && Screen.hasAltDown())
+        if ((debug || MiapiConfig.INSTANCE.server.other.developmentMode) && Screen.hasAltDown())
             drawSquareBorder(drawContext, getX(), getY(), getWidth(), getHeight(), 1, randomColor);
 
         RenderSystem.setShader(GameRenderer::getPositionProgram);

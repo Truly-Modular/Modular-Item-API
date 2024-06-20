@@ -1,0 +1,13 @@
+{
+    "replace": false,
+    "values": [
+        "miapi:modular_shovel",
+        "miapi:modular_pickaxe",
+        "miapi:modular_hammer",
+        "miapi:modular_axe",
+        "miapi:modular_hoe",
+        "miapi:modular_mattock",
+        "miapi:modular_scythe",
+        "miapi:modular_sickle"
+    ]
+}
