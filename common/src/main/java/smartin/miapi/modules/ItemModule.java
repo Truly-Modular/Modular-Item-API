@@ -55,6 +55,11 @@ public class ItemModule {
      */
     public static final ItemModule empty = new ItemModule("empty", new HashMap<>());
 
+    /**
+     * An internal ItemModule instance, can be used for whatever purpose
+     */
+    public static final ItemModule internal = new ItemModule("internal", new HashMap<>());
+
 
     /**
      * Creates an instance of ItemModule with a given name and map of properties.

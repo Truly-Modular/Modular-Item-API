@@ -9,7 +9,7 @@ import net.minecraft.network.PacketByteBuf;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.InteractAbleWidget;
-import smartin.miapi.client.gui.PreviewManager;
+import smartin.miapi.client.gui.crafting.PreviewManager;
 import smartin.miapi.client.gui.crafting.CraftingScreen;
 import smartin.miapi.client.gui.crafting.crafter.CraftEditOption;
 import smartin.miapi.craft.CraftAction;

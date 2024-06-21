@@ -14,12 +14,16 @@ import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
-import smartin.miapi.client.gui.*;
+import smartin.miapi.client.gui.InteractAbleWidget;
+import smartin.miapi.client.gui.ParentHandledScreen;
+import smartin.miapi.client.gui.SimpleScreenHandlerListener;
+import smartin.miapi.client.gui.TransformableWidget;
 import smartin.miapi.client.gui.crafting.crafter.DetailView;
 import smartin.miapi.client.gui.crafting.crafter.ModuleCrafter;
 import smartin.miapi.client.gui.crafting.slotdisplay.SlotDisplay;
 import smartin.miapi.client.gui.crafting.slotdisplay.SmithDisplay;
-import smartin.miapi.client.gui.crafting.statdisplay.StatListWidget;
+import smartin.miapi.client.gui.crafting.statdisplay.material.MaterialStatWidget;
+import smartin.miapi.client.gui.crafting.statdisplay.material.StatDisplayWidget;
 import smartin.miapi.item.ModularItemStackConverter;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.edit_options.EditOption;
@@ -28,6 +32,7 @@ import smartin.miapi.modules.properties.AllowedSlots;
 import smartin.miapi.modules.properties.SlotProperty;
 import smartin.miapi.registries.RegistryInventory;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,7 +42,8 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
     public static final InterpolateMode EASE_OUT = new InterpolateMode.EaseOut(5);*/
     private ItemStack stack;
     private ModuleCrafter moduleCrafter;
-    private StatListWidget statDisplay;
+    private StatDisplayWidget statDisplay;
+    private MaterialStatWidget materialStatWidget;
     private SlotDisplay slotDisplay;
     private SmithDisplay smithDisplay;
     private MinimizeButton minimizer;
@@ -45,9 +51,10 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
     @Nullable
     public static SlotProperty.ModuleSlot slot;
     @Nullable
-    private static EditOption editOption;
+    public static EditOption editOption;
     private TransformableWidget editHolder;
     static int editSpace = 30;
+    static WeakReference<CraftingScreen> craftingScreenWeakReference = new WeakReference<>(null);
 
     List<InteractAbleWidget> editOptionIcons = new ArrayList<>();
 
@@ -59,6 +66,15 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
         this.backgroundHeight = 223 - 9 - 15;
 
         DetailView.scrollPos = 0;
+        craftingScreenWeakReference = new WeakReference<>(this);
+    }
+
+    @Nullable
+    public static CraftingScreen getInstance(){
+        if(craftingScreenWeakReference!=null && craftingScreenWeakReference.get()!=null){
+            return craftingScreenWeakReference.get();
+        }
+        return null;
     }
 
     public EditOption getEditOption() {
@@ -102,14 +118,14 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
         moduleCrafter.setPacketIdentifier(handler.packetID);
         this.addChild(moduleCrafter);
 
-        slotDisplay = new SlotDisplay(stack, centerX + 51 - 15, centerY + 117 - 14, 68, 87, (selected) -> {
+        slotDisplay = new SlotDisplay(ItemStack.EMPTY, centerX + 51 - 15, centerY + 117 - 14, 68, 87, (selected) -> {
 
         });
         slotDisplay.setItem(getItem());
         this.addChild(slotDisplay);
         smithDisplay = new SmithDisplay(centerX + 140 - 15, centerY + 117 - 14, 55, 70);
         this.addChild(smithDisplay);
-        statDisplay = new StatListWidget(centerX + 213 - 15, centerY + 30 - 14, 161, 95);
+        statDisplay = new StatDisplayWidget(centerX + 213 - 15, centerY + 30 - 14, 161, 95);
         this.addChild(statDisplay);
 
         minimizer = new MinimizeButton(centerX + 178 - 15, centerY + 188 - 14, 18, 18, this::minimizeView, this::maximizeView);
@@ -191,8 +207,12 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
         handler.inventory.setStack(0, stack);
     }
 
-    private void updateItem(ItemStack stack) {
+    public void updateItem(ItemStack stack) {
         PreviewManager.resetCursorStack();
+        updatePreviewItemStack(stack);
+    }
+
+    public void updatePreviewItemStack(ItemStack stack){
         stack = stack.copy();
         slotDisplay.setItem(stack);
         ItemStack converted = ModularItemStackConverter.getModularVersion(stack).copy();

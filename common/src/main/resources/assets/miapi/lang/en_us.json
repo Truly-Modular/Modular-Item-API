@@ -72,6 +72,7 @@
     "miapi.create_item.bow": "Bow",
     "miapi.create_item.crossbow": "Crossbow",
     "miapi.create_item.tool": "Tool",
+
     "miapi.potion.target.on_hit": "When Attacking Effects:",
     "miapi.potion.target.self.tooltip": " %s (self) %ss %s",
     "miapi.potion.target.other.tooltip": " %s %ss %s",
@@ -387,5 +388,53 @@
     "miapi.module.banner_4x8.description": "A Cosmetic Banner option\nGreat for displaying Art or Flags",
     "miapi.module.banner_5x10": "Banner Cosmetic",
     "miapi.module.banner_5x10.name": "[translation.[material.translation]]Left Scuba-Sleeve",
-    "miapi.module.banner_5x10.description": "A Cosmetic Banner option\nGreat for displaying Art or Flags"
+    "miapi.module.banner_5x10.description": "A Cosmetic Banner option\nGreat for displaying Art or Flags",
+
+    "miapi.material.stat.attack_speed": "Speed adjustment in %",
+
+    "miapi.material_property.category.handheld": "Handheld Modules",
+    "miapi.material_property.category.handheld.description": "Handheld Modules are all modules for Handheld Items like Swords, Tools, Bows and Crossbows",
+
+    "miapi.material_property.category.default": "Default Modules",
+    "miapi.material_property.category.default.description": "Default Modules are basic modules applicable to various items.",
+
+    "miapi.material_property.category.tool": "Tool Modules",
+    "miapi.material_property.category.tool.description": "Tool Modules are all modules for different types of tools.",
+
+    "miapi.material_property.category.blade": "Blade Modules",
+    "miapi.material_property.category.blade.description": "Blade Modules are all modules for items with blades like swords.",
+
+    "miapi.material_property.category.head": "Head Modules",
+    "miapi.material_property.category.head.description": "Head Modules are all modules for head items like helmets.",
+
+    "miapi.material_property.category.axe": "Axe Modules",
+    "miapi.material_property.category.axe.description": "Axe Modules are all modules for axes.",
+
+    "miapi.material_property.category.pickaxe": "Pickaxe Modules",
+    "miapi.material_property.category.pickaxe.description": "Pickaxe Modules are all modules for pickaxes.",
+
+    "miapi.material_property.category.hammer": "Hammer Modules",
+    "miapi.material_property.category.hammer.description": "Hammer Modules are all modules for hammers.",
+
+    "miapi.material_property.category.hoe": "Hoe Modules",
+    "miapi.material_property.category.hoe.description": "Hoe Modules are all modules for hoes.",
+
+    "miapi.material_property.category.shovel": "Shovel Modules",
+    "miapi.material_property.category.shovel.description": "Shovel Modules are all modules for shovels.",
+
+    "miapi.material_property.category.armor": "Armor Modules",
+    "miapi.material_property.category.armor.description": "Armor Modules are all modules for armor items.",
+
+    "miapi.material_property.category.helmet": "Helmet Modules",
+    "miapi.material_property.category.helmet.description": "Helmet Modules are all modules for helmets.",
+
+    "miapi.material_property.category.chest": "Chest Modules",
+    "miapi.material_property.category.chest.description": "Chest Modules are all modules for chest armor.",
+
+    "miapi.material_property.category.pants": "Pants Modules",
+    "miapi.material_property.category.pants.description": "Pants Modules are all modules for pants armor.",
+
+    "miapi.material_property.category.boots": "Boots Modules",
+    "miapi.material_property.category.boots.description": "Boots Modules are all modules for boots armor."
+
 }

@@ -373,7 +373,7 @@ public class StatListWidget extends InteractAbleWidget {
     }
 
     public StatListWidget(int x, int y, int width, int height) {
-        super(x, y, width, height, Text.empty());
+        super(x, y, width, height, Text.literal("miapi.module.statdisplay"));
         transformableWidget = new TransformableWidget(x, y, width, height, Text.empty());
         boxList = new BoxList(x, y, width, height, Text.empty(), new ArrayList<>());
         ScrollList list = new ScrollList(x, y, width, height, List.of(boxList));
@@ -414,13 +414,21 @@ public class StatListWidget extends InteractAbleWidget {
     }
 
     private <T extends InteractAbleWidget & SingleStatDisplay> void update() {
+        setAttributeCaches(original, compareTo);
+        boxList.setWidgets(collectWidgets(original, compareTo), 0);
+    }
+
+    public static void setAttributeCaches(ItemStack original, ItemStack compareTo) {
         for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
             Multimap<EntityAttribute, EntityAttributeModifier> oldAttr = original.getAttributeModifiers(equipmentSlot);
             Multimap<EntityAttribute, EntityAttributeModifier> compAttr = compareTo.getAttributeModifiers(equipmentSlot);
             AttributeSingleDisplay.oldItemCache.put(equipmentSlot, oldAttr);
             AttributeSingleDisplay.compareItemCache.put(equipmentSlot, compAttr);
         }
-        List<ClickableWidget> widgets = new ArrayList<>();
+    }
+
+    public static <T extends InteractAbleWidget & SingleStatDisplay> List<InteractAbleWidget> collectWidgets(ItemStack original, ItemStack compareTo) {
+        List<InteractAbleWidget> widgets = new ArrayList<>();
         for (StatWidgetSupplier supplier : statWidgetSupplier) {
             List<T> statWidgets = supplier.currentList(original, compareTo);
             for (T statDisplay : statWidgets) {
@@ -439,7 +447,8 @@ public class StatListWidget extends InteractAbleWidget {
 
             }
         }
-        boxList.setWidgets(widgets, 0);
+        widgets.sort(Comparator.comparingInt(ClickableWidget::getWidth));
+        return widgets;
     }
 
     public interface StatWidgetSupplier {

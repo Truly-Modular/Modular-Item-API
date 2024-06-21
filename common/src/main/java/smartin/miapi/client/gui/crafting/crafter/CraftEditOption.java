@@ -2,7 +2,7 @@ package smartin.miapi.client.gui.crafting.crafter;
 
 import net.minecraft.text.Text;
 import smartin.miapi.client.gui.InteractAbleWidget;
-import smartin.miapi.client.gui.PreviewManager;
+import smartin.miapi.client.gui.crafting.PreviewManager;
 import smartin.miapi.client.gui.crafting.crafter.replace.CraftOption;
 import smartin.miapi.client.gui.crafting.crafter.replace.CraftViewRework;
 import smartin.miapi.client.gui.crafting.crafter.replace.ReplaceView;
