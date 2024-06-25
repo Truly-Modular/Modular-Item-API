@@ -10,3 +10,6 @@
 - added attribute split property
 - improved hover previews, they should work more reliably now
 - improved tool detection on Forge and Fabric to have less cases of mods not correctly identifing modular tools
+- improved material stat displays
+- added material stat display on hover
+- added How to explanations

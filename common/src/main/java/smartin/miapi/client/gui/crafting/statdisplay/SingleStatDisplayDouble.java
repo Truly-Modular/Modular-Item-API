@@ -87,17 +87,17 @@ public abstract class SingleStatDisplayDouble extends InteractAbleWidget impleme
 
     public boolean shouldRender(ItemStack original, ItemStack compareTo) {
         ItemStack mainStack = compareTo.isEmpty() ? original : compareTo;
-        textWidget.setText(text.resolve(mainStack));
-        hoverDescription.setText(hover.resolve(mainStack));
+        this.original = original;
+        this.compareTo = compareTo;
         compareToValue = getValue(compareTo);
         oldValue = getValue(original);
+        textWidget.setText(text.resolve(mainStack));
+        hoverDescription.setText(hover.resolve(mainStack));
         compareValue.setText(Text.of(modifierFormat.format(compareToValue)));
         int textWidth = MinecraftClient.getInstance().textRenderer.getWidth(this.text.resolve(original));
         int numberWidth = MinecraftClient.getInstance().textRenderer.getWidth(compareValue.getText());
         int size = Math.min(3, Math.max(1, ((textWidth + numberWidth) / 47)));
         this.setWidth(51 * size);
-        this.original = original;
-        this.compareTo = compareTo;
         return true;
     }
 

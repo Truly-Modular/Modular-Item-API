@@ -1,8 +1,9 @@
-package smartin.miapi.client.gui;
+package smartin.miapi.client.gui.crafting;
 
 import net.minecraft.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
+import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.modules.edit_options.ReplaceOption;
 import smartin.miapi.modules.material.Material;
 import smartin.miapi.modules.material.MaterialProperty;
@@ -45,9 +46,21 @@ public class PreviewManager {
     public static void tick() {
         if (lastFramePreviewMaterial != currentPreviewMaterial) {
             lastFramePreviewMaterial = currentPreviewMaterial;
-            ReplaceOption.tryPreview();
-            String material = currentPreviewMaterial == null ? "empty" : currentPreviewMaterial.getKey();
-            Miapi.LOGGER.info("updating preview Material " + material + " " + hasValidPreview());
+            if (CraftingScreen.getInstance() != null) {
+                CraftingScreen craftingScreen = CraftingScreen.getInstance();
+                ItemStack currentStack = craftingScreen.getItem();
+                if (currentStack.isEmpty() && craftingScreen.getEditOption() == null) {
+                    if (cursorStack.getItem() instanceof ModularItem || currentPreviewMaterial == null) {
+                        craftingScreen.updatePreviewItemStack(ItemStack.EMPTY);
+                    } else {
+                        craftingScreen.updatePreviewItemStack(cursorStack);
+                    }
+                } else {
+                    ReplaceOption.tryPreview();
+                    String material = currentPreviewMaterial == null ? "empty" : currentPreviewMaterial.getKey();
+                    Miapi.LOGGER.info("updating preview Material " + material + " " + hasValidPreview());
+                }
+            }
         }
     }
 }

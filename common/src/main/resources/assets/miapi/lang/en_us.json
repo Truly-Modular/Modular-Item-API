@@ -17,6 +17,8 @@
     "miapi.ui.material_detail.higher.scroll": "...⬆",
     "miapi.ui.craft.back": "Back",
     "miapi.ui.back": "Back",
+    "miapi.ui.next": "Next",
+    "miapi.ui.prev": "Previous",
     "miapi.ui.craft": "Craft",
     "miapi.ui.edit": "Edit",
     "miapi.ui.modular_item": "Modular Item",
@@ -72,6 +74,7 @@
     "miapi.create_item.bow": "Bow",
     "miapi.create_item.crossbow": "Crossbow",
     "miapi.create_item.tool": "Tool",
+
     "miapi.potion.target.on_hit": "When Attacking Effects:",
     "miapi.potion.target.self.tooltip": " %s (self) %ss %s",
     "miapi.potion.target.other.tooltip": " %s %ss %s",
@@ -387,5 +390,76 @@
     "miapi.module.banner_4x8.description": "A Cosmetic Banner option\nGreat for displaying Art or Flags",
     "miapi.module.banner_5x10": "Banner Cosmetic",
     "miapi.module.banner_5x10.name": "[translation.[material.translation]]Left Scuba-Sleeve",
-    "miapi.module.banner_5x10.description": "A Cosmetic Banner option\nGreat for displaying Art or Flags"
+    "miapi.module.banner_5x10.description": "A Cosmetic Banner option\nGreat for displaying Art or Flags",
+
+    "miapi.material.stat.attack_speed": "Speed adjustment in %",
+
+    "miapi.material_property.category.handheld": "Handheld Modules",
+    "miapi.material_property.category.handheld.description": "Handheld Modules are all modules for Handheld Items like Swords, Tools, Bows and Crossbows",
+
+    "miapi.material_property.category.default": "Default Modules",
+    "miapi.material_property.category.default.description": "Default Modules are basic modules applicable to various items.",
+
+    "miapi.material_property.category.tool": "Tool Modules",
+    "miapi.material_property.category.tool.description": "Tool Modules are all modules for different types of tools.",
+
+    "miapi.material_property.category.blade": "Blade Modules",
+    "miapi.material_property.category.blade.description": "Blade Modules are all modules for items with blades like swords.",
+
+    "miapi.material_property.category.head": "Head Modules",
+    "miapi.material_property.category.head.description": "Head Modules are all modules for head items like helmets.",
+
+    "miapi.material_property.category.axe": "Axe Modules",
+    "miapi.material_property.category.axe.description": "Axe Modules are all modules for axes.",
+
+    "miapi.material_property.category.pickaxe": "Pickaxe Modules",
+    "miapi.material_property.category.pickaxe.description": "Pickaxe Modules are all modules for pickaxes.",
+
+    "miapi.material_property.category.hammer": "Hammer Modules",
+    "miapi.material_property.category.hammer.description": "Hammer Modules are all modules for hammers.",
+
+    "miapi.material_property.category.hoe": "Hoe Modules",
+    "miapi.material_property.category.hoe.description": "Hoe Modules are all modules for hoes.",
+
+    "miapi.material_property.category.shovel": "Shovel Modules",
+    "miapi.material_property.category.shovel.description": "Shovel Modules are all modules for shovels.",
+
+    "miapi.material_property.category.armor": "Armor Modules",
+    "miapi.material_property.category.armor.description": "Armor Modules are all modules for armor items.",
+
+    "miapi.material_property.category.helmet": "Helmet Modules",
+    "miapi.material_property.category.helmet.description": "Helmet Modules are all modules for helmets.",
+
+    "miapi.material_property.category.chest": "Chest Modules",
+    "miapi.material_property.category.chest.description": "Chest Modules are all modules for chest armor.",
+
+    "miapi.material_property.category.pants": "Pants Modules",
+    "miapi.material_property.category.pants.description": "Pants Modules are all modules for pants armor.",
+
+    "miapi.material_property.category.boot": "Boots Modules",
+    "miapi.material_property.category.boot.description": "Boots Modules are all modules for boots armor.",
+
+    "miapi.gui.helper.header": "How to:",
+    "miapi.gui.helper.create_new_item": "Create new Items",
+    "miapi.gui.helper.modify_item": "Modify Modular Items",
+    "miapi.gui.helper.material_preview": "Material Previews/Info",
+
+
+    "miapi.help.create": "How to: Create new Items",
+    "miapi.help.create.info.0": "First, select the \"Create option\" on the side.\nThis option is only available if there is no Item in the bottom slot.",
+    "miapi.help.create.info.1": "Second, select the item type you wish to create. Depending on you addons this list may vary. Once you selected an option, you will see the normal module craft screen.",
+
+    "miapi.help.modify": "How to: Modify Modular Items",
+    "miapi.help.modify.info.0": "To start, you need to put the Modular Item into the bottom left slot to modify it.",
+    "miapi.help.modify.info.1": "Then, a list of modules should appear, here, select the module you wish to edit/replace.",
+    "miapi.help.modify.info.2": "Once a module is selected, edit options appear on the left side. The hammer is the option to replace the module with a different one.",
+    "miapi.help.modify.info.3": "In the replace option, you now can select the module you want to replace the current one with.",
+    "miapi.help.modify.info.4": "Now you are in the crafting option, here you need to fill the Material requirements to be able to press the craft button to replace the module.",
+
+
+    "miapi.help.material": "How to: Material previews/info",
+    "miapi.help.material.info.0": "While replacing a module, you can hover different materials to see their effects. This also works with recipe viewers like EMI,REI or JEI.",
+    "miapi.help.material.info.1": "The material icon next to the slots can be hovered and then scrolled through/shift scrolled through to see all available materials.",
+    "miapi.help.material.info.2": "When no item is set into the bottom left slot, you can hover Materials (also works in recipe viewers) to see stats on the left and special properties on the right.",
+    "miapi.help.material.info.3": "BE AWARE that those stats might not correctly reflect stats on the actual module as they can react to module specific stuff."
 }

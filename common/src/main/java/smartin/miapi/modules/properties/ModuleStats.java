@@ -25,6 +25,9 @@ public class ModuleStats implements ModuleProperty {
         StatResolver.registerResolver("module", new StatResolver.Resolver() {
             @Override
             public double resolveDouble(String data, ModuleInstance instance) {
+                if(instance.module.equals(ItemModule.internal)){
+                    return 1.0;
+                }
                 if ("cost".equals(data)) {
                     return AllowedMaterial.getMaterialCost(instance);
                 }

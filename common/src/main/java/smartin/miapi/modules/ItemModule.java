@@ -51,6 +51,11 @@ public record ItemModule(String name, Map<String, JsonElement> properties) {
      */
     public static final ItemModule empty = new ItemModule("empty", new HashMap<>());
 
+    /**
+     * An internal ItemModule instance, can be used for whatever purpose
+     */
+    public static final ItemModule internal = new ItemModule("internal", new HashMap<>());
+
 
     public Map<ModuleProperty, JsonElement> getKeyedProperties() {
         HashMap<ModuleProperty, JsonElement> map = new HashMap<>();

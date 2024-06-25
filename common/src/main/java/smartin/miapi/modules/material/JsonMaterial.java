@@ -35,6 +35,7 @@ public class JsonMaterial implements Material {
     public MaterialIcons.MaterialIcon icon;
     protected MaterialRenderController palette;
     public Map<String, Map<ModuleProperty, JsonElement>> propertyMap = new HashMap<>();
+    public Map<String, Map<ModuleProperty, JsonElement>> displayPropertyMap = new HashMap<>();
 
     public JsonMaterial(JsonObject element, boolean isClient) {
         rawJson = element;
@@ -64,22 +65,16 @@ public class JsonMaterial implements Material {
         rootElement.getAsJsonObject().asMap().forEach((elementName, propertyElement) -> {
             switch (elementName) {
                 case "properties": {
-                    propertyElement.getAsJsonObject().asMap().forEach((id, element) -> {
-                        if (element != null) {
-                            element.getAsJsonObject().entrySet().forEach(stringJsonElementEntry -> {
-                                ModuleProperty property = RegistryInventory.moduleProperties.get(stringJsonElementEntry.getKey());
-                                Map<ModuleProperty, JsonElement> specificPropertyMap = propertyMap.getOrDefault(id, new HashMap<>());
-                                if (property != null) {
-                                    if (specificPropertyMap.containsKey(property)) {
-                                        specificPropertyMap.put(property, property.merge(specificPropertyMap.get(property), stringJsonElementEntry.getValue(), MergeType.SMART));
-                                    } else {
-                                        specificPropertyMap.put(property, stringJsonElementEntry.getValue());
-                                    }
-                                }
-                                propertyMap.put(id, specificPropertyMap);
-                            });
-                        }
-                    });
+                    mergeProperties(propertyElement, propertyMap);
+                    mergeProperties(propertyElement, displayPropertyMap);
+                    break;
+                }
+                case "display_properties": {
+                    mergeProperties(propertyElement, displayPropertyMap);
+                    break;
+                }
+                case "hidden_properties": {
+                    mergeProperties(propertyElement, propertyMap);
                     break;
                 }
                 case "color_palette": {
@@ -106,6 +101,25 @@ public class JsonMaterial implements Material {
                 default: {
                     rawJson.getAsJsonObject().add(elementName, propertyElement);
                 }
+            }
+        });
+    }
+
+    private static void mergeProperties(JsonElement propertyElement, Map<String, Map<ModuleProperty, JsonElement>> properties) {
+        propertyElement.getAsJsonObject().asMap().forEach((id, element) -> {
+            if (element != null) {
+                element.getAsJsonObject().entrySet().forEach(stringJsonElementEntry -> {
+                    ModuleProperty property = RegistryInventory.moduleProperties.get(stringJsonElementEntry.getKey());
+                    Map<ModuleProperty, JsonElement> specificPropertyMap = properties.getOrDefault(id, new HashMap<>());
+                    if (property != null) {
+                        if (specificPropertyMap.containsKey(property)) {
+                            specificPropertyMap.put(property, property.merge(specificPropertyMap.get(property), stringJsonElementEntry.getValue(), MergeType.SMART));
+                        } else {
+                            specificPropertyMap.put(property, stringJsonElementEntry.getValue());
+                        }
+                    }
+                    properties.put(id, specificPropertyMap);
+                });
             }
         });
     }
@@ -156,12 +170,18 @@ public class JsonMaterial implements Material {
     }
 
     @Override
+    public Map<ModuleProperty, JsonElement> getDisplayMaterialProperties(String key) {
+        return displayPropertyMap.getOrDefault(key, new HashMap<>());
+    }
+
+    @Override
     public List<String> getAllPropertyKeys() {
-        JsonElement propertyElement = rawJson.getAsJsonObject().get("properties");
-        if (propertyElement != null) {
-            return new ArrayList<>(propertyElement.getAsJsonObject().keySet());
-        }
-        return new ArrayList<>();
+        return new ArrayList<>(propertyMap.keySet());
+    }
+
+    @Override
+    public List<String> getAllDisplayPropertyKeys() {
+        return new ArrayList<>(displayPropertyMap.keySet());
     }
 
     public JsonElement getRawElement(String key) {
@@ -256,6 +276,7 @@ public class JsonMaterial implements Material {
         return icon != null;
     }
 
+
     @Override
     public double getValueOfItem(ItemStack item) {
         JsonArray items = rawJson.getAsJsonObject().getAsJsonArray("items");
@@ -282,9 +303,9 @@ public class JsonMaterial implements Material {
                         return 1;
                     }
                 }
-            }else if(itemObj.has("ingredient")){
+            } else if (itemObj.has("ingredient")) {
                 Ingredient ingredient = Ingredient.fromJson(itemObj.get("ingredient"));
-                if(ingredient.test(item)){
+                if (ingredient.test(item)) {
                     try {
                         return itemObj.get("value").getAsDouble();
                     } catch (Exception suppressed) {

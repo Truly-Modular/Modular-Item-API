@@ -29,7 +29,25 @@
     },
     "properties": {
         "tool": {
-            "fortune": "1"
+            "enchantment_transformers": [
+                {
+                    "enchantment": "minecraft:fortune",
+                    "level": "[old_level]+1"
+                }
+            ],
+            "gui_stat": {
+                "fortune": {
+                    "value": "1",
+                    "min": 0,
+                    "max": 3,
+                    "header": {
+                        "translate": "miapi.stat.fortune"
+                    },
+                    "description": {
+                        "translate": "miapi.stat.fortune.description"
+                    }
+                }
+            }
         },
         "handheld": {
             "illagerBane": "1"

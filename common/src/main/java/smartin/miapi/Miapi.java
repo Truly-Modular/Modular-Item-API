@@ -92,6 +92,8 @@ public class Miapi {
                     }
                 }, 1f);
         ReloadEvents.END.subscribe(isClient -> {
+            RegistryInventory.modules.register(ItemModule.empty.getName(), ItemModule.empty);
+            RegistryInventory.modules.register(ItemModule.internal.getName(), ItemModule.internal);
             Miapi.LOGGER.info("Loaded " + PropertySubstitution.injectorsCount + " Injectors/Property Substitutors");
             Miapi.LOGGER.info("Loaded " + RegistryInventory.modules.getFlatMap().size() + " Modules");
             ModularItemCache.discardCache();

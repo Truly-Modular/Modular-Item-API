@@ -24,7 +24,7 @@ public class SinglePropertyStatDisplay extends SingleStatDisplayDouble {
     @Override
     public boolean shouldRender(ItemStack original, ItemStack compareTo) {
         super.shouldRender(original, compareTo);
-        return property.hasValue(original) || property.hasValue(compareTo);
+        return (property.hasValue(original) && property.getValue(original) != 0) || (property.hasValue(compareTo) && property.getValue(compareTo) != 0);
     }
 
     @Override
@@ -53,12 +53,12 @@ public class SinglePropertyStatDisplay extends SingleStatDisplayDouble {
             });
         }
 
-        public Builder setMax(double maxValue){
+        public Builder setMax(double maxValue) {
             max = maxValue;
             return this;
         }
 
-        public Builder setMin(double minValue){
+        public Builder setMin(double minValue) {
             min = minValue;
             return this;
         }

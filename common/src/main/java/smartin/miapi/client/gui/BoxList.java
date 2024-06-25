@@ -1,22 +1,18 @@
 package smartin.miapi.client.gui;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.ColorHelper;
 import org.jetbrains.annotations.Nullable;
-import smartin.miapi.Miapi;
 
 import java.util.*;
 
 @Environment(EnvType.CLIENT)
 public class BoxList extends InteractAbleWidget {
     private List<List<ClickableWidget>> allRows = new ArrayList<>();
-    private List<ClickableWidget> currentWidgets = new ArrayList<>();
+    private List<? extends ClickableWidget> currentWidgets = new ArrayList<>();
     private int space = 5;
 
     /**
@@ -47,7 +43,7 @@ public class BoxList extends InteractAbleWidget {
      * @param widgets the new List of widgets
      * @param space   the space in pixels between the widgets
      */
-    public void setWidgets(@Nullable List<ClickableWidget> widgets, int space) {
+    public void setWidgets(@Nullable List<? extends ClickableWidget> widgets, int space) {
         this.children().clear();
         this.space = space;
         if (widgets == null) {

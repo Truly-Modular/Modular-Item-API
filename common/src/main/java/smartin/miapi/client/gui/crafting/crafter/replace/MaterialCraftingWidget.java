@@ -10,6 +10,7 @@ import net.minecraft.util.math.ColorHelper;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.*;
 import smartin.miapi.client.gui.crafting.CraftingScreen;
+import smartin.miapi.client.gui.crafting.PreviewManager;
 import smartin.miapi.craft.CraftAction;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ModuleInstance;
