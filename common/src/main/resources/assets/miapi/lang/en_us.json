@@ -438,13 +438,14 @@
 
     "miapi.material_property.category.boot": "Boots Modules",
     "miapi.material_property.category.boot.description": "Boots Modules are all modules for boots armor.",
+
     "miapi.gui.helper.header": "How to:",
     "miapi.gui.helper.create_new_item": "Create new Items",
     "miapi.gui.helper.modify_item": "Modify Modular Items",
     "miapi.gui.helper.material_preview": "Material Previews/Info",
 
 
-    "miapi.help.create_item": "How to: Create new Items",
+    "miapi.help.create": "How to: Create new Items",
     "miapi.help.create.info.0": "First, select the \"Create option\" on the side.\nThis option is only available if there is no Item in the bottom slot.",
     "miapi.help.create.info.1": "Second, select the item type you wish to create. Depending on you addons this list may vary. Once you selected an option, you will see the normal module craft screen.",
 
@@ -456,7 +457,7 @@
     "miapi.help.modify.info.4": "Now you are in the crafting option, here you need to fill the Material requirements to be able to press the craft button to replace the module.",
 
 
-    "miapi.help.material": "How to: Modify Modular Items",
+    "miapi.help.material": "How to: Material previews/info",
     "miapi.help.material.info.0": "While replacing a module, you can hover different materials to see their effects. This also works with recipe viewers like EMI,REI or JEI.",
     "miapi.help.material.info.1": "The material icon next to the slots can be hovered and then scrolled through/shift scrolled through to see all available materials.",
     "miapi.help.material.info.2": "When no item is set into the bottom left slot, you can hover Materials (also works in recipe viewers) to see stats on the left and special properties on the right.",

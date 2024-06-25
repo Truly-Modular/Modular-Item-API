@@ -40,7 +40,8 @@ public class HelpPage extends InteractAbleWidget {
             currentPage = Math.min(currentPage + 1, (pages.size() - 1) / 2);
             setPage(currentPage);
         });
-        header = new ScrollingTextWidget(x + 10, y + 6, width - 10, title);
+        header = new ScrollingTextWidget(x + 10, y + 5, width - 10, title);
+        header.setOrientation(ScrollingTextWidget.Orientation.CENTERED);
         setPage(0);
     }
 
