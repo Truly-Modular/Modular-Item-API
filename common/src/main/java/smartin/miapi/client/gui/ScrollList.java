@@ -75,7 +75,7 @@ public class ScrollList extends InteractAbleWidget {
     }
 
     @Override
-    public void render(DrawContext drawContext, int mouseX, int mouseY, float delta) {
+    public void renderWidget(DrawContext drawContext, int mouseX, int mouseY, float delta) {
         super.render(drawContext, mouseX, mouseY, delta);
         int totalHeight = 0;
         for (ClickableWidget widget : this.widgets) {

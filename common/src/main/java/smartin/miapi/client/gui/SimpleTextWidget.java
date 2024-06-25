@@ -20,7 +20,7 @@ public class SimpleTextWidget extends InteractAbleWidget {
     }
 
     @Override
-    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+    public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
         context.drawText(textRenderer, text, getX(), getY(), -1, hasShadow);
     }
 }

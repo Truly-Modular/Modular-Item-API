@@ -26,7 +26,6 @@ public class ClickAbleTextWidget extends TextFieldWidget {
             setFocused(true);
             if (MinecraftClient.getInstance().currentScreen instanceof HandledScreen<?> screen) {
                 screen.setFocused(this);
-                screen.focusOn(this);
             }
         } else {
             setFocused(false);

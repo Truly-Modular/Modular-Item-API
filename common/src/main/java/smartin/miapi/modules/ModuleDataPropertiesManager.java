@@ -11,7 +11,7 @@ import java.util.Map;
 
 public class ModuleDataPropertiesManager {
 
-    public static Map<ModuleProperty, JsonElement> getProperties(ItemModule.ModuleInstance moduleInstance) {
+    public static Map<ModuleProperty, JsonElement> getProperties(ModuleInstance moduleInstance) {
         Map<ModuleProperty, JsonElement> map = new HashMap<>();
         String properties = moduleInstance.moduleData.get("properties");
         if (properties != null) {
@@ -29,7 +29,7 @@ public class ModuleDataPropertiesManager {
         return map;
     }
 
-    public static void setProperties(ItemModule.ModuleInstance moduleInstance, Map<ModuleProperty, JsonElement> propertyMap) {
+    public static void setProperties(ModuleInstance moduleInstance, Map<ModuleProperty, JsonElement> propertyMap) {
         JsonObject object = new JsonObject();
         propertyMap.forEach(((moduleProperty, element) -> {
             object.add(RegistryInventory.moduleProperties.findKey(moduleProperty), element);

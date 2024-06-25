@@ -113,7 +113,7 @@ public class BoxList extends InteractAbleWidget {
 
 
     @Override
-    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+    public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
         super.render(context, mouseX, mouseY, delta);
     }
 }

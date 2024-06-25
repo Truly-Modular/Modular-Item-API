@@ -7,6 +7,7 @@ import smartin.miapi.client.gui.ScrollList;
 import smartin.miapi.client.gui.crafting.statdisplay.StatListWidget;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleDataPropertiesManager;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.material.Material;
 import smartin.miapi.registries.RegistryInventory;
@@ -22,7 +23,7 @@ public class MaterialStatWidget extends InteractAbleWidget {
         List<String> strings = material.getAllDisplayPropertyKeys();
         List<InteractAbleWidget> widgets = new ArrayList<>();
         for (String propertyKey : strings) {
-            ItemModule.ModuleInstance moduleInstance = new ItemModule.ModuleInstance(ItemModule.internal);
+            ModuleInstance moduleInstance = new ModuleInstance(ItemModule.internal);
             ItemStack compareMaterial = RegistryInventory.modularItem.getDefaultStack();
             /*
             MaterialProperty.setMaterial(moduleInstance, material.getKey());

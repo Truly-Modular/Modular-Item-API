@@ -52,7 +52,7 @@ public class SimpleButton<T> extends InteractAbleWidget {
      * @param mouseY      The y position of the mouse.
      * @param delta       The time since the last tick.
      */
-    public void render(DrawContext drawContext, int mouseX, int mouseY, float delta) {
+    public void renderWidget(DrawContext drawContext, int mouseX, int mouseY, float delta) {
         this.renderButton(drawContext, mouseX, mouseY, delta);
         this.children().forEach(children -> {
             if (children instanceof InteractAbleWidget widget) {

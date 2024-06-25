@@ -82,7 +82,7 @@ public class MultiLineTextWidget extends InteractAbleWidget {
     }
 
     @Override
-    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+    public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
         int start = getY();
         for (Text line : lines) {
             context.drawText(textRenderer, line, getX(), start, textColor, hasTextShadow);

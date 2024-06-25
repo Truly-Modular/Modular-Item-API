@@ -379,7 +379,7 @@ public abstract class InteractAbleWidget extends ClickableWidget implements Draw
      *                    This is needed for animations and co
      */
     @Override
-    public void render(DrawContext drawContext, int mouseX, int mouseY, float delta) {
+    public void renderWidget(DrawContext drawContext, int mouseX, int mouseY, float delta) {
         if ((debug || MiapiConfig.INSTANCE.server.other.developmentMode) && Screen.hasAltDown())
             drawSquareBorder(drawContext, getX(), getY(), getWidth(), getHeight(), 1, randomColor);
 

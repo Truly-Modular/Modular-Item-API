@@ -70,7 +70,7 @@ public class ImageWidget extends InteractAbleWidget {
     }
 
     @Override
-    public void render(DrawContext drawContext, int mouseX, int mouseY, float delta) {
+    public void renderWidget(DrawContext drawContext, int mouseX, int mouseY, float delta) {
         drawContext.drawTexture(texture, this.getX(), this.getY(), getWidth(), getHeight(), (float) u, (float) v, regionWidth, regionHeight, textureSizeX, textureSizeY);
         super.render(drawContext, mouseX, mouseY, delta);
     }

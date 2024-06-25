@@ -167,7 +167,7 @@ public class TransformableWidget extends InteractAbleWidget {
      *                This is needed for animations and co
      */
     @Override
-    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+    public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
         DrawContext drawContext = new DrawContext(MinecraftClient.getInstance(), context.getVertexConsumers());
         drawContext.getMatrices().multiplyPositionMatrix(context.getMatrices().peek().getPositionMatrix());
 

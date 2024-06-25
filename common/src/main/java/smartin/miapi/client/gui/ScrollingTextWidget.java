@@ -99,7 +99,7 @@ public class ScrollingTextWidget extends InteractAbleWidget implements Drawable,
      *                This is needed for animations and co
      */
     @Override
-    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+    public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
         int textWidth = MinecraftClient.getInstance().textRenderer.getWidth(text);
         boolean scissorEnabled = false;
         int textStart = getX();

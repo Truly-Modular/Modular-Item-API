@@ -2,9 +2,9 @@ package smartin.miapi.client.gui.crafting;
 
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.component.EnchantmentEffectComponentTypes;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
@@ -245,18 +245,14 @@ public class CraftingScreenHandler extends ScreenHandler {
                     return 1;
                 }
 
-                @Override
-                public boolean canInsert(ItemStack stack) {
-                    return equipmentSlot == MobEntity.getPreferredEquipmentSlot(stack);
+                public boolean canInsert(ItemStack itemStack) {
+                    return equipmentSlot == playerInventory.player.getPreferredEquipmentSlot(itemStack);
                 }
 
                 @Override
                 public boolean canTakeItems(PlayerEntity playerEntity) {
                     ItemStack itemStack = this.getStack();
-                    if (!itemStack.isEmpty() && !playerEntity.isCreative() && EnchantmentHelper.hasBindingCurse(itemStack)) {
-                        return false;
-                    }
-                    return super.canTakeItems(playerEntity);
+                    return !itemStack.isEmpty() && !playerEntity.isCreative() && EnchantmentHelper.hasAnyEnchantmentsWith(itemStack, EnchantmentEffectComponentTypes.PREVENT_ARMOR_CHANGE) ? false : super.canTakeItems(playerEntity);
                 }
 
                 @Override

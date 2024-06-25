@@ -2,9 +2,7 @@ package smartin.miapi.client.gui;
 
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
-import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.crafting.CraftingScreen;
 
 public class IntegerStatBar extends InteractAbleWidget {
@@ -40,7 +38,7 @@ public class IntegerStatBar extends InteractAbleWidget {
     }
 
     @Override
-    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+    public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
         int newMaxSteps = Math.max(this.maxSteps, Math.max(this.primaryValue, this.secondaryValue));
 
         int stepWidth = (int) ((double) (width - gapWidth * (newMaxSteps - 1)) / newMaxSteps);

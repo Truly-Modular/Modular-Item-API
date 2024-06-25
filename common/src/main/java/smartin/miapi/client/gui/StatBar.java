@@ -40,7 +40,7 @@ public class StatBar extends InteractAbleWidget {
     }
 
     @Override
-    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+    public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
         context.fill(getX(), getY(), getX() + width, getY() + height, ColorHelper.Argb.getArgb(255, 255, 0, 255));
         context.fill(getX(), getY(), (int) (getX() + width * primaryPercent), height + getY(), primaryColor);
         context.fill((int) (getX() + width * primaryPercent), getY(), (int) (getX() + width * secondaryPercent), height + getY(), secondaryColor);

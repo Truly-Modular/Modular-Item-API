@@ -15,6 +15,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import org.joml.Matrix4fStack;
 import org.joml.Vector3f;
 import org.lwjgl.opengl.GL11;
 import smartin.miapi.Miapi;
@@ -161,7 +162,7 @@ public class SlotDisplay extends InteractAbleWidget {
     }
 
     @Override
-    public void render(DrawContext drawContext, int mouseX, int mouseY, float delta) {
+    public void renderWidget(DrawContext drawContext, int mouseX, int mouseY, float delta) {
         drawContext.enableScissor(this.getX(), this.getY(), this.getX() + this.width, this.getY() + this.height);
         renderSlot(stack, drawContext, mouseX, mouseY, delta);
         super.render(drawContext, mouseX, mouseY, delta);
@@ -182,8 +183,8 @@ public class SlotDisplay extends InteractAbleWidget {
         RenderSystem.setShaderTexture(0, SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE);
         RenderSystem.enableBlend();
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        MatrixStack matrixStack = RenderSystem.getModelViewStack();
-        matrixStack.push();
+        Matrix4fStack matrixStack = RenderSystem.getModelViewStack();
+        matrixStack.pushMatrix();
         Vector3f pos = position();
         matrixStack.translate(pos.x(), pos.y(), pos.z());
         matrixStack.scale(getSize(), getSize(), 1.0F);
@@ -200,7 +201,7 @@ public class SlotDisplay extends InteractAbleWidget {
         if (bl) {
             DiffuseLighting.enableGuiDepthLighting();
         }
-        matrixStack.pop();
+        matrixStack.popMatrix();
         RenderSystem.applyModelViewMatrix();
     }
 
@@ -210,7 +211,7 @@ public class SlotDisplay extends InteractAbleWidget {
     }
 
     public class ModuleButton extends InteractAbleWidget {
-        private static final Identifier ButtonTexture = new Identifier(Miapi.MOD_ID, "textures/button.png");
+        private static final Identifier ButtonTexture = Identifier.of(Miapi.MOD_ID, "textures/button.png");
         public SlotProperty.ModuleSlot instance;
 
         public ModuleButton(int x, int y, int width, int height, SlotProperty.ModuleSlot instance) {
@@ -223,7 +224,7 @@ public class SlotDisplay extends InteractAbleWidget {
             setSelected.accept(instance);
         }
 
-        public void render(DrawContext drawContext, int mouseX, int mouseY, float delta) {
+        public void renderWidget(DrawContext drawContext, int mouseX, int mouseY, float delta) {
             RenderSystem.depthFunc(GL11.GL_ALWAYS);
             RenderSystem.disableDepthTest();
             this.renderButton(drawContext, mouseX, mouseY, delta);
