@@ -9,8 +9,6 @@ import smartin.miapi.modules.material.Material;
 import smartin.miapi.modules.material.MaterialProperty;
 
 public class StatDisplayWidget extends InteractAbleWidget {
-    public ItemStack originalItemstack = ItemStack.EMPTY;
-    public ItemStack compareToItemstack = ItemStack.EMPTY;
     StatListWidget statListWidget;
     MaterialStatWidget materialStatWidget;
 
@@ -35,6 +33,20 @@ public class StatDisplayWidget extends InteractAbleWidget {
             removeChild(materialStatWidget);
             addChild(statListWidget);
             statListWidget.setOriginal(itemStack);
+        }
+    }
+
+    public void setItemsOriginal(ItemStack itemStack, ItemStack compareTo) {
+        Material material = MaterialProperty.getMaterialFromIngredient(itemStack);
+        if (material != null && !(itemStack.getItem() instanceof ModularItem)) {
+            removeChild(materialStatWidget);
+            materialStatWidget = new MaterialStatWidget(material, getX(), getY(), getWidth(), getHeight(), Text.literal("miapi.material.stat.widget"));
+            removeChild(statListWidget);
+            addChild(materialStatWidget);
+        } else {
+            removeChild(materialStatWidget);
+            addChild(statListWidget);
+            statListWidget.setItemsOriginal(itemStack, compareTo);
         }
     }
 }

@@ -7,6 +7,7 @@ import smartin.miapi.client.gui.ScrollList;
 import smartin.miapi.client.gui.crafting.statdisplay.StatListWidget;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleDataPropertiesManager;
+import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.material.Material;
 import smartin.miapi.registries.RegistryInventory;
 
@@ -14,7 +15,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MaterialStatWidget extends InteractAbleWidget {
-    ItemStack compareMaterial = RegistryInventory.modularItem.getDefaultStack();
 
 
     public MaterialStatWidget(Material material, int x, int y, int width, int height, Text message) {
@@ -23,6 +23,7 @@ public class MaterialStatWidget extends InteractAbleWidget {
         List<InteractAbleWidget> widgets = new ArrayList<>();
         for (String propertyKey : strings) {
             ItemModule.ModuleInstance moduleInstance = new ItemModule.ModuleInstance(ItemModule.internal);
+            ItemStack compareMaterial = RegistryInventory.modularItem.getDefaultStack();
             /*
             MaterialProperty.setMaterial(moduleInstance, material.getKey());
             JsonArray jsonElements = new JsonArray();
@@ -36,6 +37,7 @@ public class MaterialStatWidget extends InteractAbleWidget {
 
             ModuleDataPropertiesManager.setProperties(moduleInstance, material.getDisplayMaterialProperties(propertyKey));
             moduleInstance.writeToItem(compareMaterial);
+            ModularItemCache.clearUUIDFor(compareMaterial);
             StatListWidget.setAttributeCaches(compareMaterial, compareMaterial);
             List<InteractAbleWidget> stats = StatListWidget.collectWidgets(compareMaterial, compareMaterial);
             if (!stats.isEmpty()) {

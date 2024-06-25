@@ -1,6 +1,7 @@
 package smartin.miapi.client.gui.crafting;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.bettercombat.logic.WeaponAttributesFallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.ScreenHandlerProvider;
@@ -54,6 +55,8 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
     public static EditOption editOption;
     private TransformableWidget editHolder;
     static int editSpace = 30;
+    @Nullable
+    public InteractAbleWidget hoverElement = null;
     static WeakReference<CraftingScreen> craftingScreenWeakReference = new WeakReference<>(null);
 
     List<InteractAbleWidget> editOptionIcons = new ArrayList<>();
@@ -61,7 +64,7 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
     public CraftingScreen(CraftingScreenHandler handler, PlayerInventory inventory, Text title) {
         super(handler, inventory, Text.empty());
         slot = null;
-        this.backgroundWidth = 369 + 12 - 15;
+        this.backgroundWidth = 369 + 12 - 15 + 6;
 
         this.backgroundHeight = 223 - 9 - 15;
 
@@ -70,10 +73,11 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
     }
 
     @Nullable
-    public static CraftingScreen getInstance(){
-        if(craftingScreenWeakReference!=null && craftingScreenWeakReference.get()!=null){
+    public static CraftingScreen getInstance() {
+        if (craftingScreenWeakReference != null && craftingScreenWeakReference.get() != null) {
             return craftingScreenWeakReference.get();
         }
+        WeaponAttributesFallback fallback;
         return null;
     }
 
@@ -106,7 +110,7 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
         allowedModules.add("melee");
         baseSlot = new SlotProperty.ModuleSlot(allowedModules);
 
-        int centerX = (this.width - this.backgroundWidth) / 2;
+        int centerX = (this.width - this.backgroundWidth - 6) / 2;
         int centerY = (this.height - this.backgroundHeight) / 2;
 
         moduleCrafter = new ModuleCrafter(centerX + 51 - 15, centerY + 22 - 14, 144, 89, this::selectSlot, (item) -> {
@@ -154,6 +158,14 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
         previewStack(handler.inventory.getStack(0));
         PreviewManager.resetCursorStack();
         PreviewManager.resetPreview();
+    }
+
+    public int getBackgroundHeight() {
+        return this.backgroundHeight;
+    }
+
+    public int getBackgroundWidth() {
+        return this.backgroundWidth;
     }
 
     //could be the same as maximizeView()
@@ -212,7 +224,7 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
         updatePreviewItemStack(stack);
     }
 
-    public void updatePreviewItemStack(ItemStack stack){
+    public void updatePreviewItemStack(ItemStack stack) {
         stack = stack.copy();
         slotDisplay.setItem(stack);
         ItemStack converted = ModularItemStackConverter.getModularVersion(stack).copy();
@@ -239,8 +251,7 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
             smithDisplay.setPreview(converted);
         }
         if (statDisplay != null) {
-            statDisplay.setOriginal(converted);
-            statDisplay.setCompareTo(converted);
+            statDisplay.setItemsOriginal(converted, converted);
         }
         /*
         List<Integer> slotPos = new ArrayList<>();
@@ -355,7 +366,7 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
     public void render(DrawContext drawContext, int mouseX, int mouseY, float delta) {
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         renderBackground(drawContext);
-        int i = (this.width - this.backgroundWidth) / 2;
+        int i = (this.width - this.backgroundWidth - 6) / 2;
         int j = (this.height - this.backgroundHeight) / 2;
         //InteractAbleWidget.drawSquareBorder(drawContext, i, j, this.backgroundWidth, this.backgroundHeight, 1, ColorHelper.Argb.getArgb(255, 255, 0, 0));
         //(Identifier texture, int x, int y, int width, int height, float u, float v, int regionWidth, int regionHeight, int textureWidth, int textureHeight)
@@ -386,15 +397,66 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
 
             drawContext.drawTexture(BACKGROUND_TEXTURE, i + 43 - 15, j + 111 - 14, 160, 95, 0, 199, 160, 95, 512, 512);
         }
-        super.render(drawContext, mouseX, mouseY, delta);
+        if (hoverElement == null) {
+            super.render(drawContext, mouseX, mouseY, delta);
+        } else {
+            hoverElement.render(drawContext, mouseX, mouseY, delta);
+        }
         this.drawMouseoverTooltip(drawContext, mouseX, mouseY);
         drawContext.getMatrices().push();
         drawContext.getMatrices().translate(0.0F, 0.0F, 400.0F);
-        drawContext.draw(() -> {
-            this.renderHover(drawContext, mouseX, mouseY, delta);
-        });
+        if (hoverElement == null) {
+            drawContext.draw(() -> {
+                this.renderHover(drawContext, mouseX, mouseY, delta);
+            });
+        } else {
+            drawContext.draw(() -> {
+                hoverElement.renderHover(drawContext, mouseX, mouseY, delta);
+            });
+        }
         drawContext.getMatrices().pop();
         PreviewManager.tick();
+    }
+
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (hoverElement != null) {
+            return hoverElement.mouseClicked(mouseX, mouseY, button);
+        }
+        return super.mouseClicked(mouseX, mouseY, button);
+    }
+
+    @Override
+    public void mouseMoved(double mouseX, double mouseY) {
+        if (hoverElement != null) {
+            hoverElement.mouseMoved(mouseX, mouseY);
+        } else {
+            super.mouseMoved(mouseX, mouseY);
+        }
+    }
+
+    @Override
+    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+        if (hoverElement != null) {
+            return hoverElement.mouseReleased(mouseX, mouseY, button);
+        }
+        return super.mouseReleased(mouseX, mouseY, button);
+    }
+
+    @Override
+    public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
+        if (hoverElement != null) {
+            return hoverElement.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
+        }
+        return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
+    }
+
+    @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
+        if (hoverElement != null) {
+            return hoverElement.mouseScrolled(mouseX, mouseY, amount);
+        }
+        return super.mouseScrolled(mouseX, mouseY, amount);
     }
 
     @Override

@@ -137,7 +137,7 @@ public class ModularItemCache {
         UUID uuid = lookUpUUId;
         try {
             Cache cacheEntry = cache.get(uuid, () -> new Cache(uuid, stack));
-            if (ItemStack.areItemsEqual(cacheEntry.stack, stack)) {
+            if (cacheEntry.isValidItem(stack)) {
                 return cacheEntry;
             } else {
                 cache.invalidate(uuid);
@@ -169,11 +169,17 @@ public class ModularItemCache {
         protected Map<String, Object> map = new ConcurrentHashMap<>();
         public UUID uuid;
         public ItemStack stack;
+        public NbtCompound compound;
 
         public Cache(UUID uuid, ItemStack stack) {
             this.uuid = uuid;
             this.stack = stack;
+            compound = stack.getOrCreateNbt().copy();
             setUUIDFor(stack, uuid);
+        }
+
+        public boolean isValidItem(ItemStack itemStack) {
+            return ItemStack.areItemsEqual(itemStack, stack) && itemStack.getOrCreateNbt().equals(compound);
         }
 
         public void set(String key, Object object) {

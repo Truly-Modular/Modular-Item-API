@@ -21,8 +21,8 @@ public class BooleanStatDisplay extends SingleStatDisplayBoolean {
 
     @Override
     public boolean shouldRender(ItemStack original, ItemStack compareTo) {
-        super.shouldRender(original, compareTo);
-        return property.hasValue(original) || property.hasValue(compareTo);
+        return super.shouldRender(original, compareTo);
+        //return property.hasValue(original) || property.hasValue(compareTo);
     }
 
     @Override
