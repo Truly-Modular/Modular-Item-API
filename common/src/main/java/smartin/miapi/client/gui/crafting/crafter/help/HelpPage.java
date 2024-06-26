@@ -29,14 +29,14 @@ public class HelpPage extends InteractAbleWidget {
     public HelpPage(int x, int y, int width, int height, Text title, Consumer<InteractAbleWidget> remove, List<SinglePageTextImage> pages) {
         super(x, y, width, height, title);
         this.pages = pages;
-        backBtn = new SimpleButton<>(x + 3, y + height - 21, 50, 18, Text.translatable(Miapi.MOD_ID + ".ui.back"), null, (a) -> {
+        backBtn = new SimpleButton<>(x + 3, y + height - 19, 50, 18, Text.translatable(Miapi.MOD_ID + ".ui.back"), null, (a) -> {
             remove.accept(this);
         });
-        prev = new SimpleButton<>(x + 55, y + height - 21, 50, 18, Text.translatable(Miapi.MOD_ID + ".ui.prev"), null, (a) -> {
+        prev = new SimpleButton<>(x + 55, y + height - 19, 50, 18, Text.translatable(Miapi.MOD_ID + ".ui.prev"), null, (a) -> {
             currentPage = Math.max(currentPage - 1, 0);
             setPage(currentPage);
         });
-        next = new SimpleButton<>(x + width - 53, y + height - 21, 50, 18, Text.translatable(Miapi.MOD_ID + ".ui.next"), null, (a) -> {
+        next = new SimpleButton<>(x + width - 53, y + height - 19, 50, 18, Text.translatable(Miapi.MOD_ID + ".ui.next"), null, (a) -> {
             currentPage = Math.min(currentPage + 1, (pages.size() - 1) / 2);
             setPage(currentPage);
         });

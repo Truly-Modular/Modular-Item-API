@@ -370,32 +370,11 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
         int j = (this.height - this.backgroundHeight) / 2;
         //InteractAbleWidget.drawSquareBorder(drawContext, i, j, this.backgroundWidth, this.backgroundHeight, 1, ColorHelper.Argb.getArgb(255, 255, 0, 0));
         //(Identifier texture, int x, int y, int width, int height, float u, float v, int regionWidth, int regionHeight, int textureWidth, int textureHeight)
-        drawContext.drawTexture(BACKGROUND_TEXTURE, i + 43 - 15, j + 14 - 14, 338, 199, 0.0f, 0.0f, 338, 199, 512, 512);
-
-        // long timeSinceMod = Util.getMeasuringTimeMs()-minimizer.getLastChangeTime();
-        if (minimizer.isEnabled()/* || timeSinceMod < 1000*/) {
-            /*float progress = MathHelper.clamp(timeSinceMod/1000f, 0, 1);
-            int start;
-            int end;
-            InterpolateMode interp;
-            if (minimizer.isEnabled()) {
-                start = 206;
-                end = 111;
-                interp = EASE_OUT;
-            } else {
-                start = 111;
-                end = 206;
-                interp = EASE_IN;
+        if (hoverElement == null) {
+            drawContext.drawTexture(BACKGROUND_TEXTURE, i + 43 - 15, j + 14 - 14, 338, 199, 0.0f, 0.0f, 338, 199, 512, 512);
+            if (minimizer.isEnabled()/* || timeSinceMod < 1000*/) {
+                drawContext.drawTexture(BACKGROUND_TEXTURE, i + 43 - 15, j + 111 - 14, 160, 95, 0, 199, 160, 95, 512, 512);
             }
-
-            int pos = (int) interp.interpolate(progress, start, end);
-            boolean disableScissor = minimizer.isEnabled() ? pos > end : pos < end;
-            if (disableScissor) drawContext.enableScissor(i+42, j+110, i+204, j+187);
-            drawContext.drawTexture(BACKGROUND_TEXTURE, i + 43, j + pos, 160, 95, 0, 199, 160, 95, 512, 512);
-            if (disableScissor) drawContext.disableScissor();
-            //InteractAbleWidget.drawSquareBorder(drawContext, i + 43, j + 111, 160, 77, 1, Color.RED.argb());*/
-
-            drawContext.drawTexture(BACKGROUND_TEXTURE, i + 43 - 15, j + 111 - 14, 160, 95, 0, 199, 160, 95, 512, 512);
         }
         if (hoverElement == null) {
             super.render(drawContext, mouseX, mouseY, delta);
