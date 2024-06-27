@@ -15,6 +15,7 @@ import net.minecraft.entity.projectile.FireworkRocketEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.*;
+import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.screen.ScreenTexts;
@@ -384,10 +385,11 @@ public class ModularCrossbow extends CrossbowItem implements PlatformModularItem
         return list;
     }
 
-    public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
-        List<ItemStack> list = getProjectiles(stack);
-        if (isCharged(stack) && !list.isEmpty()) {
-            ItemStack itemStack = (ItemStack) list.get(0);
+    @Override
+    public void appendTooltip(ItemStack stack, TooltipContext tooltipContext, List<Text> list, TooltipType tooltipType) {
+        List<ItemStack> porjectiles = getProjectiles(stack);
+        if (isCharged(stack) && !porjectiles.isEmpty()) {
+            ItemStack itemStack = (ItemStack) porjectiles.get(0);
             tooltip.add(Text.translatable("item.minecraft.crossbow.projectile").append(ScreenTexts.SPACE).append(itemStack.toHoverableText()));
             if (context.isAdvanced() && itemStack.isOf(Items.FIREWORK_ROCKET)) {
                 List<Text> list2 = Lists.newArrayList();
@@ -402,7 +404,7 @@ public class ModularCrossbow extends CrossbowItem implements PlatformModularItem
             }
 
         }
-        LoreProperty.appendLoreTop(stack, world, tooltip, context);
+        LoreProperty.appendLoreTop(stack, list, tooltipContext, tooltipType);
     }
 
     @Override

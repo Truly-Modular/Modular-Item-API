@@ -180,7 +180,7 @@ public class ModularHoe extends HoeItem implements PlatformModularItemMethods, M
     }
 
     @Override
-    public void appendTooltip(ItemStack itemStack, TooltipContext tooltipContext, List<Text> list, TooltipType tooltipType) {
-        LoreProperty.appendLoreTop(itemStack, list, tooltipContext, tooltipType);
+    public void appendTooltip(ItemStack stack, TooltipContext tooltipContext, List<Text> list, TooltipType tooltipType) {
+        LoreProperty.appendLoreTop(stack, list, tooltipContext, tooltipType);
     }
 }

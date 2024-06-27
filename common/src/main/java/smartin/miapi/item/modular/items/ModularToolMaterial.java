@@ -1,5 +1,6 @@
 package smartin.miapi.item.modular.items;
 
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.ToolMaterial;
 import net.minecraft.recipe.Ingredient;
 

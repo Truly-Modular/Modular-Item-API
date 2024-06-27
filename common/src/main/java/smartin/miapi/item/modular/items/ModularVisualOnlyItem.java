@@ -4,6 +4,7 @@ import com.redpxnda.nucleus.util.Color;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.text.Text;
 import net.minecraft.util.Rarity;
 import net.minecraft.world.World;
@@ -11,6 +12,7 @@ import org.jetbrains.annotations.Nullable;
 import smartin.miapi.item.modular.PlatformModularItemMethods;
 import smartin.miapi.item.modular.VisualModularItem;
 import smartin.miapi.modules.properties.DisplayNameProperty;
+import smartin.miapi.modules.properties.LoreProperty;
 import smartin.miapi.modules.properties.RarityProperty;
 import smartin.miapi.modules.properties.RepairPriority;
 
@@ -47,7 +49,7 @@ public class ModularVisualOnlyItem extends Item implements PlatformModularItemMe
     }
 
     @Override
-    public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
-        tooltip.add(Text.translatable("miapi.broken_item.tooltip"));
+    public void appendTooltip(ItemStack stack, TooltipContext tooltipContext, List<Text> list, TooltipType tooltipType) {
+        LoreProperty.appendLoreTop(stack, list, tooltipContext, tooltipType);
     }
 }

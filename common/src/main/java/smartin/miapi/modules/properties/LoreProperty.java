@@ -13,9 +13,7 @@ import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.crafting.crafter.replace.HoverMaterialList;
 import smartin.miapi.config.MiapiConfig;
@@ -45,7 +43,7 @@ public class LoreProperty implements ModuleProperty {
     public LoreProperty() {
         super();
         property = this;
-        loreSuppliers.add((ItemStack itemStack, @Nullable World world, List<Text> tooltip, TooltipContext context) -> {
+        loreSuppliers.add((ItemStack itemStack, List<Text> tooltip, Item.TooltipContext context, TooltipType tooltipType) -> {
             if (itemStack.getItem() instanceof ModularItem) {
                 tooltip.add(format(Text.translatable("miapi.ui.modular_item"), Formatting.GRAY));
                 getHolders(itemStack).stream().filter(h -> h.position.equals("top")).forEach(holder -> tooltip.add(holder.getText()));
@@ -78,10 +76,10 @@ public class LoreProperty implements ModuleProperty {
     }
 
     private Holder getFromSingleElement(JsonElement element) {
-        try{
+        try {
             return codec.parse(JsonOps.INSTANCE, element).getOrThrow((Function<String, Throwable>) s -> new IllegalArgumentException("could not parse Lore Context" + s));
-        }catch (Throwable e){
-            Miapi.LOGGER.error("",e);
+        } catch (Throwable e) {
+            Miapi.LOGGER.error("", e);
             return new Holder();
         }
     }
@@ -172,8 +170,8 @@ public class LoreProperty implements ModuleProperty {
         return lines;
     }
 
-    public static void appendLoreTop(ItemStack stackList, List<Text> tooltip, Item.TooltipContext context, TooltipType tooltipType) {
-        loreSuppliers.forEach(supplierSupplier -> supplierSupplier.getLore(stack, tooltip, context, tooltip));
+    public static void appendLoreTop(ItemStack stack, List<Text> tooltip, Item.TooltipContext context, TooltipType tooltipType) {
+        loreSuppliers.forEach(supplierSupplier -> supplierSupplier.getLore(stack, tooltip, context, tooltipType));
     }
 
     public void appendLoreBottom(List<Text> oldLore, ItemStack itemStack) {
@@ -223,6 +221,6 @@ public class LoreProperty implements ModuleProperty {
     }
 
     public interface ToolTipSupplierSupplier {
-        void getLore(ItemStack stackList, List<Text> tooltip, Item.TooltipContext context, TooltipType tooltipType);
+        void getLore(ItemStack itemStack, List<Text> tooltip, Item.TooltipContext context, TooltipType tooltipType);
     }
 }

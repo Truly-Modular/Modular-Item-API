@@ -13,6 +13,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.item.PickaxeItem;
 import net.minecraft.item.ToolMaterial;
+import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.text.Text;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
@@ -178,7 +179,7 @@ public class ModularPickaxe extends PickaxeItem implements PlatformModularItemMe
     }
 
     @Override
-    public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
-        LoreProperty.appendLoreTop(stack, world, tooltip, context);
+    public void appendTooltip(ItemStack stack, TooltipContext tooltipContext, List<Text> list, TooltipType tooltipType) {
+        LoreProperty.appendLoreTop(stack, list, tooltipContext, tooltipType);
     }
 }

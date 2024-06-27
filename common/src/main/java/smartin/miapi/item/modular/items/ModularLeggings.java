@@ -3,6 +3,7 @@ package smartin.miapi.item.modular.items;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.text.Text;
 import net.minecraft.util.Rarity;
 import net.minecraft.util.math.MathHelper;
@@ -63,7 +64,7 @@ public class ModularLeggings extends ArmorItem implements PlatformModularItemMet
     }
 
     @Override
-    public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
-        LoreProperty.appendLoreTop(stack, world, tooltip, context);
+    public void appendTooltip(ItemStack stack, TooltipContext tooltipContext, List<Text> list, TooltipType tooltipType) {
+        LoreProperty.appendLoreTop(stack, list, tooltipContext, tooltipType);
     }
 }
