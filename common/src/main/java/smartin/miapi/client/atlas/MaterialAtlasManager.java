@@ -8,7 +8,6 @@ import net.minecraft.client.renderer.texture.SpriteLoader;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.resources.TextureAtlasHolder;
-import net.minecraft.client.texture.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -58,6 +57,7 @@ public class MaterialAtlasManager extends TextureAtlasHolder {
             ResourceLocation id = entry.id;
             Resource resource = manager.getResource(id).orElseThrow(() -> new RuntimeException(new FileNotFoundException(id.toString())));
             try {
+
                 SpriteContents contents = SpriteLoader.loadAndStitch(id, resource);
                 if (contents == null) {
                     Miapi.LOGGER.warn("Sprite creation of '{}' failed for material atlas! See logger error(s) above.", id);

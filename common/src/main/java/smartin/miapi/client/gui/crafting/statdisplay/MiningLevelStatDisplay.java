@@ -26,7 +26,7 @@ import java.util.Locale;
 
 @Environment(EnvType.CLIENT)
 public class MiningLevelStatDisplay extends InteractAbleWidget implements SingleStatDisplay {
-    public ResourceLocation texture = CraftingScreen.INVENTORY_LOCATION;
+    public ResourceLocation texture = CraftingScreen.BACKGROUND_TEXTURE;
     public ItemStack original = ItemStack.EMPTY;
     public ItemStack compareTo = ItemStack.EMPTY;
     public StatBar statBar;

@@ -7,6 +7,7 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.ItemStack;
 import smartin.miapi.attributes.AttributeRegistry;
+import smartin.miapi.modules.properties.AttributeProperty;
 
 @Environment(EnvType.CLIENT)
 public class DpsStatDisplay extends SingleStatDisplayDouble {
@@ -28,13 +29,13 @@ public class DpsStatDisplay extends SingleStatDisplayDouble {
     }
 
     private boolean hasAttackDamage(ItemStack itemStack) {
-        return itemStack.getAttributeModifiers(EquipmentSlot.MAINHAND).containsKey(Attributes.ATTACK_DAMAGE);
+        return AttributeProperty.getActualValue(itemStack, EquipmentSlot.MAINHAND, Attributes.ATTACK_DAMAGE.value()) != 0;
     }
 
     @Override
     public double getValue(ItemStack stack) {
-        double attackDamage = AttributeRegistry.getAttribute(stack, Attributes.ATTACK_DAMAGE, EquipmentSlot.MAINHAND, 1);
-        double attackSpeed = AttributeRegistry.getAttribute(stack, Attributes.ATTACK_SPEED, EquipmentSlot.MAINHAND, 4);
+        double attackDamage = AttributeRegistry.getAttribute(stack, Attributes.ATTACK_DAMAGE.value(), EquipmentSlot.MAINHAND, 1);
+        double attackSpeed = AttributeRegistry.getAttribute(stack, Attributes.ATTACK_SPEED.value(), EquipmentSlot.MAINHAND, 4);
         return attackDamage * attackSpeed;
     }
 }

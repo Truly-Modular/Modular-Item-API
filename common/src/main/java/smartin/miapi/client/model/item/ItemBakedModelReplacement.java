@@ -95,8 +95,8 @@ public class ItemBakedModelReplacement implements UnbakedModel, BakedModel {
 
     @Nullable
     @Override
-    public BakedModel bake(ModelBaker baker, Function<Material, TextureAtlasSprite> textureGetter, ModelState rotationContainer, ResourceLocation modelId) {
-        ModelProperty.textureGetter = textureGetter;
+    public BakedModel bake(ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter, ModelState state) {
+        ModelProperty.textureGetter = spriteGetter;
         DynamicBakery.dynamicBaker = baker;
         overrides = new ItemBakedModelOverrides();
         return this;

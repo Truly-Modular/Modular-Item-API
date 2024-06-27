@@ -121,14 +121,14 @@ public class ScrollList extends InteractAbleWidget {
 
     public void renderScrollbarBackground(GuiGraphics drawContext, int mouseX, int mouseY, float delta, int barX, int barWidth) {
         int offsetAlt = altDesign ? 28 : 0;
-        drawTextureWithEdge(drawContext, CraftingScreen.INVENTORY_LOCATION, barX, getY(), 498 - offsetAlt, 96, 14, 15, barWidth, getHeight(), 512, 512, 3);
+        drawTextureWithEdge(drawContext, CraftingScreen.BACKGROUND_TEXTURE, barX, getY(), 498 - offsetAlt, 96, 14, 15, barWidth, getHeight(), 512, 512, 3);
     }
 
     public void renderScrollbarClickAble(GuiGraphics drawContext, int mouseX, int mouseY, float delta, int barX, int barWidth, float percent) {
         int height = (int) ((this.getHeight() - 17) * percent) + (altDesign ? percent >= 1 ? 2 : 0 : 1) + getY();
         int offset = needsScrollbar ? 0 : 15;
         int offsetAlt = altDesign ? 28 : 0;
-        drawTextureWithEdge(drawContext, CraftingScreen.INVENTORY_LOCATION, barX, height, 498 - 14 - offsetAlt, 96 + offset, 14, 15, barWidth, 15, 512, 512, 3);
+        drawTextureWithEdge(drawContext, CraftingScreen.BACKGROUND_TEXTURE, barX, height, 498 - 14 - offsetAlt, 96 + offset, 14, 15, barWidth, 15, 512, 512, 3);
     }
 
     private boolean showScrollbar() {

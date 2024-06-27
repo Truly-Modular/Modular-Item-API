@@ -17,7 +17,6 @@ import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderStateShard.MultiTextureStateShard;
-import net.minecraft.client.renderer.RenderStateShard.TextureStateShard;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.client.renderer.texture.TextureAtlas;
@@ -223,7 +222,7 @@ public class RegistryInventory {
                 });
 
         RegistryInventory.components.register(
-                Miapi.MiapiIdentifier("item_module"),() -> ModuleInstance.componentType);
+                Miapi.id("item_module"),() -> ModuleInstance.componentType);
 
         //ENTITY
         // commented out because RegistrySupplier is needed... see itemProjectileType field definition above

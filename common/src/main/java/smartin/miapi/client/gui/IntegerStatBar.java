@@ -55,6 +55,6 @@ public class IntegerStatBar extends InteractAbleWidget {
                 context.fill(segmentX, getY(), segmentEndX, height + getY(), offColor);
             }
         }
-        drawTextureWithEdge(context, CraftingScreen.INVENTORY_LOCATION, getX(), getY() + height, 339, 4, 7, 1, getWidth(), shadowSize, 512, 512, 1);
+        drawTextureWithEdge(context, CraftingScreen.BACKGROUND_TEXTURE, getX(), getY() + height, 339, 4, 7, 1, getWidth(), shadowSize, 512, 512, 1);
     }
 }

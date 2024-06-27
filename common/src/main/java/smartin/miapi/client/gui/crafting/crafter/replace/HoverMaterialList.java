@@ -1,6 +1,11 @@
 package smartin.miapi.client.gui.crafting.crafter.replace;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
+import net.minecraft.util.FastColor;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.crafting.CraftingScreen;
 import smartin.miapi.modules.ItemModule;
@@ -12,11 +17,6 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.network.chat.Component;
-import net.minecraft.util.FastColor;
 
 public class HoverMaterialList extends InteractAbleWidget {
     public Map<String, List<Material>> materials = new LinkedHashMap<>();
@@ -42,7 +42,7 @@ public class HoverMaterialList extends InteractAbleWidget {
 
     @Override
     public void renderWidget(GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
-        drawContext.blit(CraftingScreen.INVENTORY_LOCATION, getX(), getY(), 404, 96, 20, 11, 512, 512);
+        drawContext.blit(CraftingScreen.BACKGROUND_TEXTURE, getX(), getY(), 404, 96, 20, 11, 512, 512);
         super.render(drawContext, mouseX, mouseY, delta);
     }
 
@@ -129,7 +129,7 @@ public class HoverMaterialList extends InteractAbleWidget {
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
+    public boolean mouseScrolled(double mouseX, double mouseY, double amount, double amountX) {
         if (isMouseOver(mouseX, mouseY)) {
             if (Screen.hasShiftDown() || Screen.hasControlDown()) {
                 if (amount < 0) {

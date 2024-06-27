@@ -112,6 +112,6 @@ public class ReplaceOption implements EditOption {
     @Override
     public InteractAbleWidget getIconGui(int x, int y, int width, int height, Consumer<EditOption> select, Supplier<EditOption> getSelected) {
         unsafeEditContext = null;
-        return new EditOptionIcon(x, y, width, height, select, getSelected, CraftingScreen.INVENTORY_LOCATION, 339 + 32, 25, 512, 512, "miapi.ui.edit_option.hover.replace", this);
+        return new EditOptionIcon(x, y, width, height, select, getSelected, CraftingScreen.BACKGROUND_TEXTURE, 339 + 32, 25, 512, 512, "miapi.ui.edit_option.hover.replace", this);
     }
 }

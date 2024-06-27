@@ -13,7 +13,7 @@ import smartin.miapi.client.gui.crafting.CraftingScreen;
  */
 @Environment(EnvType.CLIENT)
 public class StatBar extends InteractAbleWidget {
-    public ResourceLocation texture = CraftingScreen.INVENTORY_LOCATION;
+    public ResourceLocation texture = CraftingScreen.BACKGROUND_TEXTURE;
 
     double primaryPercent = 0;
     double secondaryPercent = 0;

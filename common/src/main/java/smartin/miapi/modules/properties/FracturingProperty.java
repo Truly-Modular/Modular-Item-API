@@ -4,7 +4,7 @@ import smartin.miapi.Miapi;
 import smartin.miapi.modules.properties.util.DoubleProperty;
 
 import java.util.ArrayList;
-import java.util.Collection;
+
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -17,7 +17,7 @@ import net.minecraft.world.item.ItemStack;
 public class FracturingProperty extends DoubleProperty {
     public static final String KEY = "fracturing";
     public static FracturingProperty property;
-    public static ResourceLocation ATTRIBUTE_ID = Miapi.MiapiIdentifier("fracturing_property_damage");
+    public static ResourceLocation ATTRIBUTE_ID = Miapi.id("fracturing_property_damage");
 
 
     public FracturingProperty() {

@@ -39,7 +39,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> implements MenuAccess<CraftingScreenHandler> {
-    public static final ResourceLocation INVENTORY_LOCATION = new ResourceLocation(Miapi.MOD_ID, "textures/gui/crafter/background.png");
+    public static final ResourceLocation BACKGROUND_TEXTURE = Miapi.id("textures/gui/crafter/background.png");
     /*public static final InterpolateMode EASE_IN = new InterpolateMode.EaseIn(5);
     public static final InterpolateMode EASE_OUT = new InterpolateMode.EaseOut(5);*/
     private ItemStack stack;
@@ -153,7 +153,7 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
             }
         }));
 
-        addChild(new EditOptionIcon(moduleCrafter.getX() - 36, moduleCrafter.getY() + 4, 32, 28, this::selectEditOption, this::getEditOption, INVENTORY_LOCATION, 339, 25, 512, 512, "miapi.ui.edit_option.hover.info", null));
+        addChild(new EditOptionIcon(moduleCrafter.getX() - 36, moduleCrafter.getY() + 4, 32, 28, this::selectEditOption, this::getEditOption, BACKGROUND_TEXTURE, 339, 25, 512, 512, "miapi.ui.edit_option.hover.info", null));
         selectEditOption(null);
         selectSlot(null);
         previewStack(menu.inventory.getItem(0));
@@ -366,12 +366,12 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
     @Override
     public void render(GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        renderBackground(drawContext);
+        renderBackground(drawContext, mouseX, mouseY, delta);
         int i = (this.width - this.imageWidth - 6) / 2;
         int j = (this.height - this.imageHeight) / 2;
         //InteractAbleWidget.drawSquareBorder(drawContext, i, j, this.backgroundWidth, this.backgroundHeight, 1, ColorHelper.Argb.getArgb(255, 255, 0, 0));
         //(Identifier texture, int x, int y, int width, int height, float u, float v, int regionWidth, int regionHeight, int textureWidth, int textureHeight)
-        drawContext.blit(INVENTORY_LOCATION, i + 43 - 15, j + 14 - 14, 338, 199, 0.0f, 0.0f, 338, 199, 512, 512);
+        drawContext.blit(BACKGROUND_TEXTURE, i + 43 - 15, j + 14 - 14, 338, 199, 0.0f, 0.0f, 338, 199, 512, 512);
 
         // long timeSinceMod = Util.getMeasuringTimeMs()-minimizer.getLastChangeTime();
         if (minimizer.isEnabled()/* || timeSinceMod < 1000*/) {
@@ -396,7 +396,7 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
             if (disableScissor) drawContext.disableScissor();
             //InteractAbleWidget.drawSquareBorder(drawContext, i + 43, j + 111, 160, 77, 1, Color.RED.argb());*/
 
-            drawContext.blit(INVENTORY_LOCATION, i + 43 - 15, j + 111 - 14, 160, 95, 0, 199, 160, 95, 512, 512);
+            drawContext.blit(BACKGROUND_TEXTURE, i + 43 - 15, j + 111 - 14, 160, 95, 0, 199, 160, 95, 512, 512);
         }
         if (hoverElement == null) {
             super.render(drawContext, mouseX, mouseY, delta);
@@ -453,11 +453,11 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
+    public boolean mouseScrolled(double mouseX, double mouseY, double amount, double other) {
         if (hoverElement != null) {
-            return hoverElement.mouseScrolled(mouseX, mouseY, amount);
+            return hoverElement.mouseScrolled(mouseX, mouseY, amount, other);
         }
-        return super.mouseScrolled(mouseX, mouseY, amount);
+        return super.mouseScrolled(mouseX, mouseY, amount, other);
     }
 
     @Override

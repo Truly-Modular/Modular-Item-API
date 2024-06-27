@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 
 @Environment(EnvType.CLIENT)
 public abstract class SingleStatDisplayDouble extends InteractAbleWidget implements SingleStatDisplay, Renderable {
-    public ResourceLocation texture = CraftingScreen.INVENTORY_LOCATION;
+    public ResourceLocation texture = CraftingScreen.BACKGROUND_TEXTURE;
     public ItemStack original = ItemStack.EMPTY;
     public ItemStack compareTo = ItemStack.EMPTY;
     public StatBar statBar;

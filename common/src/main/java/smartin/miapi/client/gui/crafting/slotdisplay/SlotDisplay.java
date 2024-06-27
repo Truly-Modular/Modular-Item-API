@@ -115,13 +115,13 @@ public class SlotDisplay extends InteractAbleWidget {
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
+    public boolean mouseScrolled(double mouseX, double mouseY, double amount, double amountX) {
         if (isMouseOver(mouseX, mouseY)) {
             double scale = Math.pow(2, amount / 10);
             slotProjection.scale((float) scale, (float) scale, (float) scale);
             return true;
         }
-        return super.mouseScrolled(mouseX, mouseY, amount);
+        return super.mouseScrolled(mouseX, mouseY, amount, amountX);
     }
 
     public void setBaseSlot(SlotProperty.ModuleSlot baseSlot1) {

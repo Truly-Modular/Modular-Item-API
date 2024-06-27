@@ -83,7 +83,7 @@ public class AttributeProperty implements ModuleProperty {
 
             Attribute attribute = replaceMap.getOrDefault(attributeName, () -> BuiltInRegistries.ATTRIBUTE.get(ResourceLocation.parse(attributeName))).get();
 
-            ResourceLocation identifier = Miapi.MiapiIdentifier("modular_attributes");
+            ResourceLocation identifier = Miapi.id("modular_attributes");
 
             if (attributeJson.has("id")) {
                 identifier = ResourceLocation.parse(attributeJson.get("id").getAsString());
@@ -502,7 +502,7 @@ public class AttributeProperty implements ModuleProperty {
     }
 
     public static ResourceLocation getIDforSlot(String slotidString) {
-        return Miapi.MiapiIdentifier(slotidString);
+        return Miapi.id(slotidString);
     }
 
     private static AttributeModifier.Operation getOperation(String operationString) {

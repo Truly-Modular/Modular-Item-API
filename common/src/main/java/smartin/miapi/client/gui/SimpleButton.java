@@ -100,6 +100,6 @@ public class SimpleButton<T> extends InteractAbleWidget {
         if (!isEnabled) {
             offset = 20;
         }
-        drawTextureWithEdge(drawContext, CraftingScreen.INVENTORY_LOCATION, getX(), getY(), 339 + offset, 165, 10, 10, getWidth(), getHeight(), 512, 512, 3);
+        drawTextureWithEdge(drawContext, CraftingScreen.BACKGROUND_TEXTURE, getX(), getY(), 339 + offset, 165, 10, 10, getWidth(), getHeight(), 512, 512, 3);
     }
 }

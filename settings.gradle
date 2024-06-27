@@ -10,7 +10,7 @@ pluginManagement {
 rootProject.name = 'miapi'
 
 include("common")
-include("fabric")
+//include("fabric")
 //include("neoforge")
 
 //includeBuild("./archery")

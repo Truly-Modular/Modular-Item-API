@@ -50,7 +50,7 @@ public class EmptyCraftingWidget extends InteractAbleWidget {
     public void renderWidget(GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
         RenderSystem.enableDepthTest();
 
-        drawTextureWithEdge(drawContext, CraftingScreen.INVENTORY_LOCATION, getX(), getY(), 368, 138, 26, 26, getWidth(), getHeight(), 512, 512, 5);
+        drawTextureWithEdge(drawContext, CraftingScreen.BACKGROUND_TEXTURE, getX(), getY(), 368, 138, 26, 26, getWidth(), getHeight(), 512, 512, 5);
 
         //drawTextureWithEdge(drawContext, CraftingScreen.BACKGROUND_TEXTURE, getX() + 50, getY() + allowedMaterial.slotHeight - 3, 367 - 28, 137, 28, 28, 20, 20, 512, 512, 5);
 

@@ -8,6 +8,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.protocol.game.ClientboundAnimatePacket;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -23,6 +24,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.phys.Vec3;
+import smartin.miapi.Miapi;
 import smartin.miapi.entity.ItemProjectileEntity;
 import smartin.miapi.entity.ShieldingArmorFacet;
 import smartin.miapi.entity.StunHealthFacet;
@@ -34,7 +36,6 @@ import smartin.miapi.modules.properties.AttributeProperty;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 import java.util.WeakHashMap;
 
 
@@ -92,9 +93,9 @@ public class AttributeRegistry {
     /**
      * Changing these can break savegames, so do not touch
      */
-    private static final UUID TEMP_CRIT_DMG_UUID = UUID.fromString("483b007a-c7db-11ee-a506-0242ac120002");
-    private static final UUID TEMP_CRIT_DMG_MULTIPLIER_UUID = UUID.fromString("238664bf-ae30-40f7-b717-230655bd6595");
-    private static final UUID TEMP_BACKSTAB_DMG_UUID = UUID.fromString("03740034-c97c-11ee-a506-0242ac120002");
+    private static final ResourceLocation TEMP_CRIT_DMG_UUID = Miapi.id("temp_crit_dmg");
+    private static final ResourceLocation TEMP_CRIT_DMG_MULTIPLIER_UUID = Miapi.id("temp_crit_dmg_multiplier");
+    private static final ResourceLocation TEMP_BACKSTAB_DMG_UUID = Miapi.id("temp_backstab_dmg");
 
 
     public static void setup() {
@@ -177,7 +178,7 @@ public class AttributeRegistry {
                     livingHurtEvent.damageSource.getEntity() instanceof LivingEntity attacker) {
                 if (attacker.getAttributes().hasAttribute(BACK_STAB)) {
                     if (livingHurtEvent.damageSource.getEntity().getLookAngle().dot(livingHurtEvent.livingEntity.getLookAngle()) > 0) {
-                        attacker.getAttributes().getInstance(BACK_STAB).addTransientModifier(new AttributeModifier(TEMP_BACKSTAB_DMG_UUID, "temp_backstab_base_damage", livingHurtEvent.amount, EntityAttributeModifier.Operation.ADDITION));
+                        attacker.getAttributes().getInstance(BACK_STAB).addTransientModifier(new AttributeModifier(TEMP_BACKSTAB_DMG_UUID, (double)livingHurtEvent.amount, AttributeModifier.Operation.ADD_VALUE));
                         livingHurtEvent.amount = (float) attacker.getAttributeValue(BACK_STAB);
                         attacker.getAttributes().getInstance(BACK_STAB).removeModifier(TEMP_BACKSTAB_DMG_UUID);
                     }
@@ -237,7 +238,7 @@ public class AttributeRegistry {
                     lightningEntity.moveTo(Vec3.atBottomCenterOf(blockPos));
                     lightningEntity.setCause(owner instanceof ServerPlayer ? (ServerPlayer) owner : null);
                     projectile.level().addFreshEntity(lightningEntity);
-                    projectile.hitEntitySound = new WrappedSoundEvent(SoundEvents.TRIDENT_THUNDER, 5.0f, 1.0f);
+                    projectile.hitEntitySound = new WrappedSoundEvent(SoundEvents.TRIDENT_THUNDER.value(), 5.0f, 1.0f);
                 }
             }
             return EventResult.pass();

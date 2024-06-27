@@ -75,7 +75,7 @@ public class PropertyResolver {
     }
 
     public static PropertyProvider register(String identifier, PropertyProvider propertyProvider) {
-        return register(Miapi.MiapiIdentifier(identifier), propertyProvider);
+        return register(Miapi.id(identifier), propertyProvider);
     }
 
     public static Map<ModuleProperty, JsonElement> merge(Map<ModuleProperty, JsonElement> old, Map<ModuleProperty, JsonElement> toMerge, MergeType mergeType) {

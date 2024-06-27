@@ -154,7 +154,7 @@ public class Miapi {
         }));
     }
 
-    public static ResourceLocation MiapiIdentifier(String string) {
+    public static ResourceLocation id(String string) {
         String[] parts = string.split(":");
         if (parts.length > 1) {
             return ResourceLocation.fromNamespaceAndPath(parts[0], parts[1]);
@@ -162,7 +162,7 @@ public class Miapi {
         return ResourceLocation.fromNamespaceAndPath(Miapi.MOD_ID, string);
     }
 
-    public static ResourceLocation MiapiIdentifier(String namespace, String id) {
+    public static ResourceLocation id(String namespace, String id) {
         return ResourceLocation.fromNamespaceAndPath(namespace, id);
     }
 

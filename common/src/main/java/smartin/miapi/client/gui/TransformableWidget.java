@@ -126,10 +126,10 @@ public class TransformableWidget extends InteractAbleWidget {
      */
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
+    public boolean mouseScrolled(double mouseX, double mouseY, double amount, double amountX) {
         Vector4f position = transFormMousePos(mouseX, mouseY);
         for (GuiEventListener child : this.children()) {
-            if (child.isMouseOver(position.x, position.y) && child.mouseScrolled(position.x, position.y, amount)) {
+            if (child.isMouseOver(position.x, position.y) && child.mouseScrolled(position.x, position.y, amount, amountX)) {
                 return true;
             }
         }

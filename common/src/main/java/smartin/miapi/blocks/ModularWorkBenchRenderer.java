@@ -5,7 +5,6 @@ import com.mojang.math.Axis;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import net.minecraft.item.*;
 import net.minecraft.world.item.ArrowItem;
 import net.minecraft.world.item.Equipable;
 import net.minecraft.world.item.ItemDisplayContext;

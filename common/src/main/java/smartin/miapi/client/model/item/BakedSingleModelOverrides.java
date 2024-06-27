@@ -59,7 +59,7 @@ public class BakedSingleModelOverrides extends ItemOverrides {
 
             for (int j = 0; j < i; ++j) {
                 ResourceLocation identifier = this.dynamicConditionTypes[j];
-                ItemPropertyFunction modelPredicateProvider = ItemProperties.getProperty(item, identifier);
+                ItemPropertyFunction modelPredicateProvider = ItemProperties.getProperty(stack, identifier);
                 if (modelPredicateProvider != null) {
                     fs[j] = modelPredicateProvider.call(stack, world, entity, seed);
                 } else {

@@ -123,6 +123,6 @@ public class CosmeticEditOption implements EditOption {
     public InteractAbleWidget getIconGui(int x, int y, int width, int height, Consumer<EditOption> select, Supplier<EditOption> getSelected) {
         hoverStack = null;
         unsafeEditContext = null;
-        return new EditOptionIcon(x, y, width, height, select, getSelected, CraftingScreen.INVENTORY_LOCATION, 339, 25 + 28 * 2 + 38 + 56, 512, 512, "miapi.ui.edit_option.hover.cosmetic", this);
+        return new EditOptionIcon(x, y, width, height, select, getSelected, CraftingScreen.BACKGROUND_TEXTURE, 339, 25 + 28 * 2 + 38 + 56, 512, 512, "miapi.ui.edit_option.hover.cosmetic", this);
     }
 }

@@ -110,7 +110,7 @@ public class ReplaceView extends InteractAbleWidget {
             if (!isAllowed) {
                 hoverOffset = 28;
             }
-            drawTextureWithEdge(drawContext, CraftingScreen.INVENTORY_LOCATION, getX(), getY(), 404, 54 + hoverOffset, 108, 14, getWidth(), getHeight(), 512, 512, 3);
+            drawTextureWithEdge(drawContext, CraftingScreen.BACKGROUND_TEXTURE, getX(), getY(), 404, 54 + hoverOffset, 108, 14, getWidth(), getHeight(), 512, 512, 3);
             textWidget.setX(this.getX() + 2);
             textWidget.setY(this.getY() + 3);
 

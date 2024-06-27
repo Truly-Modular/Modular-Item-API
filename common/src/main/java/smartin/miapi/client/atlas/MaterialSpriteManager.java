@@ -4,15 +4,6 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import smartin.miapi.client.MiapiClient;
-import smartin.miapi.datapack.ReloadEvents;
-import smartin.miapi.modules.material.Material;
-import smartin.miapi.modules.material.palette.SpriteColorer;
-import smartin.miapi.modules.material.palette.SpriteColorer.MaterialRecoloredSpriteHolder;
-import java.io.IOException;
-import java.util.*;
-import java.util.concurrent.TimeUnit;
-import java.util.function.IntUnaryOperator;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.RenderType;
@@ -22,6 +13,15 @@ import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
+import smartin.miapi.client.MiapiClient;
+import smartin.miapi.datapack.ReloadEvents;
+import smartin.miapi.modules.material.Material;
+import smartin.miapi.modules.material.palette.SpriteColorer;
+
+import java.io.IOException;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
+import java.util.function.IntUnaryOperator;
 
 public class MaterialSpriteManager {
     static Map<Holder, DynamicTexture> animated_Textures = new HashMap<>();
@@ -121,7 +121,7 @@ public class MaterialSpriteManager {
         int[] quadData = new int[32];
         for (TextureAtlasSprite sprite : animated) {
             BakedQuad bakedQuad = new BakedQuad(quadData, 0, Direction.DOWN, sprite, false);
-            consumer.putBulkData(drawContext.pose().last(), bakedQuad, 0, 0, 0, 0, 0);
+            consumer.putBulkData(drawContext.pose().last(), bakedQuad, 0, 0, 0, 0, 0, 0);
         }
         animated.clear();
     }

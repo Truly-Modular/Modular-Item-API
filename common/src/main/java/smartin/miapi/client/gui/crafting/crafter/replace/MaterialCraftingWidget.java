@@ -81,9 +81,9 @@ public class MaterialCraftingWidget extends InteractAbleWidget {
 
         costDescr.setY(this.getY() + allowedMaterial.slotHeight + 10);
 
-        drawTextureWithEdge(drawContext, CraftingScreen.INVENTORY_LOCATION, getX(), getY(), 368, 138, 26, 26, getWidth(), getHeight(), 512, 512, 5);
+        drawTextureWithEdge(drawContext, CraftingScreen.BACKGROUND_TEXTURE, getX(), getY(), 368, 138, 26, 26, getWidth(), getHeight(), 512, 512, 5);
 
-        drawTextureWithEdge(drawContext, CraftingScreen.INVENTORY_LOCATION, getX() + 50, getY() + allowedMaterial.slotHeight - 3, 367 - 28, 137, 28, 28, 20, 20, 512, 512, 5);
+        drawTextureWithEdge(drawContext, CraftingScreen.BACKGROUND_TEXTURE, getX() + 50, getY() + allowedMaterial.slotHeight - 3, 367 - 28, 137, 28, 28, 20, 20, 512, 512, 5);
 
         super.render(drawContext, mouseX, mouseY, delta);
     }
