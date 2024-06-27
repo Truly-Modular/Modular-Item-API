@@ -105,28 +105,27 @@ public class StatProvidersMap {
         @Override
         public <T> DataResult<Pair<StatProvidersMap, T>> decode(DynamicOps<T> ops, T input) {
             StatProvidersMap result = new StatProvidersMap();
-            MapLike<T> map = ops.getMap(input).getOrThrow(false, s ->
-                    Miapi.LOGGER.error("Failed to create base map in StatProvidersMapCodec! -> {}", s));
+            MapLike<T> map = ops.getMap(input).getOrThrow(s ->
+                    new RuntimeException("Failed to create base map in StatProvidersMapCodec! -> {}"));
 
             map.entries().forEach(p -> {
-                String str = ops.getStringValue(p.getFirst()).getOrThrow(false, s ->
-                        Miapi.LOGGER.error("Failed to create string value in StatRequirementMapCodec! -> {}", s));
+                String str = ops.getStringValue(p.getFirst()).getOrThrow(s -> new RuntimeException("Failed to create string value in StatRequirementMapCodec! -> {}"));
 
                 CraftingStat stat = RegistryInventory.craftingStats.get(str);
                 if (stat == null) return; // i could warn if the stat doesn't exist, but optional compat exists
 
-                ops.getStream(p.getSecond()).getOrThrow(false, s -> Miapi.LOGGER.error("Failed to getVertexConsumer data as a list for stat '{}' in StatProvidersMapCodec! -> {}", str, s)).forEach(val -> {
-                    MapLike<T> details = ops.getMap(val).getOrThrow(false, s ->
-                            Miapi.LOGGER.error("Failed to parse details for stat '{}' in StatProvidersMapCodec! -> {}", str, s));
+                ops.getStream(p.getSecond()).getOrThrow(s -> new RuntimeException("Failed to getVertexConsumer data as a list for stat '{}' in StatProvidersMapCodec! -> {}")).forEach(val -> {
+                    MapLike<T> details = ops.getMap(val).getOrThrow( s ->
+                            new RuntimeException("Failed to parse details for stat '{}' in StatProvidersMapCodec! -> {}"));
 
                     T actorTypeRaw = details.get("type");
-                    String actorType = actorTypeRaw == null ? "anchor" : ops.getStringValue(actorTypeRaw).getOrThrow(false, s ->
-                            Miapi.LOGGER.error("Failed to parse actor type '{}' in StatProvidersMapCodec! -> {}", actorTypeRaw, s));
+                    String actorType = actorTypeRaw == null ? "anchor" : ops.getStringValue(actorTypeRaw).getOrThrow(s ->
+                            new RuntimeException("Failed to parse actor type '{}' in StatProvidersMapCodec! -> {}"));
                     StatActorType actor = StatActorType.REGISTERED.get(actorType);
                     if (actor != null) {
                         T prioRaw = details.get("priority");
-                        float prio = prioRaw == null ? 0 : ops.getNumberValue(prioRaw).getOrThrow(false, s ->
-                                Miapi.LOGGER.warn("Failed to parse priority for actor in StatProvidersMapCodec! -> {}", s)).floatValue();
+                        float prio = prioRaw == null ? 0 : ops.getNumberValue(prioRaw).getOrThrow(s ->
+                                new RuntimeException("Failed to parse priority for actor in StatProvidersMapCodec! -> {}")).floatValue();
 
                         T valueRaw = details.get("value");
 
@@ -144,8 +143,8 @@ public class StatProvidersMap {
                                 throw new RuntimeException("Cannot decode non-JSON/non-NBT for a stat provider actor without modules context!");
                             }
                             result.put(stat, actor, stat.createFromJson(
-                                    Codecs.JSON_ELEMENT.parse(ops, valueRaw).getOrThrow(false, s ->
-                                            Miapi.LOGGER.error("Failed to turn value into a JsonElement while decoding a StatProviderMap! -> {}", s)),
+                                    Codecs.JSON_ELEMENT.parse(ops, valueRaw).getOrThrow(s ->
+                                            new RuntimeException("Failed to turn value into a JsonElement while decoding a StatProviderMap! -> {}")),
                                     modules), prio);
                         }
                     } //else Miapi.LOGGER.warn("Unknown actor type key was found: '{}' ... Data: '{}'", actorType, input);
@@ -177,7 +176,7 @@ public class StatProvidersMap {
                             details.put(
                                     ops.createString("value"),
                                     Codecs.JSON_ELEMENT.encodeStart(ops, ((CraftingStat) stat).saveToJson(instance))
-                                            .getOrThrow(false, s -> Miapi.LOGGER.error("Failed to turn instance into a JsonElement while encoding a StatRequirementMap! -> {}", s))
+                                            .getOrThrow()
                             );
                         }
 

@@ -2,33 +2,30 @@ package smartin.miapi.item.modular.items;
 
 import net.minecraft.block.DispenserBlock;
 import net.minecraft.block.dispenser.ProjectileDispenserBehavior;
-import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.ArrowItem;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.text.Text;
-import net.minecraft.util.Rarity;
 import net.minecraft.util.math.Position;
 import net.minecraft.world.World;
-import org.jetbrains.annotations.Nullable;
 import smartin.miapi.entity.ItemProjectileEntity;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.PlatformModularItemMethods;
 import smartin.miapi.modules.properties.DisplayNameProperty;
 import smartin.miapi.modules.properties.LoreProperty;
-import smartin.miapi.modules.properties.RarityProperty;
 
 import java.util.List;
 
 public class ModularArrow extends ArrowItem implements PlatformModularItemMethods,ModularItem {
     public ModularArrow() {
-        this(new Settings().maxCount(64));
+        this(new Item.Settings().maxCount(64));
     }
 
-    public ModularArrow(Settings settings) {
+    public ModularArrow(Item.Settings settings) {
         super(settings);
         DispenserBlock.registerBehavior(this, new ProjectileDispenserBehavior() {
             @Override
