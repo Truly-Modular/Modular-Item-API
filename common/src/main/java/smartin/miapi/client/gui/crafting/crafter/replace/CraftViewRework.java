@@ -202,7 +202,8 @@ public class CraftViewRework extends InteractAbleWidget {
 
     }
 
-    public void render(DrawContext drawContext, int mouseX, int mouseY, float delta) {
+    @Override
+    public void renderWidget(DrawContext drawContext, int mouseX, int mouseY, float delta) {
         currentMatrix = drawContext.getMatrices().peek().getPositionMatrix();
         if (firstRender) {
             update();
@@ -235,8 +236,8 @@ public class CraftViewRework extends InteractAbleWidget {
         private boolean isLeft;
         private Identifier texture;
         private boolean isClicked;
-        private Identifier right = new Identifier(Miapi.MOD_ID, "textures/button_right.png");
-        private Identifier left = new Identifier(Miapi.MOD_ID, "textures/button_left.png");
+        private Identifier right = Identifier.of(Miapi.MOD_ID, "textures/button_right.png");
+        private Identifier left = Identifier.of(Miapi.MOD_ID, "textures/button_left.png");
 
         public PageButton(int x, int y, int width, int height, boolean isLeft, T toCallBack, Consumer<T> callback) {
             super(x, y, width, height, Text.empty(), toCallBack, callback);
@@ -249,7 +250,7 @@ public class CraftViewRework extends InteractAbleWidget {
         }
 
         @Override
-        public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+        public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
             super.render(context, mouseX, mouseY, delta);
             RenderSystem.setShaderTexture(0, texture);
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
@@ -285,7 +286,7 @@ public class CraftViewRework extends InteractAbleWidget {
         }
 
         @Override
-        public void render(DrawContext drawContext, int mouseX, int mouseY, float delta) {
+        public void renderWidget(DrawContext drawContext, int mouseX, int mouseY, float delta) {
             super.render(drawContext, mouseX, mouseY, delta);
         }
 

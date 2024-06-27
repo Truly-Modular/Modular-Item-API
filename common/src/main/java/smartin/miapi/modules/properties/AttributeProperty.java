@@ -349,8 +349,17 @@ public class AttributeProperty implements ModuleProperty {
      */
     public static double getActualValue(ItemStack stack, EquipmentSlot slot, EntityAttribute entityAttribute, double fallback) {
         //TODO: ive got 0 clue what todo with this
-        Collection<EntityAttributeModifier> attributes = stack.getAttributeModifiers(slot).get(entityAttribute);
-        return getActualValue(attributes, fallback);
+        //DataComponentTypes.ATTRIBUTE_MODIFIERS;
+        if (entityAttribute == null) {
+            return fallback;
+        }
+        List<EntityAttributeModifier> modifiers = new ArrayList<>();
+        stack.get(DataComponentTypes.ATTRIBUTE_MODIFIERS).applyModifiers(slot, (attribute, modifier) -> {
+            if (entityAttribute.equals(attribute)) {
+                modifiers.add(modifier);
+            }
+        });
+        return getActualValue(modifiers, fallback);
     }
 
     public static boolean hasAttribute(Multimap<EntityAttribute, EntityAttributeModifier> map, EntityAttribute entityAttribute, double fallback) {

@@ -12,6 +12,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.network.packet.s2c.play.EntityAnimationS2CPacket;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -40,49 +41,49 @@ public class AttributeRegistry {
      */
     public static Map<PlayerEntity, Boolean> hasCrittedLast = new WeakHashMap<>();
 
-    public static EntityAttribute REACH;
-    public static EntityAttribute ATTACK_RANGE;
+    public static RegistryEntry<EntityAttribute> REACH;
+    public static RegistryEntry<EntityAttribute> ATTACK_RANGE;
 
-    public static EntityAttribute SWIM_SPEED;
+    public static RegistryEntry<EntityAttribute> SWIM_SPEED;
 
-    public static EntityAttribute MINING_SPEED_PICKAXE;
-    public static EntityAttribute MINING_SPEED_AXE;
-    public static EntityAttribute MINING_SPEED_SHOVEL;
-    public static EntityAttribute MINING_SPEED_HOE;
+    public static RegistryEntry<EntityAttribute> MINING_SPEED_PICKAXE;
+    public static RegistryEntry<EntityAttribute> MINING_SPEED_AXE;
+    public static RegistryEntry<EntityAttribute> MINING_SPEED_SHOVEL;
+    public static RegistryEntry<EntityAttribute> MINING_SPEED_HOE;
 
-    public static EntityAttribute MAGIC_DAMAGE;
-    public static EntityAttribute STUN_DAMAGE;
+    public static RegistryEntry<EntityAttribute> MAGIC_DAMAGE;
+    public static RegistryEntry<EntityAttribute> STUN_DAMAGE;
 
-    public static EntityAttribute STUN_MAX_HEALTH;
+    public static RegistryEntry<EntityAttribute> STUN_MAX_HEALTH;
 
-    public static EntityAttribute CRITICAL_DAMAGE;
-    public static EntityAttribute CRITICAL_CHANCE;
-    public static EntityAttribute DAMAGE_RESISTANCE;
-    public static EntityAttribute BACK_STAB;
-    public static EntityAttribute ARMOR_CRUSHING;
-    public static EntityAttribute SHIELD_BREAK;
+    public static RegistryEntry<EntityAttribute> CRITICAL_DAMAGE;
+    public static RegistryEntry<EntityAttribute> CRITICAL_CHANCE;
+    public static RegistryEntry<EntityAttribute> DAMAGE_RESISTANCE;
+    public static RegistryEntry<EntityAttribute> BACK_STAB;
+    public static RegistryEntry<EntityAttribute> ARMOR_CRUSHING;
+    public static RegistryEntry<EntityAttribute> SHIELD_BREAK;
 
-    public static EntityAttribute PROJECTILE_ARMOR;
+    public static RegistryEntry<EntityAttribute> PROJECTILE_ARMOR;
 
-    public static EntityAttribute BOW_DRAW_TIME;
+    public static RegistryEntry<EntityAttribute> BOW_DRAW_TIME;
 
-    public static EntityAttribute PLAYER_ITEM_USE_MOVEMENT_SPEED;
+    public static RegistryEntry<EntityAttribute> PLAYER_ITEM_USE_MOVEMENT_SPEED;
 
-    public static EntityAttribute PROJECTILE_DAMAGE;
+    public static RegistryEntry<EntityAttribute> PROJECTILE_DAMAGE;
     @Deprecated
     /**
      * @deprecated use {@link AttributeRegistry#CRITICAL_DAMAGE} instead, its more general and has better logic
      */
-    public static EntityAttribute PROJECTILE_CRIT_MULTIPLIER;
-    public static EntityAttribute PROJECTILE_SPEED;
-    public static EntityAttribute PROJECTILE_ACCURACY;
-    public static EntityAttribute PROJECTILE_PIERCING;
+    public static RegistryEntry<EntityAttribute> PROJECTILE_CRIT_MULTIPLIER;
+    public static RegistryEntry<EntityAttribute> PROJECTILE_SPEED;
+    public static RegistryEntry<EntityAttribute> PROJECTILE_ACCURACY;
+    public static RegistryEntry<EntityAttribute> PROJECTILE_PIERCING;
 
-    public static EntityAttribute ELYTRA_TURN_EFFICIENCY;
-    public static EntityAttribute ELYTRA_GLIDE_EFFICIENCY;
-    public static EntityAttribute ELYTRA_ROCKET_EFFICIENCY;
+    public static RegistryEntry<EntityAttribute> ELYTRA_TURN_EFFICIENCY;
+    public static RegistryEntry<EntityAttribute> ELYTRA_GLIDE_EFFICIENCY;
+    public static RegistryEntry<EntityAttribute> ELYTRA_ROCKET_EFFICIENCY;
 
-    public static EntityAttribute SHIELDING_ARMOR;
+    public static RegistryEntry<EntityAttribute> SHIELDING_ARMOR;
 
     /**
      * Changing these can break savegames, so do not touch

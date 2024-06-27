@@ -35,7 +35,7 @@ public abstract class InteractAbleWidget extends ClickableWidget implements Draw
     protected final List<Element> children = new ArrayList<>();
     protected final List<InteractAbleWidget> hoverElements = new ArrayList<>();
     public boolean debug = false;
-    public int randomColor = ColorHelper.Argb.getArgb(180, (int) (Math.random()*255), (int) (Math.random()*255), (int) (Math.random()*255));
+    public int randomColor = ColorHelper.Argb.getArgb(180, (int) (Math.random() * 255), (int) (Math.random() * 255), (int) (Math.random() * 255));
 
     /**
      * This is a Widget build to support Children and parse the events down to them.
@@ -285,9 +285,9 @@ public abstract class InteractAbleWidget extends ClickableWidget implements Draw
      * @return if this consumes the action, if you previewStack an action return true, if not return false
      */
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
+    public boolean mouseScrolled(double mouseX, double mouseY, double amount, double other) {
         for (Element child : this.children()) {
-            if (child.isMouseOver(mouseX, mouseY) && child.mouseScrolled(mouseX, mouseY, amount)) {
+            if (child.isMouseOver(mouseX, mouseY) && child.mouseScrolled(mouseX, mouseY, amount, other)) {
                 return true;
             }
         }
@@ -413,11 +413,6 @@ public abstract class InteractAbleWidget extends ClickableWidget implements Draw
                 widget.renderHover(drawContext, mouseX, mouseY, delta);
             }
         });
-    }
-
-    @Override
-    protected void renderButton(DrawContext context, int mouseX, int mouseY, float delta) {
-
     }
 
     @Override

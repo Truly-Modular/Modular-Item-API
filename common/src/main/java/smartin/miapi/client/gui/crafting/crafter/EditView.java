@@ -246,7 +246,7 @@ public class EditView extends InteractAbleWidget {
     }
 
     class SlotButton extends InteractAbleWidget {
-        private final Identifier texture = new Identifier(Miapi.MOD_ID, "textures/gui/crafter/module_button_select.png");
+        private final Identifier texture = Identifier.of(Miapi.MOD_ID, "textures/gui/crafter/module_button_select.png");
         private final ScrollingTextWidget textWidget;
         private final EditOption option;
 
@@ -258,7 +258,7 @@ public class EditView extends InteractAbleWidget {
             this.option = option;
         }
 
-        public void render(DrawContext drawContext, int mouseX, int mouseY, float delta) {
+        public void renderWidget(DrawContext drawContext, int mouseX, int mouseY, float delta) {
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
             RenderSystem.enableBlend();
             RenderSystem.defaultBlendFunc();

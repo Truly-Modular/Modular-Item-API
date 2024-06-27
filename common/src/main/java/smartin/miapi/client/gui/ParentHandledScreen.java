@@ -56,10 +56,11 @@ public abstract class ParentHandledScreen<T extends ScreenHandler> extends Handl
 
     /**
      * Acess the slot the mouse is hovering over
+     *
      * @return
      */
     @Nullable
-    public Slot getFocusSlot(){
+    public Slot getFocusSlot() {
         return this.focusedSlot;
     }
 
@@ -139,13 +140,13 @@ public abstract class ParentHandledScreen<T extends ScreenHandler> extends Handl
      * @return if this consumes the action, if you previewStack an action return true, if not return false
      */
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
+    public boolean mouseScrolled(double mouseX, double mouseY, double amount, double other) {
         for (Element child : this.children().stream().toList()) {
-            if (child.isMouseOver(mouseX, mouseY) && child.mouseScrolled(mouseX, mouseY, amount)) {
+            if (child.isMouseOver(mouseX, mouseY) && child.mouseScrolled(mouseX, mouseY, amount, other)) {
                 return true;
             }
         }
-        return super.mouseScrolled(mouseX, mouseY, amount);
+        return super.mouseScrolled(mouseX, mouseY, amount, other);
     }
 
     /**

@@ -24,7 +24,7 @@ public class BetterCombatHelper {
     }
 
     private static float getAttackRange(ItemStack stack) {
-        if (Platform.isForge()) {
+        if (Platform.isForgeLike()) {
             return (float) (AttributeProperty.getActualValueFrom(AttributeProperty.getAttributeModifiersRaw(stack), EquipmentSlot.MAINHAND, AttributeRegistry.ATTACK_RANGE, AttributeRegistry.ATTACK_RANGE.getDefaultValue()) - 0.5f);
         }
         return (float) (AttributeProperty.getActualValueFrom(AttributeProperty.getAttributeModifiersRaw(stack), EquipmentSlot.MAINHAND, AttributeRegistry.ATTACK_RANGE, AttributeRegistry.ATTACK_RANGE.getDefaultValue()) + 2.5f);
@@ -48,16 +48,16 @@ public class BetterCombatHelper {
         }
         String jsonString = data.toString();
         JsonReader jsonReader = new JsonReader(new StringReader(jsonString));
-        return net.bettercombat.logic.WeaponRegistry.resolveAttributes(new Identifier(Miapi.MOD_ID, "modular_item"), net.bettercombat.api.WeaponAttributesHelper.decode(jsonReader));
+        return net.bettercombat.logic.WeaponRegistry.resolveAttributes(Identifier.of(Miapi.MOD_ID, "modular_item"), net.bettercombat.api.WeaponAttributesHelper.decode(jsonReader));
     }
 
     public static ItemStack applyNBT(ItemStack itemStack) {
         if (itemStack.getItem() instanceof ModularItem) {
             net.bettercombat.api.WeaponAttributes container = getAttributesContainer(itemStack);
+            //TODO: rework this once better combat is available for 1.21
             if (container != null) {
                 WeaponAttributesHelper.writeToNBT(itemStack, new AttributesContainer(null, container));
             } else {
-                itemStack.getOrCreateNbt().remove("weapon_attributes");
             }
         }
         return itemStack;

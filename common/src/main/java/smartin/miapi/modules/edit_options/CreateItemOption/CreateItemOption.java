@@ -59,7 +59,7 @@ public class CreateItemOption implements EditOption {
         String itemID = buffer.readString();
         String module = buffer.readString();
         int count = buffer.readInt();
-        ItemStack itemStack = new ItemStack(Registries.ITEM.get(new Identifier(itemID)));
+        ItemStack itemStack = new ItemStack(Registries.ITEM.get(Identifier.of(itemID)));
         itemStack.setCount(count);
         ModuleInstance instance = new ModuleInstance(RegistryInventory.modules.get(module));
         instance.writeToItem(itemStack);
@@ -82,7 +82,7 @@ public class CreateItemOption implements EditOption {
         String itemID = buffer.readString();
         String module = buffer.readString();
         int count = buffer.readInt();
-        ItemStack itemStack = new ItemStack(Registries.ITEM.get(new Identifier(itemID)));
+        ItemStack itemStack = new ItemStack(Registries.ITEM.get(Identifier.of(itemID)));
         itemStack.setCount(count);
         ModuleInstance instance = new ModuleInstance(RegistryInventory.modules.get(module));
         instance.writeToItem(itemStack);
@@ -209,7 +209,7 @@ public class CreateItemOption implements EditOption {
 
         @Override
         public ItemStack getItem() {
-            ItemStack itemStack = new ItemStack(Registries.ITEM.get(new Identifier(item)));
+            ItemStack itemStack = new ItemStack(Registries.ITEM.get(Identifier.of(item)));
             itemStack.setCount(count);
             return itemStack;
         }

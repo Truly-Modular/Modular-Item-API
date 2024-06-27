@@ -110,7 +110,7 @@ public class DetailView extends InteractAbleWidget {
             buttonMap.put(slot, this);
         }
 
-        public void render(DrawContext drawContext, int mouseX, int mouseY, float delta) {
+        public void renderWidget(DrawContext drawContext, int mouseX, int mouseY, float delta) {
             super.render(drawContext, mouseX, mouseY, delta);
             int hoverOffset = 0;
             if (isMouseOver(mouseX, mouseY)) {

@@ -41,7 +41,7 @@ public class HoverMaterialList extends InteractAbleWidget {
     }
 
     @Override
-    public void render(DrawContext drawContext, int mouseX, int mouseY, float delta) {
+    public void renderWidget(DrawContext drawContext, int mouseX, int mouseY, float delta) {
         drawContext.drawTexture(CraftingScreen.BACKGROUND_TEXTURE, getX(), getY(), 404, 96, 20, 11, 512, 512);
         super.render(drawContext, mouseX, mouseY, delta);
     }

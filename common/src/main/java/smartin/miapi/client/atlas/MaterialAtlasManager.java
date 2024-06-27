@@ -23,9 +23,9 @@ import static smartin.miapi.Miapi.MOD_ID;
 
 @Environment(EnvType.CLIENT)
 public class MaterialAtlasManager extends SpriteAtlasHolder {
-    public static final Identifier MATERIAL_ID = new Identifier(MOD_ID, "miapi_materials");
-    public static final Identifier MATERIAL_ATLAS_ID = new Identifier(MOD_ID, "textures/atlas/materials.png");
-    public static final Identifier BASE_MATERIAL_ID = new Identifier(MOD_ID, "miapi_materials/base_palette");
+    public static final Identifier MATERIAL_ID = Identifier.of(MOD_ID, "miapi_materials");
+    public static final Identifier MATERIAL_ATLAS_ID = Identifier.of(MOD_ID, "textures/atlas/materials.png");
+    public static final Identifier BASE_MATERIAL_ID = Identifier.of(MOD_ID, "miapi_materials/base_palette");
 
     protected final List<AddedSpriteEntry> addedSprites = new ArrayList<>();
 

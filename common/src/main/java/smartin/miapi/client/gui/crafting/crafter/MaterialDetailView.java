@@ -23,7 +23,7 @@ public class MaterialDetailView extends InteractAbleWidget {
     private Consumer<Object> back;
     private ScrollingTextWidget header;
     private Material material;
-    private Identifier texture = new Identifier(Miapi.MOD_ID, "textures/gui/crafter/material_detail_background.png");
+    private Identifier texture = Identifier.of(Miapi.MOD_ID, "textures/gui/crafter/material_detail_background.png");
     private float scale = 1.5f;
     public static List<Builder> infoBarBuilders = new ArrayList<>();
 
@@ -72,7 +72,7 @@ public class MaterialDetailView extends InteractAbleWidget {
     }
 
     @Override
-    public void render(DrawContext drawContext, int mouseX, int mouseY, float delta) {
+    public void renderWidget(DrawContext drawContext, int mouseX, int mouseY, float delta) {
         //drawTextureWithEdge(drawContext, texture, getX(), getY(), getWidth(), getHeight(), 160, 190, 10);
         if (material != null && material.hasIcon()) {
             material.renderIcon(drawContext, (int) (getX() + 5 + header.getRequiredWidth() * scale), getY() + 5);
@@ -93,7 +93,7 @@ public class MaterialDetailView extends InteractAbleWidget {
         }
 
         @Override
-        public void render(DrawContext drawContext, int mouseX, int mouseY, float delta) {
+        public void renderWidget(DrawContext drawContext, int mouseX, int mouseY, float delta) {
             textWidget.setX(this.getX());
             textWidget.setY(this.getY());
             super.render(drawContext, mouseX, mouseY, delta);
@@ -134,7 +134,7 @@ public class MaterialDetailView extends InteractAbleWidget {
         }
 
         @Override
-        public void render(DrawContext drawContext, int mouseX, int mouseY, float delta) {
+        public void renderWidget(DrawContext drawContext, int mouseX, int mouseY, float delta) {
             textWidget.setX(this.getX());
             textWidget.setY(this.getY());
             statBar.setX(getX() + textWidth);

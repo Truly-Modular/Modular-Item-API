@@ -10,7 +10,6 @@ import com.redpxnda.nucleus.registry.NucleusNamespaces;
 import dev.architectury.event.events.common.CommandRegistrationEvent;
 import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.event.events.common.PlayerEvent;
-import net.minecraft.item.Items;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
@@ -67,7 +66,6 @@ public class Miapi {
         ConditionManager.setup();
         StatActorType.setup();
         NBTMaterial.setup();
-        Items.DIAMOND_AXE axe;
 
 
 
@@ -92,8 +90,8 @@ public class Miapi {
                     }
                 }, 1f);
         ReloadEvents.END.subscribe(isClient -> {
-            RegistryInventory.modules.register(ItemModule.empty.getName(), ItemModule.empty);
-            RegistryInventory.modules.register(ItemModule.internal.getName(), ItemModule.internal);
+            RegistryInventory.modules.register(ItemModule.empty.name(), ItemModule.empty);
+            RegistryInventory.modules.register(ItemModule.internal.name(), ItemModule.internal);
             Miapi.LOGGER.info("Loaded " + PropertySubstitution.injectorsCount + " Injectors/Property Substitutors");
             Miapi.LOGGER.info("Loaded " + RegistryInventory.modules.getFlatMap().size() + " Modules");
             ModularItemCache.discardCache();

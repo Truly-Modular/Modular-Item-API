@@ -16,15 +16,15 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.*;
 
-import static net.minecraft.entity.attribute.EntityAttributeModifier.Operation.MULTIPLY_BASE;
-import static net.minecraft.entity.attribute.EntityAttributeModifier.Operation.MULTIPLY_TOTAL;
+import static net.minecraft.entity.attribute.EntityAttributeModifier.Operation.ADD_MULTIPLIED_BASE;
+import static net.minecraft.entity.attribute.EntityAttributeModifier.Operation.ADD_MULTIPLIED_TOTAL;
 
 @Environment(EnvType.CLIENT)
 public class AttributeSingleDisplay extends SingleStatDisplayDouble {
     public static Set<EntityAttribute> attributesWithDisplay = new HashSet<>();
     public static Map<EquipmentSlot, Multimap<EntityAttribute, EntityAttributeModifier>> oldItemCache = new WeakHashMap<>();
     public static Map<EquipmentSlot, Multimap<EntityAttribute, EntityAttributeModifier>> compareItemCache = new WeakHashMap<>();
-    public EntityAttributeModifier.Operation operation = EntityAttributeModifier.Operation.ADDITION;
+    public EntityAttributeModifier.Operation operation = EntityAttributeModifier.Operation.ADD_VALUE;
     final EntityAttribute attribute;
     final EquipmentSlot slot;
     double defaultValue;
@@ -70,27 +70,27 @@ public class AttributeSingleDisplay extends SingleStatDisplayDouble {
                 Multimap<EntityAttribute, EntityAttributeModifier> currentSlot = attributeCache.get(equipmentSlot);
                 if (attributeCache.get(equipmentSlot).containsKey(attribute)) {
                     switch (operation) {
-                        case ADDITION -> {
+                        case ADD_VALUE -> {
                             value = defaultValue;
-                            for (EntityAttributeModifier modifier : currentSlot.get(attribute).stream().filter(a -> a.getOperation().equals(operation)).toList()) {
-                                value += modifier.getValue();
+                            for (EntityAttributeModifier modifier : currentSlot.get(attribute).stream().filter(a -> a.comp_2450().equals(operation)).toList()) {
+                                value += modifier.value();
                             }
                             return value;
                         }
-                        case MULTIPLY_BASE -> {
+                        case ADD_MULTIPLIED_BASE -> {
                             value = 0.0;
-                            for (EntityAttributeModifier modifier : currentSlot.get(attribute).stream().filter(a -> a.getOperation().equals(MULTIPLY_BASE)).toList()) {
-                                value += modifier.getValue();
+                            for (EntityAttributeModifier modifier : currentSlot.get(attribute).stream().filter(a -> a.comp_2450().equals(ADD_MULTIPLIED_BASE)).toList()) {
+                                value += modifier.value();
                             }
-                            for (EntityAttributeModifier modifier : currentSlot.get(attribute).stream().filter(a -> a.getOperation().equals(MULTIPLY_TOTAL)).toList()) {
-                                value = (value + 1) * (modifier.getValue() + 1) - 1;
+                            for (EntityAttributeModifier modifier : currentSlot.get(attribute).stream().filter(a -> a.comp_2450().equals(ADD_MULTIPLIED_TOTAL)).toList()) {
+                                value = (value + 1) * (modifier.value() + 1) - 1;
                             }
                             return value * 100;
                         }
-                        case MULTIPLY_TOTAL -> {
+                        case ADD_MULTIPLIED_TOTAL -> {
                             value = 1.0;
-                            for (EntityAttributeModifier modifier : currentSlot.get(attribute).stream().filter(a -> a.getOperation().equals(operation)).toList()) {
-                                value = value * modifier.getValue();
+                            for (EntityAttributeModifier modifier : currentSlot.get(attribute).stream().filter(a -> a.comp_2450().equals(operation)).toList()) {
+                                value = value * modifier.value();
                             }
                             return value * 100;
                         }
@@ -120,7 +120,7 @@ public class AttributeSingleDisplay extends SingleStatDisplayDouble {
             for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
                 Multimap<EntityAttribute, EntityAttributeModifier> slotMap = attributeCache.get(equipmentSlot);
                 if (slotMap != null) {
-                    Collection<EntityAttributeModifier> attrCollection = attributeCache.get(equipmentSlot).get(attribute).stream().filter(attribute -> attribute.getOperation().equals(operation)).toList();
+                    Collection<EntityAttributeModifier> attrCollection = attributeCache.get(equipmentSlot).get(attribute).stream().filter(attribute -> attribute.comp_2450().equals(operation)).toList();
                     if (hasValue(attrCollection)) {
                         return true;
                     }
@@ -137,8 +137,8 @@ public class AttributeSingleDisplay extends SingleStatDisplayDouble {
     }
 
     public boolean hasValue(Collection<EntityAttributeModifier> list) {
-        list = list.stream().filter(attribute -> attribute.getOperation().equals(operation)).toList();
-        if (operation.equals(EntityAttributeModifier.Operation.ADDITION)) {
+        list = list.stream().filter(attribute -> attribute.comp_2450().equals(operation)).toList();
+        if (operation.equals(EntityAttributeModifier.Operation.ADD_VALUE)) {
             double value = AttributeProperty.getActualValue(list, attribute.getDefaultValue());
             if (
                     value != attribute.getDefaultValue() && !Double.isNaN(value)
@@ -276,7 +276,7 @@ public class AttributeSingleDisplay extends SingleStatDisplayDouble {
                     }
                 };
             }
-            display.operation = EntityAttributeModifier.Operation.ADDITION;
+            display.operation = EntityAttributeModifier.Operation.ADD_VALUE;
             displays[0] = display;
 
             AttributeSingleDisplay displayMulBase = new AttributeSingleDisplay(attribute, slot, name, hoverDescription, defaultValue, modifierFormat);
@@ -296,7 +296,7 @@ public class AttributeSingleDisplay extends SingleStatDisplayDouble {
                     }
                 };
             }
-            displayMulBase.operation = MULTIPLY_BASE;
+            displayMulBase.operation = ADD_MULTIPLIED_BASE;
             displayMulBase.postfix = Text.literal("%");
             displays[1] = displayMulBase;
 
@@ -317,7 +317,7 @@ public class AttributeSingleDisplay extends SingleStatDisplayDouble {
                     }
                 };
             }
-            displayMulTotal.operation = EntityAttributeModifier.Operation.MULTIPLY_TOTAL;
+            displayMulTotal.operation = EntityAttributeModifier.Operation.ADD_MULTIPLIED_TOTAL;
             displayMulTotal.postfix = Text.literal("%");
             //displays[2] = displayMulTotal;
 

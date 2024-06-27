@@ -67,7 +67,6 @@ public class ScrollList extends InteractAbleWidget {
     }
 
     /**
-     *
      * @return the current scroll depth
      */
     public int getScrollAmount() {
@@ -142,7 +141,7 @@ public class ScrollList extends InteractAbleWidget {
             int startY = this.getY() - this.scrollAmount;
             for (ClickableWidget widget : this.widgets) {
                 if (startY + widget.getHeight() >= this.getY() && startY <= this.getY() + this.height - 1) {
-                    if(widget instanceof InteractAbleWidget interactAbleWidget){
+                    if (widget instanceof InteractAbleWidget interactAbleWidget) {
                         widget.setY(startY);
                         widget.setX(this.getX());
                         if (showScrollbar()) {
@@ -159,12 +158,12 @@ public class ScrollList extends InteractAbleWidget {
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
+    public boolean mouseScrolled(double mouseX, double mouseY, double amount, double other) {
         if (this.widgets == null) {
             return false;
         }
         for (ClickableWidget widget : widgets) {
-            if (widget.isMouseOver(mouseX, mouseY) && widget.mouseScrolled(mouseX, mouseY, amount)) {
+            if (widget.isMouseOver(mouseX, mouseY) && widget.mouseScrolled(mouseX, mouseY, amount, other)) {
                 return true;
             }
         }

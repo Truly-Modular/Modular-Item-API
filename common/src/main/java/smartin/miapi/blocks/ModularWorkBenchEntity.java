@@ -1,20 +1,20 @@
 package smartin.miapi.blocks;
 
-import com.redpxnda.nucleus.codec.auto.AutoCodec;
 import com.redpxnda.nucleus.codec.misc.MiscCodecs;
 import com.redpxnda.nucleus.util.MiscUtil;
 import net.minecraft.block.AnvilBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.DispenserBlock;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.DispenserBlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.network.listener.ClientPlayPacketListener;
-import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.PropertyDelegate;
@@ -36,27 +36,24 @@ import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ModularWorkBenchEntity extends BlockEntity implements NamedScreenHandlerFactory, GameEventListener {
     public static final Map<GameEvent, CustomGameEventHandler> gameEventHandlers = MiscUtil.initialize(new ConcurrentHashMap<>(), map -> {
         map.put(RegistryInventory.statProviderCreatedEvent, (bench, world, event, emitter, emitterPos) -> {
-            if (emitter.affectedState() != null) {
+            if (emitter.comp_714() != null) {
                 BlockPos pos = new BlockPos((int) emitterPos.x, (int) emitterPos.y, (int) emitterPos.z);
-                Block block = emitter.affectedState().getBlock();
+                Block block = emitter.comp_714().getBlock();
                 if (block instanceof IStatProvidingBlock statProvider) {
                     bench.persistentStats.computeIfAbsent(pos.toString(), s -> new StatProvidersMap());
-                    bench.persistentStats.get(pos.toString()).putAll(statProvider.getProviders(bench, emitter.affectedState(), pos, world));
+                    bench.persistentStats.get(pos.toString()).putAll(statProvider.getProviders(bench, emitter.comp_714(), pos, world));
                 }
             }
             return false;
         });
         map.put(RegistryInventory.statProviderRemovedEvent, (bench, world, event, emitter, emitterPos) -> {
-            if (emitter.affectedState() != null) {
+            if (emitter.comp_714() != null) {
                 BlockPos pos = new BlockPos((int) emitterPos.x, (int) emitterPos.y, (int) emitterPos.z);
                 bench.persistentStats.remove(pos.toString());
             }
@@ -75,6 +72,8 @@ public class ModularWorkBenchEntity extends BlockEntity implements NamedScreenHa
 
     public ModularWorkBenchEntity(BlockPos pos, BlockState state) {
         super(RegistryInventory.modularWorkBenchEntityType, pos, state);
+        DispenserBlockEntity dropperBlockEntity;
+        DispenserBlock dropperBlock;
         this.stack = ItemStack.EMPTY;
         this.x = pos.getX();
         this.y = pos.getY();
@@ -120,14 +119,29 @@ public class ModularWorkBenchEntity extends BlockEntity implements NamedScreenHa
         return (T) stats.get(stat);
     }
 
-    @Override
-    public void writeNbt(NbtCompound tag) {
-        super.writeNbt(tag);
+    public static Optional<ItemStack> fromNbt(RegistryWrapper.WrapperLookup wrapperLookup, NbtElement nbtElement) {
+        return ItemStack.CODEC.parse(wrapperLookup.getOps(NbtOps.INSTANCE), nbtElement).resultOrPartial((string) -> {
+            Miapi.LOGGER.error("Tried to load invalid item: '{}'", string);
+        });
+    }
 
-        tag.put("Item", stack.writeNbt(new NbtCompound()));
+    public static Optional<ItemStack> writeToNbt(RegistryWrapper.WrapperLookup wrapperLookup, NbtElement nbtElement) {
+        return ItemStack.CODEC.parse(wrapperLookup.getOps(NbtOps.INSTANCE), nbtElement).resultOrPartial((string) -> {
+            Miapi.LOGGER.error("Tried to load invalid item: '{}'", string);
+        });
+    }
+
+    @Override
+    public void writeNbt(NbtCompound tag, RegistryWrapper.WrapperLookup wrapperLookup) {
+        super.writeNbt(tag, wrapperLookup);
+        NbtElement element = new NbtCompound();
+
+        tag.put("Item", stack.encode(wrapperLookup, element));
 
         NbtCompound persisStatsNbt = new NbtCompound();
-        persistentStats.forEach((key, val) -> persisStatsNbt.put(key, StatProvidersMap.MODULELESS_CODEC.encodeStart(NbtOps.INSTANCE, val).getOrThrow(false, s -> Miapi.LOGGER.error("Failed to encode persistent StatProvidersMap for MWBE! -> {}", s))));
+
+        //TODO:persistentStats are disabled for now
+        //persistentStats.forEach((key, val) -> persisStatsNbt.put(key, StatProvidersMap.MODULELESS_CODEC.encodeStart(NbtOps.INSTANCE, val).getOrThrow(false, s -> Miapi.LOGGER.error("Failed to encode persistent StatProvidersMap for MWBE! -> {}", s))));
 
         NbtCompound statsNbt = new NbtCompound();
         stats.forEach((stat, inst) -> {
@@ -140,12 +154,14 @@ public class ModularWorkBenchEntity extends BlockEntity implements NamedScreenHa
 
 
     @Override
-    public void readNbt(NbtCompound tag) {
-        super.readNbt(tag);
+    public void readNbt(NbtCompound tag, RegistryWrapper.WrapperLookup wrapperLookup) {
+        super.readNbt(tag, wrapperLookup);
         persistentStats.clear();
         stats.clear();
 
-        if (tag.contains("Item")) stack = ItemStack.fromNbt(tag.getCompound("Item"));
+        if (tag.contains("Item")) {
+            stack = ItemStack.fromNbt(wrapperLookup, tag.getCompound("Item")).get();
+        }
 
         NbtCompound persisStatsNbt = tag.getCompound("PersistentStats");
         persisStatsNbt.getKeys().forEach(key -> {
@@ -163,18 +179,14 @@ public class ModularWorkBenchEntity extends BlockEntity implements NamedScreenHa
         });
     }
 
-    @Override
-    public NbtCompound toInitialChunkDataNbt() {
-        NbtCompound tag = new NbtCompound();
-        writeNbt(tag);
-        return tag;
-    }
-
+    /*
     @Nullable
     @Override
     public Packet<ClientPlayPacketListener> toUpdatePacket() {
         return BlockEntityUpdateS2CPacket.create(this, be -> be.createNbt());
     }
+
+     */
 
     public void saveAndSync() {
         markDirty();
@@ -182,7 +194,7 @@ public class ModularWorkBenchEntity extends BlockEntity implements NamedScreenHa
         handlers.forEach(weakReference -> {
             CraftingScreenHandler handler = weakReference.get();
             if (handler != null) {
-                if (!ItemStack.areEqual(handler.inventory.getStack(0),getItem())) {
+                if (!ItemStack.areEqual(handler.inventory.getStack(0), getItem())) {
                     handler.inventory.setStack(0, getItem());
                 }
             }

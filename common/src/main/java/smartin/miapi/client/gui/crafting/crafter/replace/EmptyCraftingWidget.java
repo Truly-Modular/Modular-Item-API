@@ -46,7 +46,8 @@ public class EmptyCraftingWidget extends InteractAbleWidget {
         addChild(description);
     }
 
-    public void render(DrawContext drawContext, int mouseX, int mouseY, float delta) {
+    @Override
+    public void renderWidget(DrawContext drawContext, int mouseX, int mouseY, float delta) {
         RenderSystem.enableDepthTest();
 
         drawTextureWithEdge(drawContext, CraftingScreen.BACKGROUND_TEXTURE, getX(), getY(), 368, 138, 26, 26, getWidth(), getHeight(), 512, 512, 5);

@@ -24,7 +24,7 @@ public class HelpPage extends InteractAbleWidget {
     SimpleButton next;
     int currentPage = 0;
     static Identifier BACKGROUND = Identifier.of(Miapi.MOD_ID, "textures/gui/help_background.png");
-    public static final Identifier BACKGROUND_TEXTURE = new Identifier(Miapi.MOD_ID, "textures/gui/help_background.png");
+    public static final Identifier BACKGROUND_TEXTURE = Identifier.of(Miapi.MOD_ID, "textures/gui/help_background.png");
 
     public HelpPage(int x, int y, int width, int height, Text title, Consumer<InteractAbleWidget> remove, List<SinglePageTextImage> pages) {
         super(x, y, width, height, title);
@@ -71,7 +71,7 @@ public class HelpPage extends InteractAbleWidget {
     }
 
     @Override
-    public void render(DrawContext drawContext, int mouseX, int mouseY, float delta) {
+    public void renderWidget(DrawContext drawContext, int mouseX, int mouseY, float delta) {
         //drawContext.fill(getX(), getY(), getX() + getWidth(), getY() + getHeight(), color);
         drawContext.drawTexture(BACKGROUND, getX(), getY(), getWidth(), getHeight(), 0, 0, getWidth(), getHeight(), getWidth(), getHeight());
         //drawContext.drawTexture(CraftingScreen.BACKGROUND_TEXTURE, getX(), getY(), 0, 0, getWidth(), getHeight());

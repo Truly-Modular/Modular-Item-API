@@ -20,7 +20,7 @@ import java.util.Map;
 import static smartin.miapi.Miapi.MOD_ID;
 
 public interface Material {
-    Identifier BASE_PALETTE_ID = new Identifier(MOD_ID, "miapi_materials/base_palette");
+    Identifier BASE_PALETTE_ID = Identifier.of(MOD_ID, "miapi_materials/base_palette");
 
     String getKey();
 

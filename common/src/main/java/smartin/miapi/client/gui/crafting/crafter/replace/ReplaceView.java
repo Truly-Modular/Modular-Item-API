@@ -98,7 +98,8 @@ public class ReplaceView extends InteractAbleWidget {
             hoverDescription = new HoverDescription(x, y, texts);
         }
 
-        public void render(DrawContext drawContext, int mouseX, int mouseY, float delta) {
+        @Override
+        public void renderWidget(DrawContext drawContext, int mouseX, int mouseY, float delta) {
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
             RenderSystem.enableBlend();
             RenderSystem.defaultBlendFunc();

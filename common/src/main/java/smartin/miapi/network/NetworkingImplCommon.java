@@ -10,7 +10,7 @@ import net.minecraft.util.Identifier;
 import smartin.miapi.Miapi;
 
 public class NetworkingImplCommon extends NetworkingImpl {
-    protected Identifier channelIdentifier = new Identifier(Miapi.MOD_ID, "defaultchannel");
+    protected Identifier channelIdentifier = Identifier.of(Miapi.MOD_ID, "defaultchannel");
 
     public NetworkingImplCommon() {
         if (Platform.getEnv().equals(EnvType.CLIENT)) {
@@ -28,6 +28,7 @@ public class NetworkingImplCommon extends NetworkingImpl {
         });
     }
 
+    @Deprecated
     public void sendPacketToServer(String identifier, PacketByteBuf buffer) {
         PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
         buf.writeString(identifier);
@@ -35,6 +36,7 @@ public class NetworkingImplCommon extends NetworkingImpl {
         NetworkManager.sendToServer(channelIdentifier, buf);
     }
 
+    @Deprecated
     public void sendPacketToClient(String identifier, ServerPlayerEntity player, PacketByteBuf buffer) {
         PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
         buf.writeString(identifier);
