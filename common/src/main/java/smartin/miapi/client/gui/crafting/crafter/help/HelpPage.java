@@ -1,9 +1,6 @@
 package smartin.miapi.client.gui.crafting.crafter.help;
 
 import com.redpxnda.nucleus.util.Color;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.ScrollingTextWidget;
@@ -14,6 +11,9 @@ import smartin.miapi.client.gui.crafting.crafter.help.pages.SinglePageTextImage;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 
 public class HelpPage extends InteractAbleWidget {
     int color = Color.GREEN.argb();
@@ -23,20 +23,20 @@ public class HelpPage extends InteractAbleWidget {
     SimpleButton prev;
     SimpleButton next;
     int currentPage = 0;
-    static Identifier BACKGROUND = Identifier.of(Miapi.MOD_ID, "textures/gui/help_background.png");
-    public static final Identifier BACKGROUND_TEXTURE = Identifier.of(Miapi.MOD_ID, "textures/gui/help_background.png");
+    static ResourceLocation BACKGROUND = ResourceLocation.fromNamespaceAndPath(Miapi.MOD_ID, "textures/gui/help_background.png");
+    public static final ResourceLocation BACKGROUND_TEXTURE = ResourceLocation.fromNamespaceAndPath(Miapi.MOD_ID, "textures/gui/help_background.png");
 
-    public HelpPage(int x, int y, int width, int height, Text title, Consumer<InteractAbleWidget> remove, List<SinglePageTextImage> pages) {
+    public HelpPage(int x, int y, int width, int height, Component title, Consumer<InteractAbleWidget> remove, List<SinglePageTextImage> pages) {
         super(x, y, width, height, title);
         this.pages = pages;
-        backBtn = new SimpleButton<>(x + 3, y + height - 21, 50, 18, Text.translatable(Miapi.MOD_ID + ".ui.back"), null, (a) -> {
+        backBtn = new SimpleButton<>(x + 3, y + height - 21, 50, 18, Component.translatable(Miapi.MOD_ID + ".ui.back"), null, (a) -> {
             remove.accept(this);
         });
-        prev = new SimpleButton<>(x + 55, y + height - 21, 50, 18, Text.translatable(Miapi.MOD_ID + ".ui.prev"), null, (a) -> {
+        prev = new SimpleButton<>(x + 55, y + height - 21, 50, 18, Component.translatable(Miapi.MOD_ID + ".ui.prev"), null, (a) -> {
             currentPage = Math.max(currentPage - 1, 0);
             setPage(currentPage);
         });
-        next = new SimpleButton<>(x + width - 53, y + height - 21, 50, 18, Text.translatable(Miapi.MOD_ID + ".ui.next"), null, (a) -> {
+        next = new SimpleButton<>(x + width - 53, y + height - 21, 50, 18, Component.translatable(Miapi.MOD_ID + ".ui.next"), null, (a) -> {
             currentPage = Math.min(currentPage + 1, (pages.size() - 1) / 2);
             setPage(currentPage);
         });
@@ -71,9 +71,9 @@ public class HelpPage extends InteractAbleWidget {
     }
 
     @Override
-    public void renderWidget(DrawContext drawContext, int mouseX, int mouseY, float delta) {
+    public void renderWidget(GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
         //drawContext.fill(getX(), getY(), getX() + getWidth(), getY() + getHeight(), color);
-        drawContext.drawTexture(BACKGROUND, getX(), getY(), getWidth(), getHeight(), 0, 0, getWidth(), getHeight(), getWidth(), getHeight());
+        drawContext.blit(BACKGROUND, getX(), getY(), getWidth(), getHeight(), 0, 0, getWidth(), getHeight(), getWidth(), getHeight());
         //drawContext.drawTexture(CraftingScreen.BACKGROUND_TEXTURE, getX(), getY(), 0, 0, getWidth(), getHeight());
         CraftingScreen craftingScreen;
         super.render(drawContext, mouseX, mouseY, delta);

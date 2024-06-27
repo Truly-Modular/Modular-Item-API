@@ -3,17 +3,9 @@ package smartin.miapi.modules.material.palette;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import com.mojang.blaze3d.platform.NativeImage;
 import com.redpxnda.nucleus.util.Color;
 import com.redpxnda.nucleus.util.MiscUtil;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.texture.NativeImage;
-import net.minecraft.client.texture.Sprite;
-import net.minecraft.client.texture.SpriteAtlasTexture;
-import net.minecraft.client.texture.SpriteContents;
-import net.minecraft.resource.Resource;
-import net.minecraft.resource.ResourceManager;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.ColorHelper;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.client.atlas.MaterialAtlasManager;
 import smartin.miapi.client.atlas.MaterialSpriteManager;
@@ -23,18 +15,26 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.texture.SpriteContents;
+import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.Resource;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.util.FastColor;
 
 public class SpriteFromJson {
-    public static final Map<String, Identifier> atlasIdShortcuts = MiscUtil.initialize(new HashMap<>(), m -> {
-        m.put("block", SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE);
-        m.put("particle", SpriteAtlasTexture.PARTICLE_ATLAS_TEXTURE);
+    public static final Map<String, ResourceLocation> atlasIdShortcuts = MiscUtil.initialize(new HashMap<>(), m -> {
+        m.put("block", TextureAtlas.LOCATION_BLOCKS);
+        m.put("particle", TextureAtlas.LOCATION_PARTICLES);
         m.put("material", MaterialAtlasManager.MATERIAL_ATLAS_ID);
     });
 
     public Supplier<NativeImageGetter.ImageHolder> imageSupplier;
     public boolean isAnimated;
     @Nullable
-    public Sprite rawSprite = null;
+    public TextureAtlasSprite rawSprite = null;
 
     public SpriteFromJson(JsonElement json) {
         if (!(json instanceof JsonObject obj))
@@ -43,14 +43,14 @@ public class SpriteFromJson {
         JsonElement atlasRaw = obj.get("atlas");
         if (atlasRaw instanceof JsonPrimitive prim && prim.isString()) {
             String key = prim.getAsString();
-            Identifier atlasId;
+            ResourceLocation atlasId;
 
             if (atlasIdShortcuts.containsKey(key)) atlasId = atlasIdShortcuts.get(key);
-            else atlasId = new Identifier(key);
+            else atlasId = new ResourceLocation(key);
 
-            Identifier textureId = new Identifier(obj.get("texture").getAsString());
-            rawSprite = MinecraftClient.getInstance().getSpriteAtlas(atlasId).apply(textureId);
-            SpriteContents contents = rawSprite.getContents();
+            ResourceLocation textureId = new ResourceLocation(obj.get("texture").getAsString());
+            rawSprite = Minecraft.getInstance().getTextureAtlas(atlasId).apply(textureId);
+            SpriteContents contents = rawSprite.contents();
             imageSupplier = () -> NativeImageGetter.get(contents);
             if (obj.has("forceTick"))
                 isAnimated = obj.get("forceTick").getAsBoolean();
@@ -58,8 +58,8 @@ public class SpriteFromJson {
                 isAnimated = SpriteColorer.isAnimatedSpriteStatic(contents);
         } else {
             isAnimated = obj.has("forceTick") && obj.get("forceTick").getAsBoolean();
-            Identifier textureId = new Identifier(obj.get("texture").getAsString());
-            NativeImage rawImage = loadTexture(MinecraftClient.getInstance().getResourceManager(), textureId);
+            ResourceLocation textureId = new ResourceLocation(obj.get("texture").getAsString());
+            NativeImage rawImage = loadTexture(Minecraft.getInstance().getResourceManager(), textureId);
             NativeImageGetter.ImageHolder holder = new NativeImageGetter.ImageHolder();
             holder.nativeImage = rawImage;
             holder.width = rawImage.getWidth();
@@ -68,11 +68,11 @@ public class SpriteFromJson {
         }
     }
 
-    public static NativeImage loadTexture(ResourceManager resourceManager, Identifier id) {
+    public static NativeImage loadTexture(ResourceManager resourceManager, ResourceLocation id) {
         try {
             NativeImage nativeImage;
             Resource resource = resourceManager.getResourceOrThrow(id);
-            try (InputStream inputStream = resource.getInputStream()) {
+            try (InputStream inputStream = resource.open()) {
                 nativeImage = NativeImage.read(inputStream);
             }
             return nativeImage;
@@ -105,9 +105,9 @@ public class SpriteFromJson {
         for (int x = 0; x < img.getWidth(); x++) {
             for (int y = 0; y < img.getHeight(); y++) {
                 int color = img.getColor(x, y);
-                red += ColorHelper.Abgr.getRed(color);
-                green += ColorHelper.Abgr.getGreen(color);
-                blue += ColorHelper.Abgr.getBlue(color);
+                red += FastColor.ABGR32.red(color);
+                green += FastColor.ABGR32.green(color);
+                blue += FastColor.ABGR32.blue(color);
                 count++;
             }
         }

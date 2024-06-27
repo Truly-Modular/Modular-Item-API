@@ -1,6 +1,5 @@
 package smartin.miapi.client.gui.crafting.crafter;
 
-import net.minecraft.text.Text;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.crafting.PreviewManager;
 import smartin.miapi.client.gui.crafting.crafter.replace.CraftOption;
@@ -13,13 +12,14 @@ import smartin.miapi.modules.edit_options.ReplaceOption;
 import smartin.miapi.network.Networking;
 
 import java.util.HashMap;
+import net.minecraft.network.chat.Component;
 
 public class CraftEditOption extends InteractAbleWidget {
     EditOption.EditContext editContext;
     CraftOption option = new CraftOption(ItemModule.empty,new HashMap<>());
 
     public CraftEditOption(int x, int y, int width, int height, EditOption.EditContext context) {
-        super(x, y, width, height, Text.empty());
+        super(x, y, width, height, Component.empty());
         ReplaceOption.unsafeEditContext = context;
         this.editContext = context;
         setMode(Mode.REPLACE);
@@ -45,7 +45,7 @@ public class CraftEditOption extends InteractAbleWidget {
                 }), (craftOption -> {
                     option = craftOption;
                     CraftAction action = new CraftAction(editContext.getItemstack(), editContext.getSlot(), option.module(), editContext.getPlayer(), editContext.getWorkbench(), craftOption.data());
-                    action.setItem(editContext.getLinkedInventory().getStack(0));
+                    action.setItem(editContext.getLinkedInventory().getItem(0));
                     action.linkInventory(editContext.getLinkedInventory(), 1);
                     editContext.preview(action.toPacket(Networking.createBuffer()));
                 }));

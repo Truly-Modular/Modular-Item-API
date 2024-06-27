@@ -1,58 +1,57 @@
 package smartin.miapi.modules.abilities.util;
 
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.decoration.ArmorStandEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.ProjectileUtil;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.hit.EntityHitResult;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
-
 import java.util.List;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.decoration.ArmorStand;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.ProjectileUtil;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.Vec3;
 
 public class AttackUtil {
-    public static void performAttack(PlayerEntity player, LivingEntity target, float damage, boolean useEnchants) {
+    public static void performAttack(Player player, LivingEntity target, float damage, boolean useEnchants) {
         int fireAspect = EnchantmentHelper.getFireAspect(player);
         int knockback = EnchantmentHelper.getKnockback(player);
-        if (target.damage(player.getDamageSources().playerAttack(player), damage)) {
+        if (target.hurt(player.damageSources().playerAttack(player), damage)) {
             if (fireAspect > 0 && !target.isOnFire() && useEnchants) {
-                target.setOnFireFor(1);
+                target.igniteForSeconds(1);
             }
             if (knockback > 0 && useEnchants) {
-                target.takeKnockback((knockback * 0.5F), MathHelper.sin(player.getYaw() * 0.017453292F), (-MathHelper.cos(player.getYaw() * 0.017453292F)));
+                target.knockback((knockback * 0.5F), Mth.sin(player.getYRot() * 0.017453292F), (-Mth.cos(player.getYRot() * 0.017453292F)));
 
-                player.setVelocity(player.getVelocity().multiply(0.6, 1.0, 0.6));
+                player.setDeltaMovement(player.getDeltaMovement().multiply(0.6, 1.0, 0.6));
                 player.setSprinting(false);
             }
         }
     }
 
-    public static void performSweeping(PlayerEntity player, LivingEntity target, float sweepingRange, float sweepingDamage) {
-        World world = player.getWorld();
-        List<LivingEntity> entities = world.getNonSpectatingEntities(LivingEntity.class, target.getBoundingBox().expand(1.0, 0.25, 1.0).expand(sweepingRange * 2,1,sweepingRange * 2));
+    public static void performSweeping(Player player, LivingEntity target, float sweepingRange, float sweepingDamage) {
+        Level world = player.level();
+        List<LivingEntity> entities = world.getEntitiesOfClass(LivingEntity.class, target.getBoundingBox().inflate(1.0, 0.25, 1.0).inflate(sweepingRange * 2,1,sweepingRange * 2));
 
         for (LivingEntity entity : entities) {
-            if (entity != player && entity != target && !player.isTeammate(entity) && !(entity instanceof ArmorStandEntity armorStandEntity && armorStandEntity.isMarker()) && player.squaredDistanceTo(entity) < sweepingRange * sweepingRange) {
-                entity.takeKnockback(0.4, MathHelper.sin(player.getYaw() * 0.017453292F), -MathHelper.cos(player.getYaw() * 0.017453292F));
-                entity.damage(player.getDamageSources().playerAttack(player), sweepingDamage);
+            if (entity != player && entity != target && !player.isAlliedTo(entity) && !(entity instanceof ArmorStand armorStandEntity && armorStandEntity.isMarker()) && player.distanceToSqr(entity) < sweepingRange * sweepingRange) {
+                entity.knockback(0.4, Mth.sin(player.getYRot() * 0.017453292F), -Mth.cos(player.getYRot() * 0.017453292F));
+                entity.hurt(player.damageSources().playerAttack(player), sweepingDamage);
             }
         }
 
-        world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_PLAYER_ATTACK_SWEEP, player.getSoundCategory(), 1.0F, 1.0F);
-        player.spawnSweepAttackParticles();
+        world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.PLAYER_ATTACK_SWEEP, player.getSoundSource(), 1.0F, 1.0F);
+        player.sweepAttack();
     }
 
-    public static EntityHitResult raycastFromPlayer(double maxDistance, PlayerEntity player) {
-        Vec3d start = player.getCameraPosVec(0);
-        Vec3d vec3d2 = player.getRotationVec(0);
-        Vec3d end = start.add(vec3d2.x * maxDistance, vec3d2.y * maxDistance, vec3d2.z * maxDistance);
-        Box box = player.getBoundingBox().stretch(vec3d2.multiply(maxDistance)).expand(1.0, 1.0, 1.0);
-        return ProjectileUtil.raycast(player, start, end, box, (entityx) -> {
-            return !entityx.isSpectator() && entityx.canHit();
+    public static EntityHitResult raycastFromPlayer(double maxDistance, Player player) {
+        Vec3 start = player.getEyePosition(0);
+        Vec3 vec3d2 = player.getViewVector(0);
+        Vec3 end = start.add(vec3d2.x * maxDistance, vec3d2.y * maxDistance, vec3d2.z * maxDistance);
+        AABB box = player.getBoundingBox().expandTowards(vec3d2.scale(maxDistance)).inflate(1.0, 1.0, 1.0);
+        return ProjectileUtil.getEntityHitResult(player, start, end, box, (entityx) -> {
+            return !entityx.isSpectator() && entityx.isPickable();
         }, maxDistance * maxDistance);
     }
 }

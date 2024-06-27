@@ -1,14 +1,14 @@
 package smartin.miapi.mixin.client;
 
-import net.minecraft.client.render.entity.feature.FeatureRenderer;
-import net.minecraft.client.render.entity.feature.FeatureRendererContext;
-import net.minecraft.client.render.entity.model.EntityModel;
-import net.minecraft.entity.Entity;
+import net.minecraft.client.model.EntityModel;
+import net.minecraft.client.renderer.entity.RenderLayerParent;
+import net.minecraft.client.renderer.entity.layers.RenderLayer;
+import net.minecraft.world.entity.Entity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
-@Mixin(FeatureRenderer.class)
+@Mixin(RenderLayer.class)
 public interface FeatureRendererAccessor<T extends Entity, M extends EntityModel<T>> {
     @Accessor
-    FeatureRendererContext<T, M> getContext();
+    RenderLayerParent<T, M> getContext();
 }

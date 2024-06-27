@@ -2,11 +2,6 @@ package smartin.miapi.craft.stat;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtDouble;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.item.modular.StatResolver;
@@ -15,6 +10,11 @@ import smartin.miapi.modules.ModuleInstance;
 
 import java.util.List;
 import java.util.Map;
+import net.minecraft.nbt.DoubleTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 
 /**
  * An implementation of {@link CraftingStat} with a double as its stat instance.
@@ -37,13 +37,13 @@ public class SimpleCraftingStat implements CraftingStat<Double> {
     }
 
     @Override
-    public NbtElement saveToNbt(Double instance) {
-        return NbtDouble.of(instance);
+    public Tag saveToNbt(Double instance) {
+        return DoubleTag.valueOf(instance);
     }
 
     @Override
-    public Double createFromNbt(NbtElement nbt) {
-        return ((NbtDouble) nbt).doubleValue();
+    public Double createFromNbt(Tag nbt) {
+        return ((DoubleTag) nbt).getAsDouble();
     }
 
     @Override
@@ -53,7 +53,7 @@ public class SimpleCraftingStat implements CraftingStat<Double> {
             ItemStack old,
             ItemStack crafting,
             @Nullable ModularWorkBenchEntity bench,
-            PlayerEntity player,
+            Player player,
             ModuleInstance newModule,
             ItemModule module,
             List<ItemStack> inventory,
@@ -67,8 +67,8 @@ public class SimpleCraftingStat implements CraftingStat<Double> {
     }
 
     @Override
-    public Text asText(Double instance) {
-        return Text.literal(String.valueOf(instance));
+    public Component asText(Double instance) {
+        return Component.literal(String.valueOf(instance));
     }
 
     @Override

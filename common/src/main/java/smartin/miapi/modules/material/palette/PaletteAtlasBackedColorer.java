@@ -1,13 +1,8 @@
 package smartin.miapi.modules.material.palette;
 
 import com.google.gson.JsonElement;
+import com.mojang.blaze3d.platform.NativeImage;
 import com.redpxnda.nucleus.util.Color;
-import net.minecraft.client.texture.NativeImage;
-import net.minecraft.client.texture.Sprite;
-import net.minecraft.client.texture.SpriteContents;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.ColorHelper;
-import net.minecraft.util.math.MathHelper;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.client.MiapiClient;
 import smartin.miapi.client.atlas.MaterialAtlasManager;
@@ -18,6 +13,11 @@ import smartin.miapi.modules.material.Material;
 
 import java.util.ArrayList;
 import java.util.List;
+import net.minecraft.client.renderer.texture.SpriteContents;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FastColor;
+import net.minecraft.util.Mth;
 
 /**
  * Uses textures in {@link MaterialAtlasManager} and treats them as the colors of a {@link GrayscalePaletteColorer} to recolor module sprites. <br>
@@ -27,7 +27,7 @@ import java.util.List;
  * This is to be used when you need a simple animated color palette.
  */
 public class PaletteAtlasBackedColorer extends SpritePixelReplacer {
-    protected Identifier spriteId = Material.BASE_PALETTE_ID;
+    protected ResourceLocation spriteId = Material.BASE_PALETTE_ID;
     protected Color averageColor;
     protected boolean isAnimated = false;
     protected NativeImageGetter.ImageHolder image;
@@ -40,7 +40,7 @@ public class PaletteAtlasBackedColorer extends SpritePixelReplacer {
     /**
      * Create a new PaletteAtlasBackedColorer, uploading the texture at the specified id
      */
-    public PaletteAtlasBackedColorer(Material material, Identifier id) {
+    public PaletteAtlasBackedColorer(Material material, ResourceLocation id) {
         super(material);
         setupSprite(id);
     }
@@ -50,17 +50,17 @@ public class PaletteAtlasBackedColorer extends SpritePixelReplacer {
      */
     public PaletteAtlasBackedColorer(Material material, JsonElement json) {
         super(material);
-        Identifier id = new Identifier(json.getAsJsonObject().get("location").getAsString());
+        ResourceLocation id = new ResourceLocation(json.getAsJsonObject().get("location").getAsString());
         setupSprite(id);
     }
 
     @Override
     public int getReplacementColor(int pixelX, int pixelY, int previousAbgr) {
-        int red = ColorHelper.Abgr.getRed(previousAbgr);
-        return image.getColor(MathHelper.clamp(red, 0, 255), 0);
+        int red = FastColor.ABGR32.red(previousAbgr);
+        return image.getColor(Mth.clamp(red, 0, 255), 0);
     }
 
-    public void setupSprite(Identifier id) {
+    public void setupSprite(ResourceLocation id) {
         spriteId = id;
         MiapiClient.materialAtlasManager.addSpriteToLoad(id, c -> {
             contents = c;
@@ -69,7 +69,7 @@ public class PaletteAtlasBackedColorer extends SpritePixelReplacer {
     }
 
     @Nullable
-    public Identifier getSpriteId() {
+    public ResourceLocation getSpriteId() {
         return spriteId;
     }
 
@@ -80,9 +80,9 @@ public class PaletteAtlasBackedColorer extends SpritePixelReplacer {
     @Override
     public NativeImage transform(SpriteContents originalSprite) {
         if (contents == null) {
-            Sprite sprite = MiapiClient.materialAtlasManager.getMaterialSprite(getSpriteId());
+            TextureAtlasSprite sprite = MiapiClient.materialAtlasManager.getMaterialSprite(getSpriteId());
             MaterialSpriteManager.markTextureAsAnimatedInUse(sprite);
-            contents = sprite.getContents();
+            contents = sprite.contents();
         }
         image = NativeImageGetter.get(contents);
         NativeImage result = super.transform(originalSprite);
@@ -93,19 +93,19 @@ public class PaletteAtlasBackedColorer extends SpritePixelReplacer {
     @Override
     public Color getAverageColor() {
         if (averageColor == null) {
-            NativeImage img = ((SpriteContentsAccessor) MiapiClient.materialAtlasManager.getMaterialSprite(spriteId).getContents()).getImage();
+            NativeImage img = ((SpriteContentsAccessor) MiapiClient.materialAtlasManager.getMaterialSprite(spriteId).contents()).getImage();
 
             List<Color> colors = new ArrayList<>();
             int height = img.getHeight();
             int width = img.getWidth();
             for (int x = 0; x < width; x++) {
                 for (int y = 0; y < height; y++) {
-                    int color = img.getColor(x, y);
+                    int color = img.getPixelRGBA(x, y);
                     colors.add(new Color(
-                            ColorHelper.Abgr.getRed(color),
-                            ColorHelper.Abgr.getGreen(color),
-                            ColorHelper.Abgr.getBlue(color),
-                            ColorHelper.Abgr.getAlpha(color)
+                            FastColor.ABGR32.red(color),
+                            FastColor.ABGR32.green(color),
+                            FastColor.ABGR32.blue(color),
+                            FastColor.ABGR32.alpha(color)
                     ));
                 }
             }

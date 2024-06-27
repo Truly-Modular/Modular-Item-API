@@ -1,7 +1,6 @@
 package smartin.miapi.modules.properties;
 
 import com.google.gson.JsonElement;
-import net.minecraft.item.ItemStack;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.util.MergeType;
@@ -11,6 +10,7 @@ import smartin.miapi.registries.RegistryInventory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import net.minecraft.world.item.ItemStack;
 
 /**
  * Allows the Modules to define tags to identify eachother

@@ -3,12 +3,11 @@ package smartin.miapi.modules.properties.util;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import dev.architectury.event.Event;
-import net.minecraft.item.ItemStack;
-
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.function.BiConsumer;
+import net.minecraft.world.item.ItemStack;
 
 public interface ActionListeningProperty {
     EventMap getAllListeners(ItemStack stack);

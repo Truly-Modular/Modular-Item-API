@@ -4,11 +4,11 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.item.ItemStack;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.ColorHelper;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FastColor;
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.material.palette.MaterialRenderController;
@@ -20,13 +20,13 @@ import java.util.Map;
 import static smartin.miapi.Miapi.MOD_ID;
 
 public interface Material {
-    Identifier BASE_PALETTE_ID = Identifier.of(MOD_ID, "miapi_materials/base_palette");
+    ResourceLocation BASE_PALETTE_ID = ResourceLocation.fromNamespaceAndPath(MOD_ID, "miapi_materials/base_palette");
 
     String getKey();
 
     @Environment(EnvType.CLIENT)
     static int getColor(String color) {
-        if (color.equals("")) return ColorHelper.Argb.getArgb(255, 255, 255, 255);
+        if (color.equals("")) return FastColor.ARGB32.color(255, 255, 255, 255);
         long longValue = Long.parseLong(color, 16);
         return (int) (longValue & 0xffffffffL);
     }
@@ -47,7 +47,7 @@ public interface Material {
      * @return how much to offset the text rendering by
      */
     @Environment(EnvType.CLIENT)
-    default int renderIcon(DrawContext drawContext, int x, int y) {
+    default int renderIcon(GuiGraphics drawContext, int x, int y) {
         return 0;
     }
 
@@ -59,8 +59,8 @@ public interface Material {
         return this;
     }
 
-    default Text getTranslation(){
-        return Text.translatable(getData("translation"));
+    default Component getTranslation(){
+        return Component.translatable(getData("translation"));
     }
 
     @Environment(EnvType.CLIENT)

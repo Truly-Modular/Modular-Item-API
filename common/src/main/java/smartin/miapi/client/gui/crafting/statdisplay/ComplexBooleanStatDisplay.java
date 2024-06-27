@@ -1,7 +1,7 @@
 package smartin.miapi.client.gui.crafting.statdisplay;
 
-import net.minecraft.item.ItemStack;
-import net.minecraft.text.Text;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.ItemStack;
 import smartin.miapi.Miapi;
 import smartin.miapi.modules.properties.util.ComplexBooleanProperty;
 
@@ -31,7 +31,7 @@ public class ComplexBooleanStatDisplay extends SingleStatDisplayBoolean {
     public static class Builder {
         ComplexBooleanProperty property;
         public StatListWidget.TextGetter name;
-        public StatListWidget.TextGetter hoverDescription = (stack) -> Text.empty();
+        public StatListWidget.TextGetter hoverDescription = (stack) -> Component.empty();
         public String translationKey = "";
         public Object[] descriptionArgs = new Object[]{};
 
@@ -39,7 +39,7 @@ public class ComplexBooleanStatDisplay extends SingleStatDisplayBoolean {
             this.property = property;
         }
 
-        public Builder setName(Text name) {
+        public Builder setName(Component name) {
             this.name = (stack) -> name;
             return this;
         }
@@ -51,12 +51,12 @@ public class ComplexBooleanStatDisplay extends SingleStatDisplayBoolean {
 
         public Builder setTranslationKey(String key) {
             translationKey = key;
-            name = (stack) -> Text.translatable(Miapi.MOD_ID + ".stat." + key, SingleStatDisplayBoolean.getText(property.getValueSafe(stack)));
-            hoverDescription = (stack) -> Text.translatable(Miapi.MOD_ID + ".stat." + key + ".description", SingleStatDisplayBoolean.getText(property.getValueSafe(stack)));
+            name = (stack) -> Component.translatable(Miapi.MOD_ID + ".stat." + key, SingleStatDisplayBoolean.getText(property.getValueSafe(stack)));
+            hoverDescription = (stack) -> Component.translatable(Miapi.MOD_ID + ".stat." + key + ".description", SingleStatDisplayBoolean.getText(property.getValueSafe(stack)));
             return this;
         }
 
-        public Builder setHoverDescription(Text hoverDescription) {
+        public Builder setHoverDescription(Component hoverDescription) {
             this.hoverDescription = (stack) -> hoverDescription;
             return this;
         }

@@ -7,7 +7,6 @@ import com.mojang.serialization.Codec;
 import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
 import com.redpxnda.nucleus.codec.misc.CustomIntermediateCodec;
 import com.redpxnda.nucleus.codec.misc.IntermediateCodec;
-import net.minecraft.text.Text;
 import smartin.miapi.Miapi;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.material.Material;
@@ -20,6 +19,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import net.minecraft.network.chat.Component;
 
 import static smartin.miapi.modules.material.EvalExResolverStuff.configuration;
 
@@ -125,18 +125,18 @@ public class StatResolver {
     private static final Map<String, Resolver> resolverMap = new ConcurrentHashMap<>();
 
     static {
-        StatResolver.registerResolver("translation", new StatResolver.Resolver() {
+        StatResolver.registerResolver("translation", new Resolver() {
             @Override
             public double resolveDouble(String data, ModuleInstance instance) {
-                return Double.parseDouble(Text.translatable(data).getString());
+                return Double.parseDouble(Component.translatable(data).getString());
             }
 
             @Override
             public String resolveString(String data, ModuleInstance instance) {
-                return Text.translatable(data).getString();
+                return Component.translatable(data).getString();
             }
         });
-        StatResolver.registerResolver("collect", new StatResolver.Resolver() {
+        StatResolver.registerResolver("collect", new Resolver() {
             @Override
             public double resolveDouble(String data, ModuleInstance instance) {
                 if (data.contains(".")) {
@@ -170,7 +170,7 @@ public class StatResolver {
                 return null;
             }
         });
-        StatResolver.registerResolver("material-module", new StatResolver.Resolver() {
+        StatResolver.registerResolver("material-module", new Resolver() {
 
             @Override
             public double resolveDouble(String data, ModuleInstance instance) {
@@ -190,7 +190,7 @@ public class StatResolver {
                 return firstResult;
             }
         });
-        StatResolver.registerResolver("module-material", new StatResolver.Resolver() {
+        StatResolver.registerResolver("module-material", new Resolver() {
 
             @Override
             public double resolveDouble(String data, ModuleInstance instance) {
@@ -210,7 +210,7 @@ public class StatResolver {
                 return firstResult;
             }
         });
-        StatResolver.registerResolver("count", new StatResolver.Resolver() {
+        StatResolver.registerResolver("count", new Resolver() {
             @Override
             public double resolveDouble(String data, ModuleInstance instance) {
                 double count = 0;
@@ -355,7 +355,7 @@ public class StatResolver {
      * @param instance the module instance for which to resolve values
      * @return the translated and resolved text
      */
-    public static Text translateAndResolve(String raw, ModuleInstance instance) {
+    public static Component translateAndResolve(String raw, ModuleInstance instance) {
         String old = "";
         String newString = raw;
         for (int i = 0; i < 100 && !old.equals(newString); i++) {
@@ -363,11 +363,11 @@ public class StatResolver {
             newString = resolveString(old, instance);
             List<String> translatedStrings = new ArrayList<>();
             Arrays.stream(newString.split(" ")).forEach(s -> {
-                translatedStrings.add(Text.translatable(s).getString());
+                translatedStrings.add(Component.translatable(s).getString());
             });
             newString = String.join(" ", translatedStrings);
         }
-        return Text.literal(newString);
+        return Component.literal(newString);
     }
 
     /**

@@ -5,10 +5,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.mojang.serialization.JsonOps;
-import net.minecraft.item.ItemStack;
-import net.minecraft.text.Text;
-import net.minecraft.text.TextCodecs;
-import net.minecraft.util.Pair;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.item.modular.StatResolver;
@@ -17,6 +13,10 @@ import smartin.miapi.modules.ModuleInstance;
 
 import java.lang.reflect.Type;
 import java.util.*;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentSerialization;
+import net.minecraft.util.Tuple;
+import net.minecraft.world.item.ItemStack;
 
 /**
  * Any kind of property of a Module should be implemented here
@@ -201,21 +201,21 @@ public interface ModuleProperty {
         return defaultValue;
     }
 
-    static Text getText(JsonObject object, String element, ModuleInstance moduleInstance, Text defaultValue) {
+    static Component getText(JsonObject object, String element, ModuleInstance moduleInstance, Component defaultValue) {
         if (object != null) {
             JsonElement json = object.get(element);
             if (json != null && !json.isJsonNull()) {
-                return TextCodecs.CODEC.parse(JsonOps.INSTANCE, json).result().orElse(defaultValue);
+                return ComponentSerialization.CODEC.parse(JsonOps.INSTANCE, json).result().orElse(defaultValue);
             }
         }
         return defaultValue;
     }
 
-    static Text getText(JsonObject object, String element, Text defaultValue) {
+    static Component getText(JsonObject object, String element, Component defaultValue) {
         if (object != null) {
             JsonElement json = object.get(element);
             if (json != null && !json.isJsonNull()) {
-                return TextCodecs.CODEC.parse(JsonOps.INSTANCE, json).result().orElse(defaultValue);
+                return ComponentSerialization.CODEC.parse(JsonOps.INSTANCE, json).result().orElse(defaultValue);
             }
         }
         return defaultValue;
@@ -232,7 +232,7 @@ public interface ModuleProperty {
     }
 
     @Nullable
-    default Pair<ModuleInstance, JsonElement> highestPriorityJsonElement(ItemStack itemStack) {
+    default Tuple<ModuleInstance, JsonElement> highestPriorityJsonElement(ItemStack itemStack) {
         Map<ModuleInstance, JsonElement> maps = new LinkedHashMap<>();
         ModuleInstance moduleInstance = null;
         JsonElement element = null;
@@ -245,6 +245,6 @@ public interface ModuleProperty {
         if (moduleInstance == null) {
             return null;
         }
-        return new Pair<>(moduleInstance, element);
+        return new Tuple<>(moduleInstance, element);
     }
 }

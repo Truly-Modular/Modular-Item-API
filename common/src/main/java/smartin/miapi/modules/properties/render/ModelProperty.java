@@ -6,22 +6,21 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.model.BakedModel;
-import net.minecraft.client.render.model.ModelBakeSettings;
-import net.minecraft.client.render.model.ModelLoader;
-import net.minecraft.client.render.model.json.ItemModelGenerator;
-import net.minecraft.client.render.model.json.JsonUnbakedModel;
-import net.minecraft.client.render.model.json.ModelOverrideList;
-import net.minecraft.client.texture.Sprite;
-import net.minecraft.client.util.SpriteIdentifier;
-import net.minecraft.item.ItemStack;
-import net.minecraft.resource.Resource;
-import net.minecraft.resource.metadata.ResourceMetadataReader;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.ColorHelper;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.random.Random;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.block.model.BlockModel;
+import net.minecraft.client.renderer.block.model.ItemModelGenerator;
+import net.minecraft.client.renderer.block.model.ItemOverrides;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.resources.model.ModelBakery;
+import net.minecraft.client.resources.model.ModelState;
+import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.metadata.MetadataSectionSerializer;
+import net.minecraft.server.packs.resources.Resource;
+import net.minecraft.util.FastColor;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import smartin.miapi.Miapi;
@@ -59,8 +58,8 @@ public class ModelProperty implements RenderProperty {
     public static final Map<String, UnbakedModelHolder> modelCache = new HashMap<>();
     public static final String KEY = "texture";
     public static final List<ModelTransformer> modelTransformers = new ArrayList<>();
-    public static Function<SpriteIdentifier, Sprite> textureGetter;
-    private static Function<SpriteIdentifier, Sprite> mirroredGetter;
+    public static Function<net.minecraft.client.resources.model.Material, TextureAtlasSprite> textureGetter;
+    private static Function<net.minecraft.client.resources.model.Material, TextureAtlasSprite> mirroredGetter;
     private static ItemModelGenerator generator;
 
     public ModelProperty() {
@@ -143,7 +142,7 @@ public class ModelProperty implements RenderProperty {
                 break;
             }
         }
-        BakedSingleModel model = DynamicBakery.bakeModel(unbakedModel.model, textureGetter, ColorHelper.Argb.getArgb(255, 255, 255, 255), Transform.IDENTITY);
+        BakedSingleModel model = DynamicBakery.bakeModel(unbakedModel.model, textureGetter, FastColor.ARGB32.color(255, 255, 255, 255), Transform.IDENTITY);
         if (model != null) {
             Matrix4f matrix4f = Transform.toModelTransformation(json.transform).toMatrix();
             String colorProviderId = unbakedModel.modelData.colorProvider != null ?
@@ -201,16 +200,16 @@ public class ModelProperty implements RenderProperty {
     protected static Map<String, BakedSingleModel> bakedModelMap(List<TransformedUnbakedModel> unbakedModels) {
         Map<String, BakedSingleModel> bakedModelMap = new HashMap<>();
         for (TransformedUnbakedModel unbakedModel : unbakedModels) {
-            ModelBakeSettings settings = unbakedModel.transform.get().toModelBakeSettings();
+            ModelState settings = unbakedModel.transform.get().toModelBakeSettings();
             BakedSingleModel model = DynamicBakery.bakeModel(unbakedModel.unbakedModel, mirroredGetter, unbakedModel.color, unbakedModel.transform.get());
             BakedSingleModel bakedSIngleModel = bakedModelMap.computeIfAbsent(unbakedModel.transform.primary, (key) ->
                     new BakedSingleModel(new ArrayList<>())
             );
             if (model != null) {
-                if (model.getOverrides() == null || model.getOverrides().equals(ModelOverrideList.EMPTY)) {
-                    bakedSIngleModel.quads.addAll(model.getQuads(null, null, Random.create()));
+                if (model.getOverrides() == null || model.getOverrides().equals(ItemOverrides.EMPTY)) {
+                    bakedSIngleModel.quads.addAll(model.getQuads(null, null, RandomSource.create()));
                     for (Direction dir : Direction.values()) {
-                        bakedSIngleModel.quads.addAll(model.getQuads(null, dir, Random.create()));
+                        bakedSIngleModel.quads.addAll(model.getQuads(null, dir, RandomSource.create()));
                     }
                 } else {
                     bakedSIngleModel.addModel(model);
@@ -260,7 +259,7 @@ public class ModelProperty implements RenderProperty {
                     } else {
                         list.add("default");
                     }
-                    JsonUnbakedModel unbakedModel = null;
+                    BlockModel unbakedModel = null;
                     for (String str : list) {
                         String fullPath = json.path.replace("[material.texture]", str);
                         if (modelCache.containsKey(fullPath)) {
@@ -288,7 +287,7 @@ public class ModelProperty implements RenderProperty {
         return unbakedModels;
     }
 
-    protected static JsonUnbakedModel loadModelFromFilePath(String filePath2) throws FileNotFoundException {
+    protected static BlockModel loadModelFromFilePath(String filePath2) throws FileNotFoundException {
         if (modelCache.containsKey(filePath2)) {
             return modelCache.get(filePath2).model;
         }
@@ -298,23 +297,23 @@ public class ModelProperty implements RenderProperty {
         if (filePath2.contains("item/") && !filePath2.contains("models/")) {
             filePath2 = filePath2.replace("item/", "models/item/");
         }
-        ModelLoader loader = ModelLoadAccessor.getLoader();
+        ModelBakery loader = ModelLoadAccessor.getLoader();
         filePath2 = filePath2.replace(".json", "");
         filePath2 = filePath2.replace("models/", "");
-        Identifier modelId = new Identifier(filePath2);
-        JsonUnbakedModel model = ((ModelLoaderInterfaceAccessor) loader).loadModelFromPath(modelId);
+        ResourceLocation modelId = new ResourceLocation(filePath2);
+        BlockModel model = ((ModelLoaderInterfaceAccessor) loader).loadModelFromPath(modelId);
         if (!filePath2.endsWith(".json")) {
             filePath2 += ".json";
         }
         if (filePath2.contains("item/") && !filePath2.contains("models/")) {
             filePath2 = filePath2.replace("item/", "models/item/");
         }
-        UnbakedModelHolder holder = new UnbakedModelHolder(model, fromPath(ModelLoader.MODELS_FINDER.toResourcePath(modelId)));
+        UnbakedModelHolder holder = new UnbakedModelHolder(model, fromPath(ModelBakery.MODEL_LISTER.idToFile(modelId)));
         modelCache.put(filePath2, holder);
         modelCache.put(modelId.toString(), holder);
         model.getOverrides().forEach(modelOverride -> {
             try {
-                loadModelFromFilePath(modelOverride.getModelId().toString());
+                loadModelFromFilePath(modelOverride.getModel().toString());
             } catch (FileNotFoundException e) {
                 throw new RuntimeException(e);
             }
@@ -323,24 +322,24 @@ public class ModelProperty implements RenderProperty {
         return model;
     }
 
-    public static ModelData fromPath(Identifier identifier) {
+    public static ModelData fromPath(ResourceLocation identifier) {
         try {
-            Optional<Resource> resource = MinecraftClient.getInstance().getResourceManager().getResource(identifier);
+            Optional<Resource> resource = Minecraft.getInstance().getResourceManager().getResource(identifier);
             if (resource.isPresent()) {
-                return resource.get().getMetadata().decode(new ModelDecoder()).orElse(ModelDecoder.EMPTY());
+                return resource.get().metadata().getSection(new ModelDecoder()).orElse(ModelDecoder.EMPTY());
             }
         } catch (IOException ignored) {
         }
         return ModelDecoder.EMPTY();
     }
 
-    protected static Map<String, JsonUnbakedModel> loadModelsByPath(String filePath) {
+    protected static Map<String, BlockModel> loadModelsByPath(String filePath) {
         String materialKey = "[material.texture]";
-        Map<String, JsonUnbakedModel> models = new HashMap<>();
+        Map<String, BlockModel> models = new HashMap<>();
         if (filePath.contains(materialKey)) {
             try {
                 String path = filePath.replace(materialKey, "default");
-                JsonUnbakedModel model = loadModelFromFilePath(path);
+                BlockModel model = loadModelFromFilePath(path);
                 models.put("default", model);
             } catch (FileNotFoundException fileNotFoundException) {
                 throw new RuntimeException(fileNotFoundException);
@@ -348,7 +347,7 @@ public class ModelProperty implements RenderProperty {
             MaterialProperty.getTextureKeys().forEach((path) -> {
                 try {
                     String fullPath = filePath.replace(materialKey, path);
-                    JsonUnbakedModel model = loadModelFromFilePath(fullPath);
+                    BlockModel model = loadModelFromFilePath(fullPath);
                     if (model != null) {
                         models.put(path, model);
                     }
@@ -357,7 +356,7 @@ public class ModelProperty implements RenderProperty {
             });
         } else {
             try {
-                JsonUnbakedModel model = loadModelFromFilePath(filePath);
+                BlockModel model = loadModelFromFilePath(filePath);
                 models.put("default", model);
             } catch (FileNotFoundException fileNotFoundException) {
                 throw new RuntimeException(fileNotFoundException);
@@ -366,7 +365,7 @@ public class ModelProperty implements RenderProperty {
         return models;
     }
 
-    protected static void loadTextureDependencies(JsonUnbakedModel model) {
+    protected static void loadTextureDependencies(BlockModel model) {
         DynamicBakery.bakeModel(model, (identifier) -> mirroredGetter.apply(identifier), 0, Transform.IDENTITY);
     }
 
@@ -401,7 +400,7 @@ public class ModelProperty implements RenderProperty {
         }
     }
 
-    public record TransformedUnbakedModel(TransformMap transform, JsonUnbakedModel unbakedModel,
+    public record TransformedUnbakedModel(TransformMap transform, BlockModel unbakedModel,
                                           ModuleInstance instance, int color) {
     }
 
@@ -447,14 +446,14 @@ public class ModelProperty implements RenderProperty {
         }
     }
 
-    static class ModelDecoder implements ResourceMetadataReader<ModelData> {
+    static class ModelDecoder implements MetadataSectionSerializer<ModelData> {
 
         public static ModelData EMPTY() {
             return new ModelData(null, null);
         }
 
         @Override
-        public String getKey() {
+        public String getMetadataSectionName() {
             return "miapi_model_data";
         }
 
@@ -479,6 +478,6 @@ public class ModelProperty implements RenderProperty {
     public record ModelData(String colorProvider, int[] lightValues) {
     }
 
-    public record UnbakedModelHolder(JsonUnbakedModel model, ModelData modelData) {
+    public record UnbakedModelHolder(BlockModel model, ModelData modelData) {
     }
 }

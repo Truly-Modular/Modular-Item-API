@@ -3,9 +3,9 @@ package smartin.miapi.modules.properties.render;
 import com.google.gson.JsonElement;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.model.json.ModelTransformation;
-import net.minecraft.client.render.model.json.ModelTransformationMode;
-import net.minecraft.item.ItemStack;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
+import net.minecraft.world.item.ItemDisplayContext;
+import net.minecraft.world.item.ItemStack;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
@@ -34,7 +34,7 @@ public class GuiOffsetProperty implements RenderProperty {
         property = this;
         ModularItemCache.setSupplier(KEY + "_pure_gui", (stack -> new HashMap<>()));
         MiapiItemModel.modelTransformers.add((matrices, itemStack, mode, modelType, tickDelta) -> {
-            if (mode.equals(ModelTransformationMode.GUI)) {
+            if (mode.equals(ItemDisplayContext.GUI)) {
                 Map<String, float[]> cache = ModularItemCache.getVisualOnlyCache(itemStack, KEY + "_pure_gui", new HashMap<>());
                 float[] data = cache.computeIfAbsent(modelType, s -> getGuiOffsets(itemStack, modelType));
                 matrices.translate(data[0], data[1], 0);
@@ -58,22 +58,22 @@ public class GuiOffsetProperty implements RenderProperty {
                             guiOffsetJson.sizeY += add.sizeY;
                         }
                     }
-                    Transform guiTransform = new Transform(dynamicBakedModel.getTransformation().getTransformation(ModelTransformationMode.GUI));
+                    Transform guiTransform = new Transform(dynamicBakedModel.getTransforms().getTransform(ItemDisplayContext.GUI));
                     guiOffsetJson.x -= (guiOffsetJson.sizeX / 2) / 16;
                     guiOffsetJson.y -= (guiOffsetJson.sizeY / 2) / 16;
                     guiOffsetJson.sizeX = guiOffsetJson.sizeX / 16.0f;
                     guiOffsetJson.sizeY = guiOffsetJson.sizeY / 16.0f;
                     float guiZ = (guiOffsetJson.sizeX + guiOffsetJson.sizeY) / 2;
                     guiTransform = new Transform(guiTransform.rotation, new Vector3f(guiOffsetJson.x / 16.0f, guiOffsetJson.y / 16.0f, 0), new Vector3f(guiOffsetJson.sizeX, guiOffsetJson.sizeY, guiZ));
-                    dynamicBakedModel.modelTransformation = new ModelTransformation(
-                            dynamicBakedModel.getTransformation().getTransformation(ModelTransformationMode.THIRD_PERSON_LEFT_HAND),
-                            dynamicBakedModel.getTransformation().getTransformation(ModelTransformationMode.THIRD_PERSON_RIGHT_HAND),
-                            dynamicBakedModel.getTransformation().getTransformation(ModelTransformationMode.FIRST_PERSON_LEFT_HAND),
-                            dynamicBakedModel.getTransformation().getTransformation(ModelTransformationMode.FIRST_PERSON_RIGHT_HAND),
-                            dynamicBakedModel.getTransformation().getTransformation(ModelTransformationMode.HEAD),
+                    dynamicBakedModel.modelTransformation = new ItemTransforms(
+                            dynamicBakedModel.getTransforms().getTransform(ItemDisplayContext.THIRD_PERSON_LEFT_HAND),
+                            dynamicBakedModel.getTransforms().getTransform(ItemDisplayContext.THIRD_PERSON_RIGHT_HAND),
+                            dynamicBakedModel.getTransforms().getTransform(ItemDisplayContext.FIRST_PERSON_LEFT_HAND),
+                            dynamicBakedModel.getTransforms().getTransform(ItemDisplayContext.FIRST_PERSON_RIGHT_HAND),
+                            dynamicBakedModel.getTransforms().getTransform(ItemDisplayContext.HEAD),
                             guiTransform.toTransformation(),
-                            dynamicBakedModel.getTransformation().getTransformation(ModelTransformationMode.GROUND),
-                            dynamicBakedModel.getTransformation().getTransformation(ModelTransformationMode.FIXED)
+                            dynamicBakedModel.getTransforms().getTransform(ItemDisplayContext.GROUND),
+                            dynamicBakedModel.getTransforms().getTransform(ItemDisplayContext.FIXED)
                     );
                     dynamicBakedModelmap.put(id, dynamicBakedModel);
                 });

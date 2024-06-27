@@ -4,17 +4,16 @@ import dev.architectury.event.EventResult;
 import dev.architectury.event.events.common.BlockEvent;
 import dev.architectury.event.events.common.EntityEvent;
 import dev.architectury.utils.value.IntValue;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.ExperienceOrbEntity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.item.ItemStack;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.intprovider.IntProvider;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.ExperienceOrb;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.item.modular.ModularItem;
@@ -30,13 +29,13 @@ public class LuminousLearningProperty extends DoubleProperty {
     public LuminousLearningProperty() {
         super(KEY);
         property = this;
-        BlockEvent.BREAK.register((World level, BlockPos pos, BlockState state, ServerPlayerEntity player, @Nullable IntValue xp)->{
-            ItemStack tool = player.getMainHandStack();
+        BlockEvent.BREAK.register((Level level, BlockPos pos, BlockState state, ServerPlayer player, @Nullable IntValue xp)->{
+            ItemStack tool = player.getMainHandItem();
             if (tool != null && tool.getItem() instanceof ModularItem) {
                 double value = getValueSafe(tool);
                 while (value > 0) {
-                    if (Math.random() > 0.7 && xp!=null && level instanceof ServerWorld serverWorld) {
-                        ExperienceOrbEntity.spawn(serverWorld, Vec3d.ofCenter(pos), xp.get());
+                    if (Math.random() > 0.7 && xp!=null && level instanceof ServerLevel serverWorld) {
+                        ExperienceOrb.award(serverWorld, Vec3.atCenterOf(pos), xp.get());
                     }
                     value--;
                 }
@@ -44,12 +43,12 @@ public class LuminousLearningProperty extends DoubleProperty {
             return EventResult.pass();
         });
         EntityEvent.LIVING_DEATH.register((LivingEntity entity, DamageSource source) -> {
-            if (entity.getWorld() instanceof ServerWorld serverWorld) {
-                int xp = entity.getXpToDrop();
+            if (entity.level() instanceof ServerLevel serverWorld) {
+                int xp = entity.getBaseExperienceReward();
                 double value = getForItems(entity.getItemsEquipped());
                 while (value > 0) {
                     if (Math.random() > 0.7) {
-                        ExperienceOrbEntity.spawn(serverWorld, Vec3d.ofCenter(entity.getBlockPos()), xp);
+                        ExperienceOrb.award(serverWorld, Vec3.atCenterOf(entity.blockPosition()), xp);
                     }
                     value--;
                 }

@@ -3,10 +3,6 @@ package smartin.miapi.modules.edit_options.skins;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.JsonOps;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.dynamic.Codecs;
-import net.minecraft.util.math.ColorHelper;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.modules.ItemModule;
@@ -18,15 +14,18 @@ import smartin.miapi.registries.RegistryInventory;
 
 import java.util.ArrayList;
 import java.util.List;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FastColor;
 
 public class Skin {
     public String path;
     public ItemModule module;
     public ModuleCondition condition;
     public SynergyManager.PropertyHolder propertyHolder;
-    public TextureOptions textureOptions = new TextureOptions(new Identifier(Miapi.MOD_ID, "textures/gui/skin/skin_button.png"), 100, 16, 3, ColorHelper.Argb.getArgb(255, 255, 255, 255), 1, false);
+    public TextureOptions textureOptions = new TextureOptions(new ResourceLocation(Miapi.MOD_ID, "textures/gui/skin/skin_button.png"), 100, 16, 3, FastColor.ARGB32.color(255, 255, 255, 255), 1, false);
     @Nullable
-    public Text hoverDescription;
+    public Component hoverDescription;
 
 
     public static List<Skin> fromJson(JsonElement element) {
@@ -38,11 +37,11 @@ public class Skin {
             skin.condition = ConditionManager.get(jsonObject.get("condition"));
             skin.path = jsonObject.get("path").getAsString();
             skin.propertyHolder = SynergyManager.getFrom(jsonObject, "skin for " + skin.module + " skinpath " + skin.path);
-            skin.textureOptions = TextureOptions.fromJson(jsonObject.get("texture"), new Identifier(Miapi.MOD_ID, "textures/gui/skin/skin_button.png"), 100, 16, 3, ColorHelper.Argb.getArgb(255, 255, 255, 255));
+            skin.textureOptions = TextureOptions.fromJson(jsonObject.get("texture"), new ResourceLocation(Miapi.MOD_ID, "textures/gui/skin/skin_button.png"), 100, 16, 3, FastColor.ARGB32.color(255, 255, 255, 255));
             if (jsonObject.has("hover")) {
                 skin.hoverDescription = Codecs.TEXT.parse(
                         JsonOps.INSTANCE,
-                        jsonObject.getAsJsonObject("hover")).result().orElse(Text.empty());
+                        jsonObject.getAsJsonObject("hover")).result().orElse(Component.empty());
             }
             skins.add(skin);
         });

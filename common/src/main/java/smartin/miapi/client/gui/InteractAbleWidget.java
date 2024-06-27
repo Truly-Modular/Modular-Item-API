@@ -3,20 +3,20 @@ package smartin.miapi.client.gui;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.Mouse;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.Drawable;
-import net.minecraft.client.gui.Element;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
-import net.minecraft.client.gui.widget.ClickableWidget;
-import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.sound.PositionedSoundInstance;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.ColorHelper;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.MouseHandler;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.components.Renderable;
+import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.util.FastColor;
 import org.joml.Vector2d;
 import smartin.miapi.config.MiapiConfig;
 
@@ -31,11 +31,11 @@ import java.util.List;
  * corresponding super method or handle the children yourself.
  */
 @Environment(EnvType.CLIENT)
-public abstract class InteractAbleWidget extends ClickableWidget implements Drawable, Element {
-    protected final List<Element> children = new ArrayList<>();
+public abstract class InteractAbleWidget extends AbstractWidget implements Renderable, GuiEventListener {
+    protected final List<GuiEventListener> children = new ArrayList<>();
     protected final List<InteractAbleWidget> hoverElements = new ArrayList<>();
     public boolean debug = false;
-    public int randomColor = ColorHelper.Argb.getArgb(180, (int) (Math.random() * 255), (int) (Math.random() * 255), (int) (Math.random() * 255));
+    public int randomColor = FastColor.ARGB32.color(180, (int) (Math.random() * 255), (int) (Math.random() * 255), (int) (Math.random() * 255));
 
     /**
      * This is a Widget build to support Children and parse the events down to them.
@@ -51,7 +51,7 @@ public abstract class InteractAbleWidget extends ClickableWidget implements Draw
      *               These for Params above are used to create feedback on isMouseOver() by default
      * @param title  the Title of the Widget
      */
-    protected InteractAbleWidget(int x, int y, int width, int height, Text title) {
+    protected InteractAbleWidget(int x, int y, int width, int height, Component title) {
         super(x, y, width, height, title);
     }
 
@@ -70,7 +70,7 @@ public abstract class InteractAbleWidget extends ClickableWidget implements Draw
      * @param borderWidth with of the border, border is drawn inwards
      * @param color       color of the border
      */
-    public static void drawSquareBorder(DrawContext drawContext, int x, int y, int width, int height, int borderWidth, int color) {
+    public static void drawSquareBorder(GuiGraphics drawContext, int x, int y, int width, int height, int borderWidth, int color) {
         //Top
         drawContext.fill(x, y, x + width, y + borderWidth, 100, color);
         //Bottom
@@ -100,10 +100,10 @@ public abstract class InteractAbleWidget extends ClickableWidget implements Draw
      * @param textureHeight The height of the texture sheet.
      * @param borderWidth   The width of the border to draw around the texture.
      */
-    public static void drawTextureWithEdgeAndScale(DrawContext drawContext, Identifier texture, int x, int y, int u, int v, int regionWidth, int regionHeight, int width, int height, int textureWidth, int textureHeight, int borderWidth, float scale) {
-        DrawContext context = new DrawContext(MinecraftClient.getInstance(), drawContext.getVertexConsumers());
-        context.getMatrices().multiplyPositionMatrix(drawContext.getMatrices().peek().getPositionMatrix());
-        context.getMatrices().peek().getPositionMatrix().scale(1 / scale);
+    public static void drawTextureWithEdgeAndScale(GuiGraphics drawContext, ResourceLocation texture, int x, int y, int u, int v, int regionWidth, int regionHeight, int width, int height, int textureWidth, int textureHeight, int borderWidth, float scale) {
+        GuiGraphics context = new GuiGraphics(Minecraft.getInstance(), drawContext.bufferSource());
+        context.pose().mulPose(drawContext.pose().last().pose());
+        context.pose().last().pose().scale(1 / scale);
         drawTextureWithEdge(context, texture, (int) (x * scale), (int) (y * scale), u, v, regionWidth, regionHeight, (int)
                 (width * scale), (int) (height * scale), textureWidth, textureHeight, borderWidth);
     }
@@ -127,25 +127,25 @@ public abstract class InteractAbleWidget extends ClickableWidget implements Draw
      * @param textureHeight The height of the texture sheet.
      * @param borderWidth   The width of the border to draw around the texture.
      */
-    public static void drawTextureWithEdge(DrawContext drawContext, Identifier texture, int x, int y, int u, int v, int regionWidth, int regionHeight, int width, int height, int textureWidth, int textureHeight, int borderWidth) {
+    public static void drawTextureWithEdge(GuiGraphics drawContext, ResourceLocation texture, int x, int y, int u, int v, int regionWidth, int regionHeight, int width, int height, int textureWidth, int textureHeight, int borderWidth) {
         //Center
-        drawContext.drawTexture(texture, x + borderWidth, y + borderWidth, width - 2 * borderWidth, height - 2 * borderWidth, u + borderWidth, v + borderWidth, regionWidth - borderWidth * 2, regionHeight - borderWidth * 2, textureWidth, textureHeight);
+        drawContext.blit(texture, x + borderWidth, y + borderWidth, width - 2 * borderWidth, height - 2 * borderWidth, u + borderWidth, v + borderWidth, regionWidth - borderWidth * 2, regionHeight - borderWidth * 2, textureWidth, textureHeight);
         //Top Left Corner
-        drawContext.drawTexture(texture, x, y, borderWidth, borderWidth, u, v, borderWidth, borderWidth, textureWidth, textureHeight);
+        drawContext.blit(texture, x, y, borderWidth, borderWidth, u, v, borderWidth, borderWidth, textureWidth, textureHeight);
         //Top Right Corner
-        drawContext.drawTexture(texture, x + width - borderWidth, y, borderWidth, borderWidth, u + regionWidth - borderWidth, v, borderWidth, borderWidth, textureWidth, textureHeight);
+        drawContext.blit(texture, x + width - borderWidth, y, borderWidth, borderWidth, u + regionWidth - borderWidth, v, borderWidth, borderWidth, textureWidth, textureHeight);
         //Bottom Left Corner
-        drawContext.drawTexture(texture, x, y + height - borderWidth, borderWidth, borderWidth, u, v + regionHeight - borderWidth, borderWidth, borderWidth, textureWidth, textureHeight);
+        drawContext.blit(texture, x, y + height - borderWidth, borderWidth, borderWidth, u, v + regionHeight - borderWidth, borderWidth, borderWidth, textureWidth, textureHeight);
         //Bottom Right Corner
-        drawContext.drawTexture(texture, x + width - borderWidth, y + height - borderWidth, borderWidth, borderWidth, u + regionWidth - borderWidth, v + regionHeight - borderWidth, borderWidth, borderWidth, textureWidth, textureHeight);
+        drawContext.blit(texture, x + width - borderWidth, y + height - borderWidth, borderWidth, borderWidth, u + regionWidth - borderWidth, v + regionHeight - borderWidth, borderWidth, borderWidth, textureWidth, textureHeight);
         //Bottom Bar
-        drawContext.drawTexture(texture, x + borderWidth, y + height - borderWidth, width - 2 * borderWidth, borderWidth, u + borderWidth, v + regionHeight - borderWidth, regionWidth - borderWidth * 2, borderWidth, textureWidth, textureHeight);
+        drawContext.blit(texture, x + borderWidth, y + height - borderWidth, width - 2 * borderWidth, borderWidth, u + borderWidth, v + regionHeight - borderWidth, regionWidth - borderWidth * 2, borderWidth, textureWidth, textureHeight);
         //Right Bar
-        drawContext.drawTexture(texture, x + width - borderWidth, y + borderWidth, borderWidth, height - 2 * borderWidth, u + regionWidth - borderWidth, v + borderWidth, borderWidth, regionHeight - borderWidth * 2, textureWidth, textureHeight);
+        drawContext.blit(texture, x + width - borderWidth, y + borderWidth, borderWidth, height - 2 * borderWidth, u + regionWidth - borderWidth, v + borderWidth, borderWidth, regionHeight - borderWidth * 2, textureWidth, textureHeight);
         //Left Bar
-        drawContext.drawTexture(texture, x, y + borderWidth, borderWidth, height - 2 * borderWidth, u, v + borderWidth, borderWidth, regionHeight - borderWidth * 2, textureWidth, textureHeight);
+        drawContext.blit(texture, x, y + borderWidth, borderWidth, height - 2 * borderWidth, u, v + borderWidth, borderWidth, regionHeight - borderWidth * 2, textureWidth, textureHeight);
         //Top Bar
-        drawContext.drawTexture(texture, x + borderWidth, y, width - 2 * borderWidth, borderWidth, u + borderWidth, v, regionWidth - borderWidth * 2, borderWidth, textureWidth, textureHeight);
+        drawContext.blit(texture, x + borderWidth, y, width - 2 * borderWidth, borderWidth, u + borderWidth, v, regionWidth - borderWidth * 2, borderWidth, textureWidth, textureHeight);
     }
 
 
@@ -164,7 +164,7 @@ public abstract class InteractAbleWidget extends ClickableWidget implements Draw
      * @param textureHeight The height of the texture sheet.
      * @param borderWidth   The width of the border to draw around the texture.
      */
-    public static void drawTextureWithEdge(DrawContext drawContext, Identifier texture, int x, int y, int width, int height, int textureWidth, int textureHeight, int borderWidth) {
+    public static void drawTextureWithEdge(GuiGraphics drawContext, ResourceLocation texture, int x, int y, int width, int height, int textureWidth, int textureHeight, int borderWidth) {
         drawTextureWithEdge(drawContext, texture, x, y, 0, 0, textureWidth, textureHeight, width, height, textureWidth, textureHeight, borderWidth);
     }
 
@@ -185,7 +185,7 @@ public abstract class InteractAbleWidget extends ClickableWidget implements Draw
      *
      * @param element the Child to be Added
      */
-    public void addChild(Element element) {
+    public void addChild(GuiEventListener element) {
         children().add(element);
     }
 
@@ -195,14 +195,14 @@ public abstract class InteractAbleWidget extends ClickableWidget implements Draw
      *
      * @param element the Child to be removed
      */
-    public void removeChild(Element element) {
+    public void removeChild(GuiEventListener element) {
         children().remove(element);
     }
 
     /**
      * This Method gives direct access to the ArrayList of Children
      */
-    public List<Element> children() {
+    public List<GuiEventListener> children() {
         return children;
     }
 
@@ -214,7 +214,7 @@ public abstract class InteractAbleWidget extends ClickableWidget implements Draw
      */
     @Override
     public void mouseMoved(double mouseX, double mouseY) {
-        for (Element child : this.children()) {
+        for (GuiEventListener child : this.children()) {
             if (child.isMouseOver(mouseX, mouseY)) {
                 child.mouseMoved(mouseX, mouseY);
             }
@@ -232,7 +232,7 @@ public abstract class InteractAbleWidget extends ClickableWidget implements Draw
      */
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        for (Element child : this.children()) {
+        for (GuiEventListener child : this.children()) {
             if (child.mouseClicked(mouseX, mouseY, button)) {
                 return true;
             }
@@ -241,7 +241,7 @@ public abstract class InteractAbleWidget extends ClickableWidget implements Draw
     }
 
     public void playClickedSound() {
-        MinecraftClient.getInstance().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1.0f));
+        Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0f));
     }
 
     /**
@@ -252,7 +252,7 @@ public abstract class InteractAbleWidget extends ClickableWidget implements Draw
      */
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        for (Element child : this.children()) {
+        for (GuiEventListener child : this.children()) {
             if (child.isMouseOver(mouseX, mouseY) && child.mouseReleased(mouseX, mouseY, button)) {
                 return true;
             }
@@ -270,7 +270,7 @@ public abstract class InteractAbleWidget extends ClickableWidget implements Draw
      */
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
-        for (Element child : this.children()) {
+        for (GuiEventListener child : this.children()) {
             if (child.isMouseOver(mouseX, mouseY) && child.mouseDragged(mouseX, mouseY, button, deltaX, deltaY)) {
                 return true;
             }
@@ -286,7 +286,7 @@ public abstract class InteractAbleWidget extends ClickableWidget implements Draw
      */
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double amount, double other) {
-        for (Element child : this.children()) {
+        for (GuiEventListener child : this.children()) {
             if (child.isMouseOver(mouseX, mouseY) && child.mouseScrolled(mouseX, mouseY, amount, other)) {
                 return true;
             }
@@ -302,7 +302,7 @@ public abstract class InteractAbleWidget extends ClickableWidget implements Draw
      */
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        for (Element child : this.children()) {
+        for (GuiEventListener child : this.children()) {
             if (child.keyPressed(keyCode, scanCode, modifiers)) {
                 return true;
             }
@@ -318,7 +318,7 @@ public abstract class InteractAbleWidget extends ClickableWidget implements Draw
      */
     @Override
     public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
-        for (Element child : this.children()) {
+        for (GuiEventListener child : this.children()) {
             if (child.keyReleased(keyCode, scanCode, modifiers)) {
                 return true;
             }
@@ -333,7 +333,7 @@ public abstract class InteractAbleWidget extends ClickableWidget implements Draw
      */
     @Override
     public boolean charTyped(char chr, int modifiers) {
-        for (Element child : this.children()) {
+        for (GuiEventListener child : this.children()) {
             if (child.charTyped(chr, modifiers)) {
                 return true;
             }
@@ -356,10 +356,10 @@ public abstract class InteractAbleWidget extends ClickableWidget implements Draw
     }
 
     public Vector2d getScaledMouseCoords() {
-        MinecraftClient client = MinecraftClient.getInstance();
-        Mouse mouse = client.mouse;
-        double x = mouse.getX() * client.getWindow().getScaledWidth() / client.getWindow().getWidth();
-        double y = mouse.getY() * client.getWindow().getScaledHeight() / client.getWindow().getHeight();
+        Minecraft client = Minecraft.getInstance();
+        MouseHandler mouse = client.mouseHandler;
+        double x = mouse.xpos() * client.getWindow().getGuiScaledWidth() / client.getWindow().getScreenWidth();
+        double y = mouse.ypos() * client.getWindow().getGuiScaledHeight() / client.getWindow().getScreenHeight();
 
         return new Vector2d(x, y);
     }
@@ -379,16 +379,16 @@ public abstract class InteractAbleWidget extends ClickableWidget implements Draw
      *                    This is needed for animations and co
      */
     @Override
-    public void renderWidget(DrawContext drawContext, int mouseX, int mouseY, float delta) {
+    public void renderWidget(GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
         if ((debug || MiapiConfig.INSTANCE.server.other.developmentMode) && Screen.hasAltDown())
             drawSquareBorder(drawContext, getX(), getY(), getWidth(), getHeight(), 1, randomColor);
 
-        RenderSystem.setShader(GameRenderer::getPositionProgram);
-        List<Element> reverse = new ArrayList<>(children());
+        RenderSystem.setShader(GameRenderer::getPositionShader);
+        List<GuiEventListener> reverse = new ArrayList<>(children());
         Collections.reverse(reverse);
 
-        for (Element element : reverse) {
-            if (element instanceof Drawable drawable) {
+        for (GuiEventListener element : reverse) {
+            if (element instanceof Renderable drawable) {
                 drawable.render(drawContext, mouseX, mouseY, delta);
             }
         }
@@ -404,7 +404,7 @@ public abstract class InteractAbleWidget extends ClickableWidget implements Draw
      * @param delta       the deltaTime between frames
      *                    This is needed for animations and co
      */
-    public void renderHover(DrawContext drawContext, int mouseX, int mouseY, float delta) {
+    public void renderHover(GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
         hoverElements.forEach(widget -> {
             widget.render(drawContext, mouseX, mouseY, delta);
         });
@@ -416,7 +416,7 @@ public abstract class InteractAbleWidget extends ClickableWidget implements Draw
     }
 
     @Override
-    protected void appendClickableNarrations(NarrationMessageBuilder builder) {
+    protected void updateWidgetNarration(NarrationElementOutput builder) {
 
     }
 }

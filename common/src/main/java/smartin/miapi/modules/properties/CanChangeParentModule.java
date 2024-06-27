@@ -2,7 +2,7 @@ package smartin.miapi.modules.properties;
 
 import com.google.gson.JsonElement;
 import dev.architectury.event.EventResult;
-import net.minecraft.text.Text;
+import net.minecraft.network.chat.Component;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.conditions.ConditionManager;
 import smartin.miapi.modules.properties.util.ModuleProperty;
@@ -17,7 +17,7 @@ public class CanChangeParentModule implements ModuleProperty {
             if (slot != null && slot.inSlot != null && !module.isEmpty()) {
                 for (ModuleInstance moduleInstance : slot.inSlot.subModules.values()) {
                     if (!canChangeParent(moduleInstance, conditionContext)) {
-                        conditionContext.reasons.add(Text.translatable("miapi.crafting_condition.cant_change_parent"));
+                        conditionContext.reasons.add(Component.translatable("miapi.crafting_condition.cant_change_parent"));
                         return EventResult.interruptFalse();
                     }
                 }

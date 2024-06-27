@@ -3,11 +3,11 @@ package smartin.miapi.client.model;
 import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.model.BakedModel;
-import net.minecraft.client.render.model.BakedQuad;
-import net.minecraft.util.math.ColorHelper;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.random.Random;
+import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.core.Direction;
+import net.minecraft.util.FastColor;
+import net.minecraft.util.RandomSource;
 import smartin.miapi.client.model.item.BakedSingleModel;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.material.Material;
@@ -32,11 +32,11 @@ public class ColorUtil {
     public static BakedModel recolorModel(BakedModel originalModel, int color) {
         ImmutableList.Builder<BakedQuad> builder = ImmutableList.builder();
 
-        for (BakedQuad quad : originalModel.getQuads(null, null, Random.create())) {
+        for (BakedQuad quad : originalModel.getQuads(null, null, RandomSource.create())) {
             builder.add(recolorBakedQuad(quad, color));
         }
         for (Direction dir : Direction.values()) {
-            for (BakedQuad quad : originalModel.getQuads(null, dir, Random.create())) {
+            for (BakedQuad quad : originalModel.getQuads(null, dir, RandomSource.create())) {
                 builder.add(recolorBakedQuad(quad, color));
             }
         }
@@ -46,7 +46,7 @@ public class ColorUtil {
     }
 
     public static BakedQuad recolorBakedQuad(BakedQuad originalQuad, int newColor) {
-        return new BakedQuad(originalQuad.getVertexData(), newColor, originalQuad.getFace(), originalQuad.getSprite(), false);
+        return new BakedQuad(originalQuad.getVertices(), newColor, originalQuad.getDirection(), originalQuad.getSprite(), false);
     }
 
     public static int getModuleColor(ModuleInstance instance) {
@@ -54,6 +54,6 @@ public class ColorUtil {
         if (material != null) {
             return material.getColor();
         }
-        return ColorHelper.Argb.getArgb(255, 255, 255, 255);
+        return FastColor.ARGB32.color(255, 255, 255, 255);
     }
 }

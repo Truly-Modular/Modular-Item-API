@@ -6,13 +6,13 @@ import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Axis;
+import com.mojang.math.Transformation;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.model.ModelBakeSettings;
-import net.minecraft.client.render.model.json.Transformation;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.math.AffineTransformation;
-import net.minecraft.util.math.RotationAxis;
+import net.minecraft.client.renderer.block.model.ItemTransform;
+import net.minecraft.client.resources.model.ModelState;
 import org.joml.*;
 import smartin.miapi.Miapi;
 
@@ -48,7 +48,7 @@ public class Transform {
     }
 
     @Environment(EnvType.CLIENT)
-    public Transform(Transformation transformation) {
+    public Transform(ItemTransform transformation) {
         this.rotation = new Vector3f(transformation.rotation);
         this.translation = new Vector3f(transformation.translation);
         this.scale = new Vector3f(transformation.scale);
@@ -65,8 +65,8 @@ public class Transform {
     }
 
     @Environment(EnvType.CLIENT)
-    public Transformation toTransformation() {
-        return new Transformation(new Vector3f(rotation), new Vector3f(translation), new Vector3f(scale));
+    public ItemTransform toTransformation() {
+        return new ItemTransform(new Vector3f(rotation), new Vector3f(translation), new Vector3f(scale));
     }
 
     /**
@@ -91,16 +91,16 @@ public class Transform {
         return merged;
     }
 
-    public static void applyPosition(MatrixStack matrixStack, Matrix4f matrix4f) {
-        matrixStack.multiplyPositionMatrix(matrix4f);
-        matrixStack.peek().getNormalMatrix().mul(matrix4f.get3x3(new Matrix3f()));
+    public static void applyPosition(PoseStack matrixStack, Matrix4f matrix4f) {
+        matrixStack.mulPose(matrix4f);
+        matrixStack.last().normal().mul(matrix4f.get3x3(new Matrix3f()));
     }
 
-    public static void applyPosition(MatrixStack matrixStack, Transform transform) {
+    public static void applyPosition(PoseStack matrixStack, Transform transform) {
         applyPosition(matrixStack, transform.toMatrix());
     }
 
-    public void applyPosition(MatrixStack matrixStack) {
+    public void applyPosition(PoseStack matrixStack) {
         applyPosition(matrixStack, this);
     }
 
@@ -109,9 +109,9 @@ public class Transform {
         Matrix4f translationMatrix = new Matrix4f().translate(translation);
 
         //Alt Rotation Matrix
-        Quaternionf a = new Quaternionf(RotationAxis.POSITIVE_X.rotationDegrees(rotation.x));
-        Quaternionf b = new Quaternionf(RotationAxis.POSITIVE_Y.rotationDegrees(rotation.y));
-        Quaternionf c = new Quaternionf(RotationAxis.POSITIVE_Z.rotationDegrees(rotation.z));
+        Quaternionf a = new Quaternionf(Axis.XP.rotationDegrees(rotation.x));
+        Quaternionf b = new Quaternionf(Axis.YP.rotationDegrees(rotation.y));
+        Quaternionf c = new Quaternionf(Axis.ZP.rotationDegrees(rotation.z));
         Quaternionf d = a.add(b).add(c);
 
         // Create the rotation matrix
@@ -211,7 +211,7 @@ public class Transform {
      * @return an AffineTransformation with the rotation, translation, and scale from this Transform.
      */
     @Environment(EnvType.CLIENT)
-    public AffineTransformation toAffineTransformation() {
+    public Transformation toAffineTransformation() {
         Transform transform = this.copy();
         Quaternionf quaternionf = new Quaternionf();
         quaternionf.rotationXYZ(
@@ -221,7 +221,7 @@ public class Transform {
         );
         Vector3f translationVector = new Vector3f(transform.translation);
         Vector3f scaleVector = new Vector3f(transform.scale);
-        return new AffineTransformation(translationVector, quaternionf, scaleVector, quaternionf);
+        return new Transformation(translationVector, quaternionf, scaleVector, quaternionf);
     }
 
     public int[] rotateVertexData(int[] vertexData) {
@@ -257,12 +257,12 @@ public class Transform {
      * @return a ModelBakeSettings
      */
     @Environment(EnvType.CLIENT)
-    public ModelBakeSettings toModelBakeSettings() {
+    public ModelState toModelBakeSettings() {
         Transform transform = toModelTransformation(this);
-        AffineTransformation affineTransformation = transform.toAffineTransformation();
-        return new ModelBakeSettings() {
+        Transformation affineTransformation = transform.toAffineTransformation();
+        return new ModelState() {
             @Override
-            public AffineTransformation getRotation() {
+            public Transformation getRotation() {
                 return affineTransformation;
             }
 

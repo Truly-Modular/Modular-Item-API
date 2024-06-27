@@ -2,9 +2,6 @@ package smartin.miapi.modules.properties;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
@@ -20,6 +17,9 @@ import smartin.miapi.registries.RegistryInventory;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 
 public class StatRequirementProperty implements ModuleProperty, CraftingProperty {
     public static final String KEY = "statRequirements";
@@ -30,7 +30,7 @@ public class StatRequirementProperty implements ModuleProperty, CraftingProperty
     }
 
     @Override
-    public boolean canPerform(ItemStack old, ItemStack crafting, @Nullable ModularWorkBenchEntity bench, PlayerEntity player, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<String,String> data) {
+    public boolean canPerform(ItemStack old, ItemStack crafting, @Nullable ModularWorkBenchEntity bench, Player player, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<String,String> data) {
         ModuleInstance newModule = craftAction.getModifyingModuleInstance(crafting);
         if (bench == null) return true;
 
@@ -54,13 +54,13 @@ public class StatRequirementProperty implements ModuleProperty, CraftingProperty
     }
 
     @Override
-    public ItemStack preview(ItemStack old, ItemStack crafting, PlayerEntity player, ModularWorkBenchEntity bench, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<String,String> data) {
+    public ItemStack preview(ItemStack old, ItemStack crafting, Player player, ModularWorkBenchEntity bench, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<String,String> data) {
         return crafting;
     }
 
     @Override
-    public Text getWarning() {
-        return Text.translatable(Miapi.MOD_ID + ".ui.craft.warning.crafting_stat");
+    public Component getWarning() {
+        return Component.translatable(Miapi.MOD_ID + ".ui.craft.warning.crafting_stat");
     }
 
     @Override

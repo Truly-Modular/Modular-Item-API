@@ -1,11 +1,11 @@
 package smartin.miapi.mixin;
 
-import net.minecraft.recipe.SmithingRecipe;
-import net.minecraft.screen.SmithingScreenHandler;
+import net.minecraft.world.inventory.SmithingMenu;
+import net.minecraft.world.item.crafting.SmithingRecipe;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
-@Mixin(SmithingScreenHandler.class)
+@Mixin(SmithingMenu.class)
 public interface SmithingScreenHandlerAccessor {
 
     @Accessor("currentRecipe")

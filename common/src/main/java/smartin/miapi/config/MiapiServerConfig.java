@@ -4,11 +4,10 @@ import com.redpxnda.nucleus.codec.auto.AutoCodec;
 import com.redpxnda.nucleus.codec.auto.ConfigAutoCodec;
 import com.redpxnda.nucleus.util.Comment;
 import dev.architectury.platform.Platform;
-import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.registry.Registries;
-import net.minecraft.util.Identifier;
-
 import java.util.List;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.effect.MobEffects;
 
 @ConfigAutoCodec.ConfigClassMarker
 public class MiapiServerConfig {
@@ -77,7 +76,7 @@ public class MiapiServerConfig {
     public static class StunEffectCategory {
         @Comment("List of StatusEffects the player will get when stunned")
         @AutoCodec.Name("player_effects")
-        public List<Identifier> playerEffects = List.of(Registries.STATUS_EFFECT.getId(StatusEffects.BLINDNESS.comp_349()), Registries.STATUS_EFFECT.getId(StatusEffects.SLOWNESS.comp_349()));
+        public List<ResourceLocation> playerEffects = List.of(BuiltInRegistries.MOB_EFFECT.getKey(MobEffects.BLINDNESS.value()), BuiltInRegistries.MOB_EFFECT.getKey(MobEffects.MOVEMENT_SLOWDOWN.value()));
 
         @Comment("""
                 The Stunhealth of a default entity, the StunHealth determins how much stun damage is needed to stun.

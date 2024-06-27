@@ -2,9 +2,9 @@ package smartin.miapi.client.gui.crafting.statdisplay;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.item.ItemStack;
-import net.minecraft.text.Text;
-import net.minecraft.util.Util;
+import net.minecraft.Util;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.ItemStack;
 import smartin.miapi.Miapi;
 import smartin.miapi.modules.properties.util.DoubleProperty;
 
@@ -39,7 +39,7 @@ public class SinglePropertyStatDisplay extends SingleStatDisplayDouble {
     public static class Builder {
         DoubleProperty property;
         public StatListWidget.TextGetter name;
-        public StatListWidget.TextGetter hoverDescription = (stack) -> Text.empty();
+        public StatListWidget.TextGetter hoverDescription = (stack) -> Component.empty();
         public String translationKey = "";
         public Object[] descriptionArgs = new Object[]{};
         public DecimalFormat modifierFormat;
@@ -63,7 +63,7 @@ public class SinglePropertyStatDisplay extends SingleStatDisplayDouble {
             return this;
         }
 
-        public Builder setName(Text name) {
+        public Builder setName(Component name) {
             this.name = (stack) -> name;
             return this;
         }
@@ -75,12 +75,12 @@ public class SinglePropertyStatDisplay extends SingleStatDisplayDouble {
 
         public Builder setTranslationKey(String key) {
             translationKey = key;
-            name = (stack) -> Text.translatable(Miapi.MOD_ID + ".stat." + key, modifierFormat.format(property.getValueSafe(stack)));
-            hoverDescription = (stack) -> Text.translatable(Miapi.MOD_ID + ".stat." + key + ".description", modifierFormat.format(property.getValueSafe(stack)));
+            name = (stack) -> Component.translatable(Miapi.MOD_ID + ".stat." + key, modifierFormat.format(property.getValueSafe(stack)));
+            hoverDescription = (stack) -> Component.translatable(Miapi.MOD_ID + ".stat." + key + ".description", modifierFormat.format(property.getValueSafe(stack)));
             return this;
         }
 
-        public Builder setHoverDescription(Text hoverDescription) {
+        public Builder setHoverDescription(Component hoverDescription) {
             this.hoverDescription = (stack) -> hoverDescription;
             return this;
         }

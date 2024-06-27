@@ -1,7 +1,7 @@
 package smartin.miapi.client.gui.crafting.crafter.help.pages;
 
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.ImageWidget;
 import smartin.miapi.client.gui.InteractAbleWidget;
@@ -12,10 +12,10 @@ public class SinglePageTextImage extends InteractAbleWidget {
     ImageWidget imageWidget;
 
     public SinglePageTextImage(String text, String texture) {
-        this(0, 0, Text.translatable(text), Identifier.of(Miapi.MOD_ID, texture));
+        this(0, 0, Component.translatable(text), ResourceLocation.fromNamespaceAndPath(Miapi.MOD_ID, texture));
     }
 
-    public SinglePageTextImage(int x, int y, Text text, Identifier texture) {
+    public SinglePageTextImage(int x, int y, Component text, ResourceLocation texture) {
         super(x, y, 183, 161, text);
         textWidget = new MultiLineTextWidget(x + 4, y + 1, 182, 60, text);
         //366 200 183 100

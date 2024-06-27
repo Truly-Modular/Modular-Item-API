@@ -2,6 +2,14 @@ plugins {
     id "architectury-plugin" version "3.4-SNAPSHOT"
     id "dev.architectury.loom" version "1.6-SNAPSHOT" apply false
 }
+
+repositories {
+    maven {
+        name = 'ParchmentMC'
+        url = 'https://maven.parchmentmc.org'
+    }
+}
+
 architectury {
     minecraft = rootProject.minecraft_version
 }
@@ -220,7 +228,12 @@ subprojects {
 
     dependencies {
         minecraft "com.mojang:minecraft:${rootProject.minecraft_version}"
-        mappings "net.fabricmc:yarn:${rootProject.yarn_mappings}"
+        //mappings "net.fabricmc:yarn:${rootProject.yarn_mappings}"
+        mappings loom.layered() {
+            officialMojangMappings()
+            parchment("org.parchmentmc.data:parchment-1.21:2024.06.23@zip")
+        }
+
     }
     apply plugin: "java"
     apply plugin: "architectury-plugin"
@@ -233,6 +246,10 @@ subprojects {
     repositories {
         maven {
             url "https://maven.fabricmc.net/"
+        }
+        maven {
+            name = 'ParchmentMC'
+            url = 'https://maven.parchmentmc.org'
         }
     }
     tasks.withType(JavaCompile) {

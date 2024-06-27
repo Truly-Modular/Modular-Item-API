@@ -4,13 +4,13 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
-import net.minecraft.util.math.ColorHelper;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.util.FastColor;
+import net.minecraft.world.item.ItemStack;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.ClickAbleTextWidget;
 import smartin.miapi.client.gui.InteractAbleWidget;
@@ -31,8 +31,8 @@ import java.util.function.Supplier;
 
 public class PropertyInjectionDev implements EditOption {
     @Override
-    public ItemStack preview(PacketByteBuf buffer, EditContext context) {
-        String raw = buffer.readString();
+    public ItemStack preview(FriendlyByteBuf buffer, EditContext context) {
+        String raw = buffer.readUtf();
         assert context.getInstance() != null;
         context.getInstance().moduleData.put("properties", raw);
         ItemStack stack1 = context.getItemstack().copy();
@@ -55,24 +55,24 @@ public class PropertyInjectionDev implements EditOption {
     @Environment(EnvType.CLIENT)
     @Override
     public InteractAbleWidget getIconGui(int x, int y, int width, int height, Consumer<EditOption> select, Supplier<EditOption> getSelected) {
-        return new EditOptionIcon(x, y, width, height, select, getSelected, CraftingScreen.BACKGROUND_TEXTURE, 339, 25 + 28 * 2, 512, 512, this);
+        return new EditOptionIcon(x, y, width, height, select, getSelected, CraftingScreen.INVENTORY_LOCATION, 339, 25 + 28 * 2, 512, 512, this);
     }
 
     @Environment(EnvType.CLIENT)
     public static class EditDevView extends InteractAbleWidget {
 
-        public EditDevView(int x, int y, int width, int height, ItemStack stack, ModuleInstance moduleInstance, Consumer<PacketByteBuf> craft) {
-            super(x, y, width, height, Text.empty());
-            MutableText text = Text.literal(moduleInstance.moduleData.get("properties")).copy();
-            TextFieldWidget textFieldWidget = new ClickAbleTextWidget(MinecraftClient.getInstance().textRenderer, x + 5, y + 10, this.width - 10, 20, text);
+        public EditDevView(int x, int y, int width, int height, ItemStack stack, ModuleInstance moduleInstance, Consumer<FriendlyByteBuf> craft) {
+            super(x, y, width, height, Component.empty());
+            MutableComponent text = Component.literal(moduleInstance.moduleData.get("properties")).copy();
+            EditBox textFieldWidget = new ClickAbleTextWidget(Minecraft.getInstance().font, x + 5, y + 10, this.width - 10, 20, text);
             textFieldWidget.setMaxLength(Integer.MAX_VALUE);
             textFieldWidget.setEditable(true);
 
-            ScrollingTextWidget error = new ScrollingTextWidget(x + 5, y + 40, this.width - 10, Text.empty(), ColorHelper.Argb.getArgb(255, 255, 0, 0));
+            ScrollingTextWidget error = new ScrollingTextWidget(x + 5, y + 40, this.width - 10, Component.empty(), FastColor.ARGB32.color(255, 255, 0, 0));
             addChild(error);
 
-            SimpleButton<Objects> craftButton = new SimpleButton<>(this.getX() + this.width - 41, this.getY() + this.height - 11, 40, 10, Text.literal("Apply"), null, (a) -> {
-                String raw = textFieldWidget.getText();
+            SimpleButton<Objects> craftButton = new SimpleButton<>(this.getX() + this.width - 41, this.getY() + this.height - 11, 40, 10, Component.literal("Apply"), null, (a) -> {
+                String raw = textFieldWidget.getValue();
                 try {
                     boolean success = true;
                     if (raw != null) {
@@ -84,8 +84,8 @@ public class PropertyInjectionDev implements EditOption {
                                     assert property != null;
                                     property.load(moduleInstance.module.name(), stringJsonElementEntry.getValue(), true);
                                 } catch (Exception e) {
-                                    error.setText(Text.of(e.getMessage()));
-                                    error.textColor = ColorHelper.Argb.getArgb(255, 255, 0, 0);
+                                    error.setText(Component.nullToEmpty(e.getMessage()));
+                                    error.textColor = FastColor.ARGB32.color(255, 255, 0, 0);
                                     e.printStackTrace();
                                     success = false;
                                 }
@@ -93,15 +93,15 @@ public class PropertyInjectionDev implements EditOption {
                         }
                     }
                     if (success) {
-                        PacketByteBuf buf = Networking.createBuffer();
-                        buf.writeString(raw);
+                        FriendlyByteBuf buf = Networking.createBuffer();
+                        buf.writeUtf(raw);
                         craft.accept(buf);
-                        error.setText(Text.of("success"));
-                        error.textColor = ColorHelper.Argb.getArgb(255, 0, 255, 0);
+                        error.setText(Component.nullToEmpty("success"));
+                        error.textColor = FastColor.ARGB32.color(255, 0, 255, 0);
                     }
                 } catch (Exception all) {
-                    error.setText(Text.of(all.getMessage()));
-                    error.textColor = ColorHelper.Argb.getArgb(255, 255, 0, 0);
+                    error.setText(Component.nullToEmpty(all.getMessage()));
+                    error.textColor = FastColor.ARGB32.color(255, 255, 0, 0);
                     all.printStackTrace();
                 }
             });

@@ -3,14 +3,14 @@ package smartin.miapi.client.gui.crafting.statdisplay;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.Drawable;
-import net.minecraft.item.ItemStack;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.Util;
-import net.minecraft.util.math.ColorHelper;
+import net.minecraft.Util;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Renderable;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FastColor;
+import net.minecraft.world.item.ItemStack;
 import smartin.miapi.client.gui.HoverDescription;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.ScrollingTextWidget;
@@ -26,8 +26,8 @@ import java.util.Locale;
 import java.util.stream.Collectors;
 
 @Environment(EnvType.CLIENT)
-public abstract class SingleStatDisplayDouble extends InteractAbleWidget implements SingleStatDisplay, Drawable {
-    public Identifier texture = CraftingScreen.BACKGROUND_TEXTURE;
+public abstract class SingleStatDisplayDouble extends InteractAbleWidget implements SingleStatDisplay, Renderable {
+    public ResourceLocation texture = CraftingScreen.INVENTORY_LOCATION;
     public ItemStack original = ItemStack.EMPTY;
     public ItemStack compareTo = ItemStack.EMPTY;
     public StatBar statBar;
@@ -41,22 +41,22 @@ public abstract class SingleStatDisplayDouble extends InteractAbleWidget impleme
     public StatListWidget.TextGetter text;
     public StatListWidget.TextGetter hover;
     public HoverDescription hoverDescription;
-    public Text postfix = Text.of("");
+    public Component postfix = Component.nullToEmpty("");
     public boolean inverse = false;
     double oldValue = 0;
     double compareToValue = 0;
 
     protected SingleStatDisplayDouble(int x, int y, int width, int height, StatListWidget.TextGetter title, StatListWidget.TextGetter hover) {
-        super(x, y, width, height, Text.empty());
+        super(x, y, width, height, Component.empty());
         text = title;
         this.hover = hover;
-        textWidget = new ScrollingTextWidget(x, y, 80, Text.empty(), ColorHelper.Argb.getArgb(255, 255, 255, 255));
-        currentValue = new ScrollingTextWidget(x, y, 50, Text.empty(), ColorHelper.Argb.getArgb(255, 255, 255, 255));
-        centerValue = new ScrollingTextWidget(x, y, 80 - 10, Text.empty(), ColorHelper.Argb.getArgb(255, 255, 255, 255));
+        textWidget = new ScrollingTextWidget(x, y, 80, Component.empty(), FastColor.ARGB32.color(255, 255, 255, 255));
+        currentValue = new ScrollingTextWidget(x, y, 50, Component.empty(), FastColor.ARGB32.color(255, 255, 255, 255));
+        centerValue = new ScrollingTextWidget(x, y, 80 - 10, Component.empty(), FastColor.ARGB32.color(255, 255, 255, 255));
         centerValue.setOrientation(ScrollingTextWidget.Orientation.CENTERED);
-        compareValue = new ScrollingTextWidget(x, y, 80 - 10, Text.empty(), ColorHelper.Argb.getArgb(255, 255, 255, 255));
+        compareValue = new ScrollingTextWidget(x, y, 80 - 10, Component.empty(), FastColor.ARGB32.color(255, 255, 255, 255));
         compareValue.setOrientation(ScrollingTextWidget.Orientation.RIGHT);
-        statBar = new StatBar(0, 0, width, 1, ColorHelper.Argb.getArgb(255, 0, 0, 0));
+        statBar = new StatBar(0, 0, width, 1, FastColor.ARGB32.color(255, 0, 0, 0));
         modifierFormat = Util.make(new DecimalFormat("##.##"), (decimalFormat) -> {
             decimalFormat.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ROOT));
         });
@@ -93,9 +93,9 @@ public abstract class SingleStatDisplayDouble extends InteractAbleWidget impleme
         oldValue = getValue(original);
         textWidget.setText(text.resolve(mainStack));
         hoverDescription.setText(hover.resolve(mainStack));
-        compareValue.setText(Text.of(modifierFormat.format(compareToValue)));
-        int textWidth = MinecraftClient.getInstance().textRenderer.getWidth(this.text.resolve(original));
-        int numberWidth = MinecraftClient.getInstance().textRenderer.getWidth(compareValue.getText());
+        compareValue.setText(Component.nullToEmpty(modifierFormat.format(compareToValue)));
+        int textWidth = Minecraft.getInstance().font.width(this.text.resolve(original));
+        int numberWidth = Minecraft.getInstance().font.width(compareValue.getText());
         int size = Math.min(3, Math.max(1, ((textWidth + numberWidth) / 47)));
         this.setWidth(51 * size);
         return true;
@@ -106,8 +106,8 @@ public abstract class SingleStatDisplayDouble extends InteractAbleWidget impleme
     }
 
     public int getWidthDesired() {
-        int textWidth = MinecraftClient.getInstance().textRenderer.getWidth(this.text.resolve(original).getString());
-        int numberWidth = MinecraftClient.getInstance().textRenderer.getWidth(compareValue.getText().getString());
+        int textWidth = Minecraft.getInstance().font.width(this.text.resolve(original).getString());
+        int numberWidth = Minecraft.getInstance().font.width(compareValue.getText().getString());
         int size = 1;
         if (textWidth + numberWidth > 76 - 6) {
             size = 2;
@@ -118,7 +118,7 @@ public abstract class SingleStatDisplayDouble extends InteractAbleWidget impleme
     public abstract double getValue(ItemStack stack);
 
     @Override
-    public void render(DrawContext drawContext, int mouseX, int mouseY, float delta) {
+    public void render(GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
         //double oldValue = getInt(original);
         //double compareToValue = getInt(compareTo);
 
@@ -138,11 +138,11 @@ public abstract class SingleStatDisplayDouble extends InteractAbleWidget impleme
         statBar.setWidth(this.width - 4);
         statBar.setHeight(1);
         if (oldValue < compareToValue) {
-            statBar.setPrimary((oldValue - min) / (max - min), ColorHelper.Argb.getArgb(255, 255, 255, 255));
+            statBar.setPrimary((oldValue - min) / (max - min), FastColor.ARGB32.color(255, 255, 255, 255));
             statBar.setSecondary((compareToValue - min) / (max - min), getGreen());
             compareValue.textColor = getGreen();
         } else {
-            statBar.setPrimary((compareToValue - min) / (max - min), ColorHelper.Argb.getArgb(255, 255, 255, 255));
+            statBar.setPrimary((compareToValue - min) / (max - min), FastColor.ARGB32.color(255, 255, 255, 255));
             statBar.setSecondary((oldValue - min) / (max - min), getRed());
             compareValue.textColor = getRed();
         }
@@ -150,7 +150,7 @@ public abstract class SingleStatDisplayDouble extends InteractAbleWidget impleme
             currentValue.setX(this.getX() - 3);
             currentValue.setY(this.getY() + 5);
             currentValue.setWidth(this.getWidth());
-            currentValue.setText(Text.literal(modifierFormat.format(oldValue) + postfix.getString()));
+            currentValue.setText(Component.literal(modifierFormat.format(oldValue) + postfix.getString()));
             currentValue.setOrientation(ScrollingTextWidget.Orientation.RIGHT);
             currentValue.render(drawContext, mouseX, mouseY, delta);
         } else {
@@ -158,7 +158,7 @@ public abstract class SingleStatDisplayDouble extends InteractAbleWidget impleme
             compareValue.setY(this.getY() + 5);
             compareValue.setWidth(this.getWidth());
             compareValue.setOrientation(ScrollingTextWidget.Orientation.RIGHT);
-            compareValue.setText(Text.literal(Text.of(modifierFormat.format(compareToValue)).getString() + postfix.getString()));
+            compareValue.setText(Component.literal(Component.nullToEmpty(modifierFormat.format(compareToValue)).getString() + postfix.getString()));
             compareValue.render(drawContext, mouseX, mouseY, delta);
         }
         statBar.render(drawContext, mouseX, mouseY, delta);
@@ -166,12 +166,12 @@ public abstract class SingleStatDisplayDouble extends InteractAbleWidget impleme
     }
 
     @Override
-    public void renderHover(DrawContext drawContext, int mouseX, int mouseY, float delta) {
+    public void renderHover(GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
         if (isMouseOver(mouseX, mouseY)) {
-            Text text1 = this.hover.resolve(compareTo);
+            Component text1 = this.hover.resolve(compareTo);
             if (!text1.getString().isEmpty()) {
-                List<Text> texts = Arrays.stream(text1.getString().split("\n")).map(a -> Text.literal(a)).collect(Collectors.toList());
-                drawContext.drawTooltip(MinecraftClient.getInstance().textRenderer, texts, mouseX, mouseY);
+                List<Component> texts = Arrays.stream(text1.getString().split("\n")).map(a -> Component.literal(a)).collect(Collectors.toList());
+                drawContext.renderComponentTooltip(Minecraft.getInstance().font, texts, mouseX, mouseY);
             }
         }
     }

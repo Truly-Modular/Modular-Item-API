@@ -1,14 +1,14 @@
 package smartin.miapi.modules.properties.mining.shape;
 
 import com.google.gson.JsonObject;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.world.World;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.mining.MiningShapeProperty;
 
 import java.util.ArrayList;
 import java.util.List;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.Level;
 
 /**
  * This class adds a Cube Mining shape with
@@ -31,7 +31,7 @@ public class CubeMiningShape implements MiningShape {
     }
 
     @Override
-    public List<BlockPos> getMiningBlocks(World world, BlockPos pos, Direction face) {
+    public List<BlockPos> getMiningBlocks(Level world, BlockPos pos, Direction face) {
         List<Direction.Axis> axisList = new ArrayList<>(List.of(Direction.Axis.values()));
         axisList.remove(face.getAxis());
         Direction.Axis widthDirection = axisList.remove(0);
@@ -40,10 +40,10 @@ public class CubeMiningShape implements MiningShape {
         for (int x = 0; x < depth; x++) {
             for (int y = 1; y <= width; y++) {
                 for (int z = 1; z <= height; z++) {
-                    BlockPos pos1 = pos.mutableCopy();
-                    pos1 = pos1.add(face.getVector().multiply(-x));
-                    pos1 = pos1.offset(widthDirection, intHalfInverse(y));
-                    pos1 = pos1.offset(heightDirection, intHalfInverse(z));
+                    BlockPos pos1 = pos.mutable();
+                    pos1 = pos1.offset(face.getNormal().multiply(-x));
+                    pos1 = pos1.relative(widthDirection, intHalfInverse(y));
+                    pos1 = pos1.relative(heightDirection, intHalfInverse(z));
                     list.add(pos1);
                 }
             }

@@ -1,17 +1,5 @@
 package smartin.miapi.item.modular.items;
 
-import net.minecraft.block.DispenserBlock;
-import net.minecraft.block.dispenser.ProjectileDispenserBehavior;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.projectile.PersistentProjectileEntity;
-import net.minecraft.entity.projectile.ProjectileEntity;
-import net.minecraft.item.ArrowItem;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.tooltip.TooltipType;
-import net.minecraft.text.Text;
-import net.minecraft.util.math.Position;
-import net.minecraft.world.World;
 import smartin.miapi.entity.ItemProjectileEntity;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.PlatformModularItemMethods;
@@ -19,22 +7,34 @@ import smartin.miapi.modules.properties.DisplayNameProperty;
 import smartin.miapi.modules.properties.LoreProperty;
 
 import java.util.List;
+import net.minecraft.core.Position;
+import net.minecraft.core.dispenser.ProjectileDispenseBehavior;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.projectile.AbstractArrow;
+import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.item.ArrowItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.DispenserBlock;
 
 public class ModularArrow extends ArrowItem implements PlatformModularItemMethods,ModularItem {
     public ModularArrow() {
-        this(new Item.Settings().maxCount(64));
+        this(new Item.Properties().stacksTo(64));
     }
 
-    public ModularArrow(Item.Settings settings) {
+    public ModularArrow(Item.Properties settings) {
         super(settings);
-        DispenserBlock.registerBehavior(this, new ProjectileDispenserBehavior() {
+        DispenserBlock.registerBehavior(this, new ProjectileDispenseBehavior() {
             @Override
-            protected ProjectileEntity createProjectile(World world, Position position, ItemStack stack) {
+            protected Projectile createProjectile(Level world, Position position, ItemStack stack) {
                 ItemStack itemStack = stack.copy();
                 itemStack.setCount(1);
                 ItemProjectileEntity arrowEntity = new ItemProjectileEntity(world, position, itemStack);
-                arrowEntity.setPos(position.getX(), position.getY(), position.getZ());
-                arrowEntity.pickupType = PersistentProjectileEntity.PickupPermission.ALLOWED;
+                arrowEntity.setPosRaw(position.x(), position.y(), position.z());
+                arrowEntity.pickup = AbstractArrow.Pickup.ALLOWED;
                 return arrowEntity;
             }
         });
@@ -43,7 +43,7 @@ public class ModularArrow extends ArrowItem implements PlatformModularItemMethod
 
 
     @Override
-    public PersistentProjectileEntity createArrow(World world, ItemStack stack, LivingEntity shooter) {
+    public AbstractArrow createArrow(Level world, ItemStack stack, LivingEntity shooter) {
         stack = stack.copy();
         stack.setCount(1);
         return new ItemProjectileEntity(world, shooter, stack);
@@ -51,12 +51,12 @@ public class ModularArrow extends ArrowItem implements PlatformModularItemMethod
 
 
     @Override
-    public Text getName(ItemStack stack) {
+    public Component getName(ItemStack stack) {
         return DisplayNameProperty.getDisplayText(stack);
     }
 
     @Override
-    public void appendTooltip(ItemStack itemStack, TooltipContext tooltipContext, List<Text> list, TooltipType tooltipType) {
+    public void appendHoverText(ItemStack itemStack, TooltipContext tooltipContext, List<Component> list, TooltipFlag tooltipType) {
         LoreProperty.appendLoreTop(itemStack, list, tooltipContext, tooltipType);
     }
 }

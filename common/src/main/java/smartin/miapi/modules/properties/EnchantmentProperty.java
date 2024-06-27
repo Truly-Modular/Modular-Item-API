@@ -2,16 +2,15 @@ package smartin.miapi.modules.properties;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.EnchantmentTarget;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.registry.Registries;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.JsonHelper;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.GsonHelper;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import smartin.miapi.Miapi;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.craft.CraftAction;
@@ -41,7 +40,7 @@ public class EnchantmentProperty implements CraftingProperty, ModuleProperty {
             replaceMap.clear();
             fillMapDefault();
         }, (isClient, path, data) -> {
-            JsonObject obj = JsonHelper.deserialize(data);
+            JsonObject obj = GsonHelper.parse(data);
             String id = obj.getAsJsonPrimitive("id").getAsString();
 
             if (obj.has("add")) {
@@ -163,7 +162,7 @@ public class EnchantmentProperty implements CraftingProperty, ModuleProperty {
         }
         List<Enchantment> enchantments = new ArrayList<>();
         for (String id : replaceList) {
-            Enchantment enchantment = Registries.ENCHANTMENT.get(new Identifier(id));
+            Enchantment enchantment = Registries.ENCHANTMENT.get(new ResourceLocation(id));
             if (enchantment != null && !enchantments.contains(enchantment)) {
                 enchantments.add(enchantment);
             }
@@ -216,7 +215,7 @@ public class EnchantmentProperty implements CraftingProperty, ModuleProperty {
     }
 
     @Override
-    public ItemStack preview(ItemStack old, ItemStack crafting, PlayerEntity player, ModularWorkBenchEntity bench, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<String, String> data) {
+    public ItemStack preview(ItemStack old, ItemStack crafting, Player player, ModularWorkBenchEntity bench, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<String, String> data) {
         List<Enchantment> allowedEnchants = getAllowedList(crafting);
         Map<Enchantment, Integer> newEnchants = new HashMap<>();
         for (Map.Entry<Enchantment, Integer> entry : EnchantmentHelper.get(crafting).entrySet()) {
@@ -230,12 +229,12 @@ public class EnchantmentProperty implements CraftingProperty, ModuleProperty {
             }
         }
         crafting.removeSubNbt("Enchantments");
-        EnchantmentHelper.set(newEnchants, crafting);
+        EnchantmentHelper.setEnchantments(newEnchants, crafting);
         return crafting;
     }
 
     @Override
-    public List<ItemStack> performCraftAction(ItemStack old, ItemStack crafting, PlayerEntity player, ModularWorkBenchEntity bench, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<String, String> data) {
+    public List<ItemStack> performCraftAction(ItemStack old, ItemStack crafting, Player player, ModularWorkBenchEntity bench, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<String, String> data) {
         List<Enchantment> allowedEnchants = getAllowedList(crafting);
         Map<Enchantment, Integer> newEnchants = new HashMap<>();
         for (Map.Entry<Enchantment, Integer> entry : EnchantmentHelper.get(crafting).entrySet()) {
@@ -244,7 +243,7 @@ public class EnchantmentProperty implements CraftingProperty, ModuleProperty {
             }
         }
         crafting.removeSubNbt("Enchantments");
-        EnchantmentHelper.set(newEnchants, crafting);
+        EnchantmentHelper.setEnchantments(newEnchants, crafting);
         return CraftingProperty.super.performCraftAction(old, crafting, player, bench, craftAction, module, inventory, data);
     }
 

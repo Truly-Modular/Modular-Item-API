@@ -3,18 +3,18 @@ package smartin.miapi.client.gui.crafting.crafter;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.Element;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.Inventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.screen.slot.Slot;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.ColorHelper;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FastColor;
+import net.minecraft.world.Container;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
@@ -40,13 +40,13 @@ public class EditView extends InteractAbleWidget {
     ModuleInstance instance;
     Consumer<ItemStack> previewConsumer;
     Consumer<Object> back;
-    List<Element> defaultChildren = new ArrayList<>();
+    List<GuiEventListener> defaultChildren = new ArrayList<>();
     EditOption.EditContext editContext;
     SlotProperty.ModuleSlot slot;
     List<Slot> currentSlots = new ArrayList<>();
 
     public EditView(int x, int y, int width, int height, ItemStack stack, @Nullable SlotProperty.ModuleSlot slot, Consumer<ItemStack> preview, Consumer<Object> back) {
-        super(x, y, width, height, Text.empty());
+        super(x, y, width, height, Component.empty());
         this.previewConsumer = preview;
         this.stack = stack;
         this.slot = slot;
@@ -60,20 +60,20 @@ public class EditView extends InteractAbleWidget {
         defaultChildren.add(headerHolder);
 
 
-        ScrollingTextWidget header = new ScrollingTextWidget((int) ((this.getX() + 5) / headerScale), (int) (this.getY() / headerScale), (int) ((this.width - 10) / headerScale), Text.translatable(Miapi.MOD_ID + ".ui.edit.header"), ColorHelper.Argb.getArgb(255, 255, 255, 255));
+        ScrollingTextWidget header = new ScrollingTextWidget((int) ((this.getX() + 5) / headerScale), (int) (this.getY() / headerScale), (int) ((this.width - 10) / headerScale), Component.translatable(Miapi.MOD_ID + ".ui.edit.header"), FastColor.ARGB32.color(255, 255, 255, 255));
         headerHolder.addChild(header);
         ScrollList list = new ScrollList(x, y + 16, width, height - 14, new ArrayList<>());
         defaultChildren.add(list);
         list.children().clear();
-        defaultChildren.add(new SimpleButton<>(this.getX() + 2, this.getY() + this.height - 10, 40, 12, Text.translatable(Miapi.MOD_ID + ".ui.back"), stack, back));
+        defaultChildren.add(new SimpleButton<>(this.getX() + 2, this.getY() + this.height - 10, 40, 12, Component.translatable(Miapi.MOD_ID + ".ui.back"), stack, back));
         ArrayList<InteractAbleWidget> toList = new ArrayList<>();
         editContext = new EditOption.EditContext() {
             @Override
-            public void craft(PacketByteBuf packetByteBuf) {
+            public void craft(FriendlyByteBuf packetByteBuf) {
             }
 
             @Override
-            public void preview(PacketByteBuf preview) {
+            public void preview(FriendlyByteBuf preview) {
 
             }
 
@@ -93,21 +93,21 @@ public class EditView extends InteractAbleWidget {
             }
 
             @Override
-            public @Nullable PlayerEntity getPlayer() {
-                return MinecraftClient.getInstance().player;
+            public @Nullable Player getPlayer() {
+                return Minecraft.getInstance().player;
             }
 
             @Override
             public @Nullable ModularWorkBenchEntity getWorkbench() {
-                if (MinecraftClient.getInstance().player.currentScreenHandler instanceof CraftingScreenHandler craftingScreenHandler) {
+                if (Minecraft.getInstance().player.containerMenu instanceof CraftingScreenHandler craftingScreenHandler) {
                     return craftingScreenHandler.blockEntity;
                 }
                 return null;
             }
 
             @Override
-            public Inventory getLinkedInventory() {
-                if (MinecraftClient.getInstance().player.currentScreenHandler instanceof CraftingScreenHandler craftingScreenHandler) {
+            public Container getLinkedInventory() {
+                if (Minecraft.getInstance().player.containerMenu instanceof CraftingScreenHandler craftingScreenHandler) {
                     return craftingScreenHandler.inventory;
                 }
                 return null;
@@ -115,7 +115,7 @@ public class EditView extends InteractAbleWidget {
 
             @Override
             public CraftingScreenHandler getScreenHandler() {
-                if (MinecraftClient.getInstance().player.currentScreenHandler instanceof CraftingScreenHandler craftingScreenHandler) {
+                if (Minecraft.getInstance().player.containerMenu instanceof CraftingScreenHandler craftingScreenHandler) {
                     return craftingScreenHandler;
                 }
                 return null;
@@ -137,7 +137,7 @@ public class EditView extends InteractAbleWidget {
 
     public void clearSlots() {
         currentSlots.forEach(slot1 -> {
-            if (MinecraftClient.getInstance().player.currentScreenHandler instanceof CraftingScreenHandler handler) {
+            if (Minecraft.getInstance().player.containerMenu instanceof CraftingScreenHandler handler) {
                 handler.removeSlotByClient(slot1);
             }
         });
@@ -151,12 +151,12 @@ public class EditView extends InteractAbleWidget {
     public void setEditOption(EditOption option) {
         editContext = new EditOption.EditContext() {
             @Override
-            public void craft(PacketByteBuf packetByteBuf) {
-                ScreenHandler screenHandler = this.getScreenHandler();
+            public void craft(FriendlyByteBuf packetByteBuf) {
+                AbstractContainerMenu screenHandler = this.getScreenHandler();
                 if (screenHandler instanceof CraftingScreenHandler screenHandler1) {
                     ModuleInstance toCrafter = instance;
-                    PacketByteBuf buf = Networking.createBuffer();
-                    buf.writeString(RegistryInventory.editOptions.findKey(option));
+                    FriendlyByteBuf buf = Networking.createBuffer();
+                    buf.writeUtf(RegistryInventory.editOptions.findKey(option));
                     List<Integer> position = new ArrayList<>();
                     if (toCrafter != null) {
                         toCrafter.calculatePosition(position);
@@ -169,7 +169,7 @@ public class EditView extends InteractAbleWidget {
                     int[] positionArray = position.stream()
                             .mapToInt(Integer::intValue)
                             .toArray();
-                    buf.writeIntArray(positionArray);
+                    buf.writeVarIntArray(positionArray);
                     buf.writeBytes(packetByteBuf.copy());
                     Networking.sendC2S(screenHandler1.editPacketID, buf);
                 }
@@ -177,7 +177,7 @@ public class EditView extends InteractAbleWidget {
             }
 
             @Override
-            public void preview(PacketByteBuf preview) {
+            public void preview(FriendlyByteBuf preview) {
                 previewConsumer.accept(option.preview(preview, this));
             }
 
@@ -197,13 +197,13 @@ public class EditView extends InteractAbleWidget {
             }
 
             @Override
-            public @Nullable PlayerEntity getPlayer() {
-                return MinecraftClient.getInstance().player;
+            public @Nullable Player getPlayer() {
+                return Minecraft.getInstance().player;
             }
 
             @Override
             public @Nullable ModularWorkBenchEntity getWorkbench() {
-                if (MinecraftClient.getInstance().player.currentScreenHandler instanceof CraftingScreenHandler craftingScreenHandler) {
+                if (Minecraft.getInstance().player.containerMenu instanceof CraftingScreenHandler craftingScreenHandler) {
                     return craftingScreenHandler.blockEntity;
                 }
                 return null;
@@ -211,15 +211,15 @@ public class EditView extends InteractAbleWidget {
 
             @Override
             public CraftingScreenHandler getScreenHandler() {
-                if (MinecraftClient.getInstance().player.currentScreenHandler instanceof CraftingScreenHandler craftingScreenHandler) {
+                if (Minecraft.getInstance().player.containerMenu instanceof CraftingScreenHandler craftingScreenHandler) {
                     return craftingScreenHandler;
                 }
                 return null;
             }
 
             @Override
-            public Inventory getLinkedInventory() {
-                if (MinecraftClient.getInstance().player.currentScreenHandler instanceof CraftingScreenHandler craftingScreenHandler) {
+            public Container getLinkedInventory() {
+                if (Minecraft.getInstance().player.containerMenu instanceof CraftingScreenHandler craftingScreenHandler) {
                     return craftingScreenHandler.inventory;
                 }
                 return null;
@@ -227,7 +227,7 @@ public class EditView extends InteractAbleWidget {
 
             @Override
             public void addSlot(Slot slot) {
-                if (MinecraftClient.getInstance().player.currentScreenHandler instanceof CraftingScreenHandler craftingScreenHandler) {
+                if (Minecraft.getInstance().player.containerMenu instanceof CraftingScreenHandler craftingScreenHandler) {
                     craftingScreenHandler.addSlotByClient(slot);
                     currentSlots.add(slot);
                 }
@@ -235,7 +235,7 @@ public class EditView extends InteractAbleWidget {
 
             @Override
             public void removeSlot(Slot slot) {
-                if (MinecraftClient.getInstance().player.currentScreenHandler instanceof CraftingScreenHandler craftingScreenHandler) {
+                if (Minecraft.getInstance().player.containerMenu instanceof CraftingScreenHandler craftingScreenHandler) {
                     craftingScreenHandler.removeSlotByClient(slot);
                     currentSlots.remove(slot);
                 }
@@ -246,19 +246,19 @@ public class EditView extends InteractAbleWidget {
     }
 
     class SlotButton extends InteractAbleWidget {
-        private final Identifier texture = Identifier.of(Miapi.MOD_ID, "textures/gui/crafter/module_button_select.png");
+        private final ResourceLocation texture = ResourceLocation.fromNamespaceAndPath(Miapi.MOD_ID, "textures/gui/crafter/module_button_select.png");
         private final ScrollingTextWidget textWidget;
         private final EditOption option;
 
 
         public SlotButton(int x, int y, int width, int height, String editName, EditOption option, ModuleInstance instance) {
-            super(x, y, width, height, Text.empty());
-            Text translated = StatResolver.translateAndResolve(Miapi.MOD_ID + ".edit.option." + editName, instance);
-            textWidget = new ScrollingTextWidget(0, 0, this.width, translated, ColorHelper.Argb.getArgb(255, 255, 255, 255));
+            super(x, y, width, height, Component.empty());
+            Component translated = StatResolver.translateAndResolve(Miapi.MOD_ID + ".edit.option." + editName, instance);
+            textWidget = new ScrollingTextWidget(0, 0, this.width, translated, FastColor.ARGB32.color(255, 255, 255, 255));
             this.option = option;
         }
 
-        public void renderWidget(DrawContext drawContext, int mouseX, int mouseY, float delta) {
+        public void renderWidget(GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
             RenderSystem.enableBlend();
             RenderSystem.defaultBlendFunc();

@@ -2,15 +2,15 @@ package smartin.miapi.modules.edit_options.CreateItemOption;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.Inventory;
-import net.minecraft.inventory.SimpleInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.registry.Registries;
-import net.minecraft.screen.slot.Slot;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.Container;
+import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
@@ -55,22 +55,22 @@ public class CreateItemOption implements EditOption {
     }
 
     @Override
-    public ItemStack preview(PacketByteBuf buffer, EditContext editContext) {
-        String itemID = buffer.readString();
-        String module = buffer.readString();
+    public ItemStack preview(FriendlyByteBuf buffer, EditContext editContext) {
+        String itemID = buffer.readUtf();
+        String module = buffer.readUtf();
         int count = buffer.readInt();
-        ItemStack itemStack = new ItemStack(Registries.ITEM.get(Identifier.of(itemID)));
+        ItemStack itemStack = new ItemStack(BuiltInRegistries.ITEM.get(ResourceLocation.parse(itemID)));
         itemStack.setCount(count);
         ModuleInstance instance = new ModuleInstance(RegistryInventory.modules.get(module));
         instance.writeToItem(itemStack);
         CraftAction action = new CraftAction(buffer, editContext.getWorkbench());
-        Inventory inventory = editContext.getLinkedInventory();
+        Container inventory = editContext.getLinkedInventory();
         if (
                 PreviewManager.currentPreviewMaterial != null
         ) {
-            inventory = new SimpleInventory(2);
-            PreviewManager.currentPreviewMaterialStack.getDamage();
-            inventory.setStack(1, PreviewManager.currentPreviewMaterialStack);
+            inventory = new SimpleContainer(2);
+            PreviewManager.currentPreviewMaterialStack.getDamageValue();
+            inventory.setItem(1, PreviewManager.currentPreviewMaterialStack);
         }
         action.linkInventory(inventory, 1);
         action.setItem(itemStack);
@@ -78,11 +78,11 @@ public class CreateItemOption implements EditOption {
     }
 
     @Override
-    public ItemStack execute(PacketByteBuf buffer, EditContext editContext) {
-        String itemID = buffer.readString();
-        String module = buffer.readString();
+    public ItemStack execute(FriendlyByteBuf buffer, EditContext editContext) {
+        String itemID = buffer.readUtf();
+        String module = buffer.readUtf();
         int count = buffer.readInt();
-        ItemStack itemStack = new ItemStack(Registries.ITEM.get(Identifier.of(itemID)));
+        ItemStack itemStack = new ItemStack(BuiltInRegistries.ITEM.get(ResourceLocation.parse(itemID)));
         itemStack.setCount(count);
         ModuleInstance instance = new ModuleInstance(RegistryInventory.modules.get(module));
         instance.writeToItem(itemStack);
@@ -92,7 +92,7 @@ public class CreateItemOption implements EditOption {
         if (action.canPerform()) {
             return action.perform();
         } else {
-            Miapi.LOGGER.warn("Could not previewStack Craft Action. This might indicate an exploit by " + editContext.getPlayer().getUuidAsString());
+            Miapi.LOGGER.warn("Could not previewStack Craft Action. This might indicate an exploit by " + editContext.getPlayer().getStringUUID());
             return editContext.getItemstack();
         }
     }
@@ -113,27 +113,27 @@ public class CreateItemOption implements EditOption {
     @Environment(EnvType.CLIENT)
     @Override
     public InteractAbleWidget getIconGui(int x, int y, int width, int height, Consumer<EditOption> select, Supplier<EditOption> getSelected) {
-        return new EditOptionIcon(x, y, width, height, select, getSelected, CraftingScreen.BACKGROUND_TEXTURE, 339 + 32, 25+140, 512, 512,"miapi.ui.edit_option.hover.create", this);
+        return new EditOptionIcon(x, y, width, height, select, getSelected, CraftingScreen.INVENTORY_LOCATION, 339 + 32, 25+140, 512, 512,"miapi.ui.edit_option.hover.create", this);
     }
 
     @Environment(EnvType.CLIENT)
     public static EditContext transform(EditContext context, CreateItem item) {
         return new EditContext() {
             @Override
-            public void craft(PacketByteBuf craftBuffer) {
-                PacketByteBuf packetByteBuf = Networking.createBuffer();
-                packetByteBuf.writeString(Registries.ITEM.getId(selected.getItem().getItem()).toString());
-                packetByteBuf.writeString(selected.getBaseModule().name());
+            public void craft(FriendlyByteBuf craftBuffer) {
+                FriendlyByteBuf packetByteBuf = Networking.createBuffer();
+                packetByteBuf.writeUtf(BuiltInRegistries.ITEM.getKey(selected.getItem().getItem()).toString());
+                packetByteBuf.writeUtf(selected.getBaseModule().name());
                 packetByteBuf.writeInt(selected.getItem().getCount());
                 packetByteBuf.writeBytes(craftBuffer);
                 context.craft(packetByteBuf);
             }
 
             @Override
-            public void preview(PacketByteBuf preview) {
-                PacketByteBuf packetByteBuf = Networking.createBuffer();
-                packetByteBuf.writeString(Registries.ITEM.getId(selected.getItem().getItem()).toString());
-                packetByteBuf.writeString(selected.getBaseModule().name());
+            public void preview(FriendlyByteBuf preview) {
+                FriendlyByteBuf packetByteBuf = Networking.createBuffer();
+                packetByteBuf.writeUtf(BuiltInRegistries.ITEM.getKey(selected.getItem().getItem()).toString());
+                packetByteBuf.writeUtf(selected.getBaseModule().name());
                 packetByteBuf.writeInt(selected.getItem().getCount());
                 packetByteBuf.writeBytes(preview);
                 context.preview(packetByteBuf);
@@ -157,7 +157,7 @@ public class CreateItemOption implements EditOption {
             }
 
             @Override
-            public @Nullable PlayerEntity getPlayer() {
+            public @Nullable Player getPlayer() {
                 return context.getPlayer();
             }
 
@@ -167,7 +167,7 @@ public class CreateItemOption implements EditOption {
             }
 
             @Override
-            public Inventory getLinkedInventory() {
+            public Container getLinkedInventory() {
                 return context.getLinkedInventory();
             }
 
@@ -194,9 +194,9 @@ public class CreateItemOption implements EditOption {
 
         ItemModule getBaseModule();
 
-        Text getName();
+        Component getName();
 
-        default boolean isAllowed(PlayerEntity player, ModularWorkBenchEntity entity) {
+        default boolean isAllowed(Player player, ModularWorkBenchEntity entity) {
             return true;
         }
     }
@@ -209,7 +209,7 @@ public class CreateItemOption implements EditOption {
 
         @Override
         public ItemStack getItem() {
-            ItemStack itemStack = new ItemStack(Registries.ITEM.get(Identifier.of(item)));
+            ItemStack itemStack = new ItemStack(BuiltInRegistries.ITEM.get(ResourceLocation.parse(item)));
             itemStack.setCount(count);
             return itemStack;
         }
@@ -220,8 +220,8 @@ public class CreateItemOption implements EditOption {
         }
 
         @Override
-        public Text getName() {
-            return Text.translatable(translation);
+        public Component getName() {
+            return Component.translatable(translation);
         }
     }
 }

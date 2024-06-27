@@ -2,10 +2,10 @@ package smartin.miapi.client.gui;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.ColorHelper;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FastColor;
 import smartin.miapi.client.gui.crafting.CraftingScreen;
 
 /**
@@ -13,7 +13,7 @@ import smartin.miapi.client.gui.crafting.CraftingScreen;
  */
 @Environment(EnvType.CLIENT)
 public class StatBar extends InteractAbleWidget {
-    public Identifier texture = CraftingScreen.BACKGROUND_TEXTURE;
+    public ResourceLocation texture = CraftingScreen.INVENTORY_LOCATION;
 
     double primaryPercent = 0;
     double secondaryPercent = 0;
@@ -23,7 +23,7 @@ public class StatBar extends InteractAbleWidget {
     int shadowSize = 1;
 
     public StatBar(int x, int y, int width, int height, int offColor) {
-        super(x, y, width, height, Text.empty());
+        super(x, y, width, height, Component.empty());
         this.offColor = offColor;
     }
 
@@ -40,8 +40,8 @@ public class StatBar extends InteractAbleWidget {
     }
 
     @Override
-    public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
-        context.fill(getX(), getY(), getX() + width, getY() + height, ColorHelper.Argb.getArgb(255, 255, 0, 255));
+    public void renderWidget(GuiGraphics context, int mouseX, int mouseY, float delta) {
+        context.fill(getX(), getY(), getX() + width, getY() + height, FastColor.ARGB32.color(255, 255, 0, 255));
         context.fill(getX(), getY(), (int) (getX() + width * primaryPercent), height + getY(), primaryColor);
         context.fill((int) (getX() + width * primaryPercent), getY(), (int) (getX() + width * secondaryPercent), height + getY(), secondaryColor);
         context.fill((int) (getX() + width * secondaryPercent), getY(), getX() + width, height + getY(), offColor);

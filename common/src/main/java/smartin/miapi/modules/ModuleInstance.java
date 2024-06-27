@@ -5,8 +5,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.annotations.JsonAdapter;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.component.ComponentType;
-import net.minecraft.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.item.modular.PropertyResolver;
 import smartin.miapi.modules.cache.ModularItemCache;
@@ -17,6 +15,8 @@ import smartin.miapi.registries.RegistryInventory;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
+import net.minecraft.core.component.DataComponentType;
+import net.minecraft.world.item.ItemStack;
 
 import static smartin.miapi.Miapi.LOGGER;
 
@@ -26,7 +26,7 @@ import static smartin.miapi.Miapi.LOGGER;
 @JsonAdapter(ModuleInstanceJsonAdapter.class)
 public class ModuleInstance {
     public static Codec<ModuleInstance> CODEC;
-    public static ComponentType<ModuleInstance> componentType;
+    public static DataComponentType<ModuleInstance> componentType;
 
 
     static {
@@ -46,7 +46,7 @@ public class ModuleInstance {
                     moduleInstance.subModules.values().forEach(childInstance -> childInstance.parent = moduleInstance);
                     return moduleInstance;
                 }));
-        componentType = ComponentType.<ModuleInstance>builder().codec(CODEC).build();
+        componentType = DataComponentType.<ModuleInstance>builder().persistent(CODEC).build();
     }
     /**
      * The item module represented by this module instance.
@@ -251,7 +251,7 @@ public class ModuleInstance {
         if (clearCache) {
             ModularItemCache.clearUUIDFor(stack);
         }
-        stack.apply(ModuleInstance.componentType, this, (component) -> component);
+        stack.update(ModuleInstance.componentType, this, (component) -> component);
     }
 
     /**

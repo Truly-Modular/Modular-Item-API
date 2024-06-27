@@ -3,8 +3,6 @@ package smartin.miapi.modules.cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Environment;
@@ -23,6 +21,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.item.ItemStack;
 
 import static smartin.miapi.events.MiapiEvents.CACHE_CLEAR_EVENT;
 
@@ -36,15 +36,15 @@ public class ModularItemCache {
             .expireAfterAccess(CACHE_LIFETIME, CACHE_LIFETIME_UNIT)
             .build(new CacheLoader<>() {
                 public @NotNull Cache load(@NotNull UUID key) {
-                    return new Cache(key, net.minecraft.item.ItemStack.EMPTY);
+                    return new Cache(key, net.minecraft.world.item.ItemStack.EMPTY);
                 }
             });
     protected static Map<ItemStack, UUID> lookUpTable = new WeakHashMap<>();
-    protected static final LoadingCache<NbtCompound, UUID> nbtCache = CacheBuilder.newBuilder()
+    protected static final LoadingCache<CompoundTag, UUID> nbtCache = CacheBuilder.newBuilder()
             .maximumSize(CACHE_SIZE)
             .expireAfterAccess(CACHE_LIFETIME, CACHE_LIFETIME_UNIT)
             .build(new CacheLoader<>() {
-                public @NotNull UUID load(@NotNull NbtCompound key) {
+                public @NotNull UUID load(@NotNull CompoundTag key) {
                     return ModularItemCache.getMissingUUID();
                 }
             });
@@ -169,7 +169,7 @@ public class ModularItemCache {
         protected Map<String, Object> map = new ConcurrentHashMap<>();
         public UUID uuid;
         public ItemStack stack;
-        public NbtCompound compound;
+        public CompoundTag compound;
 
         public Cache(UUID uuid, ItemStack stack) {
             this.uuid = uuid;
@@ -179,7 +179,7 @@ public class ModularItemCache {
         }
 
         public boolean isValidItem(ItemStack itemStack) {
-            return ItemStack.areItemsEqual(itemStack, stack) && itemStack.getOrCreateNbt().equals(compound);
+            return ItemStack.isSameItem(itemStack, stack) && itemStack.getOrCreateNbt().equals(compound);
         }
 
         public void set(String key, Object object) {

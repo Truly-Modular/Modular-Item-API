@@ -1,7 +1,7 @@
 package smartin.miapi.modules.properties.compat.ht_treechop;
 
 import dev.architectury.platform.Platform;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 import smartin.miapi.modules.properties.util.DoubleProperty;
 
 public class TreechopProperty extends DoubleProperty {

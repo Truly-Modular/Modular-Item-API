@@ -2,10 +2,6 @@ package smartin.miapi.modules.properties;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.item.ItemStack;
-import net.minecraft.registry.Registries;
-import net.minecraft.util.Identifier;
 import smartin.miapi.item.FakeEnchantment;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ItemModule;
@@ -15,6 +11,9 @@ import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.ArrayList;
 import java.util.List;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.Enchantment;
 
 public class EnchantmentTransformerProperty implements ModuleProperty {
     public static String KEY = "enchantment_transformers";
@@ -70,7 +69,7 @@ public class EnchantmentTransformerProperty implements ModuleProperty {
         public EnchantMentTransformerData(JsonElement element, ModuleInstance moduleInstance) {
             json = element.getAsJsonObject();
             this.moduleInstance = moduleInstance;
-            enchantment = Registries.ENCHANTMENT.get(new Identifier(ModuleProperty.getString(json, "enchantment", moduleInstance, "")));
+            enchantment = Registries.ENCHANTMENT.get(new ResourceLocation(ModuleProperty.getString(json, "enchantment", moduleInstance, "")));
         }
 
         public int apply(int prevLevel) {

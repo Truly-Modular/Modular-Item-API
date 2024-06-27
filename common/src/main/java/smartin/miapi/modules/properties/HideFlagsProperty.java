@@ -1,7 +1,7 @@
 package smartin.miapi.modules.properties;
 
 import com.google.gson.JsonElement;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 

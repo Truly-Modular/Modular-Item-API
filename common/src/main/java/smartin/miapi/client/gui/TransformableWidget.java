@@ -2,11 +2,11 @@ package smartin.miapi.client.gui;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.Drawable;
-import net.minecraft.client.gui.Element;
-import net.minecraft.text.Text;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Renderable;
+import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.network.chat.Component;
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
 
@@ -34,12 +34,12 @@ public class TransformableWidget extends InteractAbleWidget {
      *               These for Params above are used to create feedback on isMouseOver() by default
      * @param title  the Title of the Widget
      */
-    public TransformableWidget(int x, int y, int width, int height, Text title) {
+    public TransformableWidget(int x, int y, int width, int height, Component title) {
         super(x, y, width, height, title);
     }
 
     public TransformableWidget(int x, int y, int width, int height, float scale) {
-        super(x, y, width, height, Text.empty());
+        super(x, y, width, height, Component.empty());
         rawProjection = new Matrix4f();
         rawProjection.scale(scale);
     }
@@ -54,7 +54,7 @@ public class TransformableWidget extends InteractAbleWidget {
     @Override
     public void mouseMoved(double mouseX, double mouseY) {
         Vector4f position = transFormMousePos(mouseX, mouseY);
-        for (Element child : this.children()) {
+        for (GuiEventListener child : this.children()) {
             if (child.isMouseOver(position.x, position.y)) {
                 child.mouseMoved(position.x, position.y);
             }
@@ -73,7 +73,7 @@ public class TransformableWidget extends InteractAbleWidget {
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         Vector4f position = transFormMousePos(mouseX, mouseY);
-        for (Element child : this.children()) {
+        for (GuiEventListener child : this.children()) {
             if (child.isMouseOver(position.x, position.y) && child.mouseClicked(position.x, position.y, button)) {
                 return true;
             }
@@ -91,7 +91,7 @@ public class TransformableWidget extends InteractAbleWidget {
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
         Vector4f position = transFormMousePos(mouseX, mouseY);
 
-        for (Element child : this.children()) {
+        for (GuiEventListener child : this.children()) {
             if (child.isMouseOver(position.x, position.y) && child.mouseReleased(position.x, position.y, button)) {
                 return true;
             }
@@ -110,7 +110,7 @@ public class TransformableWidget extends InteractAbleWidget {
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
         Vector4f position = transFormMousePos(mouseX, mouseY);
-        for (Element child : this.children()) {
+        for (GuiEventListener child : this.children()) {
             if (child.isMouseOver(position.x, position.y) && child.mouseDragged(position.x, position.y, button, deltaX, deltaY)) {
                 return true;
             }
@@ -128,7 +128,7 @@ public class TransformableWidget extends InteractAbleWidget {
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
         Vector4f position = transFormMousePos(mouseX, mouseY);
-        for (Element child : this.children()) {
+        for (GuiEventListener child : this.children()) {
             if (child.isMouseOver(position.x, position.y) && child.mouseScrolled(position.x, position.y, amount)) {
                 return true;
             }
@@ -148,7 +148,7 @@ public class TransformableWidget extends InteractAbleWidget {
     @Override
     public boolean isMouseOver(double mouseX, double mouseY) {
         Vector4f position = transFormMousePos(mouseX, mouseY);
-        for (Element element : children()) {
+        for (GuiEventListener element : children()) {
             if (element.isMouseOver(position.x, position.y)) {
                 return true;
             }
@@ -167,36 +167,36 @@ public class TransformableWidget extends InteractAbleWidget {
      *                This is needed for animations and co
      */
     @Override
-    public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
-        DrawContext drawContext = new DrawContext(MinecraftClient.getInstance(), context.getVertexConsumers());
-        drawContext.getMatrices().multiplyPositionMatrix(context.getMatrices().peek().getPositionMatrix());
+    public void renderWidget(GuiGraphics context, int mouseX, int mouseY, float delta) {
+        GuiGraphics drawContext = new GuiGraphics(Minecraft.getInstance(), context.bufferSource());
+        drawContext.pose().mulPose(context.pose().last().pose());
 
-        drawContext.getMatrices().multiplyPositionMatrix(rawProjection);
+        drawContext.pose().mulPose(rawProjection);
         Vector4f position = transFormMousePos(mouseX, mouseY);
 
         children().forEach(element -> {
-            if (element instanceof Drawable drawable) {
+            if (element instanceof Renderable drawable) {
                 drawable.render(drawContext, Math.round(position.x), Math.round(position.y), delta);
             }
         });
     }
 
     @Override
-    public void renderHover(DrawContext context, int mouseX, int mouseY, float delta) {
-        DrawContext drawContext = new DrawContext(MinecraftClient.getInstance(), context.getVertexConsumers());
-        drawContext.getMatrices().multiplyPositionMatrix(context.getMatrices().peek().getPositionMatrix());
+    public void renderHover(GuiGraphics context, int mouseX, int mouseY, float delta) {
+        GuiGraphics drawContext = new GuiGraphics(Minecraft.getInstance(), context.bufferSource());
+        drawContext.pose().mulPose(context.pose().last().pose());
 
-        drawContext.getMatrices().multiplyPositionMatrix(rawProjection);
+        drawContext.pose().mulPose(rawProjection);
         Vector4f position = transFormMousePos(mouseX, mouseY);
 
         super.renderHover(drawContext, Math.round(position.x), Math.round(position.y), delta);
     }
 
-    public void renderWidget(InteractAbleWidget widget, DrawContext context, int mouseX, int mouseY, float delta) {
-        DrawContext drawContext = new DrawContext(MinecraftClient.getInstance(), context.getVertexConsumers());
-        drawContext.getMatrices().multiplyPositionMatrix(context.getMatrices().peek().getPositionMatrix());
+    public void renderWidget(InteractAbleWidget widget, GuiGraphics context, int mouseX, int mouseY, float delta) {
+        GuiGraphics drawContext = new GuiGraphics(Minecraft.getInstance(), context.bufferSource());
+        drawContext.pose().mulPose(context.pose().last().pose());
 
-        drawContext.getMatrices().multiplyPositionMatrix(rawProjection);
+        drawContext.pose().mulPose(rawProjection);
         Vector4f position = transFormMousePos(mouseX, mouseY);
         widget.render(drawContext, Math.round(position.x), Math.round(position.y), delta);
     }

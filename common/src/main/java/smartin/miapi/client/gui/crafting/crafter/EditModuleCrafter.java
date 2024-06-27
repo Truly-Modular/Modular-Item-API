@@ -2,13 +2,13 @@ package smartin.miapi.client.gui.crafting.crafter;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.Inventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.screen.slot.Slot;
-import net.minecraft.text.Text;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.Container;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.client.gui.InteractAbleWidget;
@@ -40,7 +40,7 @@ public class EditModuleCrafter extends InteractAbleWidget {
     public String moduleType;
 
     public EditModuleCrafter(int x, int y, int width, int height, EditOption editOption, EditOption.EditContext editContext, String moduleType) {
-        super(x, y, width, height, Text.empty());
+        super(x, y, width, height, Component.empty());
         this.moduleType = moduleType;
         this.editOption = editOption;
         this.editContext = editContext;
@@ -87,12 +87,12 @@ public class EditModuleCrafter extends InteractAbleWidget {
     public static EditOption.EditContext transform(EditOption.EditContext context, SlotProperty.ModuleSlot slot) {
         return new EditOption.EditContext() {
             @Override
-            public void craft(PacketByteBuf craftBuffer) {
+            public void craft(FriendlyByteBuf craftBuffer) {
                 context.craft(craftBuffer);
             }
 
             @Override
-            public void preview(PacketByteBuf preview) {
+            public void preview(FriendlyByteBuf preview) {
                 context.preview(preview);
             }
 
@@ -112,7 +112,7 @@ public class EditModuleCrafter extends InteractAbleWidget {
             }
 
             @Override
-            public @Nullable PlayerEntity getPlayer() {
+            public @Nullable Player getPlayer() {
                 return context.getPlayer();
             }
 
@@ -122,7 +122,7 @@ public class EditModuleCrafter extends InteractAbleWidget {
             }
 
             @Override
-            public Inventory getLinkedInventory() {
+            public Container getLinkedInventory() {
                 return context.getLinkedInventory();
             }
 
@@ -144,7 +144,7 @@ public class EditModuleCrafter extends InteractAbleWidget {
     }
 
     @Override
-    public void renderWidget(DrawContext drawContext, int mouseX, int mouseY, float delta) {
+    public void renderWidget(GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
         super.render(drawContext, mouseX, mouseY, delta);
     }
 

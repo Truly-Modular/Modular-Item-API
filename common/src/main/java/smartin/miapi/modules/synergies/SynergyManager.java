@@ -6,7 +6,6 @@ import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import net.minecraft.text.Text;
 import smartin.miapi.Environment;
 import smartin.miapi.Miapi;
 import smartin.miapi.datapack.ReloadEvents;
@@ -27,6 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import net.minecraft.network.chat.Component;
 
 public class SynergyManager {
     public static Map<ItemModule, List<Synergy>> maps = new ConcurrentHashMap<>();
@@ -38,7 +38,7 @@ public class SynergyManager {
                 List<Synergy> synergies = maps.get(moduleInstance.module);
                 if (synergies != null) {
                     synergies.forEach(synergy -> {
-                        List<Text> error = new ArrayList<>();
+                        List<Component> error = new ArrayList<>();
                         if (synergy.condition.isAllowed(new ConditionManager.ModuleConditionContext(moduleInstance, null, null, oldMap, error))) {
                             synergy.holder.applyHolder(oldMap);
                         }

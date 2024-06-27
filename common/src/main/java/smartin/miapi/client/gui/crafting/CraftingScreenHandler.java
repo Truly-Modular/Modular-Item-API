@@ -1,21 +1,26 @@
 package smartin.miapi.client.gui.crafting;
 
 import com.mojang.datafixers.util.Pair;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.component.EnchantmentEffectComponentTypes;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.Inventory;
-import net.minecraft.inventory.SimpleInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.screen.*;
-import net.minecraft.screen.slot.Slot;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.Container;
+import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ContainerData;
+import net.minecraft.world.inventory.ContainerLevelAccess;
+import net.minecraft.world.inventory.InventoryMenu;
+import net.minecraft.world.inventory.SimpleContainerData;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.EnchantmentEffectComponents;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
@@ -33,19 +38,19 @@ import smartin.miapi.registries.RegistryInventory;
 import java.util.ArrayList;
 import java.util.List;
 
-import static net.minecraft.screen.PlayerScreenHandler.BLOCK_ATLAS_TEXTURE;
-import static net.minecraft.screen.PlayerScreenHandler.EMPTY_OFFHAND_ARMOR_SLOT;
+import static net.minecraft.world.inventory.InventoryMenu.BLOCK_ATLAS;
+import static net.minecraft.world.inventory.InventoryMenu.EMPTY_ARMOR_SLOT_SHIELD;
 
 /**
  * This is the screen handler class for miapis default Crafting Screen.
  */
-public class CraftingScreenHandler extends ScreenHandler {
-    private final ScreenHandlerContext context;
+public class CraftingScreenHandler extends AbstractContainerMenu {
+    private final ContainerLevelAccess context;
     private static final String PACKET_ID = ":crafting_packet_";
-    public Inventory inventory;
-    public PlayerInventory playerInventory;
+    public Container inventory;
+    public Inventory playerInventory;
     public @Nullable ModularWorkBenchEntity blockEntity;
-    public final PropertyDelegate delegate;
+    public final ContainerData delegate;
     public final String packetID;
     public final String editPacketID;
     public final String packetIDSlotAdd;
@@ -53,7 +58,7 @@ public class CraftingScreenHandler extends ScreenHandler {
     public CraftingScreenHandler craftingScreenHandler;
     private List<Slot> mutableSlots = new ArrayList<>();
 
-    static final Identifier[] EMPTY_ARMOR_SLOT_TEXTURES = new Identifier[]{PlayerScreenHandler.EMPTY_BOOTS_SLOT_TEXTURE, PlayerScreenHandler.EMPTY_LEGGINGS_SLOT_TEXTURE, PlayerScreenHandler.EMPTY_CHESTPLATE_SLOT_TEXTURE, PlayerScreenHandler.EMPTY_HELMET_SLOT_TEXTURE};
+    static final ResourceLocation[] EMPTY_ARMOR_SLOT_TEXTURES = new ResourceLocation[]{InventoryMenu.EMPTY_ARMOR_SLOT_BOOTS, InventoryMenu.EMPTY_ARMOR_SLOT_LEGGINGS, InventoryMenu.EMPTY_ARMOR_SLOT_CHESTPLATE, InventoryMenu.EMPTY_ARMOR_SLOT_HELMET};
     private static final EquipmentSlot[] EQUIPMENT_SLOT_ORDER = new EquipmentSlot[]{EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET};
 
     /**
@@ -62,13 +67,13 @@ public class CraftingScreenHandler extends ScreenHandler {
      * @param syncId          the sync ID
      * @param playerInventory the player inventory
      */
-    public CraftingScreenHandler(int syncId, PlayerInventory playerInventory) {
-        this(syncId, playerInventory, null, ScreenHandlerContext.EMPTY, new ArrayPropertyDelegate(7));
+    public CraftingScreenHandler(int syncId, Inventory playerInventory) {
+        this(syncId, playerInventory, null, ContainerLevelAccess.NULL, new SimpleContainerData(7));
         craftingScreenHandler = this;
     }
 
-    public CraftingScreenHandler(int syncId, PlayerInventory playerInventory, ModularWorkBenchEntity benchEntity, PropertyDelegate delegate) {
-        this(syncId, playerInventory, benchEntity, ScreenHandlerContext.EMPTY, delegate);
+    public CraftingScreenHandler(int syncId, Inventory playerInventory, ModularWorkBenchEntity benchEntity, ContainerData delegate) {
+        this(syncId, playerInventory, benchEntity, ContainerLevelAccess.NULL, delegate);
         craftingScreenHandler = this;
     }
 
@@ -82,30 +87,30 @@ public class CraftingScreenHandler extends ScreenHandler {
      * @param playerInventory the player's inventory
      * @param context         the context of the screen
      */
-    public CraftingScreenHandler(int syncId, PlayerInventory playerInventory, @Nullable ModularWorkBenchEntity benchEntity, ScreenHandlerContext context, PropertyDelegate delegate) {
+    public CraftingScreenHandler(int syncId, Inventory playerInventory, @Nullable ModularWorkBenchEntity benchEntity, ContainerLevelAccess context, ContainerData delegate) {
         super(RegistryInventory.craftingScreenHandler, syncId);
         craftingScreenHandler = this;
-        packetID = Miapi.MOD_ID + PACKET_ID + playerInventory.player.getUuidAsString() + "_" + syncId;
-        editPacketID = Miapi.MOD_ID + PACKET_ID + "_edit_" + playerInventory.player.getUuidAsString() + "_" + syncId;
-        packetIDSlotAdd = Miapi.MOD_ID + PACKET_ID + "_" + playerInventory.player.getUuidAsString() + "_" + syncId + "_slotAdd";
-        packetIDSlotRemove = Miapi.MOD_ID + PACKET_ID + "_" + playerInventory.player.getUuidAsString() + "_" + syncId + "_slotRemove";
+        packetID = Miapi.MOD_ID + PACKET_ID + playerInventory.player.getStringUUID() + "_" + syncId;
+        editPacketID = Miapi.MOD_ID + PACKET_ID + "_edit_" + playerInventory.player.getStringUUID() + "_" + syncId;
+        packetIDSlotAdd = Miapi.MOD_ID + PACKET_ID + "_" + playerInventory.player.getStringUUID() + "_" + syncId + "_slotAdd";
+        packetIDSlotRemove = Miapi.MOD_ID + PACKET_ID + "_" + playerInventory.player.getStringUUID() + "_" + syncId + "_slotRemove";
         this.delegate = delegate;
         this.playerInventory = playerInventory;
         this.blockEntity = benchEntity;
-        if (playerInventory.player instanceof ServerPlayerEntity) {
+        if (playerInventory.player instanceof ServerPlayer) {
             Networking.registerC2SPacket(packetID, (buffer, player) -> {
                 CraftAction action = new CraftAction(buffer, blockEntity);
                 Miapi.server.execute(() -> {
-                    action.setItem(inventory.getStack(0));
+                    action.setItem(inventory.getItem(0));
                     action.linkInventory(inventory, 1);
                     if (action.canPerform()) {
                         ItemStack stack = action.perform();
-                        inventory.setStack(0, stack);
+                        inventory.setItem(0, stack);
                         if (blockEntity != null) {
                             blockEntity.setItem(stack);
                             blockEntity.saveAndSync();
                         }
-                        this.onContentChanged(inventory);
+                        this.slotsChanged(inventory);
                     }
                 });
             });
@@ -114,10 +119,10 @@ public class CraftingScreenHandler extends ScreenHandler {
                 int slotId = buffer.readInt();
                 Miapi.server.execute(() -> {
                     Slot slot = new Slot(inventory, invId, 0, 0);
-                    slot.id = slotId;
+                    slot.index = slotId;
                     mutableSlots.add(slot);
                     this.addSlot(slot);
-                    slot.id = slotId;
+                    slot.index = slotId;
                 });
             });
             Networking.registerC2SPacket(packetIDSlotRemove, (buffer, player) -> {
@@ -125,14 +130,14 @@ public class CraftingScreenHandler extends ScreenHandler {
                 Miapi.server.execute(() -> {
                     Slot slot = this.getSlot(slotId);
                     mutableSlots.remove(slot);
-                    quickMove(playerInventory.player, slotId);
+                    quickMoveStack(playerInventory.player, slotId);
                 });
             });
             Networking.registerC2SPacket(editPacketID, (buffer, player) -> {
-                EditOption option = RegistryInventory.editOptions.get(buffer.readString());
-                int[] intArray = buffer.readIntArray();
+                EditOption option = RegistryInventory.editOptions.get(buffer.readUtf());
+                int[] intArray = buffer.readVarIntArray();
                 //Miapi.server.execute(()->{
-                ItemStack stack = ModularItemStackConverter.getModularVersion(inventory.getStack(0));
+                ItemStack stack = ModularItemStackConverter.getModularVersion(inventory.getItem(0));
                 ModuleInstance root = ItemModule.getModules(stack);
                 List<Integer> position = new ArrayList<>();
                 for (int value : intArray) {
@@ -149,12 +154,12 @@ public class CraftingScreenHandler extends ScreenHandler {
                 SlotProperty.ModuleSlot finalSlot = slot;
                 EditOption.EditContext editContext = new EditOption.EditContext() {
                     @Override
-                    public void craft(PacketByteBuf craftBuffer) {
+                    public void craft(FriendlyByteBuf craftBuffer) {
 
                     }
 
                     @Override
-                    public void preview(PacketByteBuf preview) {
+                    public void preview(FriendlyByteBuf preview) {
 
                     }
 
@@ -174,7 +179,7 @@ public class CraftingScreenHandler extends ScreenHandler {
                     }
 
                     @Override
-                    public @Nullable PlayerEntity getPlayer() {
+                    public @Nullable Player getPlayer() {
                         return player;
                     }
 
@@ -184,7 +189,7 @@ public class CraftingScreenHandler extends ScreenHandler {
                     }
 
                     @Override
-                    public Inventory getLinkedInventory() {
+                    public Container getLinkedInventory() {
                         return inventory;
                     }
 
@@ -196,16 +201,16 @@ public class CraftingScreenHandler extends ScreenHandler {
                 if (option.isVisible(editContext)) {
                     ItemStack editedStack = option.execute(buffer, editContext);
                     Miapi.server.execute(() -> {
-                        inventory.setStack(0, editedStack);
+                        inventory.setItem(0, editedStack);
                         if (blockEntity != null) {
                             blockEntity.setItem(editedStack);
                             blockEntity.saveAndSync();
                         }
-                        inventory.markDirty();
-                        this.onContentChanged(inventory);
+                        inventory.setChanged();
+                        this.slotsChanged(inventory);
                     });
                 } else {
-                    Miapi.LOGGER.warn("ERROR - Couldn`t verify craft action from client " + player.getUuidAsString() + " " + player.getDisplayName().getString() + " This might be a bug or somebody is trying to exploit");
+                    Miapi.LOGGER.warn("ERROR - Couldn`t verify craft action from client " + player.getStringUUID() + " " + player.getDisplayName().getString() + " This might be a bug or somebody is trying to exploit");
                     Miapi.LOGGER.warn(String.valueOf(current));
                     Miapi.LOGGER.warn(position.toString());
                 }
@@ -213,11 +218,11 @@ public class CraftingScreenHandler extends ScreenHandler {
             });
         }
         this.context = context;
-        this.inventory = new SimpleInventory(54) {
+        this.inventory = new SimpleContainer(54) {
             @Override
-            public void markDirty() {
-                super.markDirty();
-                CraftingScreenHandler.this.onContentChanged(this);
+            public void setChanged() {
+                super.setChanged();
+                CraftingScreenHandler.this.slotsChanged(this);
             }
         };
         if (blockEntity != null) {
@@ -241,44 +246,44 @@ public class CraftingScreenHandler extends ScreenHandler {
             int offset = i < 2 ? 0 : 1;
             this.addSlot(new Slot(playerInventory, 39 - i, 87 - 3 + i * 18 - offset - 15, 118 + 71 - 14) {
                 @Override
-                public int getMaxItemCount() {
+                public int getMaxStackSize() {
                     return 1;
                 }
 
-                public boolean canInsert(ItemStack itemStack) {
-                    return equipmentSlot == playerInventory.player.getPreferredEquipmentSlot(itemStack);
+                public boolean mayPlace(ItemStack itemStack) {
+                    return equipmentSlot == playerInventory.player.getEquipmentSlotForItem(itemStack);
                 }
 
                 @Override
-                public boolean canTakeItems(PlayerEntity playerEntity) {
-                    ItemStack itemStack = this.getStack();
-                    return !itemStack.isEmpty() && !playerEntity.isCreative() && EnchantmentHelper.hasAnyEnchantmentsWith(itemStack, EnchantmentEffectComponentTypes.PREVENT_ARMOR_CHANGE) ? false : super.canTakeItems(playerEntity);
+                public boolean mayPickup(Player playerEntity) {
+                    ItemStack itemStack = this.getItem();
+                    return !itemStack.isEmpty() && !playerEntity.isCreative() && EnchantmentHelper.has(itemStack, EnchantmentEffectComponents.PREVENT_ARMOR_CHANGE) ? false : super.mayPickup(playerEntity);
                 }
 
                 @Override
-                public Pair<Identifier, Identifier> getBackgroundSprite() {
-                    return Pair.of(BLOCK_ATLAS_TEXTURE, EMPTY_ARMOR_SLOT_TEXTURES[equipmentSlot.getEntitySlotId()]);
+                public Pair<ResourceLocation, ResourceLocation> getNoItemIcon() {
+                    return Pair.of(BLOCK_ATLAS, EMPTY_ARMOR_SLOT_TEXTURES[equipmentSlot.getIndex()]);
                 }
             });
         }
         this.addSlot(new Slot(playerInventory, 40, 111 - 61 + 5 * 18 + 18 - 15 - 3, 118 + 71 - 14) {
             @Override
-            public Pair<Identifier, Identifier> getBackgroundSprite() {
-                return Pair.of(BLOCK_ATLAS_TEXTURE, EMPTY_OFFHAND_ARMOR_SLOT);
+            public Pair<ResourceLocation, ResourceLocation> getNoItemIcon() {
+                return Pair.of(BLOCK_ATLAS, EMPTY_ARMOR_SLOT_SHIELD);
             }
         });
-        this.addProperties(delegate);
+        this.addDataSlots(delegate);
     }
 
     public boolean notClient() {
-        return !playerInventory.player.getWorld().isClient;
+        return !playerInventory.player.level().isClientSide;
     }
 
     @Override
-    public void sendContentUpdates() {
-        super.sendContentUpdates();
+    public void broadcastChanges() {
+        super.broadcastChanges();
         if (notClient()) {
-            blockEntity.setItem(inventory.getStack(0));
+            blockEntity.setItem(inventory.getItem(0));
             blockEntity.saveAndSync();
         }
         if (blockEntity == null && delegate.get(0) == 1) {
@@ -294,7 +299,7 @@ public class CraftingScreenHandler extends ScreenHandler {
             short zsl = (short) delegate.get(6);
             int z = (zsh << 16) | (zsl & 0xFFFF);
 
-            BlockEntity be = playerInventory.player.getWorld().getBlockEntity(new BlockPos(x, y, z));
+            BlockEntity be = playerInventory.player.level().getBlockEntity(new BlockPos(x, y, z));
             if (be instanceof ModularWorkBenchEntity casted) blockEntity = casted;
         }
         updateBE();
@@ -308,15 +313,15 @@ public class CraftingScreenHandler extends ScreenHandler {
     public void removeSlotByClient(Slot slot) {
         if (!slots.contains(slot))
             return;
-        quickMove(playerInventory.player, slot.id);
-        slot.markDirty();
+        quickMoveStack(playerInventory.player, slot.index);
+        slot.setChanged();
         if (slot instanceof MutableSlot mutableSlot) {
             mutableSlot.setEnabled(false);
         }
-        playerInventory.markDirty();
-        inventory.markDirty();
-        PacketByteBuf buf = Networking.createBuffer();
-        buf.writeInt(slot.id);
+        playerInventory.setChanged();
+        inventory.setChanged();
+        FriendlyByteBuf buf = Networking.createBuffer();
+        buf.writeInt(slot.index);
         mutableSlots.remove(slot);
         Networking.sendC2S(packetIDSlotRemove, buf);
     }
@@ -329,36 +334,36 @@ public class CraftingScreenHandler extends ScreenHandler {
     public void addSlotByClient(Slot slot) {
         if (slots.contains(slot)) return;
         this.addSlot(slot);
-        PacketByteBuf buf = Networking.createBuffer();
-        buf.writeInt(slot.getIndex());
-        buf.writeInt(slot.id);
+        FriendlyByteBuf buf = Networking.createBuffer();
+        buf.writeInt(slot.getContainerSlot());
+        buf.writeInt(slot.index);
         mutableSlots.add(slot);
         Networking.sendC2S(packetIDSlotAdd, buf);
 
-        slot.markDirty();
+        slot.setChanged();
     }
 
     @Override
-    public boolean canUse(PlayerEntity player) {
+    public boolean stillValid(Player player) {
         return true;
     }
 
     @Override
-    public void onClosed(PlayerEntity player) {
-        super.onClosed(player);
-        this.context.run((world, pos) -> {
-            this.dropInventory(player, this.inventory);
+    public void removed(Player player) {
+        super.removed(player);
+        this.context.execute((world, pos) -> {
+            this.clearContainer(player, this.inventory);
         });
 
         // Transfer the items in the inventory to the player's inventory
-        for (int i = 0; i < this.inventory.size(); i++) {
+        for (int i = 0; i < this.inventory.getContainerSize(); i++) {
             if (i == 0) continue;
-            ItemStack stack = this.inventory.getStack(i);
+            ItemStack stack = this.inventory.getItem(i);
             if (!stack.isEmpty()) {
-                if (!player.getInventory().insertStack(stack)) {
-                    player.dropItem(stack, false);
+                if (!player.getInventory().add(stack)) {
+                    player.drop(stack, false);
                 }
-                this.inventory.setStack(i, ItemStack.EMPTY);
+                this.inventory.setItem(i, ItemStack.EMPTY);
             }
         }
         Networking.unRegisterC2SPacket(packetID);
@@ -369,8 +374,8 @@ public class CraftingScreenHandler extends ScreenHandler {
     }
 
     public void setItem(ItemStack stack) {
-        inventory.setStack(0, stack);
-        inventory.markDirty();
+        inventory.setItem(0, stack);
+        inventory.setChanged();
         if (blockEntity != null) {
             blockEntity.setItem(stack);
             if (notClient()) blockEntity.saveAndSync();
@@ -379,23 +384,23 @@ public class CraftingScreenHandler extends ScreenHandler {
 
     private void updateBE() {
         if (notClient()) {
-            blockEntity.setItem(inventory.getStack(0));
+            blockEntity.setItem(inventory.getItem(0));
             blockEntity.saveAndSync();
         }
     }
 
-    public ItemStack quickMove(PlayerEntity player, int index) {
-        inventory.markDirty();
+    public ItemStack quickMoveStack(Player player, int index) {
+        inventory.setChanged();
         ItemStack itemStack = ItemStack.EMPTY;
         Slot slot = this.slots.get(index);
 
-        if (slot != null && slot.hasStack()) {
-            ItemStack itemStack2 = slot.getStack();
+        if (slot != null && slot.hasItem()) {
+            ItemStack itemStack2 = slot.getItem();
             itemStack = itemStack2.copy();
             if (index >= 36) {
                 //case 1: tool slot to player
-                slot.onTakeItem(player, itemStack2);
-                if (!this.insertItem(itemStack2, 0, 36, true)) {
+                slot.onTake(player, itemStack2);
+                if (!this.moveItemStackTo(itemStack2, 0, 36, true)) {
                     return ItemStack.EMPTY;
                 }
 
@@ -403,77 +408,77 @@ public class CraftingScreenHandler extends ScreenHandler {
                     blockEntity.setItem(itemStack2);
                     if (notClient()) blockEntity.saveAndSync();
                 }
-                slot.markDirty();
+                slot.setChanged();
             } else {
                 //PlayerInv
                 for (Slot slot1 : mutableSlots) {
-                    if (slot1.id >= 36) {
-                        if (!this.insertItem(itemStack2, slot1.id, slot1.id + 1, true)) {
+                    if (slot1.index >= 36) {
+                        if (!this.moveItemStackTo(itemStack2, slot1.index, slot1.index + 1, true)) {
                             return ItemStack.EMPTY;
                         }
                     }
                 }
-                if ((slots.get(36).getStack().isEmpty() || slots.get(36).getStack().getItem().equals(itemStack2.getItem())) && !this.insertItem(itemStack2, 36, 37, true)) {
+                if ((slots.get(36).getItem().isEmpty() || slots.get(36).getItem().getItem().equals(itemStack2.getItem())) && !this.moveItemStackTo(itemStack2, 36, 37, true)) {
                     return ItemStack.EMPTY;
                 }
-                slot.markDirty();
+                slot.setChanged();
             }
         }
         return ItemStack.EMPTY;
     }
 
     @Override
-    protected void dropInventory(PlayerEntity player, Inventory inventory) {
-        if (!player.isAlive() || player instanceof ServerPlayerEntity serverPlayerEntity && serverPlayerEntity.isDisconnected()) {
-            for (int i = 0; i < inventory.size(); ++i) {
+    protected void clearContainer(Player player, Container inventory) {
+        if (!player.isAlive() || player instanceof ServerPlayer serverPlayerEntity && serverPlayerEntity.hasDisconnected()) {
+            for (int i = 0; i < inventory.getContainerSize(); ++i) {
                 if (i == 0) continue;
-                player.dropItem(inventory.removeStack(i), false);
+                player.drop(inventory.removeItemNoUpdate(i), false);
             }
             return;
         }
-        for (int i = 0; i < inventory.size(); ++i) {
+        for (int i = 0; i < inventory.getContainerSize(); ++i) {
             if (i == 0) continue;
-            PlayerInventory currentPlayerInv = player.getInventory();
-            if (!(currentPlayerInv.player instanceof ServerPlayerEntity)) continue;
-            currentPlayerInv.offerOrDrop(inventory.removeStack(i));
+            Inventory currentPlayerInv = player.getInventory();
+            if (!(currentPlayerInv.player instanceof ServerPlayer)) continue;
+            currentPlayerInv.placeItemBackInInventory(inventory.removeItemNoUpdate(i));
         }
     }
 
     public static class ModifyingSlot extends Slot {
         protected final ModularWorkBenchEntity blockEntity;
 
-        public ModifyingSlot(Inventory inventory, int index, int x, int y, ModularWorkBenchEntity blockEntity) {
+        public ModifyingSlot(Container inventory, int index, int x, int y, ModularWorkBenchEntity blockEntity) {
             super(inventory, index, x, y);
             this.blockEntity = blockEntity;
         }
 
         public boolean notClient() {
-            return blockEntity != null && blockEntity.hasWorld() && !blockEntity.getWorld().isClient;
+            return blockEntity != null && blockEntity.hasLevel() && !blockEntity.getLevel().isClientSide;
         }
 
         @Override
-        public boolean canInsert(ItemStack stack) {
+        public boolean mayPlace(ItemStack stack) {
             return true;
         }
 
         @Override
-        public int getMaxItemCount() {
+        public int getMaxStackSize() {
             return 64;
         }
 
         @Override
-        public void setStack(ItemStack stack) {
-            super.setStack(stack);
+        public void setByPlayer(ItemStack stack) {
+            super.setByPlayer(stack);
             if (notClient()) {
                 blockEntity.setItem(stack);
                 blockEntity.saveAndSync();
             }
-            this.markDirty();
+            this.setChanged();
         }
     }
 
     public static class PlayerInventorySlot extends Slot {
-        public PlayerInventorySlot(PlayerInventory inventory, int index, int x, int y) {
+        public PlayerInventorySlot(Inventory inventory, int index, int x, int y) {
             super(inventory, index, x, y);
         }
     }

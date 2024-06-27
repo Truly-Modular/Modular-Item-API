@@ -1,11 +1,6 @@
 package smartin.miapi.modules.properties.mining;
 
 import com.google.gson.JsonObject;
-import net.minecraft.item.ItemStack;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.world.World;
 import smartin.miapi.Miapi;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.mining.condition.MiningCondition;
@@ -15,6 +10,11 @@ import smartin.miapi.modules.properties.mining.shape.MiningShape;
 
 import java.util.ArrayList;
 import java.util.List;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 
 public class MiningShapeJson {
     public MiningCondition miningCondition;
@@ -62,7 +62,7 @@ public class MiningShapeJson {
         }
     }
 
-    public void execute(BlockPos pos, World level, ItemStack stack, ServerPlayerEntity player, Direction facing) {
+    public void execute(BlockPos pos, Level level, ItemStack stack, ServerPlayer player, Direction facing) {
         List<BlockPos> posList = miningCondition.trimList(level, pos, miningShape.getMiningBlocks(level, pos, facing));
         for (MiningModifier modifier : modifiers) {
             posList = modifier.adjustMiningBlock(level, pos, player, stack, posList);

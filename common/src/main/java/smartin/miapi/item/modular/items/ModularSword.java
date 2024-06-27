@@ -2,23 +2,27 @@ package smartin.miapi.item.modular.items;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
-import net.minecraft.block.BlockState;
 import net.minecraft.client.item.TooltipContext;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.EntityAttribute;
-import net.minecraft.entity.attribute.EntityAttributeModifier;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemUsageContext;
-import net.minecraft.item.SwordItem;
-import net.minecraft.item.ToolMaterial;
-import net.minecraft.item.tooltip.TooltipType;
-import net.minecraft.text.Text;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.util.*;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.World;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Rarity;
+import net.minecraft.world.item.SwordItem;
+import net.minecraft.world.item.Tier;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.UseAnim;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.item.modular.ModularItem;
@@ -30,41 +34,41 @@ import smartin.miapi.modules.properties.mining.MiningLevelProperty;
 import java.util.List;
 
 public class ModularSword extends SwordItem implements PlatformModularItemMethods, ModularItem, ModularSetableToolMaterial {
-    public ToolMaterial currentFakeToolmaterial = ModularToolMaterial.toolMaterial;
+    public Tier currentFakeToolmaterial = ModularToolMaterial.toolMaterial;
 
-    public ModularSword(Settings settings) {
-        super(new ModularToolMaterial(), 5, 5, settings.maxCount(1).maxDamage(500));
+    public ModularSword(Properties settings) {
+        super(new ModularToolMaterial(), 5, 5, settings.stacksTo(1).durability(500));
     }
 
     public ModularSword() {
-        super(new ModularToolMaterial(), 5, 5, new Settings().maxCount(1).maxDamage(500).rarity(Rarity.COMMON));
+        super(new ModularToolMaterial(), 5, 5, new Properties().stacksTo(1).durability(500).rarity(Rarity.COMMON));
     }
 
-    public ToolMaterial getMaterial() {
+    public Tier getTier() {
         if(MiapiConfig.INSTANCE.server.other.looseToolMaterial){
             return currentFakeToolmaterial;
         }
-        return super.getMaterial();
+        return super.getTier();
     }
 
     @Override
-    public void setToolMaterial(ToolMaterial toolMaterial){
+    public void setToolMaterial(Tier toolMaterial){
         this.currentFakeToolmaterial = toolMaterial;
     }
 
-    public Multimap<EntityAttribute, EntityAttributeModifier> getAttributeModifiers(EquipmentSlot slot) {
+    public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlot slot) {
         return ArrayListMultimap.create();
     }
 
     @Override
-    public int getItemBarStep(ItemStack stack) {
-        return Math.round(13.0F - (float) stack.getDamage() * 13.0F / ModularItem.getDurability(stack));
+    public int getBarWidth(ItemStack stack) {
+        return Math.round(13.0F - (float) stack.getDamageValue() * 13.0F / ModularItem.getDurability(stack));
     }
 
     @Override
-    public int getItemBarColor(ItemStack stack) {
-        float f = Math.max(0.0F, ((float) ModularItem.getDurability(stack) - (float) stack.getDamage()) / ModularItem.getDurability(stack));
-        return MathHelper.hsvToRgb(f / 3.0F, 1.0F, 1.0F);
+    public int getBarColor(ItemStack stack) {
+        float f = Math.max(0.0F, ((float) ModularItem.getDurability(stack) - (float) stack.getDamageValue()) / ModularItem.getDurability(stack));
+        return Mth.hsvToRgb(f / 3.0F, 1.0F, 1.0F);
     }
 
     @Override
@@ -73,28 +77,28 @@ public class ModularSword extends SwordItem implements PlatformModularItemMethod
     }
 
     @Override
-    public boolean canRepair(ItemStack stack, ItemStack ingredient) {
+    public boolean isValidRepairItem(ItemStack stack, ItemStack ingredient) {
         return RepairPriority.getRepairValue(stack, ingredient) > 0;
     }
 
     @Override
-    public Text getName(ItemStack stack) {
+    public Component getName(ItemStack stack) {
         return DisplayNameProperty.getDisplayText(stack);
     }
 
     @Override
-    public int getEnchantability() {
+    public int getEnchantmentValue() {
         return 1;
     }
 
     @Override
-    public boolean postHit(ItemStack stack, LivingEntity target, LivingEntity attacker) {
+    public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
         if (ToolOrWeaponProperty.isWeapon(stack)) {
-            stack.damage(1, attacker, (e) -> {
+            stack.hurtAndBreak(1, attacker, (e) -> {
                 e.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND);
             });
         } else {
-            stack.damage(2, attacker, (e) -> {
+            stack.hurtAndBreak(2, attacker, (e) -> {
                 e.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND);
             });
         }
@@ -102,14 +106,14 @@ public class ModularSword extends SwordItem implements PlatformModularItemMethod
     }
 
     @Override
-    public boolean postMine(ItemStack stack, World world, BlockState state, BlockPos pos, LivingEntity miner) {
-        if (!world.isClient && state.getHardness(world, pos) != 0.0F) {
+    public boolean mineBlock(ItemStack stack, Level world, BlockState state, BlockPos pos, LivingEntity miner) {
+        if (!world.isClientSide && state.getDestroySpeed(world, pos) != 0.0F) {
             if (ToolOrWeaponProperty.isWeapon(stack)) {
-                stack.damage(2, miner, (e) -> {
+                stack.hurtAndBreak(2, miner, (e) -> {
                     e.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND);
                 });
             } else {
-                stack.damage(1, miner, (e) -> {
+                stack.hurtAndBreak(1, miner, (e) -> {
                     e.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND);
                 });
             }
@@ -119,7 +123,7 @@ public class ModularSword extends SwordItem implements PlatformModularItemMethod
     }
 
     @Override
-    public boolean canMine(BlockState state, World world, BlockPos pos, PlayerEntity miner) {
+    public boolean canAttackBlock(BlockState state, Level world, BlockPos pos, Player miner) {
         return MiningLevelProperty.canMine(state, world, pos, miner);
     }
 
@@ -129,7 +133,7 @@ public class ModularSword extends SwordItem implements PlatformModularItemMethod
     }
 
     @Override
-    public UseAction getUseAction(ItemStack stack) {
+    public UseAnim getUseAnimation(ItemStack stack) {
         return ItemAbilityManager.getUseAction(stack);
     }
 
@@ -139,17 +143,17 @@ public class ModularSword extends SwordItem implements PlatformModularItemMethod
     }
 
     @Override
-    public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+    public InteractionResultHolder<ItemStack> use(Level world, Player user, InteractionHand hand) {
         return ItemAbilityManager.use(world, user, hand);
     }
 
     @Override
-    public void onStoppedUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
+    public void releaseUsing(ItemStack stack, Level world, LivingEntity user, int remainingUseTicks) {
         ItemAbilityManager.onStoppedUsing(stack, world, user, remainingUseTicks);
     }
 
     @Override
-    public ItemStack finishUsing(ItemStack stack, World world, LivingEntity user) {
+    public ItemStack finishUsingItem(ItemStack stack, Level world, LivingEntity user) {
         return ItemAbilityManager.finishUsing(stack, world, user);
     }
 
@@ -159,28 +163,28 @@ public class ModularSword extends SwordItem implements PlatformModularItemMethod
     }
 
     @Override
-    public void usageTick(World world, LivingEntity user, ItemStack stack, int remainingUseTicks) {
+    public void onUseTick(Level world, LivingEntity user, ItemStack stack, int remainingUseTicks) {
         ItemAbilityManager.usageTick(world, user, stack, remainingUseTicks);
     }
 
     @Override
-    public boolean isUsedOnRelease(ItemStack stack) {
+    public boolean useOnRelease(ItemStack stack) {
         //TODO;
         return true;
     }
 
     @Override
-    public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
+    public InteractionResult interactLivingEntity(ItemStack stack, Player user, LivingEntity entity, InteractionHand hand) {
         return ItemAbilityManager.useOnEntity(stack, user, entity, hand);
     }
 
     @Override
-    public ActionResult useOnBlock(ItemUsageContext context) {
+    public InteractionResult useOn(UseOnContext context) {
         return ItemAbilityManager.useOnBlock(context);
     }
 
     @Override
-    public void appendTooltip(ItemStack stack, TooltipContext tooltipContext, List<Text> list, TooltipType tooltipType) {
+    public void appendHoverText(ItemStack stack, net.minecraft.world.item.Item.TooltipContext tooltipContext, List<Component> list, TooltipFlag tooltipType) {
         LoreProperty.appendLoreTop(stack, list, tooltipContext, tooltipType);
     }
 }

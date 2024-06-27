@@ -3,13 +3,6 @@ package smartin.miapi.modules.properties.render;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.JsonOps;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.Registries;
-import net.minecraft.util.Identifier;
-import net.minecraft.world.World;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.model.EntityMiapiModel;
 import smartin.miapi.client.model.MiapiItemModel;
@@ -20,11 +13,18 @@ import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.ArrayList;
 import java.util.List;
+import net.minecraft.client.Minecraft;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.level.Level;
 
 public class EntityModelProperty implements RenderProperty {
     public static String KEY = "entity_model";
     public static EntityModelProperty property;
-    public static World fakeWorld;
+    public static Level fakeWorld;
 
     public EntityModelProperty() {
         property = this;
@@ -35,15 +35,15 @@ public class EntityModelProperty implements RenderProperty {
                 if (element != null && element.isJsonArray()) {
                     element.getAsJsonArray().forEach(jsonElement -> {
                         JsonObject object = jsonElement.getAsJsonObject();
-                        Identifier identifier = Identifier.of(object.get("id").getAsString());
-                        EntityType entityType = Registries.ENTITY_TYPE.get(identifier);
+                        ResourceLocation identifier = ResourceLocation.parse(object.get("id").getAsString());
+                        EntityType entityType = BuiltInRegistries.ENTITY_TYPE.get(identifier);
                         Transform transform = Miapi.gson.fromJson(object.get("transform"), Transform.class);
                         if (entityType != null) {
-                            Entity entity = entityType.create(MinecraftClient.getInstance().world);
+                            Entity entity = entityType.create(Minecraft.getInstance().level);
                             if (entity != null) {
                                 if (object.has("nbt")) {
-                                    NbtCompound compound = NbtCompound.CODEC.parse(JsonOps.INSTANCE, object.get("nbt")).result().orElse(new NbtCompound());
-                                    entity.readNbt(compound);
+                                    CompoundTag compound = CompoundTag.CODEC.parse(JsonOps.INSTANCE, object.get("nbt")).result().orElse(new CompoundTag());
+                                    entity.load(compound);
                                 }
                                 EntityMiapiModel entityMiapiModel = new EntityMiapiModel(entity, transform);
                                 entityMiapiModel.doTick = ModuleProperty.getBoolean(object, "tick", model, true);

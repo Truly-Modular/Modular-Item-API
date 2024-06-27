@@ -1,16 +1,16 @@
 package smartin.miapi.mixin;
 
-import net.minecraft.block.dispenser.ProjectileDispenserBehavior;
-import net.minecraft.entity.projectile.ProjectileEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.Position;
-import net.minecraft.world.World;
+import net.minecraft.core.Position;
+import net.minecraft.core.dispenser.ProjectileDispenseBehavior;
+import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Invoker;
 
-@Mixin(ProjectileDispenserBehavior.class)
+@Mixin(ProjectileDispenseBehavior.class)
 public interface ProjectileDispenserBehaviorAccessor {
 
     @Invoker("createProjectile")
-    ProjectileEntity createProjectileAccessor(World world, Position position, ItemStack itemStack);
+    Projectile createProjectileAccessor(Level world, Position position, ItemStack itemStack);
 }

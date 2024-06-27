@@ -4,59 +4,59 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.advancement.Advancement;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ClientAdvancementManager;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
+import net.minecraft.advancements.Advancement;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientAdvancements;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
 import smartin.miapi.Miapi;
 import smartin.miapi.mixin.ClientAdvancementManagerAccessor;
 
 import java.util.List;
 
 public class AdvancementCondition implements ModuleCondition {
-    Identifier advancement = null;
+    ResourceLocation advancement = null;
 
     public AdvancementCondition() {
 
     }
 
-    public AdvancementCondition(Identifier perms) {
+    public AdvancementCondition(ResourceLocation perms) {
         this.advancement = perms;
     }
 
     @Override
     public boolean isAllowed(ConditionManager.ConditionContext conditionContext) {
         if (conditionContext instanceof ConditionManager.ModuleConditionContext moduleConditionContext) {
-            PlayerEntity player = moduleConditionContext.player;
-            List<Text> reasons = moduleConditionContext.reasons;
+            Player player = moduleConditionContext.player;
+            List<Component> reasons = moduleConditionContext.reasons;
             if (player != null && advancement != null) {
                 Advancement advancement1 = getAdvancement(advancement);
                 if(advancement1!=null){
                     return hasAdvancement(advancement1, player);
                 }
             }
-            reasons.add(Text.literal("Unavailable."));
+            reasons.add(Component.literal("Unavailable."));
         }
         return false;
     }
 
-    public static boolean hasAdvancement(Advancement advancement, PlayerEntity player) {
+    public static boolean hasAdvancement(Advancement advancement, Player player) {
         if (smartin.miapi.Environment.isClient()) {
             return hasAdvancementClient(advancement, player);
         }
-        if (player instanceof ServerPlayerEntity serverPlayerEntity) {
-            return serverPlayerEntity.getAdvancementTracker().getProgress(advancement).isDone();
+        if (player instanceof ServerPlayer serverPlayerEntity) {
+            return serverPlayerEntity.getAdvancements().getOrStartProgress(advancement).isDone();
         }
         return false;
     }
 
     @Environment(EnvType.CLIENT)
-    public static boolean hasAdvancementClient(Advancement advancement, PlayerEntity player) {
-        if (MinecraftClient.getInstance() != null && MinecraftClient.getInstance().getNetworkHandler() != null) {
-            ClientAdvancementManager manager = MinecraftClient.getInstance().getNetworkHandler().getAdvancementHandler();
+    public static boolean hasAdvancementClient(Advancement advancement, Player player) {
+        if (Minecraft.getInstance() != null && Minecraft.getInstance().getConnection() != null) {
+            ClientAdvancements manager = Minecraft.getInstance().getConnection().getAdvancements();
             return ((ClientAdvancementManagerAccessor) manager).getAdvancementProgresses().get(advancement).isDone();
         }
         return false;
@@ -66,25 +66,25 @@ public class AdvancementCondition implements ModuleCondition {
     public ModuleCondition load(JsonElement element) {
         if (element.isJsonObject()) {
             JsonObject object = element.getAsJsonObject();
-            Identifier identifier = new Identifier(object.get("advancement").getAsString());
+            ResourceLocation identifier = new ResourceLocation(object.get("advancement").getAsString());
             return new AdvancementCondition(identifier);
         }
         return new NotCondition(new TrueCondition());
     }
 
-    public Advancement getAdvancement(Identifier identifier) {
+    public Advancement getAdvancement(ResourceLocation identifier) {
         if (smartin.miapi.Environment.isClient()) {
             return getAdvancementClient(identifier);
         }
         if (Miapi.server != null) {
-            return Miapi.server.getAdvancementLoader().get(identifier);
+            return Miapi.server.getAdvancements().get(identifier);
         }
         return null;
     }
 
-    public Advancement getAdvancementClient(Identifier identifier) {
-        if(MinecraftClient.getInstance().getNetworkHandler()!=null){
-            return MinecraftClient.getInstance().getNetworkHandler().getAdvancementHandler().getManager().get(identifier);
+    public Advancement getAdvancementClient(ResourceLocation identifier) {
+        if(Minecraft.getInstance().getConnection()!=null){
+            return Minecraft.getInstance().getConnection().getAdvancements().getTree().get(identifier);
         }
         return null;
     }

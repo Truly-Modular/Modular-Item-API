@@ -1,12 +1,11 @@
 package smartin.miapi.blueprint;
 
-import net.minecraft.advancement.AdvancementDisplay;
-import net.minecraft.client.gui.screen.advancement.AdvancementsScreen;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import net.minecraft.advancements.DisplayInfo;
+import net.minecraft.client.gui.screens.advancements.AdvancementsScreen;
 
 public class ResearchTree {
     public List<TreeNode> headNodes;
@@ -23,7 +22,7 @@ public class ResearchTree {
         treeByLevel.put(0, getByLevel);
         for (TreeNode researchAbleBlueprint : blueprint.childEntries) {
             addSubElement(level + 1 + researchAbleBlueprint.levelOffset, researchAbleBlueprint);
-            AdvancementDisplay display;
+            DisplayInfo display;
             AdvancementsScreen screen;
         }
     }

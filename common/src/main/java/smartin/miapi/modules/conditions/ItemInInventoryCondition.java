@@ -2,18 +2,18 @@ package smartin.miapi.modules.conditions;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.Inventory;
-import net.minecraft.predicate.NumberRange;
-import net.minecraft.recipe.Ingredient;
-import net.minecraft.text.Text;
 import smartin.miapi.Miapi;
 
 import java.util.List;
+import net.minecraft.advancements.critereon.MinMaxBounds;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.Container;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.crafting.Ingredient;
 
 public class ItemInInventoryCondition implements ModuleCondition {
     public Ingredient item;
-    public NumberRange.IntRange count = NumberRange.IntRange.atLeast(1);
+    public MinMaxBounds.Ints count = MinMaxBounds.Ints.atLeast(1);
 
     public ItemInInventoryCondition() {
     }
@@ -21,34 +21,34 @@ public class ItemInInventoryCondition implements ModuleCondition {
     @Override
     public boolean isAllowed(ConditionManager.ConditionContext conditionContext) {
         if (conditionContext instanceof ConditionManager.ModuleConditionContext moduleConditionContext) {
-            PlayerEntity player = moduleConditionContext.player;
-            List<Text> reasons = moduleConditionContext.reasons;
-            if (player != null && count.test(getCount(player.getInventory(), item))) return true;
+            Player player = moduleConditionContext.player;
+            List<Component> reasons = moduleConditionContext.reasons;
+            if (player != null && count.matches(getCount(player.getInventory(), item))) return true;
 
-            Text text;
+            Component text;
 
             int min = count.getMin() == null ? 0 : count.getMin();
             Integer max = count.getMax();
             String ingredientName = "";
-            if(item.getMatchingStacks()!=null && item.getMatchingStacks().length>1){
-                ingredientName = Text.translatable(item.getMatchingStacks()[0].getItem().getTranslationKey()).toString();
+            if(item.getItems()!=null && item.getItems().length>1){
+                ingredientName = Component.translatable(item.getItems()[0].getItem().getDescriptionId()).toString();
             }
 
             if (max != null)
-                text = Text.translatable(Miapi.MOD_ID + ".condition.item_in_inventory.error.specific", min, max, ingredientName);
+                text = Component.translatable(Miapi.MOD_ID + ".condition.item_in_inventory.error.specific", min, max, ingredientName);
             else
-                text = Text.translatable(Miapi.MOD_ID + ".condition.item_in_inventory.error.no_max", min, ingredientName);
+                text = Component.translatable(Miapi.MOD_ID + ".condition.item_in_inventory.error.no_max", min, ingredientName);
 
             reasons.add(text);
         }
         return false;
     }
 
-    public int getCount(Inventory inventory, Ingredient ingredient) {
+    public int getCount(Container inventory, Ingredient ingredient) {
         int found = 0;
-        for (int i = 0; i < inventory.size(); i++) {
-            if (ingredient.test(inventory.getStack(i))) {
-                found += inventory.getStack(i).getCount();
+        for (int i = 0; i < inventory.getContainerSize(); i++) {
+            if (ingredient.test(inventory.getItem(i))) {
+                found += inventory.getItem(i).getCount();
             }
         }
         return found;
@@ -67,7 +67,7 @@ public class ItemInInventoryCondition implements ModuleCondition {
 
             JsonElement countElement = object.get("count");
             if (countElement != null) {
-                condition.count = NumberRange.IntRange.fromJson(countElement);
+                condition.count = MinMaxBounds.Ints.fromJson(countElement);
             }
 
             return condition;

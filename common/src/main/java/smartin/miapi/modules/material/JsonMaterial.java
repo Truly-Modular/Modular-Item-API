@@ -6,13 +6,13 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.recipe.Ingredient;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.tag.TagKey;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.modules.material.palette.FallbackColorer;
@@ -45,7 +45,7 @@ public class JsonMaterial implements Material {
             if (element.has("icon")) {
                 JsonElement emnt = element.get("icon");
                 if (emnt instanceof JsonPrimitive primitive && primitive.isString())
-                    icon = new MaterialIcons.TextureMaterialIcon(new Identifier(primitive.getAsString()));
+                    icon = new MaterialIcons.TextureMaterialIcon(new ResourceLocation(primitive.getAsString()));
                 else icon = MaterialIcons.getMaterialIcon(key, emnt);
             }
 
@@ -87,7 +87,7 @@ public class JsonMaterial implements Material {
                     if (isClient) {
                         JsonElement emnt = propertyElement;
                         if (emnt instanceof JsonPrimitive primitive && primitive.isString())
-                            icon = new MaterialIcons.TextureMaterialIcon(new Identifier(primitive.getAsString()));
+                            icon = new MaterialIcons.TextureMaterialIcon(new ResourceLocation(primitive.getAsString()));
                         else icon = MaterialIcons.getMaterialIcon(key, emnt);
                     }
                     break;
@@ -266,7 +266,7 @@ public class JsonMaterial implements Material {
     }
 
     @Environment(EnvType.CLIENT)
-    public int renderIcon(DrawContext drawContext, int x, int y) {
+    public int renderIcon(GuiGraphics drawContext, int x, int y) {
         if (icon == null) return 0;
         return icon.render(drawContext, x, y);
     }
@@ -286,7 +286,7 @@ public class JsonMaterial implements Material {
 
             if (itemObj.has("item")) {
                 String itemId = itemObj.get("item").getAsString();
-                if (Registries.ITEM.getId(item.getItem()).toString().equals(itemId)) {
+                if (BuiltInRegistries.ITEM.getKey(item.getItem()).toString().equals(itemId)) {
                     try {
                         return itemObj.get("value").getAsDouble();
                     } catch (Exception surpressed) {
@@ -295,8 +295,8 @@ public class JsonMaterial implements Material {
                 }
             } else if (itemObj.has("tag")) {
                 String tagId = itemObj.get("tag").getAsString();
-                TagKey<Item> tag = TagKey.of(Registries.ITEM.getKey(), new Identifier(tagId));
-                if (tag != null && item.isIn(tag)) {
+                TagKey<Item> tag = TagKey.create(BuiltInRegistries.ITEM.key(), new ResourceLocation(tagId));
+                if (tag != null && item.is(tag)) {
                     try {
                         return itemObj.get("value").getAsDouble();
                     } catch (Exception suppressed) {
@@ -327,7 +327,7 @@ public class JsonMaterial implements Material {
 
                 if (itemObj.has("item")) {
                     String itemId = itemObj.get("item").getAsString();
-                    if (Registries.ITEM.getId(itemStack.getItem()).toString().equals(itemId)) {
+                    if (BuiltInRegistries.ITEM.getKey(itemStack.getItem()).toString().equals(itemId)) {
                         return 0.0;
                     }
                 }
@@ -349,8 +349,8 @@ public class JsonMaterial implements Material {
 
                 if (itemObj.has("tag")) {
                     String tagId = itemObj.get("tag").getAsString();
-                    TagKey<Item> tag = TagKey.of(Registries.ITEM.getKey(), new Identifier(tagId));
-                    if (tag != null && itemStack.isIn(tag)) {
+                    TagKey<Item> tag = TagKey.create(BuiltInRegistries.ITEM.key(), new ResourceLocation(tagId));
+                    if (tag != null && itemStack.is(tag)) {
                         return 10.0;
                     }
                 }

@@ -4,9 +4,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.architectury.platform.Platform;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.Identifier;
 import smartin.miapi.Miapi;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.modules.ItemModule;
@@ -17,6 +14,9 @@ import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.ArrayList;
 import java.util.List;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.item.ItemStack;
 
 /**
  * This property manages the active {@link ItemUseAbility}
@@ -65,13 +65,13 @@ public class ApoliPowersProperty implements ModuleProperty {
 
     public static class PowerJson {
         public EquipmentSlot slot;
-        public Identifier powerId;
+        public ResourceLocation powerId;
         public boolean isHidden;
         public boolean isNegative;
 
         public PowerJson(JsonObject element) {
             slot = AttributeProperty.getSlot(element.get("slot").getAsString());
-            powerId = new Identifier(element.get("powerId").getAsString());
+            powerId = new ResourceLocation(element.get("powerId").getAsString());
             isHidden = element.get("isHidden").getAsBoolean();
             isNegative = element.get("isNegative").getAsBoolean();
         }

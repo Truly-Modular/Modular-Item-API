@@ -1,12 +1,5 @@
 package smartin.miapi.mixin;
 
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.LimbAnimator;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.DefaultAttributeContainer;
-import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -23,6 +16,13 @@ import smartin.miapi.modules.properties.EquipmentSlotProperty;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.util.Map;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.WalkAnimationState;
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 
 @Mixin(LivingEntity.class)
 abstract class LivingEntityMixin {
@@ -31,7 +31,7 @@ abstract class LivingEntityMixin {
 
     @Shadow
     @Final
-    public LimbAnimator limbAnimator;
+    public WalkAnimationState limbAnimator;
 
     @Inject(method = "getPreferredEquipmentSlot", at = @At("HEAD"), cancellable = true)
     private static void miapi$onGetPreferredEquipmentSlot(ItemStack stack, CallbackInfoReturnable<EquipmentSlot> cir) {
@@ -48,7 +48,7 @@ abstract class LivingEntityMixin {
             at = @At("RETURN"))
     private void miapi$enEquipChange(CallbackInfoReturnable<Map<EquipmentSlot, ItemStack>> cir) {
         LivingEntity player = (LivingEntity) (Object) this;
-        if (player instanceof PlayerEntity entity) {
+        if (player instanceof Player entity) {
             Map<EquipmentSlot, ItemStack> map = cir.getReturnValue();
             if (map!=null && !map.isEmpty()) {
                 MiapiEvents.PLAYER_EQUIP_EVENT.invoker().equip(entity, map);
@@ -59,14 +59,14 @@ abstract class LivingEntityMixin {
     @Inject(method = "teleport(DDDZ)Z", at = @At("HEAD"), cancellable = true)
     private void miapi$optionalTeleportBlockEffect(double x, double y, double z, boolean particleEffects, CallbackInfoReturnable<Boolean> cir) {
         LivingEntity entity = (LivingEntity) (Object) this;
-        if (particleEffects && MiapiConfig.INSTANCE.server.other.blockAllTeleportsEffect && entity.hasStatusEffect(RegistryInventory.teleportBlockEffect)) {
+        if (particleEffects && MiapiConfig.INSTANCE.server.other.blockAllTeleportsEffect && entity.hasEffect(RegistryInventory.teleportBlockEffect)) {
             cir.setReturnValue(false);
         }
     }
 
     @Inject(method = "createLivingAttributes", at = @At("TAIL"), cancellable = true)
-    private static void miapi$addAttributes(CallbackInfoReturnable<DefaultAttributeContainer.Builder> cir) {
-        DefaultAttributeContainer.Builder builder = cir.getReturnValue();
+    private static void miapi$addAttributes(CallbackInfoReturnable<AttributeSupplier.Builder> cir) {
+        AttributeSupplier.Builder builder = cir.getReturnValue();
         if (builder != null) {
             AttributeRegistry.entityAttributeMap.forEach((id, attribute) -> {
                 builder.add(attribute);
@@ -106,9 +106,9 @@ abstract class LivingEntityMixin {
     @Inject(method = "tickMovement()V", at = @At(value = "HEAD"), cancellable = true)
     private void miapi$stopMovementTick(CallbackInfo ci) {
         LivingEntity livingEntity = (LivingEntity) (Object) this;
-        if (livingEntity.hasStatusEffect(RegistryInventory.stunEffect)) {
-            if (livingEntity instanceof PlayerEntity playerEntity) {
-                if (!playerEntity.hasStatusEffect(StatusEffects.BLINDNESS)) {
+        if (livingEntity.hasEffect(RegistryInventory.stunEffect)) {
+            if (livingEntity instanceof Player playerEntity) {
+                if (!playerEntity.hasEffect(MobEffects.BLINDNESS)) {
                 }
             } else {
                 ci.cancel();

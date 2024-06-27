@@ -2,9 +2,9 @@ package smartin.miapi.modules.properties;
 
 import com.google.gson.JsonElement;
 import dev.architectury.event.EventResult;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.server.world.ServerWorld;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import smartin.miapi.entity.ItemProjectileEntity;
 import smartin.miapi.entity.arrowhitbehaviours.EntityStickBehaviour;
 import smartin.miapi.events.MiapiProjectileEvents;
@@ -22,28 +22,28 @@ public class ArrowProperty implements ModuleProperty {
     public ArrowProperty() {
         property = this;
         MiapiProjectileEvents.MODULAR_PROJECTILE_DATA_TRACKER_SET.register((projectile, nbtCompound) -> {
-            JsonElement element = ItemModule.getMergedProperty(projectile.asItemStack(), property);
+            JsonElement element = ItemModule.getMergedProperty(projectile.getPickupItem(), property);
             if (element != null && !element.getAsBoolean()) {
                 nbtCompound.set(ItemProjectileEntity.SPEED_DAMAGE, false);
             }
             return EventResult.pass();
         });
         MiapiProjectileEvents.MODULAR_PROJECTILE_DATA_TRACKER_INIT.register((projectile, nbtCompound) -> {
-            JsonElement element = ItemModule.getMergedProperty(projectile.asItemStack(), property);
+            JsonElement element = ItemModule.getMergedProperty(projectile.getPickupItem(), property);
             if (element != null && !element.getAsBoolean()) {
                 nbtCompound.set(ItemProjectileEntity.SPEED_DAMAGE, false);
             }
             return EventResult.pass();
         });
         MiapiProjectileEvents.MODULAR_PROJECTILE_ENTITY_HIT.register(event -> {
-            JsonElement element = ItemModule.getMergedProperty(event.projectile.asItemStack(), property);
+            JsonElement element = ItemModule.getMergedProperty(event.projectile.getPickupItem(), property);
             if (
                     element != null &&
                     element.getAsBoolean() &&
                     event.entityHitResult.getEntity() instanceof LivingEntity livingEntity &&
-                    livingEntity.getWorld() instanceof ServerWorld serverWorld
+                    livingEntity.level() instanceof ServerLevel serverWorld
             ) {
-                if (event.projectile.getOwner() != null && EnchantmentHelper.getTridentReturnAcceleration(serverWorld, event.projectile.asItemStack(), event.projectile.getOwner()) > 0) {
+                if (event.projectile.getOwner() != null && EnchantmentHelper.getTridentReturnToOwnerAcceleration(serverWorld, event.projectile.getPickupItem(), event.projectile.getOwner()) > 0) {
 
                 } else {
                     event.projectile.projectileHitBehaviour = entityStickBehaviour;

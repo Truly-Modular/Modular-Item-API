@@ -1,8 +1,8 @@
 package smartin.miapi.modules.properties;
 
 import com.google.gson.JsonElement;
-import net.minecraft.item.ItemStack;
-import net.minecraft.text.Text;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.ItemStack;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ModuleInstance;
@@ -22,11 +22,11 @@ public class DisplayNameProperty implements ModuleProperty {
         ModularItemCache.setSupplier(KEY, DisplayNameProperty::resolveDisplayText);
     }
 
-    public static Text getDisplayText(ItemStack stack) {
-        return ModularItemCache.getVisualOnlyCache(stack, KEY, Text.empty());
+    public static Component getDisplayText(ItemStack stack) {
+        return ModularItemCache.getVisualOnlyCache(stack, KEY, Component.empty());
     }
 
-    private static Text resolveDisplayText(ItemStack itemStack) {
+    private static Component resolveDisplayText(ItemStack itemStack) {
         String translationKey = "miapi.name.missing.nomodule";
         ModuleInstance root = ItemModule.getModules(itemStack);
         ModuleInstance primaryModule = ItemModule.getModules(itemStack);

@@ -2,9 +2,9 @@ package smartin.miapi.client.gui;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.widget.ClickableWidget;
-import net.minecraft.text.Text;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.network.chat.Component;
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
 import smartin.miapi.client.gui.crafting.CraftingScreen;
@@ -40,7 +40,7 @@ public class ScrollList extends InteractAbleWidget {
      * @param widgets the list of InteractAbleWidgets to display in the ScrollList
      */
     public ScrollList(int x, int y, int width, int height, List<InteractAbleWidget> widgets) {
-        super(x, y, width, height, Text.empty());
+        super(x, y, width, height, Component.empty());
         this.widgets = null;
         this.scrollAmount = 0;
         this.maxScrollAmount = 0;
@@ -74,10 +74,10 @@ public class ScrollList extends InteractAbleWidget {
     }
 
     @Override
-    public void renderWidget(DrawContext drawContext, int mouseX, int mouseY, float delta) {
+    public void renderWidget(GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
         super.render(drawContext, mouseX, mouseY, delta);
         int totalHeight = 0;
-        for (ClickableWidget widget : this.widgets) {
+        for (AbstractWidget widget : this.widgets) {
             totalHeight += widget.getHeight();
         }
         this.maxScrollAmount = Math.max(0, totalHeight - this.height);
@@ -91,7 +91,7 @@ public class ScrollList extends InteractAbleWidget {
 
         int startY = this.getY() - this.scrollAmount;
 
-        for (ClickableWidget widget : this.widgets) {
+        for (AbstractWidget widget : this.widgets) {
             if (startY + widget.getHeight() >= this.getY() && startY <= this.getY() + this.height - 1) {
                 widget.setY(startY);
                 widget.setX(this.getX());
@@ -100,7 +100,7 @@ public class ScrollList extends InteractAbleWidget {
                 } else {
                     widget.setWidth(this.width);
                 }
-                Matrix4f matrix4f = new Matrix4f(drawContext.getMatrices().peek().getPositionMatrix());
+                Matrix4f matrix4f = new Matrix4f(drawContext.pose().last().pose());
                 Vector4f posX = TransformableWidget.transFormMousePos(getX(), getY(), matrix4f);
                 Vector4f posY = TransformableWidget.transFormMousePos(getX() + width, getY() + height, matrix4f);
 
@@ -119,16 +119,16 @@ public class ScrollList extends InteractAbleWidget {
         }
     }
 
-    public void renderScrollbarBackground(DrawContext drawContext, int mouseX, int mouseY, float delta, int barX, int barWidth) {
+    public void renderScrollbarBackground(GuiGraphics drawContext, int mouseX, int mouseY, float delta, int barX, int barWidth) {
         int offsetAlt = altDesign ? 28 : 0;
-        drawTextureWithEdge(drawContext, CraftingScreen.BACKGROUND_TEXTURE, barX, getY(), 498 - offsetAlt, 96, 14, 15, barWidth, getHeight(), 512, 512, 3);
+        drawTextureWithEdge(drawContext, CraftingScreen.INVENTORY_LOCATION, barX, getY(), 498 - offsetAlt, 96, 14, 15, barWidth, getHeight(), 512, 512, 3);
     }
 
-    public void renderScrollbarClickAble(DrawContext drawContext, int mouseX, int mouseY, float delta, int barX, int barWidth, float percent) {
+    public void renderScrollbarClickAble(GuiGraphics drawContext, int mouseX, int mouseY, float delta, int barX, int barWidth, float percent) {
         int height = (int) ((this.getHeight() - 17) * percent) + (altDesign ? percent >= 1 ? 2 : 0 : 1) + getY();
         int offset = needsScrollbar ? 0 : 15;
         int offsetAlt = altDesign ? 28 : 0;
-        drawTextureWithEdge(drawContext, CraftingScreen.BACKGROUND_TEXTURE, barX, height, 498 - 14 - offsetAlt, 96 + offset, 14, 15, barWidth, 15, 512, 512, 3);
+        drawTextureWithEdge(drawContext, CraftingScreen.INVENTORY_LOCATION, barX, height, 498 - 14 - offsetAlt, 96 + offset, 14, 15, barWidth, 15, 512, 512, 3);
     }
 
     private boolean showScrollbar() {
@@ -136,10 +136,10 @@ public class ScrollList extends InteractAbleWidget {
     }
 
     @Override
-    public void renderHover(DrawContext drawContext, int mouseX, int mouseY, float delta) {
+    public void renderHover(GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
         if (isMouseOver(mouseX, mouseY)) {
             int startY = this.getY() - this.scrollAmount;
-            for (ClickableWidget widget : this.widgets) {
+            for (AbstractWidget widget : this.widgets) {
                 if (startY + widget.getHeight() >= this.getY() && startY <= this.getY() + this.height - 1) {
                     if (widget instanceof InteractAbleWidget interactAbleWidget) {
                         widget.setY(startY);
@@ -162,7 +162,7 @@ public class ScrollList extends InteractAbleWidget {
         if (this.widgets == null) {
             return false;
         }
-        for (ClickableWidget widget : widgets) {
+        for (AbstractWidget widget : widgets) {
             if (widget.isMouseOver(mouseX, mouseY) && widget.mouseScrolled(mouseX, mouseY, amount, other)) {
                 return true;
             }
@@ -214,7 +214,7 @@ public class ScrollList extends InteractAbleWidget {
                 }
             }
 
-            for (ClickableWidget widget : this.widgets) {
+            for (AbstractWidget widget : this.widgets) {
                 if (widget.isMouseOver(mouseX, mouseY)) {
                     if (widget.mouseClicked(mouseX, mouseY, button)) {
                         return true;
@@ -260,7 +260,7 @@ public class ScrollList extends InteractAbleWidget {
 
         boolean released = false;
 
-        for (ClickableWidget widget : this.widgets) {
+        for (AbstractWidget widget : this.widgets) {
             if (widget.mouseReleased(mouseX, mouseY, button)) {
                 released = true;
             }

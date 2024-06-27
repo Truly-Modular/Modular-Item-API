@@ -3,9 +3,9 @@ package smartin.miapi.modules.edit_options.skins;
 import com.google.gson.JsonObject;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.util.Identifier;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.crafting.CraftingScreen;
@@ -31,7 +31,7 @@ public class SkinOptions implements EditOption {
 
     public SkinOptions() {
         defaultTab = SkinTab.fromJson(null);
-        PropertyResolver.register(new Identifier("miapi", "skin"), (moduleInstance, oldMap) -> {
+        PropertyResolver.register(new ResourceLocation("miapi", "skin"), (moduleInstance, oldMap) -> {
             if (moduleInstance != null) {
                 String skinKey = moduleInstance.moduleData.get("skin");
                 Map<String, Skin> moduleSkins = skins.get(moduleInstance.module);
@@ -40,7 +40,7 @@ public class SkinOptions implements EditOption {
                 }
             }
             return oldMap;
-        }, List.of(new Identifier("miapi", "synergy")));
+        }, List.of(new ResourceLocation("miapi", "synergy")));
         Miapi.registerReloadHandler(ReloadEvents.MAIN, "skins/module", skins, (isClient, path, data) -> {
             load(data);
         }, 1);
@@ -75,8 +75,8 @@ public class SkinOptions implements EditOption {
     }
 
     @Override
-    public ItemStack preview(PacketByteBuf buffer, EditContext context) {
-        String skin = buffer.readString();
+    public ItemStack preview(FriendlyByteBuf buffer, EditContext context) {
+        String skin = buffer.readUtf();
         ModularItemCache.clearUUIDFor(context.getItemstack());
         context.getInstance().moduleData.put("skin", skin);
         context.getInstance().getRoot().writeToItem(context.getItemstack());
@@ -99,6 +99,6 @@ public class SkinOptions implements EditOption {
     @Environment(EnvType.CLIENT)
     @Override
     public InteractAbleWidget getIconGui(int x, int y, int width, int height, Consumer<EditOption> select, Supplier<EditOption> getSelected) {
-        return new EditOptionIcon(x, y, width, height, select, getSelected, CraftingScreen.BACKGROUND_TEXTURE, 339 + 32, 25 + 28 * 2, 512, 512, "miapi.ui.edit_option.hover.skin", this);
+        return new EditOptionIcon(x, y, width, height, select, getSelected, CraftingScreen.INVENTORY_LOCATION, 339 + 32, 25 + 28 * 2, 512, 512, "miapi.ui.edit_option.hover.skin", this);
     }
 }

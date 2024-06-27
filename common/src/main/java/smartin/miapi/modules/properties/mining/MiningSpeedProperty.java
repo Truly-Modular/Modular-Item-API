@@ -1,6 +1,6 @@
 package smartin.miapi.modules.properties.mining;
 
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 import smartin.miapi.modules.properties.util.DoubleProperty;
 
 public class MiningSpeedProperty extends DoubleProperty {

@@ -2,8 +2,6 @@ package smartin.miapi.modules.properties;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import net.minecraft.item.ItemStack;
-import net.minecraft.text.Text;
 import smartin.miapi.Environment;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.crafting.statdisplay.JsonStatDisplay;
@@ -20,6 +18,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.ItemStack;
 
 public class GuiStatProperty implements ModuleProperty {
     public static String KEY = "gui_stat";
@@ -102,15 +102,15 @@ public class GuiStatProperty implements ModuleProperty {
         public double min;
         public double max;
         public double value;
-        public Text header;
-        public Text description;
+        public Component header;
+        public Component description;
 
         public GuiInfo(JsonObject json, ModuleInstance moduleInstance) {
             min = ModuleProperty.getDouble(json, "min", moduleInstance, 0.0);
             max = ModuleProperty.getDouble(json, "max", moduleInstance, 3.0);
             value = ModuleProperty.getDouble(json, "value", moduleInstance, 0.0);
-            header = ModuleProperty.getText(json, "header", moduleInstance, Text.empty());
-            description = ModuleProperty.getText(json, "description", moduleInstance, Text.empty());
+            header = ModuleProperty.getText(json, "header", moduleInstance, Component.empty());
+            description = ModuleProperty.getText(json, "description", moduleInstance, Component.empty());
         }
     }
 }

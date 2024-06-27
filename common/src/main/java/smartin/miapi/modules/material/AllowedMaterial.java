@@ -3,10 +3,10 @@ package smartin.miapi.modules.material;
 import com.google.gson.JsonElement;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.text.Text;
-import net.minecraft.util.math.Vec2f;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.Vec2;
 import smartin.miapi.Miapi;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.client.gui.InteractAbleWidget;
@@ -56,9 +56,9 @@ public class AllowedMaterial implements CraftingProperty, ModuleProperty {
         return MaterialProperty.materials.values().stream().filter(a -> a.getGroups().contains(key)).collect(Collectors.toList());
     }
 
-    public List<Vec2f> getSlotPositions() {
-        List<Vec2f> test = new ArrayList<>();
-        test.add(new Vec2f(96, slotHeight - 12));
+    public List<Vec2> getSlotPositions() {
+        List<Vec2> test = new ArrayList<>();
+        test.add(new Vec2(96, slotHeight - 12));
         return test;
     }
 
@@ -73,18 +73,18 @@ public class AllowedMaterial implements CraftingProperty, ModuleProperty {
         return new MaterialCraftingWidget(this, x, y, width, height, action);
     }
 
-    public Text getWarning() {
+    public Component getWarning() {
         if (wrongMaterial) {
             if (smithingMaterial) {
-                Text.translatable(Miapi.MOD_ID + ".ui.craft.warning.material.wrong.smithing");
+                Component.translatable(Miapi.MOD_ID + ".ui.craft.warning.material.wrong.smithing");
             }
-            return Text.translatable(Miapi.MOD_ID + ".ui.craft.warning.material.wrong");
+            return Component.translatable(Miapi.MOD_ID + ".ui.craft.warning.material.wrong");
         }
-        return Text.translatable(Miapi.MOD_ID + ".ui.craft.warning.material");
+        return Component.translatable(Miapi.MOD_ID + ".ui.craft.warning.material");
     }
 
     @Override
-    public boolean canPerform(ItemStack old, ItemStack crafting, ModularWorkBenchEntity bench, PlayerEntity player, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<String, String> data) {
+    public boolean canPerform(ItemStack old, ItemStack crafting, ModularWorkBenchEntity bench, Player player, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<String, String> data) {
         //AllowedMaterialJson json = Miapi.gson.fromJson()
         JsonElement element = module.properties().get(KEY);
         ItemStack input = inventory.get(0);
@@ -115,7 +115,7 @@ public class AllowedMaterial implements CraftingProperty, ModuleProperty {
     }
 
     @Override
-    public ItemStack preview(ItemStack old, ItemStack crafting, PlayerEntity player, ModularWorkBenchEntity bench, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<String, String> data) {
+    public ItemStack preview(ItemStack old, ItemStack crafting, Player player, ModularWorkBenchEntity bench, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<String, String> data) {
         ModuleInstance newModule = craftAction.getModifyingModuleInstance(crafting);
         JsonElement element = module.properties().get(KEY);
         ItemStack input = inventory.get(0);
@@ -135,21 +135,21 @@ public class AllowedMaterial implements CraftingProperty, ModuleProperty {
                 crafting = eventData.crafted;
             }
         }
-        if (crafting.isDamageable() && crafting.getDamage() > 0) {
+        if (crafting.isDamageableItem() && crafting.getDamageValue() > 0) {
             //Miapi.LOGGER.info("dmg " + crafting.getDamage());
             ModularItemCache.clearUUIDFor(crafting);
             ModuleInstance moduleInstance = craftAction.getModifyingModuleInstance(crafting);
             Double scannedDurability = DurabilityProperty.property.getValueForModule(moduleInstance, 0.0);
             int durability = (int) (scannedDurability.intValue() * MiapiConfig.INSTANCE.server.other.repairRatio);
             //Miapi.LOGGER.info("set dmg to " + (crafting.getDamage() - durability));
-            crafting.setDamage(crafting.getDamage() - durability);
+            crafting.setDamageValue(crafting.getDamageValue() - durability);
             //Miapi.LOGGER.info("set dmg end " + crafting.getDamage());
         }
         return crafting;
     }
 
     @Override
-    public List<ItemStack> performCraftAction(ItemStack old, ItemStack crafting, PlayerEntity player, ModularWorkBenchEntity bench, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<String, String> data) {
+    public List<ItemStack> performCraftAction(ItemStack old, ItemStack crafting, Player player, ModularWorkBenchEntity bench, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<String, String> data) {
         ModuleInstance newModule = craftAction.getModifyingModuleInstance(crafting);
         //AllowedMaterialJson json = Miapi.gson.fromJson()
         List<ItemStack> results = new ArrayList<>();
@@ -160,7 +160,7 @@ public class AllowedMaterial implements CraftingProperty, ModuleProperty {
         Material material = MaterialProperty.getMaterialFromIngredient(input);
         assert material != null;
         int newCount = (int) (input.getCount() - Math.ceil(json.cost * crafting.getCount() / material.getValueOfItem(input)));
-        if (!player.getWorld().isClient()) {
+        if (!player.level().isClientSide()) {
             input.setCount(newCount);
         }
         assert newModule != null;
@@ -171,11 +171,11 @@ public class AllowedMaterial implements CraftingProperty, ModuleProperty {
         MiapiEvents.MaterialCraftEventData eventData = new MiapiEvents.MaterialCraftEventData(crafting, materialStack, material, newModule, craftAction);
         MiapiEvents.MATERIAL_CRAFT_EVENT.invoker().craft(eventData);
         crafting = eventData.crafted;
-        if (crafting.isDamageable()) {
+        if (crafting.isDamageableItem()) {
             //Miapi.LOGGER.info("dmg " + crafting.getDamage());
             int durability = (int) (DurabilityProperty.property.getValueForModule(craftAction.getModifyingModuleInstance(crafting), 0.0).intValue() * MiapiConfig.INSTANCE.server.other.repairRatio);
             //Miapi.LOGGER.info("set dmg to " + (crafting.getDamage() - durability));
-            crafting.setDamage(crafting.getDamage() - durability);
+            crafting.setDamageValue(crafting.getDamageValue() - durability);
             //Miapi.LOGGER.info("set dmg end " + crafting.getDamage());
         }
         results.add(crafting);

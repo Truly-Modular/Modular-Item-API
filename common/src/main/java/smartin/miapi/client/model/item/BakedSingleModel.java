@@ -2,21 +2,21 @@ package smartin.miapi.client.model.item;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.block.BlockState;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.model.BakedModel;
-import net.minecraft.client.render.model.BakedQuad;
-import net.minecraft.client.render.model.BasicBakedModel;
-import net.minecraft.client.render.model.json.ModelOverrideList;
-import net.minecraft.client.render.model.json.ModelTransformation;
-import net.minecraft.client.texture.Sprite;
-import net.minecraft.client.texture.SpriteAtlasTexture;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.random.Random;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.renderer.block.model.ItemOverrides;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
+import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.resources.model.SimpleBakedModel;
+import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.model.DynamicBakery;
@@ -29,10 +29,10 @@ import java.util.*;
 @Environment(EnvType.CLIENT)
 public class BakedSingleModel implements BakedModel {
     public List<BakedQuad> quads;
-    public ModelTransformation modelTransformation = ModelTransformation.NONE;
+    public ItemTransforms modelTransformation = ItemTransforms.NO_TRANSFORMS;
     public List<BakedModel> childModels = new ArrayList<>();
     private BakedSingleModel overrideModel;
-    public ModelOverrideList overrideList;
+    public ItemOverrides overrideList;
 
     public BakedSingleModel(List<BakedQuad> quads) {
         this.quads = quads;
@@ -40,10 +40,10 @@ public class BakedSingleModel implements BakedModel {
     }
 
     @Override
-    public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction face, Random random) {
+    public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction face, RandomSource random) {
         List<BakedQuad> bakedQuads = new ArrayList<>();
         quads.forEach(bakedQuad -> {
-            if (bakedQuad.getFace().equals(face)) {
+            if (bakedQuad.getDirection().equals(face)) {
                 bakedQuads.add(bakedQuad);
             }
         });
@@ -63,32 +63,32 @@ public class BakedSingleModel implements BakedModel {
     }
 
     @Override
-    public boolean hasDepth() {
+    public boolean isGui3d() {
         return false;
     }
 
     @Override
-    public boolean isSideLit() {
+    public boolean usesBlockLight() {
         return false;
     }
 
     @Override
-    public boolean isBuiltin() {
+    public boolean isCustomRenderer() {
         return false;
     }
 
     @Override
-    public Sprite getParticleSprite() {
-        Identifier stoneTextureId = new Identifier("minecraft", "block/stone");
-        return MinecraftClient.getInstance().getSpriteAtlas(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE).apply(stoneTextureId);
+    public TextureAtlasSprite getParticleIcon() {
+        ResourceLocation stoneTextureId = new ResourceLocation("minecraft", "block/stone");
+        return Minecraft.getInstance().getTextureAtlas(TextureAtlas.LOCATION_BLOCKS).apply(stoneTextureId);
     }
 
     @Override
-    public ModelTransformation getTransformation() {
+    public ItemTransforms getTransforms() {
         return modelTransformation;
     }
 
-    public void setModelTransformation(ModelTransformation transformation) {
+    public void setModelTransformation(ItemTransforms transformation) {
         modelTransformation = transformation;
         this.childModels.forEach(childModel -> {
             if (childModel instanceof BakedSingleModel bakedSIngleModel) {
@@ -100,26 +100,26 @@ public class BakedSingleModel implements BakedModel {
     }
 
     @Override
-    public ModelOverrideList getOverrides() {
-        if (overrideList instanceof DynamicOverrides && childModels.isEmpty()) return ModelOverrideList.EMPTY;
+    public ItemOverrides getOverrides() {
+        if (overrideList instanceof DynamicOverrides && childModels.isEmpty()) return ItemOverrides.EMPTY;
         return overrideList;
     }
 
-    class DynamicOverrides extends ModelOverrideList {
+    class DynamicOverrides extends ItemOverrides {
 
         public DynamicOverrides() {
             super(DynamicBakery.dynamicBaker, null, new ArrayList<>());
         }
 
         @Override
-        public BakedModel apply(BakedModel oldmodel, ItemStack stack, @Nullable ClientWorld world, @Nullable LivingEntity entity, int seed) {
+        public BakedModel resolve(BakedModel oldmodel, ItemStack stack, @Nullable ClientLevel world, @Nullable LivingEntity entity, int seed) {
             if (overrideModel != null) {
                 overrideModel.childModels.clear();
                 overrideModel.quads.clear();
                 overrideModel.quads.addAll(quads);
                 childModels.forEach(model -> {
                     if (model != null && model.getOverrides() != null) {
-                        BakedModel override = model.getOverrides().apply(model, stack, world, entity, seed);
+                        BakedModel override = model.getOverrides().resolve(model, stack, world, entity, seed);
                         overrideModel.addModel(override);
                     } else {
                         overrideModel.addModel(model);
@@ -181,12 +181,12 @@ public class BakedSingleModel implements BakedModel {
         completeList.forEach(((conditionHolder, directionBakedQuadHashMap) -> {
             List<BakedQuad> defaultList = directionBakedQuadHashMap.get(null);
             defaultList = defaultList == null ? new ArrayList<>() : defaultList;
-            BakedModel model = new BasicBakedModel(defaultList, directionBakedQuadHashMap, true, false, true, this.getParticleSprite(), this.modelTransformation, ModelOverrideList.EMPTY);
+            BakedModel model = new SimpleBakedModel(defaultList, directionBakedQuadHashMap, true, false, true, this.getParticleIcon(), this.modelTransformation, ItemOverrides.EMPTY);
             overrideModels.put(conditionHolder, model);
         }));
         List<BakedQuad> defaultList = bakedQuads.get(null);
         defaultList = defaultList == null ? new ArrayList<>() : defaultList;
-        BakedModel model = new BasicBakedModel(defaultList, bakedQuads, true, false, true, this.getParticleSprite(), this.modelTransformation, this.getOverrides());
+        BakedModel model = new SimpleBakedModel(defaultList, bakedQuads, true, false, true, this.getParticleIcon(), this.modelTransformation, this.getOverrides());
         return model;
     }
 
@@ -200,14 +200,14 @@ public class BakedSingleModel implements BakedModel {
     }
 
     private void putDirectionalQuads(Map<Direction, List<BakedQuad>> directionalQuads, BakedModel model) {
-        model.getQuads(null, null, Random.create()).forEach(bakedQuad -> {
-            List<BakedQuad> list = directionalQuads.getOrDefault(bakedQuad.getFace(), new ArrayList<>());
+        model.getQuads(null, null, RandomSource.create()).forEach(bakedQuad -> {
+            List<BakedQuad> list = directionalQuads.getOrDefault(bakedQuad.getDirection(), new ArrayList<>());
             list.add(bakedQuad);
         });
         for (Direction dir : Direction.values()) {
-            model.getQuads(null, dir, Random.create()).forEach(bakedQuad -> {
-                if (bakedQuad.getFace().equals(dir)) {
-                    List<BakedQuad> list = directionalQuads.getOrDefault(bakedQuad.getFace(), new ArrayList<>());
+            model.getQuads(null, dir, RandomSource.create()).forEach(bakedQuad -> {
+                if (bakedQuad.getDirection().equals(dir)) {
+                    List<BakedQuad> list = directionalQuads.getOrDefault(bakedQuad.getDirection(), new ArrayList<>());
                     list.add(bakedQuad);
                 }
             });

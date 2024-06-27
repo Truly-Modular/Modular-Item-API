@@ -1,8 +1,8 @@
 package smartin.miapi.modules.abilities.util;
 
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import smartin.miapi.modules.properties.AbilityMangerProperty;
 
 public interface ItemUseMinHoldAbility extends ItemUseAbility {
@@ -21,13 +21,13 @@ public interface ItemUseMinHoldAbility extends ItemUseAbility {
     }
 
     @Override
-    default void onStoppedUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
+    default void onStoppedUsing(ItemStack stack, Level world, LivingEntity user, int remainingUseTicks) {
         if (finishedMinHold(stack, world, user, remainingUseTicks)) {
             onStoppedUsingAfter(stack, world, user, remainingUseTicks);
         }
     }
 
-    default boolean finishedMinHold(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
+    default boolean finishedMinHold(ItemStack stack, Level world, LivingEntity user, int remainingUseTicks) {
         return getMaxUseTime(stack) - remainingUseTicks > getMinHoldTime(stack);
     }
 
@@ -39,7 +39,7 @@ public interface ItemUseMinHoldAbility extends ItemUseAbility {
      * @param user              The entity using the item.
      * @param remainingUseTicks The remaining ticks of item usage.
      */
-    default void onStoppedUsingAfter(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
+    default void onStoppedUsingAfter(ItemStack stack, Level world, LivingEntity user, int remainingUseTicks) {
 
     }
 }

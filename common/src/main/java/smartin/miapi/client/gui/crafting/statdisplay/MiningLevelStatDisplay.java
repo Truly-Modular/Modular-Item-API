@@ -3,15 +3,15 @@ package smartin.miapi.client.gui.crafting.statdisplay;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.attribute.EntityAttribute;
-import net.minecraft.item.ItemStack;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.Util;
-import net.minecraft.util.math.ColorHelper;
+import net.minecraft.Util;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FastColor;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.item.ItemStack;
 import smartin.miapi.Miapi;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.client.gui.*;
@@ -26,7 +26,7 @@ import java.util.Locale;
 
 @Environment(EnvType.CLIENT)
 public class MiningLevelStatDisplay extends InteractAbleWidget implements SingleStatDisplay {
-    public Identifier texture = CraftingScreen.BACKGROUND_TEXTURE;
+    public ResourceLocation texture = CraftingScreen.INVENTORY_LOCATION;
     public ItemStack original = ItemStack.EMPTY;
     public ItemStack compareTo = ItemStack.EMPTY;
     public StatBar statBar;
@@ -45,22 +45,22 @@ public class MiningLevelStatDisplay extends InteractAbleWidget implements Single
     public HoverDescription hoverDescription;
     public IntegerStatBar integerStatBar;
     public String type;
-    EntityAttribute attribute;
+    Attribute attribute;
     double defaultValue;
     EquipmentSlot slot;
 
     public MiningLevelStatDisplay(String type, StatListWidget.TextGetter title, StatListWidget.TextGetter hover) {
-        super(0, 0, 76, 19, Text.empty());
+        super(0, 0, 76, 19, Component.empty());
         this.type = type;
         text = title;
         this.hover = hover;
-        textWidget = new ScrollingTextWidget(getX(), getY(), 80, Text.empty(), ColorHelper.Argb.getArgb(255, 255, 255, 255));
-        currentValue = new ScrollingTextWidget(getX(), getY(), 50, Text.empty(), ColorHelper.Argb.getArgb(255, 255, 255, 255));
-        centerValue = new ScrollingTextWidget(getX(), getY(), 80 - 10, Text.empty(), ColorHelper.Argb.getArgb(255, 255, 255, 255));
+        textWidget = new ScrollingTextWidget(getX(), getY(), 80, Component.empty(), FastColor.ARGB32.color(255, 255, 255, 255));
+        currentValue = new ScrollingTextWidget(getX(), getY(), 50, Component.empty(), FastColor.ARGB32.color(255, 255, 255, 255));
+        centerValue = new ScrollingTextWidget(getX(), getY(), 80 - 10, Component.empty(), FastColor.ARGB32.color(255, 255, 255, 255));
         centerValue.setOrientation(ScrollingTextWidget.Orientation.CENTERED);
-        compareValue = new ScrollingTextWidget(getX(), getY(), 80 - 10, Text.empty(), ColorHelper.Argb.getArgb(255, 255, 255, 255));
+        compareValue = new ScrollingTextWidget(getX(), getY(), 80 - 10, Component.empty(), FastColor.ARGB32.color(255, 255, 255, 255));
         compareValue.setOrientation(ScrollingTextWidget.Orientation.RIGHT);
-        statBar = new StatBar(0, 0, width, 10, ColorHelper.Argb.getArgb(255, 0, 0, 0));
+        statBar = new StatBar(0, 0, width, 10, FastColor.ARGB32.color(255, 0, 0, 0));
         modifierFormat = Util.make(new DecimalFormat("##.##"), (decimalFormat) -> {
             decimalFormat.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ROOT));
         });
@@ -99,8 +99,8 @@ public class MiningLevelStatDisplay extends InteractAbleWidget implements Single
     }
 
     public int getWidthDesired() {
-        int textWidth = MinecraftClient.getInstance().textRenderer.getWidth(this.text.resolve(original).getString());
-        int numberWidth = MinecraftClient.getInstance().textRenderer.getWidth(compareValue.getText().getString());
+        int textWidth = Minecraft.getInstance().font.width(this.text.resolve(original).getString());
+        int numberWidth = Minecraft.getInstance().font.width(compareValue.getText().getString());
         int size = 1;
         if (textWidth + numberWidth > 76-6) {
             size = 2;
@@ -122,7 +122,7 @@ public class MiningLevelStatDisplay extends InteractAbleWidget implements Single
     }
 
     @Override
-    public void render(DrawContext drawContext, int mouseX, int mouseY, float delta) {
+    public void render(GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
         double oldValue = getValue(original);
         double compareToValue = getValue(compareTo);
 
@@ -148,18 +148,18 @@ public class MiningLevelStatDisplay extends InteractAbleWidget implements Single
         integerStatBar.setWidth(this.width - 4);
         integerStatBar.setHeight(1);
         if (oldMining < compareMining) {
-            integerStatBar.setPrimary(oldMining, ColorHelper.Argb.getArgb(255, 255, 255, 255));
+            integerStatBar.setPrimary(oldMining, FastColor.ARGB32.color(255, 255, 255, 255));
             integerStatBar.setSecondary(compareMining, getGreen());
         } else {
-            integerStatBar.setPrimary(compareMining, ColorHelper.Argb.getArgb(255, 255, 255, 255));
+            integerStatBar.setPrimary(compareMining, FastColor.ARGB32.color(255, 255, 255, 255));
             integerStatBar.setSecondary(oldMining,getRed());
         }
         if (oldValue < compareToValue) {
-            statBar.setPrimary((oldValue - min) / (max - min), ColorHelper.Argb.getArgb(255, 255, 255, 255));
+            statBar.setPrimary((oldValue - min) / (max - min), FastColor.ARGB32.color(255, 255, 255, 255));
             statBar.setSecondary((compareToValue - min) / (max - min), getGreen());
             compareValue.textColor = getGreen();
         } else {
-            statBar.setPrimary((compareToValue - min) / (max - min), ColorHelper.Argb.getArgb(255, 255, 255, 255));
+            statBar.setPrimary((compareToValue - min) / (max - min), FastColor.ARGB32.color(255, 255, 255, 255));
             statBar.setSecondary((oldValue - min) / (max - min), getRed());
             compareValue.textColor = getRed();
         }
@@ -167,7 +167,7 @@ public class MiningLevelStatDisplay extends InteractAbleWidget implements Single
             currentValue.setX(this.getX() - 3);
             currentValue.setY(this.getY() + 3);
             currentValue.setWidth(this.getWidth());
-            currentValue.setText(Text.literal(modifierFormat.format(oldValue)));
+            currentValue.setText(Component.literal(modifierFormat.format(oldValue)));
             currentValue.setOrientation(ScrollingTextWidget.Orientation.RIGHT);
             compareValue.textColor = getRed();
             currentValue.render(drawContext, mouseX, mouseY, delta);
@@ -176,7 +176,7 @@ public class MiningLevelStatDisplay extends InteractAbleWidget implements Single
             compareValue.setY(this.getY() + 3);
             compareValue.setWidth(this.getWidth());
             compareValue.setOrientation(ScrollingTextWidget.Orientation.RIGHT);
-            compareValue.setText(Text.of(modifierFormat.format(compareToValue)));
+            compareValue.setText(Component.nullToEmpty(modifierFormat.format(compareToValue)));
             compareValue.render(drawContext, mouseX, mouseY, delta);
         }
         statBar.render(drawContext, mouseX, mouseY, delta);
@@ -185,11 +185,11 @@ public class MiningLevelStatDisplay extends InteractAbleWidget implements Single
     }
 
     @Override
-    public void renderHover(DrawContext drawContext, int mouseX, int mouseY, float delta) {
+    public void renderHover(GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
         if (isMouseOver(mouseX, mouseY)) {
-            Text text1 = this.hover.resolve(compareTo);
+            Component text1 = this.hover.resolve(compareTo);
             if(!text1.getString().isEmpty()){
-                drawContext.drawTooltip(MinecraftClient.getInstance().textRenderer, this.hover.resolve(compareTo), mouseX, mouseY);
+                drawContext.renderTooltip(Minecraft.getInstance().font, this.hover.resolve(compareTo), mouseX, mouseY);
             }
         }
     }
@@ -200,8 +200,8 @@ public class MiningLevelStatDisplay extends InteractAbleWidget implements Single
 
     public static class Builder {
         public StatListWidget.TextGetter name;
-        public StatListWidget.TextGetter hoverDescription = (stack) -> Text.empty();
-        EntityAttribute attribute;
+        public StatListWidget.TextGetter hoverDescription = (stack) -> Component.empty();
+        Attribute attribute;
         public EquipmentSlot slot = EquipmentSlot.MAINHAND;
         public double defaultValue = 1;
         public String translationKey = "";
@@ -219,7 +219,7 @@ public class MiningLevelStatDisplay extends InteractAbleWidget implements Single
             });
         }
 
-        public Builder setAttribute(EntityAttribute attribute) {
+        public Builder setAttribute(Attribute attribute) {
             this.attribute = attribute;
             modifierFormat = Util.make(new DecimalFormat("##.##"), (decimalFormat) -> {
                 decimalFormat.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ROOT));
@@ -249,7 +249,7 @@ public class MiningLevelStatDisplay extends InteractAbleWidget implements Single
             return this;
         }
 
-        public Builder setHoverDescription(Text hoverDescription) {
+        public Builder setHoverDescription(Component hoverDescription) {
             this.hoverDescription = (stack) -> hoverDescription;
             return this;
         }
@@ -261,8 +261,8 @@ public class MiningLevelStatDisplay extends InteractAbleWidget implements Single
 
         public Builder setTranslationKey(String key) {
             translationKey = key;
-            name = (stack) -> Text.translatable(Miapi.MOD_ID + ".stat." + key);
-            hoverDescription = (stack) -> Text.translatable(Miapi.MOD_ID + ".stat." + key + ".description", descriptionArgs);
+            name = (stack) -> Component.translatable(Miapi.MOD_ID + ".stat." + key);
+            hoverDescription = (stack) -> Component.translatable(Miapi.MOD_ID + ".stat." + key + ".description", descriptionArgs);
             return this;
         }
 

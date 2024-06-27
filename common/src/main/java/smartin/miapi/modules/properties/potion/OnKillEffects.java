@@ -2,14 +2,14 @@ package smartin.miapi.modules.properties.potion;
 
 import dev.architectury.event.EventResult;
 import dev.architectury.event.events.common.EntityEvent;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.item.TooltipContext;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.text.Style;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-import net.minecraft.world.World;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.modules.properties.LoreProperty;
 
@@ -24,8 +24,8 @@ public class OnKillEffects extends PotionEffectProperty {
         super(KEY);
         property = this;
         EntityEvent.LIVING_DEATH.register(((entity, source) -> {
-            if (!entity.getWorld().isClient()) {
-                if (source.getAttacker() instanceof LivingEntity livingEntity) {
+            if (!entity.level().isClientSide()) {
+                if (source.getEntity() instanceof LivingEntity livingEntity) {
                     applyEffects(livingEntity, livingEntity, livingEntity, this::isTargetOther);
                 }
             }
@@ -36,17 +36,17 @@ public class OnKillEffects extends PotionEffectProperty {
     }
 
     public void setupLore(){
-        LoreProperty.loreSuppliers.add((ItemStack itemStack, @Nullable World world, List<Text> tooltip, TooltipContext context) -> {
-            List<Text> lines = new ArrayList<>();
+        LoreProperty.loreSuppliers.add((ItemStack itemStack, @Nullable Level world, List<Component> tooltip, TooltipContext context) -> {
+            List<Component> lines = new ArrayList<>();
             for (EffectHolder effectHolder : merge(getStatusEffects(itemStack))) {
                 if (effectHolder.isGuiVisibility()) {
-                    Text text = effectHolder.getPotionDescription();
-                    lines.add(Text.translatable("miapi.potion.kill.tooltip", text, effectHolder.getDurationSeconds(), effectHolder.getAmplifier()));
+                    Component text = effectHolder.getPotionDescription();
+                    lines.add(Component.translatable("miapi.potion.kill.tooltip", text, effectHolder.getDurationSeconds(), effectHolder.getAmplifier()));
                 }
             }
             if (!lines.isEmpty()) {
-                lines.add(0, Text.translatable("miapi.potion.kill.header").getWithStyle(Style.EMPTY.withColor(Formatting.GRAY)).get(0));
-                lines.add(0, Text.empty());
+                lines.add(0, Component.translatable("miapi.potion.kill.header").toFlatList(Style.EMPTY.withColor(ChatFormatting.GRAY)).get(0));
+                lines.add(0, Component.empty());
             }
             tooltip.addAll(lines);
         });

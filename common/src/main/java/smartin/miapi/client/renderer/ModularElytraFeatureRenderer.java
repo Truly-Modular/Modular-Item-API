@@ -1,56 +1,56 @@
 package smartin.miapi.client.renderer;
 
-import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.render.OverlayTexture;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.entity.feature.ElytraFeatureRenderer;
-import net.minecraft.client.render.entity.feature.FeatureRendererContext;
-import net.minecraft.client.render.entity.model.ElytraEntityModel;
-import net.minecraft.client.render.entity.model.EntityModel;
-import net.minecraft.client.render.entity.model.EntityModelLoader;
-import net.minecraft.client.render.model.json.ModelTransformationMode;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.Identifier;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.model.ElytraModel;
+import net.minecraft.client.model.EntityModel;
+import net.minecraft.client.model.geom.EntityModelSet;
+import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.entity.RenderLayerParent;
+import net.minecraft.client.renderer.entity.layers.ElytraLayer;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemDisplayContext;
+import net.minecraft.world.item.ItemStack;
 import smartin.miapi.client.model.MiapiItemModel;
 import smartin.miapi.item.modular.VisualModularItem;
 import smartin.miapi.mixin.client.ElytraEntityModelAccessor;
 import smartin.miapi.mixin.client.ElytraFeatureRendererAccessor;
 
-public class ModularElytraFeatureRenderer<T extends LivingEntity, M extends EntityModel<T>> extends ElytraFeatureRenderer {
-    private static final Identifier SKIN = Identifier.of("textures/entity/elytra.png");
-    private final ElytraEntityModel<T> elytra;
+public class ModularElytraFeatureRenderer<T extends LivingEntity, M extends EntityModel<T>> extends ElytraLayer {
+    private static final ResourceLocation SKIN = ResourceLocation.parse("textures/entity/elytra.png");
+    private final ElytraModel<T> elytra;
 
-    public ModularElytraFeatureRenderer(FeatureRendererContext<T, M> context, EntityModelLoader loader) {
+    public ModularElytraFeatureRenderer(RenderLayerParent<T, M> context, EntityModelSet loader) {
         super(context, loader);
         elytra = ((ElytraFeatureRendererAccessor) this).getElytra();
     }
 
     @Override
-    public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, LivingEntity livingEntity, float f, float g, float h, float j, float k, float l) {
-        ItemStack itemStack = livingEntity.getEquippedStack(EquipmentSlot.CHEST);
+    public void render(PoseStack matrixStack, MultiBufferSource vertexConsumerProvider, int i, LivingEntity livingEntity, float f, float g, float h, float j, float k, float l) {
+        ItemStack itemStack = livingEntity.getItemBySlot(EquipmentSlot.CHEST);
         if (itemStack.getItem() instanceof VisualModularItem) {
-            matrixStack.push();
+            matrixStack.pushPose();
             matrixStack.translate(0.0F, 0.0F, 0.125F);
-            this.getContextModel().copyStateTo(this.elytra);
-            this.elytra.setAngles((T) livingEntity, f, g, j, k, l);
+            this.getParentModel().copyPropertiesTo(this.elytra);
+            this.elytra.setupAnim((T) livingEntity, f, g, j, k, l);
             MiapiItemModel miapiItemModel = MiapiItemModel.getItemModel(itemStack);
             if (miapiItemModel != null) {
-                matrixStack.push();
+                matrixStack.pushPose();
                 ModelPart leftWing = ((ElytraEntityModelAccessor) elytra).getLeftWing();
-                leftWing.rotate(matrixStack);
-                miapiItemModel.render("left_wing", matrixStack, ModelTransformationMode.HEAD, 0, vertexConsumerProvider, i, OverlayTexture.DEFAULT_UV);
-                matrixStack.pop();
+                leftWing.translateAndRotate(matrixStack);
+                miapiItemModel.render("left_wing", matrixStack, ItemDisplayContext.HEAD, 0, vertexConsumerProvider, i, OverlayTexture.NO_OVERLAY);
+                matrixStack.popPose();
 
-                matrixStack.push();
+                matrixStack.pushPose();
                 ModelPart rightWing = ((ElytraEntityModelAccessor) elytra).getRightWing();
-                rightWing.rotate(matrixStack);
-                miapiItemModel.render("right_wing", matrixStack, ModelTransformationMode.HEAD, 0, vertexConsumerProvider, i, OverlayTexture.DEFAULT_UV);
-                matrixStack.pop();
+                rightWing.translateAndRotate(matrixStack);
+                miapiItemModel.render("right_wing", matrixStack, ItemDisplayContext.HEAD, 0, vertexConsumerProvider, i, OverlayTexture.NO_OVERLAY);
+                matrixStack.popPose();
             }
-            matrixStack.pop();
+            matrixStack.popPose();
         }
     }
 }

@@ -1,9 +1,6 @@
 package smartin.miapi.modules.properties;
 
 import com.google.gson.JsonElement;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.craft.CraftAction;
 import smartin.miapi.modules.ItemModule;
@@ -16,6 +13,9 @@ import smartin.miapi.registries.RegistryInventory;
 
 import java.util.List;
 import java.util.Map;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 
 /**
  * This Property changes the ItemIdentifier of an ModularItem on Craft
@@ -76,7 +76,7 @@ public class ItemIdProperty implements CraftingProperty, ModuleProperty {
     }
 
     @Override
-    public ItemStack preview(ItemStack old, ItemStack crafting, PlayerEntity player, ModularWorkBenchEntity bench, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<String,String> dataMap) {
+    public ItemStack preview(ItemStack old, ItemStack crafting, Player player, ModularWorkBenchEntity bench, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<String,String> dataMap) {
         ModuleInstance root = ItemModule.getModules(crafting);
         JsonElement data = ItemModule.getMergedProperty(root, property);
         if (data != null) {

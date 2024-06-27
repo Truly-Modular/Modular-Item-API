@@ -1,10 +1,6 @@
 package smartin.miapi.modules.properties.mining.mode;
 
 import com.google.gson.JsonObject;
-import net.minecraft.item.ItemStack;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.mining.MiningLevelProperty;
 import smartin.miapi.modules.properties.mining.MiningShapeProperty;
@@ -12,6 +8,10 @@ import smartin.miapi.modules.properties.mining.MiningShapeProperty;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 
 /**
  * This Mining Mode mines all blocksinstantly and creates the drops where the block was mined
@@ -29,12 +29,12 @@ public class InstantMiningMode implements MiningMode {
     }
 
     @Override
-    public void execute(List<BlockPos> posList, World world, ServerPlayerEntity player, BlockPos origin, ItemStack itemStack) {
+    public void execute(List<BlockPos> posList, Level world, ServerPlayer player, BlockPos origin, ItemStack itemStack) {
         List<BlockPos> reducedList = new ArrayList<>(posList);
-        reducedList.sort(Comparator.comparingDouble((pos) -> pos.getSquaredDistance(origin)));
+        reducedList.sort(Comparator.comparingDouble((pos) -> pos.distSqr(origin)));
         posList.forEach(blockPos -> {
-            if (itemStack.getMaxDamage() - itemStack.getDamage() > 1 &&
-                    world.breakBlock(blockPos, MiningLevelProperty.canMine(world.getBlockState(blockPos), world, blockPos, player) && !player.isCreative(), player)
+            if (itemStack.getMaxDamage() - itemStack.getDamageValue() > 1 &&
+                    world.destroyBlock(blockPos, MiningLevelProperty.canMine(world.getBlockState(blockPos), world, blockPos, player) && !player.isCreative(), player)
             ) {
                 if (!player.isCreative()) {
                     removeDurability(durabilityBreakChance, itemStack, world, player);

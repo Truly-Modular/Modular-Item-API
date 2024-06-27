@@ -1,12 +1,11 @@
 package smartin.miapi.modules.material.palette;
 
-import net.minecraft.client.texture.NativeImage;
-import net.minecraft.client.texture.SpriteContents;
-import net.minecraft.util.math.ColorHelper;
 import smartin.miapi.client.renderer.NativeImageGetter;
 import smartin.miapi.modules.material.Material;
-
+import com.mojang.blaze3d.platform.NativeImage;
 import java.io.IOException;
+import net.minecraft.client.renderer.texture.SpriteContents;
+import net.minecraft.util.FastColor;
 
 public abstract class SpritePixelReplacer extends SpriteColorer {
     public SpritePixelReplacer(Material material) {
@@ -32,11 +31,11 @@ public abstract class SpritePixelReplacer extends SpriteColorer {
         for (int x = 0; x < rawImage.getWidth(); x++) {
             for (int y = 0; y < rawImage.getHeight(); y++) {
                 int abgr = rawImage.getColor(x, y);
-                int opacity = ColorHelper.Abgr.getAlpha(abgr);
+                int opacity = FastColor.ABGR32.alpha(abgr);
                 if (opacity < 5 && opacity > -1) {
-                    lastImage.setColor(x, y, 0);
+                    lastImage.setPixelRGBA(x, y, 0);
                 } else {
-                    lastImage.setColor(x, y, getReplacementColor(x, y, abgr));
+                    lastImage.setPixelRGBA(x, y, getReplacementColor(x, y, abgr));
                 }
             }
         }

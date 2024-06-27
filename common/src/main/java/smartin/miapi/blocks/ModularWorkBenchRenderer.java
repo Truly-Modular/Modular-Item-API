@@ -1,53 +1,59 @@
 package smartin.miapi.blocks;
 
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.block.entity.BlockEntityRenderer;
-import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
-import net.minecraft.client.render.model.json.ModelTransformationMode;
-import net.minecraft.client.util.math.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Axis;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.item.*;
-import net.minecraft.util.math.RotationAxis;
+import net.minecraft.world.item.ArrowItem;
+import net.minecraft.world.item.Equipable;
+import net.minecraft.world.item.ItemDisplayContext;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ProjectileWeaponItem;
+import net.minecraft.world.item.SwordItem;
+import net.minecraft.world.item.TieredItem;
 import smartin.miapi.item.modular.VisualModularItem;
 
 public class ModularWorkBenchRenderer implements BlockEntityRenderer<ModularWorkBenchEntity> {
-    private final BlockEntityRendererFactory.Context context;
+    private final BlockEntityRendererProvider.Context context;
 
-    public ModularWorkBenchRenderer(BlockEntityRendererFactory.Context context) {
+    public ModularWorkBenchRenderer(BlockEntityRendererProvider.Context context) {
         this.context = context;
     }
 
     @Override
-    public void render(ModularWorkBenchEntity be, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
+    public void render(ModularWorkBenchEntity be, float tickDelta, PoseStack matrices, MultiBufferSource vertexConsumers, int light, int overlay) {
         ItemStack stack = be.getItem();
         if (stack.isEmpty()) return;
 
-        matrices.push();
+        matrices.pushPose();
         matrices.translate(8 / 16f, 16.5f / 16, 8 / 16f);
-        float rotAmnt = be.getCachedState().get(ModularWorkBench.FACING).asRotation();
-        if (!(stack.getItem() instanceof Equipment) && (
+        float rotAmnt = be.getBlockState().getValue(ModularWorkBench.FACING).toYRot();
+        if (!(stack.getItem() instanceof Equipable) && (
                 stack.getItem() instanceof VisualModularItem ||
-                        stack.getItem() instanceof ToolItem ||
+                        stack.getItem() instanceof TieredItem ||
                         stack.getItem() instanceof SwordItem ||
                         stack.getItem() instanceof ArrowItem ||
                         //stack.getItem() instanceof CrossbowItem ||
-                        stack.getItem() instanceof RangedWeaponItem))
+                        stack.getItem() instanceof ProjectileWeaponItem))
             rotAmnt -= 45;
         else
             rotAmnt -= 90;
-        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(rotAmnt));
-        matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(90));
+        matrices.mulPose(Axis.YP.rotationDegrees(rotAmnt));
+        matrices.mulPose(Axis.XP.rotationDegrees(90));
         matrices.scale(0.75f, 0.75f, 0.75f);
 
         try {
-            context.getItemRenderer().renderItem(
+            context.getItemRenderer().renderStatic(
                     stack,
-                    ModelTransformationMode.FIXED,
+                    ItemDisplayContext.FIXED,
                     light, overlay,
                     matrices, vertexConsumers,
-                    be.getWorld(), 1
+                    be.getLevel(), 1
             );
         } catch (Exception ignored) {
         }
-        matrices.pop();
+        matrices.popPose();
     }
 }

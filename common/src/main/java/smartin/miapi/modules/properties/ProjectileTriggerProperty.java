@@ -2,15 +2,15 @@ package smartin.miapi.modules.properties;
 
 import com.google.gson.JsonElement;
 import dev.architectury.event.EventResult;
-import net.minecraft.block.dispenser.DispenserBehavior;
-import net.minecraft.block.dispenser.ProjectileDispenserBehavior;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.projectile.ProjectileEntity;
-import net.minecraft.entity.projectile.thrown.PotionEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ThrowablePotionItem;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.util.hit.HitResult;
+import net.minecraft.core.dispenser.DispenseItemBehavior;
+import net.minecraft.core.dispenser.ProjectileDispenseBehavior;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.entity.projectile.ThrownPotion;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ThrowablePotionItem;
+import net.minecraft.world.phys.HitResult;
 import smartin.miapi.entity.ItemProjectileEntity;
 import smartin.miapi.events.MiapiProjectileEvents;
 import smartin.miapi.mixin.DispenserBlockAccessor;
@@ -44,28 +44,28 @@ public class ProjectileTriggerProperty implements ModuleProperty {
     }
 
     public static boolean isTriggered(ItemProjectileEntity projectile, HitResult hitResult) {
-        ItemStack itemStack = projectile.asItemStack();
+        ItemStack itemStack = projectile.getPickupItem();
         JsonElement element = ItemModule.getMergedProperty(itemStack, property);
         if (element != null && itemStack.hasNbt()) {
-            NbtCompound itemCompound = itemStack.getOrCreateNbt().getCompound(element.getAsString());
+            CompoundTag itemCompound = itemStack.getOrCreateNbt().getCompound(element.getAsString());
             if (!itemCompound.isEmpty()) {
-                ItemStack storedStack = ItemStack.fromNbt(itemCompound);
+                ItemStack storedStack = ItemStack.parse(itemCompound);
                 if (projectile.getOwner() instanceof LivingEntity livingEntity) {
-                    if (!projectile.getWorld().isClient()) {
+                    if (!projectile.level().isClientSide()) {
                         if (storedStack.getItem() instanceof ThrowablePotionItem) {
-                            PotionEntity potionEntity = new PotionEntity(projectile.getWorld(), livingEntity);
-                            potionEntity.setPosition(projectile.getPos());
+                            ThrownPotion potionEntity = new ThrownPotion(projectile.level(), livingEntity);
+                            potionEntity.setPos(projectile.position());
                             potionEntity.setItem(storedStack);
-                            potionEntity.setVelocity(livingEntity, projectile.getPitch(), projectile.getYaw(), 0.0f, projectile.speed, 0.0f);
-                            projectile.getWorld().spawnEntity(potionEntity);
+                            potionEntity.shootFromRotation(livingEntity, projectile.getXRot(), projectile.getYRot(), 0.0f, projectile.flyDist, 0.0f);
+                            projectile.level().addFreshEntity(potionEntity);
                             ((ThrowablePotionItemAccessor) potionEntity).onCollisionMixin(hitResult);
                             projectile.discard();
                             return true;
                         }
                     }
-                    DispenserBehavior dispenserBehavior = DispenserBlockAccessor.getBehaviours().get(storedStack.getItem());
-                    if (dispenserBehavior instanceof ProjectileDispenserBehavior projectileDispenserBehavior) {
-                        ProjectileEntity projectileEntity = ((ProjectileDispenserBehaviorAccessor) projectileDispenserBehavior).createProjectileAccessor(projectile.getWorld(), projectile.getPos(), storedStack);
+                    DispenseItemBehavior dispenserBehavior = DispenserBlockAccessor.getBehaviours().get(storedStack.getItem());
+                    if (dispenserBehavior instanceof ProjectileDispenseBehavior projectileDispenserBehavior) {
+                        Projectile projectileEntity = ((ProjectileDispenserBehaviorAccessor) projectileDispenserBehavior).createProjectileAccessor(projectile.level(), projectile.position(), storedStack);
                         ((ProjectileEntityAccessor) projectileEntity).onCollisionMixin(hitResult);
                     }
                 }

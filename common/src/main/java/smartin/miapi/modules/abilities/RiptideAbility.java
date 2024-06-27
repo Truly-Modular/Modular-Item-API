@@ -1,20 +1,20 @@
 package smartin.miapi.modules.abilities;
 
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.MovementType;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvent;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.stat.Stats;
-import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
-import net.minecraft.util.UseAction;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.stats.Stats;
+import net.minecraft.util.Mth;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.MoverType;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.UseAnim;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
 import smartin.miapi.modules.abilities.util.ItemUseAbility;
 import smartin.miapi.modules.abilities.util.ItemUseDefaultCooldownAbility;
@@ -27,10 +27,10 @@ import smartin.miapi.modules.properties.RiptideProperty;
  */
 public class RiptideAbility implements ItemUseDefaultCooldownAbility, ItemUseMinHoldAbility {
     @Override
-    public boolean allowedOnItem(ItemStack itemStack, World world, PlayerEntity player, Hand hand, ItemAbilityManager.AbilityHitContext abilityHitContext) {
+    public boolean allowedOnItem(ItemStack itemStack, Level world, Player player, InteractionHand hand, ItemAbilityManager.AbilityHitContext abilityHitContext) {
         RiptideProperty.RiptideJson json = RiptideProperty.getData(itemStack);
         if (json == null) return false;
-        boolean missingWater = !player.isTouchingWaterOrRain();
+        boolean missingWater = !player.isInWaterOrRain();
         boolean missingLava = json.allowLava && !player.isInLava();
         if (json.needsWater && (missingWater && missingLava)) {
             return false;
@@ -42,8 +42,8 @@ public class RiptideAbility implements ItemUseDefaultCooldownAbility, ItemUseMin
     }
 
     @Override
-    public UseAction getUseAction(ItemStack itemStack) {
-        return UseAction.SPEAR;
+    public UseAnim getUseAction(ItemStack itemStack) {
+        return UseAnim.SPEAR;
     }
 
     @Override
@@ -52,15 +52,15 @@ public class RiptideAbility implements ItemUseDefaultCooldownAbility, ItemUseMin
     }
 
     @Override
-    public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-        ItemStack itemStack = user.getStackInHand(hand);
-        if (itemStack.getDamage() >= itemStack.getMaxDamage() - 1) {
-            return TypedActionResult.fail(itemStack);
-        } else if (EnchantmentHelper.getRiptide(itemStack) > 0 && !user.isTouchingWaterOrRain()) {
-            return TypedActionResult.fail(itemStack);
+    public InteractionResultHolder<ItemStack> use(Level world, Player user, InteractionHand hand) {
+        ItemStack itemStack = user.getItemInHand(hand);
+        if (itemStack.getDamageValue() >= itemStack.getMaxDamage() - 1) {
+            return InteractionResultHolder.fail(itemStack);
+        } else if (EnchantmentHelper.getRiptide(itemStack) > 0 && !user.isInWaterOrRain()) {
+            return InteractionResultHolder.fail(itemStack);
         } else {
-            user.setCurrentHand(hand);
-            return TypedActionResult.consume(itemStack);
+            user.startUsingItem(hand);
+            return InteractionResultHolder.consume(itemStack);
         }
     }
 
@@ -69,39 +69,39 @@ public class RiptideAbility implements ItemUseDefaultCooldownAbility, ItemUseMin
         return 10;
     }
 
-    public void onStoppedUsingAfter(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
-        if (user instanceof PlayerEntity playerEntity) {
+    public void onStoppedUsingAfter(ItemStack stack, Level world, LivingEntity user, int remainingUseTicks) {
+        if (user instanceof Player playerEntity) {
             int i = this.getMaxUseTime(stack) - remainingUseTicks;
             if (i >= 10) {
                 int j = EnchantmentHelper.getRiptide(stack);
                 RiptideProperty.RiptideJson json = RiptideProperty.getData(stack);
 
-                playerEntity.incrementStat(Stats.USED.getOrCreateStat(stack.getItem()));
-                float f = playerEntity.getYaw();
-                float g = playerEntity.getPitch();
-                float h = -MathHelper.sin(f * 0.017453292F) * MathHelper.cos(g * 0.017453292F);
-                float k = -MathHelper.sin(g * 0.017453292F);
-                float l = MathHelper.cos(f * 0.017453292F) * MathHelper.cos(g * 0.017453292F);
-                float m = MathHelper.sqrt(h * h + k * k + l * l);
+                playerEntity.awardStat(Stats.ITEM_USED.get(stack.getItem()));
+                float f = playerEntity.getYRot();
+                float g = playerEntity.getXRot();
+                float h = -Mth.sin(f * 0.017453292F) * Mth.cos(g * 0.017453292F);
+                float k = -Mth.sin(g * 0.017453292F);
+                float l = Mth.cos(f * 0.017453292F) * Mth.cos(g * 0.017453292F);
+                float m = Mth.sqrt(h * h + k * k + l * l);
                 float n = (float) (json.riptideStrength * ((1.0F + j) / 4.0F));
                 h *= n / m;
                 k *= n / m;
                 l *= n / m;
-                playerEntity.addVelocity(h, k, l);
-                playerEntity.useRiptide(20);
-                if (playerEntity.isOnGround()) {
-                    playerEntity.move(MovementType.SELF, new Vec3d(0.0, 1.1999999284744263, 0.0));
+                playerEntity.push(h, k, l);
+                playerEntity.startAutoSpinAttack(20);
+                if (playerEntity.onGround()) {
+                    playerEntity.move(MoverType.SELF, new Vec3(0.0, 1.1999999284744263, 0.0));
                 }
 
                 SoundEvent soundEvent;
                 if (j >= 3) {
-                    soundEvent = SoundEvents.ITEM_TRIDENT_RIPTIDE_3;
+                    soundEvent = SoundEvents.TRIDENT_RIPTIDE_3;
                 } else if (j == 2) {
-                    soundEvent = SoundEvents.ITEM_TRIDENT_RIPTIDE_2;
+                    soundEvent = SoundEvents.TRIDENT_RIPTIDE_2;
                 } else {
-                    soundEvent = SoundEvents.ITEM_TRIDENT_RIPTIDE_1;
+                    soundEvent = SoundEvents.TRIDENT_RIPTIDE_1;
                 }
-                world.playSoundFromEntity((PlayerEntity) null, playerEntity, soundEvent, SoundCategory.PLAYERS, 1.0F, 1.0F);
+                world.playSound((Player) null, playerEntity, soundEvent, SoundSource.PLAYERS, 1.0F, 1.0F);
             }
         }
     }

@@ -1,9 +1,5 @@
 package smartin.miapi.client.model;
 
-import net.minecraft.client.render.model.BakedModel;
-import net.minecraft.client.render.model.BakedQuad;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.random.Random;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.modules.cache.ModularItemCache;
 
@@ -11,6 +7,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
+import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.core.Direction;
+import net.minecraft.util.RandomSource;
 
 public class ModelTransformer {
     /*
@@ -34,7 +34,7 @@ public class ModelTransformer {
     }
 
 
-    public static List<BakedQuad> getInverse(BakedModel bakedModel, Random random) {
+    public static List<BakedQuad> getInverse(BakedModel bakedModel, RandomSource random) {
         return inverseMap.computeIfAbsent(bakedModel, model -> {
             List<BakedQuad> rawQuads = new ArrayList<>();
             for (Direction direction : Direction.values()) {
@@ -42,13 +42,13 @@ public class ModelTransformer {
             }
             List<BakedQuad> redoneQuads = new ArrayList<>();
             rawQuads.forEach(bakedQuad -> {
-                redoneQuads.add(new BakedQuad(inverse(bakedQuad.getVertexData()), bakedQuad.getColorIndex(), bakedQuad.getFace(), bakedQuad.getSprite(), bakedQuad.hasShade()));
+                redoneQuads.add(new BakedQuad(inverse(bakedQuad.getVertices()), bakedQuad.getTintIndex(), bakedQuad.getDirection(), bakedQuad.getSprite(), bakedQuad.isShade()));
             });
             return redoneQuads;
         });
     }
 
-    public static List<BakedQuad> getRescale(BakedModel bakedModel, Random random) {
+    public static List<BakedQuad> getRescale(BakedModel bakedModel, RandomSource random) {
         return reScaledMap.computeIfAbsent(bakedModel, model -> {
             List<BakedQuad> rawQuads = new ArrayList<>();
             for (Direction direction : Direction.values()) {
@@ -56,17 +56,17 @@ public class ModelTransformer {
             }
             List<BakedQuad> redoneQuads = new ArrayList<>();
             rawQuads.forEach(bakedQuad -> {
-                float uStart = bakedQuad.getSprite().getMinU();
-                float uScale = 1 / (bakedQuad.getSprite().getMaxU() - bakedQuad.getSprite().getMinU());
-                float vStart = bakedQuad.getSprite().getMinV();
-                float vScale = 1 / (bakedQuad.getSprite().getMaxV() - bakedQuad.getSprite().getMinV());
-                redoneQuads.add(new BakedQuad(rescale(bakedQuad.getVertexData(), uStart, uScale, vStart, vScale), bakedQuad.getColorIndex(), bakedQuad.getFace(), bakedQuad.getSprite(), bakedQuad.hasShade()));
+                float uStart = bakedQuad.getSprite().getU0();
+                float uScale = 1 / (bakedQuad.getSprite().getU1() - bakedQuad.getSprite().getU0());
+                float vStart = bakedQuad.getSprite().getV0();
+                float vScale = 1 / (bakedQuad.getSprite().getV1() - bakedQuad.getSprite().getV0());
+                redoneQuads.add(new BakedQuad(rescale(bakedQuad.getVertices(), uStart, uScale, vStart, vScale), bakedQuad.getTintIndex(), bakedQuad.getDirection(), bakedQuad.getSprite(), bakedQuad.isShade()));
             });
             return redoneQuads;
         });
     }
 
-    public static List<BakedQuad> getRescaleInverse(BakedModel bakedModel, Random random) {
+    public static List<BakedQuad> getRescaleInverse(BakedModel bakedModel, RandomSource random) {
         return inversedRescaledMap.computeIfAbsent(bakedModel, model -> {
             List<BakedQuad> rawQuads = new ArrayList<>();
             for (Direction direction : Direction.values()) {
@@ -74,11 +74,11 @@ public class ModelTransformer {
             }
             List<BakedQuad> redoneQuads = new ArrayList<>();
             rawQuads.forEach(bakedQuad -> {
-                float uStart = bakedQuad.getSprite().getMinU();
-                float uScale = 1 / (bakedQuad.getSprite().getMaxU() - bakedQuad.getSprite().getMinU());
-                float vStart = bakedQuad.getSprite().getMinV();
-                float vScale = 1 / (bakedQuad.getSprite().getMaxV() - bakedQuad.getSprite().getMinV());
-                redoneQuads.add(new BakedQuad(inverse(rescale(bakedQuad.getVertexData(), uStart, uScale, vStart, vScale)), bakedQuad.getColorIndex(), bakedQuad.getFace(), bakedQuad.getSprite(), bakedQuad.hasShade()));
+                float uStart = bakedQuad.getSprite().getU0();
+                float uScale = 1 / (bakedQuad.getSprite().getU1() - bakedQuad.getSprite().getU0());
+                float vStart = bakedQuad.getSprite().getV0();
+                float vScale = 1 / (bakedQuad.getSprite().getV1() - bakedQuad.getSprite().getV0());
+                redoneQuads.add(new BakedQuad(inverse(rescale(bakedQuad.getVertices(), uStart, uScale, vStart, vScale)), bakedQuad.getTintIndex(), bakedQuad.getDirection(), bakedQuad.getSprite(), bakedQuad.isShade()));
             });
             return redoneQuads;
         });

@@ -1,11 +1,10 @@
 package smartin.miapi.client.renderer;
 
-import net.minecraft.client.texture.NativeImage;
-import net.minecraft.client.texture.SpriteContents;
 import smartin.miapi.mixin.client.SpriteContentsAccessor;
-
+import com.mojang.blaze3d.platform.NativeImage;
 import java.util.Map;
 import java.util.WeakHashMap;
+import net.minecraft.client.renderer.texture.SpriteContents;
 
 public class NativeImageGetter {
     public static Map<SpriteContents, ImageHolder> nativeImageMap = new WeakHashMap<>();
@@ -17,8 +16,8 @@ public class NativeImageGetter {
     public static ImageHolder getFromContents(SpriteContents contents) {
         ImageHolder imageHolder = new ImageHolder();
         imageHolder.nativeImage = ((SpriteContentsAccessor) contents).getImage();
-        imageHolder.height = contents.getHeight();
-        imageHolder.width = contents.getWidth();
+        imageHolder.height = contents.height();
+        imageHolder.width = contents.width();
         return imageHolder;
     }
 
@@ -46,35 +45,35 @@ public class NativeImageGetter {
         }
 
         public NativeImage.Format getFormat() {
-            return nativeImage.getFormat();
+            return nativeImage.format();
         }
 
         public int getColor(int x, int y) {
-            return nativeImage.getColor(x + this.x, y + this.y);
+            return nativeImage.getPixelRGBA(x + this.x, y + this.y);
         }
 
         public void setColor(int x, int y, int color) {
-            nativeImage.setColor(x + this.x, y + this.y, color);
+            nativeImage.setPixelRGBA(x + this.x, y + this.y, color);
         }
 
         public void setLuminance(int x, int y, byte luminance) {
-            nativeImage.setLuminance(x + this.x, y + this.y, luminance);
+            nativeImage.setPixelLuminance(x + this.x, y + this.y, luminance);
         }
 
         public byte getRed(int x, int y) {
-            return nativeImage.getRed(x + this.x, y + this.y);
+            return nativeImage.getRedOrLuminance(x + this.x, y + this.y);
         }
 
         public byte getGreen(int x, int y) {
-            return nativeImage.getGreen(x + this.x, y + this.y);
+            return nativeImage.getGreenOrLuminance(x + this.x, y + this.y);
         }
 
         public byte getBlue(int x, int y) {
-            return nativeImage.getBlue(x + this.x, y + this.y);
+            return nativeImage.getBlueOrLuminance(x + this.x, y + this.y);
         }
 
         public byte getOpacity(int x, int y) {
-            return nativeImage.getOpacity(x + this.x, y + this.y);
+            return nativeImage.getLuminanceOrAlpha(x + this.x, y + this.y);
         }
 
     }

@@ -8,11 +8,6 @@ import com.mojang.serialization.JsonOps;
 import com.redpxnda.nucleus.codec.auto.AutoCodec;
 import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
 import com.redpxnda.nucleus.util.json.JsonUtil;
-import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.item.ItemStack;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.math.random.Random;
 import smartin.miapi.Miapi;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ItemModule;
@@ -23,6 +18,11 @@ import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.ArrayList;
 import java.util.List;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.item.ItemStack;
 
 public class EdibleProperty implements ModuleProperty {
     //@Panda is this done or under construction still?
@@ -111,7 +111,7 @@ public class EdibleProperty implements ModuleProperty {
                     eatingSpeed.evaluate(instance),
                     durability.evaluate(instance),
                     alwaysEdible,
-                    effects.stream().map(e -> new StatusEffectInstance(e.effect, e.duration, e.amplifier, e.ambient, e.showParticles, e.showIcon)).toList());
+                    effects.stream().map(e -> new MobEffectInstance(e.effect, e.duration, e.amplifier, e.ambient, e.showParticles, e.showIcon)).toList());
         }
     }
 
@@ -121,9 +121,9 @@ public class EdibleProperty implements ModuleProperty {
         public double eatingSpeed;
         public double durabilityDamage;
         public boolean alwaysEdible;
-        public List<StatusEffectInstance> effects;
+        public List<MobEffectInstance> effects;
 
-        public Holder(int hunger, double saturation, double eatingSpeed, double durabilityDamage, boolean alwaysEdible, List<StatusEffectInstance> effects) {
+        public Holder(int hunger, double saturation, double eatingSpeed, double durabilityDamage, boolean alwaysEdible, List<MobEffectInstance> effects) {
             this.hunger = hunger;
             this.durabilityDamage = durabilityDamage;
             this.saturation = saturation;
@@ -132,11 +132,11 @@ public class EdibleProperty implements ModuleProperty {
             this.effects = effects;
         }
 
-        public void finishedEat(ItemStack itemStack, Random random, ServerPlayerEntity serverPlayerEntity) {
+        public void finishedEat(ItemStack itemStack, RandomSource random, ServerPlayer serverPlayerEntity) {
             if (this.durabilityDamage == 0) {
-                itemStack.decrement(1);
+                itemStack.shrink(1);
             } else {
-                itemStack.damage((int) durabilityDamage, random, serverPlayerEntity);
+                itemStack.hurtAndBreak((int) durabilityDamage, random, serverPlayerEntity);
             }
         }
     }
@@ -146,7 +146,7 @@ public class EdibleProperty implements ModuleProperty {
     public static class StatusEffectHolder {
         public static final Codec<StatusEffectHolder> codec = AutoCodec.of(StatusEffectHolder.class).codec();
 
-        public @CodecBehavior.Optional(false) StatusEffect effect;
+        public @CodecBehavior.Optional(false) MobEffect effect;
         public @CodecBehavior.Optional(false) int duration;
         public @CodecBehavior.Optional(false) int amplifier;
         public boolean ambient = false;

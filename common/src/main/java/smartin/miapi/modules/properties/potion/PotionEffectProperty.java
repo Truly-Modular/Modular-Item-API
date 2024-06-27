@@ -2,15 +2,6 @@ package smartin.miapi.modules.properties.potion;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.item.ItemStack;
-import net.minecraft.registry.Registries;
-import net.minecraft.text.Style;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.modules.ItemModule;
@@ -22,6 +13,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
 
 /**
  * This is an abstract class to create properties that use Potion effects
@@ -45,7 +45,7 @@ public abstract class PotionEffectProperty implements ModuleProperty {
     public void applyPotions(LivingEntity livingEntity, Iterable<ItemStack> itemStack, @Nullable LivingEntity causer) {
         List<EffectHolder> effectHolders = getStatusEffects(itemStack);
         for (EffectHolder effectHolder : effectHolders) {
-            livingEntity.addStatusEffect(effectHolder.effectInstance(), causer);
+            livingEntity.addEffect(effectHolder.effectInstance(), causer);
         }
     }
 
@@ -68,7 +68,7 @@ public abstract class PotionEffectProperty implements ModuleProperty {
         List<EffectHolder> getFilteredEffects = getHoldersConditional(itemsFromEntity);
         getFilteredEffects = merge(getFilteredEffects);
         for (EffectHolder effectHolder : getFilteredEffects) {
-            target.addStatusEffect(effectHolder.effectInstance(), causer);
+            target.addEffect(effectHolder.effectInstance(), causer);
         }
     }
 
@@ -76,7 +76,7 @@ public abstract class PotionEffectProperty implements ModuleProperty {
         List<EffectHolder> getFilteredEffects = getHoldersConditional(itemsFromEntity, predicate);
         getFilteredEffects = merge(getFilteredEffects);
         for (EffectHolder effectHolder : getFilteredEffects) {
-            target.addStatusEffect(effectHolder.effectInstance(), causer);
+            target.addEffect(effectHolder.effectInstance(), causer);
         }
     }
 
@@ -84,7 +84,7 @@ public abstract class PotionEffectProperty implements ModuleProperty {
         List<EffectHolder> getFilteredEffects = getStatusEffects(itemStack);
         getFilteredEffects = merge(getFilteredEffects);
         for (EffectHolder effectHolder : getFilteredEffects) {
-            target.addStatusEffect(effectHolder.effectInstance(), causer);
+            target.addEffect(effectHolder.effectInstance(), causer);
         }
     }
 
@@ -100,12 +100,12 @@ public abstract class PotionEffectProperty implements ModuleProperty {
         List<EffectHolder> getFilteredEffects = getStatusEffects(itemStack, predicate, itemsFromEntity);
         getFilteredEffects = merge(getFilteredEffects);
         for (EffectHolder effectHolder : getFilteredEffects) {
-            target.addStatusEffect(effectHolder.effectInstance(), causer);
+            target.addEffect(effectHolder.effectInstance(), causer);
         }
         getFilteredEffects = getHoldersConditional(itemsFromEntity, predicate);
         getFilteredEffects = merge(getFilteredEffects);
         for (EffectHolder effectHolder : getFilteredEffects) {
-            target.addStatusEffect(effectHolder.effectInstance(), causer);
+            target.addEffect(effectHolder.effectInstance(), causer);
         }
     }
 
@@ -115,7 +115,7 @@ public abstract class PotionEffectProperty implements ModuleProperty {
 
         for (EffectHolder holder : holders) {
             int amplifier = holder.effectInstance().getAmplifier();
-            StatusEffect effect = holder.statusEffect();
+            MobEffect effect = holder.statusEffect();
             EffectKey key = new EffectKey(effect, amplifier);
 
             if (effectMap.containsKey(key)) {
@@ -134,23 +134,23 @@ public abstract class PotionEffectProperty implements ModuleProperty {
     }
 
     private EffectHolder mergeEffects(EffectHolder toMerge, EffectHolder existing) {
-        StatusEffectInstance oldInstance = existing.effectInstance();
-        StatusEffectInstance toMergeInstance = toMerge.effectInstance();
+        MobEffectInstance oldInstance = existing.effectInstance();
+        MobEffectInstance toMergeInstance = toMerge.effectInstance();
 
-        StatusEffectInstance instance = new StatusEffectInstance(
-                oldInstance.getEffectType(),
+        MobEffectInstance instance = new MobEffectInstance(
+                oldInstance.getEffect(),
                 oldInstance.getDuration() + toMergeInstance.getDuration(),
                 oldInstance.getAmplifier(),
                 oldInstance.isAmbient() || toMergeInstance.isAmbient(),
-                oldInstance.shouldShowParticles() || toMergeInstance.shouldShowParticles());
+                oldInstance.isVisible() || toMergeInstance.isVisible());
         return new EffectHolder(existing.statusEffect, existing.moduleInstance, existing.rawData, instance);
     }
 
     private static class EffectKey {
-        private StatusEffect effect;
+        private MobEffect effect;
         private int amplifier;
 
-        public EffectKey(StatusEffect effect, int amplifier) {
+        public EffectKey(MobEffect effect, int amplifier) {
             this.effect = effect;
             this.amplifier = amplifier;
         }
@@ -174,7 +174,7 @@ public abstract class PotionEffectProperty implements ModuleProperty {
     public List<EffectHolder> getHoldersConditional(LivingEntity entity, EffectPredicate predicate) {
         List<EffectHolder> effectHolders = new ArrayList<>();
         for (EquipmentSlot slot : EquipmentSlot.values()) {
-            ItemStack itemStack = entity.getEquippedStack(slot);
+            ItemStack itemStack = entity.getItemBySlot(slot);
             getStatusEffects(itemStack)
                     .stream()
                     .filter(effectHolder -> isValidForSlot(slot, effectHolder, entity))
@@ -187,7 +187,7 @@ public abstract class PotionEffectProperty implements ModuleProperty {
     public List<EffectHolder> getHoldersConditional(LivingEntity entity) {
         List<EffectHolder> effectHolders = new ArrayList<>();
         for (EquipmentSlot slot : EquipmentSlot.values()) {
-            ItemStack itemStack = entity.getEquippedStack(slot);
+            ItemStack itemStack = entity.getItemBySlot(slot);
             getStatusEffects(itemStack)
                     .stream()
                     .filter(effectHolder -> isValidForSlot(slot, effectHolder, entity))
@@ -203,13 +203,13 @@ public abstract class PotionEffectProperty implements ModuleProperty {
                 return true;
             }
             case "armor" -> {
-                return equipmentSlot.isArmorSlot();
+                return equipmentSlot.isArmor();
             }
             case "hand" -> {
-                return !equipmentSlot.isArmorSlot();
+                return !equipmentSlot.isArmor();
             }
             case "active_hand" -> {
-                switch (livingEntity.getActiveHand()) {
+                switch (livingEntity.getUsedItemHand()) {
                     case OFF_HAND -> {
                         return EquipmentSlot.MAINHAND.equals(equipmentSlot);
                     }
@@ -247,8 +247,8 @@ public abstract class PotionEffectProperty implements ModuleProperty {
         List<EffectHolder> potions = new ArrayList<>();
         jsonElement.getAsJsonArray().forEach(element -> {
             JsonObject object = element.getAsJsonObject();
-            Identifier identifier = new Identifier(ModuleProperty.getString(object, "potion", moduleInstance, ""));
-            StatusEffect potion = Registries.STATUS_EFFECT.get(identifier);
+            ResourceLocation identifier = new ResourceLocation(ModuleProperty.getString(object, "potion", moduleInstance, ""));
+            MobEffect potion = BuiltInRegistries.MOB_EFFECT.get(identifier);
             if (potion != null) {
                 potions.add(getHolder(potion, element.getAsJsonObject(), moduleInstance));
             } else {
@@ -258,18 +258,18 @@ public abstract class PotionEffectProperty implements ModuleProperty {
         return potions;
     }
 
-    public EffectHolder getHolder(StatusEffect effect, JsonObject object, ModuleInstance moduleInstance) {
+    public EffectHolder getHolder(MobEffect effect, JsonObject object, ModuleInstance moduleInstance) {
         return new EffectHolder(effect, moduleInstance, object, null);
     }
 
-    public record EffectHolder(StatusEffect statusEffect, ModuleInstance moduleInstance,
-                               JsonObject rawData, StatusEffectInstance instance) {
+    public record EffectHolder(MobEffect statusEffect, ModuleInstance moduleInstance,
+                               JsonObject rawData, MobEffectInstance instance) {
 
         public boolean isGuiVisibility() {
             return ModuleProperty.getBoolean(rawData(), "lore", moduleInstance(), true);
         }
 
-        public StatusEffectInstance effectInstance() {
+        public MobEffectInstance effectInstance() {
             if (instance != null) {
                 return instance;
             }
@@ -278,12 +278,12 @@ public abstract class PotionEffectProperty implements ModuleProperty {
             boolean ambient = ModuleProperty.getBoolean(rawData(), "ambient", moduleInstance(), false);
             boolean showParticles = ModuleProperty.getBoolean(rawData(), "showParticles", moduleInstance(), true);
             boolean showIcon = ModuleProperty.getBoolean(rawData(), "showIcon", moduleInstance(), showParticles);
-            return new StatusEffectInstance(statusEffect(), duration, amplifier, ambient, showParticles, showIcon);
+            return new MobEffectInstance(statusEffect(), duration, amplifier, ambient, showParticles, showIcon);
         }
 
-        public Text getPotionDescription() {
-            Text text = Text.translatable(effectInstance().getTranslationKey());
-            text = text.getWithStyle(Style.EMPTY.withColor(effectInstance().getEffectType().getColor())).get(0);
+        public Component getPotionDescription() {
+            Component text = Component.translatable(effectInstance().getDescriptionId());
+            text = text.toFlatList(Style.EMPTY.withColor(effectInstance().getEffect().getColor())).get(0);
             return text;
         }
 
@@ -291,8 +291,8 @@ public abstract class PotionEffectProperty implements ModuleProperty {
             return (int) Math.ceil((float) effectInstance().getDuration() / 20.0f);
         }
 
-        public Text getAmplifier() {
-            return Text.translatable("potion.potency." + effectInstance().getAmplifier());
+        public Component getAmplifier() {
+            return Component.translatable("potion.potency." + effectInstance().getAmplifier());
         }
     }
 

@@ -1,15 +1,15 @@
 package smartin.miapi.mixin.client;
 
-import net.minecraft.client.render.model.ModelLoader;
-import net.minecraft.client.render.model.json.JsonUnbakedModel;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.renderer.block.model.BlockModel;
+import net.minecraft.client.resources.model.ModelBakery;
+import net.minecraft.resources.ResourceLocation;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Invoker;
 
-@Mixin(ModelLoader.class)
+@Mixin(ModelBakery.class)
 public interface ModelLoaderInterfaceAccessor {
 
     @Invoker("loadModelFromJson")
-    JsonUnbakedModel loadModelFromPath(Identifier identifier);
+    BlockModel loadModelFromPath(ResourceLocation identifier);
 
 }

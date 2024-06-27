@@ -7,9 +7,9 @@ import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.MapLike;
 import com.redpxnda.nucleus.util.PriorityMultiMap;
-import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.util.dynamic.Codecs;
+import net.minecraft.nbt.Tag;
+import net.minecraft.util.ExtraCodecs;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.modules.ModuleInstance;
@@ -135,7 +135,7 @@ public class StatProvidersMap {
                                 throw new RuntimeException("Cannot decode JSON for a stat provider actor without modules context!");
                             }
                             result.put(stat, actor, stat.createFromJson(element, modules), prio);
-                        } else if (valueRaw instanceof NbtElement element) {
+                        } else if (valueRaw instanceof Tag element) {
                             result.put(stat, actor, stat.createFromNbt(element));
                         } else {
                             if (modules == null) {
@@ -143,7 +143,7 @@ public class StatProvidersMap {
                                 throw new RuntimeException("Cannot decode non-JSON/non-NBT for a stat provider actor without modules context!");
                             }
                             result.put(stat, actor, stat.createFromJson(
-                                    Codecs.JSON_ELEMENT.parse(ops, valueRaw).getOrThrow(s ->
+                                    ExtraCodecs.JSON.parse(ops, valueRaw).getOrThrow(s ->
                                             new RuntimeException("Failed to turn value into a JsonElement while decoding a StatProviderMap! -> {}")),
                                     modules), prio);
                         }
@@ -175,7 +175,7 @@ public class StatProvidersMap {
                         else {
                             details.put(
                                     ops.createString("value"),
-                                    Codecs.JSON_ELEMENT.encodeStart(ops, ((CraftingStat) stat).saveToJson(instance))
+                                    ExtraCodecs.JSON.encodeStart(ops, ((CraftingStat) stat).saveToJson(instance))
                                             .getOrThrow()
                             );
                         }

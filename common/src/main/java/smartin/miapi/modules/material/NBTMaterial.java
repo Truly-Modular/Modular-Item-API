@@ -4,8 +4,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.JsonOps;
 import dev.architectury.event.EventResult;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
 import smartin.miapi.Environment;
 import smartin.miapi.Miapi;
 import smartin.miapi.datapack.ReloadEvents;
@@ -14,6 +12,8 @@ import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.Optional;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.item.ItemStack;
 
 import static smartin.miapi.modules.material.MaterialProperty.materials;
 
@@ -85,8 +85,8 @@ public class NBTMaterial extends JsonMaterial {
 
     public Material getMaterialFromIngredient(ItemStack ingredient) {
         if (ingredient.hasNbt() && ingredient.getNbt().contains(NBTKEY)) {
-            NbtCompound compound = ingredient.getNbt().getCompound(NBTKEY);
-            Optional<JsonElement> element = NbtCompound.CODEC.encodeStart(JsonOps.INSTANCE, compound).result();
+            CompoundTag compound = ingredient.getNbt().getCompound(NBTKEY);
+            Optional<JsonElement> element = CompoundTag.CODEC.encodeStart(JsonOps.INSTANCE, compound).result();
             if (element.isPresent()) {
                 JsonObject object = element.get().getAsJsonObject();
                 Optional<Material> material = decode(object);

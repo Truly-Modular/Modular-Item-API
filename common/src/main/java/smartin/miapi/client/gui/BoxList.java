@@ -2,17 +2,17 @@ package smartin.miapi.client.gui;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.widget.ClickableWidget;
-import net.minecraft.text.Text;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
 @Environment(EnvType.CLIENT)
 public class BoxList extends InteractAbleWidget {
-    private List<List<ClickableWidget>> allRows = new ArrayList<>();
-    private List<? extends ClickableWidget> currentWidgets = new ArrayList<>();
+    private List<List<AbstractWidget>> allRows = new ArrayList<>();
+    private List<? extends AbstractWidget> currentWidgets = new ArrayList<>();
     private int space = 5;
 
     /**
@@ -26,14 +26,14 @@ public class BoxList extends InteractAbleWidget {
      *                no further elements are added.
      *                Make sure x,y,width and height are working for the ClickAbleWidgets
      */
-    public BoxList(int x, int y, int width, int height, Text message, List<ClickableWidget> widgets) {
+    public BoxList(int x, int y, int width, int height, Component message, List<AbstractWidget> widgets) {
         super(x, y, width, height, message);
         setWidgets(widgets, space);
     }
 
     public void setSpace(int space) {
         this.space = space;
-        List<ClickableWidget> widgets = new ArrayList<>();
+        List<AbstractWidget> widgets = new ArrayList<>();
         setWidgets(widgets, space);
     }
 
@@ -43,7 +43,7 @@ public class BoxList extends InteractAbleWidget {
      * @param widgets the new List of widgets
      * @param space   the space in pixels between the widgets
      */
-    public void setWidgets(@Nullable List<? extends ClickableWidget> widgets, int space) {
+    public void setWidgets(@Nullable List<? extends AbstractWidget> widgets, int space) {
         this.children().clear();
         this.space = space;
         if (widgets == null) {
@@ -51,21 +51,21 @@ public class BoxList extends InteractAbleWidget {
         }
         currentWidgets = widgets;
 
-        HashMap<Integer, List<ClickableWidget>> byHeight = new LinkedHashMap<>();
+        HashMap<Integer, List<AbstractWidget>> byHeight = new LinkedHashMap<>();
         widgets.forEach(widget -> {
             byHeight.putIfAbsent(widget.getHeight(), new ArrayList<>());
             byHeight.get(widget.getHeight()).add(widget);
         });
         int currentHeight = this.getY();
         while (!byHeight.isEmpty()) {
-            List<ClickableWidget> toAdd = byHeight.remove(byHeight.keySet().stream().findAny().get());
+            List<AbstractWidget> toAdd = byHeight.remove(byHeight.keySet().stream().findAny().get());
 
-            toAdd.sort(Comparator.comparingInt(ClickableWidget::getHeight));
+            toAdd.sort(Comparator.comparingInt(AbstractWidget::getHeight));
 
             while (!toAdd.isEmpty()) {
-                ClickableWidget widget = toAdd.remove(0);
+                AbstractWidget widget = toAdd.remove(0);
                 int currentWidth = 0;
-                List<ClickableWidget> currentRow = new ArrayList<>();
+                List<AbstractWidget> currentRow = new ArrayList<>();
                 currentRow.add(widget);
                 widget.setX(this.getX() + currentWidth + space);
                 widget.setY(currentHeight + space);
@@ -73,7 +73,7 @@ public class BoxList extends InteractAbleWidget {
                 currentWidth += widget.getWidth() + space;
                 for (int i = 0; i < toAdd.size(); i++) {
                     if (currentWidth + toAdd.get(i).getWidth() <= this.getWidth()) {
-                        ClickableWidget next = toAdd.remove(i);
+                        AbstractWidget next = toAdd.remove(i);
                         next.setX(this.getX() + currentWidth + space);
                         next.setY(currentHeight + space);
                         currentWidth += next.getWidth() + space;
@@ -113,7 +113,7 @@ public class BoxList extends InteractAbleWidget {
 
 
     @Override
-    public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
+    public void renderWidget(GuiGraphics context, int mouseX, int mouseY, float delta) {
         super.render(context, mouseX, mouseY, delta);
     }
 }

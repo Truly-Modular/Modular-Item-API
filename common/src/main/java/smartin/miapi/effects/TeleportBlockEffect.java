@@ -1,12 +1,12 @@
 package smartin.miapi.effects;
 
 import com.redpxnda.nucleus.util.Color;
-import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.entity.effect.StatusEffectCategory;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectCategory;
 
-public class TeleportBlockEffect extends StatusEffect {
+public class TeleportBlockEffect extends MobEffect {
 
     public TeleportBlockEffect() {
-        super(StatusEffectCategory.HARMFUL, Color.MAGENTA.hexInt());
+        super(MobEffectCategory.HARMFUL, Color.MAGENTA.hexInt());
     }
 }

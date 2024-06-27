@@ -1,12 +1,12 @@
 package smartin.miapi.modules.properties.mining.shape;
 
 import com.google.gson.JsonObject;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.world.World;
 import smartin.miapi.modules.ModuleInstance;
 
 import java.util.List;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.Level;
 
 /**
  * Mining Shape is supposed to be the original scanner for the blocks.
@@ -15,5 +15,5 @@ import java.util.List;
 public interface MiningShape {
     MiningShape fromJson(JsonObject object, ModuleInstance moduleInstance);
 
-    List<BlockPos> getMiningBlocks(World world, BlockPos pos, Direction face);
+    List<BlockPos> getMiningBlocks(Level world, BlockPos pos, Direction face);
 }

@@ -1,8 +1,8 @@
 package smartin.miapi.modules.properties;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import smartin.miapi.modules.properties.util.DoubleProperty;
 
 /**
@@ -18,10 +18,10 @@ public class ExhaustionProperty extends DoubleProperty {
     }
 
     public static void step(Entity entity){
-        if (entity instanceof PlayerEntity playerEntity && playerEntity.isLogicalSideForUpdatingMovement()) {
-            double getValue = property.getForItems(playerEntity.getArmorItems());
+        if (entity instanceof Player playerEntity && playerEntity.isControlledByLocalInstance()) {
+            double getValue = property.getForItems(playerEntity.getArmorSlots());
             if (playerEntity.getRandom().nextDouble() < 0.05 && getValue > 0.2) {
-                playerEntity.getHungerManager().addExhaustion((float) (getValue / 100.0f));
+                playerEntity.getFoodData().addExhaustion((float) (getValue / 100.0f));
             }
         }
     }

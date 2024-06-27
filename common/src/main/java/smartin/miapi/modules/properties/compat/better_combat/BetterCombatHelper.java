@@ -5,9 +5,9 @@ import com.google.gson.stream.JsonReader;
 import dev.architectury.platform.Platform;
 import net.bettercombat.api.AttributesContainer;
 import net.bettercombat.api.WeaponAttributesHelper;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.Identifier;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.attributes.AttributeRegistry;
@@ -48,7 +48,7 @@ public class BetterCombatHelper {
         }
         String jsonString = data.toString();
         JsonReader jsonReader = new JsonReader(new StringReader(jsonString));
-        return net.bettercombat.logic.WeaponRegistry.resolveAttributes(Identifier.of(Miapi.MOD_ID, "modular_item"), net.bettercombat.api.WeaponAttributesHelper.decode(jsonReader));
+        return net.bettercombat.logic.WeaponRegistry.resolveAttributes(ResourceLocation.fromNamespaceAndPath(Miapi.MOD_ID, "modular_item"), WeaponAttributesHelper.decode(jsonReader));
     }
 
     public static ItemStack applyNBT(ItemStack itemStack) {

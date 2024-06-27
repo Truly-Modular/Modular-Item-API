@@ -1,9 +1,9 @@
 package smartin.miapi.mixin;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.Inventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.screen.SmithingScreenHandler;
+import net.minecraft.world.Container;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.SmithingMenu;
+import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -13,7 +13,7 @@ import smartin.miapi.item.MaterialSmithingRecipe;
 /**
  * Since mojang doesnt allow Smithingrecipes to adjust the output items and miapi allows for stack smithing we need to adjust its output.
  */
-@Mixin(SmithingScreenHandler.class)
+@Mixin(SmithingMenu.class)
 public abstract class SmithingScreenHandlerMixin {
 
     @Inject(
@@ -22,10 +22,10 @@ public abstract class SmithingScreenHandlerMixin {
             cancellable = true,
             remap = true,
             require = -1)
-    private void miapi$adjustSmithingOutput(PlayerEntity player, ItemStack stack, CallbackInfo ci) {
+    private void miapi$adjustSmithingOutput(Player player, ItemStack stack, CallbackInfo ci) {
         if (((SmithingScreenHandlerAccessor) this).currentRecipe() instanceof MaterialSmithingRecipe) {
-            Inventory inventory = ((ForgingScreenHandlerAccessor) this).getInput();
-            inventory.setStack(1, ItemStack.EMPTY);
+            Container inventory = ((ForgingScreenHandlerAccessor) this).getInput();
+            inventory.setItem(1, ItemStack.EMPTY);
         }
     }
 }

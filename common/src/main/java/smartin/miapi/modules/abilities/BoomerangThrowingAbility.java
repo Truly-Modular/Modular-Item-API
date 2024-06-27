@@ -2,20 +2,20 @@ package smartin.miapi.modules.abilities;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.PersistentProjectileEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.stat.Stats;
-import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.stats.Stats;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.AbstractArrow;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.entity.BoomerangItemProjectileEntity;
 import smartin.miapi.item.modular.ModularItem;
@@ -31,37 +31,37 @@ public class BoomerangThrowingAbility extends ThrowingAbility {
     public static LinkedHashSet<Entity> entities = new LinkedHashSet<>();
 
     @Override
-    public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-        user.setCurrentHand(hand);
+    public InteractionResultHolder<ItemStack> use(Level world, Player user, InteractionHand hand) {
+        user.startUsingItem(hand);
         start();
-        return TypedActionResult.consume(user.getStackInHand(hand));
+        return InteractionResultHolder.consume(user.getItemInHand(hand));
     }
 
     @Environment(EnvType.CLIENT)
-    public static Stream<Entity> getLookingEntity(PlayerEntity player, double range, float deltaTick, double angleFilter) {
-        List<Entity> foundEntites = player.getWorld().getOtherEntities(player, Box.from(player.getPos()).expand(range));
+    public static Stream<Entity> getLookingEntity(Player player, double range, float deltaTick, double angleFilter) {
+        List<Entity> foundEntites = player.level().getEntities(player, AABB.unitCubeFromLowerCorner(player.position()).inflate(range));
         return foundEntites.stream()
                 .filter(target -> isEntityLookedAtByPlayer(player, target, deltaTick, angleFilter))
                 .sorted(Comparator.comparing(a -> (int) a.distanceTo(player)));
     }
 
-    public static boolean isEntityLookedAtByPlayer(PlayerEntity player, Entity target, float deltaTick, double angleFilter) {
-        Vec3d vec3d = player.getRotationVec(deltaTick).normalize();
-        Vec3d vec3d2 = new Vec3d(target.getX() - player.getX(), target.getEyeY() - player.getEyeY(), target.getZ() - player.getZ());
+    public static boolean isEntityLookedAtByPlayer(Player player, Entity target, float deltaTick, double angleFilter) {
+        Vec3 vec3d = player.getViewVector(deltaTick).normalize();
+        Vec3 vec3d2 = new Vec3(target.getX() - player.getX(), target.getEyeY() - player.getEyeY(), target.getZ() - player.getZ());
         double d = vec3d2.length();
         vec3d2 = vec3d2.normalize();
-        double e = vec3d.dotProduct(vec3d2);
-        return e > 1.0 - angleFilter / d && player.canSee(target);
+        double e = vec3d.dot(vec3d2);
+        return e > 1.0 - angleFilter / d && player.hasLineOfSight(target);
     }
 
     @Override
-    public void onStoppedUsingAfter(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
-        if (user instanceof PlayerEntity playerEntity) {
+    public void onStoppedUsingAfter(ItemStack stack, Level world, LivingEntity user, int remainingUseTicks) {
+        if (user instanceof Player playerEntity) {
             int i = this.getMaxUseTime(stack) - remainingUseTicks;
             if (i >= 10) {
-                playerEntity.incrementStat(Stats.USED.getOrCreateStat(stack.getItem()));
-                if (!world.isClient) {
-                    stack.damage(1, playerEntity, (p) -> {
+                playerEntity.awardStat(Stats.ITEM_USED.get(stack.getItem()));
+                if (!world.isClientSide) {
+                    stack.hurtAndBreak(1, playerEntity, (p) -> {
                         p.sendToolBreakStatus(user.getActiveHand());
                     });
 
@@ -74,34 +74,34 @@ public class BoomerangThrowingAbility extends ThrowingAbility {
                     if (stack.getItem() instanceof ModularItem) {
                         speed = 0.5f;
                     }
-                    boomerangEntity.setVelocity(playerEntity, playerEntity.getPitch(), playerEntity.getYaw(), 0.0F, speed, divergence);
-                    boomerangEntity.setDamage(damage);
+                    boomerangEntity.shootFromRotation(playerEntity, playerEntity.getXRot(), playerEntity.getYRot(), 0.0F, speed, divergence);
+                    boomerangEntity.setBaseDamage(damage);
                     boomerangEntity.setBowItem(ItemStack.EMPTY);
                     boomerangEntity.setPierceLevel((byte) (int) AttributeProperty.getActualValue(stack, EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_PIERCING));
                     boomerangEntity.setSpeedDamage(true);
-                    boomerangEntity.setPreferredSlot(playerEntity.getInventory().selectedSlot);
+                    boomerangEntity.setPreferredSlot(playerEntity.getInventory().selected);
                     boomerangEntity.thrownStack = stack;
-                    world.spawnEntity(boomerangEntity);
-                    world.playSoundFromEntity(null, user, SoundEvents.ITEM_TRIDENT_THROW, SoundCategory.PLAYERS, 1.0f, 1.0f);
-                    if (playerEntity.getAbilities().creativeMode) {
-                        boomerangEntity.pickupType = PersistentProjectileEntity.PickupPermission.CREATIVE_ONLY;
+                    world.addFreshEntity(boomerangEntity);
+                    world.playSound(null, user, SoundEvents.TRIDENT_THROW, SoundSource.PLAYERS, 1.0f, 1.0f);
+                    if (playerEntity.getAbilities().instabuild) {
+                        boomerangEntity.pickup = AbstractArrow.Pickup.CREATIVE_ONLY;
                     } else {
-                        user.setStackInHand(user.getActiveHand(), ItemStack.EMPTY);
+                        user.setItemInHand(user.getUsedItemHand(), ItemStack.EMPTY);
                     }
                 }
             }
         }
     }
 
-    public ItemStack finishUsing(ItemStack stack, World world, LivingEntity user) {
+    public ItemStack finishUsing(ItemStack stack, Level world, LivingEntity user) {
         return super.finishUsing(stack, world, user);
     }
 
-    public void onStoppedUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
+    public void onStoppedUsing(ItemStack stack, Level world, LivingEntity user, int remainingUseTicks) {
         super.onStoppedUsing(stack, world, user, remainingUseTicks);
     }
 
-    public void onStoppedHolding(ItemStack stack, World world, LivingEntity user) {
+    public void onStoppedHolding(ItemStack stack, Level world, LivingEntity user) {
         super.onStoppedHolding(stack, world, user);
     }
 

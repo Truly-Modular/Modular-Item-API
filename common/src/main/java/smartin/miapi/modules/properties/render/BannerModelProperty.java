@@ -3,8 +3,8 @@ package smartin.miapi.modules.properties.render;
 import com.google.gson.JsonElement;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.item.ItemStack;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.model.BannerMiapiModel;
 import smartin.miapi.client.model.MiapiItemModel;
@@ -38,9 +38,9 @@ public class BannerModelProperty implements RenderProperty {
                     }
                     Supplier<ItemStack> stackSupplier = switch (modelJson.type) {
                         case "item_nbt": {
-                            NbtCompound itemCompound = stack.getOrCreateNbt().getCompound("banner");
+                            CompoundTag itemCompound = stack.getOrCreateNbt().getCompound("banner");
                             if (!itemCompound.isEmpty() && ModelProperty.isAllowedKey(modelJson.modelType, key)) {
-                                yield () -> ItemStack.fromNbt(itemCompound);
+                                yield () -> ItemStack.parse(itemCompound);
                             }
                             yield () -> ItemStack.EMPTY;
                         }

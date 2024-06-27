@@ -2,11 +2,11 @@ package smartin.miapi.modules.edit_options;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.Inventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.screen.slot.Slot;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.Container;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.client.gui.InteractAbleWidget;
@@ -29,7 +29,7 @@ public interface EditOption {
      * @param editContext
      * @return
      */
-    ItemStack preview(PacketByteBuf buffer, EditContext editContext);
+    ItemStack preview(FriendlyByteBuf buffer, EditContext editContext);
 
     /**
      * Executed on the server for actual CraftAction, use this for stat increments and non result related stuff like ingredient consumption
@@ -37,7 +37,7 @@ public interface EditOption {
      * @param editContext
      * @return
      */
-    default ItemStack execute(PacketByteBuf buf, EditContext editContext) {
+    default ItemStack execute(FriendlyByteBuf buf, EditContext editContext) {
         return preview(buf, editContext);
     }
 
@@ -50,9 +50,9 @@ public interface EditOption {
     InteractAbleWidget getIconGui(int x, int y, int width, int height, Consumer<EditOption> select, Supplier<EditOption> getSelected);
 
     interface EditContext {
-        void craft(PacketByteBuf craftBuffer);
+        void craft(FriendlyByteBuf craftBuffer);
 
-        void preview(PacketByteBuf preview);
+        void preview(FriendlyByteBuf preview);
 
         SlotProperty.ModuleSlot getSlot();
 
@@ -62,12 +62,12 @@ public interface EditOption {
         ModuleInstance getInstance();
 
         @Nullable
-        PlayerEntity getPlayer();
+        Player getPlayer();
 
         @Nullable
         ModularWorkBenchEntity getWorkbench();
 
-        Inventory getLinkedInventory();
+        Container getLinkedInventory();
 
         CraftingScreenHandler getScreenHandler();
 

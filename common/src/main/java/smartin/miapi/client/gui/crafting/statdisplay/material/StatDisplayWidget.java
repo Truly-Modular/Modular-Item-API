@@ -1,7 +1,7 @@
 package smartin.miapi.client.gui.crafting.statdisplay.material;
 
-import net.minecraft.item.ItemStack;
-import net.minecraft.text.Text;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.ItemStack;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.crafting.statdisplay.StatListWidget;
 import smartin.miapi.item.modular.ModularItem;
@@ -13,7 +13,7 @@ public class StatDisplayWidget extends InteractAbleWidget {
     MaterialStatWidget materialStatWidget;
 
     public StatDisplayWidget(int x, int y, int width, int height) {
-        super(x, y, width, height, Text.literal("miapi.statdisplay.widget"));
+        super(x, y, width, height, Component.literal("miapi.statdisplay.widget"));
         materialStatWidget = null;
         statListWidget = new StatListWidget(x, y, width, height);
     }
@@ -26,7 +26,7 @@ public class StatDisplayWidget extends InteractAbleWidget {
         Material material = MaterialProperty.getMaterialFromIngredient(itemStack);
         if (material != null && !(itemStack.getItem() instanceof ModularItem)) {
             removeChild(materialStatWidget);
-            materialStatWidget = new MaterialStatWidget(material, getX(), getY(), getWidth(), getHeight(), Text.literal("miapi.material.stat.widget"));
+            materialStatWidget = new MaterialStatWidget(material, getX(), getY(), getWidth(), getHeight(), Component.literal("miapi.material.stat.widget"));
             removeChild(statListWidget);
             addChild(materialStatWidget);
         } else {
@@ -40,7 +40,7 @@ public class StatDisplayWidget extends InteractAbleWidget {
         Material material = MaterialProperty.getMaterialFromIngredient(itemStack);
         if (material != null && !(itemStack.getItem() instanceof ModularItem)) {
             removeChild(materialStatWidget);
-            materialStatWidget = new MaterialStatWidget(material, getX(), getY(), getWidth(), getHeight(), Text.literal("miapi.material.stat.widget"));
+            materialStatWidget = new MaterialStatWidget(material, getX(), getY(), getWidth(), getHeight(), Component.literal("miapi.material.stat.widget"));
             removeChild(statListWidget);
             addChild(materialStatWidget);
         } else {

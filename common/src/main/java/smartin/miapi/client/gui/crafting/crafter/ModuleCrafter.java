@@ -2,11 +2,11 @@ package smartin.miapi.client.gui.crafting.crafter;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.inventory.Inventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.screen.slot.Slot;
-import net.minecraft.text.Text;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.Container;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.crafting.CraftingScreen;
 import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
@@ -35,7 +35,7 @@ public class ModuleCrafter extends InteractAbleWidget {
     private final Consumer<ItemStack> preview;
     private SlotProperty.ModuleSlot baseSlot = new SlotProperty.ModuleSlot(new ArrayList<>());
     private String paketIdentifier;
-    private Inventory linkedInventory;
+    private Container linkedInventory;
     EditView editView;
     Consumer<Slot> removeSlot;
     Consumer<Slot> addSlot;
@@ -47,8 +47,8 @@ public class ModuleCrafter extends InteractAbleWidget {
     CraftOption craftOption;
     public String moduleType = "default";
 
-    public ModuleCrafter(int x, int y, int width, int height, Consumer<SlotProperty.ModuleSlot> selected, Consumer<ItemStack> craftedItem, Inventory linkedInventory, Consumer<Slot> addSlot, Consumer<Slot> removeSlot) {
-        super(x, y, width, height, Text.empty());
+    public ModuleCrafter(int x, int y, int width, int height, Consumer<SlotProperty.ModuleSlot> selected, Consumer<ItemStack> craftedItem, Container linkedInventory, Consumer<Slot> addSlot, Consumer<Slot> removeSlot) {
+        super(x, y, width, height, Component.empty());
         this.selected = selected;
         this.linkedInventory = linkedInventory;
         this.preview = craftedItem;
@@ -57,7 +57,7 @@ public class ModuleCrafter extends InteractAbleWidget {
     }
 
     public ModuleCrafter(int x, int y, int width, int height, ModuleCrafter other) {
-        super(x, y, width, height, Text.empty());
+        super(x, y, width, height, Component.empty());
         this.selected = other.selected;
         this.linkedInventory = other.linkedInventory;
         this.preview = other.preview;
@@ -145,7 +145,7 @@ public class ModuleCrafter extends InteractAbleWidget {
                     setMode(Mode.CRAFT);
                 }, (option -> {
                     CraftAction action = new CraftAction(editContext.getItemstack(), editContext.getSlot(), option.module(), editContext.getPlayer(), editContext.getWorkbench(), option.data());
-                    action.setItem(editContext.getLinkedInventory().getStack(0));
+                    action.setItem(editContext.getLinkedInventory().getItem(0));
                     action.linkInventory(editContext.getLinkedInventory(), 1);
                     editContext.preview(action.toPacket(Networking.createBuffer()));
                 }));
@@ -161,7 +161,7 @@ public class ModuleCrafter extends InteractAbleWidget {
             case HELP -> {
                 this.children().clear();
                 CraftingScreen craftingScreen = CraftingScreen.getInstance();
-                this.addChild(new HelpGuiInfo(this.getX(), this.getY(), this.width, this.getHeight(), Text.literal("miapi.help.helper"), (toFocus) -> {
+                this.addChild(new HelpGuiInfo(this.getX(), this.getY(), this.width, this.getHeight(), Component.literal("miapi.help.helper"), (toFocus) -> {
                     craftingScreen.hoverElement = toFocus;
                 }, (toRemove) -> {
                     craftingScreen.hoverElement = null;
@@ -172,7 +172,7 @@ public class ModuleCrafter extends InteractAbleWidget {
     }
 
     @Override
-    public void renderWidget(DrawContext drawContext, int mouseX, int mouseY, float delta) {
+    public void renderWidget(GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
         super.render(drawContext, mouseX, mouseY, delta);
     }
 

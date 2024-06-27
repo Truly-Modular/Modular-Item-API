@@ -5,8 +5,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.mojang.blaze3d.systems.RenderSystem;
 import dev.architectury.event.events.common.LifecycleEvent;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.MiapiClient;
@@ -19,6 +17,8 @@ import smartin.miapi.modules.properties.util.ModuleProperty;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
+import net.minecraft.client.Minecraft;
+import net.minecraft.world.item.ItemStack;
 
 /**
  * This is the Property relating to materials of a Module
@@ -93,9 +93,9 @@ public class MaterialProperty implements ModuleProperty {
         });
         ReloadEvents.END.subscribe((isClient) -> {
             if (isClient) {
-                MinecraftClient.getInstance().execute(() -> {
+                Minecraft.getInstance().execute(() -> {
                     RenderSystem.assertOnRenderThread();
-                    MiapiClient.materialAtlasManager.afterReload(null, MinecraftClient.getInstance().getProfiler());
+                    MiapiClient.materialAtlasManager.apply(null, Minecraft.getInstance().getProfiler());
                 });
 
             }

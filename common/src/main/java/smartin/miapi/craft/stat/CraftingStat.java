@@ -1,10 +1,6 @@
 package smartin.miapi.craft.stat;
 
 import com.google.gson.JsonElement;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.item.modular.StatResolver;
@@ -16,6 +12,10 @@ import smartin.miapi.modules.properties.util.CraftingProperty;
 
 import java.util.List;
 import java.util.Map;
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 
 /**
  * {@link CraftingStat}s are simple ways to require certain attributes, of which are provided by
@@ -56,7 +56,7 @@ public interface CraftingStat<T> {
      * @param instance the instance of this CraftingStat's object type
      * @return the nbt representation of the instance
      */
-    NbtElement saveToNbt(T instance);
+    Tag saveToNbt(T instance);
 
     /**
      * A method to used to create stat instances from nbt.
@@ -64,7 +64,7 @@ public interface CraftingStat<T> {
      * @param nbt the nbt representation of the stat instance
      * @return the stat instance created with the nbt
      */
-    T createFromNbt(NbtElement nbt);
+    T createFromNbt(Tag nbt);
 
     /**
      * A method used to check if a module can be crafted when the current stat instance is the {@code instance} parameter.
@@ -88,7 +88,7 @@ public interface CraftingStat<T> {
             ItemStack old,
             ItemStack crafting,
             @Nullable ModularWorkBenchEntity bench,
-            PlayerEntity player,
+            Player player,
             ModuleInstance newModule,
             ItemModule module,
             List<ItemStack> inventory,
@@ -109,7 +109,7 @@ public interface CraftingStat<T> {
      * @param instance the stat instance that is being displayed
      * @return a text representation of the stat instance
      */
-    Text asText(T instance);
+    Component asText(T instance);
 
     /**
      * A method used to getVertexConsumer the "better" of two stat instances.

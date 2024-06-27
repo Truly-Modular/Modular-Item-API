@@ -1,14 +1,14 @@
 package smartin.miapi.network;
 
 
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.server.network.ServerPlayerEntity;
 import smartin.miapi.Miapi;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerPlayer;
 
 /**
  * The Networking class is responsible for managing packets in Minecraft networking.
@@ -24,12 +24,12 @@ public class Networking {
      * A map containing packets sent from the server to the client, with the packet identifier as the key
      * and the consumer as the value.
      */
-    protected static Map<String, Consumer<PacketByteBuf>> S2CPackets = new HashMap<>();
+    protected static Map<String, Consumer<FriendlyByteBuf>> S2CPackets = new HashMap<>();
     /**
      * A map containing packets sent from the client to the server, with the packet identifier as the key
      * and the consumer as the value.
      */
-    protected static Map<String, BiConsumer<PacketByteBuf, ServerPlayerEntity>> C2SPackets = new HashMap<>();
+    protected static Map<String, BiConsumer<FriendlyByteBuf, ServerPlayer>> C2SPackets = new HashMap<>();
     /**
      * The implementation used for packet handling.
      */
@@ -77,7 +77,7 @@ public class Networking {
      *
      * @return a new PacketByteBuf instance
      */
-    public static PacketByteBuf createBuffer() {
+    public static FriendlyByteBuf createBuffer() {
         return implementation.createBuffer();
     }
 
@@ -87,7 +87,7 @@ public class Networking {
      * @param identifier the identifier for the packet
      * @param callback   the callback to previewStack when the packet is received
      */
-    public static void registerC2SPacket(String identifier, BiConsumer<PacketByteBuf, ServerPlayerEntity> callback) {
+    public static void registerC2SPacket(String identifier, BiConsumer<FriendlyByteBuf, ServerPlayer> callback) {
         if (C2SPackets.get(identifier) != null) {
             Miapi.LOGGER.error("packet already exists with identifier " + identifier);
         }
@@ -120,7 +120,7 @@ public class Networking {
      * @param identifier the identifier of the S2C packet to register.
      * @param callbacks  the callback function to previewStack when the packet is received.
      */
-    public static void registerS2CPacket(String identifier, Consumer<PacketByteBuf> callbacks) {
+    public static void registerS2CPacket(String identifier, Consumer<FriendlyByteBuf> callbacks) {
         /*
         Should also include a player reference to know who send it, maybe not use consumers?
          */
@@ -136,7 +136,7 @@ public class Networking {
      * @param packetIdentifier the identifier of the packet to send.
      * @param buffer           the data to include in the packet.
      */
-    public static void sendC2S(String packetIdentifier, PacketByteBuf buffer) {
+    public static void sendC2S(String packetIdentifier, FriendlyByteBuf buffer) {
         implementation.sendPacketToServer(packetIdentifier, buffer);
     }
 
@@ -147,7 +147,7 @@ public class Networking {
      * @param player           the player to send the packet to.
      * @param buffer           the data to include in the packet.
      */
-    public static void sendS2C(String packetIdentifier, ServerPlayerEntity player, PacketByteBuf buffer) {
+    public static void sendS2C(String packetIdentifier, ServerPlayer player, FriendlyByteBuf buffer) {
         implementation.sendPacketToClient(packetIdentifier, player, buffer);
     }
 
@@ -157,12 +157,12 @@ public class Networking {
      * @param packetIdentifier the identifier of the packet to send.
      * @param buffer           the data to include in the packet.
      */
-    public static void sendS2C(String packetIdentifier, PacketByteBuf buffer) {
+    public static void sendS2C(String packetIdentifier, FriendlyByteBuf buffer) {
         if (Miapi.server == null) {
             Miapi.LOGGER.error("cant send packets before Server has fully started");
         }
-        Miapi.server.getPlayerManager().getPlayerList().forEach(serverPlayer -> {
-            PacketByteBuf buf = new PacketByteBuf(buffer.copy());
+        Miapi.server.getPlayerList().getPlayers().forEach(serverPlayer -> {
+            FriendlyByteBuf buf = new FriendlyByteBuf(buffer.copy());
             implementation.sendPacketToClient(packetIdentifier, serverPlayer, buf);
         });
     }

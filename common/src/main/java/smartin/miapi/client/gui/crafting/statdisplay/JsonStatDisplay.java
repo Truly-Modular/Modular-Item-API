@@ -2,14 +2,14 @@ package smartin.miapi.client.gui.crafting.statdisplay;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.item.ItemStack;
-import net.minecraft.text.Text;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.ItemStack;
 
 @Environment(EnvType.CLIENT)
 public class JsonStatDisplay extends SingleStatDisplayDouble {
-    SingleStatDisplayDouble.StatReaderHelper statReader;
+    StatReaderHelper statReader;
 
-    public JsonStatDisplay(StatListWidget.TextGetter title, StatListWidget.TextGetter description, SingleStatDisplayDouble.StatReaderHelper statReaderHelper, double min, double max) {
+    public JsonStatDisplay(StatListWidget.TextGetter title, StatListWidget.TextGetter description, StatReaderHelper statReaderHelper, double min, double max) {
         super(0, 0, 51, 19, title, description);
         this.statReader = statReaderHelper;
         this.minValue = min;
@@ -44,22 +44,22 @@ public class JsonStatDisplay extends SingleStatDisplayDouble {
     public static class Builder {
         StatListWidget.TextGetter title;
         StatListWidget.TextGetter description;
-        SingleStatDisplayDouble.StatReaderHelper statReaderHelper;
+        StatReaderHelper statReaderHelper;
         double min = 0;
         double max = 10;
         public boolean isInversed = false;
 
-        public Builder setTitle(Text title) {
+        public Builder setTitle(Component title) {
             this.title = (stack) -> title;
             return this;
         }
 
-        public Builder setDescription(Text description) {
+        public Builder setDescription(Component description) {
             this.description = (stack) -> description;
             return this;
         }
 
-        public Builder setStatReader(SingleStatDisplayDouble.StatReaderHelper statReaderHelper) {
+        public Builder setStatReader(StatReaderHelper statReaderHelper) {
             this.statReaderHelper = statReaderHelper;
             return this;
         }

@@ -1,7 +1,7 @@
 package smartin.miapi.modules.properties;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import smartin.miapi.modules.properties.util.ComplexBooleanProperty;
 
 public class StepCancelingProperty extends ComplexBooleanProperty {

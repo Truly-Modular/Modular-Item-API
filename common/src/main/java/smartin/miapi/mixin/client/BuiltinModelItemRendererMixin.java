@@ -1,11 +1,11 @@
 package smartin.miapi.mixin.client;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.item.BuiltinModelItemRenderer;
-import net.minecraft.client.render.model.json.ModelTransformationMode;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.item.ItemStack;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.world.item.ItemDisplayContext;
+import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -15,7 +15,7 @@ import smartin.miapi.client.model.MiapiItemModel;
 import smartin.miapi.client.model.item.ItemBakedModelReplacement;
 import smartin.miapi.item.modular.VisualModularItem;
 
-@Mixin(BuiltinModelItemRenderer.class)
+@Mixin(BlockEntityWithoutLevelRenderer.class)
 public class BuiltinModelItemRendererMixin {
     @Inject(
             method = "render(Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/render/model/json/ModelTransformationMode;Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;II)V",
@@ -23,12 +23,12 @@ public class BuiltinModelItemRendererMixin {
             cancellable = true
     )
     private void miapi$customItemRendering(
-            ItemStack stack, ModelTransformationMode mode, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay, CallbackInfo ci
+            ItemStack stack, ItemDisplayContext mode, PoseStack matrices, MultiBufferSource vertexConsumers, int light, int overlay, CallbackInfo ci
     ) {
         if (!MiapiClient.shaderModLoaded && stack.getItem() instanceof VisualModularItem) {
             MiapiItemModel miapiModel = MiapiItemModel.getItemModel(stack);
             if (miapiModel != null) {
-                miapiModel.render(matrices, stack, mode, MinecraftClient.getInstance().getTickDelta(), vertexConsumers, ItemBakedModelReplacement.currentEntity, light, overlay);
+                miapiModel.render(matrices, stack, mode, Minecraft.getInstance().getTickDelta(), vertexConsumers, ItemBakedModelReplacement.currentEntity, light, overlay);
                 ItemBakedModelReplacement.currentEntity = null;
                 ci.cancel();
             }

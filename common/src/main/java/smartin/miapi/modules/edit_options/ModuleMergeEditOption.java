@@ -1,15 +1,15 @@
 package smartin.miapi.modules.edit_options;
 
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketByteBuf;
 import smartin.miapi.client.gui.InteractAbleWidget;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.item.ItemStack;
 
 public class ModuleMergeEditOption implements EditOption {
     @Override
-    public ItemStack preview(PacketByteBuf buffer, EditContext editContext) {
+    public ItemStack preview(FriendlyByteBuf buffer, EditContext editContext) {
         return null;
     }
 

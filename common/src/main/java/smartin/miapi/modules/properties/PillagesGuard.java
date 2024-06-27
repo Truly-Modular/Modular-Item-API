@@ -1,8 +1,8 @@
 package smartin.miapi.modules.properties;
 
 import dev.architectury.event.EventResult;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.modules.properties.damage_boosts.IllagerBane;
 import smartin.miapi.modules.properties.util.DoubleProperty;
@@ -19,10 +19,10 @@ public class PillagesGuard extends DoubleProperty {
         super(KEY);
         property = this;
         MiapiEvents.LIVING_HURT.register((livingHurtEvent) -> {
-            if (livingHurtEvent.damageSource.getAttacker() instanceof LivingEntity living) {
-                if (IllagerBane.isIllagerType(living) && !living.getWorld().isClient()) {
+            if (livingHurtEvent.damageSource.getEntity() instanceof LivingEntity living) {
+                if (IllagerBane.isIllagerType(living) && !living.level().isClientSide()) {
                     double level = 1;
-                    for (ItemStack itemStack : livingHurtEvent.livingEntity.getArmorItems()) {
+                    for (ItemStack itemStack : livingHurtEvent.livingEntity.getArmorSlots()) {
                         level -= (1 - valueRemap(getValueSafe(itemStack)));
                     }
                     livingHurtEvent.amount *= (float) level;

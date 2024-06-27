@@ -7,9 +7,9 @@ import com.redpxnda.nucleus.codec.auto.AutoCodec;
 import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.item.ItemStack;
-import net.minecraft.particle.ParticleEffect;
-import net.minecraft.text.Text;
+import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.ItemStack;
 import smartin.miapi.client.gui.crafting.statdisplay.SingleStatDisplayDouble;
 import smartin.miapi.client.gui.crafting.statdisplay.StatListWidget;
 import smartin.miapi.modules.properties.util.CodecBasedProperty;
@@ -63,9 +63,9 @@ public class HeavyAttackProperty extends CodecBasedProperty<HeavyAttackProperty.
         return (stack -> {
             HeavyAttackHolder json = get(stack);
             if (json != null) {
-                return Text.translatable(json.title);
+                return Component.translatable(json.title);
             }
-            return Text.empty();
+            return Component.empty();
         });
     }
 
@@ -75,9 +75,9 @@ public class HeavyAttackProperty extends CodecBasedProperty<HeavyAttackProperty.
         return (stack -> {
             HeavyAttackHolder json = get(stack);
             if (json != null) {
-                return Text.translatable(json.description, json.damage, json.range, json.minHold / 20);
+                return Component.translatable(json.description, json.damage, json.range, json.minHold / 20);
             }
-            return Text.empty();
+            return Component.empty();
         });
     }
 
@@ -112,6 +112,6 @@ public class HeavyAttackProperty extends CodecBasedProperty<HeavyAttackProperty.
         @CodecBehavior.Optional
         public String description = "miapi.ability.heavy_attack.description";
         @CodecBehavior.Optional
-        public ParticleEffect particleEffect;
+        public ParticleOptions particleEffect;
     }
 }

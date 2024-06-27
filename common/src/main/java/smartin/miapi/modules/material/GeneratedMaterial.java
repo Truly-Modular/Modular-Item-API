@@ -9,19 +9,33 @@ import dev.architectury.platform.Platform;
 import dev.architectury.utils.Env;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.item.*;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
 import net.minecraft.recipe.*;
-import net.minecraft.registry.DynamicRegistryManager;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.tag.BlockTags;
-import net.minecraft.registry.tag.ItemTags;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.Pair;
-import net.minecraft.util.math.ColorHelper;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.ItemTags;
+import net.minecraft.util.FastColor;
+import net.minecraft.util.Tuple;
+import net.minecraft.world.item.AxeItem;
+import net.minecraft.world.item.DiggerItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.SwordItem;
+import net.minecraft.world.item.Tier;
+import net.minecraft.world.item.TieredItem;
+import net.minecraft.world.item.Tiers;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeManager;
+import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.item.crafting.SmithingTransformRecipe;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.config.MiapiConfig;
@@ -45,7 +59,7 @@ import java.util.stream.Collectors;
 import static smartin.miapi.modules.material.MaterialProperty.materials;
 
 public class GeneratedMaterial implements Material {
-    public final ToolMaterial toolMaterial;
+    public final Tier toolMaterial;
     public final ItemStack mainIngredient;
     public final String key;
     public final List<String> groups = new ArrayList<>();
@@ -58,7 +72,7 @@ public class GeneratedMaterial implements Material {
 
     public static final List<ItemStack> generatedItems = new ArrayList<>();
     public static final List<ItemStack> generatedItemsTool = new ArrayList<>();
-    public static final List<Pair<ItemStack, ItemStack>> generatedMaterials = new ArrayList<>();
+    public static final List<Tuple<ItemStack, ItemStack>> generatedMaterials = new ArrayList<>();
     public static final List<Item> woodItems = new ArrayList<>();
     public static final List<Item> stoneItems = new ArrayList<>();
     public JsonElement iconJson;
@@ -84,28 +98,28 @@ public class GeneratedMaterial implements Material {
         }, -1);
         ReloadEvents.dataSyncerRegistry.register("generated_materials", new ReloadEvents.DataSyncer() {
             @Override
-            public PacketByteBuf createDataServer() {
-                PacketByteBuf packetByteBuf = Networking.createBuffer();
+            public FriendlyByteBuf createDataServer() {
+                FriendlyByteBuf packetByteBuf = Networking.createBuffer();
                 packetByteBuf.writeInt(generatedMaterials.size());
-                for (Pair<ItemStack, ItemStack> generatedMaterial : generatedMaterials) {
-                    ItemStack material = generatedMaterial.getLeft();
-                    ItemStack sword = generatedMaterial.getRight();
+                for (Tuple<ItemStack, ItemStack> generatedMaterial : generatedMaterials) {
+                    ItemStack material = generatedMaterial.getA();
+                    ItemStack sword = generatedMaterial.getB();
                     packetByteBuf.writeItemStack(material);
                     packetByteBuf.writeItemStack(sword);
                 }
                 packetByteBuf.writeInt(woodItems.size());
                 for (Item item : woodItems) {
-                    packetByteBuf.writeItemStack(item.getDefaultStack());
+                    packetByteBuf.writeItemStack(item.getDefaultInstance());
                 }
                 packetByteBuf.writeInt(stoneItems.size());
                 for (Item item : stoneItems) {
-                    packetByteBuf.writeItemStack(item.getDefaultStack());
+                    packetByteBuf.writeItemStack(item.getDefaultInstance());
                 }
                 return packetByteBuf;
             }
 
             @Override
-            public void interpretDataClient(PacketByteBuf buf) {
+            public void interpretDataClient(FriendlyByteBuf buf) {
                 List<ItemStack> generatedMaterials = new ArrayList<>();
                 List<ItemStack> generatedMaterialsTools = new ArrayList<>();
                 List<Item> stoneMaterials = new ArrayList<>();
@@ -147,42 +161,42 @@ public class GeneratedMaterial implements Material {
     }
 
     public static void onReloadClient() {
-        List<ToolItem> toolItems = Registries.ITEM.stream()
-                .filter(ToolItem.class::isInstance)
-                .map(ToolItem.class::cast)
+        List<TieredItem> toolItems = BuiltInRegistries.ITEM.stream()
+                .filter(TieredItem.class::isInstance)
+                .map(TieredItem.class::cast)
                 .toList();
         for (int i = 0; i < generatedItems.size(); i++) {
             ItemStack itemStack = generatedItems.get(i);
             try {
                 ItemStack toolStack = generatedItemsTool.get(i);
-                if (toolStack.getItem() instanceof ToolItem toolItem) {
-                    GeneratedMaterial generatedMaterial = new GeneratedMaterial(toolItem.getMaterial(), itemStack, true);
+                if (toolStack.getItem() instanceof TieredItem toolItem) {
+                    GeneratedMaterial generatedMaterial = new GeneratedMaterial(toolItem.getTier(), itemStack, true);
                     if (generatedMaterial.assignStats(toolItems, true)) {
                         materials.put(generatedMaterial.getKey(), generatedMaterial);
                     }
                 }
             } catch (Exception e) {
                 if (itemStack != null) {
-                    Miapi.LOGGER.info("Failure to generate Material on Client for :" + itemStack.getTranslationKey(), e);
+                    Miapi.LOGGER.info("Failure to generate Material on Client for :" + itemStack.getDescriptionId(), e);
                 }
             }
         }
         woodItems.forEach(woodItem -> {
             try {
-                GeneratedMaterial generatedMaterial = new GeneratedMaterial(ToolMaterials.WOOD, woodItem.getDefaultStack(), true);
+                GeneratedMaterial generatedMaterial = new GeneratedMaterial(Tiers.WOOD, woodItem.getDefaultInstance(), true);
                 materials.put(generatedMaterial.getKey(), generatedMaterial);
                 generatedMaterial.setupWood();
             } catch (Exception e) {
-                Miapi.LOGGER.error("Failure to setup Wood Material for " + woodItem.getTranslationKey(), e);
+                Miapi.LOGGER.error("Failure to setup Wood Material for " + woodItem.getDescriptionId(), e);
             }
         });
         stoneItems.forEach(stoneItem -> {
             try {
-                GeneratedMaterial generatedMaterial = new GeneratedMaterial(ToolMaterials.STONE, stoneItem.getDefaultStack(), true);
+                GeneratedMaterial generatedMaterial = new GeneratedMaterial(Tiers.STONE, stoneItem.getDefaultInstance(), true);
                 materials.put(generatedMaterial.getKey(), generatedMaterial);
                 generatedMaterial.setupStone();
             } catch (Exception e) {
-                Miapi.LOGGER.error("Failure to setup Stone Material for " + stoneItem.getTranslationKey(), e);
+                Miapi.LOGGER.error("Failure to setup Stone Material for " + stoneItem.getDescriptionId(), e);
             }
         });
     }
@@ -198,54 +212,54 @@ public class GeneratedMaterial implements Material {
             if (!MiapiConfig.INSTANCE.server.generatedMaterials.generateMaterials) {
                 return;
             }
-            List<ToolItem> toolItems = Registries.ITEM.stream()
-                    .filter(ToolItem.class::isInstance)
-                    .map(ToolItem.class::cast)
+            List<TieredItem> toolItems = BuiltInRegistries.ITEM.stream()
+                    .filter(TieredItem.class::isInstance)
+                    .map(TieredItem.class::cast)
                     .filter(toolMaterial ->
-                            toolMaterial.getMaterial().getRepairIngredient() != null &&
-                            toolMaterial.getMaterial().getRepairIngredient().getMatchingStacks() != null)
+                            toolMaterial.getTier().getRepairIngredient() != null &&
+                            toolMaterial.getTier().getRepairIngredient().getItems() != null)
                     .toList();
             List<Material> toRegister = new ArrayList<>();
             if (MiapiConfig.INSTANCE.server.generatedMaterials.generateOtherMaterials) {
                 toolItems.stream()
-                        .map(ToolItem::getMaterial)
+                        .map(TieredItem::getTier)
                         .collect(Collectors.toSet())
                         .stream()
                         .filter(toolMaterial -> toolMaterial.getRepairIngredient() != null &&
-                                                toolMaterial.getRepairIngredient().getMatchingStacks() != null)
-                        .filter(toolMaterial -> toolMaterial.getRepairIngredient().getMatchingStacks().length > 0)
-                        .filter(toolMaterial -> !toolMaterial.getRepairIngredient().getMatchingStacks()[0].isIn(RegistryInventory.MIAPI_FORBIDDEN_TAG))
-                        .filter(toolMaterial -> Arrays.stream(toolMaterial.getRepairIngredient().getMatchingStacks())
+                                                toolMaterial.getRepairIngredient().getItems() != null)
+                        .filter(toolMaterial -> toolMaterial.getRepairIngredient().getItems().length > 0)
+                        .filter(toolMaterial -> !toolMaterial.getRepairIngredient().getItems()[0].is(RegistryInventory.MIAPI_FORBIDDEN_TAG))
+                        .filter(toolMaterial -> Arrays.stream(toolMaterial.getRepairIngredient().getItems())
                                 .allMatch(itemStack -> MaterialProperty.getMaterialFromIngredient(itemStack) == null && !itemStack.getItem().equals(Items.BARRIER)))
                         .limit(MiapiConfig.INSTANCE.server.generatedMaterials.maximumGeneratedMaterials)
                         .collect(Collectors.toSet()).forEach(toolMaterial -> {
                             try {
-                                if (isValidItem(toolMaterial.getRepairIngredient().getMatchingStacks()[0].getItem())) {
+                                if (isValidItem(toolMaterial.getRepairIngredient().getItems()[0].getItem())) {
                                     GeneratedMaterial generatedMaterial = new GeneratedMaterial(toolMaterial, false);
                                     if (generatedMaterial.assignStats(toolItems, false)) {
                                         toRegister.add(generatedMaterial);
                                         if (verboseLogging()) {
                                             Miapi.LOGGER.info("FOUND MATERIAL " + generatedMaterial.getKey());
                                         }
-                                        generatedMaterials.add(new Pair<>(generatedMaterial.mainIngredient, generatedMaterial.swordItem.getDefaultStack()));
+                                        generatedMaterials.add(new Tuple<>(generatedMaterial.mainIngredient, generatedMaterial.swordItem.getDefaultInstance()));
                                     }
                                 }
                             } catch (Exception e) {
-                                Miapi.LOGGER.error("could not generate Material for " + toolMaterial.getRepairIngredient().getMatchingStacks()[0], e);
+                                Miapi.LOGGER.error("could not generate Material for " + toolMaterial.getRepairIngredient().getItems()[0], e);
                             }
                         });
             }
 
             if (MiapiConfig.INSTANCE.server.generatedMaterials.generateWoodMaterials) {
-                Registries.ITEM.stream()
-                        .filter(item -> item.getDefaultStack().isIn(ItemTags.PLANKS) &&
-                                        !item.getDefaultStack().isIn(RegistryInventory.MIAPI_FORBIDDEN_TAG))
+                BuiltInRegistries.ITEM.stream()
+                        .filter(item -> item.getDefaultInstance().is(ItemTags.PLANKS) &&
+                                        !item.getDefaultInstance().is(RegistryInventory.MIAPI_FORBIDDEN_TAG))
                         .limit(MiapiConfig.INSTANCE.server.generatedMaterials.maximumGeneratedMaterials)
                         .forEach(item -> {
                             try {
                                 if (isValidItem(item)) {
-                                    GeneratedMaterial generatedMaterial = new GeneratedMaterial(ToolMaterials.WOOD, item.getDefaultStack(), false);
-                                    Material old = MaterialProperty.getMaterialFromIngredient(item.getDefaultStack());
+                                    GeneratedMaterial generatedMaterial = new GeneratedMaterial(Tiers.WOOD, item.getDefaultInstance(), false);
+                                    Material old = MaterialProperty.getMaterialFromIngredient(item.getDefaultInstance());
                                     if (old == null || old == materials.get("wood")) {
                                         woodItems.add(item);
                                         toRegister.add(generatedMaterial);
@@ -257,21 +271,21 @@ public class GeneratedMaterial implements Material {
                                     }
                                 }
                             } catch (Exception e) {
-                                Miapi.LOGGER.error("could not generate wood Material for " + item.getTranslationKey(), e);
+                                Miapi.LOGGER.error("could not generate wood Material for " + item.getDescriptionId(), e);
                             }
                         });
             }
 
             if (MiapiConfig.INSTANCE.server.generatedMaterials.generateStoneMaterials) {
-                Registries.ITEM.stream()
-                        .filter(item -> item.getDefaultStack().isIn(ItemTags.STONE_TOOL_MATERIALS) &&
-                                        !item.getDefaultStack().isIn(RegistryInventory.MIAPI_FORBIDDEN_TAG))
+                BuiltInRegistries.ITEM.stream()
+                        .filter(item -> item.getDefaultInstance().is(ItemTags.STONE_TOOL_MATERIALS) &&
+                                        !item.getDefaultInstance().is(RegistryInventory.MIAPI_FORBIDDEN_TAG))
                         .limit(MiapiConfig.INSTANCE.server.generatedMaterials.maximumGeneratedMaterials)
                         .forEach(item -> {
                             try {
                                 if (isValidItem(item) && !item.equals(Items.COBBLESTONE)) {
-                                    GeneratedMaterial generatedMaterial = new GeneratedMaterial(ToolMaterials.STONE, item.getDefaultStack(), false);
-                                    Material old = MaterialProperty.getMaterialFromIngredient(item.getDefaultStack());
+                                    GeneratedMaterial generatedMaterial = new GeneratedMaterial(Tiers.STONE, item.getDefaultInstance(), false);
+                                    Material old = MaterialProperty.getMaterialFromIngredient(item.getDefaultInstance());
                                     if (old == null || old == materials.get("stone")) {
                                         toRegister.add(generatedMaterial);
                                         generatedMaterial.setupStone();
@@ -283,7 +297,7 @@ public class GeneratedMaterial implements Material {
                                     }
                                 }
                             } catch (Exception e) {
-                                Miapi.LOGGER.error("could not generate stone Material for " + item.getTranslationKey(), e);
+                                Miapi.LOGGER.error("could not generate stone Material for " + item.getDescriptionId(), e);
                             }
                         });
             }
@@ -292,17 +306,17 @@ public class GeneratedMaterial implements Material {
             }
 
             toolItems.stream()
-                    .map(ToolItem::getMaterial)
+                    .map(TieredItem::getTier)
                     .collect(Collectors.toSet())
                     .stream()
-                    .filter(toolMaterial -> toolMaterial.getRepairIngredient() != null && toolMaterial.getRepairIngredient().getMatchingStacks() != null)
-                    .filter(toolMaterial -> toolMaterial.getRepairIngredient().getMatchingStacks().length > 0)
-                    .filter(toolMaterial -> !toolMaterial.getRepairIngredient().getMatchingStacks()[0].isIn(RegistryInventory.MIAPI_FORBIDDEN_TAG))
-                    .filter(toolMaterial -> Arrays.stream(toolMaterial.getRepairIngredient().getMatchingStacks()).allMatch(itemStack -> MaterialProperty.getMaterialFromIngredient(itemStack) != null && !itemStack.getItem().equals(Items.BARRIER)))
+                    .filter(toolMaterial -> toolMaterial.getRepairIngredient() != null && toolMaterial.getRepairIngredient().getItems() != null)
+                    .filter(toolMaterial -> toolMaterial.getRepairIngredient().getItems().length > 0)
+                    .filter(toolMaterial -> !toolMaterial.getRepairIngredient().getItems()[0].is(RegistryInventory.MIAPI_FORBIDDEN_TAG))
+                    .filter(toolMaterial -> Arrays.stream(toolMaterial.getRepairIngredient().getItems()).allMatch(itemStack -> MaterialProperty.getMaterialFromIngredient(itemStack) != null && !itemStack.getItem().equals(Items.BARRIER)))
                     .forEach(toolMaterial -> {
-                        Material material = MaterialProperty.getMaterialFromIngredient(toolMaterial.getRepairIngredient().getMatchingStacks()[0]);
+                        Material material = MaterialProperty.getMaterialFromIngredient(toolMaterial.getRepairIngredient().getItems()[0]);
                         List<Item> toolMaterials = toolItems.stream()
-                                .filter(toolMat -> toolMaterial.equals(toolMat.getMaterial()))
+                                .filter(toolMat -> toolMaterial.equals(toolMat.getTier()))
                                 .collect(Collectors.toList());
                         if (material != null && material.generateConverters()) {
                             try {
@@ -325,30 +339,30 @@ public class GeneratedMaterial implements Material {
     }
 
     public static boolean isValidItem(Item item) {
-        Identifier identifier = Registries.ITEM.getId(item);
+        ResourceLocation identifier = BuiltInRegistries.ITEM.getKey(item);
         Pattern pattern = Pattern.compile(MiapiConfig.INSTANCE.server.generatedMaterials.blockRegex);
         return !pattern.matcher(identifier.toString()).find();
     }
 
-    public GeneratedMaterial(ToolMaterial toolMaterial, boolean isClient) {
-        this(toolMaterial, toolMaterial.getRepairIngredient().getMatchingStacks()[0], isClient);
+    public GeneratedMaterial(Tier toolMaterial, boolean isClient) {
+        this(toolMaterial, toolMaterial.getRepairIngredient().getItems()[0], isClient);
     }
 
-    public GeneratedMaterial(ToolMaterial toolMaterial, ItemStack itemStack, boolean isClient) {
+    public GeneratedMaterial(Tier toolMaterial, ItemStack itemStack, boolean isClient) {
         this.toolMaterial = toolMaterial;
         mainIngredient = itemStack;
-        key = "generated_" + mainIngredient.getTranslationKey();
+        key = "generated_" + mainIngredient.getDescriptionId();
         groups.add(key);
-        if (mainIngredient.getTranslationKey().contains("ingot")) {
+        if (mainIngredient.getDescriptionId().contains("ingot")) {
             groups.add("metal");
         }
-        if (mainIngredient.getTranslationKey().contains("stone")) {
+        if (mainIngredient.getDescriptionId().contains("stone")) {
             groups.add("stone");
         }
-        if (mainIngredient.getTranslationKey().contains("bone")) {
+        if (mainIngredient.getDescriptionId().contains("bone")) {
             groups.add("bone");
         }
-        if (mainIngredient.isIn(ItemTags.PLANKS)) {
+        if (mainIngredient.is(ItemTags.PLANKS)) {
             groups.add("wood");
         }
         if (groups.size() == 1) {
@@ -356,10 +370,10 @@ public class GeneratedMaterial implements Material {
         }
         //TODO:generate those sensible ig?
         //maybe scan all items assosiaated with the toolmaterial to getRaw somewhat valid stats?
-        materialStats.put("durability", (double) toolMaterial.getDurability());
+        materialStats.put("durability", (double) toolMaterial.getUses());
         materialStats.put("mining_level", (double) toolMaterial.getMiningLevel());
-        materialStats.put("mining_speed", (double) toolMaterial.getMiningSpeedMultiplier());
-        materialStats.put("enchantability", (double) toolMaterial.getEnchantability());
+        materialStats.put("mining_speed", (double) toolMaterial.getSpeed());
+        materialStats.put("enchantability", (double) toolMaterial.getEnchantmentValue());
 
         if (isClient) {
             clientSetup();
@@ -384,7 +398,7 @@ public class GeneratedMaterial implements Material {
 
     @Environment(EnvType.CLIENT)
     private void clientSetup() {
-        Identifier itemId = Registries.ITEM.getId(mainIngredient.getItem());
+        ResourceLocation itemId = BuiltInRegistries.ITEM.getKey(mainIngredient.getItem());
         StringBuilder iconBuilder = new StringBuilder();
         iconBuilder.append("{");
         iconBuilder.append("\"type\": \"").append("item").append("\",");
@@ -395,17 +409,17 @@ public class GeneratedMaterial implements Material {
         palette = GrayscalePaletteColorer.createForGeneratedMaterial(this, mainIngredient);
     }
 
-    public boolean assignStats(List<ToolItem> toolItems, boolean isClient) {
+    public boolean assignStats(List<TieredItem> toolItems, boolean isClient) {
         List<Item> toolMaterials = toolItems.stream()
-                .filter(material -> toolMaterial.equals(material.getMaterial()))
+                .filter(material -> toolMaterial.equals(material.getTier()))
                 .collect(Collectors.toList());
         Optional<Item> swordItemOptional = toolMaterials.stream().filter(SwordItem.class::isInstance).findFirst();
         Optional<Item> axeItemOptional = toolMaterials.stream().filter(AxeItem.class::isInstance).findFirst();
         if (axeItemOptional.isEmpty()) {
-            axeItemOptional = toolMaterials.stream().filter(MiningToolItem.class::isInstance).filter(miningTool -> ((MiningToolItemAccessor) miningTool).getEffectiveBlocks().equals(BlockTags.AXE_MINEABLE)).findFirst();
+            axeItemOptional = toolMaterials.stream().filter(DiggerItem.class::isInstance).filter(miningTool -> ((MiningToolItemAccessor) miningTool).getEffectiveBlocks().equals(BlockTags.MINEABLE_WITH_AXE)).findFirst();
         }
         if (swordItemOptional.isPresent() && axeItemOptional.isPresent()) {
-            if (swordItemOptional.get() instanceof SwordItem foundSwordItem && axeItemOptional.get() instanceof MiningToolItem axeItem) {
+            if (swordItemOptional.get() instanceof SwordItem foundSwordItem && axeItemOptional.get() instanceof DiggerItem axeItem) {
                 this.swordItem = foundSwordItem;
                 materialStats.put("hardness", (double) swordItem.getAttackDamage());
 
@@ -426,7 +440,7 @@ public class GeneratedMaterial implements Material {
                 if (groups.contains("crystal") || groups.contains("gemstone")) {
                     materialStats.put("flexibility", 0.0);
                 } else {
-                    materialStats.put("flexibility", (double) (toolMaterial.getMiningSpeedMultiplier() / 4));
+                    materialStats.put("flexibility", (double) (toolMaterial.getSpeed() / 4));
                 }
 
                 if (Platform.getEnvironment() == Env.CLIENT) {
@@ -442,8 +456,8 @@ public class GeneratedMaterial implements Material {
 
     public void testForSmithingMaterial(boolean isClient) {
         RecipeManager manager = findManager(isClient);
-        DynamicRegistryManager registryManager = findRegistryManager(isClient);
-        manager.listAllOfType(RecipeType.SMITHING).stream()
+        RegistryAccess registryManager = findRegistryManager(isClient);
+        manager.getAllRecipesFor(RecipeType.SMITHING).stream()
                 .filter(SmithingTransformRecipe.class::isInstance)
                 //filter for only ItemChanging Recipes
                 .map(SmithingTransformRecipe.class::cast)
@@ -451,23 +465,23 @@ public class GeneratedMaterial implements Material {
                 .filter(recipe -> isValidRecipe(recipe, swordItem, registryManager))
                 .findAny()
                 .ifPresent(smithingTransformRecipe -> {
-                    ItemStack templateItem = Arrays.stream(((SmithingTransformRecipeAccessor) smithingTransformRecipe).getTemplate().getMatchingStacks()).filter(itemStack -> !itemStack.isEmpty()).findAny().orElse(ItemStack.EMPTY);
+                    ItemStack templateItem = Arrays.stream(((SmithingTransformRecipeAccessor) smithingTransformRecipe).getTemplate().getItems()).filter(itemStack -> !itemStack.isEmpty()).findAny().orElse(ItemStack.EMPTY);
                     if (templateItem.isEmpty()) {
                         //make sure the recipe is valid by testing its template Item
                         return;
                     }
-                    Arrays.stream(((SmithingTransformRecipeAccessor) smithingTransformRecipe).getBase().getMatchingStacks())
+                    Arrays.stream(((SmithingTransformRecipeAccessor) smithingTransformRecipe).getBase().getItems())
                             //making sure the input has a valid SourceMaterial
                             .filter(itemStack -> {
-                                if (itemStack.getItem() instanceof ToolItem toolItem) {
-                                    Material material = MaterialProperty.getMaterialFromIngredient(toolItem.getMaterial()
-                                            .getRepairIngredient().getMatchingStacks()[0]);
+                                if (itemStack.getItem() instanceof TieredItem toolItem) {
+                                    Material material = MaterialProperty.getMaterialFromIngredient(toolItem.getTier()
+                                            .getRepairIngredient().getItems()[0]);
                                     return material != null;
                                 }
                                 return false;
                             })
-                            .map(itemStack -> MaterialProperty.getMaterialFromIngredient(((ToolItem) itemStack.getItem()).getMaterial()
-                                    .getRepairIngredient().getMatchingStacks()[0]))
+                            .map(itemStack -> MaterialProperty.getMaterialFromIngredient(((TieredItem) itemStack.getItem()).getTier()
+                                    .getRepairIngredient().getItems()[0]))
                             .findAny()
                             .ifPresent(sourceMaterial -> {
                                 addSmithingRecipe(sourceMaterial, templateItem, smithingTransformRecipe, isClient);
@@ -477,14 +491,14 @@ public class GeneratedMaterial implements Material {
 
     public void addSmithingRecipe(Material sourceMaterial, ItemStack templateItem, SmithingTransformRecipe smithingTransformRecipe, boolean isClient) {
         RecipeManager manager = findManager(isClient);
-        Collection<Recipe<?>> recipes = manager.values();
-        String id = "generated_material_recipe." + key + "." + Registries.ITEM.getId(templateItem.getItem()) + "." + sourceMaterial.getKey();
+        Collection<Recipe<?>> recipes = manager.getRecipes();
+        String id = "generated_material_recipe." + key + "." + BuiltInRegistries.ITEM.getKey(templateItem.getItem()) + "." + sourceMaterial.getKey();
         id = id.replace(":", ".");
-        Identifier recipeId = new Identifier(Miapi.MOD_ID, id);
-        if (manager.get(recipeId).isEmpty()) {
+        ResourceLocation recipeId = new ResourceLocation(Miapi.MOD_ID, id);
+        if (manager.byKey(recipeId).isEmpty()) {
             recipes.add(new MaterialSmithingRecipe(
                     recipeId,
-                    Ingredient.ofStacks(templateItem),
+                    Ingredient.of(templateItem),
                     sourceMaterial.getKey(),
                     ((SmithingTransformRecipeAccessor) smithingTransformRecipe).getAddition(),
                     this.key
@@ -495,7 +509,7 @@ public class GeneratedMaterial implements Material {
             this.groups.clear();
             this.groups.add(this.key);
             this.groups.add("smithing");
-            manager.setRecipes(recipes);
+            manager.replaceRecipes(recipes);
         }
     }
 
@@ -504,7 +518,7 @@ public class GeneratedMaterial implements Material {
     }
 
     static boolean isValidRecipe
-            (SmithingTransformRecipe recipe, SwordItem swordItem, DynamicRegistryManager manager) {
+            (SmithingTransformRecipe recipe, SwordItem swordItem, RegistryAccess manager) {
         if (recipe.getOutput(manager).getItem().equals(swordItem)) {
             return true;
         }
@@ -513,26 +527,26 @@ public class GeneratedMaterial implements Material {
 
     static RecipeManager findManager(boolean isClient) {
         if (isClient) {
-            return MinecraftClient.getInstance().world.getRecipeManager();
+            return Minecraft.getInstance().level.getRecipeManager();
         } else {
             return Miapi.server.getRecipeManager();
         }
     }
 
-    static DynamicRegistryManager findRegistryManager(boolean isClient) {
+    static RegistryAccess findRegistryManager(boolean isClient) {
         if (isClient) {
-            return MinecraftClient.getInstance().world.getRegistryManager();
+            return Minecraft.getInstance().level.registryAccess();
         } else {
-            return Miapi.server.getRegistryManager();
+            return Miapi.server.registryAccess();
         }
     }
 
     @Environment(EnvType.CLIENT)
     public void generateTranslation(List<Item> items) {
         List<String> names = new ArrayList<>();
-        items.forEach(item -> names.add(Text.translatable(item.getTranslationKey()).getString()));
-        String materialName = Text.translatable(mainIngredient.getTranslationKey()).getString();
-        langKey = "miapi.material.generated." + mainIngredient.getItem().getTranslationKey();
+        items.forEach(item -> names.add(Component.translatable(item.getDescriptionId()).getString()));
+        String materialName = Component.translatable(mainIngredient.getDescriptionId()).getString();
+        langKey = "miapi.material.generated." + mainIngredient.getItem().getDescriptionId();
         fakeTranslation = findCommonSubstring(names, materialName);
         if (!fakeTranslation.endsWith(" ")) {
             fakeTranslation += " ";
@@ -642,8 +656,8 @@ public class GeneratedMaterial implements Material {
 
     @Environment(EnvType.CLIENT)
     public void addFakeTranslationForCopy() {
-        fakeTranslation = Text.translatable(mainIngredient.getTranslationKey()).getString();
-        langKey = "miapi.material.generated." + mainIngredient.getItem().getTranslationKey();
+        fakeTranslation = Component.translatable(mainIngredient.getDescriptionId()).getString();
+        langKey = "miapi.material.generated." + mainIngredient.getItem().getDescriptionId();
         if (!fakeTranslation.endsWith(" ")) {
             fakeTranslation += " ";
         }
@@ -657,7 +671,7 @@ public class GeneratedMaterial implements Material {
     }
 
     @Environment(EnvType.CLIENT)
-    public int renderIcon(DrawContext drawContext, int x, int y) {
+    public int renderIcon(GuiGraphics drawContext, int x, int y) {
         if (icon == null) return 0;
         return icon.render(drawContext, x, y);
     }
@@ -760,10 +774,10 @@ public class GeneratedMaterial implements Material {
             for (int i = 0; i < palette.getColors().length; i++) {
                 int abgr = palette.getColors()[i];
                 innerPalette.addProperty(String.valueOf(i), new Color(
-                        ColorHelper.Abgr.getRed(abgr),
-                        ColorHelper.Abgr.getGreen(abgr),
-                        ColorHelper.Abgr.getBlue(abgr),
-                        ColorHelper.Abgr.getAlpha(abgr)).hex());
+                        FastColor.ABGR32.red(abgr),
+                        FastColor.ABGR32.green(abgr),
+                        FastColor.ABGR32.blue(abgr),
+                        FastColor.ABGR32.alpha(abgr)).hex());
             }
             paletteBuilder.append(Miapi.gson.toJson(innerPalette));
             paletteBuilder.append("}");
@@ -771,7 +785,7 @@ public class GeneratedMaterial implements Material {
         }
         JsonArray ingredients = new JsonArray();
         JsonObject mainIngredientJson = new JsonObject();
-        mainIngredientJson.add("item", new JsonPrimitive(Registries.ITEM.getId(this.mainIngredient.getItem()).toString()));
+        mainIngredientJson.add("item", new JsonPrimitive(BuiltInRegistries.ITEM.getKey(this.mainIngredient.getItem()).toString()));
         mainIngredientJson.add("value", new JsonPrimitive(1.0));
         JsonObject otherIngredient = new JsonObject();
         otherIngredient.add("ingredient", toolMaterial.getRepairIngredient().toJson());

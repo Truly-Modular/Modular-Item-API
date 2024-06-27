@@ -1,24 +1,24 @@
 package smartin.miapi.client.gui.Blueprint;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.screen.ScreenHandlerType;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
-public class BlueprintScreenHandler extends ScreenHandler {
+public class BlueprintScreenHandler extends AbstractContainerMenu {
 
-    protected BlueprintScreenHandler(@Nullable ScreenHandlerType<?> type, int syncId) {
+    protected BlueprintScreenHandler(@Nullable MenuType<?> type, int syncId) {
         super(type, syncId);
     }
 
     @Override
-    public ItemStack quickMove(PlayerEntity player, int slot) {
+    public ItemStack quickMoveStack(Player player, int slot) {
         return ItemStack.EMPTY;
     }
 
     @Override
-    public boolean canUse(PlayerEntity player) {
+    public boolean stillValid(Player player) {
         return true;
     }
 }

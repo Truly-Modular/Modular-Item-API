@@ -3,7 +3,6 @@ package smartin.miapi.modules.properties.util;
 import com.google.gson.JsonElement;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
-import net.minecraft.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.item.modular.StatResolver;
@@ -14,6 +13,7 @@ import smartin.miapi.modules.cache.ModularItemCache;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiFunction;
+import net.minecraft.world.item.ItemStack;
 
 /**
  * A more dynamic form of {@link CodecBasedProperty}. This should be used when you want to have collections, maps, etc. of data,

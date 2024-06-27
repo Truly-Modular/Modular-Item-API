@@ -1,8 +1,8 @@
 package smartin.miapi.modules.properties;
 
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.enchantment.Enchantments;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.Enchantments;
 import smartin.miapi.item.FakeEnchantment;
 import smartin.miapi.modules.properties.util.DoubleProperty;
 
@@ -28,6 +28,6 @@ public class MendingProperty extends DoubleProperty {
 
     @Override
     public double getValueSafe(ItemStack stack) {
-        return EnchantmentHelper.getLevel(Enchantments.MENDING, stack);
+        return EnchantmentHelper.getItemEnchantmentLevel(Enchantments.MENDING, stack);
     }
 }

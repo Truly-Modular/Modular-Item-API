@@ -1,6 +1,5 @@
 package smartin.miapi.modules.properties;
 
-import net.minecraft.item.ItemStack;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.cache.ModularItemCache;
@@ -10,6 +9,7 @@ import smartin.miapi.modules.properties.util.DoubleProperty;
 
 import java.util.ArrayList;
 import java.util.List;
+import net.minecraft.world.item.ItemStack;
 
 /**
  * controls the repair material

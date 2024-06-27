@@ -2,8 +2,8 @@ package smartin.miapi.modules.material;
 
 import com.google.gson.JsonElement;
 import dev.architectury.event.EventResult;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.item.ItemStack;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.util.ModuleProperty;
@@ -27,12 +27,12 @@ public class MaterialInscribeProperty implements ModuleProperty {
     public static ItemStack inscribe(ItemStack raw, ItemStack materialStack) {
         JsonElement element = ItemModule.getMergedProperty(raw, property);
         if (element != null) {
-            NbtCompound compound = raw.getOrCreateNbt();
+            CompoundTag compound = raw.getOrCreateNbt();
             materialStack = materialStack.copy();
             materialStack.setCount(1);
-            compound.put(element.getAsString(), materialStack.writeNbt(new NbtCompound()));
+            compound.put(element.getAsString(), materialStack.writeNbt(new CompoundTag()));
             if(materialStack.hasNbt()){
-                compound.copyFrom(materialStack.getOrCreateNbt());
+                compound.merge(materialStack.getOrCreateNbt());
             }
             raw.setNbt(compound);
         }

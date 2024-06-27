@@ -1,16 +1,16 @@
 package smartin.miapi.datapack;
 
 import dev.architectury.event.events.common.PlayerEvent;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Text;
 import smartin.miapi.Environment;
 import smartin.miapi.Miapi;
 import smartin.miapi.network.Networking;
 import smartin.miapi.registries.MiapiRegistry;
 
 import java.util.*;
+import net.minecraft.client.Minecraft;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 
 /**
  * A utility class that handles event-based reloading of data packs and caches.
@@ -81,8 +81,8 @@ public class ReloadEvents {
         Networking.registerC2SPacket(RELOAD_PACKET_ID, ((buf, serverPlayerEntity) -> {
             boolean allowHandshake = buf.readBoolean();
             if (!allowHandshake) {
-                Miapi.LOGGER.warn("Client " + serverPlayerEntity.getUuid() + " rejected reload? this should never happen!");
-                Miapi.server.sendMessage(Text.literal("Client " + serverPlayerEntity.getDisplayName() + " failed to reload."));
+                Miapi.LOGGER.warn("Client " + serverPlayerEntity.getUUID() + " rejected reload? this should never happen!");
+                Miapi.server.sendSystemMessage(Component.literal("Client " + serverPlayerEntity.getDisplayName() + " failed to reload."));
             } else {
                 triggerReloadOnClient(serverPlayerEntity);
             }
@@ -90,26 +90,26 @@ public class ReloadEvents {
 
         dataSyncerRegistry.register("data_packs", new DataSyncer() {
             @Override
-            public PacketByteBuf createDataServer() {
-                PacketByteBuf buf = Networking.createBuffer();
+            public FriendlyByteBuf createDataServer() {
+                FriendlyByteBuf buf = Networking.createBuffer();
                 buf.writeInt(DATA_PACKS.size());
                 for (String key : DATA_PACKS.keySet()) {
-                    buf.writeString(key);
-                    buf.writeString(DATA_PACKS.get(key));
+                    buf.writeUtf(key);
+                    buf.writeUtf(DATA_PACKS.get(key));
                 }
                 return buf;
             }
 
             @Override
-            public void interpretDataClient(PacketByteBuf buffer) {
+            public void interpretDataClient(FriendlyByteBuf buffer) {
                 int dataPackSize = buffer.readInt();
                 Map<String, String> tempDataPack = new HashMap<>(dataPackSize);
                 for (int i = 0; i < dataPackSize; i++) {
-                    String key = buffer.readString();
-                    String value = buffer.readString();
+                    String key = buffer.readUtf();
+                    String value = buffer.readUtf();
                     tempDataPack.put(key, value);
                 }
-                MinecraftClient.getInstance().execute(() -> {
+                Minecraft.getInstance().execute(() -> {
                     synchronized (DATA_PACKS) {
                         DATA_PACKS.clear();
                         DATA_PACKS.putAll(tempDataPack);
@@ -145,10 +145,10 @@ public class ReloadEvents {
      *
      * @param entity The player entity to send the packet to.
      */
-    public static void triggerReloadOnClient(ServerPlayerEntity entity) {
+    public static void triggerReloadOnClient(ServerPlayer entity) {
         dataSyncerRegistry.getFlatMap().forEach((id, syncer) -> {
-            PacketByteBuf buf = Networking.createBuffer();
-            buf.writeString(id);
+            FriendlyByteBuf buf = Networking.createBuffer();
+            buf.writeUtf(id);
             buf.writeBytes(syncer.createDataServer().copy());
             Networking.sendS2C(RELOAD_PACKET_ID, entity, buf);
         });
@@ -168,12 +168,12 @@ public class ReloadEvents {
             if (receivedSyncer.isEmpty()) {
                 clientReloadTimeStart = System.nanoTime();
             }
-            String receivedID = buffer.readString();
+            String receivedID = buffer.readUtf();
             receivedSyncer.add(receivedID);
             dataSyncerRegistry.get(receivedID).interpretDataClient(buffer);
             if (receivedSyncer.size() == dataSyncerRegistry.getFlatMap().keySet().size()) {
                 receivedSyncer.clear();
-                MinecraftClient.getInstance().execute(() -> {
+                Minecraft.getInstance().execute(() -> {
                     reloadCounter++;
                     ReloadEvents.START.fireEvent(true);
                     ReloadEvents.MAIN.fireEvent(true);
@@ -325,7 +325,7 @@ public class ReloadEvents {
          *
          * @return the PacketBuffer to be synced
          */
-        PacketByteBuf createDataServer();
+        FriendlyByteBuf createDataServer();
 
         /**
          * Be aware that this will trigger between the
@@ -337,6 +337,6 @@ public class ReloadEvents {
          *
          * @param buf the buffer recieved from the server
          */
-        void interpretDataClient(PacketByteBuf buf);
+        void interpretDataClient(FriendlyByteBuf buf);
     }
 }

@@ -4,11 +4,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.architectury.event.EventResult;
 import dev.architectury.event.events.common.BlockEvent;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.math.Direction;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
@@ -31,6 +26,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import net.minecraft.core.Direction;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
 
 /**
  * This Property Manages the complicated task of Mining Multiple Blocks when only one is mined
@@ -49,12 +49,12 @@ public class MiningShapeProperty implements ModuleProperty {
         property = this;
         ModularItemCache.setSupplier(KEY, MiningShapeProperty::getCache);
         BlockEvent.BREAK.register((level, pos, state, player, xp) -> {
-            if (!level.isClient() && !player.isSneaking()) {
-                ItemStack miningItem = player.getMainHandStack();
+            if (!level.isClientSide() && !player.isShiftKeyDown()) {
+                ItemStack miningItem = player.getMainHandItem();
                 List<MiningShapeJson> miningShapeJsons = get(miningItem);
-                HitResult hitResult = player.raycast(getBlockBreakDistance(player), 0, false);
+                HitResult hitResult = player.pick(getBlockBreakDistance(player), 0, false);
                 if (hitResult instanceof BlockHitResult blockHitResult) {
-                    Direction facing = blockHitResult.getSide();
+                    Direction facing = blockHitResult.getDirection();
                     miningShapeJsons.stream().filter(miningShapeJson ->
                                     miningShapeJson.miningCondition.canMine(player, level, miningItem, pos, facing)).
                             forEach(miningShapeJson ->
@@ -79,7 +79,7 @@ public class MiningShapeProperty implements ModuleProperty {
     }
 
     //TODO:update on port to 1.20.5, wont change for forge cause idc
-    public double getBlockBreakDistance(PlayerEntity player) {
+    public double getBlockBreakDistance(Player player) {
         return 10;
     }
 

@@ -3,9 +3,9 @@ package smartin.miapi.blueprint;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.fabricmc.api.EnvType;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Environment;
 import smartin.miapi.Miapi;
@@ -71,7 +71,7 @@ public class BlueprintProperty implements CraftingProperty, ModuleProperty {
                     propertyMap = option.getInstance().getProperties();
                 }
                 if (option.getWorkbench() != null) {
-                    pos = option.getWorkbench().getPos();
+                    pos = option.getWorkbench().getBlockPos();
                 } else {
                     pos = null;
                 }
@@ -94,7 +94,7 @@ public class BlueprintProperty implements CraftingProperty, ModuleProperty {
     }
 
     @Override
-    public ItemStack preview(ItemStack old, ItemStack crafting, PlayerEntity player, ModularWorkBenchEntity bench, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<String, String> data) {
+    public ItemStack preview(ItemStack old, ItemStack crafting, Player player, ModularWorkBenchEntity bench, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<String, String> data) {
         ModuleInstance newModule = craftAction.getModifyingModuleInstance(crafting);
         String blueprintKey = data.get("blueprint");
         if (blueprintKey != null && newModule != null) {

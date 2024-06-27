@@ -2,25 +2,24 @@ package smartin.miapi.client.atlas;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.render.OverlayTexture;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.entity.LivingEntityRenderer;
-import net.minecraft.client.render.entity.feature.ElytraFeatureRenderer;
-import net.minecraft.client.render.entity.feature.FeatureRendererContext;
-import net.minecraft.client.render.entity.model.BipedEntityModel;
-import net.minecraft.client.render.entity.model.ElytraEntityModel;
-import net.minecraft.client.render.entity.model.EntityModel;
-import net.minecraft.client.render.model.json.ModelTransformationMode;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.ItemStack;
+import net.minecraft.client.model.ElytraModel;
+import net.minecraft.client.model.EntityModel;
+import net.minecraft.client.model.HumanoidModel;
+import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.entity.LivingEntityRenderer;
+import net.minecraft.client.renderer.entity.RenderLayerParent;
+import net.minecraft.client.renderer.entity.layers.ElytraLayer;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemDisplayContext;
+import net.minecraft.world.item.ItemStack;
 import smartin.miapi.client.model.MiapiItemModel;
 import smartin.miapi.mixin.client.ElytraEntityModelAccessor;
 import smartin.miapi.mixin.client.ElytraFeatureRendererAccessor;
 import smartin.miapi.mixin.client.LivingEntityRendererAccessor;
-
+import com.mojang.blaze3d.vertex.PoseStack;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -38,20 +37,20 @@ public class ArmorModelManager {
         private static final String[] modelParts = {"head", "hat", "left_arm", "right_arm", "left_leg", "right_leg", "body"};
 
         @Override
-        public List<ArmorPart> getParts(EquipmentSlot equipmentSlot, LivingEntity livingEntity, BipedEntityModel<?> model, EntityModel entityModel, FeatureRendererContext context) {
+        public List<ArmorPart> getParts(EquipmentSlot equipmentSlot, LivingEntity livingEntity, HumanoidModel<?> model, EntityModel entityModel, RenderLayerParent context) {
             List<ArmorPart> parts = new ArrayList<>();
             for (String key : modelParts) {
                 parts.add((matrixStack, equipmentSlot1, livingEntity1, model1, entityModel1) -> {
-                    entityModel1.copyStateTo(model1);
+                    entityModel1.copyPropertiesTo(model1);
                     ModelPart part = getModelPart(model1, key);
-                    part.rotate(matrixStack);
+                    part.translateAndRotate(matrixStack);
                     return key;
                 });
             }
             return parts;
         }
 
-        private static ModelPart getModelPart(BipedEntityModel<?> model, String name) {
+        private static ModelPart getModelPart(HumanoidModel<?> model, String name) {
             return switch (name) {
                 case "head" -> model.head;
                 case "hat" -> model.hat;
@@ -66,25 +65,25 @@ public class ArmorModelManager {
 
     public static final class ElytraPartProvider implements ArmorPartProvider {
         @Override
-        public List<ArmorPart> getParts(EquipmentSlot equipmentSlot, LivingEntity livingEntity, BipedEntityModel<?> model, EntityModel entityModel, FeatureRendererContext context) {
+        public List<ArmorPart> getParts(EquipmentSlot equipmentSlot, LivingEntity livingEntity, HumanoidModel<?> model, EntityModel entityModel, RenderLayerParent context) {
             List<ArmorPart> parts = new ArrayList<>();
             if (context instanceof LivingEntityRenderer livingEntityRenderer) {
-                Optional<ElytraFeatureRenderer<?, ?>> elytraFeatureRenderer =
-                ((LivingEntityRendererAccessor) livingEntityRenderer).getFeatures().stream().filter(a -> a instanceof ElytraFeatureRenderer<?, ?>).findAny();
+                Optional<ElytraLayer<?, ?>> elytraFeatureRenderer =
+                ((LivingEntityRendererAccessor) livingEntityRenderer).getFeatures().stream().filter(a -> a instanceof ElytraLayer<?, ?>).findAny();
                 if(elytraFeatureRenderer.isPresent()){
-                    ElytraEntityModel elytraEntityModel = ((ElytraFeatureRendererAccessor)elytraFeatureRenderer.get()).getElytra();
+                    ElytraModel elytraEntityModel = ((ElytraFeatureRendererAccessor)elytraFeatureRenderer.get()).getElytra();
                     parts.add((matrixStack, equipmentSlot1, livingEntity1, model1, entityModel1) -> {
-                        entityModel.copyStateTo(elytraEntityModel);
-                        entityModel1.copyStateTo(model1);
+                        entityModel.copyPropertiesTo(elytraEntityModel);
+                        entityModel1.copyPropertiesTo(model1);
                         ModelPart part = ((ElytraEntityModelAccessor) elytraEntityModel).getLeftWing();
-                        part.rotate(matrixStack);
+                        part.translateAndRotate(matrixStack);
                         return "left_wing";
                     });
                     parts.add((matrixStack, equipmentSlot1, livingEntity1, model1, entityModel1) -> {
-                        entityModel.copyStateTo(elytraEntityModel);
-                        entityModel1.copyStateTo(model1);
+                        entityModel.copyPropertiesTo(elytraEntityModel);
+                        entityModel1.copyPropertiesTo(model1);
                         ModelPart part = ((ElytraEntityModelAccessor) elytraEntityModel).getRightWing();
-                        part.rotate(matrixStack);
+                        part.translateAndRotate(matrixStack);
                         return "right_wing";
                     });
                     return parts;
@@ -95,26 +94,26 @@ public class ArmorModelManager {
         }
     }
 
-    public static void renderArmorPiece(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, EquipmentSlot armorSlot, ItemStack itemStack, LivingEntity entity, BipedEntityModel outerModel, EntityModel entityModel, FeatureRendererContext context) {
+    public static void renderArmorPiece(PoseStack matrices, MultiBufferSource vertexConsumers, int light, EquipmentSlot armorSlot, ItemStack itemStack, LivingEntity entity, HumanoidModel outerModel, EntityModel entityModel, RenderLayerParent context) {
         partProviders.forEach(armorPartProvider -> {
             List<ArmorPart> armorParts = armorPartProvider.getParts(armorSlot, entity, outerModel, entityModel, context);
             armorParts.forEach(armorPart -> {
-                matrices.push();
+                matrices.pushPose();
                 String key = armorPart.apply(matrices, armorSlot, entity, outerModel, entityModel);
                 MiapiItemModel miapiItemModel = MiapiItemModel.getItemModel(itemStack);
                 if (miapiItemModel != null) {
-                    miapiItemModel.render(key, matrices, ModelTransformationMode.HEAD, 0, vertexConsumers, light, OverlayTexture.DEFAULT_UV);
+                    miapiItemModel.render(key, matrices, ItemDisplayContext.HEAD, 0, vertexConsumers, light, OverlayTexture.NO_OVERLAY);
                 }
-                matrices.pop();
+                matrices.popPose();
             });
         });
     }
 
     public interface ArmorPartProvider {
-        List<ArmorPart> getParts(EquipmentSlot equipmentSlot, LivingEntity livingEntity, BipedEntityModel<?> model, EntityModel entityModel, FeatureRendererContext context);
+        List<ArmorPart> getParts(EquipmentSlot equipmentSlot, LivingEntity livingEntity, HumanoidModel<?> model, EntityModel entityModel, RenderLayerParent context);
     }
 
     public interface ArmorPart {
-        String apply(MatrixStack matrixStack, EquipmentSlot equipmentSlot, LivingEntity livingEntity, BipedEntityModel<?> model, EntityModel entityModel);
+        String apply(PoseStack matrixStack, EquipmentSlot equipmentSlot, LivingEntity livingEntity, HumanoidModel<?> model, EntityModel entityModel);
     }
 }

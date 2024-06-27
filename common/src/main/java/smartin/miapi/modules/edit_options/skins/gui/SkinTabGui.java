@@ -1,10 +1,6 @@
 package smartin.miapi.modules.edit_options.skins.gui;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.ColorHelper;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.ScrollingTextWidget;
@@ -14,9 +10,13 @@ import smartin.miapi.modules.edit_options.skins.SkinOptions;
 import smartin.miapi.modules.edit_options.skins.SkinTab;
 
 import java.util.*;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FastColor;
 
 class SkinTabGui extends InteractAbleWidget implements SkinGui.SortAble {
-    Identifier arrowTexture = new Identifier(Miapi.MOD_ID, "textures/gui/skin/arrow.png");
+    ResourceLocation arrowTexture = new ResourceLocation(Miapi.MOD_ID, "textures/gui/skin/arrow.png");
     boolean isOpen = true;
     List<SkinGui.SortAble> fullList = new ArrayList<>();
     List<SkinGui.SortAble> currentList;
@@ -30,7 +30,7 @@ class SkinTabGui extends InteractAbleWidget implements SkinGui.SortAble {
     final SkinTab tabInfo;
 
     public SkinTabGui(SkinGui skinGui, int x, int y, int width, String currentTab, Map<String, Skin> mapsToDo) {
-        super(x, y, width, SIZE_Y, Text.empty());
+        super(x, y, width, SIZE_Y, Component.empty());
         this.tabInfo = SkinOptions.getTag(currentTab);
         height = realHeight;
         isRoot = currentTab.isBlank();
@@ -45,9 +45,9 @@ class SkinTabGui extends InteractAbleWidget implements SkinGui.SortAble {
         String[] parts = currentTab.split("/");
         int partLength = parts.length;
         if (isRoot) partLength = 0;
-        Text skinName = StatResolver.translateAndResolve(Miapi.MOD_ID + ".skin.name." + parts[parts.length - 1], skinGui.instance);
+        Component skinName = StatResolver.translateAndResolve(Miapi.MOD_ID + ".skin.name." + parts[parts.length - 1], skinGui.instance);
         sortAble = skinName.getString();
-        textWidget = new ScrollingTextWidget(x + 12, y + 1, width - 13, skinName, ColorHelper.Argb.getArgb(255, 255, 255, 255));
+        textWidget = new ScrollingTextWidget(x + 12, y + 1, width - 13, skinName, FastColor.ARGB32.color(255, 255, 255, 255));
 
         Map<String, Map<String, Skin>> toDoMap = new HashMap<>();
         for (Map.Entry<String, Skin> entry : mapsToDo.entrySet()) {
@@ -121,7 +121,7 @@ class SkinTabGui extends InteractAbleWidget implements SkinGui.SortAble {
     }
 
     @Override
-    public void render(DrawContext drawContext, int mouseX, int mouseY, float delta) {
+    public void render(GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
         if (!isRoot) {
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
             RenderSystem.enableBlend();

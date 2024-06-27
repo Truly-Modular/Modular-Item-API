@@ -9,15 +9,15 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.Suggestion;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.server.command.CommandManager;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.Text;
 import smartin.miapi.network.Networking;
 
 import java.util.Collection;
 import java.util.List;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Player;
 
 /**
  * A command related to materials- used to fetch debug data of active materials
@@ -25,67 +25,67 @@ import java.util.List;
 public class MaterialCommand {
     public static String SEND_MATERIAL_CLIENT = "miapi_material_debug";
 
-    public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        LiteralArgumentBuilder<ServerCommandSource> literal = CommandManager.literal("miapi")
-                .then(CommandManager.literal("material")
-                        .then(CommandManager.argument("material_id", StringArgumentType.word())
+    public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
+        LiteralArgumentBuilder<CommandSourceStack> literal = Commands.literal("miapi")
+                .then(Commands.literal("material")
+                        .then(Commands.argument("material_id", StringArgumentType.word())
                                 .suggests(MATERIAL_SUGGESTIONS) // Specify suggestion provider
                                 .executes(MaterialCommand::executeMaterialCommand)));
-        LiteralArgumentBuilder<ServerCommandSource> getHand = CommandManager.literal("miapi")
-                .then(CommandManager.literal("get-hand-material")
+        LiteralArgumentBuilder<CommandSourceStack> getHand = Commands.literal("miapi")
+                .then(Commands.literal("get-hand-material")
                         .executes(MaterialCommand::getHandMaterial));
         dispatcher.register(literal);
         dispatcher.register(getHand);
     }
 
-    private static int getHandMaterial(CommandContext<ServerCommandSource> context) {
-        if (context.getSource().isExecutedByPlayer()) {
-            PlayerEntity player = context.getSource().getPlayer();
-            Material material = MaterialProperty.getMaterialFromIngredient(player.getMainHandStack());
+    private static int getHandMaterial(CommandContext<CommandSourceStack> context) {
+        if (context.getSource().isPlayer()) {
+            Player player = context.getSource().getPlayer();
+            Material material = MaterialProperty.getMaterialFromIngredient(player.getMainHandItem());
             if (material != null) {
-                player.sendMessage(Text.literal("Handheld Material " + material.getKey()));
-                PacketByteBuf buf = Networking.createBuffer();
-                buf.writeString(material.getKey());
+                player.sendSystemMessage(Component.literal("Handheld Material " + material.getKey()));
+                FriendlyByteBuf buf = Networking.createBuffer();
+                buf.writeUtf(material.getKey());
                 Networking.sendS2C(SEND_MATERIAL_CLIENT, context.getSource().getPlayer(), buf);
             } else {
-                player.sendMessage(Text.literal("Handheld Item is no Material"));
+                player.sendSystemMessage(Component.literal("Handheld Item is no Material"));
             }
             return 1; // Return success
         } else {
             // Material ID is not valid
-            context.getSource().sendError(Text.literal("Handheld Item is no Material"));
+            context.getSource().sendFailure(Component.literal("Handheld Item is no Material"));
             return 0; // Return failure
         }
     }
 
-    private static int executeMaterialCommand(CommandContext<ServerCommandSource> context) {
+    private static int executeMaterialCommand(CommandContext<CommandSourceStack> context) {
         String materialId = StringArgumentType.getString(context, "material_id");
         List<String> materialOptions = getMaterialOptions(); // You need to define this method to getVertexConsumer the list of material options
         if (materialOptions.contains(materialId)) {
             // Material ID is valid, perform desired action
-            context.getSource().sendFeedback(() -> Text.literal("Material ID is valid: " + materialId), false);
-            if (context.getSource().isExecutedByPlayer()) {
-                PacketByteBuf buf = Networking.createBuffer();
-                buf.writeString(materialId);
+            context.getSource().sendSuccess(() -> Component.literal("Material ID is valid: " + materialId), false);
+            if (context.getSource().isPlayer()) {
+                FriendlyByteBuf buf = Networking.createBuffer();
+                buf.writeUtf(materialId);
                 Networking.sendS2C(SEND_MATERIAL_CLIENT, context.getSource().getPlayer(), buf);
             }
             return 1; // Return success
         } else {
             // Material ID is not valid
-            context.getSource().sendError(Text.literal("Invalid material ID: " + materialId));
+            context.getSource().sendFailure(Component.literal("Invalid material ID: " + materialId));
             return 0; // Return failure
         }
     }
 
     // Suggestion provider for material options
-    private static final SuggestionProvider<ServerCommandSource> MATERIAL_SUGGESTIONS = (context, builder) -> {
+    private static final SuggestionProvider<CommandSourceStack> MATERIAL_SUGGESTIONS = (context, builder) -> {
         List<String> materialOptions = getMaterialOptions();
         materialOptions.forEach(builder::suggest);
         return builder.buildFuture();
     };
 
     // Method to suggest material options
-    private static List<Suggestion> suggestMaterialOptions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
+    private static List<Suggestion> suggestMaterialOptions(CommandContext<CommandSourceStack> context, SuggestionsBuilder builder) {
         getMaterialOptions().forEach(builder::suggest);
         return builder.buildFuture().join().getList();
     }

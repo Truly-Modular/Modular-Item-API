@@ -1,6 +1,5 @@
 package smartin.miapi.modules;
 
-import net.minecraft.entity.player.PlayerEntity;
 import smartin.miapi.Miapi;
 import smartin.miapi.config.MiapiConfig;
 
@@ -12,16 +11,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.WeakHashMap;
+import net.minecraft.world.entity.player.Player;
 
 public class MiapiPermissions {
     static HttpClient httpClient = HttpClient.newHttpClient();
-    static WeakHashMap<PlayerEntity, List<String>> playerPerms = new WeakHashMap<>();
+    static WeakHashMap<Player, List<String>> playerPerms = new WeakHashMap<>();
 
-    public static boolean hasPerm(PlayerEntity player, String perm) {
+    public static boolean hasPerm(Player player, String perm) {
         if (MiapiConfig.INSTANCE.server.other.developmentMode) {
             return true;
         }
-        if(perm.equals(player.getUuid().toString())){
+        if(perm.equals(player.getUUID().toString())){
             return true;
         }
         try {
@@ -32,7 +32,7 @@ public class MiapiPermissions {
         }
     }
 
-    public static boolean hasPerm(PlayerEntity player, List<String> perms) {
+    public static boolean hasPerm(Player player, List<String> perms) {
         for (String perm : perms) {
             if (hasPerm(player, perm)) {
                 return true;
@@ -41,11 +41,11 @@ public class MiapiPermissions {
         return false;
     }
 
-    public static List<String> getPerms(PlayerEntity player) {
+    public static List<String> getPerms(Player player) {
         if (playerPerms.containsKey(player)) {
             return playerPerms.get(player);
         }
-        List<String> perms = getPerms(player.getUuid());
+        List<String> perms = getPerms(player.getUUID());
         perms.add("user");
         playerPerms.put(player, perms);
         return perms;

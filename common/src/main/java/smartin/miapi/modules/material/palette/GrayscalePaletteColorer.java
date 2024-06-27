@@ -3,23 +3,23 @@ package smartin.miapi.modules.material.palette;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.serialization.Codec;
 import com.redpxnda.nucleus.codec.misc.MiscCodecs;
 import com.redpxnda.nucleus.util.Color;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.model.BakedModel;
-import net.minecraft.client.texture.NativeImage;
-import net.minecraft.client.texture.SpriteContents;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.registry.Registries;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.ColorHelper;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.renderer.NativeImageGetter;
 import smartin.miapi.modules.material.Material;
 
 import java.util.*;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.texture.SpriteContents;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FastColor;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 
 /**
  * Represents a simple palette for a material, where the index of a color in a set of 256 represents the grayscale pixel to replace with said color.
@@ -38,8 +38,8 @@ public class GrayscalePaletteColorer extends SpritePixelReplacer {
      */
     public static GrayscalePaletteColorer createForImageJson(Material material, JsonElement json, boolean isItem) {
         if (isItem) {
-            Item item = Registries.ITEM.get(new Identifier(json.getAsJsonObject().get("item").getAsString()));
-            return createForGeneratedMaterial(material, item.getDefaultStack());
+            Item item = BuiltInRegistries.ITEM.get(new ResourceLocation(json.getAsJsonObject().get("item").getAsString()));
+            return createForGeneratedMaterial(material, item.getDefaultInstance());
         }
         return new GrayscalePaletteColorer(material, createImagePalette(new SpriteFromJson(json).imageSupplier.get()));
     }
@@ -48,8 +48,8 @@ public class GrayscalePaletteColorer extends SpritePixelReplacer {
      * Create a GrayscalePaletteColorer for a generated material
      */
     public static GrayscalePaletteColorer createForGeneratedMaterial(Material material, ItemStack mainIngredient) {
-        BakedModel itemModel = MinecraftClient.getInstance().getItemRenderer().getModel(mainIngredient, MinecraftClient.getInstance().world, null, 0);
-        SpriteContents contents = itemModel.getParticleSprite().getContents();
+        BakedModel itemModel = Minecraft.getInstance().getItemRenderer().getModel(mainIngredient, Minecraft.getInstance().level, null, 0);
+        SpriteContents contents = itemModel.getParticleIcon().contents();
         NativeImageGetter.ImageHolder image = NativeImageGetter.getFromContents(contents);
         return new GrayscalePaletteColorer(material, createImagePalette(image));
     }
@@ -111,7 +111,7 @@ public class GrayscalePaletteColorer extends SpritePixelReplacer {
 
     @Override
     public int getReplacementColor(int pixelX, int pixelY, int previousAbgr) {
-        int red = ColorHelper.Abgr.getRed(previousAbgr);
+        int red = FastColor.ABGR32.red(previousAbgr);
         return colors[red];
     }
 
@@ -193,7 +193,7 @@ public class GrayscalePaletteColorer extends SpritePixelReplacer {
             for (int i = 0; i < image.getHeight(); ++i) {
                 for (int j = 0; j < image.getWidth(); ++j) {
                     int k = image.getColor(j, i);
-                    is[j + i * image.getWidth()] = ColorHelper.Argb.getArgb(ColorHelper.Abgr.getAlpha(k), ColorHelper.Abgr.getRed(k), ColorHelper.Abgr.getGreen(k), ColorHelper.Abgr.getBlue(k));
+                    is[j + i * image.getWidth()] = FastColor.ARGB32.color(FastColor.ABGR32.alpha(k), FastColor.ABGR32.red(k), FastColor.ABGR32.green(k), FastColor.ABGR32.blue(k));
                 }
             }
 

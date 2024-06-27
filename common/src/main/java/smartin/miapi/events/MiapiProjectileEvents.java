@@ -2,15 +2,15 @@ package smartin.miapi.events;
 
 import com.redpxnda.nucleus.event.PrioritizedEvent;
 import dev.architectury.event.EventResult;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.data.DataTracker;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.PersistentProjectileEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.hit.EntityHitResult;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.AbstractArrow;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.EntityHitResult;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.entity.ItemProjectileEntity;
 
@@ -59,11 +59,11 @@ public final class MiapiProjectileEvents {
     }
 
     public static class ModularBowShotEvent {
-        public PersistentProjectileEntity projectile;
+        public AbstractArrow projectile;
         public ItemStack bowStack;
         public LivingEntity shooter;
 
-        public ModularBowShotEvent(PersistentProjectileEntity projectile, ItemStack bowStack, LivingEntity shooter) {
+        public ModularBowShotEvent(AbstractArrow projectile, ItemStack bowStack, LivingEntity shooter) {
             this.projectile = projectile;
             this.bowStack = bowStack;
             this.shooter = shooter;
@@ -91,15 +91,15 @@ public final class MiapiProjectileEvents {
     }
 
     public interface ItemProjectileCompound {
-        EventResult nbtEvent(ItemProjectileEntity projectile, NbtCompound nbtCompound);
+        EventResult nbtEvent(ItemProjectileEntity projectile, CompoundTag nbtCompound);
     }
 
     public interface PlayerPickupEvent {
-        EventResult pickup(PlayerEntity entity, ItemProjectileEntity projectile);
+        EventResult pickup(Player entity, ItemProjectileEntity projectile);
     }
 
     public interface ItemProjectileDataTracker {
-        EventResult dataTracker(ItemProjectileEntity projectile, DataTracker nbtCompound);
+        EventResult dataTracker(ItemProjectileEntity projectile, SynchedEntityData nbtCompound);
     }
 
     public interface ModularProjectileBlockHit {

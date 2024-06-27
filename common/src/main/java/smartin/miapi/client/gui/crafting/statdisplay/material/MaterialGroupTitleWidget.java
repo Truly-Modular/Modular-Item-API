@@ -1,30 +1,30 @@
 package smartin.miapi.client.gui.crafting.statdisplay.material;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.text.Text;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.network.chat.Component;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.ScrollingTextWidget;
 
 public class MaterialGroupTitleWidget extends InteractAbleWidget {
     ScrollingTextWidget scrollingTextWidget;
-    Text hoverDescription;
+    Component hoverDescription;
     boolean hasHoverdescription;
 
     public MaterialGroupTitleWidget(int x, int y, int width, String materialKey) {
-        super(x, y, width, 12, Text.literal(materialKey));
-        scrollingTextWidget = new ScrollingTextWidget(x, y + 2, width, Text.translatableWithFallback("miapi.material_property.category." + materialKey, materialKey));
+        super(x, y, width, 12, Component.literal(materialKey));
+        scrollingTextWidget = new ScrollingTextWidget(x, y + 2, width, Component.translatableWithFallback("miapi.material_property.category." + materialKey, materialKey));
         scrollingTextWidget.setOrientation(ScrollingTextWidget.Orientation.CENTERED);
-        hoverDescription = Text.translatableWithFallback("miapi.material_property.category." + materialKey + ".description", materialKey);
+        hoverDescription = Component.translatableWithFallback("miapi.material_property.category." + materialKey + ".description", materialKey);
         hasHoverdescription = !hoverDescription.getString().equals(materialKey);
         this.addChild(scrollingTextWidget);
     }
 
     @Override
-    public void renderHover(DrawContext drawContext, int mouseX, int mouseY, float delta) {
+    public void renderHover(GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
         super.renderHover(drawContext, mouseX, mouseY, delta);
         if (hasHoverdescription && isMouseOver(mouseX, mouseY)) {
-            drawContext.drawTooltip(MinecraftClient.getInstance().textRenderer, hoverDescription, mouseX, mouseY);
+            drawContext.renderTooltip(Minecraft.getInstance().font, hoverDescription, mouseX, mouseY);
         }
     }
 

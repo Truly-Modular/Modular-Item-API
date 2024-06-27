@@ -1,13 +1,13 @@
 package smartin.miapi.blocks;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.piston.PistonBehavior;
-import net.minecraft.registry.Registries;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraft.world.event.GameEvent;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.gameevent.GameEvent;
+import net.minecraft.world.level.material.PushReaction;
 import smartin.miapi.craft.stat.StatProvidersMap;
 import smartin.miapi.registries.RegistryInventory;
 
@@ -17,25 +17,25 @@ import smartin.miapi.registries.RegistryInventory;
 public class StatProvidingBlock extends Block implements IStatProvidingBlock {
     protected final StatProvidersMap providersMap;
 
-    public StatProvidingBlock(Settings settings, StatProvidersMap providers) {
-        super(settings.pistonBehavior(PistonBehavior.IGNORE));
+    public StatProvidingBlock(Properties settings, StatProvidersMap providers) {
+        super(settings.pushReaction(PushReaction.IGNORE));
         providersMap = providers;
     }
 
     @Override
-    public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
-        world.emitGameEvent(
-                Registries.GAME_EVENT.getEntry(RegistryInventory.statProviderCreatedEvent),
+    public void onPlace(BlockState state, Level world, BlockPos pos, BlockState oldState, boolean notify) {
+        world.gameEvent(
+                BuiltInRegistries.GAME_EVENT.wrapAsHolder(RegistryInventory.statProviderCreatedEvent),
                 pos,
-                new GameEvent.Emitter(null, state));
+                new GameEvent.Context(null, state));
     }
 
     @Override
-    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
-        if (!state.isOf(newState.getBlock())) world.emitGameEvent(
-                Registries.GAME_EVENT.getEntry(RegistryInventory.statProviderCreatedEvent),
+    public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean moved) {
+        if (!state.is(newState.getBlock())) world.gameEvent(
+                BuiltInRegistries.GAME_EVENT.wrapAsHolder(RegistryInventory.statProviderCreatedEvent),
                 pos,
-                new GameEvent.Emitter(null, state));
+                new GameEvent.Context(null, state));
     }
 
     /*@Override
@@ -48,7 +48,7 @@ public class StatProvidingBlock extends Block implements IStatProvidingBlock {
         world.emitGameEvent(RegistryInventory.statProviderUpdatedEvent, pos, new GameEvent.Emitter(null, null));
     }*/
 
-    public StatProvidersMap getProviders(ModularWorkBenchEntity caller, BlockState state, BlockPos pos, ServerWorld world) {
+    public StatProvidersMap getProviders(ModularWorkBenchEntity caller, BlockState state, BlockPos pos, ServerLevel world) {
         return providersMap;
     }
 }

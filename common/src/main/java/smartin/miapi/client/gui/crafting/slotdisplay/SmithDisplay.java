@@ -2,16 +2,16 @@ package smartin.miapi.client.gui.crafting.slotdisplay;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.ingame.InventoryScreen;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.decoration.ArmorStandEntity;
-import net.minecraft.item.ArmorItem;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.text.Text;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.inventory.InventoryScreen;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.decoration.ArmorStand;
+import net.minecraft.world.item.ArmorItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Quaternionf;
 import smartin.miapi.client.gui.InteractAbleWidget;
@@ -20,17 +20,17 @@ import smartin.miapi.client.gui.InteractAbleWidget;
 public class SmithDisplay extends InteractAbleWidget {
     public static final Quaternionf ARMOR_STAND_ROTATION = new Quaternionf().rotationXYZ(0.43633232f, 0.0f, (float) Math.PI);
     @Nullable
-    private ArmorStandEntity armorStand;
+    private ArmorStand armorStand;
 
     public SmithDisplay(int x, int y, int width, int height) {
-        super(x, y, width, height, Text.empty());
-        this.armorStand = new ArmorStandEntity(MinecraftClient.getInstance().world, 0.0, 0.0, 0.0);
-        this.armorStand.setHideBasePlate(true);
+        super(x, y, width, height, Component.empty());
+        this.armorStand = new ArmorStand(Minecraft.getInstance().level, 0.0, 0.0, 0.0);
+        this.armorStand.setNoBasePlate(true);
         this.armorStand.setShowArms(true);
-        this.armorStand.bodyYaw = 210.0f;
-        this.armorStand.setPitch(25.0f);
-        this.armorStand.headYaw = this.armorStand.getYaw();
-        this.armorStand.prevHeadYaw = this.armorStand.getYaw();
+        this.armorStand.yBodyRot = 210.0f;
+        this.armorStand.setXRot(25.0f);
+        this.armorStand.yHeadRot = this.armorStand.getYRot();
+        this.armorStand.yHeadRotO = this.armorStand.getYRot();
         this.equipArmorStand(ItemStack.EMPTY);
     }
 
@@ -43,24 +43,24 @@ public class SmithDisplay extends InteractAbleWidget {
             return;
         }
         for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
-            this.armorStand.equipStack(equipmentSlot, ItemStack.EMPTY);
+            this.armorStand.setItemSlot(equipmentSlot, ItemStack.EMPTY);
         }
         if (!stack.isEmpty()) {
             ItemStack itemStack = stack;
             Item item = stack.getItem();
             if (item instanceof ArmorItem) {
                 ArmorItem armorItem = (ArmorItem) item;
-                this.armorStand.equipStack(armorItem.getSlotType(), itemStack);
+                this.armorStand.setItemSlot(armorItem.getEquipmentSlot(), itemStack);
             } else {
-                this.armorStand.equipStack(EquipmentSlot.OFFHAND, itemStack);
+                this.armorStand.setItemSlot(EquipmentSlot.OFFHAND, itemStack);
             }
         }
     }
 
     @Override
-    public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
+    public void renderWidget(GuiGraphics context, int mouseX, int mouseY, float delta) {
         //context.enableScissor(getX(),getY(),getX()+getWidth(),getY()+getHeight());
-        InventoryScreen.drawEntity(context, this.getX() + getWidth() / 2 + 3, this.getY() + this.height - 10, 30, ARMOR_STAND_ROTATION, null, (LivingEntity) this.armorStand);
+        InventoryScreen.renderEntityInInventoryFollowsMouse(context, this.getX() + getWidth() / 2 + 3, this.getY() + this.height - 10, 30, ARMOR_STAND_ROTATION, null, (LivingEntity) this.armorStand);
         //context.disableScissor();
         super.render(context, mouseX, mouseY, delta);
     }

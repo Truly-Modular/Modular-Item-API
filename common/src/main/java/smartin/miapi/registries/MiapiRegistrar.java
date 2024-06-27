@@ -2,9 +2,6 @@ package smartin.miapi.registries;
 
 import dev.architectury.registry.registries.Registrar;
 import dev.architectury.registry.registries.RegistrySupplier;
-import net.minecraft.registry.Registry;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -15,6 +12,9 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 
 public class MiapiRegistrar<T> extends MiapiRegistry<T> implements Registrar<T> {
     public final Registrar<T> registrar;
@@ -27,23 +27,23 @@ public class MiapiRegistrar<T> extends MiapiRegistry<T> implements Registrar<T> 
     }
 
     @Override
-    public RegistrySupplier<T> delegate(Identifier id) {
+    public RegistrySupplier<T> delegate(ResourceLocation id) {
         return registrar.delegate(id);
     }
 
     @Override
-    public <E extends T> RegistrySupplier<E> register(Identifier id, Supplier<E> supplier) {
+    public <E extends T> RegistrySupplier<E> register(ResourceLocation id, Supplier<E> supplier) {
         RegistrySupplier<E> sup = registrar.register(id, supplier);
         sup.listen(e -> this.register(id.toString(), e));
         return sup;
     }
 
-    public <E extends T> void registerWithoutRegistrar(Identifier id, E object) {
+    public <E extends T> void registerWithoutRegistrar(ResourceLocation id, E object) {
         register(id.toString(), object);
     }
 
     @Override
-    public @Nullable Identifier getId(T obj) {
+    public @Nullable ResourceLocation getId(T obj) {
         return registrar.getId(obj);
     }
 
@@ -53,12 +53,12 @@ public class MiapiRegistrar<T> extends MiapiRegistry<T> implements Registrar<T> 
     }
 
     @Override
-    public Optional<RegistryKey<T>> getKey(T obj) {
+    public Optional<ResourceKey<T>> getKey(T obj) {
         return Optional.empty();
     }
 
     @Override
-    public @Nullable T get(Identifier id) {
+    public @Nullable T get(ResourceLocation id) {
         return this.get(id.toString());
     }
 
@@ -68,7 +68,7 @@ public class MiapiRegistrar<T> extends MiapiRegistry<T> implements Registrar<T> 
     }
 
     @Override
-    public boolean contains(Identifier id) {
+    public boolean contains(ResourceLocation id) {
         return this.entries.containsKey(id.toString());
     }
     public boolean contains(String id) {
@@ -81,22 +81,22 @@ public class MiapiRegistrar<T> extends MiapiRegistry<T> implements Registrar<T> 
     }
 
     @Override
-    public Set<Identifier> getIds() {
-        return this.entries.keySet().stream().map(Identifier::new).collect(Collectors.toSet());
+    public Set<ResourceLocation> getIds() {
+        return this.entries.keySet().stream().map(ResourceLocation::new).collect(Collectors.toSet());
     }
 
     @Override
-    public Set<Map.Entry<RegistryKey<T>, T>> entrySet() {
+    public Set<Map.Entry<ResourceKey<T>, T>> entrySet() {
         return registrar.entrySet();
     }
 
     @Override
-    public RegistryKey<? extends Registry<T>> key() {
+    public ResourceKey<? extends Registry<T>> key() {
         return registrar.key();
     }
 
     @Override
-    public void listen(Identifier id, Consumer<T> callback) {
+    public void listen(ResourceLocation id, Consumer<T> callback) {
         registrar.listen(id, callback);
     }
 

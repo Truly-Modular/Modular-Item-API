@@ -2,16 +2,16 @@ package smartin.miapi.modules.properties;
 
 import dev.architectury.event.EventResult;
 import dev.architectury.event.events.common.EntityEvent;
+import net.minecraft.ChatFormatting;
+import net.minecraft.Util;
 import net.minecraft.client.item.TooltipContext;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.text.Style;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.Util;
-import net.minecraft.world.World;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.craft.CraftAction;
@@ -45,14 +45,14 @@ public class NemesisProperty extends DoubleProperty implements CraftingProperty 
         property = this;
         EntityEvent.LIVING_DEATH.register((livingEntity, damageSource) -> {
             ItemStack weapon = MiapiEvents.LivingHurtEvent.getCausingItemStack(damageSource);
-            if (weapon.getItem() instanceof ModularItem && !livingEntity.getWorld().isClient()) {
+            if (weapon.getItem() instanceof ModularItem && !livingEntity.level().isClientSide()) {
                 Double nemesisScale = getValue(weapon);
-                NbtCompound compound = weapon.getOrCreateNbt();
+                CompoundTag compound = weapon.getOrCreateNbt();
                 if (nemesisScale != null && nemesisScale > 0) {
                     String entityType = compound.getString("miapi_nemesis_target");
                     int value = compound.getInt("miapi_nemesis");
                     EntityType attackedType = livingEntity.getType();
-                    Optional<EntityType<?>> entityType1 = EntityType.get(entityType);
+                    Optional<EntityType<?>> entityType1 = EntityType.byString(entityType);
                     if (entityType1.isPresent()) {
                         EntityType targetType = entityType1.get();
                         if (attackedType.equals(targetType)) {
@@ -68,7 +68,7 @@ public class NemesisProperty extends DoubleProperty implements CraftingProperty 
                             }
                         }
                     } else {
-                        compound.putString("miapi_nemesis_target", EntityType.getId(attackedType).toString());
+                        compound.putString("miapi_nemesis_target", EntityType.getKey(attackedType).toString());
                         compound.putInt("miapi_nemesis", 1);
                     }
                 }
@@ -80,14 +80,14 @@ public class NemesisProperty extends DoubleProperty implements CraftingProperty 
             ItemStack weapon = listener.getCausingItemStack();
             if (weapon.getItem() instanceof ModularItem) {
                 Double nemesisScale = getValue(weapon);
-                NbtCompound compound = weapon.getOrCreateNbt();
+                CompoundTag compound = weapon.getOrCreateNbt();
                 if (nemesisScale != null && nemesisScale > 0) {
                     String entityType = compound.getString("miapi_nemesis_target");
                     int value = compound.getInt("miapi_nemesis");
 
                     EntityType attackedType = listener.livingEntity.getType();
 
-                    Optional<EntityType<?>> entityType1 = EntityType.get(entityType);
+                    Optional<EntityType<?>> entityType1 = EntityType.byString(entityType);
 
                     if (entityType1.isPresent()) {
                         EntityType targetType = entityType1.get();
@@ -108,26 +108,26 @@ public class NemesisProperty extends DoubleProperty implements CraftingProperty 
     }
 
     public void setupLore() {
-        LoreProperty.loreSuppliers.add((ItemStack weapon, @Nullable World world, List<Text> tooltip, TooltipContext context) -> {
+        LoreProperty.loreSuppliers.add((ItemStack weapon, @Nullable Level world, List<Component> tooltip, TooltipContext context) -> {
             Double nemesisScale = getValue(weapon);
-            NbtCompound compound = weapon.getOrCreateNbt();
+            CompoundTag compound = weapon.getOrCreateNbt();
             if (nemesisScale != null && nemesisScale > 0) {
                 String entityType = compound.getString("miapi_nemesis_target");
                 int value = compound.getInt("miapi_nemesis");
                 double factor = scale(value, nemesisScale) * 100 - 1;
-                Optional<EntityType<?>> entityType1 = EntityType.get(entityType);
-                Text entity = Text.translatable("miapi.lore.nemesis.no_entity");
+                Optional<EntityType<?>> entityType1 = EntityType.byString(entityType);
+                Component entity = Component.translatable("miapi.lore.nemesis.no_entity");
                 if (entityType1.isPresent()) {
-                    entity = entityType1.get().getName();
+                    entity = entityType1.get().getDescription();
                 }
-                Text blueNumber = Text.literal(modifierFormat.format(factor) + "%").fillStyle(Style.EMPTY.withColor(Formatting.BLUE));
-                Text redNumber = Text.literal(modifierFormat.format(factor/2) + "%").fillStyle(Style.EMPTY.withColor(Formatting.RED));
-                Text whiteNumber = Text.literal(String.valueOf(value)).fillStyle(Style.EMPTY.withColor(Formatting.WHITE));
-                entity = Text.literal(entity.getString()).fillStyle(Style.EMPTY.withColor(Formatting.GRAY));
-                tooltip.add(Text.translatable("miapi.lore.nemesis.0", whiteNumber, entity));
+                Component blueNumber = Component.literal(modifierFormat.format(factor) + "%").withStyle(Style.EMPTY.withColor(ChatFormatting.BLUE));
+                Component redNumber = Component.literal(modifierFormat.format(factor/2) + "%").withStyle(Style.EMPTY.withColor(ChatFormatting.RED));
+                Component whiteNumber = Component.literal(String.valueOf(value)).withStyle(Style.EMPTY.withColor(ChatFormatting.WHITE));
+                entity = Component.literal(entity.getString()).withStyle(Style.EMPTY.withColor(ChatFormatting.GRAY));
+                tooltip.add(Component.translatable("miapi.lore.nemesis.0", whiteNumber, entity));
                 if (factor != 0) {
-                    tooltip.add(Text.translatable("miapi.lore.nemesis.1", blueNumber, Text.literal(entity.getString()).fillStyle(Style.EMPTY.withColor(Formatting.BLUE))));
-                    tooltip.add(Text.translatable("miapi.lore.nemesis.2", redNumber, Text.literal(entity.getString()).fillStyle(Style.EMPTY.withColor(Formatting.RED))));
+                    tooltip.add(Component.translatable("miapi.lore.nemesis.1", blueNumber, Component.literal(entity.getString()).withStyle(Style.EMPTY.withColor(ChatFormatting.BLUE))));
+                    tooltip.add(Component.translatable("miapi.lore.nemesis.2", redNumber, Component.literal(entity.getString()).withStyle(Style.EMPTY.withColor(ChatFormatting.RED))));
                 }
             }
         });
@@ -152,7 +152,7 @@ public class NemesisProperty extends DoubleProperty implements CraftingProperty 
     }
 
     @Override
-    public ItemStack preview(ItemStack old, ItemStack crafting, PlayerEntity player, ModularWorkBenchEntity bench, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<String, String> data) {
+    public ItemStack preview(ItemStack old, ItemStack crafting, Player player, ModularWorkBenchEntity bench, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<String, String> data) {
         crafting.removeSubNbt("miapi_nemesis");
         return crafting;
     }

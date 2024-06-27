@@ -3,10 +3,10 @@ package smartin.miapi.modules.material;
 import com.google.gson.JsonElement;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.architectury.event.EventResult;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.StringNbtReader;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.TagParser;
+import net.minecraft.world.item.ItemStack;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
@@ -39,15 +39,15 @@ public class MaterialInscribeDataProperty implements ModuleProperty {
     }
 
     public static void inscribeModuleInstance(ModuleInstance moduleInstance, ItemStack itemStack, String key) {
-        NbtElement nbtElement = itemStack.writeNbt(new NbtCompound());
-        moduleInstance.moduleData.put(key, nbtElement.asString());
+        Tag nbtElement = itemStack.writeNbt(new CompoundTag());
+        moduleInstance.moduleData.put(key, nbtElement.getAsString());
     }
 
     public static ItemStack readStackFromModuleInstance(ModuleInstance moduleInstance, String key) {
         String itemStackString = moduleInstance.moduleData.get(key);
         if (itemStackString != null) {
             try {
-                return ItemStack.fromNbt(StringNbtReader.parse(itemStackString));
+                return ItemStack.parse(TagParser.parseTag(itemStackString));
 
             } catch (CommandSyntaxException ignored) {
             }

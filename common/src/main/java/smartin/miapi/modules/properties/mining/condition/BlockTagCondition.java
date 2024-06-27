@@ -2,19 +2,19 @@ package smartin.miapi.modules.properties.mining.condition;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import net.minecraft.block.Block;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.tag.TagKey;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.world.World;
 import smartin.miapi.modules.ModuleInstance;
 
 import java.util.ArrayList;
 import java.util.List;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 
 public class BlockTagCondition implements MiningCondition {
     public List<TagKey<Block>> blockTags;
@@ -29,20 +29,20 @@ public class BlockTagCondition implements MiningCondition {
         List<TagKey<Block>> tags = new ArrayList<>();
         if (element != null && element.isJsonArray()) {
             element.getAsJsonArray().forEach(entry -> {
-                tags.add(TagKey.of(RegistryKeys.BLOCK, new Identifier(entry.getAsString())));
+                tags.add(TagKey.create(Registries.BLOCK, new ResourceLocation(entry.getAsString())));
             });
         }
         return new BlockTagCondition(tags);
     }
 
     @Override
-    public List<BlockPos> trimList(World level, BlockPos original, List<BlockPos> positions) {
+    public List<BlockPos> trimList(Level level, BlockPos original, List<BlockPos> positions) {
         return positions.stream().filter(pos -> isInAny(level, pos)).toList();
     }
 
-    public boolean isInAny(World world, BlockPos pos) {
+    public boolean isInAny(Level world, BlockPos pos) {
         for (TagKey<Block> tag : blockTags) {
-            if (world.getBlockState(pos).isIn(tag)) {
+            if (world.getBlockState(pos).is(tag)) {
                 return true;
             }
         }
@@ -50,7 +50,7 @@ public class BlockTagCondition implements MiningCondition {
     }
 
     @Override
-    public boolean canMine(PlayerEntity player, World level, ItemStack miningStack, BlockPos pos, Direction face) {
+    public boolean canMine(Player player, Level level, ItemStack miningStack, BlockPos pos, Direction face) {
         return isInAny(level, pos);
     }
 }

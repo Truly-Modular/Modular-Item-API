@@ -1,10 +1,6 @@
 package smartin.miapi.modules.edit_options.skins.gui;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.Drawable;
-import net.minecraft.text.Text;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.ScrollingTextWidget;
@@ -14,6 +10,10 @@ import smartin.miapi.modules.edit_options.skins.Skin;
 
 import java.util.ArrayList;
 import java.util.List;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Renderable;
+import net.minecraft.network.chat.Component;
 
 class SkinButton extends InteractAbleWidget implements SkinGui.SortAble {
     private final SkinGui skinGui;
@@ -24,26 +24,26 @@ class SkinButton extends InteractAbleWidget implements SkinGui.SortAble {
     static final int SIZE_Y = 16;
     public boolean isEnabled = true;
     public boolean isAllowed = true;
-    public List<Text> reasons = new ArrayList<>();
+    public List<Component> reasons = new ArrayList<>();
     public int timeHover = 0;
 
 
     public SkinButton(SkinGui skinGui, int x, int y, int width, String skinPath, Skin skin) {
-        super(x, y, width, SIZE_Y, Text.empty());
+        super(x, y, width, SIZE_Y, Component.empty());
         this.skinGui = skinGui;
         this.skinPath = skinPath;
         this.skin = skin;
         if (skin.condition != null) {
-            isAllowed = skin.condition.isAllowed(new ConditionManager.ModuleConditionContext(skinGui.instance, null, MinecraftClient.getInstance().player, skinGui.instance.getProperties(), reasons));
+            isAllowed = skin.condition.isAllowed(new ConditionManager.ModuleConditionContext(skinGui.instance, null, Minecraft.getInstance().player, skinGui.instance.getProperties(), reasons));
         }
         String[] parts = skinPath.split("/");
-        Text skinName = StatResolver.translateAndResolve(Miapi.MOD_ID + ".skin.name." + parts[parts.length - 1], skinGui.instance);
+        Component skinName = StatResolver.translateAndResolve(Miapi.MOD_ID + ".skin.name." + parts[parts.length - 1], skinGui.instance);
         sortAble = skinName.getString();
         textWidget = new ScrollingTextWidget(x + 3, y + 2, width - 6, skinName, skin.textureOptions.color());
     }
 
     @Override
-    public void render(DrawContext drawContext, int mouseX, int mouseY, float delta) {
+    public void render(GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
@@ -62,7 +62,7 @@ class SkinButton extends InteractAbleWidget implements SkinGui.SortAble {
         textWidget.setY(this.getY() + 4);
         textWidget.render(drawContext, mouseX, mouseY, delta);
         children().forEach(element -> {
-            if (element instanceof Drawable drawable) {
+            if (element instanceof Renderable drawable) {
                 drawable.render(drawContext, mouseX, mouseY, delta);
             }
         });
@@ -72,14 +72,14 @@ class SkinButton extends InteractAbleWidget implements SkinGui.SortAble {
     }
 
     @Override
-    public void renderHover(DrawContext drawContext, int mouseX, int mouseY, float delta) {
+    public void renderHover(GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
         if (!isAllowed) {
             if (isMouseOver(mouseX, mouseY)) {
-                drawContext.drawTooltip(MinecraftClient.getInstance().textRenderer, reasons, mouseX, mouseY);
+                drawContext.renderComponentTooltip(Minecraft.getInstance().font, reasons, mouseX, mouseY);
             }
         } else {
             if (isMouseOver(mouseX, mouseY) && skin.hoverDescription != null) {
-                drawContext.drawTooltip(MinecraftClient.getInstance().textRenderer, skin.hoverDescription, mouseX, mouseY);
+                drawContext.renderTooltip(Minecraft.getInstance().font, skin.hoverDescription, mouseX, mouseY);
             }
         }
     }

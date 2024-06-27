@@ -2,17 +2,22 @@ package smartin.miapi.client.model.item;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.block.BlockState;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.render.model.*;
-import net.minecraft.client.render.model.json.ModelOverrideList;
-import net.minecraft.client.render.model.json.ModelTransformation;
-import net.minecraft.client.texture.Sprite;
-import net.minecraft.client.texture.SpriteAtlasTexture;
-import net.minecraft.client.util.SpriteIdentifier;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.Direction;
+import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.renderer.block.model.ItemOverrides;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
+import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.resources.model.Material;
+import net.minecraft.client.resources.model.ModelBaker;
+import net.minecraft.client.resources.model.ModelState;
+import net.minecraft.client.resources.model.UnbakedModel;
+import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.client.model.DynamicBakery;
 import smartin.miapi.modules.properties.render.ModelProperty;
@@ -27,7 +32,7 @@ import static smartin.miapi.client.renderer.SpriteLoader.miapiModels;
 public class ItemBakedModelReplacement implements UnbakedModel, BakedModel {
     public static LivingEntity currentEntity = null;
 
-    public static boolean isModularItem(Identifier identifier) {
+    public static boolean isModularItem(ResourceLocation identifier) {
         if (identifier != null && identifier.toString() != null) {
             return RegistryInventory.modularItems.get(identifier.toString().replace("item/", "")) != null;
         }
@@ -37,12 +42,12 @@ public class ItemBakedModelReplacement implements UnbakedModel, BakedModel {
     private ItemBakedModelOverrides overrides;
 
     @Override
-    public ModelOverrideList getOverrides() {
+    public ItemOverrides getOverrides() {
         return overrides;
     }
 
     @Override
-    public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction face, net.minecraft.util.math.random.Random random) {
+    public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction face, net.minecraft.util.RandomSource random) {
         return new ArrayList<>();
     }
 
@@ -52,45 +57,45 @@ public class ItemBakedModelReplacement implements UnbakedModel, BakedModel {
     }
 
     @Override
-    public boolean hasDepth() {
+    public boolean isGui3d() {
         return false;
     }
 
     @Override
-    public boolean isSideLit() {
+    public boolean usesBlockLight() {
         return false;
     }
 
     @Override
-    public boolean isBuiltin() {
+    public boolean isCustomRenderer() {
         return true;
     }
 
     @Override
-    public Sprite getParticleSprite() {
-        Identifier stoneTextureId = new Identifier("minecraft", "block/stone");
-        return MinecraftClient.getInstance().getSpriteAtlas(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE).apply(stoneTextureId);
+    public TextureAtlasSprite getParticleIcon() {
+        ResourceLocation stoneTextureId = new ResourceLocation("minecraft", "block/stone");
+        return Minecraft.getInstance().getTextureAtlas(TextureAtlas.LOCATION_BLOCKS).apply(stoneTextureId);
     }
 
     @Override
-    public ModelTransformation getTransformation() {
-        return ModelTransformation.NONE;
+    public ItemTransforms getTransforms() {
+        return ItemTransforms.NO_TRANSFORMS;
     }
 
 
     @Override
-    public Collection<Identifier> getModelDependencies() {
+    public Collection<ResourceLocation> getDependencies() {
         return miapiModels;
     }
 
     @Override
-    public void setParents(Function<Identifier, UnbakedModel> modelLoader) {
+    public void resolveParents(Function<ResourceLocation, UnbakedModel> modelLoader) {
         miapiModels.forEach(modelLoader::apply);
     }
 
     @Nullable
     @Override
-    public BakedModel bake(Baker baker, Function<SpriteIdentifier, Sprite> textureGetter, ModelBakeSettings rotationContainer, Identifier modelId) {
+    public BakedModel bake(ModelBaker baker, Function<Material, TextureAtlasSprite> textureGetter, ModelState rotationContainer, ResourceLocation modelId) {
         ModelProperty.textureGetter = textureGetter;
         DynamicBakery.dynamicBaker = baker;
         overrides = new ItemBakedModelOverrides();

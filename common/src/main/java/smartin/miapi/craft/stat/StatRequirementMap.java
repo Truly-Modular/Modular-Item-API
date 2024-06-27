@@ -5,14 +5,14 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.MapLike;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.util.dynamic.Codecs;
 import smartin.miapi.Miapi;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.util.HashMap;
 import java.util.Map;
+import net.minecraft.nbt.Tag;
+import net.minecraft.util.ExtraCodecs;
 
 public class StatRequirementMap {
     protected final Map<CraftingStat<?>, Object> raw = new HashMap<>();
@@ -69,11 +69,11 @@ public class StatRequirementMap {
                 if (stat != null) {
                     if (element instanceof JsonElement json) {
                         stats.set(stat, stat.createFromJson(json, modules));
-                    } else if (element instanceof NbtElement nbt) {
+                    } else if (element instanceof Tag nbt) {
                         stats.set(stat, stat.createFromNbt(nbt));
                     } else {
                         stats.set(stat, stat.createFromJson(
-                                Codecs.JSON_ELEMENT.parse(ops, element).getOrThrow(false, s ->
+                                ExtraCodecs.JSON.parse(ops, element).getOrThrow(false, s ->
                                         Miapi.LOGGER.error("Failed to turn instance into a JsonElement while decoding a StatRequirementMap! -> {}", s)),
                                 modules
                         ));
@@ -89,7 +89,7 @@ public class StatRequirementMap {
             Map<T, T> map = new HashMap<>();
 
             input.raw.forEach((stat, inst) -> {
-                T obj = Codecs.JSON_ELEMENT.encodeStart(ops, ((CraftingStat)stat).saveToJson(inst))
+                T obj = ExtraCodecs.JSON.encodeStart(ops, ((CraftingStat)stat).saveToJson(inst))
                         .getOrThrow(false, s -> Miapi.LOGGER.error("Failed to turn instance into a JsonElement while encoding a StatRequirementMap! -> {}", s));
                 map.put(ops.createString(RegistryInventory.craftingStats.findKey(stat)), obj);
             });

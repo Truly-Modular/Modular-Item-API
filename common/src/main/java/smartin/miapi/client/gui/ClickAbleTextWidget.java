@@ -1,17 +1,17 @@
 package smartin.miapi.client.gui;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.screen.ingame.HandledScreen;
-import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.text.Text;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.network.chat.Component;
 
 /**
- * This Widget is an Extention of the {@link TextFieldWidget}
+ * This Widget is an Extention of the {@link EditBox}
  * It auto-disables the e-close mechanic and is selectable by clicking
  */
-public class ClickAbleTextWidget extends TextFieldWidget {
-    public ClickAbleTextWidget(TextRenderer textRenderer, int x, int y, int width, int height, Text text) {
+public class ClickAbleTextWidget extends EditBox {
+    public ClickAbleTextWidget(Font textRenderer, int x, int y, int width, int height, Component text) {
         super(textRenderer, x, y, width, height, text);
     }
 
@@ -24,12 +24,12 @@ public class ClickAbleTextWidget extends TextFieldWidget {
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (mouseX >= this.getX() && mouseX < (this.getX() + this.width) && mouseY >= this.getY() && mouseY < (this.getY() + this.height)) {
             setFocused(true);
-            if (MinecraftClient.getInstance().currentScreen instanceof HandledScreen<?> screen) {
+            if (Minecraft.getInstance().screen instanceof AbstractContainerScreen<?> screen) {
                 screen.setFocused(this);
             }
         } else {
             setFocused(false);
-            if (MinecraftClient.getInstance().currentScreen instanceof HandledScreen<?> screen) {
+            if (Minecraft.getInstance().screen instanceof AbstractContainerScreen<?> screen) {
                 screen.setFocused(null);
             }
         }
@@ -38,7 +38,7 @@ public class ClickAbleTextWidget extends TextFieldWidget {
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (isActive() && isFocused()) {
+        if (canConsumeInput() && isFocused()) {
             super.keyPressed(keyCode, scanCode, modifiers);
             return true;
         }

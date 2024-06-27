@@ -1,16 +1,15 @@
 package smartin.miapi.client.model;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.model.json.ModelTransformationMode;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.FireworkRocketItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.RotationAxis;
 import org.joml.Matrix4f;
-
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Axis;
 import java.util.function.Supplier;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.FireworkRocketItem;
+import net.minecraft.world.item.ItemDisplayContext;
+import net.minecraft.world.item.ItemStack;
 
 public class ItemMiapiModel implements MiapiModel {
 
@@ -23,24 +22,24 @@ public class ItemMiapiModel implements MiapiModel {
     }
 
     @Override
-    public void render(MatrixStack matrices, ItemStack stack, ModelTransformationMode transformationMode, float tickDelta, VertexConsumerProvider vertexConsumers, LivingEntity entity, int light, int overlay) {
-        MinecraftClient.getInstance().world.getProfiler().push("ItemOnTopRendering");
-        matrices.push();
-        matrices.multiplyPositionMatrix(matrix4f);
+    public void render(PoseStack matrices, ItemStack stack, ItemDisplayContext transformationMode, float tickDelta, MultiBufferSource vertexConsumers, LivingEntity entity, int light, int overlay) {
+        Minecraft.getInstance().level.getProfiler().push("ItemOnTopRendering");
+        matrices.pushPose();
+        matrices.mulPose(matrix4f);
         ItemStack modelStack = stackSupplier.get();
         if(modelStack.getItem() instanceof FireworkRocketItem){
-            matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(45));
+            matrices.mulPose(Axis.ZP.rotationDegrees(45));
         }
-        MinecraftClient.getInstance().getItemRenderer().renderItem(
+        Minecraft.getInstance().getItemRenderer().renderStatic(
                 modelStack,
-                ModelTransformationMode.FIXED,
+                ItemDisplayContext.FIXED,
                 light,
                 overlay,
                 matrices,
                 vertexConsumers,
-                MinecraftClient.getInstance().world,
+                Minecraft.getInstance().level,
                 0);
-        matrices.pop();
-        MinecraftClient.getInstance().world.getProfiler().pop();
+        matrices.popPose();
+        Minecraft.getInstance().level.getProfiler().pop();
     }
 }

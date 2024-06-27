@@ -1,7 +1,5 @@
 package smartin.miapi.client.gui.crafting.statdisplay.material;
 
-import net.minecraft.item.ItemStack;
-import net.minecraft.text.Text;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.ScrollList;
 import smartin.miapi.client.gui.crafting.statdisplay.StatListWidget;
@@ -14,17 +12,19 @@ import smartin.miapi.registries.RegistryInventory;
 
 import java.util.ArrayList;
 import java.util.List;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.ItemStack;
 
 public class MaterialStatWidget extends InteractAbleWidget {
 
 
-    public MaterialStatWidget(Material material, int x, int y, int width, int height, Text message) {
+    public MaterialStatWidget(Material material, int x, int y, int width, int height, Component message) {
         super(x, y, width, height, message);
         List<String> strings = material.getAllDisplayPropertyKeys();
         List<InteractAbleWidget> widgets = new ArrayList<>();
         for (String propertyKey : strings) {
             ModuleInstance moduleInstance = new ModuleInstance(ItemModule.internal);
-            ItemStack compareMaterial = RegistryInventory.modularItem.getDefaultStack();
+            ItemStack compareMaterial = RegistryInventory.modularItem.getDefaultInstance();
             /*
             MaterialProperty.setMaterial(moduleInstance, material.getKey());
             JsonArray jsonElements = new JsonArray();

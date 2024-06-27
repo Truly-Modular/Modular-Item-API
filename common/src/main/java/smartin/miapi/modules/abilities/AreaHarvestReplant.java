@@ -1,36 +1,36 @@
 package smartin.miapi.modules.abilities;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.CropBlock;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemUsageContext;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
-import net.minecraft.util.UseAction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
 import smartin.miapi.modules.abilities.util.ItemUseDefaultCooldownAbility;
 import smartin.miapi.modules.abilities.util.ItemUseMinHoldAbility;
 import smartin.miapi.modules.properties.AbilityMangerProperty;
 
 import java.util.List;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.UseAnim;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.CropBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 
 public class AreaHarvestReplant implements ItemUseDefaultCooldownAbility, ItemUseMinHoldAbility {
     public static String KEY = "area_harvest_ability";
 
     @Override
-    public boolean allowedOnItem(ItemStack itemStack, World world, PlayerEntity player, Hand hand, ItemAbilityManager.AbilityHitContext abilityHitContext) {
+    public boolean allowedOnItem(ItemStack itemStack, Level world, Player player, InteractionHand hand, ItemAbilityManager.AbilityHitContext abilityHitContext) {
         if (
                 abilityHitContext.hitEntity() == null &&
                 abilityHitContext.hitResult() != null) {
-            BlockState state = abilityHitContext.hitResult().getWorld().getBlockState(abilityHitContext.hitResult().getBlockPos());
+            BlockState state = abilityHitContext.hitResult().getLevel().getBlockState(abilityHitContext.hitResult().getClickedPos());
             if (isGrown(state)) {
                 return true;
             }
@@ -40,15 +40,15 @@ public class AreaHarvestReplant implements ItemUseDefaultCooldownAbility, ItemUs
 
     public boolean isGrown(BlockState state) {
         if (state.getBlock() instanceof CropBlock cropBlock) {
-            return cropBlock.isMature(state);
+            return cropBlock.isMaxAge(state);
 
         }
         return false;
     }
 
     @Override
-    public UseAction getUseAction(ItemStack itemStack) {
-        return UseAction.BRUSH;
+    public UseAnim getUseAction(ItemStack itemStack) {
+        return UseAnim.BRUSH;
     }
 
     @Override
@@ -57,41 +57,41 @@ public class AreaHarvestReplant implements ItemUseDefaultCooldownAbility, ItemUs
     }
 
     @Override
-    public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+    public InteractionResultHolder<ItemStack> use(Level world, Player user, InteractionHand hand) {
         return null;
     }
 
-    public ActionResult useOnBlock(ItemUsageContext context) {
-        ItemStack itemStack = context.getStack();
-        if (!context.getWorld().isClient() && context.getPlayer() instanceof ServerPlayerEntity serverPlayer) {
+    public InteractionResult useOnBlock(UseOnContext context) {
+        ItemStack itemStack = context.getItemInHand();
+        if (!context.getLevel().isClientSide() && context.getPlayer() instanceof ServerPlayer serverPlayer) {
             int blocksHarvested = 0;
             AbilityMangerProperty.AbilityContext abilityContext = getAbilityContext(itemStack);
             int range = abilityContext.getInt("block_range", 1);
-            BlockState state = context.getWorld().getBlockState(context.getBlockPos());
-            BlockPos origin = context.getBlockPos();
+            BlockState state = context.getLevel().getBlockState(context.getClickedPos());
+            BlockPos origin = context.getClickedPos();
 
             if (isGrown(state)) {
                 for (int x = -range; x <= range; x++) {
                     for (int y = -range; y <= range; y++) {
-                        BlockPos currentPos = origin.add(x, 0, y);
-                        BlockState blockState = context.getWorld().getBlockState(currentPos);
-                        if (isGrown(blockState) && blockState.getBlock() instanceof CropBlock cropBlock && context.getWorld() instanceof ServerWorld serverWorld) {
+                        BlockPos currentPos = origin.offset(x, 0, y);
+                        BlockState blockState = context.getLevel().getBlockState(currentPos);
+                        if (isGrown(blockState) && blockState.getBlock() instanceof CropBlock cropBlock && context.getLevel() instanceof ServerLevel serverWorld) {
                             //cropBlock.
 
-                            BlockEntity blockEntity = blockState.hasBlockEntity() ? context.getWorld().getBlockEntity(currentPos) : null;
-                            List<ItemStack> stacks = Block.getDroppedStacks(blockState, serverWorld, currentPos, blockEntity, serverPlayer, ItemStack.EMPTY);
-                            serverWorld.setBlockState(currentPos, cropBlock.withAge(0));
-                            stacks.forEach(serverPlayer::dropStack);
+                            BlockEntity blockEntity = blockState.hasBlockEntity() ? context.getLevel().getBlockEntity(currentPos) : null;
+                            List<ItemStack> stacks = Block.getDrops(blockState, serverWorld, currentPos, blockEntity, serverPlayer, ItemStack.EMPTY);
+                            serverWorld.setBlockAndUpdate(currentPos, cropBlock.getStateForAge(0));
+                            stacks.forEach(serverPlayer::spawnAtLocation);
                             blocksHarvested++;
                         }
                     }
                 }
             }
 
-            itemStack.damage(blocksHarvested, context.getWorld().getRandom(), serverPlayer);
+            itemStack.hurtAndBreak(blocksHarvested, context.getLevel().getRandom(), serverPlayer);
 
-            return ActionResult.success(context.getWorld().isClient());
+            return InteractionResult.sidedSuccess(context.getLevel().isClientSide());
         }
-        return ActionResult.FAIL;
+        return InteractionResult.FAIL;
     }
 }

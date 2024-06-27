@@ -4,12 +4,11 @@ import com.google.gson.JsonElement;
 import com.google.gson.reflect.TypeToken;
 import dev.architectury.utils.Env;
 import net.fabricmc.api.EnvType;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.item.ItemStack;
-import net.minecraft.registry.Registries;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import smartin.miapi.Environment;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.InteractAbleWidget;
@@ -64,12 +63,12 @@ public class FakeEnchantmentProperty implements ModuleProperty {
                     enchantments.put(enchantment, integer);
                 });
                 enchantments.keySet().forEach(enchantment -> {
-                    JsonStatDisplay display = new JsonStatDisplay((stack) -> Text.translatable(enchantment.getTranslationKey()),
-                            (stack) -> Text.translatable(enchantment.getTranslationKey()),
+                    JsonStatDisplay display = new JsonStatDisplay((stack) -> Component.translatable(enchantment.getTranslationKey()),
+                            (stack) -> Component.translatable(enchantment.getTranslationKey()),
                             new SingleStatDisplayDouble.StatReaderHelper() {
                                 @Override
                                 public double getValue(ItemStack itemStack) {
-                                    return EnchantmentHelper.getLevel(enchantment, itemStack);
+                                    return EnchantmentHelper.getItemEnchantmentLevel(enchantment, itemStack);
                                 }
 
                                 @Override
@@ -97,8 +96,8 @@ public class FakeEnchantmentProperty implements ModuleProperty {
         Map<String, Integer> map = Miapi.gson.fromJson(list, type);
         if (map != null) {
             map.forEach((id, level) -> {
-                Enchantment enchantment = Registries.ENCHANTMENT.get(new Identifier(id));
-                if (enchantment != null && enchantment.isAcceptableItem(itemStack)) {
+                Enchantment enchantment = Registries.ENCHANTMENT.get(new ResourceLocation(id));
+                if (enchantment != null && enchantment.canEnchant(itemStack)) {
                     enchants.put(enchantment, level);
                 }
             });

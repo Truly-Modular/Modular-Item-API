@@ -3,25 +3,29 @@ package smartin.miapi.item.modular.items;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.item.TooltipContext;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.enchantment.Enchantments;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.item.*;
-import net.minecraft.item.tooltip.TooltipType;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.stat.Stats;
-import net.minecraft.text.Text;
-import net.minecraft.util.Hand;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.Rarity;
-import net.minecraft.util.TypedActionResult;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.World;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.stats.Stats;
+import net.minecraft.util.Mth;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.AbstractArrow;
+import net.minecraft.world.item.ArrowItem;
+import net.minecraft.world.item.BowItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.client.model.ModularModelPredicateProvider;
@@ -37,18 +41,18 @@ import java.util.UUID;
 import java.util.function.Predicate;
 
 public class ModularBow extends BowItem implements PlatformModularItemMethods, ModularItem {
-    public static Predicate<ItemStack> projectile = BOW_PROJECTILES;
+    public static Predicate<ItemStack> projectile = ARROW_ONLY;
     public static UUID bowMoveSpeedUUId = UUID.fromString("4de85d6c-7923-11ee-b962-0242ac120002");
 
-    public ModularBow(Settings settings) {
-        super(settings.maxCount(1).maxDamage(50));
+    public ModularBow(Properties settings) {
+        super(settings.stacksTo(1).durability(50));
         if (smartin.miapi.Environment.isClient()) {
             registerAnimations();
         }
     }
 
     public ModularBow() {
-        super(new Item.Settings().maxCount(1).maxDamage(50));
+        super(new Item.Properties().stacksTo(1).durability(50));
         if (smartin.miapi.Environment.isClient()) {
             registerAnimations();
         }
@@ -60,27 +64,27 @@ public class ModularBow extends BowItem implements PlatformModularItemMethods, M
     }
 
     @Override
-    public int getEnchantability() {
+    public int getEnchantmentValue() {
         return 1;
     }
 
     @Override
-    public int getItemBarStep(ItemStack stack) {
-        return Math.round(13.0F - (float) stack.getDamage() * 13.0F / ModularItem.getDurability(stack));
+    public int getBarWidth(ItemStack stack) {
+        return Math.round(13.0F - (float) stack.getDamageValue() * 13.0F / ModularItem.getDurability(stack));
     }
 
     @Override
-    public int getItemBarColor(ItemStack stack) {
-        float f = Math.max(0.0F, ((float) ModularItem.getDurability(stack) - (float) stack.getDamage()) / ModularItem.getDurability(stack));
-        return MathHelper.hsvToRgb(f / 3.0F, 1.0F, 1.0F);
+    public int getBarColor(ItemStack stack) {
+        float f = Math.max(0.0F, ((float) ModularItem.getDurability(stack) - (float) stack.getDamageValue()) / ModularItem.getDurability(stack));
+        return Mth.hsvToRgb(f / 3.0F, 1.0F, 1.0F);
     }
 
     @Override
-    public boolean canRepair(ItemStack stack, ItemStack ingredient) {
+    public boolean isValidRepairItem(ItemStack stack, ItemStack ingredient) {
         return RepairPriority.getRepairValue(stack, ingredient) > 0;
     }
 
-    public void usageTick(World world, LivingEntity user, ItemStack stack, int remainingUseTicks) {
+    public void onUseTick(Level world, LivingEntity user, ItemStack stack, int remainingUseTicks) {
         //float movementBonus = getPullProgress(getMaxUseTime(stack) - remainingUseTicks) * 2.0f;
         //Multimap
         //Multimap<EntityAttribute, EntityAttributeModifier> attributeModifiers = ArrayListMultimap.create();
@@ -89,15 +93,15 @@ public class ModularBow extends BowItem implements PlatformModularItemMethods, M
     }
 
     @Override
-    public void onStoppedUsing(ItemStack bowStack, World world, LivingEntity user, int remainingUseTicks) {
-        if (!(user instanceof PlayerEntity)) {
+    public void releaseUsing(ItemStack bowStack, Level world, LivingEntity user, int remainingUseTicks) {
+        if (!(user instanceof Player)) {
             return;
         }
-        PlayerEntity playerEntity = (PlayerEntity) user;
-        boolean consumeArrow = !playerEntity.getAbilities().creativeMode;
-        ItemStack projectileStack = playerEntity.getProjectileType(bowStack);
+        Player playerEntity = (Player) user;
+        boolean consumeArrow = !playerEntity.getAbilities().instabuild;
+        ItemStack projectileStack = playerEntity.getProjectile(bowStack);
         if (
-                EnchantmentHelper.getLevel(Enchantments.INFINITY, bowStack) > 0 &&
+                EnchantmentHelper.getItemEnchantmentLevel(Enchantments.INFINITY, bowStack) > 0 &&
                 (
                         projectileStack.isEmpty() ||
                         (projectileStack.getItem() instanceof ArrowItem &&
@@ -115,31 +119,31 @@ public class ModularBow extends BowItem implements PlatformModularItemMethods, M
         if (projectileStack.isEmpty()) {
             projectileStack = new ItemStack(Items.ARROW);
         }
-        float pullProgress = getPullProgress(bowStack.getItem().getMaxUseTime(bowStack) - remainingUseTicks, bowStack);
+        float pullProgress = getPullProgress(bowStack.getItem().getUseDuration(bowStack) - remainingUseTicks, bowStack);
         if (pullProgress < 0.1) {
             return;
         }
-        shoot(bowStack, projectileStack, world, user, pullProgress, consumeArrow, playerEntity.getPitch(), playerEntity.getYaw(), 0.0f);
+        shoot(bowStack, projectileStack, world, user, pullProgress, consumeArrow, playerEntity.getXRot(), playerEntity.getYRot(), 0.0f);
         if (consumeArrow) {
-            projectileStack.decrement(1);
+            projectileStack.shrink(1);
             if (projectileStack.isEmpty()) {
-                playerEntity.getInventory().removeOne(projectileStack);
+                playerEntity.getInventory().removeItem(projectileStack);
             }
         }
     }
 
-    public static void shoot(ItemStack bowStack, ItemStack projectileStack, World world, LivingEntity user, float pullProgress, boolean canPickup, float pitch, float yaw, float roll) {
-        if (!(user instanceof PlayerEntity)) {
+    public static void shoot(ItemStack bowStack, ItemStack projectileStack, Level world, LivingEntity user, float pullProgress, boolean canPickup, float pitch, float yaw, float roll) {
+        if (!(user instanceof Player)) {
             return;
         }
-        PlayerEntity playerEntity = (PlayerEntity) user;
-        if (!world.isClient && projectileStack.getItem() instanceof ArrowItem arrowItem) {
-            int punchLevel = EnchantmentHelper.getLevel(Enchantments.PUNCH, bowStack);
-            int powerLevel = EnchantmentHelper.getLevel(Enchantments.POWER, bowStack);
-            int piercingLevel = EnchantmentHelper.getLevel(Enchantments.PIERCING, bowStack);
+        Player playerEntity = (Player) user;
+        if (!world.isClientSide && projectileStack.getItem() instanceof ArrowItem arrowItem) {
+            int punchLevel = EnchantmentHelper.getItemEnchantmentLevel(Enchantments.PUNCH, bowStack);
+            int powerLevel = EnchantmentHelper.getItemEnchantmentLevel(Enchantments.POWER, bowStack);
+            int piercingLevel = EnchantmentHelper.getItemEnchantmentLevel(Enchantments.PIERCING, bowStack);
             ItemStack projectileStackConsumed = projectileStack.copy();
             projectileStackConsumed.setCount(1);
-            PersistentProjectileEntity itemProjectile = arrowItem.createArrow(world, projectileStack, playerEntity);
+            AbstractArrow itemProjectile = arrowItem.createArrow(world, projectileStack, playerEntity);
             if (itemProjectile instanceof ItemProjectileEntity modularProjectile) {
                 modularProjectile.setSpeedDamage(true);
             }
@@ -148,26 +152,26 @@ public class ModularBow extends BowItem implements PlatformModularItemMethods, M
             float divergence = (float) Math.pow(12.0, -AttributeProperty.getActualValue(bowStack, EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_ACCURACY));
             float speed = (float) Math.max(0.1, AttributeProperty.getActualValue(bowStack, EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_SPEED) + 3.0);
             float damage = (float) AttributeProperty.getActualValue(bowStack, EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_DAMAGE) / speed;
-            itemProjectile.setDamage(damage + itemProjectile.getDamage());
-            itemProjectile.setVelocity(playerEntity, pitch, yaw, roll, pullProgress * speed, divergence);
+            itemProjectile.setBaseDamage(damage + itemProjectile.getBaseDamage());
+            itemProjectile.shootFromRotation(playerEntity, pitch, yaw, roll, pullProgress * speed, divergence);
             if (pullProgress == 1.0f) {
-                itemProjectile.setCritical(true);
-                itemProjectile.isCritical();
+                itemProjectile.setCritArrow(true);
+                itemProjectile.isCritArrow();
             }
             if (powerLevel > 0) {
-                itemProjectile.setDamage(itemProjectile.getDamage() + powerLevel * 0.5 + 0.5);
+                itemProjectile.setBaseDamage(itemProjectile.getBaseDamage() + powerLevel * 0.5 + 0.5);
             }
             if (punchLevel > 0) {
                 itemProjectile.setPunch(punchLevel);
             }
-            if (EnchantmentHelper.getLevel(Enchantments.FLAME, bowStack) > 0) {
-                itemProjectile.setOnFireFor(100);
+            if (EnchantmentHelper.getItemEnchantmentLevel(Enchantments.FLAME, bowStack) > 0) {
+                itemProjectile.igniteForSeconds(100);
             }
-            bowStack.damage(1, playerEntity, p -> p.sendToolBreakStatus(playerEntity.getActiveHand()));
+            bowStack.hurtAndBreak(1, playerEntity, p -> p.sendToolBreakStatus(playerEntity.getActiveHand()));
             if (!canPickup) {
-                itemProjectile.pickupType = PersistentProjectileEntity.PickupPermission.CREATIVE_ONLY;
+                itemProjectile.pickup = AbstractArrow.Pickup.CREATIVE_ONLY;
             } else {
-                itemProjectile.pickupType = PersistentProjectileEntity.PickupPermission.ALLOWED;
+                itemProjectile.pickup = AbstractArrow.Pickup.ALLOWED;
             }
             MiapiProjectileEvents.ModularBowShotEvent event = new MiapiProjectileEvents.ModularBowShotEvent(itemProjectile, bowStack, playerEntity);
             if (MiapiProjectileEvents.MODULAR_BOW_SHOT.invoker().call(event).interruptsFurtherEvaluation()) {
@@ -175,7 +179,7 @@ public class ModularBow extends BowItem implements PlatformModularItemMethods, M
             }
             itemProjectile = event.projectile;
 
-            world.spawnEntity(itemProjectile);
+            world.addFreshEntity(itemProjectile);
 
             MiapiProjectileEvents.ModularBowShotEvent postEvent = new MiapiProjectileEvents.ModularBowShotEvent(itemProjectile, bowStack, playerEntity);
             postEvent.bowStack = bowStack;
@@ -185,28 +189,28 @@ public class ModularBow extends BowItem implements PlatformModularItemMethods, M
                 return;
             }
         }
-        world.playSound(null, playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), SoundEvents.ENTITY_ARROW_SHOOT, SoundCategory.PLAYERS, 1.0f, 1.0f / (world.getRandom().nextFloat() * 0.4f + 1.2f) + pullProgress * 0.5f);
-        playerEntity.incrementStat(Stats.USED.getOrCreateStat(bowStack.getItem()));
+        world.playSound(null, playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), SoundEvents.ARROW_SHOOT, SoundSource.PLAYERS, 1.0f, 1.0f / (world.getRandom().nextFloat() * 0.4f + 1.2f) + pullProgress * 0.5f);
+        playerEntity.awardStat(Stats.ITEM_USED.get(bowStack.getItem()));
     }
 
     @Override
-    public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+    public InteractionResultHolder<ItemStack> use(Level world, Player user, InteractionHand hand) {
         //BOW_PROJECTILE
         if (MiapiConfig.INSTANCE.server.enchants.betterInfinity) {
-            ItemStack itemStack = user.getStackInHand(hand);
-            ItemStack projectileStack = user.getProjectileType(itemStack);
+            ItemStack itemStack = user.getItemInHand(hand);
+            ItemStack projectileStack = user.getProjectile(itemStack);
             if (itemStack.hasNbt()) {
-                NbtCompound compound = itemStack.getOrCreateNbt();
+                CompoundTag compound = itemStack.getOrCreateNbt();
                 compound = compound.getCompound("BOW_PROJECTILE");
                 projectileStack.writeNbt(compound);
             }
             boolean bl = !projectileStack.isEmpty();
-            int infinityLevel = EnchantmentHelper.getLevel(Enchantments.INFINITY, itemStack);
-            if (user.getAbilities().creativeMode || bl || infinityLevel > 0) {
-                user.setCurrentHand(hand);
-                return TypedActionResult.consume(itemStack);
+            int infinityLevel = EnchantmentHelper.getItemEnchantmentLevel(Enchantments.INFINITY, itemStack);
+            if (user.getAbilities().instabuild || bl || infinityLevel > 0) {
+                user.startUsingItem(hand);
+                return InteractionResultHolder.consume(itemStack);
             }
-            return TypedActionResult.fail(itemStack);
+            return InteractionResultHolder.fail(itemStack);
         } else {
             return super.use(world, user, hand);
         }
@@ -225,30 +229,30 @@ public class ModularBow extends BowItem implements PlatformModularItemMethods, M
 
     @Environment(EnvType.CLIENT)
     public void registerAnimations() {
-        ModularModelPredicateProvider.registerModelOverride(this, new Identifier("pull"), (stack, world, entity, seed) -> {
+        ModularModelPredicateProvider.registerModelOverride(this, new ResourceLocation("pull"), (stack, world, entity, seed) -> {
             if (entity == null) {
                 return 0.0F;
             } else {
-                return entity.getActiveItem() != stack ? 0.0F : getPullProgress((stack.getMaxUseTime() - entity.getItemUseTimeLeft()), stack);
+                return entity.getUseItem() != stack ? 0.0F : getPullProgress((stack.getUseDuration() - entity.getUseItemRemainingTicks()), stack);
             }
         });
-        ModularModelPredicateProvider.registerModelOverride(this, new Identifier("pulling"), (stack, world, entity, seed) -> {
-            return entity != null && entity.isUsingItem() && entity.getActiveItem() == stack ? 1.0F : 0.0F;
+        ModularModelPredicateProvider.registerModelOverride(this, new ResourceLocation("pulling"), (stack, world, entity, seed) -> {
+            return entity != null && entity.isUsingItem() && entity.getUseItem() == stack ? 1.0F : 0.0F;
         });
     }
 
     @Override
-    public Predicate<ItemStack> getProjectiles() {
+    public Predicate<ItemStack> getAllSupportedProjectiles() {
         return projectile;
     }
 
     @Override
-    public Text getName(ItemStack stack) {
+    public Component getName(ItemStack stack) {
         return DisplayNameProperty.getDisplayText(stack);
     }
 
     @Override
-    public void appendTooltip(ItemStack itemStack, TooltipContext tooltipContext, List<Text> list, TooltipType tooltipType) {
+    public void appendHoverText(ItemStack itemStack, net.minecraft.world.item.Item.TooltipContext tooltipContext, List<Component> list, TooltipFlag tooltipType) {
         LoreProperty.appendLoreTop(itemStack, list, tooltipContext, tooltipType);
     }
 }

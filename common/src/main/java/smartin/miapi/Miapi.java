@@ -10,9 +10,9 @@ import com.redpxnda.nucleus.registry.NucleusNamespaces;
 import dev.architectury.event.events.common.CommandRegistrationEvent;
 import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.event.events.common.PlayerEvent;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.JsonHelper;
+import net.minecraft.util.GsonHelper;
 import org.apache.logging.log4j.util.TriConsumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -79,7 +79,7 @@ public class Miapi {
 
         registerReloadHandler(ReloadEvents.MAIN, "injectors", bl -> PropertySubstitution.injectorsCount = 0,
                 (isClient, path, data) -> {
-                    JsonElement element = JsonHelper.deserialize(data);
+                    JsonElement element = GsonHelper.parse(data);
                     if (element instanceof JsonObject object) {
                         PropertySubstitution.targetSelectionDispatcher.dispatcher()
                                 .triggerTargetFrom(object.get("target"), PropertySubstitution.getInjector(object));
@@ -96,7 +96,7 @@ public class Miapi {
             Miapi.LOGGER.info("Loaded " + RegistryInventory.modules.getFlatMap().size() + " Modules");
             ModularItemCache.discardCache();
         });
-        PropertyResolver.register(Identifier.of(Miapi.MOD_ID, "module"), (moduleInstance, oldMap) -> {
+        PropertyResolver.register(ResourceLocation.fromNamespaceAndPath(Miapi.MOD_ID, "module"), (moduleInstance, oldMap) -> {
             Map<ModuleProperty, JsonElement> map = new ConcurrentHashMap<>();
             moduleInstance.module.properties()
                     .forEach((key, jsonData) -> map.put(RegistryInventory.moduleProperties.get(key), jsonData));
@@ -154,16 +154,16 @@ public class Miapi {
         }));
     }
 
-    public static Identifier MiapiIdentifier(String string) {
+    public static ResourceLocation MiapiIdentifier(String string) {
         String[] parts = string.split(":");
         if (parts.length > 1) {
-            return Identifier.of(parts[0], parts[1]);
+            return ResourceLocation.fromNamespaceAndPath(parts[0], parts[1]);
         }
-        return Identifier.of(Miapi.MOD_ID, string);
+        return ResourceLocation.fromNamespaceAndPath(Miapi.MOD_ID, string);
     }
 
-    public static Identifier MiapiIdentifier(String namespace, String id) {
-        return Identifier.of(namespace, id);
+    public static ResourceLocation MiapiIdentifier(String namespace, String id) {
+        return ResourceLocation.fromNamespaceAndPath(namespace, id);
     }
 
     protected static void setupNetworking() {

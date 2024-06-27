@@ -3,17 +3,6 @@ package smartin.miapi.modules.abilities;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.redpxnda.nucleus.pose.server.ServerPoseFacet;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.EntityAttribute;
-import net.minecraft.entity.attribute.EntityAttributeModifier;
-import net.minecraft.entity.attribute.EntityAttributes;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Text;
-import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
-import net.minecraft.world.World;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.modules.abilities.util.EntityAttributeAbility;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
@@ -24,6 +13,17 @@ import smartin.miapi.modules.properties.LoreProperty;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 
 /**
  * This Ability is a lesser form of the Block of a Shield.
@@ -35,9 +35,9 @@ public class BlockAbility extends EntityAttributeAbility {
 
     public BlockAbility() {
         LoreProperty.bottomLoreSuppliers.add(itemStack -> {
-            List<Text> texts = new ArrayList<>();
+            List<Component> texts = new ArrayList<>();
             if (AbilityMangerProperty.isPrimaryAbility(this, itemStack)) {
-                Text raw = Text.translatable("miapi.ability.block.lore");
+                Component raw = Component.translatable("miapi.ability.block.lore");
                 texts.add(raw);
             }
             return texts;
@@ -45,12 +45,12 @@ public class BlockAbility extends EntityAttributeAbility {
     }
 
     @Override
-    protected Multimap<EntityAttribute, EntityAttributeModifier> getAttributes(ItemStack itemStack) {
-        Multimap<EntityAttribute, EntityAttributeModifier> multimap = ArrayListMultimap.create();
+    protected Multimap<Attribute, AttributeModifier> getAttributes(ItemStack itemStack) {
+        Multimap<Attribute, AttributeModifier> multimap = ArrayListMultimap.create();
         double value = BlockProperty.property.getValueSafe(itemStack);
         value = calculate(value);
-        multimap.put(EntityAttributes.GENERIC_MOVEMENT_SPEED, new EntityAttributeModifier(attributeUUID, "miapi-block", -(value / 2) / 100, EntityAttributeModifier.Operation.MULTIPLY_TOTAL));
-        multimap.put(AttributeRegistry.DAMAGE_RESISTANCE, new EntityAttributeModifier(attributeUUID, "miapi-block", value, EntityAttributeModifier.Operation.ADDITION));
+        multimap.put(Attributes.MOVEMENT_SPEED, new AttributeModifier(attributeUUID, "miapi-block", -(value / 2) / 100, EntityAttributeModifier.Operation.MULTIPLY_TOTAL));
+        multimap.put(AttributeRegistry.DAMAGE_RESISTANCE, new AttributeModifier(attributeUUID, "miapi-block", value, EntityAttributeModifier.Operation.ADDITION));
         return multimap;
     }
 
@@ -59,7 +59,7 @@ public class BlockAbility extends EntityAttributeAbility {
     }
 
     @Override
-    public boolean allowedOnItem(ItemStack itemStack, World world, PlayerEntity player, Hand hand, ItemAbilityManager.AbilityHitContext abilityHitContext) {
+    public boolean allowedOnItem(ItemStack itemStack, Level world, Player player, InteractionHand hand, ItemAbilityManager.AbilityHitContext abilityHitContext) {
         return true;
     }
 
@@ -69,31 +69,31 @@ public class BlockAbility extends EntityAttributeAbility {
     }
 
     @Override
-    public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+    public InteractionResultHolder<ItemStack> use(Level world, Player user, InteractionHand hand) {
         setAnimation(user, hand);
         return super.use(world, user, hand);
     }
 
     @Override
-    public ItemStack finishUsing(ItemStack stack, World world, LivingEntity user) {
+    public ItemStack finishUsing(ItemStack stack, Level world, LivingEntity user) {
         resetAnimation(user);
         return super.finishUsing(stack, world, user);
     }
 
     @Override
-    public void onStoppedUsingAfter(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
+    public void onStoppedUsingAfter(ItemStack stack, Level world, LivingEntity user, int remainingUseTicks) {
         resetAnimation(user);
         super.onStoppedUsingAfter(stack, world, user, remainingUseTicks);
     }
 
     @Override
-    public void onStoppedHolding(ItemStack stack, World world, LivingEntity user) {
+    public void onStoppedHolding(ItemStack stack, Level world, LivingEntity user) {
         resetAnimation(user);
         super.onStoppedHolding(stack, world, user);
     }
 
-    public void setAnimation(PlayerEntity p, Hand hand) {
-        if (p instanceof ServerPlayerEntity player) {
+    public void setAnimation(Player p, InteractionHand hand) {
+        if (p instanceof ServerPlayer player) {
             ServerPoseFacet facet = ServerPoseFacet.KEY.get(player);
             if (facet != null) {
                 facet.set("miapi:block", player, hand);
@@ -102,7 +102,7 @@ public class BlockAbility extends EntityAttributeAbility {
     }
 
     public void resetAnimation(LivingEntity entity) {
-        if (entity instanceof ServerPlayerEntity player) {
+        if (entity instanceof ServerPlayer player) {
             ServerPoseFacet facet = ServerPoseFacet.KEY.get(player);
             if (facet != null)
                 facet.reset(player);

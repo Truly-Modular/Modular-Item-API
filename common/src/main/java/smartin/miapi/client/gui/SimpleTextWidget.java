@@ -1,26 +1,26 @@
 package smartin.miapi.client.gui;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.text.Text;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.network.chat.Component;
 
 public class SimpleTextWidget extends InteractAbleWidget {
-    public Text text;
+    public Component text;
     public boolean hasShadow = true;
-    public TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
+    public Font textRenderer = Minecraft.getInstance().font;
 
-    public SimpleTextWidget(int x, int y, int width, int height, Text text) {
-        super(x, y, width, height, Text.empty());
+    public SimpleTextWidget(int x, int y, int width, int height, Component text) {
+        super(x, y, width, height, Component.empty());
         this.text = text;
     }
 
-    public void setText(Text text) {
+    public void setText(Component text) {
         this.text = text;
     }
 
     @Override
-    public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
-        context.drawText(textRenderer, text, getX(), getY(), -1, hasShadow);
+    public void renderWidget(GuiGraphics context, int mouseX, int mouseY, float delta) {
+        context.drawString(textRenderer, text, getX(), getY(), -1, hasShadow);
     }
 }

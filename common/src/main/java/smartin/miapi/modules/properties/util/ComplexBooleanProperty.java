@@ -1,6 +1,6 @@
 package smartin.miapi.modules.properties.util;
 
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 
 public abstract class ComplexBooleanProperty extends DoubleProperty {
     boolean defaultValue;

@@ -1,9 +1,9 @@
 package smartin.miapi.modules.properties;
 
 import dev.architectury.event.EventResult;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.modules.properties.util.DoubleProperty;
 
@@ -18,10 +18,10 @@ public class HealthPercentDamage extends DoubleProperty {
         super(KEY);
         property = this;
         MiapiEvents.LIVING_HURT.register((livingHurtEvent -> {
-            if (livingHurtEvent.damageSource.getAttacker() instanceof LivingEntity livingAttacker) {
+            if (livingHurtEvent.damageSource.getEntity() instanceof LivingEntity livingAttacker) {
                 ItemStack itemStack = livingHurtEvent.getCausingItemStack();
-                if (livingAttacker instanceof PlayerEntity player) {
-                    if (player.lastHandSwingProgress != 0.0) {
+                if (livingAttacker instanceof Player player) {
+                    if (player.oAttackAnim != 0.0) {
                         return EventResult.pass();
                     }
                 }

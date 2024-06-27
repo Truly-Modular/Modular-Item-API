@@ -1,6 +1,6 @@
 package smartin.miapi.client.gui.crafting;
 
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.item.modular.ModularItem;

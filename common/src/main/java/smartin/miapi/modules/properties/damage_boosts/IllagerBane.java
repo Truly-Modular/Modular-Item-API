@@ -1,11 +1,11 @@
 package smartin.miapi.modules.properties.damage_boosts;
 
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.mob.PillagerEntity;
-import net.minecraft.entity.mob.RavagerEntity;
-import net.minecraft.entity.mob.VexEntity;
-import net.minecraft.entity.mob.VindicatorEntity;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.monster.Pillager;
+import net.minecraft.world.entity.monster.Ravager;
+import net.minecraft.world.entity.monster.Vex;
+import net.minecraft.world.entity.monster.Vindicator;
+import net.minecraft.world.item.ItemStack;
 import smartin.miapi.modules.properties.util.EntityDamageBoostProperty;
 
 /**
@@ -23,10 +23,10 @@ public class IllagerBane extends EntityDamageBoostProperty {
 
     public static boolean isIllagerType(LivingEntity living) {
         if(
-                        living instanceof PillagerEntity ||
-                        living instanceof VexEntity ||
-                        living instanceof VindicatorEntity ||
-                        living instanceof RavagerEntity
+                        living instanceof Pillager ||
+                        living instanceof Vex ||
+                        living instanceof Vindicator ||
+                        living instanceof Ravager
         ){
             return true;
         }

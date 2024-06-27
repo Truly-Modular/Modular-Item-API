@@ -1,19 +1,18 @@
 package smartin.miapi.modules.abilities.util;
 
 import com.google.common.collect.Multimap;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.EntityAttribute;
-import net.minecraft.entity.attribute.EntityAttributeModifier;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.stat.Stats;
-import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
-import net.minecraft.util.UseAction;
-import net.minecraft.world.World;
-
 import java.util.HashMap;
 import java.util.Map;
+import net.minecraft.stats.Stats;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.UseAnim;
+import net.minecraft.world.level.Level;
 
 /**
  * The EntityAttributeAbility class is an abstract implementation of the ItemUseAbility interface.
@@ -21,7 +20,7 @@ import java.util.Map;
  * Extend this class and implement the getAttributes() method to define the attributes to be applied.
  */
 public abstract class EntityAttributeAbility implements ItemUseDefaultCooldownAbility, ItemUseMinHoldAbility {
-    Map<LivingEntity, Multimap<EntityAttribute, EntityAttributeModifier>> playerEntityMultimapMap = new HashMap<>();
+    Map<LivingEntity, Multimap<Attribute, AttributeModifier>> playerEntityMultimapMap = new HashMap<>();
 
     /**
      * Get the attributes and modifiers to be applied for the specified item stack.
@@ -29,45 +28,45 @@ public abstract class EntityAttributeAbility implements ItemUseDefaultCooldownAb
      * @param itemStack The item stack being used.
      * @return The multimap of entity attributes and attribute modifiers.
      */
-    protected abstract Multimap<EntityAttribute, EntityAttributeModifier> getAttributes(ItemStack itemStack);
+    protected abstract Multimap<Attribute, AttributeModifier> getAttributes(ItemStack itemStack);
 
 
-    public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-        ItemStack itemStack = user.getStackInHand(hand);
-        user.setCurrentHand(hand);
-        Multimap<EntityAttribute, EntityAttributeModifier> attributeAttributePropertyMultimap = getAttributes(itemStack);
+    public InteractionResultHolder<ItemStack> use(Level world, Player user, InteractionHand hand) {
+        ItemStack itemStack = user.getItemInHand(hand);
+        user.startUsingItem(hand);
+        Multimap<Attribute, AttributeModifier> attributeAttributePropertyMultimap = getAttributes(itemStack);
         attributeAttributePropertyMultimap.forEach((attribute, attributeModifier) -> {
         });
-        user.getAttributes().addTemporaryModifiers(attributeAttributePropertyMultimap);
+        user.getAttributes().addTransientAttributeModifiers(attributeAttributePropertyMultimap);
         playerEntityMultimapMap.put(user, attributeAttributePropertyMultimap);
-        return TypedActionResult.consume(itemStack);
+        return InteractionResultHolder.consume(itemStack);
     }
 
     private void remove(ItemStack itemStack, LivingEntity livingEntity) {
-        if(livingEntity instanceof PlayerEntity playerEntity){
-            playerEntity.incrementStat(Stats.USED.getOrCreateStat(itemStack.getItem()));
+        if(livingEntity instanceof Player playerEntity){
+            playerEntity.awardStat(Stats.ITEM_USED.get(itemStack.getItem()));
         }
-        Multimap<EntityAttribute, EntityAttributeModifier> map = playerEntityMultimapMap.get(livingEntity);
+        Multimap<Attribute, AttributeModifier> map = playerEntityMultimapMap.get(livingEntity);
         if (map != null) {
-            livingEntity.getAttributes().removeModifiers(map);
+            livingEntity.getAttributes().removeAttributeModifiers(map);
         }
     }
 
-    public ItemStack finishUsing(ItemStack stack, World world, LivingEntity user) {
+    public ItemStack finishUsing(ItemStack stack, Level world, LivingEntity user) {
         remove(stack, user);
         return stack;
     }
 
-    public void onStoppedUsingAfter(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
+    public void onStoppedUsingAfter(ItemStack stack, Level world, LivingEntity user, int remainingUseTicks) {
         remove(stack, user);
     }
 
-    public void onStoppedHolding(ItemStack stack, World world, LivingEntity user) {
+    public void onStoppedHolding(ItemStack stack, Level world, LivingEntity user) {
         remove(stack, user);
     }
 
     @Override
-    public UseAction getUseAction(ItemStack itemStack) {
-        return UseAction.NONE;
+    public UseAnim getUseAction(ItemStack itemStack) {
+        return UseAnim.NONE;
     }
 }

@@ -1,9 +1,6 @@
 package smartin.miapi.modules.properties;
 
 import com.google.gson.JsonElement;
-import net.minecraft.item.ItemStack;
-import net.minecraft.registry.tag.TagKey;
-import net.minecraft.util.Identifier;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
@@ -11,9 +8,12 @@ import smartin.miapi.modules.properties.util.ModuleProperty;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.ItemStack;
 
 /**
- * Allows the set Itemtags via a Properterty (relies on {@link ItemStack#isIn(TagKey)}
+ * Allows the set Itemtags via a Properterty (relies on {@link ItemStack#is(TagKey)}
  */
 public class FakeItemTagProperty implements ModuleProperty {
     public static final String KEY = "fake_item_tag";
@@ -28,7 +28,7 @@ public class FakeItemTagProperty implements ModuleProperty {
         return getTags(ItemModule.getMergedProperty(itemStack, property));
     }
 
-    public static boolean hasTag(Identifier identifier, ItemStack itemStack) {
+    public static boolean hasTag(ResourceLocation identifier, ItemStack itemStack) {
         return getTags(itemStack).contains(identifier.toString());
     }
 

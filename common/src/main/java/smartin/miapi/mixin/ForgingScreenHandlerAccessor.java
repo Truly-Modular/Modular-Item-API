@@ -1,14 +1,14 @@
 package smartin.miapi.mixin;
 
-import net.minecraft.inventory.Inventory;
-import net.minecraft.screen.ForgingScreenHandler;
+import net.minecraft.world.Container;
+import net.minecraft.world.inventory.ItemCombinerMenu;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
-@Mixin(ForgingScreenHandler.class)
+@Mixin(ItemCombinerMenu.class)
 public interface ForgingScreenHandlerAccessor {
 
     @Accessor("input")
-    Inventory getInput();
+    Container getInput();
 
 }

@@ -3,46 +3,46 @@ package smartin.miapi.client.atlas;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.render.item.ItemRenderer;
-import net.minecraft.client.render.model.BakedQuad;
-import net.minecraft.client.texture.NativeImageBackedTexture;
-import net.minecraft.client.texture.Sprite;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.Direction;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import smartin.miapi.client.MiapiClient;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.modules.material.Material;
 import smartin.miapi.modules.material.palette.SpriteColorer;
-
+import smartin.miapi.modules.material.palette.SpriteColorer.MaterialRecoloredSpriteHolder;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.function.IntUnaryOperator;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.renderer.entity.ItemRenderer;
+import net.minecraft.client.renderer.texture.DynamicTexture;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
 
 public class MaterialSpriteManager {
-    static Map<Holder, NativeImageBackedTexture> animated_Textures = new HashMap<>();
+    static Map<Holder, DynamicTexture> animated_Textures = new HashMap<>();
 
     public static final long CACHE_SIZE = 10000;
     public static final long CACHE_LIFETIME = 10;
     public static final TimeUnit CACHE_LIFETIME_UNIT = TimeUnit.SECONDS;
-    protected static Map<Identifier, NativeImageBackedTexture> nativeImageBackedTextureMap = new HashMap<>();
-    public static Set<Sprite> animated = new HashSet<>();
+    protected static Map<ResourceLocation, DynamicTexture> nativeImageBackedTextureMap = new HashMap<>();
+    public static Set<TextureAtlasSprite> animated = new HashSet<>();
     //WARNING!! only access anything related to colorer ONLY from the RENDER THREAD!
-    protected static final Cache<Holder, Identifier> materialSpriteCache = CacheBuilder.newBuilder()
+    protected static final Cache<Holder, ResourceLocation> materialSpriteCache = CacheBuilder.newBuilder()
             .maximumSize(CACHE_SIZE)
             .expireAfterAccess(CACHE_LIFETIME, CACHE_LIFETIME_UNIT)
             .removalListener(notification -> {
                 if (notification.wasEvicted()) {
-                    if (notification.getValue() instanceof Identifier removeId) {
-                        NativeImageBackedTexture texture = nativeImageBackedTextureMap.get(removeId);
+                    if (notification.getValue() instanceof ResourceLocation removeId) {
+                        DynamicTexture texture = nativeImageBackedTextureMap.get(removeId);
                         if (texture != null) {
                             texture.close();
                         }
-                        MinecraftClient.getInstance().getTextureManager().destroyTexture(removeId);
+                        Minecraft.getInstance().getTextureManager().release(removeId);
                     }
                     if (notification.getKey() instanceof Holder holder) {
                         //the NativeImage should already be closed by the code above, this just kept track of the NativeImageBackedTexture to animate it
@@ -57,25 +57,25 @@ public class MaterialSpriteManager {
             })
             .build(new CacheLoader<>() {
                 @Override
-                public Identifier load(Holder key) {
+                public ResourceLocation load(Holder key) {
                     return getMaterialSprite(key);
                 }
             });
 
-    public static Identifier getMaterialSprite(Sprite oldSprite, Material material, SpriteColorer materialSpriteColorer) {
+    public static ResourceLocation getMaterialSprite(TextureAtlasSprite oldSprite, Material material, SpriteColorer materialSpriteColorer) {
         Holder holder = new Holder(oldSprite, material, materialSpriteColorer);
         return getMaterialSprite(holder);
     }
 
-    public static Identifier getMaterialSprite(Holder holder) {
-        Identifier identifier = materialSpriteCache.getIfPresent(holder);
+    public static ResourceLocation getMaterialSprite(Holder holder) {
+        ResourceLocation identifier = materialSpriteCache.getIfPresent(holder);
         if (identifier == null) {
-            var colorer = holder.colorer().createSpriteManager(holder.sprite().getContents());
+            var colorer = holder.colorer().createSpriteManager(holder.sprite().contents());
             //important!
             //the MaskColorer is responsible for managing any NativeImage it creates.
             //BUT the NativeBackedTexture removes its old uploaded NativeImage, so we need to upload a copy
-            NativeImageBackedTexture nativeImageBackedTexture = new NativeImageBackedTexture(colorer.recolor().applyToCopy(IntUnaryOperator.identity()));
-            Identifier spriteId = MinecraftClient.getInstance().getTextureManager().registerDynamicTexture("miapi/dynmaterialsprites", nativeImageBackedTexture);
+            DynamicTexture nativeImageBackedTexture = new DynamicTexture(colorer.recolor().mappedCopy(IntUnaryOperator.identity()));
+            ResourceLocation spriteId = Minecraft.getInstance().getTextureManager().register("miapi/dynmaterialsprites", nativeImageBackedTexture);
             if (colorer.requireTick()) {
                 animated_Textures.put(holder, nativeImageBackedTexture);
             }
@@ -98,9 +98,9 @@ public class MaterialSpriteManager {
                         //important!
                         //the MaskColorer is responsible for managing any NativeImage it creates.
                         //BUT the NativeBackedTexture removes its old uploaded NativeImage, so we need to upload a copy
-                        nativeImageBackedTexture.getImage().copyFrom(nativeImage);
+                        nativeImageBackedTexture.getPixels().copyFrom(nativeImage);
                         nativeImageBackedTexture.upload();
-                    }, holder.sprite().getContents());
+                    }, holder.sprite().contents());
                 } catch (Exception e) {
                     toRemove.add(holder);
                 }
@@ -109,23 +109,23 @@ public class MaterialSpriteManager {
         }
     }
 
-    public static void markTextureAsAnimatedInUse(Sprite sprite) {
+    public static void markTextureAsAnimatedInUse(TextureAtlasSprite sprite) {
         if (MiapiClient.isSodiumLoaded()) {
             animated.add(sprite);
         }
     }
 
-    public static void onHudRender(DrawContext drawContext) {
+    public static void onHudRender(GuiGraphics drawContext) {
         VertexConsumer consumer =
-                ItemRenderer.getItemGlintConsumer(drawContext.getVertexConsumers(), RenderLayer.getGui(), false, false);
+                ItemRenderer.getFoilBuffer(drawContext.bufferSource(), RenderType.gui(), false, false);
         int[] quadData = new int[32];
-        for (Sprite sprite : animated) {
+        for (TextureAtlasSprite sprite : animated) {
             BakedQuad bakedQuad = new BakedQuad(quadData, 0, Direction.DOWN, sprite, false);
-            consumer.quad(drawContext.getMatrices().peek(), bakedQuad, 0, 0, 0, 0, 0);
+            consumer.putBulkData(drawContext.pose().last(), bakedQuad, 0, 0, 0, 0, 0);
         }
         animated.clear();
     }
 
-    public record Holder(Sprite sprite, Material material, SpriteColorer colorer) {
+    public record Holder(TextureAtlasSprite sprite, Material material, SpriteColorer colorer) {
     }
 }

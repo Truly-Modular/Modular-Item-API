@@ -1,16 +1,16 @@
 package smartin.miapi.item;
 
 import com.google.gson.JsonObject;
-import net.minecraft.inventory.Inventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.recipe.Ingredient;
-import net.minecraft.recipe.RecipeSerializer;
-import net.minecraft.recipe.SmithingRecipe;
-import net.minecraft.registry.DynamicRegistryManager;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.JsonHelper;
-import net.minecraft.world.World;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.GsonHelper;
+import net.minecraft.world.Container;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.SmithingRecipe;
+import net.minecraft.world.level.Level;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.item.modular.VisualModularItem;
 import smartin.miapi.modules.ItemModule;
@@ -28,9 +28,9 @@ public class MaterialSmithingRecipe implements SmithingRecipe {
     final String resultMaterial;
     final Ingredient smithingTemplate;
     final Ingredient addition;
-    final Identifier id;
+    final ResourceLocation id;
 
-    public MaterialSmithingRecipe(Identifier id, Ingredient template, String baseMaterial, Ingredient addition, String resultMaterial) {
+    public MaterialSmithingRecipe(ResourceLocation id, Ingredient template, String baseMaterial, Ingredient addition, String resultMaterial) {
         this.startMaterial = baseMaterial;
         this.resultMaterial = resultMaterial;
         smithingTemplate = template;
@@ -45,7 +45,7 @@ public class MaterialSmithingRecipe implements SmithingRecipe {
      * @return if the stack parses the ingredient
      */
     @Override
-    public boolean testTemplate(ItemStack stack) {
+    public boolean isTemplateIngredient(ItemStack stack) {
         return smithingTemplate.test(stack);
     }
 
@@ -56,7 +56,7 @@ public class MaterialSmithingRecipe implements SmithingRecipe {
      * @return if the stack has the material
      */
     @Override
-    public boolean testBase(ItemStack stack) {
+    public boolean isBaseIngredient(ItemStack stack) {
         if (stack.getItem() instanceof VisualModularItem) {
             ModuleInstance instance = ItemModule.getModules(stack);
             return instance.allSubModules().stream().anyMatch(module -> {
@@ -77,7 +77,7 @@ public class MaterialSmithingRecipe implements SmithingRecipe {
      * @return if the stack is of the right ingredient
      */
     @Override
-    public boolean testAddition(ItemStack stack) {
+    public boolean isAdditionIngredient(ItemStack stack) {
         return addition.test(stack);
     }
 
@@ -89,8 +89,8 @@ public class MaterialSmithingRecipe implements SmithingRecipe {
      * @return
      */
     @Override
-    public boolean matches(Inventory inventory, World world) {
-        return testTemplate(inventory.getStack(0)) && testBase(inventory.getStack(1)) && addition.test(inventory.getStack(2));
+    public boolean matches(Container inventory, Level world) {
+        return isTemplateIngredient(inventory.getItem(0)) && isBaseIngredient(inventory.getItem(1)) && addition.test(inventory.getItem(2));
     }
 
     /**
@@ -101,8 +101,8 @@ public class MaterialSmithingRecipe implements SmithingRecipe {
      * @return the crafted stack
      */
     @Override
-    public ItemStack craft(Inventory inventory, DynamicRegistryManager registryManager) {
-        ItemStack old = inventory.getStack(1).copy();
+    public ItemStack craft(Container inventory, RegistryAccess registryManager) {
+        ItemStack old = inventory.getItem(1).copy();
         if (old.getItem() instanceof VisualModularItem) {
             ModuleInstance instance = ItemModule.getModules(old).copy();
             instance.allSubModules().forEach(module -> {
@@ -126,7 +126,7 @@ public class MaterialSmithingRecipe implements SmithingRecipe {
      * @return an empty itemstack since we dont know
      */
     @Override
-    public ItemStack getOutput(DynamicRegistryManager registryManager) {
+    public ItemStack getOutput(RegistryAccess registryManager) {
         return ItemStack.EMPTY;
     }
 
@@ -136,7 +136,7 @@ public class MaterialSmithingRecipe implements SmithingRecipe {
      * @return
      */
     @Override
-    public Identifier getId() {
+    public ResourceLocation getId() {
         return id;
     }
 
@@ -148,29 +148,29 @@ public class MaterialSmithingRecipe implements SmithingRecipe {
     public static class Serializer
             implements RecipeSerializer<MaterialSmithingRecipe> {
         @Override
-        public MaterialSmithingRecipe read(Identifier identifier, JsonObject jsonObject) {
-            Ingredient template = Ingredient.fromJson(JsonHelper.getElement(jsonObject, "template"));
-            Ingredient addition = Ingredient.fromJson(JsonHelper.getElement(jsonObject, "addition"));
+        public MaterialSmithingRecipe read(ResourceLocation identifier, JsonObject jsonObject) {
+            Ingredient template = Ingredient.fromJson(GsonHelper.getNonNull(jsonObject, "template"));
+            Ingredient addition = Ingredient.fromJson(GsonHelper.getNonNull(jsonObject, "addition"));
             String base = jsonObject.get("base").getAsString();
             String result = jsonObject.get("result").getAsString();
             return new MaterialSmithingRecipe(identifier, template, base, addition, result);
         }
 
         @Override
-        public MaterialSmithingRecipe read(Identifier identifier, PacketByteBuf packetByteBuf) {
+        public MaterialSmithingRecipe read(ResourceLocation identifier, FriendlyByteBuf packetByteBuf) {
             Ingredient template = Ingredient.fromPacket(packetByteBuf);
             Ingredient addition = Ingredient.fromPacket(packetByteBuf);
-            String base = packetByteBuf.readString();
-            String result = packetByteBuf.readString();
+            String base = packetByteBuf.readUtf();
+            String result = packetByteBuf.readUtf();
             return new MaterialSmithingRecipe(identifier, template, base, addition, result);
         }
 
         @Override
-        public void write(PacketByteBuf packetByteBuf, MaterialSmithingRecipe smithingTransformRecipe) {
+        public void write(FriendlyByteBuf packetByteBuf, MaterialSmithingRecipe smithingTransformRecipe) {
             smithingTransformRecipe.smithingTemplate.write(packetByteBuf);
             smithingTransformRecipe.addition.write(packetByteBuf);
-            packetByteBuf.writeString(smithingTransformRecipe.startMaterial);
-            packetByteBuf.writeString(smithingTransformRecipe.resultMaterial);
+            packetByteBuf.writeUtf(smithingTransformRecipe.startMaterial);
+            packetByteBuf.writeUtf(smithingTransformRecipe.resultMaterial);
         }
     }
 }

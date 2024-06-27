@@ -1,19 +1,22 @@
 package smartin.miapi.item.modular.items;
 
-import net.minecraft.block.BlockState;
 import net.minecraft.client.item.TooltipContext;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemUsageContext;
-import net.minecraft.item.tooltip.TooltipType;
-import net.minecraft.text.Text;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.util.*;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.World;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Rarity;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.UseAnim;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.PlatformModularItemMethods;
@@ -25,22 +28,22 @@ import java.util.List;
 
 public class ModularWeapon extends Item implements PlatformModularItemMethods, ModularItem {
     public ModularWeapon() {
-        this(new Settings(), true);
+        this(new Properties(), true);
     }
 
-    public ModularWeapon(Settings settings, boolean withDefaultSettings) {
-        super(withDefaultSettings ? settings.maxCount(1).maxDamage(500) : settings);
-    }
-
-    @Override
-    public int getItemBarStep(ItemStack stack) {
-        return Math.round(13.0F - (float) stack.getDamage() * 13.0F / ModularItem.getDurability(stack));
+    public ModularWeapon(Properties settings, boolean withDefaultSettings) {
+        super(withDefaultSettings ? settings.stacksTo(1).durability(500) : settings);
     }
 
     @Override
-    public int getItemBarColor(ItemStack stack) {
-        float f = Math.max(0.0F, ((float) ModularItem.getDurability(stack) - (float) stack.getDamage()) / ModularItem.getDurability(stack));
-        return MathHelper.hsvToRgb(f / 3.0F, 1.0F, 1.0F);
+    public int getBarWidth(ItemStack stack) {
+        return Math.round(13.0F - (float) stack.getDamageValue() * 13.0F / ModularItem.getDurability(stack));
+    }
+
+    @Override
+    public int getBarColor(ItemStack stack) {
+        float f = Math.max(0.0F, ((float) ModularItem.getDurability(stack) - (float) stack.getDamageValue()) / ModularItem.getDurability(stack));
+        return Mth.hsvToRgb(f / 3.0F, 1.0F, 1.0F);
     }
 
     @Override
@@ -49,28 +52,28 @@ public class ModularWeapon extends Item implements PlatformModularItemMethods, M
     }
 
     @Override
-    public boolean canRepair(ItemStack stack, ItemStack ingredient) {
+    public boolean isValidRepairItem(ItemStack stack, ItemStack ingredient) {
         return RepairPriority.getRepairValue(stack, ingredient) > 0;
     }
 
     @Override
-    public Text getName(ItemStack stack) {
+    public Component getName(ItemStack stack) {
         return DisplayNameProperty.getDisplayText(stack);
     }
 
     @Override
-    public int getEnchantability() {
+    public int getEnchantmentValue() {
         return 1;
     }
 
     @Override
-    public boolean postHit(ItemStack stack, LivingEntity target, LivingEntity attacker) {
+    public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
         if (ToolOrWeaponProperty.isWeapon(stack)) {
-            stack.damage(1, attacker, (e) -> {
+            stack.hurtAndBreak(1, attacker, (e) -> {
                 e.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND);
             });
         } else {
-            stack.damage(2, attacker, (e) -> {
+            stack.hurtAndBreak(2, attacker, (e) -> {
                 e.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND);
             });
         }
@@ -78,14 +81,14 @@ public class ModularWeapon extends Item implements PlatformModularItemMethods, M
     }
 
     @Override
-    public boolean postMine(ItemStack stack, World world, BlockState state, BlockPos pos, LivingEntity miner) {
-        if (!world.isClient && state.getHardness(world, pos) != 0.0F) {
+    public boolean mineBlock(ItemStack stack, Level world, BlockState state, BlockPos pos, LivingEntity miner) {
+        if (!world.isClientSide && state.getDestroySpeed(world, pos) != 0.0F) {
             if (ToolOrWeaponProperty.isWeapon(stack)) {
-                stack.damage(2, miner, (e) -> {
+                stack.hurtAndBreak(2, miner, (e) -> {
                     e.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND);
                 });
             } else {
-                stack.damage(1, miner, (e) -> {
+                stack.hurtAndBreak(1, miner, (e) -> {
                     e.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND);
                 });
             }
@@ -95,7 +98,7 @@ public class ModularWeapon extends Item implements PlatformModularItemMethods, M
     }
 
     @Override
-    public boolean canMine(BlockState state, World world, BlockPos pos, PlayerEntity miner) {
+    public boolean canAttackBlock(BlockState state, Level world, BlockPos pos, Player miner) {
         return MiningLevelProperty.canMine(state, world, pos, miner);
     }
 
@@ -105,7 +108,7 @@ public class ModularWeapon extends Item implements PlatformModularItemMethods, M
     }
 
     @Override
-    public UseAction getUseAction(ItemStack stack) {
+    public UseAnim getUseAnimation(ItemStack stack) {
         return ItemAbilityManager.getUseAction(stack);
     }
 
@@ -115,17 +118,17 @@ public class ModularWeapon extends Item implements PlatformModularItemMethods, M
     }
 
     @Override
-    public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+    public InteractionResultHolder<ItemStack> use(Level world, Player user, InteractionHand hand) {
         return ItemAbilityManager.use(world, user, hand);
     }
 
     @Override
-    public void onStoppedUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
+    public void releaseUsing(ItemStack stack, Level world, LivingEntity user, int remainingUseTicks) {
         ItemAbilityManager.onStoppedUsing(stack, world, user, remainingUseTicks);
     }
 
     @Override
-    public ItemStack finishUsing(ItemStack stack, World world, LivingEntity user) {
+    public ItemStack finishUsingItem(ItemStack stack, Level world, LivingEntity user) {
         return ItemAbilityManager.finishUsing(stack, world, user);
     }
 
@@ -135,28 +138,28 @@ public class ModularWeapon extends Item implements PlatformModularItemMethods, M
     }
 
     @Override
-    public void usageTick(World world, LivingEntity user, ItemStack stack, int remainingUseTicks) {
+    public void onUseTick(Level world, LivingEntity user, ItemStack stack, int remainingUseTicks) {
         ItemAbilityManager.usageTick(world, user, stack, remainingUseTicks);
     }
 
     @Override
-    public boolean isUsedOnRelease(ItemStack stack) {
+    public boolean useOnRelease(ItemStack stack) {
         //TODO;
         return true;
     }
 
     @Override
-    public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
+    public InteractionResult interactLivingEntity(ItemStack stack, Player user, LivingEntity entity, InteractionHand hand) {
         return ItemAbilityManager.useOnEntity(stack, user, entity, hand);
     }
 
     @Override
-    public ActionResult useOnBlock(ItemUsageContext context) {
+    public InteractionResult useOn(UseOnContext context) {
         return ItemAbilityManager.useOnBlock(context);
     }
 
     @Override
-    public void appendTooltip(ItemStack stack, TooltipContext tooltipContext, List<Text> list, TooltipType tooltipType) {
+    public void appendHoverText(ItemStack stack, net.minecraft.world.item.Item.TooltipContext tooltipContext, List<Component> list, TooltipFlag tooltipType) {
         LoreProperty.appendLoreTop(stack, list, tooltipContext, tooltipType);
     }
 }

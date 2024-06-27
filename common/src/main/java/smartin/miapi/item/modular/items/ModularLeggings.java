@@ -1,13 +1,12 @@
 package smartin.miapi.item.modular.items;
 
 import net.minecraft.client.item.TooltipContext;
-import net.minecraft.item.ArmorItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.tooltip.TooltipType;
-import net.minecraft.text.Text;
-import net.minecraft.util.Rarity;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.World;
+import net.minecraft.network.chat.Component;
+import net.minecraft.util.Mth;
+import net.minecraft.world.item.ArmorItem;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Rarity;
+import net.minecraft.world.item.TooltipFlag;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.PlatformModularItemMethods;
@@ -19,16 +18,16 @@ import smartin.miapi.modules.properties.RepairPriority;
 import java.util.List;
 
 public class ModularLeggings extends ArmorItem implements PlatformModularItemMethods, ModularItem {
-    public ModularLeggings(Settings settings) {
+    public ModularLeggings(Properties settings) {
         super(new ModularArmorMaterial(),Type.LEGGINGS, settings);
     }
 
     public ModularLeggings() {
-        super(new ModularArmorMaterial(),Type.LEGGINGS,new Settings());
+        super(new ModularArmorMaterial(),Type.LEGGINGS,new Properties());
     }
 
     @Override
-    public Text getName(ItemStack stack) {
+    public Component getName(ItemStack stack) {
         return DisplayNameProperty.getDisplayText(stack);
     }
 
@@ -38,7 +37,7 @@ public class ModularLeggings extends ArmorItem implements PlatformModularItemMet
     }
 
     @Override
-    public boolean canRepair(ItemStack stack, ItemStack ingredient) {
+    public boolean isValidRepairItem(ItemStack stack, ItemStack ingredient) {
         return RepairPriority.getRepairValue(stack, ingredient) > 0;
     }
 
@@ -48,23 +47,23 @@ public class ModularLeggings extends ArmorItem implements PlatformModularItemMet
     }
 
     @Override
-    public int getItemBarStep(ItemStack stack) {
-        return Math.round(13.0F - (float)stack.getDamage() * 13.0F / ModularItem.getDurability(stack));
+    public int getBarWidth(ItemStack stack) {
+        return Math.round(13.0F - (float)stack.getDamageValue() * 13.0F / ModularItem.getDurability(stack));
     }
 
     @Override
-    public int getItemBarColor(ItemStack stack) {
-        float f = Math.max(0.0F, ((float) ModularItem.getDurability(stack) - (float)stack.getDamage()) / ModularItem.getDurability(stack));
-        return MathHelper.hsvToRgb(f / 3.0F, 1.0F, 1.0F);
+    public int getBarColor(ItemStack stack) {
+        float f = Math.max(0.0F, ((float) ModularItem.getDurability(stack) - (float)stack.getDamageValue()) / ModularItem.getDurability(stack));
+        return Mth.hsvToRgb(f / 3.0F, 1.0F, 1.0F);
     }
 
     @Override
-    public int getEnchantability() {
+    public int getEnchantmentValue() {
         return 1;
     }
 
     @Override
-    public void appendTooltip(ItemStack stack, TooltipContext tooltipContext, List<Text> list, TooltipType tooltipType) {
+    public void appendHoverText(ItemStack stack, net.minecraft.world.item.Item.TooltipContext tooltipContext, List<Component> list, TooltipFlag tooltipType) {
         LoreProperty.appendLoreTop(stack, list, tooltipContext, tooltipType);
     }
 }

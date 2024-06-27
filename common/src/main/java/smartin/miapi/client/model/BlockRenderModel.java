@@ -1,12 +1,12 @@
 package smartin.miapi.client.model;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.model.json.ModelTransformationMode;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.ItemStack;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemDisplayContext;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.state.BlockState;
 import smartin.miapi.item.modular.Transform;
 import smartin.miapi.modules.material.MaterialIcons;
 
@@ -21,9 +21,9 @@ public class BlockRenderModel implements MiapiModel {
     }
 
     @Override
-    public void render(MatrixStack matrixStack, ItemStack stack, ModelTransformationMode transformationMode, float tickDelta, VertexConsumerProvider vertexConsumers, LivingEntity entity, int light, int overlay) {
+    public void render(PoseStack matrixStack, ItemStack stack, ItemDisplayContext transformationMode, float tickDelta, MultiBufferSource vertexConsumers, LivingEntity entity, int light, int overlay) {
 
-        matrixStack.push();
+        matrixStack.pushPose();
 
         transform.applyPosition(matrixStack);
 
@@ -31,13 +31,13 @@ public class BlockRenderModel implements MiapiModel {
             spinSettings.multiplyMatrices(matrixStack);
         }
 
-        MinecraftClient.getInstance().getBlockRenderManager().renderBlockAsEntity(
+        Minecraft.getInstance().getBlockRenderer().renderSingleBlock(
                 blockState,
                 matrixStack,
                 vertexConsumers,
                 light,
                 overlay);
 
-        matrixStack.pop();
+        matrixStack.popPose();
     }
 }

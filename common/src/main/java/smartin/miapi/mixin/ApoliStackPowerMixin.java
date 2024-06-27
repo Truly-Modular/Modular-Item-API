@@ -2,8 +2,6 @@ package smartin.miapi.mixin;
 
 
 import io.github.apace100.apoli.util.StackPowerUtil;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -13,6 +11,8 @@ import smartin.miapi.modules.properties.compat.apoli.ApoliPowersHelper;
 
 import java.util.ArrayList;
 import java.util.List;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.item.ItemStack;
 
 @Mixin(StackPowerUtil.class)
 public abstract class ApoliStackPowerMixin {

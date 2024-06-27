@@ -2,8 +2,6 @@ package smartin.miapi.modules.properties;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import net.minecraft.item.ItemStack;
-import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
@@ -16,6 +14,8 @@ import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.*;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.ItemStack;
 
 /**
  * This property manages the active {@link ItemUseAbility}
@@ -99,7 +99,7 @@ public class AbilityMangerProperty implements ModuleProperty {
         private Map<String, Boolean> booleanCache = new HashMap<>();
         private Map<String, Integer> integerCache = new HashMap<>();
         private Map<String, String> stringCache = new HashMap<>();
-        private Map<String, Text> textCache = new HashMap<>();
+        private Map<String, Component> textCache = new HashMap<>();
 
         public AbilityContext(JsonObject element, ModuleInstance moduleInstance, ItemStack itemStack) {
             this.contextInstance = moduleInstance;
@@ -129,7 +129,7 @@ public class AbilityMangerProperty implements ModuleProperty {
             return stringCache.computeIfAbsent(key, k -> ModuleProperty.getString(contextJson, key, contextInstance, defaultValue));
         }
 
-        public Text getText(String key, Text defaultValue) {
+        public Component getText(String key, Component defaultValue) {
             return textCache.computeIfAbsent(key, k -> ModuleProperty.getText(contextJson, key, contextInstance, defaultValue));
         }
     }

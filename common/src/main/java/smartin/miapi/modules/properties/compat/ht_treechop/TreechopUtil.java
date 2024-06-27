@@ -2,11 +2,11 @@ package smartin.miapi.modules.properties.compat.ht_treechop;
 
 import ht.treechop.api.IChoppingItem;
 import ht.treechop.api.TreeChopAPI;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 import smartin.miapi.registries.RegistryInventory;
 
 public class TreechopUtil {
@@ -15,7 +15,7 @@ public class TreechopUtil {
         api = (TreeChopAPI) object;
         api.registerChoppingItemBehavior(RegistryInventory.modularAxe, new IChoppingItem() {
             @Override
-            public boolean canChop(PlayerEntity playerEntity, ItemStack itemStack, World world, BlockPos blockPos, BlockState blockState) {
+            public boolean canChop(Player playerEntity, ItemStack itemStack, Level world, BlockPos blockPos, BlockState blockState) {
                 return true;
             }
 
@@ -27,7 +27,7 @@ public class TreechopUtil {
 
         api.registerChoppingItemBehavior(RegistryInventory.modularMattock, new IChoppingItem() {
             @Override
-            public boolean canChop(PlayerEntity playerEntity, ItemStack itemStack, World world, BlockPos blockPos, BlockState blockState) {
+            public boolean canChop(Player playerEntity, ItemStack itemStack, Level world, BlockPos blockPos, BlockState blockState) {
                 return true;
             }
 

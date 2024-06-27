@@ -1,11 +1,6 @@
 package smartin.miapi.craft;
 
 import com.mojang.datafixers.util.Pair;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.Inventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketByteBuf;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
@@ -22,6 +17,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+import net.minecraft.client.Minecraft;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.Container;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 
 /**
  * This class represents an action related to crafting an item with modules.
@@ -32,11 +32,11 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 public class CraftAction {
     public final ItemModule toAdd;
-    public final PlayerEntity player;
+    public final Player player;
     public final List<Integer> slotId = new ArrayList<>();
     private ItemStack old;
     private final ModularWorkBenchEntity blockEntity;
-    private Inventory linkedInventory;
+    private Container linkedInventory;
     private int inventoryOffset;
     public Map<String, String> data = new ConcurrentHashMap<>();
     public static final List<CraftingEvent> events = new ArrayList<>();
@@ -56,7 +56,7 @@ public class CraftAction {
             ItemStack old,
             SlotProperty.ModuleSlot slot,
             @Nullable ItemModule toAdd,
-            PlayerEntity player,
+            Player player,
             ModularWorkBenchEntity bench,
             Map<String, String> data) {
         this.old = ModularItemStackConverter.getModularVersion(old);
@@ -81,24 +81,24 @@ public class CraftAction {
      * @param buf   the packet byte buffer from which to construct the CraftAction
      * @param bench the workbench block entity to store in this CraftAction
      */
-    public CraftAction(PacketByteBuf buf, @Nullable ModularWorkBenchEntity bench) {
+    public CraftAction(FriendlyByteBuf buf, @Nullable ModularWorkBenchEntity bench) {
         int size = buf.readInt();
         for (int i = 0; i < size; i++) {
             slotId.add(buf.readInt());
         }
-        String modules = buf.readString();
+        String modules = buf.readUtf();
         if (!modules.equals("null")) {
             toAdd = RegistryInventory.modules.get(modules);
         } else {
             toAdd = null;
         }
-        player = getPlayerFromUuid(buf.readUuid());
+        player = getPlayerFromUuid(buf.readUUID());
         blockEntity = bench;
 
         int numBuffers = buf.readInt();
         for (int i = 0; i < numBuffers; i++) {
-            String key = buf.readString();
-            String value = buf.readString();
+            String key = buf.readUtf();
+            String value = buf.readUtf();
             data.put(key, value);
         }
     }
@@ -109,22 +109,22 @@ public class CraftAction {
      * @param buf the packet byte buffer to which to write the CraftAction
      * @return the packet byte buffer
      */
-    public PacketByteBuf toPacket(PacketByteBuf buf) {
+    public FriendlyByteBuf toPacket(FriendlyByteBuf buf) {
         buf.writeInt(slotId.size());
         for (Integer slot : slotId) {
             buf.writeInt(slot);
         }
         if (toAdd != null) {
-            buf.writeString(toAdd.name());
+            buf.writeUtf(toAdd.name());
         } else {
-            buf.writeString("null");
+            buf.writeUtf("null");
         }
-        buf.writeUuid(player.getUuid());
+        buf.writeUUID(player.getUUID());
 
         buf.writeInt(data.size());
         data.forEach((key, value) -> {
-            buf.writeString(key);
-            buf.writeString(value);
+            buf.writeUtf(key);
+            buf.writeUtf(value);
         });
 
         return buf;
@@ -190,7 +190,7 @@ public class CraftAction {
      * @param inventory the inventory to link.
      * @param offset    the offset to apply to the inventory slots.
      */
-    public void linkInventory(Inventory inventory, int offset) {
+    public void linkInventory(Container inventory, int offset) {
         this.linkedInventory = inventory;
         this.inventoryOffset = offset;
     }
@@ -215,7 +215,7 @@ public class CraftAction {
             craftingStack[0] = itemStacks.remove(0);
             updateItem(craftingStack[0], module);
             for (int i = start; i < end; i++) {
-                linkedInventory.setStack(i, itemStacks.get(i - start));
+                linkedInventory.setItem(i, itemStacks.get(i - start));
             }
         });
         ModuleInstance parsingInstance = ItemModule.getModules(craftingStack[0]);
@@ -224,7 +224,7 @@ public class CraftAction {
         }
         for (CraftingEvent eventHandler : events)
             craftingStack[0] = eventHandler.onCraft(old, craftingStack[0], parsingInstance);
-        linkedInventory.markDirty();
+        linkedInventory.setChanged();
         return craftingStack[0];
     }
 
@@ -310,7 +310,7 @@ public class CraftAction {
         for (CraftingEvent eventHandler : events) {
             craftingStack.set(eventHandler.onPreview(old, craftingStack.get(), parsingInstance));
         }
-        linkedInventory.markDirty();
+        linkedInventory.setChanged();
         return craftingStack.get();
     }
 
@@ -365,7 +365,7 @@ public class CraftAction {
             int startPos = integer.get();
             int endPos = startPos + craftingProperty.getSlotPositions().size();
             for (int i = startPos; i < endPos; i++) {
-                itemStacks.add(linkedInventory.getStack(i));
+                itemStacks.add(linkedInventory.getItem(i));
             }
             propertyConsumer.accept(craftingProperty, newInstance, itemStacks, startPos, endPos, data);
             integer.set(endPos);
@@ -380,12 +380,12 @@ public class CraftAction {
      * @param uuid the UUID of the player to retrieve
      * @return the PlayerEntity object associated with the given UUID, or null if the player doesn't exist
      */
-    protected static PlayerEntity getPlayerFromUuid(UUID uuid) {
+    protected static Player getPlayerFromUuid(UUID uuid) {
         if (Miapi.server != null) {
-            return Miapi.server.getPlayerManager().getPlayer(uuid);
-        } else if (MinecraftClient.getInstance() != null) {
-            assert MinecraftClient.getInstance().world != null;
-            return MinecraftClient.getInstance().world.getPlayerByUuid(uuid);
+            return Miapi.server.getPlayerList().getPlayer(uuid);
+        } else if (Minecraft.getInstance() != null) {
+            assert Minecraft.getInstance().level != null;
+            return Minecraft.getInstance().level.getPlayerByUUID(uuid);
         }
         return null;
     }

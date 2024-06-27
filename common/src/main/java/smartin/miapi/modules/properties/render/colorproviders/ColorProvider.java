@@ -1,15 +1,15 @@
 package smartin.miapi.modules.properties.render.colorproviders;
 
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.redpxnda.nucleus.util.Color;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.RenderLayers;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.model.json.ModelTransformationMode;
-import net.minecraft.client.texture.Sprite;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.item.ItemStack;
+import net.minecraft.client.renderer.ItemBlockRenderTypes;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.world.item.ItemDisplayContext;
+import net.minecraft.world.item.ItemStack;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.material.Material;
 import smartin.miapi.modules.material.MaterialProperty;
@@ -40,7 +40,7 @@ public interface ColorProvider {
     }
 
     @Environment(EnvType.CLIENT)
-    VertexConsumer getConsumer(VertexConsumerProvider vertexConsumers, Sprite sprite, ItemStack stack, ModuleInstance moduleInstance, ModelTransformationMode mode);
+    VertexConsumer getConsumer(MultiBufferSource vertexConsumers, TextureAtlasSprite sprite, ItemStack stack, ModuleInstance moduleInstance, ItemDisplayContext mode);
 
     ColorProvider getInstance(ItemStack stack, ModuleInstance instance);
 
@@ -56,11 +56,11 @@ public interface ColorProvider {
 
         @Environment(EnvType.CLIENT)
         @Override
-        public VertexConsumer getConsumer(VertexConsumerProvider vertexConsumers,
-                                          Sprite sprite,
+        public VertexConsumer getConsumer(MultiBufferSource vertexConsumers,
+                                          TextureAtlasSprite sprite,
                                           ItemStack stack,
                                           ModuleInstance moduleInstance,
-                                          ModelTransformationMode mode) {
+                                          ItemDisplayContext mode) {
             return material.getRenderController().getVertexConsumer(vertexConsumers,sprite, stack, moduleInstance, mode);
         }
 
@@ -96,8 +96,8 @@ public interface ColorProvider {
 
         @Environment(EnvType.CLIENT)
         @Override
-        public VertexConsumer getConsumer(VertexConsumerProvider vertexConsumers, Sprite sprite, ItemStack stack, ModuleInstance moduleInstance, ModelTransformationMode mode) {
-            return vertexConsumers.getBuffer(RenderLayers.getItemLayer(stack, true));
+        public VertexConsumer getConsumer(MultiBufferSource vertexConsumers, TextureAtlasSprite sprite, ItemStack stack, ModuleInstance moduleInstance, ItemDisplayContext mode) {
+            return vertexConsumers.getBuffer(ItemBlockRenderTypes.getRenderType(stack, true));
         }
 
         @Override
@@ -114,7 +114,7 @@ public interface ColorProvider {
         }
 
         public PotionColorProvider(ItemStack stack) {
-            potioncolor = new Color( stack.getComponents().get(DataComponentTypes.POTION_CONTENTS).getColor());
+            potioncolor = new Color( stack.getComponents().get(DataComponents.POTION_CONTENTS).getColor());
         }
 
         @Override
@@ -124,8 +124,8 @@ public interface ColorProvider {
 
         @Environment(EnvType.CLIENT)
         @Override
-        public VertexConsumer getConsumer(VertexConsumerProvider vertexConsumers, Sprite sprite, ItemStack stack, ModuleInstance moduleInstance, ModelTransformationMode mode) {
-            return vertexConsumers.getBuffer(RenderLayers.getItemLayer(stack, true));
+        public VertexConsumer getConsumer(MultiBufferSource vertexConsumers, TextureAtlasSprite sprite, ItemStack stack, ModuleInstance moduleInstance, ItemDisplayContext mode) {
+            return vertexConsumers.getBuffer(ItemBlockRenderTypes.getRenderType(stack, true));
         }
 
         @Override

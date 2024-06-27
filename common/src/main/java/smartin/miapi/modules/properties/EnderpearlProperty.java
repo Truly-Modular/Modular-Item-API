@@ -2,15 +2,15 @@ package smartin.miapi.modules.properties;
 
 import com.google.gson.JsonElement;
 import dev.architectury.event.EventResult;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.mob.EndermiteEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.particle.ParticleTypes;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.math.random.Random;
-import net.minecraft.world.GameRules;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.monster.Endermite;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.GameRules;
+import net.minecraft.world.phys.HitResult;
 import smartin.miapi.entity.ItemProjectileEntity;
 import smartin.miapi.events.MiapiProjectileEvents;
 import smartin.miapi.modules.ItemModule;
@@ -45,37 +45,37 @@ public class EnderpearlProperty implements ModuleProperty {
     }
 
     /**
-     * copied straigth from {@link net.minecraft.entity.projectile.thrown.EnderPearlEntity}
+     * copied straigth from {@link net.minecraft.world.entity.projectile.ThrownEnderpearl}
      *
      * @param projectile the projectile in question
      * @param hitResult  the Hitresult
      * @return if the player was teleported
      */
     protected boolean onCollision(ItemProjectileEntity projectile, HitResult hitResult) {
-        Random random = Random.create();
+        RandomSource random = RandomSource.create();
         for (int i = 0; i < 32; ++i) {
-            projectile.getWorld().addParticle(ParticleTypes.PORTAL, projectile.getX(), projectile.getY() + random.nextDouble() * 2.0, projectile.getZ(), random.nextGaussian(), 0.0, random.nextGaussian());
+            projectile.level().addParticle(ParticleTypes.PORTAL, projectile.getX(), projectile.getY() + random.nextDouble() * 2.0, projectile.getZ(), random.nextGaussian(), 0.0, random.nextGaussian());
         }
-        if (!projectile.getWorld().isClient && !projectile.isRemoved()) {
+        if (!projectile.level().isClientSide && !projectile.isRemoved()) {
             Entity entity = projectile.getOwner();
-            if (entity instanceof ServerPlayerEntity serverPlayerEntity) {
-                if (serverPlayerEntity.networkHandler.isConnectionOpen() && serverPlayerEntity.getWorld() == projectile.getWorld() && !serverPlayerEntity.isSleeping()) {
-                    EndermiteEntity endermiteEntity;
-                    if (random.nextFloat() < 0.05f && projectile.getWorld().getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING) && (endermiteEntity = EntityType.ENDERMITE.create(projectile.getWorld())) != null) {
-                        endermiteEntity.refreshPositionAndAngles(entity.getX(), entity.getY(), entity.getZ(), entity.getYaw(), entity.getPitch());
-                        projectile.getWorld().spawnEntity(endermiteEntity);
+            if (entity instanceof ServerPlayer serverPlayerEntity) {
+                if (serverPlayerEntity.connection.isAcceptingMessages() && serverPlayerEntity.level() == projectile.level() && !serverPlayerEntity.isSleeping()) {
+                    Endermite endermiteEntity;
+                    if (random.nextFloat() < 0.05f && projectile.level().getGameRules().getBoolean(GameRules.RULE_DOMOBSPAWNING) && (endermiteEntity = EntityType.ENDERMITE.create(projectile.level())) != null) {
+                        endermiteEntity.moveTo(entity.getX(), entity.getY(), entity.getZ(), entity.getYRot(), entity.getXRot());
+                        projectile.level().addFreshEntity(endermiteEntity);
                     }
-                    if (entity.hasVehicle()) {
-                        serverPlayerEntity.requestTeleportAndDismount(projectile.getX(), projectile.getY(), projectile.getZ());
+                    if (entity.isPassenger()) {
+                        serverPlayerEntity.dismountTo(projectile.getX(), projectile.getY(), projectile.getZ());
                     } else {
-                        entity.requestTeleport(projectile.getX(), projectile.getY(), projectile.getZ());
+                        entity.teleportTo(projectile.getX(), projectile.getY(), projectile.getZ());
                     }
-                    entity.onLanding();
-                    entity.damage(projectile.getDamageSources().fall(), 5.0f);
+                    entity.resetFallDistance();
+                    entity.hurt(projectile.damageSources().fall(), 5.0f);
                 }
             } else if (entity != null) {
-                entity.requestTeleport(projectile.getX(), projectile.getY(), projectile.getZ());
-                entity.onLanding();
+                entity.teleportTo(projectile.getX(), projectile.getY(), projectile.getZ());
+                entity.resetFallDistance();
             }
             projectile.discard();
             return true;
@@ -84,7 +84,7 @@ public class EnderpearlProperty implements ModuleProperty {
     }
 
     public static boolean isEnderPearl(ItemProjectileEntity projectile) {
-        return isEnderPearl(projectile.asItemStack());
+        return isEnderPearl(projectile.getPickupItem());
     }
 
     public static boolean isEnderPearl(ItemStack itemStack) {

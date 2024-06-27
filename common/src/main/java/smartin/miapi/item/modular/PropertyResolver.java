@@ -1,8 +1,6 @@
 package smartin.miapi.item.modular;
 
 import com.google.gson.JsonElement;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.Pair;
 import smartin.miapi.Miapi;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.util.MergeType;
@@ -10,12 +8,14 @@ import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Tuple;
 
 /**
  * This class manages Properties for Items
  */
 public class PropertyResolver {
-    public static List<Pair<Identifier, PropertyProvider>> registry = Collections.synchronizedList(new ArrayList<>());
+    public static List<Tuple<ResourceLocation, PropertyProvider>> registry = Collections.synchronizedList(new ArrayList<>());
 
     /**
      * Resolves {@link ModuleProperty} maps for an {@link ModuleInstance}
@@ -30,7 +30,7 @@ public class PropertyResolver {
             }
         });
         registry.forEach((pair) -> {
-            PropertyProvider propertyProvider = pair.getRight();
+            PropertyProvider propertyProvider = pair.getB();
             moduleInstance.allSubModules().forEach(instance -> {
                 if (instance.rawProperties == null) {
                     instance.rawProperties = new ConcurrentHashMap<>();
@@ -48,16 +48,16 @@ public class PropertyResolver {
      * @param before            all the entries that should resolve after this entry, it will be registered as late as possible
      * @return the now registered {@link PropertyProvider}
      */
-    public static PropertyProvider register(Identifier identifier, PropertyProvider propertyProvider, Collection<Identifier> before) {
-        Pair<Identifier, PropertyProvider> entry = new Pair<>(identifier, propertyProvider);
+    public static PropertyProvider register(ResourceLocation identifier, PropertyProvider propertyProvider, Collection<ResourceLocation> before) {
+        Tuple<ResourceLocation, PropertyProvider> entry = new Tuple<>(identifier, propertyProvider);
 
         // Remove existing entries with the same identifier
-        registry.removeIf(pair -> pair.getLeft().equals(identifier));
+        registry.removeIf(pair -> pair.getA().equals(identifier));
 
         // Find position to insert after identifiers
         int index = 0;
-        for (Pair<Identifier, PropertyProvider> pair : registry) {
-            if (before.contains(pair.getLeft())) {
+        for (Tuple<ResourceLocation, PropertyProvider> pair : registry) {
+            if (before.contains(pair.getA())) {
                 registry.add(index, entry);
                 return propertyProvider;
             }
@@ -69,8 +69,8 @@ public class PropertyResolver {
         return propertyProvider;
     }
 
-    public static PropertyProvider register(Identifier identifier, PropertyProvider propertyProvider) {
-        registry.add(new Pair<>(identifier, propertyProvider));
+    public static PropertyProvider register(ResourceLocation identifier, PropertyProvider propertyProvider) {
+        registry.add(new Tuple<>(identifier, propertyProvider));
         return propertyProvider;
     }
 

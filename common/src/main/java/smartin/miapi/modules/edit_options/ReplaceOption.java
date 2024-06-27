@@ -2,10 +2,10 @@ package smartin.miapi.modules.edit_options;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.inventory.Inventory;
-import net.minecraft.inventory.SimpleInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.Container;
+import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.InteractAbleWidget;
@@ -31,22 +31,22 @@ public class ReplaceOption implements EditOption {
     public static CraftAction unsafeCraftAction;
 
     @Override
-    public ItemStack preview(PacketByteBuf buffer, EditContext editContext) {
+    public ItemStack preview(FriendlyByteBuf buffer, EditContext editContext) {
         CraftAction action = new CraftAction(buffer, editContext.getWorkbench());
         if (editContext.getLinkedInventory() == null) {
             return ItemStack.EMPTY;
         }
-        ItemStack itemStack = editContext.getLinkedInventory().getStack(0);
+        ItemStack itemStack = editContext.getLinkedInventory().getItem(0);
         action.setItem(itemStack);
-        Inventory inventory = editContext.getLinkedInventory();
+        Container inventory = editContext.getLinkedInventory();
         boolean hasPreviewMaterial = false;
         if (
                 PreviewManager.currentPreviewMaterial != null
         ) {
             hasPreviewMaterial = true;
-            inventory = new SimpleInventory(2);
-            PreviewManager.currentPreviewMaterialStack.getDamage();
-            inventory.setStack(1, PreviewManager.currentPreviewMaterialStack);
+            inventory = new SimpleContainer(2);
+            PreviewManager.currentPreviewMaterialStack.getDamageValue();
+            inventory.setItem(1, PreviewManager.currentPreviewMaterialStack);
         }
         action.linkInventory(inventory, 1);
 
@@ -84,14 +84,14 @@ public class ReplaceOption implements EditOption {
     }
 
     @Override
-    public ItemStack execute(PacketByteBuf buffer, EditContext editContext) {
+    public ItemStack execute(FriendlyByteBuf buffer, EditContext editContext) {
         CraftAction action = new CraftAction(buffer, editContext.getWorkbench());
-        action.setItem(editContext.getLinkedInventory().getStack(0));
+        action.setItem(editContext.getLinkedInventory().getItem(0));
         action.linkInventory(editContext.getLinkedInventory(), 1);
         if (action.canPerform()) {
             return action.perform();
         } else {
-            Miapi.LOGGER.warn("Could not previewStack Craft Action. This might indicate an exploit by " + editContext.getPlayer().getUuidAsString());
+            Miapi.LOGGER.warn("Could not previewStack Craft Action. This might indicate an exploit by " + editContext.getPlayer().getStringUUID());
             return editContext.getItemstack();
         }
     }
@@ -112,6 +112,6 @@ public class ReplaceOption implements EditOption {
     @Override
     public InteractAbleWidget getIconGui(int x, int y, int width, int height, Consumer<EditOption> select, Supplier<EditOption> getSelected) {
         unsafeEditContext = null;
-        return new EditOptionIcon(x, y, width, height, select, getSelected, CraftingScreen.BACKGROUND_TEXTURE, 339 + 32, 25, 512, 512, "miapi.ui.edit_option.hover.replace", this);
+        return new EditOptionIcon(x, y, width, height, select, getSelected, CraftingScreen.INVENTORY_LOCATION, 339 + 32, 25, 512, 512, "miapi.ui.edit_option.hover.replace", this);
     }
 }

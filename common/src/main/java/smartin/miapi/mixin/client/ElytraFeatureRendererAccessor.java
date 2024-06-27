@@ -1,14 +1,13 @@
 package smartin.miapi.mixin.client;
 
-import net.minecraft.client.render.entity.feature.ElytraFeatureRenderer;
-import net.minecraft.client.render.entity.model.ElytraEntityModel;
-import net.minecraft.client.render.entity.model.EntityModel;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.client.model.ElytraModel;
+import net.minecraft.client.renderer.entity.layers.ElytraLayer;
+import net.minecraft.world.entity.LivingEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
-@Mixin(ElytraFeatureRenderer.class)
+@Mixin(ElytraLayer.class)
 public interface ElytraFeatureRendererAccessor<T extends LivingEntity> {
     @Accessor
-    ElytraEntityModel<T> getElytra();
+    ElytraModel<T> getElytra();
 }

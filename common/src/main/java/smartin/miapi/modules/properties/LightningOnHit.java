@@ -1,12 +1,12 @@
 package smartin.miapi.modules.properties;
 
 import dev.architectury.event.EventResult;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LightningEntity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LightningBolt;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.Vec3;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.modules.properties.util.DoubleProperty;
 
@@ -18,14 +18,14 @@ public class LightningOnHit extends DoubleProperty {
         super(KEY);
         property = this;
         MiapiEvents.LIVING_HURT.register((listener) -> {
-            if (!listener.livingEntity.getWorld().isClient() && listener.damageSource.getAttacker() instanceof LivingEntity attacker) {
-                double lightningStrength = getForItems(attacker.getEquippedItems());
+            if (!listener.livingEntity.level().isClientSide() && listener.damageSource.getEntity() instanceof LivingEntity attacker) {
+                double lightningStrength = getForItems(attacker.getAllSlots());
                 for (int i = 0; i < lightningStrength; i++) {
-                    LightningEntity lightningEntity = EntityType.LIGHTNING_BOLT.create(listener.livingEntity.getWorld());
+                    LightningBolt lightningEntity = EntityType.LIGHTNING_BOLT.create(listener.livingEntity.level());
                     assert lightningEntity != null;
-                    lightningEntity.refreshPositionAfterTeleport(Vec3d.ofBottomCenter(listener.livingEntity.getBlockPos()));
-                    lightningEntity.setChanneler(attacker instanceof ServerPlayerEntity ? (ServerPlayerEntity) attacker : null);
-                    listener.livingEntity.getWorld().spawnEntity(lightningEntity);
+                    lightningEntity.moveTo(Vec3.atBottomCenterOf(listener.livingEntity.blockPosition()));
+                    lightningEntity.setCause(attacker instanceof ServerPlayer ? (ServerPlayer) attacker : null);
+                    listener.livingEntity.level().addFreshEntity(lightningEntity);
                 }
             }
             return EventResult.pass();

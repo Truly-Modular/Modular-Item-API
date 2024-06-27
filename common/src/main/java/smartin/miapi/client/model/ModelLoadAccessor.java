@@ -2,7 +2,7 @@ package smartin.miapi.client.model;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.model.ModelLoader;
+import net.minecraft.client.resources.model.ModelBakery;
 
 /**
  * An Accessor to a ModelLoader instance, if no ModelLoader is found it creates a new one
@@ -13,13 +13,13 @@ public class ModelLoadAccessor {
     private ModelLoadAccessor(){
 
     }
-    private static ModelLoader loader;
+    private static ModelBakery loader;
 
-    public static ModelLoader getLoader(){
+    public static ModelBakery getLoader(){
         return loader;
     }
 
-    public static void setLoader(ModelLoader loader){
+    public static void setLoader(ModelBakery loader){
         ModelLoadAccessor.loader = loader;
     }
 }

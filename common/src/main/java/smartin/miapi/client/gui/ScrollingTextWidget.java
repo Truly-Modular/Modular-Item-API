@@ -2,11 +2,11 @@ package smartin.miapi.client.gui;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.Drawable;
-import net.minecraft.client.gui.Element;
-import net.minecraft.text.Text;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Renderable;
+import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.network.chat.Component;
 import org.joml.Vector4f;
 
 /**
@@ -16,8 +16,8 @@ import org.joml.Vector4f;
  * of time before starting again.
  */
 @Environment(EnvType.CLIENT)
-public class ScrollingTextWidget extends InteractAbleWidget implements Drawable, Element {
-    private Text text;
+public class ScrollingTextWidget extends InteractAbleWidget implements Renderable, GuiEventListener {
+    private Component text;
     private float timer = 0;
     private int scrollPosition = 0;
     /**
@@ -48,8 +48,8 @@ public class ScrollingTextWidget extends InteractAbleWidget implements Drawable,
      * @param text      the text in question
      * @param textColor the TextColor of the Text
      */
-    public ScrollingTextWidget(int x, int y, int maxWidth, Text text, int textColor) {
-        super(x, y, maxWidth, 9, Text.empty());
+    public ScrollingTextWidget(int x, int y, int maxWidth, Component text, int textColor) {
+        super(x, y, maxWidth, 9, Component.empty());
         this.textColor = textColor;
         setText(text);
         orientation = Orientation.LEFT;
@@ -58,8 +58,8 @@ public class ScrollingTextWidget extends InteractAbleWidget implements Drawable,
     /**
      * Same thing as above but text color is automatically taken from the text component
      */
-    public ScrollingTextWidget(int x, int y, int maxWidth, Text text) {
-        super(x, y, maxWidth, 9, Text.empty());
+    public ScrollingTextWidget(int x, int y, int maxWidth, Component text) {
+        super(x, y, maxWidth, 9, Component.empty());
         this.textColor = -1;
         setText(text);
         orientation = Orientation.LEFT;
@@ -70,7 +70,7 @@ public class ScrollingTextWidget extends InteractAbleWidget implements Drawable,
      *
      * @param text the Text of the scroller
      */
-    public void setText(Text text) {
+    public void setText(Component text) {
         this.text = text;
         scrollPosition = 0;
         timer = -firstLetterExtraTime;
@@ -81,7 +81,7 @@ public class ScrollingTextWidget extends InteractAbleWidget implements Drawable,
      *
      * @return the Text of the Widget
      */
-    public Text getText() {
+    public Component getText() {
         return text;
     }
 
@@ -99,8 +99,8 @@ public class ScrollingTextWidget extends InteractAbleWidget implements Drawable,
      *                This is needed for animations and co
      */
     @Override
-    public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
-        int textWidth = MinecraftClient.getInstance().textRenderer.getWidth(text);
+    public void renderWidget(GuiGraphics context, int mouseX, int mouseY, float delta) {
+        int textWidth = Minecraft.getInstance().font.width(text);
         boolean scissorEnabled = false;
         int textStart = getX();
         switch (orientation) {
@@ -115,8 +115,8 @@ public class ScrollingTextWidget extends InteractAbleWidget implements Drawable,
             if (scrollPosition < string.length()) {
                 String sub = string.substring(0, scrollPosition);
                 String remaining = string.substring(Math.min(string.length() - 1, scrollPosition + 1));
-                int subLength = MinecraftClient.getInstance().textRenderer.getWidth(sub);
-                int remainingLength = MinecraftClient.getInstance().textRenderer.getWidth(remaining);
+                int subLength = Minecraft.getInstance().font.width(sub);
+                int remainingLength = Minecraft.getInstance().font.width(remaining);
                 offsetAmount = -subLength;
                 if (remainingLength <= width)
                     stallScrollPos = true;
@@ -133,20 +133,20 @@ public class ScrollingTextWidget extends InteractAbleWidget implements Drawable,
             }
 
             textStart += offsetAmount;
-            Vector4f corner1 = TransformableWidget.transFormMousePos(getX(), getY(), context.getMatrices().peek().getPositionMatrix());
-            Vector4f corner2 = TransformableWidget.transFormMousePos(getX() + width, getY() + height, context.getMatrices().peek().getPositionMatrix());
+            Vector4f corner1 = TransformableWidget.transFormMousePos(getX(), getY(), context.pose().last().pose());
+            Vector4f corner2 = TransformableWidget.transFormMousePos(getX() + width, getY() + height, context.pose().last().pose());
             context.enableScissor((int) corner1.x, (int) corner1.y, (int) corner2.x + 1, (int) corner2.y);
             scissorEnabled = true;
         }
         if (text != null) {
-            context.drawText(MinecraftClient.getInstance().textRenderer, text, textStart, getY(), textColor, hasTextShadow);
+            context.drawString(Minecraft.getInstance().font, text, textStart, getY(), textColor, hasTextShadow);
         }
         if (scissorEnabled) context.disableScissor();
         super.render(context, mouseX, mouseY, delta);
     }
 
     public int getRequiredWidth() {
-        return Math.min(this.width, MinecraftClient.getInstance().textRenderer.getWidth(text));
+        return Math.min(this.width, Minecraft.getInstance().font.width(text));
     }
 
     public enum Orientation {

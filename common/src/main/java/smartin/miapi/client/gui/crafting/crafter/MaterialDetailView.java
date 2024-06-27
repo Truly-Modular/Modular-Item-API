@@ -1,11 +1,5 @@
 package smartin.miapi.client.gui.crafting.crafter;
 
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.item.ItemStack;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.Util;
-import net.minecraft.util.math.ColorHelper;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.*;
 import smartin.miapi.modules.material.Material;
@@ -17,13 +11,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.function.Consumer;
+import net.minecraft.Util;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FastColor;
+import net.minecraft.world.item.ItemStack;
 
 public class MaterialDetailView extends InteractAbleWidget {
     private ItemStack itemStack;
     private Consumer<Object> back;
     private ScrollingTextWidget header;
     private Material material;
-    private Identifier texture = Identifier.of(Miapi.MOD_ID, "textures/gui/crafter/material_detail_background.png");
+    private ResourceLocation texture = ResourceLocation.fromNamespaceAndPath(Miapi.MOD_ID, "textures/gui/crafter/material_detail_background.png");
     private float scale = 1.5f;
     public static List<Builder> infoBarBuilders = new ArrayList<>();
 
@@ -49,12 +49,12 @@ public class MaterialDetailView extends InteractAbleWidget {
     }
 
     public MaterialDetailView(int x, int y, int width, int height, ItemStack stack, Consumer<Object> back) {
-        super(x, y, width, height, Text.empty());
+        super(x, y, width, height, Component.empty());
         this.itemStack = stack;
         this.back = back;
         this.material = MaterialProperty.getMaterialFromIngredient(stack);
         TransformableWidget headerScaler = new TransformableWidget(this.getX(), this.getY(), this.getWidth(), this.getHeight(), scale);
-        this.header = new ScrollingTextWidget((int) ((x + 5) * (1 / scale)), (int) ((y + 5) * (1 / scale)), width, Text.translatable(material.getData("translation")), ColorHelper.Argb.getArgb(255, 255, 255, 255));
+        this.header = new ScrollingTextWidget((int) ((x + 5) * (1 / scale)), (int) ((y + 5) * (1 / scale)), width, Component.translatable(material.getData("translation")), FastColor.ARGB32.color(255, 255, 255, 255));
         headerScaler.addChild(header);
         this.addChild(headerScaler);
         int spacer = 13;
@@ -72,7 +72,7 @@ public class MaterialDetailView extends InteractAbleWidget {
     }
 
     @Override
-    public void renderWidget(DrawContext drawContext, int mouseX, int mouseY, float delta) {
+    public void renderWidget(GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
         //drawTextureWithEdge(drawContext, texture, getX(), getY(), getWidth(), getHeight(), 160, 190, 10);
         if (material != null && material.hasIcon()) {
             material.renderIcon(drawContext, (int) (getX() + 5 + header.getRequiredWidth() * scale), getY() + 5);
@@ -86,14 +86,14 @@ public class MaterialDetailView extends InteractAbleWidget {
         int color;
 
         public ColorWidget(int x, int y, int width, int height, int color) {
-            super(x, y, width, height, Text.empty());
-            textWidget = new ScrollingTextWidget(x, y, textWidth, Text.translatable(Miapi.MOD_ID + ".material_stat.color"), ColorHelper.Argb.getArgb(255, 255, 255, 255));
+            super(x, y, width, height, Component.empty());
+            textWidget = new ScrollingTextWidget(x, y, textWidth, Component.translatable(Miapi.MOD_ID + ".material_stat.color"), FastColor.ARGB32.color(255, 255, 255, 255));
             this.addChild(textWidget);
             this.color = color;
         }
 
         @Override
-        public void renderWidget(DrawContext drawContext, int mouseX, int mouseY, float delta) {
+        public void renderWidget(GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
             textWidget.setX(this.getX());
             textWidget.setY(this.getY());
             super.render(drawContext, mouseX, mouseY, delta);
@@ -111,30 +111,30 @@ public class MaterialDetailView extends InteractAbleWidget {
         public static int spacer = 1;
         public ScrollingTextWidget valueHolder;
 
-        public InfoBar(int x, int y, int width, int height, Text text, float value, float min, float max) {
+        public InfoBar(int x, int y, int width, int height, Component text, float value, float min, float max) {
             this(x, y, width, height, text, value, min, max, "##.##");
         }
 
-        public InfoBar(int x, int y, int width, int height, Text text, float value, float min, float max, String format) {
-            super(x, y, width, height, Text.empty());
+        public InfoBar(int x, int y, int width, int height, Component text, float value, float min, float max, String format) {
+            super(x, y, width, height, Component.empty());
             max = Math.max(value, max);
             min = Math.min(value, min);
-            this.textWidget = new ScrollingTextWidget(x, y, textWidth, text, ColorHelper.Argb.getArgb(255, 255, 255, 255));
-            this.statBar = new StatBar(x + textWidth + spacer, y + 3, barWitdh, 2, ColorHelper.Argb.getArgb(255, 0, 0, 0));
+            this.textWidget = new ScrollingTextWidget(x, y, textWidth, text, FastColor.ARGB32.color(255, 255, 255, 255));
+            this.statBar = new StatBar(x + textWidth + spacer, y + 3, barWitdh, 2, FastColor.ARGB32.color(255, 0, 0, 0));
             DecimalFormat modifierFormat = Util.make(new DecimalFormat(format), (decimalFormat) -> {
                 decimalFormat.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ROOT));
             });
             float primaryPercent = (value - min) / (max - min);
-            statBar.setPrimary(primaryPercent, ColorHelper.Argb.getArgb(255, 255, 255, 255));
-            statBar.setSecondary(primaryPercent, ColorHelper.Argb.getArgb(255, 255, 255, 255));
-            this.valueHolder = new ScrollingTextWidget(x + textWidth + barWitdh + spacer * 2, y, width - textWidth + barWitdh, Text.literal(modifierFormat.format(value)), ColorHelper.Argb.getArgb(255, 255, 255, 255));
+            statBar.setPrimary(primaryPercent, FastColor.ARGB32.color(255, 255, 255, 255));
+            statBar.setSecondary(primaryPercent, FastColor.ARGB32.color(255, 255, 255, 255));
+            this.valueHolder = new ScrollingTextWidget(x + textWidth + barWitdh + spacer * 2, y, width - textWidth + barWitdh, Component.literal(modifierFormat.format(value)), FastColor.ARGB32.color(255, 255, 255, 255));
             this.addChild(textWidget);
             this.addChild(statBar);
             this.addChild(valueHolder);
         }
 
         @Override
-        public void renderWidget(DrawContext drawContext, int mouseX, int mouseY, float delta) {
+        public void renderWidget(GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
             textWidget.setX(this.getX());
             textWidget.setY(this.getY());
             statBar.setX(getX() + textWidth);
@@ -172,7 +172,7 @@ public class MaterialDetailView extends InteractAbleWidget {
         }
 
         public InteractAbleWidget build(int x,int y,int width,int spacer, Material material){
-            return new InfoBar(x + 10, y, width - 10, spacer, Text.translatable(Miapi.MOD_ID + ".material_stat." + key), (float) material.getDouble(key), min, max, format);
+            return new InfoBar(x + 10, y, width - 10, spacer, Component.translatable(Miapi.MOD_ID + ".material_stat." + key), (float) material.getDouble(key), min, max, format);
         }
     }
 }

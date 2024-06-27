@@ -2,8 +2,8 @@ package smartin.miapi.modules.properties;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import net.minecraft.util.Pair;
-import net.minecraft.item.ItemStack;
+import net.minecraft.util.Tuple;
+import net.minecraft.world.item.ItemStack;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.util.MergeType;
@@ -35,9 +35,9 @@ public class RiptideProperty implements ModuleProperty {
             return new RiptideJson(context.contextJson, context.contextInstance);
         }
 
-        Pair<ModuleInstance, JsonElement> element = property.highestPriorityJsonElement(itemStack);
+        Tuple<ModuleInstance, JsonElement> element = property.highestPriorityJsonElement(itemStack);
         if (element != null) {
-            return new RiptideJson(element.getRight().getAsJsonObject(), element.getLeft());
+            return new RiptideJson(element.getB().getAsJsonObject(), element.getA());
         }
         return null;
     }

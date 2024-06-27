@@ -2,22 +2,21 @@ package smartin.miapi.modules.material.palette;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.item.ItemRenderer;
-import net.minecraft.client.render.model.json.ModelTransformationMode;
-import net.minecraft.client.texture.Animator;
-import net.minecraft.client.texture.NativeImage;
-import net.minecraft.client.texture.Sprite;
-import net.minecraft.client.texture.SpriteContents;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.entity.ItemRenderer;
+import net.minecraft.client.renderer.texture.SpriteContents;
+import net.minecraft.client.renderer.texture.SpriteTicker;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemDisplayContext;
+import net.minecraft.world.item.ItemStack;
 import smartin.miapi.client.atlas.MaterialSpriteManager;
 import smartin.miapi.client.renderer.RescaledVertexConsumer;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.material.Material;
-
+import com.mojang.blaze3d.platform.NativeImage;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.function.Consumer;
@@ -27,7 +26,7 @@ import java.util.function.Consumer;
  * it works hand-in-hand with {@link MaterialSpriteManager} to accomplish that
  */
 public abstract class SpriteColorer implements MaterialRenderController {
-    public static Map<Sprite, RescaledVertexConsumer> lookupMap = new WeakHashMap<>();
+    public static Map<TextureAtlasSprite, RescaledVertexConsumer> lookupMap = new WeakHashMap<>();
     public Material material;
 
     public SpriteColorer(Material material) {
@@ -65,14 +64,14 @@ public abstract class SpriteColorer implements MaterialRenderController {
     public abstract boolean doTick();
 
     @Environment(EnvType.CLIENT)
-    public VertexConsumer getVertexConsumer(VertexConsumerProvider vertexConsumers, Sprite originalSprite, ItemStack stack, ModuleInstance moduleInstance, ModelTransformationMode mode) {
-        Identifier replaceId = MaterialSpriteManager.getMaterialSprite(originalSprite, material, this);
-        RenderLayer atlasRenderLayer = RenderLayer.getEntityTranslucentCull(replaceId);
-        VertexConsumer atlasConsumer = ItemRenderer.getDirectItemGlintConsumer(vertexConsumers, atlasRenderLayer, true, false);
+    public VertexConsumer getVertexConsumer(MultiBufferSource vertexConsumers, TextureAtlasSprite originalSprite, ItemStack stack, ModuleInstance moduleInstance, ItemDisplayContext mode) {
+        ResourceLocation replaceId = MaterialSpriteManager.getMaterialSprite(originalSprite, material, this);
+        RenderType atlasRenderLayer = RenderType.entityTranslucentCull(replaceId);
+        VertexConsumer atlasConsumer = ItemRenderer.getFoilBufferDirect(vertexConsumers, atlasRenderLayer, true, false);
         return getVertexConsumer(atlasConsumer, originalSprite);
     }
 
-    public static RescaledVertexConsumer getVertexConsumer(VertexConsumer vertexConsumer, Sprite sprite) {
+    public static RescaledVertexConsumer getVertexConsumer(VertexConsumer vertexConsumer, TextureAtlasSprite sprite) {
         RescaledVertexConsumer rescaled = lookupMap.computeIfAbsent(sprite, (s) -> new RescaledVertexConsumer(vertexConsumer, sprite));
         rescaled.delegate = vertexConsumer;
         return rescaled;
@@ -83,7 +82,7 @@ public abstract class SpriteColorer implements MaterialRenderController {
     }
 
     public static boolean isAnimatedSpriteStatic(SpriteContents spriteContents) {
-        try (Animator animator = spriteContents.createAnimator()) {
+        try (SpriteTicker animator = spriteContents.createTicker()) {
             if (animator != null) {
                 return true;
             }

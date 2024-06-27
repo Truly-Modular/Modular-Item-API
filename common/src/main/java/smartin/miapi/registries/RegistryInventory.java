@@ -2,6 +2,8 @@ package smartin.miapi.registries;
 
 import com.google.common.base.Suppliers;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.VertexFormat;
 import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.platform.Platform;
 import dev.architectury.registry.CreativeTabRegistry;
@@ -11,39 +13,39 @@ import dev.architectury.registry.registries.RegistrySupplier;
 import dev.architectury.utils.Env;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.block.AbstractBlock;
-import net.minecraft.block.Block;
-import net.minecraft.block.MapColor;
-import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.block.enums.NoteBlockInstrument;
-import net.minecraft.block.piston.PistonBehavior;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gl.ShaderProgram;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.RenderPhase;
-import net.minecraft.client.render.VertexFormat;
-import net.minecraft.client.render.VertexFormats;
-import net.minecraft.client.texture.SpriteAtlasTexture;
-import net.minecraft.component.ComponentType;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.SpawnGroup;
-import net.minecraft.entity.attribute.ClampedEntityAttribute;
-import net.minecraft.entity.attribute.EntityAttribute;
-import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
-import net.minecraft.recipe.RecipeSerializer;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.tag.TagKey;
-import net.minecraft.resource.featuretoggle.FeatureSet;
-import net.minecraft.screen.ScreenHandlerType;
-import net.minecraft.sound.BlockSoundGroup;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.Util;
-import net.minecraft.world.event.GameEvent;
+import net.minecraft.Util;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.RenderStateShard;
+import net.minecraft.client.renderer.RenderStateShard.MultiTextureStateShard;
+import net.minecraft.client.renderer.RenderStateShard.TextureStateShard;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.ShaderInstance;
+import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.core.component.DataComponentType;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.ai.attributes.RangedAttribute;
+import net.minecraft.world.flag.FeatureFlagSet;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
+import net.minecraft.world.level.gameevent.GameEvent;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.material.PushReaction;
 import org.joml.Matrix4f;
 import smartin.miapi.Miapi;
 import smartin.miapi.attributes.AttributeRegistry;
@@ -99,7 +101,7 @@ import smartin.miapi.modules.synergies.SynergyManager;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import static net.minecraft.client.render.RenderPhase.*;
+import static net.minecraft.client.renderer.RenderStateShard.*;
 import static smartin.miapi.Miapi.MOD_ID;
 import static smartin.miapi.attributes.AttributeRegistry.*;
 import static smartin.miapi.modules.abilities.util.ItemAbilityManager.useAbilityRegistry;
@@ -108,46 +110,46 @@ import static smartin.miapi.modules.conditions.ConditionManager.moduleConditionR
 public class RegistryInventory {
     public static final Supplier<RegistrarManager> registrar = Suppliers.memoize(() -> RegistrarManager.get(MOD_ID));
 
-    public static final MiapiRegistrar<Item> modularItems = MiapiRegistrar.of(registrar.get().get(RegistryKeys.ITEM));
-    public static final Registrar<Item> items = registrar.get().get(RegistryKeys.ITEM);
-    public static final Registrar<ComponentType<?>> components = registrar.get().get(RegistryKeys.DATA_COMPONENT_TYPE);
-    public static final Registrar<Block> blocks = registrar.get().get(RegistryKeys.BLOCK);
-    public static final Registrar<BlockEntityType<?>> blockEntities = registrar.get().get(RegistryKeys.BLOCK_ENTITY_TYPE);
-    public static final Registrar<EntityAttribute> attributes = registrar.get().get(RegistryKeys.ATTRIBUTE);
-    public static final Registrar<EntityType<?>> entityTypes = registrar.get().get(RegistryKeys.ENTITY_TYPE);
-    public static final Registrar<ScreenHandlerType<?>> screenHandlers = registrar.get().get(RegistryKeys.SCREEN_HANDLER);
-    public static final Registrar<StatusEffect> statusEffects = registrar.get().get(RegistryKeys.STATUS_EFFECT);
-    public static final Registrar<ItemGroup> tab = registrar.get().get(RegistryKeys.ITEM_GROUP);
-    public static final Registrar<GameEvent> gameEvents = registrar.get().get(RegistryKeys.GAME_EVENT);
-    public static final Registrar<RecipeSerializer<?>> recipeSerializers = registrar.get().get(RegistryKeys.RECIPE_SERIALIZER);
+    public static final MiapiRegistrar<Item> modularItems = MiapiRegistrar.of(registrar.get().get(Registries.ITEM));
+    public static final Registrar<Item> items = registrar.get().get(Registries.ITEM);
+    public static final Registrar<DataComponentType<?>> components = registrar.get().get(Registries.DATA_COMPONENT_TYPE);
+    public static final Registrar<Block> blocks = registrar.get().get(Registries.BLOCK);
+    public static final Registrar<BlockEntityType<?>> blockEntities = registrar.get().get(Registries.BLOCK_ENTITY_TYPE);
+    public static final Registrar<Attribute> attributes = registrar.get().get(Registries.ATTRIBUTE);
+    public static final Registrar<EntityType<?>> entityTypes = registrar.get().get(Registries.ENTITY_TYPE);
+    public static final Registrar<MenuType<?>> screenHandlers = registrar.get().get(Registries.MENU);
+    public static final Registrar<MobEffect> statusEffects = registrar.get().get(Registries.MOB_EFFECT);
+    public static final Registrar<CreativeModeTab> tab = registrar.get().get(Registries.CREATIVE_MODE_TAB);
+    public static final Registrar<GameEvent> gameEvents = registrar.get().get(Registries.GAME_EVENT);
+    public static final Registrar<RecipeSerializer<?>> recipeSerializers = registrar.get().get(Registries.RECIPE_SERIALIZER);
     public static final MiapiRegistry<ModuleProperty> moduleProperties = MiapiRegistry.getInstance(ModuleProperty.class);
     public static final MiapiRegistry<ItemModule> modules = MiapiRegistry.getInstance(ItemModule.class);
     public static final MiapiRegistry<EditOption> editOptions = MiapiRegistry.getInstance(EditOption.class);
     public static final MiapiRegistry<CraftingStat> craftingStats = MiapiRegistry.getInstance(CraftingStat.class);
-    public static final TagKey<Item> MIAPI_FORBIDDEN_TAG = TagKey.of(RegistryKeys.ITEM, Identifier.of("miapi_forbidden"));
+    public static final TagKey<Item> MIAPI_FORBIDDEN_TAG = TagKey.create(Registries.ITEM, ResourceLocation.parse("miapi_forbidden"));
 
-    public static <T> RegistrySupplier<T> registerAndSupply(Registrar<T> rg, Identifier id, Supplier<T> object) {
+    public static <T> RegistrySupplier<T> registerAndSupply(Registrar<T> rg, ResourceLocation id, Supplier<T> object) {
         return rg.register(id, object);
     }
 
     public static <T> RegistrySupplier<T> registerAndSupply(Registrar<T> rg, String id, Supplier<T> object) {
-        return registerAndSupply(rg, Identifier.of(MOD_ID, id), object);
+        return registerAndSupply(rg, ResourceLocation.fromNamespaceAndPath(MOD_ID, id), object);
     }
 
-    public static <T, E extends T> void register(Registrar<T> rg, Identifier id, Supplier<E> object, Consumer<E> onRegister) {
+    public static <T, E extends T> void register(Registrar<T> rg, ResourceLocation id, Supplier<E> object, Consumer<E> onRegister) {
         rg.register(id, object).listen(onRegister);
     }
 
     public static <T, E extends T> void register(Registrar<T> rg, String id, Supplier<E> object, Consumer<E> onRegister) {
-        register(rg, Identifier.of(MOD_ID, id), object, onRegister);
+        register(rg, ResourceLocation.fromNamespaceAndPath(MOD_ID, id), object, onRegister);
     }
 
-    public static <T> void register(Registrar<T> rg, Identifier id, Supplier<T> object) {
+    public static <T> void register(Registrar<T> rg, ResourceLocation id, Supplier<T> object) {
         rg.register(id, object);
     }
 
     public static <T> void register(Registrar<T> rg, String id, Supplier<T> object) {
-        register(rg, Identifier.of(MOD_ID, id), object);
+        register(rg, ResourceLocation.fromNamespaceAndPath(MOD_ID, id), object);
     }
 
     public static <T> void registerMiapi(MiapiRegistry<T> rg, String id, T object) {
@@ -171,11 +173,11 @@ public class RegistryInventory {
      * @param sup        Supplier of the actual attribute
      * @param onRegister Callback for after the attribute is actually registered. Use this to set static fields
      */
-    public static void registerAtt(String id, boolean attach, Supplier<EntityAttribute> sup, Consumer<EntityAttribute> onRegister) {
-        Identifier rl = Identifier.of(MOD_ID, id);
+    public static void registerAtt(String id, boolean attach, Supplier<Attribute> sup, Consumer<Attribute> onRegister) {
+        ResourceLocation rl = ResourceLocation.fromNamespaceAndPath(MOD_ID, id);
         String stringId = rl.toString();
 
-        RegistrySupplier<EntityAttribute> obj = attributes.register(rl, sup); // actually register the object
+        RegistrySupplier<Attribute> obj = attributes.register(rl, sup); // actually register the object
         obj.listen(onRegister); // attach the onRegister callback, usually used to set the value of fields.
 
         if (attach) // if it should automatically attach to an entity, add another listener to do that (this is equivalent to the old registerOnEntity)
@@ -189,18 +191,18 @@ public class RegistryInventory {
     public static Item visualOnlymodularItem;
     public static Item modularAxe;
     public static Item modularMattock;
-    public static StatusEffect cryoStatusEffect;
-    public static StatusEffect teleportBlockEffect;
-    public static StatusEffect stunEffect;
-    public static StatusEffect stunResistanceEffect;
+    public static MobEffect cryoStatusEffect;
+    public static MobEffect teleportBlockEffect;
+    public static MobEffect stunEffect;
+    public static MobEffect stunResistanceEffect;
     public static GameEvent statProviderCreatedEvent;
     public static GameEvent statProviderRemovedEvent;
     //public static SimpleCraftingStat exampleCraftingStat;
     public static RecipeSerializer serializer;
     public static RegistrySupplier<EntityType<ItemProjectileEntity>> itemProjectileType = (RegistrySupplier) registerAndSupply(entityTypes, "thrown_item", () ->
-            EntityType.Builder.create(ItemProjectileEntity::new, SpawnGroup.MISC).dimensions(0.5F, 0.5F).maxTrackingRange(4).trackingTickInterval(20).build("miapi:thrown_item"));
+            EntityType.Builder.of(ItemProjectileEntity::new, MobCategory.MISC).sized(0.5F, 0.5F).clientTrackingRange(4).updateInterval(20).build("miapi:thrown_item"));
     public static RegistrySupplier<EntityType<BoomerangItemProjectileEntity>> itemBoomerangProjectileType = (RegistrySupplier) registerAndSupply(entityTypes, "thrown_boomerang_item", () ->
-            EntityType.Builder.create(BoomerangItemProjectileEntity::new, SpawnGroup.MISC).dimensions(0.5F, 0.5F).maxTrackingRange(4).trackingTickInterval(20).build("miapi:thrown_boomerang_item"));
+            EntityType.Builder.of(BoomerangItemProjectileEntity::new, MobCategory.MISC).sized(0.5F, 0.5F).clientTrackingRange(4).updateInterval(20).build("miapi:thrown_boomerang_item"));
 
     static {
         itemProjectileType.listen(e -> {
@@ -209,14 +211,14 @@ public class RegistryInventory {
         });
     }
 
-    public static ScreenHandlerType<CraftingScreenHandler> craftingScreenHandler;
+    public static MenuType<CraftingScreenHandler> craftingScreenHandler;
 
     public static void setup() {
         //SCREEN
         register(screenHandlers, "default_crafting", () ->
-                        new ScreenHandlerType<>(CraftingScreenHandler::new, FeatureSet.empty()),
+                        new MenuType<>(CraftingScreenHandler::new, FeatureFlagSet.of()),
                 scr -> {
-                    craftingScreenHandler = (ScreenHandlerType<CraftingScreenHandler>) scr;
+                    craftingScreenHandler = (MenuType<CraftingScreenHandler>) scr;
                     if (Platform.getEnvironment() == Env.CLIENT) MiapiClient.registerScreenHandler();
                 });
 
@@ -235,21 +237,21 @@ public class RegistryInventory {
 
         //BLOCK
         register(blocks, "modular_work_bench", () -> new ModularWorkBench(
-                AbstractBlock.Settings.create().
-                        mapColor(MapColor.IRON_GRAY).
+                BlockBehaviour.Properties.of().
+                        mapColor(MapColor.METAL).
                         instrument(NoteBlockInstrument.IRON_XYLOPHONE).
-                        requiresTool().
+                        requiresCorrectToolForDrops().
                         strength(2.5F, 6.0F).
-                        sounds(BlockSoundGroup.METAL).
-                        nonOpaque().
-                        pistonBehavior(PistonBehavior.IGNORE)), b -> modularWorkBench = b);
-        register(blockEntities, "modular_work_bench", () -> BlockEntityType.Builder.create(
+                        sound(SoundType.METAL).
+                        noOcclusion().
+                        pushReaction(PushReaction.IGNORE)), b -> modularWorkBench = b);
+        register(blockEntities, "modular_work_bench", () -> BlockEntityType.Builder.of(
                 ModularWorkBenchEntity::new, modularWorkBench
         ).build(null), be -> {
             modularWorkBenchEntityType = be;
             if (Platform.getEnvironment() == Env.CLIENT) MiapiClient.registerBlockEntityRenderer();
         });
-        register(items, "modular_work_bench", () -> new BlockItem(modularWorkBench, new Item.Settings()));
+        register(items, "modular_work_bench", () -> new BlockItem(modularWorkBench, new Item.Properties()));
 
 
 //        registerMiapi(craftingStats, "hammering", new SimpleCraftingStat(0), stat -> exampleCraftingStat = stat);
@@ -261,10 +263,10 @@ public class RegistryInventory {
         // CREATIVE TAB
         register(tab, "miapi_tab", () -> CreativeTabRegistry.create
                 (b -> {
-                    b.displayName(Text.translatable("miapi.tab.name"));
+                    b.title(Component.translatable("miapi.tab.name"));
                     b.icon(() -> new ItemStack(modularWorkBench));
-                    b.entries((displayContext, entries) -> {
-                        entries.add(modularWorkBench);
+                    b.displayItems((displayContext, entries) -> {
+                        entries.accept(modularWorkBench);
                     });
                 }));
 
@@ -330,90 +332,90 @@ public class RegistryInventory {
 
         // mining
         registerAtt("remove.mining_speed.pickaxe", false, () ->
-                        new ClampedEntityAttribute("miapi.attribute.name.mining_speed.pickaxe", 0.0, 0.0, 1024.0).setTracked(true),
+                        new RangedAttribute("miapi.attribute.name.mining_speed.pickaxe", 0.0, 0.0, 1024.0).setSyncable(true),
                 att -> MINING_SPEED_PICKAXE = att);
         registerAtt("remove.mining_speed.axe", false, () ->
-                        new ClampedEntityAttribute("miapi.attribute.name.mining_speed.axe", 0.0, 0.0, 1024.0).setTracked(true),
+                        new RangedAttribute("miapi.attribute.name.mining_speed.axe", 0.0, 0.0, 1024.0).setSyncable(true),
                 att -> MINING_SPEED_AXE = att);
         registerAtt("remove.mining_speed.shovel", false, () ->
-                        new ClampedEntityAttribute("miapi.attribute.name.mining_speed.shovel", 0.0, 0.0, 1024.0).setTracked(true),
+                        new RangedAttribute("miapi.attribute.name.mining_speed.shovel", 0.0, 0.0, 1024.0).setSyncable(true),
                 att -> MINING_SPEED_SHOVEL = att);
         registerAtt("remove.mining_speed.hoe", false, () ->
-                        new ClampedEntityAttribute("miapi.attribute.name.mining_speed.hoe", 0.0, 0.0, 1024.0).setTracked(true),
+                        new RangedAttribute("miapi.attribute.name.mining_speed.hoe", 0.0, 0.0, 1024.0).setSyncable(true),
                 att -> MINING_SPEED_HOE = att);
 
         // entity attached
         registerAtt("generic.resistance", true, () ->
-                        new ClampedEntityAttribute("miapi.attribute.name.resistance", 0.0, 0.0, 100).setTracked(true),
+                        new RangedAttribute("miapi.attribute.name.resistance", 0.0, 0.0, 100).setSyncable(true),
                 att -> DAMAGE_RESISTANCE = att);
         registerAtt("generic.back_stab", true, () ->
-                        new ClampedEntityAttribute("miapi.attribute.name.back_stab", 0.0, 0.0, 1024.0).setTracked(true),
+                        new RangedAttribute("miapi.attribute.name.back_stab", 0.0, 0.0, 1024.0).setSyncable(true),
                 att -> BACK_STAB = att);
         registerAtt("generic.armor_crushing", true, () ->
-                        new ClampedEntityAttribute("miapi.attribute.name.armor_crushing", 0.0, 0.0, 1024.0).setTracked(true),
+                        new RangedAttribute("miapi.attribute.name.armor_crushing", 0.0, 0.0, 1024.0).setSyncable(true),
                 att -> ARMOR_CRUSHING = att);
         registerAtt("generic.projectile_armor", true, () ->
-                        new ClampedEntityAttribute("miapi.attribute.name.projectile_armor", 0.0, 0.0, 1024.0).setTracked(true),
+                        new RangedAttribute("miapi.attribute.name.projectile_armor", 0.0, 0.0, 1024.0).setSyncable(true),
                 att -> PROJECTILE_ARMOR = att);
         registerAtt("generic.shield_break", true, () ->
-                        new ClampedEntityAttribute("miapi.attribute.name.shield_break", 0.0, 0.0, 1024.0).setTracked(true),
+                        new RangedAttribute("miapi.attribute.name.shield_break", 0.0, 0.0, 1024.0).setSyncable(true),
                 att -> SHIELD_BREAK = att);
 
         registerAtt("generic.player_item_use_speed", true, () ->
-                        new ClampedEntityAttribute("miapi.attribute.name.player_item_use_speed", -0.8, -1.0, 0.0).setTracked(true),
+                        new RangedAttribute("miapi.attribute.name.player_item_use_speed", -0.8, -1.0, 0.0).setSyncable(true),
                 att -> PLAYER_ITEM_USE_MOVEMENT_SPEED = att);
 
         registerAtt("generic.magic_damage", true, () ->
-                        new ClampedEntityAttribute("miapi.attribute.name.magic_damage", 0.0, 0.0, 1024.0).setTracked(true),
+                        new RangedAttribute("miapi.attribute.name.magic_damage", 0.0, 0.0, 1024.0).setSyncable(true),
                 att -> MAGIC_DAMAGE = att);
 
         registerAtt("generic.stun_damage", true, () ->
-                        new ClampedEntityAttribute("miapi.attribute.name.stun_damage", 0.0, 0.0, 1024.0).setTracked(true),
+                        new RangedAttribute("miapi.attribute.name.stun_damage", 0.0, 0.0, 1024.0).setSyncable(true),
                 att -> STUN_DAMAGE = att);
 
         registerAtt("generic.stun_max_health", true, () ->
-                        new ClampedEntityAttribute("miapi.attribute.name.stun_max_health", MiapiConfig.INSTANCE.server.stunEffectCategory.stunHealth, 0.0, 1024.0).setTracked(true),
+                        new RangedAttribute("miapi.attribute.name.stun_max_health", MiapiConfig.INSTANCE.server.stunEffectCategory.stunHealth, 0.0, 1024.0).setSyncable(true),
                 att -> STUN_MAX_HEALTH = att);
 
         registerAtt("generic.crit_damage", true, () ->
-                        new ClampedEntityAttribute("miapi.attribute.name.crit_damage", 0.0, 0.0, 1024.0).setTracked(true),
+                        new RangedAttribute("miapi.attribute.name.crit_damage", 0.0, 0.0, 1024.0).setSyncable(true),
                 att -> CRITICAL_DAMAGE = att);
 
         registerAtt("generic.crit_chance", true, () ->
-                        new ClampedEntityAttribute("miapi.attribute.name.crit_chance", 0.0, 0.0, 1024.0).setTracked(true),
+                        new RangedAttribute("miapi.attribute.name.crit_chance", 0.0, 0.0, 1024.0).setSyncable(true),
                 att -> CRITICAL_CHANCE = att);
 
         //projectile based
         registerAtt("generic.bow_draw_time", true, () ->
-                        new ClampedEntityAttribute("miapi.attribute.name.bow_draw_time", 0.0, -1024.0, 1024.0).setTracked(true),
+                        new RangedAttribute("miapi.attribute.name.bow_draw_time", 0.0, -1024.0, 1024.0).setSyncable(true),
                 att -> BOW_DRAW_TIME = att);
         registerAtt("generic.projectile_damage", true, () ->
-                        new ClampedEntityAttribute("miapi.attribute.name.projectile_damage", 0.0, -1024.0, 1024.0).setTracked(true),
+                        new RangedAttribute("miapi.attribute.name.projectile_damage", 0.0, -1024.0, 1024.0).setSyncable(true),
                 att -> PROJECTILE_DAMAGE = att);
         registerAtt("generic.projectile_speed", true, () ->
-                        new ClampedEntityAttribute("miapi.attribute.name.projectile_speed", 0.0, -1024.0, 1024.0).setTracked(true),
+                        new RangedAttribute("miapi.attribute.name.projectile_speed", 0.0, -1024.0, 1024.0).setSyncable(true),
                 att -> PROJECTILE_SPEED = att);
         registerAtt("generic.projectile_accuracy", true, () ->
-                        new ClampedEntityAttribute("miapi.attribute.name.projectile_accuracy", 0.0, -1024.0, 1024.0).setTracked(true),
+                        new RangedAttribute("miapi.attribute.name.projectile_accuracy", 0.0, -1024.0, 1024.0).setSyncable(true),
                 att -> PROJECTILE_ACCURACY = att);
         registerAtt("generic.projectile_piercing", true, () ->
-                        new ClampedEntityAttribute("miapi.attribute.name.projectile_piercing", 0.0, 0.0, 1024.0).setTracked(true),
+                        new RangedAttribute("miapi.attribute.name.projectile_piercing", 0.0, 0.0, 1024.0).setSyncable(true),
                 att -> PROJECTILE_PIERCING = att);
         registerAtt("generic.projectile_crit_multiplier", true, () ->
-                        new ClampedEntityAttribute("miapi.attribute.name.projectile_crit_multiplier", 1.5, 0.0, 1024.0).setTracked(true),
+                        new RangedAttribute("miapi.attribute.name.projectile_crit_multiplier", 1.5, 0.0, 1024.0).setSyncable(true),
                 att -> PROJECTILE_CRIT_MULTIPLIER = att);
 
         registerAtt("generic.elytra_turn_efficiency", true, () ->
-                        new ClampedEntityAttribute("miapi.attribute.name.elytra_turn_efficiency", 0.0, -1024.0, 100.0).setTracked(true),
+                        new RangedAttribute("miapi.attribute.name.elytra_turn_efficiency", 0.0, -1024.0, 100.0).setSyncable(true),
                 att -> ELYTRA_TURN_EFFICIENCY = att);
         registerAtt("generic.elytra_glide_efficiency", true, () ->
-                        new ClampedEntityAttribute("miapi.attribute.name.elytra_glide_efficiency", 0.0, -1024.0, 100.0).setTracked(true),
+                        new RangedAttribute("miapi.attribute.name.elytra_glide_efficiency", 0.0, -1024.0, 100.0).setSyncable(true),
                 att -> ELYTRA_GLIDE_EFFICIENCY = att);
         registerAtt("generic.elytra_rocket_efficiency", true, () ->
-                        new ClampedEntityAttribute("miapi.attribute.name.elytra_rocket_efficiency", 1.0, 0.0, 1024.0).setTracked(true),
+                        new RangedAttribute("miapi.attribute.name.elytra_rocket_efficiency", 1.0, 0.0, 1024.0).setSyncable(true),
                 att -> ELYTRA_ROCKET_EFFICIENCY = att);
         registerAtt("generic.shielding_armor", true, () ->
-                        new ClampedEntityAttribute("miapi.attribute.name.shielding_armor", 0.0, 0.0, 1024.0).setTracked(true),
+                        new RangedAttribute("miapi.attribute.name.shielding_armor", 0.0, 0.0, 1024.0).setSyncable(true),
                 att -> SHIELDING_ARMOR = att);
 
 
@@ -588,59 +590,59 @@ public class RegistryInventory {
 
             Miapi.LOGGER.info("Registered Truly Modulars Property resolvers:");
             PropertyResolver.registry.forEach((pair) -> {
-                Miapi.LOGGER.info("registered resolver: " + pair.getLeft().toString());
+                Miapi.LOGGER.info("registered resolver: " + pair.getA().toString());
             });
         });
     }
 
     @Environment(EnvType.CLIENT)
     public static class Client {
-        public static final Identifier customGlintTexture = Identifier.of(MOD_ID, "textures/custom_glint.png");
+        public static final ResourceLocation customGlintTexture = ResourceLocation.fromNamespaceAndPath(MOD_ID, "textures/custom_glint.png");
 
         //public static ShaderProgram translucentMaterialShader;
-        public static ShaderProgram entityTranslucentMaterialShader;
-        public static ShaderProgram glintShader;
+        public static ShaderInstance entityTranslucentMaterialShader;
+        public static ShaderInstance glintShader;
 
-        public static final RenderLayer modularItemGlint = RenderLayer.of(
+        public static final RenderType modularItemGlint = RenderType.create(
                 "miapi_glint_direct|immediatelyfast:renderlast",
-                VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL,
-                VertexFormat.DrawMode.QUADS,
+                DefaultVertexFormat.NEW_ENTITY,
+                VertexFormat.Mode.QUADS,
                 256, true, true,
-                RenderLayer.MultiPhaseParameters.builder()
-                        .program(new RenderPhase.ShaderProgram(() -> {
+                RenderType.CompositeState.builder()
+                        .setShaderState(new RenderStateShard.ShaderStateShard(() -> {
                             if (!RenderSystem.isOnRenderThreadOrInit()) {
                                 throw new RuntimeException("attempted miapi glint setup on-non-render thread. Please report this to Truly Modular");
                             }
-                            glintShader.bind();
+                            glintShader.apply();
                             //glintShader.addSampler("CustomGlintTexture",BLOCK_ATLAS_TEXTURE);
                             int id = 10;
-                            RenderSystem.setShaderTexture(id, RegistryInventory.Client.customGlintTexture);
+                            RenderSystem.setShaderTexture(id, Client.customGlintTexture);
                             RenderSystem.bindTexture(id);
                             int j = RenderSystem.getShaderTexture(id);
-                            glintShader.addSampler("CustomGlintTexture", j);
-                            var a = new RenderPhase.Texture(customGlintTexture, true, false);
+                            glintShader.setSampler("CustomGlintTexture", j);
+                            var a = new RenderStateShard.TextureStateShard(customGlintTexture, true, false);
                             //glintShader.getUniformOrDefault("glintSize").set();
                             //NativeImage.
                             return glintShader;
                         }))
-                        .texture(Textures.create().add(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, false, false)
+                        .setTextureState(MultiTextureStateShard.builder().add(TextureAtlas.LOCATION_BLOCKS, false, false)
                                 .add(MaterialAtlasManager.MATERIAL_ID, false, false).build())
-                        .depthTest(EQUAL_DEPTH_TEST)
-                        .transparency(GLINT_TRANSPARENCY)
-                        .lightmap(ENABLE_LIGHTMAP)
+                        .setDepthTestState(EQUAL_DEPTH_TEST)
+                        .setTransparencyState(GLINT_TRANSPARENCY)
+                        .setLightmapState(LIGHTMAP)
                         //.cull(DISABLE_CULLING)
-                        .writeMaskState(COLOR_MASK)
-                        .texturing(RenderLayer.ENTITY_GLINT_TEXTURING)
-                        .overlay(ENABLE_OVERLAY_COLOR).build(false));
+                        .setWriteMaskState(COLOR_WRITE)
+                        .setTexturingState(RenderType.ENTITY_GLINT_TEXTURING)
+                        .setOverlayState(OVERLAY).createCompositeState(false));
 
-        public static final RenderLayer TRANSLUCENT_NO_CULL = RenderLayer.of(
-                "miapi_translucent_no_cull", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL, VertexFormat.DrawMode.QUADS,
-                0x200000, true, true, RenderLayer.MultiPhaseParameters.builder()
-                        .lightmap(ENABLE_LIGHTMAP).program(TRANSLUCENT_PROGRAM).texture(MIPMAP_BLOCK_ATLAS_TEXTURE).transparency(TRANSLUCENT_TRANSPARENCY)
-                        .target(TRANSLUCENT_TARGET).cull(DISABLE_CULLING).build(true));
+        public static final RenderType TRANSLUCENT_NO_CULL = RenderType.create(
+                "miapi_translucent_no_cull", DefaultVertexFormat.BLOCK, VertexFormat.Mode.QUADS,
+                0x200000, true, true, RenderType.CompositeState.builder()
+                        .setLightmapState(LIGHTMAP).setShaderState(RENDERTYPE_TRANSLUCENT_SHADER).setTextureState(BLOCK_SHEET_MIPPED).setTransparencyState(TRANSLUCENT_TRANSPARENCY)
+                        .setOutputState(TRANSLUCENT_TARGET).setCullState(NO_CULL).createCompositeState(true));
 
         private static void setupGlintTexturing(float scale) {
-            long l = (long) ((double) Util.getMeasuringTimeMs() * MinecraftClient.getInstance().options.getGlintSpeed().getValue() * 8.0);
+            long l = (long) ((double) Util.getMillis() * Minecraft.getInstance().options.glintSpeed().get() * 8.0);
             float f = (float) (l % 110000L) / 110000.0f;
             float g = (float) (l % 30000L) / 30000.0f;
             Matrix4f matrix4f = new Matrix4f().translation(-f, g, 0.0f);

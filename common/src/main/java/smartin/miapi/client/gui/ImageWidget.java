@@ -1,11 +1,11 @@
 package smartin.miapi.client.gui;
 
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 
 public class ImageWidget extends InteractAbleWidget {
-    Identifier texture;
+    ResourceLocation texture;
     int textureSizeX;
     int textureSizeY;
     int u;
@@ -24,7 +24,7 @@ public class ImageWidget extends InteractAbleWidget {
      * @param title   a Text that allows searching through Widgets
      * @param texture the TextureID of the Texture to be rendered
      */
-    public ImageWidget(int x, int y, int width, int height, Text title, Identifier texture) {
+    public ImageWidget(int x, int y, int width, int height, Component title, ResourceLocation texture) {
         this(x, y, width, height, title, texture, width, height);
     }
 
@@ -40,7 +40,7 @@ public class ImageWidget extends InteractAbleWidget {
      * @param textureSizeX the total width of the texture to be rendered
      * @param textureSizeY the total height of the texture to be rendered
      */
-    public ImageWidget(int x, int y, int width, int height, Text title, Identifier texture, int textureSizeX, int textureSizeY) {
+    public ImageWidget(int x, int y, int width, int height, Component title, ResourceLocation texture, int textureSizeX, int textureSizeY) {
         this(x, y, width, height, title, texture, 0, 0, textureSizeX, textureSizeY, textureSizeX, textureSizeY);
     }
 
@@ -58,7 +58,7 @@ public class ImageWidget extends InteractAbleWidget {
      * @param textureSizeX the total width of the texture to be rendered
      * @param textureSizeY the total height of the texture to be rendered
      */
-    public ImageWidget(int x, int y, int width, int height, Text title, Identifier texture, int u, int v, int regionWidth, int regionHeight, int textureSizeX, int textureSizeY) {
+    public ImageWidget(int x, int y, int width, int height, Component title, ResourceLocation texture, int u, int v, int regionWidth, int regionHeight, int textureSizeX, int textureSizeY) {
         super(x, y, width, height, title);
         this.texture = texture;
         this.textureSizeX = textureSizeX;
@@ -70,8 +70,8 @@ public class ImageWidget extends InteractAbleWidget {
     }
 
     @Override
-    public void renderWidget(DrawContext drawContext, int mouseX, int mouseY, float delta) {
-        drawContext.drawTexture(texture, this.getX(), this.getY(), getWidth(), getHeight(), (float) u, (float) v, regionWidth, regionHeight, textureSizeX, textureSizeY);
+    public void renderWidget(GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
+        drawContext.blit(texture, this.getX(), this.getY(), getWidth(), getHeight(), (float) u, (float) v, regionWidth, regionHeight, textureSizeX, textureSizeY);
         super.render(drawContext, mouseX, mouseY, delta);
     }
 }

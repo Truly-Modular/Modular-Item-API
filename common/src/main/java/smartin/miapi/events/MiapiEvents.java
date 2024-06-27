@@ -3,21 +3,6 @@ package smartin.miapi.events;
 import com.google.common.collect.Multimap;
 import com.redpxnda.nucleus.event.PrioritizedEvent;
 import dev.architectury.event.EventResult;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.DefaultAttributeContainer;
-import net.minecraft.entity.attribute.EntityAttribute;
-import net.minecraft.entity.attribute.EntityAttributeModifier;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.entity.projectile.ProjectileEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.intprovider.IntProvider;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
@@ -31,6 +16,21 @@ import smartin.miapi.modules.material.Material;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.valueproviders.IntProvider;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 
 public class MiapiEvents {
     public static final PrioritizedEvent<LivingAttackEvent> LIVING_ATTACK = PrioritizedEvent.createEventResult();
@@ -65,7 +65,7 @@ public class MiapiEvents {
     }
 
     public interface PlayerEquip {
-        EventResult equip(PlayerEntity player, Map<EquipmentSlot,ItemStack> changes);
+        EventResult equip(Player player, Map<EquipmentSlot,ItemStack> changes);
     }
 
     public static class IsCriticalHitEvent {
@@ -95,12 +95,12 @@ public class MiapiEvents {
         }
 
         public static ItemStack getCausingItemStack(DamageSource damageSource) {
-            if (damageSource.getSource() instanceof ProjectileEntity projectile && (projectile instanceof ItemProjectileEntity itemProjectile)) {
-                return itemProjectile.asItemStack();
+            if (damageSource.getDirectEntity() instanceof Projectile projectile && (projectile instanceof ItemProjectileEntity itemProjectile)) {
+                return itemProjectile.getPickupItem();
 
             }
-            if (damageSource.getAttacker() instanceof LivingEntity attacker) {
-                return attacker.getMainHandStack();
+            if (damageSource.getEntity() instanceof LivingEntity attacker) {
+                return attacker.getMainHandItem();
             }
             return ItemStack.EMPTY;
         }
@@ -115,15 +115,15 @@ public class MiapiEvents {
 
         public static Iterable<ItemStack> getCausingItemStackAndArmorOfAttacker(DamageSource damageSource) {
             List<ItemStack> itemStacks = new ArrayList<>();
-            if (damageSource.getSource() instanceof ProjectileEntity projectile && (projectile instanceof ItemProjectileEntity itemProjectile)) {
-                itemStacks.add(itemProjectile.asItemStack());
+            if (damageSource.getDirectEntity() instanceof Projectile projectile && (projectile instanceof ItemProjectileEntity itemProjectile)) {
+                itemStacks.add(itemProjectile.getPickupItem());
                 if (itemProjectile.getOwner() instanceof LivingEntity attacker) {
-                    attacker.getArmorItems().forEach(itemStacks::add);
+                    attacker.getArmorSlots().forEach(itemStacks::add);
                 }
 
             }
-            if (damageSource.getAttacker() instanceof LivingEntity attacker) {
-                attacker.getArmorItems().forEach(itemStacks::add);
+            if (damageSource.getEntity() instanceof LivingEntity attacker) {
+                attacker.getArmorSlots().forEach(itemStacks::add);
             }
             return itemStacks;
         }
@@ -132,9 +132,9 @@ public class MiapiEvents {
     public static class ItemStackAttributeEventHolder {
         public ItemStack itemStack;
         public EquipmentSlot equipmentSlot;
-        public Multimap<EntityAttribute, EntityAttributeModifier> attributeModifiers;
+        public Multimap<Attribute, AttributeModifier> attributeModifiers;
 
-        public ItemStackAttributeEventHolder(ItemStack itemStack, EquipmentSlot equipmentSlot, Multimap<EntityAttribute, EntityAttributeModifier> attributeModifiers) {
+        public ItemStackAttributeEventHolder(ItemStack itemStack, EquipmentSlot equipmentSlot, Multimap<Attribute, AttributeModifier> attributeModifiers) {
             this.itemStack = itemStack;
             this.equipmentSlot = equipmentSlot;
             this.attributeModifiers = attributeModifiers;
@@ -151,7 +151,7 @@ public class MiapiEvents {
     }
 
     public interface LivingEntityAttributeBuild {
-        EventResult build(DefaultAttributeContainer.Builder builder);
+        EventResult build(AttributeSupplier.Builder builder);
 
     }
 
@@ -188,7 +188,7 @@ public class MiapiEvents {
     }
 
     public interface PlayerTickEvent {
-        EventResult tick(PlayerEntity player);
+        EventResult tick(Player player);
     }
 
     public interface LivingEntityTickEvent {
@@ -208,7 +208,7 @@ public class MiapiEvents {
     }
 
     public interface BlockBreakEvent {
-        void breakBlock(ServerWorld world, BlockPos pos, ItemStack tool, IntProvider experience);
+        void breakBlock(ServerLevel world, BlockPos pos, ItemStack tool, IntProvider experience);
     }
 
     public interface LivingHurt {
@@ -216,11 +216,11 @@ public class MiapiEvents {
     }
 
     public interface BlockCraftingStatUpdate {
-        EventResult call(ModularWorkBenchEntity bench, @Nullable PlayerEntity player);
+        EventResult call(ModularWorkBenchEntity bench, @Nullable Player player);
     }
 
     public interface ItemCraftingStatUpdate {
-        EventResult call(ModularWorkBenchEntity bench, Iterable<ItemStack> inventory, @Nullable PlayerEntity player);
+        EventResult call(ModularWorkBenchEntity bench, Iterable<ItemStack> inventory, @Nullable Player player);
     }
 
     public interface EntityRide {
@@ -228,6 +228,6 @@ public class MiapiEvents {
     }
 
     public interface StatUpdateEvent {
-        EventResult update(ModularWorkBenchEntity blockEntity, StatProvidersMap map, int syncId, PlayerInventory playerInventory, PlayerEntity player, CraftingScreenHandler handler);
+        EventResult update(ModularWorkBenchEntity blockEntity, StatProvidersMap map, int syncId, Inventory playerInventory, Player player, CraftingScreenHandler handler);
     }
 }

@@ -1,12 +1,12 @@
 package smartin.miapi.modules.properties;
 
 import com.google.gson.JsonElement;
-import net.minecraft.item.ArrowItem;
-import net.minecraft.item.ItemStack;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.function.Predicate;
+import net.minecraft.world.item.ArrowItem;
+import net.minecraft.world.item.ItemStack;
 
 /**
  * This property controls {@link smartin.miapi.modules.abilities.CrossbowAbility}

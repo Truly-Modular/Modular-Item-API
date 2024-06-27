@@ -2,18 +2,18 @@ package smartin.miapi.modules.properties;
 
 import dev.architectury.event.EventResult;
 import dev.architectury.platform.Platform;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.attribute.EntityAttributeModifier;
-import net.minecraft.entity.attribute.EntityAttributes;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Text;
 import smartin.miapi.Miapi;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.modules.properties.util.BooleanProperty;
 
 import java.util.UUID;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 
 public class HandheldItemProperty extends BooleanProperty {
     public static UUID attackspeedUUID = UUID.fromString("134d982f-c8ab-4b04-969f-15b495f89abd");
@@ -23,19 +23,19 @@ public class HandheldItemProperty extends BooleanProperty {
     public HandheldItemProperty() {
         super(KEY, false);
         MiapiEvents.PLAYER_EQUIP_EVENT.register((player, changes) -> {
-            if (player instanceof ServerPlayerEntity serverPlayerEntity) {
-                ItemStack mainHandItem = changes.getOrDefault(EquipmentSlot.MAINHAND, player.getEquippedStack(EquipmentSlot.MAINHAND));
-                ItemStack offHandItem = changes.getOrDefault(EquipmentSlot.OFFHAND, player.getEquippedStack(EquipmentSlot.OFFHAND));
+            if (player instanceof ServerPlayer serverPlayerEntity) {
+                ItemStack mainHandItem = changes.getOrDefault(EquipmentSlot.MAINHAND, player.getItemBySlot(EquipmentSlot.MAINHAND));
+                ItemStack offHandItem = changes.getOrDefault(EquipmentSlot.OFFHAND, player.getItemBySlot(EquipmentSlot.OFFHAND));
                 boolean hasAttribute = serverPlayerEntity
                                                .getAttributes()
-                                               .getCustomInstance(EntityAttributes.GENERIC_ATTACK_SPEED).getModifier(attackspeedUUID) != null;
+                                               .getInstance(Attributes.ATTACK_SPEED).getModifier(attackspeedUUID) != null;
                 if (hasTwoHandhelds(mainHandItem, offHandItem)) {
                     if(!hasAttribute){
                         serverPlayerEntity
                                 .getAttributes()
-                                .getCustomInstance(EntityAttributes.GENERIC_ATTACK_SPEED)
-                                .addTemporaryModifier(
-                                        new EntityAttributeModifier(
+                                .getInstance(Attributes.ATTACK_SPEED)
+                                .addTransientModifier(
+                                        new AttributeModifier(
                                                 attackspeedUUID,
                                                 "temphandheldboni",
                                                 1.5,
@@ -46,7 +46,7 @@ public class HandheldItemProperty extends BooleanProperty {
                     if(hasAttribute){
                         serverPlayerEntity
                                 .getAttributes()
-                                .getCustomInstance(EntityAttributes.GENERIC_ATTACK_SPEED)
+                                .getInstance(Attributes.ATTACK_SPEED)
                                 .removeModifier(attackspeedUUID);
                     }
                 }
@@ -55,7 +55,7 @@ public class HandheldItemProperty extends BooleanProperty {
         });
 
         MiapiEvents.LIVING_HURT_AFTER.register(event -> {
-            if (event.damageSource != null && event.damageSource.getAttacker() instanceof PlayerEntity serverPlayerEntity) {
+            if (event.damageSource != null && event.damageSource.getEntity() instanceof Player serverPlayerEntity) {
                 if (hasTwoHandhelds(serverPlayerEntity) && !Platform.isModLoaded("bettercombat")) {
                     Miapi.LOGGER.info("swap");
                     swapHands(serverPlayerEntity);
@@ -65,19 +65,19 @@ public class HandheldItemProperty extends BooleanProperty {
         });
         LoreProperty.loreSuppliers.add((stack, world, tooltip, context) -> {
             if (hasValue(stack)) {
-                tooltip.add(Text.translatable(Miapi.MOD_ID + ".handheld.tooltip"));
+                tooltip.add(Component.translatable(Miapi.MOD_ID + ".handheld.tooltip"));
             }
         });
     }
 
-    public void swapHands(PlayerEntity playerEntity) {
-        ItemStack itemStack = playerEntity.getEquippedStack(EquipmentSlot.OFFHAND);
-        playerEntity.equipStack(EquipmentSlot.OFFHAND, playerEntity.getEquippedStack(EquipmentSlot.MAINHAND));
-        playerEntity.equipStack(EquipmentSlot.MAINHAND, itemStack);
+    public void swapHands(Player playerEntity) {
+        ItemStack itemStack = playerEntity.getItemBySlot(EquipmentSlot.OFFHAND);
+        playerEntity.setItemSlot(EquipmentSlot.OFFHAND, playerEntity.getItemBySlot(EquipmentSlot.MAINHAND));
+        playerEntity.setItemSlot(EquipmentSlot.MAINHAND, itemStack);
     }
 
-    public boolean hasTwoHandhelds(PlayerEntity player) {
-        return hasTwoHandhelds(player.getEquippedStack(EquipmentSlot.MAINHAND), player.getEquippedStack(EquipmentSlot.OFFHAND));
+    public boolean hasTwoHandhelds(Player player) {
+        return hasTwoHandhelds(player.getItemBySlot(EquipmentSlot.MAINHAND), player.getItemBySlot(EquipmentSlot.OFFHAND));
     }
 
 

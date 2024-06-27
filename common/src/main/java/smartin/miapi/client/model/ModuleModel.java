@@ -1,11 +1,7 @@
 package smartin.miapi.client.model;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.datafixers.util.Pair;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.model.json.ModelTransformationMode;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.ItemStack;
 import org.joml.Matrix4f;
 import smartin.miapi.item.modular.Transform;
 import smartin.miapi.modules.ModuleInstance;
@@ -15,6 +11,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemDisplayContext;
+import net.minecraft.world.item.ItemStack;
 
 public class ModuleModel {
     public List<Pair<Matrix4f, MiapiModel>> models;
@@ -43,7 +43,7 @@ public class ModuleModel {
         return modelList;
     }
 
-    public void render(String modelTypeRaw, ItemStack stack, MatrixStack matrices, ModelTransformationMode mode, float tickDelta, VertexConsumerProvider vertexConsumers, LivingEntity entity, int light, int overlay) {
+    public void render(String modelTypeRaw, ItemStack stack, PoseStack matrices, ItemDisplayContext mode, float tickDelta, MultiBufferSource vertexConsumers, LivingEntity entity, int light, int overlay) {
         String modelType = modelTypeRaw == null ? "item" : modelTypeRaw;
         if (!otherModels.containsKey(modelType)) {
             otherModels.put(modelType, generateModel(modelType));
@@ -51,16 +51,16 @@ public class ModuleModel {
         Matrix4f submoduleMatrix = new Matrix4f();
 
         otherModels.get(modelType).forEach(matrix4fMiapiModelPair -> {
-            matrices.push();
+            matrices.pushPose();
             Transform.applyPosition(matrices,matrix4fMiapiModelPair.getFirst());
             matrix4fMiapiModelPair.getSecond().render(matrices, stack, mode, tickDelta, vertexConsumers, entity, light, overlay);
-            matrices.pop();
+            matrices.popPose();
 
             submoduleMatrix.mul(matrix4fMiapiModelPair.getSecond().subModuleMatrix());
         });
         //render submodules
         instance.subModules.forEach((integer, instance1) -> {
-            matrices.push();
+            matrices.pushPose();
             Transform.applyPosition(matrices,submoduleMatrix);
             ModuleModel subModuleModel = subModuleModels.get(integer);
             if (subModuleModel == null) {
@@ -68,7 +68,7 @@ public class ModuleModel {
                 subModuleModels.put(integer, subModuleModel);
             }
             subModuleModel.render(modelType, stack, matrices, mode, tickDelta, vertexConsumers, entity, light, overlay);
-            matrices.pop();
+            matrices.popPose();
         });
     }
 }

@@ -2,23 +2,6 @@ package smartin.miapi.modules.properties.mining;
 
 import com.google.common.collect.Multimap;
 import com.google.gson.JsonElement;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.attribute.EntityAttribute;
-import net.minecraft.entity.attribute.EntityAttributeModifier;
-import net.minecraft.entity.attribute.EntityAttributes;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.SwordItem;
-import net.minecraft.item.ToolMaterial;
-import net.minecraft.recipe.Ingredient;
-import net.minecraft.registry.tag.BlockTags;
-import net.minecraft.registry.tag.TagKey;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ItemModule;
@@ -33,6 +16,23 @@ import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.security.InvalidParameterException;
 import java.util.*;
+import net.minecraft.core.BlockPos;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.SwordItem;
+import net.minecraft.world.item.Tier;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 
 /**
  * The Property controls mining speed and levels of tools
@@ -46,10 +46,10 @@ public class MiningLevelProperty implements ModuleProperty {
 
     public MiningLevelProperty() {
         property = this;
-        miningCapabilities.put("pickaxe", BlockTags.PICKAXE_MINEABLE);
-        miningCapabilities.put("axe", BlockTags.AXE_MINEABLE);
-        miningCapabilities.put("shovel", BlockTags.SHOVEL_MINEABLE);
-        miningCapabilities.put("hoe", BlockTags.HOE_MINEABLE);
+        miningCapabilities.put("pickaxe", BlockTags.MINEABLE_WITH_PICKAXE);
+        miningCapabilities.put("axe", BlockTags.MINEABLE_WITH_AXE);
+        miningCapabilities.put("shovel", BlockTags.MINEABLE_WITH_SHOVEL);
+        miningCapabilities.put("hoe", BlockTags.MINEABLE_WITH_HOE);
         miningCapabilities.put("sword", BlockTags.SWORD_EFFICIENT);
         miningLevels.put(BlockTags.NEEDS_STONE_TOOL, 1);
         miningLevels.put(BlockTags.NEEDS_IRON_TOOL, 2);
@@ -95,27 +95,27 @@ public class MiningLevelProperty implements ModuleProperty {
     /**
      * we cant use the normal caching since we need to avoid an Itemstack.getItem() call here
      */
-    static Map<ItemStack, ToolMaterial> toolMaterialLookup = Collections.synchronizedMap(new WeakHashMap<>());
+    static Map<ItemStack, Tier> toolMaterialLookup = Collections.synchronizedMap(new WeakHashMap<>());
 
-    public static ToolMaterial getFakeToolMaterial(ItemStack itemStack) {
+    public static Tier getFakeToolMaterial(ItemStack itemStack) {
         return toolMaterialLookup.getOrDefault(itemStack, getFakeToolMaterialCache(itemStack));
     }
 
-    private static ToolMaterial getFakeToolMaterialCache(ItemStack itemStack) {
-        return new ToolMaterial() {
+    private static Tier getFakeToolMaterialCache(ItemStack itemStack) {
+        return new Tier() {
             @Override
-            public int getDurability() {
+            public int getUses() {
                 return (int) DurabilityProperty.property.getValueSafe(itemStack);
             }
 
             @Override
-            public float getMiningSpeedMultiplier() {
+            public float getSpeed() {
                 return getHighestMiningSpeedMultiplier(itemStack);
             }
 
             @Override
-            public float getAttackDamage() {
-                return (float) AttributeProperty.getActualValue(itemStack, EquipmentSlot.MAINHAND, EntityAttributes.GENERIC_ATTACK_DAMAGE, 1);
+            public float getAttackDamageBonus() {
+                return (float) AttributeProperty.getActualValue(itemStack, EquipmentSlot.MAINHAND, Attributes.ATTACK_DAMAGE, 1);
             }
 
             @Override
@@ -124,7 +124,7 @@ public class MiningLevelProperty implements ModuleProperty {
             }
 
             @Override
-            public int getEnchantability() {
+            public int getEnchantmentValue() {
                 return (int) EnchantAbilityProperty.getEnchantAbility(itemStack);
             }
 
@@ -138,11 +138,11 @@ public class MiningLevelProperty implements ModuleProperty {
     public static boolean isSuitable(ItemStack stack, BlockState state) {
         Map<String, Float> mergedMap = ModularItemCache.get(stack, KEY, new HashMap<>());
         for (Map.Entry<String, TagKey<Block>> entry : miningCapabilities.entrySet()) {
-            if (state.isIn(entry.getValue())) {
+            if (state.is(entry.getValue())) {
                 Float level = mergedMap.get(entry.getKey());
                 if (level != null) {
                     for (Map.Entry<TagKey<Block>, Integer> miningLevelEntry : miningLevels.entrySet()) {
-                        if (state.isIn(miningLevelEntry.getKey())) {
+                        if (state.is(miningLevelEntry.getKey())) {
                             return miningLevelEntry.getValue() <= level;
                         }
                     }
@@ -163,8 +163,8 @@ public class MiningLevelProperty implements ModuleProperty {
         return false;
     }
 
-    public static boolean canMine(BlockState state, World world, BlockPos pos, PlayerEntity miner) {
-        ItemStack stack = miner.getActiveItem();
+    public static boolean canMine(BlockState state, Level world, BlockPos pos, Player miner) {
+        ItemStack stack = miner.getUseItem();
         if (ToolOrWeaponProperty.isWeapon(stack)) {
             return !miner.isCreative();
         }
@@ -172,7 +172,7 @@ public class MiningLevelProperty implements ModuleProperty {
     }
 
     public static float getMiningSpeedMultiplier(ItemStack stack, String type) {
-        Multimap<EntityAttribute, EntityAttributeModifier> attributes;
+        Multimap<Attribute, AttributeModifier> attributes;
         attributes = AttributeProperty.equipmentSlotMultimapMap(stack).get(EquipmentSlot.MAINHAND);
         //attributes = stack.getAttributeModifiers(EquipmentSlot.MAINHAND);
         //deprecated actual attribute check because checking attributes to get mining speed is a bad idea for forge mods,
@@ -200,27 +200,27 @@ public class MiningLevelProperty implements ModuleProperty {
     }
 
     public static float getMiningSpeedMultiplier(ItemStack stack, BlockState state) {
-        if (state.isIn(BlockTags.PICKAXE_MINEABLE)) {
+        if (state.is(BlockTags.MINEABLE_WITH_PICKAXE)) {
             double value = AttributeProperty.getActualValue(stack, EquipmentSlot.MAINHAND, AttributeRegistry.MINING_SPEED_PICKAXE, 1);
             return (value == 0) ? 1.0f : (float) value;
         }
-        if (state.isIn(BlockTags.AXE_MINEABLE)) {
+        if (state.is(BlockTags.MINEABLE_WITH_AXE)) {
             double value = AttributeProperty.getActualValue(stack, EquipmentSlot.MAINHAND, AttributeRegistry.MINING_SPEED_AXE, 1);
             return (value == 0) ? 1.0f : (float) value;
         }
-        if (state.isIn(BlockTags.SHOVEL_MINEABLE)) {
+        if (state.is(BlockTags.MINEABLE_WITH_SHOVEL)) {
             double value = AttributeProperty.getActualValue(stack, EquipmentSlot.MAINHAND, AttributeRegistry.MINING_SPEED_SHOVEL, 1);
             return (value == 0) ? 1.0f : (float) value;
         }
-        if (state.isIn(BlockTags.HOE_MINEABLE)) {
+        if (state.is(BlockTags.MINEABLE_WITH_HOE)) {
             double value = AttributeProperty.getActualValue(stack, EquipmentSlot.MAINHAND, AttributeRegistry.MINING_SPEED_HOE, 1);
             return (value == 0) ? 1.0f : (float) value;
         }
         if (stack.getItem() instanceof SwordItem) {
-            if (state.isOf(Blocks.COBWEB)) {
+            if (state.is(Blocks.COBWEB)) {
                 return 15.0F;
             } else {
-                return state.isIn(BlockTags.SWORD_EFFICIENT) ? 1.5F : 1.0F;
+                return state.is(BlockTags.SWORD_EFFICIENT) ? 1.5F : 1.0F;
             }
         }
         return 1.0f;

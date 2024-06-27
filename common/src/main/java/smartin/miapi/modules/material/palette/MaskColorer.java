@@ -2,9 +2,8 @@ package smartin.miapi.modules.material.palette;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.mojang.blaze3d.platform.NativeImage;
 import com.redpxnda.nucleus.util.Color;
-import net.minecraft.client.texture.NativeImage;
-import net.minecraft.client.texture.SpriteContents;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.renderer.NativeImageGetter;
 import smartin.miapi.modules.material.Material;
@@ -13,6 +12,7 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import net.minecraft.client.renderer.texture.SpriteContents;
 
 /**
  * Colors module sprites with a base colorer, a masker, and a layered colorer.
@@ -170,10 +170,10 @@ public class MaskColorer extends SpriteColorer {
             }
             for (int width = 0; width < base.getWidth(); width++) {
                 for (int height = 0; height < base.getHeight(); height++) {
-                    int baseColor = base.getColor(width, height);
-                    int otherColor = other.getColor(width, height);
+                    int baseColor = base.getPixelRGBA(width, height);
+                    int otherColor = other.getPixelRGBA(width, height);
                     int blendColor = nativeImage.getColor(width % nativeImage.getWidth(), height % nativeImage.getHeight());
-                    lastImage.setColor(width, height, blend(baseColor, otherColor, blendColor));
+                    lastImage.setPixelRGBA(width, height, blend(baseColor, otherColor, blendColor));
                 }
             }
             if(maskingSprite!=null){

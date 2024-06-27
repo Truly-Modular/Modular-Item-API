@@ -4,17 +4,16 @@ import com.google.common.collect.Multimap;
 import com.google.gson.JsonElement;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.Element;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.attribute.EntityAttribute;
-import net.minecraft.entity.attribute.EntityAttributeModifier;
-import net.minecraft.entity.attribute.EntityAttributes;
-import net.minecraft.item.CrossbowItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.registry.Registries;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.item.ItemStack;
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
 import smartin.miapi.Miapi;
@@ -81,12 +80,12 @@ public class StatListWidget extends InteractAbleWidget {
                 .setMax(1)
                 .setTranslationKey(NemesisProperty.KEY).build());
         addStatDisplay(AttributeSingleDisplay
-                .builder(EntityAttributes.GENERIC_ATTACK_DAMAGE)
+                .builder(Attributes.ATTACK_DAMAGE)
                 .setTranslationKey("damage")
                 .setDefault(1)
                 .setMax(13.0).build());
         addStatDisplay(AttributeSingleDisplay
-                .builder(EntityAttributes.GENERIC_ATTACK_SPEED)
+                .builder(Attributes.ATTACK_SPEED)
                 .setTranslationKey("attack_speed")
                 .setDefault(4)
                 .setMax(4.0).build());
@@ -233,7 +232,7 @@ public class StatListWidget extends InteractAbleWidget {
                 .setMax(2)
                 .setTranslationKey(LeechingProperty.KEY).build());
         addStatDisplay(AttributeSingleDisplay
-                .builder(EntityAttributes.GENERIC_ARMOR)
+                .builder(Attributes.ARMOR)
                 .setTranslationKey("armor")
                 .setMax(8).build());
         addStatDisplay(AttributeSingleDisplay
@@ -241,11 +240,11 @@ public class StatListWidget extends InteractAbleWidget {
                 .setTranslationKey("projectile_armor")
                 .setMax(8).build());
         addStatDisplay(AttributeSingleDisplay
-                .builder(EntityAttributes.GENERIC_ARMOR_TOUGHNESS)
+                .builder(Attributes.ARMOR_TOUGHNESS)
                 .setTranslationKey("armor_toughness")
                 .setMax(3).build());
         addStatDisplay(AttributeSingleDisplay
-                .builder(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE)
+                .builder(Attributes.KNOCKBACK_RESISTANCE)
                 .setTranslationKey("knockback_resistance")
                 .setMax(1).build());
         addStatDisplay(AttributeSingleDisplay
@@ -347,7 +346,7 @@ public class StatListWidget extends InteractAbleWidget {
                         (stack -> {
                             double value = PillagesGuard.valueRemap(PillagesGuard.property.getValueSafe(stack));
                             value = (double) Math.round((1 - value) * 1000) / 10;
-                            return Text.translatable("miapi.stat.pillagerGuard.description", value);
+                            return Component.translatable("miapi.stat.pillagerGuard.description", value);
                         })).build());
 
         AttributeSingleDisplay.attributesWithDisplay.add(AttributeRegistry.MINING_SPEED_AXE);
@@ -363,7 +362,7 @@ public class StatListWidget extends InteractAbleWidget {
     }
 
     public static void reloadEnd() {
-        Registries.ATTRIBUTE.forEach(entityAttribute -> {
+        BuiltInRegistries.ATTRIBUTE.forEach(entityAttribute -> {
             if (!AttributeSingleDisplay.attributesWithDisplay.contains(entityAttribute)) {
                 addStatDisplay(AttributeSingleDisplay
                         .builder(entityAttribute).build());
@@ -372,9 +371,9 @@ public class StatListWidget extends InteractAbleWidget {
     }
 
     public StatListWidget(int x, int y, int width, int height) {
-        super(x, y, width, height, Text.literal("miapi.module.statdisplay"));
-        transformableWidget = new TransformableWidget(x, y, width, height, Text.empty());
-        boxList = new BoxList(x, y, width, height, Text.empty(), new ArrayList<>());
+        super(x, y, width, height, Component.literal("miapi.module.statdisplay"));
+        transformableWidget = new TransformableWidget(x, y, width, height, Component.empty());
+        boxList = new BoxList(x, y, width, height, Component.empty(), new ArrayList<>());
         ScrollList list = new ScrollList(x, y, width, height, List.of(boxList));
         list.altDesign = true;
         list.alwaysEnableScrollbar = true;
@@ -382,20 +381,20 @@ public class StatListWidget extends InteractAbleWidget {
         transformableWidget.rawProjection = new Matrix4f();
         //transformableWidget.rawProjection.scale(0.5f, 0.5f, 0.5f);
         addChild(transformableWidget);
-        hoverText = new TransformableWidget(x, y, width, height, Text.empty());
+        hoverText = new TransformableWidget(x, y, width, height, Component.empty());
         hoverText.rawProjection = new Matrix4f().scale(0.667f, 0.667f, 0.667f);
         addChild(hoverText);
     }
 
-    public static MutableText statTranslation(String statName) {
-        return Text.translatable(Miapi.MOD_ID + ".stat." + statName);
+    public static MutableComponent statTranslation(String statName) {
+        return Component.translatable(Miapi.MOD_ID + ".stat." + statName);
     }
 
-    public void render(DrawContext drawContext, int mouseX, int mouseY, float delta) {
+    public void render(GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
         super.render(drawContext, mouseX, mouseY, delta);
         Vector4f vector4f = transformableWidget.transFormMousePos(mouseX, mouseY);
         InteractAbleWidget hoverDisplay = null;
-        for (Element children : boxList.children()) {
+        for (GuiEventListener children : boxList.children()) {
             if (children.isMouseOver(vector4f.x(), vector4f.y()) && (children instanceof SingleStatDisplay widget)) {
                 InteractAbleWidget ableWidget = widget.getHoverWidget();
                 if (ableWidget != null) {
@@ -419,8 +418,8 @@ public class StatListWidget extends InteractAbleWidget {
 
     public static void setAttributeCaches(ItemStack original, ItemStack compareTo) {
         for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
-            Multimap<EntityAttribute, EntityAttributeModifier> oldAttr = original.getAttributeModifiers(equipmentSlot);
-            Multimap<EntityAttribute, EntityAttributeModifier> compAttr = compareTo.getAttributeModifiers(equipmentSlot);
+            Multimap<Attribute, AttributeModifier> oldAttr = original.getAttributeModifiers(equipmentSlot);
+            Multimap<Attribute, AttributeModifier> compAttr = compareTo.getAttributeModifiers(equipmentSlot);
             AttributeSingleDisplay.oldItemCache.put(equipmentSlot, oldAttr);
             AttributeSingleDisplay.compareItemCache.put(equipmentSlot, compAttr);
         }
@@ -501,11 +500,11 @@ public class StatListWidget extends InteractAbleWidget {
     }
 
     public interface TextGetter {
-        Text resolve(ItemStack stack);
+        Component resolve(ItemStack stack);
     }
 
     public interface MultiTextGetter {
-        List<Text> resolve(ItemStack stack);
+        List<Component> resolve(ItemStack stack);
     }
 
     public interface JsonConverter<T extends InteractAbleWidget & SingleStatDisplay> {

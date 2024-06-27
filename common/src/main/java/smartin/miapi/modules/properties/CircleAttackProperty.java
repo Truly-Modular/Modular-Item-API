@@ -3,10 +3,6 @@ package smartin.miapi.modules.properties;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
-import net.minecraft.item.ItemStack;
-import net.minecraft.particle.ParticleType;
-import net.minecraft.registry.Registries;
-import net.minecraft.util.Identifier;
 import smartin.miapi.Miapi;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ItemModule;
@@ -17,6 +13,10 @@ import smartin.miapi.modules.properties.util.ModuleProperty;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
+import net.minecraft.core.particles.ParticleType;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
 
 /**
  * This property controls {@link smartin.miapi.modules.abilities.CircleAttackAbility}
@@ -82,7 +82,7 @@ public class CircleAttackProperty implements ModuleProperty {
 
                 particles = Miapi.gson.fromJson(object.get("particles"), listType);
                 particles.forEach(particleJson -> {
-                    particleJson.particleType = Registries.PARTICLE_TYPE.get(new Identifier(particleJson.particle));
+                    particleJson.particleType = BuiltInRegistries.PARTICLE_TYPE.get(new ResourceLocation(particleJson.particle));
                 });
             }
         }

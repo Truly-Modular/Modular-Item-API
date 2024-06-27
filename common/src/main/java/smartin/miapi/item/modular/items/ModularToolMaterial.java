@@ -1,24 +1,23 @@
 package smartin.miapi.item.modular.items;
 
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.item.ToolMaterial;
-import net.minecraft.recipe.Ingredient;
+import net.minecraft.world.item.Tier;
+import net.minecraft.world.item.crafting.Ingredient;
 
-public class ModularToolMaterial implements ToolMaterial{
+public class ModularToolMaterial implements Tier{
     public static ModularToolMaterial toolMaterial = new ModularToolMaterial();
 
     @Override
-    public int getDurability() {
+    public int getUses() {
         return 50;
     }
 
     @Override
-    public float getMiningSpeedMultiplier() {
+    public float getSpeed() {
         return 5;
     }
 
     @Override
-    public float getAttackDamage() {
+    public float getAttackDamageBonus() {
         return 5;
     }
 
@@ -28,7 +27,7 @@ public class ModularToolMaterial implements ToolMaterial{
     }
 
     @Override
-    public int getEnchantability() {
+    public int getEnchantmentValue() {
         return 15;
     }
 

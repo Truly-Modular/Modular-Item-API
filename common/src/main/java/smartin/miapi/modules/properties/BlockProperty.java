@@ -1,6 +1,6 @@
 package smartin.miapi.modules.properties;
 
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 import smartin.miapi.modules.properties.util.DoubleProperty;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 

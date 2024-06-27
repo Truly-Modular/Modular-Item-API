@@ -2,10 +2,10 @@ package smartin.miapi.client.renderer;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.texture.SpriteAtlasTexture;
-import net.minecraft.resource.Resource;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.Resource;
 import smartin.miapi.Miapi;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.modules.cache.ModularItemCache;
@@ -19,7 +19,7 @@ import java.util.function.Consumer;
 public class SpriteLoader {
     public static List<String> preLoadTexturePaths = new ArrayList<>();
 
-    public static List<Identifier> miapiModels = new ArrayList<>();
+    public static List<ResourceLocation> miapiModels = new ArrayList<>();
 
     public static void setup() {
         ReloadEvents.START.subscribe(isClient -> ModularItemCache.discardCache());
@@ -43,19 +43,19 @@ public class SpriteLoader {
             });
              */
         });
-        MinecraftClient.getInstance().getResourceManager().findAllResources(
+        Minecraft.getInstance().getResourceManager().listResourceStacks(
                 "models",
                 (identifier -> identifier.getNamespace().equals(Miapi.MOD_ID))).forEach((identifier, resources) -> miapiModels.add(identifier));
     }
 
-    protected static void onTextureStitch(SpriteAtlasTexture atlas, Consumer<Identifier> spriteAdder) {
-        if (SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE.equals(atlas.getId())) {
-            Map<Identifier, Resource> map = MinecraftClient.getInstance().getResourceManager().findResources(
+    protected static void onTextureStitch(TextureAtlas atlas, Consumer<ResourceLocation> spriteAdder) {
+        if (TextureAtlas.LOCATION_BLOCKS.equals(atlas.location())) {
+            Map<ResourceLocation, Resource> map = Minecraft.getInstance().getResourceManager().listResources(
                     "textures/item",
                     s -> s.getNamespace().equals(Miapi.MOD_ID));
             map.forEach((identifier, resource) -> {
                 String string = identifier.toString().replace("textures/", "").replace(".png", "");
-                spriteAdder.accept(Identifier.of(string));
+                spriteAdder.accept(ResourceLocation.parse(string));
             });
         }
     }

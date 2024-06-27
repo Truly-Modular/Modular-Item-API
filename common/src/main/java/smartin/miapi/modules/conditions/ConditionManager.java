@@ -1,9 +1,6 @@
 package smartin.miapi.modules.conditions;
 
 import com.google.gson.JsonElement;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.text.Text;
-import net.minecraft.util.math.BlockPos;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.util.ModuleProperty;
@@ -11,6 +8,9 @@ import smartin.miapi.registries.MiapiRegistry;
 
 import java.util.List;
 import java.util.Map;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Player;
 
 public class ConditionManager {
     public static MiapiRegistry<ModuleCondition> moduleConditionRegistry = MiapiRegistry.getInstance(ModuleCondition.class);
@@ -31,16 +31,16 @@ public class ConditionManager {
     public interface ConditionContext {
         ConditionContext copy();
 
-        List<Text> getReasons();
+        List<Component> getReasons();
     }
 
     public static class ModuleConditionContext implements ConditionContext {
 
         public ModuleConditionContext(@Nullable ModuleInstance moduleInstance,
                                       @Nullable BlockPos tablePos,
-                                      @Nullable PlayerEntity player,
+                                      @Nullable Player player,
                                       @Nullable Map<ModuleProperty, JsonElement> propertyMap,
-                                      List<Text> reasons) {
+                                      List<Component> reasons) {
             this.moduleInstance = moduleInstance;
             this.tablePos = tablePos;
             this.player = player;
@@ -50,9 +50,9 @@ public class ConditionManager {
 
         public @Nullable ModuleInstance moduleInstance;
         public @Nullable BlockPos tablePos;
-        public @Nullable PlayerEntity player;
+        public @Nullable Player player;
         public @Nullable Map<ModuleProperty, JsonElement> propertyMap;
-        public List<Text> reasons;
+        public List<Component> reasons;
 
         @Override
         public ModuleConditionContext copy() {
@@ -60,7 +60,7 @@ public class ConditionManager {
         }
 
         @Override
-        public List<Text> getReasons() {
+        public List<Component> getReasons() {
             return reasons;
         }
     }

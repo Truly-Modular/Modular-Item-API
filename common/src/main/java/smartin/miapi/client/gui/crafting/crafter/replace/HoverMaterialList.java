@@ -1,11 +1,6 @@
 package smartin.miapi.client.gui.crafting.crafter.replace;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.text.Text;
-import net.minecraft.util.math.ColorHelper;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.crafting.CraftingScreen;
 import smartin.miapi.modules.ItemModule;
@@ -17,6 +12,11 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
+import net.minecraft.util.FastColor;
 
 public class HoverMaterialList extends InteractAbleWidget {
     public Map<String, List<Material>> materials = new LinkedHashMap<>();
@@ -25,12 +25,12 @@ public class HoverMaterialList extends InteractAbleWidget {
     public int scrollPosOne = 0;
     public int scrollPosTwo = 0;
     final int maxElements = 8;
-    final int selectedColor = ColorHelper.Argb.getArgb(255, 255, 255, 255);
-    final int unselectedColor = ColorHelper.Argb.getArgb(255, 200, 200, 200);
-    final int moreEntryColor = ColorHelper.Argb.getArgb(255, 160, 160, 160);
+    final int selectedColor = FastColor.ARGB32.color(255, 255, 255, 255);
+    final int unselectedColor = FastColor.ARGB32.color(255, 200, 200, 200);
+    final int moreEntryColor = FastColor.ARGB32.color(255, 160, 160, 160);
 
     public HoverMaterialList(ItemModule module, int x, int y, int width, int height) {
-        super(x, y, width, height, Text.empty());
+        super(x, y, width, height, Component.empty());
         materialKeys = AllowedMaterial.property.getAllowedKeys(module);
         for (String key : materialKeys) {
             materials.put(key, AllowedMaterial.property.getMaterials(key)
@@ -41,13 +41,13 @@ public class HoverMaterialList extends InteractAbleWidget {
     }
 
     @Override
-    public void renderWidget(DrawContext drawContext, int mouseX, int mouseY, float delta) {
-        drawContext.drawTexture(CraftingScreen.BACKGROUND_TEXTURE, getX(), getY(), 404, 96, 20, 11, 512, 512);
+    public void renderWidget(GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
+        drawContext.blit(CraftingScreen.INVENTORY_LOCATION, getX(), getY(), 404, 96, 20, 11, 512, 512);
         super.render(drawContext, mouseX, mouseY, delta);
     }
 
     @Override
-    public void renderHover(DrawContext drawContext, int mouseX, int mouseY, float delta) {
+    public void renderHover(GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
         if (isMouseOver(mouseX, mouseY)) {
             RenderSystem.disableDepthTest();
             int currentY = this.getY() + 3;
@@ -57,34 +57,34 @@ public class HoverMaterialList extends InteractAbleWidget {
             int verticalSize = Math.min(materials.size(), maxElements);
             verticalSize = Math.max(Math.min(materialList.size(), maxElements), verticalSize);
             for (int i = scrollPosOne; i < Math.min(materials.size(), maxElements + scrollPosOne); i++) {
-                Text material = getTranslation(materialKeys.get(i));
-                sizeBaseList = Math.max(MinecraftClient.getInstance().textRenderer.getWidth(material), sizeBaseList);
+                Component material = getTranslation(materialKeys.get(i));
+                sizeBaseList = Math.max(Minecraft.getInstance().font.width(material), sizeBaseList);
             }
             int sizeDetailList = 0;
             if (materialList.size() > 1) {
                 for (Material m : materialList) {
-                    Text material = m.getTranslation();
-                    sizeDetailList = Math.max(MinecraftClient.getInstance().textRenderer.getWidth(material), sizeDetailList);
+                    Component material = m.getTranslation();
+                    sizeDetailList = Math.max(Minecraft.getInstance().font.width(material), sizeDetailList);
                 }
             }
-            drawContext.fill(getX(), getY(), getX() + sizeDetailList + sizeBaseList + 10, getY() + verticalSize * 14, ColorHelper.Argb.getArgb(210, 0, 0, 0));
+            drawContext.fill(getX(), getY(), getX() + sizeDetailList + sizeBaseList + 10, getY() + verticalSize * 14, FastColor.ARGB32.color(210, 0, 0, 0));
             if (!materials.isEmpty()) {
                 scrollPosOne = Math.max(0, Math.min(materials.size() - maxElements - 1, scrollPosOne));
                 int start = scrollPosOne;
                 int end = Math.min(scrollPosOne + maxElements, materials.size());
                 if (end < materials.size() - 1) {
-                    drawContext.drawText(MinecraftClient.getInstance().textRenderer, Text.translatable("miapi.ui.material_detail.lower.scroll"), getX() + 3, currentY + 14 * (maxElements - 1), moreEntryColor, false);
+                    drawContext.drawString(Minecraft.getInstance().font, Component.translatable("miapi.ui.material_detail.lower.scroll"), getX() + 3, currentY + 14 * (maxElements - 1), moreEntryColor, false);
                     end--;
                 }
                 if (start != 0) {
-                    drawContext.drawText(MinecraftClient.getInstance().textRenderer, Text.translatable("miapi.ui.material_detail.higher.scroll"), getX() + 3, currentY, moreEntryColor, false);
+                    drawContext.drawString(Minecraft.getInstance().font, Component.translatable("miapi.ui.material_detail.higher.scroll"), getX() + 3, currentY, moreEntryColor, false);
                     start++;
                     currentY += 14;
                 }
                 for (int i = start; i < end; i++) {
                     int color = i == selected + scrollPosOne ? selectedColor : unselectedColor;
-                    Text translation = getTranslation(materialKeys.get(i));
-                    drawContext.drawText(MinecraftClient.getInstance().textRenderer, translation, getX() + 3, currentY, color, false);
+                    Component translation = getTranslation(materialKeys.get(i));
+                    drawContext.drawString(Minecraft.getInstance().font, translation, getX() + 3, currentY, color, false);
                     currentY += 14;
                 }
             }
@@ -94,17 +94,17 @@ public class HoverMaterialList extends InteractAbleWidget {
                 int start = scrollPosTwo;
                 int end = Math.min(scrollPosTwo + maxElements - 1, materialList.size() - 1);
                 if (end < materialList.size() - 2) {
-                    drawContext.drawText(MinecraftClient.getInstance().textRenderer, Text.translatable("miapi.ui.material_detail.lower"), getX() + sizeBaseList + 6, currentY + 14 * (maxElements - 1), moreEntryColor, false);
+                    drawContext.drawString(Minecraft.getInstance().font, Component.translatable("miapi.ui.material_detail.lower"), getX() + sizeBaseList + 6, currentY + 14 * (maxElements - 1), moreEntryColor, false);
                     end--;
                 }
                 if (start != 0) {
-                    drawContext.drawText(MinecraftClient.getInstance().textRenderer, Text.translatable("miapi.ui.material_detail.higher"), getX() + sizeBaseList + 6, currentY, moreEntryColor, false);
+                    drawContext.drawString(Minecraft.getInstance().font, Component.translatable("miapi.ui.material_detail.higher"), getX() + sizeBaseList + 6, currentY, moreEntryColor, false);
                     start++;
                     currentY += 14;
                 }
                 for (int i = start; i <= end; i++) {
-                    Text material = getTranslation(materialList.get(i).getKey());
-                    drawContext.drawText(MinecraftClient.getInstance().textRenderer, material, getX() + sizeBaseList + 6, currentY, unselectedColor, false);
+                    Component material = getTranslation(materialList.get(i).getKey());
+                    drawContext.drawString(Minecraft.getInstance().font, material, getX() + sizeBaseList + 6, currentY, unselectedColor, false);
                     currentY += 14;
                 }
             }
@@ -116,14 +116,14 @@ public class HoverMaterialList extends InteractAbleWidget {
         }
     }
 
-    public static Text getTranslation(String materialOrGroupKey) {
+    public static Component getTranslation(String materialOrGroupKey) {
         if (MaterialProperty.materials.containsKey(materialOrGroupKey)) {
             Material material = MaterialProperty.materials.get(materialOrGroupKey);
-            return Text.translatable(material.getData("translation"));
+            return Component.translatable(material.getData("translation"));
         }
-        Text testTranslation = Text.translatable("miapi.material_group." + materialOrGroupKey);
+        Component testTranslation = Component.translatable("miapi.material_group." + materialOrGroupKey);
         if (testTranslation.getString().equals("miapi.material_group." + materialOrGroupKey)) {
-            return Text.literal(materialOrGroupKey);
+            return Component.literal(materialOrGroupKey);
         }
         return testTranslation;
     }

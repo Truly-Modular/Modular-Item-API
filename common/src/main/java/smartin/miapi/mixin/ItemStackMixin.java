@@ -1,15 +1,15 @@
 package smartin.miapi.mixin;
 
-import net.minecraft.block.BlockState;
 import net.minecraft.client.item.TooltipContext;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.tag.TagKey;
-import net.minecraft.text.Text;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.state.BlockState;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -48,7 +48,7 @@ abstract class ItemStackMixin {
             method = "setNbt(Lnet/minecraft/nbt/NbtCompound;)V",
             at = @At("TAIL"),
             cancellable = true)
-    private void miapi$cacheMaintanaince(NbtCompound nbt, CallbackInfo ci) {
+    private void miapi$cacheMaintanaince(CompoundTag nbt, CallbackInfo ci) {
         ItemStack stack = (ItemStack) (Object) this;
         ModularItemCache.clearUUIDFor(stack);
     }
@@ -57,7 +57,7 @@ abstract class ItemStackMixin {
             method = "setNbt(Lnet/minecraft/nbt/NbtCompound;)V",
             at = @At("HEAD"),
             cancellable = true)
-    private void miapi$cacheMaintanaince2(NbtCompound nbt, CallbackInfo ci) {
+    private void miapi$cacheMaintanaince2(CompoundTag nbt, CallbackInfo ci) {
         ItemStack stack = (ItemStack) (Object) this;
         ModularItemCache.clearUUIDFor(stack);
     }
@@ -102,7 +102,7 @@ abstract class ItemStackMixin {
             ),
             locals = LocalCapture.CAPTURE_FAILSOFT
     )
-    public void miapi$injectLoreTop(PlayerEntity player, TooltipContext context, CallbackInfoReturnable<List<Text>> cir, List<Text> arg1) {
+    public void miapi$injectLoreTop(Player player, TooltipContext context, CallbackInfoReturnable<List<Component>> cir, List<Component> arg1) {
         ItemStack stack = (ItemStack) (Object) this;
         if (!(stack.getItem() instanceof ModularItem)) {
             LoreProperty.property.injectTooltipOnNonModularItems(arg1, stack);
@@ -123,7 +123,7 @@ abstract class ItemStackMixin {
             ),
             locals = LocalCapture.CAPTURE_FAILSOFT
     )
-    public void miapi$injectLoreBottom(PlayerEntity player, TooltipContext context, CallbackInfoReturnable<List<Text>> cir, List<Text> arg1) {
+    public void miapi$injectLoreBottom(Player player, TooltipContext context, CallbackInfoReturnable<List<Component>> cir, List<Component> arg1) {
         ItemStack stack = (ItemStack) (Object) this;
         PreviewManager.setCursorItemstack(stack);
         /*
@@ -140,7 +140,7 @@ abstract class ItemStackMixin {
         ItemStack stack = (ItemStack) (Object) this;
         if (stack.getItem() instanceof ModularItem) {
             if (!cir.getReturnValue()) {
-                cir.setReturnValue(FakeItemTagProperty.hasTag(tag.id(), stack));
+                cir.setReturnValue(FakeItemTagProperty.hasTag(tag.location(), stack));
             }
         }
     }
@@ -148,12 +148,12 @@ abstract class ItemStackMixin {
     @Inject(method = "damage(ILnet/minecraft/entity/LivingEntity;Ljava/util/function/Consumer;)V", at = @At("HEAD"), cancellable = true)
     public <T extends LivingEntity> void miapi$takeDurabilityDamage(int amount, T entity, Consumer<T> breakCallback, CallbackInfo ci) {
         ItemStack stack = (ItemStack) (Object) this;
-        if (!MiapiConfig.INSTANCE.server.other.fullBreakModularItems && stack.getItem() instanceof VisualModularItem && stack.isDamageable() && stack.getDamage() + amount + 1 >= stack.getMaxDamage()) {
+        if (!MiapiConfig.INSTANCE.server.other.fullBreakModularItems && stack.getItem() instanceof VisualModularItem && stack.isDamageableItem() && stack.getDamageValue() + amount + 1 >= stack.getMaxDamage()) {
             for (EquipmentSlot value : EquipmentSlot.values()) {
-                if (entity.getEquippedStack(value).equals(stack)) {
+                if (entity.getItemBySlot(value).equals(stack)) {
                     ItemStack brokenStack = new ItemStack(RegistryInventory.visualOnlymodularItem);
                     brokenStack.setNbt(stack.getNbt());
-                    entity.equipStack(value, brokenStack);
+                    entity.setItemSlot(value, brokenStack);
                     ci.cancel();
                 }
             }

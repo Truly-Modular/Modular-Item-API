@@ -1,10 +1,10 @@
 package smartin.miapi.client.model;
 
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.model.json.ModelTransformationMode;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.ItemStack;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemDisplayContext;
+import net.minecraft.world.item.ItemStack;
 import org.joml.Matrix4f;
 
 /**
@@ -13,11 +13,11 @@ import org.joml.Matrix4f;
  */
 public interface MiapiModel {
 
-    void render(MatrixStack matrices,
+    void render(PoseStack matrices,
                 ItemStack stack,
-                ModelTransformationMode transformationMode,
+                ItemDisplayContext transformationMode,
                 float tickDelta,
-                VertexConsumerProvider vertexConsumers,
+                MultiBufferSource vertexConsumers,
                 LivingEntity entity,
                 int light,
                 int overlay);

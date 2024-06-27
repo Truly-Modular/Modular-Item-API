@@ -5,30 +5,30 @@ import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.item.ModelPredicateProvider;
-import net.minecraft.client.item.ModelPredicateProviderRegistry;
-import net.minecraft.client.render.model.BakedModel;
-import net.minecraft.client.render.model.json.ModelOverride;
-import net.minecraft.client.render.model.json.ModelOverrideList;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.renderer.block.model.ItemOverride;
+import net.minecraft.client.renderer.block.model.ItemOverrides;
+import net.minecraft.client.renderer.item.ItemProperties;
+import net.minecraft.client.renderer.item.ItemPropertyFunction;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.client.model.DynamicBakery;
 
 import java.util.*;
 
 @Environment(EnvType.CLIENT)
-public class BakedSingleModelOverrides extends ModelOverrideList {
+public class BakedSingleModelOverrides extends ItemOverrides {
     public final DynamicBakedOverride[] dynamicOverrides;
-    public final Identifier[] dynamicConditionTypes;
+    public final ResourceLocation[] dynamicConditionTypes;
 
     public BakedSingleModelOverrides(Map<ConditionHolder, BakedModel> modelHashMap) {
         super(DynamicBakery.dynamicBaker, null, new ArrayList<>());
-        this.dynamicConditionTypes = modelHashMap.keySet().stream().flatMap(conditionHolder -> conditionHolder.conditions.stream()).map(Condition::getType).distinct().toArray(Identifier[]::new);
-        Object2IntMap<Identifier> object2IntMap = new Object2IntOpenHashMap<>();
+        this.dynamicConditionTypes = modelHashMap.keySet().stream().flatMap(conditionHolder -> conditionHolder.conditions.stream()).map(Condition::getType).distinct().toArray(ResourceLocation[]::new);
+        Object2IntMap<ResourceLocation> object2IntMap = new Object2IntOpenHashMap<>();
 
         for (int i = 0; i < this.dynamicConditionTypes.length; ++i) {
             object2IntMap.put(this.dynamicConditionTypes[i], i);
@@ -51,15 +51,15 @@ public class BakedSingleModelOverrides extends ModelOverrideList {
 
 
     @Override
-    public BakedModel apply(BakedModel model, ItemStack stack, @Nullable ClientWorld world, @Nullable LivingEntity entity, int seed) {
+    public BakedModel resolve(BakedModel model, ItemStack stack, @Nullable ClientLevel world, @Nullable LivingEntity entity, int seed) {
         if (this.dynamicOverrides.length != 0) {
             Item item = stack.getItem();
             int i = this.dynamicConditionTypes.length;
             float[] fs = new float[i];
 
             for (int j = 0; j < i; ++j) {
-                Identifier identifier = this.dynamicConditionTypes[j];
-                ModelPredicateProvider modelPredicateProvider = ModelPredicateProviderRegistry.get(item, identifier);
+                ResourceLocation identifier = this.dynamicConditionTypes[j];
+                ItemPropertyFunction modelPredicateProvider = ItemProperties.getProperty(item, identifier);
                 if (modelPredicateProvider != null) {
                     fs[j] = modelPredicateProvider.call(stack, world, entity, seed);
                 } else {
@@ -109,20 +109,20 @@ public class BakedSingleModelOverrides extends ModelOverrideList {
 
     @Environment(value = EnvType.CLIENT)
     public static class Condition {
-        private final Identifier type;
+        private final ResourceLocation type;
         private final float threshold;
 
-        public Condition(ModelOverride.Condition condition) {
-            this.type = condition.getType();
-            this.threshold = condition.getThreshold();
+        public Condition(ItemOverride.Predicate condition) {
+            this.type = condition.getProperty();
+            this.threshold = condition.getValue();
         }
 
-        public Condition(Identifier type, float threshold) {
+        public Condition(ResourceLocation type, float threshold) {
             this.type = type;
             this.threshold = threshold;
         }
 
-        public Identifier getType() {
+        public ResourceLocation getType() {
             return this.type;
         }
 
@@ -143,8 +143,8 @@ public class BakedSingleModelOverrides extends ModelOverrideList {
                     return true;
                 }
             }
-            if (obj instanceof ModelOverride.Condition otherCondition) {
-                if (otherCondition.getType().equals(this.type) && otherCondition.getThreshold() == this.threshold) {
+            if (obj instanceof ItemOverride.Predicate otherCondition) {
+                if (otherCondition.getProperty().equals(this.type) && otherCondition.getValue() == this.threshold) {
                     return true;
                 }
             }
@@ -158,12 +158,12 @@ public class BakedSingleModelOverrides extends ModelOverrideList {
     }
 
     public static class ConditionHolder {
-        public Identifier identifier;
+        public ResourceLocation identifier;
         public List<Condition> conditions;
 
-        public ConditionHolder(ModelOverride override) {
-            identifier = override.getModelId();
-            conditions = override.streamConditions().map(condition -> new Condition(condition)).toList();
+        public ConditionHolder(ItemOverride override) {
+            identifier = override.getModel();
+            conditions = override.getPredicates().map(condition -> new Condition(condition)).toList();
         }
 
         @Override

@@ -1,9 +1,5 @@
 package smartin.miapi.modules.properties.util;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.text.Text;
-import net.minecraft.util.math.Vec2f;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.client.gui.InteractAbleWidget;
@@ -15,6 +11,10 @@ import smartin.miapi.modules.edit_options.EditOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.Vec2;
 
 /**
  * This is an abstract Class for Crafting properties.
@@ -42,7 +42,7 @@ public interface CraftingProperty {
      *
      * @return a List of positions, return empty List of no guis
      */
-    default List<Vec2f> getSlotPositions() {
+    default List<Vec2> getSlotPositions() {
         return new ArrayList<>();
     }
 
@@ -85,12 +85,12 @@ public interface CraftingProperty {
      * @param data      a map including Data send from the Client for additional Craftinginfo
      * @return if the crafting can happen
      */
-    default boolean canPerform(ItemStack old, ItemStack crafting, @Nullable ModularWorkBenchEntity bench, PlayerEntity player, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<String, String> data) {
+    default boolean canPerform(ItemStack old, ItemStack crafting, @Nullable ModularWorkBenchEntity bench, Player player, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<String, String> data) {
         return true;
     }
 
-    default Text getWarning() {
-        return Text.empty();
+    default Component getWarning() {
+        return Component.empty();
     }
 
     /**
@@ -106,7 +106,7 @@ public interface CraftingProperty {
      * @param data      a map including Data send from the Client for additional Craftinginfo
      * @return the previewStack Itemstack
      */
-    ItemStack preview(ItemStack old, ItemStack crafting, PlayerEntity player, ModularWorkBenchEntity bench, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<String, String> data);
+    ItemStack preview(ItemStack old, ItemStack crafting, Player player, ModularWorkBenchEntity bench, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<String, String> data);
 
     /**
      * the actual CraftAction
@@ -121,7 +121,7 @@ public interface CraftingProperty {
      * @param data      a map including Data send from the Client for additional Craftinginfo
      * @return a List of Itemstacks, first is the CraftedItem, followed by a List of Itemstacks to replace Inventory slots registered by {@link #getSlotPositions()}
      */
-    default List<ItemStack> performCraftAction(ItemStack old, ItemStack crafting, PlayerEntity player, @Nullable ModularWorkBenchEntity bench, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<String, String> data) {
+    default List<ItemStack> performCraftAction(ItemStack old, ItemStack crafting, Player player, @Nullable ModularWorkBenchEntity bench, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<String, String> data) {
         List<ItemStack> stacks = new ArrayList<>();
         stacks.add(this.preview(old, crafting, player, bench, craftAction, module, inventory, data));
         stacks.addAll(inventory);

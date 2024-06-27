@@ -1,20 +1,20 @@
 package smartin.miapi.modules.properties.potion;
 
 import dev.architectury.event.EventResult;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.tooltip.TooltipType;
-import net.minecraft.text.Style;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.modules.properties.LoreProperty;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.ArrayList;
 import java.util.List;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 
 public class OnDamagedEffects extends PotionEffectProperty {
     public static String KEY = "on_hurt_potion";
@@ -24,9 +24,9 @@ public class OnDamagedEffects extends PotionEffectProperty {
         super(KEY);
         property = this;
         MiapiEvents.LIVING_HURT.register((listener) -> {
-            if (!listener.livingEntity.getWorld().isClient()) {
+            if (!listener.livingEntity.level().isClientSide()) {
                 applyEffects(listener.livingEntity, listener.livingEntity, listener.getCausingItemStack(), listener.livingEntity, this::isTargetSelf);
-                if (listener.damageSource.getAttacker() instanceof LivingEntity attacker) {
+                if (listener.damageSource.getEntity() instanceof LivingEntity attacker) {
                     applyEffects(attacker, listener.livingEntity, listener.getCausingItemStack(), attacker, this::isTargetOther);
                 }
             }
@@ -37,21 +37,21 @@ public class OnDamagedEffects extends PotionEffectProperty {
     }
 
     public void setupLore() {
-        LoreProperty.loreSuppliers.add((ItemStack itemStack, List<Text> tooltip, Item.TooltipContext context, TooltipType tooltipType) -> {
-            List<Text> lines = new ArrayList<>();
+        LoreProperty.loreSuppliers.add((ItemStack itemStack, List<Component> tooltip, Item.TooltipContext context, TooltipFlag tooltipType) -> {
+            List<Component> lines = new ArrayList<>();
             for (EffectHolder effectHolder : merge(getStatusEffects(itemStack))) {
                 if (effectHolder.isGuiVisibility()) {
-                    Text text = effectHolder.getPotionDescription();
+                    Component text = effectHolder.getPotionDescription();
                     if (isTargetSelf(effectHolder)) {
-                        lines.add(Text.translatable("miapi.potion.damaged.self.tooltip", text, effectHolder.getDurationSeconds(), effectHolder.getAmplifier()));
+                        lines.add(Component.translatable("miapi.potion.damaged.self.tooltip", text, effectHolder.getDurationSeconds(), effectHolder.getAmplifier()));
                     } else {
-                        lines.add(Text.translatable("miapi.potion.damaged.other.tooltip", text, effectHolder.getDurationSeconds(), effectHolder.getAmplifier()));
+                        lines.add(Component.translatable("miapi.potion.damaged.other.tooltip", text, effectHolder.getDurationSeconds(), effectHolder.getAmplifier()));
                     }
                 }
             }
             if (!lines.isEmpty()) {
-                lines.add(0, Text.translatable("miapi.potion.damaged.on_hit").getWithStyle(Style.EMPTY.withColor(Formatting.GRAY)).get(0));
-                lines.add(0, Text.empty());
+                lines.add(0, Component.translatable("miapi.potion.damaged.on_hit").toFlatList(Style.EMPTY.withColor(ChatFormatting.GRAY)).get(0));
+                lines.add(0, Component.empty());
             }
             tooltip.addAll(lines);
         });

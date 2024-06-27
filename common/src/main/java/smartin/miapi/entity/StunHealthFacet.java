@@ -5,12 +5,12 @@ import com.redpxnda.nucleus.facet.FacetRegistry;
 import com.redpxnda.nucleus.facet.entity.EntityFacet;
 import com.redpxnda.nucleus.facet.network.clientbound.FacetSyncPacket;
 import com.redpxnda.nucleus.network.PlayerSendable;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.Identifier;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import smartin.miapi.Miapi;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.config.MiapiConfig;
@@ -18,10 +18,10 @@ import smartin.miapi.mixin.LivingEntityAccessor;
 import smartin.miapi.registries.RegistryInventory;
 
 
-public class StunHealthFacet implements EntityFacet<NbtCompound> {
+public class StunHealthFacet implements EntityFacet<CompoundTag> {
     private LivingEntity livingEntity;
     private float currentAmount = 20;
-    public static final Identifier facetIdentifier = new Identifier(Miapi.MOD_ID, "stun_current_health");
+    public static final ResourceLocation facetIdentifier = new ResourceLocation(Miapi.MOD_ID, "stun_current_health");
     public static FacetKey<StunHealthFacet> KEY = FacetRegistry.register(facetIdentifier, StunHealthFacet.class);
 
     public StunHealthFacet(LivingEntity entity) {
@@ -37,8 +37,8 @@ public class StunHealthFacet implements EntityFacet<NbtCompound> {
     public void takeStunDamage(float stunDamage, LivingEntity attacker) {
         currentAmount -= stunDamage;
         if (currentAmount <= 0) {
-            if (!livingEntity.hasStatusEffect(RegistryInventory.stunResistanceEffect)) {
-                this.livingEntity.addStatusEffect(new StatusEffectInstance(RegistryInventory.stunEffect, MiapiConfig.INSTANCE.server.stunEffectCategory.stunLength, 0, false, true), attacker);
+            if (!livingEntity.hasEffect(RegistryInventory.stunResistanceEffect)) {
+                this.livingEntity.addEffect(new MobEffectInstance(RegistryInventory.stunEffect, MiapiConfig.INSTANCE.server.stunEffectCategory.stunLength, 0, false, true), attacker);
             }
             currentAmount = getMaxAmount();
         }
@@ -49,9 +49,9 @@ public class StunHealthFacet implements EntityFacet<NbtCompound> {
     }
 
     public void tick() {
-        if (livingEntity.age % 5 == 4) {
+        if (livingEntity.tickCount % 5 == 4) {
             currentAmount = Math.min(getCurrentStunHealth() + 2.0f, getMaxAmount());
-            if (livingEntity instanceof ServerPlayerEntity serverPlayerEntity) {
+            if (livingEntity instanceof ServerPlayer serverPlayerEntity) {
                 this.sendToClient(serverPlayerEntity);
             }
         }
@@ -59,10 +59,10 @@ public class StunHealthFacet implements EntityFacet<NbtCompound> {
 
     public int ticksSinceLastAttack() {
         int lastAttackedTime = ((LivingEntityAccessor) livingEntity).getLastAttackedTime();
-        if (lastAttackedTime > livingEntity.age) {
-            return livingEntity.age;
+        if (lastAttackedTime > livingEntity.tickCount) {
+            return livingEntity.tickCount;
         }
-        return livingEntity.age - lastAttackedTime;
+        return livingEntity.tickCount - lastAttackedTime;
     }
 
     public float getMaxAmount() {
@@ -71,14 +71,14 @@ public class StunHealthFacet implements EntityFacet<NbtCompound> {
 
 
     @Override
-    public NbtCompound toNbt() {
-        NbtCompound compound = new NbtCompound();
+    public CompoundTag toNbt() {
+        CompoundTag compound = new CompoundTag();
         compound.putFloat("miapi:stun_current_health", getCurrentStunHealth());
         return compound;
     }
 
     @Override
-    public void loadNbt(NbtCompound nbt) {
+    public void loadNbt(CompoundTag nbt) {
         currentAmount = nbt.getFloat("miapi:stun_current_health");
     }
 

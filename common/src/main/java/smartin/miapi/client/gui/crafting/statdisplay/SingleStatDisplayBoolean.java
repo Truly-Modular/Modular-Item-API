@@ -3,11 +3,11 @@ package smartin.miapi.client.gui.crafting.statdisplay;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.item.ItemStack;
-import net.minecraft.text.Text;
-import net.minecraft.util.math.ColorHelper;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.network.chat.Component;
+import net.minecraft.util.FastColor;
+import net.minecraft.world.item.ItemStack;
 import smartin.miapi.client.gui.ScrollingTextWidget;
 
 @Environment(EnvType.CLIENT)
@@ -25,8 +25,8 @@ public abstract class SingleStatDisplayBoolean extends SingleStatDisplayDouble {
     }
 
     public int getWidthDesired() {
-        int textWidth = MinecraftClient.getInstance().textRenderer.getWidth(this.text.resolve(original).getString());
-        int numberWidth = MinecraftClient.getInstance().textRenderer.getWidth(getText(compareToValue).getString());
+        int textWidth = Minecraft.getInstance().font.width(this.text.resolve(original).getString());
+        int numberWidth = Minecraft.getInstance().font.width(getText(compareToValue).getString());
         int size = 1;
         if (textWidth + numberWidth > 76 - 6) {
             size = 2;
@@ -45,7 +45,7 @@ public abstract class SingleStatDisplayBoolean extends SingleStatDisplayDouble {
     public abstract boolean hasValueItemStack(ItemStack itemStack);
 
     @Override
-    public void render(DrawContext drawContext, int mouseX, int mouseY, float delta) {
+    public void render(GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
         //double oldValue = getInt(original);
         //double compareToValue = getInt(compareTo);
 
@@ -65,11 +65,11 @@ public abstract class SingleStatDisplayBoolean extends SingleStatDisplayDouble {
         statBar.setWidth(this.width - 4);
         statBar.setHeight(1);
         if (oldValue < compareToValue) {
-            statBar.setPrimary((oldValue - min) / (max - min), ColorHelper.Argb.getArgb(255, 255, 255, 255));
+            statBar.setPrimary((oldValue - min) / (max - min), FastColor.ARGB32.color(255, 255, 255, 255));
             statBar.setSecondary((compareToValue - min) / (max - min), getGreen());
             compareValue.textColor = getGreen();
         } else {
-            statBar.setPrimary((compareToValue - min) / (max - min), ColorHelper.Argb.getArgb(255, 255, 255, 255));
+            statBar.setPrimary((compareToValue - min) / (max - min), FastColor.ARGB32.color(255, 255, 255, 255));
             statBar.setSecondary((oldValue - min) / (max - min), getRed());
             compareValue.textColor = getRed();
         }
@@ -77,7 +77,7 @@ public abstract class SingleStatDisplayBoolean extends SingleStatDisplayDouble {
             currentValue.setX(this.getX() - 3);
             currentValue.setY(this.getY() + 5);
             currentValue.setWidth(this.getWidth());
-            currentValue.setText(Text.literal(getText(oldValue).getString() + postfix.getString()));
+            currentValue.setText(Component.literal(getText(oldValue).getString() + postfix.getString()));
             currentValue.setOrientation(ScrollingTextWidget.Orientation.RIGHT);
             currentValue.render(drawContext, mouseX, mouseY, delta);
         } else {
@@ -85,22 +85,22 @@ public abstract class SingleStatDisplayBoolean extends SingleStatDisplayDouble {
             compareValue.setY(this.getY() + 5);
             compareValue.setWidth(this.getWidth());
             compareValue.setOrientation(ScrollingTextWidget.Orientation.RIGHT);
-            compareValue.setText(Text.literal(getText(compareToValue).getString() + postfix.getString()));
+            compareValue.setText(Component.literal(getText(compareToValue).getString() + postfix.getString()));
             compareValue.render(drawContext, mouseX, mouseY, delta);
         }
         statBar.render(drawContext, mouseX, mouseY, delta);
         textWidget.render(drawContext, mouseX, mouseY, delta);
     }
 
-    public static Text getText(double value) {
+    public static Component getText(double value) {
         return getText(value > 0);
     }
 
-    public static Text getText(boolean value) {
+    public static Component getText(boolean value) {
         if (value) {
-            return Text.translatable("miapi.ui.boolean.true");
+            return Component.translatable("miapi.ui.boolean.true");
         } else {
-            return Text.translatable("miapi.ui.boolean.false");
+            return Component.translatable("miapi.ui.boolean.false");
         }
     }
 }

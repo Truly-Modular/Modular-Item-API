@@ -1,10 +1,6 @@
 package smartin.miapi.item;
 
 import com.google.gson.reflect.TypeToken;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.Registries;
 import smartin.miapi.Miapi;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.modules.ItemModule;
@@ -15,6 +11,10 @@ import smartin.miapi.registries.RegistryInventory;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 
 public class ItemToModularConverter implements ModularItemStackConverter.ModularConverter {
     public Map<String, ItemStack> regexes = new ConcurrentHashMap<>();
@@ -41,7 +41,7 @@ public class ItemToModularConverter implements ModularItemStackConverter.Modular
     }
 
     public boolean preventConvert(ItemStack itemStack) {
-        NbtCompound nbt = itemStack.getNbt();
+        CompoundTag nbt = itemStack.getNbt();
         if(nbt!=null){
             if(nbt.get("CustomModelData")!=null){
                 return true;
@@ -59,7 +59,7 @@ public class ItemToModularConverter implements ModularItemStackConverter.Modular
             return stack.copy();
         }
         for (Map.Entry<String, ItemStack> entry : regexes.entrySet()) {
-            if (Registries.ITEM.getId(stack.getItem()).toString().matches(entry.getKey())) {
+            if (BuiltInRegistries.ITEM.getKey(stack.getItem()).toString().matches(entry.getKey())) {
                 ItemStack nextStack = entry.getValue().copy();
                 nextStack.setNbt(stack.copy().getNbt());
                 nextStack.getOrCreateNbt().put(ItemModule.NBT_MODULE_KEY, entry.getValue().getNbt().get(ItemModule.NBT_MODULE_KEY));

@@ -2,11 +2,11 @@ package smartin.miapi.modules.edit_options.skins.gui;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.text.Text;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.ItemStack;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.ClickAbleTextWidget;
 import smartin.miapi.client.gui.InteractAbleWidget;
@@ -24,14 +24,14 @@ import java.util.function.Consumer;
 
 public class SkinGui extends InteractAbleWidget {
 
-    public final Consumer<PacketByteBuf> craft;
-    public final Consumer<PacketByteBuf> preview;
+    public final Consumer<FriendlyByteBuf> craft;
+    public final Consumer<FriendlyByteBuf> preview;
     public String currentPreview;
     public ModuleInstance instance;
 
     @Environment(EnvType.CLIENT)
-    public SkinGui(int x, int y, int width, int height, ItemStack stack, ModuleInstance instance, Consumer<PacketByteBuf> craft, Consumer<PacketByteBuf> preview) {
-        super(x, y, width, height, Text.empty());
+    public SkinGui(int x, int y, int width, int height, ItemStack stack, ModuleInstance instance, Consumer<FriendlyByteBuf> craft, Consumer<FriendlyByteBuf> preview) {
+        super(x, y, width, height, Component.empty());
         this.craft = craft;
         this.preview = preview;
         this.instance = instance;
@@ -44,12 +44,12 @@ public class SkinGui extends InteractAbleWidget {
         widgets.add(parentSkinTab);
         ScrollList list = new ScrollList(x, y + 30, width, height - 30, widgets);
         this.addChild(list);
-        TextFieldWidget textFieldWidget = new ClickAbleTextWidget(MinecraftClient.getInstance().textRenderer, x + 2, y + 2, this.width - 4, 18, Text.literal("TITLE"));
+        EditBox textFieldWidget = new ClickAbleTextWidget(Minecraft.getInstance().font, x + 2, y + 2, this.width - 4, 18, Component.literal("TITLE"));
         textFieldWidget.setMaxLength(Integer.MAX_VALUE);
         textFieldWidget.setEditable(true);
         textFieldWidget.setVisible(true);
-        textFieldWidget.setPlaceholder(Text.translatable(Miapi.MOD_ID + ".ui.search_placeholder"));
-        textFieldWidget.setChangedListener(parentSkinTab::filter);
+        textFieldWidget.setHint(Component.translatable(Miapi.MOD_ID + ".ui.search_placeholder"));
+        textFieldWidget.setResponder(parentSkinTab::filter);
         this.addChild(textFieldWidget);
     }
 
@@ -65,16 +65,16 @@ public class SkinGui extends InteractAbleWidget {
     public void setPreview(String skinPath) {
         if (!skinPath.equals(currentPreview)) {
             currentPreview = skinPath;
-            PacketByteBuf buf = Networking.createBuffer();
-            buf.writeString(skinPath);
+            FriendlyByteBuf buf = Networking.createBuffer();
+            buf.writeUtf(skinPath);
             preview.accept(buf);
         }
     }
 
     public void setCraft(String skinPath) {
         currentPreview = skinPath;
-        PacketByteBuf buf = Networking.createBuffer();
-        buf.writeString(skinPath);
+        FriendlyByteBuf buf = Networking.createBuffer();
+        buf.writeUtf(skinPath);
         craft.accept(buf);
     }
 

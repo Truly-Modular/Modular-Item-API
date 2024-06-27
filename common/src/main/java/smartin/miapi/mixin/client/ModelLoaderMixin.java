@@ -1,16 +1,16 @@
 package smartin.miapi.mixin.client;
 
 
-import net.minecraft.client.render.model.ModelLoader;
-import net.minecraft.client.render.model.json.JsonUnbakedModel;
-import net.minecraft.util.Identifier;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 import java.util.Map;
+import net.minecraft.client.renderer.block.model.BlockModel;
+import net.minecraft.client.resources.model.ModelBakery;
+import net.minecraft.resources.ResourceLocation;
 
-@Mixin(ModelLoader.class)
+@Mixin(ModelBakery.class)
 abstract class ModelLoaderMixin {
 
 
@@ -18,7 +18,7 @@ abstract class ModelLoaderMixin {
             method = "<init>(Lnet/minecraft/client/color/block/BlockColors;Lnet/minecraft/util/profiler/Profiler;Ljava/util/Map;Ljava/util/Map;)V",
             at = @At(value = "HEAD"),
             ordinal = 0)
-    private static Map<Identifier, JsonUnbakedModel> miapi$jsonUnbakedModels(Map<Identifier, JsonUnbakedModel> jsonUnbakedModels) {
+    private static Map<ResourceLocation, BlockModel> miapi$jsonUnbakedModels(Map<ResourceLocation, BlockModel> jsonUnbakedModels) {
         /*
         Map<Identifier, Resource> rawModels = MinecraftClient.getInstance().getResourceManager().findResources("models", (identifier -> identifier.getNamespace().equals(Miapi.MOD_ID)));
 

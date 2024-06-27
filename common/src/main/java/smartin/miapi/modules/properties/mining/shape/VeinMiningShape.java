@@ -1,10 +1,6 @@
 package smartin.miapi.modules.properties.mining.shape;
 
 import com.google.gson.JsonObject;
-import net.minecraft.block.BlockState;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.world.World;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.mining.MiningShapeProperty;
 
@@ -12,6 +8,10 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 
 public class VeinMiningShape implements MiningShape {
     public int size = 5;
@@ -26,7 +26,7 @@ public class VeinMiningShape implements MiningShape {
     }
 
     @Override
-    public List<BlockPos> getMiningBlocks(World world, BlockPos pos, Direction face) {
+    public List<BlockPos> getMiningBlocks(Level world, BlockPos pos, Direction face) {
         List<BlockPos> miningBlocks = new ArrayList<>();
         if (maxBlocks < 1) {
             return miningBlocks;
@@ -44,7 +44,7 @@ public class VeinMiningShape implements MiningShape {
             miningBlocks.add(currentPos);
 
             for (Direction direction : Direction.values()) {
-                BlockPos neighborPos = currentPos.offset(direction);
+                BlockPos neighborPos = currentPos.relative(direction);
 
                 // Check if neighbor position is within the size limit and hasn't been visited
                 int dx1 = neighborPos.getX() - pos.getX() + size;

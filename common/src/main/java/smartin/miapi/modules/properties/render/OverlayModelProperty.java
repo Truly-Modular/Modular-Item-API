@@ -2,18 +2,11 @@ package smartin.miapi.modules.properties.render;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 import com.redpxnda.nucleus.codec.auto.AutoCodec;
 import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.model.json.ModelTransformationMode;
-import net.minecraft.client.texture.Sprite;
-import net.minecraft.client.texture.SpriteAtlasTexture;
-import net.minecraft.client.util.SpriteIdentifier;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
@@ -34,6 +27,13 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.regex.Pattern;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.resources.model.Material;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemDisplayContext;
+import net.minecraft.world.item.ItemStack;
 
 public class OverlayModelProperty extends CodecBasedProperty<OverlayModelProperty.OverlayModelData> implements RenderProperty {
     public static Codec<OverlayModelData> CODEC = AutoCodec.of(OverlayModelData.class).codec();
@@ -56,7 +56,7 @@ public class OverlayModelProperty extends CodecBasedProperty<OverlayModelPropert
                                     ModelHolder holder = ModelProperty.bakedModel(moduleInstance, modelJson, stack, key);
                                     if (holder != null) {
                                         ColorProvider colorProvider = modelData.getColorProvider(stack, module, moduleInstance, holder.colorProvider());
-                                        Sprite overWriteSprite = modelData.resolveSprite();
+                                        TextureAtlasSprite overWriteSprite = modelData.resolveSprite();
                                         models.add(getBakedMiapiModel(
                                                 module,
                                                 stack,
@@ -86,7 +86,7 @@ public class OverlayModelProperty extends CodecBasedProperty<OverlayModelPropert
                                 ModelHolder holder = ModelProperty.bakedModel(moduleInstance, modelJson, stack, key);
                                 if (holder != null) {
                                     ColorProvider colorProvider = modelData.getColorProvider(stack, module2, moduleInstance, holder.colorProvider());
-                                    Sprite overWriteSprite = modelData.resolveSprite();
+                                    TextureAtlasSprite overWriteSprite = modelData.resolveSprite();
                                     models.add(getBakedMiapiModel(
                                             module,
                                             stack,
@@ -113,14 +113,14 @@ public class OverlayModelProperty extends CodecBasedProperty<OverlayModelPropert
     }
 
     @NotNull
-    private BakedMiapiModel getBakedMiapiModel(ModuleInstance module, ItemStack stack, OverlayModelData modelData, ModuleInstance moduleInstance, ModelHolder holder, ColorProvider colorProvider, @Nullable Sprite overWriteSprite) {
+    private BakedMiapiModel getBakedMiapiModel(ModuleInstance module, ItemStack stack, OverlayModelData modelData, ModuleInstance moduleInstance, ModelHolder holder, ColorProvider colorProvider, @Nullable TextureAtlasSprite overWriteSprite) {
         return new BakedMiapiModel(
                 new ModelHolder(
                         holder.model(),
                         new Matrix4f(holder.matrix4f()),
                         new ColorProvider() {
                             @Override
-                            public VertexConsumer getConsumer(VertexConsumerProvider vertexConsumers, Sprite sprite, ItemStack stack, ModuleInstance moduleInstance, ModelTransformationMode mode) {
+                            public VertexConsumer getConsumer(MultiBufferSource vertexConsumers, TextureAtlasSprite sprite, ItemStack stack, ModuleInstance moduleInstance, ItemDisplayContext mode) {
                                 return new RescaledVertexConsumer(colorProvider.getConsumer(vertexConsumers, overWriteSprite == null ? sprite : overWriteSprite, stack, modelData.useThisModule() ? module : moduleInstance, mode), sprite);
                             }
 
@@ -169,16 +169,16 @@ public class OverlayModelProperty extends CodecBasedProperty<OverlayModelPropert
         public boolean allowOtherModules = false;
 
         @Nullable
-        public Sprite resolveSprite() {
+        public TextureAtlasSprite resolveSprite() {
             if (texture == null) {
                 return null;
             }
-            return ModelProperty.textureGetter.apply(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, Identifier.of(texture)));
+            return ModelProperty.textureGetter.apply(new Material(TextureAtlas.LOCATION_BLOCKS, ResourceLocation.parse(texture)));
         }
 
         public void loadSprite() {
             if (texture != null) {
-                ModelProperty.textureGetter.apply(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, Identifier.of(texture)));
+                ModelProperty.textureGetter.apply(new Material(TextureAtlas.LOCATION_BLOCKS, ResourceLocation.parse(texture)));
             }
         }
 

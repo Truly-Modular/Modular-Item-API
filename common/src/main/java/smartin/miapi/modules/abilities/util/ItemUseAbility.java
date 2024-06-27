@@ -1,15 +1,15 @@
 package smartin.miapi.modules.abilities.util;
 
 import com.google.gson.JsonObject;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemUsageContext;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
-import net.minecraft.util.UseAction;
-import net.minecraft.world.World;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.UseAnim;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.Level;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.AbilityMangerProperty;
@@ -29,7 +29,7 @@ public interface ItemUseAbility<T> {
      * @param hand      The hand with which the item is being used.
      * @return true if the item is allowed to be used, false otherwise.
      */
-    boolean allowedOnItem(ItemStack itemStack, World world, PlayerEntity player, Hand hand, ItemAbilityManager.AbilityHitContext abilityHitContext);
+    boolean allowedOnItem(ItemStack itemStack, Level world, Player player, InteractionHand hand, ItemAbilityManager.AbilityHitContext abilityHitContext);
 
     /**
      * Gets the use action of the specified item stack.
@@ -37,7 +37,7 @@ public interface ItemUseAbility<T> {
      * @param itemStack The item stack being used.
      * @return The use action of the item stack.
      */
-    UseAction getUseAction(ItemStack itemStack);
+    UseAnim getUseAction(ItemStack itemStack);
 
     /**
      * Gets the maximum use time of the specified item stack.
@@ -56,7 +56,7 @@ public interface ItemUseAbility<T> {
      * @param hand  The hand with which the item is being used.
      * @return The result of using the item, including the modified item stack.
      */
-    TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand);
+    InteractionResultHolder<ItemStack> use(Level world, Player user, InteractionHand hand);
 
     /**
      * Called when the item usage is finished (MaxUseTime is over)
@@ -66,7 +66,7 @@ public interface ItemUseAbility<T> {
      * @param user  The entity using the item.
      * @return The resulting item stack after finishing usage.
      */
-    default ItemStack finishUsing(ItemStack stack, World world, LivingEntity user) {
+    default ItemStack finishUsing(ItemStack stack, Level world, LivingEntity user) {
         return stack;
     }
 
@@ -78,7 +78,7 @@ public interface ItemUseAbility<T> {
      * @param user              The entity using the item.
      * @param remainingUseTicks The remaining ticks of item usage.
      */
-    default void onStoppedUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
+    default void onStoppedUsing(ItemStack stack, Level world, LivingEntity user, int remainingUseTicks) {
 
     }
 
@@ -89,7 +89,7 @@ public interface ItemUseAbility<T> {
      * @param world The world in which the item is being held.
      * @param user  The entity holding the item.
      */
-    default void onStoppedHolding(ItemStack stack, World world, LivingEntity user) {
+    default void onStoppedHolding(ItemStack stack, Level world, LivingEntity user) {
 
     }
 
@@ -102,8 +102,8 @@ public interface ItemUseAbility<T> {
      * @param hand   The hand with which the item is being used.
      * @return The result of using the item on the entity.
      */
-    default ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
-        return ActionResult.PASS;
+    default InteractionResult useOnEntity(ItemStack stack, Player user, LivingEntity entity, InteractionHand hand) {
+        return InteractionResult.PASS;
     }
 
     /**
@@ -112,11 +112,11 @@ public interface ItemUseAbility<T> {
      * @param context The item usage context, including the item stack, player, and block information.
      * @return The result of using the item on the block.
      */
-    default ActionResult useOnBlock(ItemUsageContext context) {
-        return ActionResult.PASS;
+    default InteractionResult useOnBlock(UseOnContext context) {
+        return InteractionResult.PASS;
     }
 
-    default void usageTick(World world, LivingEntity user, ItemStack stack, int remainingUseTicks) {
+    default void usageTick(Level world, LivingEntity user, ItemStack stack, int remainingUseTicks) {
 
     }
 

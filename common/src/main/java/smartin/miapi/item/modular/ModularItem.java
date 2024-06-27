@@ -1,6 +1,6 @@
 package smartin.miapi.item.modular;
 
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 import smartin.miapi.modules.properties.DurabilityProperty;
 
 /**

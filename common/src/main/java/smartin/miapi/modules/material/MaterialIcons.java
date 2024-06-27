@@ -3,6 +3,8 @@ package smartin.miapi.modules.material;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import com.mojang.blaze3d.platform.Lighting;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.serialization.Codec;
 import com.redpxnda.nucleus.codec.auto.AutoCodec;
 import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
@@ -11,23 +13,21 @@ import com.redpxnda.nucleus.codec.misc.MiscCodecs;
 import com.redpxnda.nucleus.codec.misc.PolyCodec;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.render.DiffuseLighting;
-import net.minecraft.client.render.LightmapTextureManager;
-import net.minecraft.client.render.OverlayTexture;
-import net.minecraft.client.render.entity.EntityRenderDispatcher;
-import net.minecraft.client.render.item.ItemRenderer;
-import net.minecraft.client.render.model.BakedModel;
-import net.minecraft.client.render.model.json.ModelTransformationMode;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.registry.Registries;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.Util;
+import net.minecraft.Util;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
+import net.minecraft.client.renderer.entity.ItemRenderer;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemDisplayContext;
+import net.minecraft.world.item.ItemStack;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import smartin.miapi.Miapi;
@@ -52,11 +52,11 @@ public class MaterialIcons {
             if (!(object.get("path") instanceof JsonPrimitive primitive) || !primitive.isString())
                 throw new RuntimeException("'path' field for the icon of the '" + mat + "' material is either missing, or not a string! -> " + element);
 
-            return new TextureMaterialIcon(new Identifier(primitive.getAsString()));
+            return new TextureMaterialIcon(new ResourceLocation(primitive.getAsString()));
         };
         iconCreators.put("texture", textureIconCreator);
 
-        Codec<ItemStack> byItem = Registries.ITEM.getCodec().xmap(Item::getDefaultStack, ItemStack::getItem);
+        Codec<ItemStack> byItem = BuiltInRegistries.ITEM.byNameCodec().xmap(Item::getDefaultInstance, ItemStack::getItem);
         iconCreators.put("item", (element, mat) -> {
             if (!(element instanceof JsonObject object))
                 throw new RuntimeException("JSON data for the icon of the '" + mat + "' material is not a JSON object! -> " + element);
@@ -92,7 +92,7 @@ public class MaterialIcons {
          * @return amount to offset for text rendering
          */
         @Environment(EnvType.CLIENT)
-        int render(DrawContext context, int x, int y);
+        int render(GuiGraphics context, int x, int y);
     }
     public interface MaterialIconCreator {
         MaterialIcon create(JsonElement element, String materialKey);
@@ -112,17 +112,17 @@ public class MaterialIcons {
     public record EntityMaterialIcon(EntityIconHolder holder) implements MaterialIcon {
         @Environment(EnvType.CLIENT)
         @Override
-        public int render(DrawContext context, int x, int y) {
+        public int render(GuiGraphics context, int x, int y) {
             renderRotatingEntity(context, x, y, 0, holder);
             return holder.offset;
         }
     }
 
-    public record TextureMaterialIcon(Identifier texture) implements MaterialIcon {
+    public record TextureMaterialIcon(ResourceLocation texture) implements MaterialIcon {
         @Environment(EnvType.CLIENT)
         @Override
-        public int render(DrawContext context, int x, int y) {
-            context.drawTexture(texture, x, y, 0, 0, 16, 16, 16, 16);
+        public int render(GuiGraphics context, int x, int y) {
+            context.blit(texture, x, y, 0, 0, 16, 16, 16, 16);
             return 16;
         }
     }
@@ -130,9 +130,9 @@ public class MaterialIcons {
     public record ItemMaterialIcon(ItemStack item, int offset, SpinSettings spin) implements MaterialIcon {
         @Environment(EnvType.CLIENT)
         @Override
-        public int render(DrawContext context, int x, int y) {
+        public int render(GuiGraphics context, int x, int y) {
             if (spin != null) renderRotatingItem(context, item, x, y, 0, spin);
-            else context.drawItem(item, x, y);
+            else context.renderItem(item, x, y);
             return offset;
         }
     }
@@ -150,57 +150,57 @@ public class MaterialIcons {
         public int originZ = 0;
         public float speed = 1;
 
-        public void multiplyMatrices(MatrixStack matrices) {
-            float amount = Util.getMeasuringTimeMs()*(0.0001745f*speed);
-            matrices.multiply(new Quaternionf().rotationXYZ(x ? amount : 0, y ? amount : 0, z ? amount : 0), originX, originY, originZ);
+        public void multiplyMatrices(PoseStack matrices) {
+            float amount = Util.getMillis()*(0.0001745f*speed);
+            matrices.rotateAround(new Quaternionf().rotationXYZ(x ? amount : 0, y ? amount : 0, z ? amount : 0), originX, originY, originZ);
         }
     }
 
     @Environment(EnvType.CLIENT)
-    public static void renderRotatingItem(DrawContext context, ItemStack stack, int x, int y, int z, SpinSettings spin) {
+    public static void renderRotatingItem(GuiGraphics context, ItemStack stack, int x, int y, int z, SpinSettings spin) {
         if (stack.isEmpty()) {
             return;
         }
-        ItemRenderer itemRenderer = MinecraftClient.getInstance().getItemRenderer();
-        BakedModel bakedModel = itemRenderer.getModel(stack, MinecraftClient.getInstance().world, MinecraftClient.getInstance().player, 0);
-        context.getMatrices().push();
-        context.getMatrices().translate(x + 8, y + 8, 150 + (bakedModel.hasDepth() ? z : 0));
-        boolean bl = !bakedModel.isSideLit();
-        context.getMatrices().multiplyPositionMatrix(new Matrix4f().scaling(1.0f, -1.0f, 1.0f));
-        context.getMatrices().scale(16.0f, 16.0f, 16.0f);
+        ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
+        BakedModel bakedModel = itemRenderer.getModel(stack, Minecraft.getInstance().level, Minecraft.getInstance().player, 0);
+        context.pose().pushPose();
+        context.pose().translate(x + 8, y + 8, 150 + (bakedModel.isGui3d() ? z : 0));
+        boolean bl = !bakedModel.usesBlockLight();
+        context.pose().mulPose(new Matrix4f().scaling(1.0f, -1.0f, 1.0f));
+        context.pose().scale(16.0f, 16.0f, 16.0f);
 
-        spin.multiplyMatrices(context.getMatrices());
+        spin.multiplyMatrices(context.pose());
 
         if (bl) {
-            DiffuseLighting.disableGuiDepthLighting();
+            Lighting.setupForFlatItems();
         }
-        itemRenderer.renderItem(stack, ModelTransformationMode.GUI, false, context.getMatrices(), context.getVertexConsumers(), 0xF000F0, OverlayTexture.DEFAULT_UV, bakedModel);
-        context.draw();
+        itemRenderer.render(stack, ItemDisplayContext.GUI, false, context.pose(), context.bufferSource(), 0xF000F0, OverlayTexture.NO_OVERLAY, bakedModel);
+        context.flush();
         if (bl) {
-            DiffuseLighting.enableGuiDepthLighting();
+            Lighting.setupFor3DItems();
         }
-        context.getMatrices().pop();
+        context.pose().popPose();
     }
 
     @Environment(EnvType.CLIENT)
-    public static void renderRotatingEntity(DrawContext context, int x, int y, int z, EntityIconHolder holder) {
-        if (holder.actual == null) holder.actual = holder.entity.create(MinecraftClient.getInstance().world);
+    public static void renderRotatingEntity(GuiGraphics context, int x, int y, int z, EntityIconHolder holder) {
+        if (holder.actual == null) holder.actual = holder.entity.create(Minecraft.getInstance().level);
 
-        EntityRenderDispatcher renderer = MinecraftClient.getInstance().getEntityRenderDispatcher();
-        context.getMatrices().push();
-        context.getMatrices().translate(x + 8 + holder.x, y + 16 - holder.y, 150 + z);
-        context.getMatrices().multiplyPositionMatrix(new Matrix4f().scaling(1.0f, -1.0f, 1.0f));
-        context.getMatrices().scale(16.0f, 16.0f, 16.0f);
-        context.getMatrices().scale(holder.scale, holder.scale, holder.scale);
+        EntityRenderDispatcher renderer = Minecraft.getInstance().getEntityRenderDispatcher();
+        context.pose().pushPose();
+        context.pose().translate(x + 8 + holder.x, y + 16 - holder.y, 150 + z);
+        context.pose().mulPose(new Matrix4f().scaling(1.0f, -1.0f, 1.0f));
+        context.pose().scale(16.0f, 16.0f, 16.0f);
+        context.pose().scale(holder.scale, holder.scale, holder.scale);
 
         if (holder.spin != null) {
-            holder.spin.multiplyMatrices(context.getMatrices());
+            holder.spin.multiplyMatrices(context.pose());
         }
 
         renderer.render(holder.actual, 0, 0, 0, 0,
-                0, context.getMatrices(),
-                MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers(), LightmapTextureManager.MAX_LIGHT_COORDINATE);
-        context.draw();
-        context.getMatrices().pop();
+                0, context.pose(),
+                Minecraft.getInstance().renderBuffers().bufferSource(), LightTexture.FULL_BRIGHT);
+        context.flush();
+        context.pose().popPose();
     }
 }

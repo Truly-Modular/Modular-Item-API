@@ -1,7 +1,7 @@
 package smartin.miapi.client.gui;
 
-import net.minecraft.inventory.Inventory;
-import net.minecraft.screen.slot.Slot;
+import net.minecraft.world.Container;
+import net.minecraft.world.inventory.Slot;
 
 /**
  * This is a mutable implementation of the vanilla Slot class that allows enabling or disabling the slot.
@@ -18,7 +18,7 @@ public class MutableSlot extends Slot {
      * @param x         the X-coordinate of the slot in the GUI.
      * @param y         the Y-coordinate of the slot in the GUI.
      */
-    public MutableSlot(Inventory inventory, int index, int x, int y) {
+    public MutableSlot(Container inventory, int index, int x, int y) {
         super(inventory, index, x, y);
     }
 
@@ -37,7 +37,7 @@ public class MutableSlot extends Slot {
      * @return true if the slot is enabled, false otherwise.
      */
     @Override
-    public boolean isEnabled() {
+    public boolean isActive() {
         return isEnabled;
     }
 }

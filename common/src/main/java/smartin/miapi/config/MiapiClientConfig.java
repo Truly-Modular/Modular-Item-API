@@ -4,10 +4,9 @@ import com.redpxnda.nucleus.codec.auto.AutoCodec;
 import com.redpxnda.nucleus.codec.auto.ConfigAutoCodec;
 import com.redpxnda.nucleus.util.Color;
 import com.redpxnda.nucleus.util.Comment;
-import net.minecraft.util.Identifier;
-
 import java.util.ArrayList;
 import java.util.List;
+import net.minecraft.resources.ResourceLocation;
 
 @ConfigAutoCodec.ConfigClassMarker
 public class MiapiClientConfig {
@@ -65,6 +64,6 @@ public class MiapiClientConfig {
         public int otherOffests = 0;
         @Comment("other attributes that if the player has more than 0 will offset the Armor shielding for every 20")
         @AutoCodec.Name("other_attributes")
-        public List<Identifier> attributesSingleLine = new ArrayList<>();
+        public List<ResourceLocation> attributesSingleLine = new ArrayList<>();
     }
 }

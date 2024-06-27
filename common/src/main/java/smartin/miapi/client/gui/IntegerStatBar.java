@@ -1,8 +1,8 @@
 package smartin.miapi.client.gui;
 
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.text.Text;
-import net.minecraft.util.math.ColorHelper;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.network.chat.Component;
+import net.minecraft.util.FastColor;
 import smartin.miapi.client.gui.crafting.CraftingScreen;
 
 public class IntegerStatBar extends InteractAbleWidget {
@@ -11,12 +11,12 @@ public class IntegerStatBar extends InteractAbleWidget {
     int maxSteps = 1;
     int primaryColor = 1;
     int secondaryColor = 1;
-    int offColor = ColorHelper.Argb.getArgb(255, 0, 0, 0);
+    int offColor = FastColor.ARGB32.color(255, 0, 0, 0);
     int gapWidth = 1;
     int shadowSize = 1;
 
     public IntegerStatBar(int x, int y, int width, int height) {
-        super(x, y, width, height, Text.empty());
+        super(x, y, width, height, Component.empty());
     }
 
     public void setMaxSteps(int maxSteps) {
@@ -38,7 +38,7 @@ public class IntegerStatBar extends InteractAbleWidget {
     }
 
     @Override
-    public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
+    public void renderWidget(GuiGraphics context, int mouseX, int mouseY, float delta) {
         int newMaxSteps = Math.max(this.maxSteps, Math.max(this.primaryValue, this.secondaryValue));
 
         int stepWidth = (int) ((double) (width - gapWidth * (newMaxSteps - 1)) / newMaxSteps);
@@ -55,6 +55,6 @@ public class IntegerStatBar extends InteractAbleWidget {
                 context.fill(segmentX, getY(), segmentEndX, height + getY(), offColor);
             }
         }
-        drawTextureWithEdge(context, CraftingScreen.BACKGROUND_TEXTURE, getX(), getY() + height, 339, 4, 7, 1, getWidth(), shadowSize, 512, 512, 1);
+        drawTextureWithEdge(context, CraftingScreen.INVENTORY_LOCATION, getX(), getY() + height, 339, 4, 7, 1, getWidth(), shadowSize, 512, 512, 1);
     }
 }

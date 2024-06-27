@@ -2,10 +2,6 @@ package smartin.miapi.modules.properties.mining.mode;
 
 import com.google.gson.JsonObject;
 import dev.architectury.event.events.common.TickEvent;
-import net.minecraft.item.ItemStack;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.mining.MiningLevelProperty;
 import smartin.miapi.modules.properties.mining.MiningShapeProperty;
@@ -13,6 +9,10 @@ import smartin.miapi.modules.properties.mining.MiningShapeProperty;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 
 public class StaggeredMiningMode implements MiningMode {
     public float speed = 1;
@@ -40,15 +40,15 @@ public class StaggeredMiningMode implements MiningMode {
     }
 
     @Override
-    public void execute(List<BlockPos> posList, World world, ServerPlayerEntity player, BlockPos origin, ItemStack itemStack) {
+    public void execute(List<BlockPos> posList, Level world, ServerPlayer player, BlockPos origin, ItemStack itemStack) {
         List<BlockPos> reducedList = new ArrayList<>(posList);
-        reducedList.sort(Comparator.comparingDouble((pos) -> pos.getSquaredDistance(origin)));
+        reducedList.sort(Comparator.comparingDouble((pos) -> pos.distSqr(origin)));
         nextTickTask.add(() -> {
             BlockPos pos;
             int success = 0;
             do {
                 pos = reducedList.remove(0);
-                if (world.breakBlock(pos, MiningLevelProperty.canMine(world.getBlockState(pos), world, pos, player) && !player.isCreative(), player)) {
+                if (world.destroyBlock(pos, MiningLevelProperty.canMine(world.getBlockState(pos), world, pos, player) && !player.isCreative(), player)) {
                     success++;
                     if(!player.isCreative()){
                         removeDurability(durabilityBreakChance, itemStack, world, player);
@@ -56,9 +56,9 @@ public class StaggeredMiningMode implements MiningMode {
                 }
             } while (
                     success < speed
-                            && !reducedList.isEmpty() && itemStack.getMaxDamage() - itemStack.getDamage() > 1
+                            && !reducedList.isEmpty() && itemStack.getMaxDamage() - itemStack.getDamageValue() > 1
             );
-            if (!reducedList.isEmpty() && itemStack.getMaxDamage() - itemStack.getDamage() > 1) {
+            if (!reducedList.isEmpty() && itemStack.getMaxDamage() - itemStack.getDamageValue() > 1) {
                 execute(reducedList, world, player, origin, itemStack);
             }
         });

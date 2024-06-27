@@ -1,12 +1,12 @@
 package smartin.miapi.modules.conditions;
 
 import com.google.gson.JsonElement;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.text.Text;
 import smartin.miapi.modules.MiapiPermissions;
 
 import java.util.ArrayList;
 import java.util.List;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Player;
 
 public class MiapiPerm implements ModuleCondition {
 
@@ -23,12 +23,12 @@ public class MiapiPerm implements ModuleCondition {
     @Override
     public boolean isAllowed(ConditionManager.ConditionContext conditionContext) {
         if (conditionContext instanceof ConditionManager.ModuleConditionContext moduleConditionContext) {
-            PlayerEntity player = moduleConditionContext.player;
-            List<Text> reasons = moduleConditionContext.reasons;
+            Player player = moduleConditionContext.player;
+            List<Component> reasons = moduleConditionContext.reasons;
             if (player != null && MiapiPermissions.hasPerm(player, perms)) {
                 return true;
             }
-            reasons.add(Text.literal("This is a Cosmetic for Kofi and Patreon supporter."));
+            reasons.add(Component.literal("This is a Cosmetic for Kofi and Patreon supporter."));
         }
         return false;
     }

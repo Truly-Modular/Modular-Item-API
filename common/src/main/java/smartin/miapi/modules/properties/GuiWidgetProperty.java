@@ -5,9 +5,8 @@ import com.google.gson.JsonObject;
 import com.mojang.serialization.JsonOps;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.item.ItemStack;
-import net.minecraft.text.Text;
-import net.minecraft.util.dynamic.Codecs;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.ItemStack;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.crafting.statdisplay.JsonStatDisplay;
 import smartin.miapi.client.gui.crafting.statdisplay.SingleStatDisplay;
@@ -24,8 +23,8 @@ public class GuiWidgetProperty<T extends InteractAbleWidget & SingleStatDisplay>
     public GuiWidgetProperty() {
         StatListWidget.jsonConverterMap.put("double", ((element, readerHelper) -> {
             JsonObject object = element.getAsJsonObject();
-            Text header = Codecs.TEXT.parse(JsonOps.INSTANCE, object.get("header")).result().orElse(Text.empty());
-            Text description = Codecs.TEXT.parse(JsonOps.INSTANCE, object.get("description")).result().orElse(Text.empty());
+            Component header = Codecs.TEXT.parse(JsonOps.INSTANCE, object.get("header")).result().orElse(Component.empty());
+            Component description = Codecs.TEXT.parse(JsonOps.INSTANCE, object.get("description")).result().orElse(Component.empty());
             double min = getOrDefault(object, "min", 0);
             double max = getOrDefault(object, "max", 10);
             return new JsonStatDisplay(

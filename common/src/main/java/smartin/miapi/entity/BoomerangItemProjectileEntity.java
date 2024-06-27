@@ -1,33 +1,33 @@
 package smartin.miapi.entity;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.projectile.PersistentProjectileEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.math.Position;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.events.MiapiProjectileEvents;
 import smartin.miapi.modules.properties.AirDragProperty;
 
 import java.util.LinkedHashSet;
+import net.minecraft.core.Position;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.projectile.AbstractArrow;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 
 public class BoomerangItemProjectileEntity extends ItemProjectileEntity {
     public LinkedHashSet<Entity> targets = new LinkedHashSet<>();
     public Entity currentTarget = null;
 
-    public BoomerangItemProjectileEntity(EntityType<? extends Entity> entityType, World world) {
-        super((EntityType<? extends PersistentProjectileEntity>) entityType, world);
+    public BoomerangItemProjectileEntity(EntityType<? extends Entity> entityType, Level world) {
+        super((EntityType<? extends AbstractArrow>) entityType, world);
     }
 
-    public BoomerangItemProjectileEntity(World world, Position position, ItemStack itemStack) {
+    public BoomerangItemProjectileEntity(Level world, Position position, ItemStack itemStack) {
         super(world, position, itemStack);
     }
 
-    public BoomerangItemProjectileEntity(World world, LivingEntity owner, ItemStack itemStack) {
+    public BoomerangItemProjectileEntity(Level world, LivingEntity owner, ItemStack itemStack) {
         super(world, owner, itemStack);
     }
 
@@ -37,43 +37,43 @@ public class BoomerangItemProjectileEntity extends ItemProjectileEntity {
 
     @Override
     public void tick() {
-        ItemStack asItem = asItemStack();
+        ItemStack asItem = getPickupItem();
         if (MiapiProjectileEvents.MODULAR_PROJECTILE_TICK.invoker().tick(this).interruptsFurtherEvaluation()) {
             return;
         }
 
         Entity entity = getTarget();
-        if ((this.dealtDamage || this.isNoClip()) && entity != null) {
+        if ((this.dealtDamage || this.isNoPhysics()) && entity != null) {
             if (!this.isOwnerAlive()) {
-                if (!this.getWorld().isClient && this.pickupType == PickupPermission.ALLOWED) {
-                    this.dropStack(this.asItemStack(), 0.1F);
+                if (!this.level().isClientSide && this.pickup == Pickup.ALLOWED) {
+                    this.spawnAtLocation(this.getPickupItem(), 0.1F);
                 }
 
                 this.discard();
             } else {
-                this.setNoClip(true);
-                Vec3d targetDir = entity.getEyePos().subtract(this.getPos());
-                this.setPos(this.getX(), this.getY() + targetDir.y * 0.015, this.getZ());
-                if (this.getWorld().isClient) {
-                    this.lastRenderY = this.getY();
+                this.setNoPhysics(true);
+                Vec3 targetDir = entity.getEyePosition().subtract(this.position());
+                this.setPosRaw(this.getX(), this.getY() + targetDir.y * 0.015, this.getZ());
+                if (this.level().isClientSide) {
+                    this.yOld = this.getY();
                 }
 
                 double speedAdjustment = 0.05;
-                this.setVelocity(this.getVelocity().multiply(0.95).add(targetDir.normalize().multiply(speedAdjustment)));
+                this.setDeltaMovement(this.getDeltaMovement().scale(0.95).add(targetDir.normalize().scale(speedAdjustment)));
                 if (this.returnTimer == 0) {
-                    this.playSound(SoundEvents.ITEM_TRIDENT_RETURN, 10.0F, 1.0F);
+                    this.playSound(SoundEvents.TRIDENT_RETURN, 10.0F, 1.0F);
                 }
 
                 ++this.returnTimer;
             }
         }
 
-        Vec3d vec3d = this.getVelocity();
+        Vec3 vec3d = this.getDeltaMovement();
         float m = (float) AirDragProperty.property.getValueSafe(asItem);
-        if (this.isTouchingWater()) {
+        if (this.isInWater()) {
             m = 1.0f;
         }
-        this.setVelocity(vec3d.multiply(m));
+        this.setDeltaMovement(vec3d.scale(m));
 
         super.tick();
     }

@@ -1,6 +1,6 @@
 package smartin.miapi.mixin;
 
-import net.minecraft.entity.projectile.FireworkRocketEntity;
+import net.minecraft.world.entity.projectile.FireworkRocketEntity;
 import org.spongepowered.asm.mixin.Mixin;
 
 @Mixin(FireworkRocketEntity.class)

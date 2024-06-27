@@ -1,14 +1,14 @@
 package smartin.miapi.modules.properties.mining.condition;
 
 import com.google.gson.JsonObject;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.world.World;
 import smartin.miapi.modules.ModuleInstance;
 
 import java.util.List;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 
 public class AlwaysMiningCondition implements MiningCondition {
     @Override
@@ -17,12 +17,12 @@ public class AlwaysMiningCondition implements MiningCondition {
     }
 
     @Override
-    public List<BlockPos> trimList(World level, BlockPos original, List<BlockPos> positions) {
+    public List<BlockPos> trimList(Level level, BlockPos original, List<BlockPos> positions) {
         return positions;
     }
 
     @Override
-    public boolean canMine(PlayerEntity player, World level, ItemStack miningStack, BlockPos pos, Direction face) {
+    public boolean canMine(Player player, Level level, ItemStack miningStack, BlockPos pos, Direction face) {
         return true;
     }
 }

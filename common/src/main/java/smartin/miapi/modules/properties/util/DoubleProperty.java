@@ -3,9 +3,6 @@ package smartin.miapi.modules.properties.util;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.EntityAttributeModifier;
-import net.minecraft.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.StatResolver;
@@ -16,6 +13,9 @@ import smartin.miapi.modules.cache.ModularItemCache;
 
 import java.util.ArrayList;
 import java.util.List;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.item.ItemStack;
 
 public abstract class DoubleProperty implements ModuleProperty {
     public ModuleProperty property;
@@ -178,7 +178,7 @@ public abstract class DoubleProperty implements ModuleProperty {
         List<ItemStack> itemsNotInSecondIterable = new ArrayList<>();
         for (ItemStack item : living.getItemsEquipped()) {
             boolean found = false;
-            for (ItemStack secondItem : living.getHandItems()) {
+            for (ItemStack secondItem : living.getHandSlots()) {
                 if (item.equals(secondItem)) {
                     found = true;
                     break;
@@ -218,7 +218,7 @@ public abstract class DoubleProperty implements ModuleProperty {
     }
 
     private static class Operation {
-        public EntityAttributeModifier.Operation attributeOperation;
+        public AttributeModifier.Operation attributeOperation;
         public String value;
         public ModuleInstance instance;
 
@@ -250,7 +250,7 @@ public abstract class DoubleProperty implements ModuleProperty {
 
     }
 
-    private static EntityAttributeModifier.Operation getOperation(String operationString) {
+    private static AttributeModifier.Operation getOperation(String operationString) {
         return switch (operationString) {
             case "*" -> EntityAttributeModifier.Operation.MULTIPLY_BASE;
             case "**" -> EntityAttributeModifier.Operation.MULTIPLY_TOTAL;

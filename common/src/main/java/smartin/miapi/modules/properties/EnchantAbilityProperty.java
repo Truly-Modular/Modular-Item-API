@@ -1,6 +1,5 @@
 package smartin.miapi.modules.properties;
 
-import net.minecraft.item.ItemStack;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.material.Material;
@@ -9,6 +8,7 @@ import smartin.miapi.modules.properties.util.DoubleProperty;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import net.minecraft.world.item.ItemStack;
 
 public class EnchantAbilityProperty extends DoubleProperty {
     //TODO:fully implement this

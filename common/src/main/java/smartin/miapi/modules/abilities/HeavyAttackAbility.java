@@ -1,18 +1,6 @@
 package smartin.miapi.modules.abilities;
 
 import com.redpxnda.nucleus.network.clientbound.ParticleCreationPacket;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.EntityAttributes;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.Text;
-import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
-import net.minecraft.util.UseAction;
-import net.minecraft.util.hit.EntityHitResult;
-import net.minecraft.world.World;
 import smartin.miapi.mixin.LivingEntityAccessor;
 import smartin.miapi.modules.abilities.util.AttackUtil;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
@@ -24,6 +12,18 @@ import smartin.miapi.modules.properties.LoreProperty;
 
 import java.util.ArrayList;
 import java.util.List;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.UseAnim;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.EntityHitResult;
 
 /**
  * This Ability allows a stronger attack than the normal left click.
@@ -33,22 +33,22 @@ public class HeavyAttackAbility implements ItemUseDefaultCooldownAbility, ItemUs
 
     public HeavyAttackAbility() {
         LoreProperty.bottomLoreSuppliers.add(itemStack -> {
-            List<Text> texts = new ArrayList<>();
+            List<Component> texts = new ArrayList<>();
             if (AbilityMangerProperty.isPrimaryAbility(this, itemStack)) {
-                texts.add(Text.translatable("miapi.ability.heavy_attack.lore"));
+                texts.add(Component.translatable("miapi.ability.heavy_attack.lore"));
             }
             return texts;
         });
     }
 
     @Override
-    public boolean allowedOnItem(ItemStack itemStack, World world, PlayerEntity player, Hand hand, ItemAbilityManager.AbilityHitContext abilityHitContext) {
+    public boolean allowedOnItem(ItemStack itemStack, Level world, Player player, InteractionHand hand, ItemAbilityManager.AbilityHitContext abilityHitContext) {
         return HeavyAttackProperty.property.hasHeavyAttack(itemStack) || getAbilityContext(itemStack).getDouble("damage", 0) != 0;
     }
 
     @Override
-    public UseAction getUseAction(ItemStack itemStack) {
-        return UseAction.SPEAR;
+    public UseAnim getUseAction(ItemStack itemStack) {
+        return UseAnim.SPEAR;
     }
 
     @Override
@@ -57,17 +57,17 @@ public class HeavyAttackAbility implements ItemUseDefaultCooldownAbility, ItemUs
     }
 
     @Override
-    public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-        if (user.getItemCooldownManager().isCoolingDown(user.getStackInHand(hand).getItem())) {
-            return TypedActionResult.pass(user.getStackInHand(hand));
+    public InteractionResultHolder<ItemStack> use(Level world, Player user, InteractionHand hand) {
+        if (user.getCooldowns().isOnCooldown(user.getItemInHand(hand).getItem())) {
+            return InteractionResultHolder.pass(user.getItemInHand(hand));
         }
-        user.setCurrentHand(hand);
-        return TypedActionResult.consume(user.getStackInHand(hand));
+        user.startUsingItem(hand);
+        return InteractionResultHolder.consume(user.getItemInHand(hand));
     }
 
 
     @Override
-    public void onStoppedUsingAfter(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
+    public void onStoppedUsingAfter(ItemStack stack, Level world, LivingEntity user, int remainingUseTicks) {
         HeavyAttackProperty.HeavyAttackHolder heavyAttackJson = HeavyAttackProperty.property.get(stack);
         AbilityMangerProperty.AbilityContext context = getAbilityContext(stack);
         double damage;
@@ -89,20 +89,20 @@ public class HeavyAttackAbility implements ItemUseDefaultCooldownAbility, ItemUs
             cooldown = context.getDouble("cooldown", 20);
         }
 
-        if (user instanceof PlayerEntity player && getMaxUseTime(stack) - remainingUseTicks > minHold) {
+        if (user instanceof Player player && getMaxUseTime(stack) - remainingUseTicks > minHold) {
             EntityHitResult entityHitResult = AttackUtil.raycastFromPlayer(range, player);
             if (entityHitResult != null) {
                 Entity target2 = entityHitResult.getEntity();
                 if (target2 instanceof LivingEntity target) {
                     ((LivingEntityAccessor) player).attacking(target);
-                    damage = ((float) player.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE) * damage);
+                    damage = ((float) player.getAttributeValue(Attributes.ATTACK_DAMAGE) * damage);
                     AttackUtil.performAttack(player, target, (float) damage, true);
                     if (sweeping > 0) {
                         AttackUtil.performSweeping(player, target, (float) sweeping, (float) damage);
                     }
-                    player.swingHand(player.getActiveHand());
-                    player.getItemCooldownManager().set(stack.getItem(), (int) cooldown);
-                    if (player.getWorld() instanceof ServerWorld serverWorld) {
+                    player.swing(player.getUsedItemHand());
+                    player.getCooldowns().addCooldown(stack.getItem(), (int) cooldown);
+                    if (player.level() instanceof ServerLevel serverWorld) {
                         if (heavyAttackJson!=null && heavyAttackJson.particleEffect != null) {
                             ParticleCreationPacket particleCreationPacket = new ParticleCreationPacket(heavyAttackJson.particleEffect, player.getX(), player.getY(), player.getZ(), 0, 0, 0);
                             particleCreationPacket.send(serverWorld);

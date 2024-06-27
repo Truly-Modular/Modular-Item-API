@@ -2,7 +2,7 @@ package smartin.miapi.client.gui.crafting.statdisplay;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 import smartin.miapi.client.gui.InteractAbleWidget;
 
 @Environment(EnvType.CLIENT)

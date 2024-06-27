@@ -1,7 +1,6 @@
 package smartin.miapi.modules.conditions;
 
 import com.google.gson.JsonElement;
-import net.minecraft.text.Text;
 import smartin.miapi.Miapi;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.material.Material;
@@ -10,6 +9,7 @@ import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.List;
 import java.util.Map;
+import net.minecraft.network.chat.Component;
 
 public class MaterialCountCondition implements ModuleCondition {
     public String material = "";
@@ -28,10 +28,10 @@ public class MaterialCountCondition implements ModuleCondition {
     public boolean isAllowed(ConditionManager.ConditionContext conditionContext) {
         if (conditionContext instanceof ConditionManager.ModuleConditionContext moduleConditionContext) {
             Map<ModuleProperty, JsonElement> propertyMap = moduleConditionContext.propertyMap;
-            List<Text> reasons = moduleConditionContext.reasons;
+            List<Component> reasons = moduleConditionContext.reasons;
             JsonElement data = propertyMap.get(MaterialProperty.property);
             if (data == null) {
-                reasons.add(Text.translatable(Miapi.MOD_ID + ".condition.material.error"));
+                reasons.add(Component.translatable(Miapi.MOD_ID + ".condition.material.error"));
                 return false;
             }
             Material material1 = MaterialProperty.getMaterial(data);
@@ -42,7 +42,7 @@ public class MaterialCountCondition implements ModuleCondition {
             ) {
                 return true;
             }
-            reasons.add(Text.translatable(Miapi.MOD_ID + ".condition.material.error"));
+            reasons.add(Component.translatable(Miapi.MOD_ID + ".condition.material.error"));
         }
         return false;
     }

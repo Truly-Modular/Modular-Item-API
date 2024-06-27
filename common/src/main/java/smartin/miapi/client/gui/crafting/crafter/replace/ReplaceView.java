@@ -3,10 +3,10 @@ package smartin.miapi.client.gui.crafting.crafter.replace;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.text.Text;
-import net.minecraft.util.math.ColorHelper;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.network.chat.Component;
+import net.minecraft.util.FastColor;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.*;
 import smartin.miapi.client.gui.crafting.CraftingScreen;
@@ -34,7 +34,7 @@ public class ReplaceView extends InteractAbleWidget {
     public SlotProperty.ModuleSlot currentSlot;
 
     public ReplaceView(int x, int y, int width, int height, SlotProperty.ModuleSlot slot, EditOption.EditContext editContext, Consumer<SlotProperty.ModuleSlot> back, Consumer<CraftOption> craft, Consumer<CraftOption> preview) {
-        super(x, y, width, height, Text.empty());
+        super(x, y, width, height, Component.empty());
         this.craft = craft;
         this.preview = preview;
         float headerScale = 1.0f;
@@ -43,7 +43,7 @@ public class ReplaceView extends InteractAbleWidget {
         addChild(headerHolder);
 
 
-        ScrollingTextWidget header = new ScrollingTextWidget((int) ((this.getX() + 5) / headerScale), (int) (this.getY() / headerScale) + 3, (int) ((this.width - 10) / headerScale), Text.translatable(Miapi.MOD_ID + ".ui.replace.header"), ColorHelper.Argb.getArgb(255, 255, 255, 255));
+        ScrollingTextWidget header = new ScrollingTextWidget((int) ((this.getX() + 5) / headerScale), (int) (this.getY() / headerScale) + 3, (int) ((this.width - 10) / headerScale), Component.translatable(Miapi.MOD_ID + ".ui.replace.header"), FastColor.ARGB32.color(255, 255, 255, 255));
         headerHolder.addChild(header);
         ScrollList list = new ScrollList(x, y + 14, width, height - 16, new ArrayList<>());
         addChild(list);
@@ -57,7 +57,7 @@ public class ReplaceView extends InteractAbleWidget {
                 .sorted(Comparator.comparingDouble(PriorityProperty::getFor))
                 .distinct()
                 .forEach(module -> {
-                    if (CraftingConditionProperty.isVisible(slot, module, MinecraftClient.getInstance().player, null)) {
+                    if (CraftingConditionProperty.isVisible(slot, module, Minecraft.getInstance().player, null)) {
                         craftOptions.add(new CraftOption(module, new HashMap<>()));
                     }
                 });
@@ -84,22 +84,22 @@ public class ReplaceView extends InteractAbleWidget {
 
 
         public SlotButton(int x, int y, int width, int height, CraftOption option) {
-            super(x, y, width, height, Text.empty());
+            super(x, y, width, height, Component.empty());
             String moduleName = option.module().name();
             this.option = option;
             ModuleInstance instance = new ModuleInstance(option.module());
-            Text translated = StatResolver.translateAndResolve(Miapi.MOD_ID + ".module." + moduleName, instance);
-            textWidget = new ScrollingTextWidget(0, 0, this.width, translated, ColorHelper.Argb.getArgb(255, 255, 255, 255));
-            isAllowed = CraftingConditionProperty.isCraftable(currentSlot, option.module(), MinecraftClient.getInstance().player, null);
-            List<Text> texts = new ArrayList<>();
+            Component translated = StatResolver.translateAndResolve(Miapi.MOD_ID + ".module." + moduleName, instance);
+            textWidget = new ScrollingTextWidget(0, 0, this.width, translated, FastColor.ARGB32.color(255, 255, 255, 255));
+            isAllowed = CraftingConditionProperty.isCraftable(currentSlot, option.module(), Minecraft.getInstance().player, null);
+            List<Component> texts = new ArrayList<>();
             if (!isAllowed) {
-                texts = CraftingConditionProperty.getReasonsForCraftable(currentSlot, option.module(), MinecraftClient.getInstance().player, null);
+                texts = CraftingConditionProperty.getReasonsForCraftable(currentSlot, option.module(), Minecraft.getInstance().player, null);
             }
             hoverDescription = new HoverDescription(x, y, texts);
         }
 
         @Override
-        public void renderWidget(DrawContext drawContext, int mouseX, int mouseY, float delta) {
+        public void renderWidget(GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
             RenderSystem.enableBlend();
             RenderSystem.defaultBlendFunc();
@@ -110,7 +110,7 @@ public class ReplaceView extends InteractAbleWidget {
             if (!isAllowed) {
                 hoverOffset = 28;
             }
-            drawTextureWithEdge(drawContext, CraftingScreen.BACKGROUND_TEXTURE, getX(), getY(), 404, 54 + hoverOffset, 108, 14, getWidth(), getHeight(), 512, 512, 3);
+            drawTextureWithEdge(drawContext, CraftingScreen.INVENTORY_LOCATION, getX(), getY(), 404, 54 + hoverOffset, 108, 14, getWidth(), getHeight(), 512, 512, 3);
             textWidget.setX(this.getX() + 2);
             textWidget.setY(this.getY() + 3);
 
@@ -122,7 +122,7 @@ public class ReplaceView extends InteractAbleWidget {
 
         }
 
-        public void renderHover(DrawContext drawContext, int mouseX, int mouseY, float delta) {
+        public void renderHover(GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
             if (isMouseOver(mouseX, mouseY) && !isAllowed && hoverDescription != null) {
                 hoverDescription.setX(this.getX());
                 hoverDescription.setY(this.getY() + this.getHeight());

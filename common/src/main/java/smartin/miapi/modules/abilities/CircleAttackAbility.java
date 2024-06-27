@@ -1,17 +1,17 @@
 package smartin.miapi.modules.abilities;
 
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.EntityAttributes;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.particle.DefaultParticleType;
-import net.minecraft.registry.Registries;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.Hand;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.TypedActionResult;
-import net.minecraft.util.UseAction;
-import net.minecraft.world.World;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.UseAnim;
+import net.minecraft.world.level.Level;
 import smartin.miapi.modules.abilities.util.*;
 import smartin.miapi.modules.properties.CircleAttackProperty;
 
@@ -20,13 +20,13 @@ import smartin.miapi.modules.properties.CircleAttackProperty;
  */
 public class CircleAttackAbility implements ItemUseDefaultCooldownAbility, ItemUseMinHoldAbility {
     @Override
-    public boolean allowedOnItem(ItemStack itemStack, World world, PlayerEntity player, Hand hand, ItemAbilityManager.AbilityHitContext abilityHitContext) {
+    public boolean allowedOnItem(ItemStack itemStack, Level world, Player player, InteractionHand hand, ItemAbilityManager.AbilityHitContext abilityHitContext) {
         return CircleAttackProperty.property.hasCircleAttack(itemStack);
     }
 
     @Override
-    public UseAction getUseAction(ItemStack itemStack) {
-        return UseAction.SPEAR;
+    public UseAnim getUseAction(ItemStack itemStack) {
+        return UseAnim.SPEAR;
     }
 
     @Override
@@ -35,31 +35,31 @@ public class CircleAttackAbility implements ItemUseDefaultCooldownAbility, ItemU
     }
 
     @Override
-    public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-        if(user.getItemCooldownManager().isCoolingDown(user.getStackInHand(hand).getItem())){
-            return TypedActionResult.pass(user.getStackInHand(hand));
+    public InteractionResultHolder<ItemStack> use(Level world, Player user, InteractionHand hand) {
+        if(user.getCooldowns().isOnCooldown(user.getItemInHand(hand).getItem())){
+            return InteractionResultHolder.pass(user.getItemInHand(hand));
         }
-        user.setCurrentHand(hand);
-        return TypedActionResult.consume(user.getStackInHand(hand));
+        user.startUsingItem(hand);
+        return InteractionResultHolder.consume(user.getItemInHand(hand));
     }
 
 
     @Override
-    public void onStoppedUsingAfter(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
+    public void onStoppedUsingAfter(ItemStack stack, Level world, LivingEntity user, int remainingUseTicks) {
         CircleAttackProperty.CircleAttackJson json = CircleAttackProperty.property.get(stack);
         double damage = json.damage;
         double range = json.range;
         double minHold = json.minHold;
         double cooldown = json.cooldown;
 
-        if (user instanceof PlayerEntity player) {
+        if (user instanceof Player player) {
             if (getMaxUseTime(stack) - remainingUseTicks > minHold) {
-                damage = ((float) player.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE) * damage);
+                damage = ((float) player.getAttributeValue(Attributes.ATTACK_DAMAGE) * damage);
                 AttackUtil.performSweeping(player, player, (float) range, (float) damage);
-                player.swingHand(player.getActiveHand());
-                player.getItemCooldownManager().set(stack.getItem(), (int) cooldown);
+                player.swing(player.getUsedItemHand());
+                player.getCooldowns().addCooldown(stack.getItem(), (int) cooldown);
 
-                if (player.getWorld() instanceof ServerWorld serverWorld) {
+                if (player.level() instanceof ServerLevel serverWorld) {
 
                     json.particles.forEach(particleJson -> {
                         double radius = range * particleJson.rangePercent; // Set the desired radius for the particle spawn
@@ -70,11 +70,11 @@ public class CircleAttackAbility implements ItemUseDefaultCooldownAbility, ItemU
                             double offsetZ = radius * Math.cos(angle);
 
                             double particleX = player.getX() + offsetX;
-                            double particleY = player.getBodyY(0.5);
+                            double particleY = player.getY(0.5);
                             double particleZ = player.getZ() + offsetZ;
-                            particleJson.particleType = Registries.PARTICLE_TYPE.get(new Identifier(particleJson.particle));
+                            particleJson.particleType = BuiltInRegistries.PARTICLE_TYPE.get(new ResourceLocation(particleJson.particle));
                             if (particleJson.particleType instanceof DefaultParticleType particle) {
-                                serverWorld.spawnParticles(particle, particleX, particleY, particleZ, particleJson.count, 0, 0, 0, 1.0);
+                                serverWorld.sendParticles(particle, particleX, particleY, particleZ, particleJson.count, 0, 0, 0, 1.0);
                             }
                         }
                     });

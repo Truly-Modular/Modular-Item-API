@@ -1,14 +1,14 @@
 package smartin.miapi.modules.properties.mining.modifier;
 
 import com.google.gson.JsonElement;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.mining.shape.MiningShape;
 
 import java.util.List;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 
 /**
  * This is a post original scan Modifier of the Found Blocks
@@ -18,5 +18,5 @@ import java.util.List;
 public interface MiningModifier {
     MiningModifier fromJson(JsonElement object, ModuleInstance moduleInstance);
 
-    List<BlockPos> adjustMiningBlock(World world, BlockPos pos, PlayerEntity player, ItemStack itemStack, List<BlockPos> blocks);
+    List<BlockPos> adjustMiningBlock(Level world, BlockPos pos, Player player, ItemStack itemStack, List<BlockPos> blocks);
 }

@@ -2,13 +2,13 @@ package smartin.miapi.modules.properties.render;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.model.json.ModelTransformation;
-import net.minecraft.client.render.model.json.ModelTransformationMode;
-import net.minecraft.client.render.model.json.Transformation;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.item.ItemStack;
+import net.minecraft.client.renderer.block.model.ItemTransform;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
+import net.minecraft.world.item.ItemDisplayContext;
+import net.minecraft.world.item.ItemStack;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import smartin.miapi.Miapi;
@@ -36,8 +36,8 @@ public class ModelTransformationProperty implements RenderProperty {
         });
     }
 
-    public static void applyTransformation(ItemStack stack, ModelTransformationMode mode, MatrixStack matrices) {
-        Transformation transformation = ModularItemCache.getVisualOnlyCache(stack, KEY, ModelTransformation.NONE).getTransformation(mode);
+    public static void applyTransformation(ItemStack stack, ItemDisplayContext mode, PoseStack matrices) {
+        ItemTransform transformation = ModularItemCache.getVisualOnlyCache(stack, KEY, ItemTransforms.NO_TRANSFORMS).getTransform(mode);
         boolean leftHanded = isLeftHanded(mode);
         matrices.translate(0.5f, 0.5f, 0.5f);
         if(transformation!=null){
@@ -46,16 +46,16 @@ public class ModelTransformationProperty implements RenderProperty {
         matrices.translate(-0.5f, -0.5f, -0.5f);
     }
 
-    public static ModelTransformation getTransformation(ItemStack stack) {
-        ModelTransformation transformation = ModelTransformation.NONE;
+    public static ItemTransforms getTransformation(ItemStack stack) {
+        ItemTransforms transformation = ItemTransforms.NO_TRANSFORMS;
         for (ModuleInstance instance : ItemModule.createFlatList(ItemModule.getModules(stack))) {
             JsonElement element = instance.getProperties().get(property);
             if (element != null) {
-                Map<ModelTransformationMode, Transformation> map = new HashMap<>();
+                Map<ItemDisplayContext, ItemTransform> map = new HashMap<>();
                 if (element.getAsJsonObject().has("replace")) {
                     JsonObject replace = element.getAsJsonObject().getAsJsonObject("replace");
-                    for (ModelTransformationMode mode : ModelTransformationMode.values()) {
-                        map.put(mode, transformation.getTransformation(mode));
+                    for (ItemDisplayContext mode : ItemDisplayContext.values()) {
+                        map.put(mode, transformation.getTransform(mode));
                         for (String modeString : getStringOfMode(mode)) {
                             if (replace.has(modeString)) {
                                 Transform transform = Transform.toModelTransformation(Miapi.gson.fromJson(replace.getAsJsonObject(modeString), Transform.class));
@@ -66,8 +66,8 @@ public class ModelTransformationProperty implements RenderProperty {
                 }
                 if (element.getAsJsonObject().has("display")) {
                     JsonObject replace = element.getAsJsonObject().getAsJsonObject("display");
-                    for (ModelTransformationMode mode : ModelTransformationMode.values()) {
-                        map.put(mode, transformation.getTransformation(mode));
+                    for (ItemDisplayContext mode : ItemDisplayContext.values()) {
+                        map.put(mode, transformation.getTransform(mode));
                         for (String modeString : getStringOfMode(mode)) {
                             if (replace.has(modeString)) {
                                 Transform transform = Transform.toModelTransformation(Miapi.gson.fromJson(replace.getAsJsonObject(modeString), Transform.class));
@@ -81,11 +81,11 @@ public class ModelTransformationProperty implements RenderProperty {
                 }
                 if (element.getAsJsonObject().has("display-merge")) {
                     JsonObject replace = element.getAsJsonObject().getAsJsonObject("display-merge");
-                    for (ModelTransformationMode mode : ModelTransformationMode.values()) {
-                        map.put(mode, transformation.getTransformation(mode));
+                    for (ItemDisplayContext mode : ItemDisplayContext.values()) {
+                        map.put(mode, transformation.getTransform(mode));
                         for (String modeString : getStringOfMode(mode)) {
                             if (replace.has(modeString)) {
-                                Transform merged = Transform.merge(new Transform(transformation.getTransformation(mode)), Miapi.gson.fromJson(replace.getAsJsonObject(modeString), Transform.class));
+                                Transform merged = Transform.merge(new Transform(transformation.getTransform(mode)), Miapi.gson.fromJson(replace.getAsJsonObject(modeString), Transform.class));
                                 if (isLeftHanded(mode)) {
                                     merged = makeLeft(merged);
                                 }
@@ -96,32 +96,32 @@ public class ModelTransformationProperty implements RenderProperty {
                 }
                 if (element.getAsJsonObject().has("merge")) {
                     JsonObject replace = element.getAsJsonObject().getAsJsonObject("merge");
-                    for (ModelTransformationMode mode : ModelTransformationMode.values()) {
-                        map.put(mode, transformation.getTransformation(mode));
+                    for (ItemDisplayContext mode : ItemDisplayContext.values()) {
+                        map.put(mode, transformation.getTransform(mode));
                         for (String modeString : getStringOfMode(mode)) {
                             if (replace.has(modeString)) {
-                                Transform merged = Transform.merge(new Transform(transformation.getTransformation(mode)), Miapi.gson.fromJson(replace.getAsJsonObject(modeString), Transform.class));
+                                Transform merged = Transform.merge(new Transform(transformation.getTransform(mode)), Miapi.gson.fromJson(replace.getAsJsonObject(modeString), Transform.class));
                                 map.put(mode, merged.toTransformation());
                             }
                         }
                     }
                 }
-                transformation = new ModelTransformation(
-                        map.get(ModelTransformationMode.THIRD_PERSON_LEFT_HAND),
-                        map.get(ModelTransformationMode.THIRD_PERSON_RIGHT_HAND),
-                        map.get(ModelTransformationMode.FIRST_PERSON_LEFT_HAND),
-                        map.get(ModelTransformationMode.FIRST_PERSON_RIGHT_HAND),
-                        map.get(ModelTransformationMode.HEAD),
-                        map.get(ModelTransformationMode.GUI),
-                        map.get(ModelTransformationMode.GROUND),
-                        map.get(ModelTransformationMode.FIXED)
+                transformation = new ItemTransforms(
+                        map.get(ItemDisplayContext.THIRD_PERSON_LEFT_HAND),
+                        map.get(ItemDisplayContext.THIRD_PERSON_RIGHT_HAND),
+                        map.get(ItemDisplayContext.FIRST_PERSON_LEFT_HAND),
+                        map.get(ItemDisplayContext.FIRST_PERSON_RIGHT_HAND),
+                        map.get(ItemDisplayContext.HEAD),
+                        map.get(ItemDisplayContext.GUI),
+                        map.get(ItemDisplayContext.GROUND),
+                        map.get(ItemDisplayContext.FIXED)
                 );
             }
         }
         return transformation;
     }
 
-    public static boolean isLeftHanded(ModelTransformationMode mode) {
+    public static boolean isLeftHanded(ItemDisplayContext mode) {
         return switch (mode) {
             case THIRD_PERSON_LEFT_HAND, FIRST_PERSON_LEFT_HAND -> true;
             default -> false;
@@ -141,7 +141,7 @@ public class ModelTransformationProperty implements RenderProperty {
         return rotated;
     }
 
-    private static Set<String> getStringOfMode(ModelTransformationMode mode) {
+    private static Set<String> getStringOfMode(ItemDisplayContext mode) {
         List<String> modes = new ArrayList<>();
         modes.add(mode.toString());
         modes.add(mode.toString().replace("_", ""));

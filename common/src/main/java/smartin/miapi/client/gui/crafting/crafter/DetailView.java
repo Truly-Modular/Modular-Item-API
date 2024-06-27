@@ -2,9 +2,9 @@ package smartin.miapi.client.gui.crafting.crafter;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.text.Text;
-import net.minecraft.util.math.ColorHelper;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.network.chat.Component;
+import net.minecraft.util.FastColor;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.ScrollList;
@@ -29,14 +29,14 @@ import java.util.function.Consumer;
 @Environment(EnvType.CLIENT)
 public class DetailView extends InteractAbleWidget {
     final Consumer<SlotProperty.ModuleSlot> selectConsumer;
-    final Map<SlotProperty.ModuleSlot, DetailView.SlotButton> buttonMap = new HashMap<>();
+    final Map<SlotProperty.ModuleSlot, SlotButton> buttonMap = new HashMap<>();
     SlotProperty.ModuleSlot selectedSlot;
     ScrollList scrollList;
     public static int scrollPos = 0;
 
 
     public DetailView(int x, int y, int width, int height, SlotProperty.ModuleSlot baseSlot, SlotProperty.ModuleSlot selected, Consumer<SlotProperty.ModuleSlot> edit, Consumer<SlotProperty.ModuleSlot> replace, String slotType) {
-        super(x, y, width, height, Text.empty());
+        super(x, y, width, height, Component.empty());
         selectedSlot = selected;
         if (baseSlot != null) {
             scrollList = new ScrollList(x, y, width, height, getButtons(baseSlot, new ArrayList<>(), 0, slotType));
@@ -89,7 +89,7 @@ public class DetailView extends InteractAbleWidget {
 
 
         public SlotButton(int x, int y, int width, int height, SlotProperty.ModuleSlot slot, int level) {
-            super(x, y, width, height, Text.empty());
+            super(x, y, width, height, Component.empty());
             this.slot = slot;
             this.level = level;
             ModuleInstance moduleInstance = slot.inSlot;
@@ -97,26 +97,26 @@ public class DetailView extends InteractAbleWidget {
             if (hasNoModule) {
                 moduleInstance = new ModuleInstance(ItemModule.empty);
             }
-            Text materialNameText = StatResolver.translateAndResolve("[translation.[material.translation]]", moduleInstance);
+            Component materialNameText = StatResolver.translateAndResolve("[translation.[material.translation]]", moduleInstance);
             material = MaterialProperty.getMaterial(moduleInstance);
 
-            Text displayText = StatResolver.translateAndResolve(Miapi.MOD_ID + ".module." + moduleInstance.module.name(), moduleInstance);
+            Component displayText = StatResolver.translateAndResolve(Miapi.MOD_ID + ".module." + moduleInstance.module.name(), moduleInstance);
             if (hasNoModule && slot.translationKey != null) {
-                displayText = Text.translatable(slot.translationKey);
+                displayText = Component.translatable(slot.translationKey);
             }
-            moduleName = new ScrollingTextWidget(this.getX() + 10, this.getY(), this.width - 20, displayText, ColorHelper.Argb.getArgb(255, 255, 255, 255));
-            materialName = new ScrollingTextWidget(this.getX() + 10, this.getY(), this.width - 20, materialNameText, ColorHelper.Argb.getArgb(255, 255, 255, 255));
+            moduleName = new ScrollingTextWidget(this.getX() + 10, this.getY(), this.width - 20, displayText, FastColor.ARGB32.color(255, 255, 255, 255));
+            materialName = new ScrollingTextWidget(this.getX() + 10, this.getY(), this.width - 20, materialNameText, FastColor.ARGB32.color(255, 255, 255, 255));
             materialName.setOrientation(ScrollingTextWidget.Orientation.RIGHT);
             buttonMap.put(slot, this);
         }
 
-        public void renderWidget(DrawContext drawContext, int mouseX, int mouseY, float delta) {
+        public void renderWidget(GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
             super.render(drawContext, mouseX, mouseY, delta);
             int hoverOffset = 0;
             if (isMouseOver(mouseX, mouseY)) {
                 hoverOffset = 1;
             }
-            if (isSelected()) {
+            if (isHoveredOrFocused()) {
                 hoverOffset = 2;
             }
             drawTextureWithEdge(drawContext, CraftingScreen.BACKGROUND_TEXTURE, getX() + (level - 1) * 2, getY(), 404, 18 * hoverOffset, 108, 18, getWidth() - (level - 1) * 2, getHeight(), 512, 512, 4);
@@ -131,7 +131,7 @@ public class DetailView extends InteractAbleWidget {
             moduleName.render(drawContext, mouseX, mouseY, delta);
         }
 
-        public boolean isSelected() {
+        public boolean isHoveredOrFocused() {
             if (this.slot == selectedSlot) {
                 return true;
             }

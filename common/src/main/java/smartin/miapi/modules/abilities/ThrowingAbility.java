@@ -1,18 +1,5 @@
 package smartin.miapi.modules.abilities;
 
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.PersistentProjectileEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.stat.Stats;
-import net.minecraft.text.Text;
-import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
-import net.minecraft.util.UseAction;
-import net.minecraft.world.World;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.entity.ItemProjectileEntity;
 import smartin.miapi.item.modular.ModularItem;
@@ -25,6 +12,19 @@ import smartin.miapi.modules.properties.LoreProperty;
 
 import java.util.ArrayList;
 import java.util.List;
+import net.minecraft.network.chat.Component;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.stats.Stats;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.AbstractArrow;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.UseAnim;
+import net.minecraft.world.level.Level;
 
 /**
  * This Ability allows you to throw the Item in question like a Trident
@@ -33,22 +33,22 @@ public class ThrowingAbility implements ItemUseDefaultCooldownAbility, ItemUseMi
 
     public ThrowingAbility() {
         LoreProperty.bottomLoreSuppliers.add(itemStack -> {
-            List<Text> texts = new ArrayList<>();
+            List<Component> texts = new ArrayList<>();
             if (AbilityMangerProperty.isPrimaryAbility(this, itemStack)) {
-                texts.add(Text.translatable("miapi.ability.throw.lore"));
+                texts.add(Component.translatable("miapi.ability.throw.lore"));
             }
             return texts;
         });
     }
 
     @Override
-    public boolean allowedOnItem(ItemStack itemStack, World world, PlayerEntity player, Hand hand, ItemAbilityManager.AbilityHitContext abilityHitContext) {
+    public boolean allowedOnItem(ItemStack itemStack, Level world, Player player, InteractionHand hand, ItemAbilityManager.AbilityHitContext abilityHitContext) {
         return true;
     }
 
     @Override
-    public UseAction getUseAction(ItemStack itemStack) {
-        return UseAction.SPEAR;
+    public UseAnim getUseAction(ItemStack itemStack) {
+        return UseAnim.SPEAR;
     }
 
     @Override
@@ -57,9 +57,9 @@ public class ThrowingAbility implements ItemUseDefaultCooldownAbility, ItemUseMi
     }
 
     @Override
-    public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-        user.setCurrentHand(hand);
-        return TypedActionResult.consume(user.getStackInHand(hand));
+    public InteractionResultHolder<ItemStack> use(Level world, Player user, InteractionHand hand) {
+        user.startUsingItem(hand);
+        return InteractionResultHolder.consume(user.getItemInHand(hand));
     }
 
     @Override
@@ -68,13 +68,13 @@ public class ThrowingAbility implements ItemUseDefaultCooldownAbility, ItemUseMi
     }
 
     @Override
-    public void onStoppedUsingAfter(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
-        if (user instanceof PlayerEntity playerEntity) {
+    public void onStoppedUsingAfter(ItemStack stack, Level world, LivingEntity user, int remainingUseTicks) {
+        if (user instanceof Player playerEntity) {
             int i = this.getMaxUseTime(stack) - remainingUseTicks;
             if (i >= 10) {
-                playerEntity.incrementStat(Stats.USED.getOrCreateStat(stack.getItem()));
-                if (!world.isClient) {
-                    stack.damage(1, playerEntity, (p) -> {
+                playerEntity.awardStat(Stats.ITEM_USED.get(stack.getItem()));
+                if (!world.isClientSide) {
+                    stack.hurtAndBreak(1, playerEntity, (p) -> {
                         p.sendToolBreakStatus(user.getActiveHand());
                     });
 
@@ -86,19 +86,19 @@ public class ThrowingAbility implements ItemUseDefaultCooldownAbility, ItemUseMi
                     if (stack.getItem() instanceof ModularItem) {
                         speed = 0.5f;
                     }
-                    projectileEntity.setVelocity(playerEntity, playerEntity.getPitch(), playerEntity.getYaw(), 0.0F, speed, divergence);
-                    projectileEntity.setDamage(damage);
+                    projectileEntity.shootFromRotation(playerEntity, playerEntity.getXRot(), playerEntity.getYRot(), 0.0F, speed, divergence);
+                    projectileEntity.setBaseDamage(damage);
                     projectileEntity.setBowItem(ItemStack.EMPTY);
                     projectileEntity.setPierceLevel((byte) (int) AttributeProperty.getActualValue(stack, EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_PIERCING));
                     projectileEntity.setSpeedDamage(true);
-                    projectileEntity.setPreferredSlot(playerEntity.getInventory().selectedSlot);
+                    projectileEntity.setPreferredSlot(playerEntity.getInventory().selected);
                     projectileEntity.thrownStack = stack;
-                    world.spawnEntity(projectileEntity);
-                    world.playSoundFromEntity(null, user, SoundEvents.ITEM_TRIDENT_THROW, SoundCategory.PLAYERS, 1.0f, 1.0f);
-                    if (playerEntity.getAbilities().creativeMode) {
-                        projectileEntity.pickupType = PersistentProjectileEntity.PickupPermission.CREATIVE_ONLY;
+                    world.addFreshEntity(projectileEntity);
+                    world.playSound(null, user, SoundEvents.TRIDENT_THROW, SoundSource.PLAYERS, 1.0f, 1.0f);
+                    if (playerEntity.getAbilities().instabuild) {
+                        projectileEntity.pickup = AbstractArrow.Pickup.CREATIVE_ONLY;
                     } else {
-                        user.setStackInHand(user.getActiveHand(), ItemStack.EMPTY);
+                        user.setItemInHand(user.getUsedItemHand(), ItemStack.EMPTY);
                     }
                 }
             }

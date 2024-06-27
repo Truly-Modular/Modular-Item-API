@@ -1,21 +1,21 @@
 package smartin.miapi.client.model;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.redpxnda.nucleus.util.Color;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.LightmapTextureManager;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.model.BakedModel;
-import net.minecraft.client.render.model.json.ModelOverrideList;
-import net.minecraft.client.render.model.json.ModelTransformationMode;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.ArmorItem;
-import net.minecraft.item.ArmorMaterial;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.trim.ArmorTrim;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.random.Random;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.block.model.ItemOverrides;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.core.Direction;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ArmorItem;
+import net.minecraft.world.item.ArmorMaterial;
+import net.minecraft.world.item.ItemDisplayContext;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.armortrim.ArmorTrim;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import smartin.miapi.client.renderer.TrimRenderer;
@@ -30,7 +30,7 @@ public class BakedMiapiModel implements MiapiModel {
     BakedModel model;
     Matrix4f modelMatrix;
     ModelHolder modelHolder;
-    Random random = Random.create();
+    RandomSource random = RandomSource.create();
     float[] colors;
     GlintProperty.GlintSettings settings;
     int skyLight;
@@ -63,39 +63,39 @@ public class BakedMiapiModel implements MiapiModel {
     }
 
     @Override
-    public void render(MatrixStack matrices, ItemStack stack, ModelTransformationMode transformationMode, float tickDelta, VertexConsumerProvider vertexConsumers, LivingEntity entity, int packedLight, int overlay) {
-        assert MinecraftClient.getInstance().world != null;
-        matrices.push();
+    public void render(PoseStack matrices, ItemStack stack, ItemDisplayContext transformationMode, float tickDelta, MultiBufferSource vertexConsumers, LivingEntity entity, int packedLight, int overlay) {
+        assert Minecraft.getInstance().level != null;
+        matrices.pushPose();
 
-        int sky = LightmapTextureManager.getSkyLightCoordinates(packedLight);
-        int block = LightmapTextureManager.getBlockLightCoordinates(packedLight);
+        int sky = LightTexture.sky(packedLight);
+        int block = LightTexture.block(packedLight);
 
         if (skyLight != -1) sky = skyLight;
         if (blockLight != -1) block = blockLight;
 
-        int light = LightmapTextureManager.pack(block, sky);
+        int light = LightTexture.pack(block, sky);
 
         Transform.applyPosition(matrices, modelMatrix);
         BakedModel currentModel = resolve(model, stack, entity, light);
-        MinecraftClient.getInstance().world.getProfiler().push("BakedModel");
+        Minecraft.getInstance().level.getProfiler().push("BakedModel");
 
         //render normally
         for (Direction dir : Direction.values()) {
-            currentModel.getQuads(null, dir, Random.create()).forEach(quad -> {
+            currentModel.getQuads(null, dir, RandomSource.create()).forEach(quad -> {
                 VertexConsumer vertexConsumer = modelHolder.colorProvider().getConsumer(vertexConsumers, quad.getSprite(), stack, instance, transformationMode);
-                vertexConsumer.quad(matrices.peek(), quad, colors[0], colors[1], colors[2], light, overlay);
-                if (stack.hasGlint()) {
+                vertexConsumer.putBulkData(matrices.last(), quad, colors[0], colors[1], colors[2], light, overlay);
+                if (stack.hasFoil()) {
                     VertexConsumer altConsumer = vertexConsumers.getBuffer(RegistryInventory.Client.modularItemGlint);
                     Color glintColor = settings.getColor();
-                    altConsumer.quad(matrices.peek(), quad, glintColor.redAsFloat(), glintColor.greenAsFloat(), glintColor.blueAsFloat(), light, overlay);
+                    altConsumer.putBulkData(matrices.last(), quad, glintColor.redAsFloat(), glintColor.greenAsFloat(), glintColor.blueAsFloat(), light, overlay);
                 }
             });
         }
-        MinecraftClient.getInstance().world.getProfiler().pop();
+        Minecraft.getInstance().level.getProfiler().pop();
 
-        MinecraftClient.getInstance().world.getProfiler().push("TrimModel");
+        Minecraft.getInstance().level.getProfiler().push("TrimModel");
         //render Trims
-        ArmorTrim trim = ArmorTrim.getTrim(entity.getWorld().getRegistryManager(), stack).orElse(null);
+        ArmorTrim trim = ArmorTrim.getTrim(entity.level().registryAccess(), stack).orElse(null);
         ArmorMaterial armorMaterial = (stack.getItem() instanceof ArmorItem armorItem) ? armorItem.getMaterial() : null;
 
         if (trim != null && armorMaterial != null && !modelHolder.trimMode().equals(TrimRenderer.TrimMode.NONE)) {
@@ -103,30 +103,30 @@ public class BakedMiapiModel implements MiapiModel {
                 TrimRenderer.renderTrims(matrices, quad, modelHolder.trimMode(), light, vertexConsumers, armorMaterial, stack);
             });
         }
-        MinecraftClient.getInstance().world.getProfiler().pop();
+        Minecraft.getInstance().level.getProfiler().pop();
 
 
-        MinecraftClient.getInstance().world.getProfiler().push("EntityModel");
+        Minecraft.getInstance().level.getProfiler().push("EntityModel");
         //render from both sides if requested
         if (modelHolder.entityRendering()) {
             ModelTransformer.getInverse(currentModel, random).forEach(quad -> {
                 VertexConsumer vertexConsumer = modelHolder.colorProvider().getConsumer(vertexConsumers, quad.getSprite(), stack, instance, transformationMode);
-                vertexConsumer.quad(matrices.peek(), quad, colors[0], colors[1], colors[2], light, overlay);
-                if (stack.hasGlint()) {
+                vertexConsumer.putBulkData(matrices.last(), quad, colors[0], colors[1], colors[2], light, overlay);
+                if (stack.hasFoil()) {
                     VertexConsumer altConsumer = vertexConsumers.getBuffer(RegistryInventory.Client.modularItemGlint);
                     Color glintColor = settings.getColor();
-                    altConsumer.quad(matrices.peek(), quad, glintColor.redAsFloat(), glintColor.greenAsFloat(), glintColor.blueAsFloat(), light, overlay);
+                    altConsumer.putBulkData(matrices.last(), quad, glintColor.redAsFloat(), glintColor.greenAsFloat(), glintColor.blueAsFloat(), light, overlay);
                 }
             });
         }
 
-        MinecraftClient.getInstance().world.getProfiler().pop();
-        matrices.pop();
+        Minecraft.getInstance().level.getProfiler().pop();
+        matrices.popPose();
     }
 
     public BakedModel resolve(BakedModel model, ItemStack stack, @Nullable LivingEntity entity, int light) {
-        if (model.getOverrides() != null && !model.getOverrides().equals(ModelOverrideList.EMPTY)) {
-            BakedModel override = model.getOverrides().apply(model, stack, MinecraftClient.getInstance().world, entity, light);
+        if (model.getOverrides() != null && !model.getOverrides().equals(ItemOverrides.EMPTY)) {
+            BakedModel override = model.getOverrides().resolve(model, stack, Minecraft.getInstance().level, entity, light);
             if (model != null) {
                 model = override;
             }

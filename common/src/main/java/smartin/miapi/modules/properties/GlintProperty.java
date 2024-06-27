@@ -6,8 +6,6 @@ import com.redpxnda.nucleus.codec.misc.MiscCodecs;
 import com.redpxnda.nucleus.event.PrioritizedEvent;
 import com.redpxnda.nucleus.util.Color;
 import dev.architectury.event.EventResult;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.Util;
 import smartin.miapi.Miapi;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.item.modular.StatResolver;
@@ -19,6 +17,8 @@ import smartin.miapi.registries.RegistryInventory;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
+import net.minecraft.Util;
+import net.minecraft.world.item.ItemStack;
 
 /**
  * This property manages the Glint on the item
@@ -69,7 +69,7 @@ public class GlintProperty implements ModuleProperty {
         public boolean shouldRenderGlint;
 
         public JsonGlintSettings(ModuleInstance instance, ItemStack stack) {
-            shouldRenderGlint = stack.hasGlint();
+            shouldRenderGlint = stack.hasFoil();
             JsonElement element = instance.getProperties().get(property);
             if (element != null) {
                 if (element.getAsJsonObject().has("color")) {
@@ -144,7 +144,7 @@ public class GlintProperty implements ModuleProperty {
         public GlintSettings get(ModuleInstance instance, ItemStack stack) {
             JsonElement element = instance.getProperties().get(property);
             SettingsControlledGlint rainbowGlintSettings = new SettingsControlledGlint();
-            rainbowGlintSettings.shouldRenderGlint = stack.hasGlint();
+            rainbowGlintSettings.shouldRenderGlint = stack.hasFoil();
             if (element != null) {
                 if (element.getAsJsonObject().has("rainbowSpeed")) {
                     rainbowGlintSettings.rainbowSpeed = (float) StatResolver.resolveDouble(element.getAsJsonObject().get("rainbowSpeed"), instance);
@@ -189,7 +189,7 @@ public class GlintProperty implements ModuleProperty {
 
 
         public Color getColorold() {
-            long time = Util.getMeasuringTimeMs();
+            long time = Util.getMillis();
             double scaledTime = (double) time / 3000 * rainbowSpeed;
             scaledTime = scaledTime % (colors.length); // Ensure scaledTime is within [0, colors.length - 1]
 
@@ -209,7 +209,7 @@ public class GlintProperty implements ModuleProperty {
 
         @Override
         public Color getColor() {
-            long time = Util.getMeasuringTimeMs();
+            long time = Util.getMillis();
 
             double scaledTime = (double) time / 3000 * rainbowSpeed;
             scaledTime = scaledTime % (colors.length); // Ensure scaledTime is within [0, colors.length - 1]
@@ -239,7 +239,7 @@ public class GlintProperty implements ModuleProperty {
         }
 
         public float getColor(int colorNo) {
-            long time = Util.getMeasuringTimeMs();
+            long time = Util.getMillis();
             double scaledTime = (double) time / 3000 * rainbowSpeed;
             return (float) Math.max(0, Math.min(1, Math.abs(((scaledTime + colorNo * 2) % (colors.length * 2)) - colors.length) - (colors.length - 2)));
         }
@@ -261,11 +261,11 @@ public class GlintProperty implements ModuleProperty {
         float getSpeed();
 
         default void applySpeed() {
-            RegistryInventory.Client.glintShader.getUniformOrDefault("GlintSpeed").set(getSpeed());
+            RegistryInventory.Client.glintShader.safeGetUniform("GlintSpeed").set(getSpeed());
         }
 
         default void applyAlpha() {
-            RegistryInventory.Client.glintShader.getUniformOrDefault("GlintStrength").set(getA());
+            RegistryInventory.Client.glintShader.safeGetUniform("GlintStrength").set(getA());
         }
 
         boolean shouldRender();

@@ -5,20 +5,20 @@ import com.redpxnda.nucleus.facet.FacetRegistry;
 import com.redpxnda.nucleus.facet.entity.EntityFacet;
 import com.redpxnda.nucleus.facet.network.clientbound.FacetSyncPacket;
 import com.redpxnda.nucleus.network.PlayerSendable;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.Identifier;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import smartin.miapi.Miapi;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.mixin.LivingEntityAccessor;
 
 
-public class ShieldingArmorFacet implements EntityFacet<NbtCompound> {
+public class ShieldingArmorFacet implements EntityFacet<CompoundTag> {
     private LivingEntity livingEntity;
     private float currentAmount;
-    public static final Identifier facetIdentifier = new Identifier(Miapi.MOD_ID, "shielding_armor");
+    public static final ResourceLocation facetIdentifier = new ResourceLocation(Miapi.MOD_ID, "shielding_armor");
     public static FacetKey<ShieldingArmorFacet> KEY = FacetRegistry.register(facetIdentifier, ShieldingArmorFacet.class);
 
     public ShieldingArmorFacet(LivingEntity entity) {
@@ -42,12 +42,12 @@ public class ShieldingArmorFacet implements EntityFacet<NbtCompound> {
     }
 
     public void tick() {
-        if (livingEntity.age % 5 == 3) {
+        if (livingEntity.tickCount % 5 == 3) {
             if (
                     ticksSinceLastAttack() > 100
             ) {
                 currentAmount = Math.min(getCurrentAmount() + 0.25f, getMaxAmount());
-                if (livingEntity instanceof ServerPlayerEntity serverPlayerEntity) {
+                if (livingEntity instanceof ServerPlayer serverPlayerEntity) {
                     this.sendToClient(serverPlayerEntity);
                 }
             }
@@ -56,10 +56,10 @@ public class ShieldingArmorFacet implements EntityFacet<NbtCompound> {
 
     public int ticksSinceLastAttack() {
         int lastAttackedTime = ((LivingEntityAccessor) livingEntity).getLastAttackedTime();
-        if (lastAttackedTime > livingEntity.age) {
-            return livingEntity.age;
+        if (lastAttackedTime > livingEntity.tickCount) {
+            return livingEntity.tickCount;
         }
-        return livingEntity.age - lastAttackedTime;
+        return livingEntity.tickCount - lastAttackedTime;
     }
 
     public float getMaxAmount() {
@@ -68,14 +68,14 @@ public class ShieldingArmorFacet implements EntityFacet<NbtCompound> {
 
 
     @Override
-    public NbtCompound toNbt() {
-        NbtCompound compound = new NbtCompound();
+    public CompoundTag toNbt() {
+        CompoundTag compound = new CompoundTag();
         compound.putFloat("miapi:shielding_armor_current", getCurrentAmount());
         return compound;
     }
 
     @Override
-    public void loadNbt(NbtCompound nbt) {
+    public void loadNbt(CompoundTag nbt) {
         currentAmount = nbt.getFloat("miapi:shielding_armor_current");
     }
 

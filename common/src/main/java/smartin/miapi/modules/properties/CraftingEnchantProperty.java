@@ -6,11 +6,6 @@ import com.google.gson.reflect.TypeToken;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.JsonOps;
 import dev.architectury.event.EventResult;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.registry.entry.RegistryEntry;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
@@ -26,6 +21,11 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import net.minecraft.core.Holder;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 
 public class CraftingEnchantProperty implements ModuleProperty, CraftingProperty {
     public static final String KEY = "crafting_enchants";
@@ -41,8 +41,8 @@ public class CraftingEnchantProperty implements ModuleProperty, CraftingProperty
         });
     }
 
-    private static List<Pair<RegistryEntry<Enchantment>, Integer>> getEnchantsCache(ItemStack itemStack) {
-        List<Pair<RegistryEntry<Enchantment>, Integer>> enchants = new ArrayList<>();
+    private static List<Pair<Holder<Enchantment>, Integer>> getEnchantsCache(ItemStack itemStack) {
+        List<Pair<Holder<Enchantment>, Integer>> enchants = new ArrayList<>();
 
         JsonElement list = ItemModule.getMergedProperty(itemStack, property, MergeType.SMART);
         ItemModule.getMergedProperty(ItemModule.getModules(itemStack), property);
@@ -52,8 +52,8 @@ public class CraftingEnchantProperty implements ModuleProperty, CraftingProperty
                 JsonObject object = new JsonObject();
                 object.addProperty("string", id);
                 try {
-                    RegistryEntry<Enchantment> entry = Enchantment.ENTRY_CODEC.parse(JsonOps.INSTANCE, object.get("string")).getOrThrow();
-                    if (entry.comp_349().isAcceptableItem(itemStack)) {
+                    Holder<Enchantment> entry = Enchantment.CODEC.parse(JsonOps.INSTANCE, object.get("string")).getOrThrow();
+                    if (entry.value().canEnchant(itemStack)) {
                         enchants.add(new Pair<>(entry, level));
                     }
                 } catch (Exception e) {
@@ -98,32 +98,32 @@ public class CraftingEnchantProperty implements ModuleProperty, CraftingProperty
     }
 
     @Override
-    public ItemStack preview(ItemStack old, ItemStack crafting, PlayerEntity player, ModularWorkBenchEntity bench, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<String, String> data) {
+    public ItemStack preview(ItemStack old, ItemStack crafting, Player player, ModularWorkBenchEntity bench, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<String, String> data) {
         return applyEnchants(crafting);
     }
 
     public ItemStack applyEnchants(ItemStack crafting) {
         getEnchantsCache(crafting).forEach((enchantmentIntegerPair -> {
-            RegistryEntry<Enchantment> enchantment = enchantmentIntegerPair.getFirst();
+            Holder<Enchantment> enchantment = enchantmentIntegerPair.getFirst();
             int level = enchantmentIntegerPair.getSecond();
-            if (enchantment.comp_349().isAcceptableItem(crafting)) {
-                int prevLevel = EnchantmentHelper.getLevel(enchantment, crafting);
+            if (enchantment.value().canEnchant(crafting)) {
+                int prevLevel = EnchantmentHelper.getItemEnchantmentLevel(enchantment, crafting);
                 if (level > prevLevel) {
                     if (prevLevel > 0) {
                         removeEnchant(enchantment, crafting);
                     }
-                    crafting.addEnchantment(enchantment, level);
+                    crafting.enchant(enchantment, level);
                 }
             }
         }));
         return crafting;
     }
 
-    public static int removeEnchant(RegistryEntry<Enchantment> enchantment, ItemStack stack) {
+    public static int removeEnchant(Holder<Enchantment> enchantment, ItemStack stack) {
         if (stack.isEmpty()) {
             return 0;
         } else {
-            EnchantmentHelper.getEnchantments(stack).getEnchantments().remove(enchantment);
+            EnchantmentHelper.getEnchantmentsForCrafting(stack).keySet().remove(enchantment);
             return 0;
         }
     }

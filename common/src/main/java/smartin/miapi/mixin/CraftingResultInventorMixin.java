@@ -1,14 +1,14 @@
 package smartin.miapi.mixin;
 
-import net.minecraft.inventory.CraftingResultInventory;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.inventory.ResultContainer;
+import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import smartin.miapi.item.modular.VisualModularItem;
 import smartin.miapi.modules.properties.ItemIdProperty;
 
-@Mixin(CraftingResultInventory.class)
+@Mixin(ResultContainer.class)
 public class CraftingResultInventorMixin {
     @ModifyVariable(method = "setStack(ILnet/minecraft/item/ItemStack;)V", at = @At(value = "HEAD"), ordinal = 0)
     private ItemStack miapi$adjustItemIdOnAnvilRepair(ItemStack original) {

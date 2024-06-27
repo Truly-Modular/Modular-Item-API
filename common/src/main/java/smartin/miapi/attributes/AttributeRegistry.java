@@ -3,22 +3,26 @@ package smartin.miapi.attributes;
 import com.redpxnda.nucleus.facet.FacetRegistry;
 import dev.architectury.event.EventResult;
 import dev.architectury.event.events.common.PlayerEvent;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.entity.*;
-import net.minecraft.entity.attribute.EntityAttribute;
-import net.minecraft.entity.attribute.EntityAttributeModifier;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.network.packet.s2c.play.EntityAnimationS2CPacket;
-import net.minecraft.particle.ParticleTypes;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.registry.tag.DamageTypeTags;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.client.Minecraft;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.network.protocol.game.ClientboundAnimatePacket;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.tags.DamageTypeTags;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LightningBolt;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.phys.Vec3;
 import smartin.miapi.entity.ItemProjectileEntity;
 import smartin.miapi.entity.ShieldingArmorFacet;
 import smartin.miapi.entity.StunHealthFacet;
@@ -35,55 +39,55 @@ import java.util.WeakHashMap;
 
 
 public class AttributeRegistry {
-    public static Map<String, EntityAttribute> entityAttributeMap = new HashMap<>();
+    public static Map<String, Attribute> entityAttributeMap = new HashMap<>();
     /**
      * Idk, this is kinda bad but i couldnt do it in the mixin
      */
-    public static Map<PlayerEntity, Boolean> hasCrittedLast = new WeakHashMap<>();
+    public static Map<Player, Boolean> hasCrittedLast = new WeakHashMap<>();
 
-    public static RegistryEntry<EntityAttribute> REACH;
-    public static RegistryEntry<EntityAttribute> ATTACK_RANGE;
+    public static Holder<Attribute> REACH;
+    public static Holder<Attribute> ATTACK_RANGE;
 
-    public static RegistryEntry<EntityAttribute> SWIM_SPEED;
+    public static Holder<Attribute> SWIM_SPEED;
 
-    public static RegistryEntry<EntityAttribute> MINING_SPEED_PICKAXE;
-    public static RegistryEntry<EntityAttribute> MINING_SPEED_AXE;
-    public static RegistryEntry<EntityAttribute> MINING_SPEED_SHOVEL;
-    public static RegistryEntry<EntityAttribute> MINING_SPEED_HOE;
+    public static Holder<Attribute> MINING_SPEED_PICKAXE;
+    public static Holder<Attribute> MINING_SPEED_AXE;
+    public static Holder<Attribute> MINING_SPEED_SHOVEL;
+    public static Holder<Attribute> MINING_SPEED_HOE;
 
-    public static RegistryEntry<EntityAttribute> MAGIC_DAMAGE;
-    public static RegistryEntry<EntityAttribute> STUN_DAMAGE;
+    public static Holder<Attribute> MAGIC_DAMAGE;
+    public static Holder<Attribute> STUN_DAMAGE;
 
-    public static RegistryEntry<EntityAttribute> STUN_MAX_HEALTH;
+    public static Holder<Attribute> STUN_MAX_HEALTH;
 
-    public static RegistryEntry<EntityAttribute> CRITICAL_DAMAGE;
-    public static RegistryEntry<EntityAttribute> CRITICAL_CHANCE;
-    public static RegistryEntry<EntityAttribute> DAMAGE_RESISTANCE;
-    public static RegistryEntry<EntityAttribute> BACK_STAB;
-    public static RegistryEntry<EntityAttribute> ARMOR_CRUSHING;
-    public static RegistryEntry<EntityAttribute> SHIELD_BREAK;
+    public static Holder<Attribute> CRITICAL_DAMAGE;
+    public static Holder<Attribute> CRITICAL_CHANCE;
+    public static Holder<Attribute> DAMAGE_RESISTANCE;
+    public static Holder<Attribute> BACK_STAB;
+    public static Holder<Attribute> ARMOR_CRUSHING;
+    public static Holder<Attribute> SHIELD_BREAK;
 
-    public static RegistryEntry<EntityAttribute> PROJECTILE_ARMOR;
+    public static Holder<Attribute> PROJECTILE_ARMOR;
 
-    public static RegistryEntry<EntityAttribute> BOW_DRAW_TIME;
+    public static Holder<Attribute> BOW_DRAW_TIME;
 
-    public static RegistryEntry<EntityAttribute> PLAYER_ITEM_USE_MOVEMENT_SPEED;
+    public static Holder<Attribute> PLAYER_ITEM_USE_MOVEMENT_SPEED;
 
-    public static RegistryEntry<EntityAttribute> PROJECTILE_DAMAGE;
+    public static Holder<Attribute> PROJECTILE_DAMAGE;
     @Deprecated
     /**
      * @deprecated use {@link AttributeRegistry#CRITICAL_DAMAGE} instead, its more general and has better logic
      */
-    public static RegistryEntry<EntityAttribute> PROJECTILE_CRIT_MULTIPLIER;
-    public static RegistryEntry<EntityAttribute> PROJECTILE_SPEED;
-    public static RegistryEntry<EntityAttribute> PROJECTILE_ACCURACY;
-    public static RegistryEntry<EntityAttribute> PROJECTILE_PIERCING;
+    public static Holder<Attribute> PROJECTILE_CRIT_MULTIPLIER;
+    public static Holder<Attribute> PROJECTILE_SPEED;
+    public static Holder<Attribute> PROJECTILE_ACCURACY;
+    public static Holder<Attribute> PROJECTILE_PIERCING;
 
-    public static RegistryEntry<EntityAttribute> ELYTRA_TURN_EFFICIENCY;
-    public static RegistryEntry<EntityAttribute> ELYTRA_GLIDE_EFFICIENCY;
-    public static RegistryEntry<EntityAttribute> ELYTRA_ROCKET_EFFICIENCY;
+    public static Holder<Attribute> ELYTRA_TURN_EFFICIENCY;
+    public static Holder<Attribute> ELYTRA_GLIDE_EFFICIENCY;
+    public static Holder<Attribute> ELYTRA_ROCKET_EFFICIENCY;
 
-    public static RegistryEntry<EntityAttribute> SHIELDING_ARMOR;
+    public static Holder<Attribute> SHIELDING_ARMOR;
 
     /**
      * Changing these can break savegames, so do not touch
@@ -107,9 +111,9 @@ public class AttributeRegistry {
             StunHealthFacet facet = StunHealthFacet.KEY.get(livingHurt.livingEntity);
             if (
                     livingHurt.damageSource!=null &&
-                    livingHurt.damageSource.getAttacker() != null &&
-                    livingHurt.damageSource.getAttacker() instanceof LivingEntity attacker) {
-                if (facet != null && !livingHurt.livingEntity.getWorld().isClient()) {
+                    livingHurt.damageSource.getEntity() != null &&
+                    livingHurt.damageSource.getEntity() instanceof LivingEntity attacker) {
+                if (facet != null && !livingHurt.livingEntity.level().isClientSide()) {
                     if (attacker.getAttributes().hasAttribute(STUN_DAMAGE)) {
                         double currentStunDamage = attacker.getAttributeValue(STUN_DAMAGE);
                         if (currentStunDamage > 0.1) {
@@ -123,13 +127,13 @@ public class AttributeRegistry {
 
         MiapiEvents.LIVING_HURT_AFTER_ARMOR.register((livingHurt) -> {
             ShieldingArmorFacet facet = ShieldingArmorFacet.KEY.get(livingHurt.livingEntity);
-            if (facet != null && !livingHurt.livingEntity.getWorld().isClient()) {
+            if (facet != null && !livingHurt.livingEntity.level().isClientSide()) {
                 if (
                         livingHurt.damageSource!=null &&
-                        !livingHurt.damageSource.isIn(DamageTypeTags.BYPASSES_ARMOR)
+                        !livingHurt.damageSource.is(DamageTypeTags.BYPASSES_ARMOR)
                 ) {
                     livingHurt.amount = facet.takeDamage(livingHurt.amount);
-                    if (livingHurt.livingEntity instanceof ServerPlayerEntity player) {
+                    if (livingHurt.livingEntity instanceof ServerPlayer player) {
                         facet.sendToClient(player);
                     }
                 }
@@ -139,7 +143,7 @@ public class AttributeRegistry {
 
         MiapiEvents.LIVING_ENTITY_TICK_END.register((entity) -> {
             ShieldingArmorFacet facet = ShieldingArmorFacet.KEY.get(entity);
-            if (facet != null && !entity.getWorld().isClient()) {
+            if (facet != null && !entity.level().isClientSide()) {
                 facet.tick();
             }
             return EventResult.pass();
@@ -162,7 +166,7 @@ public class AttributeRegistry {
             if (attacker != null && defender != null && attacker.getAttributes().hasAttribute(MAGIC_DAMAGE)) {
                 double value = attacker.getAttributeValue(MAGIC_DAMAGE);
                 if (value > 0) {
-                    defender.damage(attacker.getDamageSources().magic(), (float) value);
+                    defender.hurt(attacker.damageSources().magic(), (float) value);
                 }
             }
             return EventResult.pass();
@@ -170,12 +174,12 @@ public class AttributeRegistry {
         MiapiEvents.LIVING_HURT.register((livingHurtEvent -> {
             if (
                     livingHurtEvent.damageSource!=null &&
-                    livingHurtEvent.damageSource.getAttacker() instanceof LivingEntity attacker) {
+                    livingHurtEvent.damageSource.getEntity() instanceof LivingEntity attacker) {
                 if (attacker.getAttributes().hasAttribute(BACK_STAB)) {
-                    if (livingHurtEvent.damageSource.getAttacker().getRotationVector().dotProduct(livingHurtEvent.livingEntity.getRotationVector()) > 0) {
-                        attacker.getAttributes().getCustomInstance(BACK_STAB).addTemporaryModifier(new EntityAttributeModifier(TEMP_BACKSTAB_DMG_UUID, "temp_backstab_base_damage", livingHurtEvent.amount, EntityAttributeModifier.Operation.ADDITION));
+                    if (livingHurtEvent.damageSource.getEntity().getLookAngle().dot(livingHurtEvent.livingEntity.getLookAngle()) > 0) {
+                        attacker.getAttributes().getInstance(BACK_STAB).addTransientModifier(new AttributeModifier(TEMP_BACKSTAB_DMG_UUID, "temp_backstab_base_damage", livingHurtEvent.amount, EntityAttributeModifier.Operation.ADDITION));
                         livingHurtEvent.amount = (float) attacker.getAttributeValue(BACK_STAB);
-                        attacker.getAttributes().getCustomInstance(BACK_STAB).removeModifier(TEMP_BACKSTAB_DMG_UUID);
+                        attacker.getAttributes().getInstance(BACK_STAB).removeModifier(TEMP_BACKSTAB_DMG_UUID);
                     }
                 }
             }
@@ -184,7 +188,7 @@ public class AttributeRegistry {
         MiapiEvents.LIVING_HURT.register((livingHurtEvent -> {
             if (
                     livingHurtEvent.damageSource!=null &&
-                    livingHurtEvent.damageSource.isIn(DamageTypeTags.IS_PROJECTILE) &&
+                    livingHurtEvent.damageSource.is(DamageTypeTags.IS_PROJECTILE) &&
                     livingHurtEvent.livingEntity.getAttributes().hasAttribute(PROJECTILE_ARMOR)) {
                 double projectileArmor = livingHurtEvent.livingEntity.getAttributeValue(PROJECTILE_ARMOR);
                 if (projectileArmor > 0) {
@@ -197,14 +201,14 @@ public class AttributeRegistry {
         MiapiEvents.LIVING_HURT_AFTER.register((livingHurtEvent -> {
             if (
                     livingHurtEvent.damageSource!=null &&
-                    livingHurtEvent.damageSource.getAttacker() instanceof LivingEntity attacker) {
+                    livingHurtEvent.damageSource.getEntity() instanceof LivingEntity attacker) {
                 if (attacker.getAttributes().hasAttribute(SHIELD_BREAK)) {
                     double value = attacker.getAttributeValue(SHIELD_BREAK);
-                    if (livingHurtEvent.livingEntity instanceof PlayerEntity player) {
+                    if (livingHurtEvent.livingEntity instanceof Player player) {
                         if (value > 0 && player.isBlocking()) {
-                            player.getItemCooldownManager().set(Items.SHIELD, (int) (value * 20));
-                            player.clearActiveItem();
-                            player.getWorld().sendEntityStatus(player, (byte) 30);
+                            player.getCooldowns().addCooldown(Items.SHIELD, (int) (value * 20));
+                            player.stopUsingItem();
+                            player.level().broadcastEntityEvent(player, (byte) 30);
                         }
                     }
                 }
@@ -214,10 +218,10 @@ public class AttributeRegistry {
         MiapiEvents.LIVING_HURT.register((livingHurtEvent -> {
             if (
                     livingHurtEvent.damageSource!=null &&
-                    livingHurtEvent.damageSource.getAttacker() instanceof LivingEntity attacker) {
+                    livingHurtEvent.damageSource.getEntity() instanceof LivingEntity attacker) {
                 if (attacker.getAttributes().hasAttribute(ARMOR_CRUSHING)) {
                     double value = attacker.getAttributeValue(ARMOR_CRUSHING);
-                    ((LivingEntityAccessor) livingHurtEvent.livingEntity).callDamageArmor(livingHurtEvent.damageSource, (float) (livingHurtEvent.livingEntity.getArmor() * value));
+                    ((LivingEntityAccessor) livingHurtEvent.livingEntity).callDamageArmor(livingHurtEvent.damageSource, (float) (livingHurtEvent.livingEntity.getArmorValue() * value));
                 }
             }
             return EventResult.pass();
@@ -226,14 +230,14 @@ public class AttributeRegistry {
             ItemProjectileEntity projectile = listener.projectile;
             Entity victim = listener.entityHitResult.getEntity();
             Entity owner = listener.projectile.getOwner();
-            if (projectile.getWorld() instanceof ServerWorld && projectile.getWorld().isThundering() && projectile.hasChanneling()) {
-                BlockPos blockPos = victim.getBlockPos();
-                if (projectile.getWorld().isSkyVisible(blockPos)) {
-                    LightningEntity lightningEntity = EntityType.LIGHTNING_BOLT.create(projectile.getWorld());
-                    lightningEntity.refreshPositionAfterTeleport(Vec3d.ofBottomCenter(blockPos));
-                    lightningEntity.setChanneler(owner instanceof ServerPlayerEntity ? (ServerPlayerEntity) owner : null);
-                    projectile.getWorld().spawnEntity(lightningEntity);
-                    projectile.hitEntitySound = new WrappedSoundEvent(SoundEvents.ITEM_TRIDENT_THUNDER, 5.0f, 1.0f);
+            if (projectile.level() instanceof ServerLevel && projectile.level().isThundering() && projectile.hasChanneling()) {
+                BlockPos blockPos = victim.blockPosition();
+                if (projectile.level().canSeeSky(blockPos)) {
+                    LightningBolt lightningEntity = EntityType.LIGHTNING_BOLT.create(projectile.level());
+                    lightningEntity.moveTo(Vec3.atBottomCenterOf(blockPos));
+                    lightningEntity.setCause(owner instanceof ServerPlayer ? (ServerPlayer) owner : null);
+                    projectile.level().addFreshEntity(lightningEntity);
+                    projectile.hitEntitySound = new WrappedSoundEvent(SoundEvents.TRIDENT_THUNDER, 5.0f, 1.0f);
                 }
             }
             return EventResult.pass();
@@ -241,8 +245,8 @@ public class AttributeRegistry {
 
         MiapiProjectileEvents.MODULAR_PROJECTILE_ENTITY_HIT.register(listener -> {
             ItemProjectileEntity projectile = listener.projectile;
-            if (projectile.isCritical()) {
-                listener.damage = (float) (listener.damage * AttributeProperty.getActualValue(projectile.asItemStack(), EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_CRIT_MULTIPLIER));
+            if (projectile.isCritArrow()) {
+                listener.damage = (float) (listener.damage * AttributeProperty.getActualValue(projectile.getPickupItem(), EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_CRIT_MULTIPLIER));
             }
             return EventResult.pass();
         });
@@ -250,25 +254,25 @@ public class AttributeRegistry {
         MiapiEvents.LIVING_HURT.register(livingHurtEvent -> {
             if (
                     livingHurtEvent.damageSource!=null &&
-                    livingHurtEvent.damageSource.getAttacker() instanceof LivingEntity attacker &&
-                    !livingHurtEvent.livingEntity.getWorld().isClient()
+                    livingHurtEvent.damageSource.getEntity() instanceof LivingEntity attacker &&
+                    !livingHurtEvent.livingEntity.level().isClientSide()
             ) {
                 if (attacker.getAttributes().hasAttribute(CRITICAL_CHANCE) && !livingHurtEvent.isCritical) {
-                    attacker.getAttributes().getCustomInstance(CRITICAL_CHANCE).addTemporaryModifier(new EntityAttributeModifier(TEMP_CRIT_DMG_UUID, "temp_crit_base", 1, EntityAttributeModifier.Operation.ADDITION));
+                    attacker.getAttributes().getInstance(CRITICAL_CHANCE).addTransientModifier(new AttributeModifier(TEMP_CRIT_DMG_UUID, "temp_crit_base", 1, EntityAttributeModifier.Operation.ADDITION));
                     double value = attacker.getAttributeValue(CRITICAL_CHANCE) - 1;
-                    attacker.getAttributes().getCustomInstance(CRITICAL_CHANCE).removeModifier(TEMP_CRIT_DMG_UUID);
-                    if (attacker.getWorld().getRandom().nextDouble() < value) {
+                    attacker.getAttributes().getInstance(CRITICAL_CHANCE).removeModifier(TEMP_CRIT_DMG_UUID);
+                    if (attacker.level().getRandom().nextDouble() < value) {
                         livingHurtEvent.isCritical = true;
                         livingHurtEvent.amount = livingHurtEvent.amount * 1.5f;
-                        attacker.getWorld().playSound((PlayerEntity) null, attacker.getX(), attacker.getY(), attacker.getZ(), SoundEvents.ENTITY_PLAYER_ATTACK_CRIT, attacker.getSoundCategory(), 1.0F, 1.0F);
-                        if (attacker instanceof PlayerEntity player) {
-                            player.addCritParticles(livingHurtEvent.livingEntity);
+                        attacker.level().playSound((Player) null, attacker.getX(), attacker.getY(), attacker.getZ(), SoundEvents.PLAYER_ATTACK_CRIT, attacker.getSoundSource(), 1.0F, 1.0F);
+                        if (attacker instanceof Player player) {
+                            player.crit(livingHurtEvent.livingEntity);
                         }
-                        if (attacker.getWorld().isClient()) {
-                            MinecraftClient.getInstance().particleManager.addEmitter(livingHurtEvent.livingEntity, ParticleTypes.CRIT);
+                        if (attacker.level().isClientSide()) {
+                            Minecraft.getInstance().particleEngine.createTrackingEmitter(livingHurtEvent.livingEntity, ParticleTypes.CRIT);
                         } else {
-                            if (attacker.getWorld() instanceof ServerWorld serverWorld) {
-                                serverWorld.getChunkManager().sendToNearbyPlayers(attacker, new EntityAnimationS2CPacket(livingHurtEvent.livingEntity, 4));
+                            if (attacker.level() instanceof ServerLevel serverWorld) {
+                                serverWorld.getChunkSource().broadcastAndSend(attacker, new ClientboundAnimatePacket(livingHurtEvent.livingEntity, 4));
                             }
                         }
                     }
@@ -276,20 +280,20 @@ public class AttributeRegistry {
                 if (
                         attacker.getAttributes().hasAttribute(CRITICAL_DAMAGE) &&
                         livingHurtEvent.isCritical &&
-                        attacker.getAttributes().getCustomInstance(CRITICAL_DAMAGE) != null) {
-                    attacker.getAttributeInstance(CRITICAL_DAMAGE);
-                    attacker.getAttributes().getCustomInstance(CRITICAL_DAMAGE).addTemporaryModifier(new EntityAttributeModifier(TEMP_CRIT_DMG_UUID, "temp_crit_base_damage", livingHurtEvent.amount / 1.5, EntityAttributeModifier.Operation.ADDITION));
-                    attacker.getAttributes().getCustomInstance(CRITICAL_DAMAGE).addTemporaryModifier(new EntityAttributeModifier(TEMP_CRIT_DMG_MULTIPLIER_UUID, "temp_crit_base_multiplier", 0.5, EntityAttributeModifier.Operation.MULTIPLY_BASE));
+                        attacker.getAttributes().getInstance(CRITICAL_DAMAGE) != null) {
+                    attacker.getAttribute(CRITICAL_DAMAGE);
+                    attacker.getAttributes().getInstance(CRITICAL_DAMAGE).addTransientModifier(new AttributeModifier(TEMP_CRIT_DMG_UUID, "temp_crit_base_damage", livingHurtEvent.amount / 1.5, EntityAttributeModifier.Operation.ADDITION));
+                    attacker.getAttributes().getInstance(CRITICAL_DAMAGE).addTransientModifier(new AttributeModifier(TEMP_CRIT_DMG_MULTIPLIER_UUID, "temp_crit_base_multiplier", 0.5, EntityAttributeModifier.Operation.MULTIPLY_BASE));
                     livingHurtEvent.amount = (float) attacker.getAttributeValue(CRITICAL_DAMAGE);
-                    attacker.getAttributes().getCustomInstance(CRITICAL_DAMAGE).removeModifier(TEMP_CRIT_DMG_UUID);
-                    attacker.getAttributes().getCustomInstance(CRITICAL_DAMAGE).removeModifier(TEMP_CRIT_DMG_MULTIPLIER_UUID);
+                    attacker.getAttributes().getInstance(CRITICAL_DAMAGE).removeModifier(TEMP_CRIT_DMG_UUID);
+                    attacker.getAttributes().getInstance(CRITICAL_DAMAGE).removeModifier(TEMP_CRIT_DMG_MULTIPLIER_UUID);
                 }
             }
             return EventResult.pass();
         }, -1);
     }
 
-    public static double getAttribute(ItemStack stack, EntityAttribute attribute, EquipmentSlot slot, double defaultValue) {
+    public static double getAttribute(ItemStack stack, Attribute attribute, EquipmentSlot slot, double defaultValue) {
         return AttributeProperty.getActualValue(stack, slot, attribute, defaultValue);
     }
 }

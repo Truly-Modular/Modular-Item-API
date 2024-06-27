@@ -1,10 +1,10 @@
 package smartin.miapi.modules.properties;
 
 import dev.architectury.event.EventResult;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.item.ItemStack;
-import net.minecraft.server.world.ServerWorld;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
 import smartin.miapi.events.MiapiProjectileEvents;
 import smartin.miapi.modules.properties.util.DoubleProperty;
 import smartin.miapi.registries.RegistryInventory;
@@ -30,13 +30,13 @@ public class CryoProperty extends DoubleProperty {
             return EventResult.pass();
         });*/
         MiapiProjectileEvents.MODULAR_PROJECTILE_ENTITY_HIT.register((modularProjectileEntityHitEvent) -> {
-            if (modularProjectileEntityHitEvent.entityHitResult.getEntity() instanceof LivingEntity target && target.getWorld() instanceof ServerWorld) {
-                double strength = getValueSafe(modularProjectileEntityHitEvent.projectile.asItemStack());
+            if (modularProjectileEntityHitEvent.entityHitResult.getEntity() instanceof LivingEntity target && target.level() instanceof ServerLevel) {
+                double strength = getValueSafe(modularProjectileEntityHitEvent.projectile.getPickupItem());
                 if (strength > 0) {
                     int potionStrength = (int) Math.ceil(strength / 3);
                     int potionLength = (int) (strength * 20 + 40);
-                    StatusEffectInstance instance = new StatusEffectInstance(RegistryInventory.cryoStatusEffect, potionLength, potionStrength);
-                    target.addStatusEffect(instance);
+                    MobEffectInstance instance = new MobEffectInstance(RegistryInventory.cryoStatusEffect, potionLength, potionStrength);
+                    target.addEffect(instance);
                 }
             }
             return EventResult.pass();
