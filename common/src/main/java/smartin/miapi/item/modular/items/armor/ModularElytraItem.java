@@ -1,29 +1,30 @@
-package smartin.miapi.item.modular.items;
+package smartin.miapi.item.modular.items.armor;
 
-import net.minecraft.client.item.TooltipContext;
+import dev.architectury.injectables.annotations.ExpectPlatform;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import org.jetbrains.annotations.Nullable;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.PlatformModularItemMethods;
 import smartin.miapi.modules.properties.DisplayNameProperty;
 import smartin.miapi.modules.properties.LoreProperty;
-import smartin.miapi.modules.properties.RarityProperty;
 import smartin.miapi.modules.properties.RepairPriority;
+import smartin.miapi.registries.RegistryInventory;
 
 import java.util.List;
 
-public class ModularHelmet extends ArmorItem implements PlatformModularItemMethods, ModularItem {
-    public ModularHelmet(Properties settings) {
-        super(new ModularArmorMaterial(), Type.HELMET, settings);
+public class ModularElytraItem extends ArmorItem implements PlatformModularItemMethods, ModularItem {
+    public ModularElytraItem(Properties settings) {
+        super(RegistryInventory.armorMaterial, Type.CHESTPLATE, settings);
     }
 
-    public ModularHelmet() {
-        super(new ModularArmorMaterial(), Type.HELMET, new Properties());
+    @ExpectPlatform
+    public static ModularElytraItem getInstance() {
+        return new ModularElytraItem(new Properties().stacksTo(1).fireResistant());
     }
+
 
     @Override
     public Component getName(ItemStack stack) {
@@ -31,13 +32,18 @@ public class ModularHelmet extends ArmorItem implements PlatformModularItemMetho
     }
 
     @Override
-    public boolean isEnchantable(ItemStack itemStack){
+    public boolean isEnchantable(ItemStack itemStack) {
         return true;
     }
 
     @Override
     public boolean isValidRepairItem(ItemStack stack, ItemStack ingredient) {
         return RepairPriority.getRepairValue(stack, ingredient) > 0;
+    }
+
+    @Override
+    public int getEnchantmentValue() {
+        return 1;
     }
 
     @Override
@@ -52,12 +58,7 @@ public class ModularHelmet extends ArmorItem implements PlatformModularItemMetho
     }
 
     @Override
-    public int getEnchantmentValue() {
-        return 1;
-    }
-
-    @Override
-    public void appendHoverText(ItemStack stack, net.minecraft.world.item.Item.TooltipContext tooltipContext, List<Component> list, TooltipFlag tooltipType) {
+    public void appendHoverText(ItemStack stack, TooltipContext tooltipContext, List<Component> list, TooltipFlag tooltipType) {
         LoreProperty.appendLoreTop(stack, list, tooltipContext, tooltipType);
     }
 }

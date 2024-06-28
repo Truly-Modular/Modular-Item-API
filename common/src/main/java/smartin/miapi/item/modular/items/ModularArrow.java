@@ -1,14 +1,7 @@
 package smartin.miapi.item.modular.items;
 
-import smartin.miapi.entity.ItemProjectileEntity;
-import smartin.miapi.item.modular.ModularItem;
-import smartin.miapi.item.modular.PlatformModularItemMethods;
-import smartin.miapi.modules.properties.DisplayNameProperty;
-import smartin.miapi.modules.properties.LoreProperty;
-
-import java.util.List;
+import net.minecraft.core.Direction;
 import net.minecraft.core.Position;
-import net.minecraft.core.dispenser.ProjectileDispenseBehavior;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.AbstractArrow;
@@ -18,7 +11,14 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.DispenserBlock;
+import org.jetbrains.annotations.Nullable;
+import smartin.miapi.entity.ItemProjectileEntity;
+import smartin.miapi.item.modular.ModularItem;
+import smartin.miapi.item.modular.PlatformModularItemMethods;
+import smartin.miapi.modules.properties.DisplayNameProperty;
+import smartin.miapi.modules.properties.LoreProperty;
+
+import java.util.List;
 
 public class ModularArrow extends ArrowItem implements PlatformModularItemMethods,ModularItem {
     public ModularArrow() {
@@ -27,26 +27,20 @@ public class ModularArrow extends ArrowItem implements PlatformModularItemMethod
 
     public ModularArrow(Item.Properties settings) {
         super(settings);
-        DispenserBlock.registerBehavior(this, new ProjectileDispenseBehavior() {
-            @Override
-            protected Projectile createProjectile(Level world, Position position, ItemStack stack) {
-                ItemStack itemStack = stack.copy();
-                itemStack.setCount(1);
-                ItemProjectileEntity arrowEntity = new ItemProjectileEntity(world, position, itemStack);
-                arrowEntity.setPosRaw(position.x(), position.y(), position.z());
-                arrowEntity.pickup = AbstractArrow.Pickup.ALLOWED;
-                return arrowEntity;
-            }
-        });
-        //ItemTags.ARROWS
     }
 
 
-    @Override
-    public AbstractArrow createArrow(Level world, ItemStack stack, LivingEntity shooter) {
-        stack = stack.copy();
-        stack.setCount(1);
-        return new ItemProjectileEntity(world, shooter, stack);
+    public AbstractArrow createArrow(Level level, ItemStack ammo, LivingEntity shooter, @Nullable ItemStack weapon) {
+        return new ItemProjectileEntity(level, shooter, ammo.copyWithCount(1), weapon);
+    }
+
+    public Projectile asProjectile(Level world, Position position, ItemStack stack, Direction direction) {
+        ItemStack itemStack = stack.copy();
+        itemStack.setCount(1);
+        ItemProjectileEntity arrowEntity = new ItemProjectileEntity(world, position, itemStack);
+        arrowEntity.setPosRaw(position.x(), position.y(), position.z());
+        arrowEntity.pickup = AbstractArrow.Pickup.ALLOWED;
+        return arrowEntity;
     }
 
 

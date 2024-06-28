@@ -3,6 +3,7 @@ package smartin.miapi.item.modular.items;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.item.TooltipContext;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.item.*;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -143,7 +144,7 @@ public class ModularBow extends BowItem implements PlatformModularItemMethods, M
             int piercingLevel = EnchantmentHelper.getItemEnchantmentLevel(Enchantments.PIERCING, bowStack);
             ItemStack projectileStackConsumed = projectileStack.copy();
             projectileStackConsumed.setCount(1);
-            AbstractArrow itemProjectile = arrowItem.createArrow(world, projectileStack, playerEntity);
+            AbstractArrow itemProjectile = arrowItem.createArrow(world, projectileStack, playerEntity, bowStack);
             if (itemProjectile instanceof ItemProjectileEntity modularProjectile) {
                 modularProjectile.setSpeedDamage(true);
             }

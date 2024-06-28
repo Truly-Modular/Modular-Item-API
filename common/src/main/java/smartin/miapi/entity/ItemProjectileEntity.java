@@ -69,8 +69,8 @@ public class ItemProjectileEntity extends AbstractArrow {
         setup();
     }
 
-    public ItemProjectileEntity(Level world, LivingEntity owner, ItemStack itemStack) {
-        super(RegistryInventory.itemProjectileType.get(), owner, world, itemStack, null);
+    public ItemProjectileEntity(Level world, LivingEntity owner, ItemStack itemStack, ItemStack weapon) {
+        super(RegistryInventory.itemProjectileType.get(), owner, world, itemStack, weapon);
         ItemStack stack = itemStack.copy();
         stack.setCount(1);
         this.thrownStack = stack.copy();

@@ -2,7 +2,6 @@ package smartin.miapi.item.modular.items;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
-import net.minecraft.client.item.TooltipContext;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.*;
@@ -37,11 +36,11 @@ public class ModularAxe extends AxeItem implements PlatformModularItemMethods, M
     public Tier currentFakeToolmaterial = ModularToolMaterial.toolMaterial;
 
     public ModularAxe(Properties settings) {
-        super(new ModularToolMaterial(), 5, 5, settings.stacksTo(1).durability(500));
+        super(new ModularToolMaterial(), settings.stacksTo(1).durability(500));
     }
 
     public ModularAxe() {
-        super(new ModularToolMaterial(), 5, 5, new Properties().stacksTo(1).durability(500).rarity(Rarity.COMMON));
+        super(new ModularToolMaterial(), new Properties().stacksTo(1).durability(500).rarity(Rarity.COMMON));
     }
 
     public Tier getTier() {
@@ -91,13 +90,9 @@ public class ModularAxe extends AxeItem implements PlatformModularItemMethods, M
     @Override
     public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
         if (ToolOrWeaponProperty.isWeapon(stack)) {
-            stack.hurtAndBreak(1, attacker, (e) -> {
-                e.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND);
-            });
+            stack.hurtAndBreak(1, attacker, EquipmentSlot.MAINHAND);
         } else {
-            stack.hurtAndBreak(2, attacker, (e) -> {
-                e.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND);
-            });
+            stack.hurtAndBreak(2, attacker, EquipmentSlot.MAINHAND);
         }
         return true;
     }
@@ -110,13 +105,9 @@ public class ModularAxe extends AxeItem implements PlatformModularItemMethods, M
     public boolean mineBlock(ItemStack stack, Level world, BlockState state, BlockPos pos, LivingEntity miner) {
         if (!world.isClientSide && state.getDestroySpeed(world, pos) != 0.0F) {
             if (ToolOrWeaponProperty.isWeapon(stack)) {
-                stack.hurtAndBreak(2, miner, (e) -> {
-                    e.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND);
-                });
+                stack.hurtAndBreak(2, miner, EquipmentSlot.MAINHAND);
             } else {
-                stack.hurtAndBreak(1, miner, (e) -> {
-                    e.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND);
-                });
+                stack.hurtAndBreak(1, miner, EquipmentSlot.MAINHAND);
             }
         }
 
@@ -126,11 +117,6 @@ public class ModularAxe extends AxeItem implements PlatformModularItemMethods, M
     @Override
     public boolean canAttackBlock(BlockState state, Level world, BlockPos pos, Player miner) {
         return MiningLevelProperty.canMine(state, world, pos, miner);
-    }
-
-    @Override
-    public float getMiningSpeedMultiplier(ItemStack stack, BlockState state) {
-        return MiningLevelProperty.getMiningSpeedMultiplier(stack, state);
     }
 
     @Override

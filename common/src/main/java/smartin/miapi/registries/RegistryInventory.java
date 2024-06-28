@@ -32,10 +32,7 @@ import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.RangedAttribute;
 import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.inventory.MenuType;
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.*;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
@@ -66,6 +63,7 @@ import smartin.miapi.item.MaterialSmithingRecipe;
 import smartin.miapi.item.modular.ModularItemPart;
 import smartin.miapi.item.modular.PropertyResolver;
 import smartin.miapi.item.modular.items.*;
+import smartin.miapi.item.modular.items.armor.*;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.abilities.*;
@@ -198,6 +196,7 @@ public class RegistryInventory {
     public static Holder<MobEffect> stunResistanceEffect;
     public static GameEvent statProviderCreatedEvent;
     public static GameEvent statProviderRemovedEvent;
+    public static Holder<ArmorMaterial> armorMaterial;
     //public static SimpleCraftingStat exampleCraftingStat;
     public static RecipeSerializer serializer;
     public static RegistrySupplier<EntityType<ItemProjectileEntity>> itemProjectileType = (RegistrySupplier) registerAndSupply(entityTypes, "thrown_item", () ->

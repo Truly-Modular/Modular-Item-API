@@ -6,6 +6,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.ChatFormatting;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.client.item.TooltipContext;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.item.*;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -91,11 +92,6 @@ public class ModularCrossbow extends CrossbowItem implements PlatformModularItem
     @Override
     public int getBarWidth(ItemStack stack) {
         return Math.round(13.0F - (float) stack.getDamageValue() * 13.0F / ModularItem.getDurability(stack));
-    }
-
-    @Override
-    public Rarity getRarity(ItemStack stack) {
-        return RarityProperty.getRarity(stack);
     }
 
     @Override

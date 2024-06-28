@@ -4,6 +4,10 @@ import dev.latvian.mods.kubejs.item.ItemBuilder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import smartin.miapi.item.modular.items.*;
+import smartin.miapi.item.modular.items.armor.ModularBoots;
+import smartin.miapi.item.modular.items.armor.ModularChestPlate;
+import smartin.miapi.item.modular.items.armor.ModularHelmet;
+import smartin.miapi.item.modular.items.armor.ModularLeggings;
 import smartin.miapi.registries.RegistryInventory;
 
 public class ModularWeaponBuilder extends ItemBuilder {
