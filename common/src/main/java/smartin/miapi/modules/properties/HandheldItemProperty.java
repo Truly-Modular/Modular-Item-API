@@ -38,7 +38,7 @@ public class HandheldItemProperty extends BooleanProperty {
                                         new EntityAttributeModifier(
                                                 attackspeedUUID,
                                                 "temphandheldboni",
-                                                1.5,
+                                                0.5,
                                                 EntityAttributeModifier.Operation.MULTIPLY_TOTAL));
                     }
 
