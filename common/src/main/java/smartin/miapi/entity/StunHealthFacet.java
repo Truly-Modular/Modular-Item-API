@@ -21,7 +21,7 @@ import smartin.miapi.registries.RegistryInventory;
 public class StunHealthFacet implements EntityFacet<CompoundTag> {
     private LivingEntity livingEntity;
     private float currentAmount = 20;
-    public static final ResourceLocation facetIdentifier = new ResourceLocation(Miapi.MOD_ID, "stun_current_health");
+    public static final ResourceLocation facetIdentifier = Miapi.id( "stun_current_health");
     public static FacetKey<StunHealthFacet> KEY = FacetRegistry.register(facetIdentifier, StunHealthFacet.class);
 
     public StunHealthFacet(LivingEntity entity) {

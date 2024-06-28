@@ -11,7 +11,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import smartin.miapi.item.modular.Transform;
 
 public class ItemProjectileRenderer extends EntityRenderer<ItemProjectileEntity> {
 
@@ -20,7 +19,7 @@ public class ItemProjectileRenderer extends EntityRenderer<ItemProjectileEntity>
     }
 
     @Override
-    public ResourceLocation getTexture(ItemProjectileEntity entity) {
+    public ResourceLocation getTextureLocation(ItemProjectileEntity entity) {
         return null;
     }
 

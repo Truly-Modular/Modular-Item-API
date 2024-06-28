@@ -16,10 +16,10 @@ import net.fabricmc.api.Environment;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderStateShard;
-import net.minecraft.client.renderer.RenderStateShard.MultiTextureStateShard;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -172,12 +172,14 @@ public class RegistryInventory {
      * @param sup        Supplier of the actual attribute
      * @param onRegister Callback for after the attribute is actually registered. Use this to set static fields
      */
-    public static void registerAtt(String id, boolean attach, Supplier<Attribute> sup, Consumer<Attribute> onRegister) {
+    public static void registerAtt(String id, boolean attach, Supplier<Attribute> sup, Consumer<Holder<Attribute>> onRegister) {
         ResourceLocation rl = ResourceLocation.fromNamespaceAndPath(MOD_ID, id);
         String stringId = rl.toString();
 
         RegistrySupplier<Attribute> obj = attributes.register(rl, sup); // actually register the object
-        obj.listen(onRegister); // attach the onRegister callback, usually used to set the value of fields.
+        obj.listen((attribute -> {
+            onRegister.accept(obj.getRegistrar().getHolder(obj.getKey()));
+        })); // attach the onRegister callback, usually used to set the value of fields.
 
         if (attach) // if it should automatically attach to an entity, add another listener to do that (this is equivalent to the old registerOnEntity)
             obj.listen(att -> AttributeRegistry.entityAttributeMap.put(stringId, att));
@@ -190,10 +192,10 @@ public class RegistryInventory {
     public static Item visualOnlymodularItem;
     public static Item modularAxe;
     public static Item modularMattock;
-    public static MobEffect cryoStatusEffect;
-    public static MobEffect teleportBlockEffect;
-    public static MobEffect stunEffect;
-    public static MobEffect stunResistanceEffect;
+    public static Holder<MobEffect> cryoStatusEffect;
+    public static Holder<MobEffect> teleportBlockEffect;
+    public static Holder<MobEffect> stunEffect;
+    public static Holder<MobEffect> stunResistanceEffect;
     public static GameEvent statProviderCreatedEvent;
     public static GameEvent statProviderRemovedEvent;
     //public static SimpleCraftingStat exampleCraftingStat;
@@ -322,10 +324,18 @@ public class RegistryInventory {
         register(modularItems, "modular_elytra", ModularElytraItem::getInstance);
 
         //STATUS EFFECTS
-        register(statusEffects, "cryo", CryoStatusEffect::new, eff -> cryoStatusEffect = eff);
-        register(statusEffects, "teleport_block", TeleportBlockEffect::new, eff -> teleportBlockEffect = eff);
-        register(statusEffects, "stun", StunStatusEffect::new, eff -> stunEffect = eff);
-        register(statusEffects, "stun_resistance", StunResistanceStatusEffect::new, eff -> stunResistanceEffect = eff);
+        register(statusEffects, "cryo", CryoStatusEffect::new, eff -> {
+            cryoStatusEffect = statusEffects.getHolder(statusEffects.getId(eff));
+        });
+        register(statusEffects, "teleport_block", TeleportBlockEffect::new, eff -> {
+            teleportBlockEffect = statusEffects.getHolder(statusEffects.getId(eff));
+        });
+        register(statusEffects, "stun", StunStatusEffect::new, eff -> {
+            stunEffect = statusEffects.getHolder(statusEffects.getId(eff));
+        });
+        register(statusEffects, "stun_resistance", StunResistanceStatusEffect::new, eff -> {
+            stunResistanceEffect = statusEffects.getHolder(statusEffects.getId(eff));
+        });
 
         //ATTRIBUTE
 

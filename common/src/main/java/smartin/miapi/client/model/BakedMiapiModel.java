@@ -9,13 +9,13 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Holder;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.armortrim.ArmorTrim;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import smartin.miapi.client.renderer.TrimRenderer;
@@ -83,11 +83,11 @@ public class BakedMiapiModel implements MiapiModel {
         for (Direction dir : Direction.values()) {
             currentModel.getQuads(null, dir, RandomSource.create()).forEach(quad -> {
                 VertexConsumer vertexConsumer = modelHolder.colorProvider().getConsumer(vertexConsumers, quad.getSprite(), stack, instance, transformationMode);
-                vertexConsumer.putBulkData(matrices.last(), quad, colors[0], colors[1], colors[2], light, overlay);
+                vertexConsumer.putBulkData(matrices.last(), quad, colors[0], colors[1], colors[2], 1.0f, light, overlay);
                 if (stack.hasFoil()) {
                     VertexConsumer altConsumer = vertexConsumers.getBuffer(RegistryInventory.Client.modularItemGlint);
                     Color glintColor = settings.getColor();
-                    altConsumer.putBulkData(matrices.last(), quad, glintColor.redAsFloat(), glintColor.greenAsFloat(), glintColor.blueAsFloat(), light, overlay);
+                    altConsumer.putBulkData(matrices.last(), quad, glintColor.redAsFloat(), glintColor.greenAsFloat(), glintColor.blueAsFloat(), 1.0f, light, overlay);
                 }
             });
         }
@@ -95,10 +95,9 @@ public class BakedMiapiModel implements MiapiModel {
 
         Minecraft.getInstance().level.getProfiler().push("TrimModel");
         //render Trims
-        ArmorTrim trim = ArmorTrim.getTrim(entity.level().registryAccess(), stack).orElse(null);
-        ArmorMaterial armorMaterial = (stack.getItem() instanceof ArmorItem armorItem) ? armorItem.getMaterial() : null;
+        Holder<ArmorMaterial> armorMaterial = (stack.getItem() instanceof ArmorItem armorItem) ? armorItem.getMaterial() : null;
 
-        if (trim != null && armorMaterial != null && !modelHolder.trimMode().equals(TrimRenderer.TrimMode.NONE)) {
+        if (armorMaterial != null && !modelHolder.trimMode().equals(TrimRenderer.TrimMode.NONE)) {
             ModelTransformer.getRescale(currentModel, random).forEach(quad -> {
                 TrimRenderer.renderTrims(matrices, quad, modelHolder.trimMode(), light, vertexConsumers, armorMaterial, stack);
             });
@@ -111,11 +110,11 @@ public class BakedMiapiModel implements MiapiModel {
         if (modelHolder.entityRendering()) {
             ModelTransformer.getInverse(currentModel, random).forEach(quad -> {
                 VertexConsumer vertexConsumer = modelHolder.colorProvider().getConsumer(vertexConsumers, quad.getSprite(), stack, instance, transformationMode);
-                vertexConsumer.putBulkData(matrices.last(), quad, colors[0], colors[1], colors[2], light, overlay);
+                vertexConsumer.putBulkData(matrices.last(), quad, colors[0], colors[1], colors[2],1.0f, light, overlay);
                 if (stack.hasFoil()) {
                     VertexConsumer altConsumer = vertexConsumers.getBuffer(RegistryInventory.Client.modularItemGlint);
                     Color glintColor = settings.getColor();
-                    altConsumer.putBulkData(matrices.last(), quad, glintColor.redAsFloat(), glintColor.greenAsFloat(), glintColor.blueAsFloat(), light, overlay);
+                    altConsumer.putBulkData(matrices.last(), quad, glintColor.redAsFloat(), glintColor.greenAsFloat(), glintColor.blueAsFloat(),1.0f, light, overlay);
                 }
             });
         }

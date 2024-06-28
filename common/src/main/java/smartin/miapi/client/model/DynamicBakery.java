@@ -6,28 +6,11 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.render.model.*;
-import net.minecraft.client.render.model.json.*;
-import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.renderer.block.model.BlockElement;
-import net.minecraft.client.renderer.block.model.BlockElementFace;
-import net.minecraft.client.renderer.block.model.BlockModel;
-import net.minecraft.client.renderer.block.model.FaceBakery;
-import net.minecraft.client.renderer.block.model.ItemModelGenerator;
-import net.minecraft.client.renderer.block.model.ItemOverride;
-import net.minecraft.client.renderer.block.model.ItemOverrides;
+import net.minecraft.client.renderer.block.model.*;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.client.renderer.item.ItemPropertyFunction;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.model.BakedModel;
-import net.minecraft.client.resources.model.BlockModelRotation;
-import net.minecraft.client.resources.model.BuiltInModel;
-import net.minecraft.client.resources.model.Material;
-import net.minecraft.client.resources.model.ModelBaker;
-import net.minecraft.client.resources.model.ModelBakery;
-import net.minecraft.client.resources.model.ModelState;
-import net.minecraft.client.resources.model.SimpleBakedModel;
-import net.minecraft.client.resources.model.UnbakedModel;
+import net.minecraft.client.resources.model.*;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
@@ -35,8 +18,8 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
-import smartin.miapi.client.model.item.BakedSingleModelOverrides;
 import smartin.miapi.client.model.item.BakedSingleModel;
+import smartin.miapi.client.model.item.BakedSingleModelOverrides;
 import smartin.miapi.item.modular.Transform;
 import smartin.miapi.modules.properties.render.ModelProperty;
 
@@ -62,7 +45,7 @@ public class DynamicBakery {
             unbakedModel.getDependencies().stream().filter(identifier -> identifier.toString().equals("minecraft:item/generated") || identifier.toString().contains("handheld")).findFirst().ifPresent(identifier -> {
                 actualModel.set(ITEM_MODEL_GENERATOR.generateBlockModel(ModelProperty.textureGetter, unbakedModel));
             });
-            BakedSingleModel model = DynamicBakery.bake(actualModel.get(), modelLoader, unbakedModel.getRootModel(), textureGetter, Transform.toModelTransformation(settings), new ResourceLocation(unbakedModel.name), true, color);
+            BakedSingleModel model = DynamicBakery.bake(actualModel.get(), modelLoader, unbakedModel.getRootModel(), textureGetter, Transform.toModelTransformation(settings), ResourceLocation.parse(unbakedModel.name), true, color);
             for (Direction direction : Direction.values()) {
                 if (!model.getQuads(null, direction, RandomSource.create()).isEmpty()) {
                     return model;
@@ -70,7 +53,7 @@ public class DynamicBakery {
             }
             try {
                 actualModel.set(ITEM_MODEL_GENERATOR.generateBlockModel(ModelProperty.textureGetter, unbakedModel));
-                return DynamicBakery.bake(actualModel.get(), modelLoader, unbakedModel.getRootModel(), textureGetter, Transform.toModelTransformation(settings), new ResourceLocation(unbakedModel.name), true, color);
+                return DynamicBakery.bake(actualModel.get(), modelLoader, unbakedModel.getRootModel(), textureGetter, Transform.toModelTransformation(settings), ResourceLocation.parse(unbakedModel.name), true, color);
             } catch (Exception suppressed) {
 
             }
@@ -93,11 +76,11 @@ public class DynamicBakery {
 
                 for (Direction direction : modelElement.faces.keySet()) {
                     BlockElementFace modelElementFace = modelElement.faces.get(direction);
-                    TextureAtlasSprite sprite2 = textureGetter.apply(model.getMaterial(modelElementFace.texture));
-                    if (modelElementFace.cullForDirection == null) {
+                    TextureAtlasSprite sprite2 = textureGetter.apply(model.getMaterial(modelElementFace.texture()));
+                    if (modelElementFace.cullForDirection() == null) {
                         builder.addUnculledFace(createQuad(modelElement, modelElementFace, sprite2, direction, BlockModelRotation.X0_Y0, id, color));
                     } else {
-                        builder.addCulledFace(Direction.rotate(BlockModelRotation.X0_Y0.getRotation().getMatrix(), modelElementFace.cullForDirection), createQuad(modelElement, modelElementFace, sprite2, direction, BlockModelRotation.X0_Y0, id, color));
+                        builder.addCulledFace(Direction.rotate(BlockModelRotation.X0_Y0.getRotation().getMatrix(), modelElementFace.cullForDirection()), createQuad(modelElement, modelElementFace, sprite2, direction, BlockModelRotation.X0_Y0, id, color));
                     }
                 }
             }
@@ -169,14 +152,14 @@ public class DynamicBakery {
             return ItemOverrides.EMPTY;
         } else {
             Objects.requireNonNull(modelLoader);
-            return new DynamicOverrideList(modelLoader, parent, modelLoader::getOrLoadModel, model.getOverrides(), textureGetter, rotation, color);
+            return new DynamicOverrideList(modelLoader, parent, model.getOverrides(), textureGetter, rotation, color);
         }
     }
 
     private static BakedQuad createQuad
             (BlockElement element, BlockElementFace elementFace, TextureAtlasSprite sprite, Direction side, ModelState settings, ResourceLocation id,
              int color) {
-        BakedQuad quad = QUAD_FACTORY.bakeQuad(element.from, element.to, elementFace, sprite, side, settings, element.rotation, element.shade, id);
+        BakedQuad quad = QUAD_FACTORY.bakeQuad(element.from, element.to, elementFace, sprite, side, settings, element.rotation, element.shade);
         quad = ColorUtil.recolorBakedQuad(quad, color);
         return quad;
     }
@@ -186,7 +169,7 @@ public class DynamicBakery {
         public final ResourceLocation[] dynamicConditionTypes;
         public final List<ItemOverride> overrideList;
 
-        public DynamicOverrideList(ModelBakery modelLoader, BlockModel parent, Function<ResourceLocation, UnbakedModel> unbakedModelGetter, List<ItemOverride> overrides, Function<Material, TextureAtlasSprite> textureGetter, ModelState rotation, int color) {
+        public DynamicOverrideList(ModelBakery modelLoader, BlockModel parent, List<ItemOverride> overrides, Function<Material, TextureAtlasSprite> textureGetter, ModelState rotation, int color) {
             super(dynamicBaker, parent, overrides);
             this.dynamicConditionTypes = overrides.stream().flatMap(ItemOverride::getPredicates).map(ItemOverride.Predicate::getProperty).distinct().toArray(ResourceLocation[]::new);
             Object2IntMap<ResourceLocation> object2IntMap = new Object2IntOpenHashMap<>();
@@ -249,7 +232,7 @@ public class DynamicBakery {
 
                 for (int j = 0; j < i; ++j) {
                     ResourceLocation identifier = this.dynamicConditionTypes[j];
-                    ItemPropertyFunction modelPredicateProvider = ItemProperties.getProperty(item, identifier);
+                    ItemPropertyFunction modelPredicateProvider = ItemProperties.getProperty(stack, identifier);
                     if (modelPredicateProvider != null) {
                         fs[j] = modelPredicateProvider.call(stack, world, entity, seed);
                     } else {

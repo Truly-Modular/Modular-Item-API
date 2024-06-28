@@ -1,9 +1,7 @@
 package smartin.miapi.client.model;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.datafixers.util.Pair;
 import com.mojang.math.Axis;
-import net.minecraft.client.model.*;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.CubeListBuilder;
@@ -12,28 +10,25 @@ import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BannerRenderer;
 import net.minecraft.client.resources.model.ModelBakery;
-import net.minecraft.core.Holder;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.BannerItem;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.entity.BannerBlockEntity;
-import net.minecraft.world.level.block.entity.BannerPattern;
+import net.minecraft.world.level.block.entity.BannerPatternLayers;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 
-import java.util.List;
-
 public class BannerMiapiModel implements MiapiModel {
     ModelPart banner;
-    List<Pair<Holder<BannerPattern>, DyeColor>> patterns;
+    BannerPatternLayers patterns;
+    DyeColor baseColor;
     BannerMode mode;
     Matrix4f transform;
 
-    public BannerMiapiModel(List<Pair<Holder<BannerPattern>, DyeColor>> patterns, BannerMode mode, Matrix4f transform) {
+    public BannerMiapiModel(BannerPatternLayers patterns, BannerMode mode, DyeColor color, Matrix4f transform) {
         MeshDefinition modelData = new MeshDefinition();
         PartDefinition modelPartData = modelData.getRoot();
         modelPartData.addOrReplaceChild("flag", CubeListBuilder.create().texOffs(0, 0).addBox(-10.0F, 0.0F, -2.0F, 20.0F, 40.0F, 1.0F), PartPose.ZERO);
@@ -47,12 +42,12 @@ public class BannerMiapiModel implements MiapiModel {
     public static BannerMiapiModel getFromStack(ItemStack stack, BannerMode mode, Matrix4f transform) {
         if (stack.getItem() instanceof BannerItem bannerItem) {
             DyeColor dyeColor = bannerItem.getColor();
-            ListTag patternList = BannerBlockEntity.getPatternListNbt(stack);
+            BannerPatternLayers patternList = stack.getComponents().get(DataComponents.BANNER_PATTERNS);
             if (dyeColor != null && patternList != null) {
                 if (mode == null) {
                     mode = BannerMode.MODEL;
                 }
-                return new BannerMiapiModel(BannerBlockEntity.getPatternsFromNbt(dyeColor, patternList), mode, transform);
+                return new BannerMiapiModel(patternList, mode, dyeColor, transform);
             }
         }
         return null;
@@ -71,7 +66,7 @@ public class BannerMiapiModel implements MiapiModel {
                 matrices.last().normal().mul(transform.get3x3(new Matrix3f()));
                 matrices.scale(16f, 16f, 1f);
                 matrices.scale(1 / 20f, 1 / 20f, 2f);
-                BannerRenderer.renderPatterns(matrices, vertexConsumers, light, overlay, banner, ModelBakery.BANNER_BASE, true, patterns, stack.hasFoil());
+                BannerRenderer.renderPatterns(matrices, vertexConsumers, light, overlay, banner, ModelBakery.BANNER_BASE, true, baseColor, patterns);
                 matrices.popPose();
 
                 matrices.pushPose();
@@ -81,7 +76,7 @@ public class BannerMiapiModel implements MiapiModel {
                 matrices.last().normal().mul(transform.get3x3(new Matrix3f()));
                 matrices.scale(16f, 16f, 1f);
                 matrices.scale(1 / 20f, 1 / 20f, 2f);
-                BannerRenderer.renderPatterns(matrices, vertexConsumers, light, overlay, banner, ModelBakery.BANNER_BASE, true, patterns, stack.hasFoil());
+                BannerRenderer.renderPatterns(matrices, vertexConsumers, light, overlay, banner, ModelBakery.BANNER_BASE, true, baseColor, patterns);
                 matrices.popPose();
             }
             case ITEM_ALT -> {
@@ -93,7 +88,7 @@ public class BannerMiapiModel implements MiapiModel {
                 matrices.mulPose(Axis.XP.rotationDegrees(10));
                 matrices.scale(16f, 16f, 1f);
                 matrices.scale(1 / 20f, 1 / 20f, 2f);
-                BannerRenderer.renderPatterns(matrices, vertexConsumers, light, overlay, banner, ModelBakery.BANNER_BASE, true, patterns, stack.hasFoil());
+                BannerRenderer.renderPatterns(matrices, vertexConsumers, light, overlay, banner, ModelBakery.BANNER_BASE, true, baseColor, patterns);
                 matrices.popPose();
 
                 matrices.pushPose();
@@ -103,7 +98,7 @@ public class BannerMiapiModel implements MiapiModel {
                 matrices.mulPose(Axis.XP.rotationDegrees(10));
                 matrices.scale(16f, 16f, 1f);
                 matrices.scale(1 / 20f, 1 / 20f, 1f);
-                BannerRenderer.renderPatterns(matrices, vertexConsumers, light, overlay, banner, ModelBakery.BANNER_BASE, true, patterns, stack.hasFoil());
+                BannerRenderer.renderPatterns(matrices, vertexConsumers, light, overlay, banner, ModelBakery.BANNER_BASE, true, baseColor, patterns);
                 matrices.popPose();
             }
             default -> {
@@ -115,7 +110,7 @@ public class BannerMiapiModel implements MiapiModel {
                 matrices.last().normal().mul(transform.get3x3(new Matrix3f()));
                 matrices.scale(16f, 16f, 16f);
                 matrices.scale(1 / 20f, 1 / 20f, 1 / 20f);
-                BannerRenderer.renderPatterns(matrices, vertexConsumers, light, overlay, banner, ModelBakery.BANNER_BASE, true, patterns, stack.hasFoil());
+                BannerRenderer.renderPatterns(matrices, vertexConsumers, light, overlay, banner, ModelBakery.BANNER_BASE, true, baseColor, patterns);
                 matrices.popPose();
                 matrices.popPose();
             }
@@ -125,11 +120,11 @@ public class BannerMiapiModel implements MiapiModel {
 
     public static BannerMode getMode(String key) {
         try {
-            switch (key.toLowerCase()){
-                case "item"-> {
+            switch (key.toLowerCase()) {
+                case "item" -> {
                     return BannerMode.ITEM;
                 }
-                case "item_alt" ->{
+                case "item_alt" -> {
                     return BannerMode.ITEM_ALT;
                 }
             }

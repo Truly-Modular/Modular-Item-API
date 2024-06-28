@@ -19,7 +19,6 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ReloadableResourceManager;
 import net.minecraft.world.item.Item;
 import smartin.miapi.Miapi;
@@ -134,8 +133,8 @@ public class MiapiClient {
         });
         ClientReloadShadersEvent.EVENT.register((resourceFactory, asd) -> ModularItemCache.discardCache());
         RegistryInventory.modularItems.addCallback((item -> {
-            ModularModelPredicateProvider.registerModelOverride(item, new ResourceLocation(Miapi.MOD_ID, "damage"), (stack, world, entity, seed) -> stack.isDamageableItem() && stack.getDamageValue() > 0 ? ((float) stack.getDamageValue() / stack.getMaxDamage()) : 0.0f);
-            ModularModelPredicateProvider.registerModelOverride(item, new ResourceLocation(Miapi.MOD_ID, "damaged"), (stack, world, entity, seed) -> stack.isDamaged() ? 1.0F : 0.0F);
+            ModularModelPredicateProvider.registerModelOverride(item, Miapi.id("damage"), (stack, world, entity, seed) -> stack.isDamageableItem() && stack.getDamageValue() > 0 ? ((float) stack.getDamageValue() / stack.getMaxDamage()) : 0.0f);
+            ModularModelPredicateProvider.registerModelOverride(item, Miapi.id( "damaged"), (stack, world, entity, seed) -> stack.isDamaged() ? 1.0F : 0.0F);
         }));
         ReloadEvents.START.subscribe(isClient -> {
             if (isClient) {
@@ -154,14 +153,12 @@ public class MiapiClient {
 
     @Environment(EnvType.CLIENT)
     public static void registerAnimations(Item item) {
-        if (item.isDamageable()) {
-            ModularModelPredicateProvider.registerModelOverride(item, new ResourceLocation(Miapi.MOD_ID, "damage"), (stack, world, entity, seed) -> {
-                return stack.isDamageableItem() && stack.isDamaged() ? 0.0f : (float) stack.getMaxDamage() / (stack.getMaxDamage() - stack.getDamageValue());
-            });
-            ModularModelPredicateProvider.registerModelOverride(item, new ResourceLocation(Miapi.MOD_ID, "damaged"), (stack, world, entity, seed) -> {
-                return stack.isDamaged() ? 0.0f : 1.0f;
-            });
-        }
+        ModularModelPredicateProvider.registerModelOverride(item, Miapi.id( "damage"), (stack, world, entity, seed) -> {
+            return stack.isDamageableItem() && stack.isDamaged() ? 0.0f : (float) stack.getMaxDamage() / (stack.getMaxDamage() - stack.getDamageValue());
+        });
+        ModularModelPredicateProvider.registerModelOverride(item, Miapi.id( "damaged"), (stack, world, entity, seed) -> {
+            return stack.isDamaged() ? 0.0f : 1.0f;
+        });
     }
 
     public static boolean isSodiumLoaded() {
@@ -249,10 +246,10 @@ public class MiapiClient {
 
         runOnClientEnsured(() -> {
             ShaderRegistry.register(
-                    new ResourceLocation(Miapi.MOD_ID, "rendertype_entity_translucent_material"),
+                    Miapi.id( "rendertype_entity_translucent_material"),
                     DefaultVertexFormat.NEW_ENTITY, s -> RegistryInventory.Client.entityTranslucentMaterialShader = s);
             ShaderRegistry.register(
-                    new ResourceLocation(Miapi.MOD_ID, "rendertype_item_glint"),
+                    Miapi.id("rendertype_item_glint"),
                     DefaultVertexFormat.NEW_ENTITY, s -> glintShader = s);
         });
     }

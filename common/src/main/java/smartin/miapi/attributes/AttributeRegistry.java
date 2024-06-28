@@ -152,9 +152,6 @@ public class AttributeRegistry {
 
         PlayerEvent.PLAYER_JOIN.register((player -> {
             ShieldingArmorFacet facet = ShieldingArmorFacet.KEY.get(player);
-            if (facet != null) {
-                //facet.sendToClient(player);
-            }
         }));
 
         MiapiEvents.LIVING_HURT.register((livingHurtEvent -> {
@@ -227,22 +224,6 @@ public class AttributeRegistry {
             }
             return EventResult.pass();
         }));
-        MiapiProjectileEvents.MODULAR_PROJECTILE_ENTITY_POST_HIT.register(listener -> {
-            ItemProjectileEntity projectile = listener.projectile;
-            Entity victim = listener.entityHitResult.getEntity();
-            Entity owner = listener.projectile.getOwner();
-            if (projectile.level() instanceof ServerLevel && projectile.level().isThundering() && projectile.hasChanneling()) {
-                BlockPos blockPos = victim.blockPosition();
-                if (projectile.level().canSeeSky(blockPos)) {
-                    LightningBolt lightningEntity = EntityType.LIGHTNING_BOLT.create(projectile.level());
-                    lightningEntity.moveTo(Vec3.atBottomCenterOf(blockPos));
-                    lightningEntity.setCause(owner instanceof ServerPlayer ? (ServerPlayer) owner : null);
-                    projectile.level().addFreshEntity(lightningEntity);
-                    projectile.hitEntitySound = new WrappedSoundEvent(SoundEvents.TRIDENT_THUNDER.value(), 5.0f, 1.0f);
-                }
-            }
-            return EventResult.pass();
-        });
 
         MiapiProjectileEvents.MODULAR_PROJECTILE_ENTITY_HIT.register(listener -> {
             ItemProjectileEntity projectile = listener.projectile;
@@ -259,7 +240,7 @@ public class AttributeRegistry {
                     !livingHurtEvent.livingEntity.level().isClientSide()
             ) {
                 if (attacker.getAttributes().hasAttribute(CRITICAL_CHANCE) && !livingHurtEvent.isCritical) {
-                    attacker.getAttributes().getInstance(CRITICAL_CHANCE).addTransientModifier(new AttributeModifier(TEMP_CRIT_DMG_UUID, "temp_crit_base", 1, EntityAttributeModifier.Operation.ADDITION));
+                    attacker.getAttributes().getInstance(CRITICAL_CHANCE).addTransientModifier(new AttributeModifier(TEMP_CRIT_DMG_UUID,  1, AttributeModifier.Operation.ADD_VALUE));
                     double value = attacker.getAttributeValue(CRITICAL_CHANCE) - 1;
                     attacker.getAttributes().getInstance(CRITICAL_CHANCE).removeModifier(TEMP_CRIT_DMG_UUID);
                     if (attacker.level().getRandom().nextDouble() < value) {
@@ -283,8 +264,8 @@ public class AttributeRegistry {
                         livingHurtEvent.isCritical &&
                         attacker.getAttributes().getInstance(CRITICAL_DAMAGE) != null) {
                     attacker.getAttribute(CRITICAL_DAMAGE);
-                    attacker.getAttributes().getInstance(CRITICAL_DAMAGE).addTransientModifier(new AttributeModifier(TEMP_CRIT_DMG_UUID, "temp_crit_base_damage", livingHurtEvent.amount / 1.5, EntityAttributeModifier.Operation.ADDITION));
-                    attacker.getAttributes().getInstance(CRITICAL_DAMAGE).addTransientModifier(new AttributeModifier(TEMP_CRIT_DMG_MULTIPLIER_UUID, "temp_crit_base_multiplier", 0.5, EntityAttributeModifier.Operation.MULTIPLY_BASE));
+                    attacker.getAttributes().getInstance(CRITICAL_DAMAGE).addTransientModifier(new AttributeModifier(TEMP_CRIT_DMG_UUID,  livingHurtEvent.amount / 1.5, AttributeModifier.Operation.ADD_VALUE));
+                    attacker.getAttributes().getInstance(CRITICAL_DAMAGE).addTransientModifier(new AttributeModifier(TEMP_CRIT_DMG_MULTIPLIER_UUID, 0.5, AttributeModifier.Operation.ADD_MULTIPLIED_BASE));
                     livingHurtEvent.amount = (float) attacker.getAttributeValue(CRITICAL_DAMAGE);
                     attacker.getAttributes().getInstance(CRITICAL_DAMAGE).removeModifier(TEMP_CRIT_DMG_UUID);
                     attacker.getAttributes().getInstance(CRITICAL_DAMAGE).removeModifier(TEMP_CRIT_DMG_MULTIPLIER_UUID);

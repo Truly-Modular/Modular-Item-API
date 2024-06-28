@@ -1,12 +1,12 @@
 package smartin.miapi.effects;
 
-import com.redpxnda.nucleus.event.ClientEvents;
-import com.redpxnda.nucleus.event.MiscEvents;
-import com.redpxnda.nucleus.registry.effect.RenderingMobEffect;
 import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.redpxnda.nucleus.client.Rendering;
+import com.redpxnda.nucleus.event.ClientEvents;
+import com.redpxnda.nucleus.event.MiscEvents;
+import com.redpxnda.nucleus.registry.effect.RenderingMobEffect;
 import dev.architectury.event.CompoundEventResult;
 import dev.architectury.event.EventResult;
 import net.fabricmc.api.EnvType;
@@ -26,19 +26,21 @@ import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeMap;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.AABB;
+import smartin.miapi.Miapi;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.registries.RegistryInventory;
 
 public class CryoStatusEffect extends RenderingMobEffect {
-    protected static final ResourceLocation ICE_LOCATION = new ResourceLocation("block/ice");
+    protected static final ResourceLocation ICE_LOCATION = ResourceLocation.parse("block/ice");
 
     public CryoStatusEffect() {
         super(MobEffectCategory.HARMFUL, 1160409);
 
-        super.addAttributeModifier(Attributes.MOVEMENT_SPEED, "309da7c1-944e-4d5e-aad1-be2491a44695", -0.2, EntityAttributeModifier.Operation.MULTIPLY_TOTAL);
+        super.addAttributeModifier(Attributes.MOVEMENT_SPEED, Miapi.id("cryo_temp_movementspeed_slow"), -0.2, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
 
         MiscEvents.LIVING_JUMP_POWER.register(player -> {
             MobEffectInstance instance = player.getEffect(this);
@@ -76,8 +78,8 @@ public class CryoStatusEffect extends RenderingMobEffect {
     }
 
     @Override
-    public void onApplied(LivingEntity entity, AttributeMap attributes, int amplifier) {
-        super.onEffectStarted(entity, attributes, amplifier);
+    public void onApplied(LivingEntity entity, int amplifier) {
+        super.onEffectStarted(entity, amplifier);
         if (entity.level() instanceof ServerLevel world) {
             world.playSound(null, entity.getX(), entity.getY(), entity.getZ(), SoundEvents.PLAYER_HURT_FREEZE, SoundSource.PLAYERS, 1, 1);
         }

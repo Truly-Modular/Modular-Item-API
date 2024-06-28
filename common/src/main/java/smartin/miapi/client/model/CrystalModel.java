@@ -3,7 +3,6 @@ package smartin.miapi.client.model;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
-import net.minecraft.client.model.*;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.CubeListBuilder;
@@ -22,7 +21,7 @@ import org.joml.Quaternionf;
 
 public class CrystalModel implements MiapiModel {
     LayerDefinition modelData;
-    ResourceLocation TEXTURE = new ResourceLocation("textures/entity/end_crystal/end_crystal.png");
+    ResourceLocation TEXTURE = ResourceLocation.parse("textures/entity/end_crystal/end_crystal.png");
     RenderType END_CRYSTAL = RenderType.entityCutoutNoCull(TEXTURE);
     int age;
     float SINE_45_DEGREES = (float) Math.sin(0.7853981633974483);

@@ -3,17 +3,12 @@ package smartin.miapi.client.model.item;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.render.model.*;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.model.BakedModel;
-import net.minecraft.client.resources.model.Material;
-import net.minecraft.client.resources.model.ModelBaker;
-import net.minecraft.client.resources.model.ModelState;
-import net.minecraft.client.resources.model.UnbakedModel;
+import net.minecraft.client.resources.model.*;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
@@ -23,7 +18,9 @@ import smartin.miapi.client.model.DynamicBakery;
 import smartin.miapi.modules.properties.render.ModelProperty;
 import smartin.miapi.registries.RegistryInventory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.function.Function;
 
 import static smartin.miapi.client.renderer.SpriteLoader.miapiModels;
@@ -73,7 +70,7 @@ public class ItemBakedModelReplacement implements UnbakedModel, BakedModel {
 
     @Override
     public TextureAtlasSprite getParticleIcon() {
-        ResourceLocation stoneTextureId = new ResourceLocation("minecraft", "block/stone");
+        ResourceLocation stoneTextureId = ResourceLocation.fromNamespaceAndPath("minecraft", "block/stone");
         return Minecraft.getInstance().getTextureAtlas(TextureAtlas.LOCATION_BLOCKS).apply(stoneTextureId);
     }
 
@@ -105,7 +102,7 @@ public class ItemBakedModelReplacement implements UnbakedModel, BakedModel {
     @Override
     public String toString() {
         return "CustomModel{" +
-                "overrides=" + overrides +
-                '}';
+               "overrides=" + overrides +
+               '}';
     }
 }

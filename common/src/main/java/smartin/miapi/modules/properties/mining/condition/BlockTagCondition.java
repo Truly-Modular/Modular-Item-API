@@ -2,10 +2,6 @@ package smartin.miapi.modules.properties.mining.condition;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import smartin.miapi.modules.ModuleInstance;
-
-import java.util.ArrayList;
-import java.util.List;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
@@ -15,6 +11,10 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import smartin.miapi.modules.ModuleInstance;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class BlockTagCondition implements MiningCondition {
     public List<TagKey<Block>> blockTags;
@@ -29,7 +29,7 @@ public class BlockTagCondition implements MiningCondition {
         List<TagKey<Block>> tags = new ArrayList<>();
         if (element != null && element.isJsonArray()) {
             element.getAsJsonArray().forEach(entry -> {
-                tags.add(TagKey.create(Registries.BLOCK, new ResourceLocation(entry.getAsString())));
+                tags.add(TagKey.create(Registries.BLOCK, ResourceLocation.parse(entry.getAsString())));
             });
         }
         return new BlockTagCondition(tags);

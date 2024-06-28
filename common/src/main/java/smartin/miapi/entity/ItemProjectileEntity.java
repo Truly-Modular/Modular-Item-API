@@ -6,6 +6,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -16,6 +17,8 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
+import net.minecraft.world.entity.projectile.Arrow;
+import net.minecraft.world.entity.projectile.ThrownTrident;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
@@ -54,23 +57,24 @@ public class ItemProjectileEntity extends AbstractArrow {
     }
 
     public ItemProjectileEntity(Level world, Position position, ItemStack itemStack) {
-        super(RegistryInventory.itemProjectileType.get(), position.x(), position.y(), position.z(), world);
+        super(RegistryInventory.itemProjectileType.get(), world);
         ItemStack stack = itemStack.copy();
         stack.setCount(1);
         this.thrownStack = stack;
         this.entityData.set(THROWING_STACK, thrownStack);
-        this.entityData.set(LOYALTY, (byte) EnchantmentHelper.getLoyalty(stack));
+        ThrownTrident thrownTrident;
+        this.entityData.set(LOYALTY, this.getLoyaltyFromItem(stack));
         this.entityData.set(ENCHANTED, stack.hasFoil());
         this.checkDespawn();
         setup();
     }
 
     public ItemProjectileEntity(Level world, LivingEntity owner, ItemStack itemStack) {
-        super(RegistryInventory.itemProjectileType.get(), owner, world);
+        super(RegistryInventory.itemProjectileType.get(), owner, world, itemStack, null);
         ItemStack stack = itemStack.copy();
         stack.setCount(1);
         this.thrownStack = stack.copy();
-        this.entityData.set(LOYALTY, (byte) EnchantmentHelper.getLoyalty(stack));
+        this.entityData.set(LOYALTY, this.getLoyaltyFromItem(stack));
         this.entityData.set(ENCHANTED, stack.hasFoil());
         this.entityData.set(THROWING_STACK, thrownStack);
         this.entityData.set(BOW_ITEM_STACK, ItemStack.EMPTY);
@@ -86,7 +90,16 @@ public class ItemProjectileEntity extends AbstractArrow {
 
     private void setup() {
         ItemStack projectileStack = this.getPickupItem();
-        this.setBaseDamage(AttributeProperty.getActualValue(projectileStack, EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_DAMAGE));
+        this.setBaseDamage(AttributeProperty.getActualValue(projectileStack, EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_DAMAGE.value()));
+    }
+
+    private byte getLoyaltyFromItem(ItemStack stack) {
+        Level var3 = this.level();
+        if (var3 instanceof ServerLevel serverLevel) {
+            return (byte) Mth.clamp(EnchantmentHelper.getTridentReturnToOwnerAcceleration(serverLevel, stack, this), 0, 127);
+        } else {
+            return 0;
+        }
     }
 
     public void setPreferredSlot(int slotID) {
@@ -102,15 +115,15 @@ public class ItemProjectileEntity extends AbstractArrow {
     }
 
     @Override
-    protected void initDataTracker() {
-        super.defineSynchedData();
-        this.entityData.startTracking(LOYALTY, (byte) 0);
-        this.entityData.startTracking(ENCHANTED, false);
-        this.entityData.startTracking(THROWING_STACK, ItemStack.EMPTY);
-        this.entityData.startTracking(BOW_ITEM_STACK, ItemStack.EMPTY);
-        this.entityData.startTracking(WATER_DRAG, 0.99f);
-        this.entityData.startTracking(SPEED_DAMAGE, true);
-        this.entityData.startTracking(PREFERRED_SLOT, 0);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(LOYALTY, (byte) 0);
+        builder.define(ENCHANTED, false);
+        builder.define(THROWING_STACK, ItemStack.EMPTY);
+        builder.define(BOW_ITEM_STACK, ItemStack.EMPTY);
+        builder.define(WATER_DRAG, 0.99f);
+        builder.define(SPEED_DAMAGE, true);
+        builder.define(PREFERRED_SLOT, 0);
         MiapiProjectileEvents.MODULAR_PROJECTILE_DATA_TRACKER_INIT.invoker().dataTracker(this, this.getEntityData());
     }
 
@@ -189,7 +202,8 @@ public class ItemProjectileEntity extends AbstractArrow {
         }
     }
 
-    public ItemStack getPickupItem() {
+    @Override
+    public ItemStack getDefaultPickupItem() {
         return this.entityData.get(THROWING_STACK).copy();
     }
 
@@ -202,8 +216,8 @@ public class ItemProjectileEntity extends AbstractArrow {
     @Override
     public void shootFromRotation(Entity shooter, float pitch, float yaw, float roll, float speed, float divergence) {
         ItemStack projectileStack = this.getPickupItem();
-        speed = (float) Math.max(0.1, speed + AttributeProperty.getActualValue(projectileStack, EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_SPEED));
-        divergence *= (float) Math.pow(12.0, -AttributeProperty.getActualValue(projectileStack, EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_ACCURACY));
+        speed = (float) Math.max(0.1, speed + AttributeProperty.getActualValue(projectileStack, EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_SPEED.value()));
+        divergence *= (float) Math.pow(12.0, -AttributeProperty.getActualValue(projectileStack, EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_ACCURACY.value()));
         float f = -Mth.sin(yaw * ((float) Math.PI / 180)) * Mth.cos(pitch * ((float) Math.PI / 180));
         float g = -Mth.sin((pitch + roll) * ((float) Math.PI / 180));
         float h = Mth.cos(yaw * ((float) Math.PI / 180)) * Mth.cos(pitch * ((float) Math.PI / 180));
@@ -244,12 +258,12 @@ public class ItemProjectileEntity extends AbstractArrow {
                 return;
             }
 
-            if (entity instanceof LivingEntity victim) {
-                if (owner instanceof LivingEntity livingOwner) {
-                    EnchantmentHelper.onUserDamaged(victim, livingOwner);
-                    EnchantmentHelper.doPostAttackEffects(livingOwner, victim);
-                }
+            if (level() instanceof ServerLevel serverLevel) {
+                EnchantmentHelper.doPostAttackEffectsWithItemSource(serverLevel, entity, event.damageSource, this.getWeaponItem());
+            }
 
+            if (entity instanceof LivingEntity victim) {
+                this.doKnockback(victim, event.damageSource);
                 this.doPostHurtEffects(victim);
             }
         }
@@ -268,6 +282,10 @@ public class ItemProjectileEntity extends AbstractArrow {
             return;
         }
         this.playSound(this.hitEntitySound.event(), this.hitEntitySound.volume(), this.hitEntitySound.pitch());
+    }
+
+    public ItemStack getPickupItem() {
+        return super.getPickupItem();
     }
 
     @Override
@@ -294,10 +312,6 @@ public class ItemProjectileEntity extends AbstractArrow {
         return damage;
     }
 
-    public boolean hasChanneling() {
-        return EnchantmentHelper.hasChanneling(this.thrownStack);
-    }
-
     @Override
     protected boolean tryPickup(Player player) {
         int slotId = this.entityData.get(PREFERRED_SLOT);
@@ -309,7 +323,7 @@ public class ItemProjectileEntity extends AbstractArrow {
                 return false;
             }
             case CREATIVE_ONLY -> {
-                if (EnchantmentHelper.getLoyalty(this.getPickupItem()) > 0 && this.ownedBy(player)) {
+                if (getLoyaltyFromItem(this.getPickupItem()) > 0 && this.ownedBy(player)) {
                     return true;
                 }
                 return player.getAbilities().instabuild;
@@ -356,11 +370,11 @@ public class ItemProjectileEntity extends AbstractArrow {
     public void readAdditionalSaveData(CompoundTag nbt) {
         super.readAdditionalSaveData(nbt);
         if (nbt.contains("ThrownItem", 10)) {
-            this.thrownStack = ItemStack.parse(nbt.getCompound("ThrownItem"));
+            this.thrownStack = ItemStack.parse(this.level().registryAccess(), nbt.getCompound("ThrownItem")).get();
             this.entityData.set(THROWING_STACK, thrownStack);
         }
         if (nbt.contains("BowItem", 10)) {
-            ItemStack bowItem = ItemStack.parse(nbt.getCompound("BowItem"));
+            ItemStack bowItem = ItemStack.parse(this.level().registryAccess(), nbt.getCompound("BowItem")).get();
             this.entityData.set(BOW_ITEM_STACK, bowItem);
         }
         if (nbt.contains("WaterDrag")) {
@@ -374,15 +388,16 @@ public class ItemProjectileEntity extends AbstractArrow {
         }
 
         this.dealtDamage = nbt.getBoolean("DealtDamage");
-        this.entityData.set(LOYALTY, (byte) EnchantmentHelper.getLoyalty(this.thrownStack));
+        this.entityData.set(LOYALTY, getLoyaltyFromItem(this.thrownStack));
         MiapiProjectileEvents.MODULAR_PROJECTILE_NBT_READ.invoker().nbtEvent(this, nbt);
     }
 
     @Override
     public void addAdditionalSaveData(CompoundTag nbt) {
         super.addAdditionalSaveData(nbt);
-        nbt.put("ThrownItem", this.thrownStack.writeNbt(new CompoundTag()));
-        nbt.put("BowItem", this.getBowItem().writeNbt(new CompoundTag()));
+        ;
+        nbt.put("ThrownItem", this.thrownStack.save(this.level().registryAccess(), new CompoundTag()));
+        nbt.put("BowItem", this.getBowItem().save(this.level().registryAccess(), new CompoundTag()));
         nbt.putBoolean("DealtDamage", this.dealtDamage);
         nbt.putFloat("WaterDrag", this.entityData.get(WATER_DRAG));
         nbt.putBoolean("SpeedDamage", this.entityData.get(SPEED_DAMAGE));

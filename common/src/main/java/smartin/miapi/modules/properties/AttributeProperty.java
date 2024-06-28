@@ -372,21 +372,13 @@ public class AttributeProperty implements ModuleProperty {
         return !attributes.isEmpty();
     }
 
+    public static double getActualValue(Multimap<Attribute, AttributeModifier> map, Attribute entityAttribute) {
+        return getActualValue(map, entityAttribute, entityAttribute.getDefaultValue());
+    }
+
     public static double getActualValue(Multimap<Attribute, AttributeModifier> map, Attribute entityAttribute, double fallback) {
         Collection<AttributeModifier> attributes = map.get(entityAttribute);
         return getActualValue(attributes, fallback);
-        /*
-        DefaultAttributeContainer container = DefaultAttributeContainer.builder().add(entityAttribute).build();
-
-        AttributeContainer container1 = new AttributeContainer(container);
-
-        container1.addTemporaryModifiers(map);
-        if (map.containsKey(entityAttribute) && container1.hasAttribute(entityAttribute)) {
-            return container1.getInt(entityAttribute);
-        } else {
-            return fallback;
-        }
-        */
     }
 
     public static double getActualValue(Collection<AttributeModifier> attributes, double fallback) {

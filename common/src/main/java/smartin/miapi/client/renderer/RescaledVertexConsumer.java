@@ -23,22 +23,22 @@ public class RescaledVertexConsumer implements VertexConsumer {
     }
 
     @Override
-    public void vertex(float x, float y, float z, float red, float green, float blue, float alpha, float u, float v, int overlay, int light, float normalX, float normalY, float normalZ) {
+    public void addVertex(float x, float y, float z, int color, float u, float v, int packedOverlay, int packedLight, float normalX, float normalY, float normalZ) {
         u = ((u - uStart) * uScale);
         v = ((v - vStart) * vScale);
         this.addVertex(x, y, z);
-        this.setColor(red, green, blue, alpha);
+        this.setColor(color);
         this.setUv(u, v);
-        this.setOverlay(overlay);
-        this.setLight(light);
+        this.setOverlay(packedOverlay);
+        this.setLight(packedLight);
         this.setNormal(normalX, normalY, normalZ);
-        this.next();
     }
 
     @Override
-    public VertexConsumer vertex(double x, double y, double z) {
+    public VertexConsumer addVertex(float x, float y, float z) {
         return delegate.addVertex(x, y, z);
     }
+
 
     @Override
     public VertexConsumer setColor(int red, int green, int blue, int alpha) {
@@ -68,20 +68,5 @@ public class RescaledVertexConsumer implements VertexConsumer {
     @Override
     public VertexConsumer setNormal(float x, float y, float z) {
         return delegate.setNormal(x, y, z);
-    }
-
-    @Override
-    public void next() {
-        delegate.next();
-    }
-
-    @Override
-    public void fixedColor(int red, int green, int blue, int alpha) {
-        delegate.fixedColor(red, green, blue, alpha);
-    }
-
-    @Override
-    public void unfixColor() {
-        delegate.unfixColor();
     }
 }

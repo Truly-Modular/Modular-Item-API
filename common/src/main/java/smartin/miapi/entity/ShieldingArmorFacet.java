@@ -18,7 +18,7 @@ import smartin.miapi.mixin.LivingEntityAccessor;
 public class ShieldingArmorFacet implements EntityFacet<CompoundTag> {
     private LivingEntity livingEntity;
     private float currentAmount;
-    public static final ResourceLocation facetIdentifier = new ResourceLocation(Miapi.MOD_ID, "shielding_armor");
+    public static final ResourceLocation facetIdentifier = Miapi.id( "shielding_armor");
     public static FacetKey<ShieldingArmorFacet> KEY = FacetRegistry.register(facetIdentifier, ShieldingArmorFacet.class);
 
     public ShieldingArmorFacet(LivingEntity entity) {

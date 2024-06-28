@@ -4,7 +4,6 @@ import com.redpxnda.nucleus.util.Color;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.ai.attributes.AttributeMap;
 import smartin.miapi.registries.RegistryInventory;
 
 public class StunResistanceStatusEffect extends MobEffect {
@@ -14,10 +13,10 @@ public class StunResistanceStatusEffect extends MobEffect {
     }
 
     @Override
-    public void onApplied(LivingEntity entity, AttributeMap attributes, int amplifier) {
+    public void onEffectAdded(LivingEntity entity, int amplifier) {
         if (entity.hasEffect(RegistryInventory.stunEffect)) {
             entity.removeEffect(RegistryInventory.stunEffect);
         }
-        super.onEffectStarted(entity, attributes, amplifier);
+        super.onEffectStarted(entity, amplifier);
     }
 }

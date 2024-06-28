@@ -79,7 +79,7 @@ public class BakedSingleModel implements BakedModel {
 
     @Override
     public TextureAtlasSprite getParticleIcon() {
-        ResourceLocation stoneTextureId = new ResourceLocation("minecraft", "block/stone");
+        ResourceLocation stoneTextureId = ResourceLocation.fromNamespaceAndPath("minecraft", "block/stone");
         return Minecraft.getInstance().getTextureAtlas(TextureAtlas.LOCATION_BLOCKS).apply(stoneTextureId);
     }
 
