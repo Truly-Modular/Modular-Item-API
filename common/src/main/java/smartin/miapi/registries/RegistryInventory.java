@@ -87,9 +87,6 @@ import smartin.miapi.modules.properties.damage_boosts.IllagerBane;
 import smartin.miapi.modules.properties.damage_boosts.SmiteDamage;
 import smartin.miapi.modules.properties.damage_boosts.SpiderDamage;
 import smartin.miapi.modules.properties.enchanment.EnchantAbilityProperty;
-import smartin.miapi.modules.properties.enchanment.EnchantmentProperty;
-import smartin.miapi.modules.properties.enchanment.EnchantmentTransformerProperty;
-import smartin.miapi.modules.properties.enchanment.FakeEnchantmentProperty;
 import smartin.miapi.modules.properties.mining.MiningLevelProperty;
 import smartin.miapi.modules.properties.mining.MiningShapeProperty;
 import smartin.miapi.modules.properties.potion.OnDamagedEffects;
@@ -513,7 +510,6 @@ public class RegistryInventory {
             registerMiapi(moduleProperties, ToolOrWeaponProperty.KEY, new ToolOrWeaponProperty());
             registerMiapi(moduleProperties, MiningLevelProperty.KEY, new MiningLevelProperty());
             registerMiapi(moduleProperties, TagProperty.KEY, new TagProperty());
-            registerMiapi(moduleProperties, EnchantmentProperty.KEY, new EnchantmentProperty());
             registerMiapi(moduleProperties, MaterialProperties.KEY, new MaterialProperties());
             registerMiapi(moduleProperties, CraftingConditionProperty.KEY, new CraftingConditionProperty());
             registerMiapi(moduleProperties, StatRequirementProperty.KEY, new StatRequirementProperty());
@@ -530,8 +526,6 @@ public class RegistryInventory {
             registerMiapi(moduleProperties, ArrowProperty.KEY, new ArrowProperty());
             registerMiapi(moduleProperties, DurabilityProperty.KEY, new DurabilityProperty());
             registerMiapi(moduleProperties, FracturingProperty.KEY, new FracturingProperty());
-            registerMiapi(moduleProperties, FortuneProperty.KEY, new FortuneProperty());
-            registerMiapi(moduleProperties, MendingProperty.KEY, new MendingProperty());
             registerMiapi(moduleProperties, IsPiglinGold.KEY, new IsPiglinGold());
             registerMiapi(moduleProperties, CanWalkOnSnow.KEY, new CanWalkOnSnow());
             registerMiapi(moduleProperties, FireProof.KEY, new FireProof());
@@ -551,7 +545,6 @@ public class RegistryInventory {
             registerMiapi(moduleProperties, BlueprintProperty.KEY, new BlueprintProperty());
             registerMiapi(moduleProperties, WaterGravityProperty.KEY, new WaterGravityProperty());
             registerMiapi(moduleProperties, CraftingEnchantProperty.KEY, new CraftingEnchantProperty());
-            registerMiapi(moduleProperties, FakeEnchantmentProperty.KEY, new FakeEnchantmentProperty());
             registerMiapi(moduleProperties, ExhaustionProperty.KEY, new ExhaustionProperty());
             registerMiapi(moduleProperties, MaterialInscribeDataProperty.KEY, new MaterialInscribeDataProperty());
             registerMiapi(moduleProperties, FakeItemTagProperty.KEY, new FakeItemTagProperty());
@@ -572,7 +565,6 @@ public class RegistryInventory {
             registerMiapi(moduleProperties, NemesisProperty.KEY, new NemesisProperty());
             registerMiapi(moduleProperties, CopyParentMaterialProperty.KEY, new CopyParentMaterialProperty());
             registerMiapi(moduleProperties, EmissiveProperty.KEY, new EmissiveProperty());
-            registerMiapi(moduleProperties, EnchantmentTransformerProperty.KEY, new EnchantmentTransformerProperty());
             registerMiapi(moduleProperties, RapidfireCrossbowProperty.KEY, new RapidfireCrossbowProperty());
             registerMiapi(moduleProperties, MagazineCrossbowShotDelay.KEY, new MagazineCrossbowShotDelay());
             registerMiapi(moduleProperties, HandheldItemProperty.KEY, new HandheldItemProperty());

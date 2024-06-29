@@ -2,6 +2,10 @@ package smartin.miapi.registries;
 
 import dev.architectury.registry.registries.Registrar;
 import dev.architectury.registry.registries.RegistrySupplier;
+import net.minecraft.core.Holder;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -12,9 +16,6 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-import net.minecraft.core.Registry;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 
 public class MiapiRegistrar<T> extends MiapiRegistry<T> implements Registrar<T> {
     public final Registrar<T> registrar;
@@ -82,7 +83,7 @@ public class MiapiRegistrar<T> extends MiapiRegistry<T> implements Registrar<T> 
 
     @Override
     public Set<ResourceLocation> getIds() {
-        return this.entries.keySet().stream().map(ResourceLocation::new).collect(Collectors.toSet());
+        return this.entries.keySet().stream().map(ResourceLocation::parse).collect(Collectors.toSet());
     }
 
     @Override
@@ -93,6 +94,11 @@ public class MiapiRegistrar<T> extends MiapiRegistry<T> implements Registrar<T> 
     @Override
     public ResourceKey<? extends Registry<T>> key() {
         return registrar.key();
+    }
+
+    @Override
+    public @Nullable Holder<T> getHolder(ResourceKey<T> key) {
+        return registrar.getHolder(key);
     }
 
     @Override

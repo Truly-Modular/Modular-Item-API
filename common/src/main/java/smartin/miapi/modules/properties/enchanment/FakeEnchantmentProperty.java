@@ -1,32 +1,6 @@
 package smartin.miapi.modules.properties.enchanment;
 
-import com.google.gson.JsonElement;
-import com.google.gson.reflect.TypeToken;
-import net.fabricmc.api.EnvType;
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.enchantment.Enchantment;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import smartin.miapi.Environment;
-import smartin.miapi.Miapi;
-import smartin.miapi.client.gui.InteractAbleWidget;
-import smartin.miapi.client.gui.crafting.statdisplay.JsonStatDisplay;
-import smartin.miapi.client.gui.crafting.statdisplay.SingleStatDisplay;
-import smartin.miapi.client.gui.crafting.statdisplay.SingleStatDisplayDouble;
-import smartin.miapi.client.gui.crafting.statdisplay.StatListWidget;
-import smartin.miapi.item.FakeEnchantment;
-import smartin.miapi.modules.ItemModule;
-import smartin.miapi.modules.cache.ModularItemCache;
-import smartin.miapi.modules.properties.util.MergeType;
-import smartin.miapi.modules.properties.util.ModuleProperty;
-
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+/*
 public class FakeEnchantmentProperty implements ModuleProperty {
     public static FakeEnchantmentProperty property;
     public static final String KEY = "fake_enchant";
@@ -136,3 +110,6 @@ public class FakeEnchantmentProperty implements ModuleProperty {
         return true;
     }
 }
+
+
+     */

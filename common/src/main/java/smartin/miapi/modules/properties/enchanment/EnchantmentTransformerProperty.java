@@ -1,21 +1,6 @@
 package smartin.miapi.modules.properties.enchanment;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.enchantment.Enchantment;
-import smartin.miapi.item.FakeEnchantment;
-import smartin.miapi.item.modular.StatResolver;
-import smartin.miapi.modules.ItemModule;
-import smartin.miapi.modules.ModuleInstance;
-import smartin.miapi.modules.cache.ModularItemCache;
-import smartin.miapi.modules.properties.util.ModuleProperty;
-
-import java.util.ArrayList;
-import java.util.List;
-
+/*
 public class EnchantmentTransformerProperty implements ModuleProperty {
     public static String KEY = "enchantment_transformers";
     public static EnchantmentTransformerProperty property;
@@ -83,3 +68,5 @@ public class EnchantmentTransformerProperty implements ModuleProperty {
 
     }
 }
+
+     */

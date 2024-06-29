@@ -1,34 +1,10 @@
 package smartin.miapi.modules.properties.enchanment;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.enchantment.EnchantmentTarget;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.GsonHelper;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.item.enchantment.Enchantment;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import smartin.miapi.Miapi;
-import smartin.miapi.blocks.ModularWorkBenchEntity;
-import smartin.miapi.craft.CraftAction;
-import smartin.miapi.datapack.ReloadEvents;
-import smartin.miapi.modules.ItemModule;
-import smartin.miapi.modules.ModuleInstance;
-import smartin.miapi.modules.cache.ModularItemCache;
-import smartin.miapi.modules.properties.util.CraftingProperty;
-import smartin.miapi.modules.properties.util.MergeType;
-import smartin.miapi.modules.properties.util.ModuleProperty;
-
-import java.util.*;
-
 /**
  * This property allows to set allowed enchantments
  */
 //TODO:this will probably get deleted
+        /*
 public class EnchantmentProperty implements CraftingProperty, ModuleProperty {
     public static final String KEY = "enchantments";
     public static EnchantmentProperty property;
@@ -254,3 +230,4 @@ public class EnchantmentProperty implements CraftingProperty, ModuleProperty {
         public List<String> forbidden = new ArrayList<>();
     }
 }
+     */

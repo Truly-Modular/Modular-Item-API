@@ -21,7 +21,7 @@ public class OnKillExplosion implements ModuleProperty {
                 if (element != null) {
                     ExplosionProperty.ExplosionInfo info = ExplosionProperty.property.getInfo(attacker.getMainHandItem(), property);
                     if (info != null) {
-                        ExplosionProperty.explode(info, attacker.level(), entity.position(), attacker);
+                        info.explode(attacker.level(), attacker, entity.position());
                     }
                 }
             }
