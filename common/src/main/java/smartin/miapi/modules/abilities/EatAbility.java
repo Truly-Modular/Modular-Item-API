@@ -27,7 +27,7 @@ public class EatAbility implements ItemUseDefaultCooldownAbility, ItemUseMinHold
 
     @Override
     public boolean allowedOnItem(ItemStack itemStack, Level world, Player player, InteractionHand hand, ItemAbilityManager.AbilityHitContext abilityHitContext) {
-        EdibleProperty.Holder data = EdibleProperty.get(itemStack);
+        EdibleProperty.DataHolder data = EdibleProperty.get(itemStack);
         return data != null && (data.alwaysEdible || player.getFoodData().needsFood());
     }
 
@@ -41,7 +41,7 @@ public class EatAbility implements ItemUseDefaultCooldownAbility, ItemUseMinHold
         return (int) (32 * EdibleProperty.get(itemStack).eatingSpeed);
     }
 
-    public int getMaxUseTime(EdibleProperty.Holder data) {
+    public int getMaxUseTime(EdibleProperty.DataHolder data) {
         return (int) (32 * data.eatingSpeed);
     }
 
@@ -59,7 +59,7 @@ public class EatAbility implements ItemUseDefaultCooldownAbility, ItemUseMinHold
     public void usageTick(Level world, LivingEntity user, ItemStack stack, int remainingUseTicks) {
         if (remainingUseTicks <= 0) {
             user.releaseUsingItem();
-            EdibleProperty.Holder data = EdibleProperty.get(stack);
+            EdibleProperty.DataHolder data = EdibleProperty.get(stack);
 
             boolean isClient = user.level().isClientSide;
             if (isClient) {

@@ -247,7 +247,7 @@ public abstract class PotionEffectProperty implements ModuleProperty {
         List<EffectHolder> potions = new ArrayList<>();
         jsonElement.getAsJsonArray().forEach(element -> {
             JsonObject object = element.getAsJsonObject();
-            ResourceLocation identifier = new ResourceLocation(ModuleProperty.getString(object, "potion", moduleInstance, ""));
+            ResourceLocation identifier = ResourceLocation.parse(ModuleProperty.getString(object, "potion", moduleInstance, ""));
             MobEffect potion = BuiltInRegistries.MOB_EFFECT.get(identifier);
             if (potion != null) {
                 potions.add(getHolder(potion, element.getAsJsonObject(), moduleInstance));

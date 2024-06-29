@@ -2,6 +2,7 @@ package smartin.miapi.modules.properties;
 
 import dev.architectury.event.EventResult;
 import dev.architectury.platform.Platform;
+import net.minecraft.resources.ResourceLocation;
 import smartin.miapi.Miapi;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.modules.properties.util.BooleanProperty;
@@ -16,7 +17,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 public class HandheldItemProperty extends BooleanProperty {
-    public static UUID attackspeedUUID = UUID.fromString("134d982f-c8ab-4b04-969f-15b495f89abd");
+    public static ResourceLocation attackspeedID = Miapi.id("handheld_bonus_attackspeed");
 
     public static String KEY = "handheld_item";
 
@@ -28,7 +29,7 @@ public class HandheldItemProperty extends BooleanProperty {
                 ItemStack offHandItem = changes.getOrDefault(EquipmentSlot.OFFHAND, player.getItemBySlot(EquipmentSlot.OFFHAND));
                 boolean hasAttribute = serverPlayerEntity
                                                .getAttributes()
-                                               .getInstance(Attributes.ATTACK_SPEED).getModifier(attackspeedUUID) != null;
+                                               .getInstance(Attributes.ATTACK_SPEED).getModifier(attackspeedID) != null;
                 if (hasTwoHandhelds(mainHandItem, offHandItem)) {
                     if(!hasAttribute){
                         serverPlayerEntity
@@ -36,10 +37,9 @@ public class HandheldItemProperty extends BooleanProperty {
                                 .getInstance(Attributes.ATTACK_SPEED)
                                 .addTransientModifier(
                                         new AttributeModifier(
-                                                attackspeedUUID,
-                                                "temphandheldboni",
+                                                attackspeedID,
                                                 1.5,
-                                                EntityAttributeModifier.Operation.MULTIPLY_TOTAL));
+                                                AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
                     }
 
                 } else {
@@ -47,7 +47,7 @@ public class HandheldItemProperty extends BooleanProperty {
                         serverPlayerEntity
                                 .getAttributes()
                                 .getInstance(Attributes.ATTACK_SPEED)
-                                .removeModifier(attackspeedUUID);
+                                .removeModifier(attackspeedID);
                     }
                 }
             }
@@ -63,7 +63,7 @@ public class HandheldItemProperty extends BooleanProperty {
             }
             return EventResult.pass();
         });
-        LoreProperty.loreSuppliers.add((stack, world, tooltip, context) -> {
+        LoreProperty.loreSuppliers.add((stack, tooltip, context, flag) -> {
             if (hasValue(stack)) {
                 tooltip.add(Component.translatable(Miapi.MOD_ID + ".handheld.tooltip"));
             }

@@ -1,10 +1,8 @@
 package smartin.miapi.modules.properties.damage_boosts;
 
+import net.minecraft.advancements.critereon.EntityTypePredicate;
+import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.monster.Pillager;
-import net.minecraft.world.entity.monster.Ravager;
-import net.minecraft.world.entity.monster.Vex;
-import net.minecraft.world.entity.monster.Vindicator;
 import net.minecraft.world.item.ItemStack;
 import smartin.miapi.modules.properties.util.EntityDamageBoostProperty;
 
@@ -22,15 +20,8 @@ public class IllagerBane extends EntityDamageBoostProperty {
     }
 
     public static boolean isIllagerType(LivingEntity living) {
-        if(
-                        living instanceof Pillager ||
-                        living instanceof Vex ||
-                        living instanceof Vindicator ||
-                        living instanceof Ravager
-        ){
-            return true;
-        }
-        return false;
+        return EntityTypePredicate.of(EntityTypeTags.ILLAGER).matches(living.getType()) ||
+               EntityTypePredicate.of(EntityTypeTags.ILLAGER_FRIENDS).matches(living.getType());
     }
 
     @Override

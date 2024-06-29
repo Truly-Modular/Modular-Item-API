@@ -1,6 +1,7 @@
 package smartin.miapi.modules.properties.damage_boosts;
 
-import net.minecraft.entity.EntityGroup;
+import net.minecraft.advancements.critereon.EntityTypePredicate;
+import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import smartin.miapi.modules.properties.util.EntityDamageBoostProperty;
@@ -18,10 +19,7 @@ public class AquaticDamage extends EntityDamageBoostProperty {
     }
 
     public static boolean isOfType(LivingEntity living) {
-        if(living.getGroup() == EntityGroup.AQUATIC){
-            return true;
-        }
-        return false;
+        return EntityTypePredicate.of(EntityTypeTags.SENSITIVE_TO_IMPALING).matches(living.getType());
     }
 
     @Override

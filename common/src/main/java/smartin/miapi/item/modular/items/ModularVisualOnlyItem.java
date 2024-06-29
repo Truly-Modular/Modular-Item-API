@@ -1,18 +1,14 @@
 package smartin.miapi.item.modular.items;
 
 import com.redpxnda.nucleus.util.Color;
-import net.minecraft.client.item.TooltipContext;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.TooltipFlag;
-import org.jetbrains.annotations.Nullable;
 import smartin.miapi.item.modular.PlatformModularItemMethods;
 import smartin.miapi.item.modular.VisualModularItem;
 import smartin.miapi.modules.properties.DisplayNameProperty;
 import smartin.miapi.modules.properties.LoreProperty;
-import smartin.miapi.modules.properties.RarityProperty;
 import smartin.miapi.modules.properties.RepairPriority;
 
 import java.util.List;
@@ -25,11 +21,6 @@ public class ModularVisualOnlyItem extends Item implements PlatformModularItemMe
     @Override
     public boolean isValidRepairItem(ItemStack stack, ItemStack ingredient) {
         return RepairPriority.getRepairValue(stack, ingredient) > 0;
-    }
-
-    @Override
-    public Rarity getRarity(ItemStack stack) {
-        return RarityProperty.getRarity(stack);
     }
 
     @Override

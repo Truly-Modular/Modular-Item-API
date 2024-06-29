@@ -300,7 +300,7 @@ public class ModelProperty implements RenderProperty {
         ModelBakery loader = ModelLoadAccessor.getLoader();
         filePath2 = filePath2.replace(".json", "");
         filePath2 = filePath2.replace("models/", "");
-        ResourceLocation modelId = new ResourceLocation(filePath2);
+        ResourceLocation modelId = ResourceLocation.parse(filePath2);
         BlockModel model = ((ModelLoaderInterfaceAccessor) loader).loadModelFromPath(modelId);
         if (!filePath2.endsWith(".json")) {
             filePath2 += ".json";

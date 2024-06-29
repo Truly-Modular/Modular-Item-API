@@ -6,6 +6,8 @@ import com.redpxnda.nucleus.codec.misc.MiscCodecs;
 import com.redpxnda.nucleus.event.PrioritizedEvent;
 import com.redpxnda.nucleus.util.Color;
 import dev.architectury.event.EventResult;
+import net.minecraft.Util;
+import net.minecraft.world.item.ItemStack;
 import smartin.miapi.Miapi;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.item.modular.StatResolver;
@@ -17,8 +19,6 @@ import smartin.miapi.registries.RegistryInventory;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
-import net.minecraft.Util;
-import net.minecraft.world.item.ItemStack;
 
 /**
  * This property manages the Glint on the item
@@ -37,6 +37,7 @@ public class GlintProperty implements ModuleProperty {
     public GlintProperty() {
         property = this;
         glintSettingsMap.put("rainbow", new SettingsControlledGlint());
+
     }
 
     @Override

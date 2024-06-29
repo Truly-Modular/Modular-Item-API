@@ -3,16 +3,18 @@ package smartin.miapi.modules.properties;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import dev.architectury.event.EventResult;
-import smartin.miapi.events.MiapiEvents;
-import smartin.miapi.modules.properties.util.DoubleProperty;
-
-import java.util.Objects;
-import java.util.WeakHashMap;
+import net.minecraft.core.Holder;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.ItemStack;
+import smartin.miapi.Miapi;
+import smartin.miapi.events.MiapiEvents;
+import smartin.miapi.modules.properties.util.DoubleProperty;
+
+import java.util.Objects;
+import java.util.WeakHashMap;
 
 /**
  * This property allows for armor penetration, so weapons can igonre some armor
@@ -20,7 +22,7 @@ import net.minecraft.world.item.ItemStack;
 public class ArmorPenProperty extends DoubleProperty {
     public static final String KEY = "armor_pen";
     public static ArmorPenProperty property;
-    private static WeakHashMap<LivingEntity, Multimap<Attribute, AttributeModifier>> cache = new WeakHashMap<>();
+    private static WeakHashMap<LivingEntity, Multimap<Holder<Attribute>, AttributeModifier>> cache = new WeakHashMap<>();
 
     public ArmorPenProperty() {
         super(KEY);
@@ -30,8 +32,8 @@ public class ArmorPenProperty extends DoubleProperty {
                 ItemStack itemStack = event.getCausingItemStack();
                 if (property.hasValue(itemStack)) {
                     double value = property.getValueSafe(itemStack) / 100;
-                    Multimap<Attribute, AttributeModifier> multimap = ArrayListMultimap.create();
-                    multimap.put(Attributes.ARMOR, new AttributeModifier("tempArmorPen", (- 1 + value), EntityAttributeModifier.Operation.MULTIPLY_TOTAL));
+                    Multimap<Holder<Attribute>, AttributeModifier> multimap = ArrayListMultimap.create();
+                    multimap.put(Attributes.ARMOR, new AttributeModifier(Miapi.id("tempArmorPen"), (- 1 + value), AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
                     cache.put(event.livingEntity, multimap);
                     event.livingEntity.getAttributes().addTransientAttributeModifiers(multimap);
                 }

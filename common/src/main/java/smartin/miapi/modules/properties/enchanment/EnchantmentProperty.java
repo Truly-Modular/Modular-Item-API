@@ -1,7 +1,8 @@
-package smartin.miapi.modules.properties;
+package smartin.miapi.modules.properties.enchanment;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.enchantment.EnchantmentTarget;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
@@ -27,6 +28,7 @@ import java.util.*;
 /**
  * This property allows to set allowed enchantments
  */
+//TODO:this will probably get deleted
 public class EnchantmentProperty implements CraftingProperty, ModuleProperty {
     public static final String KEY = "enchantments";
     public static EnchantmentProperty property;

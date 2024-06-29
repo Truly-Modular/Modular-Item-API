@@ -9,7 +9,7 @@ import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.AttributeProperty;
 import smartin.miapi.modules.properties.DurabilityProperty;
-import smartin.miapi.modules.properties.EnchantAbilityProperty;
+import smartin.miapi.modules.properties.enchanment.EnchantAbilityProperty;
 import smartin.miapi.modules.properties.ToolOrWeaponProperty;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;

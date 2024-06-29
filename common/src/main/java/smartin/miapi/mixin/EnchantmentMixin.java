@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.item.modular.ModularItem;
-import smartin.miapi.modules.properties.EnchantmentProperty;
+import smartin.miapi.modules.properties.enchanment.EnchantmentProperty;
 
 
 @Mixin(Enchantment.class)

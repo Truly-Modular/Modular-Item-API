@@ -2,10 +2,9 @@ package smartin.miapi.item.modular.items;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
-import net.minecraft.client.item.TooltipContext;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.util.*;
+import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
@@ -14,21 +13,18 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.PickaxeItem;
-import net.minecraft.world.item.Rarity;
-import net.minecraft.world.item.Tier;
-import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.UseAnim;
+import net.minecraft.world.item.*;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import org.jetbrains.annotations.Nullable;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.PlatformModularItemMethods;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
-import smartin.miapi.modules.properties.*;
+import smartin.miapi.modules.properties.DisplayNameProperty;
+import smartin.miapi.modules.properties.LoreProperty;
+import smartin.miapi.modules.properties.RepairPriority;
+import smartin.miapi.modules.properties.ToolOrWeaponProperty;
 import smartin.miapi.modules.properties.mining.MiningLevelProperty;
 
 import java.util.List;
@@ -36,11 +32,11 @@ import java.util.List;
 public class ModularPickaxe extends PickaxeItem implements PlatformModularItemMethods, ModularItem, ModularSetableToolMaterial {
     public Tier currentFakeToolmaterial = ModularToolMaterial.toolMaterial;
     public ModularPickaxe(Properties settings) {
-        super(new ModularToolMaterial(), 5, 5, settings.stacksTo(1).durability(500));
+        super(new ModularToolMaterial(), settings.stacksTo(1).durability(500));
     }
 
     public ModularPickaxe() {
-        super(new ModularToolMaterial(), 5, 5, new Properties().stacksTo(1).durability(500).rarity(Rarity.COMMON));
+        super(new ModularToolMaterial(), new Properties().stacksTo(1).durability(500).rarity(Rarity.COMMON));
     }
 
     @Override
@@ -89,13 +85,9 @@ public class ModularPickaxe extends PickaxeItem implements PlatformModularItemMe
     @Override
     public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
         if (ToolOrWeaponProperty.isWeapon(stack)) {
-            stack.hurtAndBreak(1, attacker, (e) -> {
-                e.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND);
-            });
+            stack.hurtAndBreak(1, attacker, EquipmentSlot.MAINHAND);
         } else {
-            stack.hurtAndBreak(2, attacker, (e) -> {
-                e.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND);
-            });
+            stack.hurtAndBreak(2, attacker, EquipmentSlot.MAINHAND);
         }
         return true;
     }
@@ -108,13 +100,9 @@ public class ModularPickaxe extends PickaxeItem implements PlatformModularItemMe
     public boolean mineBlock(ItemStack stack, Level world, BlockState state, BlockPos pos, LivingEntity miner) {
         if (!world.isClientSide && state.getDestroySpeed(world, pos) != 0.0F) {
             if (ToolOrWeaponProperty.isWeapon(stack)) {
-                stack.hurtAndBreak(2, miner, (e) -> {
-                    e.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND);
-                });
+                stack.hurtAndBreak(2, miner, EquipmentSlot.MAINHAND);
             } else {
-                stack.hurtAndBreak(1, miner, (e) -> {
-                    e.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND);
-                });
+                stack.hurtAndBreak(1, miner, EquipmentSlot.MAINHAND);
             }
         }
 
@@ -127,18 +115,13 @@ public class ModularPickaxe extends PickaxeItem implements PlatformModularItemMe
     }
 
     @Override
-    public float getMiningSpeedMultiplier(ItemStack stack, BlockState state) {
-        return MiningLevelProperty.getMiningSpeedMultiplier(stack, state);
-    }
-
-    @Override
     public UseAnim getUseAnimation(ItemStack stack) {
         return ItemAbilityManager.getUseAction(stack);
     }
 
     @Override
-    public int getMaxUseTime(ItemStack stack) {
-        return ItemAbilityManager.getMaxUseTime(stack);
+    public int getUseDuration(ItemStack stack, LivingEntity livingEntity) {
+        return ItemAbilityManager.getMaxUseTime(stack, livingEntity);
     }
 
     @Override
@@ -154,11 +137,6 @@ public class ModularPickaxe extends PickaxeItem implements PlatformModularItemMe
     @Override
     public ItemStack finishUsingItem(ItemStack stack, Level world, LivingEntity user) {
         return ItemAbilityManager.finishUsing(stack, world, user);
-    }
-
-    @Override
-    public Rarity getRarity(ItemStack stack) {
-        return RarityProperty.getRarity(stack);
     }
 
     @Override

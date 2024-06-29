@@ -1,15 +1,6 @@
 package smartin.miapi.modules.abilities.util;
 
 import dev.architectury.event.events.common.TickEvent;
-import org.jetbrains.annotations.Nullable;
-import smartin.miapi.modules.cache.ModularItemCache;
-import smartin.miapi.modules.properties.AbilityMangerProperty;
-import smartin.miapi.modules.properties.AbilityProperty;
-import smartin.miapi.registries.MiapiRegistry;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.WeakHashMap;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
@@ -20,6 +11,15 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.Nullable;
+import smartin.miapi.modules.cache.ModularItemCache;
+import smartin.miapi.modules.properties.AbilityMangerProperty;
+import smartin.miapi.modules.properties.AbilityProperty;
+import smartin.miapi.registries.MiapiRegistry;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.WeakHashMap;
 
 /**
  * The ItemAbilityManager is the brain and control behind what Ability is executed on what Item.
@@ -79,7 +79,7 @@ public class ItemAbilityManager {
         return getAbility(itemStack).getUseAction(itemStack);
     }
 
-    public static int getMaxUseTime(ItemStack itemStack) {
+    public static int getMaxUseTime(ItemStack itemStack, LivingEntity livingEntity) {
         return getAbility(itemStack).getMaxUseTime(itemStack);
     }
 

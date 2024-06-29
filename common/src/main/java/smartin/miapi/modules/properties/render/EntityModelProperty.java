@@ -3,6 +3,12 @@ package smartin.miapi.modules.properties.render;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.JsonOps;
+import net.minecraft.client.Minecraft;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.model.EntityMiapiModel;
 import smartin.miapi.client.model.MiapiItemModel;
@@ -13,18 +19,10 @@ import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.ArrayList;
 import java.util.List;
-import net.minecraft.client.Minecraft;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.level.Level;
 
 public class EntityModelProperty implements RenderProperty {
     public static String KEY = "entity_model";
     public static EntityModelProperty property;
-    public static Level fakeWorld;
 
     public EntityModelProperty() {
         property = this;

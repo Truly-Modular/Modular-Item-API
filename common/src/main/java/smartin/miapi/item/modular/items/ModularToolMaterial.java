@@ -1,7 +1,9 @@
 package smartin.miapi.item.modular.items;
 
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Tier;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.level.block.Block;
 
 public class ModularToolMaterial implements Tier{
     public static ModularToolMaterial toolMaterial = new ModularToolMaterial();
@@ -22,8 +24,9 @@ public class ModularToolMaterial implements Tier{
     }
 
     @Override
-    public int getMiningLevel() {
-        return 5;
+    public TagKey<Block> getIncorrectBlocksForDrops() {
+        //TODO:
+        return null;
     }
 
     @Override

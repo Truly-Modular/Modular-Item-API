@@ -39,6 +39,7 @@ public class NemesisProperty extends DoubleProperty implements CraftingProperty 
         decimalFormat.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ROOT));
     });
 
+    //TODO:rework into Component
     public NemesisProperty() {
         super(KEY);
         setupLore();

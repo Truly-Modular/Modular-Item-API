@@ -1,4 +1,4 @@
-package smartin.miapi.modules.properties;
+package smartin.miapi.modules.properties.enchanment;
 
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;

@@ -4,7 +4,9 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
+import net.minecraft.world.item.ItemStack;
 import smartin.miapi.item.modular.StatResolver;
+import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.material.AllowedMaterial;
@@ -13,7 +15,6 @@ import smartin.miapi.modules.properties.util.ModuleProperty;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import net.minecraft.world.item.ItemStack;
 
 public class ModuleStats implements ModuleProperty {
     public static String KEY = "module_stats";

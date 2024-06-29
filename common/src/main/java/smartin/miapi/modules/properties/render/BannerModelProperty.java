@@ -22,6 +22,7 @@ public class BannerModelProperty implements RenderProperty {
     public static final String KEY = "banner";
     public static BannerModelProperty property;
 
+    //TODO:ahhh fuck you mojang gib nbt
     public BannerModelProperty() {
         property = this;
         MiapiItemModel.modelSuppliers.add((key, moduleInstance, stack) -> {

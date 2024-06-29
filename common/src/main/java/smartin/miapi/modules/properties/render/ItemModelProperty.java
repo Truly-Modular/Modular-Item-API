@@ -24,6 +24,7 @@ public class ItemModelProperty implements RenderProperty {
     public static final String KEY = "item_model";
     public static ItemModelProperty property;
 
+    //TODO:i hate this. gib nbt back
     public ItemModelProperty() {
         property = this;
         MiapiItemModel.modelSuppliers.add((key, model, stack) -> {

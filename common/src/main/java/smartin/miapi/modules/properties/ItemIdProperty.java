@@ -1,6 +1,9 @@
 package smartin.miapi.modules.properties;
 
 import com.google.gson.JsonElement;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.craft.CraftAction;
 import smartin.miapi.modules.ItemModule;
@@ -13,9 +16,6 @@ import smartin.miapi.registries.RegistryInventory;
 
 import java.util.List;
 import java.util.Map;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
 
 /**
  * This Property changes the ItemIdentifier of an ModularItem on Craft
@@ -50,7 +50,7 @@ public class ItemIdProperty implements CraftingProperty, ModuleProperty {
             if (item != null) {
                 ModularItemCache.clearUUIDFor(itemStack);
                 ItemStack newStack = new ItemStack(item);
-                newStack.setNbt(itemStack.getNbt());
+                newStack.applyComponents(itemStack.getComponents());
                 newStack.setCount(itemStack.getCount());
                 root.writeToItem(newStack);
                 ModularItemCache.clearUUIDFor(newStack);
@@ -85,7 +85,7 @@ public class ItemIdProperty implements CraftingProperty, ModuleProperty {
             if (item != null) {
                 ModularItemCache.clearUUIDFor(old);
                 ItemStack newStack = new ItemStack(item);
-                newStack.setNbt(crafting.getNbt());
+                newStack.applyComponents(crafting.getComponents());
                 newStack.setCount(crafting.getCount());
                 root.writeToItem(newStack);
                 ModularItemCache.clearUUIDFor(newStack);

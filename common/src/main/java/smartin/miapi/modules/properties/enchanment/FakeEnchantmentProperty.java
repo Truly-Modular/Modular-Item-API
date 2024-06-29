@@ -1,8 +1,7 @@
-package smartin.miapi.modules.properties;
+package smartin.miapi.modules.properties.enchanment;
 
 import com.google.gson.JsonElement;
 import com.google.gson.reflect.TypeToken;
-import dev.architectury.utils.Env;
 import net.fabricmc.api.EnvType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;

@@ -10,7 +10,7 @@ import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.item.FakeEnchantment;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.modules.properties.ChannelingProperty;
-import smartin.miapi.modules.properties.EnchantAbilityProperty;
+import smartin.miapi.modules.properties.enchanment.EnchantAbilityProperty;
 
 import java.util.ArrayList;
 import java.util.List;
