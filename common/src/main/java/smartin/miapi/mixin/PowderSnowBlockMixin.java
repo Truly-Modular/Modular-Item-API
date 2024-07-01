@@ -15,7 +15,7 @@ import smartin.miapi.modules.properties.CanWalkOnSnow;
 @Mixin(PowderSnowBlock.class)
 public abstract class PowderSnowBlockMixin {
 
-    @Inject(method = "canWalkOnPowderSnow(Lnet/minecraft/entity/Entity;)Z", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "canEntityWalkOnPowderSnow", at = @At("HEAD"), cancellable = true)
     private static void miapi$bypassSnowWalk(Entity entity, CallbackInfoReturnable<Boolean> cir) {
         if (entity instanceof LivingEntity livingEntity) {
             ItemStack boots = livingEntity.getItemBySlot(EquipmentSlot.FEET);

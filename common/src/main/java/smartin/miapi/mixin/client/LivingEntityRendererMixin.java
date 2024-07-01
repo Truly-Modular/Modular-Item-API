@@ -14,7 +14,7 @@ import smartin.miapi.client.renderer.ModularElytraFeatureRenderer;
 public abstract class LivingEntityRendererMixin {
 
     @Inject(
-            method = "<init>(Lnet/minecraft/client/render/entity/EntityRendererFactory$Context;Lnet/minecraft/client/render/entity/model/EntityModel;F)V",
+            method = "<init>",
             at = @At("TAIL")
     )
     private void miapi$addFeatureRenderer(EntityRendererProvider.Context ctx, EntityModel model, float shadowRadius, CallbackInfo ci) {

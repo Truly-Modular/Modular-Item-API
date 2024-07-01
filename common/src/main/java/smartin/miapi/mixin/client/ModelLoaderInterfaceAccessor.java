@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 @Mixin(ModelBakery.class)
 public interface ModelLoaderInterfaceAccessor {
 
-    @Invoker("loadModelFromJson")
+    @Invoker("loadBlockModel")
     BlockModel loadModelFromPath(ResourceLocation identifier);
 
 }

@@ -12,7 +12,7 @@ import smartin.miapi.client.renderer.NativeImageGetter;
 public abstract class SpriteContentsNativeImageGetter {
 
     @Inject(
-            method = "upload(IIII[Lnet/minecraft/client/texture/NativeImage;)V",
+            method = "upload",
             at = @At("HEAD")
     )
     private void miapi$customItemRenderingEntityGetter(int x, int y, int unpackSkipPixels, int unpackSkipRows, NativeImage[] images, CallbackInfo ci) {

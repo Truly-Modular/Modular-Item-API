@@ -12,7 +12,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import smartin.miapi.Miapi;
-import smartin.miapi.mixin.ClientAdvancementManagerAccessor;
+import smartin.miapi.mixin.client.ClientAdvancementManagerAccessor;
 
 import java.util.List;
 

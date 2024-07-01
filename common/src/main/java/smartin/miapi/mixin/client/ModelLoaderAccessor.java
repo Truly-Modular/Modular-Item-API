@@ -18,7 +18,7 @@ import java.util.Map;
 @Mixin(ModelBakery.class)
 public abstract class ModelLoaderAccessor {
 
-    @Inject(method = "<init>(Lnet/minecraft/client/color/block/BlockColors;Lnet/minecraft/util/profiler/Profiler;Ljava/util/Map;Ljava/util/Map;)V", at = @At("RETURN"), cancellable = false)
+    @Inject(method = "<init>", at = @At("RETURN"))
     public void miapi$modelLoad(BlockColors blockColors, ProfilerFiller profiler, Map jsonUnbakedModels, Map blockStates, CallbackInfo ci){
         ModelBakery loader = (ModelBakery) (Object) this;
         ModelLoadAccessor.setLoader(loader);

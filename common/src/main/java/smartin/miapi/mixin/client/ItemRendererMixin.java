@@ -24,10 +24,10 @@ import smartin.miapi.item.modular.VisualModularItem;
 public class ItemRendererMixin {
 
     @Inject(
-            method = "renderItem(Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/render/model/json/ModelTransformationMode;ZLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;IILnet/minecraft/client/render/model/BakedModel;)V",
+            method = "render",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/client/util/math/MatrixStack;translate(FFF)V",
+                    target = "Lcom/mojang/blaze3d/vertex/PoseStack;translate(FFF)V",
                     shift = At.Shift.AFTER
             )
     )
@@ -39,14 +39,14 @@ public class ItemRendererMixin {
         if (MiapiClient.shaderModLoaded &&  stack.getItem() instanceof VisualModularItem) {
             MiapiItemModel miapiModel = MiapiItemModel.getItemModel(stack);
             if (miapiModel != null) {
-                miapiModel.render(matrices, stack, renderMode, Minecraft.getInstance().getTickDelta(), vertexConsumers, ItemBakedModelReplacement.currentEntity, light, overlay);
+                miapiModel.render(matrices, stack, renderMode, Minecraft.getInstance().getTimer().getRealtimeDeltaTicks(), vertexConsumers, ItemBakedModelReplacement.currentEntity, light, overlay);
             }
             ItemBakedModelReplacement.currentEntity = null;
         }
     }
 
     @Inject(
-            method = "Lnet/minecraft/client/render/item/ItemRenderer;renderItem(Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/render/model/json/ModelTransformationMode;ZLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;Lnet/minecraft/world/World;III)V",
+            method = "renderStatic(Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/item/ItemDisplayContext;ZLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;Lnet/minecraft/world/level/Level;III)V",
             at = @At("HEAD")
     )
     private void miapi$customItemRenderingEntityGetter(LivingEntity entity, ItemStack item, ItemDisplayContext renderMode, boolean leftHanded, PoseStack matrices, MultiBufferSource vertexConsumers, Level world, int light, int overlay, int seed, CallbackInfo ci) {

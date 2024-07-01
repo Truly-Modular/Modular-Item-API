@@ -1,4 +1,4 @@
-package smartin.miapi.mixin;
+package smartin.miapi.mixin.client;
 
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementProgress;

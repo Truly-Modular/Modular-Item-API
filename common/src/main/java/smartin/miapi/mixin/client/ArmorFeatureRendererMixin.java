@@ -24,7 +24,7 @@ public abstract class ArmorFeatureRendererMixin<T extends LivingEntity, M extend
         super(context);
     }
 
-    @Inject(method = "renderArmor", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "renderArmorPiece", at = @At("HEAD"), cancellable = true)
     void miapi$renderArmorInject(PoseStack matrices, MultiBufferSource vertexConsumers, T entity, EquipmentSlot armorSlot, int light, A model, CallbackInfo ci) {
         ItemStack itemStack = entity.getItemBySlot(armorSlot);
         HumanoidArmorLayer renderer = (HumanoidArmorLayer) (Object) this;

@@ -15,11 +15,9 @@ public abstract class ClientPlayerEntityMixin {
     public abstract boolean isUsingItem();
 
     @Inject(
-            method = "tickMovement()V",
+            method = "aiStep",
             at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/client/network/ClientPlayerEntity;isUsingItem()Z",
-                    shift = At.Shift.AFTER
+                    value = "TAIL"
             )
     )
     void miapi$movementTick(CallbackInfo ci) {

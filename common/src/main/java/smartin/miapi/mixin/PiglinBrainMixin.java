@@ -13,7 +13,7 @@ import smartin.miapi.modules.properties.IsPiglinGold;
 @Mixin(PiglinAi.class)
 public abstract class PiglinBrainMixin {
 
-    @Inject(method = "wearsGoldArmor(Lnet/minecraft/entity/LivingEntity;)Z", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "isWearingGold", at = @At("HEAD"), cancellable = true)
     private static void miapi$isGoldItemBypass(LivingEntity entity, CallbackInfoReturnable<Boolean> cir) {
         for (ItemStack armorItem : entity.getArmorSlots()) {
             if (armorItem.getItem() instanceof ModularItem && IsPiglinGold.isPiglinGoldItem(armorItem)) {

@@ -18,7 +18,7 @@ import smartin.miapi.item.modular.VisualModularItem;
 @Mixin(BlockEntityWithoutLevelRenderer.class)
 public class BuiltinModelItemRendererMixin {
     @Inject(
-            method = "render(Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/render/model/json/ModelTransformationMode;Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;II)V",
+            method = "renderByItem",
             at = @At("HEAD"),
             cancellable = true
     )
@@ -28,7 +28,7 @@ public class BuiltinModelItemRendererMixin {
         if (!MiapiClient.shaderModLoaded && stack.getItem() instanceof VisualModularItem) {
             MiapiItemModel miapiModel = MiapiItemModel.getItemModel(stack);
             if (miapiModel != null) {
-                miapiModel.render(matrices, stack, mode, Minecraft.getInstance().getTickDelta(), vertexConsumers, ItemBakedModelReplacement.currentEntity, light, overlay);
+                miapiModel.render(matrices, stack, mode, Minecraft.getInstance().getTimer().getGameTimeDeltaTicks(), vertexConsumers, ItemBakedModelReplacement.currentEntity, light, overlay);
                 ItemBakedModelReplacement.currentEntity = null;
                 ci.cancel();
             }

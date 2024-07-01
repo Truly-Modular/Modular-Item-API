@@ -8,6 +8,6 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 @Mixin(ThrownPotion.class)
 public interface ThrowablePotionItemAccessor {
 
-    @Invoker("onCollision")
+    @Invoker("onHit")
     void onCollisionMixin(HitResult hitResult);
 }

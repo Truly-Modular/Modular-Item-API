@@ -7,6 +7,6 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(ItemRenderer.class)
 public interface ItemRendererAccessor {
-    @Accessor("colors")
+    @Accessor("itemColors")
     ItemColors color();
 }
