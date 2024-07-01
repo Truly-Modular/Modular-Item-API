@@ -1,12 +1,12 @@
 package smartin.miapi.network;
 
 
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.server.level.ServerPlayer;
 
 public abstract class NetworkingImpl{
     protected static final List<EventListener> listeners = new ArrayList<>();

@@ -4,7 +4,7 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.util.*;
+import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
@@ -13,21 +13,18 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.AxeItem;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Rarity;
-import net.minecraft.world.item.Tier;
-import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.UseAnim;
+import net.minecraft.world.item.*;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import org.jetbrains.annotations.Nullable;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.PlatformModularItemMethods;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
-import smartin.miapi.modules.properties.*;
+import smartin.miapi.modules.properties.DisplayNameProperty;
+import smartin.miapi.modules.properties.LoreProperty;
+import smartin.miapi.modules.properties.RepairPriority;
+import smartin.miapi.modules.properties.ToolOrWeaponProperty;
 import smartin.miapi.modules.properties.mining.MiningLevelProperty;
 
 import java.util.List;
@@ -125,8 +122,8 @@ public class ModularAxe extends AxeItem implements PlatformModularItemMethods, M
     }
 
     @Override
-    public int getMaxUseTime(ItemStack stack) {
-        return ItemAbilityManager.getMaxUseTime(stack);
+    public int getUseDuration(ItemStack stack, LivingEntity entity) {
+        return ItemAbilityManager.getMaxUseTime(stack, entity);
     }
 
     @Override

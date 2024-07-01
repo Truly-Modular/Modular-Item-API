@@ -63,11 +63,12 @@ public class ProjectileTriggerProperty implements ModuleProperty {
                             return true;
                         }
                     }
-                    DispenseItemBehavior dispenserBehavior = DispenserBlockAccessor.getBehaviours().get(storedStack.getItem());
-                    if (dispenserBehavior instanceof ProjectileDispenseBehavior projectileDispenserBehavior) {
-                        Projectile projectileEntity = ((ProjectileDispenserBehaviorAccessor) projectileDispenserBehavior).createProjectileAccessor(projectile.level(), projectile.position(), storedStack);
-                        ((ProjectileEntityAccessor) projectileEntity).onCollisionMixin(hitResult);
-                    }
+                    //TODO:the fuck was this suposed todo?
+                    //DispenseItemBehavior dispenserBehavior = DispenserBlockAccessor.getBehaviours().get(storedStack.getItem());
+                    //if (dispenserBehavior instanceof ProjectileDispenseBehavior projectileDispenserBehavior) {
+                    //    Projectile projectileEntity = ((ProjectileDispenserBehaviorAccessor) projectileDispenserBehavior).createProjectileAccessor(projectile.level(), projectile.position(), storedStack);
+                    //    ((ProjectileEntityAccessor) projectileEntity).onCollisionMixin(hitResult);
+                    //}
                 }
             }
         }

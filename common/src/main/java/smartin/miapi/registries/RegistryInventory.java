@@ -113,6 +113,7 @@ public class RegistryInventory {
     public static final Registrar<DataComponentType<?>> components = registrar.get().get(Registries.DATA_COMPONENT_TYPE);
     public static final Registrar<Block> blocks = registrar.get().get(Registries.BLOCK);
     public static final Registrar<BlockEntityType<?>> blockEntities = registrar.get().get(Registries.BLOCK_ENTITY_TYPE);
+    //TODO:make entity attached attributes work again
     public static final Registrar<Attribute> attributes = registrar.get().get(Registries.ATTRIBUTE);
     public static final Registrar<EntityType<?>> entityTypes = registrar.get().get(Registries.ENTITY_TYPE);
     public static final Registrar<MenuType<?>> screenHandlers = registrar.get().get(Registries.MENU);

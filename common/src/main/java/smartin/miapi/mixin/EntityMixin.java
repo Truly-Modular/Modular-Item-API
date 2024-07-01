@@ -14,21 +14,21 @@ import smartin.miapi.modules.properties.StepCancelingProperty;
 @Mixin(Entity.class)
 public abstract class EntityMixin {
 
-    @Inject(method = "startRiding(Lnet/minecraft/entity/Entity;Z)Z", at = @At("TAIL"))
-    private void miapi$startRidingEvent(Entity entity, boolean force, CallbackInfoReturnable<Boolean> cir) {
+    @Inject(method = "startRiding(Lnet/minecraft/world/entity/Entity;)Z", at = @At("TAIL"))
+    private void miapi$startRidingEvent(Entity vehicle, CallbackInfoReturnable<Boolean> cir) {
         if (cir.getReturnValue()) {
-            MiapiEvents.START_RIDING.invoker().ride((Entity) (Object) this, entity);
+            MiapiEvents.START_RIDING.invoker().ride((Entity) (Object) this, vehicle);
         }
     }
 
-    @Inject(method = "dismountVehicle", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/Entity;vehicle:Lnet/minecraft/entity/Entity;", ordinal = 2))
+    @Inject(method = "stopRiding", at = @At("TAIL"))
     private void miapi$stopRidingEvent(CallbackInfo ci) {
         Entity entity = (Entity) (Object) this;
         MiapiEvents.STOP_RIDING.invoker().ride(entity, entity.getVehicle());
     }
 
     @ModifyVariable(
-            method = "stepOnBlock(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;ZZLnet/minecraft/util/math/Vec3d;)Z",
+            method = "vibrationAndSoundEffectsFromBlock",
             at = @At(value = "HEAD"),
             ordinal = 1)
     private boolean miapi$adjustMakeStepNoiseEvent(boolean value) {
@@ -38,7 +38,7 @@ public abstract class EntityMixin {
     }
 
     @ModifyVariable(
-            method = "stepOnBlock(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;ZZLnet/minecraft/util/math/Vec3d;)Z",
+            method = "vibrationAndSoundEffectsFromBlock",
             at = @At(value = "HEAD"),
             ordinal = 0)
     private boolean miapi$adjustMakeStepNoiseSound(boolean value) {

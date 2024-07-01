@@ -1,16 +1,16 @@
 package smartin.miapi.datapack;
 
 import dev.architectury.event.events.common.PlayerEvent;
+import net.minecraft.client.Minecraft;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import smartin.miapi.Environment;
 import smartin.miapi.Miapi;
 import smartin.miapi.network.Networking;
 import smartin.miapi.registries.MiapiRegistry;
 
 import java.util.*;
-import net.minecraft.client.Minecraft;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerPlayer;
 
 /**
  * A utility class that handles event-based reloading of data packs and caches.

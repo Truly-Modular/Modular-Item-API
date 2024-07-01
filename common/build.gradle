@@ -101,7 +101,8 @@ dependencies {
 }
 
 architectury {
-    common("fabric", "neoforge")
+    //common("fabric", "neoforge")
+    common()
 }
 
 tasks.register('githubPublish') {

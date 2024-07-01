@@ -1,14 +1,14 @@
 package smartin.miapi.network;
 
 
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerPlayer;
 import smartin.miapi.Miapi;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.server.level.ServerPlayer;
 
 /**
  * The Networking class is responsible for managing packets in Minecraft networking.
@@ -33,7 +33,7 @@ public class Networking {
     /**
      * The implementation used for packet handling.
      */
-    protected static NetworkingImpl implementation;
+    public static NetworkingImpl implementation;
     /**
      * The listener for events from the implementation. Forwards events to the appropriate packet consumer.
      */

@@ -57,7 +57,7 @@ public class AdvancementCondition implements ModuleCondition {
     public static boolean hasAdvancementClient(Advancement advancement, Player player) {
         if (Minecraft.getInstance() != null && Minecraft.getInstance().getConnection() != null) {
             ClientAdvancements manager = Minecraft.getInstance().getConnection().getAdvancements();
-            return ((ClientAdvancementManagerAccessor) manager).getAdvancementProgresses().get(advancement).isDone();
+            return ((ClientAdvancementManagerAccessor) manager).getProgress().get(advancement).isDone();
         }
         return false;
     }

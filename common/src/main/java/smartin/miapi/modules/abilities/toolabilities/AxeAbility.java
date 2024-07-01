@@ -1,10 +1,6 @@
 package smartin.miapi.modules.abilities.toolabilities;
 
 import com.google.common.collect.BiMap;
-import smartin.miapi.mixin.AxeItemAccessor;
-import smartin.miapi.modules.abilities.ToolAbilities;
-
-import java.util.Optional;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -16,6 +12,10 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RotatedPillarBlock;
 import net.minecraft.world.level.block.WeatheringCopper;
 import net.minecraft.world.level.block.state.BlockState;
+import smartin.miapi.mixin.AxeItemAccessor;
+import smartin.miapi.modules.abilities.ToolAbilities;
+
+import java.util.Optional;
 
 public class AxeAbility extends ToolAbilities {
 
@@ -48,7 +48,7 @@ public class AxeAbility extends ToolAbilities {
     }
 
     private Optional<BlockState> getStrippedState(BlockState state) {
-        return Optional.ofNullable(AxeItemAccessor.getSTRIPPED_BLOCKS().get(state.getBlock())).map((block) -> {
+        return Optional.ofNullable(AxeItemAccessor.getSTRIPPABLES().get(state.getBlock())).map((block) -> {
             return (BlockState) block.defaultBlockState().setValue(RotatedPillarBlock.AXIS, state.getValue(RotatedPillarBlock.AXIS));
         });
     }

@@ -12,7 +12,7 @@ import smartin.miapi.item.modular.ModularItem;
 @Mixin(AutoFireHook.class)
 public class ArcheryHookMixin {
     @Inject(
-            method = "isApplicable(Lnet/minecraft/item/ItemStack;)Z",
+            method = "isApplicable",
             at = @At("HEAD"),
             cancellable = true,
             remap = true,

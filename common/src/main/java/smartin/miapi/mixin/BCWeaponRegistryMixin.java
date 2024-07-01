@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(WeaponAttributesHelper.class)
 public class BCWeaponRegistryMixin {
     @Inject(
-            method = "readFromNBT(Lnet/minecraft/item/ItemStack;)Lnet/bettercombat/api/WeaponAttributes;",
+            method = "readFromNBT",
             at = @At("HEAD"),
             cancellable = true,
             remap = true,

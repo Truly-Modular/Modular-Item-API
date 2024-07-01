@@ -5,43 +5,36 @@ import dev.architectury.platform.Platform;
 import io.netty.buffer.Unpooled;
 import net.fabricmc.api.EnvType;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import smartin.miapi.Miapi;
+
+import java.util.List;
 
 public class NetworkingImplCommon extends NetworkingImpl {
-    protected ResourceLocation channelIdentifier = ResourceLocation.fromNamespaceAndPath(Miapi.MOD_ID, "defaultchannel");
+    protected NetworkingImplCommon instance;
 
     public NetworkingImplCommon() {
+        instance = this;
         if (Platform.getEnv().equals(EnvType.CLIENT)) {
-            NetworkManager.registerReceiver(NetworkManager.Side.S2C, channelIdentifier, (buf, context) -> {
-                String packetID = buf.readUtf();
-                this.trigger(packetID, buf, null);
-            });
+            NetworkManager.registerS2CPayloadType(CustomDataPayload.TYPE, CustomDataPayload.STREAM_CODEC, List.of());
         }
     }
 
     public void setupServer() {
-        NetworkManager.registerReceiver(NetworkManager.Side.C2S, channelIdentifier, (buf, context) -> {
-            String packetID = buf.readUtf();
-            this.trigger(packetID, buf, (ServerPlayer) context.getPlayer());
-        });
+        NetworkManager.registerS2CPayloadType(CustomDataPayload.TYPE, CustomDataPayload.STREAM_CODEC, List.of());
     }
 
-    @Deprecated
+
     public void sendPacketToServer(String identifier, FriendlyByteBuf buffer) {
-        FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
-        buf.writeUtf(identifier);
-        buf.writeBytes(buffer.copy());
-        NetworkManager.sendToServer(channelIdentifier, buf);
+        //FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
+
+        //buf.writeUtf(identifier);
+        //buf.writeBytes(buffer.copy());
+        NetworkManager.sendToServer(new CustomDataPayload(new CustomDataPayload.CustomDataData(identifier, null, buffer)));
     }
 
-    @Deprecated
+
     public void sendPacketToClient(String identifier, ServerPlayer player, FriendlyByteBuf buffer) {
-        FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
-        buf.writeUtf(identifier);
-        buf.writeBytes(buffer.copy());
-        NetworkManager.sendToPlayer(player, channelIdentifier, buf);
+        NetworkManager.sendToPlayer(player, new CustomDataPayload(new CustomDataPayload.CustomDataData(identifier, player, buffer)));
     }
 
     @Override

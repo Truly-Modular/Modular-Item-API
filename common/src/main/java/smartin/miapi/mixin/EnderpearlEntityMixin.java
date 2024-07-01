@@ -13,7 +13,7 @@ import smartin.miapi.registries.RegistryInventory;
 @Mixin(ThrownEnderpearl.class)
 public class EnderpearlEntityMixin {
 
-    @Inject(method = "onCollision(Lnet/minecraft/util/hit/HitResult;)V", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "onHit", at = @At("HEAD"), cancellable = true)
     private void miapi$teleportBlockEffect(HitResult hitResult, CallbackInfo ci) {
         ThrownEnderpearl entity = (ThrownEnderpearl) (Object) this;
         Entity owner = entity.getOwner();

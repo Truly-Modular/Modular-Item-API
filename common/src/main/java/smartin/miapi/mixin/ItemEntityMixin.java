@@ -12,7 +12,7 @@ import smartin.miapi.modules.properties.FireProof;
 @Mixin(ItemEntity.class)
 public abstract class ItemEntityMixin {
 
-    @Inject(method = "isFireImmune()Z", at = @At(value = "HEAD"), cancellable = true)
+    @Inject(method = "fireImmune", at = @At(value = "HEAD"), cancellable = true)
     private void miapi$isFireImmuneOverride(CallbackInfoReturnable<Boolean> cir) {
         ItemEntity entity = (ItemEntity) (Object) (this);
         ItemStack stack = entity.getItem();
