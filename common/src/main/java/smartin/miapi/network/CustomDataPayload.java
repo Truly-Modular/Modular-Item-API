@@ -14,6 +14,7 @@ public record CustomDataPayload(CustomDataData data) implements CustomPacketPayl
     public static UUID noPlayerUUID = UUID.fromString("ddfe3f2c-2d4e-4242-8a65-f4641ba9f5f6");
 
     public static final StreamCodec<FriendlyByteBuf, CustomDataPayload> STREAM_CODEC = CustomPacketPayload.codec(CustomDataPayload::write, CustomDataPayload::new);
+
     public static final CustomPacketPayload.Type<CustomDataPayload> TYPE = new Type<>(Miapi.id("default-common-networking"));
 
     public CustomDataPayload(FriendlyByteBuf friendlyByteBuf) {

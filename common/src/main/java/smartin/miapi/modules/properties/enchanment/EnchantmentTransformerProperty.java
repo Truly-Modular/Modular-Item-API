@@ -33,8 +33,8 @@ public class EnchantmentTransformerProperty implements ModuleProperty {
     private static List<EnchantMentTransformerData> getTransfomersCache(ItemStack itemStack) {
         List<EnchantMentTransformerData> transformerData = new ArrayList<>();
         ItemModule.getModules(itemStack).allSubModules().forEach(moduleInstance -> {
-            if (moduleInstance.getProperties().containsKey(property)) {
-                moduleInstance.getProperties().get(property).getAsJsonArray().forEach(element -> {
+            if (moduleInstance.getOldProperties().containsKey(property)) {
+                moduleInstance.getOldProperties().get(property).getAsJsonArray().forEach(element -> {
                     transformerData.add(new EnchantMentTransformerData(element, moduleInstance));
                 });
             }

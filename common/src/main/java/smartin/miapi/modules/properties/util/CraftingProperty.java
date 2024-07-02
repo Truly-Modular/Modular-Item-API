@@ -50,7 +50,7 @@ public interface CraftingProperty {
      * If the Property should be executed on craft, for most Properties this should only happen when they are involved
      */
     default boolean shouldExecuteOnCraft(@Nullable ModuleInstance module, ModuleInstance root, ItemStack stack) {
-        return module != null && module.getProperties().containsKey(this);
+        return module != null && module.getOldProperties().containsKey(this);
     }
 
     /**

@@ -70,7 +70,7 @@ public class AbilityMangerProperty implements ModuleProperty {
     public static AbilityContext getContext(ItemStack itemStack, String key) {
         AbilityContext context = null;
         for (ModuleInstance moduleInstance : ItemModule.getModules(itemStack).allSubModules()) {
-            JsonElement element = moduleInstance.getProperties().get(property);
+            JsonElement element = moduleInstance.getOldProperties().get(property);
             if (element != null) {
                 Map<String, JsonElement> jsonElementMap = element.getAsJsonObject().asMap();
                 if (jsonElementMap.containsKey(key)) {

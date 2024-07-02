@@ -68,7 +68,6 @@ public class Miapi {
         NBTMaterial.setup();
 
 
-
         LifecycleEvent.SERVER_BEFORE_START.register(minecraftServer -> server = minecraftServer);
         PlayerEvent.PLAYER_JOIN.register((player -> new Thread(() -> MiapiPermissions.getPerms(player)).start()));
 
@@ -97,13 +96,13 @@ public class Miapi {
             ModularItemCache.discardCache();
         });
         PropertyResolver.register(ResourceLocation.fromNamespaceAndPath(Miapi.MOD_ID, "module"), (moduleInstance, oldMap) -> {
-            Map<ModuleProperty, JsonElement> map = new ConcurrentHashMap<>();
+            Map<ModuleProperty<?>, Object> map = new ConcurrentHashMap<>();
             moduleInstance.module.properties()
                     .forEach((key, jsonData) -> map.put(RegistryInventory.moduleProperties.get(key), jsonData));
             return map;
         });
         PropertyResolver.register("module_data", (moduleInstance, oldMap) -> {
-            Map<ModuleProperty, JsonElement> map = new ConcurrentHashMap<>();
+            Map<ModuleProperty<?>, Object> map = new ConcurrentHashMap<>();
             String properties = moduleInstance.moduleData.get("properties");
             if (properties != null) {
                 JsonObject moduleJson = gson.fromJson(properties, JsonObject.class);
@@ -112,7 +111,7 @@ public class Miapi {
                         ModuleProperty property = RegistryInventory.moduleProperties
                                 .get(stringJsonElementEntry.getKey());
                         if (property != null) {
-                            map.put(property, stringJsonElementEntry.getValue());
+                            map.put(property, property.decode(stringJsonElementEntry.getValue()));
                         }
                     });
                 }

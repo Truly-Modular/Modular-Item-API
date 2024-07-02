@@ -13,7 +13,9 @@ import smartin.miapi.Miapi;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.modules.properties.util.DoubleProperty;
 
+import javax.swing.text.html.Option;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.WeakHashMap;
 
 /**
@@ -30,8 +32,9 @@ public class ArmorPenProperty extends DoubleProperty {
         MiapiEvents.LIVING_HURT.register((event -> {
             if (event.damageSource.getEntity() instanceof LivingEntity attacker) {
                 ItemStack itemStack = event.getCausingItemStack();
-                if (property.hasValue(itemStack)) {
-                    double value = property.getValueSafe(itemStack) / 100;
+                Optional<Double> optionalDouble = getValue(itemStack);
+                if (optionalDouble.isPresent()) {
+                    double value = optionalDouble.get() / 100;
                     Multimap<Holder<Attribute>, AttributeModifier> multimap = ArrayListMultimap.create();
                     multimap.put(Attributes.ARMOR, new AttributeModifier(Miapi.id("tempArmorPen"), (- 1 + value), AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
                     cache.put(event.livingEntity, multimap);
@@ -47,25 +50,5 @@ public class ArmorPenProperty extends DoubleProperty {
             }
             return EventResult.pass();
         }));
-    }
-
-
-    public static double valueRemap(double value) {
-        return 100 - ((200) / (1 + Math.exp(-(value) / 120)) - 100);
-    }
-
-    @Override
-    public Double getValue(ItemStack stack) {
-        Double value = getValueRaw(stack);
-        if (value != null) {
-            return valueRemap(value);
-        }
-        return null;
-    }
-
-    @Override
-    public double getValueSafe(ItemStack stack) {
-        Double value = getValueRaw(stack);
-        return valueRemap(Objects.requireNonNullElse(value, 0.0));
     }
 }

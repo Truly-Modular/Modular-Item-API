@@ -36,7 +36,7 @@ public class EnchantAbilityProperty extends DoubleProperty {
     }
 
     public static double getEnchantAbility(ModuleInstance instance) {
-        if (instance.getProperties().containsKey(property)) {
+        if (instance.getOldProperties().containsKey(property)) {
             return Math.max(1, property.getValueForModule(instance, 15.0));
         }
         Material material = MaterialProperty.getMaterial(instance);

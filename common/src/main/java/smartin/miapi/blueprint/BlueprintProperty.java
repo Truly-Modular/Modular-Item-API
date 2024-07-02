@@ -68,7 +68,7 @@ public class BlueprintProperty implements CraftingProperty, ModuleProperty {
                 BlockPos pos;
                 Map<ModuleProperty, JsonElement> propertyMap = new HashMap<>();
                 if (option.getInstance() != null) {
-                    propertyMap = option.getInstance().getProperties();
+                    propertyMap = option.getInstance().getOldProperties();
                 }
                 if (option.getWorkbench() != null) {
                     pos = option.getWorkbench().getBlockPos();

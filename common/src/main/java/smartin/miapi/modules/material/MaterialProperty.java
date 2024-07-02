@@ -185,7 +185,7 @@ public class MaterialProperty implements ModuleProperty {
      */
     @Nullable
     public static Material getMaterial(ModuleInstance instance) {
-        JsonElement element = instance.getProperties().get(property);
+        JsonElement element = instance.getOldProperties().get(property);
         if (element != null) {
             Material basicMaterial = materials.get(element.getAsString());
             if (basicMaterial != null) {

@@ -49,7 +49,7 @@ public class GuiOffsetProperty implements RenderProperty {
                 dynamicBakedModelmap.forEach((id, dynamicBakedModel) -> {
                     GuiOffsetJson guiOffsetJson = new GuiOffsetJson();
                     for (ModuleInstance instance : ItemModule.createFlatList(ItemModule.getModules(stack))) {
-                        JsonElement element = instance.getProperties().get(property);
+                        JsonElement element = instance.getOldProperties().get(property);
                         if (element != null) {
                             GuiOffsetJson add = Miapi.gson.fromJson(element, GuiOffsetJson.class);
                             guiOffsetJson.x += add.x;
@@ -85,7 +85,7 @@ public class GuiOffsetProperty implements RenderProperty {
     public float[] getGuiOffsets(ItemStack itemStack, String modelType) {
         GuiOffsetJson guiOffsetJson = new GuiOffsetJson();
         for (ModuleInstance instance : ItemModule.createFlatList(ItemModule.getModules(itemStack))) {
-            JsonElement element = instance.getProperties().get(property);
+            JsonElement element = instance.getOldProperties().get(property);
             if (element != null) {
                 GuiOffsetJson add = Miapi.gson.fromJson(element, GuiOffsetJson.class);
                 Transform transform = SlotProperty.getLocalTransformStack(instance).get(modelType);

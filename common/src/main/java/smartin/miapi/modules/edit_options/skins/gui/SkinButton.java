@@ -34,7 +34,7 @@ class SkinButton extends InteractAbleWidget implements SkinGui.SortAble {
         this.skinPath = skinPath;
         this.skin = skin;
         if (skin.condition != null) {
-            isAllowed = skin.condition.isAllowed(new ConditionManager.ModuleConditionContext(skinGui.instance, null, Minecraft.getInstance().player, skinGui.instance.getProperties(), reasons));
+            isAllowed = skin.condition.isAllowed(new ConditionManager.ModuleConditionContext(skinGui.instance, null, Minecraft.getInstance().player, skinGui.instance.getOldProperties(), reasons));
         }
         String[] parts = skinPath.split("/");
         Component skinName = StatResolver.translateAndResolve(Miapi.MOD_ID + ".skin.name." + parts[parts.length - 1], skinGui.instance);

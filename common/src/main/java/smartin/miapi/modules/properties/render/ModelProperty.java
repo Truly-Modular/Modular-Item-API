@@ -79,7 +79,7 @@ public class ModelProperty implements RenderProperty {
 
     public static List<ModelJson> getJson(ModuleInstance moduleInstance) {
         List<ModelJson> modelJsonList = new ArrayList<>();
-        JsonElement data = moduleInstance.getProperties().get(property);
+        JsonElement data = moduleInstance.getOldProperties().get(property);
         if (data == null) {
             return new ArrayList<>();
         }
@@ -227,7 +227,7 @@ public class ModelProperty implements RenderProperty {
         for (ModuleInstance moduleI : root.allSubModules()) {
             Gson gson = Miapi.gson;
             List<ModelJson> modelJsonList = new ArrayList<>();
-            JsonElement data = moduleI.getProperties().get(property);
+            JsonElement data = moduleI.getOldProperties().get(property);
             if (data == null) {
                 return unbakedModels;
             }

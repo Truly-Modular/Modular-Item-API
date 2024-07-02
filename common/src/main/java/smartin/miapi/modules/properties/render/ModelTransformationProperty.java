@@ -49,7 +49,7 @@ public class ModelTransformationProperty implements RenderProperty {
     public static ItemTransforms getTransformation(ItemStack stack) {
         ItemTransforms transformation = ItemTransforms.NO_TRANSFORMS;
         for (ModuleInstance instance : ItemModule.createFlatList(ItemModule.getModules(stack))) {
-            JsonElement element = instance.getProperties().get(property);
+            JsonElement element = instance.getOldProperties().get(property);
             if (element != null) {
                 Map<ItemDisplayContext, ItemTransform> map = new HashMap<>();
                 if (element.getAsJsonObject().has("replace")) {

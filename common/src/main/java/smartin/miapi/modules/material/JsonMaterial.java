@@ -9,10 +9,12 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.modules.material.palette.FallbackColorer;
@@ -45,7 +47,7 @@ public class JsonMaterial implements Material {
             if (element.has("icon")) {
                 JsonElement emnt = element.get("icon");
                 if (emnt instanceof JsonPrimitive primitive && primitive.isString())
-                    icon = new MaterialIcons.TextureMaterialIcon(new ResourceLocation(primitive.getAsString()));
+                    icon = new MaterialIcons.TextureMaterialIcon(ResourceLocation.parse(primitive.getAsString()));
                 else icon = MaterialIcons.getMaterialIcon(key, emnt);
             }
 
@@ -87,7 +89,7 @@ public class JsonMaterial implements Material {
                     if (isClient) {
                         JsonElement emnt = propertyElement;
                         if (emnt instanceof JsonPrimitive primitive && primitive.isString())
-                            icon = new MaterialIcons.TextureMaterialIcon(new ResourceLocation(primitive.getAsString()));
+                            icon = new MaterialIcons.TextureMaterialIcon(ResourceLocation.parse(primitive.getAsString()));
                         else icon = MaterialIcons.getMaterialIcon(key, emnt);
                     }
                     break;
@@ -349,7 +351,7 @@ public class JsonMaterial implements Material {
 
                 if (itemObj.has("tag")) {
                     String tagId = itemObj.get("tag").getAsString();
-                    TagKey<Item> tag = TagKey.create(BuiltInRegistries.ITEM.key(), new ResourceLocation(tagId));
+                    TagKey<Item> tag = TagKey.create(BuiltInRegistries.ITEM.key(), ResourceLocation.parse(tagId));
                     if (tag != null && itemStack.is(tag)) {
                         return 10.0;
                     }
@@ -362,5 +364,10 @@ public class JsonMaterial implements Material {
     @Override
     public JsonObject getDebugJson() {
         return rawJson.getAsJsonObject();
+    }
+
+    @Override
+    public TagKey<Block> getIncorrectBlocksForDrops() {
+        return BlockTags.INCORRECT_FOR_WOODEN_TOOL;
     }
 }

@@ -103,7 +103,7 @@ public class AttributeSplitProperty implements ModuleProperty {
     }
 
     public Map<Context, List<SplitContext>> getMap(ModuleInstance moduleInstance) {
-        JsonElement element = moduleInstance.getProperties().get(this);
+        JsonElement element = moduleInstance.getOldProperties().get(this);
         if (element != null) {
             return getMap(element, moduleInstance);
         }

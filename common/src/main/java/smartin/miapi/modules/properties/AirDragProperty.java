@@ -15,14 +15,7 @@ public class AirDragProperty extends DoubleProperty {
         property = this;
     }
 
-    @Override
-    public Double getValue(ItemStack stack) {
-        return this.getValueRaw(stack);
-    }
-
-    @Override
     public double getValueSafe(ItemStack stack) {
-        Double value = getValueRaw(stack);
-        return value == null ? 1 : value;
+        return getValue(stack).orElse(0.0);
     }
 }

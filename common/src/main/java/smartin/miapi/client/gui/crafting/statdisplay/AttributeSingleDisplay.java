@@ -4,6 +4,7 @@ import com.google.common.collect.Multimap;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.Util;
+import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ai.attributes.Attribute;
@@ -151,12 +152,12 @@ public class AttributeSingleDisplay extends SingleStatDisplayDouble {
         return false;
     }
 
-    public static Builder builder(Attribute attribute) {
+    public static Builder builder(Holder<Attribute> attribute) {
         return new Builder(attribute);
     }
 
     public static class Builder {
-        Attribute attribute;
+        Holder<Attribute> attribute;
         public EquipmentSlot slot;
         public double defaultValue = 1;
         public StatListWidget.TextGetter name;
@@ -169,15 +170,15 @@ public class AttributeSingleDisplay extends SingleStatDisplayDouble {
         public boolean inverse = false;
         public ValueGetter valueGetter;
 
-        private Builder(Attribute attribute) {
+        private Builder(Holder<Attribute> attribute) {
             this.attribute = attribute;
-            name = (itemStack) -> Component.translatable(attribute.getDescriptionId());
+            name = (itemStack) -> Component.translatable(attribute.value().getDescriptionId());
             modifierFormat = Util.make(new DecimalFormat("##.##"), (decimalFormat) -> {
                 decimalFormat.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ROOT));
             });
-            defaultValue = attribute.getDefaultValue();
-            max = Math.min(2048, attribute.sanitizeValue(Double.MAX_VALUE));
-            min = Math.max(-2048, attribute.sanitizeValue(Double.MIN_VALUE));
+            defaultValue = attribute.value().getDefaultValue();
+            max = Math.min(2048, attribute.value().sanitizeValue(Double.MAX_VALUE));
+            min = Math.max(-2048, attribute.value().sanitizeValue(Double.MIN_VALUE));
         }
 
         public Builder setMax(double maxValue) {
@@ -259,7 +260,7 @@ public class AttributeSingleDisplay extends SingleStatDisplayDouble {
             }
 
             // Create an instance of AttributeProperty with the builder values
-            AttributeSingleDisplay display = new AttributeSingleDisplay(attribute, slot, name, hoverDescription, defaultValue, modifierFormat);
+            AttributeSingleDisplay display = new AttributeSingleDisplay(attribute.value(), slot, name, hoverDescription, defaultValue, modifierFormat);
             display.minValue = min;
             display.maxValue = max;
             display.setInverse(inverse);
@@ -279,7 +280,7 @@ public class AttributeSingleDisplay extends SingleStatDisplayDouble {
             display.operation = AttributeModifier.Operation.ADD_VALUE;
             displays[0] = display;
 
-            AttributeSingleDisplay displayMulBase = new AttributeSingleDisplay(attribute, slot, name, hoverDescription, defaultValue, modifierFormat);
+            AttributeSingleDisplay displayMulBase = new AttributeSingleDisplay(attribute.value(), slot, name, hoverDescription, defaultValue, modifierFormat);
             displayMulBase.minValue = 0;
             displayMulBase.maxValue = 100;
             displayMulBase.setInverse(inverse);
@@ -300,7 +301,7 @@ public class AttributeSingleDisplay extends SingleStatDisplayDouble {
             displayMulBase.postfix = Component.literal("%");
             displays[1] = displayMulBase;
 
-            AttributeSingleDisplay displayMulTotal = new AttributeSingleDisplay(attribute, slot, name, hoverDescription, defaultValue, modifierFormat);
+            AttributeSingleDisplay displayMulTotal = new AttributeSingleDisplay(attribute.value(), slot, name, hoverDescription, defaultValue, modifierFormat);
             displayMulTotal.minValue = 0;
             displayMulTotal.maxValue = 100;
             displayMulTotal.setInverse(inverse);

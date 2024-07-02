@@ -28,8 +28,8 @@ public class EntityModelProperty implements RenderProperty {
         property = this;
         MiapiItemModel.modelSuppliers.add((key, model, stack) -> {
             List<MiapiModel> models = new ArrayList<>();
-            if (model.getProperties().containsKey(property)) {
-                JsonElement element = model.getProperties().get(property);
+            if (model.getOldProperties().containsKey(property)) {
+                JsonElement element = model.getOldProperties().get(property);
                 if (element != null && element.isJsonArray()) {
                     element.getAsJsonArray().forEach(jsonElement -> {
                         JsonObject object = jsonElement.getAsJsonObject();

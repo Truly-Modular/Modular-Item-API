@@ -1,51 +1,33 @@
 package smartin.miapi.modules.properties.util;
 
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 import net.minecraft.world.item.ItemStack;
-import smartin.miapi.Miapi;
-import smartin.miapi.modules.ItemModule;
-import smartin.miapi.modules.cache.ModularItemCache;
+import smartin.miapi.modules.ModuleInstance;
 
 /**
  * Simple property template with loading and caching via codecs.
- * Define a codec in the constructor(your super call), and use the {@link CodecBasedProperty#get(ItemStack)} method
- * to getRaw the object you specified for that stack.
+ * Define a codec in the constructor(your super call), and use the {@link ModuleProperty#getProperty(ItemStack)} or {@link ModuleProperty#getProperty(ModuleInstance)} method
+ * to getRaw the object you specified for that stack / ModuleInstance.
  * If you want to hold lists of data or resolve material stats, I recommend using the {@link DynamicCodecBasedProperty}.
  * However, this may still work, depending on your needs.
  *
  * @param <T> The type of object to hold
  */
-public abstract class CodecBasedProperty<T> implements ModuleProperty {
-    private final String key;
+public abstract class CodecBasedProperty<T> implements ModuleProperty<T> {
     protected final Codec<T> codec;
 
-    protected CodecBasedProperty(String key, Codec<T> codec) {
-        this.key = key;
+    protected CodecBasedProperty(Codec<T> codec) {
         this.codec = codec;
-
-        ModularItemCache.setSupplier(key + "_codec", this::createCache);
     }
 
-    @Override
-    public boolean load(String moduleKey, JsonElement data) {
-        codec.parse(JsonOps.INSTANCE, data).getOrThrow(false, s ->
-                Miapi.LOGGER.error("Failed to load CodecBasedProperty! -> {}", s));
-        return true;
+    public T decode(JsonElement element) {
+        return codec.parse(JsonOps.INSTANCE, element).getOrThrow();
     }
 
-    public T get(ItemStack itemStack) {
-        return ModularItemCache.getRaw(itemStack, key + "_codec");
-    }
-
-    public T createCache(ItemStack stack) {
-        JsonElement element = ItemModule.getMergedProperty(stack, this);
-        if (element == null) {
-            return null;
-        }
-        return codec.parse(JsonOps.INSTANCE, element).getOrThrow(false, s -> {
-            Miapi.LOGGER.error("Failed to decode using codec during cache creation for a CodecBasedProperty! -> " + s);
-        });
+    public JsonElement encode(T property) {
+        return codec.encode(property, JsonOps.INSTANCE, new JsonObject()).getOrThrow();
     }
 }

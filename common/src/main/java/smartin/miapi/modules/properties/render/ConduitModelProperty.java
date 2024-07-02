@@ -18,7 +18,7 @@ public class ConduitModelProperty implements RenderProperty {
         property = this;
         MiapiItemModel.modelSuppliers.add((key, model, stack) -> {
             List<MiapiModel> models = new ArrayList<>();
-            JsonElement element = model.getProperties().get(property);
+            JsonElement element = model.getOldProperties().get(property);
             if (element != null && element.isJsonArray()) {
                 element.getAsJsonArray().forEach(jsonElement -> {
                     Transform transform = Miapi.gson.fromJson(jsonElement.getAsJsonObject().get("transform"), Transform.class);

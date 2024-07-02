@@ -17,7 +17,7 @@ public class CrystalModelProperty implements ModuleProperty, RenderProperty {
         property = this;
         MiapiItemModel.modelSuppliers.add((key, model, stack) -> {
             List<MiapiModel> models = new ArrayList<>();
-            if (model.getProperties().containsKey(property)) {
+            if (model.getOldProperties().containsKey(property)) {
                 models.add(new CrystalModel());
             }
             return models;

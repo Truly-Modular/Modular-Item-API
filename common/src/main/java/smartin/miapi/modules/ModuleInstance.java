@@ -1,12 +1,13 @@
 package smartin.miapi.modules;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.annotations.JsonAdapter;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.core.component.DataComponentType;
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.item.modular.PropertyResolver;
+import smartin.miapi.modules.cache.DataCache;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
@@ -15,24 +16,23 @@ import smartin.miapi.registries.RegistryInventory;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
-import net.minecraft.core.component.DataComponentType;
-import net.minecraft.world.item.ItemStack;
-
-import static smartin.miapi.Miapi.LOGGER;
+import java.util.function.Supplier;
 
 /**
  * A class representing a single module instance that belongs to an item.
  */
-@JsonAdapter(ModuleInstanceJsonAdapter.class)
 public class ModuleInstance {
     public static Codec<ModuleInstance> CODEC;
     public static DataComponentType<ModuleInstance> componentType;
 
+    public Map<String, Object> cachedData = new ConcurrentHashMap<>();
+    public Map<String, Object> itemStackCache = new ConcurrentHashMap<>();
 
     static {
         Codec<Map<Integer, ModuleInstance>> mapCodec =
                 Codec.unboundedMap(Codec.INT, CODEC).xmap((i) -> i, Function.identity());
         Codec<Map<String, String>> dataCodec = Codec.unboundedMap(Codec.STRING, Codec.STRING).xmap((i) -> i, Function.identity());
+
 
         CODEC = RecordCodecBuilder.create((instance) ->
                 instance.group(
@@ -48,6 +48,7 @@ public class ModuleInstance {
                 }));
         componentType = DataComponentType.<ModuleInstance>builder().persistent(CODEC).build();
     }
+
     /**
      * The item module represented by this module instance.
      */
@@ -66,13 +67,27 @@ public class ModuleInstance {
      */
     public Map<String, String> moduleData = new HashMap<>();
 
+
     /**
      * A map of the raw properties.
      * Only access this when you know what you are doing.
-     * Use {@link ModuleInstance#getProperties()} instead to trigger the Property resolver
+     * Use {@link ModuleInstance#getProperty(ModuleProperty)} instead to trigger the Property resolver
      */
-    @Nullable
-    public Map<ModuleProperty, JsonElement> rawProperties;
+    public Map<ModuleProperty<?>, Object> properties = null;
+
+    /**
+     * A map of the raw properties.
+     * Only access this when you know what you are doing.
+     * Use {@link ModuleInstance#getProperty(ModuleProperty)} instead to trigger the Property resolver
+     */
+    public Map<ModuleProperty<?>, Object> initializedProperties = new ConcurrentHashMap<>();
+
+    /**
+     * A map of the raw properties.
+     * Only access this when you know what you are doing.
+     * Use {@link ModuleInstance#getProperty(ModuleProperty)} instead to trigger the Property resolver
+     */
+    public Map<ModuleProperty<?>, Object> itemMergedProperties = new ConcurrentHashMap<>();
 
     /**
      * Constructs a new module instance with the given item module.
@@ -92,55 +107,48 @@ public class ModuleInstance {
         return ItemModule.createFlatList(this);
     }
 
-    /**
-     * Returns a map of all properties and their associated JSON elements for this module instance and its sub-modules.
-     *
-     * @return a map of module properties and their associated JSON elements
-     */
-    public Map<ModuleProperty, JsonElement> getProperties() {
-        if (rawProperties == null) {
+    @Nullable
+    public <T> T getProperty(ModuleProperty<T> property) {
+        Object propertyData = initializedProperties.get(property);
+        if (propertyData != null) {
+            return (T) propertyData;
+        }
+
+        if (properties == null) {
             PropertyResolver.resolve(this.getRoot());
         }
-        return rawProperties;
-    }
 
-    /**
-     * Returns a map of all properties and their associated JSON elements for this module instance,
-     * keyed by the property names.
-     *
-     * @return a map of module properties and their associated JSON elements, keyed by property name
-     */
-    public Map<String, JsonElement> getKeyedProperties() {
-        Map<String, JsonElement> map = new HashMap<>();
-        getProperties().forEach((property, jsonElement) -> {
-            map.put(RegistryInventory.moduleProperties.findKey(property), jsonElement);
-        });
-        return map;
-    }
-
-    /**
-     * Returns a map of all properties and their associated JSON elements for this module instance and all its submodules
-     * keyed by the property names.
-     *
-     * @return a map of module properties and their associated JSON elements, keyed by property name
-     */
-    public Map<ModuleProperty, JsonElement> getPropertiesMerged() {
-        Map<ModuleProperty, JsonElement> map = new ConcurrentHashMap<>();
-        for (ModuleInstance moduleInstance : this.allSubModules()) {
-            moduleInstance.getProperties().forEach((property, element) -> {
-                if (map.containsKey(property)) {
-                    try {
-                        map.put(property, property.merge(map.get(property), element, MergeType.SMART));
-                    } catch (Exception e) {
-                        LOGGER.error("coudlnt merge " + property, e);
-                        map.put(property, element);
-                    }
-                } else {
-                    map.put(property, element);
-                }
-            });
+        Object propertyDataRaw = properties.get(property);
+        if (propertyDataRaw != null) {
+            T data = (T) propertyDataRaw;
+            data = property.initialize(data, this);
+            this.initializedProperties.put(property, data);
+            return data;
         }
-        return map;
+        return null;
+    }
+
+    @Nullable
+    public <T> T getPropertyItemStack(ModuleProperty<T> property) {
+        if (itemMergedProperties.containsKey(property)) {
+            return (T) itemMergedProperties.get(property);
+        }
+        T propertyData = null;
+        ModuleInstance lastDataOwner = null;
+        ModuleInstance root = getRoot();
+        for (ModuleInstance moduleInstance : root.allSubModules()) {
+            T toMergeData = moduleInstance.getProperty(property);
+            if (toMergeData != null) {
+                if (propertyData == null) {
+                    propertyData = toMergeData;
+                    lastDataOwner = moduleInstance;
+                } else {
+                    propertyData = property.merge(propertyData, lastDataOwner, toMergeData, moduleInstance, MergeType.SMART);
+                }
+            }
+        }
+        itemMergedProperties.put(property, propertyData);
+        return propertyData;
     }
 
     /**
@@ -190,7 +198,7 @@ public class ModuleInstance {
      */
     public ModuleInstance getPosition(List<Integer> position) {
         if (!position.isEmpty()) {
-            int pos = position.remove(0);
+            int pos = position.removeFirst();
             ModuleInstance subModule = subModules.get(pos);
             if (subModule != null) {
                 return subModule.getPosition(position);
@@ -238,6 +246,7 @@ public class ModuleInstance {
      * @param stack The ItemStack to write the module to.
      */
     public void writeToItem(ItemStack stack) {
+        this.clearCaches();
         writeToItem(stack, true);
     }
 
@@ -248,10 +257,31 @@ public class ModuleInstance {
      * @param clearCache Determines whether to clear the cache after writing the module.
      */
     public void writeToItem(ItemStack stack, boolean clearCache) {
-        if (clearCache) {
-            ModularItemCache.clearUUIDFor(stack);
-        }
+        this.clearCaches();
         stack.update(ModuleInstance.componentType, this, (component) -> component);
+    }
+
+    /**
+     * Clears all cached data of this ModuleInstance and all its related ModulesInstances
+     * should be used in case of changes to the item
+     */
+    public void clearCaches() {
+        this.getRoot().allSubModules().forEach(ModuleInstance::clearCachesOnlyThis);
+    }
+
+    /**
+     * Clears all cached data of this ModuleInstance
+     * this should not be called directly.
+     * Calling this directly will cause issues,
+     * as the {@link PropertyResolver} will partially trigger if not all {@link ModuleInstance}
+     * are cleared. {@link ModuleInstance#clearCaches()} should be used
+     */
+    public void clearCachesOnlyThis() {
+        properties = null;
+        itemMergedProperties.clear();
+        cachedData.clear();
+        itemStackCache.clear();
+        initializedProperties.clear();
     }
 
     /**
@@ -300,5 +330,75 @@ public class ModuleInstance {
             }
         }
         return null;
+    }
+
+    /**
+     * this function is meant to be used {@link ModularItemCache#MODULE_CACHE_SUPPLIER}
+     * to have on demand caching on a per {@link ModuleInstance} level
+     * if Itemstack Level caching is desired, {@link ModularItemCache#get(ItemStack, String, Object)} should be looked at
+     *
+     * @param key      the Key for the stored data. Common Practice is to use {@link net.minecraft.resources.ResourceLocation} stringified for this
+     * @param fallback a supplier of a fallback in case this cant be resolved. Stuff cannot be resolved during reloads or other invalid stats.
+     * @param <T>      the Type of the data in question, used to avoid casting
+     * @return Returns the Cached data if available, otherwise uses the registed {@link ModularItemCache#MODULE_CACHE_SUPPLIER} to supply and then cache the data
+     */
+    public <T> T getFromCache(String key, Supplier<T> fallback) {
+        T data = (T) cachedData.get(key);
+        if (data != null) {
+            return data;
+        }
+        DataCache.ModuleCacheSupplier cacheSupplier = ModularItemCache.MODULE_CACHE_SUPPLIER.get(key);
+        if (cacheSupplier != null) {
+            data = (T) cacheSupplier.apply(this);
+            if (data != null) {
+                cachedData.put(key, data);
+                return data;
+            }
+        }
+        return fallback.get();
+    }
+
+    /**
+     * returns the Itemlevel Cache for this. Itemstack is required as context
+     * @param key the key under {@link ModularItemCache#setSupplier(String, ModularItemCache.CacheObjectSupplier)} the supplier was registered
+     * @param itemStack the Context Itemstack
+     * @param fallback fallback value incase the state was invalid or the supplier rerturned null
+     * @return
+     * @param <T>
+     */
+    public <T> T getFromCache(String key, ItemStack itemStack, T fallback) {
+        return ModularItemCache.get(itemStack, key, fallback);
+    }
+
+    /**
+     * returns the Itemlevel Cache for this. Itemstack is required as context
+     * @param key the key under {@link ModularItemCache#setSupplier(String, ModularItemCache.CacheObjectSupplier)} the supplier was registered
+     * @param itemStack the Context Itemstack
+     * @param fallback fallback value incase the state was invalid or the supplier rerturned null
+     * @return
+     * @param <T>
+     */
+    public <T> T getFromCache(String key, ItemStack itemStack, Supplier<T> fallback) {
+        return ModularItemCache.get(itemStack, key, fallback);
+    }
+
+    /**
+     * This function shouldnt be used directly, instead check {@link ModularItemCache#get(ItemStack, String, Object)} for this functionality
+     * alternativly {@link ModuleInstance#getFromCache(String, ItemStack, Supplier)} can also be used
+     */
+    public <T> T getFromCache(String key, ItemStack itemStack, Map<String, ModularItemCache.CacheObjectSupplier> supplierMap, Supplier<T> fallback) {
+        T data = (T) cachedData.get(key);
+        if (data != null) {
+            return data;
+        }
+        ModularItemCache.CacheObjectSupplier cacheSupplier = supplierMap.get(key);
+        if (cacheSupplier != null) {
+            data = (T) cacheSupplier.apply(itemStack);
+            if (data != null) {
+                cachedData.put(key, data);
+                return data;
+            }
+        }
+        return fallback.get();
     }
 }

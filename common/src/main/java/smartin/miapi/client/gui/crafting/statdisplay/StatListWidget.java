@@ -144,18 +144,6 @@ public class StatListWidget extends InteractAbleWidget {
                 .setTranslationKey("projectile_crit_multiplier")
                 .setFormat("##.##")
                 .setMax(10).build());
-        addStatDisplay(MiningLevelStatDisplay
-                .builder("pickaxe")
-                .setAttribute(AttributeRegistry.MINING_SPEED_PICKAXE).build());
-        addStatDisplay(MiningLevelStatDisplay
-                .builder("axe")
-                .setAttribute(AttributeRegistry.MINING_SPEED_AXE).build());
-        addStatDisplay(MiningLevelStatDisplay
-                .builder("shovel")
-                .setAttribute(AttributeRegistry.MINING_SPEED_SHOVEL).build());
-        addStatDisplay(MiningLevelStatDisplay
-                .builder("hoe")
-                .setAttribute(AttributeRegistry.MINING_SPEED_HOE).build());
         addStatDisplay(SinglePropertyStatDisplay
                 .builder(FlexibilityProperty.property)
                 .setTranslationKey(FlexibilityProperty.KEY)
@@ -182,23 +170,6 @@ public class StatListWidget extends InteractAbleWidget {
                 .builder(WaterDragProperty.property)
                 .setMax(1)
                 .setTranslationKey(WaterDragProperty.KEY).build());
-        addStatDisplay(AttributeSingleDisplay
-                .builder(AttributeRegistry.BOW_DRAW_TIME)
-                .setMax(100)
-                .setMin(1)
-                .setDefault(20)
-                .setValueGetter((stack) -> {
-                    if (stack.getItem() instanceof CustomDrawTimeItem customDrawTimeItem) {
-                        return customDrawTimeItem.getActualDrawTime(stack);
-                    }
-                    if (stack.getItem() instanceof CrossbowItem) {
-                        return 25 - AttributeProperty.getActualValue(stack, EquipmentSlot.MAINHAND, AttributeRegistry.BOW_DRAW_TIME);
-                    }
-                    return 20 - AttributeProperty.getActualValue(stack, EquipmentSlot.MAINHAND, AttributeRegistry.BOW_DRAW_TIME);
-                })
-                .setTranslationKey("bow_draw_time")
-                .inverseNumber(true)
-                .setFormat("##.##").build());
         addStatDisplay(SinglePropertyStatDisplay
                 .builder(RapidfireCrossbowProperty.property)
                 .setMax(3)
@@ -215,14 +186,6 @@ public class StatListWidget extends InteractAbleWidget {
                 .builder(FracturingProperty.property)
                 .setMax(50)
                 .setTranslationKey(FracturingProperty.KEY).build());
-        addStatDisplay(SinglePropertyStatDisplay
-                .builder(FortuneProperty.property)
-                .setMax(5)
-                .setTranslationKey(FortuneProperty.KEY).build());
-        addStatDisplay(SinglePropertyStatDisplay
-                .builder(MendingProperty.property)
-                .setMax(1)
-                .setTranslationKey(MendingProperty.KEY).build());
         addStatDisplay(SinglePropertyStatDisplay
                 .builder(ImmolateProperty.property)
                 .setMax(4)

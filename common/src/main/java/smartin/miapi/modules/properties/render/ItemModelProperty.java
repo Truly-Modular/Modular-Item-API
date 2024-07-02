@@ -28,7 +28,7 @@ public class ItemModelProperty implements RenderProperty {
     public ItemModelProperty() {
         property = this;
         MiapiItemModel.modelSuppliers.add((key, model, stack) -> {
-            JsonElement element = model.getProperties().get(property);
+            JsonElement element = model.getOldProperties().get(property);
             List<MiapiModel> models = new ArrayList<>();
             if (element != null) {
                 element.getAsJsonArray().forEach(element1 -> {

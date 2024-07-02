@@ -63,8 +63,8 @@ public class ExplosionProperty extends CodecBasedProperty<ExplosionProperty.Expl
     public ExplosionInfo getInfo(ItemStack itemStack, ModuleProperty property) {
         ExplosionInfo info = null;
         for (ModuleInstance moduleInstance : ItemModule.getModules(itemStack).allSubModules()) {
-            if (moduleInstance.getProperties().containsKey(property)) {
-                info = new ExplosionInfo(moduleInstance.getProperties().get(property).getAsJsonObject(), moduleInstance);
+            if (moduleInstance.getOldProperties().containsKey(property)) {
+                info = new ExplosionInfo(moduleInstance.getOldProperties().get(property).getAsJsonObject(), moduleInstance);
             }
         }
         return info;

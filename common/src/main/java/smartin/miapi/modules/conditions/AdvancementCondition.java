@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.advancements.Advancement;
+import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientAdvancements;
 import net.minecraft.network.chat.Component;
@@ -33,8 +34,8 @@ public class AdvancementCondition implements ModuleCondition {
             Player player = moduleConditionContext.player;
             List<Component> reasons = moduleConditionContext.reasons;
             if (player != null && advancement != null) {
-                Advancement advancement1 = getAdvancement(advancement);
-                if(advancement1!=null){
+                AdvancementHolder advancement1 = getAdvancement(advancement);
+                if (advancement1 != null) {
                     return hasAdvancement(advancement1, player);
                 }
             }
@@ -43,9 +44,9 @@ public class AdvancementCondition implements ModuleCondition {
         return false;
     }
 
-    public static boolean hasAdvancement(Advancement advancement, Player player) {
+    public static boolean hasAdvancement(AdvancementHolder advancement, Player player) {
         if (smartin.miapi.Environment.isClient()) {
-            return hasAdvancementClient(advancement, player);
+            return hasAdvancementClient(advancement.value(), player);
         }
         if (player instanceof ServerPlayer serverPlayerEntity) {
             return serverPlayerEntity.getAdvancements().getOrStartProgress(advancement).isDone();
@@ -66,13 +67,13 @@ public class AdvancementCondition implements ModuleCondition {
     public ModuleCondition load(JsonElement element) {
         if (element.isJsonObject()) {
             JsonObject object = element.getAsJsonObject();
-            ResourceLocation identifier = new ResourceLocation(object.get("advancement").getAsString());
+            ResourceLocation identifier = ResourceLocation.parse(object.get("advancement").getAsString());
             return new AdvancementCondition(identifier);
         }
         return new NotCondition(new TrueCondition());
     }
 
-    public Advancement getAdvancement(ResourceLocation identifier) {
+    public AdvancementHolder getAdvancement(ResourceLocation identifier) {
         if (smartin.miapi.Environment.isClient()) {
             return getAdvancementClient(identifier);
         }
@@ -82,9 +83,9 @@ public class AdvancementCondition implements ModuleCondition {
         return null;
     }
 
-    public Advancement getAdvancementClient(ResourceLocation identifier) {
-        if(Minecraft.getInstance().getConnection()!=null){
-            return Minecraft.getInstance().getConnection().getAdvancements().getTree().get(identifier);
+    public AdvancementHolder getAdvancementClient(ResourceLocation identifier) {
+        if (Minecraft.getInstance().getConnection() != null) {
+            return Minecraft.getInstance().getConnection().getAdvancements().getTree().get(identifier).holder();
         }
         return null;
     }

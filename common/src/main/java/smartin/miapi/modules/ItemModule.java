@@ -2,10 +2,6 @@ package smartin.miapi.modules;
 
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.item.modular.VisualModularItem;
@@ -13,13 +9,12 @@ import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.registries.RegistryInventory;
 
-import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
+
 import net.minecraft.world.item.ItemStack;
 
 import static smartin.miapi.Miapi.LOGGER;
@@ -258,7 +253,7 @@ public record ItemModule(String name, Map<String, JsonElement> properties) {
     public static Map<ItemModule, List<JsonElement>> getUnmergedProperties(ModuleInstance modules) {
         Map<ItemModule, List<JsonElement>> unmergedProperties = new HashMap<>();
         for (ModuleInstance module : modules.subModules.values()) {
-            module.getProperties().forEach((property, data) -> {
+            module.getOldProperties().forEach((property, data) -> {
                 unmergedProperties.getOrDefault(property, new ArrayList<>()).add(data);
             });
         }
@@ -291,7 +286,7 @@ public record ItemModule(String name, Map<String, JsonElement> properties) {
     public static JsonElement getMergedProperty(ModuleInstance moduleInstance, ModuleProperty property, MergeType type) {
         JsonElement mergedProperty = null;
         for (ModuleInstance module : moduleInstance.allSubModules()) {
-            JsonElement currentProperty = module.getProperties().get(property);
+            JsonElement currentProperty = module.getOldProperties().get(property);
             if (currentProperty != null) {
                 if (mergedProperty == null) {
                     mergedProperty = currentProperty;
@@ -315,7 +310,7 @@ public record ItemModule(String name, Map<String, JsonElement> properties) {
         ModuleInstance moduleInstance = getModules(itemStack);
         JsonElement mergedProperty = null;
         for (ModuleInstance module : moduleInstance.allSubModules()) {
-            JsonElement currentProperty = module.getProperties().get(property);
+            JsonElement currentProperty = module.getOldProperties().get(property);
             if (currentProperty != null) {
                 if (mergedProperty == null) {
                     mergedProperty = currentProperty;

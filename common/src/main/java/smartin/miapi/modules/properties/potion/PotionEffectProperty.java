@@ -236,8 +236,8 @@ public abstract class PotionEffectProperty implements ModuleProperty {
     private List<EffectHolder> getStatusEffectsCache(ItemStack itemStack) {
         List<EffectHolder> potions = new ArrayList<>();
         ItemModule.getModules(itemStack).allSubModules().forEach(moduleInstance -> {
-            if (moduleInstance.getProperties().containsKey(this)) {
-                potions.addAll(getPotions(moduleInstance.getProperties().get(this), moduleInstance));
+            if (moduleInstance.getOldProperties().containsKey(this)) {
+                potions.addAll(getPotions(moduleInstance.getOldProperties().get(this), moduleInstance));
             }
         });
         return potions;

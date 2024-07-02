@@ -7,8 +7,10 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
 import net.minecraft.util.FastColor;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.material.palette.MaterialRenderController;
@@ -119,4 +121,6 @@ public interface Material {
     Double getPriorityOfIngredientItem(ItemStack itemStack);
 
     JsonObject getDebugJson();
+
+    TagKey<Block> getIncorrectBlocksForDrops();
 }

@@ -136,7 +136,7 @@ public class OverlayModelProperty extends CodecBasedProperty<OverlayModelPropert
     }
 
     public static List<OverlayModelData> getData(ModuleInstance moduleInstance) {
-        JsonElement element = moduleInstance.getProperties().get(property);
+        JsonElement element = moduleInstance.getOldProperties().get(property);
         return getData(moduleInstance, element);
     }
 

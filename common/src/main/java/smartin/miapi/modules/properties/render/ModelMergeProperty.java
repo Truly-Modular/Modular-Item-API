@@ -34,7 +34,7 @@ public class ModelMergeProperty implements RenderProperty {
                         ModuleInstance root = ItemModule.getModules(stack);
                         List<Json> toMerge = new ArrayList<>();
                         root.allSubModules().forEach(moduleInstance -> {
-                            JsonElement data = moduleInstance.getProperties().get(property);
+                            JsonElement data = moduleInstance.getOldProperties().get(property);
                             if (data != null) {
                                 Type type = new TypeToken<List<Json>>() {
                                 }.getType();

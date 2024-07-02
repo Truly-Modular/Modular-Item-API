@@ -1,0 +1,6 @@
+{
+    "mining_level":{
+        "minecraft:mineable/pickaxe": "minecraft:incorrect_for_netherite_tool",
+        "minecraft:mineable/axe": "material"
+    }
+}

@@ -45,7 +45,7 @@ public class BooleanProperty implements ModuleProperty {
     }
 
     public boolean isTrue(ModuleInstance moduleInstance) {
-        JsonElement element = moduleInstance.getProperties().get(this);
+        JsonElement element = moduleInstance.getOldProperties().get(this);
         return getValue(element);
     }
 

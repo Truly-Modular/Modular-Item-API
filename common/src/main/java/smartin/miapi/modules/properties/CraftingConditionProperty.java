@@ -49,7 +49,7 @@ public class CraftingConditionProperty implements ModuleProperty, CraftingProper
         ModuleInstance instance = slot == null ? null : slot.parent;
         Map<ModuleProperty, JsonElement> elementMap = module.getKeyedProperties();
         if (instance != null) {
-            elementMap = instance.getProperties();
+            elementMap = instance.getOldProperties();
         }
         if (element != null) {
             CraftingConditionJson conditionJson = new CraftingConditionJson(element);
@@ -82,7 +82,7 @@ public class CraftingConditionProperty implements ModuleProperty, CraftingProper
         ModuleInstance instance = slot == null ? null : slot.parent;
         Map<ModuleProperty, JsonElement> elementMap = module.getKeyedProperties();
         if (instance != null) {
-            elementMap = instance.getProperties();
+            elementMap = instance.getOldProperties();
         }
         if (element != null) {
             new CraftingConditionJson(element).getCraftAble().isAllowed(new ConditionManager.ModuleConditionContext(instance, pos, entity, elementMap, reasons));
@@ -115,10 +115,10 @@ public class CraftingConditionProperty implements ModuleProperty, CraftingProper
     public boolean canPerform(ItemStack old, ItemStack crafting, ModularWorkBenchEntity bench, Player player, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<String, String> data) {
         ModuleInstance newModule = craftAction.getModifyingModuleInstance(crafting);
         if (newModule != null) {
-            JsonElement element = newModule.getProperties().get(property);
+            JsonElement element = newModule.getOldProperties().get(property);
             if (element != null) {
                 List<Component> reasons = new ArrayList<>();
-                return new CraftingConditionJson(element).getOnCraftAble().isAllowed(new ConditionManager.ModuleConditionContext(newModule, null, player, newModule.getProperties(), reasons));
+                return new CraftingConditionJson(element).getOnCraftAble().isAllowed(new ConditionManager.ModuleConditionContext(newModule, null, player, newModule.getOldProperties(), reasons));
             }
         }
         return true;

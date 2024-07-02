@@ -34,7 +34,7 @@ public abstract class DynamicCodecBasedProperty<T, A> implements ModuleProperty 
         A holder = createNewHolder();
         ModuleInstance rootInstance = ItemModule.getModules(stack);
         for (ModuleInstance subModule : rootInstance.allSubModules()) {
-            JsonElement element = subModule.getProperties().get(this);
+            JsonElement element = subModule.getOldProperties().get(this);
             if (element == null) continue;
             T deserialized = getDataFromSubModule(element, subModule);
             addTo(subModule, deserialized, holder);

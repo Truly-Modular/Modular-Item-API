@@ -90,7 +90,7 @@ public class MiningShapeProperty implements ModuleProperty {
     private static List<MiningShapeJson> getCache(ItemStack stack) {
         List<MiningShapeJson> miningShapeJsons = new ArrayList<>();
         ItemModule.getModules(stack).allSubModules().forEach(moduleInstance -> {
-            JsonElement element = moduleInstance.getProperties().get(property);
+            JsonElement element = moduleInstance.getOldProperties().get(property);
             if (element != null) {
                 miningShapeJsons.addAll(get(element, moduleInstance));
             }

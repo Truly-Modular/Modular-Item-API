@@ -3,45 +3,15 @@ package smartin.miapi.mixin;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.state.BlockState;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import smartin.miapi.item.modular.ModularItem;
-import smartin.miapi.item.modular.VisualModularItem;
-import smartin.miapi.item.modular.items.ModularSetableToolMaterial;
 import smartin.miapi.modules.properties.FakeItemTagProperty;
-import smartin.miapi.modules.properties.mining.MiningLevelProperty;
 
 @Mixin(value = ItemStack.class, priority = 2000)
 abstract class ItemStackMixin {
-
-    @Inject(
-            method = "getItem",
-            at = @At("RETURN"))
-    private void miapi$getItemCallback(CallbackInfoReturnable<Item> cir) {
-        ItemStack stack = (ItemStack) (Object) this;
-        if (cir.getReturnValue() instanceof ModularSetableToolMaterial toolMaterial) {
-            toolMaterial.setToolMaterial(stack);
-        }
-    }
-
-    @Inject(method = "getMaxDamage", at = @At("HEAD"), cancellable = true)
-    public void miapi$modifyDurability(CallbackInfoReturnable<Integer> cir) {
-        ItemStack stack = (ItemStack) (Object) this;
-        if (stack.getItem() instanceof VisualModularItem) {
-            cir.setReturnValue(ModularItem.getDurability(stack));
-        }
-    }
-
-    @Inject(method = "isCorrectToolForDrops", at = @At("HEAD"), cancellable = true)
-    public void miapi$injectIsSuitable(BlockState state, CallbackInfoReturnable<Boolean> cir) {
-        ItemStack stack = (ItemStack) (Object) this;
-        if (stack.getItem() instanceof ModularItem) {
-            cir.setReturnValue(MiningLevelProperty.isSuitable(stack, state));
-        }
-    }
 
     @Inject(method = "is(Lnet/minecraft/tags/TagKey;)Z", at = @At("TAIL"), cancellable = true)
     public void miapi$injectItemTag(TagKey<Item> tag, CallbackInfoReturnable<Boolean> cir) {

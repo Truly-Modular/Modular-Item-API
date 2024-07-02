@@ -50,7 +50,7 @@ public class GlintProperty implements ModuleProperty {
     }
 
     static GlintSettings getStatic(ModuleInstance instance, ItemStack stack) {
-        JsonElement element = instance.getProperties().get(property);
+        JsonElement element = instance.getOldProperties().get(property);
         if (element != null && element.getAsJsonObject().has("type")) {
             String type = element.getAsJsonObject().get("type").getAsString();
             if (glintSettingsMap.containsKey(type)) {
@@ -71,7 +71,7 @@ public class GlintProperty implements ModuleProperty {
 
         public JsonGlintSettings(ModuleInstance instance, ItemStack stack) {
             shouldRenderGlint = stack.hasFoil();
-            JsonElement element = instance.getProperties().get(property);
+            JsonElement element = instance.getOldProperties().get(property);
             if (element != null) {
                 if (element.getAsJsonObject().has("color")) {
                     try{
@@ -93,7 +93,7 @@ public class GlintProperty implements ModuleProperty {
 
         @Override
         public GlintSettings get(ModuleInstance instance, ItemStack stack) {
-            JsonElement element = instance.getProperties().get(property);
+            JsonElement element = instance.getOldProperties().get(property);
             if (element.getAsJsonObject().has("type")) {
                 String type = element.getAsJsonObject().get("type").getAsString();
                 if (glintSettingsMap.containsKey(type)) {
@@ -143,7 +143,7 @@ public class GlintProperty implements ModuleProperty {
 
         @Override
         public GlintSettings get(ModuleInstance instance, ItemStack stack) {
-            JsonElement element = instance.getProperties().get(property);
+            JsonElement element = instance.getOldProperties().get(property);
             SettingsControlledGlint rainbowGlintSettings = new SettingsControlledGlint();
             rainbowGlintSettings.shouldRenderGlint = stack.hasFoil();
             if (element != null) {

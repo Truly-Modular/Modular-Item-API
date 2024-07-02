@@ -29,7 +29,7 @@ public class TagProperty implements ModuleProperty {
     }
 
     public static List<String> getTags(ModuleInstance instance) {
-        return getTags(instance.getProperties());
+        return getTags(instance.getOldProperties());
     }
 
     public static List<String> getTags(Map<ModuleProperty, JsonElement> map) {

@@ -43,7 +43,7 @@ public class EdibleProperty implements ModuleProperty {
     public static DataHolder createCache(ItemStack stack) {
         DataHolder result = new DataHolder(0, 0, 1, 0, false, new ArrayList<>());
         for (ModuleInstance subModule : ItemModule.getModules(stack).allSubModules()) {
-            JsonElement element = subModule.getProperties().get(property);
+            JsonElement element = subModule.getOldProperties().get(property);
             if (element == null) continue;
 
             DataHolder dataHolder = RawData.codec.parse(JsonOps.INSTANCE, element).getOrThrow(s ->

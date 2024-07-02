@@ -31,7 +31,7 @@ public class DisplayNameProperty implements ModuleProperty {
         ModuleInstance root = ItemModule.getModules(itemStack);
         ModuleInstance primaryModule = ItemModule.getModules(itemStack);
         for (ModuleInstance moduleInstance : root.allSubModules()) {
-            JsonElement data = moduleInstance.getProperties().get(property);
+            JsonElement data = moduleInstance.getOldProperties().get(property);
             if (data != null) {
                 translationKey = data.getAsString();
                 primaryModule = moduleInstance;

@@ -13,13 +13,12 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.item.*;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraft.recipe.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
+import net.minecraft.tags.TagKey;
 import net.minecraft.util.FastColor;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.item.AxeItem;
@@ -36,13 +35,13 @@ import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.crafting.SmithingTransformRecipe;
+import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.item.MaterialSmithingRecipe;
-import smartin.miapi.mixin.MiningToolItemAccessor;
 import smartin.miapi.mixin.SmithingTransformRecipeAccessor;
 import smartin.miapi.modules.material.palette.FallbackColorer;
 import smartin.miapi.modules.material.palette.GrayscalePaletteColorer;
@@ -69,6 +68,7 @@ public class GeneratedMaterial implements Material {
     protected GrayscalePaletteColorer palette;
     @Nullable
     public MaterialIcons.MaterialIcon icon;
+    public TagKey<Block> getIncorrectBlocksForDrops = BlockTags.INCORRECT_FOR_WOODEN_TOOL;
 
     public static final List<ItemStack> generatedItems = new ArrayList<>();
     public static final List<ItemStack> generatedItemsTool = new ArrayList<>();
@@ -371,7 +371,7 @@ public class GeneratedMaterial implements Material {
         //TODO:generate those sensible ig?
         //maybe scan all items assosiaated with the toolmaterial to getRaw somewhat valid stats?
         materialStats.put("durability", (double) toolMaterial.getUses());
-        materialStats.put("mining_level", (double) toolMaterial.getMiningLevel());
+        getIncorrectBlocksForDrops = toolMaterial.getIncorrectBlocksForDrops();
         materialStats.put("mining_speed", (double) toolMaterial.getSpeed());
         materialStats.put("enchantability", (double) toolMaterial.getEnchantmentValue());
 
@@ -794,5 +794,10 @@ public class GeneratedMaterial implements Material {
         ingredients.add(otherIngredient);
         object.add("items", ingredients);
         return object;
+    }
+
+    @Override
+    public TagKey<Block> getIncorrectBlocksForDrops() {
+        return getIncorrectBlocksForDrops;
     }
 }

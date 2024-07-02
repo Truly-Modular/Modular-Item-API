@@ -437,7 +437,7 @@ public class AttributeProperty implements ModuleProperty {
     }
 
     public static void getAttributeModifiers(IdentifierGetter defaultID, ModuleInstance instance, Multimap<Attribute, EntityAttributeModifierHolder> attributeModifiers) {
-        JsonElement element = instance.getProperties().get(property);
+        JsonElement element = instance.getOldProperties().get(property);
         if (element == null) {
             return;
         }

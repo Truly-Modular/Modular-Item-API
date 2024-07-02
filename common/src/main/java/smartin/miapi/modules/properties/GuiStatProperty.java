@@ -65,8 +65,8 @@ public class GuiStatProperty implements ModuleProperty {
     private static Map<String, GuiInfo> getInfoCache(ItemStack itemStack) {
         Map<String, GuiInfo> infoMap = new HashMap<>();
         for (ModuleInstance moduleInstance : ItemModule.getModules(itemStack).allSubModules()) {
-            if (moduleInstance.getProperties().containsKey(property)) {
-                JsonElement element = moduleInstance.getProperties().get(property);
+            if (moduleInstance.getOldProperties().containsKey(property)) {
+                JsonElement element = moduleInstance.getOldProperties().get(property);
                 element.getAsJsonObject().asMap().forEach((id, innerJson) -> {
                     infoMap.put(id, new GuiInfo(innerJson.getAsJsonObject(), moduleInstance));
                 });

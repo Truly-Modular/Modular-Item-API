@@ -86,7 +86,7 @@ public class SlotProperty implements ModuleProperty {
 
     public static Map<Integer, ModuleSlot> getSlots(ModuleInstance instance) {
         ModuleProperty property = RegistryInventory.moduleProperties.get(KEY);
-        JsonElement data = instance.getProperties().get(property);
+        JsonElement data = instance.getOldProperties().get(property);
         if (data != null) {
             Gson gson = new Gson();
             Type type = new TypeToken<Map<Integer, ModuleSlot>>() {
@@ -126,7 +126,7 @@ public class SlotProperty implements ModuleProperty {
     @Environment(EnvType.CLIENT)
     public static Transform getLocalTransform(ModuleInstance instance) {
         ModuleProperty property = RegistryInventory.moduleProperties.get(KEY);
-        JsonElement test = instance.getProperties().get(property);
+        JsonElement test = instance.getOldProperties().get(property);
         if (test != null) {
             ModuleSlot slot = getSlotIn(instance);
             if (slot != null) {
@@ -139,7 +139,7 @@ public class SlotProperty implements ModuleProperty {
     @Environment(EnvType.CLIENT)
     public static TransformMap getLocalTransformStack(ModuleInstance instance) {
         ModuleProperty property = RegistryInventory.moduleProperties.get(KEY);
-        JsonElement test = instance.getProperties().get(property);
+        JsonElement test = instance.getOldProperties().get(property);
         if (test != null) {
             ModuleSlot slot = getSlotIn(instance);
             if (slot != null) {

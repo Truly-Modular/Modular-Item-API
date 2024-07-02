@@ -34,7 +34,7 @@ public class StatRequirementProperty implements ModuleProperty, CraftingProperty
         ModuleInstance newModule = craftAction.getModifyingModuleInstance(crafting);
         if (bench == null) return true;
 
-        JsonElement element = newModule.getProperties().get(property);
+        JsonElement element = newModule.getOldProperties().get(property);
         if (element != null){
             AtomicBoolean canCraft = new AtomicBoolean(true);
 

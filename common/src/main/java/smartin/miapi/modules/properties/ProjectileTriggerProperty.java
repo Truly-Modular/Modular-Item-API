@@ -2,21 +2,10 @@ package smartin.miapi.modules.properties;
 
 import com.google.gson.JsonElement;
 import dev.architectury.event.EventResult;
-import net.minecraft.core.dispenser.DispenseItemBehavior;
-import net.minecraft.core.dispenser.ProjectileDispenseBehavior;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.projectile.Projectile;
-import net.minecraft.world.entity.projectile.ThrownPotion;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.ThrowablePotionItem;
 import net.minecraft.world.phys.HitResult;
 import smartin.miapi.entity.ItemProjectileEntity;
 import smartin.miapi.events.MiapiProjectileEvents;
-import smartin.miapi.mixin.DispenserBlockAccessor;
-import smartin.miapi.mixin.ProjectileDispenserBehaviorAccessor;
-import smartin.miapi.mixin.ProjectileEntityAccessor;
-import smartin.miapi.mixin.ThrowablePotionItemAccessor;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
@@ -46,6 +35,7 @@ public class ProjectileTriggerProperty implements ModuleProperty {
     public static boolean isTriggered(ItemProjectileEntity projectile, HitResult hitResult) {
         ItemStack itemStack = projectile.getPickupItem();
         JsonElement element = ItemModule.getMergedProperty(itemStack, property);
+        /*
         if (element != null && itemStack.hasNbt()) {
             CompoundTag itemCompound = itemStack.getOrCreateNbt().getCompound(element.getAsString());
             if (!itemCompound.isEmpty()) {
@@ -72,6 +62,8 @@ public class ProjectileTriggerProperty implements ModuleProperty {
                 }
             }
         }
+
+         */
         return false;
     }
 

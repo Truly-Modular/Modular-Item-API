@@ -1,6 +1,8 @@
 package smartin.miapi.item.modular;
 
 import com.google.gson.JsonElement;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Tuple;
 import smartin.miapi.Miapi;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.util.MergeType;
@@ -8,8 +10,6 @@ import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.Tuple;
 
 /**
  * This class manages Properties for Items
@@ -32,10 +32,7 @@ public class PropertyResolver {
         registry.forEach((pair) -> {
             PropertyProvider propertyProvider = pair.getB();
             moduleInstance.allSubModules().forEach(instance -> {
-                if (instance.rawProperties == null) {
-                    instance.rawProperties = new ConcurrentHashMap<>();
-                }
-                instance.rawProperties.putAll(propertyProvider.resolve(instance, instance.rawProperties));
+                instance.properties.putAll(propertyProvider.resolve(instance, instance.properties));
             });
         });
     }
@@ -45,7 +42,7 @@ public class PropertyResolver {
      *
      * @param identifier       the ID of the new {@link PropertyProvider}
      * @param propertyProvider the {@link PropertyProvider} to register
-     * @param before            all the entries that should resolve after this entry, it will be registered as late as possible
+     * @param before           all the entries that should resolve after this entry, it will be registered as late as possible
      * @return the now registered {@link PropertyProvider}
      */
     public static PropertyProvider register(ResourceLocation identifier, PropertyProvider propertyProvider, Collection<ResourceLocation> before) {
@@ -93,6 +90,6 @@ public class PropertyResolver {
      * This interface allows other classes to add Properties to items
      */
     public interface PropertyProvider {
-        Map<ModuleProperty, JsonElement> resolve(ModuleInstance moduleInstance, Map<ModuleProperty, JsonElement> oldMap);
+        Map<ModuleProperty<?>, Object> resolve(ModuleInstance moduleInstance, Map<ModuleProperty<?>, Object> properties);
     }
 }
