@@ -5,6 +5,8 @@ import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.registries.RegistryInventory;
 
+import java.util.Optional;
+
 public class ModuleTypeCondition implements ModuleCondition {
     public ItemModule module;
 
@@ -18,9 +20,10 @@ public class ModuleTypeCondition implements ModuleCondition {
 
     @Override
     public boolean isAllowed(ConditionManager.ConditionContext conditionContext) {
-        if(conditionContext instanceof ConditionManager.ModuleConditionContext moduleConditionContext) {
-            ModuleInstance moduleInstance = moduleConditionContext.moduleInstance;
-            return moduleInstance != null && moduleInstance.module.equals(module);
+        Optional<ModuleInstance> optional = conditionContext.getContext(ConditionManager.MODULE_CONDITION_CONTEXT);
+        if (optional.isPresent()) {
+            ModuleInstance moduleInstance = optional.get();
+            return moduleInstance.module.equals(module);
         }
         return false;
     }

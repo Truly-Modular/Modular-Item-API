@@ -257,7 +257,9 @@ public class ModuleInstance {
      * @param clearCache Determines whether to clear the cache after writing the module.
      */
     public void writeToItem(ItemStack stack, boolean clearCache) {
-        this.clearCaches();
+        if (clearCache) {
+            this.clearCaches();
+        }
         stack.update(ModuleInstance.componentType, this, (component) -> component);
     }
 
@@ -360,11 +362,12 @@ public class ModuleInstance {
 
     /**
      * returns the Itemlevel Cache for this. Itemstack is required as context
-     * @param key the key under {@link ModularItemCache#setSupplier(String, ModularItemCache.CacheObjectSupplier)} the supplier was registered
+     *
+     * @param key       the key under {@link ModularItemCache#setSupplier(String, ModularItemCache.CacheObjectSupplier)} the supplier was registered
      * @param itemStack the Context Itemstack
-     * @param fallback fallback value incase the state was invalid or the supplier rerturned null
-     * @return
+     * @param fallback  fallback value incase the state was invalid or the supplier rerturned null
      * @param <T>
+     * @return
      */
     public <T> T getFromCache(String key, ItemStack itemStack, T fallback) {
         return ModularItemCache.get(itemStack, key, fallback);
@@ -372,11 +375,12 @@ public class ModuleInstance {
 
     /**
      * returns the Itemlevel Cache for this. Itemstack is required as context
-     * @param key the key under {@link ModularItemCache#setSupplier(String, ModularItemCache.CacheObjectSupplier)} the supplier was registered
+     *
+     * @param key       the key under {@link ModularItemCache#setSupplier(String, ModularItemCache.CacheObjectSupplier)} the supplier was registered
      * @param itemStack the Context Itemstack
-     * @param fallback fallback value incase the state was invalid or the supplier rerturned null
-     * @return
+     * @param fallback  fallback value incase the state was invalid or the supplier rerturned null
      * @param <T>
+     * @return
      */
     public <T> T getFromCache(String key, ItemStack itemStack, Supplier<T> fallback) {
         return ModularItemCache.get(itemStack, key, fallback);

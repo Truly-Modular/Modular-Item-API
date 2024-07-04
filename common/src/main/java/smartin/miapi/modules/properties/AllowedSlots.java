@@ -1,24 +1,26 @@
 package smartin.miapi.modules.properties;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonElement;
-import com.google.gson.reflect.TypeToken;
+import com.mojang.serialization.Codec;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.modules.ItemModule;
-import smartin.miapi.modules.properties.util.ModuleProperty;
+import smartin.miapi.modules.properties.util.CodecBasedProperty;
+import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.registries.RegistryInventory;
 
-import java.lang.reflect.Type;
 import java.util.*;
 
 /**
  * This Property is meant to control what is allowed in the moduleSlots of an module
  */
-public class AllowedSlots implements ModuleProperty {
+public class AllowedSlots extends CodecBasedProperty<List<String>> {
     public static final String KEY = "allowedInSlots";
+    public static Codec<List<String>> CODEC = Codec.list(Codec.STRING);
     static HashMap<String, Set<ItemModule>> allowedInMap = new HashMap<>();
+    public static AllowedSlots property;
 
     public AllowedSlots() {
+        super(CODEC);
         RegistryInventory.modules.addCallback(itemModule -> {
             getAllowedSlots(itemModule).forEach(slot -> {
                 if (allowedInMap.containsKey(slot)) {
@@ -33,6 +35,7 @@ public class AllowedSlots implements ModuleProperty {
         ReloadEvents.START.subscribe(isClient -> {
             allowedInMap.clear();
         });
+        property = this;
     }
 
     /**
@@ -43,13 +46,10 @@ public class AllowedSlots implements ModuleProperty {
      */
     public static List<String> getAllowedSlots(ItemModule module) {
         JsonElement data = module.properties().get(KEY);
-        if(data==null){
+        if (data == null) {
             return List.of();
         }
-        Gson gson = new Gson();
-        Type type = new TypeToken<List<String>>() {
-        }.getType();
-        return gson.fromJson(data, type);
+        return property.decode(data);
     }
 
     /**
@@ -69,13 +69,10 @@ public class AllowedSlots implements ModuleProperty {
         return allowedModules;
     }
 
-
     @Override
-    public boolean load(String moduleKey, JsonElement data) throws Exception {
-        Gson gson = new Gson();
-        Type type = new TypeToken<List<String>>() {
-        }.getType();
-        gson.fromJson(data, type);
-        return true;
+    public List<String> merge(List<String> left, List<String> right, MergeType mergeType) {
+        List<String> merged = new ArrayList<>(left);
+        merged.addAll(right);
+        return merged;
     }
 }

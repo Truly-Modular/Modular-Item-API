@@ -1,28 +1,24 @@
 package smartin.miapi.modules.properties;
 
-import com.google.gson.JsonElement;
 import dev.architectury.event.EventResult;
 import dev.architectury.event.events.common.EntityEvent;
 import net.minecraft.world.entity.LivingEntity;
 import smartin.miapi.events.MiapiEvents;
-import smartin.miapi.modules.ItemModule;
-import smartin.miapi.modules.ModuleInstance;
-import smartin.miapi.modules.properties.util.ModuleProperty;
+import smartin.miapi.modules.properties.util.CodecBasedProperty;
+import smartin.miapi.modules.properties.util.MergeType;
 
-public class OnKillExplosion implements ModuleProperty {
+public class OnKillExplosion extends CodecBasedProperty<ExplosionProperty.ExplosionInfo> {
     public static String KEY = "on_kill_explosion";
     public static OnKillExplosion property;
 
     public OnKillExplosion() {
+        super(ExplosionProperty.codec);
         property = this;
         EntityEvent.LIVING_DEATH.register(((entity, source) -> {
             if (source.getEntity() instanceof LivingEntity attacker) {
-                JsonElement element = getJsonElement(MiapiEvents.LivingHurtEvent.getCausingItemStack(source));
-                if (element != null) {
-                    ExplosionProperty.ExplosionInfo info = ExplosionProperty.property.getInfo(attacker.getMainHandItem(), property);
-                    if (info != null) {
-                        info.explode(attacker.level(), attacker, entity.position());
-                    }
+                ExplosionProperty.ExplosionInfo info = getProperty(MiapiEvents.LivingHurtEvent.getCausingItemStack(source));
+                if (info != null) {
+                    info.explode(attacker.level(), attacker, entity.position());
                 }
             }
             return EventResult.pass();
@@ -30,8 +26,7 @@ public class OnKillExplosion implements ModuleProperty {
     }
 
     @Override
-    public boolean load(String moduleKey, JsonElement data) throws Exception {
-        ExplosionProperty.ExplosionInfo info = new ExplosionProperty.ExplosionInfo(data.getAsJsonObject(), new ModuleInstance(ItemModule.empty));
-        return true;
+    public ExplosionProperty.ExplosionInfo merge(ExplosionProperty.ExplosionInfo left, ExplosionProperty.ExplosionInfo right, MergeType mergeType) {
+        return right;
     }
 }

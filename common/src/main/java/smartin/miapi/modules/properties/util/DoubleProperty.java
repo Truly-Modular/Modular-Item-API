@@ -12,6 +12,7 @@ import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ModuleInstance;
+import smartin.miapi.modules.cache.ModularItemCache;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,6 +44,8 @@ public abstract class DoubleProperty extends CodecBasedProperty<List<DoublePrope
         super(codec);
         this.cacheKey = cacheKey + "_internal_double";
         property = this;
+        ModularItemCache.setSupplier(cacheKey, (itemStack) ->
+                Optional.ofNullable(resolve(getProperty(itemStack), baseValue)));
     }
 
     public List<DoubleProperty.Operation> initialize(List<DoubleProperty.Operation> property, ModuleInstance context) {
@@ -51,7 +54,7 @@ public abstract class DoubleProperty extends CodecBasedProperty<List<DoublePrope
     }
 
     public Optional<Double> getValue(ItemStack itemStack) {
-        return Optional.ofNullable(resolve(getProperty(itemStack), baseValue));
+        return ModularItemCache.get(itemStack, cacheKey, Optional.empty());
     }
 
     public static double resolve(List<Operation> operations, double baseValue, double fallback) {

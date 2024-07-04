@@ -17,6 +17,7 @@ import smartin.miapi.modules.properties.util.ModuleProperty;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.item.ItemStack;
 
@@ -185,6 +186,27 @@ public class MaterialProperty implements ModuleProperty {
      */
     @Nullable
     public static Material getMaterial(ModuleInstance instance) {
+        JsonElement element = instance.getOldProperties().get(property);
+        if (element != null) {
+            Material basicMaterial = materials.get(element.getAsString());
+            if (basicMaterial != null) {
+                return basicMaterial.getMaterial(instance);
+            }
+        }
+        if (CopyParentMaterialProperty.property.isTrue(instance) && instance.parent != null) {
+            return getMaterial(instance.parent);
+        }
+        return null;
+    }
+
+    /**
+     * Gets the used Material of a ModuleInstance
+     *
+     * @param instance
+     * @return
+     */
+    @Nullable
+    public static Material getMaterial(Map<ModuleProperty<?>, Object> properties) {
         JsonElement element = instance.getOldProperties().get(property);
         if (element != null) {
             Material basicMaterial = materials.get(element.getAsString());

@@ -1,15 +1,14 @@
 package smartin.miapi.modules.conditions;
 
 import com.google.gson.JsonElement;
+import net.minecraft.network.chat.Component;
 import smartin.miapi.Miapi;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.material.Material;
 import smartin.miapi.modules.material.MaterialProperty;
-import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.List;
-import java.util.Map;
-import net.minecraft.network.chat.Component;
+import java.util.Optional;
 
 public class MaterialCountCondition implements ModuleCondition {
     public String material = "";
@@ -26,35 +25,22 @@ public class MaterialCountCondition implements ModuleCondition {
 
     @Override
     public boolean isAllowed(ConditionManager.ConditionContext conditionContext) {
-        if (conditionContext instanceof ConditionManager.ModuleConditionContext moduleConditionContext) {
-            Map<ModuleProperty, JsonElement> propertyMap = moduleConditionContext.propertyMap;
-            List<Component> reasons = moduleConditionContext.reasons;
-            JsonElement data = propertyMap.get(MaterialProperty.property);
-            if (data == null) {
-                reasons.add(Component.translatable(Miapi.MOD_ID + ".condition.material.error"));
-                return false;
-            }
-            Material material1 = MaterialProperty.getMaterial(data);
-            if (
-                    material1 != null &&
-                            MaterialProperty.getMaterial(data).getKey().equals(material) &&
-                            getCount(moduleConditionContext.moduleInstance, material1) == count
-            ) {
+        Optional<ModuleInstance> optional = conditionContext.getContext(ConditionManager.MODULE_CONDITION_CONTEXT);
+        if (optional.isPresent()) {
+            ModuleInstance moduleInstance = optional.get();
+            Material material1 = MaterialProperty.materials.get(material);
+            if (material1 != null && count >= getCount(moduleInstance, material1)) {
                 return true;
             }
-            reasons.add(Component.translatable(Miapi.MOD_ID + ".condition.material.error"));
         }
+        conditionContext.failReasons.add(Component.translatable(Miapi.MOD_ID + ".condition.material.error"));
         return false;
     }
 
     public int getCount(ModuleInstance moduleInstance, Material material) {
         if (moduleInstance != null) {
             List<ModuleInstance> moduleInstances = moduleInstance.getRoot().allSubModules().stream().filter(moduleInstance1 -> material.equals(MaterialProperty.getMaterial(moduleInstance1))).toList();
-            for (int i = 0; i < moduleInstances.size(); i++) {
-                if (moduleInstance.equals(moduleInstances.get(i))) {
-                    return i;
-                }
-            }
+            return moduleInstances.size();
         }
         return 0;
     }

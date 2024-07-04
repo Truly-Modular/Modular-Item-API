@@ -15,8 +15,9 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import smartin.miapi.modules.properties.util.ComplexBooleanProperty;
 
-public class HandheldItemProperty extends BooleanProperty {
+public class HandheldItemProperty extends ComplexBooleanProperty {
     public static ResourceLocation attackspeedID = Miapi.id("handheld_bonus_attackspeed");
 
     public static String KEY = "handheld_item";

@@ -16,6 +16,7 @@ import smartin.miapi.Miapi;
 import smartin.miapi.mixin.client.ClientAdvancementManagerAccessor;
 
 import java.util.List;
+import java.util.Optional;
 
 public class AdvancementCondition implements ModuleCondition {
     ResourceLocation advancement = null;
@@ -30,10 +31,11 @@ public class AdvancementCondition implements ModuleCondition {
 
     @Override
     public boolean isAllowed(ConditionManager.ConditionContext conditionContext) {
-        if (conditionContext instanceof ConditionManager.ModuleConditionContext moduleConditionContext) {
-            Player player = moduleConditionContext.player;
-            List<Component> reasons = moduleConditionContext.reasons;
-            if (player != null && advancement != null) {
+        Optional<Player> playerOptional = conditionContext.getContext(ConditionManager.PLAYER_LOCATION_CONTEXT);
+        if(playerOptional.isPresent()){
+            Player player = playerOptional.get();
+            List<Component> reasons = conditionContext.failReasons;
+            if (advancement != null) {
                 AdvancementHolder advancement1 = getAdvancement(advancement);
                 if (advancement1 != null) {
                     return hasAdvancement(advancement1, player);

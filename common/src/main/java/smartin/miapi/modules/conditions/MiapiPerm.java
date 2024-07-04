@@ -1,12 +1,13 @@
 package smartin.miapi.modules.conditions;
 
 import com.google.gson.JsonElement;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Player;
 import smartin.miapi.modules.MiapiPermissions;
 
 import java.util.ArrayList;
 import java.util.List;
-import net.minecraft.network.chat.Component;
-import net.minecraft.world.entity.player.Player;
+import java.util.Optional;
 
 public class MiapiPerm implements ModuleCondition {
 
@@ -22,10 +23,11 @@ public class MiapiPerm implements ModuleCondition {
 
     @Override
     public boolean isAllowed(ConditionManager.ConditionContext conditionContext) {
-        if (conditionContext instanceof ConditionManager.ModuleConditionContext moduleConditionContext) {
-            Player player = moduleConditionContext.player;
-            List<Component> reasons = moduleConditionContext.reasons;
-            if (player != null && MiapiPermissions.hasPerm(player, perms)) {
+        Optional<Player> playerOptional = conditionContext.getContext(ConditionManager.PLAYER_LOCATION_CONTEXT);
+        if (playerOptional.isPresent()) {
+            Player player = playerOptional.get();
+            List<Component> reasons = conditionContext.failReasons;
+            if (MiapiPermissions.hasPerm(player, perms)) {
                 return true;
             }
             reasons.add(Component.literal("This is a Cosmetic for Kofi and Patreon supporter."));

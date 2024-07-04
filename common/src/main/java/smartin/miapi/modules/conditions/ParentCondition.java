@@ -3,6 +3,8 @@ package smartin.miapi.modules.conditions;
 import com.google.gson.JsonElement;
 import smartin.miapi.modules.ModuleInstance;
 
+import java.util.Optional;
+
 public class ParentCondition implements ModuleCondition {
     public ModuleCondition condition;
 
@@ -16,13 +18,14 @@ public class ParentCondition implements ModuleCondition {
 
     @Override
     public boolean isAllowed(ConditionManager.ConditionContext conditionContext) {
-        if (conditionContext instanceof ConditionManager.ModuleConditionContext moduleConditionContext) {
-            ModuleInstance moduleInstance = moduleConditionContext.moduleInstance;
-            if (moduleInstance != null && moduleInstance.parent != null) {
-                ConditionManager.ModuleConditionContext copy = moduleConditionContext.copy();
-                copy.moduleInstance = moduleInstance.parent;
-                copy.propertyMap = moduleInstance.parent.getOldProperties();
-                return condition.isAllowed(copy);
+        Optional<ModuleInstance> optional = conditionContext.getContext(ConditionManager.MODULE_CONDITION_CONTEXT);
+        if (optional.isPresent()) {
+            ModuleInstance moduleInstance = optional.get();
+            if (moduleInstance.parent != null) {
+                ConditionManager.ConditionContext copiedContext = conditionContext.copy();
+                copiedContext.setContext(ConditionManager.MODULE_CONDITION_CONTEXT, moduleInstance.parent);
+                copiedContext.setContext(ConditionManager.MODULE_PROPERTIES, moduleInstance.parent.properties);
+                return condition.isAllowed(copiedContext);
             }
         }
         return false;

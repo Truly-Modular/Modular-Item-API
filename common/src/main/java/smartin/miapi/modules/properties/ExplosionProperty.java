@@ -1,28 +1,21 @@
 package smartin.miapi.modules.properties;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
 import com.redpxnda.nucleus.codec.auto.AutoCodec;
 import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
 import dev.architectury.event.EventResult;
 import net.minecraft.core.BlockPos;
-import net.minecraft.util.Tuple;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.ExplosionDamageCalculator;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import org.jetbrains.annotations.Nullable;
 import smartin.miapi.events.MiapiProjectileEvents;
-import smartin.miapi.modules.ItemModule;
-import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.util.CodecBasedProperty;
-import smartin.miapi.modules.properties.util.ModuleProperty;
+import smartin.miapi.modules.properties.util.MergeType;
 
 /**
  * This property is exploding projectiles on impact
@@ -33,12 +26,11 @@ public class ExplosionProperty extends CodecBasedProperty<ExplosionProperty.Expl
     public static ExplosionProperty property;
 
     public ExplosionProperty() {
-        super(KEY, codec);
+        super(codec);
         property = this;
         MiapiProjectileEvents.MODULAR_PROJECTILE_ENTITY_HIT.register(event -> {
-            @Nullable Tuple<ModuleInstance, JsonElement> jsonElement = this.highestPriorityJsonElement(event.projectile.getPickupItem());
-            if (jsonElement != null) {
-                ExplosionInfo info = new ExplosionInfo(jsonElement.getB().getAsJsonObject(), jsonElement.getA());
+            ExplosionInfo info = getProperty(event.projectile.getPickupItem());
+            if (info != null) {
                 if (!event.projectile.level().isClientSide()) {
                     info.explode(event.projectile.level(), event.projectile, event.projectile.position());
                     event.projectile.discard();
@@ -48,7 +40,7 @@ public class ExplosionProperty extends CodecBasedProperty<ExplosionProperty.Expl
             return EventResult.pass();
         });
         MiapiProjectileEvents.MODULAR_PROJECTILE_BLOCK_HIT.register(event -> {
-            ExplosionInfo info = this.get(event.projectile.getPickupItem());
+            ExplosionInfo info = getProperty(event.projectile.getPickupItem());
             if (info != null) {
                 if (!event.projectile.level().isClientSide()) {
                     info.explode(event.projectile.level(), event.projectile, event.blockHitResult.getLocation());
@@ -60,14 +52,9 @@ public class ExplosionProperty extends CodecBasedProperty<ExplosionProperty.Expl
         });
     }
 
-    public ExplosionInfo getInfo(ItemStack itemStack, ModuleProperty property) {
-        ExplosionInfo info = null;
-        for (ModuleInstance moduleInstance : ItemModule.getModules(itemStack).allSubModules()) {
-            if (moduleInstance.getOldProperties().containsKey(property)) {
-                info = new ExplosionInfo(moduleInstance.getOldProperties().get(property).getAsJsonObject(), moduleInstance);
-            }
-        }
-        return info;
+    @Override
+    public ExplosionInfo merge(ExplosionInfo left, ExplosionInfo right, MergeType mergeType) {
+        return right;
     }
 
     public static class BalancedExplosionDamage extends ExplosionDamageCalculator {
@@ -114,15 +101,6 @@ public class ExplosionProperty extends CodecBasedProperty<ExplosionProperty.Expl
         public double entityMaxDamage;
         @CodecBehavior.Optional
         public double entityRadius;
-
-        public ExplosionInfo(JsonObject element, ModuleInstance moduleInstance) {
-            destroyBlocks = ModuleProperty.getBoolean(element, "destroyBlocks", false);
-            chance = ModuleProperty.getDouble(element, "chance", moduleInstance, 1.0);
-            strength = ModuleProperty.getDouble(element, "strength", moduleInstance, 1.0);
-            entityStrength = ModuleProperty.getDouble(element, "entityStrength", moduleInstance, strength * 7);
-            entityMaxDamage = ModuleProperty.getDouble(element, "entityMaxDamage", moduleInstance, Float.POSITIVE_INFINITY);
-            entityRadius = ModuleProperty.getDouble(element, "entityRadius", moduleInstance, strength * 2);
-        }
 
         public ExplosionDamageCalculator getCalculator() {
             return new BalancedExplosionDamage((float) entityStrength, (float) entityMaxDamage, (float) entityRadius, destroyBlocks);

@@ -2,14 +2,16 @@ package smartin.miapi.modules.conditions;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import smartin.miapi.Miapi;
-
-import java.util.List;
+import com.mojang.serialization.JsonOps;
 import net.minecraft.advancements.critereon.MinMaxBounds;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.crafting.Ingredient;
+import smartin.miapi.Miapi;
+
+import java.util.List;
+import java.util.Optional;
 
 public class ItemInInventoryCondition implements ModuleCondition {
     public Ingredient item;
@@ -20,17 +22,17 @@ public class ItemInInventoryCondition implements ModuleCondition {
 
     @Override
     public boolean isAllowed(ConditionManager.ConditionContext conditionContext) {
-        if (conditionContext instanceof ConditionManager.ModuleConditionContext moduleConditionContext) {
-            Player player = moduleConditionContext.player;
-            List<Component> reasons = moduleConditionContext.reasons;
+        Optional<Player> playerOptional = conditionContext.getContext(ConditionManager.PLAYER_LOCATION_CONTEXT);
+        if (playerOptional.isPresent()) {
+            Player player = playerOptional.get();
+            List<Component> reasons = conditionContext.failReasons;
             if (player != null && count.matches(getCount(player.getInventory(), item))) return true;
 
             Component text;
-
-            int min = count.getMin() == null ? 0 : count.getMin();
-            Integer max = count.getMax();
+            int min = count.min().orElse(0);
+            Integer max = count.max().orElse(0);
             String ingredientName = "";
-            if(item.getItems()!=null && item.getItems().length>1){
+            if (item.getItems() != null && item.getItems().length > 1) {
                 ingredientName = Component.translatable(item.getItems()[0].getItem().getDescriptionId()).toString();
             }
 
@@ -60,14 +62,14 @@ public class ItemInInventoryCondition implements ModuleCondition {
             JsonObject object = element.getAsJsonObject();
             if (!object.has("item"))
                 throw new RuntimeException("Expected key 'item' for ItemInInventoryCondition, but it was not found.");
-            Ingredient item = Ingredient.fromJson(object.get("item"));
+            Ingredient item = Ingredient.CODEC.parse(JsonOps.INSTANCE, object.get("item")).getOrThrow();
 
             ItemInInventoryCondition condition = new ItemInInventoryCondition();
             condition.item = item;
 
             JsonElement countElement = object.get("count");
             if (countElement != null) {
-                condition.count = MinMaxBounds.Ints.fromJson(countElement);
+                condition.count = MinMaxBounds.Ints.CODEC.parse(JsonOps.INSTANCE, countElement).getOrThrow();
             }
 
             return condition;

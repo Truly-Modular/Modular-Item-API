@@ -1,12 +1,15 @@
 package smartin.miapi.modules.conditions;
 
 import com.google.gson.JsonElement;
+import com.mojang.serialization.JsonOps;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentSerialization;
 import smartin.miapi.modules.properties.TagProperty;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.List;
 import java.util.Map;
-import net.minecraft.network.chat.Component;
+import java.util.Optional;
 
 public class TagCondition implements ModuleCondition {
     public String tag = "";
@@ -22,13 +25,16 @@ public class TagCondition implements ModuleCondition {
 
     @Override
     public boolean isAllowed(ConditionManager.ConditionContext conditionContext) {
-        if(conditionContext instanceof ConditionManager.ModuleConditionContext moduleConditionContext) {
-            Map<ModuleProperty, JsonElement> propertyMap = moduleConditionContext.propertyMap;
-            List<Component> reasons = moduleConditionContext.reasons;
-            reasons.add(onFalse);
-            if (TagProperty.getTags(propertyMap).contains(tag)) {
-                return true;
+        Optional<Map<ModuleProperty<?>, Object>> propertyMapOptional = conditionContext.getContext(ConditionManager.MODULE_PROPERTIES);
+        if (propertyMapOptional.isPresent()) {
+            Map<ModuleProperty<?>, Object> propertyMap = propertyMapOptional.get();
+            List<String> tags = (List<String>) propertyMap.get(TagProperty.property);
+            if (tags != null) {
+                if (tags.contains(tag)) {
+                    return true;
+                }
             }
+            conditionContext.failReasons.add(onFalse);
         }
         return false;
     }
@@ -36,7 +42,7 @@ public class TagCondition implements ModuleCondition {
     @Override
     public ModuleCondition load(JsonElement element) {
         TagCondition condition = new TagCondition(element.getAsJsonObject().get("tag").getAsString());
-        condition.onFalse = ModuleProperty.getText(element.getAsJsonObject(), "error", Component.translatable("miapi.condition.tag.error"));
+        condition.onFalse = ComponentSerialization.CODEC.parse(JsonOps.INSTANCE, element.getAsJsonObject().get("item")).result().orElse(Component.translatable("miapi.condition.tag.error"));
         return new TagCondition(element.getAsJsonObject().get("tag").getAsString());
     }
 }

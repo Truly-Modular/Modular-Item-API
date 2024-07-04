@@ -13,7 +13,7 @@ public abstract class EntityDamageBoostProperty extends DoubleProperty {
         MiapiEvents.LIVING_HURT.register((livingHurtEvent) -> {
             if (!livingHurtEvent.livingEntity.level().isClientSide() && livingHurtEvent.livingEntity.level() instanceof ServerLevel serverWorld) {
                 ItemStack itemStack = livingHurtEvent.getCausingItemStack();
-                Double value = getValue(itemStack);
+                Double value = getValue(itemStack).orElse(0.0);
                 if (value != null && entityPredicate.test(livingHurtEvent.livingEntity)) {
                     livingHurtEvent.amount += value;
                 }
@@ -24,15 +24,5 @@ public abstract class EntityDamageBoostProperty extends DoubleProperty {
 
     public interface isOfEntity {
         boolean test(LivingEntity living);
-    }
-
-    @Override
-    public Double getValue(ItemStack stack) {
-        return getValueRaw(stack);
-    }
-
-    @Override
-    public double getValueSafe(ItemStack stack) {
-        return getValueSafeRaw(stack);
     }
 }

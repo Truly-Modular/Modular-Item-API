@@ -1,8 +1,9 @@
 package smartin.miapi.modules.conditions;
 
 import com.google.gson.JsonElement;
+import com.mojang.serialization.JsonOps;
 import net.minecraft.network.chat.Component;
-import smartin.miapi.modules.properties.util.ModuleProperty;
+import net.minecraft.network.chat.ComponentSerialization;
 
 public class NotCondition implements ModuleCondition {
     ModuleCondition conditions;
@@ -19,7 +20,7 @@ public class NotCondition implements ModuleCondition {
     @Override
     public boolean isAllowed(ConditionManager.ConditionContext conditionContext) {
         if (!conditions.isAllowed(conditionContext)) {
-            conditionContext.getReasons().add(onFalse);
+            conditionContext.failReasons.add(onFalse);
             return true;
         }
         return false;
@@ -28,7 +29,7 @@ public class NotCondition implements ModuleCondition {
     @Override
     public ModuleCondition load(JsonElement element) {
         NotCondition notCondition = new NotCondition(ConditionManager.get(element.getAsJsonObject().get("condition")));
-        notCondition.onFalse = ModuleProperty.getText(element.getAsJsonObject(), "error", Component.translatable("miapi.crafting_condition.false"));
+        notCondition.onFalse = ComponentSerialization.CODEC.parse(JsonOps.INSTANCE,element.getAsJsonObject().get("error")).result().orElse(Component.translatable("miapi.crafting_condition.false"));
         return notCondition;
     }
 }
