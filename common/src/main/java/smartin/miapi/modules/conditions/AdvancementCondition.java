@@ -1,7 +1,9 @@
 package smartin.miapi.modules.conditions;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.DynamicOps;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.advancements.Advancement;
@@ -19,7 +21,20 @@ import java.util.List;
 import java.util.Optional;
 
 public class AdvancementCondition implements ModuleCondition {
-    ResourceLocation advancement = null;
+    public static Codec<ModuleCondition> CODEC = new Codec<ModuleCondition>() {
+        @Override
+        public <T> DataResult<Pair<ModuleCondition, T>> decode(DynamicOps<T> ops, T input) {
+            Pair<String, T> result = Codec.STRING.decode(ops, ops.getMap(input).getOrThrow().get("advancement")).getOrThrow();
+            return DataResult.success(new Pair(new AdvancementCondition(ResourceLocation.parse(result.getFirst())), result.getSecond()));
+        }
+
+        @Override
+        public <T> DataResult<T> encode(ModuleCondition input, DynamicOps<T> ops, T prefix) {
+            return null;
+        }
+    };
+
+    public ResourceLocation advancement;
 
     public AdvancementCondition() {
 
@@ -32,7 +47,7 @@ public class AdvancementCondition implements ModuleCondition {
     @Override
     public boolean isAllowed(ConditionManager.ConditionContext conditionContext) {
         Optional<Player> playerOptional = conditionContext.getContext(ConditionManager.PLAYER_LOCATION_CONTEXT);
-        if(playerOptional.isPresent()){
+        if (playerOptional.isPresent()) {
             Player player = playerOptional.get();
             List<Component> reasons = conditionContext.failReasons;
             if (advancement != null) {
@@ -63,16 +78,6 @@ public class AdvancementCondition implements ModuleCondition {
             return ((ClientAdvancementManagerAccessor) manager).getProgress().get(advancement).isDone();
         }
         return false;
-    }
-
-    @Override
-    public ModuleCondition load(JsonElement element) {
-        if (element.isJsonObject()) {
-            JsonObject object = element.getAsJsonObject();
-            ResourceLocation identifier = ResourceLocation.parse(object.get("advancement").getAsString());
-            return new AdvancementCondition(identifier);
-        }
-        return new NotCondition(new TrueCondition());
     }
 
     public AdvancementHolder getAdvancement(ResourceLocation identifier) {

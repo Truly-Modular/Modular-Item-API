@@ -1,11 +1,26 @@
 package smartin.miapi.modules.conditions;
 
-import com.google.gson.JsonElement;
+import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.DynamicOps;
 import smartin.miapi.modules.ModuleInstance;
 
 import java.util.Optional;
 
 public class ChildCondition implements ModuleCondition {
+    public static Codec<ModuleCondition> CODEC = new Codec<ModuleCondition>() {
+        @Override
+        public <T> DataResult<Pair<ModuleCondition, T>> decode(DynamicOps<T> ops, T input) {
+            Pair<ModuleCondition, T> result = ConditionManager.CONDITION_CODEC.decode(ops, ops.getMap(input).getOrThrow().get("conditions")).getOrThrow();
+            return DataResult.success(new Pair(new ChildCondition(result.getFirst()), result.getSecond()));
+        }
+
+        @Override
+        public <T> DataResult<T> encode(ModuleCondition input, DynamicOps<T> ops, T prefix) {
+            return null;
+        }
+    };
     public ModuleCondition condition;
 
     public ChildCondition() {
@@ -32,10 +47,5 @@ public class ChildCondition implements ModuleCondition {
             }
         }
         return false;
-    }
-
-    @Override
-    public ModuleCondition load(JsonElement element) {
-        return new ChildCondition(ConditionManager.get(element.getAsJsonObject().get("condition")));
     }
 }

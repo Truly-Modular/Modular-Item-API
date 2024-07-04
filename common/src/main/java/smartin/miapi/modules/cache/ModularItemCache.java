@@ -64,6 +64,10 @@ public class ModularItemCache {
         return fallback;
     }
 
+    public static void discardCache(){
+
+    }
+
 
     public interface CacheObjectSupplier extends Function<ItemStack, Object> {
         @Override

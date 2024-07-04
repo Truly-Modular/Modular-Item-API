@@ -1,8 +1,9 @@
 package smartin.miapi.modules.conditions;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.mojang.serialization.JsonOps;
+import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.DynamicOps;
 import net.minecraft.advancements.critereon.MinMaxBounds;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.Container;
@@ -13,12 +14,21 @@ import smartin.miapi.Miapi;
 import java.util.List;
 import java.util.Optional;
 
-public class ItemInInventoryCondition implements ModuleCondition {
-    public Ingredient item;
-    public MinMaxBounds.Ints count = MinMaxBounds.Ints.atLeast(1);
+public record ItemInInventoryCondition(Ingredient item, MinMaxBounds.Ints count) implements ModuleCondition {
+    public static Codec<ModuleCondition> CODEC = new Codec<ModuleCondition>() {
+        @Override
+        public <T> DataResult<Pair<ModuleCondition, T>> decode(DynamicOps<T> ops, T input) {
+            Pair<Ingredient, T> result = Ingredient.CODEC.decode(ops, ops.getMap(input).getOrThrow().get("material")).getOrThrow();
+            MinMaxBounds.Ints count =  MinMaxBounds.Ints.CODEC.parse(ops, input).getOrThrow();
+            return DataResult.success(new Pair(new ItemInInventoryCondition(result.getFirst(), count), result.getSecond()));
+        }
 
-    public ItemInInventoryCondition() {
-    }
+        @Override
+        public <T> DataResult<T> encode(ModuleCondition input, DynamicOps<T> ops, T prefix) {
+            return null;
+        }
+    };
+
 
     @Override
     public boolean isAllowed(ConditionManager.ConditionContext conditionContext) {
@@ -54,28 +64,5 @@ public class ItemInInventoryCondition implements ModuleCondition {
             }
         }
         return found;
-    }
-
-    @Override
-    public ModuleCondition load(JsonElement element) {
-        try {
-            JsonObject object = element.getAsJsonObject();
-            if (!object.has("item"))
-                throw new RuntimeException("Expected key 'item' for ItemInInventoryCondition, but it was not found.");
-            Ingredient item = Ingredient.CODEC.parse(JsonOps.INSTANCE, object.get("item")).getOrThrow();
-
-            ItemInInventoryCondition condition = new ItemInInventoryCondition();
-            condition.item = item;
-
-            JsonElement countElement = object.get("count");
-            if (countElement != null) {
-                condition.count = MinMaxBounds.Ints.CODEC.parse(JsonOps.INSTANCE, countElement).getOrThrow();
-            }
-
-            return condition;
-        } catch (Exception e) {
-            Miapi.LOGGER.error("Could not load ItemInInventoryCondition ", e);
-        }
-        return new TrueCondition();
     }
 }

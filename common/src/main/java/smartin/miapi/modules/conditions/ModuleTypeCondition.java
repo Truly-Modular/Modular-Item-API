@@ -1,6 +1,9 @@
 package smartin.miapi.modules.conditions;
 
-import com.google.gson.JsonElement;
+import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.DynamicOps;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.registries.RegistryInventory;
@@ -8,6 +11,20 @@ import smartin.miapi.registries.RegistryInventory;
 import java.util.Optional;
 
 public class ModuleTypeCondition implements ModuleCondition {
+    public static Codec<ModuleCondition> CODEC = new Codec<ModuleCondition>() {
+        @Override
+        public <T> DataResult<Pair<ModuleCondition, T>> decode(DynamicOps<T> ops, T input) {
+            Pair<String, T> result = Codec.STRING.decode(ops, ops.getMap(input).getOrThrow().get("module")).getOrThrow();
+            ItemModule module1 = RegistryInventory.modules.get(result.getFirst());
+            return DataResult.success(new Pair(new ModuleTypeCondition(module1), result.getSecond()));
+        }
+
+        @Override
+        public <T> DataResult<T> encode(ModuleCondition input, DynamicOps<T> ops, T prefix) {
+            return null;
+        }
+    };
+
     public ItemModule module;
 
     public ModuleTypeCondition() {
@@ -26,10 +43,5 @@ public class ModuleTypeCondition implements ModuleCondition {
             return moduleInstance.module.equals(module);
         }
         return false;
-    }
-
-    @Override
-    public ModuleCondition load(JsonElement element) {
-        return new ModuleTypeCondition(RegistryInventory.modules.get(element.getAsJsonObject().get("module").getAsString()));
     }
 }

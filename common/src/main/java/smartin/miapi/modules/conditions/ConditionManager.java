@@ -5,28 +5,38 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
+import com.mojang.serialization.JsonOps;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
+import smartin.miapi.Miapi;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.registries.MiapiRegistry;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ConditionManager {
-    public static MiapiRegistry<ModuleCondition> moduleConditionRegistry = MiapiRegistry.getInstance(ModuleCondition.class);
+    public static MiapiRegistry<ModuleCondition> oldConditionRegistry = MiapiRegistry.getInstance(ModuleCondition.class);
+    public static Map<ResourceLocation, Codec<ModuleCondition>> CONDITION_REGISTRY = new ConcurrentHashMap<>();
     public static ContextManager<ModuleInstance> MODULE_CONDITION_CONTEXT = source -> ((ModuleInstance) source).copy();
     public static ContextManager<BlockPos> WORKBENCH_LOCATION_CONTEXT = BlockPos.class::cast;
     public static ContextManager<Player> PLAYER_LOCATION_CONTEXT = Player.class::cast;
-    public static ContextManager<Map<ModuleProperty<?>, Object>> MODULE_PROPERTIES = source -> new HashMap<>((Map<ModuleProperty<?>, Object>)source);
+    public static ContextManager<Map<ModuleProperty<?>, Object>> MODULE_PROPERTIES = source -> new HashMap<>((Map<ModuleProperty<?>, Object>) source);
 
-    public static Codec<ModuleCondition> CONDITIONCODEC = new Codec<ModuleCondition>() {
+    public static Codec<ModuleCondition> CONDITION_CODEC = new Codec<ModuleCondition>() {
         @Override
         public <T> DataResult<Pair<ModuleCondition, T>> decode(DynamicOps<T> ops, T input) {
-            return null;
+            Pair<String, T> result = Codec.STRING.decode(ops, ops.getMap(input).getOrThrow().get("type")).getOrThrow();
+            return CONDITION_REGISTRY.get(
+                    Miapi.id(result.getFirst())).decode(ops, result.getSecond());
         }
 
+        /**
+         * Conditions should never be encoded. this should be implemented at some point
+         */
         @Override
         public <T> DataResult<T> encode(ModuleCondition input, DynamicOps<T> ops, T prefix) {
             return null;
@@ -38,12 +48,7 @@ public class ConditionManager {
     }
 
     public static ModuleCondition get(JsonElement element) {
-        if (element == null) {
-            return new TrueCondition();
-        }
-        ModuleCondition condition = moduleConditionRegistry.get(element.getAsJsonObject().get("type").getAsString());
-        assert condition != null;
-        return condition.load(element);
+        return CONDITION_CODEC.parse(JsonOps.INSTANCE, element).getOrThrow();
     }
 
     public class ConditionContext {

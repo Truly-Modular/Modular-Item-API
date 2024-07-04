@@ -1,7 +1,11 @@
 package smartin.miapi.modules.conditions;
 
-import com.google.gson.JsonElement;
+import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.DynamicOps;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentSerialization;
 import smartin.miapi.Miapi;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.material.Material;
@@ -11,16 +15,32 @@ import java.util.List;
 import java.util.Optional;
 
 public class MaterialCountCondition implements ModuleCondition {
+    public static Codec<ModuleCondition> CODEC = new Codec<ModuleCondition>() {
+        @Override
+        public <T> DataResult<Pair<ModuleCondition, T>> decode(DynamicOps<T> ops, T input) {
+            Pair<String, T> result = Codec.STRING.decode(ops, ops.getMap(input).getOrThrow().get("material")).getOrThrow();
+            int count = Codec.intRange(0, 10000).parse(ops, input).getOrThrow();
+            Component warning = ComponentSerialization.CODEC
+                    .parse(ops, ops.getMap(input)
+                            .getOrThrow()
+                            .get("error"))
+                    .result().orElse(Component.translatable(Miapi.MOD_ID + ".condition.material.error"));
+            return DataResult.success(new Pair(new MaterialCountCondition(result.getFirst(),count, warning), result.getSecond()));
+        }
+
+        @Override
+        public <T> DataResult<T> encode(ModuleCondition input, DynamicOps<T> ops, T prefix) {
+            return null;
+        }
+    };
     public String material = "";
     public int count;
+    public Component error;
 
-    public MaterialCountCondition() {
-
-    }
-
-    public MaterialCountCondition(String material, int count) {
+    public MaterialCountCondition(String material, int count,Component error) {
         this.material = material;
         this.count = count;
+        this.error = error;
     }
 
     @Override
@@ -43,11 +63,5 @@ public class MaterialCountCondition implements ModuleCondition {
             return moduleInstances.size();
         }
         return 0;
-    }
-
-
-    @Override
-    public ModuleCondition load(JsonElement element) {
-        return new MaterialCountCondition(element.getAsJsonObject().get("material").getAsString(), element.getAsJsonObject().get("count").getAsInt());
     }
 }

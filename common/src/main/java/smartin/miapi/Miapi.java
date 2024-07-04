@@ -3,6 +3,10 @@ package smartin.miapi;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.DynamicOps;
 import com.redpxnda.nucleus.config.ConfigBuilder;
 import com.redpxnda.nucleus.config.ConfigManager;
 import com.redpxnda.nucleus.config.ConfigType;
@@ -55,6 +59,18 @@ public class Miapi {
     public static NetworkingImplCommon networkingImplementation;
     public static MinecraftServer server;
     public static Gson gson = new Gson();
+    public static Codec<ResourceLocation> MIAPI_ID = new Codec<>() {
+        @Override
+        public <T> DataResult<Pair<ResourceLocation, T>> decode(DynamicOps<T> ops, T input) {
+            Pair<String, T> result = Codec.STRING.decode(ops, ops.getMap(input).getOrThrow().get("type")).getOrThrow();
+            return DataResult.success(new Pair<>(Miapi.id(result.getFirst()), result.getSecond()));
+        }
+
+        @Override
+        public <T> DataResult<T> encode(ResourceLocation input, DynamicOps<T> ops, T prefix) {
+            return Codec.STRING.encode(input.toString(), ops, prefix);
+        }
+    };
 
     public static void init() {
         setupConfigs();

@@ -103,7 +103,6 @@ import static net.minecraft.client.renderer.RenderStateShard.*;
 import static smartin.miapi.Miapi.MOD_ID;
 import static smartin.miapi.attributes.AttributeRegistry.*;
 import static smartin.miapi.modules.abilities.util.ItemAbilityManager.useAbilityRegistry;
-import static smartin.miapi.modules.conditions.ConditionManager.moduleConditionRegistry;
 
 public class RegistryInventory {
     public static final Supplier<RegistrarManager> registrar = Suppliers.memoize(() -> RegistrarManager.get(MOD_ID));
@@ -225,7 +224,7 @@ public class RegistryInventory {
                 });
 
         RegistryInventory.components.register(
-                Miapi.id("item_module"),() -> ModuleInstance.componentType);
+                Miapi.id("item_module"), () -> ModuleInstance.componentType);
 
         //ENTITY
         // commented out because RegistrySupplier is needed... see itemProjectileType field definition above
@@ -444,21 +443,21 @@ public class RegistryInventory {
             SynergyManager.setup();
 
             //CONDITIONS
-            registerMiapi(moduleConditionRegistry, "true", new TrueCondition());
-            registerMiapi(moduleConditionRegistry, "not", new NotCondition());
-            registerMiapi(moduleConditionRegistry, "or", new OrCondition());
-            registerMiapi(moduleConditionRegistry, "and", new AndCondition());
-            registerMiapi(moduleConditionRegistry, "child", new ChildCondition());
-            registerMiapi(moduleConditionRegistry, "parent", new ParentCondition());
-            registerMiapi(moduleConditionRegistry, "otherModule", new OtherModuleModuleCondition());
-            registerMiapi(moduleConditionRegistry, "module", new ModuleTypeCondition());
-            registerMiapi(moduleConditionRegistry, "material", new MaterialCondition());
-            registerMiapi(moduleConditionRegistry, "material_count", new MaterialCountCondition());
-            registerMiapi(moduleConditionRegistry, "tag", new TagCondition());
-            registerMiapi(moduleConditionRegistry, "miapi_perm", new MiapiPerm());
-            registerMiapi(moduleConditionRegistry, "item_in_inventory", new ItemInInventoryCondition());
-            registerMiapi(moduleConditionRegistry, "mod_loaded", new IsModLoadedCondition());
-            registerMiapi(moduleConditionRegistry, "advancement", new AdvancementCondition());
+            ConditionManager.CONDITION_REGISTRY.put(Miapi.id("true"), TrueCondition.CODEC);
+            ConditionManager.CONDITION_REGISTRY.put(Miapi.id("not"), NotCondition.CODEC);
+            ConditionManager.CONDITION_REGISTRY.put(Miapi.id("or"), OrCondition.CODEC);
+            ConditionManager.CONDITION_REGISTRY.put(Miapi.id("and"), AndCondition.CODEC);
+            ConditionManager.CONDITION_REGISTRY.put(Miapi.id("child"), ChildCondition.CODEC);
+            ConditionManager.CONDITION_REGISTRY.put(Miapi.id("parent"), ParentCondition.CODEC);
+            ConditionManager.CONDITION_REGISTRY.put(Miapi.id("otherModule"), OtherModuleModuleCondition.CODEC);
+            ConditionManager.CONDITION_REGISTRY.put(Miapi.id("module"), ModuleTypeCondition.CODEC);
+            ConditionManager.CONDITION_REGISTRY.put(Miapi.id("tag"), TagCondition.CODEC);
+            ConditionManager.CONDITION_REGISTRY.put(Miapi.id("mod_loaded"), IsModLoadedCondition.CODEC);
+            ConditionManager.CONDITION_REGISTRY.put(Miapi.id("material"), MaterialCondition.CODEC);
+            ConditionManager.CONDITION_REGISTRY.put(Miapi.id("miapi_perm"), MiapiPerm.CODEC);
+            ConditionManager.CONDITION_REGISTRY.put(Miapi.id("material_count"), MaterialCountCondition.CODEC);
+            ConditionManager.CONDITION_REGISTRY.put(Miapi.id("item_in_inventory"), ItemInInventoryCondition.CODEC);
+            ConditionManager.CONDITION_REGISTRY.put(Miapi.id("advancement"), AdvancementCondition.CODEC);
 
             //MODULEPROPERTIES
             if (smartin.miapi.Environment.isClient()) {

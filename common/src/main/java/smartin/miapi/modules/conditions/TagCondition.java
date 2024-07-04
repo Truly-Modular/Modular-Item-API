@@ -1,7 +1,9 @@
 package smartin.miapi.modules.conditions;
 
-import com.google.gson.JsonElement;
-import com.mojang.serialization.JsonOps;
+import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.DynamicOps;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
 import smartin.miapi.modules.properties.TagProperty;
@@ -12,6 +14,23 @@ import java.util.Map;
 import java.util.Optional;
 
 public class TagCondition implements ModuleCondition {
+    public static Codec<ModuleCondition> CODEC = new Codec<ModuleCondition>() {
+        @Override
+        public <T> DataResult<Pair<ModuleCondition, T>> decode(DynamicOps<T> ops, T input) {
+            Pair<String, T> result = Codec.STRING.decode(ops, ops.getMap(input).getOrThrow().get("tag")).getOrThrow();
+            Component warning = ComponentSerialization.CODEC
+                    .parse(ops, ops.getMap(input)
+                            .getOrThrow()
+                            .get("error"))
+                    .result().orElse(Component.translatable("miapi.crafting_condition.false"));
+            return DataResult.success(new Pair(new TagCondition(result.getFirst(), warning), result.getSecond()));
+        }
+
+        @Override
+        public <T> DataResult<T> encode(ModuleCondition input, DynamicOps<T> ops, T prefix) {
+            return null;
+        }
+    };
     public String tag = "";
     Component onFalse = null;
 
@@ -19,8 +38,9 @@ public class TagCondition implements ModuleCondition {
 
     }
 
-    public TagCondition(String tag) {
+    public TagCondition(String tag, Component component) {
         this.tag = tag;
+        onFalse = component;
     }
 
     @Override
@@ -37,12 +57,5 @@ public class TagCondition implements ModuleCondition {
             conditionContext.failReasons.add(onFalse);
         }
         return false;
-    }
-
-    @Override
-    public ModuleCondition load(JsonElement element) {
-        TagCondition condition = new TagCondition(element.getAsJsonObject().get("tag").getAsString());
-        condition.onFalse = ComponentSerialization.CODEC.parse(JsonOps.INSTANCE, element.getAsJsonObject().get("item")).result().orElse(Component.translatable("miapi.condition.tag.error"));
-        return new TagCondition(element.getAsJsonObject().get("tag").getAsString());
     }
 }

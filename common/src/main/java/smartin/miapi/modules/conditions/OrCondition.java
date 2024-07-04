@@ -1,12 +1,25 @@
 package smartin.miapi.modules.conditions;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.DynamicOps;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class OrCondition implements ModuleCondition {
+    public static Codec<ModuleCondition> CODEC = new Codec<ModuleCondition>() {
+        @Override
+        public <T> DataResult<Pair<ModuleCondition, T>> decode(DynamicOps<T> ops, T input) {
+            Pair<List<ModuleCondition>, T> result = Codec.list(ConditionManager.CONDITION_CODEC).decode(ops, ops.getMap(input).getOrThrow().get("conditions")).getOrThrow();
+            return DataResult.success(new Pair(new OrCondition(result.getFirst()), result.getSecond()));
+        }
+
+        @Override
+        public <T> DataResult<T> encode(ModuleCondition input, DynamicOps<T> ops, T prefix) {
+            return null;
+        }
+    };
     List<ModuleCondition> conditions;
 
     public OrCondition() {
@@ -26,15 +39,5 @@ public class OrCondition implements ModuleCondition {
             }
         }
         return isAllowed;
-    }
-
-    @Override
-    public ModuleCondition load(JsonElement element) {
-        List<ModuleCondition> conditionsToLoad = new ArrayList<>();
-        JsonObject object = element.getAsJsonObject();
-        object.get("conditions").getAsJsonArray().forEach(subElement -> {
-            conditionsToLoad.add(ConditionManager.get(subElement));
-        });
-        return new OrCondition(conditionsToLoad);
     }
 }
