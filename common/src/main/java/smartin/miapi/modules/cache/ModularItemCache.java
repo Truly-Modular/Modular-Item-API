@@ -33,38 +33,29 @@ public class ModularItemCache {
 
     @Nullable
     public static <T> T getRaw(ItemStack stack, String key) {
-        if (!ReloadEvents.isInReload() && !stack.isEmpty() && stack.getItem() instanceof VisualModularItem) {
-            Cache itemCache = find(stack);
-            return (T) itemCache.get(key);
-        }
-        return null;
+        return get(stack, key, (T) null);
     }
 
     public static <T> T get(ItemStack stack, String key, T fallback) {
-        return get(stack, key, () -> fallback)
+        return get(stack, key, () -> fallback);
     }
 
     public static <T> T get(ItemStack stack, String key, Supplier<T> fallback) {
         ModuleInstance moduleInstance = ItemModule.getModules(stack);
         if (moduleInstance == null) {
-            return moduleInstance.getFromCache(key, stack, supplierMap, fallback)
+            return moduleInstance.getFromCache(key, stack, supplierMap, fallback);
         }
         return fallback.get();
     }
 
     public static <T> T getVisualOnlyCache(ItemStack stack, String key, T fallback) {
         if (!ReloadEvents.isInReload() && !stack.isEmpty() && stack.getItem() instanceof VisualModularItem) {
-            Cache itemCache = find(stack);
-            T object = (T) itemCache.get(key);
-            if (object == null) {
-                return fallback;
-            }
-            return object;
+            return get(stack, key, () -> fallback);
         }
         return fallback;
     }
 
-    public static void discardCache(){
+    public static void discardCache() {
 
     }
 

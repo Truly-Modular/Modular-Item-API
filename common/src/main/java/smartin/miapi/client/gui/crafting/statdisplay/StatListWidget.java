@@ -10,6 +10,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -25,6 +26,7 @@ import smartin.miapi.client.gui.TransformableWidget;
 import smartin.miapi.item.modular.CustomDrawTimeItem;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.*;
+import smartin.miapi.modules.properties.attributes.AttributeUtil;
 import smartin.miapi.modules.properties.damage_boosts.AquaticDamage;
 import smartin.miapi.modules.properties.damage_boosts.IllagerBane;
 import smartin.miapi.modules.properties.damage_boosts.SmiteDamage;
@@ -51,12 +53,12 @@ public class StatListWidget extends InteractAbleWidget {
             public <T extends InteractAbleWidget & SingleStatDisplay> List<T> currentList(ItemStack original, ItemStack compareTo) {
                 Set<GuiWidgetSupplier> suppliers = new HashSet<>();
                 suppliers.addAll(
-                        ItemModule.getModules(original).getPropertiesMerged().keySet().stream()
+                        ItemModule.getModules(original).itemMergedProperties.keySet().stream()
                                 .filter(property -> property instanceof GuiWidgetSupplier)
                                 .map(property -> (GuiWidgetSupplier) property)
                                 .toList());
                 suppliers.addAll(
-                        ItemModule.getModules(compareTo).getPropertiesMerged().keySet().stream()
+                        ItemModule.getModules(compareTo).itemMergedProperties.keySet().stream()
                                 .filter(property -> property instanceof GuiWidgetSupplier)
                                 .map(property -> (GuiWidgetSupplier) property)
                                 .toList());
@@ -312,11 +314,7 @@ public class StatListWidget extends InteractAbleWidget {
                             return Component.translatable("miapi.stat.pillagerGuard.description", value);
                         })).build());
 
-        AttributeSingleDisplay.attributesWithDisplay.add(AttributeRegistry.MINING_SPEED_AXE);
-        AttributeSingleDisplay.attributesWithDisplay.add(AttributeRegistry.MINING_SPEED_PICKAXE);
-        AttributeSingleDisplay.attributesWithDisplay.add(AttributeRegistry.MINING_SPEED_HOE);
-        AttributeSingleDisplay.attributesWithDisplay.add(AttributeRegistry.MINING_SPEED_SHOVEL);
-        AttributeSingleDisplay.attributesWithDisplay.add(AttributeRegistry.ARMOR_CRUSHING);
+        AttributeSingleDisplay.attributesWithDisplay.add(AttributeRegistry.ARMOR_CRUSHING.value());
         RegistryInventory.moduleProperties.getFlatMap().values().stream()
                 .filter(StatWidgetSupplier.class::isInstance)
                 .map(StatWidgetSupplier.class::cast)
@@ -328,7 +326,7 @@ public class StatListWidget extends InteractAbleWidget {
         BuiltInRegistries.ATTRIBUTE.forEach(entityAttribute -> {
             if (!AttributeSingleDisplay.attributesWithDisplay.contains(entityAttribute)) {
                 addStatDisplay(AttributeSingleDisplay
-                        .builder(entityAttribute).build());
+                        .builder(BuiltInRegistries.ATTRIBUTE.wrapAsHolder(entityAttribute)).build());
             }
         });
     }
@@ -353,7 +351,7 @@ public class StatListWidget extends InteractAbleWidget {
         return Component.translatable(Miapi.MOD_ID + ".stat." + statName);
     }
 
-    public void render(GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
+    public void renderWidget(GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
         super.render(drawContext, mouseX, mouseY, delta);
         Vector4f vector4f = transformableWidget.transFormMousePos(mouseX, mouseY);
         InteractAbleWidget hoverDisplay = null;
@@ -381,8 +379,8 @@ public class StatListWidget extends InteractAbleWidget {
 
     public static void setAttributeCaches(ItemStack original, ItemStack compareTo) {
         for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
-            Multimap<Attribute, AttributeModifier> oldAttr = original.getAttributeModifiers(equipmentSlot);
-            Multimap<Attribute, AttributeModifier> compAttr = compareTo.getAttributeModifiers(equipmentSlot);
+            Multimap<Attribute, AttributeModifier> oldAttr = AttributeUtil.getAttribute(original, equipmentSlot);
+            Multimap<Attribute, AttributeModifier> compAttr = AttributeUtil.getAttribute(compareTo, equipmentSlot);
             AttributeSingleDisplay.oldItemCache.put(equipmentSlot, oldAttr);
             AttributeSingleDisplay.compareItemCache.put(equipmentSlot, compAttr);
         }

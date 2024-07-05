@@ -11,6 +11,9 @@ public interface ModuleProperty<T> {
 
     T decode(JsonElement element);
 
+    /**
+     * this should NOT be called, as most properties do not properly implement this because im lazy.
+     */
     JsonElement encode(T property);
 
     T merge(T left, T right, MergeType mergeType);

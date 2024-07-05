@@ -14,7 +14,8 @@ import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.cache.ModularItemCache;
-import smartin.miapi.modules.properties.AttributeProperty;
+import smartin.miapi.modules.properties.attributes.AttributeProperty;
+import smartin.miapi.modules.properties.attributes.AttributeUtil;
 
 import java.io.StringReader;
 
@@ -25,9 +26,9 @@ public class BetterCombatHelper {
 
     private static float getAttackRange(ItemStack stack) {
         if (Platform.isForgeLike()) {
-            return (float) (AttributeProperty.getActualValueFrom(AttributeProperty.getAttributeModifiersRaw(stack), EquipmentSlot.MAINHAND, AttributeRegistry.ATTACK_RANGE, AttributeRegistry.ATTACK_RANGE.getDefaultValue()) - 0.5f);
+            return (float) (AttributeUtil.getActualValueFrom(AttributeProperty.getAttributeModifiersRaw(stack), EquipmentSlot.MAINHAND, AttributeRegistry.ATTACK_RANGE, AttributeRegistry.ATTACK_RANGE.getDefaultValue()) - 0.5f);
         }
-        return (float) (AttributeProperty.getActualValueFrom(AttributeProperty.getAttributeModifiersRaw(stack), EquipmentSlot.MAINHAND, AttributeRegistry.ATTACK_RANGE, AttributeRegistry.ATTACK_RANGE.getDefaultValue()) + 2.5f);
+        return (float) (AttributeUtil.getActualValueFrom(AttributeProperty.getAttributeModifiersRaw(stack), EquipmentSlot.MAINHAND, AttributeRegistry.ATTACK_RANGE, AttributeRegistry.ATTACK_RANGE.getDefaultValue()) + 2.5f);
     }
 
     public static net.bettercombat.api.WeaponAttributes getAttributesContainer(ItemStack stack) {

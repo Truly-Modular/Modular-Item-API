@@ -1,6 +1,7 @@
 package smartin.miapi.modules.properties;
 
 import smartin.miapi.Miapi;
+import smartin.miapi.modules.properties.attributes.AttributeProperty;
 import smartin.miapi.modules.properties.util.DoubleProperty;
 
 import java.util.ArrayList;

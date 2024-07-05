@@ -19,7 +19,7 @@ import net.minecraft.world.phys.Vec3;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.entity.BoomerangItemProjectileEntity;
 import smartin.miapi.item.modular.ModularItem;
-import smartin.miapi.modules.properties.AttributeProperty;
+import smartin.miapi.modules.properties.attributes.AttributeProperty;
 
 import java.util.Comparator;
 import java.util.LinkedHashSet;

@@ -4,7 +4,6 @@ import com.redpxnda.nucleus.facet.FacetRegistry;
 import dev.architectury.event.EventResult;
 import dev.architectury.event.events.common.PlayerEvent;
 import net.minecraft.client.Minecraft;
-import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.protocol.game.ClientboundAnimatePacket;
@@ -13,17 +12,13 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.DamageTypeTags;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.LightningBolt;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.phys.Vec3;
 import smartin.miapi.Miapi;
 import smartin.miapi.entity.ItemProjectileEntity;
 import smartin.miapi.entity.ShieldingArmorFacet;
@@ -31,8 +26,8 @@ import smartin.miapi.entity.StunHealthFacet;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.events.MiapiProjectileEvents;
 import smartin.miapi.mixin.LivingEntityAccessor;
-import smartin.miapi.modules.abilities.util.WrappedSoundEvent;
-import smartin.miapi.modules.properties.AttributeProperty;
+import smartin.miapi.modules.properties.attributes.AttributeProperty;
+import smartin.miapi.modules.properties.attributes.AttributeUtil;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -276,6 +271,6 @@ public class AttributeRegistry {
     }
 
     public static double getAttribute(ItemStack stack, Attribute attribute, EquipmentSlot slot, double defaultValue) {
-        return AttributeProperty.getActualValue(stack, slot, attribute, defaultValue);
+        return AttributeUtil.getActualValue(stack, slot, attribute, defaultValue);
     }
 }

@@ -9,7 +9,7 @@ import smartin.miapi.craft.CraftAction;
 import smartin.miapi.item.ModularItemStackConverter;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
-import smartin.miapi.modules.properties.AttributeProperty;
+import smartin.miapi.modules.properties.attributes.AttributeProperty;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 

@@ -79,6 +79,8 @@ import smartin.miapi.modules.edit_options.ReplaceOption;
 import smartin.miapi.modules.edit_options.skins.SkinOptions;
 import smartin.miapi.modules.material.*;
 import smartin.miapi.modules.properties.*;
+import smartin.miapi.modules.properties.attributes.AttributeProperty;
+import smartin.miapi.modules.properties.attributes.AttributeSplitProperty;
 import smartin.miapi.modules.properties.compat.apoli.ApoliPowersProperty;
 import smartin.miapi.modules.properties.compat.better_combat.BetterCombatProperty;
 import smartin.miapi.modules.properties.compat.ht_treechop.TreechopProperty;

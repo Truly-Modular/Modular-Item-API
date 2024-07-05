@@ -17,7 +17,6 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
-import net.minecraft.world.entity.projectile.Arrow;
 import net.minecraft.world.entity.projectile.ThrownTrident;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
@@ -34,7 +33,7 @@ import smartin.miapi.entity.arrowhitbehaviours.ProjectileHitBehaviour;
 import smartin.miapi.events.MiapiProjectileEvents;
 import smartin.miapi.modules.abilities.util.WrappedSoundEvent;
 import smartin.miapi.modules.properties.AirDragProperty;
-import smartin.miapi.modules.properties.AttributeProperty;
+import smartin.miapi.modules.properties.attributes.AttributeUtil;
 import smartin.miapi.registries.RegistryInventory;
 
 public class ItemProjectileEntity extends AbstractArrow {
@@ -90,7 +89,7 @@ public class ItemProjectileEntity extends AbstractArrow {
 
     private void setup() {
         ItemStack projectileStack = this.getPickupItem();
-        this.setBaseDamage(AttributeProperty.getActualValue(projectileStack, EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_DAMAGE.value()));
+        this.setBaseDamage(AttributeUtil.getActualValue(projectileStack, EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_DAMAGE.value()));
     }
 
     private byte getLoyaltyFromItem(ItemStack stack) {
@@ -216,8 +215,8 @@ public class ItemProjectileEntity extends AbstractArrow {
     @Override
     public void shootFromRotation(Entity shooter, float pitch, float yaw, float roll, float speed, float divergence) {
         ItemStack projectileStack = this.getPickupItem();
-        speed = (float) Math.max(0.1, speed + AttributeProperty.getActualValue(projectileStack, EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_SPEED.value()));
-        divergence *= (float) Math.pow(12.0, -AttributeProperty.getActualValue(projectileStack, EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_ACCURACY.value()));
+        speed = (float) Math.max(0.1, speed + AttributeUtil.getActualValue(projectileStack, EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_SPEED.value()));
+        divergence *= (float) Math.pow(12.0, -AttributeUtil.getActualValue(projectileStack, EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_ACCURACY.value()));
         float f = -Mth.sin(yaw * ((float) Math.PI / 180)) * Mth.cos(pitch * ((float) Math.PI / 180));
         float g = -Mth.sin((pitch + roll) * ((float) Math.PI / 180));
         float h = Mth.cos(yaw * ((float) Math.PI / 180)) * Mth.cos(pitch * ((float) Math.PI / 180));

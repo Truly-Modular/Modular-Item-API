@@ -1,16 +1,16 @@
-package smartin.miapi.modules.properties;
+package smartin.miapi.modules.properties.attributes;
 
 import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
+import com.redpxnda.nucleus.codec.auto.AutoCodec;
+import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
 import dev.architectury.event.EventResult;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -23,6 +23,7 @@ import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.cache.ModularItemCache;
+import smartin.miapi.modules.properties.util.CodecBasedProperty;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
@@ -32,14 +33,16 @@ import java.util.function.Supplier;
 /**
  * This property allows Modules to set Attributes
  */
-public class AttributeProperty implements ModuleProperty {
+public class AttributeProperty extends CodecBasedProperty<List<AttributeProperty.AttributeJson>> {
     public static final String KEY = "attributes";
     public static ModuleProperty property;
     public static final Map<String, Supplier<Attribute>> replaceMap = new HashMap<>();
     public static final Map<Attribute, Float> priorityMap = new HashMap<>();
     public static final List<AttributeTransformer> attributeTransformers = new ArrayList<>();
+    public static Codec<List<AttributeJson>> CODEC = Codec.list(AutoCodec.of(AttributeJson.class).codec());
 
     public AttributeProperty() {
+        super(CODEC);
         property = this;
         ModularItemCache.setSupplier(KEY, (AttributeProperty::createAttributeCache));
         ModularItemCache.setSupplier(KEY + "_unmodifieable", (AttributeProperty::equipmentSlotMultimapMapGenerate));
@@ -69,65 +72,6 @@ public class AttributeProperty implements ModuleProperty {
             info.attributeModifiers.putAll((AttributeProperty.equipmentSlotMultimapMap(info.itemStack).get(info.equipmentSlot)));
             return EventResult.pass();
         }));
-    }
-
-    @Override
-    public boolean load(String moduleKey, JsonElement element) throws Exception {
-        Multimap<Attribute, EntityAttributeModifierHolder> attributeModifiers = ArrayListMultimap.create();
-        for (JsonElement attributeElement : element.getAsJsonArray()) {
-            JsonObject attributeJson = attributeElement.getAsJsonObject();
-            String attributeName = attributeJson.get("attribute").getAsString();
-            double value = StatResolver.resolveDouble(attributeJson.get("value").getAsString(), new ModuleInstance(ItemModule.empty));
-            AttributeModifier.Operation operation = getOperation(attributeJson.get("operation").getAsString());
-            EquipmentSlot slot = getSlot(attributeJson.get("slot").getAsString());
-
-            Attribute attribute = replaceMap.getOrDefault(attributeName, () -> BuiltInRegistries.ATTRIBUTE.get(ResourceLocation.parse(attributeName))).get();
-
-            ResourceLocation identifier = Miapi.id("modular_attributes");
-
-            if (attributeJson.has("id")) {
-                identifier = ResourceLocation.parse(attributeJson.get("id").getAsString());
-            }
-            AttributeModifier.Operation targetOperation = AttributeModifier.Operation.ADD_VALUE;
-            if (attributeJson.has("target_operation")) {
-                targetOperation = getOperation(attributeJson.get("target_operation").getAsString());
-            }
-
-            if (attribute != null) {
-                attributeModifiers.put(attribute, new EntityAttributeModifierHolder(new AttributeModifier(identifier, value, operation), slot, targetOperation));
-            }
-        }
-        return true;
-    }
-
-    public static Multimap<Attribute, AttributeModifier> mergeAttributes(Multimap<Attribute, AttributeModifier> old, Multimap<Attribute, AttributeModifier> into) {
-        Multimap<Attribute, AttributeModifier> mergedList = LinkedListMultimap.create();
-        old.entries().forEach(entityAttributeEntityAttributeModifierHolderEntry -> {
-            if (!mergedList.get(entityAttributeEntityAttributeModifierHolderEntry.getKey()).contains(entityAttributeEntityAttributeModifierHolderEntry.getValue())) {
-                mergedList.put(entityAttributeEntityAttributeModifierHolderEntry.getKey(), entityAttributeEntityAttributeModifierHolderEntry.getValue());
-            }
-        });
-        into.entries().forEach(entityAttributeEntityAttributeModifierHolderEntry -> {
-            if (!mergedList.get(entityAttributeEntityAttributeModifierHolderEntry.getKey()).contains(entityAttributeEntityAttributeModifierHolderEntry.getValue())) {
-                mergedList.put(entityAttributeEntityAttributeModifierHolderEntry.getKey(), entityAttributeEntityAttributeModifierHolderEntry.getValue());
-            }
-        });
-        return mergedList;
-    }
-
-    @Override
-    public JsonElement merge(JsonElement old, JsonElement toMerge, MergeType type) {
-        switch (type) {
-            case SMART, EXTEND -> {
-                JsonElement element = old.deepCopy();
-                element.getAsJsonArray().addAll(toMerge.getAsJsonArray());
-                return element;
-            }
-            case OVERWRITE -> {
-                return toMerge;
-            }
-        }
-        return old;
     }
 
     /**
@@ -286,215 +230,41 @@ public class AttributeProperty implements ModuleProperty {
                 });
             });
 
-            return sortMultimap(toAdding);
+            return AttributeUtil.sortMultimap(toAdding);
         }
         return toAdding;
     }
 
-    /**
-     * A private function to sort the multimap to provide better view in the gui.
-     * Sorting is based on the {@link AttributeProperty#priorityMap}
-     *
-     * @param multimap
-     * @return
-     */
-    public static Multimap<Attribute, AttributeModifier> sortMultimap(Multimap<Attribute, AttributeModifier> multimap) {
-        Comparator<Attribute> comparator = (attribute1, attribute2) -> {
-            // Get the priority values for the attributes, using 0 as the default value
-            float priority1 = priorityMap.getOrDefault(attribute1, 0f);
-            float priority2 = priorityMap.getOrDefault(attribute2, 0f);
-
-            // Sort in ascending order (lower priority values first)
-            return Float.compare(priority1, priority2);
-        };
-
-        // Sort the keys (attributes) of the Multimap using the comparator
-        List<Attribute> sortedKeys = new ArrayList<>(multimap.keySet());
-        sortedKeys.sort(comparator);
-
-        // Create a new Multimap with the sorted keys
-        Multimap<Attribute, AttributeModifier> sortedMultimap = LinkedListMultimap.create();
-
-        // Iterate over the sorted keys and add the corresponding values to the sorted Multimap
-        for (Attribute attribute : sortedKeys) {
-            sortedMultimap.putAll(attribute, multimap.get(attribute));
-        }
-
-        // Clear the original Multimap and add the sorted entries
-        return sortedMultimap;
-    }
-
-    /**
-     * A util function to make reading the multimap simpler
-     *
-     * @param rawMap
-     * @param slot
-     * @param entityAttribute
-     * @param fallback
-     * @return
-     */
-    public static double getActualValueFrom(Multimap<Attribute, EntityAttributeModifierHolder> rawMap, EquipmentSlot slot, Attribute entityAttribute, double fallback) {
-        Multimap<Attribute, AttributeModifier> map = ArrayListMultimap.create();
-        rawMap.forEach(((attribute, entityAttributeModifierHolder) -> {
-            if (entityAttributeModifierHolder.slot.equals(slot)) {
-                map.put(attribute, entityAttributeModifierHolder.attributeModifier);
-            }
-        }));
-        return getActualValue(map, entityAttribute, fallback);
-    }
-
-    /**
-     * A Util function to make reading attributes from items easier
-     *
-     * @param stack
-     * @param slot
-     * @param entityAttribute
-     * @param fallback        if the item does not have this attribute, this value is returned
-     * @return the double value of the attribute according to the Itemstack
-     */
-    public static double getActualValue(ItemStack stack, EquipmentSlot slot, Attribute entityAttribute, double fallback) {
-        //TODO: ive got 0 clue what todo with this
-        //DataComponentTypes.ATTRIBUTE_MODIFIERS;
-        if (entityAttribute == null) {
-            return fallback;
-        }
-        List<AttributeModifier> modifiers = new ArrayList<>();
-        stack.get(DataComponents.ATTRIBUTE_MODIFIERS).forEach(slot, (attribute, modifier) -> {
-            if (entityAttribute.equals(attribute)) {
-                modifiers.add(modifier);
-            }
-        });
-        return getActualValue(modifiers, fallback);
-    }
-
-    public static boolean hasAttribute(Multimap<Attribute, AttributeModifier> map, Attribute entityAttribute, double fallback) {
-        Collection<AttributeModifier> attributes = map.get(entityAttribute);
-        return !attributes.isEmpty();
-    }
-
-    public static double getActualValue(Multimap<Attribute, AttributeModifier> map, Attribute entityAttribute) {
-        return getActualValue(map, entityAttribute, entityAttribute.getDefaultValue());
-    }
-
-    public static double getActualValue(Multimap<Attribute, AttributeModifier> map, Attribute entityAttribute, double fallback) {
-        Collection<AttributeModifier> attributes = map.get(entityAttribute);
-        return getActualValue(attributes, fallback);
-    }
-
-    public static double getActualValue(Collection<AttributeModifier> attributes, double fallback) {
-        List<Double> addition = new ArrayList<>();
-        List<Double> multiplyBase = new ArrayList<>();
-        List<Double> multiplyTotal = new ArrayList<>();
-        attributes.forEach(attribute -> {
-            switch (attribute.operation()) {
-                case ADD_VALUE -> addition.add(attribute.amount());
-                case ADD_MULTIPLIED_BASE -> multiplyBase.add(attribute.amount());
-                case ADD_MULTIPLIED_TOTAL -> multiplyTotal.add(attribute.amount());
-            }
-        });
-        double value = fallback;
-        for (Double currentValue : addition) {
-            value += currentValue;
-        }
-        double multiplier = 1.0;
-        for (Double currentValue : multiplyBase) {
-            multiplier += currentValue;
-        }
-        value = value * multiplier;
-        for (Double currentValue : multiplyTotal) {
-            value = (1 + currentValue) * value;
-        }
-        if (Double.isNaN(value)) {
-            return fallback;
-        }
-        return value;
-    }
-
-    /**
-     * A Util function to make reading attributes from items easier
-     *
-     * @param stack
-     * @param slot
-     * @param entityAttribute
-     * @return the double value of the attribute according to the Itemstack
-     */
-    public static double getActualValue(ItemStack stack, EquipmentSlot slot, Attribute entityAttribute) {
-        return getActualValue(stack, slot, entityAttribute, entityAttribute.getDefaultValue());
-    }
-
     private static Multimap<Attribute, EntityAttributeModifierHolder> createAttributeCache(ItemStack itemStack) {
-        return createAttributeMap(itemStack, AttributeProperty::getIDforSlot);
+        return createAttributeMap(itemStack);
     }
 
 
-    public static Multimap<Attribute, EntityAttributeModifierHolder> createAttributeMap(ItemStack itemStack, IdentifierGetter defaultID) {
+    public static Multimap<Attribute, EntityAttributeModifierHolder> createAttributeMap(ItemStack itemStack) {
         ModuleInstance rootInstance = ItemModule.getModules(itemStack);
         Multimap<Attribute, EntityAttributeModifierHolder> attributeModifiers = ArrayListMultimap.create();
         for (ModuleInstance instance : rootInstance.allSubModules()) {
-            getAttributeModifiers(defaultID, instance, attributeModifiers);
+            getAttributeModifiers(instance, attributeModifiers);
         }
         return attributeModifiers;
     }
 
-    public static void getAttributeModifiers(IdentifierGetter defaultID, ModuleInstance instance, Multimap<Attribute, EntityAttributeModifierHolder> attributeModifiers) {
-        JsonElement element = instance.getOldProperties().get(property);
-        if (element == null) {
-            return;
-        }
-        for (JsonElement attributeElement : element.getAsJsonArray()) {
-            AttributeJson attributeJson = Miapi.gson.fromJson(attributeElement, AttributeJson.class);
-            assert attributeJson.attribute != null;
-            assert attributeJson.value != null;
-            assert attributeJson.operation != null;
-            EquipmentSlot slot = (attributeJson.slot != null) ? getSlot(attributeJson.slot) : EquipmentSlot.MAINHAND;
-            String attributeName = attributeJson.attribute;
-            double value = StatResolver.resolveDouble(attributeJson.value, instance);
+    public static void getAttributeModifiers(ModuleInstance instance, Multimap<Attribute, EntityAttributeModifierHolder> attributeModifiers) {
+        ((AttributeProperty) property).getProperty(instance).forEach(attributeJson -> {
+
             AttributeModifier.Operation operation = getOperation(attributeJson.operation);
-            AttributeModifier.Operation baseTarget = getOperation(attributeJson.target_operation);
-            Attribute attribute = replaceMap.getOrDefault(attributeName, () -> BuiltInRegistries.ATTRIBUTE.get(ResourceLocation.parse(attributeName))).get();
+            AttributeModifier.Operation baseTarget = getOperation(attributeJson.targetOperation);
+            Attribute attribute = replaceMap.getOrDefault(attributeJson.attribute, () -> BuiltInRegistries.ATTRIBUTE.get(ResourceLocation.parse(attributeJson.attribute))).get();
             if (attribute == null) {
-                Miapi.LOGGER.warn(String.valueOf(BuiltInRegistries.ATTRIBUTE.get(ResourceLocation.parse(attributeName))));
-                Miapi.LOGGER.warn("Attribute is null " + attributeName + " on module " + instance.module.name() + " this should not have happened.");
+                Miapi.LOGGER.warn(String.valueOf(BuiltInRegistries.ATTRIBUTE.get(ResourceLocation.parse(attributeJson.attribute))));
+                Miapi.LOGGER.warn("Attribute is null " + attributeJson.attribute + " on module " + instance.module.name() + " this should not have happened.");
             } else {
-                ResourceLocation identifier = getIDforSlot(slot, attribute, operation);
-                //TODO:verify i dont need todo this anymoey
-                /*
-                if (identifier.equals(ExampleModularItem.attackDamageUUID())) {
-                    identifier = ExampleModularItem.attackSpeedUUID();
+                if (attributeJson.id == null) {
+                    attributeJson.id = AttributeUtil.getIDForSlot(attributeJson.slot, attribute, operation);
                 }
-                if (identifier.equals(ExampleModularItem.attackSpeedUUID())) {
-                    identifier = ExampleModularItem.attackSpeedUUID();
-                }
-
-                 */
-                attributeModifiers.put(attribute, new EntityAttributeModifierHolder(new AttributeModifier(identifier, value, operation), slot, baseTarget));
+                attributeModifiers.put(attribute, new EntityAttributeModifierHolder(new AttributeModifier(attributeJson.id, attributeJson.evaluatedValue, operation), attributeJson.slot, baseTarget));
             }
-        }
-    }
-
-    /**
-     * Generates a unique id for the slot to prevent collisions
-     *
-     * @param equipmentSlot
-     * @return a unique ID for the slot
-     */
-    public static ResourceLocation getIDforSlot(EquipmentSlot equipmentSlot, Attribute attribute, AttributeModifier.Operation operation) {
-        return getIDforSlot(equipmentSlot, attribute, operation, "");
-    }
-
-    /**
-     * Generates a unique id for the slot to prevent collisions
-     *
-     * @param equipmentSlot
-     * @return a unique ID for the slot
-     */
-    public static ResourceLocation getIDforSlot(EquipmentSlot equipmentSlot, Attribute attribute, AttributeModifier.Operation operation, String context) {
-        String slotidString = equipmentSlot.getName() + "-" + attribute.getDescriptionId() + "-" + equipmentSlot.getIndex() + "-" + equipmentSlot.getFilterFlag() + "-" + operation.toString() + context;
-        return getIDforSlot(slotidString);
-    }
-
-    public static ResourceLocation getIDforSlot(String slotidString) {
-        return Miapi.id(slotidString);
+        });
     }
 
     private static AttributeModifier.Operation getOperation(String operationString) {
@@ -508,20 +278,19 @@ public class AttributeProperty implements ModuleProperty {
         };
     }
 
-    public static EquipmentSlot getSlot(String slotString) {
-        if (slotString != null && !slotString.isEmpty()) {
-            try {
-                return EquipmentSlot.byName(slotString);
-            } catch (Exception e) {
-                Miapi.LOGGER.error("Equipment Slot not found - use correct spelling please [mainhand offhand feet legs chest head]");
-                Miapi.LOGGER.error("substituting mainhand Slot Instead");
-                e.printStackTrace();
-            }
-        }
-        return EquipmentSlot.MAINHAND; // default to main hand if slot is not specified
+    @Override
+    public List<AttributeJson> merge(List<AttributeJson> left, List<AttributeJson> right, MergeType mergeType) {
+        List<AttributeJson> merged = new ArrayList<>(left);
+        merged.addAll(right);
+        return merged;
     }
 
-    public record EntityAttributeModifierHolder(AttributeModifier attributeModifier, EquipmentSlot slot,
+    public List<AttributeJson> initialize(List<AttributeJson> property, ModuleInstance context) {
+        property.forEach(entry -> entry.evaluatedValue = entry.value.evaluate(context));
+        return property;
+    }
+
+    public record EntityAttributeModifierHolder(AttributeModifier attributeModifier, EquipmentSlotGroup slot,
                                                 AttributeModifier.Operation mergeTo) {
     }
 
@@ -529,16 +298,20 @@ public class AttributeProperty implements ModuleProperty {
         Multimap<Attribute, EntityAttributeModifierHolder> transform(Multimap<Attribute, EntityAttributeModifierHolder> map, ItemStack itemstack);
     }
 
-    public interface IdentifierGetter {
-        ResourceLocation fromSlot(EquipmentSlot equipmentSlot, Attribute attribute, AttributeModifier.Operation operation);
-    }
-
     public static class AttributeJson {
+        public static Codec<EquipmentSlotGroup> EQUIPMENTSLOT_CODEC = EquipmentSlotGroup.CODEC;
+
+        @CodecBehavior.Optional
+        public ResourceLocation id;
         public String attribute;
-        public String value;
+        public StatResolver.DoubleFromStat value = new StatResolver.DoubleFromStat(0);
         public String operation;
-        public String slot;
-        public String id;
-        public String target_operation;
+        @CodecBehavior.Override("EQUIPMENTSLOT_CODEC")
+        public EquipmentSlotGroup slot;
+        @CodecBehavior.Optional
+        @AutoCodec.Name("target_operation")
+        public String targetOperation;
+        @AutoCodec.Ignored
+        public double evaluatedValue;
     }
 }

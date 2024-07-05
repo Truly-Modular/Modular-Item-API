@@ -11,7 +11,7 @@ import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.ItemStack;
 import smartin.miapi.Miapi;
-import smartin.miapi.modules.properties.AttributeProperty;
+import smartin.miapi.modules.properties.attributes.AttributeUtil;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -100,7 +100,7 @@ public class AttributeSingleDisplay extends SingleStatDisplayDouble {
             }
             return defaultValue;
         }
-        return AttributeProperty.getActualValue(attributeCache.get(slot), attribute, defaultValue);
+        return AttributeUtil.getActualValue(attributeCache.get(slot), attribute, defaultValue);
     }
 
     @Override
@@ -140,7 +140,7 @@ public class AttributeSingleDisplay extends SingleStatDisplayDouble {
     public boolean hasValue(Collection<AttributeModifier> list) {
         list = list.stream().filter(attribute -> attribute.operation().equals(operation)).toList();
         if (operation.equals(AttributeModifier.Operation.ADD_VALUE)) {
-            double value = AttributeProperty.getActualValue(list, attribute.getDefaultValue());
+            double value = AttributeUtil.getActualValue(list, attribute.getDefaultValue());
             if (
                     value != attribute.getDefaultValue() && !Double.isNaN(value)
             ) {
