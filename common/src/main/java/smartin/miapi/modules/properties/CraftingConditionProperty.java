@@ -130,7 +130,7 @@ public class CraftingConditionProperty implements ModuleProperty, CraftingProper
     }
 
     public interface CanCraft {
-        EventResult craft(SlotProperty.ModuleSlot slot, ItemModule module, ConditionManager.ModuleConditionContext context);
+        EventResult craft(SlotProperty.ModuleSlot slot, ItemModule module, ConditionManager.ConditionContext context);
     }
 
     public static class CraftingConditionJson {

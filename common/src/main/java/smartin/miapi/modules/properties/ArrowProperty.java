@@ -1,6 +1,5 @@
 package smartin.miapi.modules.properties;
 
-import com.google.gson.JsonElement;
 import dev.architectury.event.EventResult;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
@@ -8,7 +7,6 @@ import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import smartin.miapi.entity.ItemProjectileEntity;
 import smartin.miapi.entity.arrowhitbehaviours.EntityStickBehaviour;
 import smartin.miapi.events.MiapiProjectileEvents;
-import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.util.ComplexBooleanProperty;
 
 /**
@@ -23,7 +21,7 @@ public class ArrowProperty extends ComplexBooleanProperty {
         super(KEY, false);
         property = this;
         MiapiProjectileEvents.MODULAR_PROJECTILE_DATA_TRACKER_SET.register((projectile, nbtCompound) -> {
-            if (isTrue(projectile.getPickupItem()) {
+            if (isTrue(projectile.getPickupItem())) {
                 nbtCompound.set(ItemProjectileEntity.SPEED_DAMAGE, false);
             }
             return EventResult.pass();

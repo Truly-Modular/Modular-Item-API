@@ -17,7 +17,7 @@ public class CanChangeParentModule implements ModuleProperty {
             if (slot != null && slot.inSlot != null && !module.isEmpty()) {
                 for (ModuleInstance moduleInstance : slot.inSlot.subModules.values()) {
                     if (!canChangeParent(moduleInstance, conditionContext)) {
-                        conditionContext.reasons.add(Component.translatable("miapi.crafting_condition.cant_change_parent"));
+                        conditionContext.add(Component.translatable("miapi.crafting_condition.cant_change_parent"));
                         return EventResult.interruptFalse();
                     }
                 }

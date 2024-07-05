@@ -1,4 +1,4 @@
-package smartin.miapi.modules.properties;
+package smartin.miapi.modules.properties.enchanment;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
