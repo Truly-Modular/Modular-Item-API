@@ -19,6 +19,7 @@ import net.minecraft.util.math.random.Random;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import smartin.miapi.client.renderer.TrimRenderer;
+import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.item.modular.Transform;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.EmissiveProperty;
@@ -86,8 +87,10 @@ public class BakedMiapiModel implements MiapiModel {
                 vertexConsumer.quad(matrices.peek(), quad, colors[0], colors[1], colors[2], light, overlay);
                 if (stack.hasGlint()) {
                     VertexConsumer altConsumer = vertexConsumers.getBuffer(RegistryInventory.Client.modularItemGlint);
-                    Color glintColor = settings.getColor();
-                    altConsumer.quad(matrices.peek(), quad, glintColor.redAsFloat(), glintColor.greenAsFloat(), glintColor.blueAsFloat(), light, overlay);
+                    if (MiapiConfig.INSTANCE.client.other.enchantingGlint) {
+                        Color glintColor = settings.getColor();
+                        altConsumer.quad(matrices.peek(), quad, glintColor.redAsFloat(), glintColor.greenAsFloat(), glintColor.blueAsFloat(), light, overlay);
+                    }
                 }
             });
         }
@@ -114,8 +117,10 @@ public class BakedMiapiModel implements MiapiModel {
                 vertexConsumer.quad(matrices.peek(), quad, colors[0], colors[1], colors[2], light, overlay);
                 if (stack.hasGlint()) {
                     VertexConsumer altConsumer = vertexConsumers.getBuffer(RegistryInventory.Client.modularItemGlint);
-                    Color glintColor = settings.getColor();
-                    altConsumer.quad(matrices.peek(), quad, glintColor.redAsFloat(), glintColor.greenAsFloat(), glintColor.blueAsFloat(), light, overlay);
+                    if (MiapiConfig.INSTANCE.client.other.enchantingGlint) {
+                        Color glintColor = settings.getColor();
+                        altConsumer.quad(matrices.peek(), quad, glintColor.redAsFloat(), glintColor.greenAsFloat(), glintColor.blueAsFloat(), light, overlay);
+                    }
                 }
             });
         }

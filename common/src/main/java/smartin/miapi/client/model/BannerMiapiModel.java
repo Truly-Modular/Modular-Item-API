@@ -19,6 +19,7 @@ import net.minecraft.util.math.RotationAxis;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
+import smartin.miapi.config.MiapiConfig;
 
 import java.util.List;
 
@@ -66,7 +67,7 @@ public class BannerMiapiModel implements MiapiModel {
                 matrices.peek().getNormalMatrix().mul(transform.get3x3(new Matrix3f()));
                 matrices.scale(16f, 16f, 1f);
                 matrices.scale(1 / 20f, 1 / 20f, 2f);
-                BannerBlockEntityRenderer.renderCanvas(matrices, vertexConsumers, light, overlay, banner, ModelLoader.BANNER_BASE, true, patterns, stack.hasGlint());
+                BannerBlockEntityRenderer.renderCanvas(matrices, vertexConsumers, light, overlay, banner, ModelLoader.BANNER_BASE, true, patterns, stack.hasGlint() && MiapiConfig.INSTANCE.client.other.enchantingGlint);
                 matrices.pop();
 
                 matrices.push();
@@ -76,7 +77,7 @@ public class BannerMiapiModel implements MiapiModel {
                 matrices.peek().getNormalMatrix().mul(transform.get3x3(new Matrix3f()));
                 matrices.scale(16f, 16f, 1f);
                 matrices.scale(1 / 20f, 1 / 20f, 2f);
-                BannerBlockEntityRenderer.renderCanvas(matrices, vertexConsumers, light, overlay, banner, ModelLoader.BANNER_BASE, true, patterns, stack.hasGlint());
+                BannerBlockEntityRenderer.renderCanvas(matrices, vertexConsumers, light, overlay, banner, ModelLoader.BANNER_BASE, true, patterns, stack.hasGlint() && MiapiConfig.INSTANCE.client.other.enchantingGlint);
                 matrices.pop();
             }
             case ITEM_ALT -> {
@@ -88,7 +89,7 @@ public class BannerMiapiModel implements MiapiModel {
                 matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(10));
                 matrices.scale(16f, 16f, 1f);
                 matrices.scale(1 / 20f, 1 / 20f, 2f);
-                BannerBlockEntityRenderer.renderCanvas(matrices, vertexConsumers, light, overlay, banner, ModelLoader.BANNER_BASE, true, patterns, stack.hasGlint());
+                BannerBlockEntityRenderer.renderCanvas(matrices, vertexConsumers, light, overlay, banner, ModelLoader.BANNER_BASE, true, patterns, stack.hasGlint() && MiapiConfig.INSTANCE.client.other.enchantingGlint);
                 matrices.pop();
 
                 matrices.push();
@@ -98,7 +99,7 @@ public class BannerMiapiModel implements MiapiModel {
                 matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(10));
                 matrices.scale(16f, 16f, 1f);
                 matrices.scale(1 / 20f, 1 / 20f, 1f);
-                BannerBlockEntityRenderer.renderCanvas(matrices, vertexConsumers, light, overlay, banner, ModelLoader.BANNER_BASE, true, patterns, stack.hasGlint());
+                BannerBlockEntityRenderer.renderCanvas(matrices, vertexConsumers, light, overlay, banner, ModelLoader.BANNER_BASE, true, patterns, stack.hasGlint() && MiapiConfig.INSTANCE.client.other.enchantingGlint);
                 matrices.pop();
             }
             default -> {
@@ -110,7 +111,7 @@ public class BannerMiapiModel implements MiapiModel {
                 matrices.peek().getNormalMatrix().mul(transform.get3x3(new Matrix3f()));
                 matrices.scale(16f, 16f, 16f);
                 matrices.scale(1 / 20f, 1 / 20f, 1 / 20f);
-                BannerBlockEntityRenderer.renderCanvas(matrices, vertexConsumers, light, overlay, banner, ModelLoader.BANNER_BASE, true, patterns, stack.hasGlint());
+                BannerBlockEntityRenderer.renderCanvas(matrices, vertexConsumers, light, overlay, banner, ModelLoader.BANNER_BASE, true, patterns, stack.hasGlint() && MiapiConfig.INSTANCE.client.other.enchantingGlint);
                 matrices.pop();
                 matrices.pop();
             }
@@ -120,11 +121,11 @@ public class BannerMiapiModel implements MiapiModel {
 
     public static BannerMode getMode(String key) {
         try {
-            switch (key.toLowerCase()){
-                case "item"-> {
+            switch (key.toLowerCase()) {
+                case "item" -> {
                     return BannerMode.ITEM;
                 }
-                case "item_alt" ->{
+                case "item_alt" -> {
                     return BannerMode.ITEM_ALT;
                 }
             }
