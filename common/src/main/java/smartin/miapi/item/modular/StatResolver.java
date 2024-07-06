@@ -7,6 +7,7 @@ import com.mojang.serialization.Codec;
 import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
 import com.redpxnda.nucleus.codec.misc.CustomIntermediateCodec;
 import com.redpxnda.nucleus.codec.misc.IntermediateCodec;
+import net.minecraft.network.chat.Component;
 import smartin.miapi.Miapi;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.material.Material;
@@ -19,7 +20,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import net.minecraft.network.chat.Component;
 
 import static smartin.miapi.modules.material.EvalExResolverStuff.configuration;
 
@@ -72,6 +72,14 @@ public class StatResolver {
                         return new DoubleFromStat(either.left().get());
                 }, Either::right);
 
+        public double evaluatedOutput = 0;
+
+        @Override
+        public Double evaluate(ModuleInstance moduleInstance){
+            evaluatedOutput = super.evaluate(moduleInstance);
+            return evaluatedOutput;
+        }
+
         public DoubleFromStat(String start) {
             super(start, func);
         }
@@ -103,12 +111,20 @@ public class StatResolver {
                         return new IntegerFromStat(either.left().get());
                 }, Either::right);
 
+        public int evaluatedOutput = 0;
+
         public IntegerFromStat(String start) {
             super(start, func);
         }
 
         public IntegerFromStat(int start) {
             this(String.valueOf(start));
+        }
+
+        @Override
+        public Integer evaluate(ModuleInstance moduleInstance){
+            evaluatedOutput = super.evaluate(moduleInstance);
+            return evaluatedOutput;
         }
 
         @Override

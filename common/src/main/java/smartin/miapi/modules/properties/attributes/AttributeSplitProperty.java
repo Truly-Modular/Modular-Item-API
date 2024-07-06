@@ -73,7 +73,7 @@ public class AttributeSplitProperty extends CodecBasedProperty<Map<AttributeSpli
         super(CODEC);
         AttributeProperty.attributeTransformers.add((oldMap, itemstack) -> {
             Multimap<Attribute, AttributeProperty.EntityAttributeModifierHolder> map = ArrayListMultimap.create(oldMap);
-            Map<Context, List<SplitContext>> replaceMap = getProperty(itemstack);
+            Map<Context, List<SplitContext>> replaceMap = getData(itemstack);
             for (Map.Entry<Context, List<SplitContext>> entry : replaceMap.entrySet()) {
                 Attribute currentAttribute = entry.getKey().entityAttribute();
                 EquipmentSlotGroup equipmentSlot = entry.getKey().target();

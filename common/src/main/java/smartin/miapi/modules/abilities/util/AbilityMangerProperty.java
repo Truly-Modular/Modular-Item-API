@@ -49,7 +49,7 @@ public class AbilityMangerProperty extends CodecBasedProperty<Map<ItemUseAbility
     }
 
     public static boolean isPrimaryAbility(ItemUseAbility<?> itemUseAbility, ItemStack itemStack) {
-        LinkedHashMap<ItemUseAbility<?>, Object> map = (LinkedHashMap<ItemUseAbility<?>, Object>) property.getProperty(itemStack);
+        LinkedHashMap<ItemUseAbility<?>, Object> map = (LinkedHashMap<ItemUseAbility<?>, Object>) property.getData(itemStack);
         return itemUseAbility == map.sequencedEntrySet().getFirst().getKey();
     }
 

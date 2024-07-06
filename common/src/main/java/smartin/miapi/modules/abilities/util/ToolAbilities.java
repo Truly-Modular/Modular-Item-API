@@ -85,18 +85,18 @@ public abstract class ToolAbilities implements ItemUseDefaultCooldownAbility<Too
     }
 
     public void initialize(ToolAbilityContext data, ModuleInstance moduleInstance) {
-        data.cd = data.cooldown.evaluate(moduleInstance).intValue();
-        data.minUse = data.minUseTime.evaluate(moduleInstance).intValue();
+        data.cooldown.evaluate(moduleInstance);
+        data.minUseTime.evaluate(moduleInstance);
     }
 
     @Override
     public int getCooldown(ItemStack itemstack) {
-        return getSpecialContext(itemstack).cd;
+        return (int) getSpecialContext(itemstack).cooldown.evaluatedOutput;
     }
 
     @Override
     public int getMinHoldTime(ItemStack itemStack) {
-        return getSpecialContext(itemStack).minUse;
+        return (int) getSpecialContext(itemStack).minUseTime.evaluatedOutput;
     }
 
     @Override
@@ -110,9 +110,5 @@ public abstract class ToolAbilities implements ItemUseDefaultCooldownAbility<Too
         public StatResolver.DoubleFromStat minUseTime = new StatResolver.DoubleFromStat(0);
         @CodecBehavior.Optional
         public StatResolver.DoubleFromStat cooldown = new StatResolver.DoubleFromStat(0);
-        @AutoCodec.Ignored
-        public int minUse = 0;
-        @AutoCodec.Ignored
-        public int cd = 0;
     }
 }

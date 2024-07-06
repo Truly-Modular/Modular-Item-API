@@ -3,7 +3,6 @@ package smartin.miapi.modules.properties.util;
 import com.google.gson.JsonElement;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.Nullable;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
 
@@ -18,7 +17,7 @@ public interface ModuleProperty<T> {
 
     T merge(T left, T right, MergeType mergeType);
 
-    default T merge(T left, @Nullable ModuleInstance leftModule, T right, @Nullable ModuleInstance rightModule, MergeType mergeType) {
+    default T merge(T left, ModuleInstance leftModule, T right, ModuleInstance rightModule, MergeType mergeType) {
         return merge(left, right, mergeType);
     }
 
@@ -27,11 +26,11 @@ public interface ModuleProperty<T> {
         return true;
     }
 
-    default T getProperty(ModuleInstance moduleInstance) {
+    default T getData(ModuleInstance moduleInstance) {
         return moduleInstance.getProperty(this);
     }
 
-    default T getProperty(ItemStack itemStack) {
+    default T getData(ItemStack itemStack) {
         return ItemModule.getModules(itemStack).getPropertyItemStack(this);
     }
 

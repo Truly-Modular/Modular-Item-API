@@ -250,7 +250,7 @@ public class AttributeProperty extends CodecBasedProperty<List<AttributeProperty
     }
 
     public static void getAttributeModifiers(ModuleInstance instance, Multimap<Attribute, EntityAttributeModifierHolder> attributeModifiers) {
-        ((AttributeProperty) property).getProperty(instance).forEach(attributeJson -> {
+        ((AttributeProperty) property).getData(instance).forEach(attributeJson -> {
 
             AttributeModifier.Operation operation = getOperation(attributeJson.operation);
             AttributeModifier.Operation baseTarget = getOperation(attributeJson.targetOperation);

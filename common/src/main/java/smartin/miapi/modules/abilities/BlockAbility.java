@@ -125,12 +125,12 @@ public class BlockAbility extends EntityAttributeAbility<BlockAbility.BlockAbili
 
     @Override
     public int getCooldown(ItemStack itemstack) {
-        return getSpecialContext(itemstack).cd;
+        return getSpecialContext(itemstack).cooldown.evaluatedOutput;
     }
 
     @Override
     public int getMinHoldTime(ItemStack itemStack) {
-        return getSpecialContext(itemStack).minUse;
+        return getSpecialContext(itemStack).minUseTime.evaluatedOutput;
     }
 
     public <K> BlockAbilityJson decode(DynamicOps<K> ops, K prefix) {
@@ -138,8 +138,8 @@ public class BlockAbility extends EntityAttributeAbility<BlockAbility.BlockAbili
     }
 
     public void initialize(BlockAbilityJson data, ModuleInstance moduleInstance) {
-        data.cd = data.cooldown.evaluate(moduleInstance);
-        data.minUse = data.minUseTime.evaluate(moduleInstance);
+        data.cooldown.evaluate(moduleInstance);
+        data.minUseTime.evaluate(moduleInstance);
     }
 
     public static class BlockAbilityJson {
@@ -148,10 +148,6 @@ public class BlockAbility extends EntityAttributeAbility<BlockAbility.BlockAbili
         public StatResolver.IntegerFromStat minUseTime = new StatResolver.IntegerFromStat(0);
         @CodecBehavior.Optional
         public StatResolver.IntegerFromStat cooldown = new StatResolver.IntegerFromStat(0);
-        @AutoCodec.Ignored
-        public int minUse = 0;
-        @AutoCodec.Ignored
-        public int cd = 0;
 
     }
 }

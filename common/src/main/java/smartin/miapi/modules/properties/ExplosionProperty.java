@@ -29,7 +29,7 @@ public class ExplosionProperty extends CodecBasedProperty<ExplosionProperty.Expl
         super(codec);
         property = this;
         MiapiProjectileEvents.MODULAR_PROJECTILE_ENTITY_HIT.register(event -> {
-            ExplosionInfo info = getProperty(event.projectile.getPickupItem());
+            ExplosionInfo info = getData(event.projectile.getPickupItem());
             if (info != null) {
                 if (!event.projectile.level().isClientSide()) {
                     info.explode(event.projectile.level(), event.projectile, event.projectile.position());
@@ -40,7 +40,7 @@ public class ExplosionProperty extends CodecBasedProperty<ExplosionProperty.Expl
             return EventResult.pass();
         });
         MiapiProjectileEvents.MODULAR_PROJECTILE_BLOCK_HIT.register(event -> {
-            ExplosionInfo info = getProperty(event.projectile.getPickupItem());
+            ExplosionInfo info = getData(event.projectile.getPickupItem());
             if (info != null) {
                 if (!event.projectile.level().isClientSide()) {
                     info.explode(event.projectile.level(), event.projectile, event.blockHitResult.getLocation());

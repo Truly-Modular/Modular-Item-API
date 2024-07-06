@@ -71,7 +71,7 @@ public class AreaHarvestReplant implements ItemUseDefaultCooldownAbility<AreaHar
         ItemStack itemStack = context.getItemInHand();
         if (!context.getLevel().isClientSide() && context.getPlayer() instanceof ServerPlayer serverPlayer) {
             int blocksHarvested = 0;
-            int range = getSpecialContext(itemStack).radius;
+            int range = getSpecialContext(itemStack).range.evaluatedOutput;
             BlockState state = context.getLevel().getBlockState(context.getClickedPos());
             BlockPos origin = context.getClickedPos();
 
@@ -93,7 +93,7 @@ public class AreaHarvestReplant implements ItemUseDefaultCooldownAbility<AreaHar
                 }
             }
 
-            itemStack.hurtAndBreak(blocksHarvested, serverPlayer,getEquipmentSlot(context.getHand()));
+            itemStack.hurtAndBreak(blocksHarvested, serverPlayer, getEquipmentSlot(context.getHand()));
 
             return InteractionResult.sidedSuccess(context.getLevel().isClientSide());
         }
@@ -105,9 +105,9 @@ public class AreaHarvestReplant implements ItemUseDefaultCooldownAbility<AreaHar
     }
 
     public void initialize(AreaHarvestJson data, ModuleInstance moduleInstance) {
-        data.cd = data.cooldown.evaluate(moduleInstance);
-        data.minUse = data.minUseTime.evaluate(moduleInstance);
-        data.radius = data.range.evaluate(moduleInstance);
+        data.cooldown.evaluate(moduleInstance);
+        data.minUseTime.evaluate(moduleInstance);
+        data.range.evaluate(moduleInstance);
     }
 
     @Override
@@ -117,12 +117,12 @@ public class AreaHarvestReplant implements ItemUseDefaultCooldownAbility<AreaHar
 
     @Override
     public int getCooldown(ItemStack itemstack) {
-        return getSpecialContext(itemstack).cd;
+        return getSpecialContext(itemstack).cooldown.evaluatedOutput;
     }
 
     @Override
     public int getMinHoldTime(ItemStack itemStack) {
-        return getSpecialContext(itemStack).minUse;
+        return getSpecialContext(itemStack).minUseTime.evaluatedOutput;
     }
 
     public static class AreaHarvestJson {
@@ -133,12 +133,6 @@ public class AreaHarvestReplant implements ItemUseDefaultCooldownAbility<AreaHar
         public StatResolver.IntegerFromStat cooldown = new StatResolver.IntegerFromStat(0);
         @CodecBehavior.Optional
         public StatResolver.IntegerFromStat range = new StatResolver.IntegerFromStat(1);
-        @AutoCodec.Ignored
-        public int minUse = 0;
-        @AutoCodec.Ignored
-        public int cd = 0;
-        @AutoCodec.Ignored
-        public int radius = 0;
 
     }
 }

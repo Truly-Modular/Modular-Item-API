@@ -1,5 +1,6 @@
 package smartin.miapi.modules.abilities.util;
 
+import com.mojang.serialization.DynamicOps;
 import dev.architectury.event.events.common.TickEvent;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -69,8 +70,8 @@ public class ItemAbilityManager {
     }
 
     private static AbilityHolder<?> getAbility(ItemStack itemStack, Level world, Player player, InteractionHand hand, AbilityHitContext abilityHitContext) {
-        AbilityMangerProperty.property.getProperty(itemStack);
-        for (Map.Entry<ItemUseAbility<?>, Object> entry : AbilityMangerProperty.property.getProperty(itemStack).entrySet()) {
+        AbilityMangerProperty.property.getData(itemStack);
+        for (Map.Entry<ItemUseAbility<?>, Object> entry : AbilityMangerProperty.property.getData(itemStack).entrySet()) {
             if (entry.getKey().allowedOnItem(itemStack, world, player, hand, abilityHitContext)) {
                 //return new Pair<>(entry.getKey(), entry.getValue());
                 return new AbilityHolder<>(entry.getKey(), entry.getKey().castTo(entry.getValue()));
@@ -185,6 +186,11 @@ public class ItemAbilityManager {
 
         public InteractionResultHolder<ItemStack> use(Level world, Player user, InteractionHand hand) {
             return InteractionResultHolder.pass(user.getItemInHand(hand));
+        }
+
+        @Override
+        public Object decode(DynamicOps ops, Object prefix) {
+            return null;
         }
 
         @Override

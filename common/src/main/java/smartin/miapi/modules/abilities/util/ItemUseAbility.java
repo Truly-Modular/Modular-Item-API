@@ -125,9 +125,7 @@ public interface ItemUseAbility<T> {
 
     }
 
-    default <K> T decode(DynamicOps<K> ops, K prefix) {
-        return null;
-    }
+    <K> T decode(DynamicOps<K> ops, K prefix);
 
     default void initialize(T data, ModuleInstance moduleInstance) {
 

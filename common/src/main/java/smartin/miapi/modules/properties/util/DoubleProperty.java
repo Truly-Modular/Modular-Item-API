@@ -40,7 +40,7 @@ public abstract class DoubleProperty extends CodecBasedProperty<DoubleOperationR
         this.cacheKey = cacheKey + "_internal_double";
         property = this;
         ModularItemCache.setSupplier(cacheKey, (itemStack) ->
-                Optional.ofNullable(getProperty(itemStack).evaluate(baseValue)));
+                Optional.ofNullable(getData(itemStack).evaluate(baseValue)));
     }
 
     public DoubleOperationResolvable initialize(DoubleOperationResolvable property, ModuleInstance context) {
@@ -53,7 +53,7 @@ public abstract class DoubleProperty extends CodecBasedProperty<DoubleOperationR
 
     public double getForItems(Iterable<ItemStack> itemStacks) {
         List<DoubleOperationResolvable.Operation> operations = new ArrayList<>();
-        itemStacks.forEach(itemStack -> operations.addAll(getProperty(itemStack).operations));
+        itemStacks.forEach(itemStack -> operations.addAll(getData(itemStack).operations));
         return DoubleOperationResolvable.resolve(operations, baseValue, baseValue);
     }
 
