@@ -16,7 +16,7 @@ public class IsModLoadedCondition implements ModuleCondition {
 
         @Override
         public <T> DataResult<T> encode(ModuleCondition input, DynamicOps<T> ops, T prefix) {
-            return null;
+            return DataResult.error(() -> "encoding condition is not fully supported");
         }
     };
     public String mod = "";

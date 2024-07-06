@@ -5,12 +5,10 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
-public interface ItemUseDefaultCooldownAbility extends ItemUseAbility {
+public interface ItemUseDefaultCooldownAbility<T> extends ItemUseAbility<T> {
 
 
-    default int getCooldown(ItemStack itemstack) {
-        return getAbilityContext(itemstack).getInt("cooldown", getDefaultCooldown());
-    }
+    int getCooldown(ItemStack itemStack);
 
     default boolean useCooldown(ItemStack stack, Level world, LivingEntity user, int remainingUseTicks) {
         if (this instanceof ItemUseMinHoldAbility itemUseMinHoldAbility) {

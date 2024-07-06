@@ -86,7 +86,7 @@ public class EnchantmentProperty implements CraftingProperty, ModuleProperty {
     private List<Enchantment> createAllowedList(ItemStack itemStack) {
         JsonElement element = ItemModule.getMergedProperty(itemStack, property);
         if (element != null) {
-            EnchantmentPropertyJson json = Miapi.gson.fromJson(element, EnchantmentPropertyJson.class);
+            EnchantmentPropertyJson json = Miapi.gson.decode(element, EnchantmentPropertyJson.class);
             if (json.allowed == null) json.allowed = new ArrayList<>();
             if (json.forbidden == null) json.forbidden = new ArrayList<>();
             List<Enchantment> enchantments = convert(json.allowed);
@@ -123,7 +123,7 @@ public class EnchantmentProperty implements CraftingProperty, ModuleProperty {
 
     @Override
     public boolean load(String moduleKey, JsonElement data) throws Exception {
-        EnchantmentPropertyJson json = Miapi.gson.fromJson(data, EnchantmentPropertyJson.class);
+        EnchantmentPropertyJson json = Miapi.gson.decode(data, EnchantmentPropertyJson.class);
         convert(json.allowed);
         convert(json.forbidden);
         return true;
@@ -155,8 +155,8 @@ public class EnchantmentProperty implements CraftingProperty, ModuleProperty {
                 return toMerge;
             }
             case EXTEND -> {
-                EnchantmentPropertyJson oldJson = Miapi.gson.fromJson(old, EnchantmentPropertyJson.class);
-                EnchantmentPropertyJson mergeJson = Miapi.gson.fromJson(toMerge, EnchantmentPropertyJson.class);
+                EnchantmentPropertyJson oldJson = Miapi.gson.decode(old, EnchantmentPropertyJson.class);
+                EnchantmentPropertyJson mergeJson = Miapi.gson.decode(toMerge, EnchantmentPropertyJson.class);
                 mergeJson.allowed.forEach(allowedEnchant -> {
                     if (!oldJson.forbidden.contains(allowedEnchant)) {
                         oldJson.allowed.add(allowedEnchant);
@@ -165,8 +165,8 @@ public class EnchantmentProperty implements CraftingProperty, ModuleProperty {
                 return Miapi.gson.toJsonTree(oldJson);
             }
             case SMART -> {
-                EnchantmentPropertyJson oldJson = Miapi.gson.fromJson(old, EnchantmentPropertyJson.class);
-                EnchantmentPropertyJson mergeJson = Miapi.gson.fromJson(toMerge, EnchantmentPropertyJson.class);
+                EnchantmentPropertyJson oldJson = Miapi.gson.decode(old, EnchantmentPropertyJson.class);
+                EnchantmentPropertyJson mergeJson = Miapi.gson.decode(toMerge, EnchantmentPropertyJson.class);
                 mergeJson.allowed.forEach(allowedEnchant -> {
                     if (!oldJson.forbidden.contains(allowedEnchant)) {
                         oldJson.forbidden.remove(allowedEnchant);

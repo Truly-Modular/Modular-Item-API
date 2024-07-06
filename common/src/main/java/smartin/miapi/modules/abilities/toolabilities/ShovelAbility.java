@@ -1,9 +1,5 @@
 package smartin.miapi.modules.abilities.toolabilities;
 
-import smartin.miapi.mixin.ShovelItemAccessor;
-import smartin.miapi.modules.abilities.ToolAbilities;
-
-import java.util.Optional;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.sounds.SoundEvents;
@@ -15,6 +11,10 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.CampfireBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
+import smartin.miapi.mixin.ShovelItemAccessor;
+import smartin.miapi.modules.abilities.util.ToolAbilities;
+
+import java.util.Optional;
 
 public class ShovelAbility extends ToolAbilities {
     public final static String KEY = "shovel_ability";
@@ -51,9 +51,7 @@ public class ShovelAbility extends ToolAbilities {
                     world.setBlock(blockPos, blockState3, 11);
                     world.gameEvent(GameEvent.BLOCK_CHANGE, blockPos, GameEvent.Context.of(playerEntity, blockState3));
                     if (playerEntity != null) {
-                        context.getItemInHand().hurtAndBreak(1, playerEntity, (p) -> {
-                            p.sendToolBreakStatus(context.getHand());
-                        });
+                        context.getItemInHand().hurtAndBreak(1, playerEntity, getEquipmentSlot(context.getHand()));
                     }
                 }
 

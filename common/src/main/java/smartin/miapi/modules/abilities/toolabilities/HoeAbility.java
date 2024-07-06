@@ -1,12 +1,6 @@
 package smartin.miapi.modules.abilities.toolabilities;
 
 import com.mojang.datafixers.util.Pair;
-import smartin.miapi.mixin.HoeItemAccessor;
-import smartin.miapi.modules.abilities.ToolAbilities;
-
-import java.util.Optional;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -16,6 +10,12 @@ import net.minecraft.world.item.HoeItem;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import smartin.miapi.mixin.HoeItemAccessor;
+import smartin.miapi.modules.abilities.util.ToolAbilities;
+
+import java.util.Optional;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 public class HoeAbility extends ToolAbilities {
     public final static String KEY = "hoe_ability";
@@ -41,9 +41,7 @@ public class HoeAbility extends ToolAbilities {
                 if (!world.isClientSide) {
                     consumer.accept(context);
                     if (playerEntity != null) {
-                        context.getItemInHand().hurtAndBreak(1, playerEntity, (p) -> {
-                            p.sendToolBreakStatus(context.getHand());
-                        });
+                        context.getItemInHand().hurtAndBreak(1, playerEntity, getEquipmentSlot(context.getHand()));
                     }
                 }
 

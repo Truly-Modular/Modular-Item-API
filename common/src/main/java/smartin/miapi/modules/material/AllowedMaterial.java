@@ -85,7 +85,7 @@ public class AllowedMaterial implements CraftingProperty, ModuleProperty {
 
     @Override
     public boolean canPerform(ItemStack old, ItemStack crafting, ModularWorkBenchEntity bench, Player player, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<String, String> data) {
-        //AllowedMaterialJson json = Miapi.gson.fromJson()
+        //AllowedMaterialJson json = Miapi.gson.decode()
         JsonElement element = module.properties().get(KEY);
         ItemStack input = inventory.get(0);
         if (element != null) {
@@ -151,7 +151,7 @@ public class AllowedMaterial implements CraftingProperty, ModuleProperty {
     @Override
     public List<ItemStack> performCraftAction(ItemStack old, ItemStack crafting, Player player, ModularWorkBenchEntity bench, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<String, String> data) {
         ModuleInstance newModule = craftAction.getModifyingModuleInstance(crafting);
-        //AllowedMaterialJson json = Miapi.gson.fromJson()
+        //AllowedMaterialJson json = Miapi.gson.decode()
         List<ItemStack> results = new ArrayList<>();
         JsonElement element = module.properties().get(KEY);
         ItemStack input = inventory.get(0);

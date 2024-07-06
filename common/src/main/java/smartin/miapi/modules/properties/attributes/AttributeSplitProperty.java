@@ -21,7 +21,7 @@ import java.util.*;
 
 public class AttributeSplitProperty extends CodecBasedProperty<Map<AttributeSplitProperty.Context, List<AttributeSplitProperty.SplitContext>>> {
     public static String KEY = "attribute_split";
-    public static Codec<Map<Context, List<SplitContext>>> CODEC = new Codec<Map<Context, List<SplitContext>>>() {
+    public static Codec<Map<Context, List<SplitContext>>> CODEC = new Codec<>() {
         @Override
         public <T> DataResult<Pair<Map<Context, List<SplitContext>>, T>> decode(DynamicOps<T> ops, T input) {
             Map<Context, List<SplitContext>> map = new HashMap<>();
@@ -55,7 +55,7 @@ public class AttributeSplitProperty extends CodecBasedProperty<Map<AttributeSpli
 
         @Override
         public <T> DataResult<T> encode(Map<Context, List<SplitContext>> input, DynamicOps<T> ops, T prefix) {
-            return null;
+            return DataResult.error(() -> "encoding properties is not fully supported");
         }
     };
 
@@ -135,6 +135,7 @@ public class AttributeSplitProperty extends CodecBasedProperty<Map<AttributeSpli
             if (merged.containsKey(context)) {
                 List<SplitContext> contexts = new ArrayList<>(merged.get(context));
                 contexts.addAll(splitContexts);
+                merged.put(context, contexts);
             } else {
                 merged.put(context, splitContexts);
             }

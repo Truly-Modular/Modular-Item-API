@@ -70,6 +70,7 @@ import smartin.miapi.modules.abilities.*;
 import smartin.miapi.modules.abilities.toolabilities.AxeAbility;
 import smartin.miapi.modules.abilities.toolabilities.HoeAbility;
 import smartin.miapi.modules.abilities.toolabilities.ShovelAbility;
+import smartin.miapi.modules.abilities.util.AbilityMangerProperty;
 import smartin.miapi.modules.conditions.*;
 import smartin.miapi.modules.edit_options.CosmeticEditOption;
 import smartin.miapi.modules.edit_options.CreateItemOption.CreateItemOption;
@@ -502,7 +503,6 @@ public class RegistryInventory {
             registerMiapi(moduleProperties, ItemIdProperty.KEY, new ItemIdProperty());
             registerMiapi(moduleProperties, EquipmentSlotProperty.KEY, new EquipmentSlotProperty());
             registerMiapi(moduleProperties, FlexibilityProperty.KEY, new FlexibilityProperty());
-            registerMiapi(moduleProperties, AbilityProperty.KEY, new AbilityProperty());
             registerMiapi(moduleProperties, BlockProperty.KEY, new BlockProperty());
             registerMiapi(moduleProperties, RiptideProperty.KEY, new RiptideProperty());
             registerMiapi(moduleProperties, HealthPercentDamage.KEY, new HealthPercentDamage());

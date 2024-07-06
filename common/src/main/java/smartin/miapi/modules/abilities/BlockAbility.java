@@ -2,18 +2,14 @@ package smartin.miapi.modules.abilities;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DynamicOps;
+import com.redpxnda.nucleus.codec.auto.AutoCodec;
+import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
 import com.redpxnda.nucleus.pose.server.ServerPoseFacet;
-import smartin.miapi.attributes.AttributeRegistry;
-import smartin.miapi.modules.abilities.util.EntityAttributeAbility;
-import smartin.miapi.modules.abilities.util.ItemAbilityManager;
-import smartin.miapi.modules.properties.AbilityMangerProperty;
-import smartin.miapi.modules.properties.BlockProperty;
-import smartin.miapi.modules.properties.LoreProperty;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
@@ -24,14 +20,27 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import smartin.miapi.Miapi;
+import smartin.miapi.attributes.AttributeRegistry;
+import smartin.miapi.item.modular.StatResolver;
+import smartin.miapi.modules.ModuleInstance;
+import smartin.miapi.modules.abilities.util.AbilityMangerProperty;
+import smartin.miapi.modules.abilities.util.EntityAttributeAbility;
+import smartin.miapi.modules.abilities.util.ItemAbilityManager;
+import smartin.miapi.modules.properties.BlockProperty;
+import smartin.miapi.modules.properties.LoreProperty;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This Ability is a lesser form of the Block of a Shield.
  * it only blocks a percentage of the Damage, defined by the value of {@link BlockProperty}
  * transforms the Value of {@link BlockProperty} with {@link BlockAbility#calculate(double)} to the actual damage resistance and slowdown percentages
  */
-public class BlockAbility extends EntityAttributeAbility {
-    UUID attributeUUID = UUID.fromString("3e91990e-4774-11ee-be56-0242ac120002");
+public class BlockAbility extends EntityAttributeAbility<BlockAbility.BlockAbilityJson> {
+    public static Codec<BlockAbilityJson> CODEC = AutoCodec.of(BlockAbilityJson.class).codec();
+    ResourceLocation id = Miapi.id("block_ability_temporary_attribute");
 
     public BlockAbility() {
         LoreProperty.bottomLoreSuppliers.add(itemStack -> {
@@ -45,12 +54,12 @@ public class BlockAbility extends EntityAttributeAbility {
     }
 
     @Override
-    protected Multimap<Attribute, AttributeModifier> getAttributes(ItemStack itemStack) {
-        Multimap<Attribute, AttributeModifier> multimap = ArrayListMultimap.create();
+    protected Multimap<Holder<Attribute>, AttributeModifier> getAttributes(ItemStack itemStack) {
+        Multimap<Holder<Attribute>, AttributeModifier> multimap = ArrayListMultimap.create();
         double value = BlockProperty.property.getValueSafe(itemStack);
         value = calculate(value);
-        multimap.put(Attributes.MOVEMENT_SPEED, new AttributeModifier(attributeUUID, "miapi-block", -(value / 2) / 100, EntityAttributeModifier.Operation.MULTIPLY_TOTAL));
-        multimap.put(AttributeRegistry.DAMAGE_RESISTANCE, new AttributeModifier(attributeUUID, "miapi-block", value, EntityAttributeModifier.Operation.ADDITION));
+        multimap.put(Attributes.MOVEMENT_SPEED, new AttributeModifier(id, -(value / 2) / 100, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
+        multimap.put(AttributeRegistry.DAMAGE_RESISTANCE, new AttributeModifier(id, value, AttributeModifier.Operation.ADD_VALUE));
         return multimap;
     }
 
@@ -92,6 +101,11 @@ public class BlockAbility extends EntityAttributeAbility {
         super.onStoppedHolding(stack, world, user);
     }
 
+    @Override
+    public BlockAbilityJson getDefaultContext() {
+        return null;
+    }
+
     public void setAnimation(Player p, InteractionHand hand) {
         if (p instanceof ServerPlayer player) {
             ServerPoseFacet facet = ServerPoseFacet.KEY.get(player);
@@ -107,5 +121,37 @@ public class BlockAbility extends EntityAttributeAbility {
             if (facet != null)
                 facet.reset(player);
         }
+    }
+
+    @Override
+    public int getCooldown(ItemStack itemstack) {
+        return getSpecialContext(itemstack).cd;
+    }
+
+    @Override
+    public int getMinHoldTime(ItemStack itemStack) {
+        return getSpecialContext(itemStack).minUse;
+    }
+
+    public <K> BlockAbilityJson decode(DynamicOps<K> ops, K prefix) {
+        return CODEC.decode(ops, prefix).getOrThrow().getFirst();
+    }
+
+    public void initialize(BlockAbilityJson data, ModuleInstance moduleInstance) {
+        data.cd = data.cooldown.evaluate(moduleInstance);
+        data.minUse = data.minUseTime.evaluate(moduleInstance);
+    }
+
+    public static class BlockAbilityJson {
+        @CodecBehavior.Optional
+        @AutoCodec.Name("min_hold_time")
+        public StatResolver.IntegerFromStat minUseTime = new StatResolver.IntegerFromStat(0);
+        @CodecBehavior.Optional
+        public StatResolver.IntegerFromStat cooldown = new StatResolver.IntegerFromStat(0);
+        @AutoCodec.Ignored
+        public int minUse = 0;
+        @AutoCodec.Ignored
+        public int cd = 0;
+
     }
 }

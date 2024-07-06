@@ -3,22 +3,11 @@ package smartin.miapi.modules.abilities.util;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import smartin.miapi.modules.properties.AbilityMangerProperty;
 
-public interface ItemUseMinHoldAbility extends ItemUseAbility {
+public interface ItemUseMinHoldAbility<T> extends ItemUseAbility<T> {
 
-    /**
-     * The default min hold Time, defaults to if noone is defined in json
-     *
-     * @return
-     */
-    default int minHoldTimeDefault() {
-        return 0;
-    }
 
-    default int getMinHoldTime(ItemStack itemStack) {
-        return getAbilityContext(itemStack).getInt("min_hold", minHoldTimeDefault());
-    }
+     int getMinHoldTime(ItemStack itemStack);
 
     @Override
     default void onStoppedUsing(ItemStack stack, Level world, LivingEntity user, int remainingUseTicks) {

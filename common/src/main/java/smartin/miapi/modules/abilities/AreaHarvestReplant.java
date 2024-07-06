@@ -1,11 +1,9 @@
 package smartin.miapi.modules.abilities;
 
-import smartin.miapi.modules.abilities.util.ItemAbilityManager;
-import smartin.miapi.modules.abilities.util.ItemUseDefaultCooldownAbility;
-import smartin.miapi.modules.abilities.util.ItemUseMinHoldAbility;
-import smartin.miapi.modules.properties.AbilityMangerProperty;
-
-import java.util.List;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DynamicOps;
+import com.redpxnda.nucleus.codec.auto.AutoCodec;
+import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -21,9 +19,17 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.CropBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import smartin.miapi.item.modular.StatResolver;
+import smartin.miapi.modules.ModuleInstance;
+import smartin.miapi.modules.abilities.util.ItemAbilityManager;
+import smartin.miapi.modules.abilities.util.ItemUseDefaultCooldownAbility;
+import smartin.miapi.modules.abilities.util.ItemUseMinHoldAbility;
 
-public class AreaHarvestReplant implements ItemUseDefaultCooldownAbility, ItemUseMinHoldAbility {
+import java.util.List;
+
+public class AreaHarvestReplant implements ItemUseDefaultCooldownAbility<AreaHarvestReplant.AreaHarvestJson>, ItemUseMinHoldAbility<AreaHarvestReplant.AreaHarvestJson> {
     public static String KEY = "area_harvest_ability";
+    public static Codec<AreaHarvestJson> CODEC = AutoCodec.of(AreaHarvestJson.class).codec();
 
     @Override
     public boolean allowedOnItem(ItemStack itemStack, Level world, Player player, InteractionHand hand, ItemAbilityManager.AbilityHitContext abilityHitContext) {
@@ -65,8 +71,7 @@ public class AreaHarvestReplant implements ItemUseDefaultCooldownAbility, ItemUs
         ItemStack itemStack = context.getItemInHand();
         if (!context.getLevel().isClientSide() && context.getPlayer() instanceof ServerPlayer serverPlayer) {
             int blocksHarvested = 0;
-            AbilityMangerProperty.AbilityContext abilityContext = getAbilityContext(itemStack);
-            int range = abilityContext.getInt("block_range", 1);
+            int range = getSpecialContext(itemStack).radius;
             BlockState state = context.getLevel().getBlockState(context.getClickedPos());
             BlockPos origin = context.getClickedPos();
 
@@ -88,10 +93,52 @@ public class AreaHarvestReplant implements ItemUseDefaultCooldownAbility, ItemUs
                 }
             }
 
-            itemStack.hurtAndBreak(blocksHarvested, context.getLevel().getRandom(), serverPlayer);
+            itemStack.hurtAndBreak(blocksHarvested, serverPlayer,getEquipmentSlot(context.getHand()));
 
             return InteractionResult.sidedSuccess(context.getLevel().isClientSide());
         }
         return InteractionResult.FAIL;
+    }
+
+    public <K> AreaHarvestJson decode(DynamicOps<K> ops, K prefix) {
+        return CODEC.decode(ops, prefix).getOrThrow().getFirst();
+    }
+
+    public void initialize(AreaHarvestJson data, ModuleInstance moduleInstance) {
+        data.cd = data.cooldown.evaluate(moduleInstance);
+        data.minUse = data.minUseTime.evaluate(moduleInstance);
+        data.radius = data.range.evaluate(moduleInstance);
+    }
+
+    @Override
+    public AreaHarvestJson getDefaultContext() {
+        return null;
+    }
+
+    @Override
+    public int getCooldown(ItemStack itemstack) {
+        return getSpecialContext(itemstack).cd;
+    }
+
+    @Override
+    public int getMinHoldTime(ItemStack itemStack) {
+        return getSpecialContext(itemStack).minUse;
+    }
+
+    public static class AreaHarvestJson {
+        @CodecBehavior.Optional
+        @AutoCodec.Name("min_hold_time")
+        public StatResolver.IntegerFromStat minUseTime = new StatResolver.IntegerFromStat(0);
+        @CodecBehavior.Optional
+        public StatResolver.IntegerFromStat cooldown = new StatResolver.IntegerFromStat(0);
+        @CodecBehavior.Optional
+        public StatResolver.IntegerFromStat range = new StatResolver.IntegerFromStat(1);
+        @AutoCodec.Ignored
+        public int minUse = 0;
+        @AutoCodec.Ignored
+        public int cd = 0;
+        @AutoCodec.Ignored
+        public int radius = 0;
+
     }
 }

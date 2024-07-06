@@ -13,7 +13,7 @@ import net.minecraft.world.level.block.RotatedPillarBlock;
 import net.minecraft.world.level.block.WeatheringCopper;
 import net.minecraft.world.level.block.state.BlockState;
 import smartin.miapi.mixin.AxeItemAccessor;
-import smartin.miapi.modules.abilities.ToolAbilities;
+import smartin.miapi.modules.abilities.util.ToolAbilities;
 
 import java.util.Optional;
 

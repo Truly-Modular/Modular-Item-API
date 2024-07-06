@@ -66,7 +66,7 @@ public class FakeEnchantmentProperty implements ModuleProperty {
 
         JsonElement list = ItemModule.getMergedProperty(itemStack, property, MergeType.SMART);
         ItemModule.getMergedProperty(ItemModule.getModules(itemStack), property);
-        Map<String, Integer> map = Miapi.gson.fromJson(list, type);
+        Map<String, Integer> map = Miapi.gson.decode(list, type);
         if (map != null) {
             map.forEach((id, level) -> {
                 Enchantment enchantment = Registries.ENCHANTMENT.get(new ResourceLocation(id));
@@ -84,8 +84,8 @@ public class FakeEnchantmentProperty implements ModuleProperty {
 
     public JsonElement merge(JsonElement old, JsonElement toMerge, MergeType mergeType) {
         if (old != null && toMerge != null) {
-            Map<String, Integer> mapOld = Miapi.gson.fromJson(old, type);
-            Map<String, Integer> mapToMerge = Miapi.gson.fromJson(toMerge, type);
+            Map<String, Integer> mapOld = Miapi.gson.decode(old, type);
+            Map<String, Integer> mapToMerge = Miapi.gson.decode(toMerge, type);
             if (mergeType.equals(MergeType.OVERWRITE)) {
                 return toMerge;
             }
@@ -106,7 +106,7 @@ public class FakeEnchantmentProperty implements ModuleProperty {
 
     @Override
     public boolean load(String moduleKey, JsonElement data) throws Exception {
-        Miapi.gson.fromJson(data, type);
+        Miapi.gson.decode(data, type);
         return true;
     }
 }

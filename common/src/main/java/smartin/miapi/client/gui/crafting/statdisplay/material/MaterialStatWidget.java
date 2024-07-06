@@ -29,7 +29,7 @@ public class MaterialStatWidget extends InteractAbleWidget {
             MaterialProperty.setMaterial(moduleInstance, material.getKey());
             JsonArray jsonElements = new JsonArray();
             jsonElements.add(propertyKey);
-            JsonObject object = Miapi.gson.fromJson(moduleInstance.moduleData.get("properties"), JsonObject.class);
+            JsonObject object = Miapi.gson.decode(moduleInstance.moduleData.get("properties"), JsonObject.class);
             object.add(MaterialProperties.KEY, jsonElements);
             moduleInstance.moduleData.put("properties", Miapi.gson.toJson(object));
             moduleInstance.writeToItem(compareMaterial);

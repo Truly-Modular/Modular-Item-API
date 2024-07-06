@@ -3,10 +3,10 @@ package smartin.miapi.modules.abilities;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.entity.ItemProjectileEntity;
 import smartin.miapi.item.modular.ModularItem;
+import smartin.miapi.modules.abilities.util.AbilityMangerProperty;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
 import smartin.miapi.modules.abilities.util.ItemUseDefaultCooldownAbility;
 import smartin.miapi.modules.abilities.util.ItemUseMinHoldAbility;
-import smartin.miapi.modules.properties.AbilityMangerProperty;
 import smartin.miapi.modules.properties.attributes.AttributeProperty;
 import smartin.miapi.modules.properties.LoreProperty;
 

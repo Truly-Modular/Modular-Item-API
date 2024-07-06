@@ -1,18 +1,19 @@
 package smartin.miapi.modules.abilities.util;
 
-import com.google.gson.JsonObject;
+import com.mojang.serialization.DynamicOps;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
-import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.cache.ModularItemCache;
-import smartin.miapi.modules.properties.AbilityMangerProperty;
+import smartin.miapi.modules.properties.util.MergeType;
 
 /**
  * Implement this interface to provide custom behavior for item usage and handling.
@@ -93,6 +94,10 @@ public interface ItemUseAbility<T> {
 
     }
 
+    default EquipmentSlot getEquipmentSlot(InteractionHand hand){
+        return hand.equals(InteractionHand.MAIN_HAND) ? EquipmentSlot.OFFHAND : EquipmentSlot.MAINHAND;
+    }
+
     /**
      * Handles the usage of the item on an entity.
      *
@@ -120,27 +125,34 @@ public interface ItemUseAbility<T> {
 
     }
 
-    default AbilityMangerProperty.AbilityContext getAbilityContext(ItemStack itemStack) {
-        String key = ItemAbilityManager.useAbilityRegistry.findKey(this);
-        if (key != null) {
-            AbilityMangerProperty.AbilityContext context1 = AbilityMangerProperty.getContext(itemStack, key);
-            if(context1!=null){
-                return context1;
-            }
-        }
-        return new AbilityMangerProperty.AbilityContext(new JsonObject(), ItemModule.getModules(itemStack), itemStack);
-    }
-
-    /**
-     * This can be implemented for caching related context, abilities should use this if they are highly complex
-     * @param jsonObject
-     * @return
-     */
-    default T fromJson(JsonObject jsonObject) {
+    default <K> T decode(DynamicOps<K> ops, K prefix) {
         return null;
     }
 
-    default T getSpecialContext(ItemStack itemStack, T defaultValue) {
-        return ModularItemCache.get(itemStack, AbilityMangerProperty.KEY + "_" + ItemAbilityManager.useAbilityRegistry.findKey(this), defaultValue);
+    default void initialize(T data, ModuleInstance moduleInstance) {
+
     }
+
+    default T merge(T left, T right, MergeType mergeType) {
+        return right;
+    }
+
+    T getDefaultContext();
+
+    default T getSpecialContext(ItemStack itemStack) {
+        return getSpecialContext(itemStack, getDefaultContext());
+    }
+
+    default T getSpecialContext(ItemStack itemStack, T defaultValue) {
+        return ModularItemCache.get(
+                itemStack,
+                AbilityMangerProperty.KEY + "_" + ItemAbilityManager.useAbilityRegistry.findKey(this), defaultValue);
+    }
+
+    @SuppressWarnings("unchecked")
+    default T castTo(Object object) {
+        return (T) object;
+    }
+
+
 }

@@ -10,6 +10,7 @@ import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.ItemAttributeModifiers;
 import smartin.miapi.Miapi;
 
 import java.util.ArrayList;
@@ -22,17 +23,21 @@ public class AttributeUtil {
 
     public static Multimap<Attribute, AttributeModifier> getAttribute(ItemStack itemStack, EquipmentSlot equipmentSlot) {
         Multimap<Attribute, AttributeModifier> multimap = ArrayListMultimap.create();
-        itemStack.getComponents().get(DataComponents.ATTRIBUTE_MODIFIERS).forEach(equipmentSlot, ((attributeHolder, attributeModifier) -> {
-            multimap.put(attributeHolder.value(), attributeModifier);
-        }));
+        ItemAttributeModifiers attributeModifiers = itemStack.getComponents().get(DataComponents.ATTRIBUTE_MODIFIERS);
+        if (attributeModifiers != null) {
+            attributeModifiers.forEach(equipmentSlot, ((attributeHolder, attributeModifier) ->
+                    multimap.put(attributeHolder.value(), attributeModifier)));
+        }
         return multimap;
     }
 
     public static Multimap<Attribute, AttributeModifier> getAttribute(ItemStack itemStack, EquipmentSlotGroup equipmentSlot) {
         Multimap<Attribute, AttributeModifier> multimap = ArrayListMultimap.create();
-        itemStack.getComponents().get(DataComponents.ATTRIBUTE_MODIFIERS).forEach(equipmentSlot, ((attributeHolder, attributeModifier) -> {
-            multimap.put(attributeHolder.value(), attributeModifier);
-        }));
+        ItemAttributeModifiers attributeModifiers = itemStack.getComponents().get(DataComponents.ATTRIBUTE_MODIFIERS);
+        if (attributeModifiers != null) {
+            attributeModifiers.forEach(equipmentSlot, ((attributeHolder, attributeModifier) ->
+                    multimap.put(attributeHolder.value(), attributeModifier)));
+        }
         return multimap;
     }
 
@@ -104,11 +109,14 @@ public class AttributeUtil {
             return fallback;
         }
         List<AttributeModifier> modifiers = new ArrayList<>();
-        stack.get(DataComponents.ATTRIBUTE_MODIFIERS).forEach(slot, (attribute, modifier) -> {
-            if (entityAttribute.equals(attribute)) {
-                modifiers.add(modifier);
-            }
-        });
+        ItemAttributeModifiers attributeModifiers = stack.get(DataComponents.ATTRIBUTE_MODIFIERS);
+        if (attributeModifiers != null) {
+            attributeModifiers.forEach(slot, (attribute, modifier) -> {
+                if (entityAttribute.equals(attribute)) {
+                    modifiers.add(modifier);
+                }
+            });
+        }
         return getActualValue(modifiers, fallback);
     }
 
