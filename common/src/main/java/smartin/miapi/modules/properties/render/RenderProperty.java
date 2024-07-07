@@ -1,6 +1,7 @@
 package smartin.miapi.modules.properties.render;
 
 import com.google.gson.JsonElement;
+import net.minecraft.resources.ResourceLocation;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
 /**
@@ -8,7 +9,7 @@ import smartin.miapi.modules.properties.util.ModuleProperty;
  * {@link ModuleProperty#load(String, JsonElement, boolean)}
  */
 public interface RenderProperty extends ModuleProperty {
-    default boolean load(String moduleKey, JsonElement data, boolean isClient) throws Exception {
-        return isClient && load(moduleKey, data);
+    default boolean load(ResourceLocation id, JsonElement element, boolean isClient) throws Exception {
+        return isClient && load(id, element, isClient);
     }
 }

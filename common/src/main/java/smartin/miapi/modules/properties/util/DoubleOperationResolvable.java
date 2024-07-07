@@ -7,14 +7,22 @@ import com.mojang.serialization.DynamicOps;
 import com.redpxnda.nucleus.codec.auto.AutoCodec;
 import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ModuleInstance;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Function;
 
+/**
+ * An Attribute like Resolvable Double
+ * !!REMINDER!! to call {@link DoubleOperationResolvable#initialize(ModuleInstance)} with its context ModuleInstance!
+ * otherwise statresolving will crash out!
+ * if the usage of {@link DoubleOperationResolvable#functionTransformer} is desired it should be set during initialize, as setting it in the constructor
+ * would be negated by an Autocodec
+ */
 public class DoubleOperationResolvable {
     static Codec<List<Operation>> listCodec = Codec.list(AutoCodec.of(Operation.class).codec());
     public static Codec<DoubleOperationResolvable> CODEC = Codec.withAlternative(
@@ -45,59 +53,78 @@ public class DoubleOperationResolvable {
             });
 
     public List<Operation> operations;
+    public Function<Pair<String, ModuleInstance>, String> functionTransformer = (Pair::getFirst);
     Double cachedResult = null;
     double baseValue = 0.0;
     double fallback = 0.0;
 
-    public DoubleOperationResolvable(double baseValue, double fallback) {
-        this.baseValue = baseValue;
+    /**
+     * @param fallback the value this will assume in resolve if no value was set at all, you can use the other resolve methods to not rely on it
+     */
+    public DoubleOperationResolvable(double fallback) {
         this.fallback = fallback;
     }
 
-    public DoubleOperationResolvable(List<Operation> operations) {
+    protected DoubleOperationResolvable(List<Operation> operations) {
         this.operations = operations;
     }
 
+    protected DoubleOperationResolvable(List<Operation> operations, Function<Pair<String, ModuleInstance>, String> functionTransformer) {
+        this.operations = operations;
+        this.functionTransformer = functionTransformer;
+    }
+
+    /**
+     * resolves the value with preset basevalue and Fallback
+     * The function internally caches to improve performance
+     *
+     * @return the resolved value.
+     */
     public double getValue() {
         return evaluate(baseValue, fallback);
     }
 
+    /**
+     * initializes this Resolvable with its Context ModuleInstance.
+     *
+     * @param moduleInstance
+     * @return
+     */
     public DoubleOperationResolvable initialize(ModuleInstance moduleInstance) {
         List<Operation> operationList = new ArrayList<>();
         operations.forEach(operation -> {
             Operation copiesOperation = new Operation(operation.value);
             copiesOperation.attributeOperation = operation.attributeOperation;
             copiesOperation.instance = moduleInstance;
+            operation.value = functionTransformer.apply(new Pair<>(operation.value, moduleInstance));
             operationList.add(copiesOperation);
         });
-        return new DoubleOperationResolvable(operationList);
+        DoubleOperationResolvable initialized = new DoubleOperationResolvable(operationList, functionTransformer);
+        initialized.getValue();
+        return initialized;
     }
 
+    /**
+     * @param baseValue this value is added at the start of the Operations
+     * @param fallback  this value will be returned if no value was set
+     * @return
+     */
     public double evaluate(double baseValue, double fallback) {
-        Double value = evaluate(baseValue);
-        if (value == null) {
-            return fallback;
-        }
-        return value;
+        return evaluate(baseValue).orElse(fallback);
     }
 
-    public Double evaluate(double baseValue) {
+    public Optional<Double> evaluate(double baseValue) {
         if (cachedResult == null) {
-            cachedResult = resolve(operations, baseValue);
+            resolve(operations, baseValue).ifPresent(result -> cachedResult = result);
         }
-        return cachedResult;
+        return Optional.ofNullable(cachedResult);
     }
 
-    public static Double resolve(List<Operation> operations, double baseValue, double fallback) {
-        Double value = resolve(operations, baseValue);
-        if (value == null) {
-            return value;
-        }
-        return fallback;
+    public static double resolve(List<Operation> operations, double baseValue, double fallback) {
+        return resolve(operations, baseValue).orElse(fallback);
     }
 
-    @Nullable
-    public static Double resolve(List<Operation> operations, double baseValue) {
+    public static Optional<Double> resolve(List<Operation> operations, double baseValue) {
         double value = baseValue;
         boolean hasValue = false;
         List<Double> addition = new ArrayList<>();
@@ -125,11 +152,11 @@ public class DoubleOperationResolvable {
         if (hasValue) {
             if (Double.isNaN(value)) {
                 Miapi.LOGGER.error("could not correctly resolve Double Operations. this indicates a serious issue");
-                return 0d;
+                return Optional.empty();
             }
-            return value;
+            return Optional.of(value);
         } else {
-            return null;
+            return Optional.empty();
         }
     }
 
@@ -138,12 +165,16 @@ public class DoubleOperationResolvable {
     }
 
     public static DoubleOperationResolvable merge(DoubleOperationResolvable left, DoubleOperationResolvable right, MergeType mergeType) {
+        Function<Pair<String, ModuleInstance>, String> functionTransformer = right.functionTransformer;
         if (MergeType.OVERWRITE.equals(mergeType)) {
             return right;
         }
+        if (MergeType.EXTEND.equals(mergeType)) {
+            functionTransformer = left.functionTransformer;
+        }
         List<Operation> operationList = new ArrayList<>(left.operations);
         operationList.addAll(right.operations);
-        return new DoubleOperationResolvable(operationList);
+        return new DoubleOperationResolvable(operationList, functionTransformer);
     }
 
     public static class Operation {
@@ -155,7 +186,6 @@ public class DoubleOperationResolvable {
         @AutoCodec.Ignored
         public ModuleInstance instance;
 
-        @SuppressWarnings("")
         public static Codec<AttributeModifier.Operation> operationCodec = new Codec<>() {
             @Override
             public <T> DataResult<Pair<AttributeModifier.Operation, T>> decode(DynamicOps<T> ops, T input) {

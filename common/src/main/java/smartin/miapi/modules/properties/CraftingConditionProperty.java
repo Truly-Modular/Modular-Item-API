@@ -92,7 +92,7 @@ public class CraftingConditionProperty extends CodecBasedProperty<CraftingCondit
             module = ItemModule.empty;
         }
         ConditionManager.ConditionContext context = ConditionManager.fullContext(new ModuleInstance(module), bench.getBlockPos(), player, module.properties());
-        if (json != null && json.selectAble.isAllowed(context)) {
+        if (json != null && json.craftAble.isAllowed(context)) {
             return false;
         }
         return true;
@@ -122,18 +122,5 @@ public class CraftingConditionProperty extends CodecBasedProperty<CraftingCondit
         public ModuleCondition selectAble = new TrueCondition();
         @CodecBehavior.Optional
         public ModuleCondition craftAble = new TrueCondition();
-
-
-        public ModuleCondition getVisible() {
-            return visible;
-        }
-
-        public ModuleCondition getSelectAble() {
-            return selectAble;
-        }
-
-        public ModuleCondition getOnCraftAble() {
-            return craftAble;
-        }
     }
 }

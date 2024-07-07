@@ -147,13 +147,13 @@ public class RiptideAbility implements ItemUseDefaultCooldownAbility<RiptideAbil
     }
 
     public class RiptideContextJson {
-        public DoubleOperationResolvable cooldown = new DoubleOperationResolvable(0, 20);
+        public DoubleOperationResolvable cooldown = new DoubleOperationResolvable( 20);
         @AutoCodec.Name("min_use")
-        public DoubleOperationResolvable minUse = new DoubleOperationResolvable(0, 10);
+        public DoubleOperationResolvable minUse = new DoubleOperationResolvable(10);
         @AutoCodec.Name("spin_duration_base")
-        public DoubleOperationResolvable spinDuration = new DoubleOperationResolvable(0, 20);
+        public DoubleOperationResolvable spinDuration = new DoubleOperationResolvable( 20);
         @AutoCodec.Name("riptide_strength")
-        public DoubleOperationResolvable riptideStrength = new DoubleOperationResolvable(0, 20);
+        public DoubleOperationResolvable riptideStrength = new DoubleOperationResolvable( 20);
         @CodecBehavior.Optional
         @AutoCodec.Name("custom_sound")
         public ResourceLocation customSound = null;

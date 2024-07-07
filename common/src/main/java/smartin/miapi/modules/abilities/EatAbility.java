@@ -118,9 +118,9 @@ public class EatAbility implements ItemUseDefaultCooldownAbility<EatAbility.EatR
 
         public DoubleOperationResolvable nutrition;
         public DoubleOperationResolvable saturation;
-        public DoubleOperationResolvable eat_ticks = new DoubleOperationResolvable(0, 32);
-        public DoubleOperationResolvable cooldown = new DoubleOperationResolvable(0,0);
-        public @CodecBehavior.Optional DoubleOperationResolvable durability = new DoubleOperationResolvable(0,0);
+        public DoubleOperationResolvable eat_ticks = new DoubleOperationResolvable(32);
+        public DoubleOperationResolvable cooldown = new DoubleOperationResolvable(0);
+        public @CodecBehavior.Optional DoubleOperationResolvable durability = new DoubleOperationResolvable(0);
         public @CodecBehavior.Optional boolean alwaysEdible = false;
         @CodecBehavior.Override("effect_codec")
         public static Codec<List<FoodProperties.PossibleEffect>> effect_codec = Codec.list(FoodProperties.PossibleEffect.CODEC);

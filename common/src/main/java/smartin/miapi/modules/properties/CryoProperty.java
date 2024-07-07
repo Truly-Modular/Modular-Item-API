@@ -4,7 +4,6 @@ import dev.architectury.event.EventResult;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.ItemStack;
 import smartin.miapi.events.MiapiProjectileEvents;
 import smartin.miapi.modules.properties.util.DoubleProperty;
 import smartin.miapi.registries.RegistryInventory;
@@ -31,7 +30,8 @@ public class CryoProperty extends DoubleProperty {
         });*/
         MiapiProjectileEvents.MODULAR_PROJECTILE_ENTITY_HIT.register((modularProjectileEntityHitEvent) -> {
             if (modularProjectileEntityHitEvent.entityHitResult.getEntity() instanceof LivingEntity target && target.level() instanceof ServerLevel) {
-                double strength = getValueSafe(modularProjectileEntityHitEvent.projectile.getPickupItem());
+                double strength = getValue(modularProjectileEntityHitEvent.projectile.getPickupItem()).orElse(0.0);
+
                 if (strength > 0) {
                     int potionStrength = (int) Math.ceil(strength / 3);
                     int potionLength = (int) (strength * 20 + 40);
@@ -41,15 +41,5 @@ public class CryoProperty extends DoubleProperty {
             }
             return EventResult.pass();
         });
-    }
-
-    @Override
-    public Double getValue(ItemStack stack) {
-        return getValueRaw(stack);
-    }
-
-    @Override
-    public double getValueSafe(ItemStack stack) {
-        return getValueSafeRaw(stack);
     }
 }

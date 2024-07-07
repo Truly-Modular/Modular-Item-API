@@ -6,6 +6,7 @@ import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import net.minecraft.resources.ResourceLocation;
 import smartin.miapi.Environment;
 import smartin.miapi.Miapi;
 import smartin.miapi.datapack.ReloadEvents;
@@ -26,7 +27,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import net.minecraft.network.chat.Component;
 
 public class SynergyManager {
     public static Map<ItemModule, List<Synergy>> maps = new ConcurrentHashMap<>();
@@ -38,8 +38,7 @@ public class SynergyManager {
                 List<Synergy> synergies = maps.get(moduleInstance.module);
                 if (synergies != null) {
                     synergies.forEach(synergy -> {
-                        List<Component> error = new ArrayList<>();
-                        if (synergy.condition.isAllowed(new ConditionManager.ModuleConditionContext(moduleInstance, null, null, oldMap, error))) {
+                        if (synergy.condition.isAllowed(ConditionManager.moduleContext(moduleInstance, oldMap))) {
                             synergy.holder.applyHolder(oldMap);
                         }
                     });
@@ -78,7 +77,7 @@ public class SynergyManager {
                     }
                 }
                 if (type.equals("all")) {
-                    if(entry.getValue().isJsonObject()){
+                    if (entry.getValue().isJsonObject()) {
                         RegistryInventory.modules.getFlatMap().forEach((id, module) -> {
                             loadSynergy(module, entry.getValue().getAsJsonObject());
                         });
@@ -103,7 +102,7 @@ public class SynergyManager {
             return new ArrayList<>();
         });
         synergies.add(synergy);
-        synergy.holder = PropertyHolderJsonAdapter.readFromObject(entryData, "synergy" + entryData);
+        synergy.holder = PropertyHolderJsonAdapter.readFromObject(entryData, Environment.isClient(), Miapi.id("synergy/" + entryData));
     }
 
     public static void loadSynergy(Material material, JsonObject entryData) {
@@ -117,11 +116,11 @@ public class SynergyManager {
             return new ArrayList<>();
         });
         synergies.add(synergy);
-        synergy.holder = PropertyHolderJsonAdapter.readFromObject(entryData, "synergy" + entryData);
+        synergy.holder = PropertyHolderJsonAdapter.readFromObject(entryData, Environment.isClient(), Miapi.id("synergy/" + entryData));
     }
 
-    public static PropertyHolder getFrom(JsonElement element, String context) {
-        return PropertyHolderJsonAdapter.readFromObject(element, context);
+    public static PropertyHolder getFrom(JsonElement element, boolean isClient, ResourceLocation context) {
+        return PropertyHolderJsonAdapter.readFromObject(element, isClient, context);
     }
 
     public static class Synergy {
@@ -129,26 +128,28 @@ public class SynergyManager {
         public PropertyHolder holder = new PropertyHolder();
     }
 
-    public static Map<ModuleProperty, JsonElement> getProperties(JsonElement element) {
-        Map<ModuleProperty, JsonElement> properties = new HashMap<>();
-        if (element == null) {
+    public static Map<ModuleProperty<?>, Object> getProperties(JsonElement element, boolean isClient, ResourceLocation source, String context) {
+        Map<ModuleProperty<?>, Object> properties = new HashMap<>();
+        if (element == null || element.isJsonNull() || element.isJsonPrimitive()) {
             return properties;
         }
         element.getAsJsonObject().entrySet().forEach(propertyEntry -> {
-            ModuleProperty property1 = RegistryInventory.moduleProperties.get(propertyEntry.getKey());
+            String propertyKey = propertyEntry.getKey();
+            ModuleProperty<?> property = RegistryInventory.moduleProperties.get(propertyKey);
             try {
-                assert property1 != null;
-                property1.load("synergy", propertyEntry.getValue(), Environment.isClient());
+                assert property != null;
+                if (property.load(source, propertyEntry.getValue(), isClient)) {
+                    properties.put(property, property.decode(propertyEntry.getValue()));
+                }
             } catch (Exception e) {
-                throw new RuntimeException(e);
+                Miapi.LOGGER.error(STR."could not load property \{propertyKey} in context \{context} from source \{source.toString()}", e);
             }
-            properties.put(property1, propertyEntry.getValue());
         });
         return properties;
     }
 
-    public static List<ModuleProperty> getRemoveProperties(JsonElement element) {
-        List<ModuleProperty> removeFields = new ArrayList<>();
+    public static List<ModuleProperty<?>> getRemoveProperties(JsonElement element, ResourceLocation source, String context) {
+        List<ModuleProperty<?>> removeFields = new ArrayList<>();
         if (element == null) {
             return removeFields;
         }
@@ -156,9 +157,11 @@ public class SynergyManager {
             element.getAsJsonArray().forEach((element1 -> {
                 if (element1.isJsonPrimitive()) {
                     String key = element1.getAsString();
-                    ModuleProperty moduleProperty = RegistryInventory.moduleProperties.get(key);
+                    ModuleProperty<?> moduleProperty = RegistryInventory.moduleProperties.get(key);
                     if (moduleProperty != null) {
                         removeFields.add(moduleProperty);
+                    } else {
+                        Miapi.LOGGER.error(STR."Could not find Property \{key} in context \{context} from source \{source.toString()}");
                     }
                 }
             }));
@@ -168,15 +171,15 @@ public class SynergyManager {
 
     @JsonAdapter(PropertyHolderJsonAdapter.class)
     public static class PropertyHolder {
-        public Map<ModuleProperty, JsonElement> replace = new HashMap<>();
-        public Map<ModuleProperty, JsonElement> merge = new HashMap<>();
-        public List<ModuleProperty> remove = new ArrayList<>();
+        public Map<ModuleProperty<?>, Object> replace = new HashMap<>();
+        public Map<ModuleProperty<?>, Object> merge = new HashMap<>();
+        public List<ModuleProperty<?>> remove = new ArrayList<>();
 
-        public Map<ModuleProperty, JsonElement> applyHolder(Map<ModuleProperty, JsonElement> oldMap) {
+        public Map<ModuleProperty<?>, Object> applyHolder(Map<ModuleProperty<?>, Object> oldMap) {
             remove.forEach((oldMap::remove));
             merge.forEach((key, value) -> {
                 if (oldMap.containsKey(key)) {
-                    oldMap.put(key, key.merge(oldMap.get(key), value, MergeType.SMART));
+                    oldMap.put(key, ItemModule.merge(key, oldMap.get(key), value, MergeType.SMART));
                 } else {
                     oldMap.put(key, value);
                 }
@@ -185,23 +188,16 @@ public class SynergyManager {
             return oldMap;
         }
 
-        public Map<String, JsonElement> applyHolderRaw(Map<String, JsonElement> oldMap) {
-            remove.forEach(key -> {
-                String stringKey = RegistryInventory.moduleProperties.findKey(key);
-                oldMap.remove(stringKey);
-            });
+        public Map<ModuleProperty<?>, Object> applyHolderRaw(Map<ModuleProperty<?>, Object> oldMap) {
+            remove.forEach(oldMap::remove);
             merge.forEach((key, value) -> {
-                String stringKey = RegistryInventory.moduleProperties.findKey(key);
-                if (oldMap.containsKey(stringKey)) {
-                    oldMap.put(stringKey, key.merge(oldMap.get(stringKey), value, MergeType.SMART));
+                if (oldMap.containsKey(key)) {
+                    oldMap.put(key, ItemModule.merge(key, oldMap.get(key), value, MergeType.SMART));
                 } else {
-                    oldMap.put(stringKey, value);
+                    oldMap.put(key, value);
                 }
             });
-            replace.forEach((key, value) -> {
-                String stringKey = RegistryInventory.moduleProperties.findKey(key);
-                oldMap.put(stringKey, value);
-            });
+            oldMap.putAll(replace);
             return oldMap;
         }
     }
@@ -215,21 +211,20 @@ public class SynergyManager {
 
         @Override
         public PropertyHolder read(JsonReader jsonReader) throws IOException {
-            return readFromObject(Miapi.gson.fromJson(jsonReader, JsonElement.class), "context missing");
+            return readFromObject(Miapi.gson.fromJson(jsonReader, JsonElement.class), Environment.isClient(), Miapi.id("miapi/synergy"));
         }
 
-        public static PropertyHolder readFromObject(JsonElement jsonElement, String context) {
+        public static PropertyHolder readFromObject(JsonElement jsonElement, boolean isClient, ResourceLocation source) {
             JsonObject entryData = jsonElement.getAsJsonObject();
             PropertyHolder propertyHolder = new PropertyHolder();
             JsonElement replaceProperty = entryData.get("replace");
             if (entryData.has("properties")) {
                 replaceProperty = entryData.get("properties");
-                Miapi.LOGGER.warn("The raw use of the Field `properties` should be replaced with the field `replace`");
-                Miapi.LOGGER.warn(context);
+                Miapi.LOGGER.warn(STR."The raw use of the Field `properties` should be replaced with the field `replace` in \{source}");
             }
-            propertyHolder.replace = getProperties(replaceProperty);
-            propertyHolder.merge = getProperties(entryData.get("merge"));
-            propertyHolder.remove = getRemoveProperties(entryData.get("remove"));
+            propertyHolder.replace = getProperties(replaceProperty, isClient, source, "replace");
+            propertyHolder.merge = getProperties(entryData.get("merge"), isClient, source, "merge");
+            propertyHolder.remove = getRemoveProperties(entryData.get("remove"), source, "remove");
             return propertyHolder;
         }
     }

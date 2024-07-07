@@ -141,8 +141,8 @@ public class ThrowingAbility implements ItemUseDefaultCooldownAbility<ThrowingAb
     public static class BasicContext {
         @AutoCodec.Name("min_hold_time")
         @CodecBehavior.Optional
-        public DoubleOperationResolvable minUseTime = new DoubleOperationResolvable(0, 0);
+        public DoubleOperationResolvable minUseTime = new DoubleOperationResolvable(0);
         @CodecBehavior.Optional
-        public DoubleOperationResolvable cooldown = new DoubleOperationResolvable(0, 0);
+        public DoubleOperationResolvable cooldown = new DoubleOperationResolvable(0);
     }
 }

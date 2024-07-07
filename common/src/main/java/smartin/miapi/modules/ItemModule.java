@@ -11,6 +11,7 @@ import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.item.modular.VisualModularItem;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
+import smartin.miapi.modules.synergies.SynergyManager;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.lang.reflect.Type;
@@ -93,38 +94,15 @@ public record ItemModule(String name, Map<ModuleProperty<?>, Object> properties)
         try {
             //TODO:rework this into SynergyManagers implementation
             JsonObject moduleJson = gson.fromJson(moduleJsonString, JsonObject.class);
+            SynergyManager.PropertyHolder holder = SynergyManager.getFrom(moduleJson, isClient, Miapi.id(path));
             String name = moduleJson.get("name").getAsString();
             ItemModule module = RegistryInventory.modules.get(name);
             if (module == null) {
                 LOGGER.warn("module not found to be extended! " + name);
                 return;
             }
-            Map<ModuleProperty<?>, Object> moduleProperties = new HashMap<>(module.properties());
-            if (moduleJson.has("remove")) {
-                moduleJson.get("remove").getAsJsonArray().forEach(jsonElement -> {
-                    try {
-                        ModuleProperty<?> property = RegistryInventory.moduleProperties.get(jsonElement.getAsString());
-                        moduleProperties.remove(property);
-                    } catch (Exception e) {
-                    }
-                });
-            }
-            if (moduleJson.has("merge")) {
-                Map<ModuleProperty<?>, Object> rawMergeProperties = getPropertiesFromJsonString(moduleJson.get("merge"), path, isClient);
-                rawMergeProperties.forEach((key, element) -> {
-                    if (moduleProperties.containsKey(key)) {
-                        moduleProperties.put(key, merge(key, moduleProperties.get(key), module, MergeType.SMART));
-                    } else {
-                        moduleProperties.put(key, element);
-                    }
-                });
-            }
-            if (moduleJson.has("replace")) {
-                Map<ModuleProperty<?>, Object> rawReplaceProperties = getPropertiesFromJsonString(moduleJson.get("replace"), path, isClient);
-                moduleProperties.putAll(rawReplaceProperties);
-            }
             RegistryInventory.modules.getFlatMap().remove(name);
-            RegistryInventory.modules.register(name, new ItemModule(name, moduleProperties));
+            RegistryInventory.modules.register(name, new ItemModule(name, holder.applyHolder(module.properties())));
         } catch (Exception e) {
             LOGGER.warn("Could not load Module to extend " + path, e);
         }
@@ -134,44 +112,28 @@ public record ItemModule(String name, Map<ModuleProperty<?>, Object> properties)
         return property.merge((T) left, (T) right, mergeType);
     }
 
-    protected static Map<ModuleProperty<?>, Object> getPropertiesFromJsonString(JsonElement jsonString, String debugPath, boolean isClient) {
-        Map<ModuleProperty<?>, Object> moduleProperties = new HashMap<>();
-        Type type = new TypeToken<Map<String, JsonElement>>() {
-        }.getType();
-        Map<String, JsonElement> rawProperties = gson.fromJson(jsonString, type);
-        rawProperties.forEach((key, json) -> {
-            if (isValidProperty(key, debugPath, json, isClient, (pair) -> moduleProperties.put(pair.getFirst(), pair.getSecond()))) {
-            }
-        });
-        return moduleProperties;
-    }
-
     /**
      * Checks if the given module property is valid and can be loaded.
      *
-     * @param key       the key of the module property
-     * @param moduleKey the key of the module
-     * @param data      the data to load the module property
+     * @param key  the key of the module property
+     * @param path the path of the module
+     * @param data the data to load the module property
      * @return true if the module property is valid and can be loaded, false otherwise
-     * @throws RuntimeException if an error occurs during loading
      */
-    protected static boolean isValidProperty(String key, String moduleKey, JsonElement data, boolean isClient, Consumer<Pair<ModuleProperty<?>, Object>> onValid) {
+    protected static boolean isValidProperty(String key, String path, JsonElement data, boolean isClient, Consumer<Pair<ModuleProperty<?>, Object>> onValid) {
         ModuleProperty property = RegistryInventory.moduleProperties.get(key);
         if (property != null) {
             try {
-                return property.load(Miapi.id(moduleKey), data, isClient);
-                //if (!(property instanceof RenderProperty) || isClient) {
-                //    return property.load(moduleKey, data, isClient);
-                //} else {
-                //    return true;
-                //}
+                boolean valid = property.load(Miapi.id(key), data, isClient);
+                if (valid) {
+                    onValid.accept(new Pair<>(property, property.decode(data)));
+                }
+                return valid;
             } catch (Exception e) {
-                RuntimeException exception = new RuntimeException("Failure during moduleLoad, Error in Module " + moduleKey + " with property " + key + " with data " + data + " with error " + e.getLocalizedMessage());
-                exception.addSuppressed(e);
-                throw exception;
+                LOGGER.error("Failure during moduleLoad, Error in Module " + path + " with property " + key + " with data " + data + " with error " + e.getLocalizedMessage(), e);
             }
         } else {
-            LOGGER.error("Module " + moduleKey + " contains invalid property " + key);
+            LOGGER.error("Module " + path + " contains invalid property " + key);
             LOGGER.error("This indicates either a broken Module, Outdated API version or missing dependency!");
         }
         return false;
@@ -186,7 +148,7 @@ public record ItemModule(String name, Map<ModuleProperty<?>, Object> properties)
     public static ModuleInstance getModules(ItemStack stack) {
         if (ReloadEvents.isInReload()) {
             if (MiapiConfig.INSTANCE.server.other.verboseLogging) {
-                //LOGGER.info("Item cannot have modules during a reload.");
+                LOGGER.info("Item cannot have modules during a reload.");
             }
             return new ModuleInstance(ItemModule.empty);
         }

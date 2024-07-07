@@ -21,7 +21,7 @@ public interface ModuleProperty<T> {
         return merge(left, right, mergeType);
     }
 
-    default boolean load(ResourceLocation id, JsonElement element, boolean isClient) {
+    default boolean load(ResourceLocation id, JsonElement element, boolean isClient) throws Exception {
         decode(element);
         return true;
     }

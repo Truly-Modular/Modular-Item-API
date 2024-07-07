@@ -1,23 +1,24 @@
 package smartin.miapi.modules.properties;
 
-import com.google.gson.JsonElement;
 import dev.architectury.event.EventResult;
 import net.minecraft.network.chat.Component;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.conditions.ConditionManager;
-import smartin.miapi.modules.properties.util.ModuleProperty;
+import smartin.miapi.modules.conditions.ModuleCondition;
+import smartin.miapi.modules.properties.util.CodecBasedProperty;
+import smartin.miapi.modules.properties.util.MergeType;
 
 
-public class CanChangeParentModule implements ModuleProperty {
+public class CanChangeParentModule extends CodecBasedProperty<ModuleCondition> {
     public static final String KEY = "allowChangeParent";
 
     public CanChangeParentModule() {
-        super();
+        super(ConditionManager.CONDITION_CODEC);
         CraftingConditionProperty.CAN_CRAFT_SELECT_EVENT.register((slot, module, conditionContext) -> {
             if (slot != null && slot.inSlot != null && !module.isEmpty()) {
                 for (ModuleInstance moduleInstance : slot.inSlot.subModules.values()) {
                     if (!canChangeParent(moduleInstance, conditionContext)) {
-                        conditionContext.add(Component.translatable("miapi.crafting_condition.cant_change_parent"));
+                        conditionContext.failReasons.add(Component.translatable("miapi.crafting_condition.cant_change_parent"));
                         return EventResult.interruptFalse();
                     }
                 }
@@ -26,16 +27,19 @@ public class CanChangeParentModule implements ModuleProperty {
         });
     }
 
-    public boolean canChangeParent(ModuleInstance moduleInstance, ConditionManager.ModuleConditionContext context) {
-        JsonElement element = this.getJsonElement(moduleInstance);
-        if (element != null) {
-            return ConditionManager.get(element).isAllowed(context);
+    public boolean canChangeParent(ModuleInstance moduleInstance, ConditionManager.ConditionContext context) {
+        ModuleCondition condition = getData(moduleInstance);
+        if (condition != null) {
+            return condition.isAllowed(context);
         }
         return true;
     }
 
     @Override
-    public boolean load(String moduleKey, JsonElement data) throws Exception {
-        return true;
+    public ModuleCondition merge(ModuleCondition left, ModuleCondition right, MergeType mergeType) {
+        if(MergeType.EXTEND.equals(mergeType)){
+            return left;
+        }
+        return right;
     }
 }

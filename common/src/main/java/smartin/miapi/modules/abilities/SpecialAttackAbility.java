@@ -76,7 +76,7 @@ public class SpecialAttackAbility implements
     public void onStoppedUsingAfter(ItemStack stack, Level world, LivingEntity user, int remainingUseTicks) {
         SpecialAttackJson specialAttackJson = getSpecialContext(stack);
         if (user instanceof Player player && getMaxUseTime(stack) - remainingUseTicks > specialAttackJson.minHold.getValue()) {
-            EntityHitResult entityHitResult = AttackUtil.raycastFromPlayer(specialAttackJson.range.getValue(), player);
+            EntityHitResult entityHitResult = AttackUtil.raycastFromPlayer(specialAttackJson.range.evaluate(3.5, 3.5), player);
             if (entityHitResult != null) {
                 Entity target2 = entityHitResult.getEntity();
                 if (target2 instanceof LivingEntity target) {
@@ -126,8 +126,7 @@ public class SpecialAttackAbility implements
         return (int) getSpecialContext(itemStack).minHold.getValue();
     }
 
-    Override
-
+    @Override
     public SpecialAttackJson merge(SpecialAttackJson left, SpecialAttackJson right, MergeType mergeType) {
         SpecialAttackJson merged = new SpecialAttackJson();
         merged.damage = left.damage.merge(right.damage, mergeType);
@@ -153,12 +152,12 @@ public class SpecialAttackAbility implements
     }
 
     public static class SpecialAttackJson {
-        public DoubleOperationResolvable damage = new DoubleOperationResolvable(0, 1);
-        public DoubleOperationResolvable sweeping = new DoubleOperationResolvable(0, 0);
-        public DoubleOperationResolvable range = new DoubleOperationResolvable(3.5, 3.5);
+        public DoubleOperationResolvable damage = new DoubleOperationResolvable(1);
+        public DoubleOperationResolvable sweeping = new DoubleOperationResolvable(0);
+        public DoubleOperationResolvable range = new DoubleOperationResolvable(3.5);
         @AutoCodec.Name("min_hold")
-        public DoubleOperationResolvable minHold = new DoubleOperationResolvable(0, 0);
-        public DoubleOperationResolvable cooldown = new DoubleOperationResolvable(0, 0);
+        public DoubleOperationResolvable minHold = new DoubleOperationResolvable(0);
+        public DoubleOperationResolvable cooldown = new DoubleOperationResolvable(0);
         @CodecBehavior.Optional
         public Component title = Component.translatable("miapi.ability.heavy_attack.title");
         @CodecBehavior.Optional

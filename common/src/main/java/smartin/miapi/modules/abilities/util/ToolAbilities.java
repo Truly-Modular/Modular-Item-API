@@ -116,8 +116,8 @@ public abstract class ToolAbilities implements ItemUseDefaultCooldownAbility<Too
     public static class ToolAbilityContext {
         @AutoCodec.Name("min_hold_time")
         @CodecBehavior.Optional
-        public DoubleOperationResolvable minUseTime = new DoubleOperationResolvable(0, 0);
+        public DoubleOperationResolvable minUseTime = new DoubleOperationResolvable( 0);
         @CodecBehavior.Optional
-        public DoubleOperationResolvable cooldown = new DoubleOperationResolvable(0, 0);
+        public DoubleOperationResolvable cooldown = new DoubleOperationResolvable( 0);
     }
 }

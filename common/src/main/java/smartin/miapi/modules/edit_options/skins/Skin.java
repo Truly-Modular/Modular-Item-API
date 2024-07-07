@@ -3,7 +3,11 @@ package smartin.miapi.modules.edit_options.skins;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.JsonOps;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentSerialization;
+import net.minecraft.util.FastColor;
 import org.jetbrains.annotations.Nullable;
+import smartin.miapi.Environment;
 import smartin.miapi.Miapi;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.conditions.ConditionManager;
@@ -14,16 +18,13 @@ import smartin.miapi.registries.RegistryInventory;
 
 import java.util.ArrayList;
 import java.util.List;
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.FastColor;
 
 public class Skin {
     public String path;
     public ItemModule module;
     public ModuleCondition condition;
     public SynergyManager.PropertyHolder propertyHolder;
-    public TextureOptions textureOptions = new TextureOptions(new ResourceLocation(Miapi.MOD_ID, "textures/gui/skin/skin_button.png"), 100, 16, 3, FastColor.ARGB32.color(255, 255, 255, 255), 1, false);
+    public TextureOptions textureOptions = new TextureOptions(Miapi.id("textures/gui/skin/skin_button.png"), 100, 16, 3, FastColor.ARGB32.color(255, 255, 255, 255), 1, false);
     @Nullable
     public Component hoverDescription;
 
@@ -36,10 +37,10 @@ public class Skin {
             skin.module = itemModule;
             skin.condition = ConditionManager.get(jsonObject.get("condition"));
             skin.path = jsonObject.get("path").getAsString();
-            skin.propertyHolder = SynergyManager.getFrom(jsonObject, "skin for " + skin.module + " skinpath " + skin.path);
-            skin.textureOptions = TextureOptions.fromJson(jsonObject.get("texture"), new ResourceLocation(Miapi.MOD_ID, "textures/gui/skin/skin_button.png"), 100, 16, 3, FastColor.ARGB32.color(255, 255, 255, 255));
+            skin.propertyHolder = SynergyManager.getFrom(jsonObject, Environment.isClient(), Miapi.id(skin.path));
+            skin.textureOptions = TextureOptions.fromJson(jsonObject.get("texture"), Miapi.id("textures/gui/skin/skin_button.png"), 100, 16, 3, FastColor.ARGB32.color(255, 255, 255, 255));
             if (jsonObject.has("hover")) {
-                skin.hoverDescription = Codecs.TEXT.parse(
+                skin.hoverDescription = ComponentSerialization.CODEC.parse(
                         JsonOps.INSTANCE,
                         jsonObject.getAsJsonObject("hover")).result().orElse(Component.empty());
             }

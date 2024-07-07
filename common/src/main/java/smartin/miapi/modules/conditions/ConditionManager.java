@@ -60,6 +60,13 @@ public class ConditionManager {
         return context;
     }
 
+    public static ConditionContext moduleContext(ModuleInstance moduleInstance, Map<ModuleProperty<?>, Object> properties) {
+        ConditionContext context = new ConditionContext();
+        context.setContext(MODULE_CONDITION_CONTEXT, moduleInstance);
+        context.setContext(MODULE_PROPERTIES,properties);
+        return context;
+    }
+
     public static class ConditionContext {
         Map<ContextManager<?>, Object> context = new HashMap<>();
         public List<Component> failReasons = new ArrayList<>();
