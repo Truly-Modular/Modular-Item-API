@@ -126,6 +126,7 @@ public class SpecialAttackAbility implements
         return (int) getSpecialContext(itemStack).minHold.getValue();
     }
 
+    Override
     public SpecialAttackJson merge(SpecialAttackJson left, SpecialAttackJson right, MergeType mergeType) {
         SpecialAttackJson merged = new SpecialAttackJson();
         merged.damage = left.damage.merge(right.damage, mergeType);

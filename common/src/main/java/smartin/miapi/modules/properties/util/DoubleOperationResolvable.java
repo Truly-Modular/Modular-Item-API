@@ -58,7 +58,7 @@ public class DoubleOperationResolvable {
         this.operations = operations;
     }
 
-    public double getValue() {
+    public int getValue() {
         return evaluate(baseValue, fallback);
     }
 

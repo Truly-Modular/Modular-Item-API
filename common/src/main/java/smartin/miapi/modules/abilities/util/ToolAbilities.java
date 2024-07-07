@@ -18,8 +18,9 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
-import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ModuleInstance;
+import smartin.miapi.modules.properties.util.DoubleOperationResolvable;
+import smartin.miapi.modules.properties.util.MergeType;
 
 import java.util.Optional;
 
@@ -85,18 +86,18 @@ public abstract class ToolAbilities implements ItemUseDefaultCooldownAbility<Too
     }
 
     public void initialize(ToolAbilityContext data, ModuleInstance moduleInstance) {
-        data.cooldown.evaluate(moduleInstance);
-        data.minUseTime.evaluate(moduleInstance);
+        data.cooldown.initialize(moduleInstance);
+        data.minUseTime.initialize(moduleInstance);
     }
 
     @Override
     public int getCooldown(ItemStack itemstack) {
-        return (int) getSpecialContext(itemstack).cooldown.evaluatedOutput;
+        return (int) getSpecialContext(itemstack).cooldown.getValue();
     }
 
     @Override
     public int getMinHoldTime(ItemStack itemStack) {
-        return (int) getSpecialContext(itemStack).minUseTime.evaluatedOutput;
+        return (int) getSpecialContext(itemStack).minUseTime.getValue();
     }
 
     @Override
@@ -104,11 +105,19 @@ public abstract class ToolAbilities implements ItemUseDefaultCooldownAbility<Too
         return null;
     }
 
+    @Override
+    public ToolAbilityContext merge(ToolAbilityContext right, ToolAbilityContext left, MergeType mergeType) {
+        ToolAbilityContext context = new ToolAbilityContext();
+        context.minUseTime = left.minUseTime.merge(right.minUseTime, mergeType);
+        context.cooldown = left.cooldown.merge(right.cooldown, mergeType);
+        return context;
+    }
+
     public static class ToolAbilityContext {
         @AutoCodec.Name("min_hold_time")
         @CodecBehavior.Optional
-        public StatResolver.DoubleFromStat minUseTime = new StatResolver.DoubleFromStat(0);
+        public DoubleOperationResolvable minUseTime = new DoubleOperationResolvable(0, 0);
         @CodecBehavior.Optional
-        public StatResolver.DoubleFromStat cooldown = new StatResolver.DoubleFromStat(0);
+        public DoubleOperationResolvable cooldown = new DoubleOperationResolvable(0, 0);
     }
 }
