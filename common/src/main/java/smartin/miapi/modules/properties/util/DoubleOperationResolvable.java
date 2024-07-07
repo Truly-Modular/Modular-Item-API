@@ -46,9 +46,20 @@ public class DoubleOperationResolvable {
 
     public List<Operation> operations;
     Double cachedResult = null;
+    double baseValue = 0.0;
+    double fallback = 0.0;
+
+    public DoubleOperationResolvable(double baseValue, double fallback) {
+        this.baseValue = baseValue;
+        this.fallback = fallback;
+    }
 
     public DoubleOperationResolvable(List<Operation> operations) {
         this.operations = operations;
+    }
+
+    public double getValue() {
+        return evaluate(baseValue, fallback);
     }
 
     public DoubleOperationResolvable initialize(ModuleInstance moduleInstance) {

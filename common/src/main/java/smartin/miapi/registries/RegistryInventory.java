@@ -586,7 +586,7 @@ public class RegistryInventory {
             registerMiapi(useAbilityRegistry, "block", new BlockAbility());
             registerMiapi(useAbilityRegistry, "full_block", new ShieldBlockAbility());
             registerMiapi(useAbilityRegistry, RiptideProperty.KEY, new RiptideAbility());
-            registerMiapi(useAbilityRegistry, HeavyAttackProperty.KEY, new HeavyAttackAbility());
+            registerMiapi(useAbilityRegistry, HeavyAttackProperty.KEY, new SpecialAttackAbility());
             registerMiapi(useAbilityRegistry, CircleAttackProperty.KEY, new CircleAttackAbility());
             registerMiapi(useAbilityRegistry, CrossbowProperty.KEY, new CrossbowAbility());
             registerMiapi(useAbilityRegistry, AxeAbility.KEY, new AxeAbility());
