@@ -46,7 +46,7 @@ public class AdvancementCondition implements ModuleCondition {
 
     @Override
     public boolean isAllowed(ConditionManager.ConditionContext conditionContext) {
-        Optional<Player> playerOptional = conditionContext.getContext(ConditionManager.PLAYER_LOCATION_CONTEXT);
+        Optional<Player> playerOptional = conditionContext.getContext(ConditionManager.PLAYER_CONTEXT);
         if (playerOptional.isPresent()) {
             Player player = playerOptional.get();
             List<Component> reasons = conditionContext.failReasons;

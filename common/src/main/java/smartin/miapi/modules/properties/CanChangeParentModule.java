@@ -13,7 +13,7 @@ public class CanChangeParentModule implements ModuleProperty {
 
     public CanChangeParentModule() {
         super();
-        CraftingConditionProperty.CRAFT_CONDITION_EVENT.register((slot, module, conditionContext) -> {
+        CraftingConditionProperty.CAN_CRAFT_SELECT_EVENT.register((slot, module, conditionContext) -> {
             if (slot != null && slot.inSlot != null && !module.isEmpty()) {
                 for (ModuleInstance moduleInstance : slot.inSlot.subModules.values()) {
                     if (!canChangeParent(moduleInstance, conditionContext)) {

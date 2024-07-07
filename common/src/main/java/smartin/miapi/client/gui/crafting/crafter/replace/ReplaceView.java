@@ -90,10 +90,10 @@ public class ReplaceView extends InteractAbleWidget {
             ModuleInstance instance = new ModuleInstance(option.module());
             Component translated = StatResolver.translateAndResolve(Miapi.MOD_ID + ".module." + moduleName, instance);
             textWidget = new ScrollingTextWidget(0, 0, this.width, translated, FastColor.ARGB32.color(255, 255, 255, 255));
-            isAllowed = CraftingConditionProperty.isCraftable(currentSlot, option.module(), Minecraft.getInstance().player, null);
+            isAllowed = CraftingConditionProperty.isSelectAble(currentSlot, option.module(), Minecraft.getInstance().player, null);
             List<Component> texts = new ArrayList<>();
             if (!isAllowed) {
-                texts = CraftingConditionProperty.getReasonsForCraftable(currentSlot, option.module(), Minecraft.getInstance().player, null);
+                texts = CraftingConditionProperty.getReasonsForSelectable(currentSlot, option.module(), Minecraft.getInstance().player, null);
             }
             hoverDescription = new HoverDescription(x, y, texts);
         }

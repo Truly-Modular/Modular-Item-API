@@ -1,7 +1,11 @@
 package smartin.miapi.modules;
 
-import com.google.gson.*;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
+import com.mojang.datafixers.util.Pair;
+import net.minecraft.world.item.ItemStack;
+import smartin.miapi.Miapi;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.item.modular.VisualModularItem;
@@ -14,8 +18,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import net.minecraft.world.item.ItemStack;
+import java.util.function.Consumer;
 
 import static smartin.miapi.Miapi.LOGGER;
 import static smartin.miapi.Miapi.gson;
@@ -26,7 +29,7 @@ import static smartin.miapi.Miapi.gson;
  * @param name       The name of the module.
  * @param properties The map of properties for the module.
  */
-public record ItemModule(String name, Map<String, JsonElement> properties) {
+public record ItemModule(String name, Map<ModuleProperty<?>, Object> properties) {
 
     /**
      * The key for the properties in the Cache.
@@ -51,12 +54,6 @@ public record ItemModule(String name, Map<String, JsonElement> properties) {
     public static final ItemModule internal = new ItemModule("internal", new HashMap<>());
 
 
-    public Map<ModuleProperty, JsonElement> getKeyedProperties() {
-        HashMap<ModuleProperty, JsonElement> map = new HashMap<>();
-        properties().forEach((key, jsonData) -> map.put(RegistryInventory.moduleProperties.get(key), jsonData));
-        return map;
-    }
-
     /**
      * Loads an ItemModule from a JSON string.
      *
@@ -73,13 +70,14 @@ public record ItemModule(String name, Map<String, JsonElement> properties) {
             }.getType();
             String name = moduleJson.get("name").getAsString();
             Map<String, JsonElement> moduleProperties = new HashMap<>();
+            Map<ModuleProperty<?>, Object> decodedProperties = new HashMap<>();
             Map<String, JsonElement> rawProperties = gson.fromJson(moduleJsonString, type);
             rawProperties.forEach((key, json) -> {
-                if (isValidProperty(key, path, json, isClient)) {
+                if (isValidProperty(key, path, json, isClient, (pair) -> decodedProperties.put(pair.getFirst(), pair.getSecond()))) {
                     moduleProperties.put(key, json);
                 }
             });
-            RegistryInventory.modules.register(name, new ItemModule(name, moduleProperties));
+            RegistryInventory.modules.register(name, new ItemModule(name, decodedProperties));
         } catch (Exception e) {
             LOGGER.warn("Could not load Module " + path, e);
         }
@@ -101,30 +99,28 @@ public record ItemModule(String name, Map<String, JsonElement> properties) {
                 LOGGER.warn("module not found to be extended! " + name);
                 return;
             }
-            Map<String, JsonElement> moduleProperties = new HashMap<>(module.properties());
+            Map<ModuleProperty<?>, Object> moduleProperties = new HashMap<>(module.properties());
             if (moduleJson.has("remove")) {
                 moduleJson.get("remove").getAsJsonArray().forEach(jsonElement -> {
                     try {
-                        moduleProperties.remove(jsonElement.getAsString());
+                        ModuleProperty<?> property = RegistryInventory.moduleProperties.get(jsonElement.getAsString());
+                        moduleProperties.remove(property);
                     } catch (Exception e) {
                     }
                 });
             }
             if (moduleJson.has("merge")) {
-                Map<String, JsonElement> rawMergeProperties = getPropertiesFromJsonString(moduleJson.get("merge"), path, isClient);
+                Map<ModuleProperty<?>, Object> rawMergeProperties = getPropertiesFromJsonString(moduleJson.get("merge"), path, isClient);
                 rawMergeProperties.forEach((key, element) -> {
                     if (moduleProperties.containsKey(key)) {
-                        ModuleProperty property = RegistryInventory.moduleProperties.get(key);
-                        if (property != null) {
-                            moduleProperties.put(key, property.merge(moduleProperties.get(key), element, MergeType.SMART));
-                        }
+                        moduleProperties.put(key, merge(key, moduleProperties.get(key), module, MergeType.SMART));
                     } else {
                         moduleProperties.put(key, element);
                     }
                 });
             }
             if (moduleJson.has("replace")) {
-                Map<String, JsonElement> rawReplaceProperties = getPropertiesFromJsonString(moduleJson.get("replace"), path, isClient);
+                Map<ModuleProperty<?>, Object> rawReplaceProperties = getPropertiesFromJsonString(moduleJson.get("replace"), path, isClient);
                 moduleProperties.putAll(rawReplaceProperties);
             }
             RegistryInventory.modules.getFlatMap().remove(name);
@@ -134,64 +130,20 @@ public record ItemModule(String name, Map<String, JsonElement> properties) {
         }
     }
 
-    protected static Map<String, JsonElement> getPropertiesFromJsonString(String jsonString, String debugPath, boolean isClient) {
-        Map<String, JsonElement> moduleProperties = new HashMap<>();
+    public static <T> T merge(ModuleProperty<T> property, Object left, Object right, MergeType mergeType) {
+        return property.merge((T) left, (T) right, mergeType);
+    }
+
+    protected static Map<ModuleProperty<?>, Object> getPropertiesFromJsonString(JsonElement jsonString, String debugPath, boolean isClient) {
+        Map<ModuleProperty<?>, Object> moduleProperties = new HashMap<>();
         Type type = new TypeToken<Map<String, JsonElement>>() {
         }.getType();
         Map<String, JsonElement> rawProperties = gson.fromJson(jsonString, type);
         rawProperties.forEach((key, json) -> {
-            if (isValidProperty(key, debugPath, json, isClient)) {
-                moduleProperties.put(key, json);
+            if (isValidProperty(key, debugPath, json, isClient, (pair) -> moduleProperties.put(pair.getFirst(), pair.getSecond()))) {
             }
         });
         return moduleProperties;
-    }
-
-    protected static Map<String, JsonElement> getPropertiesFromJsonString(JsonElement jsonString, String debugPath, boolean isClient) {
-        Map<String, JsonElement> moduleProperties = new HashMap<>();
-        Type type = new TypeToken<Map<String, JsonElement>>() {
-        }.getType();
-        Map<String, JsonElement> rawProperties = gson.fromJson(jsonString, type);
-        rawProperties.forEach((key, json) -> {
-            if (isValidProperty(key, debugPath, json, isClient)) {
-                moduleProperties.put(key, json);
-            }
-        });
-        return moduleProperties;
-    }
-
-    /**
-     * Processes a JSON element and adds valid properties to the module properties map.
-     *
-     * @param element          the JSON element to process
-     * @param moduleProperties the map of properties for the module
-     * @param name             the name of the module
-     * @param path             the path of the JSON file
-     * @param rawString        the raw JSON string
-     */
-    protected static void processModuleJsonElement(JsonElement element, Map<String, JsonElement> moduleProperties, String name, String path, String rawString, boolean isClient) {
-        if (element.isJsonObject()) {
-            JsonObject jsonObject = element.getAsJsonObject();
-            for (Map.Entry<String, JsonElement> entry : jsonObject.entrySet()) {
-                String key = entry.getKey();
-                JsonElement value = entry.getValue();
-                ModuleProperty property = RegistryInventory.moduleProperties.get(key);
-                if (property != null) {
-                    if (isValidProperty(key, name, value, isClient)) {
-                        moduleProperties.put(key, value);
-                    }
-                } else if (value.isJsonObject()) {
-                    processModuleJsonElement(value, moduleProperties, name, path, rawString, isClient);
-                } else if (value.isJsonArray()) {
-                    JsonArray jsonArray = value.getAsJsonArray();
-                    for (JsonElement jsonElement : jsonArray) {
-                        processModuleJsonElement(jsonElement, moduleProperties, name, path, rawString, isClient);
-                    }
-                } else {
-                    LOGGER.error("Error while reading ModuleJson, module " + name + " key/property " + key + " in file " + path + " Please make sure there are no Typos in the Property Names");
-                }
-            }
-        }
     }
 
     /**
@@ -203,11 +155,11 @@ public record ItemModule(String name, Map<String, JsonElement> properties) {
      * @return true if the module property is valid and can be loaded, false otherwise
      * @throws RuntimeException if an error occurs during loading
      */
-    protected static boolean isValidProperty(String key, String moduleKey, JsonElement data, boolean isClient) {
+    protected static boolean isValidProperty(String key, String moduleKey, JsonElement data, boolean isClient, Consumer<Pair<ModuleProperty<?>, Object>> onValid) {
         ModuleProperty property = RegistryInventory.moduleProperties.get(key);
         if (property != null) {
             try {
-                return property.load(moduleKey, data);
+                return property.load(Miapi.id(moduleKey), data, isClient);
                 //if (!(property instanceof RenderProperty) || isClient) {
                 //    return property.load(moduleKey, data, isClient);
                 //} else {
@@ -242,84 +194,6 @@ public record ItemModule(String name, Map<String, JsonElement> properties) {
             return stack.getComponents().get(ModuleInstance.componentType);
         }
         return new ModuleInstance(ItemModule.empty);
-    }
-
-    /**
-     * Gets a map of unmerged module properties for the given module instance.
-     *
-     * @param modules the module instance to getRaw the unmerged module properties from
-     * @return a map of unmerged module properties
-     */
-    public static Map<ItemModule, List<JsonElement>> getUnmergedProperties(ModuleInstance modules) {
-        Map<ItemModule, List<JsonElement>> unmergedProperties = new HashMap<>();
-        for (ModuleInstance module : modules.subModules.values()) {
-            module.getOldProperties().forEach((property, data) -> {
-                unmergedProperties.getOrDefault(property, new ArrayList<>()).add(data);
-            });
-        }
-        return unmergedProperties;
-    }
-
-    /**
-     * this method works through all submodules and merges the Properties using the Smart MergeType
-     *
-     * @param moduleInstance the root instance
-     * @param property       the property to be merged
-     * @return the merged PropertyJson
-     */
-    public static JsonElement getMergedProperty(ModuleInstance moduleInstance, ModuleProperty property) {
-        return getMergedProperty(moduleInstance, property, MergeType.SMART);
-    }
-
-    public static JsonElement getMergedProperty(ItemStack itemStack, ModuleProperty property) {
-        return getMergedProperty(getModules(itemStack), property, MergeType.SMART);
-    }
-
-    /**
-     * this method works through all submodules and merges the Properties depending on the supplied MergeType
-     *
-     * @param moduleInstance the root instance
-     * @param property       the property to be merged
-     * @param type           the mergeType for the merge Logic
-     * @return the merged PropertyJson
-     */
-    public static JsonElement getMergedProperty(ModuleInstance moduleInstance, ModuleProperty property, MergeType type) {
-        JsonElement mergedProperty = null;
-        for (ModuleInstance module : moduleInstance.allSubModules()) {
-            JsonElement currentProperty = module.getOldProperties().get(property);
-            if (currentProperty != null) {
-                if (mergedProperty == null) {
-                    mergedProperty = currentProperty;
-                } else {
-                    mergedProperty = property.merge(mergedProperty, currentProperty, type);
-                }
-            }
-        }
-        return mergedProperty;
-    }
-
-    /**
-     * this method works through all submodules and merges the Properties depending on the supplied MergeType
-     *
-     * @param itemStack the ModularItemStack
-     * @param property  the property to be merged
-     * @param type      the mergeType for the merge Logic
-     * @return the merged PropertyJson
-     */
-    public static JsonElement getMergedProperty(ItemStack itemStack, ModuleProperty property, MergeType type) {
-        ModuleInstance moduleInstance = getModules(itemStack);
-        JsonElement mergedProperty = null;
-        for (ModuleInstance module : moduleInstance.allSubModules()) {
-            JsonElement currentProperty = module.getOldProperties().get(property);
-            if (currentProperty != null) {
-                if (mergedProperty == null) {
-                    mergedProperty = currentProperty;
-                } else {
-                    mergedProperty = property.merge(mergedProperty, currentProperty, type);
-                }
-            }
-        }
-        return mergedProperty;
     }
 
     /**

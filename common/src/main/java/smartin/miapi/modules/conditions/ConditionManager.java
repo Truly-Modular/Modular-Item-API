@@ -23,7 +23,7 @@ public class ConditionManager {
     public static Map<ResourceLocation, Codec<ModuleCondition>> CONDITION_REGISTRY = new ConcurrentHashMap<>();
     public static ContextManager<ModuleInstance> MODULE_CONDITION_CONTEXT = source -> ((ModuleInstance) source).copy();
     public static ContextManager<BlockPos> WORKBENCH_LOCATION_CONTEXT = BlockPos.class::cast;
-    public static ContextManager<Player> PLAYER_LOCATION_CONTEXT = Player.class::cast;
+    public static ContextManager<Player> PLAYER_CONTEXT = Player.class::cast;
     public static ContextManager<Map<ModuleProperty<?>, Object>> MODULE_PROPERTIES = source -> new HashMap<>((Map<ModuleProperty<?>, Object>) source);
 
     public static Codec<ModuleCondition> CONDITION_CODEC = new Codec<ModuleCondition>() {
@@ -51,9 +51,18 @@ public class ConditionManager {
         return CONDITION_CODEC.parse(JsonOps.INSTANCE, element).getOrThrow();
     }
 
-    public class ConditionContext {
+    public static ConditionContext fullContext(ModuleInstance moduleInstance, BlockPos pos, Player player, Map<ModuleProperty<?>, Object> properties) {
+        ConditionContext context = new ConditionContext();
+        context.setContext(MODULE_CONDITION_CONTEXT, moduleInstance);
+        context.setContext(WORKBENCH_LOCATION_CONTEXT, pos);
+        context.setContext(PLAYER_CONTEXT, player);
+        context.setContext(MODULE_PROPERTIES,properties);
+        return context;
+    }
+
+    public static class ConditionContext {
         Map<ContextManager<?>, Object> context = new HashMap<>();
-        List<Component> failReasons = new ArrayList<>();
+        public List<Component> failReasons = new ArrayList<>();
 
         public ConditionContext copy() {
             ConditionContext copy = new ConditionContext();

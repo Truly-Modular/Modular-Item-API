@@ -1,104 +1,83 @@
 package smartin.miapi.modules.properties;
 
-import com.google.gson.JsonElement;
+import com.mojang.serialization.Codec;
+import com.redpxnda.nucleus.codec.auto.AutoCodec;
+import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
 import com.redpxnda.nucleus.event.PrioritizedEvent;
 import dev.architectury.event.EventResult;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.Nullable;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.craft.CraftAction;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.conditions.ConditionManager;
 import smartin.miapi.modules.conditions.ModuleCondition;
+import smartin.miapi.modules.conditions.TrueCondition;
+import smartin.miapi.modules.properties.util.CodecBasedProperty;
 import smartin.miapi.modules.properties.util.CraftingProperty;
 import smartin.miapi.modules.properties.util.MergeType;
-import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
-import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.Component;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 
 /**
  * This property can manage if a module can be crafted in the first place
  */
-public class CraftingConditionProperty implements ModuleProperty, CraftingProperty {
+public class CraftingConditionProperty extends CodecBasedProperty<CraftingConditionProperty.CraftingConditionJson> implements CraftingProperty {
     public static final String KEY = "crafting_condition";
     public static CraftingConditionProperty property;
-    public static PrioritizedEvent<CanCraft> CRAFT_CONDITION_EVENT = PrioritizedEvent.createEventResult();
+    public static PrioritizedEvent<CanCraft> CAN_CRAFT_SELECT_EVENT = PrioritizedEvent.createEventResult();
+    public static Codec<CraftingConditionJson> CODEC = AutoCodec.of(CraftingConditionJson.class).codec();
 
     public CraftingConditionProperty() {
+        super(CODEC);
         property = this;
     }
 
     public static boolean isVisible(SlotProperty.ModuleSlot slot, ItemModule module, Player entity, BlockPos pos) {
-        JsonElement element = module.getKeyedProperties().get(property);
-        List<Component> reasons = new ArrayList<>();
-        if (element != null) {
-            return new CraftingConditionJson(element).getVisible().isAllowed(new ConditionManager.ModuleConditionContext(slot.parent, pos, entity, module.getKeyedProperties(), reasons));
+        CraftingConditionJson json = (CraftingConditionJson) module.properties().get(property);
+        if (json != null) {
+            return json.visible.isAllowed(ConditionManager.fullContext(new ModuleInstance(module), pos, entity, module.properties()));
         }
         return true;
     }
 
-    public static boolean isCraftable(SlotProperty.ModuleSlot slot, ItemModule module, Player entity, BlockPos pos) {
-        JsonElement element = module.getKeyedProperties().get(property);
-        List<Component> reasons = new ArrayList<>();
-        ModuleInstance instance = slot == null ? null : slot.parent;
-        Map<ModuleProperty, JsonElement> elementMap = module.getKeyedProperties();
-        if (instance != null) {
-            elementMap = instance.getOldProperties();
+    public static boolean isSelectAble(SlotProperty.ModuleSlot slot, @Nullable ItemModule module, Player entity, BlockPos pos) {
+        CraftingConditionJson json = module != null ? (CraftingConditionJson) module.properties().get(property) : null;
+        if (module == null) {
+            module = ItemModule.empty;
         }
-        if (element != null) {
-            CraftingConditionJson conditionJson = new CraftingConditionJson(element);
-            if (!conditionJson.getCraftAble().isAllowed(new ConditionManager.ModuleConditionContext(instance, pos, entity, elementMap, reasons))) {
-                return false;
-            }
+        ConditionManager.ConditionContext context = ConditionManager.fullContext(new ModuleInstance(module), pos, entity, module.properties());
+        if (json != null && !json.selectAble.isAllowed(context.copy())) {
+            return false;
         }
-        if (CRAFT_CONDITION_EVENT.invoker().craft(slot, module, new ConditionManager.ModuleConditionContext(instance, pos, entity, elementMap, reasons)).interruptsFurtherEvaluation()) {
+        if (CAN_CRAFT_SELECT_EVENT.invoker().craft(slot, module, context).interruptsFurtherEvaluation()) {
             return false;
         }
         return true;
     }
 
-    public static void inSlotPlaced(SlotProperty.ModuleSlot slot, ItemModule module, Consumer<ModuleInstance> test) {
-        ModuleInstance moduleInstance = new ModuleInstance(module);
-        if (slot != null && slot.parent != null) {
-            slot.inSlot = moduleInstance;
-            moduleInstance.parent = slot.parent;
+    public static List<Component> getReasonsForSelectable(SlotProperty.ModuleSlot slot, ItemModule module, Player entity, BlockPos pos) {
+        CraftingConditionJson json = module != null ? (CraftingConditionJson) module.properties().get(property) : null;
+        if (module == null) {
+            module = ItemModule.empty;
         }
-        test.accept(moduleInstance);
-        moduleInstance.parent = null;
-        if (slot != null && slot.parent != null) {
-            slot.inSlot = null;
-        }
-    }
-
-    public static List<Component> getReasonsForCraftable(SlotProperty.ModuleSlot slot, ItemModule module, Player entity, BlockPos pos) {
-        JsonElement element = module.getKeyedProperties().get(property);
         List<Component> reasons = new ArrayList<>();
-        ModuleInstance instance = slot == null ? null : slot.parent;
-        Map<ModuleProperty, JsonElement> elementMap = module.getKeyedProperties();
-        if (instance != null) {
-            elementMap = instance.getOldProperties();
+        ConditionManager.ConditionContext context = ConditionManager.fullContext(new ModuleInstance(module), pos, entity, module.properties());
+        ConditionManager.ConditionContext secondContext = context.copy();
+        if (json != null) {
+            json.selectAble.isAllowed(context);
+            reasons.addAll(context.failReasons);
         }
-        if (element != null) {
-            new CraftingConditionJson(element).getCraftAble().isAllowed(new ConditionManager.ModuleConditionContext(instance, pos, entity, elementMap, reasons));
+        if (CAN_CRAFT_SELECT_EVENT.invoker().craft(slot, module, secondContext).interruptsFurtherEvaluation()) {
+            reasons.addAll(secondContext.failReasons);
         }
-        CRAFT_CONDITION_EVENT.invoker().craft(slot, module, new ConditionManager.ModuleConditionContext(instance, pos, entity, elementMap, reasons));
         return reasons;
-    }
-
-    @Override
-    public boolean load(String moduleKey, JsonElement data) throws Exception {
-        return true;
-    }
-
-    @Override
-    public JsonElement merge(JsonElement old, JsonElement toMerge, MergeType type) {
-        return ModuleProperty.super.merge(old, toMerge, type);
     }
 
     @Override
@@ -107,19 +86,14 @@ public class CraftingConditionProperty implements ModuleProperty, CraftingProper
     }
 
     @Override
-    public Component getWarning() {
-        return CraftingProperty.super.getWarning();
-    }
-
-    @Override
     public boolean canPerform(ItemStack old, ItemStack crafting, ModularWorkBenchEntity bench, Player player, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<String, String> data) {
-        ModuleInstance newModule = craftAction.getModifyingModuleInstance(crafting);
-        if (newModule != null) {
-            JsonElement element = newModule.getOldProperties().get(property);
-            if (element != null) {
-                List<Component> reasons = new ArrayList<>();
-                return new CraftingConditionJson(element).getOnCraftAble().isAllowed(new ConditionManager.ModuleConditionContext(newModule, null, player, newModule.getOldProperties(), reasons));
-            }
+        CraftingConditionJson json = module != null ? (CraftingConditionJson) module.properties().get(property) : null;
+        if (module == null) {
+            module = ItemModule.empty;
+        }
+        ConditionManager.ConditionContext context = ConditionManager.fullContext(new ModuleInstance(module), bench.getBlockPos(), player, module.properties());
+        if (json != null && json.selectAble.isAllowed(context)) {
+            return false;
         }
         return true;
     }
@@ -129,31 +103,37 @@ public class CraftingConditionProperty implements ModuleProperty, CraftingProper
         return crafting;
     }
 
+    @Override
+    public CraftingConditionJson merge(CraftingConditionJson left, CraftingConditionJson right, MergeType mergeType) {
+        if(MergeType.EXTEND.equals(mergeType)){
+            return left;
+        }
+        return right;
+    }
+
     public interface CanCraft {
         EventResult craft(SlotProperty.ModuleSlot slot, ItemModule module, ConditionManager.ConditionContext context);
     }
 
     public static class CraftingConditionJson {
-        public ModuleCondition visible;
-        public ModuleCondition craftAble;
-        public ModuleCondition onCraft;
+        @CodecBehavior.Optional
+        public ModuleCondition visible = new TrueCondition();
+        @CodecBehavior.Optional
+        public ModuleCondition selectAble = new TrueCondition();
+        @CodecBehavior.Optional
+        public ModuleCondition craftAble = new TrueCondition();
 
-        public CraftingConditionJson(JsonElement element) {
-            visible = ConditionManager.get(element.getAsJsonObject().get("visible"));
-            craftAble = ConditionManager.get(element.getAsJsonObject().get("craftable"));
-            onCraft = ConditionManager.get(element.getAsJsonObject().get("on_craft"));
-        }
 
         public ModuleCondition getVisible() {
             return visible;
         }
 
-        public ModuleCondition getCraftAble() {
-            return craftAble;
+        public ModuleCondition getSelectAble() {
+            return selectAble;
         }
 
         public ModuleCondition getOnCraftAble() {
-            return onCraft;
+            return craftAble;
         }
     }
 }
