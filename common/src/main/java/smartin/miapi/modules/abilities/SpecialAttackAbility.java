@@ -83,7 +83,7 @@ public class SpecialAttackAbility implements
                     ((LivingEntityAccessor) player).attacking(target);
                     float damage = (float) ((float) player.getAttributeValue(Attributes.ATTACK_DAMAGE) * specialAttackJson.damage.getValue());
                     float sweeping = (float) specialAttackJson.sweeping.getValue();
-                    AttackUtil.performAttack(player, target, damage, true);
+                    AttackUtil.performAttack(player, target, damage, true, stack);
                     if (sweeping > 0) {
                         AttackUtil.performSweeping(player, target, sweeping, damage);
                     }
@@ -127,6 +127,7 @@ public class SpecialAttackAbility implements
     }
 
     Override
+
     public SpecialAttackJson merge(SpecialAttackJson left, SpecialAttackJson right, MergeType mergeType) {
         SpecialAttackJson merged = new SpecialAttackJson();
         merged.damage = left.damage.merge(right.damage, mergeType);

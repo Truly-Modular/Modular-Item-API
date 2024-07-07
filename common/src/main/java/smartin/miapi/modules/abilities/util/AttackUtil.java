@@ -1,38 +1,35 @@
 package smartin.miapi.modules.abilities.util;
 
-import java.util.List;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 
-public class AttackUtil {
-    public static void performAttack(Player player, LivingEntity target, float damage, boolean useEnchants) {
-        int fireAspect = EnchantmentHelper.getFireAspect(player);
-        int knockback = EnchantmentHelper.getKnockback(player);
-        if (target.hurt(player.damageSources().playerAttack(player), damage)) {
-            if (fireAspect > 0 && !target.isOnFire() && useEnchants) {
-                target.igniteForSeconds(1);
-            }
-            if (knockback > 0 && useEnchants) {
-                target.knockback((knockback * 0.5F), Mth.sin(player.getYRot() * 0.017453292F), (-Mth.cos(player.getYRot() * 0.017453292F)));
+import java.util.List;
 
-                player.setDeltaMovement(player.getDeltaMovement().multiply(0.6, 1.0, 0.6));
-                player.setSprinting(false);
+public class AttackUtil {
+    public static void performAttack(Player player, LivingEntity target, float damage, boolean useEnchants, ItemStack causing) {
+        DamageSource source = player.damageSources().playerAttack(player);
+        if (player.level() instanceof ServerLevel level && target.hurt(source, damage)) {
+            if (useEnchants) {
+                EnchantmentHelper.doPostAttackEffectsWithItemSource(level, target, source, causing);
             }
         }
     }
 
     public static void performSweeping(Player player, LivingEntity target, float sweepingRange, float sweepingDamage) {
         Level world = player.level();
-        List<LivingEntity> entities = world.getEntitiesOfClass(LivingEntity.class, target.getBoundingBox().inflate(1.0, 0.25, 1.0).inflate(sweepingRange * 2,1,sweepingRange * 2));
+        List<LivingEntity> entities = world.getEntitiesOfClass(LivingEntity.class, target.getBoundingBox().inflate(1.0, 0.25, 1.0).inflate(sweepingRange * 2, 1, sweepingRange * 2));
 
         for (LivingEntity entity : entities) {
             if (entity != player && entity != target && !player.isAlliedTo(entity) && !(entity instanceof ArmorStand armorStandEntity && armorStandEntity.isMarker()) && player.distanceToSqr(entity) < sweepingRange * sweepingRange) {
