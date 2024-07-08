@@ -32,20 +32,22 @@ public class LuminousLearningProperty extends DoubleProperty {
         BlockEvent.BREAK.register((Level level, BlockPos pos, BlockState state, ServerPlayer player, @Nullable IntValue xp)->{
             ItemStack tool = player.getMainHandItem();
             if (tool != null && tool.getItem() instanceof ModularItem) {
-                double value = getValueSafe(tool);
-                while (value > 0) {
-                    if (Math.random() > 0.7 && xp!=null && level instanceof ServerLevel serverWorld) {
-                        ExperienceOrb.award(serverWorld, Vec3.atCenterOf(pos), xp.get());
+                getValue(tool).ifPresent((value)->{
+                    while (value > 0) {
+                        if (Math.random() > 0.7 && xp!=null && level instanceof ServerLevel serverWorld) {
+                            ExperienceOrb.award(serverWorld, Vec3.atCenterOf(pos), xp.get());
+                        }
+                        value--;
                     }
-                    value--;
-                }
+                });
             }
             return EventResult.pass();
         });
+        //TODO: create a common adjust XP event
         EntityEvent.LIVING_DEATH.register((LivingEntity entity, DamageSource source) -> {
             if (entity.level() instanceof ServerLevel serverWorld) {
                 int xp = entity.getBaseExperienceReward();
-                double value = getForItems(entity.getItemsEquipped());
+                double value = getForItems(entity.getAllSlots());
                 while (value > 0) {
                     if (Math.random() > 0.7) {
                         ExperienceOrb.award(serverWorld, Vec3.atCenterOf(entity.blockPosition()), xp);
@@ -55,16 +57,5 @@ public class LuminousLearningProperty extends DoubleProperty {
             }
             return EventResult.pass();
         });
-    }
-
-
-    @Override
-    public Double getValue(ItemStack stack) {
-        return getValueRaw(stack);
-    }
-
-    @Override
-    public double getValueSafe(ItemStack stack) {
-        return getValueSafeRaw(stack);
     }
 }

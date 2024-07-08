@@ -1,6 +1,5 @@
 package smartin.miapi.modules.material;
 
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -75,7 +74,7 @@ public interface Material {
      * @param key
      * @return
      */
-    Map<ModuleProperty, JsonElement> materialProperties(String key);
+    Map<ModuleProperty<?>, Object> materialProperties(String key);
 
     /**
      * be sure to also implement {@link Material#getAllDisplayPropertyKeys()}
@@ -83,7 +82,7 @@ public interface Material {
      * @param key
      * @return
      */
-    default Map<ModuleProperty, JsonElement> getDisplayMaterialProperties(String key) {
+    default Map<ModuleProperty<?>, Object> getDisplayMaterialProperties(String key) {
         return materialProperties(key);
     }
 

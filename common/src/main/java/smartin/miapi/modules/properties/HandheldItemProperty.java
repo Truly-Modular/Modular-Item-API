@@ -5,7 +5,6 @@ import dev.architectury.platform.Platform;
 import net.minecraft.resources.ResourceLocation;
 import smartin.miapi.Miapi;
 import smartin.miapi.events.MiapiEvents;
-import smartin.miapi.modules.properties.util.BooleanProperty;
 
 import java.util.UUID;
 import net.minecraft.network.chat.Component;

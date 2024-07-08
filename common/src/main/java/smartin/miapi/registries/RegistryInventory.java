@@ -567,7 +567,7 @@ public class RegistryInventory {
             registerMiapi(moduleProperties, CanChangeParentModule.KEY, new CanChangeParentModule());
             registerMiapi(moduleProperties, NemesisProperty.KEY, new NemesisProperty());
             registerMiapi(moduleProperties, CopyParentMaterialProperty.KEY, new CopyParentMaterialProperty());
-            registerMiapi(moduleProperties, EmissiveProperty.KEY, new EmissiveProperty());
+            registerMiapi(moduleProperties, EmissivityProperty.KEY, new EmissivityProperty());
             registerMiapi(moduleProperties, RapidfireCrossbowProperty.KEY, new RapidfireCrossbowProperty());
             registerMiapi(moduleProperties, MagazineCrossbowShotDelay.KEY, new MagazineCrossbowShotDelay());
             registerMiapi(moduleProperties, HandheldItemProperty.KEY, new HandheldItemProperty());

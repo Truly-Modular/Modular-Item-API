@@ -108,6 +108,7 @@ public class ModuleInstance {
     }
 
     @Nullable
+    @SuppressWarnings("unchecked")
     public <T> T getProperty(ModuleProperty<T> property) {
         Object propertyData = initializedProperties.get(property);
         if (propertyData != null) {
@@ -129,6 +130,7 @@ public class ModuleInstance {
     }
 
     @Nullable
+    @SuppressWarnings("unchecked")
     public <T> T getPropertyItemStack(ModuleProperty<T> property) {
         if (itemMergedProperties.containsKey(property)) {
             return (T) itemMergedProperties.get(property);
@@ -311,10 +313,9 @@ public class ModuleInstance {
         return moduleInstance;
     }
 
-    @Nullable
-    public ModuleInstance parseTo(String[] data) {
+    public Optional<ModuleInstance> parseTo(String[] data) {
         if (data.length == 0) {
-            return this;
+            return Optional.of(this);
         }
         String[] newArray = Arrays.copyOfRange(data, 1, data.length);
         if ("parent".equals(data[0])) {
@@ -331,7 +332,7 @@ public class ModuleInstance {
 
             }
         }
-        return null;
+        return Optional.empty();
     }
 
     /**
@@ -339,11 +340,12 @@ public class ModuleInstance {
      * to have on demand caching on a per {@link ModuleInstance} level
      * if Itemstack Level caching is desired, {@link ModularItemCache#get(ItemStack, String, Object)} should be looked at
      *
-     * @param key      the Key for the stored data. Common Practice is to use {@link net.minecraft.resources.ResourceLocation} stringified for this
+     * @param key      the Key for the stored data. Common Practice is to use {@link net.minecraft.resources.ResourceLocation} stringifies for this
      * @param fallback a supplier of a fallback in case this cant be resolved. Stuff cannot be resolved during reloads or other invalid stats.
      * @param <T>      the Type of the data in question, used to avoid casting
-     * @return Returns the Cached data if available, otherwise uses the registed {@link ModularItemCache#MODULE_CACHE_SUPPLIER} to supply and then cache the data
+     * @return Returns the Cached data if available, otherwise uses the registered {@link ModularItemCache#MODULE_CACHE_SUPPLIER} to supply and then cache the data
      */
+    @SuppressWarnings("unchecked")
     public <T> T getFromCache(String key, Supplier<T> fallback) {
         T data = (T) cachedData.get(key);
         if (data != null) {
@@ -361,26 +363,26 @@ public class ModuleInstance {
     }
 
     /**
-     * returns the Itemlevel Cache for this. Itemstack is required as context
+     * returns the Item-level Cache for this. Itemstack is required as context
      *
      * @param key       the key under {@link ModularItemCache#setSupplier(String, ModularItemCache.CacheObjectSupplier)} the supplier was registered
      * @param itemStack the Context Itemstack
-     * @param fallback  fallback value incase the state was invalid or the supplier rerturned null
-     * @param <T>
-     * @return
+     * @param fallback  fallback value in case the state was invalid or the supplier returned null
+     * @param <T>       the type inside the cache
+     * @return the cached value
      */
     public <T> T getFromCache(String key, ItemStack itemStack, T fallback) {
         return ModularItemCache.get(itemStack, key, fallback);
     }
 
     /**
-     * returns the Itemlevel Cache for this. Itemstack is required as context
+     * returns the Item-level Cache for this. Itemstack is required as context
      *
      * @param key       the key under {@link ModularItemCache#setSupplier(String, ModularItemCache.CacheObjectSupplier)} the supplier was registered
      * @param itemStack the Context Itemstack
-     * @param fallback  fallback value incase the state was invalid or the supplier rerturned null
-     * @param <T>
-     * @return
+     * @param fallback  fallback value in case the state was invalid or the supplier returned null
+     * @param <T>       the type inside the cache
+     * @return the cached value
      */
     public <T> T getFromCache(String key, ItemStack itemStack, Supplier<T> fallback) {
         return ModularItemCache.get(itemStack, key, fallback);
@@ -390,6 +392,7 @@ public class ModuleInstance {
      * This function shouldnt be used directly, instead check {@link ModularItemCache#get(ItemStack, String, Object)} for this functionality
      * alternativly {@link ModuleInstance#getFromCache(String, ItemStack, Supplier)} can also be used
      */
+    @SuppressWarnings("unchecked")
     public <T> T getFromCache(String key, ItemStack itemStack, Map<String, ModularItemCache.CacheObjectSupplier> supplierMap, Supplier<T> fallback) {
         T data = (T) cachedData.get(key);
         if (data != null) {

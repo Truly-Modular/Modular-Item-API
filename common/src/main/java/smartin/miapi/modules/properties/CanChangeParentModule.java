@@ -28,11 +28,7 @@ public class CanChangeParentModule extends CodecBasedProperty<ModuleCondition> {
     }
 
     public boolean canChangeParent(ModuleInstance moduleInstance, ConditionManager.ConditionContext context) {
-        ModuleCondition condition = getData(moduleInstance);
-        if (condition != null) {
-            return condition.isAllowed(context);
-        }
-        return true;
+        return getData(moduleInstance).map(moduleCondition -> moduleCondition.isAllowed(context)).orElse(true);
     }
 
     @Override

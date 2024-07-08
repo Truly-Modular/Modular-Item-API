@@ -1,131 +1,51 @@
 package smartin.miapi.modules.properties;
 
-import com.google.gson.JsonElement;
-import com.mojang.serialization.JsonOps;
-import com.redpxnda.nucleus.codec.misc.MiscCodecs;
+import com.mojang.serialization.Codec;
+import com.redpxnda.nucleus.codec.auto.AutoCodec;
+import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
 import com.redpxnda.nucleus.event.PrioritizedEvent;
 import com.redpxnda.nucleus.util.Color;
 import dev.architectury.event.EventResult;
 import net.minecraft.Util;
 import net.minecraft.world.item.ItemStack;
-import smartin.miapi.Miapi;
 import smartin.miapi.config.MiapiConfig;
-import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.cache.ModularItemCache;
-import smartin.miapi.modules.properties.util.ModuleProperty;
+import smartin.miapi.modules.properties.util.CodecBasedProperty;
+import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.registries.RegistryInventory;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * This property manages the Glint on the item
  */
-public class GlintProperty implements ModuleProperty {
-    //TODO:add gui implementation
+public class GlintProperty extends CodecBasedProperty<GlintProperty.RainbowGlintSettings> {
     public static GlintProperty property;
     public static final String KEY = "glint_settings";
-
-    public static Map<String, GlintSettings> glintSettingsMap = new HashMap<>();
     public static PrioritizedEvent<GlintGetter> GLINT_RESOLVE = PrioritizedEvent.createLoop();
-
-
-    public static GlintSettings defaultSettings = new SettingsControlledGlint();
+    public static SettingsControlledGlint defaultSettings = new SettingsControlledGlint();
+    public static Codec<RainbowGlintSettings> CODEC = AutoCodec.of(RainbowGlintSettings.class).codec();
 
     public GlintProperty() {
+        super(CODEC);
         property = this;
-        glintSettingsMap.put("rainbow", new SettingsControlledGlint());
-
-    }
-
-    @Override
-    public boolean load(String moduleKey, JsonElement data) throws Exception {
-        return false;
+        updateConfig();
     }
 
     public GlintSettings getGlintSettings(ModuleInstance instance, ItemStack stack) {
-        return getStatic(instance, stack);
-    }
-
-    static GlintSettings getStatic(ModuleInstance instance, ItemStack stack) {
-        JsonElement element = instance.getOldProperties().get(property);
-        if (element != null && element.getAsJsonObject().has("type")) {
-            String type = element.getAsJsonObject().get("type").getAsString();
-            if (glintSettingsMap.containsKey(type)) {
-                return glintSettingsMap.get("type").get(instance, stack);
-            }
-        }
-        AtomicReference<GlintSettings> reference = new AtomicReference<>(defaultSettings);
+        AtomicReference<GlintSettings> reference = new AtomicReference<>(getData(instance).orElse(defaultSettings));
         GLINT_RESOLVE.invoker().get(stack, instance, reference);
         return reference.get();
-    }
-
-
-    public static class JsonGlintSettings implements GlintSettings {
-        public Color color;
-        public float a = 1;
-        public float speed = 1;
-        public boolean shouldRenderGlint;
-
-        public JsonGlintSettings(ModuleInstance instance, ItemStack stack) {
-            shouldRenderGlint = stack.hasFoil();
-            JsonElement element = instance.getOldProperties().get(property);
-            if (element != null) {
-                if (element.getAsJsonObject().has("color")) {
-                    try{
-                        this.color = MiscCodecs.COLOR.parse(JsonOps.INSTANCE, element.getAsJsonObject().get("color")).getOrThrow();
-                    }catch (Exception e){
-                        Miapi.LOGGER.error("Failed to decode using color for GlintProperty! -> " + e);
-                        this.color = Color.BLACK;
-                    }
-                    a = color.a() * 2;
-                }
-                if (element.getAsJsonObject().has("speed")) {
-                    speed = (float) StatResolver.resolveDouble(element.getAsJsonObject().get("speed"), instance);
-                }
-                if (element.getAsJsonObject().has("should_render")) {
-                    shouldRenderGlint = element.getAsJsonObject().get("should_render").getAsBoolean();
-                }
-            }
-        }
-
-        @Override
-        public GlintSettings get(ModuleInstance instance, ItemStack stack) {
-            JsonElement element = instance.getOldProperties().get(property);
-            if (element.getAsJsonObject().has("type")) {
-                String type = element.getAsJsonObject().get("type").getAsString();
-                if (glintSettingsMap.containsKey(type)) {
-                    return glintSettingsMap.get("type").get(instance, stack);
-                }
-            }
-            return new JsonGlintSettings(instance, stack);
-        }
-
-        public float getA() {
-            return a;
-        }
-
-        @Override
-        public Color getColor() {
-            return color;
-        }
-
-
-        public float getSpeed() {
-            return speed;
-        }
-
-        public boolean shouldRender() {
-            return shouldRenderGlint;
-        }
     }
 
     public static void updateConfig() {
         Color[] newColors = new Color[MiapiConfig.INSTANCE.client.other.enchantColors.size()];
         for (int i = 0; i < newColors.length; i++) {
             newColors[i] = MiapiConfig.INSTANCE.client.other.enchantColors.get(i);
+        }
+        if (newColors.length == 0) {
+            newColors = new Color[]{Color.WHITE};
         }
         SettingsControlledGlint glintSettings = new SettingsControlledGlint();
         glintSettings.colors = newColors;
@@ -134,78 +54,36 @@ public class GlintProperty implements ModuleProperty {
         ModularItemCache.discardCache();
     }
 
+    @Override
+    public RainbowGlintSettings merge(RainbowGlintSettings left, RainbowGlintSettings right, MergeType mergeType) {
+        if (mergeType.equals(MergeType.EXTEND)) {
+            return left;
+        }
+        return right;
+    }
+
 
     public static class SettingsControlledGlint extends RainbowGlintSettings {
-
         public SettingsControlledGlint() {
             super();
         }
-
-        @Override
-        public GlintSettings get(ModuleInstance instance, ItemStack stack) {
-            JsonElement element = instance.getOldProperties().get(property);
-            SettingsControlledGlint rainbowGlintSettings = new SettingsControlledGlint();
-            rainbowGlintSettings.shouldRenderGlint = stack.hasFoil();
-            if (element != null) {
-                if (element.getAsJsonObject().has("rainbowSpeed")) {
-                    rainbowGlintSettings.rainbowSpeed = (float) StatResolver.resolveDouble(element.getAsJsonObject().get("rainbowSpeed"), instance);
-                }
-                if (element.getAsJsonObject().has("speed")) {
-                    rainbowGlintSettings.speed = (float) StatResolver.resolveDouble(element.getAsJsonObject().get("speed"), instance);
-                }
-                if (element.getAsJsonObject().has("strength")) {
-                    rainbowGlintSettings.strength = (float) StatResolver.resolveDouble(element.getAsJsonObject().get("strength"), instance);
-                }
-                if (element.getAsJsonObject().has("should_render")) {
-                    rainbowGlintSettings.shouldRenderGlint = element.getAsJsonObject().get("should_render").getAsBoolean();
-                }
-            }
-            return rainbowGlintSettings;
-        }
     }
 
-    public static abstract class RainbowGlintSettings implements GlintSettings {
-
+    public static class RainbowGlintSettings implements GlintSettings {
+        @CodecBehavior.Optional
         public float speed = 1;
+        @CodecBehavior.Optional
         public float rainbowSpeed = 1;
+        @CodecBehavior.Optional
         public float strength = 1;
-        public boolean shouldRenderGlint;
-        public Color[] colors;
-
-        public RainbowGlintSettings(float speed, float rainbowSpeed, float strength, boolean shouldRenderGlint, Color[] colors) {
-            this.speed = speed;
-            this.rainbowSpeed = rainbowSpeed;
-            this.strength = strength;
-            this.shouldRenderGlint = shouldRenderGlint;
-            this.colors = colors;
-        }
-
-        public RainbowGlintSettings() {
-        }
+        @CodecBehavior.Optional
+        public boolean shouldRenderGlint = false;
+        @CodecBehavior.Optional
+        public Color[] colors = new Color[]{Color.WHITE};
 
         @Override
         public float getA() {
             return strength;
-        }
-
-
-        public Color getColorold() {
-            long time = Util.getMillis();
-            double scaledTime = (double) time / 3000 * rainbowSpeed;
-            scaledTime = scaledTime % (colors.length); // Ensure scaledTime is within [0, colors.length - 1]
-
-            int lowerColorIndex = (int) Math.floor(scaledTime);
-            int higherColorIndex = (lowerColorIndex + 1) % (colors.length);
-
-            float percent = (float) (scaledTime - (float) lowerColorIndex); // Calculate the percentage of lower color
-            float otherPercent = 1.0f - percent;
-
-            return new Color(
-                    colors[lowerColorIndex].redAsFloat() * percent + colors[higherColorIndex].redAsFloat() * otherPercent,
-                    colors[lowerColorIndex].greenAsFloat() * percent + colors[higherColorIndex].greenAsFloat() * otherPercent,
-                    colors[lowerColorIndex].blueAsFloat() * percent + colors[higherColorIndex].blueAsFloat() * otherPercent,
-                    colors[lowerColorIndex].alphaAsFloat() * percent + colors[higherColorIndex].alphaAsFloat() * otherPercent
-            );
         }
 
         @Override
@@ -252,9 +130,6 @@ public class GlintProperty implements ModuleProperty {
     }
 
     public interface GlintSettings {
-
-        GlintSettings get(ModuleInstance instance, ItemStack stack);
-
         float getA();
 
         Color getColor();

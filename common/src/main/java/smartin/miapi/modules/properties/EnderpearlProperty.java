@@ -1,6 +1,5 @@
 package smartin.miapi.modules.properties;
 
-import com.google.gson.JsonElement;
 import dev.architectury.event.EventResult;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerPlayer;
@@ -13,18 +12,17 @@ import net.minecraft.world.level.GameRules;
 import net.minecraft.world.phys.HitResult;
 import smartin.miapi.entity.ItemProjectileEntity;
 import smartin.miapi.events.MiapiProjectileEvents;
-import smartin.miapi.modules.ItemModule;
-import smartin.miapi.modules.properties.util.ModuleProperty;
+import smartin.miapi.modules.properties.util.ComplexBooleanProperty;
 
 /**
  * This property gives a projectile ender pearl behaviour
  */
-public class EnderpearlProperty implements ModuleProperty {
-    //TODO:rework this into complexBooleanProperty
+public class EnderpearlProperty extends ComplexBooleanProperty {
     public static final String KEY = "is_enderpearl";
     public static EnderpearlProperty property;
 
     public EnderpearlProperty() {
+        super(KEY, false);
         property = this;
         MiapiProjectileEvents.MODULAR_PROJECTILE_ENTITY_HIT.register(event -> {
             if (isEnderPearl(event.projectile)) {
@@ -88,16 +86,6 @@ public class EnderpearlProperty implements ModuleProperty {
     }
 
     public static boolean isEnderPearl(ItemStack itemStack) {
-        JsonElement element = ItemModule.getMergedProperty(itemStack, property);
-        if (element != null) {
-            return element.getAsBoolean();
-        }
-        return false;
-    }
-
-    @Override
-    public boolean load(String moduleKey, JsonElement data) throws Exception {
-        data.getAsBoolean();
-        return true;
+        return property.isTrue(itemStack);
     }
 }

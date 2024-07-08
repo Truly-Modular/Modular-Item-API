@@ -36,7 +36,7 @@ import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.material.Material;
 import smartin.miapi.modules.material.MaterialProperty;
-import smartin.miapi.modules.properties.EmissiveProperty;
+import smartin.miapi.modules.properties.EmissivityProperty;
 import smartin.miapi.modules.properties.SlotProperty;
 import smartin.miapi.modules.properties.render.colorproviders.ColorProvider;
 import smartin.miapi.modules.properties.util.ModuleProperty;
@@ -469,7 +469,7 @@ public class ModelProperty implements RenderProperty {
                 }
             }
             if (json.has("lightValues")) {
-                light = EmissiveProperty.getLightValues(json.get("lightValues"));
+                light = EmissivityProperty.getLightValues(json.get("lightValues"));
             }
             return new ModelData(data, light);
         }

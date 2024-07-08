@@ -1,31 +1,34 @@
 package smartin.miapi.modules.properties;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
+import com.redpxnda.nucleus.codec.auto.AutoCodec;
+import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.ItemStack;
 import smartin.miapi.Environment;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.crafting.statdisplay.JsonStatDisplay;
 import smartin.miapi.client.gui.crafting.statdisplay.SingleStatDisplay;
 import smartin.miapi.client.gui.crafting.statdisplay.SingleStatDisplayDouble;
 import smartin.miapi.client.gui.crafting.statdisplay.StatListWidget;
-import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.cache.ModularItemCache;
+import smartin.miapi.modules.properties.util.CodecBasedProperty;
+import smartin.miapi.modules.properties.util.DoubleOperationResolvable;
 import smartin.miapi.modules.properties.util.MergeType;
-import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import net.minecraft.network.chat.Component;
-import net.minecraft.world.item.ItemStack;
 
-public class GuiStatProperty implements ModuleProperty {
+public class GuiStatProperty extends CodecBasedProperty<Map<String, GuiStatProperty.GuiInfo>> {
     public static String KEY = "gui_stat";
     public static GuiStatProperty property;
+    public static Codec<Map<String, GuiInfo>> CODEC = Codec.dispatchedMap(Codec.STRING, (key) -> AutoCodec.of(GuiInfo.class).codec());
 
     public GuiStatProperty() {
+        super(CODEC);
         property = this;
         if (Environment.isClient()) {
             ModularItemCache.setSupplier(KEY, GuiStatProperty::getInfoCache);
@@ -50,8 +53,8 @@ public class GuiStatProperty implements ModuleProperty {
                                         return GuiStatProperty.getValue(itemStack, key) != 0;
                                     }
                                 },
-                                gui.min,
-                                gui.max
+                                gui.min.getValue(),
+                                gui.max.getValue()
 
                         );
                         combined.add((T) display);
@@ -63,16 +66,7 @@ public class GuiStatProperty implements ModuleProperty {
     }
 
     private static Map<String, GuiInfo> getInfoCache(ItemStack itemStack) {
-        Map<String, GuiInfo> infoMap = new HashMap<>();
-        for (ModuleInstance moduleInstance : ItemModule.getModules(itemStack).allSubModules()) {
-            if (moduleInstance.getOldProperties().containsKey(property)) {
-                JsonElement element = moduleInstance.getOldProperties().get(property);
-                element.getAsJsonObject().asMap().forEach((id, innerJson) -> {
-                    infoMap.put(id, new GuiInfo(innerJson.getAsJsonObject(), moduleInstance));
-                });
-            }
-        }
-        return infoMap;
+        return property.getData(itemStack).orElse(new HashMap<>());
     }
 
     public static Map<String, GuiInfo> getInfo(ItemStack itemStack) {
@@ -82,35 +76,46 @@ public class GuiStatProperty implements ModuleProperty {
     public static double getValue(ItemStack itemStack, String key) {
         Map<String, GuiInfo> infoMap = getInfoCache(itemStack);
         if (infoMap.containsKey(key)) {
-            return infoMap.get(key).value;
+            return infoMap.get(key).value.getValue();
         }
         return 0.0;
     }
 
     @Override
-    public boolean load(String moduleKey, JsonElement data) throws Exception {
-
-        return true;
+    public Map<String, GuiInfo> merge(Map<String, GuiInfo> left, Map<String, GuiInfo> right, MergeType mergeType) {
+        Map<String, GuiInfo> merged = new HashMap<>(left);
+        right.forEach((key, info) -> {
+            if (!merged.containsKey(key) || !MergeType.EXTEND.equals(mergeType)) {
+                merged.put(key, info);
+            }
+        });
+        return Map.of();
     }
 
     @Override
-    public JsonElement merge(JsonElement old, JsonElement toMerge, MergeType type) {
-        return ModuleProperty.mergeAsMap(old, toMerge, type);
+    public Map<String, GuiInfo> initialize(Map<String, GuiInfo> property, ModuleInstance context) {
+        Map<String, GuiInfo> initialied = new HashMap<>();
+        property.forEach((key, value) -> initialied.put(key, value.initialize(context)));
+        return super.initialize(property, context);
     }
 
     public static class GuiInfo {
-        public double min;
-        public double max;
-        public double value;
+        @CodecBehavior.Optional
+        public DoubleOperationResolvable min = new DoubleOperationResolvable(0.0);
+        @CodecBehavior.Optional
+        public DoubleOperationResolvable max = new DoubleOperationResolvable(10.0);
+        public DoubleOperationResolvable value;
         public Component header;
         public Component description;
 
-        public GuiInfo(JsonObject json, ModuleInstance moduleInstance) {
-            min = ModuleProperty.getDouble(json, "min", moduleInstance, 0.0);
-            max = ModuleProperty.getDouble(json, "max", moduleInstance, 3.0);
-            value = ModuleProperty.getDouble(json, "value", moduleInstance, 0.0);
-            header = ModuleProperty.getText(json, "header", moduleInstance, Component.empty());
-            description = ModuleProperty.getText(json, "description", moduleInstance, Component.empty());
+        public GuiInfo initialize(ModuleInstance moduleInstance) {
+            GuiInfo init = new GuiInfo();
+            init.min = this.min.initialize(moduleInstance);
+            init.max = this.max.initialize(moduleInstance);
+            init.value = this.value.initialize(moduleInstance);
+            init.header = this.header;
+            init.description = this.description;
+            return init;
         }
     }
 }

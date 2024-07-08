@@ -15,7 +15,7 @@ public class StepCancelingProperty extends ComplexBooleanProperty {
 
     public static boolean makesStepNoise(Entity entity, boolean old) {
         if (entity instanceof LivingEntity livingEntity && old) {
-            double value = property.getForItems(livingEntity.getItemsEquipped());
+            double value = property.getForItems(livingEntity.getArmorAndBodyArmorSlots());
             if (value == 0) {
                 return true;
             }

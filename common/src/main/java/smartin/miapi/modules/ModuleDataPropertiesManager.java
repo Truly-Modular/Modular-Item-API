@@ -11,14 +11,14 @@ import java.util.Map;
 
 public class ModuleDataPropertiesManager {
 
-    public static Map<ModuleProperty, JsonElement> getProperties(ModuleInstance moduleInstance) {
-        Map<ModuleProperty, JsonElement> map = new HashMap<>();
+    public static Map<ModuleProperty<?>, JsonElement> getProperties(ModuleInstance moduleInstance) {
+        Map<ModuleProperty<?>, JsonElement> map = new HashMap<>();
         String properties = moduleInstance.moduleData.get("properties");
         if (properties != null) {
             JsonObject moduleJson = Miapi.gson.fromJson(properties, JsonObject.class);
             if (moduleJson != null) {
                 moduleJson.entrySet().forEach(stringJsonElementEntry -> {
-                    ModuleProperty property = RegistryInventory.moduleProperties
+                    ModuleProperty<?> property = RegistryInventory.moduleProperties
                             .get(stringJsonElementEntry.getKey());
                     if (property != null) {
                         map.put(property, stringJsonElementEntry.getValue());
@@ -29,10 +29,12 @@ public class ModuleDataPropertiesManager {
         return map;
     }
 
-    public static void setProperties(ModuleInstance moduleInstance, Map<ModuleProperty, JsonElement> propertyMap) {
+    public static void setProperties(ModuleInstance moduleInstance, Map<ModuleProperty<?>, JsonElement> propertyMap) {
         JsonObject object = new JsonObject();
         propertyMap.forEach(((moduleProperty, element) -> {
-            object.add(RegistryInventory.moduleProperties.findKey(moduleProperty), element);
+            String key = RegistryInventory.moduleProperties.findKey(moduleProperty);
+            assert key != null;
+            object.add(key, element);
         }));
         moduleInstance.moduleData.put("properties", Miapi.gson.toJson(object));
     }

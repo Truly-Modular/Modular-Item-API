@@ -17,6 +17,8 @@ import smartin.miapi.events.MiapiProjectileEvents;
 import smartin.miapi.modules.properties.util.CodecBasedProperty;
 import smartin.miapi.modules.properties.util.MergeType;
 
+import java.util.Optional;
+
 /**
  * This property is exploding projectiles on impact
  */
@@ -29,10 +31,10 @@ public class ExplosionProperty extends CodecBasedProperty<ExplosionProperty.Expl
         super(codec);
         property = this;
         MiapiProjectileEvents.MODULAR_PROJECTILE_ENTITY_HIT.register(event -> {
-            ExplosionInfo info = getData(event.projectile.getPickupItem());
-            if (info != null) {
+            Optional<ExplosionInfo> info = getData(event.projectile.getPickupItem());
+            if (info.isPresent()) {
                 if (!event.projectile.level().isClientSide()) {
-                    info.explode(event.projectile.level(), event.projectile, event.projectile.position());
+                    info.get().explode(event.projectile.level(), event.projectile, event.projectile.position());
                     event.projectile.discard();
                 }
                 return EventResult.interruptTrue();
@@ -40,10 +42,10 @@ public class ExplosionProperty extends CodecBasedProperty<ExplosionProperty.Expl
             return EventResult.pass();
         });
         MiapiProjectileEvents.MODULAR_PROJECTILE_BLOCK_HIT.register(event -> {
-            ExplosionInfo info = getData(event.projectile.getPickupItem());
-            if (info != null) {
+            Optional<ExplosionInfo> info = getData(event.projectile.getPickupItem());
+            if (info.isPresent()) {
                 if (!event.projectile.level().isClientSide()) {
-                    info.explode(event.projectile.level(), event.projectile, event.blockHitResult.getLocation());
+                    info.get().explode(event.projectile.level(), event.projectile, event.blockHitResult.getLocation());
                     event.projectile.discard();
                 }
                 return EventResult.interruptTrue();
@@ -75,6 +77,7 @@ public class ExplosionProperty extends CodecBasedProperty<ExplosionProperty.Expl
             this.destroyBlock = destroyBlocks;
         }
 
+        @Override
         public boolean shouldBlockExplode(Explosion explosion, BlockGetter reader, BlockPos pos, BlockState state, float power) {
             return destroyBlock;
         }

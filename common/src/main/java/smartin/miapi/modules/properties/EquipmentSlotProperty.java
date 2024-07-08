@@ -1,30 +1,22 @@
 package smartin.miapi.modules.properties;
 
-import com.google.gson.JsonElement;
-import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
-import smartin.miapi.modules.ItemModule;
-import smartin.miapi.modules.ModuleInstance;
+import smartin.miapi.modules.properties.util.CodecBasedProperty;
 import smartin.miapi.modules.properties.util.MergeType;
-import smartin.miapi.modules.properties.util.ModuleProperty;
 
 
 /**
  * This property allows to dynamically set teh preferred EquipmentSlot
  */
-public class EquipmentSlotProperty implements ModuleProperty {
+public class EquipmentSlotProperty extends CodecBasedProperty<EquipmentSlotGroup> {
     public static final String KEY = "equipmentSlot";
-    public static ModuleProperty property;
+    public static EquipmentSlotProperty property;
 
     public EquipmentSlotProperty() {
+        super(EquipmentSlotGroup.CODEC);
         property = this;
-    }
-
-    @Override
-    public boolean load(String moduleKey, JsonElement data) throws Exception {
-        data.getAsString();
-        return true;
     }
 
     /**
@@ -34,18 +26,15 @@ public class EquipmentSlotProperty implements ModuleProperty {
      * @return the slot
      */
     @Nullable
-    public static EquipmentSlot getSlot(ItemStack stack) {
-        ModuleInstance root = ItemModule.getModules(stack);
-        JsonElement element = ItemModule.getMergedProperty(root, property, MergeType.OVERWRITE);
-        if (element != null) {
-            String name = element.getAsString();
-            try{
-                return EquipmentSlot.byName(name);
-            }
-            catch (Exception ignored){
+    public static EquipmentSlotGroup getSlot(ItemStack stack) {
+        return property.getData(stack).orElse(EquipmentSlotGroup.ANY);
+    }
 
-            }
+    @Override
+    public EquipmentSlotGroup merge(EquipmentSlotGroup left, EquipmentSlotGroup right, MergeType mergeType) {
+        if(mergeType.equals(MergeType.EXTEND)){
+            return left;
         }
-        return null;
+        return right;
     }
 }

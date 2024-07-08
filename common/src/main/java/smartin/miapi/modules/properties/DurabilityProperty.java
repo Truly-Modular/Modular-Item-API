@@ -1,6 +1,5 @@
 package smartin.miapi.modules.properties;
 
-import net.minecraft.world.item.ItemStack;
 import smartin.miapi.modules.properties.util.DoubleProperty;
 
 /**
@@ -14,19 +13,5 @@ public class DurabilityProperty extends DoubleProperty {
         super(KEY);
         property = this;
         allowVisualOnly = true;
-    }
-
-    @Override
-    public Double getValue(ItemStack stack) {
-        Double value = getValueRaw(stack);
-        if (value != null) {
-            return value;
-        }
-        return null;
-    }
-
-    @Override
-    public double getValueSafe(ItemStack stack) {
-        return (int) Math.max(1, Math.round(getValueSafeRaw(stack)));
     }
 }

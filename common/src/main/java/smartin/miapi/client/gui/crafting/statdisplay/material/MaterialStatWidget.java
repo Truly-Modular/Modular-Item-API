@@ -35,6 +35,7 @@ public class MaterialStatWidget extends InteractAbleWidget {
             moduleInstance.writeToItem(compareMaterial);
 
              */
+            //TODO:FUCK. I CANT ENCODE PROPERTIES ATM. should i add a custom resolver for this? should i implement encoding?
 
             ModuleDataPropertiesManager.setProperties(moduleInstance, material.getDisplayMaterialProperties(propertyKey));
             moduleInstance.writeToItem(compareMaterial);

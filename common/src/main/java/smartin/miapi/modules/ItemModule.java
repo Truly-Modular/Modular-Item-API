@@ -70,14 +70,9 @@ public record ItemModule(String name, Map<ModuleProperty<?>, Object> properties)
             Type type = new TypeToken<Map<String, JsonElement>>() {
             }.getType();
             String name = moduleJson.get("name").getAsString();
-            Map<String, JsonElement> moduleProperties = new HashMap<>();
             Map<ModuleProperty<?>, Object> decodedProperties = new HashMap<>();
             Map<String, JsonElement> rawProperties = gson.fromJson(moduleJsonString, type);
-            rawProperties.forEach((key, json) -> {
-                if (isValidProperty(key, path, json, isClient, (pair) -> decodedProperties.put(pair.getFirst(), pair.getSecond()))) {
-                    moduleProperties.put(key, json);
-                }
-            });
+            rawProperties.forEach((key, json) -> isValidProperty(key, path, json, isClient, (pair) -> decodedProperties.put(pair.getFirst(), pair.getSecond())));
             RegistryInventory.modules.register(name, new ItemModule(name, decodedProperties));
         } catch (Exception e) {
             LOGGER.warn("Could not load Module " + path, e);
@@ -92,7 +87,6 @@ public record ItemModule(String name, Map<ModuleProperty<?>, Object> properties)
      */
     public static void loadModuleExtension(String path, String moduleJsonString, boolean isClient) {
         try {
-            //TODO:rework this into SynergyManagers implementation
             JsonObject moduleJson = gson.fromJson(moduleJsonString, JsonObject.class);
             SynergyManager.PropertyHolder holder = SynergyManager.getFrom(moduleJson, isClient, Miapi.id(path));
             String name = moduleJson.get("name").getAsString();
@@ -108,6 +102,7 @@ public record ItemModule(String name, Map<ModuleProperty<?>, Object> properties)
         }
     }
 
+    @SuppressWarnings("unchecked")
     public static <T> T merge(ModuleProperty<T> property, Object left, Object right, MergeType mergeType) {
         return property.merge((T) left, (T) right, mergeType);
     }
@@ -118,25 +113,23 @@ public record ItemModule(String name, Map<ModuleProperty<?>, Object> properties)
      * @param key  the key of the module property
      * @param path the path of the module
      * @param data the data to load the module property
-     * @return true if the module property is valid and can be loaded, false otherwise
      */
-    protected static boolean isValidProperty(String key, String path, JsonElement data, boolean isClient, Consumer<Pair<ModuleProperty<?>, Object>> onValid) {
-        ModuleProperty property = RegistryInventory.moduleProperties.get(key);
+    @SuppressWarnings("unchecked")
+    private static void isValidProperty(String key, String path, JsonElement data, boolean isClient, Consumer<Pair<ModuleProperty<?>, Object>> onValid) {
+        ModuleProperty<?> property = RegistryInventory.moduleProperties.get(key);
         if (property != null) {
             try {
                 boolean valid = property.load(Miapi.id(key), data, isClient);
                 if (valid) {
                     onValid.accept(new Pair<>(property, property.decode(data)));
                 }
-                return valid;
             } catch (Exception e) {
-                LOGGER.error("Failure during moduleLoad, Error in Module " + path + " with property " + key + " with data " + data + " with error " + e.getLocalizedMessage(), e);
+                LOGGER.error("Failure during moduleLoad, Error in Module " + path + " with property " + key + " with data " + data + "with error " + e.getLocalizedMessage(), e);
             }
         } else {
             LOGGER.error("Module " + path + " contains invalid property " + key);
             LOGGER.error("This indicates either a broken Module, Outdated API version or missing dependency!");
         }
-        return false;
     }
 
     /**
@@ -170,7 +163,7 @@ public record ItemModule(String name, Map<ModuleProperty<?>, Object> properties)
         queue.add(root);
 
         while (!queue.isEmpty()) {
-            ModuleInstance module = queue.remove(0);
+            ModuleInstance module = queue.removeFirst();
             if (module != null) {
                 flatList.add(module);
 

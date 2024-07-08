@@ -1,6 +1,5 @@
 package smartin.miapi.modules.properties;
 
-import com.google.gson.JsonElement;
 import com.mojang.serialization.Codec;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.modules.ItemModule;
@@ -44,12 +43,9 @@ public class AllowedSlots extends CodecBasedProperty<List<String>> {
      * @param module the module in question
      * @return List of slotIds
      */
+    @SuppressWarnings("unchecked")
     public static List<String> getAllowedSlots(ItemModule module) {
-        JsonElement data = module.properties().get(KEY);
-        if (data == null) {
-            return List.of();
-        }
-        return property.decode(data);
+        return Optional.ofNullable((List<String>)module.properties().get(property)).orElse(new ArrayList<>());
     }
 
     /**

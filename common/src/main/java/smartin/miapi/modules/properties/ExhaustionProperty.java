@@ -25,14 +25,4 @@ public class ExhaustionProperty extends DoubleProperty {
             }
         }
     }
-
-    @Override
-    public Double getValue(ItemStack stack) {
-        return this.getValueRaw(stack);
-    }
-
-    @Override
-    public double getValueSafe(ItemStack stack) {
-        return getValueSafeRaw(stack);
-    }
 }

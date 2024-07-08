@@ -1,65 +1,44 @@
 package smartin.miapi.modules.properties;
 
-import com.google.gson.JsonElement;
-import smartin.miapi.modules.ItemModule;
+import com.mojang.serialization.Codec;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.ItemStack;
+import smartin.miapi.modules.properties.util.CodecBasedProperty;
 import smartin.miapi.modules.properties.util.MergeType;
-import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.TagKey;
-import net.minecraft.world.item.ItemStack;
-
 /**
  * Allows the set Itemtags via a Properterty (relies on {@link ItemStack#is(TagKey)}
  */
-public class FakeItemTagProperty implements ModuleProperty {
+public class FakeItemTagProperty extends CodecBasedProperty<List<String>> {
     public static final String KEY = "fake_item_tag";
     public static FakeItemTagProperty property;
+    public static Codec<List<String>> CODEC = Codec.list(Codec.STRING);
 
     public FakeItemTagProperty() {
+        super(CODEC);
         property = this;
     }
 
 
     public static List<String> getTags(ItemStack itemStack) {
-        return getTags(ItemModule.getMergedProperty(itemStack, property));
+        return property.getData(itemStack).orElse(new ArrayList<>());
     }
 
     public static boolean hasTag(ResourceLocation identifier, ItemStack itemStack) {
         return getTags(itemStack).contains(identifier.toString());
     }
 
-    public static List<String> getTags(JsonElement data) {
-        List<String> tags = new ArrayList<>();
-        if (data != null) {
-            data.getAsJsonArray().forEach(element -> {
-                tags.add(element.getAsString());
-            });
-        }
-        return tags;
-    }
-
     @Override
-    public boolean load(String moduleKey, JsonElement data) throws Exception {
-        data.getAsJsonArray().forEach(JsonElement::getAsString);
-        return true;
-    }
-
-    @Override
-    public JsonElement merge(JsonElement old, JsonElement toMerge, MergeType type) {
-        switch (type) {
-            case SMART, EXTEND -> {
-                JsonElement element = old.deepCopy();
-                element.getAsJsonArray().addAll(toMerge.getAsJsonArray());
-                return element;
-            }
-            case OVERWRITE -> {
-                return toMerge;
-            }
+    public List<String> merge(List<String> left, List<String> right, MergeType mergeType) {
+        if(mergeType.equals(MergeType.OVERWRITE)){
+            return right;
         }
-        return old;
+        List<String> merged = new ArrayList<>(left);
+        merged.addAll(right);
+        return  merged;
     }
 }
