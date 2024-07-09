@@ -1,21 +1,20 @@
 package smartin.miapi.craft.stat;
 
 import com.google.gson.JsonElement;
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
-import smartin.miapi.modules.properties.StatProvisionProperty;
 import smartin.miapi.modules.properties.StatRequirementProperty;
 import smartin.miapi.modules.properties.util.CraftingProperty;
 
 import java.util.List;
 import java.util.Map;
-import net.minecraft.nbt.Tag;
-import net.minecraft.network.chat.Component;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 
 /**
  * {@link CraftingStat}s are simple ways to require certain attributes, of which are provided by
@@ -26,7 +25,6 @@ import net.minecraft.world.item.ItemStack;
  * go about this.
  *
  * @see StatRequirementProperty
- * @see StatProvisionProperty
  *
  * @param <T> the type of object this crafting stat represents. For example, if you want your hammers
  *            to save a simple double value, you'd set this type parameter to {@link Double}.

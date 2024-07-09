@@ -27,7 +27,6 @@ import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
 import smartin.miapi.modules.abilities.util.ItemUseDefaultCooldownAbility;
 import smartin.miapi.modules.abilities.util.ItemUseMinHoldAbility;
-import smartin.miapi.modules.properties.RiptideProperty;
 import smartin.miapi.modules.properties.util.DoubleOperationResolvable;
 import smartin.miapi.modules.properties.util.MergeType;
 
@@ -37,19 +36,12 @@ import java.util.List;
 /**
  * This Ability allows you to use the Trident riptide Effect
  */
+//TODO:rework this again
 public class RiptideAbility implements ItemUseDefaultCooldownAbility<RiptideAbility.RiptideContextJson>, ItemUseMinHoldAbility<RiptideAbility.RiptideContextJson> {
     public static Codec<RiptideContextJson> CODEC = AutoCodec.of(RiptideContextJson.class).codec();
 
     @Override
     public boolean allowedOnItem(ItemStack itemStack, Level world, Player player, InteractionHand hand, ItemAbilityManager.AbilityHitContext abilityHitContext) {
-        RiptideProperty.RiptideJson json = RiptideProperty.getData(itemStack);
-        if (json == null) return false;
-        boolean missingWater = !player.isInWaterOrRain();
-        boolean missingLava = json.allowLava && !player.isInLava();
-        if (json.needsWater && (missingWater && missingLava)) {
-            return false;
-        }
-
         return true;
     }
 

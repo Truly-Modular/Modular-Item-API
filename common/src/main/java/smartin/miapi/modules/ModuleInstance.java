@@ -185,7 +185,7 @@ public class ModuleInstance {
      *
      * @param position The list to store the position.
      */
-    public void calculatePosition(List<Integer> position) {
+    public void calculatePosition(List<String> position) {
         if (parent != null) {
             parent.calculatePosition(position);
             position.add(this.getId());
@@ -198,9 +198,9 @@ public class ModuleInstance {
      * @param position The position of the module instance.
      * @return The module instance at the specified position.
      */
-    public ModuleInstance getPosition(List<Integer> position) {
+    public ModuleInstance getPosition(List<String> position) {
         if (!position.isEmpty()) {
-            int pos = position.removeFirst();
+            String pos = position.removeFirst();
             ModuleInstance subModule = subModules.get(pos);
             if (subModule != null) {
                 return subModule.getPosition(position);

@@ -142,7 +142,7 @@ public class SynergyManager {
                     properties.put(property, property.decode(propertyEntry.getValue()));
                 }
             } catch (Exception e) {
-                Miapi.LOGGER.error(STR."could not load property \{propertyKey} in context \{context} from source \{source.toString()}", e);
+                Miapi.LOGGER.error("could not load property " + propertyKey + " in context " + context + " from source " + source.toString(), e);
             }
         });
         return properties;
@@ -161,7 +161,7 @@ public class SynergyManager {
                     if (moduleProperty != null) {
                         removeFields.add(moduleProperty);
                     } else {
-                        Miapi.LOGGER.error(STR."Could not find Property \{key} in context \{context} from source \{source.toString()}");
+                        Miapi.LOGGER.error("Could not find Property " + key + " in context " + context + " from source " + source.toString());
                     }
                 }
             }));
@@ -220,7 +220,7 @@ public class SynergyManager {
             JsonElement replaceProperty = entryData.get("replace");
             if (entryData.has("properties")) {
                 replaceProperty = entryData.get("properties");
-                Miapi.LOGGER.warn(STR."The raw use of the Field `properties` should be replaced with the field `replace` in \{source}");
+                Miapi.LOGGER.warn("The raw use of the Field `properties` should be replaced with the field `replace` in " + source);
             }
             propertyHolder.replace = getProperties(replaceProperty, isClient, source, "replace");
             propertyHolder.merge = getProperties(entryData.get("merge"), isClient, source, "merge");

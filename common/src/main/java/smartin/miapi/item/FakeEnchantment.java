@@ -1,10 +1,12 @@
 package smartin.miapi.item;
 
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class FakeEnchantment {
 
@@ -32,6 +34,8 @@ public class FakeEnchantment {
         enchantmentListMap.put(enchantment, transformers);
     }
 
+    /*
+    //TODO:rewo
     public static void addEnchantments(EnchantmentHelper.EnchantmentVisitor consumer, ItemStack stack) {
         Set<Enchantment> enchantments = new HashSet<>();
         adder.forEach(enchantmentAdder -> {
@@ -41,6 +45,8 @@ public class FakeEnchantment {
             consumer.accept(enchantment, getFakeLevel(enchantment, stack, 0));
         });
     }
+
+     */
 
     public interface EnchantmentTransformer {
         int level(Enchantment enchantment, ItemStack stack, int level);

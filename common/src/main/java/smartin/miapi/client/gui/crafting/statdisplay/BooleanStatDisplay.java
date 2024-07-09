@@ -3,13 +3,13 @@ package smartin.miapi.client.gui.crafting.statdisplay;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import smartin.miapi.Miapi;
-import smartin.miapi.modules.properties.util.BooleanProperty;
+import smartin.miapi.modules.properties.util.ComplexBooleanProperty;
 
 public class BooleanStatDisplay extends SingleStatDisplayBoolean {
-    public BooleanProperty property;
+    public ComplexBooleanProperty property;
 
 
-    public BooleanStatDisplay(StatListWidget.TextGetter title, StatListWidget.TextGetter hover, BooleanProperty property) {
+    public BooleanStatDisplay(StatListWidget.TextGetter title, StatListWidget.TextGetter hover, ComplexBooleanProperty property) {
         super(0, 0, 51, 19, title, hover);
         this.property = property;
     }
@@ -35,18 +35,18 @@ public class BooleanStatDisplay extends SingleStatDisplayBoolean {
         return property.hasValue(itemStack);
     }
 
-    public static Builder builder(BooleanProperty property) {
+    public static Builder builder(ComplexBooleanProperty property) {
         return new Builder(property);
     }
 
     public static class Builder {
-        BooleanProperty property;
+        ComplexBooleanProperty property;
         public StatListWidget.TextGetter name;
         public StatListWidget.TextGetter hoverDescription = (stack) -> Component.empty();
         public String translationKey = "";
         public Object[] descriptionArgs = new Object[]{};
 
-        private Builder(BooleanProperty property) {
+        private Builder(ComplexBooleanProperty property) {
             this.property = property;
         }
 

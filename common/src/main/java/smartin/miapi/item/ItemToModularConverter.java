@@ -1,20 +1,16 @@
 package smartin.miapi.item;
 
 import com.google.gson.reflect.TypeToken;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.world.item.ItemStack;
 import smartin.miapi.Miapi;
 import smartin.miapi.datapack.ReloadEvents;
-import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
-import smartin.miapi.modules.properties.enchanment.EnchantmentProperty;
 import smartin.miapi.modules.properties.ItemIdProperty;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
 
 public class ItemToModularConverter implements ModularItemStackConverter.ModularConverter {
     public Map<String, ItemStack> regexes = new ConcurrentHashMap<>();
@@ -41,15 +37,6 @@ public class ItemToModularConverter implements ModularItemStackConverter.Modular
     }
 
     public boolean preventConvert(ItemStack itemStack) {
-        CompoundTag nbt = itemStack.getNbt();
-        if(nbt!=null){
-            if(nbt.get("CustomModelData")!=null){
-                return true;
-            }
-            if(nbt.get("SpellboundItem")!=null){
-                return true;
-            }
-        }
         return false;
     }
 
@@ -61,15 +48,8 @@ public class ItemToModularConverter implements ModularItemStackConverter.Modular
         for (Map.Entry<String, ItemStack> entry : regexes.entrySet()) {
             if (BuiltInRegistries.ITEM.getKey(stack.getItem()).toString().matches(entry.getKey())) {
                 ItemStack nextStack = entry.getValue().copy();
-                nextStack.setNbt(stack.copy().getNbt());
-                nextStack.getOrCreateNbt().put(ItemModule.NBT_MODULE_KEY, entry.getValue().getNbt().get(ItemModule.NBT_MODULE_KEY));
-                EnchantmentHelper.get(stack).forEach((enchantment, integer) -> {
-                    if (EnchantmentProperty.isAllowed(nextStack, enchantment)) {
-                        nextStack.addEnchantment(enchantment, integer);
-                    } else {
-                        Miapi.LOGGER.info("enchantment is not allowed");
-                    }
-                });
+                nextStack.applyComponents(stack.getComponents());
+                //TODO:add event for convertion
                 nextStack.setCount(stack.getCount());
                 return ItemIdProperty.changeId(nextStack);
             }

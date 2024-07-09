@@ -1,42 +1,11 @@
 package smartin.miapi.item.modular.items;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.client.item.TooltipContext;
-import net.minecraft.item.*;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.stats.Stats;
-import net.minecraft.util.Mth;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.AbstractArrow;
-import net.minecraft.world.item.ArrowItem;
 import net.minecraft.world.item.BowItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import net.minecraft.world.item.enchantment.Enchantments;
-import net.minecraft.world.level.Level;
-import smartin.miapi.attributes.AttributeRegistry;
-import smartin.miapi.client.model.ModularModelPredicateProvider;
-import smartin.miapi.config.MiapiConfig;
-import smartin.miapi.entity.ItemProjectileEntity;
-import smartin.miapi.events.MiapiProjectileEvents;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.PlatformModularItemMethods;
-import smartin.miapi.modules.properties.*;
-import smartin.miapi.modules.properties.attributes.AttributeProperty;
 
-import java.util.List;
 import java.util.UUID;
 import java.util.function.Predicate;
 
@@ -47,17 +16,16 @@ public class ModularBow extends BowItem implements PlatformModularItemMethods, M
     public ModularBow(Properties settings) {
         super(settings.stacksTo(1).durability(50));
         if (smartin.miapi.Environment.isClient()) {
-            registerAnimations();
         }
     }
 
     public ModularBow() {
         super(new Item.Properties().stacksTo(1).durability(50));
         if (smartin.miapi.Environment.isClient()) {
-            registerAnimations();
         }
     }
 
+    /*
     @Override
     public boolean isEnchantable(ItemStack itemStack) {
         return true;
@@ -255,4 +223,6 @@ public class ModularBow extends BowItem implements PlatformModularItemMethods, M
     public void appendHoverText(ItemStack itemStack, net.minecraft.world.item.Item.TooltipContext tooltipContext, List<Component> list, TooltipFlag tooltipType) {
         LoreProperty.appendLoreTop(itemStack, list, tooltipContext, tooltipType);
     }
+
+     */
 }

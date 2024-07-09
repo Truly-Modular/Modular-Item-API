@@ -1,74 +1,46 @@
 package smartin.miapi.item.modular.items;
 
-import com.google.common.collect.Lists;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.ChatFormatting;
-import net.minecraft.advancements.CriteriaTriggers;
-import net.minecraft.client.item.TooltipContext;
-import net.minecraft.item.*;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.network.chat.CommonComponents;
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.stats.Stats;
-import net.minecraft.util.*;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.monster.CrossbowAttackMob;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.AbstractArrow;
-import net.minecraft.world.entity.projectile.FireworkRocketEntity;
-import net.minecraft.world.entity.projectile.Projectile;
-import net.minecraft.world.item.ArrowItem;
+
 import net.minecraft.world.item.CrossbowItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import net.minecraft.world.item.enchantment.Enchantments;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.Vec3;
-import org.joml.Quaternionf;
-import org.joml.Vector3f;
-import smartin.miapi.Miapi;
-import smartin.miapi.attributes.AttributeRegistry;
-import smartin.miapi.client.model.ModularModelPredicateProvider;
-import smartin.miapi.entity.ItemProjectileEntity;
-import smartin.miapi.events.MiapiProjectileEvents;
 import smartin.miapi.item.modular.CustomDrawTimeItem;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.PlatformModularItemMethods;
-import smartin.miapi.modules.cache.ModularItemCache;
-import smartin.miapi.modules.properties.*;
-import smartin.miapi.modules.properties.attributes.AttributeProperty;
 
-import java.util.List;
-import java.util.function.Predicate;
-
-import static smartin.miapi.item.modular.items.ModularBow.projectile;
+import java.util.ArrayList;
+import java.util.Collection;
 
 public class ModularCrossbow extends CrossbowItem implements PlatformModularItemMethods, ModularItem, CustomDrawTimeItem {
     public ModularCrossbow(Properties settings) {
         super(settings.stacksTo(1).durability(50));
         if (smartin.miapi.Environment.isClient()) {
-            registerAnimations();
+            //registerAnimations();
         }
     }
 
     public ModularCrossbow() {
         super(new Item.Properties().stacksTo(1).durability(50));
         if (smartin.miapi.Environment.isClient()) {
-            registerAnimations();
+            //registerAnimations();
         }
     }
+
+    public static void putProjectile(ItemStack crossbow, ItemStack copy) {
+    }
+
+    public static Collection<ItemStack> getProjectiles(ItemStack stack) {
+        return new ArrayList<>();
+    }
+
+    @Override
+    public double getBaseDrawTime(ItemStack itemStack) {
+        return 0;
+    }
+
+
+
+    /*
 
     @Environment(EnvType.CLIENT)
     public void registerAnimations() {
@@ -418,4 +390,6 @@ public class ModularCrossbow extends CrossbowItem implements PlatformModularItem
     public double getBaseDrawTime(ItemStack itemStack) {
         return 25;
     }
+
+     */
 }

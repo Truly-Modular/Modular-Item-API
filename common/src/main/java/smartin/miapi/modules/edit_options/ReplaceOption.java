@@ -54,7 +54,7 @@ public class ReplaceOption implements EditOption {
         if (editContext.getInstance() != null && !hasPreviewMaterial) {
             Material material = MaterialProperty.getMaterial(editContext.getInstance());
             if (material != null) {
-                List<Integer> position = new ArrayList<>();
+                List<String> position = new ArrayList<>();
                 editContext.getInstance().calculatePosition(position);
                 ModuleInstance root = ItemModule.getModules(preview);
                 ModuleInstance editing = root.getPosition(position);

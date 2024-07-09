@@ -26,7 +26,6 @@ import net.minecraft.world.item.enchantment.Enchantments;
 
 public class RapidfireCrossbowProperty extends DoubleProperty {
     public static String KEY = "rapid_fire_crossbow";
-    public static String NBTKEY = Miapi.MOD_ID + KEY;
     public static RapidfireCrossbowProperty property;
     public static DataComponentType<List<ItemStack>> ADDITIONAL_PROJECTILES_COMPONENT = DataComponentType.<List<ItemStack>>builder().persistent(Codec.list(ItemStack.CODEC)).build();
 
@@ -99,7 +98,7 @@ public class RapidfireCrossbowProperty extends DoubleProperty {
     }
 
     public static List<ItemStack> getSavedProjectilesOnCrossbow(ItemStack crossbow) {
-        return crossbow.getComponents().getOrDefault(ADDITIONAL_PROJECTILES_COMPONENT, new ArrayList<>())
+        return crossbow.getComponents().getOrDefault(ADDITIONAL_PROJECTILES_COMPONENT, new ArrayList<>());
     }
 
     public static int getShotCount(ItemStack itemStack) {

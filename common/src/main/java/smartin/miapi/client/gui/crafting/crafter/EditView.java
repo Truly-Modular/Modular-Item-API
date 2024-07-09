@@ -157,19 +157,18 @@ public class EditView extends InteractAbleWidget {
                     ModuleInstance toCrafter = instance;
                     FriendlyByteBuf buf = Networking.createBuffer();
                     buf.writeUtf(RegistryInventory.editOptions.findKey(option));
-                    List<Integer> position = new ArrayList<>();
+                    List<String> position = new ArrayList<>();
                     if (toCrafter != null) {
                         toCrafter.calculatePosition(position);
-                    } else {
-                        if (slot != null && slot.parent != null) {
-                            slot.parent.calculatePosition(position);
-                            position.add(slot.id);
-                        }
                     }
-                    int[] positionArray = position.stream()
-                            .mapToInt(Integer::intValue)
-                            .toArray();
-                    buf.writeVarIntArray(positionArray);
+                    String sharedPos = "";
+                    if(!position.isEmpty()){
+                        sharedPos = position.removeFirst();
+                    }
+                    for (String entry : position) {
+                        sharedPos = sharedPos + "|" + entry;
+                    }
+                    buf.writeUtf(sharedPos);
                     buf.writeBytes(packetByteBuf.copy());
                     Networking.sendC2S(screenHandler1.editPacketID, buf);
                 }

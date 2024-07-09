@@ -134,12 +134,13 @@ public class CraftingScreenHandler extends AbstractContainerMenu {
             });
             Networking.registerC2SPacket(editPacketID, (buffer, player) -> {
                 EditOption option = RegistryInventory.editOptions.get(buffer.readUtf());
-                int[] intArray = buffer.readVarIntArray();
+                String[] array = null;//buffer.readVarIntArray();
+                //TODO: rework packet stuff. FUCK this shit
                 //Miapi.server.execute(()->{
                 ItemStack stack = ModularItemStackConverter.getModularVersion(inventory.getItem(0));
                 ModuleInstance root = ItemModule.getModules(stack);
-                List<Integer> position = new ArrayList<>();
-                for (int value : intArray) {
+                List<String> position = new ArrayList<>();
+                for (String value : array) {
                     position.add(value);
                 }
                 ModuleInstance current = root.getPosition(position).copy();
