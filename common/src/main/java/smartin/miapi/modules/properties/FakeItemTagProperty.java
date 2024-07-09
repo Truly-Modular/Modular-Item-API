@@ -6,6 +6,7 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.ItemStack;
 import smartin.miapi.modules.properties.util.CodecBasedProperty;
 import smartin.miapi.modules.properties.util.MergeType;
+import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,11 +35,6 @@ public class FakeItemTagProperty extends CodecBasedProperty<List<String>> {
 
     @Override
     public List<String> merge(List<String> left, List<String> right, MergeType mergeType) {
-        if(mergeType.equals(MergeType.OVERWRITE)){
-            return right;
-        }
-        List<String> merged = new ArrayList<>(left);
-        merged.addAll(right);
-        return  merged;
+        return ModuleProperty.mergeList(left, right, mergeType);
     }
 }

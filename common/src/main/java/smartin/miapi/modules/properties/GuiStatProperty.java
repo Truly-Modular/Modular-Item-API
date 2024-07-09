@@ -16,6 +16,7 @@ import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.util.CodecBasedProperty;
 import smartin.miapi.modules.properties.util.DoubleOperationResolvable;
 import smartin.miapi.modules.properties.util.MergeType;
+import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -83,13 +84,7 @@ public class GuiStatProperty extends CodecBasedProperty<Map<String, GuiStatPrope
 
     @Override
     public Map<String, GuiInfo> merge(Map<String, GuiInfo> left, Map<String, GuiInfo> right, MergeType mergeType) {
-        Map<String, GuiInfo> merged = new HashMap<>(left);
-        right.forEach((key, info) -> {
-            if (!merged.containsKey(key) || !MergeType.EXTEND.equals(mergeType)) {
-                merged.put(key, info);
-            }
-        });
-        return Map.of();
+        return ModuleProperty.mergeMap(left,right,mergeType);
     }
 
     @Override

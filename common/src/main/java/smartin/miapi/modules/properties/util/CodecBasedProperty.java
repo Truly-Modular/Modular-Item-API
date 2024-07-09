@@ -11,7 +11,6 @@ import smartin.miapi.modules.ModuleInstance;
  * Simple property template with loading and caching via codecs.
  * Define a codec in the constructor(your super call), and use the {@link ModuleProperty#getData(ItemStack)} or {@link ModuleProperty#getData(ModuleInstance)} method
  * to getRaw the object you specified for that stack / ModuleInstance.
- * If you want to hold lists of data or resolve material stats, I recommend using the {@link DynamicCodecBasedProperty}.
  * However, this may still work, depending on your needs.
  *
  * @param <T> The type of object to hold

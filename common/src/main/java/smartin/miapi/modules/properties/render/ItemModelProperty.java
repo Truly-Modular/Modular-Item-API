@@ -1,10 +1,12 @@
 package smartin.miapi.modules.properties.render;
 
-import com.google.gson.JsonElement;
+import com.mojang.serialization.Codec;
+import com.redpxnda.nucleus.codec.auto.AutoCodec;
+import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import smartin.miapi.Miapi;
@@ -14,71 +16,72 @@ import smartin.miapi.client.model.MiapiModel;
 import smartin.miapi.item.modular.Transform;
 import smartin.miapi.item.modular.items.ModularCrossbow;
 import smartin.miapi.modules.material.MaterialInscribeDataProperty;
+import smartin.miapi.modules.properties.NemesisProperty;
+import smartin.miapi.modules.properties.util.CodecBasedProperty;
+import smartin.miapi.modules.properties.util.MergeType;
+import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
 @Environment(EnvType.CLIENT)
-public class ItemModelProperty implements RenderProperty {
+public class ItemModelProperty extends CodecBasedProperty<List<ItemModelProperty.ModelJson>> {
     public static final String KEY = "item_model";
     public static ItemModelProperty property;
+    public static Codec<ModelJson> CODEC = AutoCodec.of(ModelJson.class).codec();
+    public static DataComponentType<ItemStack> ITEM_MODEL_COMPONENT = DataComponentType.<ItemStack>builder().persistent(ItemStack.CODEC).build();
 
-    //TODO:i hate this. gib nbt back
     public ItemModelProperty() {
+        super(Codec.list(CODEC));
         property = this;
         MiapiItemModel.modelSuppliers.add((key, model, stack) -> {
-            JsonElement element = model.getOldProperties().get(property);
+            List<ModelJson> modelJsons = getData(stack).orElse(new ArrayList<>());
             List<MiapiModel> models = new ArrayList<>();
-            if (element != null) {
-                element.getAsJsonArray().forEach(element1 -> {
-                    ModelJson modelJson = Miapi.gson.fromJson(element1, ModelJson.class);
-                    Supplier<ItemStack> stackSupplier = switch (modelJson.type) {
-                        case "item_nbt": {
-                            CompoundTag itemCompound = stack.getOrCreateNbt().getCompound(modelJson.model);
-                            if (!itemCompound.isEmpty() && ModelProperty.isAllowedKey(modelJson.modelType, key)) {
-                                yield () -> ItemStack.parse(itemCompound);
-                            }
-                            yield () -> ItemStack.EMPTY;
+            modelJsons.forEach(modelJson -> {
+                Supplier<ItemStack> stackSupplier = switch (modelJson.type) {
+                    case "item_nbt": {
+                        yield () -> stack.getOrDefault(ITEM_MODEL_COMPONENT, ItemStack.EMPTY);
+                    }
+                    case "module_data": {
+                        if (ModelProperty.isAllowedKey(modelJson.modelType, key)) {
+                            yield () -> MaterialInscribeDataProperty.readStackFromModuleInstance(model, modelJson.model);
                         }
-                        case "module_data": {
-                            if (ModelProperty.isAllowedKey(modelJson.modelType, key)) {
-                                yield () -> MaterialInscribeDataProperty.readStackFromModuleInstance(model, modelJson.model);
-                            }
-                            yield () -> ItemStack.EMPTY;
+                        yield () -> ItemStack.EMPTY;
+                    }
+                    case "item": {
+                        if (ModelProperty.isAllowedKey(modelJson.modelType, key)) {
+                            yield () -> new ItemStack(BuiltInRegistries.ITEM.get(ResourceLocation.parse(modelJson.model)));
                         }
-                        case "item": {
-                            if (ModelProperty.isAllowedKey(modelJson.modelType, key)) {
-                                yield () -> new ItemStack(BuiltInRegistries.ITEM.get(ResourceLocation.parse(modelJson.model)));
-                            }
-                            yield () -> ItemStack.EMPTY;
+                        yield () -> ItemStack.EMPTY;
+                    }
+                    case "projectile": {
+                        if (stack.getItem() instanceof ModularCrossbow && ModelProperty.isAllowedKey(modelJson.modelType, key)) {
+                            yield () -> ModularCrossbow.getProjectiles(stack).stream().findFirst().orElse(ItemStack.EMPTY);
                         }
-                        case "projectile": {
-                            if (stack.getItem() instanceof ModularCrossbow && ModelProperty.isAllowedKey(modelJson.modelType, key)) {
-                                yield () -> ModularCrossbow.getProjectiles(stack).stream().findFirst().orElse(ItemStack.EMPTY);
-                            }
-                            yield () -> ItemStack.EMPTY;
-                        }
-                        default:
-                            throw new IllegalStateException("Unexpected value: " + modelJson.type);
-                    };
-                    ItemMiapiModel miapiModel = new ItemMiapiModel(stackSupplier, modelJson.transform.toMatrix());
-                    models.add(miapiModel);
-                });
-            }
+                        yield () -> ItemStack.EMPTY;
+                    }
+                    default:
+                        throw new IllegalStateException("Unexpected value: " + modelJson.type);
+                };
+                ItemMiapiModel miapiModel = new ItemMiapiModel(stackSupplier, modelJson.transform.toMatrix());
+                models.add(miapiModel);
+            });
             return models;
         });
     }
 
     @Override
-    public boolean load(String moduleKey, JsonElement data) throws Exception {
-        return true;
+    public List<ModelJson> merge(List<ModelJson> left, List<ModelJson> right, MergeType mergeType) {
+        return ModuleProperty.mergeList(left, right, mergeType);
     }
 
-    static class ModelJson {
+    public static class ModelJson {
         public String type;
         public String model;
+        @CodecBehavior.Optional
         public String modelType;
+        @CodecBehavior.Optional
         public Transform transform = Transform.IDENTITY;
     }
 }

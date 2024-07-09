@@ -233,6 +233,8 @@ public class RegistryInventory {
                 Miapi.id("nemesis_property"), () -> NemesisProperty.NEMESIS_COMPONENT);
         RegistryInventory.components.register(
                 Miapi.id("magazine_property"), () -> RapidfireCrossbowProperty.ADDITIONAL_PROJECTILES_COMPONENT);
+        RegistryInventory.components.register(
+                Miapi.id("item_module_property"), () -> ItemModelProperty.ITEM_MODEL_COMPONENT);
 
         //ENTITY
         // commented out because RegistrySupplier is needed... see itemProjectileType field definition above

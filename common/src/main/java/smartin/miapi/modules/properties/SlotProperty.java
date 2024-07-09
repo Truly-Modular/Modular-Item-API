@@ -11,6 +11,7 @@ import smartin.miapi.item.modular.TransformMap;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.util.CodecBasedProperty;
 import smartin.miapi.modules.properties.util.MergeType;
+import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.util.*;
@@ -132,13 +133,11 @@ public class SlotProperty extends CodecBasedProperty<Map<String, SlotProperty.Mo
 
     @Override
     public Map<String, ModuleSlot> merge(Map<String, ModuleSlot> left, Map<String, ModuleSlot> right, MergeType mergeType) {
-        Map<String, ModuleSlot> mergedList = new LinkedHashMap<>(left);
-        mergedList.putAll(right);
-        return mergedList;
+        return ModuleProperty.mergeMap(left, right, mergeType);
     }
 
     public Map<String, ModuleSlot> initialize(Map<String, ModuleSlot> property, ModuleInstance context) {
-        property.forEach((id,slot)-> slot.initialize(context));
+        property.forEach((id, slot) -> slot.initialize(context));
         return property;
     }
 
@@ -176,7 +175,7 @@ public class SlotProperty extends CodecBasedProperty<Map<String, SlotProperty.Mo
             return false;
         }
 
-        public void initialize(ModuleInstance moduleInstance){
+        public void initialize(ModuleInstance moduleInstance) {
             inSlot = moduleInstance;
             parent = moduleInstance.parent;
         }

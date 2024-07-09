@@ -7,6 +7,7 @@ import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.material.AllowedMaterial;
 import smartin.miapi.modules.properties.util.CodecBasedProperty;
 import smartin.miapi.modules.properties.util.MergeType;
+import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -40,8 +41,6 @@ public class ModuleStats extends CodecBasedProperty<Map<String, Double>> {
 
     @Override
     public Map<String, Double> merge(Map<String, Double> left, Map<String, Double> right, MergeType mergeType) {
-        Map<String, Double> merged = new HashMap<>(left);
-        merged.putAll(right);
-        return merged;
+        return ModuleProperty.mergeMap(left,right,mergeType);
     }
 }

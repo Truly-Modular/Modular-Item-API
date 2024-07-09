@@ -6,7 +6,7 @@ import net.minecraft.world.item.ItemStack;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
 
-import java.util.Optional;
+import java.util.*;
 
 public interface ModuleProperty<T> {
 
@@ -43,5 +43,31 @@ public interface ModuleProperty<T> {
 
     default T initialize(T property, ModuleInstance context) {
         return property;
+    }
+
+    static <K> List<K> mergeList(List<K> left, List<K> right, MergeType mergeType) {
+        if (MergeType.OVERWRITE.equals(mergeType)) {
+            return new ArrayList<>(right);
+        }
+        List<K> merged = new ArrayList<>(left);
+        merged.addAll(right);
+        return merged;
+    }
+
+    static <K> Map<String, K> mergeMap(Map<String, K> left, Map<String, K> right, MergeType mergeType) {
+        if (MergeType.OVERWRITE.equals(mergeType)) {
+            return new LinkedHashMap<>(right);
+        }
+        Map<String, K> merged = new LinkedHashMap<>(left);
+        if (MergeType.EXTEND.equals(mergeType)) {
+            right.forEach((key,entry)->{
+                if(!merged.containsKey(key)){
+                    merged.put(key,entry);
+                }
+            });
+            return merged;
+        }
+        merged.putAll(right);
+        return merged;
     }
 }

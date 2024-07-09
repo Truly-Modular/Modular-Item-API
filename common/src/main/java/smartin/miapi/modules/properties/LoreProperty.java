@@ -20,6 +20,7 @@ import smartin.miapi.modules.material.Material;
 import smartin.miapi.modules.material.MaterialProperty;
 import smartin.miapi.modules.properties.util.CodecBasedProperty;
 import smartin.miapi.modules.properties.util.MergeType;
+import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.*;
 
@@ -146,9 +147,7 @@ public class LoreProperty extends CodecBasedProperty<List<LoreProperty.Holder>> 
 
     @Override
     public List<Holder> merge(List<Holder> left, List<Holder> right, MergeType mergeType) {
-        List<Holder> merged = new ArrayList<>(left);
-        merged.addAll(right);
-        return merged;
+        return ModuleProperty.mergeList(left, right, mergeType);
     }
 
     public static class Holder implements Comparable<Holder> {

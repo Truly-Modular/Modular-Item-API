@@ -5,6 +5,7 @@ import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.util.CodecBasedProperty;
 import smartin.miapi.modules.properties.util.MergeType;
+import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.util.*;
@@ -66,8 +67,6 @@ public class AllowedSlots extends CodecBasedProperty<List<String>> {
 
     @Override
     public List<String> merge(List<String> left, List<String> right, MergeType mergeType) {
-        List<String> merged = new ArrayList<>(left);
-        merged.addAll(right);
-        return merged;
+        return ModuleProperty.mergeList(left, right, mergeType);
     }
 }
