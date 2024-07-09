@@ -1,13 +1,17 @@
 package smartin.miapi.craft;
 
 import com.mojang.datafixers.util.Pair;
+import net.minecraft.client.Minecraft;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.Container;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.item.ModularItemStackConverter;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
-import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.SlotProperty;
 import smartin.miapi.modules.properties.util.CraftingProperty;
 import smartin.miapi.registries.RegistryInventory;
@@ -17,11 +21,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
-import net.minecraft.client.Minecraft;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.world.Container;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 
 /**
  * This class represents an action related to crafting an item with modules.
@@ -33,7 +32,7 @@ import net.minecraft.world.item.ItemStack;
 public class CraftAction {
     public final ItemModule toAdd;
     public final Player player;
-    public final List<Integer> slotId = new ArrayList<>();
+    public final List<String> slotLocation = new ArrayList<>();
     private ItemStack old;
     private final ModularWorkBenchEntity blockEntity;
     private Container linkedInventory;
@@ -63,10 +62,10 @@ public class CraftAction {
         this.toAdd = toAdd;
         ModuleInstance instance = slot.parent;
         if (instance != null) {
-            slotId.add(slot.id);
+            slotLocation.add(slot.id);
             while (instance.parent != null) {
-                int slotNumber = SlotProperty.getSlotNumberIn(instance);
-                slotId.add(slotNumber);
+                String slotNumber = SlotProperty.getSlotID(instance);
+                slotLocation.add(slotNumber);
                 instance = instance.parent;
             }
         }
@@ -84,7 +83,7 @@ public class CraftAction {
     public CraftAction(FriendlyByteBuf buf, @Nullable ModularWorkBenchEntity bench) {
         int size = buf.readInt();
         for (int i = 0; i < size; i++) {
-            slotId.add(buf.readInt());
+            slotLocation.add(buf.readUtf());
         }
         String modules = buf.readUtf();
         if (!modules.equals("null")) {
@@ -110,9 +109,9 @@ public class CraftAction {
      * @return the packet byte buffer
      */
     public FriendlyByteBuf toPacket(FriendlyByteBuf buf) {
-        buf.writeInt(slotId.size());
-        for (Integer slot : slotId) {
-            buf.writeInt(slot);
+        buf.writeInt(slotLocation.size());
+        for (String slot : slotLocation) {
+            buf.writeUtf(slot);
         }
         if (toAdd != null) {
             buf.writeUtf(toAdd.name());
@@ -219,8 +218,8 @@ public class CraftAction {
             }
         });
         ModuleInstance parsingInstance = ItemModule.getModules(craftingStack[0]);
-        for (int i = slotId.size() - 1; i >= 0; i--) {
-            parsingInstance = parsingInstance.subModules.get(slotId.get(i));
+        for (int i = slotLocation.size() - 1; i >= 0; i--) {
+            parsingInstance = parsingInstance.subModules.get(slotLocation.get(i));
         }
         for (CraftingEvent eventHandler : events)
             craftingStack[0] = eventHandler.onCraft(old, craftingStack[0], parsingInstance);
@@ -239,8 +238,8 @@ public class CraftAction {
         //remove CacheKey so new cache gets Generated
         ModuleInstance oldBaseModule = ItemModule.getModules(old);
         ModuleInstance newBaseModule = ModuleInstance.fromString(oldBaseModule.toString());
-        Map<Integer, ModuleInstance> subModuleMap = new HashMap<>();
-        if (slotId.isEmpty()) {
+        Map<String, ModuleInstance> subModuleMap = new HashMap<>();
+        if (slotLocation.isEmpty()) {
             //a module already exists, replacing module 0
             if (toAdd == null) {
                 return ItemStack.EMPTY;
@@ -254,20 +253,20 @@ public class CraftAction {
                 }
             });
             newModule.writeToItem(craftingStack);
-            ModularItemCache.clearUUIDFor(craftingStack);
+            newModule.clearCaches();
             return craftingStack;
         }
         ModuleInstance parsingInstance = newBaseModule;
-        for (int i = slotId.size() - 1; i > 0; i--) {
-            parsingInstance = parsingInstance.subModules.get(slotId.get(i));
+        for (int i = slotLocation.size() - 1; i > 0; i--) {
+            parsingInstance = parsingInstance.subModules.get(slotLocation.get(i));
         }
 
         if (toAdd == null) {
-            parsingInstance.subModules.remove(slotId.get(0));
+            parsingInstance.subModules.remove(slotLocation.get(0));
         } else {
             ModuleInstance newModule = new ModuleInstance(toAdd);
-            if (parsingInstance.subModules.get(slotId.get(0)) != null) {
-                subModuleMap = parsingInstance.subModules.get(slotId.get(0)).subModules;
+            if (parsingInstance.subModules.get(slotLocation.get(0)) != null) {
+                subModuleMap = parsingInstance.subModules.get(slotLocation.get(0)).subModules;
             }
             subModuleMap.forEach((id, module) -> {
                 SlotProperty.ModuleSlot slot = SlotProperty.getSlots(newModule).get(id);
@@ -279,7 +278,7 @@ public class CraftAction {
                 }
             });
             newModule.parent = parsingInstance;
-            parsingInstance.subModules.put(slotId.get(0), newModule);
+            parsingInstance.subModules.put(slotLocation.get(0), newModule);
         }
         newBaseModule.writeToItem(craftingStack);
         return craftingStack.copy();
@@ -304,8 +303,8 @@ public class CraftAction {
                         inventory,
                         buffer)));
         ModuleInstance parsingInstance = ItemModule.getModules(craftingStack.get());
-        for (int i = slotId.size() - 1; i >= 0; i--) {
-            parsingInstance = parsingInstance.subModules.get(slotId.get(i));
+        for (int i = slotLocation.size() - 1; i >= 0; i--) {
+            parsingInstance = parsingInstance.subModules.get(slotLocation.get(i));
         }
         for (CraftingEvent eventHandler : events) {
             craftingStack.set(eventHandler.onPreview(old, craftingStack.get(), parsingInstance));
@@ -327,8 +326,8 @@ public class CraftAction {
     public ModuleInstance getModifyingModuleInstance(ItemStack itemStack) {
         try {
             ModuleInstance parsingInstance = ItemModule.getModules(itemStack);
-            for (int i = slotId.size() - 1; i >= 0; i--) {
-                parsingInstance = parsingInstance.subModules.get(slotId.get(i));
+            for (int i = slotLocation.size() - 1; i >= 0; i--) {
+                parsingInstance = parsingInstance.subModules.get(slotLocation.get(i));
             }
             return parsingInstance;
         } catch (Exception e) {
@@ -345,8 +344,8 @@ public class CraftAction {
      */
     public void forEachCraftingProperty(ItemStack crafted, PropertyConsumer propertyConsumer) {
         ModuleInstance parsingInstance = ItemModule.getModules(crafted);
-        for (int i = slotId.size() - 1; i >= 0; i--) {
-            parsingInstance = parsingInstance.subModules.get(slotId.get(i));
+        for (int i = slotLocation.size() - 1; i >= 0; i--) {
+            parsingInstance = parsingInstance.subModules.get(slotLocation.get(i));
         }
 
         AtomicInteger integer = new AtomicInteger(inventoryOffset);

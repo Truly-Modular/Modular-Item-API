@@ -1,43 +1,35 @@
 package smartin.miapi.modules.properties;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.reflect.TypeToken;
+import com.mojang.serialization.Codec;
+import com.redpxnda.nucleus.codec.auto.AutoCodec;
+import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.item.modular.Transform;
 import smartin.miapi.item.modular.TransformMap;
 import smartin.miapi.modules.ModuleInstance;
-import smartin.miapi.modules.properties.util.ModuleProperty;
+import smartin.miapi.modules.properties.util.CodecBasedProperty;
+import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.registries.RegistryInventory;
 
-import java.lang.reflect.Type;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * The SlotProperty, this allows Modules to define submodule Slots
  */
-public class SlotProperty implements ModuleProperty {
+public class SlotProperty extends CodecBasedProperty<Map<String, SlotProperty.ModuleSlot>> {
+    public static Codec CODEC = Codec.unboundedMap(Codec.STRING, AutoCodec.of(ModuleSlot.class).codec());
 
     public static final String KEY = "slots";
 
-    public static SlotProperty getInstance() {
-        return (SlotProperty) RegistryInventory.moduleProperties.get(KEY);
+    public SlotProperty() {
+        super(CODEC);
     }
 
-    @Environment(EnvType.CLIENT)
-    public static Transform getTransform(ModuleInstance instance) {
-        ModuleSlot slot = getSlotIn(instance);
-        if (slot == null) return Transform.IDENTITY;
-        ModuleInstance current = instance;
-        Transform merged = Transform.IDENTITY;
-        while (current != null) {
-            merged = Transform.merge(getLocalTransform(current), merged);
-            current = current.parent;
-        }
-        return getTransform(slot);
+    public static SlotProperty getInstance() {
+        return (SlotProperty) RegistryInventory.moduleProperties.get(KEY);
     }
 
     @Environment(EnvType.CLIENT)
@@ -50,11 +42,6 @@ public class SlotProperty implements ModuleProperty {
         }
         mergedTransform = Transform.merge(mergedTransform, moduleSlot.transform);
         return mergedTransform;
-    }
-
-    @Environment(EnvType.CLIENT)
-    public static Transform getTransform(ModuleSlot moduleSlot, String id) {
-        return getTransformStack(moduleSlot).get(id);
     }
 
     @Environment(EnvType.CLIENT)
@@ -84,35 +71,14 @@ public class SlotProperty implements ModuleProperty {
         return mergedTransform;
     }
 
-    public static Map<Integer, ModuleSlot> getSlots(ModuleInstance instance) {
-        ModuleProperty property = RegistryInventory.moduleProperties.get(KEY);
-        JsonElement data = instance.getOldProperties().get(property);
-        if (data != null) {
-            Gson gson = new Gson();
-            Type type = new TypeToken<Map<Integer, ModuleSlot>>() {
-            }.getType();
-            Map<Integer, ModuleSlot> slots = gson.fromJson(data, type);
-            //need to set Inslot as well here
-            slots.forEach((number, slot) -> {
-                slot.inSlot = instance.subModules.get(number);
-                slot.parent = instance;
-                slot.id = number;
-                if (slot.translationKey == null) {
-                    slot.translationKey = "miapi.module.empty.name";
-                }
-                if (slot.slotType == null) {
-                    slot.slotType = "default";
-                }
-            });
-            return slots;
-        }
-        return new HashMap<>();
+    public static Map<String, ModuleSlot> getSlots(ModuleInstance instance) {
+        return getInstance().getData(instance).orElse(new HashMap<>());
     }
 
-    public static Integer getSlotNumberIn(ModuleInstance instance) {
+    public static String getSlotID(ModuleInstance instance) {
         if (instance.parent != null) {
-            Map<Integer, ModuleSlot> slots = getSlots(instance.parent);
-            AtomicReference<Integer> id = new AtomicReference<>(0);
+            Map<String, ModuleSlot> slots = getSlots(instance.parent);
+            AtomicReference<String> id = new AtomicReference<>("primary");
             slots.forEach((number, moduleSlot) -> {
                 if (moduleSlot.inSlot == instance) {
                     id.set(number);
@@ -120,35 +86,27 @@ public class SlotProperty implements ModuleProperty {
             });
             return id.get();
         }
-        return 0;
+        return "primary";
     }
 
     @Environment(EnvType.CLIENT)
     public static Transform getLocalTransform(ModuleInstance instance) {
-        ModuleProperty property = RegistryInventory.moduleProperties.get(KEY);
-        JsonElement test = instance.getOldProperties().get(property);
-        if (test != null) {
-            ModuleSlot slot = getSlotIn(instance);
-            if (slot != null) {
-                return slot.transform;
-            }
+        ModuleSlot slot = getSlotIn(instance);
+        if (slot != null) {
+            return slot.transform;
         }
         return Transform.IDENTITY;
     }
 
     @Environment(EnvType.CLIENT)
     public static TransformMap getLocalTransformStack(ModuleInstance instance) {
-        ModuleProperty property = RegistryInventory.moduleProperties.get(KEY);
-        JsonElement test = instance.getOldProperties().get(property);
-        if (test != null) {
-            ModuleSlot slot = getSlotIn(instance);
-            if (slot != null) {
-                Transform transform = slot.transform;
-                TransformMap stack = new TransformMap();
-                stack.add(transform);
-                stack.primary = transform.origin;
-                return stack;
-            }
+        ModuleSlot slot = getSlotIn(instance);
+        if (slot != null) {
+            Transform transform = slot.transform;
+            TransformMap stack = new TransformMap();
+            stack.add(transform);
+            stack.primary = transform.origin;
+            return stack;
         }
         return new TransformMap();
     }
@@ -156,7 +114,7 @@ public class SlotProperty implements ModuleProperty {
     @Nullable
     public static ModuleSlot getSlotIn(ModuleInstance instance) {
         if (instance != null && instance.parent != null) {
-            Map<Integer, ModuleSlot> slots = getSlots(instance.parent);
+            Map<String, ModuleSlot> slots = getSlots(instance.parent);
             ModuleSlot slot = slots.values().stream().filter(moduleSlot -> {
                 if (moduleSlot.inSlot == null) return false;
                 return moduleSlot.inSlot.equals(instance);
@@ -173,28 +131,40 @@ public class SlotProperty implements ModuleProperty {
     }
 
     @Override
-    public boolean load(String moduleKey, JsonElement data) throws Exception {
-        Gson gson = new Gson();
-        Type type = new TypeToken<Map<Integer, ModuleSlot>>() {
-        }.getType();
-        gson.fromJson(data, type);
-        return true;
+    public Map<String, ModuleSlot> merge(Map<String, ModuleSlot> left, Map<String, ModuleSlot> right, MergeType mergeType) {
+        Map<String, ModuleSlot> mergedList = new LinkedHashMap<>(left);
+        mergedList.putAll(right);
+        return mergedList;
+    }
+
+    public Map<String, ModuleSlot> initialize(Map<String, ModuleSlot> property, ModuleInstance context) {
+        property.forEach((id,slot)-> slot.initialize(context));
+        return property;
     }
 
     public static class ModuleSlot {
+        @CodecBehavior.Optional
+        public Transform transform = Transform.IDENTITY;
+        @CodecBehavior.Optional
+        public String translationKey = "miapi.module.empty.name";
+        @CodecBehavior.Optional
+        public String slotType = "default";
+        @CodecBehavior.Optional
+        public List<String> allowed = new ArrayList<>();
+        @CodecBehavior.Optional
+        public List<String> allowedMerge = new ArrayList<>();
+        public String id;
+        @Nullable
+        @AutoCodec.Ignored
+        public ModuleInstance inSlot;
+        @Nullable
+        @AutoCodec.Ignored
+        public ModuleInstance parent;
+
         public ModuleSlot(List<String> allowedList) {
             this.allowed = allowedList;
-            id = 0;
+            id = "primary";
         }
-
-        public List<String> allowed;
-        public Transform transform = Transform.IDENTITY;
-        @Nullable
-        public ModuleInstance inSlot;
-        public ModuleInstance parent;
-        public String translationKey = "miapi.module.empty.name";
-        public String slotType = "default";
-        public int id;
 
         public boolean allowedIn(ModuleInstance instance) {
             List<String> allowedSlots = AllowedSlots.getAllowedSlots(instance.module);
@@ -204,6 +174,11 @@ public class SlotProperty implements ModuleProperty {
                 }
             }
             return false;
+        }
+
+        public void initialize(ModuleInstance moduleInstance){
+            inSlot = moduleInstance;
+            parent = moduleInstance.parent;
         }
 
         @Environment(EnvType.CLIENT)

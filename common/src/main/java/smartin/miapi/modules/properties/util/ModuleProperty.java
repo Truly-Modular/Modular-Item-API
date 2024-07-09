@@ -36,6 +36,11 @@ public interface ModuleProperty<T> {
         return Optional.ofNullable(ItemModule.getModules(itemStack).getPropertyItemStack(this));
     }
 
+    @SuppressWarnings("unchecked")
+    default Optional<T> getData(ItemModule module) {
+        return Optional.ofNullable((T) module.properties().get(this));
+    }
+
     default T initialize(T property, ModuleInstance context) {
         return property;
     }

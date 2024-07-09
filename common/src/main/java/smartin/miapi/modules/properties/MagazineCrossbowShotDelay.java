@@ -1,6 +1,5 @@
 package smartin.miapi.modules.properties;
 
-import net.minecraft.world.item.ItemStack;
 import smartin.miapi.modules.properties.util.DoubleProperty;
 
 public class MagazineCrossbowShotDelay extends DoubleProperty {
@@ -10,15 +9,5 @@ public class MagazineCrossbowShotDelay extends DoubleProperty {
     public MagazineCrossbowShotDelay() {
         super(KEY);
         property = this;
-    }
-
-    @Override
-    public Double getValue(ItemStack stack) {
-        return getValueRaw(stack);
-    }
-
-    @Override
-    public double getValueSafe(ItemStack stack) {
-        return getValueSafeRaw(stack);
     }
 }

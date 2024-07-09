@@ -1,22 +1,29 @@
 package smartin.miapi.modules.properties;
 
-import com.google.gson.JsonElement;
 import dev.architectury.event.EventResult;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.projectile.ThrownPotion;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ThrowablePotionItem;
 import net.minecraft.world.phys.HitResult;
 import smartin.miapi.entity.ItemProjectileEntity;
 import smartin.miapi.events.MiapiProjectileEvents;
-import smartin.miapi.modules.ItemModule;
-import smartin.miapi.modules.properties.util.ModuleProperty;
+import smartin.miapi.mixin.ThrowablePotionItemAccessor;
+import smartin.miapi.modules.properties.util.CodecBasedProperty;
+import smartin.miapi.modules.properties.util.MergeType;
+
+import java.util.Optional;
 
 /**
  * replaces the projectile with another projectile on impact
  */
-public class ProjectileTriggerProperty implements ModuleProperty {
+public class ProjectileTriggerProperty extends CodecBasedProperty<ItemStack> {
     public static final String KEY = "replace_projectile";
     public static ProjectileTriggerProperty property;
 
+
     public ProjectileTriggerProperty() {
+        super(ItemStack.CODEC);
         property = this;
         MiapiProjectileEvents.MODULAR_PROJECTILE_ENTITY_HIT.register(event -> {
             if (isTriggered(event.projectile, event.entityHitResult)) {
@@ -34,42 +41,34 @@ public class ProjectileTriggerProperty implements ModuleProperty {
 
     public static boolean isTriggered(ItemProjectileEntity projectile, HitResult hitResult) {
         ItemStack itemStack = projectile.getPickupItem();
-        JsonElement element = ItemModule.getMergedProperty(itemStack, property);
-        /*
-        if (element != null && itemStack.hasNbt()) {
-            CompoundTag itemCompound = itemStack.getOrCreateNbt().getCompound(element.getAsString());
-            if (!itemCompound.isEmpty()) {
-                ItemStack storedStack = ItemStack.parse(itemCompound);
-                if (projectile.getOwner() instanceof LivingEntity livingEntity) {
-                    if (!projectile.level().isClientSide()) {
-                        if (storedStack.getItem() instanceof ThrowablePotionItem) {
-                            ThrownPotion potionEntity = new ThrownPotion(projectile.level(), livingEntity);
-                            potionEntity.setPos(projectile.position());
-                            potionEntity.setItem(storedStack);
-                            potionEntity.shootFromRotation(livingEntity, projectile.getXRot(), projectile.getYRot(), 0.0f, projectile.flyDist, 0.0f);
-                            projectile.level().addFreshEntity(potionEntity);
-                            ((ThrowablePotionItemAccessor) potionEntity).onCollisionMixin(hitResult);
-                            projectile.discard();
-                            return true;
-                        }
+        Optional<ItemStack> storedStack = property.getData(itemStack);
+        if (storedStack.isPresent()) {
+            if (projectile.getOwner() instanceof LivingEntity livingEntity) {
+                if (!projectile.level().isClientSide()) {
+                    if (storedStack.get().getItem() instanceof ThrowablePotionItem) {
+                        ThrownPotion potionEntity = new ThrownPotion(projectile.level(), livingEntity);
+                        potionEntity.setPos(projectile.position());
+                        potionEntity.setItem(storedStack.get());
+                        potionEntity.shootFromRotation(livingEntity, projectile.getXRot(), projectile.getYRot(), 0.0f, projectile.flyDist, 0.0f);
+                        projectile.level().addFreshEntity(potionEntity);
+                        ((ThrowablePotionItemAccessor) potionEntity).onCollisionMixin(hitResult);
+                        projectile.discard();
+                        return true;
                     }
-                    //TODO:the fuck was this suposed todo?
-                    //DispenseItemBehavior dispenserBehavior = DispenserBlockAccessor.getBehaviours().get(storedStack.getItem());
-                    //if (dispenserBehavior instanceof ProjectileDispenseBehavior projectileDispenserBehavior) {
-                    //    Projectile projectileEntity = ((ProjectileDispenserBehaviorAccessor) projectileDispenserBehavior).createProjectileAccessor(projectile.level(), projectile.position(), storedStack);
-                    //    ((ProjectileEntityAccessor) projectileEntity).onCollisionMixin(hitResult);
-                    //}
                 }
+                //TODO:the fuck was this suposed todo?
+                //DispenseItemBehavior dispenserBehavior = DispenserBlockAccessor.getBehaviours().get(storedStack.getItem());
+                //if (dispenserBehavior instanceof ProjectileDispenseBehavior projectileDispenserBehavior) {
+                //    Projectile projectileEntity = ((ProjectileDispenserBehaviorAccessor) projectileDispenserBehavior).createProjectileAccessor(projectile.level(), projectile.position(), storedStack);
+                //    ((ProjectileEntityAccessor) projectileEntity).onCollisionMixin(hitResult);
+                //}
             }
         }
-
-         */
         return false;
     }
 
     @Override
-    public boolean load(String moduleKey, JsonElement data) throws Exception {
-        data.getAsString();
-        return true;
+    public ItemStack merge(ItemStack left, ItemStack right, MergeType mergeType) {
+        return right;
     }
 }

@@ -1,5 +1,6 @@
 package smartin.miapi.modules.properties;
 
+import net.minecraft.world.item.ItemStack;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.cache.ModularItemCache;
@@ -9,7 +10,7 @@ import smartin.miapi.modules.properties.util.DoubleProperty;
 
 import java.util.ArrayList;
 import java.util.List;
-import net.minecraft.world.item.ItemStack;
+import java.util.Optional;
 
 /**
  * controls the repair material
@@ -42,29 +43,23 @@ public class RepairPriority extends DoubleProperty {
         double lowest = Double.MAX_VALUE;
         List<Material> materials = new ArrayList<>();
         for (ModuleInstance moduleInstance : ItemModule.getModules(itemStack).allSubModules()) {
-            Double value = getValueForModule(moduleInstance, null);
-            Material material = MaterialProperty.getMaterial(moduleInstance);
-            if (value != null && material != null && lowest > value) {
-                lowest = value;
+            Optional<Double> optional = getValue(itemStack);
+            if (optional.isPresent()) {
+                Material material = MaterialProperty.getMaterial(moduleInstance);
+                if (material != null && lowest > optional.get()) {
+                    lowest = optional.get();
+                }
             }
         }
         for (ModuleInstance moduleInstance : ItemModule.getModules(itemStack).allSubModules()) {
-            Double value = getValueForModule(moduleInstance, null);
-            Material material = MaterialProperty.getMaterial(moduleInstance);
-            if (value != null && material != null && Math.abs(lowest - value) < 0.001) {
-                materials.add(material);
+            Optional<Double> optional = getValue(itemStack);
+            if (optional.isPresent()) {
+                Material material = MaterialProperty.getMaterial(moduleInstance);
+                if (material != null && Math.abs(lowest - optional.get()) < 0.001) {
+                    materials.add(material);
+                }
             }
         }
         return materials;
-    }
-
-    @Override
-    public Double getValue(ItemStack stack) {
-        return null;
-    }
-
-    @Override
-    public double getValueSafe(ItemStack stack) {
-        return 0;
     }
 }

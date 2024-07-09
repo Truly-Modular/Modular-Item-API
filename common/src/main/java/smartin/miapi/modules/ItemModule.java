@@ -15,10 +15,7 @@ import smartin.miapi.modules.synergies.SynergyManager;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Consumer;
 
 import static smartin.miapi.Miapi.LOGGER;

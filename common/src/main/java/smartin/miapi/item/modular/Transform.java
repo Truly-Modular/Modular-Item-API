@@ -9,6 +9,9 @@ import com.google.gson.stream.JsonWriter;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import com.mojang.math.Transformation;
+import com.mojang.serialization.Codec;
+import com.redpxnda.nucleus.codec.auto.AutoCodec;
+import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.renderer.block.model.ItemTransform;
@@ -25,10 +28,14 @@ import java.lang.Math;
  */
 @JsonAdapter(Transform.TransformJsonAdapter.class)
 public class Transform {
-    public String origin;
-    public final Vector3f rotation;
-    public final Vector3f translation;
-    public final Vector3f scale;
+    public static Codec<Transform> CODEC = AutoCodec.of(Transform.class).codec();
+    public String origin = null;
+    @CodecBehavior.Optional
+    public Vector3f rotation = new Vector3f();
+    @CodecBehavior.Optional
+    public Vector3f translation = new Vector3f();
+    @CodecBehavior.Optional
+    public Vector3f scale = new Vector3f();
     /**
      * The identity bakedTransform, representing no transformation at all.
      */

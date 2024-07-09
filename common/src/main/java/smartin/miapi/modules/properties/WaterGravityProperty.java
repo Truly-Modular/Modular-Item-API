@@ -1,7 +1,6 @@
 package smartin.miapi.modules.properties;
 
 import dev.architectury.event.EventResult;
-import net.minecraft.world.item.ItemStack;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.modules.properties.util.DoubleProperty;
 
@@ -24,15 +23,5 @@ public class WaterGravityProperty extends DoubleProperty {
             }
             return EventResult.pass();
         }));
-    }
-
-    @Override
-    public Double getValue(ItemStack stack) {
-        return getValueRaw(stack);
-    }
-
-    @Override
-    public double getValueSafe(ItemStack stack) {
-        return getValueSafeRaw(stack);
     }
 }

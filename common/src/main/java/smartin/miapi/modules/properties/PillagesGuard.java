@@ -23,7 +23,7 @@ public class PillagesGuard extends DoubleProperty {
                 if (IllagerBane.isIllagerType(living) && !living.level().isClientSide()) {
                     double level = 1;
                     for (ItemStack itemStack : livingHurtEvent.livingEntity.getArmorSlots()) {
-                        level -= (1 - valueRemap(getValueSafe(itemStack)));
+                        level -= (1 - valueRemap(getValue(itemStack).orElse(0.0)));
                     }
                     livingHurtEvent.amount *= (float) level;
                 }
@@ -34,15 +34,5 @@ public class PillagesGuard extends DoubleProperty {
 
     public static double valueRemap(double x) {
         return 1 - (2 / (1 + Math.exp(-x / 10)) - 1);
-    }
-
-    @Override
-    public Double getValue(ItemStack stack) {
-        return getValueRaw(stack);
-    }
-
-    @Override
-    public double getValueSafe(ItemStack stack) {
-        return getValueSafeRaw(stack);
     }
 }

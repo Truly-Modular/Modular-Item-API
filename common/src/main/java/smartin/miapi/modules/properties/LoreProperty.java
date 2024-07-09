@@ -1,8 +1,6 @@
 package smartin.miapi.modules.properties;
 
-import com.google.gson.JsonElement;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.JsonOps;
 import com.redpxnda.nucleus.codec.auto.AutoCodec;
 import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
 import net.fabricmc.api.EnvType;
@@ -14,25 +12,21 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import org.jetbrains.annotations.NotNull;
-import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.crafting.crafter.replace.HoverMaterialList;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.item.ModularItemStackConverter;
 import smartin.miapi.item.modular.ModularItem;
-import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.material.Material;
 import smartin.miapi.modules.material.MaterialProperty;
+import smartin.miapi.modules.properties.util.CodecBasedProperty;
 import smartin.miapi.modules.properties.util.MergeType;
-import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 /**
  * This property manages the Itemlore of an Item
  */
-public class LoreProperty implements ModuleProperty {
+public class LoreProperty extends CodecBasedProperty<List<LoreProperty.Holder>> {
     public static final String KEY = "itemLore";
     public static final Codec<Holder> codec = AutoCodec.of(Holder.class).codec();
     public static LoreProperty property;
@@ -41,7 +35,7 @@ public class LoreProperty implements ModuleProperty {
     public static Map<ItemStack, Material> materialLookupTable = Collections.synchronizedMap(new WeakHashMap<>());
 
     public LoreProperty() {
-        super();
+        super(Codec.list(codec));
         property = this;
         loreSuppliers.add((ItemStack itemStack, List<Component> tooltip, Item.TooltipContext context, TooltipFlag tooltipType) -> {
             if (itemStack.getItem() instanceof ModularItem) {
@@ -52,36 +46,7 @@ public class LoreProperty implements ModuleProperty {
     }
 
     public List<Holder> getHolders(ItemStack itemStack) {
-        return getHolders(ItemModule.getMergedProperty(itemStack, property));
-    }
-
-    public List<Holder> getHolders(JsonElement element) {
-        List<Holder> holders = new ArrayList<>();
-        if (element != null) {
-            if (element.isJsonArray()) {
-                element.getAsJsonArray().forEach(element1 -> holders.add(getFromSingleElement(element1)));
-            } else {
-                holders.add(getFromSingleElement(element));
-            }
-        }
-        return holders.stream().sorted().collect(Collectors.toCollection(ArrayList::new));
-    }
-
-    public JsonElement merge(JsonElement old, JsonElement toMerge, MergeType type) {
-        if (MergeType.OVERWRITE.equals(type)) {
-            return ModuleProperty.mergeToList(old, toMerge);
-        }
-
-        return old;
-    }
-
-    private Holder getFromSingleElement(JsonElement element) {
-        try {
-            return codec.parse(JsonOps.INSTANCE, element).getOrThrow((Function<String, Throwable>) s -> new IllegalArgumentException("could not parse Lore Context" + s));
-        } catch (Throwable e) {
-            Miapi.LOGGER.error("", e);
-            return new Holder();
-        }
+        return getData(itemStack).orElse(new ArrayList<>());
     }
 
     private Component gray(Component text) {
@@ -180,17 +145,13 @@ public class LoreProperty implements ModuleProperty {
     }
 
     @Override
-    public boolean load(String moduleKey, JsonElement data) throws Exception {
-        return false;
+    public List<Holder> merge(List<Holder> left, List<Holder> right, MergeType mergeType) {
+        List<Holder> merged = new ArrayList<>(left);
+        merged.addAll(right);
+        return merged;
     }
 
     public static class Holder implements Comparable<Holder> {
-        @CodecBehavior.Optional
-        @Deprecated
-        /**
-         * @deprecated will be fully removed and replaced with the {@link Holder#text}
-         */
-        public String lang;
         @CodecBehavior.Optional
         public Component text;
         @CodecBehavior.Optional(false)
@@ -199,9 +160,6 @@ public class LoreProperty implements ModuleProperty {
         public float priority = 0;
 
         public Component getText() {
-            if (lang != null) {
-                return Component.translatable(lang);
-            }
             if (text != null) {
                 return text;
                 //return Codecs.TEXT.parse(JsonOps.INSTANCE, text).result().orElse(Text.empty());

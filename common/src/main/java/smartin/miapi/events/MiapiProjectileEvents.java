@@ -5,6 +5,7 @@ import dev.architectury.event.EventResult;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
@@ -82,11 +83,13 @@ public final class MiapiProjectileEvents {
         public LivingEntity player;
         public ItemStack crossbow;
         public ItemStack loadingProjectile;
+        public EquipmentSlot crossbowSlot;
 
-        public CrossbowLoadingContext(LivingEntity player, ItemStack crossbow, ItemStack loadingProjectile) {
+        public CrossbowLoadingContext(LivingEntity player, ItemStack crossbow, ItemStack loadingProjectile,EquipmentSlot crossbowSlot) {
             this.player = player;
             this.crossbow = crossbow;
             this.loadingProjectile = loadingProjectile;
+            this.crossbowSlot = crossbowSlot;
         }
     }
 

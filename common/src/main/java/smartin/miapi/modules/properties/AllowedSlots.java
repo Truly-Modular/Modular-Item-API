@@ -43,9 +43,8 @@ public class AllowedSlots extends CodecBasedProperty<List<String>> {
      * @param module the module in question
      * @return List of slotIds
      */
-    @SuppressWarnings("unchecked")
     public static List<String> getAllowedSlots(ItemModule module) {
-        return Optional.ofNullable((List<String>)module.properties().get(property)).orElse(new ArrayList<>());
+        return property.getData(module).orElse(new ArrayList<>());
     }
 
     /**

@@ -29,8 +29,8 @@ public class ModuleInstance {
     public Map<String, Object> itemStackCache = new ConcurrentHashMap<>();
 
     static {
-        Codec<Map<Integer, ModuleInstance>> mapCodec =
-                Codec.unboundedMap(Codec.INT, CODEC).xmap((i) -> i, Function.identity());
+        Codec<Map<String, ModuleInstance>> mapCodec =
+                Codec.unboundedMap(Codec.STRING, CODEC).xmap((i) -> i, Function.identity());
         Codec<Map<String, String>> dataCodec = Codec.unboundedMap(Codec.STRING, Codec.STRING).xmap((i) -> i, Function.identity());
 
 
@@ -61,7 +61,7 @@ public class ModuleInstance {
     /**
      * A map of child module instances to their respective module IDs.
      */
-    public Map<Integer, ModuleInstance> subModules = new HashMap<>();
+    public Map<String, ModuleInstance> subModules = new HashMap<>();
     /**
      * A map of module data keys to their respective values.
      */
@@ -215,9 +215,9 @@ public class ModuleInstance {
      * @return The ID of the module instance, or null if not found.
      */
     @Nullable
-    public Integer getId() {
+    public String getId() {
         if (parent != null) {
-            for (Map.Entry<Integer, ModuleInstance> entry : parent.subModules.entrySet()) {
+            for (Map.Entry<String, ModuleInstance> entry : parent.subModules.entrySet()) {
                 if (entry.getValue() == this) {
                     return entry.getKey();
                 }

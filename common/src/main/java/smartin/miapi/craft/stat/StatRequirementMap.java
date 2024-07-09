@@ -5,14 +5,13 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.MapLike;
-import smartin.miapi.Miapi;
+import net.minecraft.nbt.Tag;
+import net.minecraft.util.ExtraCodecs;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.util.HashMap;
 import java.util.Map;
-import net.minecraft.nbt.Tag;
-import net.minecraft.util.ExtraCodecs;
 
 public class StatRequirementMap {
     protected final Map<CraftingStat<?>, Object> raw = new HashMap<>();
@@ -57,12 +56,12 @@ public class StatRequirementMap {
         @Override
         public <T> DataResult<Pair<StatRequirementMap, T>> decode(DynamicOps<T> ops, T input) {
             StatRequirementMap stats = new StatRequirementMap();
-            MapLike<T> map = ops.getMap(input).getOrThrow(false, s ->
-                    Miapi.LOGGER.error("Failed to create map in StatRequirementMapCodec! -> {}", s));
+            MapLike<T> map = ops.getMap(input).getOrThrow(s ->
+                    new RuntimeException("Failed to create map in StatRequirementMapCodec! -> " + s));
 
             map.entries().forEach(p -> {
-                String str = ops.getStringValue(p.getFirst()).getOrThrow(false, s ->
-                        Miapi.LOGGER.error("Failed to getVertexConsumer string value in StatRequirementMapCodec! -> {}", s));
+                String str = ops.getStringValue(p.getFirst()).getOrThrow(s ->
+                        new RuntimeException("Failed to getVertexConsumer string value in StatRequirementMapCodec! -> "+s));
 
                 CraftingStat stat = RegistryInventory.craftingStats.get(str);
                 T element = p.getSecond();
@@ -73,8 +72,8 @@ public class StatRequirementMap {
                         stats.set(stat, stat.createFromNbt(nbt));
                     } else {
                         stats.set(stat, stat.createFromJson(
-                                ExtraCodecs.JSON.parse(ops, element).getOrThrow(false, s ->
-                                        Miapi.LOGGER.error("Failed to turn instance into a JsonElement while decoding a StatRequirementMap! -> {}", s)),
+                                ExtraCodecs.JSON.parse(ops, element).getOrThrow(s ->
+                                        new RuntimeException("Failed to turn instance into a JsonElement while decoding a StatRequirementMap! -> "+ s)),
                                 modules
                         ));
                     }
@@ -89,8 +88,8 @@ public class StatRequirementMap {
             Map<T, T> map = new HashMap<>();
 
             input.raw.forEach((stat, inst) -> {
-                T obj = ExtraCodecs.JSON.encodeStart(ops, ((CraftingStat)stat).saveToJson(inst))
-                        .getOrThrow(false, s -> Miapi.LOGGER.error("Failed to turn instance into a JsonElement while encoding a StatRequirementMap! -> {}", s));
+                T obj = ExtraCodecs.JSON.encodeStart(ops, ((CraftingStat) stat).saveToJson(inst))
+                        .getOrThrow(s -> new RuntimeException("Failed to turn instance into a JsonElement while encoding a StatRequirementMap! -> "+ s));
                 map.put(ops.createString(RegistryInventory.craftingStats.findKey(stat)), obj);
             });
 

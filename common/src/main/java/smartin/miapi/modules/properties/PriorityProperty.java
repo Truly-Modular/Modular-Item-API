@@ -1,9 +1,11 @@
 package smartin.miapi.modules.properties;
 
-import net.minecraft.world.item.ItemStack;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
+import smartin.miapi.modules.properties.util.DoubleOperationResolvable;
 import smartin.miapi.modules.properties.util.DoubleProperty;
+
+import java.util.Optional;
 
 /**
  * influences the ordering inside the gui
@@ -18,17 +20,11 @@ public class PriorityProperty extends DoubleProperty {
         property = this;
     }
 
-    @Override
-    public Double getValue(ItemStack stack) {
-        return getValueRaw(stack);
-    }
-
     public static double getFor(ItemModule module) {
-        return property.getValueForModule(new ModuleInstance(module),0.0);
-    }
-
-    @Override
-    public double getValueSafe(ItemStack stack) {
-        return getValueSafeRaw(stack);
+        Optional<DoubleOperationResolvable> resolvable = property.getData(new ModuleInstance(module));
+        if (resolvable.isPresent()) {
+            return resolvable.get().getValue();
+        }
+        return 0.0;
     }
 }

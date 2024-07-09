@@ -51,8 +51,8 @@ public class ComplexBooleanStatDisplay extends SingleStatDisplayBoolean {
 
         public Builder setTranslationKey(String key) {
             translationKey = key;
-            name = (stack) -> Component.translatable(Miapi.MOD_ID + ".stat." + key, SingleStatDisplayBoolean.getText(property.getValueSafe(stack)));
-            hoverDescription = (stack) -> Component.translatable(Miapi.MOD_ID + ".stat." + key + ".description", SingleStatDisplayBoolean.getText(property.getValueSafe(stack)));
+            name = (stack) -> Component.translatable(Miapi.MOD_ID + ".stat." + key, SingleStatDisplayBoolean.getText(property.getValue(stack).orElse(0.0)));
+            hoverDescription = (stack) -> Component.translatable(Miapi.MOD_ID + ".stat." + key + ".description", SingleStatDisplayBoolean.getText(property.getValue(stack).orElse(0.0)));
             return this;
         }
 
@@ -76,8 +76,7 @@ public class ComplexBooleanStatDisplay extends SingleStatDisplayBoolean {
             }
 
             // Create an instance of AttributeProperty with the builder values
-            ComplexBooleanStatDisplay display = new ComplexBooleanStatDisplay(name, hoverDescription, property);
-            return display;
+            return new ComplexBooleanStatDisplay(name, hoverDescription, property);
         }
     }
 }

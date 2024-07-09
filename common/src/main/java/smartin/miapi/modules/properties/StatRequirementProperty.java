@@ -1,7 +1,9 @@
 package smartin.miapi.modules.properties;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
@@ -17,11 +19,10 @@ import smartin.miapi.registries.RegistryInventory;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
-import net.minecraft.network.chat.Component;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 
-public class StatRequirementProperty implements ModuleProperty, CraftingProperty {
+
+//TODO: @Panda rework this and Stats in general
+public class StatRequirementProperty implements ModuleProperty<Object>, CraftingProperty {
     public static final String KEY = "statRequirements";
     public static StatRequirementProperty property;
 
@@ -30,12 +31,12 @@ public class StatRequirementProperty implements ModuleProperty, CraftingProperty
     }
 
     @Override
-    public boolean canPerform(ItemStack old, ItemStack crafting, @Nullable ModularWorkBenchEntity bench, Player player, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<String,String> data) {
+    public boolean canPerform(ItemStack old, ItemStack crafting, @Nullable ModularWorkBenchEntity bench, Player player, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<String, String> data) {
         ModuleInstance newModule = craftAction.getModifyingModuleInstance(crafting);
         if (bench == null) return true;
 
-        JsonElement element = newModule.getOldProperties().get(property);
-        if (element != null){
+        JsonElement element = null;
+        if (element != null) {
             AtomicBoolean canCraft = new AtomicBoolean(true);
 
             element.getAsJsonObject().asMap().forEach((key, val) -> {
@@ -54,7 +55,7 @@ public class StatRequirementProperty implements ModuleProperty, CraftingProperty
     }
 
     @Override
-    public ItemStack preview(ItemStack old, ItemStack crafting, Player player, ModularWorkBenchEntity bench, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<String,String> data) {
+    public ItemStack preview(ItemStack old, ItemStack crafting, Player player, ModularWorkBenchEntity bench, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<String, String> data) {
         return crafting;
     }
 
@@ -69,23 +70,17 @@ public class StatRequirementProperty implements ModuleProperty, CraftingProperty
     }
 
     @Override
-    public boolean load(String moduleKey, JsonElement data) throws Exception {
-        assert data instanceof JsonObject;
-        return true;
+    public Object decode(JsonElement element) {
+        return null;
     }
 
     @Override
-    public JsonElement merge(JsonElement old, JsonElement toMerge, MergeType type) {
-        switch (type) {
-            case OVERWRITE -> {
-                return toMerge;
-            }
-            case SMART, EXTEND -> {
-                JsonObject obj = old.deepCopy().getAsJsonObject();
-                toMerge.getAsJsonObject().asMap().forEach(obj::add);
-                return obj;
-            }
-        }
-        return old;
+    public Object merge(Object left, Object right, MergeType mergeType) {
+        return null;
+    }
+
+    @Override
+    public JsonElement encode(Object property) {
+        return null;
     }
 }

@@ -11,21 +11,19 @@ import smartin.miapi.modules.properties.util.ModuleProperty;
 public class NameProperty implements ModuleProperty {
     public static final String KEY = "name";
 
+
     @Override
-    public boolean load(String moduleKey, JsonElement data) {
-        return true;
+    public Object decode(JsonElement element) {
+        return null;
     }
 
     @Override
-    public JsonElement merge(JsonElement old, JsonElement toMerge, MergeType type) {
-        switch (type) {
-            case EXTEND -> {
-                return old;
-            }
-            case SMART, OVERWRITE -> {
-                return toMerge;
-            }
-        }
-        return old;
+    public JsonElement encode(Object property) {
+        return null;
+    }
+
+    @Override
+    public Object merge(Object left, Object right, MergeType mergeType) {
+        return null;
     }
 }
