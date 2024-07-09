@@ -172,7 +172,7 @@ public class ModuleInstance {
      * @return The copied module instance.
      */
     public ModuleInstance copy() {
-        List<Integer> position = new ArrayList<>();
+        List<String> position = new ArrayList<>();
         calculatePosition(position);
 
         ModuleInstance root = this.getRoot().deepCopy();

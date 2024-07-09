@@ -229,6 +229,10 @@ public class RegistryInventory {
 
         RegistryInventory.components.register(
                 Miapi.id("item_module"), () -> ModuleInstance.componentType);
+        RegistryInventory.components.register(
+                Miapi.id("nemesis_property"), () -> NemesisProperty.NEMESIS_COMPONENT);
+        RegistryInventory.components.register(
+                Miapi.id("magazine_property"), () -> RapidfireCrossbowProperty.ADDITIONAL_PROJECTILES_COMPONENT);
 
         //ENTITY
         // commented out because RegistrySupplier is needed... see itemProjectileType field definition above
@@ -502,21 +506,15 @@ public class RegistryInventory {
             registerMiapi(moduleProperties, DisplayNameProperty.KEY, new DisplayNameProperty());
             registerMiapi(moduleProperties, ItemIdProperty.KEY, new ItemIdProperty());
             registerMiapi(moduleProperties, EquipmentSlotProperty.KEY, new EquipmentSlotProperty());
-            registerMiapi(moduleProperties, FlexibilityProperty.KEY, new FlexibilityProperty());
             registerMiapi(moduleProperties, BlockProperty.KEY, new BlockProperty());
-            registerMiapi(moduleProperties, RiptideProperty.KEY, new RiptideProperty());
             registerMiapi(moduleProperties, HealthPercentDamage.KEY, new HealthPercentDamage());
             registerMiapi(moduleProperties, ArmorPenProperty.KEY, new ArmorPenProperty());
-            registerMiapi(moduleProperties, HeavyAttackProperty.KEY, new HeavyAttackProperty());
-            registerMiapi(moduleProperties, CircleAttackProperty.KEY, new CircleAttackProperty());
-            registerMiapi(moduleProperties, CrossbowProperty.KEY, new CrossbowProperty());
             registerMiapi(moduleProperties, ToolOrWeaponProperty.KEY, new ToolOrWeaponProperty());
             registerMiapi(moduleProperties, MiningLevelProperty.KEY, new MiningLevelProperty());
             registerMiapi(moduleProperties, TagProperty.KEY, new TagProperty());
             registerMiapi(moduleProperties, MaterialProperties.KEY, new MaterialProperties());
             registerMiapi(moduleProperties, CraftingConditionProperty.KEY, new CraftingConditionProperty());
             registerMiapi(moduleProperties, StatRequirementProperty.KEY, new StatRequirementProperty());
-            registerMiapi(moduleProperties, StatProvisionProperty.KEY, new StatProvisionProperty());
             registerMiapi(moduleProperties, GlintProperty.KEY, new GlintProperty());
             registerMiapi(moduleProperties, EnderpearlProperty.KEY, new EnderpearlProperty());
             registerMiapi(moduleProperties, TeleportTarget.KEY, new TeleportTarget());
@@ -537,7 +535,6 @@ public class RegistryInventory {
             registerMiapi(moduleProperties, ImmolateProperty.KEY, new ImmolateProperty());
             registerMiapi(moduleProperties, LeechingProperty.KEY, new LeechingProperty());
             registerMiapi(moduleProperties, IsCrossbowShootAble.KEY, new IsCrossbowShootAble());
-            registerMiapi(moduleProperties, EdibleProperty.KEY, new EdibleProperty());
             registerMiapi(moduleProperties, CryoProperty.KEY, new CryoProperty());
             registerMiapi(moduleProperties, AquaticDamage.KEY, new AquaticDamage());
             registerMiapi(moduleProperties, SpiderDamage.KEY, new SpiderDamage());
@@ -552,7 +549,6 @@ public class RegistryInventory {
             registerMiapi(moduleProperties, MaterialInscribeDataProperty.KEY, new MaterialInscribeDataProperty());
             registerMiapi(moduleProperties, FakeItemTagProperty.KEY, new FakeItemTagProperty());
             registerMiapi(moduleProperties, RarityProperty.KEY, new RarityProperty());
-            registerMiapi(moduleProperties, HideFlagsProperty.KEY, new HideFlagsProperty());
             registerMiapi(moduleProperties, MiningShapeProperty.KEY, new MiningShapeProperty());
             registerMiapi(moduleProperties, ModuleStats.KEY, new ModuleStats());
             registerMiapi(moduleProperties, EnchantAbilityProperty.KEY, new EnchantAbilityProperty());
@@ -582,13 +578,10 @@ public class RegistryInventory {
 
             // ABILITIES
             registerMiapi(useAbilityRegistry, "throw", new ThrowingAbility());
-            registerMiapi(useAbilityRegistry, "boomerang_throw", new BoomerangThrowingAbility());
             registerMiapi(useAbilityRegistry, "block", new BlockAbility());
             registerMiapi(useAbilityRegistry, "full_block", new ShieldBlockAbility());
-            registerMiapi(useAbilityRegistry, RiptideProperty.KEY, new RiptideAbility());
-            registerMiapi(useAbilityRegistry, HeavyAttackProperty.KEY, new SpecialAttackAbility());
-            registerMiapi(useAbilityRegistry, CircleAttackProperty.KEY, new CircleAttackAbility());
-            registerMiapi(useAbilityRegistry, CrossbowProperty.KEY, new CrossbowAbility());
+            registerMiapi(useAbilityRegistry, "riptide", new RiptideAbility());
+            registerMiapi(useAbilityRegistry, "heavy_attack", new SpecialAttackAbility());
             registerMiapi(useAbilityRegistry, AxeAbility.KEY, new AxeAbility());
             registerMiapi(useAbilityRegistry, HoeAbility.KEY, new HoeAbility());
             registerMiapi(useAbilityRegistry, ShovelAbility.KEY, new ShovelAbility());

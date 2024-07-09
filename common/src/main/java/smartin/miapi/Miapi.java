@@ -32,7 +32,6 @@ import smartin.miapi.item.modular.PropertyResolver;
 import smartin.miapi.item.modular.VisualModularItem;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.MiapiPermissions;
-import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
 import smartin.miapi.modules.cache.CacheCommands;
 import smartin.miapi.modules.cache.ModularItemCache;
@@ -112,10 +111,7 @@ public class Miapi {
             ModularItemCache.discardCache();
         });
         PropertyResolver.register(ResourceLocation.fromNamespaceAndPath(Miapi.MOD_ID, "module"), (moduleInstance, oldMap) -> {
-            Map<ModuleProperty<?>, Object> map = new ConcurrentHashMap<>();
-            moduleInstance.module.properties()
-                    .forEach((key, jsonData) -> map.put(RegistryInventory.moduleProperties.get(key), jsonData));
-            return map;
+            return new ConcurrentHashMap<>(moduleInstance.module.properties());
         });
         PropertyResolver.register("module_data", (moduleInstance, oldMap) -> {
             Map<ModuleProperty<?>, Object> map = new ConcurrentHashMap<>();
@@ -144,9 +140,6 @@ public class Miapi {
             }
             return null;
         });
-        ModularItemCache.setSupplier(ItemModule.PROPERTY_KEY,
-                itemStack -> ItemModule.getUnmergedProperties(
-                        ModularItemCache.getVisualOnlyCache(itemStack, ItemModule.MODULE_KEY, new ModuleInstance(ItemModule.empty))));
         ModularItemStackConverter.converters.add(new ItemToModularConverter());
         if (Environment.isClient()) {
             MiapiClient.init();

@@ -38,10 +38,6 @@ public record ItemModule(String name, Map<ModuleProperty<?>, Object> properties)
      */
     public static final String NBT_MODULE_KEY = "miapi_modules";
     /**
-     * The key for the raw properties in the Cache.
-     */
-    public static final String PROPERTY_KEY = "rawProperties";
-    /**
      * An empty ItemModule instance.
      */
     public static final ItemModule empty = new ItemModule("empty", new HashMap<>());
