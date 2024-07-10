@@ -13,6 +13,7 @@ import smartin.miapi.item.ModularItemStackConverter;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.SlotProperty;
+import smartin.miapi.modules.properties.util.ComponentApplyProperty;
 import smartin.miapi.modules.properties.util.CraftingProperty;
 import smartin.miapi.registries.RegistryInventory;
 
@@ -369,6 +370,7 @@ public class CraftAction {
             propertyConsumer.accept(craftingProperty, newInstance, itemStacks, startPos, endPos, data);
             integer.set(endPos);
         }
+        ComponentApplyProperty.updateItemStack(crafted);
     }
 
     /**

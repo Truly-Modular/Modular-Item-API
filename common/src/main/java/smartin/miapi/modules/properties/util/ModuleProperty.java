@@ -60,14 +60,22 @@ public interface ModuleProperty<T> {
         }
         Map<String, K> merged = new LinkedHashMap<>(left);
         if (MergeType.EXTEND.equals(mergeType)) {
-            right.forEach((key,entry)->{
-                if(!merged.containsKey(key)){
-                    merged.put(key,entry);
+            right.forEach((key, entry) -> {
+                if (!merged.containsKey(key)) {
+                    merged.put(key, entry);
                 }
             });
             return merged;
         }
         merged.putAll(right);
         return merged;
+    }
+
+    static <K> K decideLeftRight(K right, K left, MergeType mergeType) {
+        if(MergeType.EXTEND.equals(mergeType)){
+            return right;
+        }else{
+            return left;
+        }
     }
 }
