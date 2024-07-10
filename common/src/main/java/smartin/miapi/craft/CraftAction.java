@@ -230,6 +230,10 @@ public class CraftAction {
         for (CraftingEvent eventHandler : events)
             craftingStack[0] = eventHandler.onCraft(old, craftingStack[0], parsingInstance);
         linkedInventory.markDirty();
+        ItemStack crafted = craftingStack[0];
+        if (ItemModule.getModules(crafted).module.equals(ItemModule.empty)) {
+            return ItemStack.EMPTY;
+        }
         return craftingStack[0];
     }
 
@@ -240,7 +244,9 @@ public class CraftAction {
      */
     private ItemStack craft() {
         ItemStack craftingStack = old.copy();
-
+        if (toAdd == null || toAdd == ItemModule.empty || toAdd.getName().equals("empty")) {
+            return ItemStack.EMPTY;
+        }
         if (slotId.size() == 1) {
         } else if (!old.hasNbt() || !(old.hasNbt() && old.getOrCreateNbt().contains(ItemModule.MODULE_KEY) || (old.hasNbt() && old.getOrCreateNbt().contains(NBT_MODULE_KEY)))) {
             Exception exception = new IllegalArgumentException();
@@ -254,7 +260,7 @@ public class CraftAction {
         Map<Integer, ItemModule.ModuleInstance> subModuleMap = new HashMap<>();
         if (slotId.isEmpty()) {
             //a module already exists, replacing module 0
-            if (toAdd == null) {
+            if (toAdd == null || toAdd == ItemModule.empty || toAdd.getName().equals("empty")) {
                 return ItemStack.EMPTY;
             }
             subModuleMap = oldBaseModule.subModules;
