@@ -3,8 +3,10 @@ package smartin.miapi.item.modular.items;
 import net.minecraft.world.item.BowItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import smartin.miapi.item.FakeItemstackReferenceProvider;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.PlatformModularItemMethods;
+import smartin.miapi.modules.properties.enchanment.EnchantAbilityProperty;
 
 import java.util.UUID;
 import java.util.function.Predicate;
@@ -23,6 +25,15 @@ public class ModularBow extends BowItem implements PlatformModularItemMethods, M
         super(new Item.Properties().stacksTo(1).durability(50));
         if (smartin.miapi.Environment.isClient()) {
         }
+    }
+
+    @Override
+    public int getEnchantmentValue() {
+        ItemStack itemStack = FakeItemstackReferenceProvider.getFakeReference(this);
+        if (itemStack != null) {
+            return (int) EnchantAbilityProperty.getEnchantAbility(itemStack);
+        }
+        return 15;
     }
 
     /*

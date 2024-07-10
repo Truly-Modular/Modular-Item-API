@@ -43,6 +43,7 @@ public class CraftingEnchantProperty implements ModuleProperty, CraftingProperty
 
     private static List<Pair<Holder<Enchantment>, Integer>> getEnchantsCache(ItemStack itemStack) {
         List<Pair<Holder<Enchantment>, Integer>> enchants = new ArrayList<>();
+        EnchantmentHelper helper;
 
         JsonElement list = ItemModule.getMergedProperty(itemStack, property, MergeType.SMART);
         ItemModule.getMergedProperty(ItemModule.getModules(itemStack), property);

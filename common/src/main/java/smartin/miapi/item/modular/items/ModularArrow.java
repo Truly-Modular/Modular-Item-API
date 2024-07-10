@@ -14,10 +14,12 @@ import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.entity.ItemProjectileEntity;
+import smartin.miapi.item.FakeItemstackReferenceProvider;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.PlatformModularItemMethods;
 import smartin.miapi.modules.properties.DisplayNameProperty;
 import smartin.miapi.modules.properties.LoreProperty;
+import smartin.miapi.modules.properties.enchanment.EnchantAbilityProperty;
 
 import java.util.List;
 
@@ -55,5 +57,14 @@ public class ModularArrow extends ArrowItem implements PlatformModularItemMethod
     @Override
     public void appendHoverText(@NotNull ItemStack itemStack, @NotNull TooltipContext tooltipContext, @NotNull List<Component> list, @NotNull TooltipFlag tooltipType) {
         LoreProperty.appendLoreTop(itemStack, list, tooltipContext, tooltipType);
+    }
+
+    @Override
+    public int getEnchantmentValue() {
+        ItemStack itemStack = FakeItemstackReferenceProvider.getFakeReference(this);
+        if (itemStack != null) {
+            return (int) EnchantAbilityProperty.getEnchantAbility(itemStack);
+        }
+        return 15;
     }
 }

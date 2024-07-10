@@ -23,10 +23,12 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import smartin.miapi.config.MiapiConfig;
+import smartin.miapi.item.FakeItemstackReferenceProvider;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.PlatformModularItemMethods;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
 import smartin.miapi.modules.properties.*;
+import smartin.miapi.modules.properties.enchanment.EnchantAbilityProperty;
 import smartin.miapi.modules.properties.mining.MiningLevelProperty;
 
 import java.util.List;
@@ -82,7 +84,11 @@ public class ModularShovel extends ShovelItem implements PlatformModularItemMeth
 
     @Override
     public int getEnchantmentValue() {
-        return 1;
+        ItemStack itemStack = FakeItemstackReferenceProvider.getFakeReference(this);
+        if (itemStack != null) {
+            return (int) EnchantAbilityProperty.getEnchantAbility(itemStack);
+        }
+        return 15;
     }
 
     @Override

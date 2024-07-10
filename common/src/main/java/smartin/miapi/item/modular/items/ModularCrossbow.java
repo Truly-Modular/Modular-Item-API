@@ -4,9 +4,11 @@ package smartin.miapi.item.modular.items;
 import net.minecraft.world.item.CrossbowItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import smartin.miapi.item.FakeItemstackReferenceProvider;
 import smartin.miapi.item.modular.CustomDrawTimeItem;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.PlatformModularItemMethods;
+import smartin.miapi.modules.properties.enchanment.EnchantAbilityProperty;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -36,6 +38,15 @@ public class ModularCrossbow extends CrossbowItem implements PlatformModularItem
     @Override
     public double getBaseDrawTime(ItemStack itemStack) {
         return 0;
+    }
+
+    @Override
+    public int getEnchantmentValue() {
+        ItemStack itemStack = FakeItemstackReferenceProvider.getFakeReference(this);
+        if (itemStack != null) {
+            return (int) EnchantAbilityProperty.getEnchantAbility(itemStack);
+        }
+        return 15;
     }
 
 

@@ -1,7 +1,5 @@
 package smartin.miapi.item.modular.items;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
@@ -10,14 +8,13 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.ai.attributes.Attribute;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import smartin.miapi.config.MiapiConfig;
+import smartin.miapi.item.FakeItemstackReferenceProvider;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.PlatformModularItemMethods;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
@@ -25,6 +22,7 @@ import smartin.miapi.modules.properties.DisplayNameProperty;
 import smartin.miapi.modules.properties.LoreProperty;
 import smartin.miapi.modules.properties.RepairPriority;
 import smartin.miapi.modules.properties.ToolOrWeaponProperty;
+import smartin.miapi.modules.properties.enchanment.EnchantAbilityProperty;
 import smartin.miapi.modules.properties.mining.MiningLevelProperty;
 
 import java.util.List;
@@ -54,7 +52,6 @@ public class ModularAxe extends AxeItem implements PlatformModularItemMethods, M
 
     @Override
     public int getBarWidth(ItemStack stack) {
-        ItemStack itemStack;
         return Math.round(13.0F - (float) stack.getDamageValue() * 13.0F / ModularItem.getDurability(stack));
     }
 
@@ -81,7 +78,11 @@ public class ModularAxe extends AxeItem implements PlatformModularItemMethods, M
 
     @Override
     public int getEnchantmentValue() {
-        return 1;
+        ItemStack itemStack = FakeItemstackReferenceProvider.getFakeReference(this);
+        if (itemStack != null) {
+            return (int) EnchantAbilityProperty.getEnchantAbility(itemStack);
+        }
+        return 15;
     }
 
     @Override
@@ -92,10 +93,6 @@ public class ModularAxe extends AxeItem implements PlatformModularItemMethods, M
             stack.hurtAndBreak(2, attacker, EquipmentSlot.MAINHAND);
         }
         return true;
-    }
-
-    public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlot slot) {
-        return ArrayListMultimap.create();
     }
 
     @Override

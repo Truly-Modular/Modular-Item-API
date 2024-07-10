@@ -1,23 +1,25 @@
 package smartin.miapi.modules.properties;
 
-import com.google.gson.JsonElement;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.world.item.ItemStack;
 import smartin.miapi.modules.ItemModule;
-import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.cache.ModularItemCache;
+import smartin.miapi.modules.material.Material;
+import smartin.miapi.modules.material.MaterialProperty;
 import smartin.miapi.modules.properties.util.CodecBasedProperty;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
+
+import java.util.Optional;
 
 /**
  * This property allows modules to change the DisplayName of the item in question
  */
 public class DisplayNameProperty extends CodecBasedProperty<Component> {
     public static final String KEY = "displayName";
-    public static ModuleProperty property;
+    public static DisplayNameProperty property;
 
     public DisplayNameProperty() {
         super(ComponentSerialization.CODEC);
@@ -30,24 +32,24 @@ public class DisplayNameProperty extends CodecBasedProperty<Component> {
     }
 
     private static Component resolveDisplayText(ItemStack itemStack) {
-        String translationKey = "miapi.name.missing.nomodule";
+        Component name = Component.translatable("miapi.name.missing.nomodule");
         ModuleInstance root = ItemModule.getModules(itemStack);
-        ModuleInstance primaryModule = ItemModule.getModules(itemStack);
         for (ModuleInstance moduleInstance : root.allSubModules()) {
-            JsonElement data = moduleInstance.getOldProperties().get(property);
-            if (data != null) {
-                translationKey = data.getAsString();
-                primaryModule = moduleInstance;
+            Optional<Component> componentOptional = property.getData(moduleInstance);
+            if (componentOptional.isPresent()) {
+                Material material = MaterialProperty.getMaterial(moduleInstance);
+                if (material != null) {
+                    name = Component.translatable(componentOptional.get().getString(), material.getTranslation());
+                } else {
+                    name = Component.translatable(componentOptional.get().getString(), "");
+                }
             }
         }
-        return StatResolver.translateAndResolve(translationKey, primaryModule);
+        return name;
     }
 
     @Override
     public Component merge(Component left, Component right, MergeType mergeType) {
-        if(MergeType.EXTEND.equals(mergeType)){
-            return left;
-        }
-        return right;
+        return ModuleProperty.decideLeftRight(left, right, mergeType);
     }
 }

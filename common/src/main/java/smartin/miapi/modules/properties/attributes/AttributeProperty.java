@@ -25,7 +25,6 @@ import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.util.CodecBasedProperty;
 import smartin.miapi.modules.properties.util.MergeType;
-import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.*;
 import java.util.function.Supplier;
@@ -35,7 +34,7 @@ import java.util.function.Supplier;
  */
 public class AttributeProperty extends CodecBasedProperty<List<AttributeProperty.AttributeJson>> {
     public static final String KEY = "attributes";
-    public static ModuleProperty property;
+    public static AttributeProperty property;
     public static final Map<String, Supplier<Attribute>> replaceMap = new HashMap<>();
     public static final Map<Attribute, Float> priorityMap = new HashMap<>();
     public static final List<AttributeTransformer> attributeTransformers = new ArrayList<>();
@@ -250,7 +249,7 @@ public class AttributeProperty extends CodecBasedProperty<List<AttributeProperty
     }
 
     public static void getAttributeModifiers(ModuleInstance instance, Multimap<Attribute, EntityAttributeModifierHolder> attributeModifiers) {
-        ((AttributeProperty) property).getData(instance).forEach(attributeJson -> {
+        property.getData(instance).ifPresent(attributeJsons -> attributeJsons.forEach(attributeJson -> {
 
             AttributeModifier.Operation operation = getOperation(attributeJson.operation);
             AttributeModifier.Operation baseTarget = getOperation(attributeJson.targetOperation);
@@ -264,7 +263,7 @@ public class AttributeProperty extends CodecBasedProperty<List<AttributeProperty
                 }
                 attributeModifiers.put(attribute, new EntityAttributeModifierHolder(new AttributeModifier(attributeJson.id, attributeJson.evaluatedValue, operation), attributeJson.slot, baseTarget));
             }
-        });
+        }));
     }
 
     private static AttributeModifier.Operation getOperation(String operationString) {

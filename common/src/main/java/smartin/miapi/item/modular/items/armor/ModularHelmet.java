@@ -5,11 +5,13 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import smartin.miapi.item.FakeItemstackReferenceProvider;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.PlatformModularItemMethods;
 import smartin.miapi.modules.properties.DisplayNameProperty;
 import smartin.miapi.modules.properties.LoreProperty;
 import smartin.miapi.modules.properties.RepairPriority;
+import smartin.miapi.modules.properties.enchanment.EnchantAbilityProperty;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.util.List;
@@ -51,7 +53,11 @@ public class ModularHelmet extends ArmorItem implements PlatformModularItemMetho
 
     @Override
     public int getEnchantmentValue() {
-        return 1;
+        ItemStack itemStack = FakeItemstackReferenceProvider.getFakeReference(this);
+        if (itemStack != null) {
+            return (int) EnchantAbilityProperty.getEnchantAbility(itemStack);
+        }
+        return 15;
     }
 
     @Override
