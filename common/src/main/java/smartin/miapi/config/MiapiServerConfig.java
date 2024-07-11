@@ -107,7 +107,7 @@ public class MiapiServerConfig {
         @AutoCodec.Name("generate_materials")
         public boolean generateMaterials = true;
 
-        @Comment("The maximum amount of materials generated per type")
+        @Comment("The maximum amount of materials adjust per type")
         @AutoCodec.Name("max_generated_materials")
         public int maximumGeneratedMaterials = 200;
 

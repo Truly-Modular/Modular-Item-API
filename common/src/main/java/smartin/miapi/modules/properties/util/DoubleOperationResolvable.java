@@ -53,7 +53,10 @@ public class DoubleOperationResolvable {
             });
 
     public List<Operation> operations;
-    public Function<Pair<String, ModuleInstance>, String> functionTransformer = (Pair::getFirst);
+    /**
+     * use the function to set this value.
+     */
+    protected Function<Pair<String, ModuleInstance>, String> functionTransformer = (Pair::getFirst);
     Double cachedResult = null;
     double baseValue = 0.0;
     double fallback = 0.0;
@@ -82,6 +85,19 @@ public class DoubleOperationResolvable {
      */
     public double getValue() {
         return evaluate(baseValue, fallback);
+    }
+
+    /**
+     * use this function to set a new FunctionTransformer, it resets the cachedResult as well
+     * @param functionTransformer the new FunctionTransformer
+     */
+    public void setFunctionTransformer(Function<Pair<String, ModuleInstance>, String> functionTransformer) {
+        this.functionTransformer = functionTransformer;
+        this.cachedResult = null;
+    }
+
+    public Function<Pair<String, ModuleInstance>, String> getFunctionTransformer() {
+        return functionTransformer;
     }
 
     /**

@@ -25,7 +25,7 @@ import net.minecraft.world.item.ItemStack;
  * Represents a simple palette for a material, where the index of a color in a set of 256 represents the grayscale pixel to replace with said color.
  * Essentially, (index 5 -> #F8A334) means replace #050505 with #F8A334 in the module texture.
  * The red channel is used, meaning that even non-grayscale pixels will be treated as such.
- * There are several helper methods for things like generated materials.
+ * There are several helper methods for things like adjust materials.
  */
 public class GrayscalePaletteColorer extends SpritePixelReplacer {
     public static final Codec<Integer> stringToIntCodec = Codec.STRING.xmap(Integer::parseInt, String::valueOf);
@@ -45,7 +45,7 @@ public class GrayscalePaletteColorer extends SpritePixelReplacer {
     }
 
     /**
-     * Create a GrayscalePaletteColorer for a generated material
+     * Create a GrayscalePaletteColorer for a adjust material
      */
     public static GrayscalePaletteColorer createForGeneratedMaterial(Material material, ItemStack mainIngredient) {
         BakedModel itemModel = Minecraft.getInstance().getItemRenderer().getModel(mainIngredient, Minecraft.getInstance().level, null, 0);

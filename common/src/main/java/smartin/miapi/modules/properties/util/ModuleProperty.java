@@ -54,11 +54,11 @@ public interface ModuleProperty<T> {
         return merged;
     }
 
-    static <K> Map<String, K> mergeMap(Map<String, K> left, Map<String, K> right, MergeType mergeType) {
+    static <K, L> Map<L, K> mergeMap(Map<L, K> left, Map<L, K> right, MergeType mergeType) {
         if (MergeType.OVERWRITE.equals(mergeType)) {
             return new LinkedHashMap<>(right);
         }
-        Map<String, K> merged = new LinkedHashMap<>(left);
+        Map<L, K> merged = new LinkedHashMap<>(left);
         if (MergeType.EXTEND.equals(mergeType)) {
             right.forEach((key, entry) -> {
                 if (!merged.containsKey(key)) {
@@ -72,9 +72,9 @@ public interface ModuleProperty<T> {
     }
 
     static <K> K decideLeftRight(K right, K left, MergeType mergeType) {
-        if(MergeType.EXTEND.equals(mergeType)){
+        if (MergeType.EXTEND.equals(mergeType)) {
             return right;
-        }else{
+        } else {
             return left;
         }
     }

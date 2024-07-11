@@ -546,7 +546,7 @@ public class GeneratedMaterial implements Material {
         List<String> names = new ArrayList<>();
         items.forEach(item -> names.add(Component.translatable(item.getDescriptionId()).getString()));
         String materialName = Component.translatable(mainIngredient.getDescriptionId()).getString();
-        langKey = "miapi.material.generated." + mainIngredient.getItem().getDescriptionId();
+        langKey = "miapi.material.adjust." + mainIngredient.getItem().getDescriptionId();
         fakeTranslation = findCommonSubstring(names, materialName);
         if (!fakeTranslation.endsWith(" ")) {
             fakeTranslation += " ";
@@ -657,7 +657,7 @@ public class GeneratedMaterial implements Material {
     @Environment(EnvType.CLIENT)
     public void addFakeTranslationForCopy() {
         fakeTranslation = Component.translatable(mainIngredient.getDescriptionId()).getString();
-        langKey = "miapi.material.generated." + mainIngredient.getItem().getDescriptionId();
+        langKey = "miapi.material.adjust." + mainIngredient.getItem().getDescriptionId();
         if (!fakeTranslation.endsWith(" ")) {
             fakeTranslation += " ";
         }

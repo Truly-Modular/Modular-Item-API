@@ -138,7 +138,7 @@ public class TransformableWidget extends InteractAbleWidget {
 
     /**
      * This Function handles if the Mouse is above the current Widget
-     * Its not recommended to adjust this if your widget is a Rectangle,
+     * Its not recommended to adjustEnchantments this if your widget is a Rectangle,
      * if it is not make sure this function returns true whenever the mouse is above the widget
      *
      * @param mouseX current mouseX coordinate

@@ -1,20 +1,52 @@
 package smartin.miapi.modules.properties.enchanment;
 
-/*
-public class FakeEnchantmentProperty implements ModuleProperty {
+import com.mojang.serialization.Codec;
+import dev.architectury.event.EventResult;
+import net.fabricmc.api.EnvType;
+import net.minecraft.core.Holder;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import smartin.miapi.Environment;
+import smartin.miapi.client.gui.InteractAbleWidget;
+import smartin.miapi.client.gui.crafting.statdisplay.JsonStatDisplay;
+import smartin.miapi.client.gui.crafting.statdisplay.SingleStatDisplay;
+import smartin.miapi.client.gui.crafting.statdisplay.SingleStatDisplayDouble;
+import smartin.miapi.client.gui.crafting.statdisplay.StatListWidget;
+import smartin.miapi.modules.properties.util.CodecBasedProperty;
+import smartin.miapi.modules.properties.util.DoubleOperationResolvable;
+import smartin.miapi.modules.properties.util.MergeType;
+import smartin.miapi.modules.properties.util.ModuleProperty;
+
+import java.util.*;
+
+import static smartin.miapi.modules.properties.enchanment.FakeEnchantmentManager.ADD_ENCHANTMENT;
+
+public class FakeEnchantmentProperty extends CodecBasedProperty<Map<Holder<Enchantment>, DoubleOperationResolvable>> {
     public static FakeEnchantmentProperty property;
-    public static final String KEY = "fake_enchant";
-    private static final Type type = new TypeToken<Map<String, Integer>>() {
-    }.getType();
+    public static final String KEY = "fake_enchants";
+    public static Codec<Map<Holder<Enchantment>, DoubleOperationResolvable>> CODEC = Codec.unboundedMap(Enchantment.CODEC, DoubleOperationResolvable.CODEC);
 
     public FakeEnchantmentProperty() {
+        super(CODEC);
         property = this;
-        ModularItemCache.setSupplier(KEY, FakeEnchantmentProperty::getEnchantsCache);
-        FakeEnchantment.enchantmentTransformers.add((enchantment, stack, level) -> {
-            if (getEnchants(stack).containsKey(enchantment)) {
-                return Math.max(getEnchants(stack).get(enchantment), level);
+        FakeEnchantmentManager.transformerList.add((enchantmentHolder, itemStack, oldLevel) -> {
+            for (Map.Entry<Holder<Enchantment>, DoubleOperationResolvable> location : getData(itemStack).orElse(new HashMap<>()).entrySet()) {
+                if (enchantmentHolder.is(location.getKey())) {
+                    DoubleOperationResolvable resolvable = location.getValue();
+                    resolvable.setFunctionTransformer((s) -> s.getFirst().replace("[old_level]", String.valueOf(oldLevel)));
+                    return (int) resolvable.evaluate(0.0, oldLevel);
+                }
             }
-            return level;
+            return oldLevel;
+        });
+        ADD_ENCHANTMENT.register(enchantmentMap -> {
+            for (Map.Entry<Holder<Enchantment>, DoubleOperationResolvable> location : getData(enchantmentMap.referenceStack).orElse(new HashMap<>()).entrySet()) {
+                if (!enchantmentMap.enchantments.contains(location.getKey())) {
+                    enchantmentMap.enchantments.add(location.getKey());
+                }
+            }
+            return EventResult.pass();
         });
         if (Environment.isClient()) {
             setupClient();
@@ -27,17 +59,12 @@ public class FakeEnchantmentProperty implements ModuleProperty {
             @Override
             public <T extends InteractAbleWidget & SingleStatDisplay> List<T> currentList(ItemStack original, ItemStack compareTo) {
                 List<T> displays = new ArrayList<>();
-
-                Map<Enchantment, Integer> enchantments = new HashMap<>(getEnchants(original));
-                getEnchants(original).forEach((enchantment, integer) -> {
-                    if (enchantments.containsKey(enchantment)) {
-                        enchantments.put(enchantment, Math.max(integer, enchantments.get(enchantment)));
-                    }
-                    enchantments.put(enchantment, integer);
-                });
-                enchantments.keySet().forEach(enchantment -> {
-                    JsonStatDisplay display = new JsonStatDisplay((stack) -> Component.translatable(enchantment.getTranslationKey()),
-                            (stack) -> Component.translatable(enchantment.getTranslationKey()),
+                Set<Holder<Enchantment>> enchantments = new HashSet<>();
+                enchantments.addAll(getData(original).orElse(new HashMap<>()).keySet());
+                enchantments.addAll(getData(compareTo).orElse(new HashMap<>()).keySet());
+                enchantments.forEach(enchantment -> {
+                    JsonStatDisplay display = new JsonStatDisplay((stack) -> enchantment.value().description(),
+                            (stack) -> enchantment.value().description(),
                             new SingleStatDisplayDouble.StatReaderHelper() {
                                 @Override
                                 public double getValue(ItemStack itemStack) {
@@ -50,8 +77,9 @@ public class FakeEnchantmentProperty implements ModuleProperty {
                                 }
                             },
                             0,
-                            enchantment.getMaxLevel());
-                    if(enchantment.isCursed()){
+                            enchantment.value().getMaxLevel());
+                    if (false) {
+                        //TODO:idk how to check for curses now?
                         display.inverse = true;
                     }
                     displays.add((T) display);
@@ -61,55 +89,8 @@ public class FakeEnchantmentProperty implements ModuleProperty {
         });
     }
 
-    private static Map<Enchantment, Integer> getEnchantsCache(ItemStack itemStack) {
-        Map<Enchantment, Integer> enchants = new HashMap<>();
-
-        JsonElement list = ItemModule.getMergedProperty(itemStack, property, MergeType.SMART);
-        ItemModule.getMergedProperty(ItemModule.getModules(itemStack), property);
-        Map<String, Integer> map = Miapi.gson.decode(list, type);
-        if (map != null) {
-            map.forEach((id, level) -> {
-                Enchantment enchantment = Registries.ENCHANTMENT.get(new ResourceLocation(id));
-                if (enchantment != null && enchantment.canEnchant(itemStack)) {
-                    enchants.put(enchantment, level);
-                }
-            });
-        }
-        return enchants;
-    }
-
-    public static Map<Enchantment, Integer> getEnchants(ItemStack itemStack) {
-        return ModularItemCache.get(itemStack, KEY, new HashMap<>());
-    }
-
-    public JsonElement merge(JsonElement old, JsonElement toMerge, MergeType mergeType) {
-        if (old != null && toMerge != null) {
-            Map<String, Integer> mapOld = Miapi.gson.decode(old, type);
-            Map<String, Integer> mapToMerge = Miapi.gson.decode(toMerge, type);
-            if (mergeType.equals(MergeType.OVERWRITE)) {
-                return toMerge;
-            }
-            mapOld.forEach((key, level) -> {
-                if (mapToMerge.containsKey(key)) {
-                    mapToMerge.put(key, Math.max(mapOld.get(key), mapToMerge.get(key)));
-                } else {
-                    mapToMerge.put(key, level);
-                }
-            });
-            return Miapi.gson.toJsonTree(mapToMerge);
-        }
-        if (old == null && toMerge != null) {
-            return toMerge;
-        }
-        return old;
-    }
-
     @Override
-    public boolean load(String moduleKey, JsonElement data) throws Exception {
-        Miapi.gson.decode(data, type);
-        return true;
+    public Map<Holder<Enchantment>, DoubleOperationResolvable> merge(Map<Holder<Enchantment>, DoubleOperationResolvable> left, Map<Holder<Enchantment>, DoubleOperationResolvable> right, MergeType mergeType) {
+        return ModuleProperty.mergeMap(left, right, mergeType);
     }
 }
-
-
-     */

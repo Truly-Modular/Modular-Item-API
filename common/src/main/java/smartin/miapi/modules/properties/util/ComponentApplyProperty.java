@@ -1,5 +1,6 @@
 package smartin.miapi.modules.properties.util;
 
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.world.item.ItemStack;
 import smartin.miapi.registries.RegistryInventory;
 
@@ -14,18 +15,20 @@ public interface ComponentApplyProperty {
 
     /**
      * This should be called to update an ItemStacks Component
+     *
      * @param toUpdate the Itemstack to be updated
      */
-    static void updateItemStack(ItemStack toUpdate){
+    static void updateItemStack(ItemStack toUpdate, RegistryAccess registryAccess) {
         RegistryInventory.moduleProperties.getFlatMap().values().stream().filter(ComponentApplyProperty.class::isInstance).map(ComponentApplyProperty.class::cast).forEach(componentApplyProperty -> {
-            componentApplyProperty.updateComponent(toUpdate);
+            componentApplyProperty.updateComponent(toUpdate, registryAccess);
         });
     }
 
     /**
      * This needs to be implemented in the Property, it allows you to perform
      * in-place modifications of the Itemstack
+     *
      * @param itemStack
      */
-    void updateComponent(ItemStack itemStack);
+    void updateComponent(ItemStack itemStack, RegistryAccess registryAccess);
 }

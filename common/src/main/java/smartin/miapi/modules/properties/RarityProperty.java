@@ -1,5 +1,6 @@
 package smartin.miapi.modules.properties;
 
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
@@ -45,7 +46,7 @@ public class RarityProperty extends CodecBasedProperty<Rarity> implements Compon
     }
 
     @Override
-    public void updateComponent(ItemStack itemStack) {
+    public void updateComponent(ItemStack itemStack, RegistryAccess registryAccess) {
         Rarity rarity = getRarity(itemStack);
         itemStack.set(DataComponents.RARITY, rarity);
     }

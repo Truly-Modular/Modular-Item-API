@@ -3,6 +3,7 @@ package smartin.miapi.events;
 import com.google.common.collect.Multimap;
 import com.redpxnda.nucleus.event.PrioritizedEvent;
 import dev.architectury.event.EventResult;
+import net.minecraft.core.RegistryAccess;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
@@ -16,6 +17,7 @@ import smartin.miapi.modules.material.Material;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.valueproviders.IntProvider;
@@ -31,6 +33,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import smartin.miapi.modules.properties.util.ComponentApplyProperty;
 
 public class MiapiEvents {
     public static final PrioritizedEvent<LivingAttackEvent> LIVING_ATTACK = PrioritizedEvent.createEventResult();
@@ -60,12 +63,19 @@ public class MiapiEvents {
     public static final PrioritizedEvent<LivingEntityAttributeBuild> LIVING_ENTITY_ATTRIBUTE_BUILD_EVENT = PrioritizedEvent.createLoop();
     public static final PrioritizedEvent<PlayerEquip> PLAYER_EQUIP_EVENT = PrioritizedEvent.createLoop();
 
+    static {
+        MiapiEvents.SMITHING_EVENT.register((listener) -> {
+            ComponentApplyProperty.updateItemStack(listener.itemStack, listener.registryAccess);
+            return EventResult.pass();
+        });
+    }
+
     public interface ReloadEvent {
         EventResult onReload(boolean isClient);
     }
 
     public interface PlayerEquip {
-        EventResult equip(Player player, Map<EquipmentSlot,ItemStack> changes);
+        EventResult equip(Player player, Map<EquipmentSlot, ItemStack> changes);
     }
 
     public static class IsCriticalHitEvent {
@@ -180,6 +190,7 @@ public class MiapiEvents {
     }
 
     public static class MaterialCraft {
+        public RegistryAccess registryAccess;
         public ItemStack itemStack;
 
         public MaterialCraft(ItemStack itemStack) {

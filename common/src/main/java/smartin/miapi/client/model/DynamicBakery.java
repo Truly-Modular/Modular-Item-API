@@ -42,7 +42,7 @@ public class DynamicBakery {
         try {
             ModelBakery modelLoader = ModelLoadAccessor.getLoader();
             AtomicReference<BlockModel> actualModel = new AtomicReference<>(unbakedModel);
-            unbakedModel.getDependencies().stream().filter(identifier -> identifier.toString().equals("minecraft:item/generated") || identifier.toString().contains("handheld")).findFirst().ifPresent(identifier -> {
+            unbakedModel.getDependencies().stream().filter(identifier -> identifier.toString().equals("minecraft:item/adjust") || identifier.toString().contains("handheld")).findFirst().ifPresent(identifier -> {
                 actualModel.set(ITEM_MODEL_GENERATOR.generateBlockModel(ModelProperty.textureGetter, unbakedModel));
             });
             BakedSingleModel model = DynamicBakery.bake(actualModel.get(), modelLoader, unbakedModel.getRootModel(), textureGetter, Transform.toModelTransformation(settings), ResourceLocation.parse(unbakedModel.name), true, color);

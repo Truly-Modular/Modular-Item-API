@@ -370,7 +370,7 @@ public class CraftAction {
             propertyConsumer.accept(craftingProperty, newInstance, itemStacks, startPos, endPos, data);
             integer.set(endPos);
         }
-        ComponentApplyProperty.updateItemStack(crafted);
+        ComponentApplyProperty.updateItemStack(crafted, player.level().registryAccess());
     }
 
     /**

@@ -1,5 +1,6 @@
 package smartin.miapi.modules.properties;
 
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.util.Unit;
 import net.minecraft.world.item.ItemStack;
@@ -23,7 +24,7 @@ public class FireProof extends ComplexBooleanProperty implements ComponentApplyP
     }
 
     @Override
-    public void updateComponent(ItemStack itemStack) {
+    public void updateComponent(ItemStack itemStack, RegistryAccess registryAccess) {
         if (fireProof(itemStack)) {
             itemStack.set(DataComponents.FIRE_RESISTANT, Unit.INSTANCE);
         } else {

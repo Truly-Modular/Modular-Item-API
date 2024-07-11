@@ -1,5 +1,6 @@
 package smartin.miapi.modules.properties;
 
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.ItemStack;
 import smartin.miapi.modules.properties.util.ComponentApplyProperty;
@@ -19,7 +20,7 @@ public class DurabilityProperty extends DoubleProperty implements ComponentApply
     }
 
     @Override
-    public void updateComponent(ItemStack itemStack) {
+    public void updateComponent(ItemStack itemStack, RegistryAccess registryAccess) {
         itemStack.set(DataComponents.MAX_DAMAGE,getValue(itemStack).orElse(50.0).intValue());
     }
 }

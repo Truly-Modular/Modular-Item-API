@@ -1,32 +1,29 @@
 package smartin.miapi.modules.properties.potion;
 
+import com.mojang.serialization.Codec;
 import dev.architectury.event.EventResult;
 import dev.architectury.event.events.common.EntityEvent;
-import net.minecraft.ChatFormatting;
-import net.minecraft.client.item.TooltipContext;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.Style;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
-import org.jetbrains.annotations.Nullable;
 import smartin.miapi.modules.properties.LoreProperty;
+import smartin.miapi.modules.properties.util.CodecBasedProperty;
+import smartin.miapi.modules.properties.util.MergeType;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class OnKillEffects extends PotionEffectProperty {
+public class OnKillEffects extends CodecBasedProperty<List<PossibleEffect>> {
     public static String KEY = "on_kill_potion";
     public OnKillEffects property;
+    public static Codec<List<PossibleEffect>> CODEC = Codec.list(PossibleEffect.CODEC);
 
     public OnKillEffects() {
-        super(KEY);
+        super(CODEC);
         property = this;
         EntityEvent.LIVING_DEATH.register(((entity, source) -> {
             if (!entity.level().isClientSide()) {
                 if (source.getEntity() instanceof LivingEntity livingEntity) {
-                    applyEffects(livingEntity, livingEntity, livingEntity, this::isTargetOther);
+                    PossibleEffect.applyEffects(livingEntity, livingEntity, i -> getData(i).orElse(new ArrayList<>()));
                 }
             }
             return EventResult.pass();
@@ -35,24 +32,18 @@ public class OnKillEffects extends PotionEffectProperty {
         setupLore();
     }
 
-    public void setupLore(){
-        LoreProperty.loreSuppliers.add((ItemStack itemStack, @Nullable Level world, List<Component> tooltip, TooltipContext context) -> {
-            List<Component> lines = new ArrayList<>();
-            for (EffectHolder effectHolder : merge(getStatusEffects(itemStack))) {
-                if (effectHolder.isGuiVisibility()) {
-                    Component text = effectHolder.getPotionDescription();
-                    lines.add(Component.translatable("miapi.potion.kill.tooltip", text, effectHolder.getDurationSeconds(), effectHolder.getAmplifier()));
-                }
-            }
-            if (!lines.isEmpty()) {
-                lines.add(0, Component.translatable("miapi.potion.kill.header").toFlatList(Style.EMPTY.withColor(ChatFormatting.GRAY)).get(0));
-                lines.add(0, Component.empty());
-            }
-            tooltip.addAll(lines);
+    public void setupLore() {
+        LoreProperty.loreSuppliers.add((itemStack, tooltip, context, flag) -> {
+            tooltip.addAll(PossibleEffect.getTooltip(
+                    Component.translatable("miapi.potion.kill.header"),
+                    getData(itemStack).orElse(new ArrayList<>()),
+                    "miapi.potion.kill.tooltip",
+                    "miapi.potion.kill.tooltip"));
         });
     }
 
-    public boolean isTargetOther(EffectHolder holder, EquipmentSlot slot) {
-        return true;
+    @Override
+    public List<PossibleEffect> merge(List<PossibleEffect> left, List<PossibleEffect> right, MergeType mergeType) {
+        return PossibleEffect.merge(left, right, mergeType);
     }
 }

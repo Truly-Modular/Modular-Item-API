@@ -1,8 +1,11 @@
 package smartin.miapi.modules.properties.potion;
 
+import com.mojang.serialization.Codec;
 import dev.architectury.event.EventResult;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.modules.properties.LoreProperty;
+import smartin.miapi.modules.properties.util.CodecBasedProperty;
+import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.ArrayList;
@@ -16,60 +19,37 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 
-public class OnDamagedEffects extends PotionEffectProperty {
-    public static String KEY = "on_hurt_potion";
+public class OnDamagedEffects extends CodecBasedProperty<List<PossibleEffect>> {
+    public static String KEY = "on_attack_potion";
     public OnDamagedEffects property;
+    public static Codec<List<PossibleEffect>> CODEC = Codec.list(PossibleEffect.CODEC);
 
     public OnDamagedEffects() {
-        super(KEY);
+        super(CODEC);
         property = this;
+
         MiapiEvents.LIVING_HURT.register((listener) -> {
-            if (!listener.livingEntity.level().isClientSide()) {
-                applyEffects(listener.livingEntity, listener.livingEntity, listener.getCausingItemStack(), listener.livingEntity, this::isTargetSelf);
-                if (listener.damageSource.getEntity() instanceof LivingEntity attacker) {
-                    applyEffects(attacker, listener.livingEntity, listener.getCausingItemStack(), attacker, this::isTargetOther);
-                }
+            if (listener.damageSource.getEntity() instanceof LivingEntity attacker && !attacker.level().isClientSide()) {
+                LivingEntity defender = listener.livingEntity;
+                PossibleEffect.applyEffects(defender, attacker, attacker, i -> getData(i).orElse(new ArrayList<>()));
             }
             return EventResult.pass();
         });
-
         setupLore();
     }
 
     public void setupLore() {
-        LoreProperty.loreSuppliers.add((ItemStack itemStack, List<Component> tooltip, Item.TooltipContext context, TooltipFlag tooltipType) -> {
-            List<Component> lines = new ArrayList<>();
-            for (EffectHolder effectHolder : merge(getStatusEffects(itemStack))) {
-                if (effectHolder.isGuiVisibility()) {
-                    Component text = effectHolder.getPotionDescription();
-                    if (isTargetSelf(effectHolder)) {
-                        lines.add(Component.translatable("miapi.potion.damaged.self.tooltip", text, effectHolder.getDurationSeconds(), effectHolder.getAmplifier()));
-                    } else {
-                        lines.add(Component.translatable("miapi.potion.damaged.other.tooltip", text, effectHolder.getDurationSeconds(), effectHolder.getAmplifier()));
-                    }
-                }
-            }
-            if (!lines.isEmpty()) {
-                lines.add(0, Component.translatable("miapi.potion.damaged.on_hit").toFlatList(Style.EMPTY.withColor(ChatFormatting.GRAY)).get(0));
-                lines.add(0, Component.empty());
-            }
-            tooltip.addAll(lines);
+        LoreProperty.loreSuppliers.add((itemStack, tooltip, context, flag) -> {
+            tooltip.addAll(PossibleEffect.getTooltip(
+                    Component.translatable("miapi.potion.target.on_hit"),
+                    getData(itemStack).orElse(new ArrayList<>()),
+                    "miapi.potion.target.other.tooltip",
+                    "miapi.potion.target.self.tooltip"));
         });
     }
 
-    public boolean isTargetOther(EffectHolder holder, EquipmentSlot slot) {
-        return isTargetOther(holder);
-    }
-
-    public boolean isTargetOther(EffectHolder holder) {
-        return !ModuleProperty.getBoolean(holder.rawData(), "target_self", holder.moduleInstance(), false);
-    }
-
-    public boolean isTargetSelf(EffectHolder holder, EquipmentSlot slot) {
-        return !isTargetOther(holder);
-    }
-
-    public boolean isTargetSelf(EffectHolder holder) {
-        return !isTargetOther(holder);
+    @Override
+    public List<PossibleEffect> merge(List<PossibleEffect> left, List<PossibleEffect> right, MergeType mergeType) {
+        return PossibleEffect.merge(left, right, mergeType);
     }
 }
