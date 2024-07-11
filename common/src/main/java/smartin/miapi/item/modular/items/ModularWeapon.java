@@ -9,7 +9,10 @@ import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.*;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
@@ -17,7 +20,10 @@ import smartin.miapi.item.FakeItemstackReferenceProvider;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.PlatformModularItemMethods;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
-import smartin.miapi.modules.properties.*;
+import smartin.miapi.modules.properties.DisplayNameProperty;
+import smartin.miapi.modules.properties.LoreProperty;
+import smartin.miapi.modules.properties.RepairPriority;
+import smartin.miapi.modules.properties.ToolOrWeaponProperty;
 import smartin.miapi.modules.properties.enchanment.EnchantAbilityProperty;
 import smartin.miapi.modules.properties.mining.MiningLevelProperty;
 
@@ -78,24 +84,6 @@ public class ModularWeapon extends Item implements PlatformModularItemMethods, M
     }
 
     @Override
-    public boolean mineBlock(ItemStack stack, Level world, BlockState state, BlockPos pos, LivingEntity miner) {
-        if (!world.isClientSide && state.getDestroySpeed(world, pos) != 0.0F) {
-            if (ToolOrWeaponProperty.isWeapon(stack)) {
-                stack.hurtAndBreak(2, miner, EquipmentSlot.MAINHAND);
-            } else {
-                stack.hurtAndBreak(1, miner, EquipmentSlot.MAINHAND);
-            }
-        }
-
-        return true;
-    }
-
-    @Override
-    public boolean canAttackBlock(BlockState state, Level world, BlockPos pos, Player miner) {
-        return MiningLevelProperty.canMine(state, world, pos, miner);
-    }
-
-    @Override
     public UseAnim getUseAnimation(ItemStack stack) {
         return ItemAbilityManager.getUseAction(stack);
     }
@@ -144,5 +132,20 @@ public class ModularWeapon extends Item implements PlatformModularItemMethods, M
     @Override
     public void appendHoverText(ItemStack stack, net.minecraft.world.item.Item.TooltipContext tooltipContext, List<Component> list, TooltipFlag tooltipType) {
         LoreProperty.appendLoreTop(stack, list, tooltipContext, tooltipType);
+    }
+
+    @Override
+    public float getDestroySpeed(ItemStack stack, BlockState state) {
+        return MiningLevelProperty.getDestroySpeed(stack, state);
+    }
+
+    @Override
+    public boolean mineBlock(ItemStack stack, Level level, BlockState state, BlockPos pos, LivingEntity miningEntity) {
+        return MiningLevelProperty.mineBlock(stack, level, state, pos, miningEntity);
+    }
+
+    @Override
+    public boolean isCorrectToolForDrops(ItemStack stack, BlockState state) {
+        return MiningLevelProperty.isCorrectToolForDrops(stack, state);
     }
 }

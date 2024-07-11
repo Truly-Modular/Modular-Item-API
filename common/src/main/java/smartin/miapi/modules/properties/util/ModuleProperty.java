@@ -3,10 +3,12 @@ package smartin.miapi.modules.properties.util;
 import com.google.gson.JsonElement;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import org.apache.commons.lang3.tuple.Triple;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
 
 import java.util.*;
+import java.util.function.Function;
 
 public interface ModuleProperty<T> {
 
@@ -68,6 +70,18 @@ public interface ModuleProperty<T> {
             return merged;
         }
         merged.putAll(right);
+        return merged;
+    }
+
+    static <K, L> Map<L, K> mergeMap(Map<L, K> left, Map<L, K> right, MergeType mergeType, Function<Triple<K, K, MergeType>, K> collisionHandle) {
+        Map<L, K> merged = new LinkedHashMap<>(left);
+        right.forEach((key, entry) -> {
+            if (!merged.containsKey(key)) {
+                merged.put(key, entry);
+            } else {
+                merged.put(key, collisionHandle.apply(Triple.of(merged.get(key), entry, mergeType)));
+            }
+        });
         return merged;
     }
 

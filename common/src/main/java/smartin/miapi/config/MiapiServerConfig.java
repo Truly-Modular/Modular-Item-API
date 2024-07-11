@@ -4,10 +4,11 @@ import com.redpxnda.nucleus.codec.auto.AutoCodec;
 import com.redpxnda.nucleus.codec.auto.ConfigAutoCodec;
 import com.redpxnda.nucleus.util.Comment;
 import dev.architectury.platform.Platform;
-import java.util.List;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffects;
+
+import java.util.List;
 
 @ConfigAutoCodec.ConfigClassMarker
 public class MiapiServerConfig {
@@ -107,7 +108,7 @@ public class MiapiServerConfig {
         @AutoCodec.Name("generate_materials")
         public boolean generateMaterials = true;
 
-        @Comment("The maximum amount of materials adjust per type")
+        @Comment("The maximum amount of materials generated per type")
         @AutoCodec.Name("max_generated_materials")
         public int maximumGeneratedMaterials = 200;
 

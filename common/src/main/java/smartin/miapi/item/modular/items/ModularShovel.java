@@ -105,23 +105,6 @@ public class ModularShovel extends ShovelItem implements PlatformModularItemMeth
         return ArrayListMultimap.create();
     }
 
-    @Override
-    public boolean mineBlock(ItemStack stack, Level world, BlockState state, BlockPos pos, LivingEntity miner) {
-        if (!world.isClientSide && state.getDestroySpeed(world, pos) != 0.0F) {
-            if (ToolOrWeaponProperty.isWeapon(stack)) {
-                stack.hurtAndBreak(2, miner, EquipmentSlot.MAINHAND);
-            } else {
-                stack.hurtAndBreak(1, miner, EquipmentSlot.MAINHAND);
-            }
-        }
-
-        return true;
-    }
-
-    @Override
-    public boolean canAttackBlock(BlockState state, Level world, BlockPos pos, Player miner) {
-        return MiningLevelProperty.canMine(state, world, pos, miner);
-    }
 
     @Override
     public UseAnim getUseAnimation(ItemStack stack) {
@@ -172,5 +155,20 @@ public class ModularShovel extends ShovelItem implements PlatformModularItemMeth
     @Override
     public void appendHoverText(ItemStack stack, net.minecraft.world.item.Item.TooltipContext tooltipContext, List<Component> list, TooltipFlag tooltipType) {
         LoreProperty.appendLoreTop(stack, list, tooltipContext, tooltipType);
+    }
+
+    @Override
+    public float getDestroySpeed(ItemStack stack, BlockState state) {
+        return MiningLevelProperty.getDestroySpeed(stack, state);
+    }
+
+    @Override
+    public boolean mineBlock(ItemStack stack, Level level, BlockState state, BlockPos pos, LivingEntity miningEntity) {
+        return MiningLevelProperty.mineBlock(stack, level, state, pos, miningEntity);
+    }
+
+    @Override
+    public boolean isCorrectToolForDrops(ItemStack stack, BlockState state) {
+        return MiningLevelProperty.isCorrectToolForDrops(stack, state);
     }
 }

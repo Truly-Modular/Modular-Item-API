@@ -27,7 +27,7 @@ import smartin.miapi.modules.properties.mining.MiningLevelProperty;
 
 import java.util.List;
 
-public class ModularAxe extends AxeItem implements PlatformModularItemMethods, ModularItem, ModularSetableToolMaterial {
+public class ModularAxe extends AxeItem implements PlatformModularItemMethods, ModularItem {
     public Tier currentFakeToolmaterial = ModularToolMaterial.toolMaterial;
 
     public ModularAxe(Properties settings) {
@@ -43,11 +43,6 @@ public class ModularAxe extends AxeItem implements PlatformModularItemMethods, M
             return currentFakeToolmaterial;
         }
         return super.getTier();
-    }
-
-    @Override
-    public void setToolMaterial(Tier toolMaterial) {
-        this.currentFakeToolmaterial = toolMaterial;
     }
 
     @Override
@@ -93,24 +88,6 @@ public class ModularAxe extends AxeItem implements PlatformModularItemMethods, M
             stack.hurtAndBreak(2, attacker, EquipmentSlot.MAINHAND);
         }
         return true;
-    }
-
-    @Override
-    public boolean mineBlock(ItemStack stack, Level world, BlockState state, BlockPos pos, LivingEntity miner) {
-        if (!world.isClientSide && state.getDestroySpeed(world, pos) != 0.0F) {
-            if (ToolOrWeaponProperty.isWeapon(stack)) {
-                stack.hurtAndBreak(2, miner, EquipmentSlot.MAINHAND);
-            } else {
-                stack.hurtAndBreak(1, miner, EquipmentSlot.MAINHAND);
-            }
-        }
-
-        return true;
-    }
-
-    @Override
-    public boolean canAttackBlock(BlockState state, Level world, BlockPos pos, Player miner) {
-        return MiningLevelProperty.canMine(state, world, pos, miner);
     }
 
     @Override
@@ -162,5 +139,20 @@ public class ModularAxe extends AxeItem implements PlatformModularItemMethods, M
     @Override
     public void appendHoverText(ItemStack itemStack, net.minecraft.world.item.Item.TooltipContext tooltipContext, List<Component> list, TooltipFlag tooltipType) {
         LoreProperty.appendLoreTop(itemStack, list, tooltipContext, tooltipType);
+    }
+
+    @Override
+    public float getDestroySpeed(ItemStack stack, BlockState state) {
+        return MiningLevelProperty.getDestroySpeed(stack, state);
+    }
+
+    @Override
+    public boolean mineBlock(ItemStack stack, Level level, BlockState state, BlockPos pos, LivingEntity miningEntity) {
+        return MiningLevelProperty.mineBlock(stack, level, state, pos, miningEntity);
+    }
+
+    @Override
+    public boolean isCorrectToolForDrops(ItemStack stack, BlockState state) {
+        return MiningLevelProperty.isCorrectToolForDrops(stack, state);
     }
 }
