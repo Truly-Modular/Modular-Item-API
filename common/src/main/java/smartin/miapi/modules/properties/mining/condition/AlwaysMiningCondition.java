@@ -1,20 +1,17 @@
 package smartin.miapi.modules.properties.mining.condition;
 
-import com.google.gson.JsonObject;
-import smartin.miapi.modules.ModuleInstance;
-
-import java.util.List;
+import com.mojang.serialization.Codec;
+import com.redpxnda.nucleus.codec.auto.AutoCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
+import java.util.List;
+
 public class AlwaysMiningCondition implements MiningCondition {
-    @Override
-    public MiningCondition fromJson(JsonObject object, ModuleInstance moduleInstance) {
-        return this;
-    }
+    public static Codec<AlwaysMiningCondition> CODEC = AutoCodec.of(AlwaysMiningCondition.class).codec();
 
     @Override
     public List<BlockPos> trimList(Level level, BlockPos original, List<BlockPos> positions) {

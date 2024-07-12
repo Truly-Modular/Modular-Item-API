@@ -289,6 +289,16 @@ public class ModuleInstance {
     }
 
     /**
+     * Clears all cached data of this ModuleInstance
+     * unlike like the other Cache-clears this doesn`t reset the Property Resolver, but still kills the initalized Properties
+     */
+    public void clearCachesSoftOnlyThis() {
+        cachedData.clear();
+        itemStackCache.clear();
+        initializedProperties.clear();
+    }
+
+    /**
      * Returns a JSON string representation of this module instance.
      *
      * @return a JSON string representation of this module instance

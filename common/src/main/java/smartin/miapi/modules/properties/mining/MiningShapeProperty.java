@@ -1,17 +1,18 @@
 package smartin.miapi.modules.properties.mining;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
 import dev.architectury.event.EventResult;
 import dev.architectury.event.events.common.BlockEvent;
-import smartin.miapi.item.modular.StatResolver;
-import smartin.miapi.modules.ItemModule;
-import smartin.miapi.modules.ModuleInstance;
-import smartin.miapi.modules.cache.ModularItemCache;
+import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
+import smartin.miapi.Miapi;
 import smartin.miapi.modules.properties.mining.condition.AlwaysMiningCondition;
 import smartin.miapi.modules.properties.mining.condition.BlockTagCondition;
 import smartin.miapi.modules.properties.mining.condition.MiningCondition;
-import smartin.miapi.modules.properties.mining.condition.MiningTypeCondition;
 import smartin.miapi.modules.properties.mining.mode.InstantMiningMode;
 import smartin.miapi.modules.properties.mining.mode.MiningMode;
 import smartin.miapi.modules.properties.mining.mode.StaggeredMiningMode;
@@ -20,43 +21,44 @@ import smartin.miapi.modules.properties.mining.modifier.SameBlockModifier;
 import smartin.miapi.modules.properties.mining.shape.CubeMiningShape;
 import smartin.miapi.modules.properties.mining.shape.MiningShape;
 import smartin.miapi.modules.properties.mining.shape.VeinMiningShape;
-import smartin.miapi.modules.properties.util.ModuleProperty;
+import smartin.miapi.modules.properties.util.CodecBasedProperty;
+import smartin.miapi.modules.properties.util.MergeType;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import net.minecraft.core.Direction;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.HitResult;
 
 /**
  * This Property Manages the complicated task of Mining Multiple Blocks when only one is mined
  * Area,Vein and other stuff
  */
-public class MiningShapeProperty implements ModuleProperty {
+public class MiningShapeProperty extends CodecBasedProperty<List<MiningShapeEntry>> {
     public static String KEY = "mining_shape";
     public static MiningShapeProperty property;
-    public static Map<String, MiningCondition> miningConditionMap = new HashMap<>();
-    public static Map<String, MiningShape> miningShapeMap = new HashMap<>();
-    public static Map<String, MiningMode> miningModeMap = new HashMap<>();
-    public static Map<String, MiningModifier> miningModifierMap = new HashMap<>();
+    public static Map<ResourceLocation, Codec<? extends MiningCondition>> miningConditionMap = new HashMap<>();
+    public static Map<ResourceLocation, Codec<? extends MiningShape>> miningShapeMap = new HashMap<>();
+    public static Map<ResourceLocation, Codec<? extends MiningMode>> miningModeMap = new HashMap<>();
+    public static Map<ResourceLocation, Codec<? extends MiningModifier>> miningModifierMap = new HashMap<>();
+
+    @Override
+    public List<MiningShapeEntry> merge(List<MiningShapeEntry> left, List<MiningShapeEntry> right, MergeType mergeType) {
+        return List.of();
+    }
 
 
     public MiningShapeProperty() {
+        super(Codec.list(MiningShapeEntry.CODEC));
         property = this;
-        ModularItemCache.setSupplier(KEY, MiningShapeProperty::getCache);
         BlockEvent.BREAK.register((level, pos, state, player, xp) -> {
             if (!level.isClientSide() && !player.isShiftKeyDown()) {
                 ItemStack miningItem = player.getMainHandItem();
-                List<MiningShapeJson> miningShapeJsons = get(miningItem);
-                HitResult hitResult = player.pick(getBlockBreakDistance(player), 0, false);
+                List<MiningShapeEntry> miningShapeJsons = getData(miningItem).orElse(new ArrayList<>());
+                HitResult hitResult = player.pick(player.getAttributeValue(Attributes.BLOCK_INTERACTION_RANGE), 0, false);
                 if (hitResult instanceof BlockHitResult blockHitResult) {
                     Direction facing = blockHitResult.getDirection();
                     miningShapeJsons.stream().filter(miningShapeJson ->
-                                    miningShapeJson.miningCondition.canMine(player, level, miningItem, pos, facing)).
+                                    miningShapeJson.condition().canMine(player, level, miningItem, pos, facing)).
                             forEach(miningShapeJson ->
                                     miningShapeJson.execute(pos, level, miningItem, player, facing));
                 }
@@ -64,88 +66,17 @@ public class MiningShapeProperty implements ModuleProperty {
             return EventResult.pass();
         });
 
-        miningModeMap.put("instant", new InstantMiningMode(1));
-        miningModeMap.put("staggered", new StaggeredMiningMode());
+        miningModeMap.put(Miapi.id("instant"), InstantMiningMode.CODEC);
+        miningModeMap.put(Miapi.id("staggered"), StaggeredMiningMode.CODEC);
 
-        miningModifierMap.put("require_same", new SameBlockModifier());
+        miningModifierMap.put(Miapi.id("require_same"), SameBlockModifier.CODEC);
 
-        miningConditionMap.put("always", new AlwaysMiningCondition());
-        miningConditionMap.put("block_tag", new BlockTagCondition(new ArrayList<>()));
+        miningConditionMap.put(Miapi.id("always"), AlwaysMiningCondition.CODEC);
+        miningConditionMap.put(Miapi.id("block_tag"), BlockTagCondition.CODEC);
 
-        MiningLevelProperty.miningCapabilities.keySet().forEach(s -> miningConditionMap.put(s, new MiningTypeCondition(s)));
+        //MiningLevelProperty.miningCapabilities.keySet().forEach(s -> miningConditionMap.put(s, new MiningTypeCondition(s)));
 
-        miningShapeMap.put("cube", new CubeMiningShape());
-        miningShapeMap.put("vein", new VeinMiningShape());
+        miningShapeMap.put(Miapi.id("cube"), CubeMiningShape.CODEC);
+        miningShapeMap.put(Miapi.id("vein"), VeinMiningShape.CODEC);
     }
-
-    //TODO:update on port to 1.20.5, wont change for forge cause idc
-    public double getBlockBreakDistance(Player player) {
-        return 10;
-    }
-
-    public List<MiningShapeJson> get(ItemStack stack) {
-        return ModularItemCache.get(stack, KEY, new ArrayList<>());
-    }
-
-    private static List<MiningShapeJson> getCache(ItemStack stack) {
-        List<MiningShapeJson> miningShapeJsons = new ArrayList<>();
-        ItemModule.getModules(stack).allSubModules().forEach(moduleInstance -> {
-            JsonElement element = moduleInstance.getOldProperties().get(property);
-            if (element != null) {
-                miningShapeJsons.addAll(get(element, moduleInstance));
-            }
-        });
-        return miningShapeJsons;
-    }
-
-    public static List<MiningShapeJson> get(JsonElement element, ModuleInstance moduleInstance) {
-        return element.getAsJsonArray().asList().stream().map(subElement -> new MiningShapeJson(subElement.getAsJsonObject(), moduleInstance)).toList();
-    }
-
-    @Override
-    public boolean load(String moduleKey, JsonElement data) throws Exception {
-        get(data, new ModuleInstance(ItemModule.empty));
-        return true;
-    }
-
-    public static boolean getBoolean(JsonObject object, String element, boolean defaultValue) {
-        if (object != null) {
-            JsonElement json = object.get(element);
-            if (json != null && !json.isJsonNull() && json.isJsonPrimitive()) {
-                return json.getAsBoolean();
-            }
-        }
-        return defaultValue;
-    }
-
-    public static int getInteger(JsonObject object, String element, int defaultValue) {
-        if (object != null) {
-            JsonElement json = object.get(element);
-            if (json != null && !json.isJsonNull() && json.isJsonPrimitive()) {
-                return json.getAsInt();
-            }
-        }
-        return defaultValue;
-    }
-
-    public static int getInteger(JsonObject object, String element, ModuleInstance moduleInstance, int defaultValue) {
-        if (object != null) {
-            JsonElement json = object.get(element);
-            if (json != null && !json.isJsonNull()) {
-                return (int) StatResolver.resolveDouble(json, moduleInstance);
-            }
-        }
-        return defaultValue;
-    }
-
-    public static double getDouble(JsonObject object, String element, ModuleInstance moduleInstance, int defaultValue) {
-        if (object != null) {
-            JsonElement json = object.get(element);
-            if (json != null && !json.isJsonNull()) {
-                return StatResolver.resolveDouble(json, moduleInstance);
-            }
-        }
-        return defaultValue;
-    }
-
 }

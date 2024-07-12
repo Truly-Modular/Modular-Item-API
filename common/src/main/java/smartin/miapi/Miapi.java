@@ -58,7 +58,7 @@ public class Miapi {
     public static NetworkingImplCommon networkingImplementation;
     public static MinecraftServer server;
     public static Gson gson = new Gson();
-    public static Codec<ResourceLocation> MIAPI_ID = new Codec<>() {
+    public static Codec<ResourceLocation> ID_CODEC = new Codec<>() {
         @Override
         public <T> DataResult<Pair<ResourceLocation, T>> decode(DynamicOps<T> ops, T input) {
             Pair<String, T> result = Codec.STRING.decode(ops, ops.getMap(input).getOrThrow().get("type")).getOrThrow();

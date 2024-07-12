@@ -1,29 +1,24 @@
 package smartin.miapi.modules.properties.mining.shape;
 
-import com.google.gson.JsonObject;
-import smartin.miapi.modules.ModuleInstance;
-import smartin.miapi.modules.properties.mining.MiningShapeProperty;
-
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
+import com.mojang.serialization.Codec;
+import com.redpxnda.nucleus.codec.auto.AutoCodec;
+import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 
-public class VeinMiningShape implements MiningShape {
-    public int size = 5;
-    public int maxBlocks = 15;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
 
-    @Override
-    public MiningShape fromJson(JsonObject object, ModuleInstance moduleInstance) {
-        VeinMiningShape veinMiningShape = new VeinMiningShape();
-        veinMiningShape.size = MiningShapeProperty.getInteger(object, "size", moduleInstance, 5);
-        veinMiningShape.maxBlocks = MiningShapeProperty.getInteger(object, "max", moduleInstance, 5);
-        return veinMiningShape;
-    }
+public class VeinMiningShape implements MiningShape {
+    public static Codec<VeinMiningShape> CODEC = AutoCodec.of(VeinMiningShape.class).codec();
+
+    public int size = 5;
+    @CodecBehavior.Optional
+    public int maxBlocks = 15;
 
     @Override
     public List<BlockPos> getMiningBlocks(Level world, BlockPos pos, Direction face) {

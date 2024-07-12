@@ -1,14 +1,13 @@
 package smartin.miapi.modules.properties.mining.shape;
 
-import com.google.gson.JsonObject;
-import smartin.miapi.modules.ModuleInstance;
-import smartin.miapi.modules.properties.mining.MiningShapeProperty;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.mojang.serialization.Codec;
+import com.redpxnda.nucleus.codec.auto.AutoCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This class adds a Cube Mining shape with
@@ -16,19 +15,10 @@ import net.minecraft.world.level.Level;
  * if height, width, depth are not defined they fallback onto radius
  */
 public class CubeMiningShape implements MiningShape {
-    int width;
-    int height;
-    int depth;
-
-    @Override
-    public MiningShape fromJson(JsonObject object, ModuleInstance moduleInstance) {
-        int radius = MiningShapeProperty.getInteger(object, "radius", 1);
-        CubeMiningShape cube = new CubeMiningShape();
-        cube.width = MiningShapeProperty.getInteger(object, "width", moduleInstance, radius);
-        cube.height = MiningShapeProperty.getInteger(object, "height", moduleInstance, radius);
-        cube.depth = MiningShapeProperty.getInteger(object, "depth", moduleInstance, radius);
-        return cube;
-    }
+    public static Codec<CubeMiningShape> CODEC = AutoCodec.of(CubeMiningShape.class).codec();
+    public int width;
+    public int height;
+    public int depth;
 
     @Override
     public List<BlockPos> getMiningBlocks(Level world, BlockPos pos, Direction face) {

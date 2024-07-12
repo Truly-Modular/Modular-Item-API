@@ -468,6 +468,7 @@ public class RegistryInventory {
             ConditionManager.CONDITION_REGISTRY.put(Miapi.id("material_count"), MaterialCountCondition.CODEC);
             ConditionManager.CONDITION_REGISTRY.put(Miapi.id("item_in_inventory"), ItemInInventoryCondition.CODEC);
             ConditionManager.CONDITION_REGISTRY.put(Miapi.id("advancement"), AdvancementCondition.CODEC);
+            ConditionManager.CONDITION_REGISTRY.put(Miapi.id("number"), NumberCondition.CODEC);
 
             //MODULEPROPERTIES
             if (smartin.miapi.Environment.isClient()) {

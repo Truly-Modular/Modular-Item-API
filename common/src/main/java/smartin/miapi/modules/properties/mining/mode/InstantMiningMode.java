@@ -1,32 +1,29 @@
 package smartin.miapi.modules.properties.mining.mode;
 
-import com.google.gson.JsonObject;
-import smartin.miapi.modules.ModuleInstance;
-import smartin.miapi.modules.properties.mining.MiningLevelProperty;
-import smartin.miapi.modules.properties.mining.MiningShapeProperty;
-
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import smartin.miapi.modules.properties.mining.MiningLevelProperty;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 
 /**
  * This Mining Mode mines all blocksinstantly and creates the drops where the block was mined
  */
-public class InstantMiningMode implements MiningMode {
-    public double durabilityBreakChance;
-
-    public InstantMiningMode(double durabilityBreakChance) {
-        this.durabilityBreakChance = durabilityBreakChance;
-    }
-
-    @Override
-    public MiningMode fromJson(JsonObject object, ModuleInstance moduleInstance) {
-        return new InstantMiningMode(MiningShapeProperty.getDouble(object, "durability_chance", moduleInstance, 1));
-    }
+public record InstantMiningMode(double durabilityBreakChance) implements MiningMode {
+    public static Codec<InstantMiningMode> CODEC = RecordCodecBuilder.create((miningModeInstance -> {
+        return miningModeInstance.group(
+                        Codec.DOUBLE
+                                .fieldOf("durability_chance")
+                                .forGetter(InstantMiningMode::durabilityBreakChance)
+                )
+                .apply(miningModeInstance, InstantMiningMode::new);
+    }));
 
     @Override
     public void execute(List<BlockPos> posList, Level world, ServerPlayer player, BlockPos origin, ItemStack itemStack) {
@@ -34,7 +31,8 @@ public class InstantMiningMode implements MiningMode {
         reducedList.sort(Comparator.comparingDouble((pos) -> pos.distSqr(origin)));
         posList.forEach(blockPos -> {
             if (itemStack.getMaxDamage() - itemStack.getDamageValue() > 1 &&
-                    world.destroyBlock(blockPos, MiningLevelProperty.canMine(world.getBlockState(blockPos), world, blockPos, player) && !player.isCreative(), player)
+                world.destroyBlock(blockPos,
+                        MiningLevelProperty.mineBlock(itemStack, world, world.getBlockState(blockPos), blockPos, player) && !player.isCreative(), player)
             ) {
                 if (!player.isCreative()) {
                     removeDurability(durabilityBreakChance, itemStack, world, player);

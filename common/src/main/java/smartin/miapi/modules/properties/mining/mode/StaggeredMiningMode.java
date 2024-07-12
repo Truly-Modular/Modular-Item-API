@@ -1,22 +1,19 @@
 package smartin.miapi.modules.properties.mining.mode;
 
-import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.architectury.event.events.common.TickEvent;
-import smartin.miapi.modules.ModuleInstance;
-import smartin.miapi.modules.properties.mining.MiningLevelProperty;
-import smartin.miapi.modules.properties.mining.MiningShapeProperty;
-
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import smartin.miapi.modules.properties.mining.MiningLevelProperty;
 
-public class StaggeredMiningMode implements MiningMode {
-    public float speed = 1;
-    public double durabilityBreakChance;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+
+public record StaggeredMiningMode(float speed, double durabilityBreakChance) implements MiningMode {
     public static List<Runnable> nextTickTask = new ArrayList<>();
 
     static {
@@ -27,17 +24,17 @@ public class StaggeredMiningMode implements MiningMode {
         }));
     }
 
-    public StaggeredMiningMode() {
-
-    }
-
-    @Override
-    public MiningMode fromJson(JsonObject object, ModuleInstance moduleInstance) {
-        StaggeredMiningMode miningMode = new StaggeredMiningMode();
-        miningMode.speed = (float) MiningShapeProperty.getDouble(object, "speed", moduleInstance, 1);
-        miningMode.durabilityBreakChance = MiningShapeProperty.getDouble(object, "durability_chance", moduleInstance, 1);
-        return miningMode;
-    }
+    public static Codec<StaggeredMiningMode> CODEC = RecordCodecBuilder.create((miningModeInstance -> {
+        return miningModeInstance.group(
+                        Codec.FLOAT
+                                .fieldOf("speed")
+                                .forGetter(StaggeredMiningMode::speed),
+                        Codec.DOUBLE
+                                .fieldOf("durability_chance")
+                                .forGetter(StaggeredMiningMode::durabilityBreakChance)
+                )
+                .apply(miningModeInstance, StaggeredMiningMode::new);
+    }));
 
     @Override
     public void execute(List<BlockPos> posList, Level world, ServerPlayer player, BlockPos origin, ItemStack itemStack) {
@@ -48,15 +45,16 @@ public class StaggeredMiningMode implements MiningMode {
             int success = 0;
             do {
                 pos = reducedList.remove(0);
-                if (world.destroyBlock(pos, MiningLevelProperty.canMine(world.getBlockState(pos), world, pos, player) && !player.isCreative(), player)) {
+                if (world.destroyBlock(pos, MiningLevelProperty.mineBlock(itemStack, world, world.getBlockState(pos), pos, player) && !player.isCreative(), player))
+                {
                     success++;
-                    if(!player.isCreative()){
+                    if (!player.isCreative()) {
                         removeDurability(durabilityBreakChance, itemStack, world, player);
                     }
                 }
             } while (
                     success < speed
-                            && !reducedList.isEmpty() && itemStack.getMaxDamage() - itemStack.getDamageValue() > 1
+                    && !reducedList.isEmpty() && itemStack.getMaxDamage() - itemStack.getDamageValue() > 1
             );
             if (!reducedList.isEmpty() && itemStack.getMaxDamage() - itemStack.getDamageValue() > 1) {
                 execute(reducedList, world, player, origin, itemStack);

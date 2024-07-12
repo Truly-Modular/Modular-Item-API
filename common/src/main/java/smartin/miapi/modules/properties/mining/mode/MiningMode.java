@@ -1,14 +1,13 @@
 package smartin.miapi.modules.properties.mining.mode;
 
-import com.google.gson.JsonObject;
-import smartin.miapi.modules.ModuleInstance;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import smartin.miapi.modules.properties.mining.modifier.MiningModifier;
 
 import java.util.List;
-import net.minecraft.core.BlockPos;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
 
 /**
  * Mining Modes are supposed to control how sth is mined.
@@ -17,7 +16,6 @@ import net.minecraft.world.level.Level;
  * {@link MiningModifier} is meant to filter blocks from the shape
  */
 public interface MiningMode {
-    MiningMode fromJson(JsonObject object, ModuleInstance moduleInstance);
 
     void execute(List<BlockPos> posList, Level world, ServerPlayer player, BlockPos origin, ItemStack itemStack);
 
@@ -29,7 +27,7 @@ public interface MiningMode {
             }
         }
         if (Math.floor(durability) > 0) {
-            itemStack.hurtAndBreak((int) Math.floor(durability), player, (p) -> p.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND));
+            itemStack.hurtAndBreak((int) Math.floor(durability), player, EquipmentSlot.MAINHAND);
         }
     }
 

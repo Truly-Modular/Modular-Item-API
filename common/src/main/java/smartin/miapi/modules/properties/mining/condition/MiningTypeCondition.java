@@ -1,26 +1,24 @@
 package smartin.miapi.modules.properties.mining.condition;
 
-import com.google.gson.JsonObject;
-import smartin.miapi.modules.ModuleInstance;
-import smartin.miapi.modules.properties.mining.MiningLevelProperty;
-
-import java.util.List;
+import com.mojang.serialization.Codec;
+import com.redpxnda.nucleus.codec.auto.AutoCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import smartin.miapi.modules.properties.mining.MiningLevelProperty;
 
+import java.util.List;
+
+@Deprecated
+//this prob should be removed altogheter
 public class MiningTypeCondition implements MiningCondition {
+    public static Codec<MiningTypeCondition> CODEC = AutoCodec.of(MiningTypeCondition.class).codec();
     public String type;
 
     public MiningTypeCondition(String type) {
         this.type = type;
-    }
-
-    @Override
-    public MiningCondition fromJson(JsonObject object, ModuleInstance moduleInstance) {
-        return new MiningTypeCondition(type);
     }
 
     @Override
