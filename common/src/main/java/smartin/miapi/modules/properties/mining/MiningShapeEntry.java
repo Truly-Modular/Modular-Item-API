@@ -1,9 +1,7 @@
 package smartin.miapi.modules.properties.mining;
 
-import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
-import com.mojang.serialization.DynamicOps;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
@@ -17,49 +15,40 @@ import smartin.miapi.modules.properties.mining.modifier.MiningModifier;
 import smartin.miapi.modules.properties.mining.shape.MiningShape;
 
 import java.util.List;
+import java.util.Map;
 
 public record MiningShapeEntry(MiningCondition condition, MiningShape shape, MiningMode mode,
-                               List<? extends MiningModifier> modifiers) {
-    public static Codec<MiningShapeEntry> CODEC = new Codec<>() {
-        @Override
-        public <T> DataResult<Pair<MiningShapeEntry, T>> decode(DynamicOps<T> ops, T input) {
-            T conditionPart = ops.getMap(input).getOrThrow().get("condition");
-            ResourceLocation conditionLocation = Miapi.ID_CODEC.decode(ops, ops.getMap(conditionPart).getOrThrow().get("type"))
-                    .getOrThrow(s -> new RuntimeException("could not find condition in miningProperty")).getFirst();
-            Codec<? extends MiningCondition> miningConditionCodec = MiningShapeProperty.miningConditionMap.get(conditionLocation);
-            MiningCondition miningCondition = miningConditionCodec.decode(ops, conditionPart)
-                    .getOrThrow().getFirst();
-
-            T collapseMode = ops.getMap(input).getOrThrow().get("collapse_mode");
-            ResourceLocation collapseLocation = Miapi.ID_CODEC.decode(ops, ops.getMap(collapseMode).getOrThrow().get("type"))
-                    .getOrThrow(s -> new RuntimeException("could not find collapse_mode in miningProperty")).getFirst();
-            Codec<? extends MiningMode> modeCodec = MiningShapeProperty.miningModeMap.get(collapseLocation);
-            MiningMode mode = modeCodec.decode(ops, conditionPart)
-                    .getOrThrow().getFirst();
-
-            T shapePart = ops.getMap(input).getOrThrow().get("shape");
-            ResourceLocation location = Miapi.ID_CODEC.decode(ops, ops.getMap(shapePart).getOrThrow(s -> new RuntimeException("could decode shape id")).get("type"))
-                    .getOrThrow(s -> new RuntimeException("could not find shape in miningProperty")).getFirst();
-            Codec<? extends MiningShape> shapeCodec = MiningShapeProperty.miningShapeMap.get(location);
-            MiningShape shape = shapeCodec.decode(ops, conditionPart)
-                    .getOrThrow().getFirst();
-
-            T modifierPart = ops.getMap(input).getOrThrow().get("modifiers");
-            List<? extends MiningModifier> modifiers =
-                    Codec.dispatchedMap(Miapi.ID_CODEC, (id) -> MiningShapeProperty.miningModifierMap.get(id))
-                            .decode(ops, modifierPart).getOrThrow().getFirst().values().stream().toList();
-            return DataResult.success(new Pair<>(new MiningShapeEntry(miningCondition, shape, mode, modifiers), input));
-        }
-
-        @Override
-        public <T> DataResult<T> encode(MiningShapeEntry input, DynamicOps<T> ops, T prefix) {
-            return DataResult.error(() -> "encoding condition is not fully supported");
-        }
-    };
+                               Map<ResourceLocation, MiningModifier> modifiers) {
+    public static Codec<MiningCondition> MINING_CONDITION_CODEC =
+            Miapi.ID_CODEC.dispatch("type", MiningCondition::getID,
+                    (id) -> MiningShapeProperty.miningConditionMap.get(id));
+    public static Codec<MiningMode> MINING_MODE_CODEC =
+            Miapi.ID_CODEC.dispatch("type", MiningMode::getID,
+                    (id) -> MiningShapeProperty.miningModeMap.get(id));
+    public static Codec<Map<ResourceLocation, MiningModifier>> MINING_MODIFIER_CODEC =
+            Codec.dispatchedMap(Miapi.ID_CODEC, id -> MiningShapeProperty.miningModifierMap.get(id).codec());
+    public static Codec<MiningShape> MINING_SHAPE_CODEC =
+            Miapi.ID_CODEC.dispatch("type", MiningShape::getID,
+                    (id) -> MiningShapeProperty.miningShapeMap.get(id));
+    public static Codec<MiningShapeEntry> CODEC = RecordCodecBuilder.create((instance) -> instance.group(
+                    MINING_CONDITION_CODEC
+                            .fieldOf("condition")
+                            .forGetter(MiningShapeEntry::condition),
+                    MINING_SHAPE_CODEC
+                            .fieldOf("shape")
+                            .forGetter(MiningShapeEntry::shape),
+                    MINING_MODE_CODEC
+                            .fieldOf("mode")
+                            .forGetter(MiningShapeEntry::mode),
+                    MINING_MODIFIER_CODEC
+                            .fieldOf("modifier")
+                            .forGetter(MiningShapeEntry::modifiers)
+            )
+            .apply(instance, MiningShapeEntry::new));
 
     public void execute(BlockPos pos, Level level, ItemStack stack, ServerPlayer player, Direction facing) {
         List<BlockPos> posList = condition().trimList(level, pos, shape().getMiningBlocks(level, pos, facing));
-        for (MiningModifier modifier : modifiers) {
+        for (MiningModifier modifier : modifiers.values()) {
             posList = modifier.adjustMiningBlock(level, pos, player, stack, posList);
         }
         mode().execute(posList, level, player, pos, stack);

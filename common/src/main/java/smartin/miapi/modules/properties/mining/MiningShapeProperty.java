@@ -1,6 +1,7 @@
 package smartin.miapi.modules.properties.mining;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import dev.architectury.event.EventResult;
 import dev.architectury.event.events.common.BlockEvent;
 import net.minecraft.core.Direction;
@@ -36,10 +37,10 @@ import java.util.Map;
 public class MiningShapeProperty extends CodecBasedProperty<List<MiningShapeEntry>> {
     public static String KEY = "mining_shape";
     public static MiningShapeProperty property;
-    public static Map<ResourceLocation, Codec<? extends MiningCondition>> miningConditionMap = new HashMap<>();
-    public static Map<ResourceLocation, Codec<? extends MiningShape>> miningShapeMap = new HashMap<>();
-    public static Map<ResourceLocation, Codec<? extends MiningMode>> miningModeMap = new HashMap<>();
-    public static Map<ResourceLocation, Codec<? extends MiningModifier>> miningModifierMap = new HashMap<>();
+    public static Map<ResourceLocation, MapCodec<? extends MiningCondition>> miningConditionMap = new HashMap<>();
+    public static Map<ResourceLocation, MapCodec<? extends MiningShape>> miningShapeMap = new HashMap<>();
+    public static Map<ResourceLocation, MapCodec<? extends MiningMode>> miningModeMap = new HashMap<>();
+    public static Map<ResourceLocation,MapCodec<? extends MiningModifier>> miningModifierMap = new HashMap<>();
 
     @Override
     public List<MiningShapeEntry> merge(List<MiningShapeEntry> left, List<MiningShapeEntry> right, MergeType mergeType) {

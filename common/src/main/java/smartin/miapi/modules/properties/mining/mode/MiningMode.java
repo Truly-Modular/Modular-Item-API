@@ -1,6 +1,7 @@
 package smartin.miapi.modules.properties.mining.mode;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
@@ -30,5 +31,7 @@ public interface MiningMode {
             itemStack.hurtAndBreak((int) Math.floor(durability), player, EquipmentSlot.MAINHAND);
         }
     }
+
+    ResourceLocation getID();
 
 }

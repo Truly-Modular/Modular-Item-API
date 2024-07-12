@@ -91,6 +91,7 @@ import smartin.miapi.modules.properties.damage_boosts.SmiteDamage;
 import smartin.miapi.modules.properties.damage_boosts.SpiderDamage;
 import smartin.miapi.modules.properties.enchanment.CraftingEnchantProperty;
 import smartin.miapi.modules.properties.enchanment.EnchantAbilityProperty;
+import smartin.miapi.modules.properties.enchanment.FakeEnchantmentProperty;
 import smartin.miapi.modules.properties.mining.MiningLevelProperty;
 import smartin.miapi.modules.properties.mining.MiningShapeProperty;
 import smartin.miapi.modules.properties.potion.OnDamagedEffects;
@@ -571,6 +572,7 @@ public class RegistryInventory {
             registerMiapi(moduleProperties, MagazineCrossbowShotDelay.KEY, new MagazineCrossbowShotDelay());
             registerMiapi(moduleProperties, HandheldItemProperty.KEY, new HandheldItemProperty());
             registerMiapi(moduleProperties, AttributeSplitProperty.KEY, new AttributeSplitProperty());
+            registerMiapi(moduleProperties, FakeEnchantmentProperty.KEY, new FakeEnchantmentProperty());
             //compat
             registerMiapi(moduleProperties, BetterCombatProperty.KEY, new BetterCombatProperty());
             registerMiapi(moduleProperties, ApoliPowersProperty.KEY, new ApoliPowersProperty());

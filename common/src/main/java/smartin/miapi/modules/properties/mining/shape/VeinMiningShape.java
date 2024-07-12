@@ -1,12 +1,14 @@
 package smartin.miapi.modules.properties.mining.shape;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.redpxnda.nucleus.codec.auto.AutoCodec;
 import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import smartin.miapi.Miapi;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -14,11 +16,14 @@ import java.util.List;
 import java.util.Queue;
 
 public class VeinMiningShape implements MiningShape {
-    public static Codec<VeinMiningShape> CODEC = AutoCodec.of(VeinMiningShape.class).codec();
+    public static MapCodec<VeinMiningShape> CODEC = AutoCodec.of(VeinMiningShape.class);
+    public static ResourceLocation ID = Miapi.id("vein");
 
     public int size = 5;
     @CodecBehavior.Optional
     public int maxBlocks = 15;
+
+
 
     @Override
     public List<BlockPos> getMiningBlocks(Level world, BlockPos pos, Direction face) {
@@ -59,5 +64,10 @@ public class VeinMiningShape implements MiningShape {
         }
 
         return miningBlocks;
+    }
+
+    @Override
+    public ResourceLocation getID(){
+        return ID;
     }
 }

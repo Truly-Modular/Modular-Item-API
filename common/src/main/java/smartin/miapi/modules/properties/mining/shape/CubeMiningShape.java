@@ -1,10 +1,12 @@
 package smartin.miapi.modules.properties.mining.shape;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.redpxnda.nucleus.codec.auto.AutoCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
+import smartin.miapi.Miapi;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +17,8 @@ import java.util.List;
  * if height, width, depth are not defined they fallback onto radius
  */
 public class CubeMiningShape implements MiningShape {
-    public static Codec<CubeMiningShape> CODEC = AutoCodec.of(CubeMiningShape.class).codec();
+    public static MapCodec<CubeMiningShape> CODEC = AutoCodec.of(CubeMiningShape.class);
+    public static ResourceLocation ID = Miapi.id("cube");
     public int width;
     public int height;
     public int depth;
@@ -46,5 +49,10 @@ public class CubeMiningShape implements MiningShape {
             return i / 2 * (-1);
         }
         return i / 2;
+    }
+
+    @Override
+    public ResourceLocation getID(){
+        return ID;
     }
 }
