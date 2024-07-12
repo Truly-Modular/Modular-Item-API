@@ -9,15 +9,13 @@ import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import smartin.miapi.Miapi;
 import smartin.miapi.client.model.ItemMiapiModel;
 import smartin.miapi.client.model.MiapiItemModel;
 import smartin.miapi.client.model.MiapiModel;
 import smartin.miapi.item.modular.Transform;
 import smartin.miapi.item.modular.items.ModularCrossbow;
 import smartin.miapi.modules.material.MaterialInscribeDataProperty;
-import smartin.miapi.modules.properties.NemesisProperty;
-import smartin.miapi.modules.properties.util.CodecBasedProperty;
+import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
@@ -26,7 +24,7 @@ import java.util.List;
 import java.util.function.Supplier;
 
 @Environment(EnvType.CLIENT)
-public class ItemModelProperty extends CodecBasedProperty<List<ItemModelProperty.ModelJson>> {
+public class ItemModelProperty extends CodecProperty<List<ItemModelProperty.ModelJson>> {
     public static final String KEY = "item_model";
     public static ItemModelProperty property;
     public static Codec<ModelJson> CODEC = AutoCodec.of(ModelJson.class).codec();

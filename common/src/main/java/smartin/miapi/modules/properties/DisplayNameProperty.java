@@ -8,7 +8,7 @@ import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.material.Material;
 import smartin.miapi.modules.material.MaterialProperty;
-import smartin.miapi.modules.properties.util.CodecBasedProperty;
+import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
@@ -17,7 +17,7 @@ import java.util.Optional;
 /**
  * This property allows modules to change the DisplayName of the item in question
  */
-public class DisplayNameProperty extends CodecBasedProperty<Component> {
+public class DisplayNameProperty extends CodecProperty<Component> {
     public static final String KEY = "displayName";
     public static DisplayNameProperty property;
 

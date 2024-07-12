@@ -14,7 +14,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import smartin.miapi.events.MiapiProjectileEvents;
-import smartin.miapi.modules.properties.util.CodecBasedProperty;
+import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.MergeType;
 
 import java.util.Optional;
@@ -22,7 +22,7 @@ import java.util.Optional;
 /**
  * This property is exploding projectiles on impact
  */
-public class ExplosionProperty extends CodecBasedProperty<ExplosionProperty.ExplosionInfo> {
+public class ExplosionProperty extends CodecProperty<ExplosionProperty.ExplosionInfo> {
     public static final String KEY = "explosion_projectile";
     public static final Codec<ExplosionInfo> codec = AutoCodec.of(ExplosionInfo.class).codec();
     public static ExplosionProperty property;

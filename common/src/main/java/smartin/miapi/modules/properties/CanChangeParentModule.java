@@ -5,11 +5,11 @@ import net.minecraft.network.chat.Component;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.conditions.ConditionManager;
 import smartin.miapi.modules.conditions.ModuleCondition;
-import smartin.miapi.modules.properties.util.CodecBasedProperty;
+import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.MergeType;
 
 
-public class CanChangeParentModule extends CodecBasedProperty<ModuleCondition> {
+public class CanChangeParentModule extends CodecProperty<ModuleCondition> {
     public static final String KEY = "allowChangeParent";
 
     public CanChangeParentModule() {

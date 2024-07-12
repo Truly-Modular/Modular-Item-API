@@ -6,13 +6,13 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.modules.properties.LoreProperty;
-import smartin.miapi.modules.properties.util.CodecBasedProperty;
+import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.MergeType;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class OnHitTargetEffects extends CodecBasedProperty<List<PossibleEffect>> {
+public class OnHitTargetEffects extends CodecProperty<List<PossibleEffect>> {
     public static String KEY = "on_attack_potion";
     public OnHitTargetEffects property;
     public static Codec<List<PossibleEffect>> CODEC = Codec.list(PossibleEffect.CODEC);

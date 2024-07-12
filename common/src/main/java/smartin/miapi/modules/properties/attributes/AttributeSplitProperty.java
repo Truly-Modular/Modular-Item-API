@@ -14,12 +14,12 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import smartin.miapi.Miapi;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ModuleInstance;
-import smartin.miapi.modules.properties.util.CodecBasedProperty;
+import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.MergeType;
 
 import java.util.*;
 
-public class AttributeSplitProperty extends CodecBasedProperty<Map<AttributeSplitProperty.Context, List<AttributeSplitProperty.SplitContext>>> {
+public class AttributeSplitProperty extends CodecProperty<Map<AttributeSplitProperty.Context, List<AttributeSplitProperty.SplitContext>>> {
     public static String KEY = "attribute_split";
     public static Codec<Map<Context, List<SplitContext>>> CODEC = new Codec<>() {
         @Override

@@ -4,7 +4,7 @@ import com.mojang.serialization.Codec;
 import net.minecraft.world.item.ItemStack;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
-import smartin.miapi.modules.properties.util.CodecBasedProperty;
+import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.registries.RegistryInventory;
@@ -15,7 +15,7 @@ import java.util.List;
 /**
  * Allows the Modules to define tags to identify eachother
  */
-public class TagProperty extends CodecBasedProperty<List<String>> {
+public class TagProperty extends CodecProperty<List<String>> {
     public static final String KEY = "tag";
     public static TagProperty property;
     public static Codec<List<String>> CODEC = Codec.list(Codec.STRING);

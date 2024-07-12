@@ -3,10 +3,10 @@ package smartin.miapi.modules.properties;
 import com.mojang.serialization.Codec;
 import com.redpxnda.nucleus.codec.auto.AutoCodec;
 import smartin.miapi.modules.ModuleInstance;
-import smartin.miapi.modules.properties.util.CodecBasedProperty;
+import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.MergeType;
 
-public class EmissivityProperty extends CodecBasedProperty<EmissivityProperty.LightJson> {
+public class EmissivityProperty extends CodecProperty<EmissivityProperty.LightJson> {
     public static final String KEY = "emissive";
     public static EmissivityProperty property;
     static Codec<LightJson> CODEC = AutoCodec.of(LightJson.class).codec();

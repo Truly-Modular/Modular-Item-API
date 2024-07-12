@@ -8,7 +8,7 @@ import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.craft.CraftAction;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
-import smartin.miapi.modules.properties.util.CodecBasedProperty;
+import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.CraftingProperty;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.registries.RegistryInventory;
@@ -21,7 +21,7 @@ import java.util.Optional;
  * This Property changes the ItemIdentifier of an ModularItem on Craft
  * it only supports preregisterd ids in {@link RegistryInventory#modularItems}
  */
-public class ItemIdProperty extends CodecBasedProperty<ResourceLocation> implements CraftingProperty {
+public class ItemIdProperty extends CodecProperty<ResourceLocation> implements CraftingProperty {
     public static final String KEY = "itemId";
     public static ItemIdProperty property;
 

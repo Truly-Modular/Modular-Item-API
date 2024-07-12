@@ -15,10 +15,10 @@ import smartin.miapi.modules.ModuleInstance;
  *
  * @param <T> The type of object to hold
  */
-public abstract class CodecBasedProperty<T> implements ModuleProperty<T> {
+public abstract class CodecProperty<T> implements ModuleProperty<T> {
     protected final Codec<T> codec;
 
-    protected CodecBasedProperty(Codec<T> codec) {
+    protected CodecProperty(Codec<T> codec) {
         this.codec = codec;
     }
 

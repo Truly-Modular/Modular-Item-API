@@ -24,7 +24,7 @@ import java.util.*;
 /**
  * The Property controls mining speed and levels of tools
  */
-public class MiningLevelProperty extends CodecBasedProperty<Map<String, MiningLevelProperty.MiningRule>> implements ComponentApplyProperty {
+public class MiningLevelProperty extends CodecProperty<Map<String, MiningLevelProperty.MiningRule>> implements ComponentApplyProperty {
     public static MiningLevelProperty property;
     public static final String KEY = "mining_level";
     public static Map<String, TagKey<Block>> miningCapabilities = new HashMap<>();

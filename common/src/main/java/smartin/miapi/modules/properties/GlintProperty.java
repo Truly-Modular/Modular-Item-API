@@ -11,7 +11,7 @@ import net.minecraft.world.item.ItemStack;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.cache.ModularItemCache;
-import smartin.miapi.modules.properties.util.CodecBasedProperty;
+import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.registries.RegistryInventory;
 
@@ -20,7 +20,7 @@ import java.util.concurrent.atomic.AtomicReference;
 /**
  * This property manages the Glint on the item
  */
-public class GlintProperty extends CodecBasedProperty<GlintProperty.RainbowGlintSettings> {
+public class GlintProperty extends CodecProperty<GlintProperty.RainbowGlintSettings> {
     public static GlintProperty property;
     public static final String KEY = "glint_settings";
     public static PrioritizedEvent<GlintGetter> GLINT_RESOLVE = PrioritizedEvent.createLoop();

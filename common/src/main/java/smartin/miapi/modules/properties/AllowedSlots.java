@@ -3,7 +3,7 @@ package smartin.miapi.modules.properties;
 import com.mojang.serialization.Codec;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.modules.ItemModule;
-import smartin.miapi.modules.properties.util.CodecBasedProperty;
+import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.registries.RegistryInventory;
@@ -13,7 +13,7 @@ import java.util.*;
 /**
  * This Property is meant to control what is allowed in the moduleSlots of an module
  */
-public class AllowedSlots extends CodecBasedProperty<List<String>> {
+public class AllowedSlots extends CodecProperty<List<String>> {
     public static final String KEY = "allowedInSlots";
     public static Codec<List<String>> CODEC = Codec.list(Codec.STRING);
     static HashMap<String, Set<ItemModule>> allowedInMap = new HashMap<>();

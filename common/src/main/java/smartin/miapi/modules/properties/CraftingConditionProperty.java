@@ -17,7 +17,7 @@ import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.conditions.ConditionManager;
 import smartin.miapi.modules.conditions.ModuleCondition;
 import smartin.miapi.modules.conditions.TrueCondition;
-import smartin.miapi.modules.properties.util.CodecBasedProperty;
+import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.CraftingProperty;
 import smartin.miapi.modules.properties.util.MergeType;
 
@@ -28,7 +28,7 @@ import java.util.Map;
 /**
  * This property can manage if a module can be crafted in the first place
  */
-public class CraftingConditionProperty extends CodecBasedProperty<CraftingConditionProperty.CraftingConditionJson> implements CraftingProperty {
+public class CraftingConditionProperty extends CodecProperty<CraftingConditionProperty.CraftingConditionJson> implements CraftingProperty {
     public static final String KEY = "crafting_condition";
     public static CraftingConditionProperty property;
     public static PrioritizedEvent<CanCraft> CAN_CRAFT_SELECT_EVENT = PrioritizedEvent.createEventResult();

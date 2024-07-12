@@ -6,13 +6,13 @@ import dev.architectury.event.events.common.EntityEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
 import smartin.miapi.modules.properties.LoreProperty;
-import smartin.miapi.modules.properties.util.CodecBasedProperty;
+import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.MergeType;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class OnKillEffects extends CodecBasedProperty<List<PossibleEffect>> {
+public class OnKillEffects extends CodecProperty<List<PossibleEffect>> {
     public static String KEY = "on_kill_potion";
     public OnKillEffects property;
     public static Codec<List<PossibleEffect>> CODEC = Codec.list(PossibleEffect.CODEC);

@@ -13,7 +13,7 @@ import smartin.miapi.client.gui.crafting.statdisplay.JsonStatDisplay;
 import smartin.miapi.client.gui.crafting.statdisplay.SingleStatDisplay;
 import smartin.miapi.client.gui.crafting.statdisplay.SingleStatDisplayDouble;
 import smartin.miapi.client.gui.crafting.statdisplay.StatListWidget;
-import smartin.miapi.modules.properties.util.CodecBasedProperty;
+import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.DoubleOperationResolvable;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
@@ -22,7 +22,7 @@ import java.util.*;
 
 import static smartin.miapi.modules.properties.enchanment.FakeEnchantmentManager.ADD_ENCHANTMENT;
 
-public class FakeEnchantmentProperty extends CodecBasedProperty<Map<Holder<Enchantment>, DoubleOperationResolvable>> {
+public class FakeEnchantmentProperty extends CodecProperty<Map<Holder<Enchantment>, DoubleOperationResolvable>> {
     public static FakeEnchantmentProperty property;
     public static final String KEY = "fake_enchants";
     public static Codec<Map<Holder<Enchantment>, DoubleOperationResolvable>> CODEC = Codec.unboundedMap(Enchantment.CODEC, DoubleOperationResolvable.CODEC);

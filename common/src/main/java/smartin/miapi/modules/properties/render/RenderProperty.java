@@ -8,7 +8,7 @@ import smartin.miapi.modules.properties.util.ModuleProperty;
  * RenderProperty is a {@link ModuleProperty} to block calling the normal
  * {@link ModuleProperty#load(String, JsonElement, boolean)}
  */
-public interface RenderProperty extends ModuleProperty {
+public interface RenderProperty<T> extends ModuleProperty<T> {
     default boolean load(ResourceLocation id, JsonElement element, boolean isClient) throws Exception {
         return isClient && load(id, element, isClient);
     }

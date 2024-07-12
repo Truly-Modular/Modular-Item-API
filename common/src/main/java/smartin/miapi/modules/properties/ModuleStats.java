@@ -5,14 +5,14 @@ import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.material.AllowedMaterial;
-import smartin.miapi.modules.properties.util.CodecBasedProperty;
+import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class ModuleStats extends CodecBasedProperty<Map<String, Double>> {
+public class ModuleStats extends CodecProperty<Map<String, Double>> {
     public static String KEY = "module_stats";
     public static ModuleStats property;
     public static Codec<Map<String, Double>> CODEC = Codec.dispatchedMap(Codec.STRING, (s) -> Codec.DOUBLE);

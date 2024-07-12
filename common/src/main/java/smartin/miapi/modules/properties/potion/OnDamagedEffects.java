@@ -4,22 +4,16 @@ import com.mojang.serialization.Codec;
 import dev.architectury.event.EventResult;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.modules.properties.LoreProperty;
-import smartin.miapi.modules.properties.util.CodecBasedProperty;
+import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.MergeType;
-import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.ArrayList;
 import java.util.List;
-import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.Style;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TooltipFlag;
 
-public class OnDamagedEffects extends CodecBasedProperty<List<PossibleEffect>> {
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.LivingEntity;
+
+public class OnDamagedEffects extends CodecProperty<List<PossibleEffect>> {
     public static String KEY = "on_attack_potion";
     public OnDamagedEffects property;
     public static Codec<List<PossibleEffect>> CODEC = Codec.list(PossibleEffect.CODEC);

@@ -4,12 +4,12 @@ import dev.architectury.event.EventResult;
 import dev.architectury.event.events.common.EntityEvent;
 import net.minecraft.world.entity.LivingEntity;
 import smartin.miapi.events.MiapiEvents;
-import smartin.miapi.modules.properties.util.CodecBasedProperty;
+import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.MergeType;
 
 import java.util.Optional;
 
-public class OnKillExplosion extends CodecBasedProperty<ExplosionProperty.ExplosionInfo> {
+public class OnKillExplosion extends CodecProperty<ExplosionProperty.ExplosionInfo> {
     public static String KEY = "on_kill_explosion";
     public static OnKillExplosion property;
 

@@ -7,7 +7,7 @@ import com.mojang.serialization.DynamicOps;
 import net.minecraft.world.item.ItemStack;
 import smartin.miapi.Miapi;
 import smartin.miapi.modules.ModuleInstance;
-import smartin.miapi.modules.properties.util.CodecBasedProperty;
+import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.MergeType;
 
 import java.util.LinkedHashMap;
@@ -16,7 +16,7 @@ import java.util.Map;
 /**
  * This property manages the active {@link ItemUseAbility}
  */
-public class AbilityMangerProperty extends CodecBasedProperty<Map<ItemUseAbility<?>, Object>> {
+public class AbilityMangerProperty extends CodecProperty<Map<ItemUseAbility<?>, Object>> {
     public static String KEY = "ability_context";
     public static AbilityMangerProperty property;
     public static Codec<Map<ItemUseAbility<?>, Object>> CODEC = new Codec<>() {

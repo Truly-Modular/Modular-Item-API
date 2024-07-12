@@ -9,7 +9,7 @@ import org.jetbrains.annotations.Nullable;
 import smartin.miapi.item.modular.Transform;
 import smartin.miapi.item.modular.TransformMap;
 import smartin.miapi.modules.ModuleInstance;
-import smartin.miapi.modules.properties.util.CodecBasedProperty;
+import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.registries.RegistryInventory;
@@ -20,7 +20,7 @@ import java.util.concurrent.atomic.AtomicReference;
 /**
  * The SlotProperty, this allows Modules to define submodule Slots
  */
-public class SlotProperty extends CodecBasedProperty<Map<String, SlotProperty.ModuleSlot>> {
+public class SlotProperty extends CodecProperty<Map<String, SlotProperty.ModuleSlot>> {
     public static Codec CODEC = Codec.unboundedMap(Codec.STRING, AutoCodec.of(ModuleSlot.class).codec());
 
     public static final String KEY = "slots";

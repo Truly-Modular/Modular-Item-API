@@ -13,7 +13,7 @@ import smartin.miapi.client.gui.crafting.statdisplay.SingleStatDisplayDouble;
 import smartin.miapi.client.gui.crafting.statdisplay.StatListWidget;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.cache.ModularItemCache;
-import smartin.miapi.modules.properties.util.CodecBasedProperty;
+import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.DoubleOperationResolvable;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class GuiStatProperty extends CodecBasedProperty<Map<String, GuiStatProperty.GuiInfo>> {
+public class GuiStatProperty extends CodecProperty<Map<String, GuiStatProperty.GuiInfo>> {
     public static String KEY = "gui_stat";
     public static GuiStatProperty property;
     public static Codec<Map<String, GuiInfo>> CODEC = Codec.dispatchedMap(Codec.STRING, (key) -> AutoCodec.of(GuiInfo.class).codec());

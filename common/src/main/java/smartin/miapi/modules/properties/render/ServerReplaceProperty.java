@@ -6,12 +6,17 @@ import smartin.miapi.modules.properties.util.ModuleProperty;
 
 public class ServerReplaceProperty implements ModuleProperty {
     @Override
-    public boolean load(String moduleKey, JsonElement data) throws Exception {
-        return true;
+    public Object decode(JsonElement element) {
+        return null;
     }
 
     @Override
-    public JsonElement merge(JsonElement old, JsonElement toMerge, MergeType type) {
-        return ModuleProperty.super.merge(old, toMerge, type);
+    public JsonElement encode(Object property) {
+        return null;
+    }
+
+    @Override
+    public Object merge(Object left, Object right, MergeType mergeType) {
+        return null;
     }
 }

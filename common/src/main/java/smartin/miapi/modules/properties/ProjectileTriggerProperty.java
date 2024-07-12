@@ -9,7 +9,7 @@ import net.minecraft.world.phys.HitResult;
 import smartin.miapi.entity.ItemProjectileEntity;
 import smartin.miapi.events.MiapiProjectileEvents;
 import smartin.miapi.mixin.ThrowablePotionItemAccessor;
-import smartin.miapi.modules.properties.util.CodecBasedProperty;
+import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.MergeType;
 
 import java.util.Optional;
@@ -17,7 +17,7 @@ import java.util.Optional;
 /**
  * replaces the projectile with another projectile on impact
  */
-public class ProjectileTriggerProperty extends CodecBasedProperty<ItemStack> {
+public class ProjectileTriggerProperty extends CodecProperty<ItemStack> {
     public static final String KEY = "replace_projectile";
     public static ProjectileTriggerProperty property;
 

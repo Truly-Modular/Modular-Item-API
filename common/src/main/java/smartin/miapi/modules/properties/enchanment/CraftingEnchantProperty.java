@@ -10,7 +10,7 @@ import smartin.miapi.modules.properties.util.*;
 
 import java.util.Map;
 
-public class CraftingEnchantProperty extends CodecBasedProperty<Map<Holder<Enchantment>, DoubleOperationResolvable>> implements ComponentApplyProperty {
+public class CraftingEnchantProperty extends CodecProperty<Map<Holder<Enchantment>, DoubleOperationResolvable>> implements ComponentApplyProperty {
     public static final String KEY = "crafting_enchants";
     public static CraftingEnchantProperty property;
     public static Codec<Map<Holder<Enchantment>, DoubleOperationResolvable>> CODEC = Codec.unboundedMap(Enchantment.CODEC, DoubleOperationResolvable.CODEC);

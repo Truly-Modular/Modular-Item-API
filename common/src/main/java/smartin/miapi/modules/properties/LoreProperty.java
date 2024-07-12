@@ -18,7 +18,7 @@ import smartin.miapi.item.ModularItemStackConverter;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.modules.material.Material;
 import smartin.miapi.modules.material.MaterialProperty;
-import smartin.miapi.modules.properties.util.CodecBasedProperty;
+import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
@@ -27,7 +27,7 @@ import java.util.*;
 /**
  * This property manages the Itemlore of an Item
  */
-public class LoreProperty extends CodecBasedProperty<List<LoreProperty.Holder>> {
+public class LoreProperty extends CodecProperty<List<LoreProperty.Holder>> {
     public static final String KEY = "itemLore";
     public static final Codec<Holder> codec = AutoCodec.of(Holder.class).codec();
     public static LoreProperty property;

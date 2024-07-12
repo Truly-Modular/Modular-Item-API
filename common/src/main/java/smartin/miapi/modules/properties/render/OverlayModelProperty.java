@@ -1,16 +1,20 @@
 package smartin.miapi.modules.properties.render;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.JsonOps;
 import com.redpxnda.nucleus.codec.auto.AutoCodec;
 import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.resources.model.Material;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemDisplayContext;
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
-import smartin.miapi.Miapi;
 import smartin.miapi.client.model.BakedMiapiModel;
 import smartin.miapi.client.model.MiapiItemModel;
 import smartin.miapi.client.model.MiapiModel;
@@ -20,64 +24,28 @@ import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.material.MaterialProperty;
 import smartin.miapi.modules.properties.render.colorproviders.ColorProvider;
-import smartin.miapi.modules.properties.util.CodecBasedProperty;
+import smartin.miapi.modules.properties.util.CodecProperty;
+import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.regex.Pattern;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.texture.TextureAtlas;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.model.Material;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.ItemDisplayContext;
-import net.minecraft.world.item.ItemStack;
 
-public class OverlayModelProperty extends CodecBasedProperty<OverlayModelProperty.OverlayModelData> implements RenderProperty {
-    public static Codec<OverlayModelData> CODEC = AutoCodec.of(OverlayModelData.class).codec();
+public class OverlayModelProperty extends CodecProperty<List<OverlayModelProperty.OverlayModelData>> {
+    public static Codec<List<OverlayModelProperty.OverlayModelData>> CODEC = Codec.list(AutoCodec.of(OverlayModelData.class).codec());
     public static String KEY = "overlay_texture_model";
     public static OverlayModelProperty property;
 
     public OverlayModelProperty() {
-        super(KEY, CODEC);
+        super(CODEC);
         property = this;
         MiapiItemModel.modelSuppliers.add((key, module, stack) -> {
             List<MiapiModel> models = new ArrayList<>();
-            if (false) {
-                for (OverlayModelData modelData : getData(module)) {
-                    for (ModuleInstance moduleInstance : ItemModule.getModules(stack).allSubModules()) {
-                        if (!modelData.onlyOnSameModule() || moduleInstance.equals(module)) {
-                            List<ModelProperty.ModelJson> list = ModelProperty.getJson(moduleInstance);
-
-                            list.forEach(modelJson -> {
-                                if (modelData.isValid(modelJson)) {
-                                    ModelHolder holder = ModelProperty.bakedModel(moduleInstance, modelJson, stack, key);
-                                    if (holder != null) {
-                                        ColorProvider colorProvider = modelData.getColorProvider(stack, module, moduleInstance, holder.colorProvider());
-                                        TextureAtlasSprite overWriteSprite = modelData.resolveSprite();
-                                        models.add(getBakedMiapiModel(
-                                                module,
-                                                stack,
-                                                modelData,
-                                                moduleInstance,
-                                                holder,
-                                                colorProvider,
-                                                overWriteSprite));
-                                    }
-                                }
-                            });
-                        }
-                    }
-                }
-
-            }
-
             ModuleInstance moduleInstance = module;
 
             for (ModuleInstance module2 : ItemModule.getModules(stack).allSubModules()) {
-                for (OverlayModelData modelData : getData(module2)) {
+                for (OverlayModelData modelData : getData(module2).orElse(new ArrayList<>())) {
                     if (!modelData.onlyOnSameModule() || moduleInstance.equals(module2)) {
                         List<ModelProperty.ModelJson> list = ModelProperty.getJson(moduleInstance);
 
@@ -107,11 +75,6 @@ public class OverlayModelProperty extends CodecBasedProperty<OverlayModelPropert
 
     }
 
-    public boolean load(String moduleKey, JsonElement data) {
-        getData(new ModuleInstance(ItemModule.empty), data).forEach(OverlayModelData::loadSprite);
-        return true;
-    }
-
     @NotNull
     private BakedMiapiModel getBakedMiapiModel(ModuleInstance module, ItemStack stack, OverlayModelData modelData, ModuleInstance moduleInstance, ModelHolder holder, ColorProvider colorProvider, @Nullable TextureAtlasSprite overWriteSprite) {
         return new BakedMiapiModel(
@@ -135,26 +98,15 @@ public class OverlayModelProperty extends CodecBasedProperty<OverlayModelPropert
                 ), modelData.useThisModule() ? module : moduleInstance, stack);
     }
 
-    public static List<OverlayModelData> getData(ModuleInstance moduleInstance) {
-        JsonElement element = moduleInstance.getOldProperties().get(property);
-        return getData(moduleInstance, element);
+    @Override
+    public boolean load(ResourceLocation id, JsonElement element, boolean isClient) throws Exception {
+        decode(element).forEach(OverlayModelData::loadSprite);
+        return isClient;
     }
 
-    public static List<OverlayModelData> getData(ModuleInstance moduleInstance, JsonElement element) {
-        List<OverlayModelData> data = new ArrayList<>();
-        if (element != null && element.isJsonArray()) {
-            element.getAsJsonArray().forEach(element1 -> {
-                try {
-                    OverlayModelData overlayModelData = CODEC.parse(JsonOps.INSTANCE, element1).getOrThrow();
-                    overlayModelData.getPriority(moduleInstance, element1.getAsJsonObject());
-                    data.add(overlayModelData);
-                } catch (Exception e) {
-                    Miapi.LOGGER.error("Failed to load OverlayModelData! -> {}", e);
-                }
-            });
-        }
-        data.sort(Comparator.comparingDouble(a -> a.javaPriority));
-        return data;
+    @Override
+    public List<OverlayModelData> merge(List<OverlayModelData> left, List<OverlayModelData> right, MergeType mergeType) {
+        return ModuleProperty.mergeList(left, right, mergeType);
     }
 
     public static class OverlayModelData {
@@ -164,7 +116,7 @@ public class OverlayModelProperty extends CodecBasedProperty<OverlayModelPropert
         public String modelTargetInfo;
         public String colorProvider;
         @CodecBehavior.Optional
-        public double javaPriority;
+        public double javaPriority = 0;
         @CodecBehavior.Optional
         public boolean allowOtherModules = false;
 
@@ -180,11 +132,6 @@ public class OverlayModelProperty extends CodecBasedProperty<OverlayModelPropert
             if (texture != null) {
                 ModelProperty.textureGetter.apply(new Material(TextureAtlas.LOCATION_BLOCKS, ResourceLocation.parse(texture)));
             }
-        }
-
-        public double getPriority(ModuleInstance moduleInstance, JsonObject element) {
-            javaPriority = ModuleProperty.getDouble(element, "priority", moduleInstance, 0);
-            return javaPriority;
         }
 
         public ColorProvider getColorProvider(ItemStack itemStack, ModuleInstance current, ModuleInstance other, ColorProvider otherColor) {

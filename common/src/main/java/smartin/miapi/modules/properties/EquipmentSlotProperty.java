@@ -3,14 +3,14 @@ package smartin.miapi.modules.properties;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
-import smartin.miapi.modules.properties.util.CodecBasedProperty;
+import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.MergeType;
 
 
 /**
  * This property allows to dynamically set teh preferred EquipmentSlot
  */
-public class EquipmentSlotProperty extends CodecBasedProperty<EquipmentSlotGroup> {
+public class EquipmentSlotProperty extends CodecProperty<EquipmentSlotGroup> {
     public static final String KEY = "equipmentSlot";
     public static EquipmentSlotProperty property;
 

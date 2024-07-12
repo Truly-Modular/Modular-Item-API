@@ -4,12 +4,12 @@ import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
-import smartin.miapi.modules.properties.util.CodecBasedProperty;
+import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.ComponentApplyProperty;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
-public class RarityProperty extends CodecBasedProperty<Rarity> implements ComponentApplyProperty {
+public class RarityProperty extends CodecProperty<Rarity> implements ComponentApplyProperty {
     public static String KEY = "rarity";
     public static RarityProperty property;
 

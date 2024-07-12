@@ -23,7 +23,7 @@ import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.cache.ModularItemCache;
-import smartin.miapi.modules.properties.util.CodecBasedProperty;
+import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.MergeType;
 
 import java.util.*;
@@ -32,7 +32,7 @@ import java.util.function.Supplier;
 /**
  * This property allows Modules to set Attributes
  */
-public class AttributeProperty extends CodecBasedProperty<List<AttributeProperty.AttributeJson>> {
+public class AttributeProperty extends CodecProperty<List<AttributeProperty.AttributeJson>> {
     public static final String KEY = "attributes";
     public static AttributeProperty property;
     public static final Map<String, Supplier<Attribute>> replaceMap = new HashMap<>();

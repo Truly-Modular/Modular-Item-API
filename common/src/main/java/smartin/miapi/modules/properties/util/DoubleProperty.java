@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public abstract class DoubleProperty extends CodecBasedProperty<DoubleOperationResolvable> {
+public abstract class DoubleProperty extends CodecProperty<DoubleOperationResolvable> {
     public DoubleProperty property;
     public double baseValue = 0;
     public boolean allowVisualOnly = false;

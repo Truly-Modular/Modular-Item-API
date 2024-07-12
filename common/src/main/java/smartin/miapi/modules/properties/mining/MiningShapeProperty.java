@@ -22,7 +22,7 @@ import smartin.miapi.modules.properties.mining.modifier.SameBlockModifier;
 import smartin.miapi.modules.properties.mining.shape.CubeMiningShape;
 import smartin.miapi.modules.properties.mining.shape.MiningShape;
 import smartin.miapi.modules.properties.mining.shape.VeinMiningShape;
-import smartin.miapi.modules.properties.util.CodecBasedProperty;
+import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.MergeType;
 
 import java.util.ArrayList;
@@ -34,7 +34,7 @@ import java.util.Map;
  * This Property Manages the complicated task of Mining Multiple Blocks when only one is mined
  * Area,Vein and other stuff
  */
-public class MiningShapeProperty extends CodecBasedProperty<List<MiningShapeEntry>> {
+public class MiningShapeProperty extends CodecProperty<List<MiningShapeEntry>> {
     public static String KEY = "mining_shape";
     public static MiningShapeProperty property;
     public static Map<ResourceLocation, MapCodec<? extends MiningCondition>> miningConditionMap = new HashMap<>();
