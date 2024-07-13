@@ -3,6 +3,9 @@ package smartin.miapi.modules.properties.render;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.serialization.Codec;
+import com.redpxnda.nucleus.codec.auto.AutoCodec;
+import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.renderer.block.model.ItemTransform;
@@ -17,17 +20,19 @@ import smartin.miapi.item.modular.Transform;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.cache.ModularItemCache;
+import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.*;
 
 @Environment(EnvType.CLIENT)
-public class ModelTransformationProperty implements RenderProperty {
+public class ModelTransformationProperty extends CodecProperty<List<ModelTransformationProperty.ModelTransformationData>> {
 
     public static final String KEY = "modelTransform";
-    public static ModuleProperty property;
+    public static ModelTransformationProperty property;
 
     public ModelTransformationProperty() {
+        super(Codec.list(AutoCodec.of(ModelTransformationData.class).codec()));
         property = this;
         ModularItemCache.setSupplier(KEY, ModelTransformationProperty::getTransformation);
         MiapiItemModel.modelTransformers.add((matrices, itemStack, mode, modelType, tickDelta) -> {
@@ -40,7 +45,7 @@ public class ModelTransformationProperty implements RenderProperty {
         ItemTransform transformation = ModularItemCache.getVisualOnlyCache(stack, KEY, ItemTransforms.NO_TRANSFORMS).getTransform(mode);
         boolean leftHanded = isLeftHanded(mode);
         matrices.translate(0.5f, 0.5f, 0.5f);
-        if(transformation!=null){
+        if (transformation != null) {
             transformation.apply(false, matrices);
         }
         matrices.translate(-0.5f, -0.5f, -0.5f);
@@ -160,8 +165,26 @@ public class ModelTransformationProperty implements RenderProperty {
         return Set.copyOf(modes);
     }
 
-    @Override
-    public boolean load(String moduleKey, JsonElement data) throws Exception {
-        return true;
+    public class ModelTransformationData {
+        @CodecBehavior.Optional
+        public Transform gui = null;
+        @CodecBehavior.Optional
+        public Transform head = null;
+        @CodecBehavior.Optional
+        public Transform fixed = null;
+        @CodecBehavior.Optional
+        public Transform ground = null;
+        @CodecBehavior.Optional
+        @AutoCodec.Name("firstperson_lefthand")
+        public Transform firstPersonLeftHand = null;
+        @CodecBehavior.Optional
+        @AutoCodec.Name("firstperson_righthand")
+        public Transform firstPersonRightHand = null;
+        @CodecBehavior.Optional
+        @AutoCodec.Name("thirdperson_lefthand")
+        public Transform thirdPersonLeftHand = null;
+        @CodecBehavior.Optional
+        @AutoCodec.Name("thirdperson_righthand")
+        public Transform thirdPersonRightHand = null;
     }
 }
