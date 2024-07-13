@@ -31,7 +31,6 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
-import smartin.miapi.Miapi;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.client.model.ModularModelPredicateProvider;
 import smartin.miapi.entity.ItemProjectileEntity;
@@ -328,7 +327,6 @@ public class ModularCrossbow extends CrossbowItem implements PlatformModularItem
 
         clearProjectiles(stack);
         setCharged(stack, false);
-        ModularItemCache.getUUIDFor(stack);
         MiapiProjectileEvents.MODULAR_CROSSBOW_POST_SHOT.invoker().shoot(entity, stack);
     }
 
@@ -341,7 +339,6 @@ public class ModularCrossbow extends CrossbowItem implements PlatformModularItem
             }
             shootAll(world, user, hand, itemStack, getSpeed(itemStack), 1.0F);
             itemStack.damage(1, user, p -> p.sendToolBreakStatus(user.getActiveHand()));
-            Miapi.LOGGER.info("do shoot crossbow");
             return TypedActionResult.consume(itemStack);
         } else if (!user.getProjectileType(itemStack).isEmpty()) {
             if (!isCharged(itemStack)) {
@@ -349,10 +346,8 @@ public class ModularCrossbow extends CrossbowItem implements PlatformModularItem
                 this.loaded = false;
                 user.setCurrentHand(hand);
             }
-            Miapi.LOGGER.info("do load crossbow");
             return TypedActionResult.consume(itemStack);
         } else {
-            Miapi.LOGGER.info("do nothing crossbow");
             return TypedActionResult.fail(itemStack);
         }
     }

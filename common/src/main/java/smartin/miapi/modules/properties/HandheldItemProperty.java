@@ -31,6 +31,7 @@ public class HandheldItemProperty extends BooleanProperty {
                                                .getCustomInstance(EntityAttributes.GENERIC_ATTACK_SPEED).getModifier(attackspeedUUID) != null;
                 if (hasTwoHandhelds(mainHandItem, offHandItem)) {
                     if(!hasAttribute){
+                        Miapi.LOGGER.info("add handheld buff");
                         serverPlayerEntity
                                 .getAttributes()
                                 .getCustomInstance(EntityAttributes.GENERIC_ATTACK_SPEED)
@@ -38,12 +39,13 @@ public class HandheldItemProperty extends BooleanProperty {
                                         new EntityAttributeModifier(
                                                 attackspeedUUID,
                                                 "temphandheldboni",
-                                                1.5,
+                                                0.5,
                                                 EntityAttributeModifier.Operation.MULTIPLY_TOTAL));
                     }
 
                 } else {
                     if(hasAttribute){
+                        Miapi.LOGGER.info("remove handheld buff");
                         serverPlayerEntity
                                 .getAttributes()
                                 .getCustomInstance(EntityAttributes.GENERIC_ATTACK_SPEED)
@@ -57,7 +59,6 @@ public class HandheldItemProperty extends BooleanProperty {
         MiapiEvents.LIVING_HURT_AFTER.register(event -> {
             if (event.damageSource != null && event.damageSource.getAttacker() instanceof PlayerEntity serverPlayerEntity) {
                 if (hasTwoHandhelds(serverPlayerEntity) && !Platform.isModLoaded("bettercombat")) {
-                    Miapi.LOGGER.info("swap");
                     swapHands(serverPlayerEntity);
                 }
             }
