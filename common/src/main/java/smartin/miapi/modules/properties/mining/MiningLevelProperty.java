@@ -175,26 +175,16 @@ public class MiningLevelProperty implements ModuleProperty {
         //attributes = stack.getAttributeModifiers(EquipmentSlot.MAINHAND);
         //deprecated actual attribute check because checking attributes to get mining speed is a bad idea for forge mods,
         //as they check the mining speed during attribute resolve, creating a circular deadlock
-        switch (type) {
-            case "axe": {
-                return (float) AttributeProperty.getActualValue(attributes, AttributeRegistry.MINING_SPEED_AXE, 1);
-            }
-            case "pickaxe": {
-                return (float) AttributeProperty.getActualValue(attributes, AttributeRegistry.MINING_SPEED_PICKAXE, 1);
-            }
-            case "shovel": {
-                return (float) AttributeProperty.getActualValue(attributes, AttributeRegistry.MINING_SPEED_SHOVEL, 1);
-            }
-            case "hoe": {
-                return (float) AttributeProperty.getActualValue(attributes, AttributeRegistry.MINING_SPEED_HOE, 1);
-            }
-            case "sword": {
-                return stack.getItem() instanceof SwordItem ? 1.5f : 0;
-            }
-            default: {
-                return 1;
-            }
-        }
+        return switch (type) {
+            case "axe" -> (float) AttributeProperty.getActualValue(attributes, AttributeRegistry.MINING_SPEED_AXE, 1);
+            case "pickaxe" ->
+                    (float) AttributeProperty.getActualValue(attributes, AttributeRegistry.MINING_SPEED_PICKAXE, 1);
+            case "shovel" ->
+                    (float) AttributeProperty.getActualValue(attributes, AttributeRegistry.MINING_SPEED_SHOVEL, 1);
+            case "hoe" -> (float) AttributeProperty.getActualValue(attributes, AttributeRegistry.MINING_SPEED_HOE, 1);
+            case "sword" -> stack.getItem() instanceof SwordItem ? 1.5f : 0;
+            default -> 1;
+        };
     }
 
     public static float getMiningSpeedMultiplier(ItemStack stack, BlockState state) {
