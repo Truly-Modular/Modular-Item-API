@@ -334,9 +334,9 @@ public class ModuleInstance {
             }
         } else {
             try {
-                int id = Integer.parseInt(data[0]);
+                String id = data[0];
                 if (subModules.containsKey(id)) {
-                    subModules.get(0).parseTo(newArray);
+                    subModules.get(id).parseTo(newArray);
                 }
             } catch (NumberFormatException ignored) {
 
@@ -399,8 +399,8 @@ public class ModuleInstance {
     }
 
     /**
-     * This function shouldnt be used directly, instead check {@link ModularItemCache#get(ItemStack, String, Object)} for this functionality
-     * alternativly {@link ModuleInstance#getFromCache(String, ItemStack, Supplier)} can also be used
+     * This function should not be used directly, instead check {@link ModularItemCache#get(ItemStack, String, Object)} for this functionality
+     * alternatively {@link ModuleInstance#getFromCache(String, ItemStack, Supplier)} can also be used
      */
     @SuppressWarnings("unchecked")
     public <T> T getFromCache(String key, ItemStack itemStack, Map<String, ModularItemCache.CacheObjectSupplier> supplierMap, Supplier<T> fallback) {

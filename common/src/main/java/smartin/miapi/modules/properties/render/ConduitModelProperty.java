@@ -1,36 +1,43 @@
 package smartin.miapi.modules.properties.render;
 
-import com.google.gson.JsonElement;
-import smartin.miapi.Miapi;
+import com.mojang.serialization.Codec;
+import com.redpxnda.nucleus.codec.auto.AutoCodec;
+import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
 import smartin.miapi.client.model.ConduitRendererEntity;
 import smartin.miapi.client.model.MiapiItemModel;
 import smartin.miapi.client.model.MiapiModel;
 import smartin.miapi.item.modular.Transform;
+import smartin.miapi.modules.properties.util.CodecProperty;
+import smartin.miapi.modules.properties.util.MergeType;
+import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ConduitModelProperty implements RenderProperty {
+public class ConduitModelProperty extends CodecProperty<ConduitModelProperty.ConduitModelData> {
     public static String KEY = "conduit_model";
     public static ConduitModelProperty property;
+    public static Codec<ConduitModelData> CODEC = AutoCodec.of(ConduitModelData.class).codec();
 
     public ConduitModelProperty() {
+        super(CODEC);
         property = this;
         MiapiItemModel.modelSuppliers.add((key, model, stack) -> {
             List<MiapiModel> models = new ArrayList<>();
-            JsonElement element = model.getOldProperties().get(property);
-            if (element != null && element.isJsonArray()) {
-                element.getAsJsonArray().forEach(jsonElement -> {
-                    Transform transform = Miapi.gson.fromJson(jsonElement.getAsJsonObject().get("transform"), Transform.class);
-                    models.add(new ConduitRendererEntity(transform));
-                });
-            }
+            getData(model).ifPresent(conduitModelData -> {
+                models.add(new ConduitRendererEntity(conduitModelData.transform));
+            });
             return models;
         });
     }
 
     @Override
-    public boolean load(String moduleKey, JsonElement data) throws Exception {
-        return true;
+    public ConduitModelData merge(ConduitModelData left, ConduitModelData right, MergeType mergeType) {
+        return ModuleProperty.decideLeftRight(left, right, mergeType);
+    }
+
+    public static class ConduitModelData {
+        @CodecBehavior.Optional
+        public Transform transform = Transform.IDENTITY;
     }
 }

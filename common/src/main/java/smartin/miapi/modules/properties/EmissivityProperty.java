@@ -32,7 +32,7 @@ public class EmissivityProperty extends CodecProperty<EmissivityProperty.LightJs
         public int sky = 15;
         public int block = 15;
 
-        int[] asArray() {
+        public int[] asArray() {
             return new int[]{sky, block};
         }
     }

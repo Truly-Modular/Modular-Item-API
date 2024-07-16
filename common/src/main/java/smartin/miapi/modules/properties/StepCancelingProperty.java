@@ -17,7 +17,7 @@ public class StepCancelingProperty extends ComplexBooleanProperty {
         if (entity instanceof LivingEntity livingEntity && old) {
             double value = property.getForItems(livingEntity.getArmorAndBodyArmorSlots());
             if (value == 0) {
-                return true;
+                return old;
             }
             return value < 0;
         }

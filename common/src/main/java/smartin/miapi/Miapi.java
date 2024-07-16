@@ -61,7 +61,7 @@ public class Miapi {
     public static Codec<ResourceLocation> ID_CODEC = new Codec<>() {
         @Override
         public <T> DataResult<Pair<ResourceLocation, T>> decode(DynamicOps<T> ops, T input) {
-            Pair<String, T> result = Codec.STRING.decode(ops, ops.getMap(input).getOrThrow().get("type")).getOrThrow();
+            Pair<String, T> result = Codec.STRING.decode(ops, input).getOrThrow();
             return DataResult.success(new Pair<>(Miapi.id(result.getFirst()), result.getSecond()));
         }
 

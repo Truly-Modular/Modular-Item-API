@@ -1,77 +1,74 @@
 package smartin.miapi.modules.properties.render;
 
-import com.google.gson.JsonElement;
+import com.mojang.serialization.Codec;
+import com.redpxnda.nucleus.codec.auto.AutoCodec;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
-import smartin.miapi.Miapi;
 import smartin.miapi.client.model.BannerMiapiModel;
 import smartin.miapi.client.model.MiapiItemModel;
 import smartin.miapi.client.model.MiapiModel;
 import smartin.miapi.item.modular.Transform;
 import smartin.miapi.modules.material.MaterialInscribeDataProperty;
 import smartin.miapi.modules.properties.SlotProperty;
+import smartin.miapi.modules.properties.util.CodecProperty;
+import smartin.miapi.modules.properties.util.MergeType;
+import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
 @Environment(EnvType.CLIENT)
-public class BannerModelProperty implements RenderProperty {
+public class BannerModelProperty extends CodecProperty<List<BannerModelProperty.BannerModelData>> {
     public static final String KEY = "banner";
     public static BannerModelProperty property;
+    public static Codec<List<BannerModelProperty.BannerModelData>> CODEC = Codec.list(AutoCodec.of(BannerModelData.class).codec());
 
-    //TODO:ahhh fuck you mojang gib nbt
     public BannerModelProperty() {
+        super(CODEC);
         property = this;
         MiapiItemModel.modelSuppliers.add((key, moduleInstance, stack) -> {
-            JsonElement element = moduleInstance.getOldProperties().get(property);
             List<MiapiModel> models = new ArrayList<>();
-            if (element != null && stack.hasNbt()) {
-                element.getAsJsonArray().forEach(element1 -> {
-                    ModelJson modelJson = Miapi.gson.fromJson(element1, ModelJson.class);
-                    if ("parent".equals(modelJson.modelType)) {
+            getData(moduleInstance).ifPresent(list -> {
+                list.forEach(bannerModelData -> {
+                    if ("parent".equals(bannerModelData.modelType)) {
                         SlotProperty.ModuleSlot slot = SlotProperty.getSlotIn(moduleInstance);
                         if (slot != null) {
-                            modelJson.modelType = slot.transform.origin;
+                            bannerModelData.modelType = slot.transform.origin;
                         }
                     }
-                    Supplier<ItemStack> stackSupplier = switch (modelJson.type) {
+                    Supplier<ItemStack> stackSupplier = switch (bannerModelData.type) {
                         case "item_nbt": {
-                            CompoundTag itemCompound = stack.getOrCreateNbt().getCompound("banner");
-                            if (!itemCompound.isEmpty() && ModelProperty.isAllowedKey(modelJson.modelType, key)) {
-                                yield () -> ItemStack.parse(itemCompound);
-                            }
-                            yield () -> ItemStack.EMPTY;
+                            yield () -> stack;
                         }
                         case "module_data": {
-                            if (ModelProperty.isAllowedKey(modelJson.modelType, key)) {
-                                yield () -> MaterialInscribeDataProperty.readStackFromModuleInstance(moduleInstance, "banner");
+                            if (ModelProperty.isAllowedKey(bannerModelData.modelType, key)) {
+                                yield () -> MaterialInscribeDataProperty.readStackFromModuleInstance(moduleInstance, KEY);
                             }
                             yield () -> ItemStack.EMPTY;
                         }
                         default:
-                            throw new IllegalStateException("Unexpected value: " + modelJson.type);
+                            throw new IllegalStateException("Unexpected value: " + bannerModelData.type);
                     };
-                    BannerMiapiModel.BannerMode mode = BannerMiapiModel.getMode(modelJson.model);
-                    modelJson.transform = Transform.repair(modelJson.transform);
-                    BannerMiapiModel bannerMiapiModel = BannerMiapiModel.getFromStack(stackSupplier.get(), mode, modelJson.transform.toMatrix());
+                    BannerMiapiModel.BannerMode mode = BannerMiapiModel.getMode(bannerModelData.model);
+                    bannerModelData.transform = Transform.repair(bannerModelData.transform);
+                    BannerMiapiModel bannerMiapiModel = BannerMiapiModel.getFromStack(stackSupplier.get(), mode, bannerModelData.transform.toMatrix());
                     if (bannerMiapiModel != null) {
                         models.add(bannerMiapiModel);
                     }
                 });
-            }
+            });
             return models;
         });
     }
 
     @Override
-    public boolean load(String moduleKey, JsonElement data) throws Exception {
-        return true;
+    public List<BannerModelData> merge(List<BannerModelData> left, List<BannerModelData> right, MergeType mergeType) {
+        return ModuleProperty.mergeList(left, right, mergeType);
     }
 
-    static class ModelJson {
+    public static class BannerModelData {
         public String type;
         public String model;
         public String modelType;

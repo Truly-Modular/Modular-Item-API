@@ -27,16 +27,11 @@ public class RarityProperty extends CodecProperty<Rarity> implements ComponentAp
         if (!itemStack.isEnchanted()) {
             return old;
         } else {
-            switch (old) {
-                case COMMON:
-                case UNCOMMON:
-                    return Rarity.RARE;
-                case RARE:
-                    return Rarity.EPIC;
-                case EPIC:
-                default:
-                    return old;
-            }
+            return switch (old) {
+                case COMMON, UNCOMMON -> Rarity.RARE;
+                case RARE -> Rarity.EPIC;
+                default -> old;
+            };
         }
     }
 

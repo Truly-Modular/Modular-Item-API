@@ -1,9 +1,6 @@
 package smartin.miapi.modules.properties.render;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.serialization.Codec;
 import com.redpxnda.nucleus.codec.auto.AutoCodec;
 import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
 import net.fabricmc.api.EnvType;
@@ -12,27 +9,27 @@ import net.minecraft.client.renderer.block.model.ItemTransform;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
-import smartin.miapi.Miapi;
 import smartin.miapi.client.model.MiapiItemModel;
 import smartin.miapi.item.modular.Transform;
-import smartin.miapi.modules.ItemModule;
-import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.util.CodecProperty;
-import smartin.miapi.modules.properties.util.ModuleProperty;
+import smartin.miapi.modules.properties.util.MergeType;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 @Environment(EnvType.CLIENT)
-public class ModelTransformationProperty extends CodecProperty<List<ModelTransformationProperty.ModelTransformationData>> {
+public class ModelTransformationProperty extends CodecProperty<ModelTransformationProperty.ModelTransformationData> {
 
     public static final String KEY = "modelTransform";
     public static ModelTransformationProperty property;
 
     public ModelTransformationProperty() {
-        super(Codec.list(AutoCodec.of(ModelTransformationData.class).codec()));
+        super(AutoCodec.of(ModelTransformationData.class).codec());
         property = this;
         ModularItemCache.setSupplier(KEY, ModelTransformationProperty::getTransformation);
         MiapiItemModel.modelTransformers.add((matrices, itemStack, mode, modelType, tickDelta) -> {
@@ -52,78 +49,7 @@ public class ModelTransformationProperty extends CodecProperty<List<ModelTransfo
     }
 
     public static ItemTransforms getTransformation(ItemStack stack) {
-        ItemTransforms transformation = ItemTransforms.NO_TRANSFORMS;
-        for (ModuleInstance instance : ItemModule.createFlatList(ItemModule.getModules(stack))) {
-            JsonElement element = instance.getOldProperties().get(property);
-            if (element != null) {
-                Map<ItemDisplayContext, ItemTransform> map = new HashMap<>();
-                if (element.getAsJsonObject().has("replace")) {
-                    JsonObject replace = element.getAsJsonObject().getAsJsonObject("replace");
-                    for (ItemDisplayContext mode : ItemDisplayContext.values()) {
-                        map.put(mode, transformation.getTransform(mode));
-                        for (String modeString : getStringOfMode(mode)) {
-                            if (replace.has(modeString)) {
-                                Transform transform = Transform.toModelTransformation(Miapi.gson.fromJson(replace.getAsJsonObject(modeString), Transform.class));
-                                map.put(mode, transform.toTransformation());
-                            }
-                        }
-                    }
-                }
-                if (element.getAsJsonObject().has("display")) {
-                    JsonObject replace = element.getAsJsonObject().getAsJsonObject("display");
-                    for (ItemDisplayContext mode : ItemDisplayContext.values()) {
-                        map.put(mode, transformation.getTransform(mode));
-                        for (String modeString : getStringOfMode(mode)) {
-                            if (replace.has(modeString)) {
-                                Transform transform = Transform.toModelTransformation(Miapi.gson.fromJson(replace.getAsJsonObject(modeString), Transform.class));
-                                if (isLeftHanded(mode)) {
-                                    transform = makeLeft(transform);
-                                }
-                                map.put(mode, transform.toTransformation());
-                            }
-                        }
-                    }
-                }
-                if (element.getAsJsonObject().has("display-merge")) {
-                    JsonObject replace = element.getAsJsonObject().getAsJsonObject("display-merge");
-                    for (ItemDisplayContext mode : ItemDisplayContext.values()) {
-                        map.put(mode, transformation.getTransform(mode));
-                        for (String modeString : getStringOfMode(mode)) {
-                            if (replace.has(modeString)) {
-                                Transform merged = Transform.merge(new Transform(transformation.getTransform(mode)), Miapi.gson.fromJson(replace.getAsJsonObject(modeString), Transform.class));
-                                if (isLeftHanded(mode)) {
-                                    merged = makeLeft(merged);
-                                }
-                                map.put(mode, merged.toTransformation());
-                            }
-                        }
-                    }
-                }
-                if (element.getAsJsonObject().has("merge")) {
-                    JsonObject replace = element.getAsJsonObject().getAsJsonObject("merge");
-                    for (ItemDisplayContext mode : ItemDisplayContext.values()) {
-                        map.put(mode, transformation.getTransform(mode));
-                        for (String modeString : getStringOfMode(mode)) {
-                            if (replace.has(modeString)) {
-                                Transform merged = Transform.merge(new Transform(transformation.getTransform(mode)), Miapi.gson.fromJson(replace.getAsJsonObject(modeString), Transform.class));
-                                map.put(mode, merged.toTransformation());
-                            }
-                        }
-                    }
-                }
-                transformation = new ItemTransforms(
-                        map.get(ItemDisplayContext.THIRD_PERSON_LEFT_HAND),
-                        map.get(ItemDisplayContext.THIRD_PERSON_RIGHT_HAND),
-                        map.get(ItemDisplayContext.FIRST_PERSON_LEFT_HAND),
-                        map.get(ItemDisplayContext.FIRST_PERSON_RIGHT_HAND),
-                        map.get(ItemDisplayContext.HEAD),
-                        map.get(ItemDisplayContext.GUI),
-                        map.get(ItemDisplayContext.GROUND),
-                        map.get(ItemDisplayContext.FIXED)
-                );
-            }
-        }
-        return transformation;
+        return property.getData(stack).orElseGet(ModelTransformationData::new).asItemTransforms();
     }
 
     public static boolean isLeftHanded(ItemDisplayContext mode) {
@@ -133,6 +59,7 @@ public class ModelTransformationProperty extends CodecProperty<List<ModelTransfo
         };
     }
 
+    //TODO:requires testing and more debugging with makeLeft vs not make left
     public static Transform makeLeft(Transform transform) {
         transform = transform.copy();
         transform.translation.set(new Vector3f(-transform.translation.x(), transform.translation.y(), transform.translation.z()));
@@ -165,7 +92,12 @@ public class ModelTransformationProperty extends CodecProperty<List<ModelTransfo
         return Set.copyOf(modes);
     }
 
-    public class ModelTransformationData {
+    @Override
+    public ModelTransformationData merge(ModelTransformationData left, ModelTransformationData right, MergeType mergeType) {
+        return ModelTransformationData.merge(left, right, mergeType);
+    }
+
+    public static class ModelTransformationData {
         @CodecBehavior.Optional
         public Transform gui = null;
         @CodecBehavior.Optional
@@ -186,5 +118,67 @@ public class ModelTransformationProperty extends CodecProperty<List<ModelTransfo
         @CodecBehavior.Optional
         @AutoCodec.Name("thirdperson_righthand")
         public Transform thirdPersonRightHand = null;
+        @CodecBehavior.Optional
+        public boolean overwrite = true;
+
+        public static ModelTransformationData merge(ModelTransformationData left, ModelTransformationData right, MergeType mergeType) {
+            ModelTransformationData data = new ModelTransformationData();
+
+            if (right.overwrite) {
+                data.gui = overwrite(left.gui, right.gui);
+                data.head = overwrite(left.head, right.head);
+                data.fixed = overwrite(left.fixed, right.fixed);
+                data.ground = overwrite(left.ground, right.ground);
+                data.firstPersonLeftHand = overwrite(left.firstPersonLeftHand, right.firstPersonLeftHand);
+                data.firstPersonRightHand = overwrite(left.firstPersonRightHand, right.firstPersonRightHand);
+                data.thirdPersonLeftHand = overwrite(left.thirdPersonLeftHand, right.thirdPersonLeftHand);
+                data.thirdPersonRightHand = overwrite(left.thirdPersonRightHand, right.thirdPersonRightHand);
+            } else {
+                data.gui = merge(left.gui, right.gui);
+                data.head = merge(left.head, right.head);
+                data.fixed = merge(left.fixed, right.fixed);
+                data.ground = merge(left.ground, right.ground);
+                data.firstPersonLeftHand = merge(left.firstPersonLeftHand, right.firstPersonLeftHand);
+                data.firstPersonRightHand = merge(left.firstPersonRightHand, right.firstPersonRightHand);
+                data.thirdPersonLeftHand = merge(left.thirdPersonLeftHand, right.thirdPersonLeftHand);
+                data.thirdPersonRightHand = merge(left.thirdPersonRightHand, right.thirdPersonRightHand);
+            }
+
+            return data;
+        }
+
+        public static Transform merge(@Nullable Transform left, @Nullable Transform right) {
+            if (left == null && right == null) {
+                return null;
+            }
+            if (left != null && right == null) {
+                return left.copy();
+            }
+            if (left == null && right != null) {
+                return right.copy();
+            }
+            return Transform.merge(left, right);
+        }
+
+        public static Transform overwrite(@Nullable Transform left, @Nullable Transform right) {
+            if (right == null) {
+                return left != null ? left.copy() : null;
+            }
+            return right.copy();
+        }
+
+        public ItemTransforms asItemTransforms() {
+            return new ItemTransforms(
+                    thirdPersonLeftHand != null ? thirdPersonLeftHand.toTransformation() : Transform.IDENTITY.toTransformation(),
+                    thirdPersonRightHand != null ? thirdPersonRightHand.toTransformation() : Transform.IDENTITY.toTransformation(),
+                    firstPersonLeftHand != null ? firstPersonLeftHand.toTransformation() : Transform.IDENTITY.toTransformation(),
+                    firstPersonRightHand != null ? firstPersonRightHand.toTransformation() : Transform.IDENTITY.toTransformation(),
+                    head != null ? head.toTransformation() : Transform.IDENTITY.toTransformation(),
+                    gui != null ? gui.toTransformation() : Transform.IDENTITY.toTransformation(),
+                    ground != null ? ground.toTransformation() : Transform.IDENTITY.toTransformation(),
+                    fixed != null ? fixed.toTransformation() : Transform.IDENTITY.toTransformation()
+            );
+        }
+
     }
 }

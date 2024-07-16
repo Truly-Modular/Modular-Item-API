@@ -1,36 +1,36 @@
 package smartin.miapi.modules.properties.render;
 
-import com.google.gson.JsonElement;
+import com.redpxnda.nucleus.codec.auto.AutoCodec;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import org.joml.Matrix4f;
-import org.joml.Vector3f;
 import org.joml.Vector4f;
-import smartin.miapi.Miapi;
-import smartin.miapi.client.model.item.BakedSingleModel;
 import smartin.miapi.client.model.MiapiItemModel;
 import smartin.miapi.item.modular.Transform;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.SlotProperty;
+import smartin.miapi.modules.properties.util.CodecProperty;
+import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * This Property allows to have a simple way to change the gui position and size of an item
  */
 @Environment(EnvType.CLIENT)
-public class GuiOffsetProperty implements RenderProperty {
+public class GuiOffsetProperty extends CodecProperty<GuiOffsetProperty.GuiOffsetData> {
     public static final String KEY = "guiOffset";
     public static ModuleProperty property;
 
     public GuiOffsetProperty() {
+        super(AutoCodec.of(GuiOffsetData.class).codec());
         property = this;
         ModularItemCache.setSupplier(KEY + "_pure_gui", (stack -> new HashMap<>()));
         MiapiItemModel.modelTransformers.add((matrices, itemStack, mode, modelType, tickDelta) -> {
@@ -43,51 +43,14 @@ public class GuiOffsetProperty implements RenderProperty {
             }
             return matrices;
         });
-        ModelProperty.modelTransformers.add(new ModelProperty.ModelTransformer() {
-            @Override
-            public Map<String, BakedSingleModel> bakedTransform(Map<String, BakedSingleModel> dynamicBakedModelmap, ItemStack stack) {
-                dynamicBakedModelmap.forEach((id, dynamicBakedModel) -> {
-                    GuiOffsetJson guiOffsetJson = new GuiOffsetJson();
-                    for (ModuleInstance instance : ItemModule.createFlatList(ItemModule.getModules(stack))) {
-                        JsonElement element = instance.getOldProperties().get(property);
-                        if (element != null) {
-                            GuiOffsetJson add = Miapi.gson.fromJson(element, GuiOffsetJson.class);
-                            guiOffsetJson.x += add.x;
-                            guiOffsetJson.y += add.y;
-                            guiOffsetJson.sizeX += add.sizeX;
-                            guiOffsetJson.sizeY += add.sizeY;
-                        }
-                    }
-                    Transform guiTransform = new Transform(dynamicBakedModel.getTransforms().getTransform(ItemDisplayContext.GUI));
-                    guiOffsetJson.x -= (guiOffsetJson.sizeX / 2) / 16;
-                    guiOffsetJson.y -= (guiOffsetJson.sizeY / 2) / 16;
-                    guiOffsetJson.sizeX = guiOffsetJson.sizeX / 16.0f;
-                    guiOffsetJson.sizeY = guiOffsetJson.sizeY / 16.0f;
-                    float guiZ = (guiOffsetJson.sizeX + guiOffsetJson.sizeY) / 2;
-                    guiTransform = new Transform(guiTransform.rotation, new Vector3f(guiOffsetJson.x / 16.0f, guiOffsetJson.y / 16.0f, 0), new Vector3f(guiOffsetJson.sizeX, guiOffsetJson.sizeY, guiZ));
-                    dynamicBakedModel.modelTransformation = new ItemTransforms(
-                            dynamicBakedModel.getTransforms().getTransform(ItemDisplayContext.THIRD_PERSON_LEFT_HAND),
-                            dynamicBakedModel.getTransforms().getTransform(ItemDisplayContext.THIRD_PERSON_RIGHT_HAND),
-                            dynamicBakedModel.getTransforms().getTransform(ItemDisplayContext.FIRST_PERSON_LEFT_HAND),
-                            dynamicBakedModel.getTransforms().getTransform(ItemDisplayContext.FIRST_PERSON_RIGHT_HAND),
-                            dynamicBakedModel.getTransforms().getTransform(ItemDisplayContext.HEAD),
-                            guiTransform.toTransformation(),
-                            dynamicBakedModel.getTransforms().getTransform(ItemDisplayContext.GROUND),
-                            dynamicBakedModel.getTransforms().getTransform(ItemDisplayContext.FIXED)
-                    );
-                    dynamicBakedModelmap.put(id, dynamicBakedModel);
-                });
-                return dynamicBakedModelmap;
-            }
-        });
     }
 
     public float[] getGuiOffsets(ItemStack itemStack, String modelType) {
-        GuiOffsetJson guiOffsetJson = new GuiOffsetJson();
+        GuiOffsetData guiOffsetJson = new GuiOffsetData();
         for (ModuleInstance instance : ItemModule.createFlatList(ItemModule.getModules(itemStack))) {
-            JsonElement element = instance.getOldProperties().get(property);
-            if (element != null) {
-                GuiOffsetJson add = Miapi.gson.fromJson(element, GuiOffsetJson.class);
+            Optional<GuiOffsetData> optional = getData(instance);
+            if (optional.isPresent()) {
+                GuiOffsetData add = optional.get();
                 Transform transform = SlotProperty.getLocalTransformStack(instance).get(modelType);
                 Matrix4f matrix4f = transform.toMatrix();
                 Vector4f offsetPos = new Vector4f(add.x, add.y, 0, 0);
@@ -110,11 +73,11 @@ public class GuiOffsetProperty implements RenderProperty {
     }
 
     @Override
-    public boolean load(String moduleKey, JsonElement data) throws Exception {
-        return true;
+    public GuiOffsetData merge(GuiOffsetData left, GuiOffsetData right, MergeType mergeType) {
+        return ModuleProperty.decideLeftRight(left, right, mergeType);
     }
 
-    private static class GuiOffsetJson {
+    public static class GuiOffsetData {
         public float x = 0;
         public float y = 0;
         public float sizeX = 0;

@@ -21,7 +21,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * The SlotProperty, this allows Modules to define submodule Slots
  */
 public class SlotProperty extends CodecProperty<Map<String, SlotProperty.ModuleSlot>> {
-    public static Codec CODEC = Codec.unboundedMap(Codec.STRING, AutoCodec.of(ModuleSlot.class).codec());
+    public static Codec<Map<String, ModuleSlot>> CODEC = Codec.unboundedMap(Codec.STRING, AutoCodec.of(ModuleSlot.class).codec());
 
     public static final String KEY = "slots";
 
@@ -120,7 +120,7 @@ public class SlotProperty extends CodecProperty<Map<String, SlotProperty.ModuleS
                 if (moduleSlot.inSlot == null) return false;
                 return moduleSlot.inSlot.equals(instance);
             }).findFirst().orElse(null);
-            if (slot != null && slot.transform.origin != null && slot.transform.origin.equals("")) {
+            if (slot != null && slot.transform.origin != null && slot.transform.origin.isEmpty()) {
                 slot.transform.origin = null;
             }
             if (slot != null && slot.translationKey == null) {
@@ -210,9 +210,7 @@ public class SlotProperty extends CodecProperty<Map<String, SlotProperty.ModuleS
                     Collections.sort(sortedAllowed);
                     List<String> sortedOtherAllowed = new ArrayList<>(slot.allowed);
                     Collections.sort(sortedOtherAllowed);
-                    if (!sortedAllowed.equals(sortedOtherAllowed)) {
-                        return false;
-                    }
+                    return sortedAllowed.equals(sortedOtherAllowed);
                 }
                 return true;
             }

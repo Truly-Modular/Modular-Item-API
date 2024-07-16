@@ -1,9 +1,13 @@
 package smartin.miapi.modules.properties.render;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.DynamicOps;
+import com.redpxnda.nucleus.codec.auto.AutoCodec;
+import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
@@ -21,6 +25,7 @@ import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.util.FastColor;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import smartin.miapi.Miapi;
@@ -31,7 +36,6 @@ import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.item.modular.Transform;
 import smartin.miapi.item.modular.TransformMap;
 import smartin.miapi.mixin.client.ModelLoaderInterfaceAccessor;
-import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.material.Material;
@@ -39,6 +43,8 @@ import smartin.miapi.modules.material.MaterialProperty;
 import smartin.miapi.modules.properties.EmissivityProperty;
 import smartin.miapi.modules.properties.SlotProperty;
 import smartin.miapi.modules.properties.render.colorproviders.ColorProvider;
+import smartin.miapi.modules.properties.util.CodecProperty;
+import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.io.FileNotFoundException;
@@ -47,27 +53,41 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 
-import static smartin.miapi.Miapi.gson;
-
 
 @Environment(EnvType.CLIENT)
-public class ModelProperty implements RenderProperty {
-    public static ModuleProperty property;
-    private static final String CACHE_KEY_MAP = Miapi.MOD_ID + ":modelMap";
+public class ModelProperty extends CodecProperty<List<ModelProperty.ModelData>> {
+    public static ModelProperty property;
     private static final String CACHE_KEY_ITEM = Miapi.MOD_ID + ":itemModelodel";
     public static final Map<String, UnbakedModelHolder> modelCache = new HashMap<>();
-    public static final String KEY = "texture";
-    public static final List<ModelTransformer> modelTransformers = new ArrayList<>();
+    public static final String KEY = "model";
     public static Function<net.minecraft.client.resources.model.Material, TextureAtlasSprite> textureGetter;
     private static Function<net.minecraft.client.resources.model.Material, TextureAtlasSprite> mirroredGetter;
     private static ItemModelGenerator generator;
+    public static Codec<ModelData> DATA_CODEC = AutoCodec.of(ModelData.class).codec();
+    public static Codec<List<ModelData>> CODEC = Codec.withAlternative(Codec.list(DATA_CODEC), new Codec<>() {
+        @Override
+        public <T> DataResult<Pair<List<ModelData>, T>> decode(DynamicOps<T> ops, T input) {
+            var result = DATA_CODEC.decode(ops, input);
+            if (result.isSuccess()) {
+                var success = result.getOrThrow();
+                return DataResult.success(new Pair<>(List.of(success.getFirst()), success.getSecond()));
+            } else {
+                return DataResult.error(() -> "could not decode as single entry");
+            }
+        }
+
+        @Override
+        public <T> DataResult<T> encode(List<ModelData> input, DynamicOps<T> ops, T prefix) {
+            return Codec.list(DATA_CODEC).encode(input, ops, prefix);
+        }
+    });
 
     public ModelProperty() {
+        super(CODEC);
         property = this;
         mirroredGetter = (identifier) -> textureGetter.apply(identifier);
         generator = new ItemModelGenerator();
         ModularItemCache.setSupplier(CACHE_KEY_ITEM, (stack) -> getModelMap(stack).get("item"));
-        ModularItemCache.setSupplier(CACHE_KEY_MAP, ModelProperty::generateModels);
         MiapiItemModel.modelSuppliers.add((key, model, stack) -> {
             List<MiapiModel> miapiModels = new ArrayList<>();
             for (ModelHolder holder : getForModule(model, key, stack)) {
@@ -77,33 +97,12 @@ public class ModelProperty implements RenderProperty {
         });
     }
 
-    public static List<ModelJson> getJson(ModuleInstance moduleInstance) {
-        List<ModelJson> modelJsonList = new ArrayList<>();
-        JsonElement data = moduleInstance.getOldProperties().get(property);
-        if (data == null) {
-            return new ArrayList<>();
-        }
-        if (data.isJsonArray()) {
-            JsonArray dataArray = data.getAsJsonArray();
-            for (JsonElement element : dataArray) {
-                ModelJson propertyJson = gson.fromJson(element.toString(), ModelJson.class);
-                propertyJson.repair();
-                modelJsonList.add(propertyJson);
-            }
-        } else {
-            ModelJson propertyJson = gson.fromJson(data.toString(), ModelJson.class);
-            propertyJson.repair();
-            modelJsonList.add(propertyJson);
-        }
-        return modelJsonList;
-    }
-
     public static List<ModelHolder> getForModule(ModuleInstance instance, String key, ItemStack itemStack) {
-        List<ModelJson> modelJsonList = getJson(instance);
+        List<ModelData> modelDataList = property.getData(instance).orElse(new ArrayList<>());
         List<ModelHolder> models = new ArrayList<>();
-        for (ModelJson json : modelJsonList) {
-            ModelHolder holder = bakedModel(instance,json,itemStack,key);
-            if(holder!=null){
+        for (ModelData json : modelDataList) {
+            ModelHolder holder = bakedModel(instance, json, itemStack, key);
+            if (holder != null) {
                 models.add(holder);
             }
         }
@@ -111,13 +110,13 @@ public class ModelProperty implements RenderProperty {
     }
 
     @Nullable
-    public static ModelHolder bakedModel(ModuleInstance instance, ModelJson json, ItemStack itemStack, String key) {
+    public static ModelHolder bakedModel(ModuleInstance instance, ModelData json, ItemStack itemStack, String key) {
         int condition = Material.getColor(StatResolver.resolveString(json.condition, instance));
-        if(condition!=0){
+        if (condition != 0) {
             if (
                     json.transform.origin == null && key == null ||
-                            json.transform.origin != null && json.transform.origin.equals(key) ||
-                            ("item".equals(json.transform.origin) && key == null)) {
+                    json.transform.origin != null && json.transform.origin.equals(key) ||
+                    ("item".equals(json.transform.origin) && key == null)) {
                 return bakedModel(instance, json, itemStack);
             }
         }
@@ -125,7 +124,7 @@ public class ModelProperty implements RenderProperty {
     }
 
     @Nullable
-    public static ModelHolder bakedModel(ModuleInstance instance, ModelJson json, ItemStack itemStack) {
+    public static ModelHolder bakedModel(ModuleInstance instance, ModelData json, ItemStack itemStack) {
         Material material = MaterialProperty.getMaterial(instance);
         List<String> list = new ArrayList<>();
         if (material != null) {
@@ -145,21 +144,21 @@ public class ModelProperty implements RenderProperty {
         BakedSingleModel model = DynamicBakery.bakeModel(unbakedModel.model, textureGetter, FastColor.ARGB32.color(255, 255, 255, 255), Transform.IDENTITY);
         if (model != null) {
             Matrix4f matrix4f = Transform.toModelTransformation(json.transform).toMatrix();
-            String colorProviderId = unbakedModel.modelData.colorProvider != null ?
-                    unbakedModel.modelData.colorProvider : json.color_provider;
+            String colorProviderId = unbakedModel.modelMetadata.colorProvider != null ?
+                    unbakedModel.modelMetadata.colorProvider : json.color_provider;
             ColorProvider colorProvider = ColorProvider.getProvider(colorProviderId, itemStack, instance);
             if (colorProvider == null) {
                 throw new RuntimeException("colorProvider is null");
             }
-            return new ModelHolder(model.optimize(), matrix4f, colorProvider, unbakedModel.modelData.lightValues, json.getTrimMode(), json.entity_render);
+            return new ModelHolder(model.optimize(), matrix4f, colorProvider, unbakedModel.modelMetadata.lightValues, json.getTrimMode(), json.entity_render);
         }
         return null;
     }
 
     public static boolean isAllowedKey(@Nullable String jsonKey, @Nullable String modelTypeKey) {
         return jsonKey == null && modelTypeKey == null ||
-                jsonKey != null && jsonKey.equals(modelTypeKey) ||
-                ("item".equals(jsonKey) && modelTypeKey == null);
+               jsonKey != null && jsonKey.equals(modelTypeKey) ||
+               ("item".equals(jsonKey) && modelTypeKey == null);
     }
 
     public static Map<String, BakedModel> getModelMap(ItemStack stack) {
@@ -170,23 +169,6 @@ public class ModelProperty implements RenderProperty {
     @Nullable
     public static BakedModel getItemModel(ItemStack stack) {
         return ModularItemCache.getRaw(stack, CACHE_KEY_ITEM);
-    }
-
-    protected static Map<String, BakedModel> generateModels(ItemStack itemStack) {
-        ModuleInstance root = ItemModule.getModules(itemStack);
-
-        List<TransformedUnbakedModel> unbakedModels = resolveUnbakedModel(root);
-
-        for (ModelTransformer transformer : modelTransformers) {
-            unbakedModels = transformer.unBakedTransform(unbakedModels, itemStack);
-        }
-        Map<String, BakedSingleModel> bakedModelMap = bakedModelMap(unbakedModels);
-
-        for (ModelTransformer transformer : modelTransformers) {
-            bakedModelMap = transformer.bakedTransform(bakedModelMap, itemStack);
-        }
-        Map<String, BakedModel> optimizedMap = optimize(bakedModelMap);
-        return optimizedMap;
     }
 
     protected static Map<String, BakedModel> optimize(Map<String, BakedSingleModel> bakedModelMap) {
@@ -225,29 +207,8 @@ public class ModelProperty implements RenderProperty {
         List<TransformedUnbakedModel> unbakedModels = new ArrayList<>();
         AtomicReference<Float> scaleAdder = new AtomicReference<>(1.0f);
         for (ModuleInstance moduleI : root.allSubModules()) {
-            Gson gson = Miapi.gson;
-            List<ModelJson> modelJsonList = new ArrayList<>();
-            JsonElement data = moduleI.getOldProperties().get(property);
-            if (data == null) {
-                return unbakedModels;
-            }
-            if (data.isJsonArray()) {
-                JsonArray dataArray = data.getAsJsonArray();
-                for (JsonElement element : dataArray) {
-                    ModelJson propertyJson = gson.fromJson(element.toString(), ModelJson.class);
-                    propertyJson.repair();
-                    modelJsonList.add(propertyJson);
-                }
-            } else {
-                ModelJson propertyJson = gson.fromJson(data.toString(), ModelJson.class);
-                propertyJson.repair();
-                modelJsonList.add(propertyJson);
-            }
-            if (modelJsonList == null) {
-                Miapi.LOGGER.warn("Module " + moduleI.module.name() + " has no Model Attached, is this intentional?");
-                return new ArrayList<>();
-            }
-            for (ModelJson json : modelJsonList) {
+            List<ModelData> modelDataList = property.getData(moduleI).orElse(new ArrayList<>());
+            for (ModelData json : modelDataList) {
                 int color = 0;
                 int condition = Material.getColor(StatResolver.resolveString(json.condition, moduleI));
                 if (condition != 0) {
@@ -322,7 +283,7 @@ public class ModelProperty implements RenderProperty {
         return model;
     }
 
-    public static ModelData fromPath(ResourceLocation identifier) {
+    public static ModelMetadata fromPath(ResourceLocation identifier) {
         try {
             Optional<Resource> resource = Minecraft.getInstance().getResourceManager().getResource(identifier);
             if (resource.isPresent()) {
@@ -333,7 +294,7 @@ public class ModelProperty implements RenderProperty {
         return ModelDecoder.EMPTY();
     }
 
-    protected static Map<String, BlockModel> loadModelsByPath(String filePath) {
+    protected static void loadModelsByPath(String filePath) {
         String materialKey = "[material.texture]";
         Map<String, BlockModel> models = new HashMap<>();
         if (filePath.contains(materialKey)) {
@@ -362,7 +323,6 @@ public class ModelProperty implements RenderProperty {
                 throw new RuntimeException(fileNotFoundException);
             }
         }
-        return models;
     }
 
     protected static void loadTextureDependencies(BlockModel model) {
@@ -370,47 +330,36 @@ public class ModelProperty implements RenderProperty {
     }
 
     @Override
-    public boolean load(String moduleKey, JsonElement data) throws Exception {
-        Gson gson = Miapi.gson;
-        List<ModelJson> jsonList = new ArrayList<>();
-        if (data.isJsonArray()) {
-            JsonArray dataArray = data.getAsJsonArray();
-            for (JsonElement element : dataArray) {
-                ModelJson propertyJson = gson.fromJson(element.toString(), ModelJson.class);
-                propertyJson.repair();
-                loadModelsByPath(propertyJson.path);
-                jsonList.add(propertyJson);
-            }
-        } else {
-            ModelJson propertyJson = gson.fromJson(data.toString(), ModelJson.class);
-            propertyJson.repair();
-            loadModelsByPath(propertyJson.path);
-            jsonList.add(propertyJson);
-        }
+    public boolean load(ResourceLocation moduleKey, JsonElement data, boolean isClient) throws Exception {
+        decode(data).forEach(modelData ->{
+            modelData .repair();
+            loadModelsByPath(modelData .path);
+        });
         return true;
     }
 
-    public interface ModelTransformer {
-        default Map<String, BakedSingleModel> bakedTransform(Map<String, BakedSingleModel> dynamicBakedModelMap, ItemStack stack) {
-            return dynamicBakedModelMap;
-        }
-
-        default List<TransformedUnbakedModel> unBakedTransform(List<TransformedUnbakedModel> list, ItemStack itemStack) {
-            return list;
-        }
+    @Override
+    public List<ModelData> merge(List<ModelData> left, List<ModelData> right, MergeType mergeType) {
+        return ModuleProperty.mergeList(left, right, mergeType);
     }
 
     public record TransformedUnbakedModel(TransformMap transform, BlockModel unbakedModel,
                                           ModuleInstance instance, int color) {
     }
 
-    public static class ModelJson {
+    public static class ModelData {
         public String path;
+        @CodecBehavior.Optional
         public Transform transform = Transform.IDENTITY;
+        @CodecBehavior.Optional
         public String condition = "1";
+        @CodecBehavior.Optional
         public String color_provider = "material";
-        public String trim_mode;
-        public Boolean entity_render;
+        @CodecBehavior.Optional
+        public String trim_mode = "none";
+        @CodecBehavior.Optional
+        public Boolean entity_render = null;
+
         public String id = null;
 
         public void repair() {
@@ -446,19 +395,19 @@ public class ModelProperty implements RenderProperty {
         }
     }
 
-    static class ModelDecoder implements MetadataSectionSerializer<ModelData> {
+    static class ModelDecoder implements MetadataSectionSerializer<ModelMetadata> {
 
-        public static ModelData EMPTY() {
-            return new ModelData(null, null);
+        public static ModelMetadata EMPTY() {
+            return new ModelMetadata(null, null);
         }
 
         @Override
-        public String getMetadataSectionName() {
+        public @NotNull String getMetadataSectionName() {
             return "miapi_model_data";
         }
 
         @Override
-        public ModelData fromJson(JsonObject json) {
+        public @NotNull ModelMetadata fromJson(JsonObject json) {
             String data = null;
             int[] light = null;
             if (json.has("modelProvider")) {
@@ -469,15 +418,16 @@ public class ModelProperty implements RenderProperty {
                 }
             }
             if (json.has("lightValues")) {
-                light = EmissivityProperty.getLightValues(json.get("lightValues"));
+                EmissivityProperty.LightJson lightJson = EmissivityProperty.property.decode(json.get("lightValues"));
+                light = lightJson.asArray();
             }
-            return new ModelData(data, light);
+            return new ModelMetadata(data, light);
         }
     }
 
-    public record ModelData(String colorProvider, int[] lightValues) {
+    public record ModelMetadata(String colorProvider, int[] lightValues) {
     }
 
-    public record UnbakedModelHolder(BlockModel model, ModelData modelData) {
+    public record UnbakedModelHolder(BlockModel model, ModelMetadata modelMetadata) {
     }
 }
