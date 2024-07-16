@@ -399,12 +399,11 @@ public class GeneratedMaterial implements Material {
     @Environment(EnvType.CLIENT)
     private void clientSetup() {
         ResourceLocation itemId = BuiltInRegistries.ITEM.getKey(mainIngredient.getItem());
-        StringBuilder iconBuilder = new StringBuilder();
-        iconBuilder.append("{");
-        iconBuilder.append("\"type\": \"").append("item").append("\",");
-        iconBuilder.append("\"item\": \"").append(itemId).append("\"");
-        iconBuilder.append("}");
-        iconJson = Miapi.gson.fromJson(iconBuilder.toString(), JsonObject.class);
+        String iconBuilder = "{" +
+                             "\"type\": \"" + "item" + "\"," +
+                             "\"item\": \"" + itemId + "\"" +
+                             "}";
+        iconJson = Miapi.gson.fromJson(iconBuilder, JsonObject.class);
         icon = MaterialIcons.getMaterialIcon(key, iconJson);
         palette = GrayscalePaletteColorer.createForGeneratedMaterial(this, mainIngredient);
     }
@@ -601,7 +600,7 @@ public class GeneratedMaterial implements Material {
 
             // Matrix to store result of two
             // consecutive rows at a time.
-            int len[][] = new int[2][m];
+            int[][] len = new int[2][m];
 
             // Variable to represent which row of
             // matrix is current row.

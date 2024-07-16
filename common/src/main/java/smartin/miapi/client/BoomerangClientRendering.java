@@ -4,7 +4,6 @@ public class BoomerangClientRendering {
 
     public static void setup(){
         if(true){
-            return;
         }
         /*
         ClientTickEvent.CLIENT_PRE.register((instance -> {

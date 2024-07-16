@@ -22,7 +22,7 @@ public class ReloadEvents {
      */
     public static MiapiRegistry<DataSyncer> dataSyncerRegistry = MiapiRegistry.getInstance(DataSyncer.class);
 
-    private static List<String> receivedSyncer = new ArrayList<>();
+    private static final List<String> receivedSyncer = new ArrayList<>();
 
     /**
      * The packet ID for triggering a server-to-client reload.

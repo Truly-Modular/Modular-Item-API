@@ -18,8 +18,8 @@ import java.util.function.Consumer;
  */
 @Environment(EnvType.CLIENT)
 public class SimpleButton<T> extends InteractAbleWidget {
-    private T toCallback;
-    private Consumer<T> callback;
+    private final T toCallback;
+    private final Consumer<T> callback;
     public boolean isEnabled = true;
 
     /**

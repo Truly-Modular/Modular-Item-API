@@ -161,7 +161,8 @@ public record ItemModule(String name, Map<ModuleProperty<?>, Object> properties)
                 flatList.add(module);
 
                 List<ModuleInstance> submodules = new ArrayList<>();
-                module.subModules.keySet().stream().sorted((a, b) -> b - a).forEach(id -> {
+                //TODO:add prioritized sorting into slot logic
+                module.subModules.keySet().stream().sorted().forEach(id -> {
                     submodules.add(module.subModules.get(id));
                 });
                 queue.addAll(0, submodules);

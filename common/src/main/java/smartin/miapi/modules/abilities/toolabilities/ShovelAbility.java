@@ -39,7 +39,7 @@ public class ShovelAbility extends ToolAbilities {
                 blockState3 = blockState2;
             } else if (blockState.getBlock() instanceof CampfireBlock && blockState.getValue(CampfireBlock.LIT)) {
                 if (!world.isClientSide()) {
-                    world.levelEvent((Player)null, 1009, blockPos, 0);
+                    world.levelEvent(null, 1009, blockPos, 0);
                 }
 
                 CampfireBlock.dowse(context.getPlayer(), world, blockPos, blockState);

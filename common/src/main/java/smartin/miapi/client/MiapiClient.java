@@ -162,15 +162,10 @@ public class MiapiClient {
     }
 
     public static boolean isSodiumLoaded() {
-        if (
-                Platform.isModLoaded("sodium") ||
-                Platform.isModLoaded("embeddium") ||
-                Platform.isModLoaded("magnesium") ||
-                Platform.isModLoaded("rubidium")
-        ) {
-            return true;
-        }
-        return false;
+        return Platform.isModLoaded("sodium") ||
+               Platform.isModLoaded("embeddium") ||
+               Platform.isModLoaded("magnesium") ||
+               Platform.isModLoaded("rubidium");
     }
 
     public static boolean isHigherVersion(String version, String compareToVersion) {

@@ -37,9 +37,7 @@ public class AreaHarvestReplant implements ItemUseDefaultCooldownAbility<AreaHar
                 abilityHitContext.hitEntity() == null &&
                 abilityHitContext.hitResult() != null) {
             BlockState state = abilityHitContext.hitResult().getLevel().getBlockState(abilityHitContext.hitResult().getClickedPos());
-            if (isGrown(state)) {
-                return true;
-            }
+            return isGrown(state);
         }
         return false;
     }

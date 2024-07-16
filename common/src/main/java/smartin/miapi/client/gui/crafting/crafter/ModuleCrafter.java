@@ -35,7 +35,7 @@ public class ModuleCrafter extends InteractAbleWidget {
     private final Consumer<ItemStack> preview;
     private SlotProperty.ModuleSlot baseSlot = new SlotProperty.ModuleSlot(new ArrayList<>());
     private String paketIdentifier;
-    private Container linkedInventory;
+    private final Container linkedInventory;
     EditView editView;
     Consumer<Slot> removeSlot;
     Consumer<Slot> addSlot;

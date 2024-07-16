@@ -93,7 +93,7 @@ public class RiptideAbility implements ItemUseDefaultCooldownAbility<RiptideAbil
                 }
 
                 SoundEvent soundEvent = riptideContextJson.resolveSoundEvent(j);
-                world.playSound((Player) null, playerEntity, soundEvent, SoundSource.PLAYERS, 1.0F, 1.0F);
+                world.playSound(null, playerEntity, soundEvent, SoundSource.PLAYERS, 1.0F, 1.0F);
             }
         }
     }

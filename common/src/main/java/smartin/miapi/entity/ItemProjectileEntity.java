@@ -394,7 +394,6 @@ public class ItemProjectileEntity extends AbstractArrow {
     @Override
     public void addAdditionalSaveData(CompoundTag nbt) {
         super.addAdditionalSaveData(nbt);
-        ;
         nbt.put("ThrownItem", this.thrownStack.save(this.level().registryAccess(), new CompoundTag()));
         nbt.put("BowItem", this.getBowItem().save(this.level().registryAccess(), new CompoundTag()));
         nbt.putBoolean("DealtDamage", this.dealtDamage);

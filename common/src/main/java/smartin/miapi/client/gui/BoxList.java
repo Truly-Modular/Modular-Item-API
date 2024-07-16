@@ -11,7 +11,7 @@ import java.util.*;
 
 @Environment(EnvType.CLIENT)
 public class BoxList extends InteractAbleWidget {
-    private List<List<AbstractWidget>> allRows = new ArrayList<>();
+    private final List<List<AbstractWidget>> allRows = new ArrayList<>();
     private List<? extends AbstractWidget> currentWidgets = new ArrayList<>();
     private int space = 5;
 

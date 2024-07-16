@@ -106,7 +106,7 @@ public class AttributeRegistry {
         MiapiEvents.LIVING_HURT_AFTER_ARMOR.register((livingHurt) -> {
             StunHealthFacet facet = StunHealthFacet.KEY.get(livingHurt.livingEntity);
             if (
-                    livingHurt.damageSource!=null &&
+                    livingHurt.damageSource != null &&
                     livingHurt.damageSource.getEntity() != null &&
                     livingHurt.damageSource.getEntity() instanceof LivingEntity attacker) {
                 if (facet != null && !livingHurt.livingEntity.level().isClientSide()) {
@@ -125,7 +125,7 @@ public class AttributeRegistry {
             ShieldingArmorFacet facet = ShieldingArmorFacet.KEY.get(livingHurt.livingEntity);
             if (facet != null && !livingHurt.livingEntity.level().isClientSide()) {
                 if (
-                        livingHurt.damageSource!=null &&
+                        livingHurt.damageSource != null &&
                         !livingHurt.damageSource.is(DamageTypeTags.BYPASSES_ARMOR)
                 ) {
                     livingHurt.amount = facet.takeDamage(livingHurt.amount);
@@ -146,7 +146,7 @@ public class AttributeRegistry {
         });
 
         PlayerEvent.PLAYER_JOIN.register((player -> {
-            ShieldingArmorFacet facet = ShieldingArmorFacet.KEY.get(player);
+            ShieldingArmorFacet.KEY.get(player);
         }));
 
         MiapiEvents.LIVING_HURT.register((livingHurtEvent -> {
@@ -166,11 +166,11 @@ public class AttributeRegistry {
         }));
         MiapiEvents.LIVING_HURT.register((livingHurtEvent -> {
             if (
-                    livingHurtEvent.damageSource!=null &&
+                    livingHurtEvent.damageSource != null &&
                     livingHurtEvent.damageSource.getEntity() instanceof LivingEntity attacker) {
-                if (attacker.getAttributes().hasAttribute(BACK_STAB)) {
+                if (attacker.getAttributes().hasAttribute(BACK_STAB) && attacker.getAttributes().getInstance(BACK_STAB) != null) {
                     if (livingHurtEvent.damageSource.getEntity().getLookAngle().dot(livingHurtEvent.livingEntity.getLookAngle()) > 0) {
-                        attacker.getAttributes().getInstance(BACK_STAB).addTransientModifier(new AttributeModifier(TEMP_BACKSTAB_DMG_UUID, (double)livingHurtEvent.amount, AttributeModifier.Operation.ADD_VALUE));
+                        attacker.getAttributes().getInstance(BACK_STAB).addTransientModifier(new AttributeModifier(TEMP_BACKSTAB_DMG_UUID, livingHurtEvent.amount, AttributeModifier.Operation.ADD_VALUE));
                         livingHurtEvent.amount = (float) attacker.getAttributeValue(BACK_STAB);
                         attacker.getAttributes().getInstance(BACK_STAB).removeModifier(TEMP_BACKSTAB_DMG_UUID);
                     }
@@ -180,7 +180,7 @@ public class AttributeRegistry {
         }));
         MiapiEvents.LIVING_HURT.register((livingHurtEvent -> {
             if (
-                    livingHurtEvent.damageSource!=null &&
+                    livingHurtEvent.damageSource != null &&
                     livingHurtEvent.damageSource.is(DamageTypeTags.IS_PROJECTILE) &&
                     livingHurtEvent.livingEntity.getAttributes().hasAttribute(PROJECTILE_ARMOR)) {
                 double projectileArmor = livingHurtEvent.livingEntity.getAttributeValue(PROJECTILE_ARMOR);
@@ -193,7 +193,7 @@ public class AttributeRegistry {
         }));
         MiapiEvents.LIVING_HURT_AFTER.register((livingHurtEvent -> {
             if (
-                    livingHurtEvent.damageSource!=null &&
+                    livingHurtEvent.damageSource != null &&
                     livingHurtEvent.damageSource.getEntity() instanceof LivingEntity attacker) {
                 if (attacker.getAttributes().hasAttribute(SHIELD_BREAK)) {
                     double value = attacker.getAttributeValue(SHIELD_BREAK);
@@ -210,7 +210,7 @@ public class AttributeRegistry {
         }));
         MiapiEvents.LIVING_HURT.register((livingHurtEvent -> {
             if (
-                    livingHurtEvent.damageSource!=null &&
+                    livingHurtEvent.damageSource != null &&
                     livingHurtEvent.damageSource.getEntity() instanceof LivingEntity attacker) {
                 if (attacker.getAttributes().hasAttribute(ARMOR_CRUSHING)) {
                     double value = attacker.getAttributeValue(ARMOR_CRUSHING);
@@ -223,25 +223,26 @@ public class AttributeRegistry {
         MiapiProjectileEvents.MODULAR_PROJECTILE_ENTITY_HIT.register(listener -> {
             ItemProjectileEntity projectile = listener.projectile;
             if (projectile.isCritArrow()) {
-                listener.damage = (float) (listener.damage * AttributeProperty.getActualValue(projectile.getPickupItem(), EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_CRIT_MULTIPLIER));
+                //TODO:rework projectile logic as a whole
+                //listener.damage = (float) (listener.damage * AttributeProperty.getActualValue(projectile.getPickupItem(), EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_CRIT_MULTIPLIER));
             }
             return EventResult.pass();
         });
 
         MiapiEvents.LIVING_HURT.register(livingHurtEvent -> {
             if (
-                    livingHurtEvent.damageSource!=null &&
+                    livingHurtEvent.damageSource != null &&
                     livingHurtEvent.damageSource.getEntity() instanceof LivingEntity attacker &&
                     !livingHurtEvent.livingEntity.level().isClientSide()
             ) {
                 if (attacker.getAttributes().hasAttribute(CRITICAL_CHANCE) && !livingHurtEvent.isCritical) {
-                    attacker.getAttributes().getInstance(CRITICAL_CHANCE).addTransientModifier(new AttributeModifier(TEMP_CRIT_DMG_UUID,  1, AttributeModifier.Operation.ADD_VALUE));
+                    attacker.getAttributes().getInstance(CRITICAL_CHANCE).addTransientModifier(new AttributeModifier(TEMP_CRIT_DMG_UUID, 1, AttributeModifier.Operation.ADD_VALUE));
                     double value = attacker.getAttributeValue(CRITICAL_CHANCE) - 1;
                     attacker.getAttributes().getInstance(CRITICAL_CHANCE).removeModifier(TEMP_CRIT_DMG_UUID);
                     if (attacker.level().getRandom().nextDouble() < value) {
                         livingHurtEvent.isCritical = true;
                         livingHurtEvent.amount = livingHurtEvent.amount * 1.5f;
-                        attacker.level().playSound((Player) null, attacker.getX(), attacker.getY(), attacker.getZ(), SoundEvents.PLAYER_ATTACK_CRIT, attacker.getSoundSource(), 1.0F, 1.0F);
+                        attacker.level().playSound(null, attacker.getX(), attacker.getY(), attacker.getZ(), SoundEvents.PLAYER_ATTACK_CRIT, attacker.getSoundSource(), 1.0F, 1.0F);
                         if (attacker instanceof Player player) {
                             player.crit(livingHurtEvent.livingEntity);
                         }
@@ -259,7 +260,7 @@ public class AttributeRegistry {
                         livingHurtEvent.isCritical &&
                         attacker.getAttributes().getInstance(CRITICAL_DAMAGE) != null) {
                     attacker.getAttribute(CRITICAL_DAMAGE);
-                    attacker.getAttributes().getInstance(CRITICAL_DAMAGE).addTransientModifier(new AttributeModifier(TEMP_CRIT_DMG_UUID,  livingHurtEvent.amount / 1.5, AttributeModifier.Operation.ADD_VALUE));
+                    attacker.getAttributes().getInstance(CRITICAL_DAMAGE).addTransientModifier(new AttributeModifier(TEMP_CRIT_DMG_UUID, livingHurtEvent.amount / 1.5, AttributeModifier.Operation.ADD_VALUE));
                     attacker.getAttributes().getInstance(CRITICAL_DAMAGE).addTransientModifier(new AttributeModifier(TEMP_CRIT_DMG_MULTIPLIER_UUID, 0.5, AttributeModifier.Operation.ADD_MULTIPLIED_BASE));
                     livingHurtEvent.amount = (float) attacker.getAttributeValue(CRITICAL_DAMAGE);
                     attacker.getAttributes().getInstance(CRITICAL_DAMAGE).removeModifier(TEMP_CRIT_DMG_UUID);

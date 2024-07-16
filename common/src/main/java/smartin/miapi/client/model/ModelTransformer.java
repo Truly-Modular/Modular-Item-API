@@ -23,9 +23,9 @@ public class ModelTransformer {
 6: Lighting value (assumed to be stored as a packed integer)
 7: Normals (assumed to be stored as a packed integer)
 */
-    private static Map<BakedModel, List<BakedQuad>> inverseMap = new WeakHashMap<>();
-    private static Map<BakedModel, List<BakedQuad>> reScaledMap = new WeakHashMap<>();
-    private static Map<BakedModel, List<BakedQuad>> inversedRescaledMap = new WeakHashMap<>();
+    private static final Map<BakedModel, List<BakedQuad>> inverseMap = new WeakHashMap<>();
+    private static final Map<BakedModel, List<BakedQuad>> reScaledMap = new WeakHashMap<>();
+    private static final Map<BakedModel, List<BakedQuad>> inversedRescaledMap = new WeakHashMap<>();
 
     public static void clearCaches() {
         inverseMap.clear();
@@ -98,9 +98,9 @@ public class ModelTransformer {
         int[] copiedArray = new int[raw.length];
         System.arraycopy(raw, 0, copiedArray, 0, raw.length);
         for (int j = 0; j < 8; j++) {
-            copiedArray[0 * 8 + j] = raw[2 * 8 + j];
-            copiedArray[1 * 8 + j] = raw[1 * 8 + j];
-            copiedArray[2 * 8 + j] = raw[0 * 8 + j];
+            copiedArray[j] = raw[2 * 8 + j];
+            copiedArray[8 + j] = raw[8 + j];
+            copiedArray[2 * 8 + j] = raw[j];
             copiedArray[3 * 8 + j] = raw[3 * 8 + j];
         }
         return copiedArray;

@@ -46,7 +46,7 @@ public class CrystalModel implements MiapiModel {
         float scale = 1.0f / 16.0f;
         matrixStack.scale(scale, scale, scale);
         float h = 0.5f;
-        float j = (age + tickDelta) * 1.0F;
+        float j = (age + tickDelta);
         VertexConsumer vertexConsumer = vertexConsumers.getBuffer(END_CRYSTAL);
         matrixStack.pushPose();
         matrixStack.scale(2.0F, 2.0F, 2.0F);

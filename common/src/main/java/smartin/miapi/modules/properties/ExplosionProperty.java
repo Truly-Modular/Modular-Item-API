@@ -112,7 +112,7 @@ public class ExplosionProperty extends CodecProperty<ExplosionProperty.Explosion
         public void explode(Level world, Entity source, Vec3 position) {
             world.explode(
                     source,
-                    (DamageSource) null,
+                    null,
                     getCalculator(),
                     position,
                     (float) strength,

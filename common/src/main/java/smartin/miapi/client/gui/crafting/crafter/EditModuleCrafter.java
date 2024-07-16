@@ -29,7 +29,7 @@ import java.util.function.Consumer;
 public class EditModuleCrafter extends InteractAbleWidget {
     public ItemStack stack;
     public SlotProperty.ModuleSlot slot;
-    private SlotProperty.ModuleSlot baseSlot = new SlotProperty.ModuleSlot(new ArrayList<>());
+    private final SlotProperty.ModuleSlot baseSlot = new SlotProperty.ModuleSlot(new ArrayList<>());
     Consumer<SlotProperty.ModuleSlot> selected;
     EditView editView;
     public CraftingScreenHandler handler;

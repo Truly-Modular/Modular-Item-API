@@ -20,7 +20,7 @@ public class BoomerangItemProjectileEntity extends ItemProjectileEntity {
     public Entity currentTarget = null;
 
     public BoomerangItemProjectileEntity(EntityType<? extends Entity> entityType, Level world) {
-        super((EntityType<? extends AbstractArrow>) entityType, world);
+        super(entityType, world);
     }
 
     public BoomerangItemProjectileEntity(Level world, Position position, ItemStack itemStack) {

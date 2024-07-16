@@ -33,8 +33,8 @@ public class HoeAbility extends ToolAbilities {
         if (pair == null) {
             return InteractionResult.PASS;
         } else {
-            Predicate<UseOnContext> predicate = (Predicate) pair.getFirst();
-            Consumer<UseOnContext> consumer = (Consumer) pair.getSecond();
+            Predicate<UseOnContext> predicate = pair.getFirst();
+            Consumer<UseOnContext> consumer = pair.getSecond();
             if (predicate.test(context)) {
                 Player playerEntity = context.getPlayer();
                 world.playSound(playerEntity, blockPos, SoundEvents.HOE_TILL, SoundSource.BLOCKS, 1.0F, 1.0F);

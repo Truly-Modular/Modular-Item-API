@@ -22,7 +22,7 @@ public record TextureOptions(ResourceLocation texture, int xSize, int ySize, int
             color = (int) (longValue & 0xffffffffL);
         }
         int scale = jsonObject.has("scale") ? jsonObject.get("scale").getAsInt() : 1;
-        boolean keepScale = jsonObject.has("keepScale") ? jsonObject.get("keepScale").getAsBoolean() : false;
+        boolean keepScale = jsonObject.has("keepScale") && jsonObject.get("keepScale").getAsBoolean();
         return new TextureOptions(textureValue, xSizeValue, ySizeValue, borderSizeValue, color, scale, keepScale);
     }
 }

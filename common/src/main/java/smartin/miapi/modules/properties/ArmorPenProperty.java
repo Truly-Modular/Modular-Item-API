@@ -24,7 +24,7 @@ import java.util.WeakHashMap;
 public class ArmorPenProperty extends DoubleProperty {
     public static final String KEY = "armor_pen";
     public static ArmorPenProperty property;
-    private static WeakHashMap<LivingEntity, Multimap<Holder<Attribute>, AttributeModifier>> cache = new WeakHashMap<>();
+    private static final WeakHashMap<LivingEntity, Multimap<Holder<Attribute>, AttributeModifier>> cache = new WeakHashMap<>();
 
     public ArmorPenProperty() {
         super(KEY);

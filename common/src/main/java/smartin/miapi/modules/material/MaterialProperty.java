@@ -4,13 +4,17 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.serialization.Codec;
 import dev.architectury.event.events.common.LifecycleEvent;
+import net.minecraft.client.Minecraft;
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.MiapiClient;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ModuleInstance;
+import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
@@ -18,19 +22,17 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.world.item.ItemStack;
-
 /**
  * This is the Property relating to materials of a Module
  */
-public class MaterialProperty implements ModuleProperty {
+public class MaterialProperty extends CodecProperty<String> {
     public static final String KEY = "material";
     public static ModuleProperty property;
     public static Map<String, Material> materials = new ConcurrentHashMap<>() {
     };
 
     public MaterialProperty() {
+        super(Codec.STRING);
         property = this;
         StatResolver.registerResolver(KEY, new StatResolver.Resolver() {
             @Override
@@ -106,6 +108,11 @@ public class MaterialProperty implements ModuleProperty {
         }));
     }
 
+    @Override
+    public String merge(String left, String right, MergeType mergeType) {
+        return ModuleProperty.decideLeftRight(left, right, mergeType);
+    }
+
     public static class CurrentThreadExecutor implements Executor {
         public void execute(Runnable r) {
             r.run();
@@ -120,24 +127,6 @@ public class MaterialProperty implements ModuleProperty {
             textureKeys.addAll(material.getTextureKeys());
         }
         return new ArrayList<>(textureKeys);
-    }
-
-    @Override
-    public boolean load(String moduleKey, JsonElement data) throws Exception {
-        return true;
-    }
-
-    @Override
-    public JsonElement merge(JsonElement old, JsonElement toMerge, MergeType type) {
-        switch (type) {
-            case EXTEND -> {
-                return old;
-            }
-            case SMART, OVERWRITE -> {
-                return toMerge;
-            }
-        }
-        return old;
     }
 
     /**
@@ -186,11 +175,10 @@ public class MaterialProperty implements ModuleProperty {
      */
     @Nullable
     public static Material getMaterial(ModuleInstance instance) {
-        JsonElement element = instance.getOldProperties().get(property);
-        if (element != null) {
-            Material basicMaterial = materials.get(element.getAsString());
-            if (basicMaterial != null) {
-                return basicMaterial.getMaterial(instance);
+        if (property.getData(instance).isPresent()) {
+            Material material = MaterialProperty.materials.get(property.getData(instance).get());
+            if (material != null) {
+                return material;
             }
         }
         if (CopyParentMaterialProperty.property.isTrue(instance) && instance.parent != null) {
@@ -200,22 +188,15 @@ public class MaterialProperty implements ModuleProperty {
     }
 
     /**
-     * Gets the used Material of a ModuleInstance
+     * Gets the used Material of some Properties
      *
-     * @param instance
      * @return
      */
     @Nullable
     public static Material getMaterial(Map<ModuleProperty<?>, Object> properties) {
-        JsonElement element = instance.getOldProperties().get(property);
-        if (element != null) {
-            Material basicMaterial = materials.get(element.getAsString());
-            if (basicMaterial != null) {
-                return basicMaterial.getMaterial(instance);
-            }
-        }
-        if (CopyParentMaterialProperty.property.isTrue(instance) && instance.parent != null) {
-            return getMaterial(instance.parent);
+        String id = (String) properties.get(property);
+        if (id != null) {
+            return MaterialProperty.materials.get(id);
         }
         return null;
     }

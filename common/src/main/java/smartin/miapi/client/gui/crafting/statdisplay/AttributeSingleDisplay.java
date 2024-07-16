@@ -141,15 +141,10 @@ public class AttributeSingleDisplay extends SingleStatDisplayDouble {
         list = list.stream().filter(attribute -> attribute.operation().equals(operation)).toList();
         if (operation.equals(AttributeModifier.Operation.ADD_VALUE)) {
             double value = AttributeUtil.getActualValue(list, attribute.getDefaultValue());
-            if (
-                    value != attribute.getDefaultValue() && !Double.isNaN(value)
-            ) {
-                return true;
-            }
+            return value != attribute.getDefaultValue() && !Double.isNaN(value);
         } else {
             return !list.isEmpty();
         }
-        return false;
     }
 
     public static Builder builder(Holder<Attribute> attribute) {

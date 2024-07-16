@@ -47,7 +47,7 @@ public class OverlayModelProperty extends CodecProperty<List<OverlayModelPropert
             for (ModuleInstance module2 : ItemModule.getModules(stack).allSubModules()) {
                 for (OverlayModelData modelData : getData(module2).orElse(new ArrayList<>())) {
                     if (!modelData.onlyOnSameModule() || moduleInstance.equals(module2)) {
-                        List<ModelProperty.ModelJson> list = ModelProperty.getJson(moduleInstance);
+                        List<ModelProperty.ModelData> list = ModelProperty.property.getData(moduleInstance).orElse(new ArrayList<>());
 
                         list.forEach(modelJson -> {
                             if (modelData.isValid(modelJson)) {
@@ -163,7 +163,7 @@ public class OverlayModelProperty extends CodecProperty<List<OverlayModelPropert
             return !allowOtherModules;
         }
 
-        public boolean isValid(ModelProperty.ModelJson modelJson) {
+        public boolean isValid(ModelProperty.ModelData modelJson) {
             Pattern pattern = Pattern.compile(modelTargetInfo);
             switch (modelTargetType) {
                 case "id": {

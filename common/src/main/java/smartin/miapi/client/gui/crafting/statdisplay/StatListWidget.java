@@ -42,8 +42,8 @@ public class StatListWidget extends InteractAbleWidget {
     private static final List<StatWidgetSupplier> statWidgetSupplier = new ArrayList<>();
     public static final Map<String, JsonConverter> jsonConverterMap = new HashMap<>();
     private final BoxList boxList;
-    private TransformableWidget transformableWidget;
-    private TransformableWidget hoverText;
+    private final TransformableWidget transformableWidget;
+    private final TransformableWidget hoverText;
     private ItemStack original = ItemStack.EMPTY;
     private ItemStack compareTo = ItemStack.EMPTY;
 

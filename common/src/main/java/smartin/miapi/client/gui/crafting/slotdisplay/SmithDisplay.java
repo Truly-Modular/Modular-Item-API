@@ -20,7 +20,7 @@ import smartin.miapi.client.gui.InteractAbleWidget;
 public class SmithDisplay extends InteractAbleWidget {
     public static final Quaternionf ARMOR_STAND_ROTATION = new Quaternionf().rotationXYZ(0.43633232f, 0.0f, (float) Math.PI);
     @Nullable
-    private ArmorStand armorStand;
+    private final ArmorStand armorStand;
 
     public SmithDisplay(int x, int y, int width, int height) {
         super(x, y, width, height, Component.empty());
@@ -48,8 +48,7 @@ public class SmithDisplay extends InteractAbleWidget {
         if (!stack.isEmpty()) {
             ItemStack itemStack = stack;
             Item item = stack.getItem();
-            if (item instanceof ArmorItem) {
-                ArmorItem armorItem = (ArmorItem) item;
+            if (item instanceof ArmorItem armorItem) {
                 this.armorStand.setItemSlot(armorItem.getEquipmentSlot(), itemStack);
             } else {
                 this.armorStand.setItemSlot(EquipmentSlot.OFFHAND, itemStack);
@@ -70,7 +69,7 @@ public class SmithDisplay extends InteractAbleWidget {
                 0,
                 mouseX,
                 mouseY,
-                (LivingEntity) this.armorStand);
+                this.armorStand);
         //context.disableScissor();
         super.render(context, mouseX, mouseY, delta);
     }

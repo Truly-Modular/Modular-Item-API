@@ -77,10 +77,10 @@ public class ReplaceView extends InteractAbleWidget {
     }
 
     class SlotButton extends InteractAbleWidget {
-        private ScrollingTextWidget textWidget;
-        private CraftOption option;
+        private final ScrollingTextWidget textWidget;
+        private final CraftOption option;
         private boolean isAllowed = true;
-        private HoverDescription hoverDescription;
+        private final HoverDescription hoverDescription;
 
 
         public SlotButton(int x, int y, int width, int height, CraftOption option) {

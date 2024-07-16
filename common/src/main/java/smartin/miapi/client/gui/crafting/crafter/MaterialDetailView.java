@@ -19,12 +19,12 @@ import net.minecraft.util.FastColor;
 import net.minecraft.world.item.ItemStack;
 
 public class MaterialDetailView extends InteractAbleWidget {
-    private ItemStack itemStack;
-    private Consumer<Object> back;
-    private ScrollingTextWidget header;
-    private Material material;
-    private ResourceLocation texture = ResourceLocation.fromNamespaceAndPath(Miapi.MOD_ID, "textures/gui/crafter/material_detail_background.png");
-    private float scale = 1.5f;
+    private final ItemStack itemStack;
+    private final Consumer<Object> back;
+    private final ScrollingTextWidget header;
+    private final Material material;
+    private final ResourceLocation texture = ResourceLocation.fromNamespaceAndPath(Miapi.MOD_ID, "textures/gui/crafter/material_detail_background.png");
+    private final float scale = 1.5f;
     public static List<Builder> infoBarBuilders = new ArrayList<>();
 
     static {

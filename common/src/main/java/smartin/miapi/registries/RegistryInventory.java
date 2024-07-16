@@ -47,7 +47,6 @@ import smartin.miapi.Miapi;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.blocks.ModularWorkBench;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
-import smartin.miapi.blueprint.BlueprintProperty;
 import smartin.miapi.client.MiapiClient;
 import smartin.miapi.client.atlas.MaterialAtlasManager;
 import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
@@ -224,7 +223,7 @@ public class RegistryInventory {
         register(screenHandlers, "default_crafting", () ->
                         new MenuType<>(CraftingScreenHandler::new, FeatureFlagSet.of()),
                 scr -> {
-                    craftingScreenHandler = (MenuType<CraftingScreenHandler>) scr;
+                    craftingScreenHandler = scr;
                     if (Platform.getEnvironment() == Env.CLIENT) MiapiClient.registerScreenHandler();
                 });
 
@@ -475,7 +474,6 @@ public class RegistryInventory {
             if (smartin.miapi.Environment.isClient()) {
                 registerMiapi(moduleProperties, ModelProperty.KEY, new ModelProperty());
                 registerMiapi(moduleProperties, ModelTransformationProperty.KEY, new ModelTransformationProperty());
-                registerMiapi(moduleProperties, ModelMergeProperty.KEY, new ModelMergeProperty());
                 registerMiapi(moduleProperties, GuiOffsetProperty.KEY, new GuiOffsetProperty());
                 registerMiapi(moduleProperties, ItemModelProperty.KEY, new ItemModelProperty());
                 registerMiapi(moduleProperties, BannerModelProperty.KEY, new BannerModelProperty());
@@ -546,7 +544,6 @@ public class RegistryInventory {
             registerMiapi(moduleProperties, IllagerBane.KEY, new IllagerBane());
             registerMiapi(moduleProperties, PillagesGuard.KEY, new PillagesGuard());
             registerMiapi(moduleProperties, LuminousLearningProperty.KEY, new LuminousLearningProperty());
-            registerMiapi(moduleProperties, BlueprintProperty.KEY, new BlueprintProperty());
             registerMiapi(moduleProperties, WaterGravityProperty.KEY, new WaterGravityProperty());
             registerMiapi(moduleProperties, CraftingEnchantProperty.KEY, new CraftingEnchantProperty());
             registerMiapi(moduleProperties, ExhaustionProperty.KEY, new ExhaustionProperty());
@@ -595,7 +592,7 @@ public class RegistryInventory {
 
             Miapi.LOGGER.info("Registered Truly Modulars Property resolvers:");
             PropertyResolver.registry.forEach((pair) -> {
-                Miapi.LOGGER.info("registered resolver: " + pair.getA().toString());
+                Miapi.LOGGER.info("registered resolver: " + pair.getA());
             });
         });
     }

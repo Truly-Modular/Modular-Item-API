@@ -49,7 +49,7 @@ public class AxeAbility extends ToolAbilities {
 
     private Optional<BlockState> getStrippedState(BlockState state) {
         return Optional.ofNullable(AxeItemAccessor.getSTRIPPABLES().get(state.getBlock())).map((block) -> {
-            return (BlockState) block.defaultBlockState().setValue(RotatedPillarBlock.AXIS, state.getValue(RotatedPillarBlock.AXIS));
+            return block.defaultBlockState().setValue(RotatedPillarBlock.AXIS, state.getValue(RotatedPillarBlock.AXIS));
         });
     }
 }

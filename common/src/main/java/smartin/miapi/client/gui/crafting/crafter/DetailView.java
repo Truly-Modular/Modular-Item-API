@@ -84,8 +84,8 @@ public class DetailView extends InteractAbleWidget {
         private final SlotProperty.ModuleSlot slot;
         private final Material material;
         private final int level;
-        private boolean isOpened = false;
-        private boolean isSelected = false;
+        private final boolean isOpened = false;
+        private final boolean isSelected = false;
 
 
         public SlotButton(int x, int y, int width, int height, SlotProperty.ModuleSlot slot, int level) {
@@ -135,10 +135,7 @@ public class DetailView extends InteractAbleWidget {
             if (this.slot == selectedSlot) {
                 return true;
             }
-            if (this.slot != null && slot.equals(selectedSlot)) {
-                return true;
-            }
-            return false;
+            return this.slot != null && slot.equals(selectedSlot);
         }
 
         public boolean mouseClicked(double mouseX, double mouseY, int button) {

@@ -56,10 +56,7 @@ public class CraftingConditionProperty extends CodecProperty<CraftingConditionPr
         if (json != null && !json.selectAble.isAllowed(context.copy())) {
             return false;
         }
-        if (CAN_CRAFT_SELECT_EVENT.invoker().craft(slot, module, context).interruptsFurtherEvaluation()) {
-            return false;
-        }
-        return true;
+        return !CAN_CRAFT_SELECT_EVENT.invoker().craft(slot, module, context).interruptsFurtherEvaluation();
     }
 
     public static List<Component> getReasonsForSelectable(SlotProperty.ModuleSlot slot, ItemModule module, Player entity, BlockPos pos) {
@@ -92,10 +89,7 @@ public class CraftingConditionProperty extends CodecProperty<CraftingConditionPr
             module = ItemModule.empty;
         }
         ConditionManager.ConditionContext context = ConditionManager.fullContext(new ModuleInstance(module), bench.getBlockPos(), player, module.properties());
-        if (json != null && json.craftAble.isAllowed(context)) {
-            return false;
-        }
-        return true;
+        return json == null || !json.craftAble.isAllowed(context);
     }
 
     @Override

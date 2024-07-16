@@ -108,11 +108,7 @@ class SkinTabGui extends InteractAbleWidget implements SkinGui.SortAble {
     }
 
     private boolean isMouseOverReal(double mouseX, double mouseY) {
-        if (mouseY > this.getY() && mouseY < this.getY() + realHeight && (mouseX > this.getX() && mouseX < this.getX() + width)) {
-            return true;
-
-        }
-        return false;
+        return mouseY > this.getY() && mouseY < this.getY() + realHeight && (mouseX > this.getX() && mouseX < this.getX() + width);
     }
 
     public void setY(int y) {

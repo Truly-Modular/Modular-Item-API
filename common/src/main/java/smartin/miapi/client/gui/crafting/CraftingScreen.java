@@ -87,7 +87,7 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
     }
 
     public void selectSlot(SlotProperty.ModuleSlot slot) {
-        this.slot = slot;
+        CraftingScreen.slot = slot;
         updateEditOptions();
     }
 
@@ -98,7 +98,7 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
     }
 
     public void selectEditOption(EditOption editOption) {
-        this.editOption = editOption;
+        CraftingScreen.editOption = editOption;
         moduleCrafter.setSelectedSlot(slot);
         moduleCrafter.setEditMode(editOption, get(editOption));
         PreviewManager.resetCursorStack();

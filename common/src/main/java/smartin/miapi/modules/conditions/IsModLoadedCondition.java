@@ -31,9 +31,6 @@ public class IsModLoadedCondition implements ModuleCondition {
 
     @Override
     public boolean isAllowed(ConditionManager.ConditionContext conditionContext) {
-        if(Platform.isModLoaded(mod)) {
-            return true;
-        }
-        return false;
+        return Platform.isModLoaded(mod);
     }
 }

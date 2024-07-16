@@ -233,11 +233,11 @@ public class CraftViewRework extends InteractAbleWidget {
     }
 
     public static class PageButton<T> extends SimpleButton<T> {
-        private boolean isLeft;
-        private ResourceLocation texture;
+        private final boolean isLeft;
+        private final ResourceLocation texture;
         private boolean isClicked;
-        private ResourceLocation right = ResourceLocation.fromNamespaceAndPath(Miapi.MOD_ID, "textures/button_right.png");
-        private ResourceLocation left = ResourceLocation.fromNamespaceAndPath(Miapi.MOD_ID, "textures/button_left.png");
+        private final ResourceLocation right = ResourceLocation.fromNamespaceAndPath(Miapi.MOD_ID, "textures/button_right.png");
+        private final ResourceLocation left = ResourceLocation.fromNamespaceAndPath(Miapi.MOD_ID, "textures/button_left.png");
 
         public PageButton(int x, int y, int width, int height, boolean isLeft, T toCallBack, Consumer<T> callback) {
             super(x, y, width, height, Component.empty(), toCallBack, callback);

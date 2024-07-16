@@ -35,6 +35,7 @@ import smartin.miapi.network.Networking;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static net.minecraft.world.inventory.InventoryMenu.BLOCK_ATLAS;
@@ -55,7 +56,7 @@ public class CraftingScreenHandler extends AbstractContainerMenu {
     public final String packetIDSlotAdd;
     public final String packetIDSlotRemove;
     public CraftingScreenHandler craftingScreenHandler;
-    private List<Slot> mutableSlots = new ArrayList<>();
+    private final List<Slot> mutableSlots = new ArrayList<>();
 
     static final ResourceLocation[] EMPTY_ARMOR_SLOT_TEXTURES = new ResourceLocation[]{InventoryMenu.EMPTY_ARMOR_SLOT_BOOTS, InventoryMenu.EMPTY_ARMOR_SLOT_LEGGINGS, InventoryMenu.EMPTY_ARMOR_SLOT_CHESTPLATE, InventoryMenu.EMPTY_ARMOR_SLOT_HELMET};
     private static final EquipmentSlot[] EQUIPMENT_SLOT_ORDER = new EquipmentSlot[]{EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET};
@@ -140,9 +141,7 @@ public class CraftingScreenHandler extends AbstractContainerMenu {
                 ItemStack stack = ModularItemStackConverter.getModularVersion(inventory.getItem(0));
                 ModuleInstance root = ItemModule.getModules(stack);
                 List<String> position = new ArrayList<>();
-                for (String value : array) {
-                    position.add(value);
-                }
+                Collections.addAll(position, array);
                 ModuleInstance current = root.getPosition(position).copy();
 
                 SlotProperty.ModuleSlot slot = SlotProperty.getSlotIn(current);
@@ -257,7 +256,7 @@ public class CraftingScreenHandler extends AbstractContainerMenu {
                 @Override
                 public boolean mayPickup(Player playerEntity) {
                     ItemStack itemStack = this.getItem();
-                    return !itemStack.isEmpty() && !playerEntity.isCreative() && EnchantmentHelper.has(itemStack, EnchantmentEffectComponents.PREVENT_ARMOR_CHANGE) ? false : super.mayPickup(playerEntity);
+                    return (itemStack.isEmpty() || playerEntity.isCreative() || !EnchantmentHelper.has(itemStack, EnchantmentEffectComponents.PREVENT_ARMOR_CHANGE)) && super.mayPickup(playerEntity);
                 }
 
                 @Override

@@ -13,12 +13,15 @@ import net.minecraft.client.renderer.item.ItemPropertyFunction;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.client.model.DynamicBakery;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Environment(EnvType.CLIENT)
 public class BakedSingleModelOverrides extends ItemOverrides {
@@ -51,9 +54,8 @@ public class BakedSingleModelOverrides extends ItemOverrides {
 
 
     @Override
-    public BakedModel resolve(BakedModel model, ItemStack stack, @Nullable ClientLevel world, @Nullable LivingEntity entity, int seed) {
+    public BakedModel resolve(@NotNull BakedModel model, @NotNull ItemStack stack, @Nullable ClientLevel world, @Nullable LivingEntity entity, int seed) {
         if (this.dynamicOverrides.length != 0) {
-            Item item = stack.getItem();
             int i = this.dynamicConditionTypes.length;
             float[] fs = new float[i];
 
@@ -144,9 +146,7 @@ public class BakedSingleModelOverrides extends ItemOverrides {
                 }
             }
             if (obj instanceof ItemOverride.Predicate otherCondition) {
-                if (otherCondition.getProperty().equals(this.type) && otherCondition.getValue() == this.threshold) {
-                    return true;
-                }
+                return otherCondition.getProperty().equals(this.type) && otherCondition.getValue() == this.threshold;
             }
             return false;
         }
