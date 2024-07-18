@@ -147,11 +147,6 @@ public class StatListWidget extends InteractAbleWidget {
                 .setFormat("##.##")
                 .setMax(10).build());
         addStatDisplay(SinglePropertyStatDisplay
-                .builder(FlexibilityProperty.property)
-                .setTranslationKey(FlexibilityProperty.KEY)
-                .setMax(10)
-                .build());
-        addStatDisplay(SinglePropertyStatDisplay
                 .builder(HealthPercentDamage.property)
                 .setMax(50)
                 .setTranslationKey(HealthPercentDamage.KEY).build());
@@ -309,7 +304,7 @@ public class StatListWidget extends InteractAbleWidget {
                 .setTranslationKey(PillagesGuard.KEY)
                 .setHoverDescription(
                         (stack -> {
-                            double value = PillagesGuard.valueRemap(PillagesGuard.property.getValueSafe(stack));
+                            double value = PillagesGuard.valueRemap(PillagesGuard.property.getValue(stack).orElse(0.0));
                             value = (double) Math.round((1 - value) * 1000) / 10;
                             return Component.translatable("miapi.stat.pillagerGuard.description", value);
                         })).build());

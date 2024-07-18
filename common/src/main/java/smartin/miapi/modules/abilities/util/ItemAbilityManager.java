@@ -71,7 +71,7 @@ public class ItemAbilityManager {
 
     private static AbilityHolder<?> getAbility(ItemStack itemStack, Level world, Player player, InteractionHand hand, AbilityHitContext abilityHitContext) {
         AbilityMangerProperty.property.getData(itemStack);
-        for (Map.Entry<ItemUseAbility<?>, Object> entry : AbilityMangerProperty.property.getData(itemStack).entrySet()) {
+        for (Map.Entry<ItemUseAbility<?>, Object> entry : AbilityMangerProperty.property.getData(itemStack).orElse(new HashMap<>()).entrySet()) {
             if (entry.getKey().allowedOnItem(itemStack, world, player, hand, abilityHitContext)) {
                 //return new Pair<>(entry.getKey(), entry.getValue());
                 return new AbilityHolder<>(entry.getKey(), entry.getKey().castTo(entry.getValue()));

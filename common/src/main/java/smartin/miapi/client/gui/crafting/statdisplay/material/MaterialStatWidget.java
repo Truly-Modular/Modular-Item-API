@@ -1,19 +1,17 @@
 package smartin.miapi.client.gui.crafting.statdisplay.material;
 
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.ItemStack;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.ScrollList;
 import smartin.miapi.client.gui.crafting.statdisplay.StatListWidget;
 import smartin.miapi.modules.ItemModule;
-import smartin.miapi.modules.ModuleDataPropertiesManager;
 import smartin.miapi.modules.ModuleInstance;
-import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.material.Material;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.util.ArrayList;
 import java.util.List;
-import net.minecraft.network.chat.Component;
-import net.minecraft.world.item.ItemStack;
 
 public class MaterialStatWidget extends InteractAbleWidget {
 
@@ -37,9 +35,8 @@ public class MaterialStatWidget extends InteractAbleWidget {
              */
             //TODO:FUCK. I CANT ENCODE PROPERTIES ATM. should i add a custom resolver for this? should i implement encoding?
 
-            ModuleDataPropertiesManager.setProperties(moduleInstance, material.getDisplayMaterialProperties(propertyKey));
+            //ModuleDataPropertiesManager.setProperties(moduleInstance, material.getDisplayMaterialProperties(propertyKey));
             moduleInstance.writeToItem(compareMaterial);
-            ModularItemCache.clearUUIDFor(compareMaterial);
             StatListWidget.setAttributeCaches(compareMaterial, compareMaterial);
             List<InteractAbleWidget> stats = StatListWidget.collectWidgets(compareMaterial, compareMaterial);
             if (!stats.isEmpty()) {

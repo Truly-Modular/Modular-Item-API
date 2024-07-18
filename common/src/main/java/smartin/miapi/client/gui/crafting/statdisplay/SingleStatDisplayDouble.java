@@ -118,7 +118,7 @@ public abstract class SingleStatDisplayDouble extends InteractAbleWidget impleme
     public abstract double getValue(ItemStack stack);
 
     @Override
-    public void render(GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
+    public void renderWidget(GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
         //double oldValue = getInt(original);
         //double compareToValue = getInt(compareTo);
 

@@ -24,12 +24,14 @@ public class SinglePropertyStatDisplay extends SingleStatDisplayDouble {
     @Override
     public boolean shouldRender(ItemStack original, ItemStack compareTo) {
         super.shouldRender(original, compareTo);
-        return (property.hasValue(original) && property.getValue(original) != 0) || (property.hasValue(compareTo) && property.getValue(compareTo) != 0);
+        return property.getValue(original).isEmpty() && property.getValue(compareTo).isEmpty() ||
+               property.getValue(original).orElse(0.0) == 0.0 &&
+               property.getValue(compareTo).orElse(0.0) == 0.0;
     }
 
     @Override
     public double getValue(ItemStack stack) {
-        return property.getValueSafeRaw(stack);
+        return property.getValue(stack).orElse(0.0);
     }
 
     public static Builder builder(DoubleProperty property) {
@@ -75,8 +77,8 @@ public class SinglePropertyStatDisplay extends SingleStatDisplayDouble {
 
         public Builder setTranslationKey(String key) {
             translationKey = key;
-            name = (stack) -> Component.translatable(Miapi.MOD_ID + ".stat." + key, modifierFormat.format(property.getValueSafe(stack)));
-            hoverDescription = (stack) -> Component.translatable(Miapi.MOD_ID + ".stat." + key + ".description", modifierFormat.format(property.getValueSafe(stack)));
+            name = (stack) -> Component.translatable(Miapi.MOD_ID + ".stat." + key, modifierFormat.format(property.getValue(stack).orElse(0.0)));
+            hoverDescription = (stack) -> Component.translatable(Miapi.MOD_ID + ".stat." + key + ".description", modifierFormat.format(property.getValue(stack).orElse(0.0)));
             return this;
         }
 

@@ -3,23 +3,8 @@ package smartin.miapi.events;
 import com.google.common.collect.Multimap;
 import com.redpxnda.nucleus.event.PrioritizedEvent;
 import dev.architectury.event.EventResult;
-import net.minecraft.core.RegistryAccess;
-import net.minecraft.world.item.TieredItem;
-import org.jetbrains.annotations.Nullable;
-import smartin.miapi.blocks.ModularWorkBenchEntity;
-import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
-import smartin.miapi.craft.CraftAction;
-import smartin.miapi.craft.stat.StatProvidersMap;
-import smartin.miapi.entity.ItemProjectileEntity;
-import smartin.miapi.modules.ModuleInstance;
-import smartin.miapi.modules.material.GeneratedMaterial;
-import smartin.miapi.modules.material.Material;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.valueproviders.IntProvider;
 import net.minecraft.world.damagesource.DamageSource;
@@ -34,7 +19,21 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TieredItem;
+import org.jetbrains.annotations.Nullable;
+import smartin.miapi.blocks.ModularWorkBenchEntity;
+import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
+import smartin.miapi.craft.CraftAction;
+import smartin.miapi.craft.stat.StatProvidersMap;
+import smartin.miapi.entity.ItemProjectileEntity;
+import smartin.miapi.modules.ModuleInstance;
+import smartin.miapi.modules.material.Material;
+import smartin.miapi.modules.material.generated.GeneratedMaterial;
 import smartin.miapi.modules.properties.util.ComponentApplyProperty;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class MiapiEvents {
     public static final PrioritizedEvent<LivingAttackEvent> LIVING_ATTACK = PrioritizedEvent.createEventResult();
