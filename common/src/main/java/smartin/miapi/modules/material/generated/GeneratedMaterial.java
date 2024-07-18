@@ -32,6 +32,7 @@ import smartin.miapi.modules.material.palette.GrayscalePaletteColorer;
 import smartin.miapi.modules.material.palette.MaterialRenderController;
 import smartin.miapi.modules.properties.attributes.AttributeUtil;
 import smartin.miapi.modules.properties.util.ModuleProperty;
+import smartin.miapi.registries.FakeTranslation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -186,6 +187,7 @@ public class GeneratedMaterial implements Material {
     public void setupClient() {
         palette = GrayscalePaletteColorer.createForGeneratedMaterial(this, mainIngredient);
         icon = new MaterialIcons.ItemMaterialIcon(mainIngredient, 0, null);
+        FakeTranslation.translations.put(getLangKey(), NamingUtil.generateTranslation(toolItems, mainIngredient));
     }
 
     @Override

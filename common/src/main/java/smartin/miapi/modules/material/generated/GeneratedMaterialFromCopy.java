@@ -28,6 +28,7 @@ import smartin.miapi.modules.material.palette.FallbackColorer;
 import smartin.miapi.modules.material.palette.GrayscalePaletteColorer;
 import smartin.miapi.modules.material.palette.MaterialRenderController;
 import smartin.miapi.modules.properties.util.ModuleProperty;
+import smartin.miapi.registries.FakeTranslation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -82,6 +83,9 @@ public class GeneratedMaterialFromCopy implements Material {
         stats.put("enchantability", other.getDouble("enchantability"));
         stats.put("armor_durability_offset", other.getDouble("armor_durability_offset"));
         MiapiEvents.GENERATE_MATERIAL_CONVERTERS.invoker().generated(this, new ArrayList<>(), smartin.miapi.Environment.isClient());
+        if(smartin.miapi.Environment.isClient()){
+            setupClient();
+        }
     }
 
     public String getLangKey() {
@@ -92,6 +96,7 @@ public class GeneratedMaterialFromCopy implements Material {
     public void setupClient() {
         palette = GrayscalePaletteColorer.createForGeneratedMaterial(this, mainIngredient);
         icon = new MaterialIcons.ItemMaterialIcon(mainIngredient, 0, null);
+        FakeTranslation.translations.put(getLangKey(), NamingUtil.generateTranslation(new ArrayList<>(), mainIngredient));
     }
 
     @Override

@@ -1,8 +1,8 @@
 package smartin.miapi.modules.material.generated;
 
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TieredItem;
 import smartin.miapi.Miapi;
 
 import java.util.ArrayList;
@@ -14,7 +14,7 @@ import java.util.Map;
  * this class handles finding a sensible name for Generated Materials
  */
 public class NamingUtil {
-    public static String generateTranslation(List<Item> items, ItemStack mainIngredient) {
+    public static String generateTranslation(List<TieredItem> items, ItemStack mainIngredient) {
         List<String> names = new ArrayList<>();
         items.forEach(item -> names.add(Component.translatable(item.getDescriptionId()).getString()));
         String materialName = Component.translatable(mainIngredient.getDescriptionId()).getString();
