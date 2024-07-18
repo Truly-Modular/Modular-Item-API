@@ -1,26 +1,28 @@
 package smartin.miapi.modules.material;
 
 import com.google.gson.JsonElement;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.JsonOps;
 import dev.architectury.event.EventResult;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
-import net.minecraft.nbt.TagParser;
 import net.minecraft.world.item.ItemStack;
+import smartin.miapi.Miapi;
 import smartin.miapi.events.MiapiEvents;
-import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
+import smartin.miapi.modules.properties.util.CodecProperty;
+import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
+import java.util.Optional;
+
 /**
- * This Property allows to designate the Item as Tool or Weapon,
- * mainly affecting durability calculations
+ * This Property allows you to write the material Itemstack into the module it was used to craft it
  */
-public class MaterialInscribeDataProperty implements ModuleProperty {
+public class MaterialInscribeDataProperty extends CodecProperty<String> {
     public static final String KEY = "inscribe_data_on_craft";
     public static MaterialInscribeDataProperty property;
 
     public MaterialInscribeDataProperty() {
+        super(Codec.STRING);
         property = this;
         MiapiEvents.MATERIAL_CRAFT_EVENT.register((listener) -> {
             listener.crafted = inscribe(listener);
@@ -30,34 +32,35 @@ public class MaterialInscribeDataProperty implements ModuleProperty {
 
     public static ItemStack inscribe(MiapiEvents.MaterialCraftEventData data) {
         ItemStack raw = data.crafted;
-        JsonElement element = ItemModule.getMergedProperty(raw, property);
-        if (element != null) {
-            inscribeModuleInstance(data.moduleInstance, data.materialStack.copy(), element.getAsString());
+        Optional<String> optional = property.getData(data.moduleInstance);
+        if (optional.isPresent()) {
+            inscribeModuleInstance(data.moduleInstance, data.materialStack.copy(), optional.get());
             data.moduleInstance.getRoot().writeToItem(data.crafted);
         }
         return raw;
     }
 
     public static void inscribeModuleInstance(ModuleInstance moduleInstance, ItemStack itemStack, String key) {
-        Tag nbtElement = itemStack.writeNbt(new CompoundTag());
-        moduleInstance.moduleData.put(key, nbtElement.getAsString());
+        JsonElement element = ItemStack.CODEC.encodeStart(JsonOps.INSTANCE, itemStack).getOrThrow();
+        moduleInstance.moduleData.put(key, element.getAsString());
     }
 
     public static ItemStack readStackFromModuleInstance(ModuleInstance moduleInstance, String key) {
         String itemStackString = moduleInstance.moduleData.get(key);
+        JsonElement element = Miapi.gson.toJsonTree(itemStackString);
         if (itemStackString != null) {
             try {
-                return ItemStack.parse(TagParser.parseTag(itemStackString));
+                return ItemStack.CODEC.decode(JsonOps.INSTANCE, element).getOrThrow().getFirst();
 
-            } catch (CommandSyntaxException ignored) {
+            } catch (RuntimeException ignored) {
+                Miapi.LOGGER.error("failed to read item-data from moduledata " + key, ignored);
             }
         }
         return ItemStack.EMPTY;
     }
 
     @Override
-    public boolean load(String moduleKey, JsonElement data) throws Exception {
-        data.getAsString();
-        return true;
+    public String merge(String left, String right, MergeType mergeType) {
+        return ModuleProperty.decideLeftRight(left, right, mergeType);
     }
 }

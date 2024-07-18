@@ -43,18 +43,18 @@ public class CryoStatusEffect extends RenderingMobEffect {
         super.addAttributeModifier(Attributes.MOVEMENT_SPEED, Miapi.id("cryo_temp_movementspeed_slow"), -0.2, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
 
         MiscEvents.LIVING_JUMP_POWER.register(player -> {
-            MobEffectInstance instance = player.getEffect(this);
+            MobEffectInstance instance = player.getEffect(RegistryInventory.cryoStatusEffect);
             if (instance != null) return CompoundEventResult.interruptFalse(0.4f - Math.min(0.4f, (instance.getAmplifier()+1)*0.04f));
             return CompoundEventResult.pass();
         });
         MiapiEvents.LIVING_HURT_AFTER.register(event -> {
-            if (event.livingEntity.hasEffect(this)) {
-                MobEffectInstance instance = event.livingEntity.getEffect(this);
+            if (event.livingEntity.hasEffect(RegistryInventory.cryoStatusEffect)) {
+                MobEffectInstance instance = event.livingEntity.getEffect(RegistryInventory.cryoStatusEffect);
                 if (instance != null) {
-                    event.livingEntity.removeEffect(this);
+                    event.livingEntity.removeEffect(RegistryInventory.cryoStatusEffect);
                     event.livingEntity.addEffect(
                             new MobEffectInstance(
-                                    this, instance.getDuration()-30, instance.getAmplifier(),
+                                    RegistryInventory.cryoStatusEffect, instance.getDuration()-30, instance.getAmplifier(),
                                     instance.isAmbient(), instance.isVisible(), instance.showIcon()));
                 }
             }
@@ -77,17 +77,20 @@ public class CryoStatusEffect extends RenderingMobEffect {
         });
     }
 
+    public void removeAttributeModifiers(AttributeMap attributeMap){
+        super.removeAttributeModifiers(attributeMap);
+    }
+
     @Override
-    public void onApplied(LivingEntity entity, int amplifier) {
+    public void onEffectStarted(LivingEntity entity, int amplifier) {
         super.onEffectStarted(entity, amplifier);
         if (entity.level() instanceof ServerLevel world) {
             world.playSound(null, entity.getX(), entity.getY(), entity.getZ(), SoundEvents.PLAYER_HURT_FREEZE, SoundSource.PLAYERS, 1, 1);
         }
     }
 
-    @Override
+    //TODO:this doesnt apply anymore
     public void onRemoved(LivingEntity entity, AttributeMap attributes, int amplifier) {
-        super.removeAttributeModifiers(entity, attributes, amplifier);
         if (entity.level() instanceof ServerLevel world) {
             world.playSound(null, entity.getX(), entity.getY(), entity.getZ(), SoundEvents.GLASS_BREAK, SoundSource.BLOCKS, 1, 1);
             world.sendParticles(

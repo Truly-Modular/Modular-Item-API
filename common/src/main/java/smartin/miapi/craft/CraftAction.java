@@ -212,7 +212,7 @@ public class CraftAction {
                     toAdd,
                     inventory,
                     buffer);
-            craftingStack[0] = itemStacks.remove(0);
+            craftingStack[0] = itemStacks.removeFirst();
             updateItem(craftingStack[0], module);
             for (int i = start; i < end; i++) {
                 linkedInventory.setItem(i, itemStacks.get(i - start));

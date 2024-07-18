@@ -74,7 +74,7 @@ public class ItemAbilityManager {
         for (Map.Entry<ItemUseAbility<?>, Object> entry : AbilityMangerProperty.property.getData(itemStack).orElse(new HashMap<>()).entrySet()) {
             if (entry.getKey().allowedOnItem(itemStack, world, player, hand, abilityHitContext)) {
                 //return new Pair<>(entry.getKey(), entry.getValue());
-                return new AbilityHolder<>(entry.getKey(), entry.getKey().castTo(entry.getValue()));
+                return entry.getKey().getAsHolder(entry.getValue());
             }
         }
         return emptyAbility;

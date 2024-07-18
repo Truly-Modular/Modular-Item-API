@@ -44,6 +44,7 @@ public class LuminousLearningProperty extends DoubleProperty {
             return EventResult.pass();
         });
         //TODO: create a common adjust XP event
+        MiapiEvents
         EntityEvent.LIVING_DEATH.register((LivingEntity entity, DamageSource source) -> {
             if (entity.level() instanceof ServerLevel serverWorld) {
                 int xp = entity.getBaseExperienceReward();

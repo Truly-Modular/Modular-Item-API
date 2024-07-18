@@ -1,15 +1,17 @@
 package smartin.miapi.item;
 
-import com.google.gson.JsonObject;
-import net.minecraft.core.RegistryAccess;
-import net.minecraft.network.FriendlyByteBuf;
+import com.mojang.serialization.MapCodec;
+import com.redpxnda.nucleus.codec.auto.AutoCodec;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.GsonHelper;
-import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.SmithingRecipe;
+import net.minecraft.world.item.crafting.SmithingRecipeInput;
 import net.minecraft.world.level.Level;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.item.modular.VisualModularItem;
@@ -24,11 +26,13 @@ import smartin.miapi.registries.RegistryInventory;
  */
 public class MaterialSmithingRecipe implements SmithingRecipe {
 
-    final String startMaterial;
-    final String resultMaterial;
-    final Ingredient smithingTemplate;
-    final Ingredient addition;
-    final ResourceLocation id;
+    public static MapCodec<MaterialSmithingRecipe> CODEC = AutoCodec.of(MaterialSmithingRecipe.class);
+
+    public final String startMaterial;
+    public final String resultMaterial;
+    public final Ingredient smithingTemplate;
+    public final Ingredient addition;
+    public final ResourceLocation id;
 
     public MaterialSmithingRecipe(ResourceLocation id, Ingredient template, String baseMaterial, Ingredient addition, String resultMaterial) {
         this.startMaterial = baseMaterial;
@@ -89,20 +93,16 @@ public class MaterialSmithingRecipe implements SmithingRecipe {
      * @return
      */
     @Override
-    public boolean matches(Container inventory, Level world) {
+    public boolean matches(SmithingRecipeInput inventory, Level world) {
         return isTemplateIngredient(inventory.getItem(0)) && isBaseIngredient(inventory.getItem(1)) && addition.test(inventory.getItem(2));
     }
 
     /**
-     * executes the craft action. does not change the inventory.
-     *
-     * @param inventory       the input inventory
-     * @param registryManager
      * @return the crafted stack
      */
     @Override
-    public ItemStack craft(Container inventory, RegistryAccess registryManager) {
-        ItemStack old = inventory.getItem(1).copy();
+    public ItemStack assemble(SmithingRecipeInput input, HolderLookup.Provider registries) {
+        ItemStack old = input.getItem(1).copy();
         if (old.getItem() instanceof VisualModularItem) {
             ModuleInstance instance = ItemModule.getModules(old).copy();
             instance.allSubModules().forEach(module -> {
@@ -122,23 +122,13 @@ public class MaterialSmithingRecipe implements SmithingRecipe {
     /**
      * Returns a previewStack output without context.
      *
-     * @param registryManager
      * @return an empty itemstack since we dont know
      */
     @Override
-    public ItemStack getOutput(RegistryAccess registryManager) {
+    public ItemStack getResultItem(HolderLookup.Provider registries) {
         return ItemStack.EMPTY;
     }
 
-    /**
-     * The Id of the recipe
-     *
-     * @return
-     */
-    @Override
-    public ResourceLocation getId() {
-        return id;
-    }
 
     @Override
     public RecipeSerializer<?> getSerializer() {
@@ -148,29 +138,13 @@ public class MaterialSmithingRecipe implements SmithingRecipe {
     public static class Serializer
             implements RecipeSerializer<MaterialSmithingRecipe> {
         @Override
-        public MaterialSmithingRecipe read(ResourceLocation identifier, JsonObject jsonObject) {
-            Ingredient template = Ingredient.fromJson(GsonHelper.getNonNull(jsonObject, "template"));
-            Ingredient addition = Ingredient.fromJson(GsonHelper.getNonNull(jsonObject, "addition"));
-            String base = jsonObject.get("base").getAsString();
-            String result = jsonObject.get("result").getAsString();
-            return new MaterialSmithingRecipe(identifier, template, base, addition, result);
+        public MapCodec<MaterialSmithingRecipe> codec() {
+            return CODEC;
         }
 
         @Override
-        public MaterialSmithingRecipe read(ResourceLocation identifier, FriendlyByteBuf packetByteBuf) {
-            Ingredient template = Ingredient.fromPacket(packetByteBuf);
-            Ingredient addition = Ingredient.fromPacket(packetByteBuf);
-            String base = packetByteBuf.readUtf();
-            String result = packetByteBuf.readUtf();
-            return new MaterialSmithingRecipe(identifier, template, base, addition, result);
-        }
-
-        @Override
-        public void write(FriendlyByteBuf packetByteBuf, MaterialSmithingRecipe smithingTransformRecipe) {
-            smithingTransformRecipe.smithingTemplate.write(packetByteBuf);
-            smithingTransformRecipe.addition.write(packetByteBuf);
-            packetByteBuf.writeUtf(smithingTransformRecipe.startMaterial);
-            packetByteBuf.writeUtf(smithingTransformRecipe.resultMaterial);
+        public StreamCodec<RegistryFriendlyByteBuf, MaterialSmithingRecipe> streamCodec() {
+            return ByteBufCodecs.fromCodecWithRegistries(CODEC.codec());
         }
     }
 }

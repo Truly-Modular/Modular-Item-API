@@ -94,7 +94,7 @@ public interface ItemUseAbility<T> {
 
     }
 
-    default EquipmentSlot getEquipmentSlot(InteractionHand hand){
+    default EquipmentSlot getEquipmentSlot(InteractionHand hand) {
         return hand.equals(InteractionHand.MAIN_HAND) ? EquipmentSlot.OFFHAND : EquipmentSlot.MAINHAND;
     }
 
@@ -150,6 +150,11 @@ public interface ItemUseAbility<T> {
     @SuppressWarnings("unchecked")
     default T castTo(Object object) {
         return (T) object;
+    }
+
+    @SuppressWarnings("unchecked")
+    default ItemAbilityManager.AbilityHolder<T> getAsHolder(Object context) {
+        return new ItemAbilityManager.AbilityHolder<>(this, (T) context);
     }
 
 

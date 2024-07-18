@@ -227,7 +227,6 @@ public class MiapiClient {
 
     public static void registerEntityRenderer() {
         EntityRendererRegistry.register(RegistryInventory.itemProjectileType, ItemProjectileRenderer::new);
-        EntityRendererRegistry.register(RegistryInventory.itemBoomerangProjectileType, ItemProjectileRenderer::new);
     }
 
     public static void registerBlockEntityRenderer() {

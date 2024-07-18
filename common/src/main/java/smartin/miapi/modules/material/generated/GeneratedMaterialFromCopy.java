@@ -6,12 +6,9 @@ import com.google.gson.JsonPrimitive;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.redpxnda.nucleus.util.Color;
-import io.netty.buffer.ByteBuf;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.FastColor;
@@ -57,7 +54,6 @@ public class GeneratedMaterialFromCopy implements Material {
             ).apply(instance, (itemstack, material) -> {
                 return new GeneratedMaterialFromCopy(itemstack, MaterialProperty.materials.get(material));
             }));
-    public static StreamCodec<ByteBuf, GeneratedMaterialFromCopy> STREAMCODEC = ByteBufCodecs.fromCodec(CODEC);
 
 
     /**

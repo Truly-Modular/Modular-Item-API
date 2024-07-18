@@ -3,10 +3,12 @@ package smartin.miapi.client.atlas;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.renderer.texture.SpriteContents;
+import net.minecraft.client.renderer.texture.SpriteLoader;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.resources.TextureAtlasHolder;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.profiling.ProfilerFiller;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +34,10 @@ public class MaterialAtlasManager extends TextureAtlasHolder {
 
     public void addSpriteToLoad(ResourceLocation id, Consumer<SpriteContents> onAdded) {
         addedSprites.add(new AddedSpriteEntry(id, onAdded));
+    }
+
+
+    public void apply(SpriteLoader.Preparations preparations, ProfilerFiller profiler) {
     }
 
     //TODO:analyze new atlas behaviour. this might already be functional

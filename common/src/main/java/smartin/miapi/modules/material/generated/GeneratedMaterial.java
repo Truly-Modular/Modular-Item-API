@@ -84,7 +84,6 @@ public class GeneratedMaterial implements Material {
                 }
                 return material;
             }));
-    public static StreamCodec<ByteBuf, GeneratedMaterial> STREAMCODEC = ByteBufCodecs.fromCodec(CODEC);
 
     /**
      * generates a {@link Material} from a {@link Tier} and an implemented Sword and Axe Item.

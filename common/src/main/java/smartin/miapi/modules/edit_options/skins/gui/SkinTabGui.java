@@ -1,6 +1,10 @@
 package smartin.miapi.modules.edit_options.skins.gui;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FastColor;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.ScrollingTextWidget;
@@ -10,10 +14,6 @@ import smartin.miapi.modules.edit_options.skins.SkinOptions;
 import smartin.miapi.modules.edit_options.skins.SkinTab;
 
 import java.util.*;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.FastColor;
 
 class SkinTabGui extends InteractAbleWidget implements SkinGui.SortAble {
     ResourceLocation arrowTexture = Miapi.id( "textures/gui/skin/arrow.png");
@@ -135,8 +135,7 @@ class SkinTabGui extends InteractAbleWidget implements SkinGui.SortAble {
             if (isOpen) {
                 //Background
                 if (tabInfo.background.keepScale()) {
-
-                    drawContext.drawRepeatingTexture(tabInfo.background.texture(), getX(), getY() + realHeight, this.width, height - realHeight, 0, 0, tabInfo.background.xSize(), tabInfo.background.ySize());
+                    drawContext.blit(tabInfo.background.texture(), getX(), getY() + realHeight, this.width, height - realHeight, 0, 0, tabInfo.background.xSize(), tabInfo.background.ySize());
                 } else {
                     RenderSystem.setShaderTexture(0, tabInfo.background.texture());
                     drawTextureWithEdgeAndScale(drawContext, tabInfo.background.texture(), getX(), getY() + realHeight, 0, 0, tabInfo.background.xSize(), tabInfo.background.ySize(), this.width, height - realHeight, tabInfo.background.xSize(), tabInfo.background.ySize(), tabInfo.background.borderSize(), tabInfo.background.scale());

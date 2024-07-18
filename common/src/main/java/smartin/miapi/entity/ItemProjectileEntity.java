@@ -31,6 +31,7 @@ import smartin.miapi.entity.arrowhitbehaviours.EntityBounceBehaviour;
 import smartin.miapi.entity.arrowhitbehaviours.EntityPierceBehaviour;
 import smartin.miapi.entity.arrowhitbehaviours.ProjectileHitBehaviour;
 import smartin.miapi.events.MiapiProjectileEvents;
+import smartin.miapi.mixin.AbstractArrowAccessor;
 import smartin.miapi.modules.abilities.util.WrappedSoundEvent;
 import smartin.miapi.modules.properties.AirDragProperty;
 import smartin.miapi.modules.properties.attributes.AttributeUtil;
@@ -231,7 +232,7 @@ public class ItemProjectileEntity extends AbstractArrow {
         float damage = getProjectileDamage();
         if (this.getPierceLevel() > 0) {
             projectileHitBehaviour = new EntityPierceBehaviour();
-            this.setPierceLevel((byte) (this.getPierceLevel() - 1));
+            ((AbstractArrowAccessor) this).callSetPierceLevel((byte) (this.getPierceLevel() - 1));
         } else {
             projectileHitBehaviour = new EntityBounceBehaviour();
         }

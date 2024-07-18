@@ -5,7 +5,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.serialization.Codec;
-import dev.architectury.event.events.common.LifecycleEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
@@ -86,14 +85,6 @@ public class MaterialProperty extends CodecProperty<String> {
                 Miapi.LOGGER.error("Miapi could not find Material for Material extension " + path);
             }
         }, -1.5f);
-
-        GeneratedMaterial.setup();
-
-        LifecycleEvent.SERVER_BEFORE_START.register(server -> {
-            MaterialProperty.materials.values().stream()
-                    .filter(GeneratedMaterial.class::isInstance)
-                    .forEach(generatedMaterial -> ((GeneratedMaterial) generatedMaterial).testForSmithingMaterial(false));
-        });
         ReloadEvents.END.subscribe((isClient) -> {
             if (isClient) {
                 Minecraft.getInstance().execute(() -> {

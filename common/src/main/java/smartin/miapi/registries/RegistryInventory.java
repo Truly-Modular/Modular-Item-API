@@ -517,7 +517,6 @@ public class RegistryInventory {
             registerMiapi(moduleProperties, EnderpearlProperty.KEY, new EnderpearlProperty());
             registerMiapi(moduleProperties, TeleportTarget.KEY, new TeleportTarget());
             registerMiapi(moduleProperties, ExplosionProperty.KEY, new ExplosionProperty());
-            registerMiapi(moduleProperties, MaterialInscribeProperty.KEY, new MaterialInscribeProperty());
             registerMiapi(moduleProperties, ProjectileTriggerProperty.KEY, new ProjectileTriggerProperty());
             registerMiapi(moduleProperties, ChannelingProperty.KEY, new ChannelingProperty());
             registerMiapi(moduleProperties, AirDragProperty.KEY, new AirDragProperty());
