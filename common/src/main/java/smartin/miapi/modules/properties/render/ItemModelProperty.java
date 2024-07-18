@@ -7,6 +7,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import smartin.miapi.client.model.ItemMiapiModel;
@@ -28,7 +29,10 @@ public class ItemModelProperty extends CodecProperty<List<ItemModelProperty.Mode
     public static final String KEY = "item_model";
     public static ItemModelProperty property;
     public static Codec<ModelJson> CODEC = AutoCodec.of(ModelJson.class).codec();
-    public static DataComponentType<ItemStack> ITEM_MODEL_COMPONENT = DataComponentType.<ItemStack>builder().persistent(ItemStack.CODEC).build();
+    public static DataComponentType<ItemStack> ITEM_MODEL_COMPONENT = DataComponentType.<ItemStack>builder()
+            .persistent(ItemStack.CODEC)
+            .networkSynchronized(ByteBufCodecs.fromCodec(ItemStack.CODEC))
+            .build();
 
     public ItemModelProperty() {
         super(Codec.list(CODEC));

@@ -52,7 +52,7 @@ public class MaterialIcons {
             if (!(object.get("path") instanceof JsonPrimitive primitive) || !primitive.isString())
                 throw new RuntimeException("'path' field for the icon of the '" + mat + "' material is either missing, or not a string! -> " + element);
 
-            return new TextureMaterialIcon(new ResourceLocation(primitive.getAsString()));
+            return new TextureMaterialIcon(ResourceLocation.parse(primitive.getAsString()));
         };
         iconCreators.put("texture", textureIconCreator);
 

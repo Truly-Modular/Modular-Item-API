@@ -1,6 +1,7 @@
 package smartin.miapi.modules.material;
 
-import com.google.gson.JsonElement;
+import com.redpxnda.nucleus.codec.auto.AutoCodec;
+import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.network.chat.Component;
@@ -15,21 +16,23 @@ import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.craft.CraftAction;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.modules.ItemModule;
-import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.DurabilityProperty;
+import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.CraftingProperty;
+import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
  * This property manages the allowed Materials for a module
  */
-public class AllowedMaterial implements CraftingProperty, ModuleProperty {
+public class AllowedMaterial extends CodecProperty<AllowedMaterial.AllowedMaterialData> implements CraftingProperty {
     public static final String KEY = "allowedMaterial";
     public static AllowedMaterial property;
     public double materialCostClient = 0.0f;
@@ -39,17 +42,16 @@ public class AllowedMaterial implements CraftingProperty, ModuleProperty {
     public int slotHeight = 130 - 14;
 
     public AllowedMaterial() {
+        super(AutoCodec.of(AllowedMaterialData.class).codec());
         property = this;
     }
 
     public List<String> getAllowedKeys(ItemModule module) {
-        JsonElement element = module.properties().get(KEY);
-        if (element != null) {
-            AllowedMaterialJson json = Miapi.gson.fromJson(element, AllowedMaterialJson.class);
-            return json.allowedMaterials;
-        } else {
-            return new ArrayList<>();
+        Optional<AllowedMaterialData> optional = getData(module);
+        if(optional.isPresent()){
+            return optional.get().allowedMaterials;
         }
+        return new ArrayList<>();
     }
 
     public List<Material> getMaterials(String key) {
@@ -86,10 +88,10 @@ public class AllowedMaterial implements CraftingProperty, ModuleProperty {
     @Override
     public boolean canPerform(ItemStack old, ItemStack crafting, ModularWorkBenchEntity bench, Player player, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<String, String> data) {
         //AllowedMaterialJson json = Miapi.gson.decode()
-        JsonElement element = module.properties().get(KEY);
+        Optional<AllowedMaterialData> optional = getData(module);
         ItemStack input = inventory.get(0);
-        if (element != null) {
-            AllowedMaterialJson json = Miapi.gson.fromJson(element, AllowedMaterialJson.class);
+        if (optional.isPresent()) {
+            AllowedMaterialData json = optional.get();
             Material material = MaterialProperty.getMaterialFromIngredient(input);
             materialRequirementClient = json.cost * crafting.getCount();
             if (material != null) {
@@ -117,13 +119,13 @@ public class AllowedMaterial implements CraftingProperty, ModuleProperty {
     @Override
     public ItemStack preview(ItemStack old, ItemStack crafting, Player player, ModularWorkBenchEntity bench, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<String, String> data) {
         ModuleInstance newModule = craftAction.getModifyingModuleInstance(crafting);
-        JsonElement element = module.properties().get(KEY);
+        Optional<AllowedMaterialData> optional = getData(module);
         ItemStack input = inventory.get(0);
         ItemStack materialStack = input.copy();
-        if (element != null) {
+        if (optional.isPresent()) {
             Material material = MaterialProperty.getMaterialFromIngredient(input);
             if (material != null) {
-                AllowedMaterialJson json = Miapi.gson.fromJson(element, AllowedMaterialJson.class);
+                AllowedMaterialData json = optional.get();
                 boolean isAllowed = (json.allowedMaterials.stream().anyMatch(allowedMaterial ->
                         material.getGroups().contains(allowedMaterial)));
                 if (isAllowed) {
@@ -137,9 +139,8 @@ public class AllowedMaterial implements CraftingProperty, ModuleProperty {
         }
         if (crafting.isDamageableItem() && crafting.getDamageValue() > 0) {
             //Miapi.LOGGER.info("dmg " + crafting.getDamage());
-            ModularItemCache.clearUUIDFor(crafting);
             ModuleInstance moduleInstance = craftAction.getModifyingModuleInstance(crafting);
-            Double scannedDurability = DurabilityProperty.property.getValueForModule(moduleInstance, 0.0);
+            Double scannedDurability = DurabilityProperty.property.getValue(moduleInstance).orElse(0.0);
             int durability = (int) (scannedDurability.intValue() * MiapiConfig.INSTANCE.server.other.repairRatio);
             //Miapi.LOGGER.info("set dmg to " + (crafting.getDamage() - durability));
             crafting.setDamageValue(crafting.getDamageValue() - durability);
@@ -153,10 +154,16 @@ public class AllowedMaterial implements CraftingProperty, ModuleProperty {
         ModuleInstance newModule = craftAction.getModifyingModuleInstance(crafting);
         //AllowedMaterialJson json = Miapi.gson.decode()
         List<ItemStack> results = new ArrayList<>();
-        JsonElement element = module.properties().get(KEY);
         ItemStack input = inventory.get(0);
         ItemStack materialStack = input.copy();
-        AllowedMaterialJson json = Miapi.gson.fromJson(element, AllowedMaterialJson.class);
+        Optional<AllowedMaterialData> optional = getData(module);
+        if (optional.isEmpty()) {
+            Miapi.LOGGER.error("crafting without allowed Material? this probably is a bug!");
+            results.add(crafting);
+            results.add(input);
+            return results;
+        }
+        AllowedMaterialData json = optional.get();
         Material material = MaterialProperty.getMaterialFromIngredient(input);
         assert material != null;
         int newCount = (int) (input.getCount() - Math.ceil(json.cost * crafting.getCount() / material.getValueOfItem(input)));
@@ -173,7 +180,7 @@ public class AllowedMaterial implements CraftingProperty, ModuleProperty {
         crafting = eventData.crafted;
         if (crafting.isDamageableItem()) {
             //Miapi.LOGGER.info("dmg " + crafting.getDamage());
-            int durability = (int) (DurabilityProperty.property.getValueForModule(craftAction.getModifyingModuleInstance(crafting), 0.0).intValue() * MiapiConfig.INSTANCE.server.other.repairRatio);
+            int durability = (int) (DurabilityProperty.property.getValue(craftAction.getModifyingModuleInstance(crafting)).orElse(0.0).intValue() * MiapiConfig.INSTANCE.server.other.repairRatio);
             //Miapi.LOGGER.info("set dmg to " + (crafting.getDamage() - durability));
             crafting.setDamageValue(crafting.getDamageValue() - durability);
             //Miapi.LOGGER.info("set dmg end " + crafting.getDamage());
@@ -184,20 +191,21 @@ public class AllowedMaterial implements CraftingProperty, ModuleProperty {
     }
 
     public static double getMaterialCost(ModuleInstance moduleInstance) {
-        JsonElement element = property.getJsonElement(moduleInstance);
-        if (element != null) {
-            return Miapi.gson.fromJson(element, AllowedMaterialJson.class).cost;
+        Optional<AllowedMaterialData> optional = property.getData(moduleInstance);
+        if (optional.isPresent()) {
+            return optional.get().cost;
         }
         return 0;
     }
 
     @Override
-    public boolean load(String moduleKey, JsonElement data) throws Exception {
-        return true;
+    public AllowedMaterialData merge(AllowedMaterialData left, AllowedMaterialData right, MergeType mergeType) {
+        return ModuleProperty.decideLeftRight(left, right, mergeType);
     }
 
-    static class AllowedMaterialJson {
+    public static class AllowedMaterialData {
         public List<String> allowedMaterials;
-        public float cost;
+        @CodecBehavior.Optional
+        public float cost = 1;
     }
 }

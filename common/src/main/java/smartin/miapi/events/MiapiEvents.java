@@ -4,6 +4,7 @@ import com.google.common.collect.Multimap;
 import com.redpxnda.nucleus.event.PrioritizedEvent;
 import dev.architectury.event.EventResult;
 import net.minecraft.core.RegistryAccess;
+import net.minecraft.world.item.TieredItem;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
@@ -211,7 +212,7 @@ public class MiapiEvents {
     }
 
     public interface CreateMaterialModularConvertersEvent {
-        EventResult generated(Material material, List<Item> tools, boolean isClient);
+        EventResult generated(Material material, List<TieredItem> tools, boolean isClient);
     }
 
     public interface SmithingEvent {

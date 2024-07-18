@@ -2,29 +2,59 @@ package smartin.miapi.modules.material;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.mojang.serialization.JsonOps;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.architectury.event.EventResult;
+import net.minecraft.core.component.DataComponentType;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Environment;
 import smartin.miapi.Miapi;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.events.MiapiEvents;
+import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ModuleInstance;
-import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.Optional;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.item.ItemStack;
 
 import static smartin.miapi.modules.material.MaterialProperty.materials;
 
-public class NBTMaterial extends JsonMaterial {
-    public static String NBTKEY = "miapi_material";
+public class ComponentMaterial extends JsonMaterial {
     public static String KEY = "nbt_runtime_material";
     public JsonObject overWrite;
     public Material parent;
     public double cost = 1.0;
+    public static Codec<ComponentMaterial> CODEC = RecordCodecBuilder.create((instance) ->
+            instance.group(
+                    Codec.DOUBLE
+                            .optionalFieldOf("cost", 1.0)
+                            .forGetter((material) -> material.cost),
+                    StatResolver.Codecs.JSONELEMENT_CODEC
+                            .optionalFieldOf("overwrite", new JsonObject())
+                            .forGetter((material) -> material.overWrite),
+                    Codec.STRING
+                            .fieldOf("parent")
+                            .forGetter((material) -> material.parent.getKey())
+            ).apply(instance, (cost, json, materialKey) -> {
+                Material material = materials.get(materialKey);
+                return new ComponentMaterial(material, json, cost, Environment.isClient());
+            }));
 
-    public NBTMaterial(Material parent, JsonObject overwrite, boolean isClient) {
+    public static DataComponentType<ComponentMaterial> NBT_MATERIAL_COMPONENT = DataComponentType.<ComponentMaterial>builder()
+            .persistent(CODEC)
+            .networkSynchronized(ByteBufCodecs.fromCodec(CODEC)).build();
+
+    public ComponentMaterial(Material parent, JsonElement overwrite, double cost, boolean isClient) {
+        super(parent.getDebugJson().deepCopy(), isClient);
+        this.parent = parent;
+        this.overWrite = overwrite.getAsJsonObject();
+        this.mergeJson(overwrite, isClient);
+        this.cost = cost;
+
+    }
+
+    public ComponentMaterial(Material parent, JsonObject overwrite, boolean isClient) {
         super(parent.getDebugJson().deepCopy(), isClient);
         this.parent = parent;
         this.overWrite = overwrite;
@@ -35,7 +65,7 @@ public class NBTMaterial extends JsonMaterial {
         if (rootElement.isJsonObject()) {
             JsonObject object = rootElement.getAsJsonObject();
             if (object.has("cost")) {
-                cost = ModuleProperty.getDouble(object, "cost", null, cost);
+                cost = object.get("cost").getAsDouble();
             }
         }
         super.mergeJson(rootElement, isClient);
@@ -52,13 +82,13 @@ public class NBTMaterial extends JsonMaterial {
             object.addProperty("key", KEY);
             materials.put(
                     KEY,
-                    new NBTMaterial(
+                    new ComponentMaterial(
                             new JsonMaterial(object, isClient),
                             new JsonObject(), isClient));
         }, -1);
         MiapiEvents.MATERIAL_CRAFT_EVENT.register(data -> {
-            if (data.material instanceof NBTMaterial nbtMaterial) {
-                nbtMaterial.writeMaterial(data.moduleInstance);
+            if (data.material instanceof ComponentMaterial componentMaterial) {
+                componentMaterial.writeMaterial(data.moduleInstance);
             }
             return EventResult.pass();
         });
@@ -83,29 +113,20 @@ public class NBTMaterial extends JsonMaterial {
         moduleInstance.moduleData.put("miapi:nbt_material_data", Miapi.gson.toJson(object1));
     }
 
+    @Nullable
     public Material getMaterialFromIngredient(ItemStack ingredient) {
-        if (ingredient.hasNbt() && ingredient.getNbt().contains(NBTKEY)) {
-            CompoundTag compound = ingredient.getNbt().getCompound(NBTKEY);
-            Optional<JsonElement> element = CompoundTag.CODEC.encodeStart(JsonOps.INSTANCE, compound).result();
-            if (element.isPresent()) {
-                JsonObject object = element.get().getAsJsonObject();
-                Optional<Material> material = decode(object);
-                if (material.isPresent()) {
-                    return material.get();
-                }
-            }
-        }
-        return null;
+        return ingredient.getComponents().get(NBT_MATERIAL_COMPONENT);
     }
 
     public Optional<Material> decode(JsonObject object) {
         try {
             String parentID = object.get("parent").getAsString();
-            Material parent = MaterialProperty.materials.get(parentID);
-            if (parent == null) {
+            Material parentMaterial = MaterialProperty.materials.get(parentID);
+            if (parentMaterial == null) {
                 Miapi.LOGGER.error("Could not find Material:" + parentID);
+                return Optional.empty();
             }
-            return Optional.of(new NBTMaterial(parent, object, Environment.isClient()));
+            return Optional.of(new ComponentMaterial(parentMaterial, object, Environment.isClient()));
         } catch (Exception e) {
             Miapi.LOGGER.error("Could not find Material", e);
         }
@@ -114,15 +135,16 @@ public class NBTMaterial extends JsonMaterial {
 
     @Override
     public double getValueOfItem(ItemStack itemStack) {
-        if (itemStack.hasNbt() && itemStack.getNbt().contains(NBTKEY)) {
-            return 1.0;
+        ComponentMaterial material = itemStack.getComponents().get(NBT_MATERIAL_COMPONENT);
+        if (material != null) {
+            return material.cost;
         }
         return 0.0;
     }
 
     @Override
     public Double getPriorityOfIngredientItem(ItemStack itemStack) {
-        if (itemStack.hasNbt() && itemStack.getNbt().contains(NBTKEY)) {
+        if (itemStack.getComponents().has(NBT_MATERIAL_COMPONENT)) {
             return -5.0;
         }
         return null;

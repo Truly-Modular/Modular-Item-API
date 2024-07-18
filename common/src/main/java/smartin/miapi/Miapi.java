@@ -37,7 +37,8 @@ import smartin.miapi.modules.cache.CacheCommands;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.conditions.ConditionManager;
 import smartin.miapi.modules.material.MaterialCommand;
-import smartin.miapi.modules.material.NBTMaterial;
+import smartin.miapi.modules.material.ComponentMaterial;
+import smartin.miapi.modules.material.generated.GeneratedMaterialManager;
 import smartin.miapi.modules.properties.GlintProperty;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.network.Networking;
@@ -80,7 +81,8 @@ public class Miapi {
         AttributeRegistry.setup();
         ConditionManager.setup();
         StatActorType.setup();
-        NBTMaterial.setup();
+        ComponentMaterial.setup();
+        GeneratedMaterialManager.setup();
 
 
         LifecycleEvent.SERVER_BEFORE_START.register(minecraftServer -> server = minecraftServer);

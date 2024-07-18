@@ -3,7 +3,11 @@ package smartin.miapi.item.modular;
 import com.ezylang.evalex.Expression;
 import com.google.gson.JsonElement;
 import com.mojang.datafixers.util.Either;
+import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.DynamicOps;
+import com.mojang.serialization.JsonOps;
 import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
 import com.redpxnda.nucleus.codec.misc.CustomIntermediateCodec;
 import com.redpxnda.nucleus.codec.misc.IntermediateCodec;
@@ -45,6 +49,18 @@ public class StatResolver {
                 else return e.right().get();
             }, Either::left);
         }
+
+        public static Codec<JsonElement> JSONELEMENT_CODEC = new Codec<>() {
+            @Override
+            public <T> DataResult<T> encode(JsonElement input, DynamicOps<T> ops, T prefix) {
+                return DataResult.success(JsonOps.INSTANCE.convertTo(ops, input));
+            }
+
+            @Override
+            public <T> DataResult<Pair<JsonElement, T>> decode(DynamicOps<T> ops, T input) {
+                return DataResult.success(new Pair<>(ops.convertTo(JsonOps.INSTANCE, input), input));
+            }
+        };
     }
 
     @CodecBehavior.Override("codec")

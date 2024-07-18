@@ -228,7 +228,7 @@ public class RegistryInventory {
                 });
 
         RegistryInventory.components.register(
-                Miapi.id("item_module"), () -> ModuleInstance.componentType);
+                Miapi.id("item_module"), () -> ModuleInstance.MODULE_INSTANCE_COMPONENT);
         RegistryInventory.components.register(
                 Miapi.id("nemesis_property"), () -> NemesisProperty.NEMESIS_COMPONENT);
         RegistryInventory.components.register(

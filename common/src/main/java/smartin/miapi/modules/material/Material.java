@@ -111,7 +111,7 @@ public interface Material {
         return getRenderController().getAverageColor().argb();
     }
 
-    double getValueOfItem(ItemStack item);
+    double getValueOfItem(ItemStack itemStack);
 
     /**
      * return null if itemstack is not assosiated with the material

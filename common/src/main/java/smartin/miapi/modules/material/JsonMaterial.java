@@ -4,6 +4,11 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.DynamicOps;
+import com.mojang.serialization.JsonOps;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.GuiGraphics;
@@ -15,8 +20,11 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.properties.Property;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
+import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.material.palette.FallbackColorer;
 import smartin.miapi.modules.material.palette.MaterialRenderController;
 import smartin.miapi.modules.material.palette.MaterialRenderControllers;
@@ -30,14 +38,32 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * quite frankly, this isnt a good implementation. its still very much based on JSON instead of normal codecs.
+ * Its a functional implementation of a Material based on a Raw JsonElement.
+ */
 public class JsonMaterial implements Material {
     public String key;
     protected JsonElement rawJson;
     @Nullable
     public MaterialIcons.MaterialIcon icon;
     protected MaterialRenderController palette;
-    public Map<String, Map<ModuleProperty, JsonElement>> propertyMap = new HashMap<>();
-    public Map<String, Map<ModuleProperty, JsonElement>> displayPropertyMap = new HashMap<>();
+    public Map<String, Map<ModuleProperty<?>, Object>> propertyMap = new HashMap<>();
+    public Map<String, Map<ModuleProperty<?>, Object>> displayPropertyMap = new HashMap<>();
+    public static Codec<Map<Property<?>, Object>> PROPERTY_CODEC;
+
+    //WARNING! this *probably* cant encode (depends on property encoding)
+    public static Codec<JsonMaterial> CODEC = new Codec<JsonMaterial>() {
+        @Override
+        public <T> DataResult<Pair<JsonMaterial, T>> decode(DynamicOps<T> ops, T input) {
+            return DataResult.success(Pair.of(new JsonMaterial(ops.convertTo(JsonOps.INSTANCE, input).getAsJsonObject(), smartin.miapi.Environment.isClient()), input));
+        }
+
+        @Override
+        public <T> DataResult<T> encode(JsonMaterial input, DynamicOps<T> ops, T prefix) {
+            return DataResult.success(JsonOps.INSTANCE.convertTo(ops, input.rawJson));
+        }
+    };
 
     public JsonMaterial(JsonObject element, boolean isClient) {
         rawJson = element;
@@ -107,18 +133,24 @@ public class JsonMaterial implements Material {
         });
     }
 
-    private static void mergeProperties(JsonElement propertyElement, Map<String, Map<ModuleProperty, JsonElement>> properties) {
+    private static void mergeProperties(JsonElement propertyElement, Map<String, Map<ModuleProperty<?>, Object>> properties) {
         propertyElement.getAsJsonObject().asMap().forEach((id, element) -> {
             if (element != null) {
                 element.getAsJsonObject().entrySet().forEach(stringJsonElementEntry -> {
-                    ModuleProperty property = RegistryInventory.moduleProperties.get(stringJsonElementEntry.getKey());
-                    Map<ModuleProperty, JsonElement> specificPropertyMap = properties.getOrDefault(id, new HashMap<>());
+                    ModuleProperty<?> property = RegistryInventory.moduleProperties.get(stringJsonElementEntry.getKey());
+                    Map<ModuleProperty<?>, Object> specificPropertyMap = properties.getOrDefault(id, new HashMap<>());
                     if (property != null) {
-                        if (specificPropertyMap.containsKey(property)) {
-                            specificPropertyMap.put(property, property.merge(specificPropertyMap.get(property), stringJsonElementEntry.getValue(), MergeType.SMART));
-                        } else {
-                            specificPropertyMap.put(property, stringJsonElementEntry.getValue());
+                        specificPropertyMap.put(property, ItemModule.merge(property, specificPropertyMap.get(property), stringJsonElementEntry.getValue(), MergeType.SMART));
+                    } else {
+                        try {
+                            property.load(ResourceLocation.parse(
+                                            Miapi.MOD_ID + ":material-property"),
+                                    stringJsonElementEntry.getValue(),
+                                    smartin.miapi.Environment.isClient());
+                        } catch (Exception e) {
+                            Miapi.LOGGER.error("Could not load property in material :", e);
                         }
+                        specificPropertyMap.put(property, property.decode(stringJsonElementEntry.getValue()));
                     }
                     properties.put(id, specificPropertyMap);
                 });
@@ -167,12 +199,12 @@ public class JsonMaterial implements Material {
     }
 
     @Override
-    public Map<ModuleProperty, JsonElement> materialProperties(String key) {
+    public Map<ModuleProperty<?>, Object> materialProperties(String key) {
         return propertyMap.getOrDefault(key, new HashMap<>());
     }
 
     @Override
-    public Map<ModuleProperty, JsonElement> getDisplayMaterialProperties(String key) {
+    public Map<ModuleProperty<?>, Object> getDisplayMaterialProperties(String key) {
         return displayPropertyMap.getOrDefault(key, new HashMap<>());
     }
 
@@ -297,7 +329,7 @@ public class JsonMaterial implements Material {
                 }
             } else if (itemObj.has("tag")) {
                 String tagId = itemObj.get("tag").getAsString();
-                TagKey<Item> tag = TagKey.create(BuiltInRegistries.ITEM.key(), new ResourceLocation(tagId));
+                TagKey<Item> tag = TagKey.create(BuiltInRegistries.ITEM.key(), ResourceLocation.parse(tagId));
                 if (tag != null && item.is(tag)) {
                     try {
                         return itemObj.get("value").getAsDouble();
@@ -306,7 +338,7 @@ public class JsonMaterial implements Material {
                     }
                 }
             } else if (itemObj.has("ingredient")) {
-                Ingredient ingredient = Ingredient.fromJson(itemObj.get("ingredient"));
+                Ingredient ingredient = Ingredient.CODEC.decode(JsonOps.INSTANCE, itemObj.get("ingredient")).getOrThrow().getFirst();
                 if (ingredient.test(item)) {
                     try {
                         return itemObj.get("value").getAsDouble();
@@ -339,7 +371,7 @@ public class JsonMaterial implements Material {
                 JsonObject itemObj = element.getAsJsonObject();
 
                 if (itemObj.has("ingredient")) {
-                    Ingredient ingredient = Ingredient.fromJson(itemObj.get("ingredient"));
+                    Ingredient ingredient = Ingredient.CODEC.decode(JsonOps.INSTANCE, itemObj.get("ingredient")).getOrThrow().getFirst();
                     if (ingredient.test(itemStack)) {
                         return 5.0;
                     }

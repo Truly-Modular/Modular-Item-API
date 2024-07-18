@@ -7,16 +7,14 @@ import dev.architectury.event.events.common.EntityEvent;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.core.component.DataComponentType;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
+import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.level.Level;
-import org.jetbrains.annotations.Nullable;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.craft.CraftAction;
 import smartin.miapi.events.MiapiEvents;
@@ -39,7 +37,7 @@ public class NemesisProperty extends DoubleProperty implements CraftingProperty 
     public static String KEY = "nemesis";
     public static NemesisProperty property;
     public static Codec<NemesisData> CODEC = AutoCodec.of(NemesisData.class).codec();
-    public static DataComponentType<NemesisData> NEMESIS_COMPONENT = DataComponentType.<NemesisData>builder().persistent(CODEC).build();
+    public static DataComponentType<NemesisData> NEMESIS_COMPONENT = DataComponentType.<NemesisData>builder().persistent(CODEC).networkSynchronized(ByteBufCodecs.fromCodec(CODEC)).build();
 
 
     public DecimalFormat modifierFormat = Util.make(new DecimalFormat("##.#"), (decimalFormat) -> {

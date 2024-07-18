@@ -139,7 +139,7 @@ public record ItemModule(String name, Map<ModuleProperty<?>, Object> properties)
             return new ModuleInstance(ItemModule.empty);
         }
         if (stack.getItem() instanceof VisualModularItem && !ReloadEvents.isInReload()) {
-            return stack.getComponents().get(ModuleInstance.componentType);
+            return stack.getComponents().get(ModuleInstance.MODULE_INSTANCE_COMPONENT);
         }
         return new ModuleInstance(ItemModule.empty);
     }

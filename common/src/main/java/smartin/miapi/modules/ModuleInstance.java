@@ -1,12 +1,15 @@
 package smartin.miapi.modules;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.component.DataComponentType;
+import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.item.modular.PropertyResolver;
+import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.cache.DataCache;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.util.MergeType;
@@ -23,30 +26,30 @@ import java.util.function.Supplier;
  */
 public class ModuleInstance {
     public static Codec<ModuleInstance> CODEC;
-    public static DataComponentType<ModuleInstance> componentType;
-
-    public Map<String, Object> cachedData = new ConcurrentHashMap<>();
-    public Map<String, Object> itemStackCache = new ConcurrentHashMap<>();
+    public static DataComponentType<ModuleInstance> MODULE_INSTANCE_COMPONENT;
 
     static {
-        Codec<Map<String, ModuleInstance>> mapCodec =
-                Codec.unboundedMap(Codec.STRING, CODEC).xmap((i) -> i, Function.identity());
         Codec<Map<String, String>> dataCodec = Codec.unboundedMap(Codec.STRING, Codec.STRING).xmap((i) -> i, Function.identity());
-
-
-        CODEC = RecordCodecBuilder.create((instance) ->
-                instance.group(
-                        Codec.STRING.fieldOf("key").forGetter((moduleInstance) -> moduleInstance.module.name()),
-                        mapCodec.fieldOf("child").forGetter((moduleInstance) -> moduleInstance.subModules),
-                        dataCodec.fieldOf("data").forGetter((moduleInstance) -> moduleInstance.moduleData)
-                ).apply(instance, (module, children, data) -> {
-                    ModuleInstance moduleInstance = new ModuleInstance(RegistryInventory.modules.get(module));
-                    moduleInstance.moduleData = data;
-                    moduleInstance.subModules = children;
-                    moduleInstance.subModules.values().forEach(childInstance -> childInstance.parent = moduleInstance);
-                    return moduleInstance;
-                }));
-        componentType = DataComponentType.<ModuleInstance>builder().persistent(CODEC).build();
+        Codec<Map<String, JsonElement>> dataJsonCodec = Codec.unboundedMap(Codec.STRING, StatResolver.Codecs.JSONELEMENT_CODEC).xmap((i) -> i, Function.identity());
+        CODEC = Codec.recursive(
+                "module_instance",
+                selfCodec -> RecordCodecBuilder.create((instance) ->
+                        instance.group(
+                                Codec.STRING.fieldOf("key")
+                                        .forGetter((moduleInstance) -> moduleInstance.module.name()),
+                                Codec.unboundedMap(Codec.STRING, selfCodec).xmap((i) -> i, Function.identity()).fieldOf("child")
+                                        .forGetter((moduleInstance) -> moduleInstance.subModules),
+                                dataCodec.fieldOf("data")
+                                        .forGetter((moduleInstance) -> moduleInstance.moduleData)
+                        ).apply(instance, (module, children, data) -> {
+                            ModuleInstance moduleInstance = new ModuleInstance(RegistryInventory.modules.get(module));
+                            moduleInstance.moduleData = data;
+                            moduleInstance.subModules = children;
+                            moduleInstance.subModules.values().forEach(childInstance -> childInstance.parent = moduleInstance);
+                            return moduleInstance;
+                        }))
+        );
+        MODULE_INSTANCE_COMPONENT = DataComponentType.<ModuleInstance>builder().persistent(CODEC).networkSynchronized(ByteBufCodecs.fromCodec(CODEC)).build();
     }
 
     /**
@@ -88,6 +91,10 @@ public class ModuleInstance {
      * Use {@link ModuleInstance#getProperty(ModuleProperty)} instead to trigger the Property resolver
      */
     public Map<ModuleProperty<?>, Object> itemMergedProperties = new ConcurrentHashMap<>();
+
+
+    public Map<String, Object> cachedData = new ConcurrentHashMap<>();
+    public Map<String, Object> itemStackCache = new ConcurrentHashMap<>();
 
     /**
      * Constructs a new module instance with the given item module.
@@ -262,7 +269,7 @@ public class ModuleInstance {
         if (clearCache) {
             this.clearCaches();
         }
-        stack.update(ModuleInstance.componentType, this, (component) -> component);
+        stack.update(ModuleInstance.MODULE_INSTANCE_COMPONENT, this, (component) -> component);
     }
 
     /**

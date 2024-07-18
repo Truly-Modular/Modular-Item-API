@@ -2,27 +2,16 @@ package smartin.miapi.client.atlas;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.SpriteContents;
-import net.minecraft.client.renderer.texture.SpriteLoader;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.resources.TextureAtlasHolder;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.resources.Resource;
-import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraft.util.profiling.ProfilerFiller;
-import smartin.miapi.Miapi;
-import smartin.miapi.datapack.ReloadEvents;
-import smartin.miapi.modules.cache.ModularItemCache;
 
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Executor;
 import java.util.function.Consumer;
 
-import static java.util.concurrent.Executors.newSingleThreadExecutor;
 import static smartin.miapi.Miapi.MOD_ID;
 
 @Environment(EnvType.CLIENT)
@@ -45,9 +34,11 @@ public class MaterialAtlasManager extends TextureAtlasHolder {
         addedSprites.add(new AddedSpriteEntry(id, onAdded));
     }
 
+    //TODO:analyze new atlas behaviour. this might already be functional
+    /*
     @Override
-    public void apply(SpriteLoader.Preparations invalidResult, ProfilerFiller profiler) {
-        if (invalidResult != null)
+    public void apply(SpriteLoader.Preparations preparations, ProfilerFiller profiler) {
+        if (preparations != null)
             return;
         ReloadEvents.reloadCounter++;
         List<SpriteContents> materialSprites = new ArrayList<>();
@@ -57,8 +48,7 @@ public class MaterialAtlasManager extends TextureAtlasHolder {
             ResourceLocation id = entry.id;
             Resource resource = manager.getResource(id).orElseThrow(() -> new RuntimeException(new FileNotFoundException(id.toString())));
             try {
-
-                SpriteContents contents = SpriteLoader.loadAndStitch(id, resource);
+                SpriteContents contents = SpriteLoader.load(id, resource);
                 if (contents == null) {
                     Miapi.LOGGER.warn("Sprite creation of '{}' failed for material atlas! See logger error(s) above.", id);
                 } else if (contents.width() != 256) {
@@ -90,6 +80,8 @@ public class MaterialAtlasManager extends TextureAtlasHolder {
         ModularItemCache.discardCache();
         ReloadEvents.reloadCounter--;
     }
+
+     */
 
     public TextureAtlasSprite getMaterialSprite(ResourceLocation id) {
         TextureAtlasSprite sprite = getSprite(id);

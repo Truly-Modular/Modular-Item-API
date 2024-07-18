@@ -1,9 +1,11 @@
 package smartin.miapi.datapack;
 
 import dev.architectury.event.events.common.PlayerEvent;
+import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.server.level.ServerPlayer;
 import smartin.miapi.Environment;
 import smartin.miapi.Miapi;
@@ -338,5 +340,27 @@ public class ReloadEvents {
          * @param buf the buffer recieved from the server
          */
         void interpretDataClient(FriendlyByteBuf buf);
+    }
+
+    public abstract static class SimpleSyncer<T> implements DataSyncer {
+        public StreamCodec<ByteBuf, T> streamCodec;
+
+        public SimpleSyncer(StreamCodec<ByteBuf, T> streamCodec) {
+            this.streamCodec = streamCodec;
+        }
+
+        public abstract T getDataServer();
+
+        public abstract void interpretData(T data);
+
+        public FriendlyByteBuf createDataServer() {
+            FriendlyByteBuf buf = Networking.createBuffer();
+            streamCodec.encode(buf, getDataServer());
+            return buf;
+        }
+
+        public void interpretDataClient(FriendlyByteBuf buf) {
+            interpretData(streamCodec.decode(buf));
+        }
     }
 }

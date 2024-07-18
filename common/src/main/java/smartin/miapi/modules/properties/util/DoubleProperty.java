@@ -42,7 +42,7 @@ public abstract class DoubleProperty extends CodecProperty<DoubleOperationResolv
         ModularItemCache.setSupplier(cacheKey, (itemStack) -> {
             Optional<DoubleOperationResolvable> optional = getData(itemStack);
             if (optional.isPresent()) {
-                return Optional.of(optional.get().evaluate(baseValue));
+                return optional.get().evaluate(baseValue);
             }
             return Optional.empty();
         });
@@ -54,6 +54,14 @@ public abstract class DoubleProperty extends CodecProperty<DoubleOperationResolv
 
     public Optional<Double> getValue(ItemStack itemStack) {
         return ModularItemCache.get(itemStack, cacheKey, Optional.empty());
+    }
+
+    public Optional<Double> getValue(ModuleInstance moduleInstance) {
+        Optional<DoubleOperationResolvable> optional = getData(moduleInstance);
+        if (optional.isPresent()) {
+            return optional.get().evaluate(baseValue);
+        }
+        return Optional.empty();
     }
 
     public double getForItems(Iterable<ItemStack> itemStacks) {

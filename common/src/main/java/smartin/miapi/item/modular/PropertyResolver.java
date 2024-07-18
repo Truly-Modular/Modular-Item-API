@@ -1,9 +1,9 @@
 package smartin.miapi.item.modular;
 
-import com.google.gson.JsonElement;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Tuple;
 import smartin.miapi.Miapi;
+import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
@@ -25,8 +25,8 @@ public class PropertyResolver {
      */
     public static void resolve(ModuleInstance moduleInstance) {
         moduleInstance.allSubModules().forEach(instance -> {
-            if (instance.rawProperties == null) {
-                instance.rawProperties = new ConcurrentHashMap<>();
+            if (instance.properties == null) {
+                instance.properties = new ConcurrentHashMap<>();
             }
         });
         registry.forEach((pair) -> {
@@ -75,10 +75,10 @@ public class PropertyResolver {
         return register(Miapi.id(identifier), propertyProvider);
     }
 
-    public static Map<ModuleProperty, JsonElement> merge(Map<ModuleProperty, JsonElement> old, Map<ModuleProperty, JsonElement> toMerge, MergeType mergeType) {
+    public static Map<ModuleProperty<?>, Object> merge(Map<ModuleProperty<?>, Object> old, Map<ModuleProperty<?>, Object> toMerge, MergeType mergeType) {
         toMerge.forEach(((property, element) -> {
             if (old.containsKey(property)) {
-                old.put(property, property.merge(old.get(property), element, mergeType));
+                old.put(property, ItemModule.merge(property, old.get(property), element, mergeType));
             } else {
                 old.put(property, element);
             }
