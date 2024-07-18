@@ -43,15 +43,12 @@ public class LuminousLearningProperty extends DoubleProperty {
             }
             return EventResult.pass();
         });
-        //TODO: create a common adjust XP event
-        MiapiEvents
-        EntityEvent.LIVING_DEATH.register((LivingEntity entity, DamageSource source) -> {
+        MiapiEvents.ADJUST_DROP_XP.register((entity,xp)->{
             if (entity.level() instanceof ServerLevel serverWorld) {
-                int xp = entity.getBaseExperienceReward();
                 double value = getForItems(entity.getAllSlots());
                 while (value > 0) {
                     if (Math.random() > 0.7) {
-                        ExperienceOrb.award(serverWorld, Vec3.atCenterOf(entity.blockPosition()), xp);
+                        xp.add(xp.getValue());
                     }
                     value--;
                 }

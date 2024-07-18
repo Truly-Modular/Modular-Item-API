@@ -1,26 +1,9 @@
 package smartin.miapi.modules.properties.compat.apoli;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import dev.architectury.platform.Platform;
-import smartin.miapi.Miapi;
-import smartin.miapi.item.modular.ModularItem;
-import smartin.miapi.modules.ItemModule;
-import smartin.miapi.modules.abilities.util.ItemUseAbility;
-import smartin.miapi.modules.properties.attributes.AttributeProperty;
-import smartin.miapi.modules.properties.util.MergeType;
-import smartin.miapi.modules.properties.util.ModuleProperty;
-
-import java.util.ArrayList;
-import java.util.List;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.item.ItemStack;
-
 /**
- * This property manages the active {@link ItemUseAbility}
+ * This property manages the active {@link smartin.miapi.modules.abilities.util.ItemUseAbility}
  */
+/*
 public class ApoliPowersProperty implements ModuleProperty {
     public static final String KEY = "apoli_powers";
     public static ApoliPowersProperty property;
@@ -77,3 +60,5 @@ public class ApoliPowersProperty implements ModuleProperty {
         }
     }
 }
+
+ */

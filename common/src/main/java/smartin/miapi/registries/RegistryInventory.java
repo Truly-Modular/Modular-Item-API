@@ -80,9 +80,6 @@ import smartin.miapi.modules.material.*;
 import smartin.miapi.modules.properties.*;
 import smartin.miapi.modules.properties.attributes.AttributeProperty;
 import smartin.miapi.modules.properties.attributes.AttributeSplitProperty;
-import smartin.miapi.modules.properties.compat.apoli.ApoliPowersProperty;
-import smartin.miapi.modules.properties.compat.better_combat.BetterCombatProperty;
-import smartin.miapi.modules.properties.compat.ht_treechop.TreechopProperty;
 import smartin.miapi.modules.properties.damage_boosts.AquaticDamage;
 import smartin.miapi.modules.properties.damage_boosts.IllagerBane;
 import smartin.miapi.modules.properties.damage_boosts.SmiteDamage;
@@ -566,9 +563,9 @@ public class RegistryInventory {
             registerMiapi(moduleProperties, AttributeSplitProperty.KEY, new AttributeSplitProperty());
             registerMiapi(moduleProperties, FakeEnchantmentProperty.KEY, new FakeEnchantmentProperty());
             //compat
-            registerMiapi(moduleProperties, BetterCombatProperty.KEY, new BetterCombatProperty());
-            registerMiapi(moduleProperties, ApoliPowersProperty.KEY, new ApoliPowersProperty());
-            registerMiapi(moduleProperties, TreechopProperty.KEY, new TreechopProperty());
+            //registerMiapi(moduleProperties, BetterCombatProperty.KEY, new BetterCombatProperty());
+            //registerMiapi(moduleProperties, ApoliPowersProperty.KEY, new ApoliPowersProperty());
+            //registerMiapi(moduleProperties, TreechopProperty.KEY, new TreechopProperty());
 
             // CRAFTING STATS
             //registerMiapi(craftingStats, "hammering", new SimpleCraftingStat(0), stat -> exampleCraftingStat = stat);

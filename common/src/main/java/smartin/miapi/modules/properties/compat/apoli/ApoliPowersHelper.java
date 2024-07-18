@@ -1,10 +1,6 @@
 package smartin.miapi.modules.properties.compat.apoli;
 
-import io.github.apace100.apoli.util.StackPowerUtil;
-import java.util.List;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.item.ItemStack;
-
+/*
 public class ApoliPowersHelper {
 
     public static List<StackPowerUtil.StackPower> getPowers(ItemStack itemStack, EquipmentSlot equipmentSlot, List<StackPowerUtil.StackPower> oldPowers) {
@@ -25,3 +21,5 @@ public class ApoliPowersHelper {
         return power;
     }
 }
+
+ */

@@ -1,24 +1,6 @@
 package smartin.miapi.modules.properties.compat.better_combat;
 
-import com.google.gson.JsonElement;
-import com.google.gson.stream.JsonReader;
-import dev.architectury.platform.Platform;
-import net.bettercombat.api.AttributesContainer;
-import net.bettercombat.api.WeaponAttributesHelper;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.Nullable;
-import smartin.miapi.Miapi;
-import smartin.miapi.attributes.AttributeRegistry;
-import smartin.miapi.item.modular.ModularItem;
-import smartin.miapi.modules.ItemModule;
-import smartin.miapi.modules.cache.ModularItemCache;
-import smartin.miapi.modules.properties.attributes.AttributeProperty;
-import smartin.miapi.modules.properties.attributes.AttributeUtil;
-
-import java.io.StringReader;
-
+/*
 public class BetterCombatHelper {
     public static void setup() {
         ModularItemCache.setSupplier(BetterCombatProperty.KEY, itemStack -> new AttributeHolder(BetterCombatHelper.getAttributesContainer(itemStack)));
@@ -72,3 +54,5 @@ public class BetterCombatHelper {
     public record AttributeHolder(net.bettercombat.api.WeaponAttributes attributes) {
     }
 }
+
+ */

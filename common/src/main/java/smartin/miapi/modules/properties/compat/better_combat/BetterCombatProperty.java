@@ -1,18 +1,6 @@
 package smartin.miapi.modules.properties.compat.better_combat;
 
-import com.google.gson.JsonElement;
-import dev.architectury.platform.Platform;
-import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.Nullable;
-import smartin.miapi.attributes.AttributeRegistry;
-import smartin.miapi.craft.CraftAction;
-import smartin.miapi.item.ModularItemStackConverter;
-import smartin.miapi.modules.ItemModule;
-import smartin.miapi.modules.ModuleInstance;
-import smartin.miapi.modules.properties.attributes.AttributeProperty;
-import smartin.miapi.modules.properties.util.MergeType;
-import smartin.miapi.modules.properties.util.ModuleProperty;
-
+/*
 public class BetterCombatProperty implements ModuleProperty {
     public static String KEY = "better_combat_config";
     public static BetterCombatProperty property;
@@ -63,3 +51,6 @@ public class BetterCombatProperty implements ModuleProperty {
         return ModuleProperty.super.merge(old, toMerge, type);
     }
 }
+
+
+ */

@@ -1,7 +1,6 @@
 package smartin.miapi;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
@@ -16,7 +15,6 @@ import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.event.events.common.PlayerEvent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.GsonHelper;
 import org.apache.logging.log4j.util.TriConsumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +23,6 @@ import smartin.miapi.client.MiapiClient;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.craft.stat.StatActorType;
 import smartin.miapi.datapack.ReloadEvents;
-import smartin.miapi.injectors.PropertySubstitution;
 import smartin.miapi.item.ItemToModularConverter;
 import smartin.miapi.item.ModularItemStackConverter;
 import smartin.miapi.item.modular.PropertyResolver;
@@ -36,8 +33,8 @@ import smartin.miapi.modules.abilities.util.ItemAbilityManager;
 import smartin.miapi.modules.cache.CacheCommands;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.conditions.ConditionManager;
-import smartin.miapi.modules.material.MaterialCommand;
 import smartin.miapi.modules.material.ComponentMaterial;
+import smartin.miapi.modules.material.MaterialCommand;
 import smartin.miapi.modules.material.generated.GeneratedMaterialManager;
 import smartin.miapi.modules.properties.GlintProperty;
 import smartin.miapi.modules.properties.util.ModuleProperty;
@@ -92,23 +89,9 @@ public class Miapi {
                 (isClient, path, data) -> ItemModule.loadFromData(path, data, isClient), -0.5f);
         registerReloadHandler(ReloadEvents.MAIN, "module_extensions", Collections.synchronizedMap(new LinkedHashMap<>()),
                 (isClient, path, data) -> ItemModule.loadModuleExtension(path, data, isClient), -0.4f);
-
-        registerReloadHandler(ReloadEvents.MAIN, "injectors", bl -> PropertySubstitution.injectorsCount = 0,
-                (isClient, path, data) -> {
-                    JsonElement element = GsonHelper.parse(data);
-                    if (element instanceof JsonObject object) {
-                        PropertySubstitution.targetSelectionDispatcher.dispatcher()
-                                .triggerTargetFrom(object.get("target"), PropertySubstitution.getInjector(object));
-                        PropertySubstitution.injectorsCount++;
-                    } else {
-                        LOGGER.warn(
-                                "Found a non JSON object PropertyInjector. PropertyInjectors should be JSON objects.");
-                    }
-                }, 1f);
         ReloadEvents.END.subscribe(isClient -> {
             RegistryInventory.modules.register(ItemModule.empty.name(), ItemModule.empty);
             RegistryInventory.modules.register(ItemModule.internal.name(), ItemModule.internal);
-            Miapi.LOGGER.info("Loaded " + PropertySubstitution.injectorsCount + " Injectors/Property Substitutors");
             Miapi.LOGGER.info("Loaded " + RegistryInventory.modules.getFlatMap().size() + " Modules");
             ModularItemCache.discardCache();
         });
