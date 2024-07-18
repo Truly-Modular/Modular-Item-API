@@ -3,6 +3,11 @@ package smartin.miapi.modules.material.palette;
 import com.google.gson.JsonElement;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.redpxnda.nucleus.util.Color;
+import net.minecraft.client.renderer.texture.SpriteContents;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FastColor;
+import net.minecraft.util.Mth;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.client.MiapiClient;
 import smartin.miapi.client.atlas.MaterialAtlasManager;
@@ -13,11 +18,6 @@ import smartin.miapi.modules.material.Material;
 
 import java.util.ArrayList;
 import java.util.List;
-import net.minecraft.client.renderer.texture.SpriteContents;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.FastColor;
-import net.minecraft.util.Mth;
 
 /**
  * Uses textures in {@link MaterialAtlasManager} and treats them as the colors of a {@link GrayscalePaletteColorer} to recolor module sprites. <br>
@@ -50,7 +50,7 @@ public class PaletteAtlasBackedColorer extends SpritePixelReplacer {
      */
     public PaletteAtlasBackedColorer(Material material, JsonElement json) {
         super(material);
-        ResourceLocation id = new ResourceLocation(json.getAsJsonObject().get("location").getAsString());
+        ResourceLocation id = ResourceLocation.parse(json.getAsJsonObject().get("location").getAsString());
         setupSprite(id);
     }
 

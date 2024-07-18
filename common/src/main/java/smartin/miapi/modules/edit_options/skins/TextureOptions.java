@@ -13,7 +13,7 @@ public record TextureOptions(ResourceLocation texture, int xSize, int ySize, int
         }
         JsonObject jsonObject = element.getAsJsonObject();
 
-        ResourceLocation textureValue = jsonObject.has("texture") ? new ResourceLocation(jsonObject.get("texture").getAsString()) : texture;
+        ResourceLocation textureValue = jsonObject.has("texture") ? ResourceLocation.parse(jsonObject.get("texture").getAsString()) : texture;
         int xSizeValue = jsonObject.has("xSize") ? jsonObject.get("xSize").getAsInt() : xSize;
         int ySizeValue = jsonObject.has("ySize") ? jsonObject.get("ySize").getAsInt() : ySize;
         int borderSizeValue = jsonObject.has("borderSize") ? jsonObject.get("borderSize").getAsInt() : borderSize;

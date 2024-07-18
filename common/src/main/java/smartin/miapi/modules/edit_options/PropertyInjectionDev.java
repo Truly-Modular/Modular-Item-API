@@ -82,7 +82,7 @@ public class PropertyInjectionDev implements EditOption {
                                 ModuleProperty property = RegistryInventory.moduleProperties.get(stringJsonElementEntry.getKey());
                                 try {
                                     assert property != null;
-                                    property.load(moduleInstance.module.name(), stringJsonElementEntry.getValue(), true);
+                                    property.load(Miapi.id("property-injection"), stringJsonElementEntry.getValue(), true);
                                 } catch (Exception e) {
                                     error.setText(Component.nullToEmpty(e.getMessage()));
                                     error.textColor = FastColor.ARGB32.color(255, 255, 0, 0);

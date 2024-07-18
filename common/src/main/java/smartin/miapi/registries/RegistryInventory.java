@@ -56,7 +56,6 @@ import smartin.miapi.effects.CryoStatusEffect;
 import smartin.miapi.effects.StunResistanceStatusEffect;
 import smartin.miapi.effects.StunStatusEffect;
 import smartin.miapi.effects.TeleportBlockEffect;
-import smartin.miapi.entity.BoomerangItemProjectileEntity;
 import smartin.miapi.entity.ItemProjectileEntity;
 import smartin.miapi.item.MaterialSmithingRecipe;
 import smartin.miapi.item.modular.ModularItemPart;
@@ -206,9 +205,6 @@ public class RegistryInventory {
     public static RecipeSerializer serializer;
     public static RegistrySupplier<EntityType<ItemProjectileEntity>> itemProjectileType = (RegistrySupplier) registerAndSupply(entityTypes, "thrown_item", () ->
             EntityType.Builder.of(ItemProjectileEntity::new, MobCategory.MISC).sized(0.5F, 0.5F).clientTrackingRange(4).updateInterval(20).build("miapi:thrown_item"));
-    public static RegistrySupplier<EntityType<BoomerangItemProjectileEntity>> itemBoomerangProjectileType = (RegistrySupplier) registerAndSupply(entityTypes, "thrown_boomerang_item", () ->
-            EntityType.Builder.of(BoomerangItemProjectileEntity::new, MobCategory.MISC).sized(0.5F, 0.5F).clientTrackingRange(4).updateInterval(20).build("miapi:thrown_boomerang_item"));
-
     static {
         itemProjectileType.listen(e -> {
             if (Platform.getEnvironment() == Env.CLIENT)

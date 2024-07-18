@@ -46,9 +46,9 @@ public class SpriteFromJson {
             ResourceLocation atlasId;
 
             if (atlasIdShortcuts.containsKey(key)) atlasId = atlasIdShortcuts.get(key);
-            else atlasId = new ResourceLocation(key);
+            else atlasId = ResourceLocation.parse(key);
 
-            ResourceLocation textureId = new ResourceLocation(obj.get("texture").getAsString());
+            ResourceLocation textureId = ResourceLocation.parse(obj.get("texture").getAsString());
             rawSprite = Minecraft.getInstance().getTextureAtlas(atlasId).apply(textureId);
             SpriteContents contents = rawSprite.contents();
             imageSupplier = () -> NativeImageGetter.get(contents);
@@ -58,7 +58,7 @@ public class SpriteFromJson {
                 isAnimated = SpriteColorer.isAnimatedSpriteStatic(contents);
         } else {
             isAnimated = obj.has("forceTick") && obj.get("forceTick").getAsBoolean();
-            ResourceLocation textureId = new ResourceLocation(obj.get("texture").getAsString());
+            ResourceLocation textureId = ResourceLocation.parse(obj.get("texture").getAsString());
             NativeImage rawImage = loadTexture(Minecraft.getInstance().getResourceManager(), textureId);
             NativeImageGetter.ImageHolder holder = new NativeImageGetter.ImageHolder();
             holder.nativeImage = rawImage;

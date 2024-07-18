@@ -1,6 +1,10 @@
 package smartin.miapi.modules.edit_options.skins.gui;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Renderable;
+import net.minecraft.network.chat.Component;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.ScrollingTextWidget;
@@ -10,10 +14,6 @@ import smartin.miapi.modules.edit_options.skins.Skin;
 
 import java.util.ArrayList;
 import java.util.List;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.Renderable;
-import net.minecraft.network.chat.Component;
 
 class SkinButton extends InteractAbleWidget implements SkinGui.SortAble {
     private final SkinGui skinGui;
@@ -34,7 +34,7 @@ class SkinButton extends InteractAbleWidget implements SkinGui.SortAble {
         this.skinPath = skinPath;
         this.skin = skin;
         if (skin.condition != null) {
-            isAllowed = skin.condition.isAllowed(new ConditionManager.ModuleConditionContext(skinGui.instance, null, Minecraft.getInstance().player, skinGui.instance.getOldProperties(), reasons));
+            isAllowed = skin.condition.isAllowed(ConditionManager.playerContext(skinGui.instance,Minecraft.getInstance().player,skinGui.instance.properties));
         }
         String[] parts = skinPath.split("/");
         Component skinName = StatResolver.translateAndResolve(Miapi.MOD_ID + ".skin.name." + parts[parts.length - 1], skinGui.instance);
@@ -43,7 +43,7 @@ class SkinButton extends InteractAbleWidget implements SkinGui.SortAble {
     }
 
     @Override
-    public void render(GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
+    public void renderWidget(GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();

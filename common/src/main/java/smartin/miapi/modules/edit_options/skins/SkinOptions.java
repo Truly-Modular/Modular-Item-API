@@ -4,7 +4,6 @@ import com.google.gson.JsonObject;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.InteractAbleWidget;
@@ -12,7 +11,6 @@ import smartin.miapi.client.gui.crafting.CraftingScreen;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.item.modular.PropertyResolver;
 import smartin.miapi.modules.ItemModule;
-import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.edit_options.EditOption;
 import smartin.miapi.modules.edit_options.EditOptionIcon;
 import smartin.miapi.modules.edit_options.skins.gui.SkinGui;
@@ -31,7 +29,7 @@ public class SkinOptions implements EditOption {
 
     public SkinOptions() {
         defaultTab = SkinTab.fromJson(null);
-        PropertyResolver.register(new ResourceLocation("miapi", "skin"), (moduleInstance, oldMap) -> {
+        PropertyResolver.register(Miapi.id( "skin"), (moduleInstance, oldMap) -> {
             if (moduleInstance != null) {
                 String skinKey = moduleInstance.moduleData.get("skin");
                 Map<String, Skin> moduleSkins = skins.get(moduleInstance.module);
@@ -40,7 +38,7 @@ public class SkinOptions implements EditOption {
                 }
             }
             return oldMap;
-        }, List.of(new ResourceLocation("miapi", "synergy")));
+        }, List.of(Miapi.id( "synergy")));
         Miapi.registerReloadHandler(ReloadEvents.MAIN, "skins/module", skins, (isClient, path, data) -> {
             load(data);
         }, 1);
@@ -77,10 +75,9 @@ public class SkinOptions implements EditOption {
     @Override
     public ItemStack preview(FriendlyByteBuf buffer, EditContext context) {
         String skin = buffer.readUtf();
-        ModularItemCache.clearUUIDFor(context.getItemstack());
         context.getInstance().moduleData.put("skin", skin);
         context.getInstance().getRoot().writeToItem(context.getItemstack());
-        ModularItemCache.clearUUIDFor(context.getItemstack());
+        context.getInstance().clearCaches();
         return context.getItemstack();
     }
 

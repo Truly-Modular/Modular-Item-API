@@ -16,7 +16,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FastColor;
 
 class SkinTabGui extends InteractAbleWidget implements SkinGui.SortAble {
-    ResourceLocation arrowTexture = new ResourceLocation(Miapi.MOD_ID, "textures/gui/skin/arrow.png");
+    ResourceLocation arrowTexture = Miapi.id( "textures/gui/skin/arrow.png");
     boolean isOpen = true;
     List<SkinGui.SortAble> fullList = new ArrayList<>();
     List<SkinGui.SortAble> currentList;
@@ -117,7 +117,7 @@ class SkinTabGui extends InteractAbleWidget implements SkinGui.SortAble {
     }
 
     @Override
-    public void render(GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
+    public void renderWidget(GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
         if (!isRoot) {
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
             RenderSystem.enableBlend();

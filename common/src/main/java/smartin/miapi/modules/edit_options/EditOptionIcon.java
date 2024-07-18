@@ -1,13 +1,13 @@
 package smartin.miapi.modules.edit_options;
 
-import smartin.miapi.client.gui.InteractAbleWidget;
-
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import smartin.miapi.client.gui.InteractAbleWidget;
+
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public class EditOptionIcon extends InteractAbleWidget {
     ResourceLocation texture;
@@ -42,7 +42,7 @@ public class EditOptionIcon extends InteractAbleWidget {
     }
 
     @Override
-    public void render(GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
+    public void renderWidget(GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
         super.render(drawContext, mouseX, mouseY, delta);
         float vOffset = 0;
         if (isHoveredOrFocused()) {

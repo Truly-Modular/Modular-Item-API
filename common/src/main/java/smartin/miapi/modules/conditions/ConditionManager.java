@@ -60,6 +60,14 @@ public class ConditionManager {
         return context;
     }
 
+    public static ConditionContext playerContext(ModuleInstance moduleInstance, Player player, Map<ModuleProperty<?>, Object> properties) {
+        ConditionContext context = new ConditionContext();
+        context.setContext(MODULE_CONDITION_CONTEXT, moduleInstance);
+        context.setContext(PLAYER_CONTEXT, player);
+        context.setContext(MODULE_PROPERTIES,properties);
+        return context;
+    }
+
     public static ConditionContext moduleContext(ModuleInstance moduleInstance, Map<ModuleProperty<?>, Object> properties) {
         ConditionContext context = new ConditionContext();
         context.setContext(MODULE_CONDITION_CONTEXT, moduleInstance);
