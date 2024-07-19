@@ -18,7 +18,7 @@ public record CustomDataPayload(CustomDataData data) implements CustomPacketPayl
     public static final CustomPacketPayload.Type<CustomDataPayload> TYPE = new Type<>(Miapi.id("default-common-networking"));
 
     public CustomDataPayload(FriendlyByteBuf friendlyByteBuf) {
-        this(new CustomDataData(friendlyByteBuf.readUtf(), getPlayer(friendlyByteBuf.readUUID()), friendlyByteBuf));
+        this(new CustomDataData(friendlyByteBuf.readUtf(), getPlayer(friendlyByteBuf.readUUID()), read(Networking.createBuffer())));
         Networking.implementation.trigger(data().id(), data().data(), data().serverPlayer());
     }
 
@@ -27,6 +27,12 @@ public record CustomDataPayload(CustomDataData data) implements CustomPacketPayl
             return Miapi.server.getPlayerList().getPlayer(uuid);
         }
         return null;
+    }
+
+    private static FriendlyByteBuf read(FriendlyByteBuf friendlyByteBuf){
+        FriendlyByteBuf buf = Networking.createBuffer();
+        friendlyByteBuf.readBytes(Networking.createBuffer());
+        return buf;
     }
 
     public void write(FriendlyByteBuf data) {

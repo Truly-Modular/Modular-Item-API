@@ -251,6 +251,7 @@ public class CraftAction {
                 SlotProperty.ModuleSlot slot = SlotProperty.getSlots(newModule).get(id);
                 if (slot != null && slot.allowedIn(module)) {
                     newModule.subModules.put(id, module);
+                    newModule.sortSubModule();
                 }
             });
             newModule.writeToItem(craftingStack);
@@ -263,11 +264,11 @@ public class CraftAction {
         }
 
         if (toAdd == null) {
-            parsingInstance.subModules.remove(slotLocation.get(0));
+            parsingInstance.subModules.remove(slotLocation.getFirst());
         } else {
             ModuleInstance newModule = new ModuleInstance(toAdd);
-            if (parsingInstance.subModules.get(slotLocation.get(0)) != null) {
-                subModuleMap = parsingInstance.subModules.get(slotLocation.get(0)).subModules;
+            if (parsingInstance.subModules.get(slotLocation.getFirst()) != null) {
+                subModuleMap = parsingInstance.subModules.get(slotLocation.getFirst()).subModules;
             }
             subModuleMap.forEach((id, module) -> {
                 SlotProperty.ModuleSlot slot = SlotProperty.getSlots(newModule).get(id);
@@ -275,11 +276,12 @@ public class CraftAction {
                     if (slot.allowedIn(module)) {
                         module.parent = newModule;
                         newModule.subModules.put(id, module);
+                        newModule.sortSubModule();
                     }
                 }
             });
             newModule.parent = parsingInstance;
-            parsingInstance.subModules.put(slotLocation.get(0), newModule);
+            parsingInstance.subModules.put(slotLocation.getFirst(), newModule);
         }
         newBaseModule.writeToItem(craftingStack);
         return craftingStack.copy();

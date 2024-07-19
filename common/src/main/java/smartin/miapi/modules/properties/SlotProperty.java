@@ -1,5 +1,6 @@
 package smartin.miapi.modules.properties;
 
+import com.google.gson.JsonElement;
 import com.mojang.serialization.Codec;
 import com.redpxnda.nucleus.codec.auto.AutoCodec;
 import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
@@ -131,6 +132,18 @@ public class SlotProperty extends CodecProperty<Map<String, SlotProperty.ModuleS
         return null;
     }
 
+    public Map<String, ModuleSlot> decode(JsonElement element) {
+        Map<String, ModuleSlot> map = super.decode(element);
+        map.forEach((key, slot) -> {
+            slot.id = key;
+        });
+        return map;
+    }
+
+    public static List<ModuleSlot> asSortedList(Map<String, ModuleSlot> map) {
+        return map.entrySet().stream().sorted(Comparator.comparingDouble(a -> a.getValue().priority)).map(Map.Entry::getValue).toList();
+    }
+
     @Override
     public Map<String, ModuleSlot> merge(Map<String, ModuleSlot> left, Map<String, ModuleSlot> right, MergeType mergeType) {
         return ModuleProperty.mergeMap(left, right, mergeType);
@@ -138,7 +151,13 @@ public class SlotProperty extends CodecProperty<Map<String, SlotProperty.ModuleS
 
     public Map<String, ModuleSlot> initialize(Map<String, ModuleSlot> property, ModuleInstance context) {
         property.forEach((id, slot) -> slot.initialize(context));
-        return property;
+        List<Map.Entry<String, ModuleSlot>> slots = property.entrySet().stream().sorted(Comparator.comparingDouble(a -> a.getValue().priority)).toList();
+        Map<String, ModuleSlot> initializedMap = new LinkedHashMap<>();
+        for (var value : slots) {
+            value.getValue().initialize(context);
+            initializedMap.put(value.getKey(), value.getValue());
+        }
+        return initializedMap;
     }
 
     public static class ModuleSlot {
@@ -152,6 +171,9 @@ public class SlotProperty extends CodecProperty<Map<String, SlotProperty.ModuleS
         public List<String> allowed = new ArrayList<>();
         @CodecBehavior.Optional
         public List<String> allowedMerge = new ArrayList<>();
+        @CodecBehavior.Optional
+        public double priority = 0.0;
+        @AutoCodec.Ignored
         public String id;
         @Nullable
         @AutoCodec.Ignored

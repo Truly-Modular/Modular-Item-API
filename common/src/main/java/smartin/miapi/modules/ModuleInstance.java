@@ -12,6 +12,7 @@ import smartin.miapi.item.modular.PropertyResolver;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.cache.DataCache;
 import smartin.miapi.modules.cache.ModularItemCache;
+import smartin.miapi.modules.properties.SlotProperty;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.registries.RegistryInventory;
@@ -45,6 +46,7 @@ public class ModuleInstance {
                             ModuleInstance moduleInstance = new ModuleInstance(RegistryInventory.modules.get(module));
                             moduleInstance.moduleData = data;
                             moduleInstance.subModules = children;
+                            moduleInstance.sortSubModule();
                             moduleInstance.subModules.values().forEach(childInstance -> childInstance.parent = moduleInstance);
                             return moduleInstance;
                         }))
@@ -64,7 +66,7 @@ public class ModuleInstance {
     /**
      * A map of child module instances to their respective module IDs.
      */
-    public Map<String, ModuleInstance> subModules = new HashMap<>();
+    public Map<String, ModuleInstance> subModules = new LinkedHashMap<>();
     /**
      * A map of module data keys to their respective values.
      */
@@ -231,6 +233,18 @@ public class ModuleInstance {
             }
         }
         return null;
+    }
+
+    public void sortSubModule() {
+        SlotProperty.getInstance().getData(this.module);
+        Map<String, ModuleInstance> sortedMap = new LinkedHashMap<>();
+        SlotProperty.asSortedList(SlotProperty.getInstance().getData(this.module).orElse(new LinkedHashMap<>())).forEach(slot -> {
+            ModuleInstance moduleInstance = subModules.get(slot.id);
+            if (moduleInstance != null) {
+                sortedMap.put(slot.id, moduleInstance);
+            }
+        });
+        subModules = sortedMap;
     }
 
     /**
