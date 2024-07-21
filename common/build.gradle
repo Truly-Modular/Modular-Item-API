@@ -50,11 +50,11 @@ dependencies {
     // Remove the next line if you don't want to depend on the API
     modApi "dev.architectury:architectury:${rootProject.architectury_version}"
 
-    //modApi "com.redpxnda.nucleus:nucleus-core-common:${rootProject.minecraft_version}+${rootProject.nucleus_core_version}"
-    //modApi "com.redpxnda.nucleus:nucleus-codec-common:${rootProject.minecraft_version}+${rootProject.nucleus_codec_version}"
-    //modApi "com.redpxnda.nucleus:nucleus-config-common:${rootProject.minecraft_version}+${rootProject.nucleus_config_version}"
-    //modApi "com.redpxnda.nucleus:nucleus-pose-common:${rootProject.minecraft_version}+${rootProject.nucleus_pose_version}"
-    //modApi "com.redpxnda.nucleus:nucleus-facet-common:${rootProject.minecraft_version}+${rootProject.nucleus_facet_version}"
+    modApi "com.redpxnda.nucleus:nucleus-core-common:${rootProject.minecraft_version}+${rootProject.nucleus_core_version}"
+    modApi "com.redpxnda.nucleus:nucleus-codec-common:${rootProject.minecraft_version}+${rootProject.nucleus_codec_version}"
+    modApi "com.redpxnda.nucleus:nucleus-config-common:${rootProject.minecraft_version}+${rootProject.nucleus_config_version}"
+    modApi "com.redpxnda.nucleus:nucleus-pose-common:${rootProject.minecraft_version}+${rootProject.nucleus_pose_version}"
+    modApi "com.redpxnda.nucleus:nucleus-facet-common:${rootProject.minecraft_version}+${rootProject.nucleus_facet_version}"
 
     //https://modrinth.com/mod/treechop/version/tIdTnzkf
 
@@ -64,11 +64,11 @@ dependencies {
     //modImplementation files('libs/archery-local.jar')
     //modImplementation files('libs/armory-local.jar')
 
-    modApi files('libs/nucleus-codec-local.jar')
-    modApi files('libs/nucleus-config-local.jar')
-    modApi files('libs/nucleus-core-local.jar')
-    modApi files('libs/nucleus-facet-local.jar')
-    modApi files('libs/nucleus-pose-local.jar')
+    //modApi files('libs/nucleus-codec-local.jar')
+    //modApi files('libs/nucleus-config-local.jar')
+    //modApi files('libs/nucleus-core-local.jar')
+    //modApi files('libs/nucleus-facet-local.jar')
+    //modApi files('libs/nucleus-pose-local.jar')
 
     modCompileOnly("dev.onyxstudios.cardinal-components-api:cardinal-components-base:${cca_version}") {
         exclude(group: "net.fabricmc.fabric-api")
