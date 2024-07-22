@@ -8,7 +8,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.serialization.Codec;
 import com.redpxnda.nucleus.codec.auto.AutoCodec;
 import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
-import com.redpxnda.nucleus.util.InterfaceDispatcher;
 import com.redpxnda.nucleus.codec.misc.MiscCodecs;
 import com.redpxnda.nucleus.codec.misc.PolyCodec;
 import net.fabricmc.api.EnvType;
@@ -30,18 +29,16 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
-import smartin.miapi.Miapi;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class MaterialIcons {
     public static final Map<String, MaterialIconCreator> iconCreators = new HashMap<>();
-    private static final InterfaceDispatcher<MaterialIconCreator> dispatcher = InterfaceDispatcher.of(iconCreators, "type");
     public static MaterialIconCreator textureIconCreator;
 
     public static MaterialIcon getMaterialIcon(String materialKey, JsonElement element) {
-        return dispatcher.dispatcher().create(element, materialKey);
+        return iconCreators.get(element.getAsJsonObject().get("type").getAsString()).create(element, materialKey);
     }
 
     public static void setup() {
@@ -65,11 +62,11 @@ public class MaterialIcons {
                 throw new RuntimeException("'item' field for the icon of the '" + mat + "' material is missing! -> " + element);
 
             ItemStack stack = MiscCodecs.quickParse(object.get("item"), PolyCodec.of(byItem, ItemStack.CODEC),
-                    s -> Miapi.LOGGER.error("Failed to parse item for the icon of the '{}' material! -> {}", mat, s));
+                    s -> new RuntimeException("Failed to parse item for the icon of the '" + mat + "' material! -> " + s));
             int offset = object.get("offset") instanceof JsonPrimitive prim ? prim.getAsInt() : 16;
             SpinSettings spin = object.has("spin") ?
                     MiscCodecs.quickParse(object.get("spin"), SpinSettings.codec,
-                            s -> Miapi.LOGGER.error("Failed to parse spin settings for item icon of the '{}' material! -> {}", mat, s)) :
+                            s -> new RuntimeException("Failed to parse spin settings for item icon of the '" + mat + "' material! -> " + s)) :
                     null;
 
             return new ItemMaterialIcon(stack, offset, spin);
@@ -78,7 +75,7 @@ public class MaterialIcons {
         iconCreators.put("entity", (element, materialKey) -> {
             EntityIconHolder holder = MiscCodecs.quickParse(
                     element, EntityIconHolder.codec,
-                    s -> Miapi.LOGGER.error("Failed to parse entity icon for the '{}' material! -> {}", materialKey, s)
+                    s -> new RuntimeException("Failed to parse entity icon for the '" + materialKey + "' material! -> " + s)
             );
             return new EntityMaterialIcon(holder);
         });
@@ -87,13 +84,14 @@ public class MaterialIcons {
     public interface MaterialIcon {
         /**
          * @param context draw context for use
-         * @param x x pos of icon
-         * @param y y pos of icon
+         * @param x       x pos of icon
+         * @param y       y pos of icon
          * @return amount to offset for text rendering
          */
         @Environment(EnvType.CLIENT)
         int render(GuiGraphics context, int x, int y);
     }
+
     public interface MaterialIconCreator {
         MaterialIcon create(JsonElement element, String materialKey);
     }
@@ -109,6 +107,7 @@ public class MaterialIcons {
         public @CodecBehavior.Optional float scale = 0.85f;
         public @CodecBehavior.Optional SpinSettings spin = null;
     }
+
     public record EntityMaterialIcon(EntityIconHolder holder) implements MaterialIcon {
         @Environment(EnvType.CLIENT)
         @Override
@@ -151,7 +150,7 @@ public class MaterialIcons {
         public float speed = 1;
 
         public void multiplyMatrices(PoseStack matrices) {
-            float amount = Util.getMillis()*(0.0001745f*speed);
+            float amount = Util.getMillis() * (0.0001745f * speed);
             matrices.rotateAround(new Quaternionf().rotationXYZ(x ? amount : 0, y ? amount : 0, z ? amount : 0), originX, originY, originZ);
         }
     }

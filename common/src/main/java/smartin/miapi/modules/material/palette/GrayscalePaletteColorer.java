@@ -7,11 +7,6 @@ import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.serialization.Codec;
 import com.redpxnda.nucleus.codec.misc.MiscCodecs;
 import com.redpxnda.nucleus.util.Color;
-import smartin.miapi.Miapi;
-import smartin.miapi.client.renderer.NativeImageGetter;
-import smartin.miapi.modules.material.Material;
-
-import java.util.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.SpriteContents;
 import net.minecraft.client.resources.model.BakedModel;
@@ -20,6 +15,10 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FastColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import smartin.miapi.client.renderer.NativeImageGetter;
+import smartin.miapi.modules.material.Material;
+
+import java.util.*;
 
 /**
  * Represents a simple palette for a material, where the index of a color in a set of 256 represents the grayscale pixel to replace with said color.
@@ -89,7 +88,7 @@ public class GrayscalePaletteColorer extends SpritePixelReplacer {
             JsonElement element = object.get("colors");
             Map<Integer, Color> colorsMap = new HashMap<>(MiscCodecs.quickParse(
                     element, Codec.unboundedMap(stringToIntCodec, MiscCodecs.COLOR),
-                    s -> Miapi.LOGGER.error("Failed to create material palette color map from JSON '" + element + "'! -> " + s)
+                    s -> new RuntimeException("Failed to create material palette color map from JSON '" + element + "'! -> " + s)
             ));
             String key = object.has("filler") ? object.get("filler").getAsString() : "interpolate";
             MaterialRenderControllers.FillerFunction filler = MaterialRenderControllers.fillers.getOrDefault(key, MaterialRenderControllers.interpolateFiller);

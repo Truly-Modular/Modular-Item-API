@@ -194,14 +194,6 @@ public class DoubleOperationResolvable {
     }
 
     public static class Operation {
-        @AutoCodec.Name("operation")
-        @CodecBehavior.Override("operationCode")
-        public AttributeModifier.Operation attributeOperation = AttributeModifier.Operation.ADD_VALUE;
-        @AutoCodec.Name("value")
-        public String value;
-        @AutoCodec.Ignored
-        public ModuleInstance instance;
-
         public static Codec<AttributeModifier.Operation> operationCodec = new Codec<>() {
             @Override
             public <T> DataResult<Pair<AttributeModifier.Operation, T>> decode(DynamicOps<T> ops, T input) {
@@ -215,6 +207,13 @@ public class DoubleOperationResolvable {
                 return Codec.STRING.encode(toCodecString(input), ops, prefix);
             }
         };
+        @AutoCodec.Name("operation")
+        @CodecBehavior.Override("operationCode")
+        public AttributeModifier.Operation attributeOperation = AttributeModifier.Operation.ADD_VALUE;
+        @AutoCodec.Name("value")
+        public String value;
+        @AutoCodec.Ignored
+        public ModuleInstance instance;
 
         public Operation(String value) {
             this.value = value;

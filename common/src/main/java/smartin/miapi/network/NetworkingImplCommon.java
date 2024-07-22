@@ -15,8 +15,7 @@ public class NetworkingImplCommon extends NetworkingImpl {
     public NetworkingImplCommon() {
         instance = this;
         if (Platform.getEnv().equals(EnvType.CLIENT)) {
-            NetworkManager.registerS2CPayloadType(CustomDataPayload.TYPE, CustomDataPayload.STREAM_CODEC, List.of());
-
+            //NetworkManager.registerS2CPayloadType(CustomDataPayload.TYPE, CustomDataPayload.STREAM_CODEC, List.of());
         }
     }
 

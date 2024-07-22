@@ -1,27 +1,29 @@
 package smartin.miapi.fabric;
 
 import com.google.gson.JsonObject;
-import net.minecraft.resource.Resource;
-import net.minecraft.resource.ResourceManager;
-import net.minecraft.resource.ResourceReloader;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.profiler.Profiler;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.PreparableReloadListener;
+import net.minecraft.server.packs.resources.Resource;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.util.profiling.ProfilerFiller;
 import smartin.miapi.Miapi;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.modules.conditions.ConditionManager;
 
 import java.io.BufferedReader;
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
 
 
-public class MiapiReloadListener implements ResourceReloader {
+public class MiapiReloadListener implements PreparableReloadListener {
     static long timeStart;
 
-    public CompletableFuture load(ResourceManager manager, Profiler profiler, Executor executor) {
+    public CompletableFuture load(ResourceManager manager, ProfilerFiller profiler, Executor executor) {
         ReloadEvents.reloadCounter++;
         timeStart = System.nanoTime();
         ReloadEvents.START.fireEvent(false);
@@ -29,12 +31,12 @@ public class MiapiReloadListener implements ResourceReloader {
 
         ReloadEvents.syncedPaths.forEach((modID, dataPaths) -> {
             dataPaths.forEach(dataPath -> {
-                Map<Identifier, List<Resource>> map = manager.findAllResources(dataPath, (fileName) -> true);
+                Map<ResourceLocation, List<Resource>> map = manager.listResourceStacks(dataPath, (fileName) -> true);
                 map.forEach((identifier, resources) -> {
                     if (identifier.getNamespace().equals(modID)) {
                         resources.forEach(resource -> {
                             try {
-                                BufferedReader reader = resource.getReader();
+                                BufferedReader reader = resource.openAsReader();
                                 String dataString = reader.lines().collect(Collectors.joining());
                                 String fullPath = identifier.getPath();
                                 data.put(fullPath, dataString);
@@ -49,7 +51,7 @@ public class MiapiReloadListener implements ResourceReloader {
         return CompletableFuture.completedFuture(data);
     }
 
-    public CompletableFuture<Void> apply(Object data, ResourceManager manager, Profiler profiler, Executor executor) {
+    public CompletableFuture<Void> apply(Object data, ResourceManager manager, ProfilerFiller profiler, Executor executor) {
         return CompletableFuture.runAsync(() -> {
             Map<String, String> dataMap = new HashMap<>((Map) data);
             Map<String, String> filteredMap = new HashMap<>();
@@ -69,11 +71,6 @@ public class MiapiReloadListener implements ResourceReloader {
                         public ConditionManager.ConditionContext copy() {
                             return this;
                         }
-
-                        @Override
-                        public List<Text> getReasons() {
-                            return new ArrayList<>();
-                        }
                     });
                     if (allowed) {
                         element.remove("load_condition");
@@ -91,16 +88,16 @@ public class MiapiReloadListener implements ResourceReloader {
             ReloadEvents.END.fireEvent(false);
             Miapi.LOGGER.info("Server load took " + (double) (System.nanoTime() - timeStart) / 1000 / 1000 + " ms");
             if (Miapi.server != null) {
-                Miapi.server.getPlayerManager().getPlayerList().forEach(ReloadEvents::triggerReloadOnClient);
+                Miapi.server.getPlayerList().getPlayers().forEach(ReloadEvents::triggerReloadOnClient);
             }
             ReloadEvents.reloadCounter--;
         });
     }
 
     @Override
-    public CompletableFuture<Void> reload(Synchronizer synchronizer, ResourceManager manager, Profiler prepareProfiler, Profiler applyProfiler, Executor prepareExecutor, Executor applyExecutor) {
-        return load(manager, prepareProfiler, prepareExecutor).thenCompose(synchronizer::whenPrepared).thenAcceptAsync(a -> {
-            apply(a, manager, applyProfiler, applyExecutor);
+    public CompletableFuture<Void> reload(PreparableReloadListener.PreparationBarrier preparationBarrier, ResourceManager resourceManager, ProfilerFiller preparationsProfiler, ProfilerFiller reloadProfiler, Executor backgroundExecutor, Executor gameExecutor) {
+        return load(resourceManager, preparationsProfiler, backgroundExecutor).thenCompose(preparationBarrier::wait).thenAcceptAsync(a -> {
+            apply(a, resourceManager, reloadProfiler, gameExecutor);
         });
     }
 }

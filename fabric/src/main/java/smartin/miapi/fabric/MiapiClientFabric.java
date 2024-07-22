@@ -4,7 +4,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.model.loading.v1.ModelLoadingPlugin;
-import net.minecraft.util.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import smartin.miapi.client.model.item.ItemBakedModelReplacement;
 import smartin.miapi.registries.RegistryInventory;
 
@@ -18,7 +18,7 @@ public class MiapiClientFabric {
             KeyBindingHelper.registerKeyBinding(keyBinding);
         }));
         ModelLoadingPlugin.register(pluginContext -> {
-            List<Identifier> ids = RegistryInventory.modularItems.getFlatMap().keySet().stream().map(string -> new Identifier(string.replace("item/", ""))).toList();
+            List<ResourceLocation> ids = RegistryInventory.modularItems.getFlatMap().keySet().stream().map(string -> ResourceLocation.parse(string.replace("item/", ""))).toList();
             pluginContext.addModels(ids);
             pluginContext.resolveModel().register((context) -> {
                 if (ItemBakedModelReplacement.isModularItem(context.id())) {

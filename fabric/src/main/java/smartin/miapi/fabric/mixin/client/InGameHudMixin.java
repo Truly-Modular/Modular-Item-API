@@ -1,41 +1,35 @@
 package smartin.miapi.fabric.mixin.client;
 
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.hud.InGameHud;
-import net.minecraft.entity.attribute.EntityAttributes;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.registry.Registries;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.resources.ResourceLocation;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import smartin.miapi.client.gui.crafting.CraftingScreen;
-import smartin.miapi.config.MiapiConfig;
-import smartin.miapi.entity.ShieldingArmorFacet;
 import smartin.miapi.events.ClientEvents;
-import smartin.miapi.mixin.client.InGameHudAccessor;
 
-@Mixin(InGameHud.class)
+@Mixin(Gui.class)
 public class InGameHudMixin {
-    private static final Identifier ICONS = new Identifier("textures/gui/icons.png");
+    private static final ResourceLocation ICONS = ResourceLocation.parse("textures/gui/icons.png");
 
     @Inject(
             method = "render",
             at = @At("TAIL")
     )
-    private void miapi$customDrawContext(DrawContext context, float tickDelta, CallbackInfo ci) {
-        ClientEvents.HUD_RENDER.invoker().render(context, tickDelta);
+    private void miapi$customDrawContext(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
+        ClientEvents.HUD_RENDER.invoker().render(guiGraphics, deltaTracker.getGameTimeDeltaTicks());
     }
 
     @Inject(
-            method = "renderStatusBars(Lnet/minecraft/client/gui/DrawContext;)V",
+            method = "renderHotbarAndDecorations",
             at = @At("TAIL")
     )
-    private void miapi$customDrawContext(DrawContext context, CallbackInfo ci) {
-        InGameHud inGameHud = (InGameHud) (Object) (this);
-        PlayerEntity playerEntity = ((InGameHudAccessor) inGameHud).callGetCameraPlayer();
+    private void miapi$customDrawContext2(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
+        /*
+        Gui inGameHud = (Gui) (Object) (this);
+        Player playerEntity = ((InGameHudAccessor) inGameHud).callGetCameraPlayer();
         int heartBars = ((InGameHudAccessor) inGameHud).callGetHeartRows(((InGameHudAccessor) inGameHud).callGetHeartCount(playerEntity));
         ShieldingArmorFacet facet = ShieldingArmorFacet.KEY.get(playerEntity);
         // Calculate health and absorption values
@@ -77,6 +71,6 @@ public class InGameHudMixin {
                 context.drawTexture(CraftingScreen.BACKGROUND_TEXTURE, heartX, startY - yOffset, 448, 96, 9, 9, 512, 512);
             }
         }
-
+         */
     }
 }

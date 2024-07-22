@@ -32,7 +32,7 @@ abstract class ItemStackMixin {
     @Inject(method = "getItem", at = @At("TAIL"))
     public void miapi$capturePotentialItemstack(CallbackInfoReturnable<Item> cir) {
         ItemStack stack = (ItemStack) (Object) this;
-        if (stack.getItem() instanceof ModularItem) {
+        if (cir.getReturnValue() instanceof ModularItem) {
             FakeItemstackReferenceProvider.setReference(cir.getReturnValue(), stack);
         }
     }

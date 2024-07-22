@@ -1,15 +1,12 @@
 package smartin.miapi.fabric.mixin;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.world.entity.Entity;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
-import smartin.miapi.attributes.AttributeRegistry;
 
 @Mixin(Entity.class)
 public abstract class EntityMixin {
 
+    /*
     @ModifyVariable(method = "updateVelocity(FLnet/minecraft/util/math/Vec3d;)V", at = @At("HEAD"))
     private float miapi$adjustSwimSpeed(float speed) {
         Entity entity = (Entity) (Object) this;
@@ -18,4 +15,6 @@ public abstract class EntityMixin {
         }
         return speed;
     }
+
+     */
 }

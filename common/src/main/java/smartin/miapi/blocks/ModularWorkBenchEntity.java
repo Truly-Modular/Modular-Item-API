@@ -1,6 +1,5 @@
 package smartin.miapi.blocks;
 
-import com.redpxnda.nucleus.codec.misc.MiscCodecs;
 import com.redpxnda.nucleus.util.MiscUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
@@ -165,7 +164,8 @@ public class ModularWorkBenchEntity extends BlockEntity implements MenuProvider,
 
         CompoundTag persisStatsNbt = tag.getCompound("PersistentStats");
         persisStatsNbt.getAllKeys().forEach(key -> {
-            persistentStats.put(key, MiscCodecs.quickParse(NbtOps.INSTANCE, persisStatsNbt.getCompound(key), StatProvidersMap.MODULELESS_CODEC, s -> Miapi.LOGGER.error("Failed to decode persistent StatProvidersMap for MWBE! -> {}", s)));
+            //TODO:this did not work, idk the stats stuff though
+            //persistentStats.put(key, MiscCodecs.quickParse(NbtOps.INSTANCE, persisStatsNbt.getCompound(key), StatProvidersMap.MODULELESS_CODEC, s -> Miapi.LOGGER.error("Failed to decode persistent StatProvidersMap for MWBE! -> {}", s)));
         });
 
         CompoundTag statsNbt = tag.getCompound("Stats");

@@ -2,7 +2,6 @@ package smartin.miapi.modules.material.palette;
 
 import com.google.gson.JsonElement;
 import com.redpxnda.nucleus.util.Color;
-import com.redpxnda.nucleus.util.InterfaceDispatcher;
 import smartin.miapi.modules.material.JsonMaterial;
 import smartin.miapi.modules.material.Material;
 
@@ -17,7 +16,6 @@ import java.util.Map;
 public class MaterialRenderControllers {
     public static final Map<String, RenderControllerCreator> creators = new HashMap<>();
     public static final Map<String, FillerFunction> fillers = new HashMap<>();
-    public static final InterfaceDispatcher<RenderControllerCreator> paletteCreator = InterfaceDispatcher.of(creators, "type");
     public static FillerFunction interpolateFiller;
 
     public static void setup() {

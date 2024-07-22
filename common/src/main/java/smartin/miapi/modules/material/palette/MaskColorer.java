@@ -76,8 +76,11 @@ public class MaskColorer extends SpriteColorer {
     public static MaterialRenderController fromJson(Material material, JsonElement element) {
         try {
             JsonObject object = element.getAsJsonObject();
-            MaterialRenderController baseColorer = MaterialRenderControllers.paletteCreator.dispatcher().createPalette(object.get("base"), material);
-            MaterialRenderController layerColorer = MaterialRenderControllers.paletteCreator.dispatcher().createPalette(object.get("layer"), material);
+            JsonElement baseElement = object.get("base");
+            MaterialRenderController baseColorer = MaterialRenderControllers.creators.get(baseElement.getAsJsonObject().get("base").getAsString()).createPalette(baseElement,material);
+            JsonElement layerElement = object.get("layer");
+            MaterialRenderController layerColorer = MaterialRenderControllers.creators.get(layerElement.getAsJsonObject().get("layer").getAsString()).createPalette(layerElement,material);
+
             if (baseColorer instanceof SpriteColorer baseSpriteColor && layerColorer instanceof SpriteColorer layerSpriteColor) {
                 Masker masker = getMaskerFromJson(object.get("mask"));
                 return new MaskColorer(material, baseSpriteColor, layerSpriteColor, masker);

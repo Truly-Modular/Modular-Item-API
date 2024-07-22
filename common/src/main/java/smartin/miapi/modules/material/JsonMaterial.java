@@ -78,7 +78,8 @@ public class JsonMaterial implements Material {
             }
 
             if (element.has("color_palette")) {
-                palette = MaterialRenderControllers.paletteCreator.dispatcher().createPalette(element.get("color_palette"), this);
+                JsonElement innerElement =  element.get("color_palette");
+                palette = MaterialRenderControllers.creators.get(innerElement.getAsJsonObject().get("type").getAsString()).createPalette(innerElement,this);
             } else {
                 palette = new FallbackColorer(this);
             }
@@ -107,7 +108,8 @@ public class JsonMaterial implements Material {
                 }
                 case "color_palette": {
                     if (isClient) {
-                        palette = MaterialRenderControllers.paletteCreator.dispatcher().createPalette(propertyElement, this);
+                        palette = MaterialRenderControllers.creators.get(
+                                propertyElement.getAsJsonObject().get("type").getAsString()).createPalette(propertyElement,this);
                     }
                     break;
                 }
