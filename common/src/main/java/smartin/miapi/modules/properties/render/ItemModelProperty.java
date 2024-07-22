@@ -1,8 +1,6 @@
 package smartin.miapi.modules.properties.render;
 
 import com.mojang.serialization.Codec;
-import com.redpxnda.nucleus.codec.auto.AutoCodec;
-import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.core.component.DataComponentType;
@@ -10,10 +8,10 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import smartin.miapi.client.MiapiClient;
 import smartin.miapi.client.model.ItemMiapiModel;
 import smartin.miapi.client.model.MiapiItemModel;
 import smartin.miapi.client.model.MiapiModel;
-import smartin.miapi.item.modular.Transform;
 import smartin.miapi.item.modular.items.ModularCrossbow;
 import smartin.miapi.modules.material.MaterialInscribeDataProperty;
 import smartin.miapi.modules.properties.util.CodecProperty;
@@ -25,10 +23,10 @@ import java.util.List;
 import java.util.function.Supplier;
 
 @Environment(EnvType.CLIENT)
-public class ItemModelProperty extends CodecProperty<List<ItemModelProperty.ModelJson>> {
+public class ItemModelProperty extends CodecProperty<List<ModelJson>> {
     public static final String KEY = "item_model";
     public static ItemModelProperty property;
-    public static Codec<ModelJson> CODEC = AutoCodec.of(ModelJson.class).codec();
+    public static Codec<ModelJson> CODEC = MiapiClient.MODEL_CODEC;
     public static DataComponentType<ItemStack> ITEM_MODEL_COMPONENT = DataComponentType.<ItemStack>builder()
             .persistent(ItemStack.CODEC)
             .networkSynchronized(ByteBufCodecs.fromCodec(ItemStack.CODEC))
@@ -78,12 +76,4 @@ public class ItemModelProperty extends CodecProperty<List<ItemModelProperty.Mode
         return ModuleProperty.mergeList(left, right, mergeType);
     }
 
-    public static class ModelJson {
-        public String type;
-        public String model;
-        @CodecBehavior.Optional
-        public String modelType;
-        @CodecBehavior.Optional
-        public Transform transform = Transform.IDENTITY;
-    }
 }
