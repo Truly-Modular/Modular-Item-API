@@ -208,7 +208,7 @@ public class DoubleOperationResolvable {
             }
         };
         @AutoCodec.Name("operation")
-        @CodecBehavior.Override("operationCode")
+        @CodecBehavior.Override("operationCodec")
         public AttributeModifier.Operation attributeOperation = AttributeModifier.Operation.ADD_VALUE;
         @AutoCodec.Name("value")
         public String value;
