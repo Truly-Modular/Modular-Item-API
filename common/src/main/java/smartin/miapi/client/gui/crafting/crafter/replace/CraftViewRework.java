@@ -216,7 +216,7 @@ public class CraftViewRework extends InteractAbleWidget {
         } else {
             addChild(fallbackCraftingWidget);
         }
-        super.render(drawContext, mouseX, mouseY, delta);
+        super.renderWidget(drawContext, mouseX, mouseY, delta);
     }
 
     public void setBuffers() {
@@ -251,7 +251,7 @@ public class CraftViewRework extends InteractAbleWidget {
 
         @Override
         public void renderWidget(GuiGraphics context, int mouseX, int mouseY, float delta) {
-            super.render(context, mouseX, mouseY, delta);
+            super.renderWidget(context, mouseX, mouseY, delta);
             RenderSystem.setShaderTexture(0, texture);
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
             RenderSystem.enableBlend();
@@ -287,7 +287,7 @@ public class CraftViewRework extends InteractAbleWidget {
 
         @Override
         public void renderWidget(GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
-            super.render(drawContext, mouseX, mouseY, delta);
+            super.renderWidget(drawContext, mouseX, mouseY, delta);
         }
 
         @Override

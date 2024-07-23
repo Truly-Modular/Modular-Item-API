@@ -24,66 +24,57 @@ import java.util.function.Function;
  * would be negated by an Autocodec
  */
 public class DoubleOperationResolvable {
-    static Codec<Operation> operationCodec = AutoCodec.of(Operation.class).codec();
+    static Codec<Operation> autoCodec = AutoCodec.of(Operation.class).codec();
+    static Codec<Operation> operationCodec = Codec.withAlternative(new Codec<Operation>() {
+        @Override
+        public <T> DataResult<T> encode(Operation input, DynamicOps<T> ops, T prefix) {
+            return autoCodec.encode(input, ops, prefix);
+        }
+
+        @Override
+        public <T> DataResult<Pair<Operation, T>> decode(DynamicOps<T> ops, T input) {
+            DataResult<Pair<Boolean, T>> decodeBoolean = Codec.BOOL.decode(ops, input);
+            if (decodeBoolean.isSuccess()) {
+                Operation operation = new Operation(decodeBoolean.getOrThrow().getFirst() ? "1" : "-1");
+                return DataResult.success(new Pair<>(operation, input));
+            }
+            DataResult<Pair<String, T>> result = Codec.STRING.decode(ops, input);
+            if (result.isError()) {
+                DataResult<Pair<Double, T>> doubleResult = Codec.DOUBLE.decode(ops, input);
+                if (doubleResult.isSuccess()) {
+                    Pair<Double, T> doubleTPair = doubleResult.getOrThrow();
+                    return DataResult.success(new Pair<>(new Operation("" + doubleTPair.getFirst()), doubleTPair.getSecond()));
+                }
+                return DataResult.error(() -> "is neither a string nor a boolean or a number");
+            }
+            Pair<String, T> stringTPair = result.getOrThrow();
+            return DataResult.success(new Pair<>(new Operation(stringTPair.getFirst()), stringTPair.getSecond()));
+        }
+    }, autoCodec);
     static Codec<List<Operation>> listCodec = Codec.list(operationCodec);
-    public static Codec<DoubleOperationResolvable> CODEC = Codec.withAlternative(
-            new Codec<>() {
-                @Override
-                public <T> DataResult<T> encode(DoubleOperationResolvable input, DynamicOps<T> ops, T prefix) {
-                    return listCodec.encode(input.operations, ops, prefix);
-                }
+    public static Codec<DoubleOperationResolvable> CODEC = Codec.withAlternative(new Codec<>() {
+        @Override
+        public <T> DataResult<T> encode(DoubleOperationResolvable input, DynamicOps<T> ops, T prefix) {
+            return listCodec.encode(input.operations, ops, prefix);
+        }
 
-                @Override
-                public <T> DataResult<Pair<DoubleOperationResolvable, T>> decode(DynamicOps<T> ops, T input) {
-                    DataResult<Pair<Boolean, T>> decodeBoolean = Codec.BOOL.decode(ops, input);
-                    if (decodeBoolean.isSuccess()) {
-                        Operation operation = new Operation(decodeBoolean.getOrThrow().getFirst() ? "1" : "-1");
-                        return DataResult.success(
-                                new Pair<>(
-                                        new DoubleOperationResolvable(List.of(operation)),
-                                        input));
-                    }
-                    DataResult<Pair<String, T>> result = Codec.STRING.decode(ops, input);
-                    if (result.isError()) {
-                        DataResult<Pair<Double, T>> doubleResult = Codec.DOUBLE.decode(ops, input);
-                        if (doubleResult.isSuccess()) {
-                            Pair<Double, T> doubleTPair = doubleResult.getOrThrow();
-                            List<Operation> operationList = List.of(new Operation("" + doubleTPair.getFirst()));
-                            return DataResult.success(new Pair<>(new DoubleOperationResolvable(operationList), doubleTPair.getSecond()));
-                        }
-                        return DataResult.error(() -> "is neither a string nor a boolean");
-                    }
-                    Pair<String, T> stringTPair = result.getOrThrow();
-                    List<Operation> operationList = List.of(new Operation(stringTPair.getFirst()));
-                    return DataResult.success(new Pair<>(new DoubleOperationResolvable(operationList), stringTPair.getSecond()));
-                }
-            },
-            Codec.withAlternative(
-                    new Codec<>() {
-                        @Override
-                        public <T> DataResult<T> encode(DoubleOperationResolvable input, DynamicOps<T> ops, T prefix) {
-                            return listCodec.encode(input.operations, ops, prefix);
-                        }
+        @Override
+        public <T> DataResult<Pair<DoubleOperationResolvable, T>> decode(DynamicOps<T> ops, T input) {
+            Pair<Operation, T> pair = operationCodec.decode(ops, input).getOrThrow((e) -> new RuntimeException(e + "could not decode double operations"));
+            return DataResult.success(new Pair<>(new DoubleOperationResolvable(List.of(pair.getFirst())), pair.getSecond()));
+        }
+    }, new Codec<>() {
+        @Override
+        public <T> DataResult<T> encode(DoubleOperationResolvable input, DynamicOps<T> ops, T prefix) {
+            return listCodec.encode(input.operations, ops, prefix);
+        }
 
-                        @Override
-                        public <T> DataResult<Pair<DoubleOperationResolvable, T>> decode(DynamicOps<T> ops, T input) {
-                            Pair<Operation, T> pair = operationCodec.decode(ops, input).getOrThrow((e) -> new RuntimeException(e + "could not decode double operations"));
-                            return DataResult.success(new Pair<>(new DoubleOperationResolvable(List.of(pair.getFirst())), pair.getSecond()));
-                        }
-                    },
-                    new Codec<>() {
-                        @Override
-                        public <T> DataResult<T> encode(DoubleOperationResolvable input, DynamicOps<T> ops, T prefix) {
-                            return listCodec.encode(input.operations, ops, prefix);
-                        }
-
-                        @Override
-                        public <T> DataResult<Pair<DoubleOperationResolvable, T>> decode(DynamicOps<T> ops, T input) {
-                            Pair<List<Operation>, T> pair = listCodec.decode(ops, input).getOrThrow((e) -> new RuntimeException(e + "could not decode double operations"));
-                            return DataResult.success(new Pair<>(new DoubleOperationResolvable(pair.getFirst()), pair.getSecond()));
-                        }
-                    }
-            ));
+        @Override
+        public <T> DataResult<Pair<DoubleOperationResolvable, T>> decode(DynamicOps<T> ops, T input) {
+            Pair<List<Operation>, T> pair = listCodec.decode(ops, input).getOrThrow((e) -> new RuntimeException(e + "could not decode double operations"));
+            return DataResult.success(new Pair<>(new DoubleOperationResolvable(pair.getFirst()), pair.getSecond()));
+        }
+    });
 
     public List<Operation> operations;
     /**
@@ -241,10 +232,36 @@ public class DoubleOperationResolvable {
                 return Codec.STRING.encode(toCodecString(input), ops, prefix);
             }
         };
+        public static Codec<String> NUMBERSTRINGCODEC = new Codec<String>() {
+            @Override
+            public <T> DataResult<Pair<String, T>> decode(DynamicOps<T> ops, T input) {
+                DataResult<Pair<Boolean, T>> decodeBoolean = Codec.BOOL.decode(ops, input);
+                if (decodeBoolean.isSuccess()) {
+                    return DataResult.success(new Pair<>(decodeBoolean.getOrThrow().getFirst() ? "1" : "-1", input));
+                }
+                DataResult<Pair<Double, T>> decodeDouble = Codec.DOUBLE.decode(ops, input);
+                if (decodeDouble.isSuccess()) {
+                    Pair<Double, T> doubleTPair = decodeDouble.getOrThrow();
+                    return DataResult.success(new Pair<>("" + doubleTPair.getFirst(), input));
+                }
+                DataResult<Pair<String, T>> decodeString = Codec.STRING.decode(ops, input);
+                if (decodeString.isSuccess()) {
+                    Pair<String, T> pair = decodeString.getOrThrow();
+                    return DataResult.success(new Pair<>(pair.getFirst(), input));
+                }
+                return DataResult.error(() -> "is neither a string nor a boolean or a number");
+            }
+
+            @Override
+            public <T> DataResult<T> encode(String input, DynamicOps<T> ops, T prefix) {
+                return Codec.STRING.encode(input, ops, prefix);
+            }
+        };
         @AutoCodec.Name("operation")
         @CodecBehavior.Override("operationCodec")
         public AttributeModifier.Operation attributeOperation = AttributeModifier.Operation.ADD_VALUE;
         @AutoCodec.Name("value")
+        @CodecBehavior.Override("NUMBERSTRINGCODEC")
         public String value;
         @AutoCodec.Ignored
         public ModuleInstance instance;

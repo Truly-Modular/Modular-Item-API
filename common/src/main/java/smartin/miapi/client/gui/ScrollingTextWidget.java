@@ -142,7 +142,7 @@ public class ScrollingTextWidget extends InteractAbleWidget implements Renderabl
             context.drawString(Minecraft.getInstance().font, text, textStart, getY(), textColor, hasTextShadow);
         }
         if (scissorEnabled) context.disableScissor();
-        super.render(context, mouseX, mouseY, delta);
+        super.renderWidget(context, mouseX, mouseY, delta);
     }
 
     public int getRequiredWidth() {

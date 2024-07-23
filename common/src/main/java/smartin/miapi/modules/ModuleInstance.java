@@ -158,7 +158,9 @@ public class ModuleInstance {
                 }
             }
         }
-        itemMergedProperties.put(property, propertyData);
+        if (property != null && propertyData != null) {
+            itemMergedProperties.put(property, propertyData);
+        }
         return propertyData;
     }
 

@@ -165,7 +165,7 @@ public class SlotDisplay extends InteractAbleWidget {
     public void renderWidget(GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
         drawContext.enableScissor(this.getX(), this.getY(), this.getX() + this.width, this.getY() + this.height);
         renderSlot(stack, drawContext, mouseX, mouseY, delta);
-        super.render(drawContext, mouseX, mouseY, delta);
+        super.renderWidget(drawContext, mouseX, mouseY, delta);
         drawContext.disableScissor();
     }
 

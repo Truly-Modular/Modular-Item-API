@@ -72,6 +72,6 @@ public class ImageWidget extends InteractAbleWidget {
     @Override
     public void renderWidget(GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
         drawContext.blit(texture, this.getX(), this.getY(), getWidth(), getHeight(), (float) u, (float) v, regionWidth, regionHeight, textureSizeX, textureSizeY);
-        super.render(drawContext, mouseX, mouseY, delta);
+        super.renderWidget(drawContext, mouseX, mouseY, delta);
     }
 }

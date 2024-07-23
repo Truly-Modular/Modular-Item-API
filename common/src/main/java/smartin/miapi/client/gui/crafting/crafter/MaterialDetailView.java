@@ -1,5 +1,11 @@
 package smartin.miapi.client.gui.crafting.crafter;
 
+import net.minecraft.Util;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FastColor;
+import net.minecraft.world.item.ItemStack;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.*;
 import smartin.miapi.modules.material.Material;
@@ -11,12 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.function.Consumer;
-import net.minecraft.Util;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.FastColor;
-import net.minecraft.world.item.ItemStack;
 
 public class MaterialDetailView extends InteractAbleWidget {
     private final ItemStack itemStack;
@@ -77,7 +77,7 @@ public class MaterialDetailView extends InteractAbleWidget {
         if (material != null && material.hasIcon()) {
             material.renderIcon(drawContext, (int) (getX() + 5 + header.getRequiredWidth() * scale), getY() + 5);
         }
-        super.render(drawContext, mouseX, mouseY, delta);
+        super.renderWidget(drawContext, mouseX, mouseY, delta);
     }
 
     private static class ColorWidget extends InteractAbleWidget {
@@ -96,7 +96,7 @@ public class MaterialDetailView extends InteractAbleWidget {
         public void renderWidget(GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
             textWidget.setX(this.getX());
             textWidget.setY(this.getY());
-            super.render(drawContext, mouseX, mouseY, delta);
+            super.renderWidget(drawContext, mouseX, mouseY, delta);
             color |= (0xFF << 24);
             drawContext.fill(this.getX()+textWidth, this.getY(), this.getX()+textWidth + 10, this.getY() + 10, color);
 
@@ -141,7 +141,7 @@ public class MaterialDetailView extends InteractAbleWidget {
             statBar.setY(getY() + 3);
             valueHolder.setX(getX() + textWidth + barWitdh + spacer * 2);
             valueHolder.setY(getY());
-            super.render(drawContext, mouseX, mouseY, delta);
+            super.renderWidget(drawContext, mouseX, mouseY, delta);
 
         }
     }

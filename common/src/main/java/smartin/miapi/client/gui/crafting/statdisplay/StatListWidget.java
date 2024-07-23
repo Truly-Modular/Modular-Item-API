@@ -347,7 +347,7 @@ public class StatListWidget extends InteractAbleWidget {
     }
 
     public void renderWidget(GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
-        super.render(drawContext, mouseX, mouseY, delta);
+        super.renderWidget(drawContext, mouseX, mouseY, delta);
         Vector4f vector4f = transformableWidget.transFormMousePos(mouseX, mouseY);
         InteractAbleWidget hoverDisplay = null;
         for (GuiEventListener children : boxList.children()) {

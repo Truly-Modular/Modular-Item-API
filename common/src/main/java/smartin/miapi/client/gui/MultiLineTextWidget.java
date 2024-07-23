@@ -87,6 +87,6 @@ public class MultiLineTextWidget extends InteractAbleWidget {
             context.drawString(textRenderer, line, getX(), start, textColor, hasTextShadow);
             start += textRenderer.lineHeight + spacer;
         }
-        super.render(context, mouseX, mouseY, delta);
+        super.renderWidget(context, mouseX, mouseY, delta);
     }
 }

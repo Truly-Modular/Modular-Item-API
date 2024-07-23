@@ -144,7 +144,7 @@ class SkinTabGui extends InteractAbleWidget implements SkinGui.SortAble {
             textWidget.setY(this.getY() + 2);
             textWidget.render(drawContext, mouseX, mouseY, delta);
         }
-        super.render(drawContext, mouseX, mouseY, delta);
+        super.renderWidget(drawContext, mouseX, mouseY, delta);
     }
 
     private void setChildren(boolean updateChildren) {

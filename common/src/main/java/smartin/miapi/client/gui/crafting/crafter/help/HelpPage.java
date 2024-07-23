@@ -1,6 +1,9 @@
 package smartin.miapi.client.gui.crafting.crafter.help;
 
 import com.redpxnda.nucleus.util.Color;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.ScrollingTextWidget;
@@ -11,9 +14,6 @@ import smartin.miapi.client.gui.crafting.crafter.help.pages.SinglePageTextImage;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 
 public class HelpPage extends InteractAbleWidget {
     int color = Color.GREEN.argb();
@@ -76,7 +76,7 @@ public class HelpPage extends InteractAbleWidget {
         drawContext.blit(BACKGROUND, getX(), getY(), getWidth(), getHeight(), 0, 0, getWidth(), getHeight(), getWidth(), getHeight());
         //drawContext.drawTexture(CraftingScreen.BACKGROUND_TEXTURE, getX(), getY(), 0, 0, getWidth(), getHeight());
         CraftingScreen craftingScreen;
-        super.render(drawContext, mouseX, mouseY, delta);
+        super.renderWidget(drawContext, mouseX, mouseY, delta);
     }
 
     public static List<SinglePageTextImage> getPages(String key, int count) {

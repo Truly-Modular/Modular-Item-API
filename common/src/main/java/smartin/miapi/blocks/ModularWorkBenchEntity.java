@@ -135,7 +135,7 @@ public class ModularWorkBenchEntity extends BlockEntity implements MenuProvider,
         super.saveAdditional(tag, wrapperLookup);
         Tag element = new CompoundTag();
 
-        tag.put("Item", stack.save(wrapperLookup, element));
+        //tag.put("Item", stack.save(wrapperLookup, element));
 
         CompoundTag persisStatsNbt = new CompoundTag();
 

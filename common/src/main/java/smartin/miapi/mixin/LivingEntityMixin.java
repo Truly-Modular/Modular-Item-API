@@ -29,7 +29,7 @@ abstract class LivingEntityMixin {
         LivingEntity player = (LivingEntity) (Object) this;
         if (player instanceof Player entity) {
             Map<EquipmentSlot, ItemStack> map = cir.getReturnValue();
-            if (map!=null && !map.isEmpty()) {
+            if (map != null && !map.isEmpty()) {
                 MiapiEvents.PLAYER_EQUIP_EVENT.invoker().equip(entity, map);
             }
         }
@@ -46,9 +46,11 @@ abstract class LivingEntityMixin {
     @Inject(method = "createLivingAttributes", at = @At("TAIL"), cancellable = true)
     private static void miapi$addAttributes(CallbackInfoReturnable<AttributeSupplier.Builder> cir) {
         AttributeSupplier.Builder builder = cir.getReturnValue();
+        smartin.miapi.registries.AttributeRegistry.registerAttributes();
         if (builder != null) {
             AttributeRegistry.entityAttributeMap.forEach((id, attribute) -> {
                 builder.add(BuiltInRegistries.ATTRIBUTE.wrapAsHolder(attribute));
+                //Miapi.LOGGER.info("added attribute to living entity" + id);
             });
             MiapiEvents.LIVING_ENTITY_ATTRIBUTE_BUILD_EVENT.invoker().build(builder);
         }

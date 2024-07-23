@@ -7,7 +7,6 @@ import smartin.miapi.Miapi;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.ItemIdProperty;
-import smartin.miapi.registries.RegistryInventory;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -22,6 +21,8 @@ public class ItemToModularConverter implements ModularItemStackConverter.Modular
             TypeToken<Map<String, ModuleInstance>> token = new TypeToken<>() {
             };
 
+            //TODO:reimplement convers
+            /*
             dataMap = Miapi.gson.fromJson(data, token.getType());
 
             dataMap.forEach((itemId, moduleString) -> {
@@ -29,6 +30,8 @@ public class ItemToModularConverter implements ModularItemStackConverter.Modular
                 moduleString.writeToItem(stack);
                 regexes.put(itemId, stack);
             });
+
+             */
         }, 1);
 
         ReloadEvents.END.subscribe((isClient -> {

@@ -52,6 +52,8 @@ public class ConditionManager {
             return CONDITION_CODEC.parse(JsonOps.INSTANCE, element).getOrThrow();
         } catch (RuntimeException e) {
             Miapi.LOGGER.error("issue during condition decoding " + e);
+            Miapi.LOGGER.error("" + element);
+            e.fillInStackTrace();
             return new TrueCondition();
         }
     }

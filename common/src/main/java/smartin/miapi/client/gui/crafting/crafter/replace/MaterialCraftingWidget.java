@@ -85,6 +85,6 @@ public class MaterialCraftingWidget extends InteractAbleWidget {
 
         drawTextureWithEdge(drawContext, CraftingScreen.BACKGROUND_TEXTURE, getX() + 50, getY() + allowedMaterial.slotHeight - 3, 367 - 28, 137, 28, 28, 20, 20, 512, 512, 5);
 
-        super.render(drawContext, mouseX, mouseY, delta);
+        super.renderWidget(drawContext, mouseX, mouseY, delta);
     }
 }

@@ -61,7 +61,7 @@ public class SimpleButton<T> extends InteractAbleWidget {
                 widget.setWidth(this.width - 4);
             }
         });
-        super.render(drawContext, mouseX, mouseY, delta);
+        super.renderWidget(drawContext, mouseX, mouseY, delta);
     }
 
     /**

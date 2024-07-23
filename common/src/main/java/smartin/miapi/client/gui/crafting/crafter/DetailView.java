@@ -111,7 +111,7 @@ public class DetailView extends InteractAbleWidget {
         }
 
         public void renderWidget(GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
-            super.render(drawContext, mouseX, mouseY, delta);
+            super.renderWidget(drawContext, mouseX, mouseY, delta);
             int hoverOffset = 0;
             if (isMouseOver(mouseX, mouseY)) {
                 hoverOffset = 1;

@@ -173,7 +173,7 @@ public class ModuleCrafter extends InteractAbleWidget {
 
     @Override
     public void renderWidget(GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
-        super.render(drawContext, mouseX, mouseY, delta);
+        super.renderWidget(drawContext, mouseX, mouseY, delta);
     }
 
     public enum Mode {
