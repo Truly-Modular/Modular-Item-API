@@ -1,4 +1,4 @@
-package smartin.miapi.item.modular.items.fabric;
+package smartin.miapi.item.modular.items.armor.fabric;
 
 import net.fabricmc.fabric.api.entity.event.v1.FabricElytraItem;
 import smartin.miapi.item.modular.items.armor.ModularElytraItem;

@@ -2,8 +2,6 @@ package smartin.miapi.client;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.serialization.Codec;
-import com.redpxnda.nucleus.codec.auto.AutoCodec;
 import com.redpxnda.nucleus.impl.ShaderRegistry;
 import dev.architectury.event.events.client.ClientLifecycleEvent;
 import dev.architectury.event.events.client.ClientPlayerEvent;
@@ -44,7 +42,6 @@ import smartin.miapi.modules.material.MaterialCommand;
 import smartin.miapi.modules.material.MaterialIcons;
 import smartin.miapi.modules.material.MaterialProperty;
 import smartin.miapi.modules.material.palette.MaterialRenderControllers;
-import smartin.miapi.modules.properties.render.ModelJson;
 import smartin.miapi.modules.properties.render.colorproviders.ColorProvider;
 import smartin.miapi.network.Networking;
 import smartin.miapi.registries.MiapiRegistry;
@@ -65,7 +62,6 @@ public class MiapiClient {
     public static boolean sodiumLoaded = isSodiumLoaded();
     public static boolean jerLoaded = Platform.isModLoaded("jeresources");
     public static final MiapiRegistry<KeyMapping> KEY_BINDINGS = MiapiRegistry.getInstance(KeyMapping.class);
-    public static Codec<ModelJson> MODEL_CODEC = AutoCodec.of(ModelJson.class).codec();
     //public static final KeyBinding HOVER_DETAIL_BINDING = KEY_BINDINGS.register("miapi:hover_detail", new KeyBinding("miapi.gui.item_detail", 42, "miapi.keybinds"));
 
     private MiapiClient() {

@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class OnHitTargetEffects extends CodecProperty<List<PossibleEffect>> {
-    public static String KEY = "on_attack_potion";
+    public static String KEY = "on_hit_potion";
     public OnHitTargetEffects property;
     public static Codec<List<PossibleEffect>> CODEC = Codec.list(PossibleEffect.CODEC);
 

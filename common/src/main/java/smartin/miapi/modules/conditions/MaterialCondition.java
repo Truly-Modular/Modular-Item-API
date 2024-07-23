@@ -20,7 +20,12 @@ public class MaterialCondition implements ModuleCondition {
     public static Codec<ModuleCondition> CODEC = new Codec<ModuleCondition>() {
         @Override
         public <T> DataResult<Pair<ModuleCondition, T>> decode(DynamicOps<T> ops, T input) {
-            Pair<String, T> result = Codec.STRING.decode(ops, ops.getMap(input).getOrThrow().get("conditions")).getOrThrow();
+            Pair<String, T> result = Codec.STRING
+                    .decode(
+                            ops,
+                            ops.getMap(input)
+                                    .getOrThrow().get("conditions")
+                    ).getOrThrow();
             Component warning = ComponentSerialization.CODEC
                     .parse(ops, ops.getMap(input)
                             .getOrThrow()

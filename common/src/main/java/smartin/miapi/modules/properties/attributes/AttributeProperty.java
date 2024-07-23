@@ -62,8 +62,8 @@ public class AttributeProperty extends CodecProperty<List<AttributeProperty.Attr
         priorityMap.put(AttributeRegistry.MINING_SPEED_PICKAXE.value(), -8.0f);
         priorityMap.put(AttributeRegistry.MINING_SPEED_HOE.value(), -8.0f);
         priorityMap.put(AttributeRegistry.MINING_SPEED_SHOVEL.value(), -8.0f);
-        priorityMap.put(AttributeRegistry.REACH.value(), -7.0f);
-        priorityMap.put(AttributeRegistry.ATTACK_RANGE.value(), -7.0f);
+        priorityMap.put(Attributes.BLOCK_INTERACTION_RANGE.value(), -7.0f);
+        priorityMap.put(Attributes.ENTITY_INTERACTION_RANGE.value(), -7.0f);
         priorityMap.put(AttributeRegistry.BACK_STAB.value(), -6.0f);
         priorityMap.put(AttributeRegistry.SHIELD_BREAK.value(), -6.0f);
         priorityMap.put(AttributeRegistry.ARMOR_CRUSHING.value(), -6.0f);

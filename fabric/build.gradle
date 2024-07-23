@@ -112,9 +112,9 @@ dependencies {
     //modLocalRuntime tasks.getByName("buildWithArchery").outputs.files
     //modLocalRuntime tasks.getByName("buildWithArmory").outputs.files
 
-    modLocalRuntime files('libs/arsenal-local.jar')
+    //modLocalRuntime files('libs/arsenal-local.jar')
     modLocalRuntime files('libs/archery-local.jar')
-    modLocalRuntime files('libs/armory-local.jar')
+    //modLocalRuntime files('libs/armory-local.jar')
 
 
     //modLocalRuntime "maven.modrinth:sodium:mc1.20.1-0.5.3"

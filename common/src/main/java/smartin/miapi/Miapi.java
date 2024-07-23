@@ -6,6 +6,7 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
+import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
 import com.redpxnda.nucleus.config.ConfigBuilder;
 import com.redpxnda.nucleus.config.ConfigManager;
 import com.redpxnda.nucleus.config.ConfigType;
@@ -13,6 +14,7 @@ import com.redpxnda.nucleus.registry.NucleusNamespaces;
 import dev.architectury.event.events.common.CommandRegistrationEvent;
 import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.event.events.common.PlayerEvent;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import org.apache.logging.log4j.util.TriConsumer;
@@ -26,17 +28,22 @@ import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.item.ItemToModularConverter;
 import smartin.miapi.item.ModularItemStackConverter;
 import smartin.miapi.item.modular.PropertyResolver;
+import smartin.miapi.item.modular.Transform;
 import smartin.miapi.item.modular.VisualModularItem;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.MiapiPermissions;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
 import smartin.miapi.modules.cache.CacheCommands;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.conditions.ConditionManager;
+import smartin.miapi.modules.conditions.ModuleCondition;
 import smartin.miapi.modules.material.ComponentMaterial;
 import smartin.miapi.modules.material.MaterialCommand;
+import smartin.miapi.modules.material.MaterialIcons;
 import smartin.miapi.modules.material.generated.GeneratedMaterialManager;
 import smartin.miapi.modules.properties.GlintProperty;
+import smartin.miapi.modules.properties.util.DoubleOperationResolvable;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.network.Networking;
 import smartin.miapi.network.NetworkingImplCommon;
@@ -70,6 +77,17 @@ public class Miapi {
     };
 
     public static void init() {
+        CodecBehavior.registerClass(Transform.class, Transform.CODEC);
+        CodecBehavior.registerClass(DoubleOperationResolvable.class, DoubleOperationResolvable.CODEC);
+        CodecBehavior.registerClass(ModuleInstance.class, ModuleInstance.CODEC);
+        CodecBehavior.registerClass(ModuleCondition.class, ConditionManager.CONDITION_CODEC);
+        CodecBehavior.registerClass(ResourceLocation.class, ResourceLocation.CODEC);
+        CodecBehavior.registerClass(CompoundTag.class, CompoundTag.CODEC);
+
+
+        CodecBehavior.registerClass(MaterialIcons.SpinSettings.class, MaterialIcons.SpinSettings.CODEC);
+
+
         setupConfigs();
         setupNetworking();
         RegistryInventory.setup();
@@ -147,7 +165,36 @@ public class Miapi {
         }));
     }
 
+
+    public static String camelToSnake(String input) {
+        if (input == null || input.isEmpty()) {
+            return input;
+        }
+
+        StringBuilder result = new StringBuilder();
+        boolean conversionOccurred = false;
+
+        for (char c : input.toCharArray()) {
+            if (Character.isUpperCase(c)) {
+                if (result.length() > 0) {
+                    result.append('_');
+                }
+                result.append(Character.toLowerCase(c));
+                conversionOccurred = true;
+            } else {
+                result.append(c);
+            }
+        }
+
+        if (conversionOccurred) {
+            LOGGER.info("Converted camelCase to snake_case: " + input);
+        }
+
+        return result.toString();
+    }
+
     public static ResourceLocation id(String string) {
+        string = camelToSnake(string);
         String[] parts = string.split(":");
         if (parts.length > 1) {
             return ResourceLocation.fromNamespaceAndPath(parts[0], parts[1]);

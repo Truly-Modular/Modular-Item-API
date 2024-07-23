@@ -78,8 +78,8 @@ public class JsonMaterial implements Material {
             }
 
             if (element.has("color_palette")) {
-                JsonElement innerElement =  element.get("color_palette");
-                palette = MaterialRenderControllers.creators.get(innerElement.getAsJsonObject().get("type").getAsString()).createPalette(innerElement,this);
+                JsonElement innerElement = element.get("color_palette");
+                palette = MaterialRenderControllers.creators.get(innerElement.getAsJsonObject().get("type").getAsString()).createPalette(innerElement, this);
             } else {
                 palette = new FallbackColorer(this);
             }
@@ -109,7 +109,7 @@ public class JsonMaterial implements Material {
                 case "color_palette": {
                     if (isClient) {
                         palette = MaterialRenderControllers.creators.get(
-                                propertyElement.getAsJsonObject().get("type").getAsString()).createPalette(propertyElement,this);
+                                propertyElement.getAsJsonObject().get("type").getAsString()).createPalette(propertyElement, this);
                     }
                     break;
                 }
@@ -142,17 +142,21 @@ public class JsonMaterial implements Material {
                     ModuleProperty<?> property = RegistryInventory.moduleProperties.get(stringJsonElementEntry.getKey());
                     Map<ModuleProperty<?>, Object> specificPropertyMap = properties.getOrDefault(id, new HashMap<>());
                     if (property != null) {
-                        specificPropertyMap.put(property, ItemModule.merge(property, specificPropertyMap.get(property), stringJsonElementEntry.getValue(), MergeType.SMART));
-                    } else {
                         try {
-                            property.load(ResourceLocation.parse(
-                                            Miapi.MOD_ID + ":material-property"),
-                                    stringJsonElementEntry.getValue(),
-                                    smartin.miapi.Environment.isClient());
+                            if (specificPropertyMap.containsKey(property)) {
+                                specificPropertyMap.put(property, ItemModule.merge(
+                                        property,
+                                        specificPropertyMap.get(property),
+                                        property.decode(stringJsonElementEntry.getValue()),
+                                        MergeType.SMART));
+                            } else {
+                                specificPropertyMap.put(property, property.decode(stringJsonElementEntry.getValue()));
+                            }
                         } catch (Exception e) {
                             Miapi.LOGGER.error("Could not load property in material :", e);
                         }
-                        specificPropertyMap.put(property, property.decode(stringJsonElementEntry.getValue()));
+                    } else {
+                        Miapi.LOGGER.error("Could not find property " + stringJsonElementEntry.getKey());
                     }
                     properties.put(id, specificPropertyMap);
                 });

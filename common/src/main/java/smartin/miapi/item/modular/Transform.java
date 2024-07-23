@@ -29,6 +29,7 @@ import java.lang.Math;
 @JsonAdapter(Transform.TransformJsonAdapter.class)
 public class Transform {
     public static Codec<Transform> CODEC = AutoCodec.of(Transform.class).codec();
+    @CodecBehavior.Optional
     public String origin = null;
     @CodecBehavior.Optional
     public Vector3f rotation = new Vector3f();
@@ -52,6 +53,13 @@ public class Transform {
         this.rotation = new Vector3f(rotation);
         this.translation = new Vector3f(translation);
         this.scale = new Vector3f(scale);
+    }
+
+    /**
+     * DO NOT USE! this is only for autocodecs
+     */
+    public Transform(){
+
     }
 
     @Environment(EnvType.CLIENT)

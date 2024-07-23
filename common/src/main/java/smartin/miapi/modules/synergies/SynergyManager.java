@@ -102,7 +102,7 @@ public class SynergyManager {
             return new ArrayList<>();
         });
         synergies.add(synergy);
-        synergy.holder = PropertyHolderJsonAdapter.readFromObject(entryData, Environment.isClient(), Miapi.id("synergy/" + entryData));
+        synergy.holder = PropertyHolderJsonAdapter.readFromObject(entryData, Environment.isClient(), Miapi.id("synergy_runtime"));
     }
 
     public static void loadSynergy(Material material, JsonObject entryData) {
@@ -136,13 +136,16 @@ public class SynergyManager {
         element.getAsJsonObject().entrySet().forEach(propertyEntry -> {
             String propertyKey = propertyEntry.getKey();
             ModuleProperty<?> property = RegistryInventory.moduleProperties.get(propertyKey);
-            try {
-                assert property != null;
-                if (property.load(source, propertyEntry.getValue(), isClient)) {
-                    properties.put(property, property.decode(propertyEntry.getValue()));
+            if (property != null) {
+                try {
+                    if (property.load(source, propertyEntry.getValue(), isClient)) {
+                        properties.put(property, property.decode(propertyEntry.getValue()));
+                    }
+                } catch (Exception e) {
+                    Miapi.LOGGER.error("could not load property " + propertyKey + " in context " + context + " from source " + source.toString(), e);
                 }
-            } catch (Exception e) {
-                Miapi.LOGGER.error("could not load property " + propertyKey + " in context " + context + " from source " + source.toString(), e);
+            } else {
+                Miapi.LOGGER.warn("could not find property " + propertyKey +" in context " + context + " from source " + source.toString());
             }
         });
         return properties;

@@ -187,6 +187,12 @@ public class SlotProperty extends CodecProperty<Map<String, SlotProperty.ModuleS
             id = "primary";
         }
 
+
+        public ModuleSlot() {
+            this.allowed = new ArrayList<>();
+            id = "primary";
+        }
+
         public boolean allowedIn(ModuleInstance instance) {
             List<String> allowedSlots = AllowedSlots.getAllowedSlots(instance.module);
             for (String key : allowed) {

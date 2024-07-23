@@ -65,7 +65,7 @@ public class MaterialIcons {
                     s -> new RuntimeException("Failed to parse item for the icon of the '" + mat + "' material! -> " + s));
             int offset = object.get("offset") instanceof JsonPrimitive prim ? prim.getAsInt() : 16;
             SpinSettings spin = object.has("spin") ?
-                    MiscCodecs.quickParse(object.get("spin"), SpinSettings.codec,
+                    MiscCodecs.quickParse(object.get("spin"), SpinSettings.CODEC,
                             s -> new RuntimeException("Failed to parse spin settings for item icon of the '" + mat + "' material! -> " + s)) :
                     null;
 
@@ -139,7 +139,7 @@ public class MaterialIcons {
     @CodecBehavior.Override("codec")
     @AutoCodec.Settings(defaultOptionalBehavior = @CodecBehavior.Optional)
     public static class SpinSettings {
-        public static final Codec<SpinSettings> codec = AutoCodec.of(SpinSettings.class).codec();
+        public static final Codec<SpinSettings> CODEC = AutoCodec.of(SpinSettings.class).codec();
 
         public boolean x = false;
         public boolean y = true;

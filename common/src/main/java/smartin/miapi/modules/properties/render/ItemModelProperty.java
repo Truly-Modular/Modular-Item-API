@@ -1,6 +1,7 @@
 package smartin.miapi.modules.properties.render;
 
 import com.mojang.serialization.Codec;
+import com.redpxnda.nucleus.codec.auto.AutoCodec;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.core.component.DataComponentType;
@@ -26,7 +27,7 @@ import java.util.function.Supplier;
 public class ItemModelProperty extends CodecProperty<List<ModelJson>> {
     public static final String KEY = "item_model";
     public static ItemModelProperty property;
-    public static Codec<ModelJson> CODEC = MiapiClient.MODEL_CODEC;
+    public static Codec<ModelJson> CODEC = AutoCodec.of(ModelJson.class).codec();
     public static DataComponentType<ItemStack> ITEM_MODEL_COMPONENT = DataComponentType.<ItemStack>builder()
             .persistent(ItemStack.CODEC)
             .networkSynchronized(ByteBufCodecs.fromCodec(ItemStack.CODEC))

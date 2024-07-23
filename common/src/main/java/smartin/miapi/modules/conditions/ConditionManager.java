@@ -48,7 +48,12 @@ public class ConditionManager {
     }
 
     public static ModuleCondition get(JsonElement element) {
-        return CONDITION_CODEC.parse(JsonOps.INSTANCE, element).getOrThrow();
+        try {
+            return CONDITION_CODEC.parse(JsonOps.INSTANCE, element).getOrThrow();
+        } catch (RuntimeException e) {
+            Miapi.LOGGER.error("issue during condition decoding " + e);
+            return new TrueCondition();
+        }
     }
 
     public static ConditionContext fullContext(ModuleInstance moduleInstance, BlockPos pos, Player player, Map<ModuleProperty<?>, Object> properties) {
@@ -56,7 +61,7 @@ public class ConditionManager {
         context.setContext(MODULE_CONDITION_CONTEXT, moduleInstance);
         context.setContext(WORKBENCH_LOCATION_CONTEXT, pos);
         context.setContext(PLAYER_CONTEXT, player);
-        context.setContext(MODULE_PROPERTIES,properties);
+        context.setContext(MODULE_PROPERTIES, properties);
         return context;
     }
 
@@ -64,14 +69,14 @@ public class ConditionManager {
         ConditionContext context = new ConditionContext();
         context.setContext(MODULE_CONDITION_CONTEXT, moduleInstance);
         context.setContext(PLAYER_CONTEXT, player);
-        context.setContext(MODULE_PROPERTIES,properties);
+        context.setContext(MODULE_PROPERTIES, properties);
         return context;
     }
 
     public static ConditionContext moduleContext(ModuleInstance moduleInstance, Map<ModuleProperty<?>, Object> properties) {
         ConditionContext context = new ConditionContext();
         context.setContext(MODULE_CONDITION_CONTEXT, moduleInstance);
-        context.setContext(MODULE_PROPERTIES,properties);
+        context.setContext(MODULE_PROPERTIES, properties);
         return context;
     }
 

@@ -452,7 +452,7 @@ public class RegistryInventory {
             ConditionManager.CONDITION_REGISTRY.put(Miapi.id("and"), AndCondition.CODEC);
             ConditionManager.CONDITION_REGISTRY.put(Miapi.id("child"), ChildCondition.CODEC);
             ConditionManager.CONDITION_REGISTRY.put(Miapi.id("parent"), ParentCondition.CODEC);
-            ConditionManager.CONDITION_REGISTRY.put(Miapi.id("otherModule"), OtherModuleModuleCondition.CODEC);
+            ConditionManager.CONDITION_REGISTRY.put(Miapi.id("other_module"), OtherModuleModuleCondition.CODEC);
             ConditionManager.CONDITION_REGISTRY.put(Miapi.id("module"), ModuleTypeCondition.CODEC);
             ConditionManager.CONDITION_REGISTRY.put(Miapi.id("tag"), TagCondition.CODEC);
             ConditionManager.CONDITION_REGISTRY.put(Miapi.id("mod_loaded"), IsModLoadedCondition.CODEC);
