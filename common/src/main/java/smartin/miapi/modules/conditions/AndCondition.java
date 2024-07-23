@@ -1,32 +1,20 @@
 package smartin.miapi.modules.conditions;
 
-import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
-import com.mojang.serialization.DynamicOps;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import java.util.List;
 
 public class AndCondition implements ModuleCondition {
-    List<ModuleCondition> conditions;
-    public static Codec<ModuleCondition> CODEC = new Codec<ModuleCondition>() {
-        @Override
-        public <T> DataResult<Pair<ModuleCondition, T>> decode(DynamicOps<T> ops, T input) {
-            Pair<List<ModuleCondition>, T> result = Codec.list(ConditionManager.CONDITION_CODEC).decode(ops, ops.getMap(input).getOrThrow().get("conditions")).getOrThrow();
-            return DataResult.success(new Pair(new AndCondition(result.getFirst()), result.getSecond()));
-        }
+    public static Codec<AndCondition> CODEC = RecordCodecBuilder.create((instance) ->
+            instance.group(
+                    Codec.list(ConditionManager.CONDITION_CODEC).fieldOf("conditions")
+                            .forGetter((condition) -> (List) condition.conditions)
+            ).apply(instance,  AndCondition::new));
 
-        @Override
-        public <T> DataResult<T> encode(ModuleCondition input, DynamicOps<T> ops, T prefix) {
-            return DataResult.error(() -> "encoding condition is not fully supported");
-        }
-    };
+    List<? extends ModuleCondition> conditions;
 
-    public AndCondition() {
-
-    }
-
-    public AndCondition(List<ModuleCondition> conditions) {
+    public AndCondition(List<? extends ModuleCondition> conditions) {
         this.conditions = conditions;
     }
 

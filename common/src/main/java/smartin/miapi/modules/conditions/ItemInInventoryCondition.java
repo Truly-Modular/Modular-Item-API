@@ -1,11 +1,10 @@
 package smartin.miapi.modules.conditions;
 
-import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
-import com.mojang.serialization.DynamicOps;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.advancements.critereon.MinMaxBounds;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -14,20 +13,20 @@ import smartin.miapi.Miapi;
 import java.util.List;
 import java.util.Optional;
 
-public record ItemInInventoryCondition(Ingredient item, MinMaxBounds.Ints count) implements ModuleCondition {
-    public static Codec<ModuleCondition> CODEC = new Codec<ModuleCondition>() {
-        @Override
-        public <T> DataResult<Pair<ModuleCondition, T>> decode(DynamicOps<T> ops, T input) {
-            Pair<Ingredient, T> result = Ingredient.CODEC.decode(ops, ops.getMap(input).getOrThrow().get("material")).getOrThrow();
-            MinMaxBounds.Ints count =  MinMaxBounds.Ints.CODEC.parse(ops, input).getOrThrow();
-            return DataResult.success(new Pair(new ItemInInventoryCondition(result.getFirst(), count), result.getSecond()));
-        }
+public record ItemInInventoryCondition(Ingredient item, MinMaxBounds.Ints count,
+                                       Component error) implements ModuleCondition {
 
-        @Override
-        public <T> DataResult<T> encode(ModuleCondition input, DynamicOps<T> ops, T prefix) {
-            return DataResult.error(() -> "encoding condition is not fully supported");
-        }
-    };
+    public static Codec<ItemInInventoryCondition> CODEC = RecordCodecBuilder.create((instance) ->
+            instance.group(
+                    Ingredient.CODEC.fieldOf("material")
+                            .forGetter((condition) -> condition.item),
+                    MinMaxBounds.Ints.CODEC
+                            .optionalFieldOf("count", MinMaxBounds.Ints.atLeast(1))
+                            .forGetter((condition) -> condition.count),
+                    ComponentSerialization.CODEC
+                            .optionalFieldOf("error", Component.literal("Unavailable."))
+                            .forGetter((condition) -> condition.error)
+            ).apply(instance, ItemInInventoryCondition::new));
 
 
     @Override

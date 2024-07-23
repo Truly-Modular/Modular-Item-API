@@ -6,14 +6,14 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 
 public class TrueCondition implements ModuleCondition {
-    public static Codec<ModuleCondition> CODEC = new Codec<ModuleCondition>() {
+    public static Codec<TrueCondition> CODEC = new Codec<TrueCondition>() {
         @Override
-        public <T> DataResult<Pair<ModuleCondition, T>> decode(DynamicOps<T> ops, T input) {
+        public <T> DataResult<Pair<TrueCondition, T>> decode(DynamicOps<T> ops, T input) {
             return DataResult.success(new Pair(new TrueCondition(), input));
         }
 
         @Override
-        public <T> DataResult<T> encode(ModuleCondition input, DynamicOps<T> ops, T prefix) {
+        public <T> DataResult<T> encode(TrueCondition input, DynamicOps<T> ops, T prefix) {
             return DataResult.error(() -> "encoding condition is not fully supported");
         }
     };

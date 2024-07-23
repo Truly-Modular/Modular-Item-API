@@ -1,30 +1,26 @@
 package smartin.miapi.modules.conditions;
 
-import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
-import com.mojang.serialization.DynamicOps;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import smartin.miapi.modules.ModuleInstance;
 
 import java.util.Optional;
 
 public class ChildCondition implements ModuleCondition {
-    public static Codec<ModuleCondition> CODEC = new Codec<ModuleCondition>() {
-        @Override
-        public <T> DataResult<Pair<ModuleCondition, T>> decode(DynamicOps<T> ops, T input) {
-            Pair<ModuleCondition, T> result = ConditionManager.CONDITION_CODEC.decode(ops, ops.getMap(input).getOrThrow().get("conditions")).getOrThrow();
-            return DataResult.success(new Pair(new ChildCondition(result.getFirst()), result.getSecond()));
-        }
-
-        @Override
-        public <T> DataResult<T> encode(ModuleCondition input, DynamicOps<T> ops, T prefix) {
-            return DataResult.error(() -> "encoding condition is not fully supported");
-        }
-    };
+    public static Codec<ChildCondition> CODEC = RecordCodecBuilder.create((instance) ->
+            instance.group(
+                    ConditionManager.CONDITION_CODEC.fieldOf("conditions")
+                            .forGetter(ChildCondition::getCondition)
+            ).apply(instance, ChildCondition::new));
     public ModuleCondition condition;
 
     public ChildCondition() {
 
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T extends ModuleCondition > T getCondition(){
+        return (T) condition;
     }
 
     private ChildCondition(ModuleCondition condition) {

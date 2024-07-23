@@ -80,7 +80,7 @@ public class Miapi {
         CodecBehavior.registerClass(Transform.class, Transform.CODEC);
         CodecBehavior.registerClass(DoubleOperationResolvable.class, DoubleOperationResolvable.CODEC);
         CodecBehavior.registerClass(ModuleInstance.class, ModuleInstance.CODEC);
-        CodecBehavior.registerClass(ModuleCondition.class, ConditionManager.CONDITION_CODEC);
+        CodecBehavior.registerClass(ModuleCondition.class, ConditionManager.CONDITION_CODEC_DIRECT);
         CodecBehavior.registerClass(ResourceLocation.class, ResourceLocation.CODEC);
         CodecBehavior.registerClass(CompoundTag.class, CompoundTag.CODEC);
 

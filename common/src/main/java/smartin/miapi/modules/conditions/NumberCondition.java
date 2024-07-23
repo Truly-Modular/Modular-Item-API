@@ -11,23 +11,14 @@ import smartin.miapi.modules.ModuleInstance;
 import java.util.Optional;
 
 public record NumberCondition(String condition, Component error) implements ModuleCondition {
-    public static Codec<ModuleCondition> CODEC = RecordCodecBuilder.create((instance) -> instance.group(
-                    Codec.STRING
-                            .fieldOf("condition")
-                            .forGetter(condition ->
-                                    condition instanceof NumberCondition
-                                            ? ((NumberCondition) condition).condition()
-                                            : ""
-                            ),
+    public static Codec<NumberCondition> CODEC = RecordCodecBuilder.create((instance) ->
+            instance.group(
+                    Codec.STRING.fieldOf("condition")
+                            .forGetter(NumberCondition::condition),
                     ComponentSerialization.CODEC
-                            .optionalFieldOf("error", Component.translatable(Miapi.MOD_ID + ".condition.material.error"))
-                            .forGetter(condition ->
-                                    condition instanceof NumberCondition
-                                            ? ((NumberCondition) condition).error()
-                                            : Component.translatable(Miapi.MOD_ID + ".condition.material.error")
-                            )
-            )
-            .apply(instance, NumberCondition::new));
+                            .optionalFieldOf("error", Component.translatable(Miapi.MOD_ID + ".error"))
+                            .forGetter((condition) -> condition.error)
+            ).apply(instance, NumberCondition::new));
 
     @Override
     public boolean isAllowed(ConditionManager.ConditionContext conditionContext) {

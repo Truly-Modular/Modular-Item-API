@@ -1,9 +1,7 @@
 package smartin.miapi.modules.conditions;
 
-import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
-import com.mojang.serialization.DynamicOps;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
 import smartin.miapi.Miapi;
@@ -15,29 +13,24 @@ import java.util.List;
 import java.util.Optional;
 
 public class MaterialCountCondition implements ModuleCondition {
-    public static Codec<ModuleCondition> CODEC = new Codec<ModuleCondition>() {
-        @Override
-        public <T> DataResult<Pair<ModuleCondition, T>> decode(DynamicOps<T> ops, T input) {
-            Pair<String, T> result = Codec.STRING.decode(ops, ops.getMap(input).getOrThrow().get("material")).getOrThrow();
-            int count = Codec.intRange(0, 10000).parse(ops, input).getOrThrow();
-            Component warning = ComponentSerialization.CODEC
-                    .parse(ops, ops.getMap(input)
-                            .getOrThrow()
-                            .get("error"))
-                    .result().orElse(Component.translatable(Miapi.MOD_ID + ".condition.material.error"));
-            return DataResult.success(new Pair(new MaterialCountCondition(result.getFirst(),count, warning), result.getSecond()));
-        }
+    public static Codec<MaterialCountCondition> CODEC = RecordCodecBuilder.create((instance) ->
+            instance.group(
+                    Codec.STRING
+                            .fieldOf("material")
+                            .forGetter((condition) -> condition.material),
+                    Codec.INT
+                            .optionalFieldOf("count", 1)
+                            .forGetter((condition) -> condition.count),
+                    ComponentSerialization.CODEC
+                            .optionalFieldOf("error", Component.translatable(Miapi.MOD_ID + ".condition.material.error"))
+                            .forGetter((condition) -> condition.error)
+            ).apply(instance, MaterialCountCondition::new));
 
-        @Override
-        public <T> DataResult<T> encode(ModuleCondition input, DynamicOps<T> ops, T prefix) {
-            return DataResult.error(() -> "encoding condition is not fully supported");
-        }
-    };
     public String material = "";
     public int count;
     public Component error;
 
-    public MaterialCountCondition(String material, int count,Component error) {
+    public MaterialCountCondition(String material, int count, Component error) {
         this.material = material;
         this.count = count;
         this.error = error;

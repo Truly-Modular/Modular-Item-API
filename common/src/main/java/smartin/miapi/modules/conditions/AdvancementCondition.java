@@ -1,9 +1,7 @@
 package smartin.miapi.modules.conditions;
 
-import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
-import com.mojang.serialization.DynamicOps;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.advancements.Advancement;
@@ -11,6 +9,7 @@ import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientAdvancements;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
@@ -21,27 +20,21 @@ import java.util.List;
 import java.util.Optional;
 
 public class AdvancementCondition implements ModuleCondition {
-    public static Codec<ModuleCondition> CODEC = new Codec<ModuleCondition>() {
-        @Override
-        public <T> DataResult<Pair<ModuleCondition, T>> decode(DynamicOps<T> ops, T input) {
-            Pair<String, T> result = Codec.STRING.decode(ops, ops.getMap(input).getOrThrow().get("advancement")).getOrThrow();
-            return DataResult.success(new Pair(new AdvancementCondition(ResourceLocation.parse(result.getFirst())), result.getSecond()));
-        }
-
-        @Override
-        public <T> DataResult<T> encode(ModuleCondition input, DynamicOps<T> ops, T prefix) {
-            return DataResult.error(() -> "encoding condition is not fully supported");
-        }
-    };
+    public static Codec< AdvancementCondition> CODEC = RecordCodecBuilder.create((instance) ->
+            instance.group(
+                    ResourceLocation.CODEC.fieldOf("advancement")
+                            .forGetter((condition) -> condition.advancement),
+                    ComponentSerialization.CODEC
+                            .optionalFieldOf("error", Component.literal("Unavailable."))
+                            .forGetter((condition) -> condition.error)
+            ).apply(instance, AdvancementCondition::new));
 
     public ResourceLocation advancement;
+    public Component error;
 
-    public AdvancementCondition() {
-
-    }
-
-    public AdvancementCondition(ResourceLocation perms) {
+    public AdvancementCondition(ResourceLocation perms,Component error) {
         this.advancement = perms;
+        this.error = error;
     }
 
     @Override
@@ -56,7 +49,7 @@ public class AdvancementCondition implements ModuleCondition {
                     return hasAdvancement(advancement1, player);
                 }
             }
-            reasons.add(Component.literal("Unavailable."));
+            reasons.add(error);
         }
         return false;
     }

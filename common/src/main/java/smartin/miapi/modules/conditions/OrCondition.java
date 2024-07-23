@@ -1,32 +1,24 @@
 package smartin.miapi.modules.conditions;
 
-import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
-import com.mojang.serialization.DynamicOps;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import java.util.List;
 
 public class OrCondition implements ModuleCondition {
-    public static Codec<ModuleCondition> CODEC = new Codec<ModuleCondition>() {
-        @Override
-        public <T> DataResult<Pair<ModuleCondition, T>> decode(DynamicOps<T> ops, T input) {
-            Pair<List<ModuleCondition>, T> result = Codec.list(ConditionManager.CONDITION_CODEC).decode(ops, ops.getMap(input).getOrThrow().get("conditions")).getOrThrow();
-            return DataResult.success(new Pair(new OrCondition(result.getFirst()), result.getSecond()));
-        }
+    public static Codec<OrCondition> CODEC = RecordCodecBuilder.create((instance) ->
+            instance.group(
+                    Codec.list(ConditionManager.CONDITION_CODEC).fieldOf("conditions")
+                            .forGetter((condition) -> (List) condition.conditions)
+            ).apply(instance, OrCondition::new));
 
-        @Override
-        public <T> DataResult<T> encode(ModuleCondition input, DynamicOps<T> ops, T prefix) {
-            return DataResult.error(() -> "encoding condition is not fully supported");
-        }
-    };
-    List<ModuleCondition> conditions;
+    List<? extends ModuleCondition> conditions;
 
     public OrCondition() {
 
     }
 
-    public OrCondition(List<ModuleCondition> conditions) {
+    public OrCondition(List<? extends ModuleCondition> conditions) {
         this.conditions = conditions;
     }
 

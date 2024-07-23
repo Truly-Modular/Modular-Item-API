@@ -13,7 +13,7 @@ public class CanChangeParentModule extends CodecProperty<ModuleCondition> {
     public static final String KEY = "allowChangeParent";
 
     public CanChangeParentModule() {
-        super(ConditionManager.CONDITION_CODEC);
+        super(ConditionManager.CONDITION_CODEC_DIRECT);
         CraftingConditionProperty.CAN_CRAFT_SELECT_EVENT.register((slot, module, conditionContext) -> {
             if (slot != null && slot.inSlot != null && !module.isEmpty()) {
                 for (ModuleInstance moduleInstance : slot.inSlot.subModules.values()) {
@@ -33,7 +33,7 @@ public class CanChangeParentModule extends CodecProperty<ModuleCondition> {
 
     @Override
     public ModuleCondition merge(ModuleCondition left, ModuleCondition right, MergeType mergeType) {
-        if(MergeType.EXTEND.equals(mergeType)){
+        if (MergeType.EXTEND.equals(mergeType)) {
             return left;
         }
         return right;

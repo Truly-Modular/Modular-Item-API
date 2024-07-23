@@ -1,30 +1,29 @@
 package smartin.miapi.modules.conditions;
 
-import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
-import com.mojang.serialization.DynamicOps;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentSerialization;
+import smartin.miapi.Miapi;
 import smartin.miapi.modules.ModuleInstance;
 
 import java.util.Optional;
 
 public class ParentCondition implements ModuleCondition {
-    public static Codec<ModuleCondition> CODEC = new Codec<ModuleCondition>() {
-        @Override
-        public <T> DataResult<Pair<ModuleCondition, T>> decode(DynamicOps<T> ops, T input) {
-            Pair<ModuleCondition, T> result = ConditionManager.CONDITION_CODEC.decode(ops, ops.getMap(input).getOrThrow().get("conditions")).getOrThrow();
-            return DataResult.success(new Pair(new ParentCondition(result.getFirst()), result.getSecond()));
-        }
-
-        @Override
-        public <T> DataResult<T> encode(ModuleCondition input, DynamicOps<T> ops, T prefix) {
-            return DataResult.error(() -> "encoding condition is not fully supported");
-        }
-    };
+    public static Codec<ParentCondition> CODEC = RecordCodecBuilder.create((instance) ->
+            instance.group(
+                    ConditionManager.CONDITION_CODEC.fieldOf("conditions")
+                            .forGetter(ParentCondition::getCondition),
+                    ComponentSerialization.CODEC
+                            .optionalFieldOf("error", Component.translatable(Miapi.MOD_ID + ".error"))
+                            .forGetter((condition) -> condition.error)
+            ).apply(instance, ParentCondition::new));
     public ModuleCondition condition;
+    public Component error;
 
-    private ParentCondition(ModuleCondition module) {
+    private ParentCondition(ModuleCondition module, Component error) {
         this.condition = module;
+        this.error = error;
     }
 
     @Override
@@ -40,5 +39,11 @@ public class ParentCondition implements ModuleCondition {
             }
         }
         return false;
+    }
+
+
+    @SuppressWarnings("unchecked")
+    public <T extends ModuleCondition> T getCondition() {
+        return (T) condition;
     }
 }

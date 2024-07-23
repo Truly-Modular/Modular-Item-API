@@ -20,18 +20,29 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class ConditionManager {
     public static MiapiRegistry<ModuleCondition> oldConditionRegistry = MiapiRegistry.getInstance(ModuleCondition.class);
-    public static Map<ResourceLocation, Codec<ModuleCondition>> CONDITION_REGISTRY = new ConcurrentHashMap<>();
+    public static Map<ResourceLocation, Codec<? extends ModuleCondition>> CONDITION_REGISTRY = new ConcurrentHashMap<>();
     public static ContextManager<ModuleInstance> MODULE_CONDITION_CONTEXT = source -> ((ModuleInstance) source).copy();
     public static ContextManager<BlockPos> WORKBENCH_LOCATION_CONTEXT = BlockPos.class::cast;
     public static ContextManager<Player> PLAYER_CONTEXT = Player.class::cast;
     public static ContextManager<Map<ModuleProperty<?>, Object>> MODULE_PROPERTIES = source -> new HashMap<>((Map<ModuleProperty<?>, Object>) source);
 
-    public static Codec<ModuleCondition> CONDITION_CODEC = new Codec<ModuleCondition>() {
+    public static Codec<? extends ModuleCondition> CONDITION_CODEC = new Codec<ModuleCondition>() {
         @Override
         public <T> DataResult<Pair<ModuleCondition, T>> decode(DynamicOps<T> ops, T input) {
-            Pair<String, T> result = Codec.STRING.decode(ops, ops.getMap(input).getOrThrow().get("type")).getOrThrow();
-            return CONDITION_REGISTRY.get(
-                    Miapi.id(result.getFirst())).decode(ops, result.getSecond());
+            var idRestult = Codec.STRING.decode(ops, ops.getMap(input).getOrThrow().get("type"));
+            if (idRestult.isError()) {
+                return DataResult.error(() -> "failed to decode condition - type was missing");
+            }
+            Pair<String, T> id = idRestult.getOrThrow();
+            Codec<? extends ModuleCondition> conditionCodec = CONDITION_REGISTRY.get(Miapi.id(id.getFirst()));
+            if(conditionCodec==null){
+                return DataResult.error(() -> "failed to decode condition - type is not a condition:" + Miapi.id(id.getFirst()));
+            }
+            var result = conditionCodec.decode(ops, input);
+            if (result.isSuccess()) {
+                return DataResult.success(new Pair<>(result.getOrThrow().getFirst(), result.getOrThrow().getSecond()));
+            }
+            return DataResult.error(() -> "failed to decode condition " + result.error().get().message());
         }
 
         /**
@@ -39,7 +50,31 @@ public class ConditionManager {
          */
         @Override
         public <T> DataResult<T> encode(ModuleCondition input, DynamicOps<T> ops, T prefix) {
-            return null;
+            return DataResult.error(() -> "conditions cannot be encoded. This feature might be added later");
+        }
+    };
+
+    public static Codec<ModuleCondition> CONDITION_CODEC_DIRECT = new Codec<ModuleCondition>() {
+
+        @Override
+        public <T> DataResult<T> encode(ModuleCondition input, DynamicOps<T> ops, T prefix) {
+            return CONDITION_CODEC.encode(cast(input), ops, prefix);
+        }
+
+
+        @SuppressWarnings("unchecked")
+        public <T extends ModuleCondition> T cast(ModuleCondition condition) {
+            return (T) condition;
+        }
+
+        @Override
+        public <T> DataResult<Pair<ModuleCondition, T>> decode(DynamicOps<T> ops, T input) {
+            DataResult<? extends Pair<? extends ModuleCondition, T>> firstResult = CONDITION_CODEC.decode(ops, input);
+            if (firstResult.isError()) {
+                return DataResult.error(() -> firstResult.error().get().message());
+            }
+            var pair = firstResult.getOrThrow();
+            return DataResult.success(new Pair<>((ModuleCondition) pair.getFirst(), pair.getSecond()));
         }
     };
 
