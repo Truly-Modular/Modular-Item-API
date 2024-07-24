@@ -26,7 +26,7 @@ import java.util.Optional;
  */
 @Environment(EnvType.CLIENT)
 public class GuiOffsetProperty extends CodecProperty<GuiOffsetProperty.GuiOffsetData> {
-    public static final String KEY = "guiOffset";
+    public static final String KEY = "gui_fffset";
     public static ModuleProperty property;
 
     public GuiOffsetProperty() {

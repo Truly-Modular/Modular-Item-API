@@ -7,7 +7,7 @@ import smartin.miapi.modules.properties.util.ComplexBooleanProperty;
  * this property sets an item as shootable by crossbow even if its not an arrow
  */
 public class IsCrossbowShootAble extends ComplexBooleanProperty {
-    public static final String KEY = "crossbowAmmunition";
+    public static final String KEY = "crossbow_ammunition";
     public static IsCrossbowShootAble property;
 
     public IsCrossbowShootAble() {

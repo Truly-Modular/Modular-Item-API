@@ -10,7 +10,7 @@ import smartin.miapi.modules.properties.util.EntityDamageBoostProperty;
  */
 public class IllagerBane extends EntityDamageBoostProperty {
     ///TODO:look how to better detect those entitys, maybe a tag and look into mod compat as well
-    public static final String KEY = "illagerBane";
+    public static final String KEY = "illager_bane";
     public static IllagerBane property;
 
     public IllagerBane() {

@@ -22,7 +22,7 @@ import java.util.Optional;
  * it only supports preregisterd ids in {@link RegistryInventory#modularItems}
  */
 public class ItemIdProperty extends CodecProperty<ResourceLocation> implements CraftingProperty {
-    public static final String KEY = "itemId";
+    public static final String KEY = "item_id";
     public static ItemIdProperty property;
 
     public ItemIdProperty() {

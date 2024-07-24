@@ -17,7 +17,7 @@ import java.util.Optional;
  */
 public class RepairPriority extends DoubleProperty {
     public static RepairPriority property;
-    public static final String KEY = "repairPriority";
+    public static final String KEY = "repair_priority";
 
     public RepairPriority() {
         super(KEY);

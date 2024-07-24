@@ -19,6 +19,7 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ReloadableResourceManager;
 import net.minecraft.world.item.Item;
 import smartin.miapi.Miapi;
@@ -98,7 +99,7 @@ public class MiapiClient {
             ModularItemCache.discardCache();
             if (Minecraft.getInstance().level != null) {
                 Minecraft.getInstance().execute(() -> {
-                    Map<String, String> cacheDatapack = new LinkedHashMap<>(ReloadEvents.DATA_PACKS);
+                    Map<ResourceLocation, String> cacheDatapack = new LinkedHashMap<>(ReloadEvents.DATA_PACKS);
                     ReloadEvents.reloadCounter++;
                     ReloadEvents.START.fireEvent(true);
                     ReloadEvents.DataPackLoader.trigger(cacheDatapack);

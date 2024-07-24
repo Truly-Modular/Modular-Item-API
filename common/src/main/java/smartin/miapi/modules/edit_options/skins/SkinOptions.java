@@ -39,10 +39,10 @@ public class SkinOptions implements EditOption {
             }
             return oldMap;
         }, List.of(Miapi.id( "synergy")));
-        Miapi.registerReloadHandler(ReloadEvents.MAIN, "skins/module", skins, (isClient, path, data) -> {
+        Miapi.registerReloadHandler(ReloadEvents.MAIN, "miapi/skins/module", skins, (isClient, path, data) -> {
             load(data);
         }, 1);
-        Miapi.registerReloadHandler(ReloadEvents.MAIN, "skins/tab", tabMap, (isClient, path, data) -> {
+        Miapi.registerReloadHandler(ReloadEvents.MAIN, "miapi/skins/tab", tabMap, (isClient, path, data) -> {
             loadTabData(data);
         }, 1);
         ReloadEvents.END.subscribe((isClient -> {

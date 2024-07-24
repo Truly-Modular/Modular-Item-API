@@ -6,6 +6,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import smartin.miapi.Environment;
 import smartin.miapi.Miapi;
@@ -34,7 +35,7 @@ public class ReloadEvents {
     /**
      * A map that stores the paths of data packs to be synced.
      */
-    public static final Map<String, String> DATA_PACKS = Collections.synchronizedMap(new LinkedHashMap<>());
+    public static final Map<ResourceLocation, String> DATA_PACKS = Collections.synchronizedMap(new LinkedHashMap<>());
 
     /**
      * A map that stores the paths of data packs that have been synced.
@@ -95,8 +96,8 @@ public class ReloadEvents {
             public FriendlyByteBuf createDataServer() {
                 FriendlyByteBuf buf = Networking.createBuffer();
                 buf.writeInt(DATA_PACKS.size());
-                for (String key : DATA_PACKS.keySet()) {
-                    buf.writeUtf(key);
+                for (ResourceLocation key : DATA_PACKS.keySet()) {
+                    buf.writeUtf(key.toString());
                     buf.writeUtf(DATA_PACKS.get(key));
                 }
                 return buf;
@@ -105,9 +106,9 @@ public class ReloadEvents {
             @Override
             public void interpretDataClient(FriendlyByteBuf buffer) {
                 int dataPackSize = buffer.readInt();
-                Map<String, String> tempDataPack = new HashMap<>(dataPackSize);
+                Map<ResourceLocation, String> tempDataPack = new HashMap<>(dataPackSize);
                 for (int i = 0; i < dataPackSize; i++) {
-                    String key = buffer.readUtf();
+                    ResourceLocation key = ResourceLocation.parse(buffer.readUtf());
                     String value = buffer.readUtf();
                     tempDataPack.put(key, value);
                 }
@@ -295,7 +296,7 @@ public class ReloadEvents {
          *
          * @param dataPack the datapack in a <Path,Data> map
          */
-        public static void trigger(Map<String, String> dataPack) {
+        public static void trigger(Map<ResourceLocation, String> dataPack) {
             for (EventListener listener : listeners) {
                 try {
                     listener.onEvent(dataPack);
@@ -314,7 +315,7 @@ public class ReloadEvents {
              *
              * @param dataPack the datapack in a <Path,Data> map
              */
-            void onEvent(Map<String, String> dataPack);
+            void onEvent(Map<ResourceLocation, String> dataPack);
         }
     }
 

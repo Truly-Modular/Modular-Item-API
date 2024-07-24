@@ -28,7 +28,7 @@ import java.util.*;
  * This property manages the Itemlore of an Item
  */
 public class LoreProperty extends CodecProperty<List<LoreProperty.Holder>> {
-    public static final String KEY = "itemLore";
+    public static final String KEY = "item_lore";
     public static final Codec<Holder> codec = AutoCodec.of(Holder.class).codec();
     public static LoreProperty property;
     public static List<LoreSupplier> bottomLoreSuppliers = Collections.synchronizedList(new ArrayList<>());

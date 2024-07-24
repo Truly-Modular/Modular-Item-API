@@ -10,7 +10,7 @@ import smartin.miapi.modules.properties.util.MergeType;
 
 
 public class CanChangeParentModule extends CodecProperty<ModuleCondition> {
-    public static final String KEY = "allowChangeParent";
+    public static final String KEY = "allow_change_parent";
 
     public CanChangeParentModule() {
         super(ConditionManager.CONDITION_CODEC_DIRECT);

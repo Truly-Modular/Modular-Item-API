@@ -11,7 +11,7 @@ import smartin.miapi.modules.properties.util.DoubleProperty;
  * decreases damage from raid type mobs
  */
 public class PillagesGuard extends DoubleProperty {
-    public static final String KEY = "pillagerGuard";
+    public static final String KEY = "pillager_guard";
     public static PillagesGuard property;
 
 

@@ -15,4 +15,4 @@ include("fabric")
 
 //includeBuild("./archery")
 //includeBuild("./armory")
-//includeBuild("./arsenal")
+includeBuild("./arsenal")

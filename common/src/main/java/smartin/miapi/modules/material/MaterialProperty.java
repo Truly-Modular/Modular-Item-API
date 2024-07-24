@@ -60,7 +60,7 @@ public class MaterialProperty extends CodecProperty<String> {
                 return "";
             }
         });
-        Miapi.registerReloadHandler(ReloadEvents.MAIN, "materials", materials, (isClient, path, data) -> {
+        Miapi.registerReloadHandler(ReloadEvents.MAIN, "miapi/materials", materials, (isClient, path, data) -> {
             JsonParser parser = new JsonParser();
             JsonObject obj = parser.parse(data).getAsJsonObject();
             JsonMaterial material = new JsonMaterial(obj, isClient);
@@ -71,7 +71,7 @@ public class MaterialProperty extends CodecProperty<String> {
         }, -2f);
 
 
-        Miapi.registerReloadHandler(ReloadEvents.MAIN, "material_extensions", (isClient) -> {
+        Miapi.registerReloadHandler(ReloadEvents.MAIN, "miapi/material_extensions", (isClient) -> {
 
         }, (isClient, path, data) -> {
             JsonParser parser = new JsonParser();

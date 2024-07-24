@@ -2,6 +2,7 @@ package smartin.miapi.registries;
 
 import com.mojang.serialization.Codec;
 import org.jetbrains.annotations.Nullable;
+import smartin.miapi.Miapi;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -100,6 +101,7 @@ public class MiapiRegistry<T> {
         if (entries.containsKey(name) || suppliers.containsKey(name)) {
             throw new IllegalArgumentException("Entry with name '" + name + "' already exists.");
         }
+        Miapi.id(name);
         entries.put(name, value);
 
         // Call the callbacks for the class type

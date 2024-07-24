@@ -15,7 +15,7 @@ import java.util.Map;
  * This property allows materials to set specific Properties
  */
 public class MaterialProperties extends CodecProperty<List<String>> {
-    public static String KEY = "materialProperty";
+    public static String KEY = "material_property";
     public static MaterialProperties property;
 
     public MaterialProperties() {

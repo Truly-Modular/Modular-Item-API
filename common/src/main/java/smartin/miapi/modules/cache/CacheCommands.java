@@ -5,6 +5,11 @@ import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import smartin.miapi.Miapi;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.modules.material.MaterialProperty;
@@ -14,10 +19,6 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.Commands;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.chat.Component;
 
 /**
  * A command related to materials- used to fetch debug data of active materials
@@ -56,7 +57,7 @@ public class CacheCommands {
 
     public static void triggerServerReload(){
         ReloadEvents.reloadCounter++;
-        Map<String, String> cacheDatapack = new LinkedHashMap<>(ReloadEvents.DATA_PACKS);
+        Map<ResourceLocation, String> cacheDatapack = new LinkedHashMap<>(ReloadEvents.DATA_PACKS);
         ReloadEvents.START.fireEvent(false);
         ReloadEvents.DataPackLoader.trigger(cacheDatapack);
         ReloadEvents.MAIN.fireEvent(false);

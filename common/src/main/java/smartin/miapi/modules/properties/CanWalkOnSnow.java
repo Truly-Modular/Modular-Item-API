@@ -7,7 +7,7 @@ import smartin.miapi.modules.properties.util.ComplexBooleanProperty;
  * This Property determins if boots can walk on powdered snow
  */
 public class CanWalkOnSnow extends ComplexBooleanProperty {
-    public static final String KEY = "canWalkOnSnow";
+    public static final String KEY = "can_walk_on_snow";
     public static CanWalkOnSnow property;
 
     public CanWalkOnSnow() {

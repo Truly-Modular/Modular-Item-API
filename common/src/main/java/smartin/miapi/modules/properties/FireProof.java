@@ -11,7 +11,7 @@ import smartin.miapi.modules.properties.util.ComponentApplyProperty;
  * This Property allows to be set as fireproof, making them immune to Lava
  */
 public class FireProof extends ComplexBooleanProperty implements ComponentApplyProperty {
-    public static final String KEY = "fireProof";
+    public static final String KEY = "fire_proof";
     public static FireProof property;
 
     public FireProof() {

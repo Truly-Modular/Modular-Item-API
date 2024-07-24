@@ -7,6 +7,7 @@ import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Environment;
 import smartin.miapi.Miapi;
 import smartin.miapi.datapack.ReloadEvents;
@@ -46,8 +47,8 @@ public class SynergyManager {
             }
             return oldMap;
         });
-        Miapi.registerReloadHandler(ReloadEvents.MAIN, "synergies", maps, (isClient, path, data) -> {
-            load(data);
+        Miapi.registerReloadHandler(ReloadEvents.MAIN, "miapi/synergies", maps, (isClient, path, data) -> {
+            load(data, path);
         }, 2);
         ReloadEvents.END.subscribe((isClient -> {
             int size = 0;
@@ -58,7 +59,7 @@ public class SynergyManager {
         }));
     }
 
-    public static void load(String data) {
+    public static void load(String data, ResourceLocation path) {
         JsonObject element = Miapi.gson.fromJson(data, JsonObject.class);
         element.getAsJsonObject().entrySet().forEach((entry) -> {
             if (element.has("type")) {
@@ -66,32 +67,32 @@ public class SynergyManager {
                 if (type.equals("tag")) {
                     String tagKey = entry.getKey();
                     TagProperty.getModulesWithTag(tagKey).forEach(itemModule -> {
-                        loadSynergy(itemModule, entry.getValue().getAsJsonObject());
+                        loadSynergy(itemModule, entry.getValue().getAsJsonObject(), path);
                     });
                 }
                 if (type.equals("material")) {
                     String tagKey = entry.getKey();
                     Material material = MaterialProperty.materials.get(tagKey);
                     if (material != null) {
-                        loadSynergy(material, entry.getValue().getAsJsonObject());
+                        loadSynergy(material, entry.getValue().getAsJsonObject(), path);
                     }
                 }
                 if (type.equals("all")) {
                     if (entry.getValue().isJsonObject()) {
                         RegistryInventory.modules.getFlatMap().forEach((id, module) -> {
-                            loadSynergy(module, entry.getValue().getAsJsonObject());
+                            loadSynergy(module, entry.getValue().getAsJsonObject(), path);
                         });
                     }
                 }
             } else {
                 ItemModule property = RegistryInventory.modules.get(entry.getKey());
                 JsonObject entryData = entry.getValue().getAsJsonObject();
-                loadSynergy(property, entryData);
+                loadSynergy(property, entryData, path);
             }
         });
     }
 
-    public static void loadSynergy(ItemModule itemModule, JsonObject entryData) {
+    public static void loadSynergy(ItemModule itemModule, JsonObject entryData, ResourceLocation id) {
         if (itemModule == null) {
             Miapi.LOGGER.warn("ItemModule is null?");
             return;
@@ -102,10 +103,11 @@ public class SynergyManager {
             return new ArrayList<>();
         });
         synergies.add(synergy);
-        synergy.holder = PropertyHolderJsonAdapter.readFromObject(entryData, Environment.isClient(), Miapi.id("synergy_runtime"));
+        synergy.id = id;
+        synergy.holder = PropertyHolderJsonAdapter.readFromObject(entryData, Environment.isClient(), synergy.id);
     }
 
-    public static void loadSynergy(Material material, JsonObject entryData) {
+    public static void loadSynergy(Material material, JsonObject entryData, ResourceLocation id) {
         if (material == null) {
             Miapi.LOGGER.warn("ItemModule is null?");
             return;
@@ -116,7 +118,8 @@ public class SynergyManager {
             return new ArrayList<>();
         });
         synergies.add(synergy);
-        synergy.holder = PropertyHolderJsonAdapter.readFromObject(entryData, Environment.isClient(), Miapi.id("synergy/" + entryData));
+        synergy.id = id;
+        synergy.holder = PropertyHolderJsonAdapter.readFromObject(entryData, Environment.isClient(), synergy.id);
     }
 
     public static PropertyHolder getFrom(JsonElement element, boolean isClient, ResourceLocation context) {
@@ -126,9 +129,10 @@ public class SynergyManager {
     public static class Synergy {
         public ModuleCondition condition;
         public PropertyHolder holder = new PropertyHolder();
+        public ResourceLocation id;
     }
 
-    public static Map<ModuleProperty<?>, Object> getProperties(JsonElement element, boolean isClient, ResourceLocation source, String context) {
+    public static Map<ModuleProperty<?>, Object> getProperties(@Nullable JsonElement element, boolean isClient, ResourceLocation source, String context) {
         Map<ModuleProperty<?>, Object> properties = new HashMap<>();
         if (element == null || element.isJsonNull() || element.isJsonPrimitive()) {
             return properties;
@@ -143,9 +147,11 @@ public class SynergyManager {
                     }
                 } catch (Exception e) {
                     Miapi.LOGGER.error("could not load property " + propertyKey + " in context " + context + " from source " + source.toString(), e);
+                    Miapi.LOGGER.error(Miapi.gson.toJson(element));
                 }
             } else {
-                Miapi.LOGGER.warn("could not find property " + propertyKey +" in context " + context + " from source " + source.toString());
+                Miapi.LOGGER.warn("could not find property " + propertyKey + " in context " + context + " from source " + source.toString());
+                Miapi.LOGGER.error(Miapi.gson.toJson(element));
             }
         });
         return properties;
@@ -165,6 +171,7 @@ public class SynergyManager {
                         removeFields.add(moduleProperty);
                     } else {
                         Miapi.LOGGER.error("Could not find Property " + key + " in context " + context + " from source " + source.toString());
+                        Miapi.LOGGER.error(Miapi.gson.toJson(element));
                     }
                 }
             }));
@@ -214,7 +221,7 @@ public class SynergyManager {
 
         @Override
         public PropertyHolder read(JsonReader jsonReader) throws IOException {
-            return readFromObject(Miapi.gson.fromJson(jsonReader, JsonElement.class), Environment.isClient(), Miapi.id("miapi/synergy"));
+            return readFromObject(Miapi.gson.fromJson(jsonReader, JsonElement.class), Environment.isClient(), Miapi.id("miapi:runtime_property_holder"));
         }
 
         public static PropertyHolder readFromObject(JsonElement jsonElement, boolean isClient, ResourceLocation source) {

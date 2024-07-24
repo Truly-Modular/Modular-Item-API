@@ -23,7 +23,7 @@ public abstract class CodecProperty<T> implements ModuleProperty<T> {
     }
 
     public T decode(JsonElement element) {
-        return codec.parse(JsonOps.INSTANCE, element).getOrThrow();
+        return codec.parse(JsonOps.INSTANCE, element).getOrThrow((s) -> new RuntimeException("could not decode CodecProperty " + this.getClass().getName() + " " + s));
     }
 
     public JsonElement encode(T property) {

@@ -11,7 +11,7 @@ import smartin.miapi.modules.properties.util.MergeType;
  * This property allows to dynamically set teh preferred EquipmentSlot
  */
 public class EquipmentSlotProperty extends CodecProperty<EquipmentSlotGroup> {
-    public static final String KEY = "equipmentSlot";
+    public static final String KEY = "equipment_slot";
     public static EquipmentSlotProperty property;
 
     public EquipmentSlotProperty() {

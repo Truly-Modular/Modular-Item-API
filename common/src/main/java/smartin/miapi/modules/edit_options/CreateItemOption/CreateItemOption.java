@@ -41,7 +41,7 @@ public class CreateItemOption implements EditOption {
 
 
     public CreateItemOption() {
-        Miapi.registerReloadHandler(ReloadEvents.END, "create_options", (isClient -> {
+        Miapi.registerReloadHandler(ReloadEvents.END, "miapi/create_options", (isClient -> {
             createAbleItems.clear();
         }), ((isClient, path, data) -> {
             if(isClient){

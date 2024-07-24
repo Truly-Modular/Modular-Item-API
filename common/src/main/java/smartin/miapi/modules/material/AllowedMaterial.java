@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
  * This property manages the allowed Materials for a module
  */
 public class AllowedMaterial extends CodecProperty<AllowedMaterial.AllowedMaterialData> implements CraftingProperty {
-    public static final String KEY = "allowedMaterial";
+    public static final String KEY = "allowed_material";
     public static AllowedMaterial property;
     public double materialCostClient = 0.0f;
     public double materialRequirementClient = 0.0f;

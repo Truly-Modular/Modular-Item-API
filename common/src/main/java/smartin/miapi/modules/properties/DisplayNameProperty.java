@@ -18,7 +18,7 @@ import java.util.Optional;
  * This property allows modules to change the DisplayName of the item in question
  */
 public class DisplayNameProperty extends CodecProperty<Component> {
-    public static final String KEY = "displayName";
+    public static final String KEY = "display_name";
     public static DisplayNameProperty property;
 
     public DisplayNameProperty() {

@@ -27,24 +27,21 @@ public class MiapiReloadListener implements PreparableReloadListener {
         ReloadEvents.reloadCounter++;
         timeStart = System.nanoTime();
         ReloadEvents.START.fireEvent(false);
-        Map<String, String> data = new LinkedHashMap<>();
+        Map<ResourceLocation, String> data = new LinkedHashMap<>();
 
         ReloadEvents.syncedPaths.forEach((modID, dataPaths) -> {
             dataPaths.forEach(dataPath -> {
                 Map<ResourceLocation, List<Resource>> map = manager.listResourceStacks(dataPath, (fileName) -> true);
                 map.forEach((identifier, resources) -> {
-                    if (identifier.getNamespace().equals(modID)) {
-                        resources.forEach(resource -> {
-                            try {
-                                BufferedReader reader = resource.openAsReader();
-                                String dataString = reader.lines().collect(Collectors.joining());
-                                String fullPath = identifier.getPath();
-                                data.put(fullPath, dataString);
-                            } catch (Exception e) {
-                                Miapi.LOGGER.warn("Error Loading Resource" + identifier + " " + resources);
-                            }
-                        });
-                    }
+                    resources.forEach(resource -> {
+                        try {
+                            BufferedReader reader = resource.openAsReader();
+                            String dataString = reader.lines().collect(Collectors.joining());
+                            data.put(identifier, dataString);
+                        } catch (Exception e) {
+                            Miapi.LOGGER.warn("Error Loading Resource" + identifier + " " + resources);
+                        }
+                    });
                 });
             });
         });
@@ -53,10 +50,10 @@ public class MiapiReloadListener implements PreparableReloadListener {
 
     public CompletableFuture<Void> apply(Object data, ResourceManager manager, ProfilerFiller profiler, Executor executor) {
         return CompletableFuture.runAsync(() -> {
-            Map<String, String> dataMap = new HashMap<>((Map) data);
-            Map<String, String> filteredMap = new HashMap<>();
+            Map<ResourceLocation, String> dataMap = new HashMap<>((Map) data);
+            Map<ResourceLocation, String> filteredMap = new HashMap<>();
             dataMap.forEach((key, value) -> {
-                if (!key.endsWith(".json")) {
+                if (!key.getPath().endsWith(".json")) {
                     filteredMap.put(key, value);
                     return;
                 }

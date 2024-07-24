@@ -8,7 +8,7 @@ import smartin.miapi.modules.properties.util.ComplexBooleanProperty;
  * mainly affecting durability calculations
  */
 public class ToolOrWeaponProperty extends ComplexBooleanProperty {
-    public static final String KEY = "isWeapon";
+    public static final String KEY = "is_weapon";
     public static ToolOrWeaponProperty property;
 
     public ToolOrWeaponProperty() {

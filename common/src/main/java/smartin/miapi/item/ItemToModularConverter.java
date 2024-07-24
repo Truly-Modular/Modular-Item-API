@@ -16,7 +16,7 @@ public class ItemToModularConverter implements ModularItemStackConverter.Modular
 
 
     public ItemToModularConverter() {
-        Miapi.registerReloadHandler(ReloadEvents.MAIN, "modular_converter", regexes, (isClient, path, data) -> {
+        Miapi.registerReloadHandler(ReloadEvents.MAIN, "miapi/modular_converter", regexes, (isClient, path, data) -> {
             Map<String, ModuleInstance> dataMap;
             TypeToken<Map<String, ModuleInstance>> token = new TypeToken<>() {
             };

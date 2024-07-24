@@ -25,7 +25,7 @@ import java.util.Set;
 @Environment(EnvType.CLIENT)
 public class ModelTransformationProperty extends CodecProperty<ModelTransformationProperty.ModelTransformationData> {
 
-    public static final String KEY = "modelTransform";
+    public static final String KEY = "model_transform";
     public static ModelTransformationProperty property;
 
     public ModelTransformationProperty() {

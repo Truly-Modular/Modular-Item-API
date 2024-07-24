@@ -4,6 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.mojang.datafixers.util.Pair;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import smartin.miapi.Miapi;
 import smartin.miapi.config.MiapiConfig;
@@ -54,10 +55,10 @@ public record ItemModule(String name, Map<ModuleProperty<?>, Object> properties)
      * @param path             the path of the JSON file
      * @param moduleJsonString the JSON string to load from
      */
-    public static void loadFromData(String path, String moduleJsonString, boolean isClient) {
+    public static void loadFromData(ResourceLocation path, String moduleJsonString, boolean isClient) {
         try {
             JsonObject moduleJson = gson.fromJson(moduleJsonString, JsonObject.class);
-            if (!path.startsWith(MODULE_KEY)) {
+            if (!path.getPath().startsWith(MODULE_KEY)) {
                 return;
             }
             Type type = new TypeToken<Map<String, JsonElement>>() {
@@ -78,10 +79,10 @@ public record ItemModule(String name, Map<ModuleProperty<?>, Object> properties)
      * @param path             the path of the JSON file
      * @param moduleJsonString the JSON string to load from
      */
-    public static void loadModuleExtension(String path, String moduleJsonString, boolean isClient) {
+    public static void loadModuleExtension(ResourceLocation path, String moduleJsonString, boolean isClient) {
         try {
             JsonObject moduleJson = gson.fromJson(moduleJsonString, JsonObject.class);
-            SynergyManager.PropertyHolder holder = SynergyManager.getFrom(moduleJson, isClient, Miapi.id(path));
+            SynergyManager.PropertyHolder holder = SynergyManager.getFrom(moduleJson, isClient, path);
             String name = moduleJson.get("name").getAsString();
             ItemModule module = RegistryInventory.modules.get(name);
             if (module == null) {
@@ -108,7 +109,7 @@ public record ItemModule(String name, Map<ModuleProperty<?>, Object> properties)
      * @param data the data to load the module property
      */
     @SuppressWarnings("unchecked")
-    private static void isValidProperty(String key, String path, JsonElement data, boolean isClient, Consumer<Pair<ModuleProperty<?>, Object>> onValid) {
+    private static void isValidProperty(String key, ResourceLocation path, JsonElement data, boolean isClient, Consumer<Pair<ModuleProperty<?>, Object>> onValid) {
         ModuleProperty<?> property = RegistryInventory.moduleProperties.get(key);
         if (property != null) {
             try {
@@ -117,7 +118,7 @@ public record ItemModule(String name, Map<ModuleProperty<?>, Object> properties)
                     onValid.accept(new Pair<>(property, property.decode(data)));
                 }
             } catch (Exception e) {
-                LOGGER.error("Failure during moduleLoad, Error in Module " + path + " with property " + key + " with data " + data + "with error " + e.getLocalizedMessage(), e);
+                LOGGER.error("Failure during moduleLoad, Error in Module " + path.toString() + " with property " + key + " with data " + data + "with error " + e.getLocalizedMessage(), e);
             }
         } else {
             LOGGER.error("Module " + path + " contains invalid property " + key);

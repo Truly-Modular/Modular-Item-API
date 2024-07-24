@@ -11,7 +11,7 @@ import smartin.miapi.modules.properties.util.DoubleProperty;
  * This Property allows currentHealthpercent damage ontop of already dealt damage
  */
 public class HealthPercentDamage extends DoubleProperty {
-    public static final String KEY = "healthPercent";
+    public static final String KEY = "health_percent";
     public static HealthPercentDamage property;
 
     public HealthPercentDamage() {
