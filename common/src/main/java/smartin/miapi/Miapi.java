@@ -1,7 +1,9 @@
 package smartin.miapi;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
+import com.google.gson.*;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
@@ -50,6 +52,7 @@ import smartin.miapi.network.NetworkingImplCommon;
 import smartin.miapi.registries.MiapiRegistry;
 import smartin.miapi.registries.RegistryInventory;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -63,7 +66,9 @@ public class Miapi {
     public static final Logger DEBUG_LOGGER = LoggerFactory.getLogger("miapi debug");
     public static NetworkingImplCommon networkingImplementation;
     public static MinecraftServer server;
-    public static Gson gson = new Gson();
+    public static Gson gson = new GsonBuilder()
+            .registerTypeAdapterFactory(new LoggingTypeAdapterFactory())
+            .create();
     public static Codec<ResourceLocation> ID_CODEC = new Codec<>() {
         @Override
         public <T> DataResult<Pair<ResourceLocation, T>> decode(DynamicOps<T> ops, T input) {
@@ -76,6 +81,27 @@ public class Miapi {
             return Codec.STRING.encode(input.toString(), ops, prefix);
         }
     };
+
+    public static class LoggingTypeAdapterFactory implements TypeAdapterFactory {
+        @Override
+        public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+            final TypeAdapter<T> delegate = gson.getDelegateAdapter(this, type);
+            return new TypeAdapter<T>() {
+                @Override
+                public void write(JsonWriter out, T value) throws IOException {
+                    LOGGER.info("Serializing type: " + type.getType() + " Value: " + value);
+                    delegate.write(out, value);
+                }
+
+                @Override
+                public T read(JsonReader in) throws IOException {
+                    T result = delegate.read(in);
+                    LOGGER.info("Deserialized type: " + type.getType() + " Value: " + result);
+                    return result;
+                }
+            };
+        }
+    }
 
     public static void init() {
         CodecBehavior.registerClass(Transform.class, Transform.CODEC);

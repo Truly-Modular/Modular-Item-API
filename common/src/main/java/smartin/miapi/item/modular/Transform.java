@@ -363,7 +363,7 @@ public class Transform {
             return transform;
         }
 
-        private void writeVector3f(JsonWriter jsonWriter, String name, Vector3f vector3f) throws IOException {
+        private static void writeVector3f(JsonWriter jsonWriter, String name, Vector3f vector3f) throws IOException {
             jsonWriter.name(name);
             jsonWriter.beginArray();
             jsonWriter.value(vector3f.x);
@@ -372,7 +372,7 @@ public class Transform {
             jsonWriter.endArray();
         }
 
-        private Vector3f readVector3f(JsonReader jsonReader) throws IOException {
+        private static Vector3f readVector3f(JsonReader jsonReader) throws IOException {
             Vector3f vector3f = new Vector3f();
 
             if (jsonReader.peek() == JsonToken.BEGIN_ARRAY) {

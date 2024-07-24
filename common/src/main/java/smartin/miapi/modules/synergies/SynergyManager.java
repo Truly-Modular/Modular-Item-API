@@ -2,10 +2,6 @@ package smartin.miapi.modules.synergies;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Environment;
@@ -22,7 +18,6 @@ import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.registries.RegistryInventory;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -104,7 +99,7 @@ public class SynergyManager {
         });
         synergies.add(synergy);
         synergy.id = id;
-        synergy.holder = PropertyHolderJsonAdapter.readFromObject(entryData, Environment.isClient(), synergy.id);
+        synergy.holder = readFromObject(entryData, Environment.isClient(), synergy.id);
     }
 
     public static void loadSynergy(Material material, JsonObject entryData, ResourceLocation id) {
@@ -119,11 +114,25 @@ public class SynergyManager {
         });
         synergies.add(synergy);
         synergy.id = id;
-        synergy.holder = PropertyHolderJsonAdapter.readFromObject(entryData, Environment.isClient(), synergy.id);
+        synergy.holder = readFromObject(entryData, Environment.isClient(), synergy.id);
     }
 
     public static PropertyHolder getFrom(JsonElement element, boolean isClient, ResourceLocation context) {
-        return PropertyHolderJsonAdapter.readFromObject(element, isClient, context);
+        return readFromObject(element, isClient, context);
+    }
+
+    public static PropertyHolder readFromObject(JsonElement jsonElement, boolean isClient, ResourceLocation source) {
+        JsonObject entryData = jsonElement.getAsJsonObject();
+        PropertyHolder propertyHolder = new PropertyHolder();
+        JsonElement replaceProperty = entryData.get("replace");
+        if (entryData.has("properties")) {
+            replaceProperty = entryData.get("properties");
+            Miapi.LOGGER.warn("The raw use of the Field `properties` should be replaced with the field `replace` in " + source);
+        }
+        propertyHolder.replace = getProperties(replaceProperty, isClient, source, "replace");
+        propertyHolder.merge = getProperties(entryData.get("merge"), isClient, source, "merge");
+        propertyHolder.remove = getRemoveProperties(entryData.get("remove"), source, "remove");
+        return propertyHolder;
     }
 
     public static class Synergy {
@@ -179,7 +188,6 @@ public class SynergyManager {
         return removeFields;
     }
 
-    @JsonAdapter(PropertyHolderJsonAdapter.class)
     public static class PropertyHolder {
         public Map<ModuleProperty<?>, Object> replace = new HashMap<>();
         public Map<ModuleProperty<?>, Object> merge = new HashMap<>();
@@ -209,33 +217,6 @@ public class SynergyManager {
             });
             oldMap.putAll(replace);
             return oldMap;
-        }
-    }
-
-    public static class PropertyHolderJsonAdapter extends TypeAdapter<PropertyHolder> {
-
-        @Override
-        public void write(JsonWriter jsonWriter, PropertyHolder propertyHolder) throws IOException {
-
-        }
-
-        @Override
-        public PropertyHolder read(JsonReader jsonReader) throws IOException {
-            return readFromObject(Miapi.gson.fromJson(jsonReader, JsonElement.class), Environment.isClient(), Miapi.id("miapi:runtime_property_holder"));
-        }
-
-        public static PropertyHolder readFromObject(JsonElement jsonElement, boolean isClient, ResourceLocation source) {
-            JsonObject entryData = jsonElement.getAsJsonObject();
-            PropertyHolder propertyHolder = new PropertyHolder();
-            JsonElement replaceProperty = entryData.get("replace");
-            if (entryData.has("properties")) {
-                replaceProperty = entryData.get("properties");
-                Miapi.LOGGER.warn("The raw use of the Field `properties` should be replaced with the field `replace` in " + source);
-            }
-            propertyHolder.replace = getProperties(replaceProperty, isClient, source, "replace");
-            propertyHolder.merge = getProperties(entryData.get("merge"), isClient, source, "merge");
-            propertyHolder.remove = getRemoveProperties(entryData.get("remove"), source, "remove");
-            return propertyHolder;
         }
     }
 }

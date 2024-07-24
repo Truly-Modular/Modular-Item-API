@@ -2,7 +2,9 @@ package smartin.miapi.modules;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -334,7 +336,7 @@ public class ModuleInstance {
      */
     public String toString() {
         Gson gson = new Gson();
-        return gson.toJson(this);
+        return gson.toJson(gson.toJson(CODEC.encodeStart(JsonOps.INSTANCE, this)));
     }
 
     /**
@@ -344,12 +346,23 @@ public class ModuleInstance {
      * @return a module instance constructed from the given JSON string representation
      */
     public static ModuleInstance fromString(String string) {
-        Gson gson = new Gson();
-        ModuleInstance moduleInstance = gson.fromJson(string, ModuleInstance.class);
-        if (moduleInstance.module == null) {
-            moduleInstance.module = ItemModule.empty;
+        try {
+            Gson gson = new Gson();
+            var result = CODEC.decode(JsonOps.INSTANCE, gson.fromJson(string, JsonObject.class));
+            if (result.isError()) {
+                Miapi.LOGGER.warn("Error durind ModuleInstance decode" + result.error().get().message());
+                return new ModuleInstance(ItemModule.empty);
+            }
+            ModuleInstance moduleInstance = result.getOrThrow().getFirst();
+            if (moduleInstance.module == null) {
+                moduleInstance.module = ItemModule.empty;
+            }
+            return moduleInstance;
+        } catch (RuntimeException e) {
+            Miapi.LOGGER.error("Error during ModuleInstance decode - replacing with empty module", e);
+            Miapi.LOGGER.error("raw data: " + string);
+            return new ModuleInstance(ItemModule.empty);
         }
-        return moduleInstance;
     }
 
     public Optional<ModuleInstance> parseTo(String[] data) {
