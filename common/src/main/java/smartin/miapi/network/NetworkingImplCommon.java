@@ -7,8 +7,6 @@ import net.fabricmc.api.EnvType;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 
-import java.util.List;
-
 public class NetworkingImplCommon extends NetworkingImpl {
     protected NetworkingImplCommon instance;
 
@@ -17,10 +15,16 @@ public class NetworkingImplCommon extends NetworkingImpl {
         if (Platform.getEnv().equals(EnvType.CLIENT)) {
             //NetworkManager.registerS2CPayloadType(CustomDataPayload.TYPE, CustomDataPayload.STREAM_CODEC, List.of());
         }
+        NetworkManager.registerReceiver(NetworkManager.Side.S2C, CustomDataPayload.TYPE, CustomDataPayload.STREAM_CODEC, (value, context) -> {
+
+        });
     }
 
     public void setupServer() {
-        NetworkManager.registerS2CPayloadType(CustomDataPayload.TYPE, CustomDataPayload.STREAM_CODEC, List.of());
+        //NetworkManager.registerS2CPayloadType(CustomDataPayload.TYPE, CustomDataPayload.STREAM_CODEC, List.of());
+        NetworkManager.registerReceiver(NetworkManager.Side.C2S, CustomDataPayload.TYPE, CustomDataPayload.STREAM_CODEC, (value, context) -> {
+
+        });
     }
 
 
