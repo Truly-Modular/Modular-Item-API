@@ -365,39 +365,9 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
 
     @Override
     public void render(GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
+        //renderBackground(drawContext, mouseX, mouseY, delta);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        renderBackground(drawContext, mouseX, mouseY, delta);
-        int i = (this.width - this.imageWidth - 6) / 2;
-        int j = (this.height - this.imageHeight) / 2;
-        //InteractAbleWidget.drawSquareBorder(drawContext, i, j, this.backgroundWidth, this.backgroundHeight, 1, ColorHelper.Argb.getArgb(255, 255, 0, 0));
-        //(Identifier texture, int x, int y, int width, int height, float u, float v, int regionWidth, int regionHeight, int textureWidth, int textureHeight)
-        drawContext.blit(BACKGROUND_TEXTURE, i + 43 - 15, j + 14 - 14, 338, 199, 0.0f, 0.0f, 338, 199, 512, 512);
-
         // long timeSinceMod = Util.getMeasuringTimeMs()-minimizer.getLastChangeTime();
-        if (minimizer.isEnabled()/* || timeSinceMod < 1000*/) {
-            /*float progress = MathHelper.clamp(timeSinceMod/1000f, 0, 1);
-            int start;
-            int end;
-            InterpolateMode interp;
-            if (minimizer.isEnabled()) {
-                start = 206;
-                end = 111;
-                interp = EASE_OUT;
-            } else {
-                start = 111;
-                end = 206;
-                interp = EASE_IN;
-            }
-
-            int pos = (int) interp.interpolate(progress, start, end);
-            boolean disableScissor = minimizer.isEnabled() ? pos > end : pos < end;
-            if (disableScissor) drawContext.enableScissor(i+42, j+110, i+204, j+187);
-            drawContext.drawTexture(BACKGROUND_TEXTURE, i + 43, j + pos, 160, 95, 0, 199, 160, 95, 512, 512);
-            if (disableScissor) drawContext.disableScissor();
-            //InteractAbleWidget.drawSquareBorder(drawContext, i + 43, j + 111, 160, 77, 1, Color.RED.argb());*/
-
-            drawContext.blit(BACKGROUND_TEXTURE, i + 43 - 15, j + 111 - 14, 160, 95, 0, 199, 160, 95, 512, 512);
-        }
         if (hoverElement == null) {
             super.render(drawContext, mouseX, mouseY, delta);
         } else {
@@ -417,6 +387,16 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
         }
         drawContext.pose().popPose();
         PreviewManager.tick();
+    }
+
+    public void renderBackground(GuiGraphics drawContext, int mouseX, int mouseY, float partialTick) {
+        super.renderBackground(drawContext, mouseX, mouseY, partialTick);
+        int i = (this.width - this.imageWidth - 6) / 2;
+        int j = (this.height - this.imageHeight) / 2;
+        drawContext.blit(BACKGROUND_TEXTURE, i + 43 - 15, j + 14 - 14, 338, 199, 0.0f, 0.0f, 338, 199, 512, 512);
+        if (minimizer.isEnabled()) {
+            drawContext.blit(BACKGROUND_TEXTURE, i + 43 - 15, j + 111 - 14, 160, 95, 0, 199, 160, 95, 512, 512);
+        }
     }
 
     @Override

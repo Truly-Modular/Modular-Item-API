@@ -1,5 +1,6 @@
 package smartin.miapi.client.gui;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Renderable;
@@ -223,12 +224,14 @@ public abstract class ParentHandledScreen<T extends AbstractContainerMenu> exten
      */
     @Override
     public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
+        super.render(context, mouseX, mouseY, delta);
+        RenderSystem.disableDepthTest();
         children().forEach(element -> {
             if (element instanceof Renderable drawable) {
                 drawable.render(context, mouseX, mouseY, delta);
             }
         });
-        super.render(context, mouseX, mouseY, delta);
+        RenderSystem.enableDepthTest();
     }
 
     public void renderHover(GuiGraphics context, int mouseX, int mouseY, float delta) {
