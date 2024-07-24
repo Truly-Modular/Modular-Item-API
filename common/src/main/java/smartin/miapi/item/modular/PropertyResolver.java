@@ -32,6 +32,10 @@ public class PropertyResolver {
         registry.forEach((pair) -> {
             PropertyProvider propertyProvider = pair.getB();
             moduleInstance.allSubModules().forEach(instance -> {
+                if (instance.properties == null) {
+                    Miapi.LOGGER.warn("IS NULL?!");
+                    instance.properties = new ConcurrentHashMap<>();
+                }
                 instance.properties.putAll(propertyProvider.resolve(instance, instance.properties));
             });
         });

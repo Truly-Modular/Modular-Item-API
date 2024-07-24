@@ -58,9 +58,6 @@ public record ItemModule(String name, Map<ModuleProperty<?>, Object> properties)
     public static void loadFromData(ResourceLocation path, String moduleJsonString, boolean isClient) {
         try {
             JsonObject moduleJson = gson.fromJson(moduleJsonString, JsonObject.class);
-            if (!path.getPath().startsWith(MODULE_KEY)) {
-                return;
-            }
             Type type = new TypeToken<Map<String, JsonElement>>() {
             }.getType();
             String name = moduleJson.get("name").getAsString();
@@ -90,7 +87,12 @@ public record ItemModule(String name, Map<ModuleProperty<?>, Object> properties)
                 return;
             }
             RegistryInventory.modules.getFlatMap().remove(name);
-            RegistryInventory.modules.register(name, new ItemModule(name, holder.applyHolder(module.properties())));
+            Map<ModuleProperty<?>, Object> map = holder.applyHolder(module.properties());
+            if (map == null) {
+                map = new HashMap<>();
+                LOGGER.warn("is NULL wtf holder.applyHolder is false");
+            }
+            RegistryInventory.modules.register(name, new ItemModule(name, map));
         } catch (Exception e) {
             LOGGER.warn("Could not load Module to extend " + path, e);
         }

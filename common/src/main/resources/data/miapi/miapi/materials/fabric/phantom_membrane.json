@@ -29,7 +29,7 @@
     ],
     "properties": {
         "boot": {
-            "canWalkOnSnow": true
+            "can_walk_on_snow": true
         }
     },
     "mining_speed": 0,

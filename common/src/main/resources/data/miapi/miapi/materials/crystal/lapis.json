@@ -31,10 +31,10 @@
     ],
     "properties": {
         "tool": {
-            "luminiousLearning": "1"
+            "luminious_learning": "1"
         },
         "handheld": {
-            "luminiousLearning": "0.3"
+            "luminious_learning": "0.3"
         }
     },
     "items": [

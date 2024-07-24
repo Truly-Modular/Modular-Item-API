@@ -33,7 +33,7 @@ public record PossibleEffect(MobEffectInstance effect, float probability, boolea
     public static final Codec<PossibleEffect> CODEC = RecordCodecBuilder.create((instance) -> {
         return instance.group(
                 MobEffectInstance.CODEC
-                        .fieldOf("effect")
+                        .fieldOf("potion")
                         .forGetter(PossibleEffect::effect),
                 Codec.floatRange(0.0F, 1.0F)
                         .optionalFieldOf("probability", 1.0F)

@@ -60,7 +60,11 @@ public class DoubleOperationResolvable {
 
         @Override
         public <T> DataResult<Pair<DoubleOperationResolvable, T>> decode(DynamicOps<T> ops, T input) {
-            Pair<Operation, T> pair = operationCodec.decode(ops, input).getOrThrow((e) -> new RuntimeException(e + "could not decode double operations"));
+            var result = operationCodec.decode(ops, input);
+            if(result.isError()){
+                return DataResult.error(() -> "could not decode double operations");
+            }
+            Pair<Operation, T> pair = result.getOrThrow();
             return DataResult.success(new Pair<>(new DoubleOperationResolvable(List.of(pair.getFirst())), pair.getSecond()));
         }
     }, new Codec<>() {

@@ -359,7 +359,7 @@ public class ModelProperty extends CodecProperty<List<ModelProperty.ModelData>> 
         public String trim_mode = "none";
         @CodecBehavior.Optional
         public Boolean entity_render = null;
-
+        @CodecBehavior.Optional
         public String id = null;
 
         public void repair() {

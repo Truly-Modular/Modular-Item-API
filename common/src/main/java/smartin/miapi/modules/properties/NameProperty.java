@@ -1,6 +1,7 @@
 package smartin.miapi.modules.properties;
 
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
@@ -14,12 +15,12 @@ public class NameProperty implements ModuleProperty {
 
     @Override
     public Object decode(JsonElement element) {
-        return null;
+        return element.getAsString();
     }
 
     @Override
     public JsonElement encode(Object property) {
-        return null;
+        return new JsonObject();
     }
 
     @Override

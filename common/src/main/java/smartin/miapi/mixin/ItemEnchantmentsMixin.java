@@ -22,7 +22,8 @@ public abstract class ItemEnchantmentsMixin {
         ItemEnchantments itemEnchantments = (ItemEnchantments) (Object) this;
         ItemStack itemStack = FakeEnchantmentManager.lookupMap.get(itemEnchantments);
         if (itemStack != null && itemStack.getItem() instanceof ModularItem) {
-            cir.setReturnValue(FakeEnchantmentManager.adjustEnchantments(cir.getReturnValue(), itemStack));
+            //TODO:this might not work
+            //cir.setReturnValue(FakeEnchantmentManager.adjustEnchantments(cir.getReturnValue(), itemStack));
         }
     }
 
@@ -31,7 +32,8 @@ public abstract class ItemEnchantmentsMixin {
         ItemEnchantments itemEnchantments = (ItemEnchantments) (Object) this;
         ItemStack itemStack = FakeEnchantmentManager.lookupMap.get(itemEnchantments);
         if (itemStack != null && itemStack.getItem() instanceof ModularItem) {
-            cir.setReturnValue(FakeEnchantmentManager.adjustLevel(enchantment, cir.getReturnValue(), itemStack));
+            //TODO:this might not work
+            //cir.setReturnValue(FakeEnchantmentManager.adjustLevel(enchantment, cir.getReturnValue(), itemStack));
         }
     }
 }

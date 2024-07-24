@@ -51,6 +51,7 @@ import smartin.miapi.registries.MiapiRegistry;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -114,7 +115,12 @@ public class Miapi {
             ModularItemCache.discardCache();
         });
         PropertyResolver.register(ResourceLocation.fromNamespaceAndPath(Miapi.MOD_ID, "miapi/module"), (moduleInstance, oldMap) -> {
-            return new ConcurrentHashMap<>(moduleInstance.module.properties());
+            Map<ModuleProperty<?>, Object> map = moduleInstance.module.properties();
+            if (map == null) {
+                map = new HashMap<>();
+                Miapi.LOGGER.warn("Item Modules has no properties. this is a api issue. please report this. this should not happen");
+            }
+            return new ConcurrentHashMap<>(map);
         });
         PropertyResolver.register("miapi/module_data", (moduleInstance, oldMap) -> {
             Map<ModuleProperty<?>, Object> map = new ConcurrentHashMap<>();
@@ -126,7 +132,13 @@ public class Miapi {
                         ModuleProperty property = RegistryInventory.moduleProperties
                                 .get(stringJsonElementEntry.getKey());
                         if (property != null) {
-                            map.put(property, property.decode(stringJsonElementEntry.getValue()));
+                            Object value = property.decode(stringJsonElementEntry.getValue());
+                            if (value != null) {
+                                map.put(property, property.decode(stringJsonElementEntry.getValue()));
+                            } else {
+                                Miapi.LOGGER.warn("Property decode returned NULL for key " + stringJsonElementEntry.getKey() +" ");
+                                Miapi.LOGGER.warn("data:" + stringJsonElementEntry.getValue());
+                            }
                         }
                     });
                 }

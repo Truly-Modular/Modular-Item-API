@@ -204,8 +204,9 @@ public class SlotProperty extends CodecProperty<Map<String, SlotProperty.ModuleS
         }
 
         public void initialize(ModuleInstance moduleInstance) {
-            inSlot = moduleInstance;
-            parent = moduleInstance.parent;
+            inSlot = null;
+            //TODO:fix this
+            parent = moduleInstance;
         }
 
         @Environment(EnvType.CLIENT)

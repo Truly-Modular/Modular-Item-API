@@ -8,6 +8,7 @@ import net.minecraft.core.component.DataComponentType;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
+import smartin.miapi.Miapi;
 import smartin.miapi.item.modular.PropertyResolver;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.cache.DataCache;
@@ -43,7 +44,12 @@ public class ModuleInstance {
                                 dataCodec.fieldOf("data")
                                         .forGetter((moduleInstance) -> moduleInstance.moduleData)
                         ).apply(instance, (module, children, data) -> {
-                            ModuleInstance moduleInstance = new ModuleInstance(RegistryInventory.modules.get(module));
+                            ItemModule itemModule = RegistryInventory.modules.get(module);
+                            if (itemModule == null) {
+                                itemModule = ItemModule.empty;
+                                Miapi.LOGGER.warn("could not find module " + module + " substituting with empty module");
+                            }
+                            ModuleInstance moduleInstance = new ModuleInstance(itemModule);
                             moduleInstance.moduleData = data;
                             moduleInstance.subModules = children;
                             moduleInstance.sortSubModule();

@@ -5,6 +5,7 @@ import com.redpxnda.nucleus.codec.auto.AutoCodec;
 import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Environment;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.crafting.statdisplay.JsonStatDisplay;
@@ -101,6 +102,8 @@ public class GuiStatProperty extends CodecProperty<Map<String, GuiStatProperty.G
         public DoubleOperationResolvable max = new DoubleOperationResolvable(10.0);
         public DoubleOperationResolvable value;
         public Component header;
+        @CodecBehavior.Optional
+        @Nullable
         public Component description;
 
         public GuiInfo initialize(ModuleInstance moduleInstance) {
