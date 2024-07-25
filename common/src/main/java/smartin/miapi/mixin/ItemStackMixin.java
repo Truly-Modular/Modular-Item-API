@@ -1,11 +1,16 @@
 package smartin.miapi.mixin;
 
+import net.minecraft.core.component.DataComponentType;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.component.PatchedDataComponentMap;
+import net.minecraft.network.chat.Component;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.ItemLike;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -14,10 +19,18 @@ import smartin.miapi.item.FakeItemstackReferenceProvider;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.VisualModularItem;
 import smartin.miapi.modules.properties.FakeItemTagProperty;
+import smartin.miapi.modules.properties.LoreProperty;
 import smartin.miapi.modules.properties.enchanment.FakeEnchantmentManager;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
 
 @Mixin(value = ItemStack.class, priority = 2000)
 abstract class ItemStackMixin {
+
+    @Shadow
+    public abstract ItemStack copy();
 
     @Inject(method = "is(Lnet/minecraft/tags/TagKey;)Z", at = @At("TAIL"), cancellable = true)
     public void miapi$injectItemTag(TagKey<Item> tag, CallbackInfoReturnable<Boolean> cir) {
@@ -42,6 +55,23 @@ abstract class ItemStackMixin {
         ItemStack stack = (ItemStack) (Object) this;
         if (stack.getItem() instanceof VisualModularItem) {
             FakeEnchantmentManager.initOnItemStack(stack);
+        }
+    }
+
+    @Inject(method = "Lnet/minecraft/world/item/ItemStack;addToTooltip(Lnet/minecraft/core/component/DataComponentType;Lnet/minecraft/world/item/Item$TooltipContext;Ljava/util/function/Consumer;Lnet/minecraft/world/item/TooltipFlag;)V", at = @At("TAIL"))
+    public <T> void miapi$capturePotentialItemstack(DataComponentType<T> component, Item.TooltipContext context, Consumer<Component> tooltipAdder, TooltipFlag tooltipFlag, CallbackInfo ci) {
+        ItemStack stack = (ItemStack) (Object) this;
+        if (DataComponents.UNBREAKABLE.equals(component)) {
+            FakeEnchantmentManager.initOnItemStack(stack);
+            if (stack.getItem() instanceof VisualModularItem) {
+                List<Component> lore = new ArrayList<>();
+                LoreProperty.property.appendLoreBottom(lore, stack);
+                lore.forEach(tooltipAdder);
+            } else {
+                List<Component> lore = new ArrayList<>();
+                LoreProperty.property.injectTooltipOnNonModularItems(lore, stack);
+                lore.forEach(tooltipAdder);
+            }
         }
     }
 }

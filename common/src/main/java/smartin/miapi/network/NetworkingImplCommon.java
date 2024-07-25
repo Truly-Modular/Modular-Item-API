@@ -33,12 +33,13 @@ public class NetworkingImplCommon extends NetworkingImpl {
 
         //buf.writeUtf(identifier);
         //buf.writeBytes(buffer.copy());
-        NetworkManager.sendToServer(new CustomDataPayload(new CustomDataPayload.CustomDataData(identifier, null, buffer)));
+        NetworkManager.sendToServer(new CustomDataPayload(new CustomDataPayload.CustomDataData(identifier, null,
+                buffer.readByteArray())));
     }
 
 
     public void sendPacketToClient(String identifier, ServerPlayer player, FriendlyByteBuf buffer) {
-        NetworkManager.sendToPlayer(player, new CustomDataPayload(new CustomDataPayload.CustomDataData(identifier, player, buffer)));
+        NetworkManager.sendToPlayer(player, new CustomDataPayload(new CustomDataPayload.CustomDataData(identifier, player, buffer.readByteArray())));
     }
 
     @Override

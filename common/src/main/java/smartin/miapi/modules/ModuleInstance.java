@@ -3,6 +3,7 @@ package smartin.miapi.modules;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -52,7 +53,7 @@ public class ModuleInstance {
                                 Miapi.LOGGER.warn("could not find module " + module + " substituting with empty module");
                             }
                             ModuleInstance moduleInstance = new ModuleInstance(itemModule);
-                            moduleInstance.moduleData = data;
+                            moduleInstance.moduleData = new HashMap<>(data);
                             moduleInstance.subModules = children;
                             moduleInstance.sortSubModule();
                             moduleInstance.subModules.values().forEach(childInstance -> childInstance.parent = moduleInstance);
@@ -336,7 +337,7 @@ public class ModuleInstance {
      */
     public String toString() {
         Gson gson = new Gson();
-        return gson.toJson(gson.toJson(CODEC.encodeStart(JsonOps.INSTANCE, this)));
+        return gson.toJson(CODEC.encodeStart(JsonOps.INSTANCE, this));
     }
 
     /**
@@ -347,10 +348,11 @@ public class ModuleInstance {
      */
     public static ModuleInstance fromString(String string) {
         try {
-            Gson gson = new Gson();
-            var result = CODEC.decode(JsonOps.INSTANCE, gson.fromJson(string, JsonObject.class));
+            JsonObject jsonObject = JsonParser.parseString(string).getAsJsonObject();
+
+            var result = CODEC.decode(JsonOps.INSTANCE, jsonObject);
             if (result.isError()) {
-                Miapi.LOGGER.warn("Error durind ModuleInstance decode" + result.error().get().message());
+                Miapi.LOGGER.warn("Error during ModuleInstance decode" + result.error().get().message());
                 return new ModuleInstance(ItemModule.empty);
             }
             ModuleInstance moduleInstance = result.getOrThrow().getFirst();
@@ -378,13 +380,34 @@ public class ModuleInstance {
             try {
                 String id = data[0];
                 if (subModules.containsKey(id)) {
-                    subModules.get(id).parseTo(newArray);
+                    return subModules.get(id).parseTo(newArray);
                 }
             } catch (NumberFormatException ignored) {
 
             }
         }
         return Optional.empty();
+    }
+
+    public String[] getStringPosition() {
+        List<String> position = new ArrayList<>();
+        ModuleInstance parser = this;
+        while (this.parent != null) {
+            ModuleInstance filter = parser;
+            Optional<Map.Entry<String, ModuleInstance>> next = this
+                    .parent
+                    .subModules
+                    .entrySet()
+                    .stream()
+                    .filter(e -> e.getValue().equals(filter))
+                    .findFirst();
+            if (next.isEmpty()) {
+                return position.toArray(new String[]{});
+            }
+            position.add(next.get().getKey());
+            parser = next.get().getValue();
+        }
+        return position.toArray(new String[]{});
     }
 
     /**

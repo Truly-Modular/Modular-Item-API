@@ -92,7 +92,7 @@ public class LoreProperty extends CodecProperty<List<LoreProperty.Holder>> {
         if (MiapiConfig.INSTANCE.client.other.injectLoreModularItem) {
             ItemStack converted = ModularItemStackConverter.getModularVersion(itemStack);
             if (!ItemStack.matches(converted, itemStack) || itemStack.getItem() instanceof ModularItem) {
-                lines.add(format(Component.translatable("miapi.ui.modular_item"), ChatFormatting.GRAY));
+                lines.add(format(Component.translatable("miapi.ui.modular_item"), ChatFormatting.BLACK));
             }
         }
         return lines;

@@ -63,7 +63,11 @@ public class PropertyInjectionDev implements EditOption {
 
         public EditDevView(int x, int y, int width, int height, ItemStack stack, ModuleInstance moduleInstance, Consumer<FriendlyByteBuf> craft) {
             super(x, y, width, height, Component.empty());
-            MutableComponent text = Component.literal(moduleInstance.moduleData.get("properties")).copy();
+            String context = moduleInstance.moduleData.get("properties");
+            if(context==null){
+                context = "no data";
+            }
+            MutableComponent text = Component.literal(context).copy();
             EditBox textFieldWidget = new ClickAbleTextWidget(Minecraft.getInstance().font, x + 5, y + 10, this.width - 10, 20, text);
             textFieldWidget.setMaxLength(Integer.MAX_VALUE);
             textFieldWidget.setEditable(true);
