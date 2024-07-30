@@ -133,19 +133,23 @@ public class JsonMaterial implements Material {
     public List<String> getGroups() {
         List<String> groups = new ArrayList<>();
         groups.add(key);
-        if (rawJson.getAsJsonObject().has("groups")) {
-            JsonArray groupsJson = rawJson.getAsJsonObject().getAsJsonArray("groups");
-            for (JsonElement groupElement : groupsJson) {
-                String group = groupElement.getAsString();
-                groups.add(group);
+        try {
+            if (rawJson.getAsJsonObject().has("groups")) {
+                JsonArray groupsJson = rawJson.getAsJsonObject().getAsJsonArray("groups");
+                for (JsonElement groupElement : groupsJson) {
+                    String group = groupElement.getAsString();
+                    groups.add(group);
+                }
             }
-        }
-        if (rawJson.getAsJsonObject().has("hidden_groups")) {
-            JsonArray groupsJson = rawJson.getAsJsonObject().getAsJsonArray("hidden_groups");
-            for (JsonElement groupElement : groupsJson) {
-                String group = groupElement.getAsString();
-                groups.add(group);
+            if (rawJson.getAsJsonObject().has("hidden_groups")) {
+                JsonArray groupsJson = rawJson.getAsJsonObject().getAsJsonArray("hidden_groups");
+                for (JsonElement groupElement : groupsJson) {
+                    String group = groupElement.getAsString();
+                    groups.add(group);
+                }
             }
+        } catch (RuntimeException e) {
+            Miapi.LOGGER.warn("Groups were not correctly set up in json Material!" + getKey() + " " + rawJson);
         }
         return groups;
     }
@@ -154,12 +158,16 @@ public class JsonMaterial implements Material {
     public List<String> getGuiGroups() {
         List<String> groups = new ArrayList<>();
         groups.add(key);
-        if (rawJson.getAsJsonObject().has("groups")) {
-            JsonArray groupsJson = rawJson.getAsJsonObject().getAsJsonArray("groups");
-            for (JsonElement groupElement : groupsJson) {
-                String group = groupElement.getAsString();
-                groups.add(group);
+        try {
+            if (rawJson.getAsJsonObject().has("groups")) {
+                JsonArray groupsJson = rawJson.getAsJsonObject().getAsJsonArray("groups");
+                for (JsonElement groupElement : groupsJson) {
+                    String group = groupElement.getAsString();
+                    groups.add(group);
+                }
             }
+        } catch (RuntimeException e) {
+            Miapi.LOGGER.warn("Groups were not correctly set up in json Material!" + getKey() + " " + rawJson);
         }
         return groups;
     }
@@ -225,9 +233,13 @@ public class JsonMaterial implements Material {
 
     public boolean generateConverters() {
         if (rawJson.getAsJsonObject().has("generate_converters")) {
-            JsonElement element = rawJson.getAsJsonObject().get("generate_converters");
-            if (element != null && !element.isJsonNull() && element.isJsonPrimitive()) {
-                return element.getAsBoolean();
+            try {
+                JsonElement element = rawJson.getAsJsonObject().get("generate_converters");
+                if (element != null && !element.isJsonNull() && element.isJsonPrimitive()) {
+                    return element.getAsBoolean();
+                }
+            } catch (RuntimeException e) {
+                Miapi.LOGGER.warn("generate converters in material " + getKey() + " is not setup correctly");
             }
         }
         return false;
@@ -237,9 +249,13 @@ public class JsonMaterial implements Material {
     public List<String> getTextureKeys() {
         List<String> textureKeys = new ArrayList<>();
         if (rawJson.getAsJsonObject().has("textures")) {
-            JsonArray textures = rawJson.getAsJsonObject().getAsJsonArray("textures");
-            for (JsonElement texture : textures) {
-                textureKeys.add(texture.getAsString());
+            try {
+                JsonArray textures = rawJson.getAsJsonObject().getAsJsonArray("textures");
+                for (JsonElement texture : textures) {
+                    textureKeys.add(texture.getAsString());
+                }
+            } catch (RuntimeException e) {
+                Miapi.LOGGER.warn("textures in material " + getKey() + " is not setup correctly");
             }
         }
         textureKeys.add("default");
@@ -250,8 +266,12 @@ public class JsonMaterial implements Material {
     @Override
     public int getColor() {
         if (rawJson.getAsJsonObject().get("color") != null) {
-            long longValue = Long.parseLong(rawJson.getAsJsonObject().get("color").getAsString(), 16);
-            return (int) (longValue & 0xffffffffL);
+            try {
+                long longValue = Long.parseLong(rawJson.getAsJsonObject().get("color").getAsString(), 16);
+                return (int) (longValue & 0xffffffffL);
+            } catch (RuntimeException e) {
+                Miapi.LOGGER.warn("textures in material " + getKey() + " is not setup correctly");
+            }
         }
         return getRenderController().getAverageColor().argb();
     }
