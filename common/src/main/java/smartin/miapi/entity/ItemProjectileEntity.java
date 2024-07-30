@@ -188,6 +188,7 @@ public class ItemProjectileEntity extends AbstractArrow {
     }
 
     protected void tickDespawn() {
+        ++this.tickCount;
         if (this.tickCount >= 1200 * 20) {
             this.discard();
         }

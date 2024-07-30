@@ -6,6 +6,8 @@ import io.netty.buffer.Unpooled;
 import net.fabricmc.api.EnvType;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
+import smartin.miapi.network.modern.payload.CustomPayload;
+import smartin.miapi.network.payload.CustomDataPayload;
 
 public class NetworkingImplCommon extends NetworkingImpl {
     protected NetworkingImplCommon instance;
@@ -33,13 +35,13 @@ public class NetworkingImplCommon extends NetworkingImpl {
 
         //buf.writeUtf(identifier);
         //buf.writeBytes(buffer.copy());
-        NetworkManager.sendToServer(new CustomDataPayload(new CustomDataPayload.CustomDataData(identifier, null,
+        NetworkManager.sendToServer(new CustomDataPayload(new CustomPayload(identifier, null,
                 buffer.readByteArray())));
     }
 
 
     public void sendPacketToClient(String identifier, ServerPlayer player, FriendlyByteBuf buffer) {
-        NetworkManager.sendToPlayer(player, new CustomDataPayload(new CustomDataPayload.CustomDataData(identifier, player, buffer.readByteArray())));
+        NetworkManager.sendToPlayer(player, new CustomDataPayload(new CustomPayload(identifier, player.getUUID(), buffer.readByteArray())));
     }
 
     @Override

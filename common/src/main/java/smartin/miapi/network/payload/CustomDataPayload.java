@@ -1,4 +1,4 @@
-package smartin.miapi.network;
+package smartin.miapi.network.payload;
 
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
@@ -7,11 +7,14 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import smartin.miapi.Environment;
 import smartin.miapi.Miapi;
+import smartin.miapi.network.Networking;
+import smartin.miapi.network.modern.payload.CustomPayload;
 
 import java.util.UUID;
 
-public record CustomDataPayload(CustomDataData data) implements CustomPacketPayload {
+public record CustomDataPayload(CustomPayload data) implements CustomPacketPayload {
     public static UUID noPlayerUUID = UUID.fromString("ddfe3f2c-2d4e-4242-8a65-f4641ba9f5f6");
 
     public static final StreamCodec<FriendlyByteBuf, CustomDataPayload> STREAM_CODEC = CustomPacketPayload.codec(CustomDataPayload::write, CustomDataPayload::decode);
@@ -19,16 +22,16 @@ public record CustomDataPayload(CustomDataData data) implements CustomPacketPayl
     public static final CustomPacketPayload.Type<CustomDataPayload> TYPE = new Type<>(Miapi.id("default-common-networking"));
 
     public CustomDataPayload(FriendlyByteBuf friendlyByteBuf) {
-        this(new CustomDataData(
+        this(new CustomPayload(
                 friendlyByteBuf.readUtf(),
-                getPlayer(friendlyByteBuf.readUUID()),
+                friendlyByteBuf.readUUID(),
                 friendlyByteBuf.readByteArray(friendlyByteBuf.readInt())));
         FriendlyByteBuf buf = Networking.createBuffer();
         buf.writeBytes(data().data());
-        Networking.implementation.trigger(data().id(), buf, data().serverPlayer());
     }
 
     public static CustomDataPayload decode(FriendlyByteBuf friendlyByteBuf) {
+        boolean isClient = friendlyByteBuf.readBoolean();
         String id = friendlyByteBuf.readUtf();
         Player player = getPlayer(friendlyByteBuf.readUUID());
         int bufferSize = friendlyByteBuf.readInt();
@@ -39,8 +42,15 @@ public record CustomDataPayload(CustomDataData data) implements CustomPacketPayl
         if (player instanceof ServerPlayer s) {
             serverPlayer = s;
         }
+
         //Networking.implementation.trigger(id, buf, serverPlayer);
-        return new CustomDataPayload(new CustomDataData(id, serverPlayer, buffer));
+        Miapi.LOGGER.info("recieved packet " + id + " on thread " + Thread.currentThread().getName() + " isClient " + isClient);
+        if (isClient) {
+            Networking.S2CPackets.get(id).accept(buf);
+        } else {
+            Networking.C2SPackets.get(id).accept(buf, serverPlayer);
+        }
+        return new CustomDataPayload(new CustomPayload(id, null, buffer));
     }
 
     public static @Nullable ServerPlayer getPlayer(@NotNull UUID uuid) {
@@ -51,12 +61,13 @@ public record CustomDataPayload(CustomDataData data) implements CustomPacketPayl
     }
 
     public void write(FriendlyByteBuf data) {
-
+        data.writeBoolean(Environment.isClient());
         data.writeUtf(data().id());
-        UUID playerUUID = data().serverPlayer() == null ? noPlayerUUID : data().serverPlayer().getUUID();
+        UUID playerUUID = data().serverPlayer();
         data.writeUUID(playerUUID);
         byte[] bytes = data().data();
         data.writeInt(bytes.length);
+        Miapi.LOGGER.info("sending packet " + data().id() + " on thread " + Thread.currentThread().getName());
         data.writeByteArray(bytes);
     }
 
@@ -65,7 +76,4 @@ public record CustomDataPayload(CustomDataData data) implements CustomPacketPayl
         return TYPE;
     }
 
-    public record CustomDataData(String id, @Nullable ServerPlayer serverPlayer, byte[] data) {
-
-    }
 }

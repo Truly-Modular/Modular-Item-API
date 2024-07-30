@@ -106,7 +106,7 @@ public class CraftAction {
     /**
      * Converts this CraftAction instance to a packet byte buffer.
      *
-     * @param buf the packet byte buffer to which to write the CraftAction
+     * @param buf the packet byte buffer to which to encode the CraftAction
      * @return the packet byte buffer
      */
     public FriendlyByteBuf toPacket(FriendlyByteBuf buf) {

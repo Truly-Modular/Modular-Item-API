@@ -56,7 +56,7 @@ public interface CraftingProperty {
     /**
      * Write a buffer from gui to be sent to server
      *
-     * @param data       A dataMap to write additional data to, its recommended to use the Properties key to avoid collisions
+     * @param data       A dataMap to encode additional data to, its recommended to use the Properties key to avoid collisions
      * @param createdGui the gui created on the client, return value of {@link #createGui}
      */
     default void writeData(Map<String, String> data, @Nullable InteractAbleWidget createdGui, EditOption.EditContext editContext) {

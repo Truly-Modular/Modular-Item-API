@@ -8,6 +8,9 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.tags.ItemTags;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import smartin.miapi.Environment;
 import smartin.miapi.Miapi;
 import smartin.miapi.network.Networking;
@@ -152,7 +155,7 @@ public class ReloadEvents {
         dataSyncerRegistry.getFlatMap().forEach((id, syncer) -> {
             FriendlyByteBuf buf = Networking.createBuffer();
             buf.writeUtf(id);
-            buf.writeBytes(syncer.createDataServer().copy());
+            buf.writeByteArray(syncer.createDataServer().array());
             Networking.sendS2C(RELOAD_PACKET_ID, entity, buf);
         });
     }
@@ -171,6 +174,9 @@ public class ReloadEvents {
             if (receivedSyncer.isEmpty()) {
                 clientReloadTimeStart = System.nanoTime();
             }
+            ItemStack diamondSwordStack = Items.DIAMOND_SWORD.getDefaultInstance();
+            diamondSwordStack.is(ItemTags.ANVIL);//correct
+            diamondSwordStack.getItem().builtInRegistryHolder().is(ItemTags.ANVIL);//bad
             String receivedID = buffer.readUtf();
             receivedSyncer.add(receivedID);
             dataSyncerRegistry.get(receivedID).interpretDataClient(buffer);
@@ -193,6 +199,7 @@ public class ReloadEvents {
      * An interface for listening to reload events. Implementations of this interface can subscribe to reload events
      * using the {@link ReloadEvent} class.
      */
+    @FunctionalInterface
     public interface EventListener {
 
         /**
@@ -320,7 +327,7 @@ public class ReloadEvents {
     }
 
     /**
-     * This interface can be used to sync custom data from server to client within Truly Modulars reload logic to ensure the sync happens at a predictable time
+     * This interface can be used to sync custom data from server to client within Truly Modular reload logic to ensure the sync happens at a predictable time
      */
     public interface DataSyncer {
         /**
@@ -333,12 +340,12 @@ public class ReloadEvents {
         /**
          * Be aware that this will trigger between the
          * {@link ReloadEvents#START} and {@link ReloadEvents#MAIN}
-         * This should be used to setup data and not process the data.
+         * This should be used to set up data and not process the data.
          * For processing the data {@link ReloadEvents#MAIN} should be used
          * <p>
          * !Be aware this is executed on the Networking thread!
          *
-         * @param buf the buffer recieved from the server
+         * @param buf the buffer received from the server
          */
         void interpretDataClient(FriendlyByteBuf buf);
     }

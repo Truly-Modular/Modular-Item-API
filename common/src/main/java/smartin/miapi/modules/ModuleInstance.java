@@ -277,7 +277,7 @@ public class ModuleInstance {
     /**
      * Writes the module to the item using the current module.
      *
-     * @param stack The ItemStack to write the module to.
+     * @param stack The ItemStack to encode the module to.
      */
     public void writeToItem(ItemStack stack) {
         this.clearCaches();
@@ -287,7 +287,7 @@ public class ModuleInstance {
     /**
      * Writes the module to the item using the current module.
      *
-     * @param stack      The ItemStack to write the module to.
+     * @param stack      The ItemStack to encode the module to.
      * @param clearCache Determines whether to clear the cache after writing the module.
      */
     public void writeToItem(ItemStack stack, boolean clearCache) {

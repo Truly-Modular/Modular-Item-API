@@ -26,7 +26,7 @@ public abstract class NetworkingImpl{
         listeners.remove(listener);
     }
 
-    protected void trigger(String path, FriendlyByteBuf data, @Nullable ServerPlayer entity) {
+    public void trigger(String path, FriendlyByteBuf data, @Nullable ServerPlayer entity) {
         for (EventListener listener : listeners) {
             listener.onEvent(path, data, entity);
         }

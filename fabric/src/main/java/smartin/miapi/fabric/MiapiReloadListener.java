@@ -93,7 +93,9 @@ public class MiapiReloadListener implements PreparableReloadListener {
 
     @Override
     public CompletableFuture<Void> reload(PreparableReloadListener.PreparationBarrier preparationBarrier, ResourceManager resourceManager, ProfilerFiller preparationsProfiler, ProfilerFiller reloadProfiler, Executor backgroundExecutor, Executor gameExecutor) {
-        return load(resourceManager, preparationsProfiler, backgroundExecutor).thenCompose(preparationBarrier::wait).thenAcceptAsync(a -> {
+        return load(resourceManager, preparationsProfiler, backgroundExecutor)
+                .thenCompose(preparationBarrier::wait)
+                .thenAcceptAsync(a -> {
             apply(a, resourceManager, reloadProfiler, gameExecutor);
         });
     }

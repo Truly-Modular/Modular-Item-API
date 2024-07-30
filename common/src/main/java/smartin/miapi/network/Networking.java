@@ -24,12 +24,12 @@ public class Networking {
      * A map containing packets sent from the server to the client, with the packet identifier as the key
      * and the consumer as the value.
      */
-    protected static Map<String, Consumer<FriendlyByteBuf>> S2CPackets = new HashMap<>();
+    public static Map<String, Consumer<FriendlyByteBuf>> S2CPackets = new HashMap<>();
     /**
      * A map containing packets sent from the client to the server, with the packet identifier as the key
      * and the consumer as the value.
      */
-    protected static Map<String, BiConsumer<FriendlyByteBuf, ServerPlayer>> C2SPackets = new HashMap<>();
+    public static Map<String, BiConsumer<FriendlyByteBuf, ServerPlayer>> C2SPackets = new HashMap<>();
     /**
      * The implementation used for packet handling.
      */

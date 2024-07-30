@@ -15,7 +15,7 @@ import smartin.miapi.modules.properties.util.ModuleProperty;
 import java.util.Optional;
 
 /**
- * This Property allows you to write the material Itemstack into the module it was used to craft it
+ * This Property allows you to encode the material Itemstack into the module it was used to craft it
  */
 public class MaterialInscribeDataProperty extends CodecProperty<String> {
     public static final String KEY = "inscribe_data_on_craft";
