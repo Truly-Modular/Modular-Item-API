@@ -126,8 +126,9 @@ public class AllowedMaterial implements CraftingProperty, ModuleProperty {
                 boolean isAllowed = (json.allowedMaterials.stream().anyMatch(allowedMaterial ->
                         material.getGroups().contains(allowedMaterial)));
                 if (isAllowed) {
-                    MaterialProperty.setMaterial(newModule, material.getKey());
+                    //MaterialProperty.setMaterial(newModule, material.getKey());
                 }
+                MaterialProperty.setMaterial(newModule, material.getKey());
                 newModule.getRoot().writeToItem(crafting);
                 MiapiEvents.MaterialCraftEventData eventData = new MiapiEvents.MaterialCraftEventData(crafting, materialStack, material, newModule, craftAction);
                 MiapiEvents.MATERIAL_CRAFT_EVENT.invoker().craft(eventData);
