@@ -5,9 +5,12 @@ import dev.architectury.platform.Platform;
 import dev.architectury.platform.forge.EventBuses;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.client.event.EntityRenderersEvent;
@@ -16,6 +19,7 @@ import net.minecraftforge.client.event.RenderGuiEvent;
 import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.ToolActions;
+import net.minecraftforge.common.extensions.IForgeItem;
 import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -49,6 +53,10 @@ public class TrulyModularForge {
     public TrulyModularForge() {
         // Submit our event bus to let architectury register our content on the right time
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
+        Items.DIAMOND_SWORD.asItem();
+        IForgeItem item;
+        ItemStack itemStack;
+        LivingEntity livingEntity;
         EventBuses.registerModEventBus(MOD_ID, bus);
         if (Environment.isClient()) {
             bus.register(new ClientModEvents());
