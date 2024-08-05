@@ -1,2 +1,2 @@
-## v1.1.26 (1.20.1)
-- fix crash when removing module
+## v1.1.27 (1.20.1)
+- fixed enchantments not modifying base attackdamage of weapons during heavy attack
