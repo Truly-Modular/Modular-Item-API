@@ -1,6 +1,7 @@
 package smartin.miapi.modules.abilities;
 
 import com.redpxnda.nucleus.network.clientbound.ParticleCreationPacket;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -95,7 +96,8 @@ public class HeavyAttackAbility implements ItemUseDefaultCooldownAbility, ItemUs
                 Entity target2 = entityHitResult.getEntity();
                 if (target2 instanceof LivingEntity target) {
                     ((LivingEntityAccessor) player).attacking(target);
-                    damage = ((float) player.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE) * damage);
+                    float basedamage = ((float) player.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE));
+                    damage = EnchantmentHelper.getAttackDamage(stack, target.getGroup()) * damage + basedamage;
                     AttackUtil.performAttack(player, target, (float) damage, true);
                     if (sweeping > 0) {
                         AttackUtil.performSweeping(player, target, (float) sweeping, (float) damage);
@@ -103,7 +105,7 @@ public class HeavyAttackAbility implements ItemUseDefaultCooldownAbility, ItemUs
                     player.swingHand(player.getActiveHand());
                     player.getItemCooldownManager().set(stack.getItem(), (int) cooldown);
                     if (player.getWorld() instanceof ServerWorld serverWorld) {
-                        if (heavyAttackJson!=null && heavyAttackJson.particleEffect != null) {
+                        if (heavyAttackJson != null && heavyAttackJson.particleEffect != null) {
                             ParticleCreationPacket particleCreationPacket = new ParticleCreationPacket(heavyAttackJson.particleEffect, player.getX(), player.getY(), player.getZ(), 0, 0, 0);
                             particleCreationPacket.send(serverWorld);
                         }
