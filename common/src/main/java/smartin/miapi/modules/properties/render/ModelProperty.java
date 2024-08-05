@@ -126,6 +126,7 @@ public class ModelProperty extends CodecProperty<List<ModelProperty.ModelData>> 
     @Nullable
     public static ModelHolder bakedModel(ModuleInstance instance, ModelData json, ItemStack itemStack) {
         Material material = MaterialProperty.getMaterial(instance);
+        json.repair();
         List<String> list = new ArrayList<>();
         if (material != null) {
             list.add(material.getKey());
@@ -358,7 +359,7 @@ public class ModelProperty extends CodecProperty<List<ModelProperty.ModelData>> 
         @CodecBehavior.Optional
         public String trim_mode = "none";
         @CodecBehavior.Optional
-        public Boolean entity_render = null;
+        public Boolean entity_render = false;
         @CodecBehavior.Optional
         public String id = null;
 

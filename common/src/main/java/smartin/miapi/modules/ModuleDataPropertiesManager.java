@@ -2,7 +2,6 @@ package smartin.miapi.modules;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import smartin.miapi.Miapi;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.registries.RegistryInventory;
 
@@ -11,17 +10,17 @@ import java.util.Map;
 
 public class ModuleDataPropertiesManager {
 
-    public static Map<ModuleProperty<?>, JsonElement> getProperties(ModuleInstance moduleInstance) {
-        Map<ModuleProperty<?>, JsonElement> map = new HashMap<>();
-        String properties = moduleInstance.moduleData.get("properties");
+    public static Map<ModuleProperty<?>, Object> getProperties(ModuleInstance moduleInstance) {
+        Map<ModuleProperty<?>, Object> map = new HashMap<>();
+        JsonElement properties = moduleInstance.moduleData.get("properties");
         if (properties != null) {
-            JsonObject moduleJson = Miapi.gson.fromJson(properties, JsonObject.class);
+            JsonObject moduleJson = properties.getAsJsonObject();
             if (moduleJson != null) {
                 moduleJson.entrySet().forEach(stringJsonElementEntry -> {
                     ModuleProperty<?> property = RegistryInventory.moduleProperties
                             .get(stringJsonElementEntry.getKey());
                     if (property != null) {
-                        map.put(property, stringJsonElementEntry.getValue());
+                        map.put(property, property.decode(stringJsonElementEntry.getValue()));
                     }
                 });
             }
@@ -29,13 +28,24 @@ public class ModuleDataPropertiesManager {
         return map;
     }
 
-    public static void setProperties(ModuleInstance moduleInstance, Map<ModuleProperty<?>, JsonElement> propertyMap) {
+    public static <T> void setProperty(ModuleInstance moduleInstance, ModuleProperty<T> property, T propertyData) {
+        Map<ModuleProperty<?>, Object> map = getProperties(moduleInstance);
+        map.put(property, propertyData);
+        setProperties(moduleInstance, map);
+    }
+
+    public static void setProperties(ModuleInstance moduleInstance, Map<ModuleProperty<?>, Object> propertyMap) {
         JsonObject object = new JsonObject();
         propertyMap.forEach(((moduleProperty, element) -> {
             String key = RegistryInventory.moduleProperties.findKey(moduleProperty);
             assert key != null;
-            object.add(key, element);
+            object.add(key, encode(moduleProperty, element));
         }));
-        moduleInstance.moduleData.put("properties", Miapi.gson.toJson(object));
+        moduleInstance.moduleData.put("properties", object);
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <T> JsonElement encode(ModuleProperty<T> property, Object data) {
+        return property.encode((T) data);
     }
 }

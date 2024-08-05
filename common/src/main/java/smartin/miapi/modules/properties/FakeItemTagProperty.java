@@ -30,6 +30,9 @@ public class FakeItemTagProperty extends CodecProperty<List<String>> {
     }
 
     public static boolean hasTag(ResourceLocation identifier, ItemStack itemStack) {
+        if(itemStack==null){
+            return false;
+        }
         return getTags(itemStack).contains(identifier.toString());
     }
 

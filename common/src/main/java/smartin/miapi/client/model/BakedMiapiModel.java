@@ -23,7 +23,7 @@ import smartin.miapi.item.modular.Transform;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.EmissivityProperty;
 import smartin.miapi.modules.properties.GlintProperty;
-import smartin.miapi.registries.RegistryInventory;
+import smartin.miapi.client.GlintShader;
 
 public class BakedMiapiModel implements MiapiModel {
     ModuleInstance instance;
@@ -85,7 +85,7 @@ public class BakedMiapiModel implements MiapiModel {
                 VertexConsumer vertexConsumer = modelHolder.colorProvider().getConsumer(vertexConsumers, quad.getSprite(), stack, instance, transformationMode);
                 vertexConsumer.putBulkData(matrices.last(), quad, colors[0], colors[1], colors[2], 1.0f, light, overlay);
                 if (stack.hasFoil()) {
-                    VertexConsumer altConsumer = vertexConsumers.getBuffer(RegistryInventory.Client.modularItemGlint);
+                    VertexConsumer altConsumer = vertexConsumers.getBuffer(GlintShader.modularItemGlint);
                     Color glintColor = settings.getColor();
                     altConsumer.putBulkData(matrices.last(), quad, glintColor.redAsFloat(), glintColor.greenAsFloat(), glintColor.blueAsFloat(), 1.0f, light, overlay);
                 }
@@ -112,7 +112,7 @@ public class BakedMiapiModel implements MiapiModel {
                 VertexConsumer vertexConsumer = modelHolder.colorProvider().getConsumer(vertexConsumers, quad.getSprite(), stack, instance, transformationMode);
                 vertexConsumer.putBulkData(matrices.last(), quad, colors[0], colors[1], colors[2],1.0f, light, overlay);
                 if (stack.hasFoil()) {
-                    VertexConsumer altConsumer = vertexConsumers.getBuffer(RegistryInventory.Client.modularItemGlint);
+                    VertexConsumer altConsumer = vertexConsumers.getBuffer(GlintShader.modularItemGlint);
                     Color glintColor = settings.getColor();
                     altConsumer.putBulkData(matrices.last(), quad, glintColor.redAsFloat(), glintColor.greenAsFloat(), glintColor.blueAsFloat(),1.0f, light, overlay);
                 }

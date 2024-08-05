@@ -44,7 +44,7 @@ public class ModuleInstance {
                                         .forGetter((moduleInstance) -> moduleInstance.module.name()),
                                 Codec.unboundedMap(Codec.STRING, selfCodec).xmap((i) -> i, Function.identity()).fieldOf("child")
                                         .forGetter((moduleInstance) -> moduleInstance.subModules),
-                                dataCodec.fieldOf("data")
+                                dataJsonCodec.fieldOf("data")
                                         .forGetter((moduleInstance) -> moduleInstance.moduleData)
                         ).apply(instance, (module, children, data) -> {
                             ItemModule itemModule = RegistryInventory.modules.get(module);
@@ -79,7 +79,7 @@ public class ModuleInstance {
     /**
      * A map of module data keys to their respective values.
      */
-    public Map<String, String> moduleData = new HashMap<>();
+    public Map<String, JsonElement> moduleData = new HashMap<>();
 
 
     /**

@@ -1,21 +1,22 @@
 package smartin.miapi.client.model;
 
-import org.jetbrains.annotations.Nullable;
-import org.joml.Matrix4f;
-import smartin.miapi.datapack.ReloadEvents;
-import smartin.miapi.item.modular.VisualModularItem;
-import smartin.miapi.modules.ItemModule;
-import smartin.miapi.modules.ModuleInstance;
-import smartin.miapi.modules.cache.ModularItemCache;
-import smartin.miapi.registries.RegistryInventory;
 import com.mojang.blaze3d.vertex.PoseStack;
-import java.util.ArrayList;
-import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.Nullable;
+import org.joml.Matrix4f;
+import smartin.miapi.client.GlintShader;
+import smartin.miapi.datapack.ReloadEvents;
+import smartin.miapi.item.modular.VisualModularItem;
+import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.ModuleInstance;
+import smartin.miapi.modules.cache.ModularItemCache;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MiapiItemModel implements MiapiModel {
     public static List<ModelSupplier> modelSuppliers = new ArrayList<>();
@@ -76,7 +77,7 @@ public class MiapiItemModel implements MiapiModel {
             //needed because otherwise overwrites dont work
             entity = Minecraft.getInstance().player;
         }
-        RegistryInventory.Client.glintShader.safeGetUniform("ModelMat").set(new Matrix4f(matrices.last().pose()));
+        GlintShader.setupItem(matrices.last().pose());
         rootModel.render(modelType, stack, matrices, mode, tickDelta, vertexConsumers, entity, light, overlay);
         matrices.popPose();
         Minecraft.getInstance().level.getProfiler().pop();

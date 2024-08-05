@@ -13,7 +13,7 @@ import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.MergeType;
-import smartin.miapi.registries.RegistryInventory;
+import smartin.miapi.client.GlintShader;
 
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -137,11 +137,11 @@ public class GlintProperty extends CodecProperty<GlintProperty.RainbowGlintSetti
         float getSpeed();
 
         default void applySpeed() {
-            RegistryInventory.Client.glintShader.safeGetUniform("GlintSpeed").set(getSpeed());
+            GlintShader.glintShader.safeGetUniform("GlintSpeed").set(getSpeed());
         }
 
         default void applyAlpha() {
-            RegistryInventory.Client.glintShader.safeGetUniform("GlintStrength").set(getA());
+            GlintShader.glintShader.safeGetUniform("GlintStrength").set(getA());
         }
 
         boolean shouldRender();

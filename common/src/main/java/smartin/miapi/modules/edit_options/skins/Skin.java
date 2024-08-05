@@ -2,6 +2,7 @@ package smartin.miapi.modules.edit_options.skins;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import com.mojang.serialization.JsonOps;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
@@ -10,6 +11,7 @@ import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Environment;
 import smartin.miapi.Miapi;
 import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.conditions.ConditionManager;
 import smartin.miapi.modules.conditions.ModuleCondition;
 import smartin.miapi.modules.properties.TagProperty;
@@ -18,6 +20,8 @@ import smartin.miapi.registries.RegistryInventory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 public class Skin {
     public String path;
@@ -47,6 +51,23 @@ public class Skin {
             skins.add(skin);
         });
         return skins;
+    }
+
+    public static Optional<Skin> getSkin(ModuleInstance moduleInstance) {
+        JsonElement element = moduleInstance.moduleData.get("skin");
+        if (element != null) {
+            String key = element.getAsString();
+            Map<String, Skin> moduleSkins = SkinOptions.skins.get(moduleInstance.module);
+            if (moduleSkins != null) {
+                Skin skin = moduleSkins.get(key);
+                return Optional.ofNullable(skin);
+            }
+        }
+        return Optional.empty();
+    }
+
+    public static void writeSkin(ModuleInstance moduleInstance, String skinKey) {
+        moduleInstance.moduleData.put("skin",new JsonPrimitive(skinKey));
     }
 
     public static List<ItemModule> getModules(JsonElement element) {

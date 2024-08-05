@@ -42,7 +42,7 @@ public class ModularItemCache {
 
     public static <T> T get(ItemStack stack, String key, Supplier<T> fallback) {
         ModuleInstance moduleInstance = ItemModule.getModules(stack);
-        if (moduleInstance == null) {
+        if (moduleInstance != null) {
             return moduleInstance.getFromCache(key, stack, supplierMap, fallback);
         }
         return fallback.get();

@@ -2,7 +2,6 @@ package smartin.miapi;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
@@ -33,6 +32,7 @@ import smartin.miapi.item.modular.Transform;
 import smartin.miapi.item.modular.VisualModularItem;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.MiapiPermissions;
+import smartin.miapi.modules.ModuleDataPropertiesManager;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
 import smartin.miapi.modules.cache.CacheCommands;
@@ -125,26 +125,9 @@ public class Miapi {
             return new ConcurrentHashMap<>(map);
         });
         PropertyResolver.register("miapi/module_data", (moduleInstance, oldMap) -> {
-            Map<ModuleProperty<?>, Object> map = new ConcurrentHashMap<>();
-            String properties = moduleInstance.moduleData.get("properties");
-            if (properties != null) {
-                JsonObject moduleJson = gson.fromJson(properties, JsonObject.class);
-                if (moduleJson != null) {
-                    moduleJson.entrySet().forEach(stringJsonElementEntry -> {
-                        ModuleProperty property = RegistryInventory.moduleProperties
-                                .get(stringJsonElementEntry.getKey());
-                        if (property != null) {
-                            Object value = property.decode(stringJsonElementEntry.getValue());
-                            if (value != null) {
-                                map.put(property, property.decode(stringJsonElementEntry.getValue()));
-                            } else {
-                                Miapi.LOGGER.warn("Property decode returned NULL for key " + stringJsonElementEntry.getKey() +" ");
-                                Miapi.LOGGER.warn("data:" + stringJsonElementEntry.getValue());
-                            }
-                        }
-                    });
-                }
-            }
+            Map<ModuleProperty<?>, Object> map = new ConcurrentHashMap<>(oldMap);
+            Map<ModuleProperty<?>, Object> toMerge = new ConcurrentHashMap<>(ModuleDataPropertiesManager.getProperties(moduleInstance));
+            map.putAll(toMerge);
             return map;
         });
         ModularItemCache.setSupplier(ItemModule.MODULE_KEY, itemStack -> {

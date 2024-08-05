@@ -18,6 +18,7 @@ import smartin.miapi.modules.edit_options.skins.gui.SkinGui;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -31,10 +32,9 @@ public class SkinOptions implements EditOption {
         defaultTab = SkinTab.fromJson(null);
         PropertyResolver.register(Miapi.id( "skin"), (moduleInstance, oldMap) -> {
             if (moduleInstance != null) {
-                String skinKey = moduleInstance.moduleData.get("skin");
-                Map<String, Skin> moduleSkins = skins.get(moduleInstance.module);
-                if (skinKey != null && moduleSkins != null && moduleSkins.containsKey(skinKey)) {
-                    moduleSkins.get(skinKey).propertyHolder.applyHolder(oldMap);
+                Optional<Skin> foundSkin = Skin.getSkin(moduleInstance);
+                if(foundSkin.isPresent()){
+                    oldMap = foundSkin.get().propertyHolder.applyHolder(oldMap);
                 }
             }
             return oldMap;
@@ -75,7 +75,7 @@ public class SkinOptions implements EditOption {
     @Override
     public ItemStack preview(FriendlyByteBuf buffer, EditContext context) {
         String skin = buffer.readUtf();
-        context.getInstance().moduleData.put("skin", skin);
+        Skin.writeSkin(context.getInstance(),skin);
         context.getInstance().getRoot().writeToItem(context.getItemstack());
         context.getInstance().clearCaches();
         return context.getItemstack();

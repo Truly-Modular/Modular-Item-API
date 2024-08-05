@@ -1,5 +1,6 @@
 package smartin.miapi.modules.edit_options.skins.gui;
 
+import com.google.gson.JsonObject;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
@@ -55,7 +56,7 @@ public class SkinGui extends InteractAbleWidget {
 
     public String currentSkin() {
         if (instance != null) {
-            return instance.moduleData.getOrDefault("skin", "");
+            return instance.moduleData.getOrDefault("skin", new JsonObject()).getAsString();
         } else {
             Miapi.LOGGER.warn("instance null??????");
             return "";

@@ -32,38 +32,39 @@ public class GeneratedMaterialManager {
         ReloadEvents.MAIN.subscribe(isClient -> {
             if (!isClient) {
                 onReloadServer();
-            }else{
-                basicGeneratedMaterials.forEach(generatedMaterial -> materials.put(generatedMaterial.getKey(),generatedMaterial));
+            } else {
+                basicGeneratedMaterials.forEach(generatedMaterial -> materials.put(generatedMaterial.getKey(), generatedMaterial));
             }
         }, -1);
-        ReloadEvents.dataSyncerRegistry.register("generated_materials", new ReloadEvents.SimpleSyncer<>(ByteBufCodecs.fromCodec(Codec.list(GeneratedMaterial.CODEC))) {
+        ReloadEvents.dataSyncerRegistry.register("generated_materials",
+                new ReloadEvents.SimpleSyncer<>(ByteBufCodecs.fromCodec(Codec.list(GeneratedMaterial.CODEC))) {
 
-            @Override
-            public List<GeneratedMaterial> getDataServer() {
-                return generatedMaterials;
-            }
+                    @Override
+                    public List<GeneratedMaterial> getDataServer() {
+                        return generatedMaterials;
+                    }
 
-            @Override
-            public void interpretData(List<GeneratedMaterial> data) {
-                generatedMaterials.clear();
-                generatedMaterials.addAll(data);
-                generatedMaterials.forEach(generatedMaterial -> materials.put(generatedMaterial.getKey(), generatedMaterial));
-                SmithingRecipeUtil.setupSmithingRecipe(generatedMaterials);
-            }
-        });
+                    @Override
+                    public void interpretData(List<GeneratedMaterial> data) {
+                        generatedMaterials.clear();
+                        generatedMaterials.addAll(data);
+                        generatedMaterials.forEach(generatedMaterial -> materials.put(generatedMaterial.getKey(), generatedMaterial));
+                        SmithingRecipeUtil.setupSmithingRecipe(generatedMaterials);
+                    }
+                });
         ReloadEvents.dataSyncerRegistry.register("generated_simple_materials",
                 new ReloadEvents.SimpleSyncer<>(ByteBufCodecs.fromCodec(Codec.list(GeneratedMaterialFromCopy.CODEC))) {
-            @Override
-            public List<GeneratedMaterialFromCopy> getDataServer() {
-                return basicGeneratedMaterials;
-            }
+                    @Override
+                    public List<GeneratedMaterialFromCopy> getDataServer() {
+                        return basicGeneratedMaterials;
+                    }
 
-            @Override
-            public void interpretData(List<GeneratedMaterialFromCopy> data) {
-                basicGeneratedMaterials.clear();
-                basicGeneratedMaterials.addAll(data);
-            }
-        });
+                    @Override
+                    public void interpretData(List<GeneratedMaterialFromCopy> data) {
+                        basicGeneratedMaterials.clear();
+                        basicGeneratedMaterials.addAll(data);
+                    }
+                });
     }
 
     public static void onReloadServer() {

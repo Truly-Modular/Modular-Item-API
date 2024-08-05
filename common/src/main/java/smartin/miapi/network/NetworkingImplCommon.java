@@ -36,12 +36,11 @@ public class NetworkingImplCommon extends NetworkingImpl {
         //buf.writeUtf(identifier);
         //buf.writeBytes(buffer.copy());
         NetworkManager.sendToServer(new CustomDataPayload(new CustomPayload(identifier, null,
-                buffer.readByteArray())));
+                buffer.array())));
     }
 
-
     public void sendPacketToClient(String identifier, ServerPlayer player, FriendlyByteBuf buffer) {
-        NetworkManager.sendToPlayer(player, new CustomDataPayload(new CustomPayload(identifier, player.getUUID(), buffer.readByteArray())));
+        NetworkManager.sendToPlayer(player, new CustomDataPayload(new CustomPayload(identifier, player.getUUID(), buffer.array())));
     }
 
     @Override

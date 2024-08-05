@@ -1,16 +1,15 @@
 package smartin.miapi.datapack;
 
+import com.mojang.serialization.Codec;
 import dev.architectury.event.events.common.PlayerEvent;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.tags.ItemTags;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import smartin.miapi.Environment;
 import smartin.miapi.Miapi;
 import smartin.miapi.network.Networking;
@@ -94,34 +93,26 @@ public class ReloadEvents {
             }
         }));
 
-        dataSyncerRegistry.register("data_packs", new DataSyncer() {
-            @Override
-            public FriendlyByteBuf createDataServer() {
-                FriendlyByteBuf buf = Networking.createBuffer();
-                buf.writeInt(DATA_PACKS.size());
-                for (ResourceLocation key : DATA_PACKS.keySet()) {
-                    buf.writeUtf(key.toString());
-                    buf.writeUtf(DATA_PACKS.get(key));
-                }
-                return buf;
-            }
+        Codec<Map<ResourceLocation, String>> codec = Codec.unboundedMap(ResourceLocation.CODEC, Codec.STRING);
+        StreamCodec<ByteBuf,Map<ResourceLocation, String>> streamCodec = ByteBufCodecs.fromCodec(codec);
 
+        dataSyncerRegistry.register("data_packs", new SimpleSyncer<Map<ResourceLocation, String>>(streamCodec) {
             @Override
-            public void interpretDataClient(FriendlyByteBuf buffer) {
-                int dataPackSize = buffer.readInt();
-                Map<ResourceLocation, String> tempDataPack = new HashMap<>(dataPackSize);
-                for (int i = 0; i < dataPackSize; i++) {
-                    ResourceLocation key = ResourceLocation.parse(buffer.readUtf());
-                    String value = buffer.readUtf();
-                    tempDataPack.put(key, value);
+            public Map<ResourceLocation, String> getDataServer() {
+                Map<ResourceLocation, String> toSend;
+                synchronized (DATA_PACKS) {
+                    toSend = new LinkedHashMap<>(DATA_PACKS);
                 }
+                return toSend;
+            }
+            @Override
+            public void interpretData(Map<ResourceLocation, String> data) {
                 Minecraft.getInstance().execute(() -> {
                     synchronized (DATA_PACKS) {
                         DATA_PACKS.clear();
-                        DATA_PACKS.putAll(tempDataPack);
+                        DATA_PACKS.putAll(data);
                     }
-                    DataPackLoader.trigger(tempDataPack);
-                    tempDataPack.clear();
+                    DataPackLoader.trigger(data);
                 });
             }
         });
@@ -174,9 +165,6 @@ public class ReloadEvents {
             if (receivedSyncer.isEmpty()) {
                 clientReloadTimeStart = System.nanoTime();
             }
-            ItemStack diamondSwordStack = Items.DIAMOND_SWORD.getDefaultInstance();
-            diamondSwordStack.is(ItemTags.ANVIL);//correct
-            diamondSwordStack.getItem().builtInRegistryHolder().is(ItemTags.ANVIL);//bad
             String receivedID = buffer.readUtf();
             receivedSyncer.add(receivedID);
             dataSyncerRegistry.get(receivedID).interpretDataClient(buffer);
@@ -329,7 +317,7 @@ public class ReloadEvents {
     /**
      * This interface can be used to sync custom data from server to client within Truly Modular reload logic to ensure the sync happens at a predictable time
      */
-    public interface DataSyncer {
+    public interface DataSyncer<T> {
         /**
          * This will be called when truly modular syncs its data to the client
          *

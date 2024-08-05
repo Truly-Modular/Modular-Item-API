@@ -34,7 +34,7 @@ public class PropertyInjectionDev implements EditOption {
     public ItemStack preview(FriendlyByteBuf buffer, EditContext context) {
         String raw = buffer.readUtf();
         assert context.getInstance() != null;
-        context.getInstance().moduleData.put("properties", raw);
+        context.getInstance().moduleData.put("properties", new JsonObject());
         ItemStack stack1 = context.getItemstack().copy();
         context.getInstance().getRoot().writeToItem(stack1);
         ModularItemCache.discardCache();
@@ -63,11 +63,11 @@ public class PropertyInjectionDev implements EditOption {
 
         public EditDevView(int x, int y, int width, int height, ItemStack stack, ModuleInstance moduleInstance, Consumer<FriendlyByteBuf> craft) {
             super(x, y, width, height, Component.empty());
-            String context = moduleInstance.moduleData.get("properties");
-            if(context==null){
-                context = "no data";
+            JsonElement context = moduleInstance.moduleData.get("properties");
+            if (context == null) {
+                context = new JsonObject();
             }
-            MutableComponent text = Component.literal(context).copy();
+            MutableComponent text = Component.literal(context.toString()).copy();
             EditBox textFieldWidget = new ClickAbleTextWidget(Minecraft.getInstance().font, x + 5, y + 10, this.width - 10, 20, text);
             textFieldWidget.setMaxLength(Integer.MAX_VALUE);
             textFieldWidget.setEditable(true);

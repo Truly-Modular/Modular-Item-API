@@ -1,8 +1,6 @@
 package smartin.miapi.client;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.redpxnda.nucleus.impl.ShaderRegistry;
 import dev.architectury.event.events.client.ClientLifecycleEvent;
 import dev.architectury.event.events.client.ClientPlayerEvent;
 import dev.architectury.event.events.client.ClientReloadShadersEvent;
@@ -50,8 +48,6 @@ import smartin.miapi.registries.RegistryInventory;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-
-import static smartin.miapi.registries.RegistryInventory.Client.glintShader;
 
 public class MiapiClient {
     public static MaterialAtlasManager materialAtlasManager;
@@ -111,7 +107,7 @@ public class MiapiClient {
             }
         });
 
-        registerShaders();
+        GlintShader.registerShaders();
         MaterialRenderControllers.setup();
         MaterialIcons.setup();
         ColorProvider.setup();
@@ -189,11 +185,7 @@ public class MiapiClient {
     }
 
     protected static void clientSetup(Minecraft client) {
-        runOnClientEnsured(() -> {
-            Minecraft mc = Minecraft.getInstance();
-            mc.getTextureManager();
-            SpriteLoader.setup();
-        });
+        SpriteLoader.setup();
     }
 
     public static void runOnClientEnsured(Runnable runnable) {
@@ -206,15 +198,10 @@ public class MiapiClient {
     }
 
     protected static void clientStart(Minecraft client) {
-        runOnClientEnsured(() -> {
-            Minecraft mc = Minecraft.getInstance();
-            //Load StatDisplayClass
-            mc.getTextureManager();
-            materialAtlasManager = new MaterialAtlasManager(mc.getTextureManager());
-            ((ReloadableResourceManager) mc.getResourceManager()).registerReloadListener(materialAtlasManager);
-            //((ReloadableResourceManagerImpl) mc.getResourceManager()).registerReloader(new AltModelAtlasManager(mc.getTextureManager()));
-            CryoStatusEffect.setupOnClient();
-        });
+        materialAtlasManager = new MaterialAtlasManager(client.getTextureManager());
+        ((ReloadableResourceManager) client.getResourceManager()).registerReloadListener(materialAtlasManager);
+        //((ReloadableResourceManagerImpl) mc.getResourceManager()).registerReloader(new AltModelAtlasManager(mc.getTextureManager()));
+        CryoStatusEffect.setupOnClient();
     }
 
     protected static void clientLevelLoad(ClientLevel clientWorld) {
@@ -234,18 +221,4 @@ public class MiapiClient {
         BlockEntityRendererRegistry.register(RegistryInventory.modularWorkBenchEntityType, ModularWorkBenchRenderer::new);
     }
 
-    public static void registerShaders() {
-        /*ShaderRegistry.register(
-                new Identifier(Miapi.MOD_ID, "rendertype_translucent_material"),
-                VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL, s -> RegistryInventory.Client.translucentMaterialShader = s);*/
-
-        runOnClientEnsured(() -> {
-            ShaderRegistry.register(
-                    Miapi.id( "rendertype_entity_translucent_material"),
-                    DefaultVertexFormat.NEW_ENTITY, s -> RegistryInventory.Client.entityTranslucentMaterialShader = s);
-            ShaderRegistry.register(
-                    Miapi.id("rendertype_item_glint"),
-                    DefaultVertexFormat.NEW_ENTITY, s -> glintShader = s);
-        });
-    }
 }

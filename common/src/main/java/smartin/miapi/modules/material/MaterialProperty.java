@@ -12,6 +12,7 @@ import smartin.miapi.Miapi;
 import smartin.miapi.client.MiapiClient;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.item.modular.StatResolver;
+import smartin.miapi.modules.ModuleDataPropertiesManager;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.MergeType;
@@ -199,11 +200,6 @@ public class MaterialProperty extends CodecProperty<String> {
      * @param material
      */
     public static void setMaterial(ModuleInstance instance, String material) {
-        String propertyString = instance.moduleData.computeIfAbsent("properties", (key) -> {
-            return "{material:empty}";
-        });
-        JsonObject moduleJson = Miapi.gson.fromJson(propertyString, JsonObject.class);
-        moduleJson.addProperty(KEY, material);
-        instance.moduleData.put("properties", Miapi.gson.toJson(moduleJson));
+        ModuleDataPropertiesManager.setProperty(instance, MaterialProperty.property, material);
     }
 }

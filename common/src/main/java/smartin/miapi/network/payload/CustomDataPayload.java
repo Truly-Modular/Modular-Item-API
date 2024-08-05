@@ -64,6 +64,10 @@ public record CustomDataPayload(CustomPayload data) implements CustomPacketPaylo
         data.writeBoolean(Environment.isClient());
         data.writeUtf(data().id());
         UUID playerUUID = data().serverPlayer();
+        if(playerUUID==null){
+            Miapi.LOGGER.warn("player is null? this is not normal");
+            playerUUID = noPlayerUUID;
+        }
         data.writeUUID(playerUUID);
         byte[] bytes = data().data();
         data.writeInt(bytes.length);

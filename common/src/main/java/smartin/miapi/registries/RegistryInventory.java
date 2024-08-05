@@ -1,9 +1,6 @@
 package smartin.miapi.registries;
 
 import com.google.common.base.Suppliers;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.VertexFormat;
 import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.platform.Platform;
 import dev.architectury.registry.CreativeTabRegistry;
@@ -11,19 +8,14 @@ import dev.architectury.registry.registries.Registrar;
 import dev.architectury.registry.registries.RegistrarManager;
 import dev.architectury.registry.registries.RegistrySupplier;
 import dev.architectury.utils.Env;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.Util;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.RenderStateShard;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.ShaderInstance;
-import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentType;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.EntityType;
@@ -32,6 +24,7 @@ import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.*;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
@@ -41,13 +34,11 @@ import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
-import org.joml.Matrix4f;
 import smartin.miapi.Miapi;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.blocks.ModularWorkBench;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.client.MiapiClient;
-import smartin.miapi.client.atlas.MaterialAtlasManager;
 import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
 import smartin.miapi.craft.stat.CraftingStat;
 import smartin.miapi.effects.CryoStatusEffect;
@@ -94,10 +85,11 @@ import smartin.miapi.modules.properties.render.*;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.modules.synergies.SynergyManager;
 
+import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import static net.minecraft.client.renderer.RenderStateShard.*;
 import static smartin.miapi.Miapi.MOD_ID;
 import static smartin.miapi.modules.abilities.util.ItemAbilityManager.useAbilityRegistry;
 
@@ -111,6 +103,7 @@ public class RegistryInventory {
     public static final Registrar<BlockEntityType<?>> blockEntities = registrar.get().get(Registries.BLOCK_ENTITY_TYPE);
     //TODO:make entity attached attributes work again
     public static final Registrar<Attribute> attributes = registrar.get().get(Registries.ATTRIBUTE);
+    public static final Registrar<ArmorMaterial> armorMaterials = registrar.get().get(Registries.ARMOR_MATERIAL);
     public static final Registrar<EntityType<?>> entityTypes = registrar.get().get(Registries.ENTITY_TYPE);
     public static final Registrar<MenuType<?>> screenHandlers = registrar.get().get(Registries.MENU);
     public static final Registrar<MobEffect> statusEffects = registrar.get().get(Registries.MOB_EFFECT);
@@ -199,6 +192,7 @@ public class RegistryInventory {
     public static RecipeSerializer serializer;
     public static RegistrySupplier<EntityType<ItemProjectileEntity>> itemProjectileType = (RegistrySupplier) registerAndSupply(entityTypes, "thrown_item", () ->
             EntityType.Builder.of(ItemProjectileEntity::new, MobCategory.MISC).sized(0.5F, 0.5F).clientTrackingRange(4).updateInterval(20).build("miapi:thrown_item"));
+
     static {
         itemProjectileType.listen(e -> {
             if (Platform.getEnvironment() == Env.CLIENT)
@@ -225,6 +219,25 @@ public class RegistryInventory {
                 Miapi.id("magazine_property"), () -> RapidfireCrossbowProperty.ADDITIONAL_PROJECTILES_COMPONENT);
         RegistryInventory.components.register(
                 Miapi.id("item_module_property"), () -> ItemModelProperty.ITEM_MODEL_COMPONENT);
+
+        register(armorMaterials, "modular_armor_material", () ->
+                new ArmorMaterial(
+                        Util.make(new EnumMap(ArmorItem.Type.class), (enumMap) -> {
+                            enumMap.put(ArmorItem.Type.BOOTS, 1);
+                            enumMap.put(ArmorItem.Type.LEGGINGS, 4);
+                            enumMap.put(ArmorItem.Type.CHESTPLATE, 5);
+                            enumMap.put(ArmorItem.Type.HELMET, 2);
+                            enumMap.put(ArmorItem.Type.BODY, 4);
+                        }),
+                        5,
+                        SoundEvents.ARMOR_EQUIP_IRON,
+                        () -> Ingredient.EMPTY,
+                        new ArrayList<>(),
+                        5.0f, 5.0f
+                ), (s) -> {
+            armorMaterial = BuiltInRegistries.ARMOR_MATERIAL.wrapAsHolder(s);
+        });
+
 
         //ENTITY
         // commented out because RegistrySupplier is needed... see itemProjectileType field definition above
@@ -496,62 +509,6 @@ public class RegistryInventory {
                 Miapi.LOGGER.info("registered resolver: " + pair.getA());
             });
         });
-    }
-
-    @Environment(EnvType.CLIENT)
-    public static class Client {
-        public static final ResourceLocation customGlintTexture = ResourceLocation.fromNamespaceAndPath(MOD_ID, "textures/custom_glint.png");
-
-        //public static ShaderProgram translucentMaterialShader;
-        public static ShaderInstance entityTranslucentMaterialShader;
-        public static ShaderInstance glintShader;
-
-        public static final RenderType modularItemGlint = RenderType.create(
-                "miapi_glint_direct|immediatelyfast:renderlast",
-                DefaultVertexFormat.NEW_ENTITY,
-                VertexFormat.Mode.QUADS,
-                256, true, true,
-                RenderType.CompositeState.builder()
-                        .setShaderState(new RenderStateShard.ShaderStateShard(() -> {
-                            if (!RenderSystem.isOnRenderThreadOrInit()) {
-                                throw new RuntimeException("attempted miapi glint setup on-non-render thread. Please report this to Truly Modular");
-                            }
-                            glintShader.apply();
-                            //glintShader.addSampler("CustomGlintTexture",BLOCK_ATLAS_TEXTURE);
-                            int id = 10;
-                            RenderSystem.setShaderTexture(id, Client.customGlintTexture);
-                            RenderSystem.bindTexture(id);
-                            int j = RenderSystem.getShaderTexture(id);
-                            glintShader.setSampler("CustomGlintTexture", j);
-                            var a = new RenderStateShard.TextureStateShard(customGlintTexture, true, false);
-                            //glintShader.getUniformOrDefault("glintSize").set();
-                            //NativeImage.
-                            return glintShader;
-                        }))
-                        .setTextureState(MultiTextureStateShard.builder().add(TextureAtlas.LOCATION_BLOCKS, false, false)
-                                .add(MaterialAtlasManager.MATERIAL_ID, false, false).build())
-                        .setDepthTestState(EQUAL_DEPTH_TEST)
-                        .setTransparencyState(GLINT_TRANSPARENCY)
-                        .setLightmapState(LIGHTMAP)
-                        //.cull(DISABLE_CULLING)
-                        .setWriteMaskState(COLOR_WRITE)
-                        .setTexturingState(RenderType.ENTITY_GLINT_TEXTURING)
-                        .setOverlayState(OVERLAY).createCompositeState(false));
-
-        public static final RenderType TRANSLUCENT_NO_CULL = RenderType.create(
-                "miapi_translucent_no_cull", DefaultVertexFormat.BLOCK, VertexFormat.Mode.QUADS,
-                0x200000, true, true, RenderType.CompositeState.builder()
-                        .setLightmapState(LIGHTMAP).setShaderState(RENDERTYPE_TRANSLUCENT_SHADER).setTextureState(BLOCK_SHEET_MIPPED).setTransparencyState(TRANSLUCENT_TRANSPARENCY)
-                        .setOutputState(TRANSLUCENT_TARGET).setCullState(NO_CULL).createCompositeState(true));
-
-        private static void setupGlintTexturing(float scale) {
-            long l = (long) ((double) Util.getMillis() * Minecraft.getInstance().options.glintSpeed().get() * 8.0);
-            float f = (float) (l % 110000L) / 110000.0f;
-            float g = (float) (l % 30000L) / 30000.0f;
-            Matrix4f matrix4f = new Matrix4f().translation(-f, g, 0.0f);
-            matrix4f.rotateZ(0.17453292f).scale(scale);
-            RenderSystem.setTextureMatrix(matrix4f);
-        }
     }
 
 

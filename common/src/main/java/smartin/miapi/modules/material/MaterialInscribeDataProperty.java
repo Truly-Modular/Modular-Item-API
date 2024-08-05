@@ -42,13 +42,12 @@ public class MaterialInscribeDataProperty extends CodecProperty<String> {
 
     public static void inscribeModuleInstance(ModuleInstance moduleInstance, ItemStack itemStack, String key) {
         JsonElement element = ItemStack.CODEC.encodeStart(JsonOps.INSTANCE, itemStack).getOrThrow();
-        moduleInstance.moduleData.put(key, element.getAsString());
+        moduleInstance.moduleData.put(key, element);
     }
 
     public static ItemStack readStackFromModuleInstance(ModuleInstance moduleInstance, String key) {
-        String itemStackString = moduleInstance.moduleData.get(key);
-        JsonElement element = Miapi.gson.toJsonTree(itemStackString);
-        if (itemStackString != null) {
+        JsonElement element = moduleInstance.moduleData.get(key);
+        if (element!= null) {
             try {
                 return ItemStack.CODEC.decode(JsonOps.INSTANCE, element).getOrThrow().getFirst();
 
