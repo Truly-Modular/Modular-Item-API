@@ -6,7 +6,6 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import smartin.miapi.modules.ItemModule;
-import smartin.miapi.modules.properties.mining.MiningLevelProperty;
 import smartin.miapi.modules.properties.mining.MiningShapeProperty;
 
 import java.util.ArrayList;
@@ -34,7 +33,7 @@ public class InstantMiningMode implements MiningMode {
         reducedList.sort(Comparator.comparingDouble((pos) -> pos.getSquaredDistance(origin)));
         posList.forEach(blockPos -> {
             if (itemStack.getMaxDamage() - itemStack.getDamage() > 1 &&
-                    world.breakBlock(blockPos, MiningLevelProperty.canMine(world.getBlockState(blockPos), world, blockPos, player) && !player.isCreative(), player)
+                tryBreakBlock(player, blockPos)
             ) {
                 if (!player.isCreative()) {
                     removeDurability(durabilityBreakChance, itemStack, world, player);
