@@ -1,3 +1,3 @@
 ## v1.1.27 (1.20.1)
-- fixed enchantments not modifying base attackdamage of weapons during heavy attack
-- fixed Shapedmining not respecting enchantments
+- fixed enchantments not modifying base attack damage during heavy attack
+- fixed shaped-mining not respecting enchantments
