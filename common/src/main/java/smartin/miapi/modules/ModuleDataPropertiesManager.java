@@ -41,6 +41,7 @@ public class ModuleDataPropertiesManager {
             assert key != null;
             JsonElement encoded = encode(moduleProperty, element);
             if(encoded.isJsonPrimitive()){
+                object.add(key, encoded);
             }else{
                 object.add(key, encoded);
             }

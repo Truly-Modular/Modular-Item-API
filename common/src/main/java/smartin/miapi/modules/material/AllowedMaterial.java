@@ -131,10 +131,10 @@ public class AllowedMaterial extends CodecProperty<AllowedMaterial.AllowedMateri
                 if (isAllowed) {
                     MaterialProperty.setMaterial(newModule, material.getKey());
                 }
-                newModule.getRoot().writeToItem(crafting);
                 MiapiEvents.MaterialCraftEventData eventData = new MiapiEvents.MaterialCraftEventData(crafting, materialStack, material, newModule, craftAction);
                 MiapiEvents.MATERIAL_CRAFT_EVENT.invoker().craft(eventData);
                 crafting = eventData.crafted;
+                newModule.getRoot().writeToItem(crafting);
             }
         }
         if (crafting.isDamageableItem() && crafting.getDamageValue() > 0) {
