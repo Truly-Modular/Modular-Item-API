@@ -23,7 +23,7 @@ import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.edit_options.EditOption;
-import smartin.miapi.modules.properties.SlotProperty;
+import smartin.miapi.modules.properties.slot.SlotProperty;
 import smartin.miapi.network.Networking;
 import smartin.miapi.registries.RegistryInventory;
 

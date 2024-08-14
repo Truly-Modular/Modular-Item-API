@@ -12,7 +12,7 @@ import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.item.ModularItemStackConverter;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
-import smartin.miapi.modules.properties.SlotProperty;
+import smartin.miapi.modules.properties.slot.SlotProperty;
 import smartin.miapi.modules.properties.util.ComponentApplyProperty;
 import smartin.miapi.modules.properties.util.CraftingProperty;
 import smartin.miapi.registries.RegistryInventory;
@@ -61,15 +61,7 @@ public class CraftAction {
             Map<String, String> data) {
         this.old = ModularItemStackConverter.getModularVersion(old);
         this.toAdd = toAdd;
-        ModuleInstance instance = slot.parent;
-        if (instance != null) {
-            slotLocation.add(slot.id);
-            while (instance.parent != null) {
-                String slotNumber = SlotProperty.getSlotID(instance);
-                slotLocation.add(slotNumber);
-                instance = instance.parent;
-            }
-        }
+        slotLocation.addAll(slot.getAsLocation());
         this.player = player;
         this.blockEntity = bench;
         this.data = data;
@@ -81,7 +73,7 @@ public class CraftAction {
      * @param buf   the packet byte buffer from which to construct the CraftAction
      * @param bench the workbench block entity to store in this CraftAction
      */
-    public CraftAction(FriendlyByteBuf buf, @Nullable ModularWorkBenchEntity bench) {
+    public CraftAction(FriendlyByteBuf buf, ModularWorkBenchEntity bench) {
         int size = buf.readInt();
         for (int i = 0; i < size; i++) {
             slotLocation.add(buf.readUtf());
@@ -115,7 +107,7 @@ public class CraftAction {
             buf.writeUtf(slot);
         }
         if (toAdd != null) {
-            buf.writeUtf(toAdd.name());
+            buf.writeUtf(toAdd.name().toString());
         } else {
             buf.writeUtf("null");
         }
@@ -174,14 +166,7 @@ public class CraftAction {
      * @param instance the module instance to set.
      */
     protected void updateItem(ItemStack stack, ModuleInstance instance) {
-        if (instance != null) {
-            while (instance.parent != null) {
-                instance = instance.parent;
-            }
-            if (!stack.isEmpty()) {
-                instance.writeToItem(stack);
-            }
-        }
+        instance.getRoot().writeToItem(stack);
     }
 
     /**
@@ -220,7 +205,7 @@ public class CraftAction {
         });
         ModuleInstance parsingInstance = ItemModule.getModules(craftingStack[0]);
         for (int i = slotLocation.size() - 1; i >= 0; i--) {
-            parsingInstance = parsingInstance.subModules.get(slotLocation.get(i));
+            parsingInstance = parsingInstance.getSubModuleMap().get(slotLocation.get(i));
         }
         for (CraftingEvent eventHandler : events)
             craftingStack[0] = eventHandler.onCraft(old, craftingStack[0], parsingInstance);
@@ -238,19 +223,19 @@ public class CraftAction {
 
         //remove CacheKey so new cache gets Generated
         ModuleInstance oldBaseModule = ItemModule.getModules(old);
-        ModuleInstance newBaseModule = ModuleInstance.fromString(oldBaseModule.toString());
+        ModuleInstance newBaseModule = oldBaseModule.copy();
         Map<String, ModuleInstance> subModuleMap = new HashMap<>();
         if (slotLocation.isEmpty()) {
             //a module already exists, replacing module 0
-            if (toAdd == null) {
+            if (toAdd == null || toAdd == ItemModule.empty || toAdd.name().equals("empty")) {
                 return ItemStack.EMPTY;
             }
-            subModuleMap = oldBaseModule.subModules;
+            subModuleMap = oldBaseModule.getSubModuleMap();
             ModuleInstance newModule = new ModuleInstance(toAdd);
             subModuleMap.forEach((id, module) -> {
                 SlotProperty.ModuleSlot slot = SlotProperty.getSlots(newModule).get(id);
                 if (slot != null && slot.allowedIn(module)) {
-                    newModule.subModules.put(id, module);
+                    newModule.setSubModule(id, module);
                     newModule.sortSubModule();
                 }
             });
@@ -260,28 +245,42 @@ public class CraftAction {
         }
         ModuleInstance parsingInstance = newBaseModule;
         for (int i = slotLocation.size() - 1; i > 0; i--) {
-            parsingInstance = parsingInstance.subModules.get(slotLocation.get(i));
+            if (parsingInstance == null) {
+                parsingInstance = parsingInstance.getSubModule(slotLocation.get(i));
+            } else {
+                Miapi.LOGGER.error("Critical error in replace Logic!, step craft slot position of crafting was not found!");
+                slotLocation.forEach(slot -> {
+                    Miapi.LOGGER.error("slot id" + slot);
+                });
+                return old;
+                //throw new RuntimeException("Critical error in replace Logic!, slot position of crafting was not found!");
+            }
         }
 
-        if (toAdd == null) {
-            parsingInstance.subModules.remove(slotLocation.getFirst());
+        if (toAdd == null || toAdd == ItemModule.empty || toAdd.name().equals(Miapi.id("empty"))) {
+            parsingInstance.removeSubModule(slotLocation.getFirst());
         } else {
             ModuleInstance newModule = new ModuleInstance(toAdd);
-            if (parsingInstance.subModules.get(slotLocation.getFirst()) != null) {
-                subModuleMap = parsingInstance.subModules.get(slotLocation.getFirst()).subModules;
+            if (parsingInstance == null) {
+                Miapi.LOGGER.error("Critical error in replace Logic!, step craft 2 slot position of crafting was not found!");
+                slotLocation.forEach(slot -> {
+                    Miapi.LOGGER.error("slot id" + slot);
+                });
+                return old;
+            }
+            ModuleInstance moduleMapInstance = parsingInstance.getSubModule(slotLocation.getFirst());
+            if (moduleMapInstance != null) {
+                subModuleMap = moduleMapInstance.getSubModuleMap();
             }
             subModuleMap.forEach((id, module) -> {
                 SlotProperty.ModuleSlot slot = SlotProperty.getSlots(newModule).get(id);
                 if (slot != null) {
                     if (slot.allowedIn(module)) {
-                        module.parent = newModule;
-                        newModule.subModules.put(id, module);
-                        newModule.sortSubModule();
+                        newModule.setSubModule(id, module);
                     }
                 }
             });
-            newModule.parent = parsingInstance;
-            parsingInstance.subModules.put(slotLocation.getFirst(), newModule);
+            parsingInstance.setSubModule(slotLocation.getFirst(), newModule);
         }
         newBaseModule.writeToItem(craftingStack);
         return craftingStack.copy();
@@ -307,7 +306,14 @@ public class CraftAction {
                         buffer)));
         ModuleInstance parsingInstance = ItemModule.getModules(craftingStack.get());
         for (int i = slotLocation.size() - 1; i >= 0; i--) {
-            parsingInstance = parsingInstance.subModules.get(slotLocation.get(i));
+            if (parsingInstance == null) {
+                Miapi.LOGGER.error("Critical error in replace Logic!, step preview slot position of crafting was not found!");
+                slotLocation.forEach(slot -> {
+                    Miapi.LOGGER.error("slot id" + slot);
+                });
+                return old;
+            }
+            parsingInstance = parsingInstance.getSubModule(slotLocation.get(i));
         }
         for (CraftingEvent eventHandler : events) {
             craftingStack.set(eventHandler.onPreview(old, craftingStack.get(), parsingInstance));
@@ -327,15 +333,18 @@ public class CraftAction {
 
     @Nullable
     public ModuleInstance getModifyingModuleInstance(ItemStack itemStack) {
-        try {
-            ModuleInstance parsingInstance = ItemModule.getModules(itemStack);
-            for (int i = slotLocation.size() - 1; i >= 0; i--) {
-                parsingInstance = parsingInstance.subModules.get(slotLocation.get(i));
+        ModuleInstance parsingInstance = ItemModule.getModules(itemStack);
+        for (int i = slotLocation.size() - 1; i >= 0; i--) {
+            if (parsingInstance == null) {
+                Miapi.LOGGER.error("Critical error in replace Logic!, step modifiying module slot position of crafting was not found!");
+                slotLocation.forEach(slot -> {
+                    Miapi.LOGGER.error("slot id" + slot);
+                });
+                return parsingInstance;
             }
-            return parsingInstance;
-        } catch (Exception e) {
-            return null;
+            parsingInstance = parsingInstance.getSubModule(slotLocation.get(i));
         }
+        return parsingInstance;
     }
 
     /**
@@ -348,7 +357,14 @@ public class CraftAction {
     public void forEachCraftingProperty(ItemStack crafted, PropertyConsumer propertyConsumer) {
         ModuleInstance parsingInstance = ItemModule.getModules(crafted);
         for (int i = slotLocation.size() - 1; i >= 0; i--) {
-            parsingInstance = parsingInstance.subModules.get(slotLocation.get(i));
+            if (parsingInstance == null) {
+                Miapi.LOGGER.error("Critical error in replace Logic!, step crafting property slot position of crafting was not found!");
+                slotLocation.forEach(slot -> {
+                    Miapi.LOGGER.error("slot id" + slot);
+                });
+                return;
+            }
+            parsingInstance = parsingInstance.getSubModule(slotLocation.get(i));
         }
 
         AtomicInteger integer = new AtomicInteger(inventoryOffset);

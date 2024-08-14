@@ -10,11 +10,13 @@ import net.minecraft.util.FastColor;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.*;
 import smartin.miapi.client.gui.crafting.CraftingScreen;
-import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.edit_options.EditOption;
 import smartin.miapi.modules.properties.*;
+import smartin.miapi.modules.properties.slot.AllowedSlots;
+import smartin.miapi.modules.properties.slot.CanChildBeEmpty;
+import smartin.miapi.modules.properties.slot.SlotProperty;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -85,10 +87,9 @@ public class ReplaceView extends InteractAbleWidget {
 
         public SlotButton(int x, int y, int width, int height, CraftOption option) {
             super(x, y, width, height, Component.empty());
-            String moduleName = option.module().name();
             this.option = option;
             ModuleInstance instance = new ModuleInstance(option.module());
-            Component translated = StatResolver.translateAndResolve(Miapi.MOD_ID + ".module." + moduleName, instance);
+            Component translated = instance.getModuleName();
             textWidget = new ScrollingTextWidget(0, 0, this.width, translated, FastColor.ARGB32.color(255, 255, 255, 255));
             isAllowed = CraftingConditionProperty.isSelectAble(currentSlot, option.module(), Minecraft.getInstance().player, null);
             List<Component> texts = new ArrayList<>();

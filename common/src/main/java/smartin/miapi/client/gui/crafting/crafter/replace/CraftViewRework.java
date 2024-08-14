@@ -19,7 +19,7 @@ import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.*;
 import smartin.miapi.craft.CraftAction;
 import smartin.miapi.modules.edit_options.EditOption;
-import smartin.miapi.modules.properties.SlotProperty;
+import smartin.miapi.modules.properties.slot.SlotProperty;
 import smartin.miapi.modules.properties.util.CraftingProperty;
 import smartin.miapi.network.Networking;
 

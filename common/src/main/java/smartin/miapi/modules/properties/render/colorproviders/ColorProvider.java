@@ -77,8 +77,8 @@ public interface ColorProvider {
     class ParentColorProvider extends MaterialColorProvider {
         @Override
         public ColorProvider getInstance(ItemStack stack, ModuleInstance instance) {
-            if (instance.parent != null) {
-                return super.getInstance(stack, instance.parent);
+            if (instance.getParent() != null) {
+                return super.getInstance(stack, instance.getParent());
             }
             return new ModelColorProvider(stack);
         }

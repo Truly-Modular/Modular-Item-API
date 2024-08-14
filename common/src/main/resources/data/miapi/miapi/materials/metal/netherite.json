@@ -34,7 +34,7 @@
         "metallic"
     ],
     "mining_speed": 9,
-    "mining_level": 4,
+    "mining_level": "minecraft:incorrect_for_netherite_tool",
     "items": [
         {
             "item": "minecraft:netherite_ingot",

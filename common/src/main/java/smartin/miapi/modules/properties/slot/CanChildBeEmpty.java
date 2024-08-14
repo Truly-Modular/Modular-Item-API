@@ -1,4 +1,4 @@
-package smartin.miapi.modules.properties;
+package smartin.miapi.modules.properties.slot;
 
 import smartin.miapi.modules.properties.util.ComplexBooleanProperty;
 

@@ -8,7 +8,9 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.component.DataComponentType;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
@@ -16,7 +18,9 @@ import smartin.miapi.item.modular.PropertyResolver;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.cache.DataCache;
 import smartin.miapi.modules.cache.ModularItemCache;
-import smartin.miapi.modules.properties.SlotProperty;
+import smartin.miapi.modules.material.Material;
+import smartin.miapi.modules.material.MaterialProperty;
+import smartin.miapi.modules.properties.slot.SlotProperty;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.registries.RegistryInventory;
@@ -40,14 +44,14 @@ public class ModuleInstance {
                 "module_instance",
                 selfCodec -> RecordCodecBuilder.create((instance) ->
                         instance.group(
-                                Codec.STRING.fieldOf("key")
+                                ResourceLocation.CODEC.fieldOf("key")
                                         .forGetter((moduleInstance) -> moduleInstance.module.name()),
                                 Codec.unboundedMap(Codec.STRING, selfCodec).xmap((i) -> i, Function.identity()).fieldOf("child")
                                         .forGetter((moduleInstance) -> moduleInstance.subModules),
                                 dataJsonCodec.fieldOf("data")
                                         .forGetter((moduleInstance) -> moduleInstance.moduleData)
                         ).apply(instance, (module, children, data) -> {
-                            ItemModule itemModule = RegistryInventory.modules.get(module);
+                            ItemModule itemModule = RegistryInventory.modules.get(module.toString());
                             if (itemModule == null) {
                                 itemModule = ItemModule.empty;
                                 Miapi.LOGGER.warn("could not find module " + module + " substituting with empty module");
@@ -71,11 +75,11 @@ public class ModuleInstance {
      * The parent module instance of this module instance, if any.
      */
     @Nullable
-    public ModuleInstance parent;
+    protected ModuleInstance parent;
     /**
      * A map of child module instances to their respective module IDs.
      */
-    public Map<String, ModuleInstance> subModules = new LinkedHashMap<>();
+    protected Map<String, ModuleInstance> subModules = new LinkedHashMap<>();
     /**
      * A map of module data keys to their respective values.
      */
@@ -123,6 +127,36 @@ public class ModuleInstance {
      */
     public List<ModuleInstance> allSubModules() {
         return ItemModule.createFlatList(this);
+    }
+
+    public void setSubModule(String id, ModuleInstance submodule) {
+        removeSubModule(id);
+        subModules.put(id, submodule);
+        submodule.parent = this;
+        sortSubModule();
+        getRoot().clearCaches();
+    }
+
+    public void removeSubModule(String id) {
+        ModuleInstance oldModule = subModules.get(id);
+        if (oldModule != null) {
+            oldModule.parent = null;
+        }
+        getRoot().clearCaches();
+    }
+
+    public Map<String, ModuleInstance> getSubModuleMap() {
+        return new LinkedHashMap<>(subModules);
+    }
+
+    @Nullable
+    public ModuleInstance getSubModule(String id) {
+        return subModules.get(id);
+    }
+
+    @Nullable
+    public ModuleInstance getParent() {
+        return parent;
     }
 
     @Nullable
@@ -252,6 +286,7 @@ public class ModuleInstance {
         SlotProperty.asSortedList(SlotProperty.getInstance().getData(this.module).orElse(new LinkedHashMap<>())).forEach(slot -> {
             ModuleInstance moduleInstance = subModules.get(slot.id);
             if (moduleInstance != null) {
+                moduleInstance.parent = this;
                 sortedMap.put(slot.id, moduleInstance);
             }
         });
@@ -268,8 +303,7 @@ public class ModuleInstance {
         copy.moduleData = new HashMap<>(this.moduleData);
         this.subModules.forEach(((id, subModule) -> {
             ModuleInstance subModuleCopy = subModule.deepCopy();
-            subModuleCopy.parent = copy;
-            copy.subModules.put(id, subModuleCopy);
+            copy.setSubModule(id, subModuleCopy);
         }));
         return copy;
     }
@@ -294,7 +328,8 @@ public class ModuleInstance {
         if (clearCache) {
             this.clearCaches();
         }
-        stack.update(ModuleInstance.MODULE_INSTANCE_COMPONENT, this, (component) -> component);
+        //stack.update(ModuleInstance.MODULE_INSTANCE_COMPONENT, this, (component) -> this);
+        stack.set(ModuleInstance.MODULE_INSTANCE_COMPONENT, this);
     }
 
     /**
@@ -339,6 +374,29 @@ public class ModuleInstance {
         Gson gson = new Gson();
         return gson.toJson(CODEC.encodeStart(JsonOps.INSTANCE, this));
     }
+
+    public Component getModuleName() {
+        String moduleName = module.name().toString();
+        moduleName = moduleName.replace(":", ".");
+        moduleName = moduleName.replaceAll("/", ".");
+        Material material = MaterialProperty.getMaterial(this);
+        if (material != null) {
+            return Component.translatable(Miapi.MOD_ID + ".module." + moduleName, MaterialProperty.getMaterial(this));
+        }
+        return StatResolver.translateAndResolve(Miapi.MOD_ID + ".module." + moduleName, this);
+    }
+
+    public Component getModuleDescription() {
+        String moduleName = module.name().toString();
+        moduleName = moduleName.replace(":", ".");
+        moduleName = moduleName.replaceAll("/", ".");
+        Material material = MaterialProperty.getMaterial(this);
+        if (material != null) {
+            return Component.translatable(Miapi.MOD_ID + ".module." + moduleName + ".description", MaterialProperty.getMaterial(this));
+        }
+        return StatResolver.translateAndResolve(Miapi.MOD_ID + ".module." + moduleName + ".description", this);
+    }
+
 
     /**
      * Returns a module instance constructed from the given JSON string representation.

@@ -28,8 +28,7 @@ import java.util.concurrent.Executor;
 public class MaterialProperty extends CodecProperty<String> {
     public static final String KEY = "material";
     public static ModuleProperty property;
-    public static Map<String, Material> materials = new ConcurrentHashMap<>() {
-    };
+    public static Map<String, Material> materials = new ConcurrentHashMap<>();
 
     public MaterialProperty() {
         super(Codec.STRING);
@@ -173,8 +172,8 @@ public class MaterialProperty extends CodecProperty<String> {
                 return material;
             }
         }
-        if (CopyParentMaterialProperty.property.isTrue(instance) && instance.parent != null) {
-            return getMaterial(instance.parent);
+        if (CopyParentMaterialProperty.property.isTrue(instance) && instance.getParent() != null) {
+            return getMaterial(instance.getParent());
         }
         return null;
     }

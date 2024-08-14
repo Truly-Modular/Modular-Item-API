@@ -20,7 +20,7 @@ import org.joml.Vector3f;
 import org.lwjgl.opengl.GL11;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.InteractAbleWidget;
-import smartin.miapi.modules.properties.SlotProperty;
+import smartin.miapi.modules.properties.slot.SlotProperty;
 
 import java.util.ArrayList;
 import java.util.HashMap;

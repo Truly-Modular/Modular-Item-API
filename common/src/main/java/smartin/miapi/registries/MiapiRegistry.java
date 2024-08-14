@@ -1,6 +1,7 @@
 package smartin.miapi.registries;
 
 import com.mojang.serialization.Codec;
+import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 
@@ -107,6 +108,18 @@ public class MiapiRegistry<T> {
         // Call the callbacks for the class type
         callbacks.forEach(callback -> callback.accept(value));
         return value;
+    }
+
+    /**
+     * Registers a new entry with the given name and value to this registry. If an entry with the same name already exists, an
+     * IllegalArgumentException is thrown. Calls all the callbacks associated with the class type.
+     *
+     * @param name  the name of the entry to be registered
+     * @param value the value of the entry to be registered
+     * @throws IllegalArgumentException if an entry with the same name already exists
+     */
+    public T register(ResourceLocation name, T value) {
+        return register(name.toString(),value);
     }
 
     /**

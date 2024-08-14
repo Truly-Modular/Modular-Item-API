@@ -28,7 +28,7 @@
     "bright"
   ],
   "mining_speed": 6,
-  "mining_level": 2,
+  "mining_level": "minecraft:incorrect_for_iron_tool",
   "items": [
     {
       "item": "minecraft:iron_ingot",

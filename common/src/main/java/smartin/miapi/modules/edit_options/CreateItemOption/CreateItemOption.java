@@ -26,7 +26,7 @@ import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.edit_options.EditOption;
 import smartin.miapi.modules.edit_options.EditOptionIcon;
 import smartin.miapi.modules.edit_options.ReplaceOption;
-import smartin.miapi.modules.properties.SlotProperty;
+import smartin.miapi.modules.properties.slot.SlotProperty;
 import smartin.miapi.network.Networking;
 import smartin.miapi.registries.RegistryInventory;
 
@@ -123,7 +123,7 @@ public class CreateItemOption implements EditOption {
             public void craft(FriendlyByteBuf craftBuffer) {
                 FriendlyByteBuf packetByteBuf = Networking.createBuffer();
                 packetByteBuf.writeUtf(BuiltInRegistries.ITEM.getKey(selected.getItem().getItem()).toString());
-                packetByteBuf.writeUtf(selected.getBaseModule().name());
+                packetByteBuf.writeUtf(selected.getBaseModule().name().toString());
                 packetByteBuf.writeInt(selected.getItem().getCount());
                 packetByteBuf.writeBytes(craftBuffer);
                 context.craft(packetByteBuf);
@@ -133,7 +133,7 @@ public class CreateItemOption implements EditOption {
             public void preview(FriendlyByteBuf preview) {
                 FriendlyByteBuf packetByteBuf = Networking.createBuffer();
                 packetByteBuf.writeUtf(BuiltInRegistries.ITEM.getKey(selected.getItem().getItem()).toString());
-                packetByteBuf.writeUtf(selected.getBaseModule().name());
+                packetByteBuf.writeUtf(selected.getBaseModule().name().toString());
                 packetByteBuf.writeInt(selected.getItem().getCount());
                 packetByteBuf.writeBytes(preview);
                 context.preview(packetByteBuf);

@@ -17,6 +17,8 @@ import dev.architectury.event.events.common.PlayerEvent;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.EquipmentSlotGroup;
 import org.apache.logging.log4j.util.TriConsumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -86,10 +88,9 @@ public class Miapi {
         CodecBehavior.registerClass(ModuleCondition.class, ConditionManager.CONDITION_CODEC_DIRECT);
         CodecBehavior.registerClass(ResourceLocation.class, ResourceLocation.CODEC);
         CodecBehavior.registerClass(CompoundTag.class, CompoundTag.CODEC);
-
-
         CodecBehavior.registerClass(MaterialIcons.SpinSettings.class, MaterialIcons.SpinSettings.CODEC);
-
+        CodecBehavior.registerClass(EquipmentSlotGroup.class, EquipmentSlotGroup.CODEC);
+        CodecBehavior.registerClass(EquipmentSlot.class, EquipmentSlot.CODEC);
 
         setupConfigs();
         setupNetworking();
@@ -101,7 +102,6 @@ public class Miapi {
         StatActorType.setup();
         ComponentMaterial.setup();
         GeneratedMaterialManager.setup();
-
 
         LifecycleEvent.SERVER_BEFORE_START.register(minecraftServer -> server = minecraftServer);
         PlayerEvent.PLAYER_JOIN.register((player -> new Thread(() -> MiapiPermissions.getPerms(player)).start()));

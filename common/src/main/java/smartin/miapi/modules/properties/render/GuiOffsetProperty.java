@@ -1,6 +1,7 @@
 package smartin.miapi.modules.properties.render;
 
 import com.redpxnda.nucleus.codec.auto.AutoCodec;
+import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.world.item.ItemDisplayContext;
@@ -12,7 +13,7 @@ import smartin.miapi.item.modular.Transform;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.cache.ModularItemCache;
-import smartin.miapi.modules.properties.SlotProperty;
+import smartin.miapi.modules.properties.slot.SlotProperty;
 import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
@@ -26,7 +27,7 @@ import java.util.Optional;
  */
 @Environment(EnvType.CLIENT)
 public class GuiOffsetProperty extends CodecProperty<GuiOffsetProperty.GuiOffsetData> {
-    public static final String KEY = "gui_fffset";
+    public static final String KEY = "gui_offset";
     public static ModuleProperty property;
 
     public GuiOffsetProperty() {
@@ -78,9 +79,13 @@ public class GuiOffsetProperty extends CodecProperty<GuiOffsetProperty.GuiOffset
     }
 
     public static class GuiOffsetData {
+        @CodecBehavior.Optional
         public float x = 0;
+        @CodecBehavior.Optional
         public float y = 0;
+        @CodecBehavior.Optional
         public float sizeX = 0;
+        @CodecBehavior.Optional
         public float sizeY = 0;
     }
 }

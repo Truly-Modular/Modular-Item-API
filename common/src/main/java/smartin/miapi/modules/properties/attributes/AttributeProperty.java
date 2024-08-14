@@ -6,24 +6,26 @@ import com.google.common.collect.Multimaps;
 import com.mojang.serialization.Codec;
 import com.redpxnda.nucleus.codec.auto.AutoCodec;
 import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
-import dev.architectury.event.EventResult;
+import net.minecraft.core.Holder;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.ItemAttributeModifiers;
 import smartin.miapi.Miapi;
 import smartin.miapi.attributes.AttributeRegistry;
-import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.util.CodecProperty;
+import smartin.miapi.modules.properties.util.ComponentApplyProperty;
 import smartin.miapi.modules.properties.util.MergeType;
 
 import java.util.*;
@@ -32,7 +34,7 @@ import java.util.function.Supplier;
 /**
  * This property allows Modules to set Attributes
  */
-public class AttributeProperty extends CodecProperty<List<AttributeProperty.AttributeJson>> {
+public class AttributeProperty extends CodecProperty<List<AttributeProperty.AttributeJson>> implements ComponentApplyProperty {
     public static final String KEY = "attributes";
     public static AttributeProperty property;
     public static final Map<String, Supplier<Attribute>> replaceMap = new HashMap<>();
@@ -43,8 +45,7 @@ public class AttributeProperty extends CodecProperty<List<AttributeProperty.Attr
     public AttributeProperty() {
         super(CODEC);
         property = this;
-        ModularItemCache.setSupplier(KEY, (AttributeProperty::createAttributeCache));
-        ModularItemCache.setSupplier(KEY + "_unmodifieable", (AttributeProperty::equipmentSlotMultimapMapGenerate));
+        ModularItemCache.setSupplier(KEY, (AttributeProperty::createAttributeMap));
         priorityMap.put(Attributes.ARMOR.value(), -15.0f);
         priorityMap.put(Attributes.ARMOR_TOUGHNESS.value(), -14.0f);
         priorityMap.put(Attributes.KNOCKBACK_RESISTANCE.value(), -13.0f);
@@ -67,10 +68,6 @@ public class AttributeProperty extends CodecProperty<List<AttributeProperty.Attr
         priorityMap.put(AttributeRegistry.BACK_STAB.value(), -6.0f);
         priorityMap.put(AttributeRegistry.SHIELD_BREAK.value(), -6.0f);
         priorityMap.put(AttributeRegistry.ARMOR_CRUSHING.value(), -6.0f);
-        MiapiEvents.ITEM_STACK_ATTRIBUTE_EVENT.register((info -> {
-            info.attributeModifiers.putAll((AttributeProperty.equipmentSlotMultimapMap(info.itemStack).get(info.equipmentSlot)));
-            return EventResult.pass();
-        }));
     }
 
     /**
@@ -79,15 +76,15 @@ public class AttributeProperty extends CodecProperty<List<AttributeProperty.Attr
      * @param itemStack
      * @return
      */
-    public static Multimap<Attribute, EntityAttributeModifierHolder> getAttributeModifiers(ItemStack itemStack) {
-        Multimap<Attribute, EntityAttributeModifierHolder> map = getAttributeModifiersRaw(itemStack);
-        Multimap<Attribute, EntityAttributeModifierHolder> map2 = ArrayListMultimap.create();
+    public static Multimap<Holder<Attribute>, EntityAttributeModifierHolder> getAttributeModifiers(ItemStack itemStack) {
+        Multimap<Holder<Attribute>, EntityAttributeModifierHolder> map = getAttributeModifiersRaw(itemStack);
+        Multimap<Holder<Attribute>, EntityAttributeModifierHolder> map2 = ArrayListMultimap.create();
         map.entries().forEach((entityAttributeEntityAttributeModifierHolderEntry -> {
             map2.put(entityAttributeEntityAttributeModifierHolderEntry.getKey(), entityAttributeEntityAttributeModifierHolderEntry.getValue());
         }));
         map = map2;
         for (AttributeTransformer transformer : attributeTransformers) {
-            Multimap<Attribute, EntityAttributeModifierHolder> map3 = ArrayListMultimap.create();
+            Multimap<Holder<Attribute>, EntityAttributeModifierHolder> map3 = ArrayListMultimap.create();
             transformer.transform(map, itemStack).entries().forEach((entityAttributeEntityAttributeModifierHolderEntry -> {
                 map3.put(entityAttributeEntityAttributeModifierHolderEntry.getKey(), entityAttributeEntityAttributeModifierHolderEntry.getValue());
             }));
@@ -102,8 +99,8 @@ public class AttributeProperty extends CodecProperty<List<AttributeProperty.Attr
      * @param itemStack
      * @return
      */
-    public static Multimap<Attribute, EntityAttributeModifierHolder> getAttributeModifiersRaw(ItemStack itemStack) {
-        Multimap<Attribute, EntityAttributeModifierHolder> multimap = ArrayListMultimap.create();
+    public static Multimap<Holder<Attribute>, EntityAttributeModifierHolder> getAttributeModifiersRaw(ItemStack itemStack) {
+        Multimap<Holder<Attribute>, EntityAttributeModifierHolder> multimap = ArrayListMultimap.create();
         return ModularItemCache.get(itemStack, KEY, multimap);
     }
 
@@ -113,53 +110,50 @@ public class AttributeProperty extends CodecProperty<List<AttributeProperty.Attr
      * @param itemStack
      * @return
      */
-    private static Map<EquipmentSlot, Multimap<Attribute, AttributeModifier>> equipmentSlotMultimapMapGenerate(ItemStack itemStack) {
-        Map<EquipmentSlot, Multimap<Attribute, AttributeModifier>> map = new HashMap<>();
-        Arrays.stream(EquipmentSlot.values()).forEach(equipmentSlot -> {
+    private static Map<EquipmentSlotGroup, Multimap<Holder<Attribute>, AttributeModifier>> equipmentSlotMultimapMapGenerate(ItemStack itemStack) {
+        Map<EquipmentSlotGroup, Multimap<Holder<Attribute>, AttributeModifier>> map = new HashMap<>();
+        Arrays.stream(EquipmentSlotGroup.values()).forEach(equipmentSlot -> {
             map.put(equipmentSlot, Multimaps.unmodifiableMultimap(getAttributeModifiersForSlot(itemStack, equipmentSlot, ArrayListMultimap.create())));
         });
         return map;
     }
 
-    /**
-     * returns the Attribute map based on equipmentslot
-     * This will be nullsave for all equipmentslot
-     *
-     * @param itemStack
-     * @return
-     */
-    public static Map<EquipmentSlot, Multimap<Attribute, AttributeModifier>> equipmentSlotMultimapMap(ItemStack itemStack) {
-        Map<EquipmentSlot, Multimap<Attribute, AttributeModifier>> replaceMap = new EnumMap<>(EquipmentSlot.class);
-        for (EquipmentSlot slot : EquipmentSlot.values()) {
-            replaceMap.put(slot, ArrayListMultimap.create());
-        }
-        return ModularItemCache.get(itemStack, KEY + "_unmodifieable", replaceMap);
-    }
-
-    private static Multimap<Attribute, AttributeModifier> getAttributeModifiersForSlot(ItemStack itemStack, EquipmentSlot slot, Multimap<Attribute, AttributeModifier> toAdding) {
+    private static Multimap<Holder<Attribute>, AttributeModifier> getAttributeModifiersForSlot(ItemStack itemStack, EquipmentSlotGroup slot, Multimap<Holder<Attribute>, AttributeModifier> toAdding) {
         if (itemStack.getItem() instanceof ModularItem) {
-            Multimap<Attribute, EntityAttributeModifierHolder> toMerge = AttributeProperty.getAttributeModifiers(itemStack);
-            Multimap<Attribute, AttributeModifier> merged = ArrayListMultimap.create();
-            Map<ResourceLocation, Multimap<Attribute, AttributeModifier>> mergedAdditive = new HashMap<>();
-            Map<ResourceLocation, Multimap<Attribute, AttributeModifier>> mergedMultiBase = new HashMap<>();
-            Map<ResourceLocation, Multimap<Attribute, AttributeModifier>> mergedMultiTotal = new HashMap<>();
+            Multimap<Holder<Attribute>, EntityAttributeModifierHolder> toMerge = AttributeProperty.getAttributeModifiers(itemStack);
+            Multimap<Holder<Attribute>, AttributeModifier> merged = ArrayListMultimap.create();
+            Map<ResourceLocation, Multimap<Holder<Attribute>, AttributeModifier>> mergedAdditive = new HashMap<>();
+            Map<ResourceLocation, Multimap<Holder<Attribute>, AttributeModifier>> mergedMultiBase = new HashMap<>();
+            Map<ResourceLocation, Multimap<Holder<Attribute>, AttributeModifier>> mergedMultiTotal = new HashMap<>();
 
             // Add existing modifiers from original to merged
             toAdding.entries().forEach(entry -> merged.put(entry.getKey(), entry.getValue()));
 
             toMerge.forEach((entityAttribute, entityAttributeModifier) -> {
-                if (entityAttributeModifier.slot().equals(slot)) {
-                    merged.put(entityAttribute, entityAttributeModifier.attributeModifier());
+                if (slot.equals(entityAttributeModifier.slot)) {
+                    switch (entityAttributeModifier.mergeTo) {
+                        case ADD_VALUE -> {
+                            Multimap<Holder<Attribute>, AttributeModifier> multimap = mergedAdditive.computeIfAbsent(entityAttributeModifier.attributeModifier().id(), (id) -> ArrayListMultimap.create());
+                            multimap.put(entityAttribute, entityAttributeModifier.attributeModifier());
+                        }
+                        case ADD_MULTIPLIED_BASE -> {
+                            Multimap<Holder<Attribute>, AttributeModifier> multimap = mergedMultiBase.computeIfAbsent(entityAttributeModifier.attributeModifier().id(), (id) -> ArrayListMultimap.create());
+                            multimap.put(entityAttribute, entityAttributeModifier.attributeModifier());
+                        }
+                        case ADD_MULTIPLIED_TOTAL -> {
+                            Multimap<Holder<Attribute>, AttributeModifier> multimap = mergedMultiTotal.computeIfAbsent(entityAttributeModifier.attributeModifier().id(), (id) -> ArrayListMultimap.create());
+                            multimap.put(entityAttribute, entityAttributeModifier.attributeModifier());
+                        }
+                    }
                 }
             });
 
-            // Assign merged back to original
             toAdding.clear();
             toAdding.putAll(merged);
 
             mergedAdditive.forEach((id, entityAttributeEntityAttributeModifierMultimap) -> {
                 entityAttributeEntityAttributeModifierMultimap.asMap().forEach((key, collection) -> {
-                    double startValue = key.getDefaultValue();
+                    double startValue = key.value().getDefaultValue();
                     double multiply = 1;
                     boolean hasValue = false;
                     for (AttributeModifier entityAttributeModifier : collection) {
@@ -177,7 +171,7 @@ public class AttributeProperty extends CodecProperty<List<AttributeProperty.Attr
                             startValue = startValue * entityAttributeModifier.amount();
                         }
                     }
-                    startValue = startValue - key.getDefaultValue();
+                    startValue = startValue - key.value().getDefaultValue();
                     if ((startValue != 0 || hasValue) && !Double.isNaN(startValue)) {
                         AttributeModifier entityAttributeModifier = new AttributeModifier(id, startValue, AttributeModifier.Operation.ADD_VALUE);
                         toAdding.put(key, entityAttributeModifier);
@@ -234,21 +228,17 @@ public class AttributeProperty extends CodecProperty<List<AttributeProperty.Attr
         return toAdding;
     }
 
-    private static Multimap<Attribute, EntityAttributeModifierHolder> createAttributeCache(ItemStack itemStack) {
-        return createAttributeMap(itemStack);
-    }
 
-
-    public static Multimap<Attribute, EntityAttributeModifierHolder> createAttributeMap(ItemStack itemStack) {
+    public static Multimap<Holder<Attribute>, EntityAttributeModifierHolder> createAttributeMap(ItemStack itemStack) {
         ModuleInstance rootInstance = ItemModule.getModules(itemStack);
-        Multimap<Attribute, EntityAttributeModifierHolder> attributeModifiers = ArrayListMultimap.create();
+        Multimap<Holder<Attribute>, EntityAttributeModifierHolder> attributeModifiers = ArrayListMultimap.create();
         for (ModuleInstance instance : rootInstance.allSubModules()) {
             getAttributeModifiers(instance, attributeModifiers);
         }
         return attributeModifiers;
     }
 
-    public static void getAttributeModifiers(ModuleInstance instance, Multimap<Attribute, EntityAttributeModifierHolder> attributeModifiers) {
+    public static void getAttributeModifiers(ModuleInstance instance, Multimap<Holder<Attribute>, EntityAttributeModifierHolder> attributeModifiers) {
         property.getData(instance).ifPresent(attributeJsons -> attributeJsons.forEach(attributeJson -> {
 
             AttributeModifier.Operation operation = getOperation(attributeJson.operation);
@@ -258,10 +248,11 @@ public class AttributeProperty extends CodecProperty<List<AttributeProperty.Attr
                 Miapi.LOGGER.warn(String.valueOf(BuiltInRegistries.ATTRIBUTE.get(ResourceLocation.parse(attributeJson.attribute))));
                 Miapi.LOGGER.warn("Attribute is null " + attributeJson.attribute + " on module " + instance.module.name() + " this should not have happened.");
             } else {
+                Holder<Attribute> attributeHolder = BuiltInRegistries.ATTRIBUTE.wrapAsHolder(attribute);
                 if (attributeJson.id == null) {
                     attributeJson.id = AttributeUtil.getIDForSlot(attributeJson.slot, attribute, operation);
                 }
-                attributeModifiers.put(attribute, new EntityAttributeModifierHolder(new AttributeModifier(attributeJson.id, attributeJson.evaluatedValue, operation), attributeJson.slot, baseTarget));
+                attributeModifiers.put(attributeHolder, new EntityAttributeModifierHolder(new AttributeModifier(attributeJson.id, attributeJson.evaluatedValue, operation), attributeJson.slot, baseTarget));
             }
         }));
     }
@@ -289,12 +280,24 @@ public class AttributeProperty extends CodecProperty<List<AttributeProperty.Attr
         return property;
     }
 
+    @Override
+    public void updateComponent(ItemStack itemStack, RegistryAccess registryAccess) {
+        var attributes = itemStack.get(DataComponents.ATTRIBUTE_MODIFIERS);
+        List<ItemAttributeModifiers.Entry> filteredList = new ArrayList<>(attributes.modifiers().stream().filter(entry -> !entry.modifier().id().getNamespace().equals(Miapi.MOD_ID)).toList());
+        equipmentSlotMultimapMapGenerate(itemStack).forEach(((group, attributeAttributeModifierMultimap) -> {
+            attributeAttributeModifierMultimap.forEach((attribute, attributeModifier) -> {
+                filteredList.add(new ItemAttributeModifiers.Entry(attribute, attributeModifier, group));
+            });
+        }));
+        itemStack.set(DataComponents.ATTRIBUTE_MODIFIERS, new ItemAttributeModifiers(filteredList, true));
+    }
+
     public record EntityAttributeModifierHolder(AttributeModifier attributeModifier, EquipmentSlotGroup slot,
                                                 AttributeModifier.Operation mergeTo) {
     }
 
     public interface AttributeTransformer {
-        Multimap<Attribute, EntityAttributeModifierHolder> transform(Multimap<Attribute, EntityAttributeModifierHolder> map, ItemStack itemstack);
+        Multimap<Holder<Attribute>, EntityAttributeModifierHolder> transform(Multimap<Holder<Attribute>, EntityAttributeModifierHolder> map, ItemStack itemstack);
     }
 
     public static class AttributeJson {

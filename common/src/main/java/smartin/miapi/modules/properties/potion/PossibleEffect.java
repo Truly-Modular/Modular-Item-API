@@ -2,16 +2,19 @@ package smartin.miapi.modules.properties.potion;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.core.Holder;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
+import smartin.miapi.modules.properties.util.DoubleOperationResolvable;
 import smartin.miapi.modules.properties.util.MergeType;
 
 import java.util.ArrayList;
@@ -23,38 +26,66 @@ import java.util.function.Function;
  * this is a utility class for decoding complex Possible Potion effects
  * it allows for a target boolean, probability, potion effect and equipment slot.
  *
- * @param effect      the Potioneffect given
+ * @param potion      the Potioneffect given
  * @param probability the probability of the potion effect beeing applied
  * @param targetSelf  the target selector, target or targetSelf
  * @param group       the EquipmentSlot predicate to limit the usability to certain Equipment slots
  */
-public record PossibleEffect(MobEffectInstance effect, float probability, boolean targetSelf,
+public record PossibleEffect(Holder<MobEffect> potion,
+                             DoubleOperationResolvable amplifier,
+                             DoubleOperationResolvable duration,
+                             DoubleOperationResolvable ambient,
+                             DoubleOperationResolvable showParticle,
+                             DoubleOperationResolvable showIcon,
+                             DoubleOperationResolvable probability,
+                             DoubleOperationResolvable targetSelf,
                              EquipmentSlotGroup group) {
     public static final Codec<PossibleEffect> CODEC = RecordCodecBuilder.create((instance) -> {
         return instance.group(
-                MobEffectInstance.CODEC
+                MobEffect.CODEC
                         .fieldOf("potion")
-                        .forGetter(PossibleEffect::effect),
-                Codec.floatRange(0.0F, 1.0F)
-                        .optionalFieldOf("probability", 1.0F)
-                        .forGetter(PossibleEffect::probability),
-                Codec.BOOL
-                        .optionalFieldOf("target_self", false)
-                        .forGetter(PossibleEffect::targetSelf),
+                        .forGetter(PossibleEffect::potion),
+                DoubleOperationResolvable.CODEC
+                        .optionalFieldOf("amplifier", new DoubleOperationResolvable(0))
+                        .forGetter(PossibleEffect::amplifier),
+                DoubleOperationResolvable.CODEC
+                        .optionalFieldOf("duration", new DoubleOperationResolvable(0))
+                        .forGetter(PossibleEffect::duration),
+                DoubleOperationResolvable.CODEC
+                        .optionalFieldOf("ambient", new DoubleOperationResolvable(0))
+                        .forGetter(PossibleEffect::ambient),
+                DoubleOperationResolvable.CODEC
+                        .optionalFieldOf("show_particles", new DoubleOperationResolvable(1))
+                        .forGetter(PossibleEffect::showParticle),
+                DoubleOperationResolvable.CODEC
+                        .optionalFieldOf("show_icon", new DoubleOperationResolvable(1))
+                        .forGetter(PossibleEffect::showIcon),
+                DoubleOperationResolvable.CODEC
+                        .optionalFieldOf("probability", new DoubleOperationResolvable(1))
+                        .forGetter(PossibleEffect::showIcon),
+                DoubleOperationResolvable.CODEC
+                        .optionalFieldOf("target_self", new DoubleOperationResolvable(1))
+                        .forGetter(PossibleEffect::showIcon),
                 EquipmentSlotGroup.CODEC
                         .optionalFieldOf("equipment_slot", EquipmentSlotGroup.ANY)
                         .forGetter(PossibleEffect::group)
         ).apply(instance, PossibleEffect::new);
     });
+    //(Holder<MobEffect> effect, int duration, int amplifier, boolean ambient, boolean visible, boolean showIcon
+
+    public MobEffectInstance getEffect() {
+        return new MobEffectInstance(potion(), (int) duration().getValue(), (int) amplifier().getValue(), ambient().isTrue(), showParticle().isTrue(), showIcon().isTrue());
+    }
 
     public void apply(LivingEntity wielder, RandomSource random, EquipmentSlot equipmentSlot, LivingEntity target, LivingEntity selfTarget) {
         if (this.group().test(equipmentSlot)) {
-            if (targetSelf()) {
+            if (targetSelf().isTrue()) {
                 target = selfTarget;
             }
             if (target != null) {
-                if (probability() == 1.0 || random.nextDouble() < probability())
-                    target.addEffect(new MobEffectInstance(effect()), wielder);
+                if (probability().getValue() == 1.0 || random.nextDouble() < probability().getValue()) {
+                    target.addEffect(getEffect(), wielder);
+                }
             }
         }
     }
@@ -66,11 +97,11 @@ public record PossibleEffect(MobEffectInstance effect, float probability, boolea
     }
 
     public Component getTooltip(String key, String showTargetSelf) {
-        return Component.translatable(targetSelf() ? key : showTargetSelf,
-                effect().getEffect().value().getDisplayName(),
-                effect().getDuration(),
-                effect().getAmplifier(),
-                probability() == 1.0 ? Component.empty() : probability()
+        return Component.translatable(targetSelf().isTrue() ? key : showTargetSelf,
+                potion().value().getDisplayName(),
+                (int) duration().getValue(),
+                (int) amplifier().getValue(),
+                probability().getValue() == 1.0 ? Component.empty() : probability()
         );
     }
 
@@ -106,20 +137,21 @@ public record PossibleEffect(MobEffectInstance effect, float probability, boolea
         directMerged.forEach(possibleEffect -> {
             Optional<PossibleEffect> mergeWith =
                     mergedList.stream().filter(possibleEffect1 ->
-                            possibleEffect1.effect().getEffect().equals(possibleEffect.effect().getEffect()) &&
-                            possibleEffect1.targetSelf() == possibleEffect.targetSelf() &&
-                            possibleEffect1.effect().getAmplifier() == possibleEffect.effect().getAmplifier()
+                            possibleEffect1.potion().equals(possibleEffect.potion()) &&
+                            possibleEffect1.targetSelf().isTrue() == possibleEffect.targetSelf().isTrue() &&
+                            (int) possibleEffect1.amplifier().getValue() == (int) possibleEffect.amplifier().getValue()
                     ).findFirst();
             if (mergeWith.isPresent()) {
                 PossibleEffect first = mergeWith.get();
                 mergedList.remove(first);
 
-                float combinedProbability = first.probability() + possibleEffect.probability();
-                int combinedDuration = first.effect().getDuration() +
-                                       (combinedProbability > 1.0f ? (int) (possibleEffect.effect().getDuration() * (combinedProbability - 1.0f))
-                                               : possibleEffect.effect().getDuration());
+                double combinedProbability = first.probability().getValue() + possibleEffect.probability().getValue();
+                int combinedDuration = (int) (first.duration().getValue() +
+                                                              (combinedProbability > 1.0f ? (int) (first.duration().getValue() * (combinedProbability - 1.0f))
+                                                               : first.duration().getValue()));
                 combinedProbability = Math.min(combinedProbability, 1.0f);
 
+                /*
                 MobEffectInstance mergedMobEffect = new MobEffectInstance(
                         first.effect().getEffect(),
                         combinedDuration,
@@ -127,8 +159,28 @@ public record PossibleEffect(MobEffectInstance effect, float probability, boolea
                         first.effect().isAmbient(),
                         first.effect().isVisible()
                 );
+                                             DoubleOperationResolvable amplifier,
+                             DoubleOperationResolvable duration,
+                             DoubleOperationResolvable ambient,
+                             DoubleOperationResolvable showParticle,
+                             DoubleOperationResolvable showIcon,
+                             DoubleOperationResolvable probability,
+                             DoubleOperationResolvable targetSelf,
 
-                mergedList.add(new PossibleEffect(mergedMobEffect, combinedProbability, first.targetSelf(), first.group()));
+                 */
+
+                mergedList.add(new PossibleEffect(
+                        first.potion,
+                        DoubleOperationResolvable.merge(first.amplifier, possibleEffect.amplifier, mergeType),
+                        new DoubleOperationResolvable(combinedDuration),
+                        DoubleOperationResolvable.merge(first.ambient, possibleEffect.ambient, mergeType),
+                        DoubleOperationResolvable.merge(first.showParticle, possibleEffect.showParticle, mergeType),
+                        DoubleOperationResolvable.merge(first.showIcon, possibleEffect.showIcon, mergeType),
+                        new DoubleOperationResolvable(combinedProbability),
+                        first.targetSelf,
+                        first.group()
+                        )
+                );
             } else {
                 mergedList.add(possibleEffect);
             }
@@ -136,15 +188,5 @@ public record PossibleEffect(MobEffectInstance effect, float probability, boolea
         return mergedList;
     }
 
-    public static final StreamCodec<RegistryFriendlyByteBuf, PossibleEffect> STREAM_CODEC =
-            StreamCodec.composite(
-                    MobEffectInstance.STREAM_CODEC,
-                    PossibleEffect::effect,
-                    ByteBufCodecs.FLOAT,
-                    PossibleEffect::probability,
-                    ByteBufCodecs.BOOL,
-                    PossibleEffect::targetSelf,
-                    EquipmentSlotGroup.STREAM_CODEC,
-                    PossibleEffect::group,
-                    PossibleEffect::new);
+    public static final StreamCodec<RegistryFriendlyByteBuf, PossibleEffect> STREAM_CODEC = ByteBufCodecs.fromCodecWithRegistries(CODEC);
 }

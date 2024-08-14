@@ -24,7 +24,7 @@
         }
     },
     "mining_speed": 5,
-    "mining_level": 1,
+    "mining_level": "minecraft:incorrect_for_wooden_tool",
     "textures": [
         "emissive"
     ],

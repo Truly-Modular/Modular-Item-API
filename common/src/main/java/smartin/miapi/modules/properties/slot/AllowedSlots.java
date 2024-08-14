@@ -1,4 +1,4 @@
-package smartin.miapi.modules.properties;
+package smartin.miapi.modules.properties.slot;
 
 import com.mojang.serialization.Codec;
 import smartin.miapi.datapack.ReloadEvents;

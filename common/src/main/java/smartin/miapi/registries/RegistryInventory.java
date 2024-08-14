@@ -82,6 +82,10 @@ import smartin.miapi.modules.properties.potion.OnDamagedEffects;
 import smartin.miapi.modules.properties.potion.OnHitTargetEffects;
 import smartin.miapi.modules.properties.potion.OnKillEffects;
 import smartin.miapi.modules.properties.render.*;
+import smartin.miapi.modules.properties.slot.AllowedSlots;
+import smartin.miapi.modules.properties.slot.CanChangeParentModule;
+import smartin.miapi.modules.properties.slot.CanChildBeEmpty;
+import smartin.miapi.modules.properties.slot.SlotProperty;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.modules.synergies.SynergyManager;
 

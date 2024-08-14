@@ -18,7 +18,7 @@ import smartin.miapi.item.modular.VisualModularItem;
 import smartin.miapi.modules.edit_options.EditOption;
 import smartin.miapi.modules.material.Material;
 import smartin.miapi.modules.material.MaterialProperty;
-import smartin.miapi.modules.properties.SlotProperty;
+import smartin.miapi.modules.properties.slot.SlotProperty;
 import smartin.miapi.network.Networking;
 
 import java.util.ArrayList;

@@ -12,7 +12,7 @@
     "durability": 830,
     "armor_durability_offset": -400,
     "mining_speed": 7.5,
-    "mining_level": 3,
+    "mining_level": "minecraft:incorrect_for_diamond_tool",
     "enchantability": 12,
     "color": "17DA61",
     "color_palette": {

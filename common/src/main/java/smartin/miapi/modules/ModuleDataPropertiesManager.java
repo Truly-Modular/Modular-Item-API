@@ -39,7 +39,12 @@ public class ModuleDataPropertiesManager {
         propertyMap.forEach(((moduleProperty, element) -> {
             String key = RegistryInventory.moduleProperties.findKey(moduleProperty);
             assert key != null;
-            object.add(key, encode(moduleProperty, element));
+            JsonElement encoded = encode(moduleProperty, element);
+            if(encoded.isJsonPrimitive()){
+            }else{
+                object.add(key, encoded);
+            }
+            //object.add(key, encode(moduleProperty, element));
         }));
         moduleInstance.moduleData.put("properties", object);
     }

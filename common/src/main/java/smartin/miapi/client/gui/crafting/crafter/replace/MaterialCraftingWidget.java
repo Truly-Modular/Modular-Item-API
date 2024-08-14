@@ -7,12 +7,13 @@ import net.minecraft.Util;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.FastColor;
-import smartin.miapi.Miapi;
-import smartin.miapi.client.gui.*;
+import smartin.miapi.client.gui.InteractAbleWidget;
+import smartin.miapi.client.gui.MultiLineTextWidget;
+import smartin.miapi.client.gui.ScrollingTextWidget;
+import smartin.miapi.client.gui.TransformableWidget;
 import smartin.miapi.client.gui.crafting.CraftingScreen;
 import smartin.miapi.client.gui.crafting.PreviewManager;
 import smartin.miapi.craft.CraftAction;
-import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.edit_options.ReplaceOption;
 import smartin.miapi.modules.material.AllowedMaterial;
@@ -37,8 +38,8 @@ public class MaterialCraftingWidget extends InteractAbleWidget {
         allowedMaterial.slotHeight = height + 12;
 
         ModuleInstance moduleInstance = new ModuleInstance(action.toAdd);
-        Component displayText = StatResolver.translateAndResolve(Miapi.MOD_ID + ".module." + moduleInstance.module.name(), moduleInstance);
-        Component descriptionText = StatResolver.translateAndResolve(Miapi.MOD_ID + ".module." + moduleInstance.module.name() + ".description", moduleInstance);
+        Component displayText = moduleInstance.getModuleName();
+        Component descriptionText = moduleInstance.getModuleDescription();
 
         float headerScale = 1.5f;
 

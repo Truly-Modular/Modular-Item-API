@@ -19,7 +19,7 @@
         "location": "miapi:textures/miapi_materials/stone_magma.png"
     },
     "mining_speed": 2.5,
-    "mining_level": 0,
+    "mining_level": "minecraft:incorrect_for_wooden_tool",
     "textures": [
         "stone_magma",
         "rough"

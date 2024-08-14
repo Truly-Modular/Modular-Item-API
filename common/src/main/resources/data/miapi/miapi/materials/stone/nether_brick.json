@@ -24,7 +24,7 @@
         }
     },
     "mining_speed": 4,
-    "mining_level": 1,
+    "mining_level": "minecraft:incorrect_for_stone_tool",
     "textures": [
         "rough"
     ],

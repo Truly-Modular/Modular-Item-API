@@ -1,10 +1,11 @@
-package smartin.miapi.modules.properties;
+package smartin.miapi.modules.properties.slot;
 
 import dev.architectury.event.EventResult;
 import net.minecraft.network.chat.Component;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.conditions.ConditionManager;
 import smartin.miapi.modules.conditions.ModuleCondition;
+import smartin.miapi.modules.properties.CraftingConditionProperty;
 import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.MergeType;
 
@@ -16,7 +17,7 @@ public class CanChangeParentModule extends CodecProperty<ModuleCondition> {
         super(ConditionManager.CONDITION_CODEC_DIRECT);
         CraftingConditionProperty.CAN_CRAFT_SELECT_EVENT.register((slot, module, conditionContext) -> {
             if (slot != null && slot.inSlot != null && !module.isEmpty()) {
-                for (ModuleInstance moduleInstance : slot.inSlot.subModules.values()) {
+                for (ModuleInstance moduleInstance : slot.inSlot.getSubModuleMap().values()) {
                     if (!canChangeParent(moduleInstance, conditionContext)) {
                         conditionContext.failReasons.add(Component.translatable("miapi.crafting_condition.cant_change_parent"));
                         return EventResult.interruptFalse();

@@ -1,9 +1,10 @@
 package smartin.miapi.modules.properties.util;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
+import io.netty.handler.codec.DecoderException;
+import io.netty.handler.codec.EncoderException;
 import net.minecraft.world.item.ItemStack;
 import smartin.miapi.modules.ModuleInstance;
 
@@ -23,10 +24,14 @@ public abstract class CodecProperty<T> implements ModuleProperty<T> {
     }
 
     public T decode(JsonElement element) {
-        return codec.parse(JsonOps.INSTANCE, element).getOrThrow((s) -> new RuntimeException("could not decode CodecProperty " + this.getClass().getName() + " " + s));
+        return codec.parse(JsonOps.INSTANCE, element).getOrThrow((s) -> new DecoderException("could not decode CodecProperty " + this.getClass().getName() + " " + s));
     }
 
     public JsonElement encode(T property) {
-        return codec.encode(property, JsonOps.INSTANCE, new JsonObject()).getOrThrow();
+        var result = codec.encodeStart(JsonOps.INSTANCE, property);
+        if (result.isError()) {
+            throw new EncoderException("Could not Encode " + this.getClass().getName() + " with Error " + result.error().toString());
+        }
+        return result.getOrThrow();
     }
 }

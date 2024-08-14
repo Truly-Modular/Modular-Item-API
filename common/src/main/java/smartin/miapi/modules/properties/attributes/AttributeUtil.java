@@ -3,6 +3,7 @@ package smartin.miapi.modules.properties.attributes;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Multimap;
+import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -48,49 +49,30 @@ public class AttributeUtil {
      * @param multimap
      * @return
      */
-    public static Multimap<Attribute, AttributeModifier> sortMultimap(Multimap<Attribute, AttributeModifier> multimap) {
-        Comparator<Attribute> comparator = (attribute1, attribute2) -> {
+    public static Multimap<Holder<Attribute>, AttributeModifier> sortMultimap(Multimap<Holder<Attribute>, AttributeModifier> multimap) {
+        Comparator<Holder<Attribute>> comparator = (attribute1, attribute2) -> {
             // Get the priority values for the attributes, using 0 as the default value
-            float priority1 = AttributeProperty.priorityMap.getOrDefault(attribute1, 0f);
-            float priority2 = AttributeProperty.priorityMap.getOrDefault(attribute2, 0f);
+            float priority1 = AttributeProperty.priorityMap.getOrDefault(attribute1.value(), 0f);
+            float priority2 = AttributeProperty.priorityMap.getOrDefault(attribute2.value(), 0f);
 
             // Sort in ascending order (lower priority values first)
             return Float.compare(priority1, priority2);
         };
 
         // Sort the keys (attributes) of the Multimap using the comparator
-        List<Attribute> sortedKeys = new ArrayList<>(multimap.keySet());
+        List<Holder<Attribute>> sortedKeys = new ArrayList<>(multimap.keySet());
         sortedKeys.sort(comparator);
 
         // Create a new Multimap with the sorted keys
-        Multimap<Attribute, AttributeModifier> sortedMultimap = LinkedListMultimap.create();
+        Multimap<Holder<Attribute>, AttributeModifier> sortedMultimap = LinkedListMultimap.create();
 
         // Iterate over the sorted keys and add the corresponding values to the sorted Multimap
-        for (Attribute attribute : sortedKeys) {
+        for (Holder<Attribute> attribute : sortedKeys) {
             sortedMultimap.putAll(attribute, multimap.get(attribute));
         }
 
         // Clear the original Multimap and add the sorted entries
         return sortedMultimap;
-    }
-
-    /**
-     * A util function to make reading the multimap simpler
-     *
-     * @param rawMap
-     * @param slot
-     * @param entityAttribute
-     * @param fallback
-     * @return
-     */
-    public static double getActualValueFrom(Multimap<Attribute, AttributeProperty.EntityAttributeModifierHolder> rawMap, EquipmentSlot slot, Attribute entityAttribute, double fallback) {
-        Multimap<Attribute, AttributeModifier> map = ArrayListMultimap.create();
-        rawMap.forEach(((attribute, entityAttributeModifierHolder) -> {
-            if (entityAttributeModifierHolder.slot().test(slot)) {
-                map.put(attribute, entityAttributeModifierHolder.attributeModifier());
-            }
-        }));
-        return getActualValue(map, entityAttribute, fallback);
     }
 
     /**

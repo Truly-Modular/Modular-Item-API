@@ -31,7 +31,7 @@ public class MaterialProperties extends CodecProperty<List<String>> {
                 }
                 if (moduleInstance.module != null) {
                     List<String> newKeys = new ArrayList<>();
-                    newKeys.add(moduleInstance.module.name());
+                    newKeys.add(moduleInstance.module.name().toString());
                     newKeys.addAll(keys);
                     keys = newKeys;
                 }

@@ -61,7 +61,7 @@ public class DoubleOperationResolvable {
         @Override
         public <T> DataResult<Pair<DoubleOperationResolvable, T>> decode(DynamicOps<T> ops, T input) {
             var result = operationCodec.decode(ops, input);
-            if(result.isError()){
+            if (result.isError()) {
                 return DataResult.error(() -> "could not decode double operations");
             }
             Pair<Operation, T> pair = result.getOrThrow();
@@ -203,6 +203,10 @@ public class DoubleOperationResolvable {
         } else {
             return Optional.empty();
         }
+    }
+
+    public boolean isTrue() {
+        return getValue() > 0;
     }
 
     public DoubleOperationResolvable merge(DoubleOperationResolvable left, MergeType mergeType) {

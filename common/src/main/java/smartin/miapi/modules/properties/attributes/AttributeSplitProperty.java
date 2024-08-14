@@ -6,6 +6,7 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlotGroup;
@@ -33,7 +34,7 @@ public class AttributeSplitProperty extends CodecProperty<Map<AttributeSplitProp
                     if (attribute == null) {
                         Miapi.LOGGER.error("could not find Attribute " + attributeID);
                     } else {
-                        Context context = new Context(attribute, group);
+                        Context context = new Context(BuiltInRegistries.ATTRIBUTE.wrapAsHolder(attribute), group);
                         ops.getList(ttPair.getSecond()).getOrThrow().accept(inner -> {
                             ResourceLocation replaceAttributeID = ResourceLocation.CODEC.decode(ops, ops.getMap(input).getOrThrow().get("attribute")).getOrThrow().getFirst();
                             StatResolver.DoubleFromStat doubleFromStat = StatResolver.DoubleFromStat.codec.decode(ops, ops.getMap(input).getOrThrow().get("attribute")).getOrThrow().getFirst();
@@ -41,7 +42,7 @@ public class AttributeSplitProperty extends CodecProperty<Map<AttributeSplitProp
                             if (replaceAttribute == null) {
                                 Miapi.LOGGER.error("could not find Attribute " + replaceAttribute);
                             } else {
-                                SplitContext splitContext = new SplitContext(replaceAttribute, doubleFromStat, 0.0);
+                                SplitContext splitContext = new SplitContext(BuiltInRegistries.ATTRIBUTE.wrapAsHolder(replaceAttribute), doubleFromStat, 0.0);
                                 List<SplitContext> list = map.computeIfAbsent(context, (c) -> new ArrayList<>());
                                 list.add(splitContext);
 
@@ -72,10 +73,10 @@ public class AttributeSplitProperty extends CodecProperty<Map<AttributeSplitProp
     public AttributeSplitProperty() {
         super(CODEC);
         AttributeProperty.attributeTransformers.add((oldMap, itemstack) -> {
-            Multimap<Attribute, AttributeProperty.EntityAttributeModifierHolder> map = ArrayListMultimap.create(oldMap);
+            Multimap<Holder<Attribute>, AttributeProperty.EntityAttributeModifierHolder> map = ArrayListMultimap.create(oldMap);
             Map<Context, List<SplitContext>> replaceMap = getData(itemstack).orElse(new HashMap<>());
             for (Map.Entry<Context, List<SplitContext>> entry : replaceMap.entrySet()) {
-                Attribute currentAttribute = entry.getKey().entityAttribute();
+                Holder<Attribute> currentAttribute = entry.getKey().entityAttribute();
                 EquipmentSlotGroup equipmentSlot = entry.getKey().target();
                 List<SplitContext> ratios = entry.getValue();
 
@@ -95,7 +96,7 @@ public class AttributeSplitProperty extends CodecProperty<Map<AttributeSplitProp
 
                     double baseValue = 0.0;
 
-                    ResourceLocation id = AttributeUtil.getIDForSlot(equipmentSlot, entityAttribute.entityAttribute(), AttributeModifier.Operation.ADD_VALUE, "miapi:attribute_split");
+                    ResourceLocation id = AttributeUtil.getIDForSlot(equipmentSlot, entityAttribute.entityAttribute().value(), AttributeModifier.Operation.ADD_VALUE, "miapi:attribute_split");
 
                     if (foundAttributes != null && !foundAttributes.isEmpty()) {
                         Optional<AttributeProperty.EntityAttributeModifierHolder> holder = foundAttributes.stream()
@@ -143,9 +144,9 @@ public class AttributeSplitProperty extends CodecProperty<Map<AttributeSplitProp
         return merged;
     }
 
-    public record SplitContext(Attribute entityAttribute, StatResolver.DoubleFromStat percent, double value) {
+    public record SplitContext(Holder<Attribute> entityAttribute, StatResolver.DoubleFromStat percent, double value) {
     }
 
-    public record Context(Attribute entityAttribute, EquipmentSlotGroup target) {
+    public record Context(Holder<Attribute> entityAttribute, EquipmentSlotGroup target) {
     }
 }

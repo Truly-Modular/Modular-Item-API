@@ -32,8 +32,8 @@ public class ChildCondition implements ModuleCondition {
         Optional<ModuleInstance> optional = conditionContext.getContext(ConditionManager.MODULE_CONDITION_CONTEXT);
         if (optional.isPresent()) {
             ModuleInstance moduleInstance = optional.get();
-            for (ModuleInstance otherInstance : moduleInstance.subModules.values()) {
-                assert otherInstance.parent != null;
+            for (ModuleInstance otherInstance : moduleInstance.getSubModuleMap().values()) {
+                assert otherInstance.getParent() != null;
                 ConditionManager.ConditionContext copiedContext = conditionContext.copy();
                 copiedContext.setContext(ConditionManager.MODULE_CONDITION_CONTEXT, otherInstance);
                 copiedContext.setContext(ConditionManager.MODULE_PROPERTIES, otherInstance.properties);

@@ -1,4 +1,4 @@
-package smartin.miapi.modules.properties;
+package smartin.miapi.modules.properties.slot;
 
 import com.google.gson.JsonElement;
 import com.mojang.serialization.Codec;
@@ -40,7 +40,7 @@ public class SlotProperty extends CodecProperty<Map<String, SlotProperty.ModuleS
         Transform mergedTransform = Transform.IDENTITY;
         while (current != null) {
             mergedTransform = Transform.merge(getLocalTransform(current), mergedTransform);
-            current = current.parent;
+            current = current.getParent();
         }
         mergedTransform = Transform.merge(mergedTransform, moduleSlot.transform);
         return mergedTransform;
@@ -67,7 +67,7 @@ public class SlotProperty extends CodecProperty<Map<String, SlotProperty.ModuleS
                 mergedTransform.set(null, Transform.IDENTITY);
             }
             mergedTransform = TransformMap.merge(stack, mergedTransform);
-            current = current.parent;
+            current = current.getParent();
         }
         mergedTransform = TransformMap.merge(moduleSlot.getTransformStack(), mergedTransform);
         return mergedTransform;
@@ -78,11 +78,11 @@ public class SlotProperty extends CodecProperty<Map<String, SlotProperty.ModuleS
     }
 
     public static String getSlotID(ModuleInstance instance) {
-        if (instance.parent != null) {
-            Map<String, ModuleSlot> slots = getSlots(instance.parent);
+        if (instance.getParent() != null) {
+            Map<String, ModuleSlot> slots = getSlots(instance.getParent());
             AtomicReference<String> id = new AtomicReference<>("primary");
             slots.forEach((number, moduleSlot) -> {
-                if (moduleSlot.inSlot == instance) {
+                if (moduleSlot.inSlot != null && moduleSlot.inSlot.equals(instance)) {
                     id.set(number);
                 }
             });
@@ -115,8 +115,8 @@ public class SlotProperty extends CodecProperty<Map<String, SlotProperty.ModuleS
 
     @Nullable
     public static ModuleSlot getSlotIn(ModuleInstance instance) {
-        if (instance != null && instance.parent != null) {
-            Map<String, ModuleSlot> slots = getSlots(instance.parent);
+        if (instance != null && instance.getParent() != null) {
+            Map<String, ModuleSlot> slots = getSlots(instance.getParent());
             ModuleSlot slot = slots.values().stream().filter(moduleSlot -> {
                 if (moduleSlot.inSlot == null) return false;
                 return moduleSlot.inSlot.equals(instance);
@@ -204,7 +204,7 @@ public class SlotProperty extends CodecProperty<Map<String, SlotProperty.ModuleS
         }
 
         public void initialize(ModuleInstance moduleInstance) {
-            inSlot = moduleInstance.subModules.get(id);
+            inSlot = moduleInstance.getSubModule(id);
             parent = moduleInstance;
         }
 
@@ -213,6 +213,20 @@ public class SlotProperty extends CodecProperty<Map<String, SlotProperty.ModuleS
             TransformMap stack = new TransformMap();
             stack.add(transform);
             return stack;
+        }
+
+        public List<String> getAsLocation() {
+            List<String> location = new ArrayList<>();
+            location.add(id);
+            ModuleInstance parsing = parent;
+            if(parsing!=null){
+                while (parsing.getParent() != null) {
+                    String slotNumber = SlotProperty.getSlotID(parsing);
+                    location.add(slotNumber);
+                    parsing = parsing.getParent();
+                }
+            }
+            return location;
         }
 
         @Override

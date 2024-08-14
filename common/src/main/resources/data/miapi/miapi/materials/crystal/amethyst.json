@@ -11,7 +11,7 @@
     "flexibility": 0,
     "durability": 1,
     "mining_speed": 5,
-    "mining_level": 0,
+    "mining_level": "minecraft:incorrect_for_wooden_tool",
     "enchantability": 11,
     "color": "A477EE",
     "color_palette": {

@@ -30,8 +30,8 @@ import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.edit_options.EditOption;
 import smartin.miapi.modules.edit_options.EditOptionIcon;
-import smartin.miapi.modules.properties.AllowedSlots;
-import smartin.miapi.modules.properties.SlotProperty;
+import smartin.miapi.modules.properties.slot.AllowedSlots;
+import smartin.miapi.modules.properties.slot.SlotProperty;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.lang.ref.WeakReference;

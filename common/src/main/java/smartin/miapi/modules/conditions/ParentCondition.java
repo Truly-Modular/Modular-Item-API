@@ -31,10 +31,10 @@ public class ParentCondition implements ModuleCondition {
         Optional<ModuleInstance> optional = conditionContext.getContext(ConditionManager.MODULE_CONDITION_CONTEXT);
         if (optional.isPresent()) {
             ModuleInstance moduleInstance = optional.get();
-            if (moduleInstance.parent != null) {
+            if (moduleInstance.getParent() != null) {
                 ConditionManager.ConditionContext copiedContext = conditionContext.copy();
-                copiedContext.setContext(ConditionManager.MODULE_CONDITION_CONTEXT, moduleInstance.parent);
-                copiedContext.setContext(ConditionManager.MODULE_PROPERTIES, moduleInstance.parent.properties);
+                copiedContext.setContext(ConditionManager.MODULE_CONDITION_CONTEXT, moduleInstance.getParent());
+                copiedContext.setContext(ConditionManager.MODULE_PROPERTIES, moduleInstance.getParent().properties);
                 return condition.isAllowed(copiedContext);
             }
         }

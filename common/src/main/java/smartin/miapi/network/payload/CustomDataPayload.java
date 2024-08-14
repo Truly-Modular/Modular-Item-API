@@ -45,10 +45,14 @@ public record CustomDataPayload(CustomPayload data) implements CustomPacketPaylo
 
         //Networking.implementation.trigger(id, buf, serverPlayer);
         Miapi.LOGGER.info("recieved packet " + id + " on thread " + Thread.currentThread().getName() + " isClient " + isClient);
-        if (isClient) {
-            Networking.S2CPackets.get(id).accept(buf);
-        } else {
-            Networking.C2SPackets.get(id).accept(buf, serverPlayer);
+        try {
+            if (isClient) {
+                Networking.S2CPackets.get(id).accept(buf);
+            } else {
+                Networking.C2SPackets.get(id).accept(buf, serverPlayer);
+            }
+        } catch (RuntimeException exception) {
+            Miapi.LOGGER.error("Networking issue: ", exception);
         }
         return new CustomDataPayload(new CustomPayload(id, null, buffer));
     }
@@ -64,7 +68,7 @@ public record CustomDataPayload(CustomPayload data) implements CustomPacketPaylo
         data.writeBoolean(Environment.isClient());
         data.writeUtf(data().id());
         UUID playerUUID = data().serverPlayer();
-        if(playerUUID==null){
+        if (playerUUID == null) {
             Miapi.LOGGER.warn("player is null? this is not normal");
             playerUUID = noPlayerUUID;
         }

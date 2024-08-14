@@ -9,7 +9,7 @@ import net.minecraft.world.item.ItemStack;
 import org.joml.Matrix4f;
 import smartin.miapi.item.modular.Transform;
 import smartin.miapi.modules.ModuleInstance;
-import smartin.miapi.modules.properties.SlotProperty;
+import smartin.miapi.modules.properties.slot.SlotProperty;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -59,7 +59,7 @@ public class ModuleModel {
             submoduleMatrix.mul(matrix4fMiapiModelPair.getSecond().subModuleMatrix());
         });
         //render submodules
-        instance.subModules.forEach((id, instance1) -> {
+        instance.getSubModuleMap().forEach((id, instance1) -> {
             matrices.pushPose();
             Transform.applyPosition(matrices,submoduleMatrix);
             ModuleModel subModuleModel = subModuleModels.get(id);

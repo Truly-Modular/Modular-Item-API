@@ -34,20 +34,6 @@ public class FakeEnchantment {
         enchantmentListMap.put(enchantment, transformers);
     }
 
-    /*
-    //TODO:rewo
-    public static void addEnchantments(EnchantmentHelper.EnchantmentVisitor consumer, ItemStack stack) {
-        Set<Enchantment> enchantments = new HashSet<>();
-        adder.forEach(enchantmentAdder -> {
-            enchantments.addAll(enchantmentAdder.getEnchantments(stack));
-        });
-        enchantments.forEach(enchantment -> {
-            consumer.accept(enchantment, getFakeLevel(enchantment, stack, 0));
-        });
-    }
-
-     */
-
     public interface EnchantmentTransformer {
         int level(Enchantment enchantment, ItemStack stack, int level);
     }

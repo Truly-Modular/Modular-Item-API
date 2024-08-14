@@ -49,7 +49,7 @@
         "contrast"
     ],
     "mining_speed": 12,
-    "mining_level": 1,
+    "mining_level": "minecraft:incorrect_for_gold_tool",
     "items": [
         {
             "item": "minecraft:gold_nugget",

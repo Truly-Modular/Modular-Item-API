@@ -14,7 +14,7 @@ import smartin.miapi.client.gui.crafting.crafter.EditModuleCrafter;
 import smartin.miapi.craft.CraftAction;
 import smartin.miapi.modules.material.Material;
 import smartin.miapi.modules.material.MaterialProperty;
-import smartin.miapi.modules.properties.SlotProperty;
+import smartin.miapi.modules.properties.slot.SlotProperty;
 import smartin.miapi.network.Networking;
 
 import java.util.function.Consumer;

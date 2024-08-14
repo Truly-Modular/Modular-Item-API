@@ -24,7 +24,7 @@
         }
     },
     "mining_speed": 4,
-    "mining_level": 2,
+    "mining_level": "minecraft:incorrect_for_iron_tool",
     "textures": [
         "rough"
     ],

@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import dev.architectury.event.EventResult;
 import net.fabricmc.api.EnvType;
 import net.minecraft.core.Holder;
+import net.minecraft.tags.EnchantmentTags;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
@@ -78,8 +79,7 @@ public class FakeEnchantmentProperty extends CodecProperty<Map<Holder<Enchantmen
                             },
                             0,
                             enchantment.value().getMaxLevel());
-                    if (false) {
-                        //TODO:idk how to check for curses now?
+                    if (enchantment.is(EnchantmentTags.CURSE)) {
                         display.inverse = true;
                     }
                     displays.add((T) display);

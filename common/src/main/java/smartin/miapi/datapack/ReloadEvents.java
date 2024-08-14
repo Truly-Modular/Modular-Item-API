@@ -94,7 +94,7 @@ public class ReloadEvents {
         }));
 
         Codec<Map<ResourceLocation, String>> codec = Codec.unboundedMap(ResourceLocation.CODEC, Codec.STRING);
-        StreamCodec<ByteBuf,Map<ResourceLocation, String>> streamCodec = ByteBufCodecs.fromCodec(codec);
+        StreamCodec<ByteBuf, Map<ResourceLocation, String>> streamCodec = ByteBufCodecs.fromCodec(codec);
 
         dataSyncerRegistry.register("data_packs", new SimpleSyncer<Map<ResourceLocation, String>>(streamCodec) {
             @Override
@@ -105,6 +105,7 @@ public class ReloadEvents {
                 }
                 return toSend;
             }
+
             @Override
             public void interpretData(Map<ResourceLocation, String> data) {
                 Minecraft.getInstance().execute(() -> {
@@ -167,7 +168,13 @@ public class ReloadEvents {
             }
             String receivedID = buffer.readUtf();
             receivedSyncer.add(receivedID);
-            dataSyncerRegistry.get(receivedID).interpretDataClient(buffer);
+            FriendlyByteBuf dataBuffer = Networking.createBuffer();
+            dataBuffer.writeBytes(buffer.readByteArray());
+            try {
+                dataSyncerRegistry.get(receivedID).interpretDataClient(dataBuffer);
+            } catch (RuntimeException exception) {
+                Miapi.LOGGER.error("Exception during Reload Networking!", exception);
+            }
             if (receivedSyncer.size() == dataSyncerRegistry.getFlatMap().keySet().size()) {
                 receivedSyncer.clear();
                 Minecraft.getInstance().execute(() -> {

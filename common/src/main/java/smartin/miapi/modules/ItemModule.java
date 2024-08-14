@@ -4,11 +4,13 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.mojang.datafixers.util.Pair;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import smartin.miapi.Miapi;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.datapack.ReloadEvents;
+import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.item.modular.VisualModularItem;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
@@ -28,25 +30,21 @@ import static smartin.miapi.Miapi.gson;
  * @param name       The name of the module.
  * @param properties The map of properties for the module.
  */
-public record ItemModule(String name, Map<ModuleProperty<?>, Object> properties) {
+public record ItemModule(ResourceLocation name, Map<ModuleProperty<?>, Object> properties) {
 
     /**
      * The key for the properties in the Cache.
      */
     public static final String MODULE_KEY = "modules";
     /**
-     *
-     */
-    public static final String NBT_MODULE_KEY = "miapi_modules";
-    /**
      * An empty ItemModule instance.
      */
-    public static final ItemModule empty = new ItemModule("empty", new HashMap<>());
+    public static final ItemModule empty = new ItemModule(Miapi.id("empty"), new HashMap<>());
 
     /**
      * An internal ItemModule instance, can be used for whatever purpose
      */
-    public static final ItemModule internal = new ItemModule("internal", new HashMap<>());
+    public static final ItemModule internal = new ItemModule(Miapi.id("internal"), new HashMap<>());
 
 
     /**
@@ -60,11 +58,15 @@ public record ItemModule(String name, Map<ModuleProperty<?>, Object> properties)
             JsonObject moduleJson = gson.fromJson(moduleJsonString, JsonObject.class);
             Type type = new TypeToken<Map<String, JsonElement>>() {
             }.getType();
-            String name = moduleJson.get("name").getAsString();
             Map<ModuleProperty<?>, Object> decodedProperties = new HashMap<>();
+            String id = path.toString();
+            id = id.replace("miapi/modules/", "");
+            id = id.replace(".json", "");
+            ResourceLocation revisedID = ResourceLocation.parse(id);
+            LOGGER.info("registered Module " + revisedID);
             Map<String, JsonElement> rawProperties = gson.fromJson(moduleJsonString, type);
             rawProperties.forEach((key, json) -> isValidProperty(key, path, json, isClient, (pair) -> decodedProperties.put(pair.getFirst(), pair.getSecond())));
-            RegistryInventory.modules.register(name, new ItemModule(name, decodedProperties));
+            RegistryInventory.modules.register(revisedID.toString(), new ItemModule(revisedID, decodedProperties));
         } catch (Exception e) {
             LOGGER.warn("Could not load Module " + path, e);
         }
@@ -92,7 +94,7 @@ public record ItemModule(String name, Map<ModuleProperty<?>, Object> properties)
                 map = new HashMap<>();
                 LOGGER.warn("is NULL wtf holder.applyHolder is false");
             }
-            RegistryInventory.modules.register(name, new ItemModule(name, map));
+            RegistryInventory.modules.register(name, new ItemModule(Miapi.id(name), map));
         } catch (Exception e) {
             LOGGER.warn("Could not load Module to extend " + path, e);
         }

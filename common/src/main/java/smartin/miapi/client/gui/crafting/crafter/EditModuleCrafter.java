@@ -14,9 +14,10 @@ import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
 import smartin.miapi.client.gui.crafting.crafter.replace.CraftOption;
+import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.edit_options.EditOption;
-import smartin.miapi.modules.properties.SlotProperty;
+import smartin.miapi.modules.properties.slot.SlotProperty;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -77,7 +78,7 @@ public class EditModuleCrafter extends InteractAbleWidget {
             }
             case REPLACE -> {
                 this.children.clear();
-                CraftEditOption craftEditOption = new CraftEditOption(this.getX(), this.getY(), this.width, this.height, transform(editContext,slot));
+                CraftEditOption craftEditOption = new CraftEditOption(this.getX(), this.getY(), this.width, this.height, transform(editContext, slot));
                 addChild(craftEditOption);
             }
         }
@@ -85,6 +86,12 @@ public class EditModuleCrafter extends InteractAbleWidget {
 
     @Environment(EnvType.CLIENT)
     public static EditOption.EditContext transform(EditOption.EditContext context, SlotProperty.ModuleSlot slot) {
+        ModuleInstance moduleInstance = ItemModule.getModules(context.getItemstack());
+        List<String> location = slot.getAsLocation();
+        for (int i = location.size() + 1; i > 0; i--) {
+            moduleInstance = moduleInstance.getSubModuleMap().get(location.get(i));
+        }
+        SlotProperty.ModuleSlot convertedSlot = SlotProperty.getSlots(moduleInstance).get(location.get(0));
         return new EditOption.EditContext() {
             @Override
             public void craft(FriendlyByteBuf craftBuffer) {
@@ -98,7 +105,7 @@ public class EditModuleCrafter extends InteractAbleWidget {
 
             @Override
             public SlotProperty.ModuleSlot getSlot() {
-                return slot;
+                return convertedSlot;
             }
 
             @Override

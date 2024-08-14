@@ -35,7 +35,14 @@ public interface ModuleProperty<T> {
     }
 
     default Optional<T> getData(ItemStack itemStack) {
-        return Optional.ofNullable(ItemModule.getModules(itemStack).getPropertyItemStack(this));
+        if (itemStack == null) {
+            return Optional.empty();
+        }
+        ModuleInstance baseModule = ItemModule.getModules(itemStack);
+        if (baseModule == null) {
+            return Optional.empty();
+        }
+        return Optional.ofNullable(baseModule.getPropertyItemStack(this));
     }
 
     @SuppressWarnings("unchecked")

@@ -27,7 +27,7 @@
         "metallic"
     ],
     "mining_speed": 5,
-    "mining_level": 2,
+    "mining_level": "minecraft:incorrect_for_iron_tool",
     "items": [
         {
             "item": "minecraft:copper_ingot",

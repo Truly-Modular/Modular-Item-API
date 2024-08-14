@@ -20,6 +20,7 @@ import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TieredItem;
+import org.apache.commons.lang3.mutable.Mutable;
 import org.apache.commons.lang3.mutable.MutableFloat;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
@@ -35,7 +36,6 @@ import smartin.miapi.modules.properties.util.ComponentApplyProperty;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.function.BiFunction;
 
 public class MiapiEvents {
     public static final PrioritizedEvent<LivingAttackEvent> LIVING_ATTACK = PrioritizedEvent.createEventResult();
@@ -52,11 +52,7 @@ public class MiapiEvents {
     public static final PrioritizedEvent<StatUpdateEvent> STAT_UPDATE_EVENT = PrioritizedEvent.createEventResult();
     public static final PrioritizedEvent<ItemStackAttributeEvent> ITEM_STACK_ATTRIBUTE_EVENT = PrioritizedEvent.createEventResult();
     public static final PrioritizedEvent<ReloadEvent> CACHE_CLEAR_EVENT = PrioritizedEvent.createEventResult();
-    @Deprecated
-    /**
-     * @Deprecated use {@link MiapiEvents#GENERATE_MATERIAL_CONVERTERS} instead
-     */
-    public static final PrioritizedEvent<GeneratedMaterialEvent> GENERATED_MATERIAL = PrioritizedEvent.createEventResult();
+    public static final PrioritizedEvent<ItemConvertEvent> CONVERT_ITEM = PrioritizedEvent.createEventResult();
     public static final PrioritizedEvent<CreateMaterialModularConvertersEvent> GENERATE_MATERIAL_CONVERTERS = PrioritizedEvent.createEventResult();
     public static final PrioritizedEvent<PlayerTickEvent> PLAYER_TICK_START = PrioritizedEvent.createLoop();
     public static final PrioritizedEvent<PlayerTickEvent> PLAYER_TICK_END = PrioritizedEvent.createLoop();
@@ -171,6 +167,10 @@ public class MiapiEvents {
     public interface LivingEntityAttributeBuild {
         EventResult build(AttributeSupplier.Builder builder);
 
+    }
+
+    public interface ItemConvertEvent {
+        EventResult convert(ItemStack old, Mutable<ItemStack> converting);
     }
 
     public static class MaterialCraftEventData {

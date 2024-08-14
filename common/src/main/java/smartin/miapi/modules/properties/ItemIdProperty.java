@@ -56,7 +56,7 @@ public class ItemIdProperty extends CodecProperty<ResourceLocation> implements C
 
     @Override
     public ItemStack preview(ItemStack old, ItemStack crafting, Player player, ModularWorkBenchEntity bench, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<String, String> dataMap) {
-        return changeId(old);
+        return changeId(crafting);
     }
 
     @Override

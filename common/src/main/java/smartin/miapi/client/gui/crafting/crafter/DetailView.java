@@ -5,17 +5,15 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.FastColor;
-import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.ScrollList;
 import smartin.miapi.client.gui.ScrollingTextWidget;
 import smartin.miapi.client.gui.crafting.CraftingScreen;
-import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.material.Material;
 import smartin.miapi.modules.material.MaterialProperty;
-import smartin.miapi.modules.properties.SlotProperty;
+import smartin.miapi.modules.properties.slot.SlotProperty;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -97,10 +95,10 @@ public class DetailView extends InteractAbleWidget {
             if (hasNoModule) {
                 moduleInstance = new ModuleInstance(ItemModule.empty);
             }
-            Component materialNameText = StatResolver.translateAndResolve("[translation.[material.translation]]", moduleInstance);
+            Component materialNameText = moduleInstance.getModuleName();
             material = MaterialProperty.getMaterial(moduleInstance);
 
-            Component displayText = StatResolver.translateAndResolve(Miapi.MOD_ID + ".module." + moduleInstance.module.name(), moduleInstance);
+            Component displayText = moduleInstance.getModuleName();
             if (hasNoModule && slot.translationKey != null) {
                 displayText = Component.translatable(slot.translationKey);
             }

@@ -10,6 +10,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
+import smartin.miapi.Miapi;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.craft.CraftAction;
 import smartin.miapi.modules.ItemModule;
@@ -17,6 +18,7 @@ import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.conditions.ConditionManager;
 import smartin.miapi.modules.conditions.ModuleCondition;
 import smartin.miapi.modules.conditions.TrueCondition;
+import smartin.miapi.modules.properties.slot.SlotProperty;
 import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.CraftingProperty;
 import smartin.miapi.modules.properties.util.MergeType;
@@ -88,7 +90,13 @@ public class CraftingConditionProperty extends CodecProperty<CraftingConditionPr
         if (module == null) {
             module = ItemModule.empty;
         }
-        ConditionManager.ConditionContext context = ConditionManager.fullContext(new ModuleInstance(module), bench.getBlockPos(), player, module.properties());
+        BlockPos pos = new BlockPos(0, 0, 0);
+        if (bench != null) {
+            pos = bench.getBlockPos();
+        } else {
+            Miapi.LOGGER.error("bench is null. this should never happen");
+        }
+        ConditionManager.ConditionContext context = ConditionManager.fullContext(new ModuleInstance(module), pos, player, module.properties());
         return json == null || !json.craftAble.isAllowed(context);
     }
 
@@ -99,7 +107,7 @@ public class CraftingConditionProperty extends CodecProperty<CraftingConditionPr
 
     @Override
     public CraftingConditionJson merge(CraftingConditionJson left, CraftingConditionJson right, MergeType mergeType) {
-        if(MergeType.EXTEND.equals(mergeType)){
+        if (MergeType.EXTEND.equals(mergeType)) {
             return left;
         }
         return right;

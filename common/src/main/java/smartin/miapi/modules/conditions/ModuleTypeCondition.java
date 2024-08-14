@@ -16,7 +16,7 @@ public class ModuleTypeCondition implements ModuleCondition {
             instance.group(
                     Codec.STRING
                             .fieldOf("module")
-                            .forGetter((condition) -> condition.module.name()),
+                            .forGetter((condition) -> condition.module.name().toString()),
                     ComponentSerialization.CODEC
                             .optionalFieldOf("error", Component.translatable(Miapi.MOD_ID + ".condition.material.error"))
                             .forGetter((condition) -> condition.error)
