@@ -105,13 +105,13 @@ public class StatListWidget extends InteractAbleWidget {
                 .setFormat("##.#")
                 .setMax(5).build());
         addStatDisplay(AttributeSingleDisplay
-                .builder(AttributeRegistry.REACH)
+                .builder(Attributes.BLOCK_INTERACTION_RANGE)
                 .setTranslationKey("reach")
                 .setDefault(0)
                 .setFormat("##.##")
                 .setMax(2).build());
         addStatDisplay(AttributeSingleDisplay
-                .builder(AttributeRegistry.ATTACK_RANGE)
+                .builder(Attributes.ENTITY_INTERACTION_RANGE)
                 .setTranslationKey("attack_range")
                 .setDefault(0)
                 .setFormat("##.##")

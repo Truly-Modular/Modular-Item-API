@@ -9,10 +9,10 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.profiling.ProfilerFiller;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.attributes.RangedAttribute;
 import smartin.miapi.Environment;
 import smartin.miapi.Miapi;
-import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.fabric.compat.ZenithCompat;
 import smartin.miapi.modules.properties.attributes.AttributeProperty;
 import smartin.miapi.registries.RegistryInventory;
@@ -64,12 +64,12 @@ public class MiapiFabric implements ModInitializer {
         });
 
         AttributeProperty.replaceMap.put("forge:generic.swim_speed", () -> SWIM_SPEED.value());
-        AttributeProperty.replaceMap.put("miapi:generic.reach", () -> AttributeRegistry.REACH.value());
-        AttributeProperty.replaceMap.put("miapi:generic.attack_range", () -> AttributeRegistry.ATTACK_RANGE.value());
-        AttributeProperty.replaceMap.put("forge:block_reach", () -> AttributeRegistry.REACH.value());
-        AttributeProperty.replaceMap.put("forge:entity_reach", () -> AttributeRegistry.ATTACK_RANGE.value());
-        AttributeProperty.replaceMap.put("reach-entity-attributes:reach", () -> AttributeRegistry.REACH.value());
-        AttributeProperty.replaceMap.put("reach-entity-attributes:attack_range", () -> AttributeRegistry.ATTACK_RANGE.value());
+        AttributeProperty.replaceMap.put("miapi:generic.reach", Attributes.BLOCK_INTERACTION_RANGE::value);
+        AttributeProperty.replaceMap.put("miapi:generic.attack_range", Attributes.ENTITY_INTERACTION_RANGE::value);
+        AttributeProperty.replaceMap.put("forge:block_reach", Attributes.BLOCK_INTERACTION_RANGE::value);
+        AttributeProperty.replaceMap.put("forge:entity_reach", Attributes.ENTITY_INTERACTION_RANGE::value);
+        AttributeProperty.replaceMap.put("reach-entity-attributes:reach", Attributes.BLOCK_INTERACTION_RANGE::value);
+        AttributeProperty.replaceMap.put("reach-entity-attributes:attack_range", Attributes.ENTITY_INTERACTION_RANGE::value);
 
         if (Platform.isModLoaded("zenith")) {
             try {

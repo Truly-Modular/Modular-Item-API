@@ -42,9 +42,6 @@ public class AttributeRegistry {
      */
     public static Map<Player, Boolean> hasCrittedLast = new WeakHashMap<>();
 
-    public static Holder<Attribute> REACH;
-    public static Holder<Attribute> ATTACK_RANGE;
-
     public static Holder<Attribute> SWIM_SPEED;
 
     public static Holder<Attribute> MINING_SPEED_PICKAXE;
