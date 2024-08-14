@@ -4,7 +4,11 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.server.level.ServerPlayer;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
+import smartin.miapi.network.Networking;
 
 import java.util.UUID;
 
@@ -22,7 +26,20 @@ public record C2SMiapiPayload(CustomPayload payload) implements CustomPacketPayl
 
     public static C2SMiapiPayload decode(FriendlyByteBuf friendlyByteBuf) {
         CustomPayload payload = CustomPayload.decode(friendlyByteBuf);
+        if (!Networking.C2SPackets.containsKey(payload.id())) {
+            Miapi.LOGGER.error("no reciever for c2s " + payload.id() + " was registered");
+        }
+        FriendlyByteBuf buf = Networking.createBuffer();
+        buf.writeBytes(payload.data());
+        Networking.C2SPackets.get(payload.id()).accept(buf, getPlayer(payload.serverPlayer()));
         return new C2SMiapiPayload(payload);
+    }
+
+    public static @Nullable ServerPlayer getPlayer(@NotNull UUID uuid) {
+        if (Miapi.server != null) {
+            return Miapi.server.getPlayerList().getPlayer(uuid);
+        }
+        return null;
     }
 
     public void encode(FriendlyByteBuf data) {

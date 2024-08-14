@@ -166,7 +166,7 @@ public class EditView extends InteractAbleWidget {
                         sharedPos = position.removeFirst();
                     }
                     for (String entry : position) {
-                        sharedPos = sharedPos + "|" + entry;
+                        sharedPos = sharedPos + "\n" + entry;
                     }
                     buf.writeUtf(sharedPos);
                     buf.writeBytes(packetByteBuf.copy());

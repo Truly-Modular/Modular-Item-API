@@ -47,8 +47,14 @@ public record CustomDataPayload(CustomPayload data) implements CustomPacketPaylo
         Miapi.LOGGER.info("recieved packet " + id + " on thread " + Thread.currentThread().getName() + " isClient " + isClient);
         try {
             if (isClient) {
+                if(!Networking.S2CPackets.containsKey(id)){
+                    Miapi.LOGGER.error("no reciever for s2c "+id+" was registered");
+                }
                 Networking.S2CPackets.get(id).accept(buf);
             } else {
+                if(!Networking.C2SPackets.containsKey(id)){
+                    Miapi.LOGGER.error("no reciever for c2s "+id+" was registered");
+                }
                 Networking.C2SPackets.get(id).accept(buf, serverPlayer);
             }
         } catch (RuntimeException exception) {

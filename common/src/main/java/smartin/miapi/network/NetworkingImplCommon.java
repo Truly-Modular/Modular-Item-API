@@ -6,7 +6,10 @@ import io.netty.buffer.Unpooled;
 import net.fabricmc.api.EnvType;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
+import smartin.miapi.network.modern.ModernNetworking;
+import smartin.miapi.network.modern.payload.C2SMiapiPayload;
 import smartin.miapi.network.modern.payload.CustomPayload;
+import smartin.miapi.network.modern.payload.S2CMiapiPayload;
 import smartin.miapi.network.payload.CustomDataPayload;
 
 public class NetworkingImplCommon extends NetworkingImpl {
@@ -20,6 +23,7 @@ public class NetworkingImplCommon extends NetworkingImpl {
         NetworkManager.registerReceiver(NetworkManager.Side.S2C, CustomDataPayload.TYPE, CustomDataPayload.STREAM_CODEC, (value, context) -> {
 
         });
+        ModernNetworking.setup();
     }
 
     public void setupServer() {
@@ -35,12 +39,12 @@ public class NetworkingImplCommon extends NetworkingImpl {
 
         //buf.writeUtf(identifier);
         //buf.writeBytes(buffer.copy());
-        NetworkManager.sendToServer(new CustomDataPayload(new CustomPayload(identifier, null,
+        NetworkManager.sendToServer(new C2SMiapiPayload(new CustomPayload(identifier, null,
                 buffer.array())));
     }
 
     public void sendPacketToClient(String identifier, ServerPlayer player, FriendlyByteBuf buffer) {
-        NetworkManager.sendToPlayer(player, new CustomDataPayload(new CustomPayload(identifier, player.getUUID(), buffer.array())));
+        NetworkManager.sendToPlayer(player, new S2CMiapiPayload(new CustomPayload(identifier, player.getUUID(), buffer.array())));
     }
 
     @Override

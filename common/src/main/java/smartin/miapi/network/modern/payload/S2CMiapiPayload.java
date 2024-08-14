@@ -4,6 +4,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import smartin.miapi.Miapi;
+import smartin.miapi.network.Networking;
 
 import java.util.UUID;
 
@@ -21,6 +22,12 @@ public record S2CMiapiPayload(CustomPayload payload) implements CustomPacketPayl
 
     public static S2CMiapiPayload decode(FriendlyByteBuf friendlyByteBuf) {
         CustomPayload payload = CustomPayload.decode(friendlyByteBuf);
+        if(!Networking.S2CPackets.containsKey(payload.id())){
+            Miapi.LOGGER.error("no reciever for s2c "+payload.id()+" was registered");
+        }
+        FriendlyByteBuf buf = Networking.createBuffer();
+        buf.writeBytes(payload.data());
+        Networking.S2CPackets.get(payload.id()).accept(buf);
         return new S2CMiapiPayload(payload);
     }
 

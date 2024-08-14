@@ -84,6 +84,7 @@ public class ReloadEvents {
         }
 
         Networking.registerC2SPacket(RELOAD_PACKET_ID, ((buf, serverPlayerEntity) -> {
+            Miapi.DEBUG_LOGGER.info("Recieved reload request from client!" + serverPlayerEntity.getUUID() + "! sending reload! " + Thread.currentThread().getName());
             boolean allowHandshake = buf.readBoolean();
             if (!allowHandshake) {
                 Miapi.LOGGER.warn("Client " + serverPlayerEntity.getUUID() + " rejected reload? this should never happen!");
@@ -149,6 +150,7 @@ public class ReloadEvents {
             buf.writeUtf(id);
             buf.writeByteArray(syncer.createDataServer().array());
             Networking.sendS2C(RELOAD_PACKET_ID, entity, buf);
+            Miapi.DEBUG_LOGGER.info("sending dataSyncer info to client!" + entity.getUUID() + "!" + Thread.currentThread().getName());
         });
     }
 
@@ -163,6 +165,7 @@ public class ReloadEvents {
 
     private static void clientSetup() {
         Networking.registerS2CPacket(RELOAD_PACKET_ID, (buffer) -> {
+            Miapi.DEBUG_LOGGER.info("recieved dataSyncer info on client! " + Thread.currentThread().getName());
             if (receivedSyncer.isEmpty()) {
                 clientReloadTimeStart = System.nanoTime();
             }

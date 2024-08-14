@@ -2,6 +2,7 @@ package smartin.miapi.network.modern.payload;
 
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
+import smartin.miapi.network.payload.CustomDataPayload;
 
 import java.util.UUID;
 
@@ -16,7 +17,7 @@ public record CustomPayload(String id, UUID serverPlayer, byte[] data) {
 
     public void encode(FriendlyByteBuf data) {
         data.writeUtf(id());
-        data.writeUUID(serverPlayer());
+        data.writeUUID(serverPlayer() != null ? serverPlayer() : CustomDataPayload.noPlayerUUID);
         data.writeByteArray(data());
     }
 

@@ -55,7 +55,7 @@ public class HoverMaterialList extends InteractAbleWidget {
             List<Material> materialList = materials.get(selectedMaterialOrGroup);
             int sizeBaseList = 30;
             int verticalSize = Math.min(materials.size(), maxElements);
-            verticalSize = Math.max(Math.min(materialList.size(), maxElements), verticalSize);
+            verticalSize = Math.clamp(materialList.size(), verticalSize, maxElements);
             for (int i = scrollPosOne; i < Math.min(materials.size(), maxElements + scrollPosOne); i++) {
                 Component material = getTranslation(materialKeys.get(i));
                 sizeBaseList = Math.max(Minecraft.getInstance().font.width(material), sizeBaseList);

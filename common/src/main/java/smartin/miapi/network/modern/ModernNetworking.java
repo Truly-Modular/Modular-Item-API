@@ -20,7 +20,7 @@ public class ModernNetworking {
     public static final Map<ResourceLocation, Receiver<?>> s2cReceivers = new HashMap<>();
     public static final Map<ResourceLocation, Receiver<?>> c2sReceivers = new HashMap<>();
 
-    static {
+    public static void setup() {
         NetworkManager.registerReceiver(NetworkManager.Side.S2C, S2CMiapiPayload.TYPE, S2CMiapiPayload.STREAM_CODEC, (packet, context) -> {
             ModernNetworking.s2cReceivers.computeIfPresent(packet.payload().parseId(), ((location, receiver) -> {
                 FriendlyByteBuf buf = Networking.createBuffer();
