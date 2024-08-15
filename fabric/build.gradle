@@ -99,7 +99,7 @@ dependencies {
     /*modApi "dev.latvian.mods:rhino-fabric:${rootProject.rhino_version}"
     modApi "dev.latvian.mods:kubejs-fabric:${rootProject.kjs_version}"*/
 
-    modImplementation "software.bernie.geckolib:geckolib-fabric-${minecraft_version}:${geckolib_version}"
+    modApi "software.bernie.geckolib:geckolib-fabric-${minecraft_version}:${geckolib_version}"
 
     modApi(include("com.redpxnda.nucleus:nucleus-core-fabric:${rootProject.minecraft_version}+${rootProject.nucleus_core_version}"))
     modApi(include("com.redpxnda.nucleus:nucleus-codec-fabric:${rootProject.minecraft_version}+${rootProject.nucleus_codec_version}"))

@@ -43,7 +43,6 @@
         "ThrowablePotionItemAccessor"
     ],
     "client": [
-        "client.ArmorFeatureRendererMixin",
         "client.BuiltinModelItemRendererMixin",
         "client.ClientPlayerEntityMixin",
         "client.ElytraEntityModelAccessor",

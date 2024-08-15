@@ -11,7 +11,8 @@
     "client": [
         "ModelLoaderMixin",
         "TextMixin",
-        "TranslatableTextContentAccessor"
+        "TranslatableTextContentAccessor",
+        "ArmorFeatureRendererMixin"
     ],
     "injectors": {
         "defaultRequire": 1

@@ -1,4 +1,4 @@
-package smartin.miapi.mixin.client;
+package smartin.miapi.forge.mixin;
 
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.feature.ArmorFeatureRenderer;
@@ -16,6 +16,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import smartin.miapi.client.atlas.ArmorModelManager;
 import smartin.miapi.item.modular.VisualModularItem;
+import smartin.miapi.mixin.client.FeatureRendererAccessor;
 
 @Mixin(value = ArmorFeatureRenderer.class, priority = 700)
 public abstract class ArmorFeatureRendererMixin<T extends LivingEntity, M extends BipedEntityModel<T>, A extends BipedEntityModel<T>> extends FeatureRenderer<T, M> {
