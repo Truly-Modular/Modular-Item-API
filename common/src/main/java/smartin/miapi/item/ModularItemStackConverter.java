@@ -1,10 +1,12 @@
 package smartin.miapi.item;
 
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.ItemAttributeModifiers;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.util.ArrayList;
 import java.util.List;
-import net.minecraft.world.item.ItemStack;
 
 /**
  * The ModularItemStackConverter class provides a mechanism to convert an ItemStack into its modular version.
@@ -27,10 +29,18 @@ public class ModularItemStackConverter {
         if (original.is(RegistryInventory.MIAPI_FORBIDDEN_TAG)) {
             return original;
         }
-        for (ModularConverter converter : converters) {
-            original = converter.convert(original);
+        ItemStack converted = original.copy();
+        if(original.getItem().getDefaultInstance().has(DataComponents.ATTRIBUTE_MODIFIERS)){
+            var oldEntries = original.getItem().getDefaultInstance().get(DataComponents.ATTRIBUTE_MODIFIERS).modifiers();
+            converted.update(DataComponents.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.EMPTY, (old) -> new ItemAttributeModifiers(
+                    old.modifiers().stream().filter(a -> !oldEntries.contains(a)).toList(),
+                    old.showInTooltip()
+            ));
         }
-        return original;
+        for (ModularConverter converter : converters) {
+            converted = converter.convert(converted);
+        }
+        return converted;
     }
 
     /**
