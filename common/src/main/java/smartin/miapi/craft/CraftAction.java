@@ -245,7 +245,7 @@ public class CraftAction {
         }
         ModuleInstance parsingInstance = newBaseModule;
         for (int i = slotLocation.size() - 1; i > 0; i--) {
-            if (parsingInstance == null) {
+            if (parsingInstance != null) {
                 parsingInstance = parsingInstance.getSubModule(slotLocation.get(i));
             } else {
                 Miapi.LOGGER.error("Critical error in replace Logic!, step craft slot position of crafting was not found!");
@@ -253,7 +253,6 @@ public class CraftAction {
                     Miapi.LOGGER.error("slot id" + slot);
                 });
                 return old;
-                //throw new RuntimeException("Critical error in replace Logic!, slot position of crafting was not found!");
             }
         }
 
