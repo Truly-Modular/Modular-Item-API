@@ -198,6 +198,7 @@ public class CraftAction {
                     inventory,
                     buffer);
             craftingStack[0] = itemStacks.removeFirst();
+            ComponentApplyProperty.updateItemStack(craftingStack[0], player.level().registryAccess());
             updateItem(craftingStack[0], module);
             for (int i = start; i < end; i++) {
                 linkedInventory.setItem(i, itemStacks.get(i - start));
@@ -283,7 +284,6 @@ public class CraftAction {
         }
         newBaseModule.writeToItem(craftingStack);
         craftingStack = craftingStack.copy();
-        ComponentApplyProperty.updateItemStack(craftingStack, player.level().registryAccess());
         return craftingStack;
     }
 
@@ -305,6 +305,7 @@ public class CraftAction {
                         toAdd,
                         inventory,
                         buffer)));
+        ComponentApplyProperty.updateItemStack(craftingStack.get(), player.level().registryAccess());
         ModuleInstance parsingInstance = ItemModule.getModules(craftingStack.get());
         for (int i = slotLocation.size() - 1; i >= 0; i--) {
             if (parsingInstance == null) {

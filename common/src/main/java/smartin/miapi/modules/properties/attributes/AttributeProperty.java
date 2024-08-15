@@ -276,7 +276,7 @@ public class AttributeProperty extends CodecProperty<List<AttributeProperty.Attr
 
     @Override
     public void updateComponent(ItemStack itemStack, RegistryAccess registryAccess) {
-        var attributes = itemStack.get(DataComponents.ATTRIBUTE_MODIFIERS);
+        var attributes = itemStack.getOrDefault(DataComponents.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.EMPTY);
         List<ItemAttributeModifiers.Entry> filteredList = new ArrayList<>(attributes.modifiers().stream().filter(entry -> !entry.modifier().id().getNamespace().equals(Miapi.MOD_ID)).toList());
         equipmentSlotMultimapMapGenerate(itemStack).forEach(((group, attributeAttributeModifierMultimap) -> {
             attributeAttributeModifierMultimap.forEach((attribute, attributeModifier) -> {
