@@ -23,8 +23,7 @@ public class ModularArmorRenderer implements ArmorRenderer {
                     stack,
                     entity,
                     contextModel,
-                    contextModel,
-                    null);
+                    contextModel);
         }
     }
 }

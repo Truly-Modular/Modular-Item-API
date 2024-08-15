@@ -31,6 +31,9 @@ public class ModularElytraFeatureRenderer<T extends LivingEntity, M extends Enti
     @Override
     public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, LivingEntity livingEntity, float f, float g, float h, float j, float k, float l) {
         ItemStack itemStack = livingEntity.getEquippedStack(EquipmentSlot.CHEST);
+        if(true){
+            return;
+        }
         if (itemStack.getItem() instanceof VisualModularItem) {
             matrixStack.push();
             matrixStack.translate(0.0F, 0.0F, 0.125F);

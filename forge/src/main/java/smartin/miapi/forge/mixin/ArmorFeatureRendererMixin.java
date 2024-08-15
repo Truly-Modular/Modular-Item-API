@@ -39,6 +39,6 @@ public abstract class ArmorFeatureRendererMixin<T extends LivingEntity, M extend
     @Unique
     private void renderPieces(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, EquipmentSlot armorSlot, ItemStack itemStack, T entity, A outerModel, FeatureRendererContext context) {
         this.getContextModel().copyBipedStateTo(outerModel);
-        ArmorModelManager.renderArmorPiece(matrices, vertexConsumers, light, armorSlot, itemStack, entity, outerModel, this.getContextModel(),context);
+        ArmorModelManager.renderArmorPiece(matrices, vertexConsumers, light, armorSlot, itemStack, entity, outerModel, this.getContextModel());
     }
 }

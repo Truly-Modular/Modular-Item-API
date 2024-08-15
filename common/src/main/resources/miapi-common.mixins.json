@@ -4,7 +4,6 @@
     "package": "smartin.miapi.mixin",
     "compatibilityLevel": "JAVA_17",
     "mixins": [
-        "CraftingResultInventorMixin",
         "ApoliStackPowerMixin",
         "ArcheryHookMixin",
         "AxeItemAccessor",
@@ -12,6 +11,7 @@
         "ChorusFruitMixin",
         "ClientAdvancementManagerAccessor",
         "ConduitBlockEntityAccessor",
+        "CraftingResultInventorMixin",
         "DefaultAttributeContainerAccessor",
         "DefaultAttributeRegistryMixin",
         "DispenserBlockAccessor",
@@ -23,7 +23,6 @@
         "FireworkRocketEntityMixin",
         "ForgingScreenHandlerAccessor",
         "HoeItemAccessor",
-        "client.InGameHudAccessor",
         "InventoryValidationMixin",
         "ItemEntityMixin",
         "ItemStackMixin",
@@ -40,7 +39,8 @@
         "SmithingScreenHandlerAccessor",
         "SmithingScreenHandlerMixin",
         "SmithingTransformRecipeAccessor",
-        "ThrowablePotionItemAccessor"
+        "ThrowablePotionItemAccessor",
+        "client.InGameHudAccessor"
     ],
     "client": [
         "client.BuiltinModelItemRendererMixin",
