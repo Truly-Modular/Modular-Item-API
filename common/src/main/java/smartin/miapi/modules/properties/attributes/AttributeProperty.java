@@ -15,6 +15,7 @@ import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import smartin.miapi.Miapi;
@@ -146,8 +147,8 @@ public class AttributeProperty extends CodecProperty<List<AttributeProperty.Attr
         });
 
         Map<EquipmentSlotGroup, Multimap<Holder<Attribute>, AttributeModifier>> sortedMap = new HashMap<>();
-        map.forEach((slot,attributes) ->{
-            sortedMap.put(slot,AttributeUtil.sortMultimap(attributes));
+        map.forEach((slot, attributes) -> {
+            sortedMap.put(slot, AttributeUtil.sortMultimap(attributes));
         });
         return sortedMap;
     }
@@ -206,7 +207,7 @@ public class AttributeProperty extends CodecProperty<List<AttributeProperty.Attr
 
     private static Optional<AttributeModifier> mergeMultiplyTotalAttributes(Pair<EquipmentSlotGroup, Holder<Attribute>> pair, List<AttributeModifier> multiplyList) {
         double multiply = 1;
-        for (AttributeModifier entityAttributeModifier :multiplyList) {
+        for (AttributeModifier entityAttributeModifier : multiplyList) {
             if (entityAttributeModifier.operation().equals(AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL)) {
                 multiply = multiply * entityAttributeModifier.amount();
             }
@@ -277,7 +278,11 @@ public class AttributeProperty extends CodecProperty<List<AttributeProperty.Attr
     @Override
     public void updateComponent(ItemStack itemStack, RegistryAccess registryAccess) {
         var attributes = itemStack.getOrDefault(DataComponents.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.EMPTY);
-        List<ItemAttributeModifiers.Entry> filteredList = new ArrayList<>(attributes.modifiers().stream().filter(entry -> !entry.modifier().id().getNamespace().equals(Miapi.MOD_ID)).toList());
+        List<ItemAttributeModifiers.Entry> filteredList = new ArrayList<>(attributes.modifiers().stream().filter(
+                entry -> !(entry.modifier().id().getNamespace().equals(Miapi.MOD_ID)
+                         || entry.modifier().id().equals(Item.BASE_ATTACK_DAMAGE_ID)
+                         || entry.modifier().id().equals(Item.BASE_ATTACK_SPEED_ID))
+        ).toList());
         equipmentSlotMultimapMapGenerate(itemStack).forEach(((group, attributeAttributeModifierMultimap) -> {
             attributeAttributeModifierMultimap.forEach((attribute, attributeModifier) -> {
                 filteredList.add(new ItemAttributeModifiers.Entry(attribute, attributeModifier, group));

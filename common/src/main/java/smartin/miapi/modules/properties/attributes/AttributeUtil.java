@@ -159,13 +159,13 @@ public class AttributeUtil {
     public static ResourceLocation getIDForSlot(EquipmentSlotGroup equipmentSlot, Attribute attribute, AttributeModifier.Operation operation) {
         if (
                 equipmentSlot.equals(EquipmentSlotGroup.MAINHAND) &&
-                attribute.equals(Attributes.ATTACK_DAMAGE) &&
+                attribute.equals(Attributes.ATTACK_DAMAGE.value()) &&
                 operation.equals(AttributeModifier.Operation.ADD_VALUE)){
             return SwordItem.BASE_ATTACK_DAMAGE_ID;
         }
         if (
                 equipmentSlot.equals(EquipmentSlotGroup.MAINHAND) &&
-                attribute.equals(Attributes.ATTACK_SPEED) &&
+                attribute.equals(Attributes.ATTACK_SPEED.value()) &&
                 operation.equals(AttributeModifier.Operation.ADD_VALUE)){
             return SwordItem.BASE_ATTACK_SPEED_ID;
         }
