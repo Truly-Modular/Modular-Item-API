@@ -4,6 +4,7 @@ import dev.architectury.networking.NetworkManager;
 import dev.architectury.platform.Platform;
 import io.netty.buffer.Unpooled;
 import net.fabricmc.api.EnvType;
+import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import smartin.miapi.network.modern.ModernNetworking;
@@ -11,6 +12,8 @@ import smartin.miapi.network.modern.payload.C2SMiapiPayload;
 import smartin.miapi.network.modern.payload.CustomPayload;
 import smartin.miapi.network.modern.payload.S2CMiapiPayload;
 import smartin.miapi.network.payload.CustomDataPayload;
+
+import java.util.UUID;
 
 public class NetworkingImplCommon extends NetworkingImpl {
     protected NetworkingImplCommon instance;
@@ -39,7 +42,8 @@ public class NetworkingImplCommon extends NetworkingImpl {
 
         //buf.writeUtf(identifier);
         //buf.writeBytes(buffer.copy());
-        NetworkManager.sendToServer(new C2SMiapiPayload(new CustomPayload(identifier, null,
+        UUID player = Minecraft.getInstance().player.getUUID();
+        NetworkManager.sendToServer(new C2SMiapiPayload(new CustomPayload(identifier, player,
                 buffer.array())));
     }
 

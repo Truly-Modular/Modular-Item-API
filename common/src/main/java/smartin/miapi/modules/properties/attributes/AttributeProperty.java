@@ -129,21 +129,14 @@ public class AttributeProperty extends CodecProperty<List<AttributeProperty.Attr
                     case ADD_MULTIPLIED_TOTAL -> multiplyTotal.add(holder.attributeModifier());
                 }
             }
-            mergeAddAttributes(pair, addition).ifPresent(addAttribute -> {
-                var slotMap = map.getOrDefault(pair.getFirst(), ArrayListMultimap.create());
-                slotMap.put(pair.getSecond(), addAttribute);
-                map.put(pair.getFirst(), slotMap);
-            });
-            mergeMultiplyBaseAttributes(pair, multiplication).ifPresent(addAttribute -> {
-                var slotMap = map.getOrDefault(pair.getFirst(), ArrayListMultimap.create());
-                slotMap.put(pair.getSecond(), addAttribute);
-                map.put(pair.getFirst(), slotMap);
-            });
-            mergeMultiplyTotalAttributes(pair, multiplyTotal).ifPresent(addAttribute -> {
-                var slotMap = map.getOrDefault(pair.getFirst(), ArrayListMultimap.create());
-                slotMap.put(pair.getSecond(), addAttribute);
-                map.put(pair.getFirst(), slotMap);
-            });
+            var slotMap = map.getOrDefault(pair.getFirst(), ArrayListMultimap.create());
+            mergeAddAttributes(pair, addition).ifPresent(addAttribute ->
+                    slotMap.put(pair.getSecond(), addAttribute));
+            mergeMultiplyBaseAttributes(pair, multiplication).ifPresent(addAttribute ->
+                    slotMap.put(pair.getSecond(), addAttribute));
+            mergeMultiplyTotalAttributes(pair, multiplyTotal).ifPresent(addAttribute ->
+                    slotMap.put(pair.getSecond(), addAttribute));
+            map.put(pair.getFirst(), slotMap);
         });
 
         Map<EquipmentSlotGroup, Multimap<Holder<Attribute>, AttributeModifier>> sortedMap = new HashMap<>();

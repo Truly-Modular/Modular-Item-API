@@ -30,15 +30,15 @@ public class SkinOptions implements EditOption {
 
     public SkinOptions() {
         defaultTab = SkinTab.fromJson(null);
-        PropertyResolver.register(Miapi.id( "skin"), (moduleInstance, oldMap) -> {
+        PropertyResolver.register(Miapi.id("skin"), (moduleInstance, oldMap) -> {
             if (moduleInstance != null) {
                 Optional<Skin> foundSkin = Skin.getSkin(moduleInstance);
-                if(foundSkin.isPresent()){
+                if (foundSkin.isPresent()) {
                     oldMap = foundSkin.get().propertyHolder.applyHolder(oldMap);
                 }
             }
             return oldMap;
-        }, List.of(Miapi.id( "synergy")));
+        }, List.of(Miapi.id("synergy")));
         Miapi.registerReloadHandler(ReloadEvents.MAIN, "miapi/skins/module", skins, (isClient, path, data) -> {
             load(data);
         }, 1);
@@ -75,7 +75,7 @@ public class SkinOptions implements EditOption {
     @Override
     public ItemStack preview(FriendlyByteBuf buffer, EditContext context) {
         String skin = buffer.readUtf();
-        Skin.writeSkin(context.getInstance(),skin);
+        Skin.writeSkin(context.getInstance(), skin);
         context.getInstance().getRoot().writeToItem(context.getItemstack());
         context.getInstance().clearCaches();
         return context.getItemstack();
@@ -83,8 +83,12 @@ public class SkinOptions implements EditOption {
 
     @Override
     public boolean isVisible(EditContext context) {
-        return context.getInstance() != null &&
-               skins.get(context.getInstance().module) != null;
+        if(context.getInstance()!=null){
+            ItemModule module = context.getInstance().module;
+            var foundSkins = skins.get(module);
+            return foundSkins != null;
+        }
+        return false;
     }
 
     @Environment(EnvType.CLIENT)
