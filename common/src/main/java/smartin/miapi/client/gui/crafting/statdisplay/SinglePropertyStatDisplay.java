@@ -24,9 +24,7 @@ public class SinglePropertyStatDisplay extends SingleStatDisplayDouble {
     @Override
     public boolean shouldRender(ItemStack original, ItemStack compareTo) {
         super.shouldRender(original, compareTo);
-        return property.getValue(original).isEmpty() && property.getValue(compareTo).isEmpty() ||
-               property.getValue(original).orElse(0.0) == 0.0 &&
-               property.getValue(compareTo).orElse(0.0) == 0.0;
+        return property.getValue(original).isEmpty() && property.getValue(compareTo).isEmpty();
     }
 
     @Override

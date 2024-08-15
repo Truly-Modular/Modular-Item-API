@@ -10,7 +10,9 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import smartin.miapi.Miapi;
 
@@ -155,6 +157,18 @@ public class AttributeUtil {
      * @return a unique ID for the slot
      */
     public static ResourceLocation getIDForSlot(EquipmentSlotGroup equipmentSlot, Attribute attribute, AttributeModifier.Operation operation) {
+        if (
+                equipmentSlot.equals(EquipmentSlotGroup.MAINHAND) &&
+                attribute.equals(Attributes.ATTACK_DAMAGE) &&
+                operation.equals(AttributeModifier.Operation.ADD_VALUE)){
+            return SwordItem.BASE_ATTACK_DAMAGE_ID;
+        }
+        if (
+                equipmentSlot.equals(EquipmentSlotGroup.MAINHAND) &&
+                attribute.equals(Attributes.ATTACK_SPEED) &&
+                operation.equals(AttributeModifier.Operation.ADD_VALUE)){
+            return SwordItem.BASE_ATTACK_SPEED_ID;
+        }
         return getIDForSlot(equipmentSlot, attribute, operation, "");
     }
 

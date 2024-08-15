@@ -282,7 +282,9 @@ public class CraftAction {
             parsingInstance.setSubModule(slotLocation.getFirst(), newModule);
         }
         newBaseModule.writeToItem(craftingStack);
-        return craftingStack.copy();
+        craftingStack = craftingStack.copy();
+        ComponentApplyProperty.updateItemStack(craftingStack, player.level().registryAccess());
+        return craftingStack;
     }
 
     /**
@@ -387,7 +389,6 @@ public class CraftAction {
             propertyConsumer.accept(craftingProperty, newInstance, itemStacks, startPos, endPos, data);
             integer.set(endPos);
         }
-        ComponentApplyProperty.updateItemStack(crafted, player.level().registryAccess());
     }
 
     /**

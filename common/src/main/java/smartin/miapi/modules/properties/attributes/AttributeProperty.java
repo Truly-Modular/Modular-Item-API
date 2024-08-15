@@ -2,7 +2,7 @@ package smartin.miapi.modules.properties.attributes;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
-import com.google.common.collect.Multimaps;
+import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.redpxnda.nucleus.codec.auto.AutoCodec;
 import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
@@ -19,7 +19,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import smartin.miapi.Miapi;
 import smartin.miapi.attributes.AttributeRegistry;
-import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
@@ -112,122 +111,119 @@ public class AttributeProperty extends CodecProperty<List<AttributeProperty.Attr
      */
     private static Map<EquipmentSlotGroup, Multimap<Holder<Attribute>, AttributeModifier>> equipmentSlotMultimapMapGenerate(ItemStack itemStack) {
         Map<EquipmentSlotGroup, Multimap<Holder<Attribute>, AttributeModifier>> map = new HashMap<>();
-        Arrays.stream(EquipmentSlotGroup.values()).forEach(equipmentSlot -> {
-            map.put(equipmentSlot, Multimaps.unmodifiableMultimap(getAttributeModifiersForSlot(itemStack, equipmentSlot, ArrayListMultimap.create())));
+        Map<Pair<EquipmentSlotGroup, Holder<Attribute>>, List<EntityAttributeModifierHolder>> equipentSlotMap = new HashMap<>();
+        AttributeProperty.getAttributeModifiers(itemStack).forEach((attribute, info) -> {
+            List<EntityAttributeModifierHolder> infos = equipentSlotMap.getOrDefault(new Pair<>(info.slot(), attribute), new ArrayList<>());
+            infos.add(info);
+            equipentSlotMap.put(new Pair<>(info.slot(), attribute), infos);
         });
-        return map;
-    }
-
-    private static Multimap<Holder<Attribute>, AttributeModifier> getAttributeModifiersForSlot(ItemStack itemStack, EquipmentSlotGroup slot, Multimap<Holder<Attribute>, AttributeModifier> toAdding) {
-        if (itemStack.getItem() instanceof ModularItem) {
-            Multimap<Holder<Attribute>, EntityAttributeModifierHolder> toMerge = AttributeProperty.getAttributeModifiers(itemStack);
-            Multimap<Holder<Attribute>, AttributeModifier> merged = ArrayListMultimap.create();
-            Map<ResourceLocation, Multimap<Holder<Attribute>, AttributeModifier>> mergedAdditive = new HashMap<>();
-            Map<ResourceLocation, Multimap<Holder<Attribute>, AttributeModifier>> mergedMultiBase = new HashMap<>();
-            Map<ResourceLocation, Multimap<Holder<Attribute>, AttributeModifier>> mergedMultiTotal = new HashMap<>();
-
-            // Add existing modifiers from original to merged
-            toAdding.entries().forEach(entry -> merged.put(entry.getKey(), entry.getValue()));
-
-            toMerge.forEach((entityAttribute, entityAttributeModifier) -> {
-                if (slot.equals(entityAttributeModifier.slot)) {
-                    switch (entityAttributeModifier.mergeTo) {
-                        case ADD_VALUE -> {
-                            Multimap<Holder<Attribute>, AttributeModifier> multimap = mergedAdditive.computeIfAbsent(entityAttributeModifier.attributeModifier().id(), (id) -> ArrayListMultimap.create());
-                            multimap.put(entityAttribute, entityAttributeModifier.attributeModifier());
-                        }
-                        case ADD_MULTIPLIED_BASE -> {
-                            Multimap<Holder<Attribute>, AttributeModifier> multimap = mergedMultiBase.computeIfAbsent(entityAttributeModifier.attributeModifier().id(), (id) -> ArrayListMultimap.create());
-                            multimap.put(entityAttribute, entityAttributeModifier.attributeModifier());
-                        }
-                        case ADD_MULTIPLIED_TOTAL -> {
-                            Multimap<Holder<Attribute>, AttributeModifier> multimap = mergedMultiTotal.computeIfAbsent(entityAttributeModifier.attributeModifier().id(), (id) -> ArrayListMultimap.create());
-                            multimap.put(entityAttribute, entityAttributeModifier.attributeModifier());
-                        }
-                    }
+        equipentSlotMap.forEach((pair, values) -> {
+            List<AttributeModifier> addition = new ArrayList<>();
+            List<AttributeModifier> multiplication = new ArrayList<>();
+            List<AttributeModifier> multiplyTotal = new ArrayList<>();
+            for (EntityAttributeModifierHolder holder : values) {
+                switch (holder.mergeTo()) {
+                    case ADD_VALUE -> addition.add(holder.attributeModifier());
+                    case ADD_MULTIPLIED_BASE -> multiplication.add(holder.attributeModifier());
+                    case ADD_MULTIPLIED_TOTAL -> multiplyTotal.add(holder.attributeModifier());
                 }
+            }
+            mergeAddAttributes(pair, addition).ifPresent(addAttribute -> {
+                var slotMap = map.getOrDefault(pair.getFirst(), ArrayListMultimap.create());
+                slotMap.put(pair.getSecond(), addAttribute);
+                map.put(pair.getFirst(), slotMap);
             });
-
-            toAdding.clear();
-            toAdding.putAll(merged);
-
-            mergedAdditive.forEach((id, entityAttributeEntityAttributeModifierMultimap) -> {
-                entityAttributeEntityAttributeModifierMultimap.asMap().forEach((key, collection) -> {
-                    double startValue = key.value().getDefaultValue();
-                    double multiply = 1;
-                    boolean hasValue = false;
-                    for (AttributeModifier entityAttributeModifier : collection) {
-                        if (entityAttributeModifier.operation().equals(AttributeModifier.Operation.ADD_VALUE)) {
-                            startValue += entityAttributeModifier.amount();
-                            hasValue = true;
-                        }
-                        if (entityAttributeModifier.operation().equals(AttributeModifier.Operation.ADD_MULTIPLIED_BASE)) {
-                            multiply += entityAttributeModifier.amount();
-                        }
-                    }
-                    startValue = startValue * multiply;
-                    for (AttributeModifier entityAttributeModifier : collection) {
-                        if (entityAttributeModifier.operation().equals(AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL)) {
-                            startValue = startValue * entityAttributeModifier.amount();
-                        }
-                    }
-                    startValue = startValue - key.value().getDefaultValue();
-                    if ((startValue != 0 || hasValue) && !Double.isNaN(startValue)) {
-                        AttributeModifier entityAttributeModifier = new AttributeModifier(id, startValue, AttributeModifier.Operation.ADD_VALUE);
-                        toAdding.put(key, entityAttributeModifier);
-                    }
-                });
+            mergeMultiplyBaseAttributes(pair, multiplication).ifPresent(addAttribute -> {
+                var slotMap = map.getOrDefault(pair.getFirst(), ArrayListMultimap.create());
+                slotMap.put(pair.getSecond(), addAttribute);
+                map.put(pair.getFirst(), slotMap);
             });
-
-            mergedMultiBase.forEach((id, entityAttributeEntityAttributeModifierMultimap) -> {
-                entityAttributeEntityAttributeModifierMultimap.asMap().forEach((key, collection) -> {
-                    double multiply = 0;
-                    for (AttributeModifier entityAttributeModifier : collection) {
-                        if (entityAttributeModifier.operation().equals(AttributeModifier.Operation.ADD_MULTIPLIED_BASE)) {
-                            multiply += entityAttributeModifier.amount();
-                        }
-                        if (entityAttributeModifier.operation().equals(AttributeModifier.Operation.ADD_VALUE)) {
-                            Miapi.LOGGER.warn("Operation Addition(+) is not supported to be merged to Multiply Base(*)");
-                        }
-                    }
-                    for (AttributeModifier entityAttributeModifier : collection) {
-                        if (entityAttributeModifier.operation().equals(AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL)) {
-                            multiply = (multiply + 1) * (entityAttributeModifier.amount() + 1) - 1;
-                        }
-                    }
-                    if (!Double.isNaN(multiply) && multiply != 1) {
-                        AttributeModifier entityAttributeModifier = new AttributeModifier(id, multiply, AttributeModifier.Operation.ADD_MULTIPLIED_BASE);
-                        toAdding.put(key, entityAttributeModifier);
-                    }
-                });
+            mergeMultiplyTotalAttributes(pair, multiplyTotal).ifPresent(addAttribute -> {
+                var slotMap = map.getOrDefault(pair.getFirst(), ArrayListMultimap.create());
+                slotMap.put(pair.getSecond(), addAttribute);
+                map.put(pair.getFirst(), slotMap);
             });
+        });
 
-            mergedMultiTotal.forEach((id, entityAttributeEntityAttributeModifierMultimap) -> {
-                entityAttributeEntityAttributeModifierMultimap.asMap().forEach((key, collection) -> {
-                    double multiply = 1;
-                    for (AttributeModifier entityAttributeModifier : collection) {
-                        if (entityAttributeModifier.operation().equals(AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL)) {
-                            multiply = multiply * entityAttributeModifier.amount();
-                        }
-                        if (entityAttributeModifier.operation().equals(AttributeModifier.Operation.ADD_VALUE)) {
-                            Miapi.LOGGER.warn("Operation Addition(+) is not supported to be merged to Multiply Total(**)");
-                        }
-                        if (entityAttributeModifier.operation().equals(AttributeModifier.Operation.ADD_VALUE)) {
-                            Miapi.LOGGER.warn("Operation Multiply Base(*) is not supported to be merged to Multiply Total(**)");
-                        }
-                    }
-                    if (!Double.isNaN(multiply)) {
-                        AttributeModifier entityAttributeModifier = new AttributeModifier(id, multiply, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
-                        toAdding.put(key, entityAttributeModifier);
-                    }
-                });
-            });
-
-            return AttributeUtil.sortMultimap(toAdding);
-        }
-        return toAdding;
+        Map<EquipmentSlotGroup, Multimap<Holder<Attribute>, AttributeModifier>> sortedMap = new HashMap<>();
+        map.forEach((slot,attributes) ->{
+            sortedMap.put(slot,AttributeUtil.sortMultimap(attributes));
+        });
+        return sortedMap;
     }
 
+    private static Optional<AttributeModifier> mergeAddAttributes(Pair<EquipmentSlotGroup, Holder<Attribute>> pair, List<AttributeModifier> addition) {
+        double baseValue = pair.getSecond().value().getDefaultValue();
+        double startValue = baseValue;
+        double multiply = 1;
+        boolean hasValue = false;
+        for (AttributeModifier entityAttributeModifier : addition) {
+            if (entityAttributeModifier.operation().equals(AttributeModifier.Operation.ADD_VALUE)) {
+                startValue += entityAttributeModifier.amount();
+                hasValue = true;
+            }
+            if (entityAttributeModifier.operation().equals(AttributeModifier.Operation.ADD_MULTIPLIED_BASE)) {
+                multiply += entityAttributeModifier.amount();
+            }
+        }
+        startValue = startValue * multiply;
+        for (AttributeModifier entityAttributeModifier : addition) {
+            if (entityAttributeModifier.operation().equals(AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL)) {
+                startValue = startValue * entityAttributeModifier.amount();
+            }
+        }
+        startValue = startValue - baseValue;
+        AttributeModifier entityAttributeModifier = null;
+        if ((startValue != 0 || hasValue) && !Double.isNaN(startValue)) {
+            ResourceLocation id = AttributeUtil.getIDForSlot(pair.getFirst(), pair.getSecond().value(), AttributeModifier.Operation.ADD_VALUE);
+            entityAttributeModifier = new AttributeModifier(id, startValue, AttributeModifier.Operation.ADD_VALUE);
+        }
+        return Optional.ofNullable(entityAttributeModifier);
+    }
+
+    private static Optional<AttributeModifier> mergeMultiplyBaseAttributes(Pair<EquipmentSlotGroup, Holder<Attribute>> pair, List<AttributeModifier> multiplyList) {
+        double multiply = 0;
+        for (AttributeModifier entityAttributeModifier : multiplyList) {
+            if (entityAttributeModifier.operation().equals(AttributeModifier.Operation.ADD_MULTIPLIED_BASE)) {
+                multiply += entityAttributeModifier.amount();
+            }
+            if (entityAttributeModifier.operation().equals(AttributeModifier.Operation.ADD_VALUE)) {
+                Miapi.LOGGER.warn("Operation Addition(+) is not supported to be merged to Multiply Base(*)");
+            }
+        }
+        for (AttributeModifier entityAttributeModifier : multiplyList) {
+            if (entityAttributeModifier.operation().equals(AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL)) {
+                multiply = (multiply + 1) * (entityAttributeModifier.amount() + 1) - 1;
+            }
+        }
+        AttributeModifier entityAttributeModifier = null;
+        if (!Double.isNaN(multiply) && multiply != 1) {
+            ResourceLocation id = AttributeUtil.getIDForSlot(pair.getFirst(), pair.getSecond().value(), AttributeModifier.Operation.ADD_MULTIPLIED_BASE);
+            entityAttributeModifier = new AttributeModifier(id, multiply, AttributeModifier.Operation.ADD_MULTIPLIED_BASE);
+        }
+        return Optional.ofNullable(entityAttributeModifier);
+    }
+
+    private static Optional<AttributeModifier> mergeMultiplyTotalAttributes(Pair<EquipmentSlotGroup, Holder<Attribute>> pair, List<AttributeModifier> multiplyList) {
+        double multiply = 1;
+        for (AttributeModifier entityAttributeModifier :multiplyList) {
+            if (entityAttributeModifier.operation().equals(AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL)) {
+                multiply = multiply * entityAttributeModifier.amount();
+            }
+            if (entityAttributeModifier.operation().equals(AttributeModifier.Operation.ADD_VALUE)) {
+                Miapi.LOGGER.warn("Operation Addition(+) is not supported to be merged to Multiply Total(**)");
+            }
+            if (entityAttributeModifier.operation().equals(AttributeModifier.Operation.ADD_VALUE)) {
+                Miapi.LOGGER.warn("Operation Multiply Base(*) is not supported to be merged to Multiply Total(**)");
+            }
+        }
+        AttributeModifier entityAttributeModifier = null;
+        if (!Double.isNaN(multiply) && multiply != 1) {
+            ResourceLocation id = AttributeUtil.getIDForSlot(pair.getFirst(), pair.getSecond().value(), AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
+            entityAttributeModifier = new AttributeModifier(id, multiply, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
+        }
+        return Optional.ofNullable(entityAttributeModifier);
+    }
 
     public static Multimap<Holder<Attribute>, EntityAttributeModifierHolder> createAttributeMap(ItemStack itemStack) {
         ModuleInstance rootInstance = ItemModule.getModules(itemStack);
@@ -249,10 +245,8 @@ public class AttributeProperty extends CodecProperty<List<AttributeProperty.Attr
                 Miapi.LOGGER.warn("Attribute is null " + attributeJson.attribute + " on module " + instance.module.name() + " this should not have happened.");
             } else {
                 Holder<Attribute> attributeHolder = BuiltInRegistries.ATTRIBUTE.wrapAsHolder(attribute);
-                if (attributeJson.id == null) {
-                    attributeJson.id = AttributeUtil.getIDForSlot(attributeJson.slot, attribute, operation);
-                }
-                attributeModifiers.put(attributeHolder, new EntityAttributeModifierHolder(new AttributeModifier(attributeJson.id, attributeJson.evaluatedValue, operation), attributeJson.slot, baseTarget));
+                ResourceLocation id = AttributeUtil.getIDForSlot(attributeJson.slot, attribute, operation);
+                attributeModifiers.put(attributeHolder, new EntityAttributeModifierHolder(new AttributeModifier(id, attributeJson.evaluatedValue, operation), attributeJson.slot, baseTarget));
             }
         }));
     }
@@ -303,8 +297,6 @@ public class AttributeProperty extends CodecProperty<List<AttributeProperty.Attr
     public static class AttributeJson {
         public static Codec<EquipmentSlotGroup> EQUIPMENTSLOT_CODEC = EquipmentSlotGroup.CODEC;
 
-        @CodecBehavior.Optional
-        public ResourceLocation id;
         public String attribute;
         public StatResolver.DoubleFromStat value = new StatResolver.DoubleFromStat(0);
         public String operation;

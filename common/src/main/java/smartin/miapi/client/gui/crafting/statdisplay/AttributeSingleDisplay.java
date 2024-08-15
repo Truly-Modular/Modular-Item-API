@@ -5,11 +5,13 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.Util;
 import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.ItemAttributeModifiers;
 import smartin.miapi.Miapi;
 import smartin.miapi.modules.properties.attributes.AttributeUtil;
 
@@ -113,28 +115,10 @@ public class AttributeSingleDisplay extends SingleStatDisplayDouble {
     }
 
     public boolean hasAttribute(ItemStack itemStack) {
-        Map<EquipmentSlot, Multimap<Attribute, AttributeModifier>> attributeCache = compareItemCache;
-        if (itemStack.equals(original)) {
-            attributeCache = oldItemCache;
-        }
-        if (slot == null) {
-            for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
-                Multimap<Attribute, AttributeModifier> slotMap = attributeCache.get(equipmentSlot);
-                if (slotMap != null) {
-                    Collection<AttributeModifier> attrCollection = attributeCache.get(equipmentSlot).get(attribute).stream().filter(attribute -> attribute.operation().equals(operation)).toList();
-                    if (hasValue(attrCollection)) {
-                        return true;
-                    }
-                }
-            }
-        } else {
-            Multimap<Attribute, AttributeModifier> slotMap = attributeCache.get(slot);
-            if (slotMap != null) {
-                Collection<AttributeModifier> attrCollection = attributeCache.get(slot).get(attribute);
-                return hasValue(attrCollection);
-            }
-        }
-        return false;
+        return itemStack.getOrDefault(DataComponents.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.EMPTY)
+                .modifiers()
+                .stream()
+                .anyMatch(a -> a.attribute().value().equals(attribute));
     }
 
     public boolean hasValue(Collection<AttributeModifier> list) {

@@ -92,8 +92,8 @@ public class CraftingScreenHandler extends AbstractContainerMenu {
         craftingScreenHandler = this;
         packetID = Miapi.MOD_ID + PACKET_ID + playerInventory.player.getStringUUID() + "_" + syncId;
         editPacketID = Miapi.MOD_ID + PACKET_ID + "_edit_" + playerInventory.player.getStringUUID() + "_" + syncId;
-        packetIDSlotAdd = Miapi.MOD_ID + PACKET_ID + "_" + playerInventory.player.getStringUUID() + "_" + syncId + "_slotAdd";
-        packetIDSlotRemove = Miapi.MOD_ID + PACKET_ID + "_" + playerInventory.player.getStringUUID() + "_" + syncId + "_slotRemove";
+        packetIDSlotAdd = Miapi.MOD_ID + PACKET_ID + "_" + playerInventory.player.getStringUUID() + "_" + syncId + "_slot_add";
+        packetIDSlotRemove = Miapi.MOD_ID + PACKET_ID + "_" + playerInventory.player.getStringUUID() + "_" + syncId + "_slot_remove";
         this.delegate = delegate;
         this.playerInventory = playerInventory;
         this.blockEntity = benchEntity;
@@ -135,8 +135,8 @@ public class CraftingScreenHandler extends AbstractContainerMenu {
             });
             Networking.registerC2SPacket(editPacketID, (buffer, player) -> {
                 EditOption option = RegistryInventory.editOptions.get(buffer.readUtf());
-                String[] array = buffer.readUtf().split("\n");//buffer.readVarIntArray();
-                //TODO: rework packet stuff. FUCK this shit
+                String[] array = buffer.readUtf().split("\n");
+                //TODO: do i need execute on server?
                 //Miapi.server.execute(()->{
                 ItemStack stack = ModularItemStackConverter.getModularVersion(inventory.getItem(0));
                 ModuleInstance root = ItemModule.getModules(stack);

@@ -217,9 +217,9 @@ public class SlotProperty extends CodecProperty<Map<String, SlotProperty.ModuleS
 
         public List<String> getAsLocation() {
             List<String> location = new ArrayList<>();
-            location.add(id);
             ModuleInstance parsing = parent;
             if(parsing!=null){
+                location.add(id);
                 while (parsing.getParent() != null) {
                     String slotNumber = SlotProperty.getSlotID(parsing);
                     location.add(slotNumber);
