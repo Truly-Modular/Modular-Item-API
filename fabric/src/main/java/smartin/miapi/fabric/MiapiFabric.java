@@ -3,7 +3,6 @@ package smartin.miapi.fabric;
 import com.jamieswhiteshirt.reachentityattributes.ReachEntityAttributes;
 import dev.architectury.platform.Platform;
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.client.rendering.v1.ArmorRenderer;
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.ResourceReloadListenerKeys;
@@ -50,9 +49,6 @@ public class MiapiFabric implements ModInitializer {
         }
 
         MiapiReloadListener listener = new MiapiReloadListener();
-        RegistryInventory.modularItems.addCallback((modularItem) -> {
-            ArmorRenderer.register(new ModularArmorRenderer(), modularItem);
-        });
 
         ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new IdentifiableResourceReloadListener() {
             @Override
