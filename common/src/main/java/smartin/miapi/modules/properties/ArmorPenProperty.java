@@ -4,6 +4,7 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import dev.architectury.event.EventResult;
 import net.minecraft.core.Holder;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -22,7 +23,7 @@ import java.util.WeakHashMap;
  * This property allows for armor penetration, so weapons can igonre some armor
  */
 public class ArmorPenProperty extends DoubleProperty {
-    public static final String KEY = "armor_pen";
+    public static final ResourceLocation KEY = Miapi.id("armor_pen");
     public static ArmorPenProperty property;
     private static final WeakHashMap<LivingEntity, Multimap<Holder<Attribute>, AttributeModifier>> cache = new WeakHashMap<>();
 
@@ -36,7 +37,7 @@ public class ArmorPenProperty extends DoubleProperty {
                 if (optionalDouble.isPresent()) {
                     double value = optionalDouble.get() / 100;
                     Multimap<Holder<Attribute>, AttributeModifier> multimap = ArrayListMultimap.create();
-                    multimap.put(Attributes.ARMOR, new AttributeModifier(Miapi.id("tempArmorPen"), (- 1 + value), AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
+                    multimap.put(Attributes.ARMOR, new AttributeModifier(Miapi.id("temp_armor_pen"), (- 1 + value), AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
                     cache.put(event.livingEntity, multimap);
                     event.livingEntity.getAttributes().addTransientAttributeModifiers(multimap);
                 }

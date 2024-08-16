@@ -9,6 +9,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import smartin.miapi.Miapi;
 import smartin.miapi.client.model.EntityMiapiModel;
 import smartin.miapi.client.model.MiapiItemModel;
 import smartin.miapi.client.model.MiapiModel;
@@ -22,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class EntityModelProperty extends CodecProperty<List<EntityModelProperty.EntityModelData>> {
-    public static String KEY = "entity_model";
+    public static final ResourceLocation KEY = Miapi.id("entity_model");
     public static EntityModelProperty property;
     public static Codec<EntityModelData> CODEC = AutoCodec.of(EntityModelData.class).codec();
 

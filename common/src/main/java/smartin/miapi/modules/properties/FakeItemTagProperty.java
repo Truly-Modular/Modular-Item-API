@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.ItemStack;
+import smartin.miapi.Miapi;
 import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
@@ -15,7 +16,7 @@ import java.util.List;
  * Allows the set Itemtags via a Properterty (relies on {@link ItemStack#is(TagKey)}
  */
 public class FakeItemTagProperty extends CodecProperty<List<String>> {
-    public static final String KEY = "fake_item_tag";
+    public static final ResourceLocation KEY = Miapi.id("fake_item_tag");
     public static FakeItemTagProperty property;
     public static Codec<List<String>> CODEC = Codec.list(Codec.STRING);
 

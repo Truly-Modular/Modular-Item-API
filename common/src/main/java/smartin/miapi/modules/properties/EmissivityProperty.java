@@ -2,12 +2,14 @@ package smartin.miapi.modules.properties;
 
 import com.mojang.serialization.Codec;
 import com.redpxnda.nucleus.codec.auto.AutoCodec;
+import net.minecraft.resources.ResourceLocation;
+import smartin.miapi.Miapi;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.MergeType;
 
 public class EmissivityProperty extends CodecProperty<EmissivityProperty.LightJson> {
-    public static final String KEY = "emissive";
+    public static final ResourceLocation KEY = Miapi.id("emissive");
     public static EmissivityProperty property;
     static Codec<LightJson> CODEC = AutoCodec.of(LightJson.class).codec();
 

@@ -2,7 +2,9 @@ package smartin.miapi.modules.properties;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import smartin.miapi.Miapi;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.cache.ModularItemCache;
@@ -18,17 +20,17 @@ import java.util.Optional;
  * This property allows modules to change the DisplayName of the item in question
  */
 public class DisplayNameProperty extends CodecProperty<Component> {
-    public static final String KEY = "display_name";
+    public static final ResourceLocation KEY = Miapi.id("display_name");
     public static DisplayNameProperty property;
 
     public DisplayNameProperty() {
         super(ComponentSerialization.CODEC);
         property = this;
-        ModularItemCache.setSupplier(KEY, DisplayNameProperty::resolveDisplayText);
+        ModularItemCache.setSupplier(KEY.toString(), DisplayNameProperty::resolveDisplayText);
     }
 
     public static Component getDisplayText(ItemStack stack) {
-        return ModularItemCache.getVisualOnlyCache(stack, KEY, Component.empty());
+        return ModularItemCache.getVisualOnlyCache(stack, KEY.toString(), Component.empty());
     }
 
     private static Component resolveDisplayText(ItemStack itemStack) {

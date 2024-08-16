@@ -4,6 +4,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.Util;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import smartin.miapi.Miapi;
 import smartin.miapi.modules.properties.util.DoubleProperty;
@@ -73,10 +74,10 @@ public class SinglePropertyStatDisplay extends SingleStatDisplayDouble {
             return this;
         }
 
-        public Builder setTranslationKey(String key) {
-            translationKey = key;
-            name = (stack) -> Component.translatable(Miapi.MOD_ID + ".stat." + key, modifierFormat.format(property.getValue(stack).orElse(0.0)));
-            hoverDescription = (stack) -> Component.translatable(Miapi.MOD_ID + ".stat." + key + ".description", modifierFormat.format(property.getValue(stack).orElse(0.0)));
+        public Builder setTranslationKey(ResourceLocation key) {
+            translationKey = Miapi.toLangString(key);
+            name = (stack) -> Component.translatable(Miapi.MOD_ID + ".stat." + translationKey, modifierFormat.format(property.getValue(stack).orElse(0.0)));
+            hoverDescription = (stack) -> Component.translatable(Miapi.MOD_ID + ".stat." + translationKey + ".description", modifierFormat.format(property.getValue(stack).orElse(0.0)));
             return this;
         }
 

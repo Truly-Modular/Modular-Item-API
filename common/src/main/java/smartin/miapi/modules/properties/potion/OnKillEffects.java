@@ -4,7 +4,9 @@ import com.mojang.serialization.Codec;
 import dev.architectury.event.EventResult;
 import dev.architectury.event.events.common.EntityEvent;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
+import smartin.miapi.Miapi;
 import smartin.miapi.modules.properties.LoreProperty;
 import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.MergeType;
@@ -13,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class OnKillEffects extends CodecProperty<List<PossibleEffect>> {
-    public static String KEY = "on_kill_potion";
+    public static final ResourceLocation KEY = Miapi.id("on_kill_potion");
     public OnKillEffects property;
     public static Codec<List<PossibleEffect>> CODEC = Codec.list(PossibleEffect.CODEC);
 

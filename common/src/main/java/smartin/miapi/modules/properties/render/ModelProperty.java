@@ -59,7 +59,7 @@ public class ModelProperty extends CodecProperty<List<ModelProperty.ModelData>> 
     public static ModelProperty property;
     private static final String CACHE_KEY_ITEM = Miapi.MOD_ID + ":itemModelodel";
     public static final Map<String, UnbakedModelHolder> modelCache = new HashMap<>();
-    public static final String KEY = "model";
+    public static final ResourceLocation KEY = Miapi.id("model");
     public static Function<net.minecraft.client.resources.model.Material, TextureAtlasSprite> textureGetter;
     private static Function<net.minecraft.client.resources.model.Material, TextureAtlasSprite> mirroredGetter;
     private static ItemModelGenerator generator;

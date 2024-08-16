@@ -3,6 +3,8 @@ package smartin.miapi.modules.properties.render;
 import com.mojang.serialization.Codec;
 import com.redpxnda.nucleus.codec.auto.AutoCodec;
 import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
+import net.minecraft.resources.ResourceLocation;
+import smartin.miapi.Miapi;
 import smartin.miapi.client.model.ConduitRendererEntity;
 import smartin.miapi.client.model.MiapiItemModel;
 import smartin.miapi.client.model.MiapiModel;
@@ -15,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ConduitModelProperty extends CodecProperty<ConduitModelProperty.ConduitModelData> {
-    public static String KEY = "conduit_model";
+    public static final ResourceLocation KEY = Miapi.id("conduit_model");
     public static ConduitModelProperty property;
     public static Codec<ConduitModelData> CODEC = AutoCodec.of(ConduitModelData.class).codec();
 

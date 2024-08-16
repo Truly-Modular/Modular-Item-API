@@ -5,6 +5,7 @@ import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec2;
@@ -33,7 +34,7 @@ import java.util.stream.Collectors;
  * This property manages the allowed Materials for a module
  */
 public class AllowedMaterial extends CodecProperty<AllowedMaterial.AllowedMaterialData> implements CraftingProperty {
-    public static final String KEY = "allowed_material";
+    public static final ResourceLocation KEY = Miapi.id("allowed_material");
     public static AllowedMaterial property;
     public double materialCostClient = 0.0f;
     public double materialRequirementClient = 0.0f;

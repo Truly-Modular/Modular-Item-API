@@ -1,15 +1,17 @@
 package smartin.miapi.modules.properties;
 
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import smartin.miapi.Miapi;
 import smartin.miapi.modules.properties.util.DoubleProperty;
 
 /**
  * This property adds a passive Food drain similar to sprinting
  */
 public class ExhaustionProperty extends DoubleProperty {
-    public static final String KEY = "food_exhaustion";
+    public static final ResourceLocation KEY = Miapi.id("food_exhaustion");
     public static ExhaustionProperty property;
 
     public ExhaustionProperty() {

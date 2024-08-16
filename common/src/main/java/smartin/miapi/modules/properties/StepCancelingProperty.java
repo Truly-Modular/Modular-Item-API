@@ -1,12 +1,14 @@
 package smartin.miapi.modules.properties;
 
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import smartin.miapi.Miapi;
 import smartin.miapi.modules.properties.util.ComplexBooleanProperty;
 
 public class StepCancelingProperty extends ComplexBooleanProperty {
     public static StepCancelingProperty property;
-    public static String KEY = "step_noise_cancel";
+    public static final ResourceLocation KEY = Miapi.id("step_noise_cancel");
 
     public StepCancelingProperty() {
         super(KEY, false);

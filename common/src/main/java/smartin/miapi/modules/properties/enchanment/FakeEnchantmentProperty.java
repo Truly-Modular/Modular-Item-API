@@ -4,11 +4,13 @@ import com.mojang.serialization.Codec;
 import dev.architectury.event.EventResult;
 import net.fabricmc.api.EnvType;
 import net.minecraft.core.Holder;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.EnchantmentTags;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import smartin.miapi.Environment;
+import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.crafting.statdisplay.JsonStatDisplay;
 import smartin.miapi.client.gui.crafting.statdisplay.SingleStatDisplay;
@@ -25,7 +27,7 @@ import static smartin.miapi.modules.properties.enchanment.FakeEnchantmentManager
 
 public class FakeEnchantmentProperty extends CodecProperty<Map<Holder<Enchantment>, DoubleOperationResolvable>> {
     public static FakeEnchantmentProperty property;
-    public static final String KEY = "fake_enchants";
+    public static final ResourceLocation KEY = Miapi.id("fake_enchants");
     public static Codec<Map<Holder<Enchantment>, DoubleOperationResolvable>> CODEC = Codec.unboundedMap(Enchantment.CODEC, DoubleOperationResolvable.CODEC);
 
     public FakeEnchantmentProperty() {

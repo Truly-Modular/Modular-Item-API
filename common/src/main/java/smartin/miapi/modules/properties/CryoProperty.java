@@ -1,9 +1,11 @@
 package smartin.miapi.modules.properties;
 
 import dev.architectury.event.EventResult;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
+import smartin.miapi.Miapi;
 import smartin.miapi.events.MiapiProjectileEvents;
 import smartin.miapi.modules.properties.util.DoubleProperty;
 import smartin.miapi.registries.RegistryInventory;
@@ -12,7 +14,7 @@ import smartin.miapi.registries.RegistryInventory;
  * This Property applies the Cryo effect on Arrowhit(only on arrowhit)
  */
 public class CryoProperty extends DoubleProperty {
-    public static final String KEY = "cryo";
+    public static final ResourceLocation KEY = Miapi.id("cryo");
     public static CryoProperty property;
 
     public CryoProperty() {

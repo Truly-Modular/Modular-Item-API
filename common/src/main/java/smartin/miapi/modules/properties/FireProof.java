@@ -2,8 +2,10 @@ package smartin.miapi.modules.properties;
 
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Unit;
 import net.minecraft.world.item.ItemStack;
+import smartin.miapi.Miapi;
 import smartin.miapi.modules.properties.util.ComplexBooleanProperty;
 import smartin.miapi.modules.properties.util.ComponentApplyProperty;
 
@@ -11,7 +13,7 @@ import smartin.miapi.modules.properties.util.ComponentApplyProperty;
  * This Property allows to be set as fireproof, making them immune to Lava
  */
 public class FireProof extends ComplexBooleanProperty implements ComponentApplyProperty {
-    public static final String KEY = "fire_proof";
+    public static final ResourceLocation KEY = Miapi.id("fire_proof");
     public static FireProof property;
 
     public FireProof() {

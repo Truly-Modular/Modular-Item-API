@@ -1,6 +1,7 @@
 package smartin.miapi.client.gui.crafting.statdisplay;
 
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import smartin.miapi.Miapi;
 import smartin.miapi.modules.properties.util.ComplexBooleanProperty;
@@ -49,10 +50,10 @@ public class ComplexBooleanStatDisplay extends SingleStatDisplayBoolean {
             return this;
         }
 
-        public Builder setTranslationKey(String key) {
-            translationKey = key;
-            name = (stack) -> Component.translatable(Miapi.MOD_ID + ".stat." + key, SingleStatDisplayBoolean.getText(property.getValue(stack).orElse(0.0)));
-            hoverDescription = (stack) -> Component.translatable(Miapi.MOD_ID + ".stat." + key + ".description", SingleStatDisplayBoolean.getText(property.getValue(stack).orElse(0.0)));
+        public Builder setTranslationKey(ResourceLocation key) {
+            translationKey = Miapi.toLangString(key);
+            name = (stack) -> Component.translatable(Miapi.MOD_ID + ".stat." + translationKey, SingleStatDisplayBoolean.getText(property.getValue(stack).orElse(0.0)));
+            hoverDescription = (stack) -> Component.translatable(Miapi.MOD_ID + ".stat." + translationKey + ".description", SingleStatDisplayBoolean.getText(property.getValue(stack).orElse(0.0)));
             return this;
         }
 

@@ -130,7 +130,7 @@ public class JsonMaterial implements Material {
         propertyElement.getAsJsonObject().asMap().forEach((id, element) -> {
             if (element != null) {
                 element.getAsJsonObject().entrySet().forEach(stringJsonElementEntry -> {
-                    ModuleProperty<?> property = RegistryInventory.moduleProperties.get(stringJsonElementEntry.getKey());
+                    ModuleProperty<?> property = RegistryInventory.moduleProperties.get(Miapi.id(stringJsonElementEntry.getKey()));
                     Map<ModuleProperty<?>, Object> specificPropertyMap = properties.getOrDefault(id, new HashMap<>());
                     if (property != null) {
                         try {

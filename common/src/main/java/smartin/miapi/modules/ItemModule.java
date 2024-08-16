@@ -114,7 +114,7 @@ public record ItemModule(ResourceLocation name, Map<ModuleProperty<?>, Object> p
      */
     @SuppressWarnings("unchecked")
     private static void isValidProperty(String key, ResourceLocation path, JsonElement data, boolean isClient, Consumer<Pair<ModuleProperty<?>, Object>> onValid) {
-        ModuleProperty<?> property = RegistryInventory.moduleProperties.get(key);
+        ModuleProperty<?> property = RegistryInventory.moduleProperties.get(Miapi.id(key));
         if (property != null) {
             try {
                 boolean valid = property.load(Miapi.id(key), data, isClient);

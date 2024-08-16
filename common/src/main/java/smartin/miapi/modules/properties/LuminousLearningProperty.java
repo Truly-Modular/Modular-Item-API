@@ -5,6 +5,7 @@ import dev.architectury.event.events.common.BlockEvent;
 import dev.architectury.event.events.common.EntityEvent;
 import dev.architectury.utils.value.IntValue;
 import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
@@ -15,6 +16,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
+import smartin.miapi.Miapi;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.modules.properties.util.DoubleProperty;
@@ -23,7 +25,7 @@ import smartin.miapi.modules.properties.util.DoubleProperty;
  * Increases Xp Drops from slain mods and broken blocks
  */
 public class LuminousLearningProperty extends DoubleProperty {
-    public static final String KEY = "luminious_learning";
+    public static final ResourceLocation KEY = Miapi.id("luminious_learning");
     public static LuminousLearningProperty property;
 
     public LuminousLearningProperty() {

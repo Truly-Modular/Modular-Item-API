@@ -35,7 +35,7 @@ import java.util.function.Supplier;
  * This property allows Modules to set Attributes
  */
 public class AttributeProperty extends CodecProperty<List<AttributeProperty.AttributeJson>> implements ComponentApplyProperty {
-    public static final String KEY = "attributes";
+    public static final ResourceLocation KEY = Miapi.id("attributes");
     public static AttributeProperty property;
     public static final Map<String, Supplier<Attribute>> replaceMap = new HashMap<>();
     public static final Map<Attribute, Float> priorityMap = new HashMap<>();
@@ -45,7 +45,7 @@ public class AttributeProperty extends CodecProperty<List<AttributeProperty.Attr
     public AttributeProperty() {
         super(CODEC);
         property = this;
-        ModularItemCache.setSupplier(KEY, (AttributeProperty::createAttributeMap));
+        ModularItemCache.setSupplier(KEY.toString(), (AttributeProperty::createAttributeMap));
         priorityMap.put(Attributes.ARMOR.value(), -15.0f);
         priorityMap.put(Attributes.ARMOR_TOUGHNESS.value(), -14.0f);
         priorityMap.put(Attributes.KNOCKBACK_RESISTANCE.value(), -13.0f);
@@ -101,7 +101,7 @@ public class AttributeProperty extends CodecProperty<List<AttributeProperty.Attr
      */
     public static Multimap<Holder<Attribute>, EntityAttributeModifierHolder> getAttributeModifiersRaw(ItemStack itemStack) {
         Multimap<Holder<Attribute>, EntityAttributeModifierHolder> multimap = ArrayListMultimap.create();
-        return ModularItemCache.get(itemStack, KEY, multimap);
+        return ModularItemCache.get(itemStack, KEY.toString(), multimap);
     }
 
     /**

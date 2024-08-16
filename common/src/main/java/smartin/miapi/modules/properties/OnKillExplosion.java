@@ -2,7 +2,9 @@ package smartin.miapi.modules.properties;
 
 import dev.architectury.event.EventResult;
 import dev.architectury.event.events.common.EntityEvent;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
+import smartin.miapi.Miapi;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.MergeType;
@@ -10,7 +12,7 @@ import smartin.miapi.modules.properties.util.MergeType;
 import java.util.Optional;
 
 public class OnKillExplosion extends CodecProperty<ExplosionProperty.ExplosionInfo> {
-    public static String KEY = "on_kill_explosion";
+    public static final ResourceLocation KEY = Miapi.id("on_kill_explosion");
     public static OnKillExplosion property;
 
     public OnKillExplosion() {

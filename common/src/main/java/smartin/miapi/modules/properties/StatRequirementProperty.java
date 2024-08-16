@@ -2,6 +2,7 @@ package smartin.miapi.modules.properties;
 
 import com.google.gson.JsonElement;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
@@ -23,7 +24,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 //TODO: @Panda rework this and Stats in general
 public class StatRequirementProperty implements ModuleProperty<Object>, CraftingProperty {
-    public static final String KEY = "stat_requirements";
+    public static final ResourceLocation KEY = Miapi.id("stat_requirements");
     public static StatRequirementProperty property;
 
     public StatRequirementProperty() {

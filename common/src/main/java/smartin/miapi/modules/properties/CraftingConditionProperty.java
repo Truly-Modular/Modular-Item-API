@@ -7,6 +7,7 @@ import com.redpxnda.nucleus.event.PrioritizedEvent;
 import dev.architectury.event.EventResult;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
@@ -31,7 +32,7 @@ import java.util.Map;
  * This property can manage if a module can be crafted in the first place
  */
 public class CraftingConditionProperty extends CodecProperty<CraftingConditionProperty.CraftingConditionJson> implements CraftingProperty {
-    public static final String KEY = "crafting_condition";
+    public static final ResourceLocation KEY = Miapi.id("crafting_condition");
     public static CraftingConditionProperty property;
     public static PrioritizedEvent<CanCraft> CAN_CRAFT_SELECT_EVENT = PrioritizedEvent.createEventResult();
     public static Codec<CraftingConditionJson> CODEC = AutoCodec.of(CraftingConditionJson.class).codec();

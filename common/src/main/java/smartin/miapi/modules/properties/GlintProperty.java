@@ -7,7 +7,9 @@ import com.redpxnda.nucleus.event.PrioritizedEvent;
 import com.redpxnda.nucleus.util.Color;
 import dev.architectury.event.EventResult;
 import net.minecraft.Util;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import smartin.miapi.Miapi;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.cache.ModularItemCache;
@@ -22,7 +24,7 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 public class GlintProperty extends CodecProperty<GlintProperty.RainbowGlintSettings> {
     public static GlintProperty property;
-    public static final String KEY = "glint_settings";
+    public static final ResourceLocation KEY = Miapi.id("glint_settings");
     public static PrioritizedEvent<GlintGetter> GLINT_RESOLVE = PrioritizedEvent.createLoop();
     public static SettingsControlledGlint defaultSettings = new SettingsControlledGlint();
     public static Codec<RainbowGlintSettings> CODEC = AutoCodec.of(RainbowGlintSettings.class).codec();

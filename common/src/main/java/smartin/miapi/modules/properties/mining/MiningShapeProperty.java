@@ -35,7 +35,7 @@ import java.util.Map;
  * Area,Vein and other stuff
  */
 public class MiningShapeProperty extends CodecProperty<List<MiningShapeEntry>> {
-    public static String KEY = "mining_shape";
+    public static final ResourceLocation KEY = Miapi.id("mining_shape");
     public static MiningShapeProperty property;
     public static Map<ResourceLocation, MapCodec<? extends MiningCondition>> miningConditionMap = new HashMap<>();
     public static Map<ResourceLocation, MapCodec<? extends MiningShape>> miningShapeMap = new HashMap<>();

@@ -2,6 +2,7 @@ package smartin.miapi.modules;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import smartin.miapi.Miapi;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.registries.RegistryInventory;
 
@@ -18,7 +19,7 @@ public class ModuleDataPropertiesManager {
             if (moduleJson != null) {
                 moduleJson.entrySet().forEach(stringJsonElementEntry -> {
                     ModuleProperty<?> property = RegistryInventory.moduleProperties
-                            .get(stringJsonElementEntry.getKey());
+                            .get(Miapi.id(stringJsonElementEntry.getKey()));
                     if (property != null) {
                         map.put(property, property.decode(stringJsonElementEntry.getValue()));
                     }

@@ -1,6 +1,8 @@
 package smartin.miapi.modules.properties;
 
 import dev.architectury.event.EventResult;
+import net.minecraft.resources.ResourceLocation;
+import smartin.miapi.Miapi;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.modules.properties.util.DoubleProperty;
 
@@ -8,7 +10,7 @@ import smartin.miapi.modules.properties.util.DoubleProperty;
  * This property allows for armor penetration, so weapons can igonre some armor
  */
 public class WaterGravityProperty extends DoubleProperty {
-    public static final String KEY = "water_gravity";
+    public static final ResourceLocation KEY = Miapi.id("water_gravity");
     public static WaterGravityProperty property;
 
     public WaterGravityProperty() {

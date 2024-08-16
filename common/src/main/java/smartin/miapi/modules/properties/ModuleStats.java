@@ -1,6 +1,8 @@
 package smartin.miapi.modules.properties;
 
 import com.mojang.serialization.Codec;
+import net.minecraft.resources.ResourceLocation;
+import smartin.miapi.Miapi;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
@@ -13,7 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ModuleStats extends CodecProperty<Map<String, Double>> {
-    public static String KEY = "module_stats";
+    public static final ResourceLocation KEY = Miapi.id("module_stats");
     public static ModuleStats property;
     public static Codec<Map<String, Double>> CODEC = Codec.dispatchedMap(Codec.STRING, (s) -> Codec.DOUBLE);
 

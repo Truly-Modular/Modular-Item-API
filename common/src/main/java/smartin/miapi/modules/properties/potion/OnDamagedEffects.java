@@ -2,6 +2,8 @@ package smartin.miapi.modules.properties.potion;
 
 import com.mojang.serialization.Codec;
 import dev.architectury.event.EventResult;
+import net.minecraft.resources.ResourceLocation;
+import smartin.miapi.Miapi;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.modules.properties.LoreProperty;
 import smartin.miapi.modules.properties.util.CodecProperty;
@@ -14,7 +16,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
 
 public class OnDamagedEffects extends CodecProperty<List<PossibleEffect>> {
-    public static String KEY = "on_attack_potion";
+    public static final ResourceLocation KEY = Miapi.id("on_attack_potion");
     public OnDamagedEffects property;
     public static Codec<List<PossibleEffect>> CODEC = Codec.list(PossibleEffect.CODEC);
 

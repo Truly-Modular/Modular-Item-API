@@ -148,6 +148,10 @@ public class RegistryInventory {
         rg.register(id, object);
     }
 
+    public static <T> void registerMiapi(MiapiRegistry<T> rg, ResourceLocation id, T object) {
+        rg.register(id, object);
+    }
+
     public static <T, E extends T> void registerMiapi(MiapiRegistry<T> rg, String id, E object, Consumer<E> onRegister) {
         rg.register(id, object);
         onRegister.accept(object);

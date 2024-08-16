@@ -1,6 +1,8 @@
 package smartin.miapi.modules.properties;
 
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import smartin.miapi.Miapi;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.cache.ModularItemCache;
@@ -17,7 +19,7 @@ import java.util.Optional;
  */
 public class RepairPriority extends DoubleProperty {
     public static RepairPriority property;
-    public static final String KEY = "repair_priority";
+    public static final ResourceLocation KEY = Miapi.id("repair_priority");
 
     public RepairPriority() {
         super(KEY);

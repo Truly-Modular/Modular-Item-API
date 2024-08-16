@@ -1,11 +1,13 @@
 package smartin.miapi.modules.properties;
 
 import dev.architectury.event.EventResult;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.ThrownPotion;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ThrowablePotionItem;
 import net.minecraft.world.phys.HitResult;
+import smartin.miapi.Miapi;
 import smartin.miapi.entity.ItemProjectileEntity;
 import smartin.miapi.events.MiapiProjectileEvents;
 import smartin.miapi.mixin.ThrowablePotionItemAccessor;
@@ -18,7 +20,7 @@ import java.util.Optional;
  * replaces the projectile with another projectile on impact
  */
 public class ProjectileTriggerProperty extends CodecProperty<ItemStack> {
-    public static final String KEY = "replace_projectile";
+    public static final ResourceLocation KEY = Miapi.id("replace_projectile");
     public static ProjectileTriggerProperty property;
 
 

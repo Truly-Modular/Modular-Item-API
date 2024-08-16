@@ -148,7 +148,7 @@ public class SynergyManager {
         }
         element.getAsJsonObject().entrySet().forEach(propertyEntry -> {
             String propertyKey = propertyEntry.getKey();
-            ModuleProperty<?> property = RegistryInventory.moduleProperties.get(propertyKey);
+            ModuleProperty<?> property = RegistryInventory.moduleProperties.get(Miapi.id(propertyKey));
             if (property != null) {
                 try {
                     if (property.load(source, propertyEntry.getValue(), isClient)) {
@@ -175,7 +175,7 @@ public class SynergyManager {
             element.getAsJsonArray().forEach((element1 -> {
                 if (element1.isJsonPrimitive()) {
                     String key = element1.getAsString();
-                    ModuleProperty<?> moduleProperty = RegistryInventory.moduleProperties.get(key);
+                    ModuleProperty<?> moduleProperty = RegistryInventory.moduleProperties.get(Miapi.id(key));
                     if (moduleProperty != null) {
                         removeFields.add(moduleProperty);
                     } else {

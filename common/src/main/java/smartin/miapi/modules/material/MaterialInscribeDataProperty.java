@@ -4,6 +4,7 @@ import com.google.gson.JsonElement;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 import dev.architectury.event.EventResult;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import smartin.miapi.Miapi;
 import smartin.miapi.events.MiapiEvents;
@@ -18,7 +19,7 @@ import java.util.Optional;
  * This Property allows you to encode the material Itemstack into the module it was used to craft it
  */
 public class MaterialInscribeDataProperty extends CodecProperty<String> {
-    public static final String KEY = "inscribe_data_on_craft";
+    public static final ResourceLocation KEY = Miapi.id("inscribe_data_on_craft");
     public static MaterialInscribeDataProperty property;
 
     public MaterialInscribeDataProperty() {

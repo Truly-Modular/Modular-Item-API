@@ -91,7 +91,7 @@ public class StatResolver {
         public double evaluatedOutput = 0;
 
         @Override
-        public Double evaluate(ModuleInstance moduleInstance){
+        public Double evaluate(ModuleInstance moduleInstance) {
             evaluatedOutput = super.evaluate(moduleInstance);
             return evaluatedOutput;
         }
@@ -138,7 +138,7 @@ public class StatResolver {
         }
 
         @Override
-        public Integer evaluate(ModuleInstance moduleInstance){
+        public Integer evaluate(ModuleInstance moduleInstance) {
             evaluatedOutput = super.evaluate(moduleInstance);
             return evaluatedOutput;
         }
@@ -373,11 +373,12 @@ public class StatResolver {
                     String resolvedData = String.valueOf(resolver.resolveDouble(resolverData, instance));
                     resolved = resolved.replace("[" + match + "]", resolvedData);
                 } else {
-                    resolved = resolved.replace("[" + match + "]", "");
+                    Miapi.LOGGER.error("material resolver for id " + resolverKey + " was not found!");
+                    resolved = resolved.replace("[" + match + "]", "0");
                 }
             }
         }
-        return resolveCalculation(resolved);
+        return resolveCalculation(resolved, raw);
     }
 
     /**
@@ -435,12 +436,12 @@ public class StatResolver {
         String resolveString(String data, ModuleInstance instance);
     }
 
-    public static double resolveCalculation(String string) {
+    public static double resolveCalculation(String string, String original) {
         try {
             Expression e = new Expression(string, configuration);
             return e.evaluate().getNumberValue().doubleValue();
         } catch (Exception e) {
-            Miapi.LOGGER.error("could not evaluate " + string, e);
+            Miapi.LOGGER.error("could not evaluate " + string + " from original" + original, e);
             return 0;
         }
     }

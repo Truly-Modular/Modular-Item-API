@@ -2,6 +2,7 @@ package smartin.miapi.modules.properties;
 
 import dev.architectury.event.EventResult;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
@@ -10,6 +11,7 @@ import net.minecraft.world.entity.monster.Endermite;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.phys.HitResult;
+import smartin.miapi.Miapi;
 import smartin.miapi.entity.ItemProjectileEntity;
 import smartin.miapi.events.MiapiProjectileEvents;
 import smartin.miapi.modules.properties.util.ComplexBooleanProperty;
@@ -18,7 +20,7 @@ import smartin.miapi.modules.properties.util.ComplexBooleanProperty;
  * This property gives a projectile ender pearl behaviour
  */
 public class EnderpearlProperty extends ComplexBooleanProperty {
-    public static final String KEY = "is_enderpearl";
+    public static final ResourceLocation KEY = Miapi.id("is_enderpearl");
     public static EnderpearlProperty property;
 
     public EnderpearlProperty() {

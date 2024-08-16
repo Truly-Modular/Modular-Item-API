@@ -2,6 +2,8 @@ package smartin.miapi.modules.properties.slot;
 
 import dev.architectury.event.EventResult;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import smartin.miapi.Miapi;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.conditions.ConditionManager;
 import smartin.miapi.modules.conditions.ModuleCondition;
@@ -11,7 +13,7 @@ import smartin.miapi.modules.properties.util.MergeType;
 
 
 public class CanChangeParentModule extends CodecProperty<ModuleCondition> {
-    public static final String KEY = "allow_change_parent";
+    public static final ResourceLocation KEY = Miapi.id("allow_change_parent");
 
     public CanChangeParentModule() {
         super(ConditionManager.CONDITION_CODEC_DIRECT);

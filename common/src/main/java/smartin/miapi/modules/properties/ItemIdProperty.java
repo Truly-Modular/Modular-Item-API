@@ -4,6 +4,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import smartin.miapi.Miapi;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.craft.CraftAction;
 import smartin.miapi.modules.ItemModule;
@@ -22,7 +23,7 @@ import java.util.Optional;
  * it only supports preregisterd ids in {@link RegistryInventory#modularItems}
  */
 public class ItemIdProperty extends CodecProperty<ResourceLocation> implements CraftingProperty {
-    public static final String KEY = "item_id";
+    public static final ResourceLocation KEY = Miapi.id("item_id");
     public static ItemIdProperty property;
 
     public ItemIdProperty() {

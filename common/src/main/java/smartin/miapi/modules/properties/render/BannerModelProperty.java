@@ -4,7 +4,9 @@ import com.mojang.serialization.Codec;
 import com.redpxnda.nucleus.codec.auto.AutoCodec;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import smartin.miapi.Miapi;
 import smartin.miapi.client.model.BannerMiapiModel;
 import smartin.miapi.client.model.MiapiItemModel;
 import smartin.miapi.client.model.MiapiModel;
@@ -21,7 +23,7 @@ import java.util.function.Supplier;
 
 @Environment(EnvType.CLIENT)
 public class BannerModelProperty extends CodecProperty<List<BannerModelProperty.BannerModelData>> {
-    public static final String KEY = "banner";
+    public static final ResourceLocation KEY = Miapi.id("banner");
     public static BannerModelProperty property;
     public static Codec<List<BannerModelProperty.BannerModelData>> CODEC = Codec.list(AutoCodec.of(BannerModelData.class).codec());
 
@@ -44,7 +46,7 @@ public class BannerModelProperty extends CodecProperty<List<BannerModelProperty.
                         }
                         case "module_data": {
                             if (ModelProperty.isAllowedKey(bannerModelData.modelType, key)) {
-                                yield () -> MaterialInscribeDataProperty.readStackFromModuleInstance(moduleInstance, KEY);
+                                yield () -> MaterialInscribeDataProperty.readStackFromModuleInstance(moduleInstance, KEY.toString());
                             }
                             yield () -> ItemStack.EMPTY;
                         }

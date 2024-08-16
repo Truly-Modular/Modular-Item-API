@@ -1,9 +1,11 @@
 package smartin.miapi.modules.properties;
 
 import dev.architectury.event.EventResult;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import smartin.miapi.Miapi;
 import smartin.miapi.entity.ItemProjectileEntity;
 import smartin.miapi.entity.arrowhitbehaviours.EntityStickBehaviour;
 import smartin.miapi.events.MiapiProjectileEvents;
@@ -13,7 +15,7 @@ import smartin.miapi.modules.properties.util.ComplexBooleanProperty;
  * This property is responsible for designating a Projectile as an arrow, having subtle changes to its behaviour
  */
 public class ArrowProperty extends ComplexBooleanProperty {
-    public static final String KEY = "is_arrow";
+    public static final ResourceLocation KEY = Miapi.id("is_arrow");
     public static ArrowProperty property;
     public static EntityStickBehaviour entityStickBehaviour = new EntityStickBehaviour();
 

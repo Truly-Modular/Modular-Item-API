@@ -1,7 +1,9 @@
 package smartin.miapi.modules.properties;
 
 import com.mojang.serialization.Codec;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import smartin.miapi.Miapi;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.util.CodecProperty;
@@ -16,7 +18,7 @@ import java.util.List;
  * Allows the Modules to define tags to identify eachother
  */
 public class TagProperty extends CodecProperty<List<String>> {
-    public static final String KEY = "tag";
+    public static final ResourceLocation KEY = Miapi.id("tag");
     public static TagProperty property;
     public static Codec<List<String>> CODEC = Codec.list(Codec.STRING);
 

@@ -1,8 +1,10 @@
 package smartin.miapi.modules.properties;
 
 import dev.architectury.event.EventResult;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
+import smartin.miapi.Miapi;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.modules.properties.damage_boosts.IllagerBane;
 import smartin.miapi.modules.properties.util.DoubleProperty;
@@ -11,7 +13,7 @@ import smartin.miapi.modules.properties.util.DoubleProperty;
  * decreases damage from raid type mobs
  */
 public class PillagesGuard extends DoubleProperty {
-    public static final String KEY = "pillager_guard";
+    public static final ResourceLocation KEY = Miapi.id("pillager_guard");
     public static PillagesGuard property;
 
 

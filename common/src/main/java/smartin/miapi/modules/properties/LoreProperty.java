@@ -8,10 +8,12 @@ import net.fabricmc.api.Environment;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import org.jetbrains.annotations.NotNull;
+import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.crafting.crafter.replace.HoverMaterialList;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.item.ModularItemStackConverter;
@@ -28,7 +30,7 @@ import java.util.*;
  * This property manages the Itemlore of an Item
  */
 public class LoreProperty extends CodecProperty<List<LoreProperty.Holder>> {
-    public static final String KEY = "item_lore";
+    public static final ResourceLocation KEY = Miapi.id("item_lore");
     public static final Codec<Holder> codec = AutoCodec.of(Holder.class).codec();
     public static LoreProperty property;
     public static List<LoreSupplier> bottomLoreSuppliers = Collections.synchronizedList(new ArrayList<>());
@@ -90,9 +92,13 @@ public class LoreProperty extends CodecProperty<List<LoreProperty.Holder>> {
             }
         }
         if (MiapiConfig.INSTANCE.client.other.injectLoreModularItem) {
+            if (itemStack.getItem() instanceof ModularItem) {
+                lines.add(format(Component.translatable("miapi.ui.modular_item"), ChatFormatting.GRAY));
+                return lines;
+            }
             ItemStack converted = ModularItemStackConverter.getModularVersion(itemStack);
-            if (!ItemStack.matches(converted, itemStack) || itemStack.getItem() instanceof ModularItem) {
-                lines.add(format(Component.translatable("miapi.ui.modular_item"), ChatFormatting.BLACK));
+            if (!ItemStack.matches(converted, itemStack) && converted.getItem() instanceof ModularItem) {
+                lines.add(format(Component.translatable("miapi.ui.modular_item"), ChatFormatting.GRAY));
             }
         }
         return lines;

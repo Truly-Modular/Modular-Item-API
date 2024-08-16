@@ -4,10 +4,12 @@ import com.redpxnda.nucleus.codec.auto.AutoCodec;
 import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
+import smartin.miapi.Miapi;
 import smartin.miapi.client.model.MiapiItemModel;
 import smartin.miapi.item.modular.Transform;
 import smartin.miapi.modules.ItemModule;
@@ -27,7 +29,7 @@ import java.util.Optional;
  */
 @Environment(EnvType.CLIENT)
 public class GuiOffsetProperty extends CodecProperty<GuiOffsetProperty.GuiOffsetData> {
-    public static final String KEY = "gui_offset";
+    public static final ResourceLocation KEY = Miapi.id("gui_offset");
     public static ModuleProperty property;
 
     public GuiOffsetProperty() {

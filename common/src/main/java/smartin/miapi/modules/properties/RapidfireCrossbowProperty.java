@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import dev.architectury.event.EventResult;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EquipmentSlot;
 import smartin.miapi.Miapi;
@@ -26,7 +27,7 @@ import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 
 public class RapidfireCrossbowProperty extends DoubleProperty {
-    public static String KEY = "rapid_fire_crossbow";
+    public static final ResourceLocation KEY = Miapi.id("rapid_fire_crossbow");
     public static RapidfireCrossbowProperty property;
     public static DataComponentType<List<ItemStack>> ADDITIONAL_PROJECTILES_COMPONENT = DataComponentType.<List<ItemStack>>builder()
             .persistent(Codec.list(ItemStack.CODEC))

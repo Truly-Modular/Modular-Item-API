@@ -10,11 +10,13 @@ import net.minecraft.core.component.DataComponentType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import smartin.miapi.Miapi;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.craft.CraftAction;
 import smartin.miapi.events.MiapiEvents;
@@ -34,7 +36,7 @@ import java.util.Optional;
  * Nemesis is a Complicated Property to deal bonus damage against certain targets
  */
 public class NemesisProperty extends DoubleProperty implements CraftingProperty {
-    public static String KEY = "nemesis";
+    public static final ResourceLocation KEY = Miapi.id("nemesis");
     public static NemesisProperty property;
     public static Codec<NemesisData> CODEC = AutoCodec.of(NemesisData.class).codec();
     public static DataComponentType<NemesisData> NEMESIS_COMPONENT = DataComponentType.<NemesisData>builder().persistent(CODEC).networkSynchronized(ByteBufCodecs.fromCodec(CODEC)).build();

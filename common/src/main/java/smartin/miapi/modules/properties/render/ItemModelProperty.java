@@ -9,6 +9,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import smartin.miapi.Miapi;
 import smartin.miapi.client.MiapiClient;
 import smartin.miapi.client.model.ItemMiapiModel;
 import smartin.miapi.client.model.MiapiItemModel;
@@ -25,7 +26,7 @@ import java.util.function.Supplier;
 
 @Environment(EnvType.CLIENT)
 public class ItemModelProperty extends CodecProperty<List<ModelJson>> {
-    public static final String KEY = "item_model";
+    public static final ResourceLocation KEY = Miapi.id("item_model");
     public static ItemModelProperty property;
     public static Codec<ModelJson> CODEC = AutoCodec.of(ModelJson.class).codec();
     public static DataComponentType<ItemStack> ITEM_MODEL_COMPONENT = DataComponentType.<ItemStack>builder()

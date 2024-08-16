@@ -21,7 +21,7 @@ import smartin.miapi.modules.properties.util.MergeType;
 import java.util.*;
 
 public class AttributeSplitProperty extends CodecProperty<Map<AttributeSplitProperty.Context, List<AttributeSplitProperty.SplitContext>>> {
-    public static String KEY = "attribute_split";
+    public static final ResourceLocation KEY = Miapi.id("attribute_split");
     public static Codec<Map<Context, List<SplitContext>>> CODEC = new Codec<>() {
         @Override
         public <T> DataResult<Pair<Map<Context, List<SplitContext>>, T>> decode(DynamicOps<T> ops, T input) {

@@ -15,7 +15,7 @@ import java.util.Optional;
  * This property increases the Attackdamage of a weapon the lower the durability and the higher its value is.
  */
 public class FracturingProperty extends DoubleProperty {
-    public static final String KEY = "fracturing";
+    public static final ResourceLocation KEY = Miapi.id("fracturing");
     public static FracturingProperty property;
     public static ResourceLocation ATTRIBUTE_ID = Miapi.id("fracturing_property_damage");
 

@@ -5,6 +5,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import com.redpxnda.nucleus.codec.auto.AutoCodec;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.cache.ModularItemCache;
@@ -35,11 +36,11 @@ public abstract class DoubleProperty extends CodecProperty<DoubleOperationResolv
             },
             listCodec);
 
-    protected DoubleProperty(String cacheKey) {
+    protected DoubleProperty(ResourceLocation cacheKey) {
         super(DoubleOperationResolvable.CODEC);
         this.cacheKey = cacheKey + "_internal_double";
         property = this;
-        ModularItemCache.setSupplier(cacheKey, (itemStack) -> {
+        ModularItemCache.setSupplier(cacheKey.toString(), (itemStack) -> {
             Optional<DoubleOperationResolvable> optional = getData(itemStack);
             if (optional.isPresent()) {
                 return optional.get().evaluate(baseValue);

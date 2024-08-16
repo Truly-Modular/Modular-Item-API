@@ -1,6 +1,8 @@
 package smartin.miapi.modules.properties.enchanment;
 
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import smartin.miapi.Miapi;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.material.Material;
@@ -13,7 +15,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class EnchantAbilityProperty extends DoubleProperty {
-    public static String KEY = "enchantability";
+    public static final ResourceLocation KEY = Miapi.id("enchantability");
     public static EnchantAbilityProperty property;
 
     public EnchantAbilityProperty() {

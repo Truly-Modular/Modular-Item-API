@@ -7,11 +7,13 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.renderer.block.model.ItemTransform;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
+import smartin.miapi.Miapi;
 import smartin.miapi.client.model.MiapiItemModel;
 import smartin.miapi.item.modular.Transform;
 import smartin.miapi.modules.cache.ModularItemCache;
@@ -24,14 +26,13 @@ import java.util.Set;
 
 @Environment(EnvType.CLIENT)
 public class ModelTransformationProperty extends CodecProperty<ModelTransformationProperty.ModelTransformationData> {
-
-    public static final String KEY = "model_transform";
+    public static final ResourceLocation KEY = Miapi.id("model_transform");
     public static ModelTransformationProperty property;
 
     public ModelTransformationProperty() {
         super(AutoCodec.of(ModelTransformationData.class).codec());
         property = this;
-        ModularItemCache.setSupplier(KEY, ModelTransformationProperty::getTransformation);
+        ModularItemCache.setSupplier(KEY.toString(), ModelTransformationProperty::getTransformation);
         MiapiItemModel.modelTransformers.add((matrices, itemStack, mode, modelType, tickDelta) -> {
             applyTransformation(itemStack, mode, matrices);
             return matrices;
@@ -39,7 +40,7 @@ public class ModelTransformationProperty extends CodecProperty<ModelTransformati
     }
 
     public static void applyTransformation(ItemStack stack, ItemDisplayContext mode, PoseStack matrices) {
-        var data = ModularItemCache.getVisualOnlyCache(stack, KEY, ItemTransforms.NO_TRANSFORMS);
+        var data = ModularItemCache.getVisualOnlyCache(stack, KEY.toString(), ItemTransforms.NO_TRANSFORMS);
         ItemTransform transformation = data.getTransform(mode);
         boolean leftHanded = isLeftHanded(mode);
         matrices.translate(0.5f, 0.5f, 0.5f);

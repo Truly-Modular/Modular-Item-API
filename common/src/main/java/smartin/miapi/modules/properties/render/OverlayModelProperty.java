@@ -15,6 +15,7 @@ import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
+import smartin.miapi.Miapi;
 import smartin.miapi.client.model.BakedMiapiModel;
 import smartin.miapi.client.model.MiapiItemModel;
 import smartin.miapi.client.model.MiapiModel;
@@ -34,7 +35,7 @@ import java.util.regex.Pattern;
 
 public class OverlayModelProperty extends CodecProperty<List<OverlayModelProperty.OverlayModelData>> {
     public static Codec<List<OverlayModelProperty.OverlayModelData>> CODEC = Codec.list(AutoCodec.of(OverlayModelData.class).codec());
-    public static String KEY = "overlay_texture_model";
+    public static final ResourceLocation KEY = Miapi.id("overlay_texture_model");
     public static OverlayModelProperty property;
 
     public OverlayModelProperty() {

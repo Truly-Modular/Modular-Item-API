@@ -5,6 +5,7 @@ import com.redpxnda.nucleus.codec.auto.AutoCodec;
 import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
 import dev.architectury.event.EventResult;
 import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.BlockGetter;
@@ -13,6 +14,7 @@ import net.minecraft.world.level.ExplosionDamageCalculator;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
+import smartin.miapi.Miapi;
 import smartin.miapi.events.MiapiProjectileEvents;
 import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.MergeType;
@@ -23,7 +25,7 @@ import java.util.Optional;
  * This property is exploding projectiles on impact
  */
 public class ExplosionProperty extends CodecProperty<ExplosionProperty.ExplosionInfo> {
-    public static final String KEY = "explosion_projectile";
+    public static final ResourceLocation KEY = Miapi.id("explosion_projectile");
     public static final Codec<ExplosionInfo> codec = AutoCodec.of(ExplosionInfo.class).codec();
     public static ExplosionProperty property;
 

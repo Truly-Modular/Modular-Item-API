@@ -4,9 +4,11 @@ import com.mojang.serialization.Codec;
 import com.redpxnda.nucleus.codec.auto.AutoCodec;
 import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Environment;
+import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.crafting.statdisplay.JsonStatDisplay;
 import smartin.miapi.client.gui.crafting.statdisplay.SingleStatDisplay;
@@ -25,7 +27,7 @@ import java.util.List;
 import java.util.Map;
 
 public class GuiStatProperty extends CodecProperty<Map<String, GuiStatProperty.GuiInfo>> {
-    public static String KEY = "gui_stat";
+    public static final ResourceLocation KEY = Miapi.id("gui_stat");
     public static GuiStatProperty property;
     public static Codec<Map<String, GuiInfo>> CODEC = Codec.dispatchedMap(Codec.STRING, (key) -> AutoCodec.of(GuiInfo.class).codec());
 
@@ -33,7 +35,7 @@ public class GuiStatProperty extends CodecProperty<Map<String, GuiStatProperty.G
         super(CODEC);
         property = this;
         if (Environment.isClient()) {
-            ModularItemCache.setSupplier(KEY, GuiStatProperty::getInfoCache);
+            ModularItemCache.setSupplier(KEY.toString(), GuiStatProperty::getInfoCache);
             StatListWidget.addStatDisplaySupplier(new StatListWidget.StatWidgetSupplier() {
                 @Override
                 public <T extends InteractAbleWidget & SingleStatDisplay> List<T> currentList(ItemStack original, ItemStack compareTo) {
@@ -72,7 +74,7 @@ public class GuiStatProperty extends CodecProperty<Map<String, GuiStatProperty.G
     }
 
     public static Map<String, GuiInfo> getInfo(ItemStack itemStack) {
-        return ModularItemCache.getVisualOnlyCache(itemStack, KEY, new HashMap<>());
+        return ModularItemCache.getVisualOnlyCache(itemStack, KEY.toString(), new HashMap<>());
     }
 
     public static double getValue(ItemStack itemStack, String key) {

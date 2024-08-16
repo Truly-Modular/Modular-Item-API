@@ -18,8 +18,7 @@ import smartin.miapi.modules.properties.util.ComplexBooleanProperty;
 
 public class HandheldItemProperty extends ComplexBooleanProperty {
     public static ResourceLocation attackspeedID = Miapi.id("handheld_bonus_attackspeed");
-
-    public static String KEY = "handheld_item";
+    public static final ResourceLocation KEY = Miapi.id("handheld_item");
 
     public HandheldItemProperty() {
         super(KEY, false);

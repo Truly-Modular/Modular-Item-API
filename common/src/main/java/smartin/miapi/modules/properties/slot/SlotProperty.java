@@ -6,7 +6,9 @@ import com.redpxnda.nucleus.codec.auto.AutoCodec;
 import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
+import smartin.miapi.Miapi;
 import smartin.miapi.item.modular.Transform;
 import smartin.miapi.item.modular.TransformMap;
 import smartin.miapi.modules.ModuleInstance;
@@ -22,9 +24,8 @@ import java.util.concurrent.atomic.AtomicReference;
  * The SlotProperty, this allows Modules to define submodule Slots
  */
 public class SlotProperty extends CodecProperty<Map<String, SlotProperty.ModuleSlot>> {
+    public static final ResourceLocation KEY = Miapi.id("slots");
     public static Codec<Map<String, ModuleSlot>> CODEC = Codec.unboundedMap(Codec.STRING, AutoCodec.of(ModuleSlot.class).codec());
-
-    public static final String KEY = "slots";
 
     public SlotProperty() {
         super(CODEC);

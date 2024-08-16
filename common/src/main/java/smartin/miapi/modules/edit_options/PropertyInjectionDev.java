@@ -83,7 +83,7 @@ public class PropertyInjectionDev implements EditOption {
                         JsonObject moduleJson = Miapi.gson.fromJson(raw, JsonObject.class);
                         if (moduleJson != null) {
                             for (Map.Entry<String, JsonElement> stringJsonElementEntry : moduleJson.entrySet()) {
-                                ModuleProperty property = RegistryInventory.moduleProperties.get(stringJsonElementEntry.getKey());
+                                ModuleProperty property = RegistryInventory.moduleProperties.get(Miapi.id(stringJsonElementEntry.getKey()));
                                 try {
                                     assert property != null;
                                     property.load(Miapi.id("property-injection"), stringJsonElementEntry.getValue(), true);

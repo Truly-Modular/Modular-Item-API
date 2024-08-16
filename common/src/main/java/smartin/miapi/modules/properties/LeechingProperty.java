@@ -1,7 +1,9 @@
 package smartin.miapi.modules.properties;
 
 import dev.architectury.event.EventResult;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
+import smartin.miapi.Miapi;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.modules.properties.util.DoubleProperty;
 
@@ -9,7 +11,7 @@ import smartin.miapi.modules.properties.util.DoubleProperty;
  * simple lifesteal property
  */
 public class LeechingProperty extends DoubleProperty {
-    public static final String KEY = "leeching";
+    public static final ResourceLocation KEY = Miapi.id("leeching");
     public static LeechingProperty property;
 
 

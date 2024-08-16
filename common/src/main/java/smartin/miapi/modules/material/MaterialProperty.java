@@ -27,14 +27,14 @@ import java.util.concurrent.Executor;
  * This is the Property relating to materials of a Module
  */
 public class MaterialProperty extends CodecProperty<ResourceLocation> {
-    public static final String KEY = "material";
+    public static final ResourceLocation KEY = Miapi.id("material");
     public static ModuleProperty property;
     public static Map<ResourceLocation, Material> materials = new ConcurrentHashMap<>();
 
     public MaterialProperty() {
         super(ResourceLocation.CODEC);
         property = this;
-        StatResolver.registerResolver(KEY, new StatResolver.Resolver() {
+        StatResolver.registerResolver("material", new StatResolver.Resolver() {
             @Override
             public double resolveDouble(String data, ModuleInstance instance) {
                 try {

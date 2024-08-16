@@ -3,15 +3,17 @@ package smartin.miapi.modules.properties.enchanment;
 import com.mojang.serialization.Codec;
 import net.minecraft.core.Holder;
 import net.minecraft.core.RegistryAccess;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import smartin.miapi.Miapi;
 import smartin.miapi.modules.properties.util.*;
 
 import java.util.Map;
 
 public class CraftingEnchantProperty extends CodecProperty<Map<Holder<Enchantment>, DoubleOperationResolvable>> implements ComponentApplyProperty {
-    public static final String KEY = "crafting_enchants";
+    public static final ResourceLocation KEY = Miapi.id("crafting_enchants");
     public static CraftingEnchantProperty property;
     public static Codec<Map<Holder<Enchantment>, DoubleOperationResolvable>> CODEC = Codec.unboundedMap(Enchantment.CODEC, DoubleOperationResolvable.CODEC);
 

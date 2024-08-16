@@ -9,6 +9,7 @@ import net.minecraft.nbt.NbtOps;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
+import smartin.miapi.Miapi;
 import smartin.miapi.client.model.BlockRenderModel;
 import smartin.miapi.client.model.MiapiItemModel;
 import smartin.miapi.client.model.MiapiModel;
@@ -22,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BlockModelProperty extends CodecProperty<List<BlockModelProperty.BlockModelData>> {
-    public static String KEY = "block_model";
+    public static final ResourceLocation KEY = Miapi.id("block_model");
     public static BlockModelProperty property;
     public static Codec<List<BlockModelData>> CODEC = Codec.list(AutoCodec.of(BlockModelData.class).codec());
 

@@ -182,6 +182,17 @@ public class MiapiRegistry<T> {
     }
 
     /**
+     * Retrieves the entry associated with the given name from this registry. If no such entry exists, returns null.
+     *
+     * @param name the name of the entry to be retrieved
+     * @return the entry associated with the given name, or null if no such entry exists
+     */
+    @Nullable
+    public T get(ResourceLocation name) {
+        return get(name.toString());
+    }
+
+    /**
      * Adds a new callback to this registry. The callback will be called for every entry in the registry, and for all
      * entries that are registered in the future. The callback will be called immediately for all existing entries in the
      * registry.

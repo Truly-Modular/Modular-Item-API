@@ -1,5 +1,6 @@
 package smartin.miapi.modules.properties.util;
 
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import smartin.miapi.modules.ModuleInstance;
 
@@ -8,7 +9,7 @@ import java.util.Optional;
 public abstract class ComplexBooleanProperty extends DoubleProperty {
     boolean defaultValue;
 
-    protected ComplexBooleanProperty(String key, boolean defaultValue) {
+    protected ComplexBooleanProperty(ResourceLocation key, boolean defaultValue) {
         super(key);
         this.defaultValue = defaultValue;
     }

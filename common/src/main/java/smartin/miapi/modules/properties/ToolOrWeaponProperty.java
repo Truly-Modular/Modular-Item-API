@@ -1,6 +1,8 @@
 package smartin.miapi.modules.properties;
 
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import smartin.miapi.Miapi;
 import smartin.miapi.modules.properties.util.ComplexBooleanProperty;
 
 /**
@@ -8,7 +10,7 @@ import smartin.miapi.modules.properties.util.ComplexBooleanProperty;
  * mainly affecting durability calculations
  */
 public class ToolOrWeaponProperty extends ComplexBooleanProperty {
-    public static final String KEY = "is_weapon";
+    public static final ResourceLocation KEY = Miapi.id("is_weapon");
     public static ToolOrWeaponProperty property;
 
     public ToolOrWeaponProperty() {
