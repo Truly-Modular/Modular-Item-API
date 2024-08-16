@@ -236,7 +236,7 @@ public class AttributeProperty extends CodecProperty<List<AttributeProperty.Attr
             Attribute attribute = replaceMap.getOrDefault(attributeJson.attribute, () -> BuiltInRegistries.ATTRIBUTE.get(ResourceLocation.parse(attributeJson.attribute))).get();
             if (attribute == null) {
                 Miapi.LOGGER.warn(String.valueOf(BuiltInRegistries.ATTRIBUTE.get(ResourceLocation.parse(attributeJson.attribute))));
-                Miapi.LOGGER.warn("Attribute is null " + attributeJson.attribute + " on module " + instance.module.name() + " this should not have happened.");
+                Miapi.LOGGER.warn("Attribute is null " + attributeJson.attribute + " on module " + instance.module.id() + " this should not have happened.");
             } else {
                 Holder<Attribute> attributeHolder = BuiltInRegistries.ATTRIBUTE.wrapAsHolder(attribute);
                 ResourceLocation id = AttributeUtil.getIDForSlot(attributeJson.slot, attribute, operation);

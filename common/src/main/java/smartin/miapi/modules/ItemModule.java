@@ -4,13 +4,11 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.mojang.datafixers.util.Pair;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import smartin.miapi.Miapi;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.datapack.ReloadEvents;
-import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.item.modular.VisualModularItem;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
@@ -27,10 +25,10 @@ import static smartin.miapi.Miapi.gson;
 /**
  * An ItemModule represents a Module loaded from a JSON
  *
- * @param name       The name of the module.
+ * @param id       The id of the module.
  * @param properties The map of properties for the module.
  */
-public record ItemModule(ResourceLocation name, Map<ModuleProperty<?>, Object> properties) {
+public record ItemModule(ResourceLocation id, Map<ModuleProperty<?>, Object> properties) {
 
     /**
      * The key for the properties in the Cache.
@@ -82,7 +80,7 @@ public record ItemModule(ResourceLocation name, Map<ModuleProperty<?>, Object> p
         try {
             JsonObject moduleJson = gson.fromJson(moduleJsonString, JsonObject.class);
             SynergyManager.PropertyHolder holder = SynergyManager.getFrom(moduleJson, isClient, path);
-            String name = moduleJson.get("name").getAsString();
+            String name = moduleJson.get("id").getAsString();
             ItemModule module = RegistryInventory.modules.get(name);
             if (module == null) {
                 LOGGER.warn("module not found to be extended! " + name);
@@ -190,7 +188,7 @@ public record ItemModule(ResourceLocation name, Map<ModuleProperty<?>, Object> p
     @Override
     public boolean equals(Object other) {
         if (other instanceof ItemModule otherModule) {
-            return this.name.equals(otherModule.name);
+            return this.id.equals(otherModule.id);
         }
         return false;
     }

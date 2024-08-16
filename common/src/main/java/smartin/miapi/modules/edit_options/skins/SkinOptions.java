@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.InteractAbleWidget;
@@ -24,7 +25,7 @@ import java.util.function.Supplier;
 
 public class SkinOptions implements EditOption {
 
-    public static Map<ItemModule, Map<String, Skin>> skins = new HashMap<>();
+    public static Map<ResourceLocation, Map<String, Skin>> skins = new HashMap<>();
     public static Map<String, SkinTab> tabMap = new HashMap<>();
     public static SkinTab defaultTab = new SkinTab();
 
@@ -61,7 +62,7 @@ public class SkinOptions implements EditOption {
     public static void load(String data) {
         JsonObject element = Miapi.gson.fromJson(data, JsonObject.class);
         Skin.fromJson(element).forEach(skin -> {
-            Map<String, Skin> skinMap = skins.computeIfAbsent(skin.module, (module) -> new HashMap<>());
+            Map<String, Skin> skinMap = skins.computeIfAbsent(skin.module.id(), (module) -> new HashMap<>());
             skinMap.put(skin.path, skin);
         });
     }
@@ -75,18 +76,25 @@ public class SkinOptions implements EditOption {
     @Override
     public ItemStack preview(FriendlyByteBuf buffer, EditContext context) {
         String skin = buffer.readUtf();
-        Skin.writeSkin(context.getInstance(), skin);
-        context.getInstance().getRoot().writeToItem(context.getItemstack());
-        context.getInstance().clearCaches();
+        if (context.getInstance() != null) {
+            Skin.writeSkin(context.getInstance(), skin);
+            context.getInstance().getRoot().writeToItem(context.getItemstack());
+            context.getInstance().clearCaches();
+        }else{
+            Miapi.LOGGER.error("could not set skin, no module found");
+        }
         return context.getItemstack();
     }
 
     @Override
     public boolean isVisible(EditContext context) {
-        if(context.getInstance()!=null){
+        if (context.getInstance() != null) {
             ItemModule module = context.getInstance().module;
-            var foundSkins = skins.get(module);
-            return foundSkins != null;
+            if (module != null) {
+                var foundSkins = skins
+                        .get(module.id());
+                return foundSkins != null;
+            }
         }
         return false;
     }

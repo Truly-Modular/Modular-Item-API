@@ -36,7 +36,7 @@ public class SkinGui extends InteractAbleWidget {
         this.craft = craft;
         this.preview = preview;
         this.instance = instance;
-        Map<String, Skin> maps = SkinOptions.skins.get(instance.module);
+        Map<String, Skin> maps = SkinOptions.skins.get(instance.module.id());
         if (maps == null) {
             maps = new HashMap<>();
         }

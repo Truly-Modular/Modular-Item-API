@@ -57,7 +57,7 @@ public class Skin {
         JsonElement element = moduleInstance.moduleData.get("skin");
         if (element != null) {
             String key = element.getAsString();
-            Map<String, Skin> moduleSkins = SkinOptions.skins.get(moduleInstance.module);
+            Map<String, Skin> moduleSkins = SkinOptions.skins.get(moduleInstance.module.id());
             if (moduleSkins != null) {
                 Skin skin = moduleSkins.get(key);
                 return Optional.ofNullable(skin);

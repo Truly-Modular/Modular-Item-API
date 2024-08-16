@@ -38,17 +38,18 @@ public class ModuleInstance {
     public static DataComponentType<ModuleInstance> MODULE_INSTANCE_COMPONENT;
 
     static {
-        Codec<Map<String, String>> dataCodec = Codec.unboundedMap(Codec.STRING, Codec.STRING).xmap((i) -> i, Function.identity());
         Codec<Map<String, JsonElement>> dataJsonCodec = Codec.unboundedMap(Codec.STRING, StatResolver.Codecs.JSONELEMENT_CODEC).xmap((i) -> i, Function.identity());
         CODEC = Codec.recursive(
                 "module_instance",
                 selfCodec -> RecordCodecBuilder.create((instance) ->
                         instance.group(
                                 ResourceLocation.CODEC.fieldOf("key")
-                                        .forGetter((moduleInstance) -> moduleInstance.module.name()),
-                                Codec.unboundedMap(Codec.STRING, selfCodec).xmap((i) -> i, Function.identity()).fieldOf("child")
+                                        .forGetter((moduleInstance) -> moduleInstance.module.id()),
+                                Codec.unboundedMap(Codec.STRING, selfCodec).xmap((i) -> i, Function.identity())
+                                        .optionalFieldOf("child", new LinkedHashMap<>())
                                         .forGetter((moduleInstance) -> moduleInstance.subModules),
-                                dataJsonCodec.fieldOf("data")
+                                dataJsonCodec
+                                        .optionalFieldOf("data", new HashMap<>())
                                         .forGetter((moduleInstance) -> moduleInstance.moduleData)
                         ).apply(instance, (module, children, data) -> {
                             ItemModule itemModule = RegistryInventory.modules.get(module.toString());
@@ -376,7 +377,7 @@ public class ModuleInstance {
     }
 
     public Component getModuleName() {
-        String moduleName = module.name().toString();
+        String moduleName = module.id().toString();
         moduleName = moduleName.replace(":", ".");
         moduleName = moduleName.replaceAll("/", ".");
         Material material = MaterialProperty.getMaterial(this);
@@ -387,7 +388,7 @@ public class ModuleInstance {
     }
 
     public Component getModuleDescription() {
-        String moduleName = module.name().toString();
+        String moduleName = module.id().toString();
         moduleName = moduleName.replace(":", ".");
         moduleName = moduleName.replaceAll("/", ".");
         Material material = MaterialProperty.getMaterial(this);

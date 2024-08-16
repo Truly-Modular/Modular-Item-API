@@ -19,7 +19,6 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ConditionManager {
-    public static MiapiRegistry<ModuleCondition> oldConditionRegistry = MiapiRegistry.getInstance(ModuleCondition.class);
     public static Map<ResourceLocation, Codec<? extends ModuleCondition>> CONDITION_REGISTRY = new ConcurrentHashMap<>();
     public static ContextManager<ModuleInstance> MODULE_CONDITION_CONTEXT = source -> ((ModuleInstance) source).copy();
     public static ContextManager<BlockPos> WORKBENCH_LOCATION_CONTEXT = BlockPos.class::cast;

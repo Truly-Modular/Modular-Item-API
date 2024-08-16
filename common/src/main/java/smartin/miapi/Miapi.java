@@ -111,8 +111,8 @@ public class Miapi {
         registerReloadHandler(ReloadEvents.MAIN, "miapi/module_extensions", Collections.synchronizedMap(new LinkedHashMap<>()),
                 (isClient, path, data) -> ItemModule.loadModuleExtension(path, data, isClient), -0.4f);
         ReloadEvents.END.subscribe(isClient -> {
-            RegistryInventory.modules.register(ItemModule.empty.name(), ItemModule.empty);
-            RegistryInventory.modules.register(ItemModule.internal.name(), ItemModule.internal);
+            RegistryInventory.modules.register(ItemModule.empty.id(), ItemModule.empty);
+            RegistryInventory.modules.register(ItemModule.internal.id(), ItemModule.internal);
             Miapi.LOGGER.info("Loaded " + RegistryInventory.modules.getFlatMap().size() + " Modules");
             ModularItemCache.discardCache();
         });

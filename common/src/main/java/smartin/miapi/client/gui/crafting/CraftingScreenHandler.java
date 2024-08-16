@@ -134,7 +134,8 @@ public class CraftingScreenHandler extends AbstractContainerMenu {
                 });
             });
             Networking.registerC2SPacket(editPacketID, (buffer, player) -> {
-                EditOption option = RegistryInventory.editOptions.get(buffer.readUtf());
+                String editOptionKey = buffer.readUtf();
+                EditOption option = RegistryInventory.editOptions.get(editOptionKey);
                 String[] array = buffer.readUtf().split("\n");
                 //TODO: do i need execute on server?
                 //Miapi.server.execute(()->{
@@ -209,7 +210,7 @@ public class CraftingScreenHandler extends AbstractContainerMenu {
                         this.slotsChanged(inventory);
                     });
                 } else {
-                    Miapi.LOGGER.warn("ERROR - Couldn`t verify craft action from client " + player.getStringUUID() + " " + player.getDisplayName().getString() + " This might be a bug or somebody is trying to exploit");
+                    Miapi.LOGGER.warn("ERROR - Couldn`t verify craft action of type" + editOptionKey + " from client " + player.getStringUUID() + " " + player.getDisplayName().getString() + " This might be a bug or somebody is trying to exploit");
                     Miapi.LOGGER.warn(String.valueOf(current));
                     Miapi.LOGGER.warn(position.toString());
                 }

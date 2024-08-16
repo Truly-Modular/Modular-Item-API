@@ -107,7 +107,7 @@ public class CraftAction {
             buf.writeUtf(slot);
         }
         if (toAdd != null) {
-            buf.writeUtf(toAdd.name().toString());
+            buf.writeUtf(toAdd.id().toString());
         } else {
             buf.writeUtf("null");
         }
@@ -228,7 +228,7 @@ public class CraftAction {
         Map<String, ModuleInstance> subModuleMap = new HashMap<>();
         if (slotLocation.isEmpty()) {
             //a module already exists, replacing module 0
-            if (toAdd == null || toAdd == ItemModule.empty || toAdd.name().equals("empty")) {
+            if (toAdd == null || toAdd == ItemModule.empty || toAdd.id().equals("empty")) {
                 return ItemStack.EMPTY;
             }
             subModuleMap = oldBaseModule.getSubModuleMap();
@@ -257,7 +257,7 @@ public class CraftAction {
             }
         }
 
-        if (toAdd == null || toAdd == ItemModule.empty || toAdd.name().equals(Miapi.id("empty"))) {
+        if (toAdd == null || toAdd == ItemModule.empty || toAdd.id().equals(Miapi.id("empty"))) {
             parsingInstance.removeSubModule(slotLocation.getFirst());
         } else {
             ModuleInstance newModule = new ModuleInstance(toAdd);

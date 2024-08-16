@@ -16,10 +16,7 @@ import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import smartin.miapi.Miapi;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 public class AttributeUtil {
 
@@ -180,6 +177,6 @@ public class AttributeUtil {
     }
 
     public static ResourceLocation getIDForSlot(String slotidString) {
-        return Miapi.id(slotidString);
+        return Miapi.id(slotidString.toLowerCase(Locale.ROOT));
     }
 }

@@ -123,7 +123,7 @@ public class CreateItemOption implements EditOption {
             public void craft(FriendlyByteBuf craftBuffer) {
                 FriendlyByteBuf packetByteBuf = Networking.createBuffer();
                 packetByteBuf.writeUtf(BuiltInRegistries.ITEM.getKey(selected.getItem().getItem()).toString());
-                packetByteBuf.writeUtf(selected.getBaseModule().name().toString());
+                packetByteBuf.writeUtf(selected.getBaseModule().id().toString());
                 packetByteBuf.writeInt(selected.getItem().getCount());
                 packetByteBuf.writeBytes(craftBuffer);
                 context.craft(packetByteBuf);
@@ -133,7 +133,7 @@ public class CreateItemOption implements EditOption {
             public void preview(FriendlyByteBuf preview) {
                 FriendlyByteBuf packetByteBuf = Networking.createBuffer();
                 packetByteBuf.writeUtf(BuiltInRegistries.ITEM.getKey(selected.getItem().getItem()).toString());
-                packetByteBuf.writeUtf(selected.getBaseModule().name().toString());
+                packetByteBuf.writeUtf(selected.getBaseModule().id().toString());
                 packetByteBuf.writeInt(selected.getItem().getCount());
                 packetByteBuf.writeBytes(preview);
                 context.preview(packetByteBuf);
