@@ -7,6 +7,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.architectury.event.EventResult;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Environment;
@@ -21,7 +22,7 @@ import java.util.Optional;
 import static smartin.miapi.modules.material.MaterialProperty.materials;
 
 public class ComponentMaterial extends JsonMaterial {
-    public static String KEY = "nbt_runtime_material";
+    public static ResourceLocation KEY = Miapi.id("component_runtime_material");
     public JsonObject overWrite;
     public Material parent;
     public double cost = 1.0;
@@ -33,9 +34,9 @@ public class ComponentMaterial extends JsonMaterial {
                     StatResolver.Codecs.JSONELEMENT_CODEC
                             .optionalFieldOf("overwrite", new JsonObject())
                             .forGetter((material) -> material.overWrite),
-                    Codec.STRING
+                    ResourceLocation.CODEC
                             .fieldOf("parent")
-                            .forGetter((material) -> material.parent.getKey())
+                            .forGetter((material) -> material.parent.getID())
             ).apply(instance, (cost, json, materialKey) -> {
                 Material material = materials.get(materialKey);
                 return new ComponentMaterial(material, json, cost, Environment.isClient());
@@ -46,7 +47,7 @@ public class ComponentMaterial extends JsonMaterial {
             .networkSynchronized(ByteBufCodecs.fromCodec(CODEC)).build();
 
     public ComponentMaterial(Material parent, JsonElement overwrite, double cost, boolean isClient) {
-        super(parent.getDebugJson().deepCopy(), isClient);
+        super(KEY, parent.getDebugJson().deepCopy(), isClient);
         this.parent = parent;
         this.overWrite = overwrite.getAsJsonObject();
         this.mergeJson(overwrite, isClient);
@@ -55,7 +56,7 @@ public class ComponentMaterial extends JsonMaterial {
     }
 
     public ComponentMaterial(Material parent, JsonObject overwrite, boolean isClient) {
-        super(parent.getDebugJson().deepCopy(), isClient);
+        super(KEY, parent.getDebugJson().deepCopy(), isClient);
         this.parent = parent;
         this.overWrite = overwrite;
         this.mergeJson(overwrite, isClient);
@@ -72,18 +73,17 @@ public class ComponentMaterial extends JsonMaterial {
     }
 
     @Override
-    public String getKey() {
+    public ResourceLocation getID() {
         return KEY;
     }
 
     public static void setup() {
         ReloadEvents.MAIN.subscribe(isClient -> {
             JsonObject object = new JsonObject();
-            object.addProperty("key", KEY);
             materials.put(
                     KEY,
                     new ComponentMaterial(
-                            new JsonMaterial(object, isClient),
+                            new JsonMaterial(KEY, object, isClient),
                             new JsonObject(), isClient));
         }, -1);
         MiapiEvents.MATERIAL_CRAFT_EVENT.register(data -> {
@@ -107,7 +107,7 @@ public class ComponentMaterial extends JsonMaterial {
 
     public void writeMaterial(ModuleInstance moduleInstance) {
         JsonObject object1 = this.overWrite.deepCopy();
-        object1.addProperty("parent", this.parent.getKey());
+        object1.addProperty("parent", this.parent.getID().toString());
 
         moduleInstance.moduleData.put("miapi:nbt_material_data", object1);
     }

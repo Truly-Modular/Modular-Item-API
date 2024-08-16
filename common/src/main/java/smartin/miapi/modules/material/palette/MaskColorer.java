@@ -88,7 +88,7 @@ public class MaskColorer extends SpriteColorer {
                 return baseColorer;
             }
         } catch (Exception e) {
-            Miapi.LOGGER.error("Could not setup MaskPalette for " + material.getKey(), e);
+            Miapi.LOGGER.error("Could not setup MaskPalette for " + material.getID(), e);
         }
         return null;
     }

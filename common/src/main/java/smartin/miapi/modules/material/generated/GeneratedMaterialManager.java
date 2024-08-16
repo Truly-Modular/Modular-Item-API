@@ -33,7 +33,7 @@ public class GeneratedMaterialManager {
             if (!isClient) {
                 onReloadServer();
             } else {
-                basicGeneratedMaterials.forEach(generatedMaterial -> materials.put(generatedMaterial.getKey(), generatedMaterial));
+                basicGeneratedMaterials.forEach(generatedMaterial -> materials.put(generatedMaterial.getID(), generatedMaterial));
             }
         }, -1);
         ReloadEvents.dataSyncerRegistry.register("generated_materials",
@@ -48,7 +48,7 @@ public class GeneratedMaterialManager {
                     public void interpretData(List<GeneratedMaterial> data) {
                         generatedMaterials.clear();
                         generatedMaterials.addAll(data);
-                        generatedMaterials.forEach(generatedMaterial -> materials.put(generatedMaterial.getKey(), generatedMaterial));
+                        generatedMaterials.forEach(generatedMaterial -> materials.put(generatedMaterial.getID(), generatedMaterial));
                         SmithingRecipeUtil.setupSmithingRecipe(generatedMaterials);
                     }
                 });
@@ -107,7 +107,7 @@ public class GeneratedMaterialManager {
                                     );
                                     if (generatedMaterial.isValid()) {
                                         if (verboseLogging()) {
-                                            Miapi.LOGGER.info("Generated Material " + generatedMaterial.getKey());
+                                            Miapi.LOGGER.info("Generated Material " + generatedMaterial.getID());
                                         }
                                         generatedMaterials.add(generatedMaterial);
                                     }
@@ -119,7 +119,7 @@ public class GeneratedMaterialManager {
             }
 
             generatedMaterials.forEach(material -> {
-                materials.put(material.getKey(), material);
+                materials.put(material.getID(), material);
             });
             SmithingRecipeUtil.setupSmithingRecipe(generatedMaterials);
 
@@ -139,7 +139,7 @@ public class GeneratedMaterialManager {
                                         );
                                         basicGeneratedMaterials.add(generatedMaterial);
                                         if (verboseLogging()) {
-                                            Miapi.LOGGER.info("Generated Wood Material " + generatedMaterial.getKey());
+                                            Miapi.LOGGER.info("Generated Wood Material " + generatedMaterial.getID());
                                         }
                                     }
                                 }
@@ -165,7 +165,7 @@ public class GeneratedMaterialManager {
                                         );
                                         basicGeneratedMaterials.add(generatedMaterial);
                                         if (verboseLogging()) {
-                                            Miapi.LOGGER.info("Generated Stone Material " + generatedMaterial.getKey());
+                                            Miapi.LOGGER.info("Generated Stone Material " + generatedMaterial.getID());
                                         }
                                     }
                                 }
@@ -175,7 +175,7 @@ public class GeneratedMaterialManager {
                         });
             }
             for (Material material : basicGeneratedMaterials) {
-                materials.put(material.getKey(), material);
+                materials.put(material.getID(), material);
             }
             if (verboseLogging()) {
                 Miapi.LOGGER.info("MIAPI FINISHED MATERIAL GENERATION");

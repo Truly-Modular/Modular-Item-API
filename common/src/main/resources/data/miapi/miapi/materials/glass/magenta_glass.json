@@ -1,6 +1,4 @@
 {
-    "key": "glass_magenta",
-    "translation": "miapi.material.glass.magenta",
     "icon": {
         "type": "item",
         "item": "minecraft:magenta_stained_glass"

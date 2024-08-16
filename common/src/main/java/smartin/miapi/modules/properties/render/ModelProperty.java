@@ -129,7 +129,7 @@ public class ModelProperty extends CodecProperty<List<ModelProperty.ModelData>> 
         json.repair();
         List<String> list = new ArrayList<>();
         if (material != null) {
-            list.add(material.getKey());
+            list.add(material.getStringID());
             list = material.getTextureKeys();
         } else {
             list.add("default");
@@ -216,7 +216,7 @@ public class ModelProperty extends CodecProperty<List<ModelProperty.ModelData>> 
                     Material material = MaterialProperty.getMaterial(moduleI);
                     List<String> list = new ArrayList<>();
                     if (material != null) {
-                        list.add(material.getKey());
+                        list.add(material.getStringID());
                         list = material.getTextureKeys();
                     } else {
                         list.add("default");

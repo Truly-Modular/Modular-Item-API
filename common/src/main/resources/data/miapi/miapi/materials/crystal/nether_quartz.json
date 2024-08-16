@@ -1,6 +1,4 @@
 {
-    "key": "nether_quartz",
-    "translation": "miapi.material.crystal.nether_quartz",
     "icon": "textures/item/quartz.png",
     "groups": [
         "crystal"

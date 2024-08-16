@@ -9,6 +9,8 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.Suggestion;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.commands.GiveCommand;
 import smartin.miapi.network.Networking;
 
 import java.util.Collection;
@@ -43,9 +45,9 @@ public class MaterialCommand {
             Player player = context.getSource().getPlayer();
             Material material = MaterialProperty.getMaterialFromIngredient(player.getMainHandItem());
             if (material != null) {
-                player.sendSystemMessage(Component.literal("Handheld Material " + material.getKey()));
+                player.sendSystemMessage(Component.literal("Handheld Material " + material.getID()));
                 FriendlyByteBuf buf = Networking.createBuffer();
-                buf.writeUtf(material.getKey());
+                buf.writeUtf(material.getID().toString());
                 Networking.sendS2C(SEND_MATERIAL_CLIENT, context.getSource().getPlayer(), buf);
             } else {
                 player.sendSystemMessage(Component.literal("Handheld Item is no Material"));
@@ -84,26 +86,7 @@ public class MaterialCommand {
         return builder.buildFuture();
     };
 
-    // Method to suggest material options
-    private static List<Suggestion> suggestMaterialOptions(CommandContext<CommandSourceStack> context, SuggestionsBuilder builder) {
-        getMaterialOptions().forEach(builder::suggest);
-        return builder.buildFuture().join().getList();
-    }
-
-    static ArgumentType<String> getArgumentType() {
-        return new ArgumentType<>() {
-            @Override
-            public String parse(StringReader reader) {
-                return reader.getRead();
-            }
-
-            public Collection<String> getExamples() {
-                return getMaterialOptions();
-            }
-        };
-    }
-
     private static List<String> getMaterialOptions() {
-        return MaterialProperty.materials.keySet().stream().toList();
+        return MaterialProperty.materials.values().stream().map(Material::getStringID).toList();
     }
 }

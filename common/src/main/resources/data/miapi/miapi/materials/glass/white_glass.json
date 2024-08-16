@@ -1,6 +1,4 @@
 {
-    "key": "glass_white",
-    "translation": "miapi.material.glass.white",
     "icon": {
         "type": "item",
         "item": "minecraft:white_stained_glass"

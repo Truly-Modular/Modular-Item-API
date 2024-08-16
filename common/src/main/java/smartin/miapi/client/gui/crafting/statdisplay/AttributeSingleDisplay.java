@@ -118,7 +118,12 @@ public class AttributeSingleDisplay extends SingleStatDisplayDouble {
         return itemStack.getOrDefault(DataComponents.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.EMPTY)
                 .modifiers()
                 .stream()
-                .anyMatch(a -> a.attribute().value().equals(attribute));
+                .anyMatch(a ->
+                        a.attribute().value().equals(attribute) &&
+                        a.modifier().amount() != 0 &&
+                        (a.modifier().operation().equals(operation) ||
+                         (operation.equals(ADD_MULTIPLIED_BASE) && a.modifier().operation().equals(ADD_MULTIPLIED_TOTAL)))
+                );
     }
 
     public boolean hasValue(Collection<AttributeModifier> list) {

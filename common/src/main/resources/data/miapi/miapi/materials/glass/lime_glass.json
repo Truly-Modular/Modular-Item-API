@@ -1,6 +1,4 @@
 {
-    "key": "glass_lime",
-    "translation": "miapi.material.glass.lime",
     "icon": {
         "type": "item",
         "item": "minecraft:lime_stained_glass"

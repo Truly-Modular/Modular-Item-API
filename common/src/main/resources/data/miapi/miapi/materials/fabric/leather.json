@@ -1,6 +1,4 @@
 {
-    "key": "leather",
-    "translation": "miapi.material.fabric.leather",
     "icon": "textures/item/leather.png",
     "groups": [
         "fabric"

@@ -33,7 +33,7 @@ import java.util.Map;
 
 public class GeneratedMaterialFromCopy implements Material {
     ItemStack mainIngredient;
-    String key;
+    ResourceLocation key;
     List<String> groups = new ArrayList<>();
     List<String> textureKeys;
     Map<String, Double> stats;
@@ -48,9 +48,9 @@ public class GeneratedMaterialFromCopy implements Material {
                     ItemStack.CODEC
                             .fieldOf("ingredient")
                             .forGetter(m -> m.mainIngredient),
-                    Codec.STRING
+                    ResourceLocation.CODEC
                             .fieldOf("material").
-                            forGetter(m -> m.source.getKey())
+                            forGetter(m -> m.source.getID())
             ).apply(instance, (itemstack, material) -> {
                 return new GeneratedMaterialFromCopy(itemstack, MaterialProperty.materials.get(material));
             }));
@@ -63,10 +63,10 @@ public class GeneratedMaterialFromCopy implements Material {
      * @param other          the {@link Material} the stats are copied from
      */
     public GeneratedMaterialFromCopy(ItemStack mainIngredient, Material other) {
-        key = "generated_" + mainIngredient.getDescriptionId();
+        key = Miapi.id("generated_simple/" + mainIngredient.getDescriptionId());
         this.source = other;
         this.mainIngredient = mainIngredient;
-        groups.add(key);
+        groups.add(key.toString());
         groups.addAll(other.getGroups());
         textureKeys = List.of("default");
         stats.put("hardness", other.getDouble("hardness"));
@@ -96,7 +96,7 @@ public class GeneratedMaterialFromCopy implements Material {
     }
 
     @Override
-    public String getKey() {
+    public ResourceLocation getID() {
         return key;
     }
 
@@ -169,7 +169,7 @@ public class GeneratedMaterialFromCopy implements Material {
     @Override
     public JsonObject getDebugJson() {
         JsonObject object = new JsonObject();
-        object.add("key", new JsonPrimitive(getKey()));
+        object.add("key", new JsonPrimitive(getID().toString()));
         JsonArray jsonElements = new JsonArray();
         getTextureKeys().forEach(jsonElements::add);
         object.add("groups", jsonElements);

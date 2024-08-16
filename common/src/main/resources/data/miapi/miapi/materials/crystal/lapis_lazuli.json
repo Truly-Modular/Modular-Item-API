@@ -1,6 +1,4 @@
 {
-    "key": "lapis_lazuli",
-    "translation": "miapi.material.crystal.lapis_lazuli",
     "icon": "textures/item/lapis_lazuli.png",
     "groups": [
         "crystal",

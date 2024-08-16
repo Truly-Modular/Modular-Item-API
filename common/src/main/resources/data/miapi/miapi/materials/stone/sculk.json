@@ -1,6 +1,4 @@
 {
-    "key": "sculk",
-    "translation": "miapi.material.stone.sculk",
     "icon": {
         "type": "item",
         "item": "minecraft:sculk"

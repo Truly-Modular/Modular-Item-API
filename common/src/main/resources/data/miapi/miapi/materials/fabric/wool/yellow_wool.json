@@ -1,6 +1,4 @@
 {
-    "key": "wool_yellow",
-    "translation": "miapi.material.fabric.wool.yellow",
     "icon": {
         "type": "item",
         "item": "minecraft:yellow_wool"

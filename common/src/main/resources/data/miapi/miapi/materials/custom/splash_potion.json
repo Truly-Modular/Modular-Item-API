@@ -1,6 +1,4 @@
 {
-    "key": "splash_potion",
-    "translation": "miapi.material.custom.splash_potion",
     "icon": "textures/item/potion.png",
     "items": [
         {

@@ -59,7 +59,7 @@ public class ReplaceOption implements EditOption {
                 ModuleInstance root = ItemModule.getModules(preview);
                 ModuleInstance editing = root.getPosition(position);
                 if (MaterialProperty.getMaterial(editing) == null) {
-                    MaterialProperty.setMaterial(editing, material.getKey());
+                    MaterialProperty.setMaterial(editing, material.getID());
                     editing.getRoot().writeToItem(preview);
                 }
             }

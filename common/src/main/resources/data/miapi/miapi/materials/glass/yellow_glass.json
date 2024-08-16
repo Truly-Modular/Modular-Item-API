@@ -1,6 +1,4 @@
 {
-    "key": "glass_yellow",
-    "translation": "miapi.material.glass.yellow",
     "icon": {
         "type": "item",
         "item": "minecraft:yellow_stained_glass"

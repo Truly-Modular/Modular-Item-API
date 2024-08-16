@@ -1,6 +1,4 @@
 {
-    "key": "lingering_potion",
-    "translation": "miapi.material.custom.lingering_potion",
     "icon": "textures/item/potion.png",
     "items": [
         {

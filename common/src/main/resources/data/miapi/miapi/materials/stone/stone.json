@@ -1,6 +1,4 @@
 {
-    "key": "stone",
-    "translation": "miapi.material.stone",
     "icon": {
         "type": "item",
         "item": "minecraft:cobblestone"

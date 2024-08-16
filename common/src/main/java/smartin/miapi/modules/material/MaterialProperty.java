@@ -6,6 +6,7 @@ import com.google.gson.JsonParser;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.serialization.Codec;
 import net.minecraft.client.Minecraft;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
@@ -25,13 +26,13 @@ import java.util.concurrent.Executor;
 /**
  * This is the Property relating to materials of a Module
  */
-public class MaterialProperty extends CodecProperty<String> {
+public class MaterialProperty extends CodecProperty<ResourceLocation> {
     public static final String KEY = "material";
     public static ModuleProperty property;
-    public static Map<String, Material> materials = new ConcurrentHashMap<>();
+    public static Map<ResourceLocation, Material> materials = new ConcurrentHashMap<>();
 
     public MaterialProperty() {
-        super(Codec.STRING);
+        super(ResourceLocation.CODEC);
         property = this;
         StatResolver.registerResolver(KEY, new StatResolver.Resolver() {
             @Override
@@ -62,12 +63,16 @@ public class MaterialProperty extends CodecProperty<String> {
         });
         Miapi.registerReloadHandler(ReloadEvents.MAIN, "miapi/materials", materials, (isClient, path, data) -> {
             JsonParser parser = new JsonParser();
+            String id = path.toString();
+            id = id.replace("miapi/materials/", "");
+            id = id.replace(".json", "");
+            ResourceLocation revisedID = ResourceLocation.parse(id);
             JsonObject obj = parser.parse(data).getAsJsonObject();
-            JsonMaterial material = new JsonMaterial(obj, isClient);
-            if (materials.containsKey(material.getKey())) {
-                Miapi.LOGGER.warn("Overwriting Materials isnt 100% safe. The ordering might be wrong, please set the overwrite material in the same path as the origin Material" + path + " is overwriting " + material.getKey());
+            JsonMaterial material = new JsonMaterial(revisedID,obj, isClient);
+            if (materials.containsKey(material.getID())) {
+                Miapi.LOGGER.warn("Overwriting Materials isnt 100% safe. The ordering might be wrong, please set the overwrite material in the same path as the origin Material" + path + " is overwriting " + material.getID());
             }
-            materials.put(material.getKey(), material);
+            materials.put(material.getID(), material);
         }, -2f);
 
 
@@ -100,21 +105,15 @@ public class MaterialProperty extends CodecProperty<String> {
     }
 
     @Override
-    public String merge(String left, String right, MergeType mergeType) {
+    public ResourceLocation merge(ResourceLocation left, ResourceLocation right, MergeType mergeType) {
         return ModuleProperty.decideLeftRight(left, right, mergeType);
-    }
-
-    public static class CurrentThreadExecutor implements Executor {
-        public void execute(Runnable r) {
-            r.run();
-        }
     }
 
     public static List<String> getTextureKeys() {
         Set<String> textureKeys = new HashSet<>();
         textureKeys.add("base");
         for (Material material : materials.values()) {
-            textureKeys.add(material.getKey());
+            textureKeys.add(material.getStringID());
             textureKeys.addAll(material.getTextureKeys());
         }
         return new ArrayList<>(textureKeys);
@@ -185,7 +184,7 @@ public class MaterialProperty extends CodecProperty<String> {
      */
     @Nullable
     public static Material getMaterial(Map<ModuleProperty<?>, Object> properties) {
-        String id = (String) properties.get(property);
+        ResourceLocation id = (ResourceLocation) properties.get(property);
         if (id != null) {
             return MaterialProperty.materials.get(id);
         }
@@ -198,7 +197,7 @@ public class MaterialProperty extends CodecProperty<String> {
      * @param instance
      * @param material
      */
-    public static void setMaterial(ModuleInstance instance, String material) {
+    public static void setMaterial(ModuleInstance instance, ResourceLocation material) {
         ModuleDataPropertiesManager.setProperty(instance, MaterialProperty.property, material);
     }
 }

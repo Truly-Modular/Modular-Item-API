@@ -23,7 +23,14 @@ import static smartin.miapi.Miapi.MOD_ID;
 public interface Material {
     ResourceLocation BASE_PALETTE_ID = ResourceLocation.fromNamespaceAndPath(MOD_ID, "miapi_materials/base_palette");
 
-    String getKey();
+    ResourceLocation getID();
+
+    default String getStringID() {
+        String id = getID().toString();
+        id = id.replace(":", ".");
+        id = id.replaceAll("/", ".");
+        return id;
+    }
 
     @Environment(EnvType.CLIENT)
     static int getColor(String color) {
@@ -34,7 +41,7 @@ public interface Material {
 
     List<String> getGroups();
 
-    default List<String> getGuiGroups(){
+    default List<String> getGuiGroups() {
         return getGroups();
     }
 
@@ -43,8 +50,8 @@ public interface Material {
 
     /**
      * @param drawContext a DrawContext that can be used to draw shtuff
-     * @param x x pos of the icon
-     * @param y y pos of the icon
+     * @param x           x pos of the icon
+     * @param y           y pos of the icon
      * @return how much to offset the text rendering by
      */
     @Environment(EnvType.CLIENT)
@@ -52,16 +59,16 @@ public interface Material {
         return 0;
     }
 
-    default Material getMaterial(ModuleInstance moduleInstance){
+    default Material getMaterial(ModuleInstance moduleInstance) {
         return this;
     }
 
-    default Material getMaterialFromIngredient(ItemStack ingredient){
+    default Material getMaterialFromIngredient(ItemStack ingredient) {
         return this;
     }
 
-    default Component getTranslation(){
-        return Component.translatable(getData("translation"));
+    default Component getTranslation() {
+        return Component.translatable(getData("miapi.material." + getStringID()));
     }
 
     @Environment(EnvType.CLIENT)
@@ -71,6 +78,7 @@ public interface Material {
 
     /**
      * Retuns all Material Properties for this key, see {@link MaterialProperties} for more details
+     *
      * @param key
      * @return
      */
@@ -79,6 +87,7 @@ public interface Material {
     /**
      * be sure to also implement {@link Material#getAllDisplayPropertyKeys()}
      * if you implement this
+     *
      * @param key
      * @return
      */
@@ -88,6 +97,7 @@ public interface Material {
 
     /**
      * retuns all unique property keys this Material has Properties for.
+     *
      * @return
      */
     List<String> getAllPropertyKeys();
@@ -100,7 +110,7 @@ public interface Material {
 
     String getData(String property);
 
-    default boolean generateConverters(){
+    default boolean generateConverters() {
         return false;
     }
 

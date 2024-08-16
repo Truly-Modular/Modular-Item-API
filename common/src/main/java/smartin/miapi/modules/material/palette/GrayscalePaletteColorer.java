@@ -83,7 +83,7 @@ public class GrayscalePaletteColorer extends SpritePixelReplacer {
 
         if (json instanceof JsonObject object) {
             if (!object.has("colors"))
-                throw new JsonParseException("ModularItem API failed to parse grayscale_map sampling palette for material '" + material.getKey() + "'! Missing member 'colors'.");
+                throw new JsonParseException("ModularItem API failed to parse grayscale_map sampling palette for material '" + material.getID() + "'! Missing member 'colors'.");
 
             JsonElement element = object.get("colors");
             Map<Integer, Color> colorsMap = new HashMap<>(MiscCodecs.quickParse(
@@ -97,7 +97,7 @@ public class GrayscalePaletteColorer extends SpritePixelReplacer {
             averageColor = createAverageColor(colorsMap);
             colors = createColorsArray(colorsMap);
         } else {
-            throw new JsonParseException("ModularItem API failed to parse grayscale_map sampling palette for material '" + material.getKey() + "'! Not a JSON object -> " + json);
+            throw new JsonParseException("ModularItem API failed to parse grayscale_map sampling palette for material '" + material.getID() + "'! Not a JSON object -> " + json);
         }
     }
 

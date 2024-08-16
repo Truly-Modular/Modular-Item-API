@@ -1,6 +1,4 @@
 {
-    "key": "redstone",
-    "translation": "miapi.material.stone.redstone",
     "icon": {
         "type": "item",
         "item": "minecraft:redstone_block"

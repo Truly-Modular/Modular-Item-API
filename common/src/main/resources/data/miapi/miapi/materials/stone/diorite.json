@@ -1,6 +1,4 @@
 {
-    "key": "stone_diorite",
-    "translation": "miapi.material.stone.diorite",
     "icon": {
         "type": "item",
         "item": "minecraft:diorite"

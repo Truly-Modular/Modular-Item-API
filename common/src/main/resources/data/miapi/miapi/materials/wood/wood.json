@@ -1,6 +1,4 @@
 {
-  "key": "wood",
-  "translation": "miapi.material.wood",
   "icon": {
     "type": "item",
     "item": "minecraft:oak_planks"

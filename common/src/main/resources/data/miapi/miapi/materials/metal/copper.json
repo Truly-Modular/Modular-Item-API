@@ -1,6 +1,4 @@
 {
-    "key": "copper",
-    "translation": "miapi.material.metal.copper",
     "groups": [
         "metal"
     ],
@@ -14,8 +12,8 @@
     "color_palette": {
         "type": "grayscale_map",
         "colors": {
-            "24": "6d3421",
-            "68": "8a4129",
+            "24": "381B11",
+            "68": "6B3020",
             "107": "9c4e31",
             "150": "9c4529",
             "190": "c15a36",

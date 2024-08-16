@@ -1,6 +1,4 @@
 {
-    "key": "nether_star",
-    "translation": "miapi.material.custom.nether_star",
     "icon": "textures/item/nether_star.png",
     "enchantability": 30,
     "color_palette": {

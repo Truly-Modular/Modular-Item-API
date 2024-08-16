@@ -6,6 +6,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementHolder;
+import net.minecraft.advancements.AdvancementNode;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientAdvancements;
 import net.minecraft.network.chat.Component;
@@ -83,9 +84,13 @@ public class AdvancementCondition implements ModuleCondition {
         return null;
     }
 
+    @Environment(EnvType.CLIENT)
     public AdvancementHolder getAdvancementClient(ResourceLocation identifier) {
         if (Minecraft.getInstance().getConnection() != null) {
-            return Minecraft.getInstance().getConnection().getAdvancements().getTree().get(identifier).holder();
+            AdvancementNode node = Minecraft.getInstance().getConnection().getAdvancements().getTree().get(identifier);
+            if(node!=null){
+                return node.holder();
+            }
         }
         return null;
     }

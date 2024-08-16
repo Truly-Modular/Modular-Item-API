@@ -17,7 +17,7 @@ public abstract class SpriteContentsNativeImageGetter {
     )
     private void miapi$customItemRenderingEntityGetter(int x, int y, int unpackSkipPixels, int unpackSkipRows, NativeImage[] images, CallbackInfo ci) {
         SpriteContents spriteContents = (SpriteContents) (Object) (this);
-        //Miapi.LOGGER.info("x " + x + " y " + y + " a " + unpackSkipPixels + " b " + unpackSkipRows + " i " + spriteContents.getId());
+        //Miapi.LOGGER.info("x " + x + " y " + y + " a " + unpackSkipPixels + " b " + unpackSkipRows + " i " + spriteContents.getID());
         if (((SpriteContentsAccessor) spriteContents).getImage() != images[0]) {
             NativeImageGetter.ImageHolder holder = NativeImageGetter.nativeImageMap.getOrDefault(spriteContents, new NativeImageGetter.ImageHolder());
             holder.nativeImage = images[0];

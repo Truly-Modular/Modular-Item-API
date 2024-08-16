@@ -1,6 +1,4 @@
 {
-    "key": "glass_brown",
-    "translation": "miapi.material.glass.brown",
     "icon": {
         "type": "item",
         "item": "minecraft:brown_stained_glass"

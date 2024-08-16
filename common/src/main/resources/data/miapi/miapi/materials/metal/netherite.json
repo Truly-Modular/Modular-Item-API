@@ -1,6 +1,4 @@
 {
-    "key": "netherite",
-    "translation": "miapi.material.metal.netherite",
     "icon": "textures/item/netherite_ingot.png",
     "groups": [
         "smithing"

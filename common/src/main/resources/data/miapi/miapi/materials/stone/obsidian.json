@@ -1,6 +1,4 @@
 {
-    "key": "stone_obsidian",
-    "translation": "miapi.material.stone.obsidian",
     "icon": {
         "type": "item",
         "item": "minecraft:obsidian"

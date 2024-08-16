@@ -1,6 +1,4 @@
 {
-    "key": "tnt",
-    "translation": "miapi.material.custom.tnt",
     "icon": "miapi:textures/item/arrow/head/custom/tnt.png",
     "color": "D82E1A",
     "items": [

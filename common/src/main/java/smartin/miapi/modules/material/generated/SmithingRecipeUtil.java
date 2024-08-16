@@ -98,16 +98,16 @@ public class SmithingRecipeUtil {
 
     public static void addSmithingRecipe(Material sourceMaterial, GeneratedMaterial outputMaterial, ItemStack templateItem, SmithingTransformRecipe smithingTransformRecipe, RegistryAccess registryAccess, RecipeManager recipeManager) {
         Collection<RecipeHolder<?>> recipes = recipeManager.getRecipes();
-        String id = "generated_material_recipe." + outputMaterial.getKey() + "." + sourceMaterial.getKey() + "." + BuiltInRegistries.ITEM.getKey(templateItem.getItem());
+        String id = "generated_material_recipe." + outputMaterial.getID() + "." + sourceMaterial.getID() + "." + BuiltInRegistries.ITEM.getKey(templateItem.getItem());
         id = id.replace(":", ".");
         ResourceLocation recipeId = Miapi.id(id);
         if (recipeManager.byKey(recipeId).isEmpty()) {
             MaterialSmithingRecipe materialSmithingRecipe = new MaterialSmithingRecipe(
                     recipeId,
                     ((SmithingTransformRecipeAccessor) smithingTransformRecipe).getTemplate(),
-                    sourceMaterial.getKey(),
+                    sourceMaterial.getID(),
                     ((SmithingTransformRecipeAccessor) smithingTransformRecipe).getAddition(),
-                    outputMaterial.getKey()
+                    outputMaterial.getID()
             );
             RecipeHolder<MaterialSmithingRecipe> materialSmithingRecipeRecipeHolder = new RecipeHolder<>(
                     recipeId, materialSmithingRecipe
@@ -115,9 +115,9 @@ public class SmithingRecipeUtil {
             recipes = new ArrayList<>(recipes);
             recipes.add(materialSmithingRecipeRecipeHolder);
             if (verboseLogging()) {
-                Miapi.LOGGER.warn("added Smithing Recipe for " + sourceMaterial.getKey() + " to " + outputMaterial.key + " via " + BuiltInRegistries.ITEM.getKey(templateItem.getItem()));
+                Miapi.LOGGER.warn("added Smithing Recipe for " + sourceMaterial.getID() + " to " + outputMaterial.key + " via " + BuiltInRegistries.ITEM.getKey(templateItem.getItem()));
             }
-            outputMaterial.setSmithingMaterial(sourceMaterial.getKey());
+            outputMaterial.setSmithingMaterial(sourceMaterial.getID());
             recipeManager.replaceRecipes(recipes);
         }
     }

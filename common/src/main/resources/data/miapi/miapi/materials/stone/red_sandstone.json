@@ -1,6 +1,4 @@
 {
-    "key": "red_sandstone",
-    "translation": "miapi.material.stone.red_sandstone",
     "icon": {
         "type": "item",
         "item": "minecraft:red_sandstone"

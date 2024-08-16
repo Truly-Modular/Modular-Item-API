@@ -39,7 +39,8 @@ public class ModelTransformationProperty extends CodecProperty<ModelTransformati
     }
 
     public static void applyTransformation(ItemStack stack, ItemDisplayContext mode, PoseStack matrices) {
-        ItemTransform transformation = ModularItemCache.getVisualOnlyCache(stack, KEY, ItemTransforms.NO_TRANSFORMS).getTransform(mode);
+        var data = ModularItemCache.getVisualOnlyCache(stack, KEY, ItemTransforms.NO_TRANSFORMS);
+        ItemTransform transformation = data.getTransform(mode);
         boolean leftHanded = isLeftHanded(mode);
         matrices.translate(0.5f, 0.5f, 0.5f);
         if (transformation != null) {

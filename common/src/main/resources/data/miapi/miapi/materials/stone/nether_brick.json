@@ -1,6 +1,4 @@
 {
-    "key": "stone_nether_brick",
-    "translation": "miapi.material.stone.nether_brick",
     "icon": "textures/item/nether_brick.png",
     "groups": [
         "stone"

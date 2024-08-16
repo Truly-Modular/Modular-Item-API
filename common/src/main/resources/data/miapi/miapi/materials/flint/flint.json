@@ -1,6 +1,4 @@
 {
-    "key": "flint",
-    "translation": "miapi.material.flint",
     "icon": "textures/item/flint.png",
     "groups": [
         "flint"

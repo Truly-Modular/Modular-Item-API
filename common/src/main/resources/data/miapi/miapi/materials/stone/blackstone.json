@@ -1,6 +1,4 @@
 {
-    "key": "stone_blackstone",
-    "translation": "miapi.material.stone.blackstone",
     "icon": {
         "type": "item",
         "item": "minecraft:blackstone"

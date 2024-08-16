@@ -1,6 +1,4 @@
 {
-    "key": "wool_magenta",
-    "translation": "miapi.material.fabric.wool.magenta",
     "icon": {
         "type": "item",
         "item": "minecraft:magenta_wool"

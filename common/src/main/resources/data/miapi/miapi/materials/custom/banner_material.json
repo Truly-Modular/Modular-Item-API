@@ -1,6 +1,4 @@
 {
-    "key": "banner",
-    "translation": "miapi.material.custom.banner",
     "icon": {
         "type": "item",
         "item": "minecraft:white_banner"

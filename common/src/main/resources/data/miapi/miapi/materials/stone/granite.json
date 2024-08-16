@@ -1,6 +1,4 @@
 {
-    "key": "stone_granite",
-    "translation": "miapi.material.stone.granite",
     "icon": {
         "type": "item",
         "item": "minecraft:granite"

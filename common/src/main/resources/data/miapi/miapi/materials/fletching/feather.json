@@ -1,6 +1,4 @@
 {
-    "key": "feather",
-    "translation": "miapi.material.feather",
     "icon": "textures/item/feather.png",
     "groups": [
         "fletching"

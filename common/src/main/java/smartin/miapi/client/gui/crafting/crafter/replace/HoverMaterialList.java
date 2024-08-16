@@ -51,6 +51,9 @@ public class HoverMaterialList extends InteractAbleWidget {
         if (isMouseOver(mouseX, mouseY)) {
             RenderSystem.disableDepthTest();
             int currentY = this.getY() + 3;
+            if(materialKeys.isEmpty()){
+                return;
+            }
             String selectedMaterialOrGroup = materialKeys.get(selected + scrollPosOne);
             List<Material> materialList = materials.get(selectedMaterialOrGroup);
             int sizeBaseList = 30;
@@ -103,7 +106,7 @@ public class HoverMaterialList extends InteractAbleWidget {
                     currentY += 14;
                 }
                 for (int i = start; i <= end; i++) {
-                    Component material = getTranslation(materialList.get(i).getKey());
+                    Component material = getTranslation(materialList.get(i).getID().toString());
                     drawContext.drawString(Minecraft.getInstance().font, material, getX() + sizeBaseList + 6, currentY, unselectedColor, false);
                     currentY += 14;
                 }

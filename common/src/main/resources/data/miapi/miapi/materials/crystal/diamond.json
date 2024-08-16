@@ -1,6 +1,4 @@
 {
-    "key": "diamond",
-    "translation": "miapi.material.crystal.diamond",
     "icon": "textures/item/diamond.png",
     "groups": [
         "crystal",

@@ -1,6 +1,4 @@
 {
-    "key": "twisting_vine",
-    "translation": "miapi.material.fabric.twisting_vine",
     "icon": {
         "type": "item",
         "item": "minecraft:twisting_vines"

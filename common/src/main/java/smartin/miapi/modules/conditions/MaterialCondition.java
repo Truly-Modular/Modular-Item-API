@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
+import net.minecraft.resources.ResourceLocation;
 import smartin.miapi.Miapi;
 import smartin.miapi.modules.material.Material;
 import smartin.miapi.modules.material.MaterialProperty;
@@ -16,17 +17,17 @@ import java.util.Optional;
 public class MaterialCondition implements ModuleCondition {
     public static Codec<MaterialCondition> CODEC = RecordCodecBuilder.create((instance) ->
             instance.group(
-                    Codec.STRING.fieldOf("material")
+                    ResourceLocation.CODEC.fieldOf("material")
                             .forGetter((condition) -> condition.materialKey),
                     ComponentSerialization.CODEC
                             .optionalFieldOf("error", Component.translatable(Miapi.MOD_ID + ".condition.material.error"))
                             .forGetter((condition) -> condition.error)
             ).apply(instance, MaterialCondition::new));
 
-    public String materialKey;
+    public ResourceLocation materialKey;
     public Component error;
 
-    public MaterialCondition(String materialKey, Component error) {
+    public MaterialCondition(ResourceLocation materialKey, Component error) {
         this.materialKey = materialKey;
         this.error = error;
     }
@@ -38,7 +39,7 @@ public class MaterialCondition implements ModuleCondition {
             Map<ModuleProperty<?>, Object> propertyMap = propertyMapOptional.get();
             List<Component> reasons = conditionContext.failReasons;
             Material material = (Material) propertyMap.get(MaterialProperty.property);
-            if (material != null && material.getKey().equals(materialKey)) {
+            if (material != null && material.getID().equals(materialKey)) {
                 return true;
             }
             reasons.add(error);

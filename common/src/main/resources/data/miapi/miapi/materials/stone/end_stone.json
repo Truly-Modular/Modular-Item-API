@@ -1,6 +1,4 @@
 {
-    "key": "stone_end_stone",
-    "translation": "miapi.material.stone.end_stone",
     "icon": {
         "type": "item",
         "item": "minecraft:end_stone"

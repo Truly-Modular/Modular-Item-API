@@ -1,6 +1,4 @@
 {
-    "key": "heart_of_the_sea",
-    "translation": "miapi.material.custom.heart_of_the_sea",
     "icon": "textures/item/heart_of_the_sea.png",
     "enchantability": 30,
     "color_palette": {

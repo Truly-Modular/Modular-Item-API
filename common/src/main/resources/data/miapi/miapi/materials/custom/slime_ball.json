@@ -1,6 +1,4 @@
 {
-    "key": "slime_ball",
-    "translation": "miapi.material.custom.slime_ball",
     "icon": "textures/item/slime_ball.png",
     "items": [
         {

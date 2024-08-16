@@ -1,6 +1,4 @@
 {
-    "key": "blaze_rod",
-    "translation": "miapi.material.rod.blaze_rod",
     "icon": "textures/item/blaze_rod.png",
     "groups": [
         "rod"

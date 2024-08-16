@@ -13,6 +13,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
@@ -24,10 +25,10 @@ import net.minecraft.world.level.block.state.properties.Property;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.modules.ItemModule;
-import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.material.palette.FallbackColorer;
 import smartin.miapi.modules.material.palette.MaterialRenderController;
 import smartin.miapi.modules.material.palette.MaterialRenderControllers;
+import smartin.miapi.modules.properties.util.ComponentApplyProperty;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.registries.FakeTranslation;
@@ -43,7 +44,7 @@ import java.util.Map;
  * Its a functional implementation of a Material based on a Raw JsonElement.
  */
 public class JsonMaterial implements Material {
-    public String key;
+    public ResourceLocation id;
     protected JsonElement rawJson;
     @Nullable
     public MaterialIcons.MaterialIcon icon;
@@ -52,29 +53,16 @@ public class JsonMaterial implements Material {
     public Map<String, Map<ModuleProperty<?>, Object>> displayPropertyMap = new HashMap<>();
     public static Codec<Map<Property<?>, Object>> PROPERTY_CODEC;
 
-    //WARNING! this *probably* cant encode (depends on property encoding)
-    public static Codec<JsonMaterial> CODEC = new Codec<JsonMaterial>() {
-        @Override
-        public <T> DataResult<Pair<JsonMaterial, T>> decode(DynamicOps<T> ops, T input) {
-            return DataResult.success(Pair.of(new JsonMaterial(ops.convertTo(JsonOps.INSTANCE, input).getAsJsonObject(), smartin.miapi.Environment.isClient()), input));
-        }
-
-        @Override
-        public <T> DataResult<T> encode(JsonMaterial input, DynamicOps<T> ops, T prefix) {
-            return DataResult.success(JsonOps.INSTANCE.convertTo(ops, input.rawJson));
-        }
-    };
-
-    public JsonMaterial(JsonObject element, boolean isClient) {
+    public JsonMaterial(ResourceLocation id, JsonObject element, boolean isClient) {
         rawJson = element;
-        key = element.get("key").getAsString();
+        this.id = id;
 
         if (isClient) {
             if (element.has("icon")) {
                 JsonElement emnt = element.get("icon");
                 if (emnt instanceof JsonPrimitive primitive && primitive.isString())
                     icon = new MaterialIcons.TextureMaterialIcon(ResourceLocation.parse(primitive.getAsString()));
-                else icon = MaterialIcons.getMaterialIcon(key, emnt);
+                else icon = MaterialIcons.getMaterialIcon(this.id, emnt);
             }
 
             if (element.has("color_palette")) {
@@ -85,6 +73,9 @@ public class JsonMaterial implements Material {
             }
             if (element.has("fake_translation") && element.has("translation")) {
                 FakeTranslation.translations.put(element.get("translation").getAsString(), element.get("fake_translation").getAsString());
+            }
+            if(getTranslation().getString().contains(".")){
+                Miapi.LOGGER.error("Material "+getID().toString()+" likely has a broken Translation!");
             }
         }
         mergeJson(rawJson, isClient);
@@ -118,7 +109,7 @@ public class JsonMaterial implements Material {
                         JsonElement emnt = propertyElement;
                         if (emnt instanceof JsonPrimitive primitive && primitive.isString())
                             icon = new MaterialIcons.TextureMaterialIcon(ResourceLocation.parse(primitive.getAsString()));
-                        else icon = MaterialIcons.getMaterialIcon(key, emnt);
+                        else icon = MaterialIcons.getMaterialIcon(id, emnt);
                     }
                     break;
                 }
@@ -165,14 +156,14 @@ public class JsonMaterial implements Material {
     }
 
     @Override
-    public String getKey() {
-        return key;
+    public ResourceLocation getID() {
+        return id;
     }
 
     @Override
     public List<String> getGroups() {
         List<String> groups = new ArrayList<>();
-        groups.add(key);
+        groups.add(id.toString());
         if (rawJson.getAsJsonObject().has("groups")) {
             JsonArray groupsJson = rawJson.getAsJsonObject().getAsJsonArray("groups");
             for (JsonElement groupElement : groupsJson) {
@@ -193,7 +184,7 @@ public class JsonMaterial implements Material {
     @Override
     public List<String> getGuiGroups() {
         List<String> groups = new ArrayList<>();
-        groups.add(key);
+        groups.add(id.toString());
         if (rawJson.getAsJsonObject().has("groups")) {
             JsonArray groupsJson = rawJson.getAsJsonObject().getAsJsonArray("groups");
             for (JsonElement groupElement : groupsJson) {

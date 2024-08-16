@@ -1,6 +1,4 @@
 {
-    "key": "stone_netherrack",
-    "translation": "miapi.material.stone.netherrack",
     "icon": {
         "type": "item",
         "item": "minecraft:netherrack"

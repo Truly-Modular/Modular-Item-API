@@ -1,6 +1,4 @@
 {
-    "key": "wool_lime",
-    "translation": "miapi.material.fabric.wool.lime",
     "icon": {
         "type": "item",
         "item": "minecraft:lime_wool"

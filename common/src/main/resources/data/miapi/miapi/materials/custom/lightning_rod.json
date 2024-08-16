@@ -1,6 +1,4 @@
 {
-    "key": "lightning_rod",
-    "translation": "miapi.material.custom.lightning_rod",
     "icon": "miapi:textures/item/arrow/head/custom/lightning_rod.png",
     "color": "BF5935",
     "items": [

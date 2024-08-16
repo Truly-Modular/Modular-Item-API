@@ -1,6 +1,4 @@
 {
-    "key": "stone_calcite",
-    "translation": "miapi.material.stone.calcite",
     "icon": {
         "type": "item",
         "item": "minecraft:calcite"

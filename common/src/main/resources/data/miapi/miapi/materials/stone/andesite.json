@@ -1,6 +1,4 @@
 {
-    "key": "stone_andesite",
-    "translation": "miapi.material.stone.andesite",
     "icon": {
         "type": "item",
         "item": "minecraft:andesite"

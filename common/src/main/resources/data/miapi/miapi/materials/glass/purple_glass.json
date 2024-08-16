@@ -1,6 +1,4 @@
 {
-    "key": "glass_purple",
-    "translation": "miapi.material.glass.purple",
     "icon": {
         "type": "item",
         "item": "minecraft:purple_stained_glass"

@@ -1,6 +1,4 @@
 {
-    "key": "string",
-    "translation": "miapi.material.string",
     "icon": "textures/item/string.png",
     "groups": [
         "rope"

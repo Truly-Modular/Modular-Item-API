@@ -1,6 +1,4 @@
 {
-    "key": "glass_cyan",
-    "translation": "miapi.material.glass.cyan",
     "icon": {
         "type": "item",
         "item": "minecraft:cyan_stained_glass"

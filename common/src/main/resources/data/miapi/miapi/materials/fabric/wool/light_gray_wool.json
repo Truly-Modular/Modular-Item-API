@@ -1,6 +1,4 @@
 {
-    "key": "wool_light_gray",
-    "translation": "miapi.material.fabric.wool.light_gray",
     "icon": {
         "type": "item",
         "item": "minecraft:light_gray_wool"

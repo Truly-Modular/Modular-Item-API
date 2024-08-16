@@ -1,6 +1,4 @@
 {
-  "key": "end_rod",
-  "translation": "miapi.material.rod.end_rod",
   "icon": {
     "type": "item",
     "item": "minecraft:end_rod"

@@ -7,12 +7,9 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.redpxnda.nucleus.util.Color;
-import io.netty.buffer.ByteBuf;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
@@ -43,7 +40,7 @@ import java.util.stream.Collectors;
 public class GeneratedMaterial implements Material {
     ItemStack mainIngredient;
     Ingredient ingredient;
-    String key;
+    ResourceLocation key;
     List<String> groups = new ArrayList<>();
     List<String> textureKeys;
     Map<String, Double> stats;
@@ -55,8 +52,7 @@ public class GeneratedMaterial implements Material {
     boolean isValid = false;
     SwordItem swordItem;
     List<TieredItem> toolItems;
-    @Nullable
-    String smithingParent = null;
+    Optional<ResourceLocation> smithingParent = Optional.empty();
 
     public static Codec<GeneratedMaterial> CODEC = RecordCodecBuilder.create((instance) ->
             instance.group(
@@ -72,15 +68,15 @@ public class GeneratedMaterial implements Material {
                     Codec.list(ItemStack.CODEC)
                             .fieldOf("toolItems")
                             .forGetter(m -> m.toolItems.stream().map(Item::getDefaultInstance).toList()),
-                    Codec.STRING
-                            .fieldOf("smithing_key")
-                            .forGetter(m -> m.smithingParent == null ? "" : m.smithingParent)
+                    ResourceLocation.CODEC
+                            .optionalFieldOf("smithing_key")
+                            .forGetter(m -> m.smithingParent)
             ).apply(instance, (itemstack, additionalIngredient, swordItem, ingredient_toolItems, smithingKey) -> {
                 GeneratedMaterial material = new GeneratedMaterial(itemstack, additionalIngredient, ((SwordItem) (swordItem.getItem())).getTier(),
                         ingredient_toolItems.stream().map(itemStack -> (TieredItem) itemStack.getItem()).toList()
                 );
-                if (smithingKey != null && !smithingKey.isBlank()) {
-                    material.setSmithingMaterial(smithingKey);
+                if (smithingKey != null && smithingKey.isPresent()) {
+                    material.setSmithingMaterial(smithingKey.get());
                 }
                 return material;
             }));
@@ -95,11 +91,11 @@ public class GeneratedMaterial implements Material {
      * @param toolItems      all the assosiated Tooltitems of the {@link Tier}
      */
     public GeneratedMaterial(ItemStack mainIngredient, Ingredient ingredient, Tier sourceTier, List<TieredItem> toolItems) {
-        key = "generated_" + mainIngredient.getDescriptionId();
+        key = Miapi.id("generated/" + mainIngredient.getDescriptionId());
         this.toolMaterial = sourceTier;
         this.ingredient = ingredient;
         this.toolItems = toolItems;
-        groups.add(key);
+        groups.add(key.toString());
         textureKeys = List.of("default");
         if (mainIngredient.getDescriptionId().contains("ingot")) {
             groups.add("metal");
@@ -169,9 +165,9 @@ public class GeneratedMaterial implements Material {
         return swordItem;
     }
 
-    public void setSmithingMaterial(String other) {
-        this.smithingParent = other;
-        this.groups = List.of(getKey(), "smithing");
+    public void setSmithingMaterial(ResourceLocation other) {
+        this.smithingParent = Optional.of(other);
+        this.groups = List.of(getID().toString(), "smithing");
     }
 
     public String getLangKey() {
@@ -190,7 +186,7 @@ public class GeneratedMaterial implements Material {
     }
 
     @Override
-    public String getKey() {
+    public ResourceLocation getID() {
         return key;
     }
 
@@ -263,7 +259,7 @@ public class GeneratedMaterial implements Material {
     @Override
     public JsonObject getDebugJson() {
         JsonObject object = new JsonObject();
-        object.add("key", new JsonPrimitive(getKey()));
+        object.add("id", new JsonPrimitive(getID().toString()));
         JsonArray jsonElements = new JsonArray();
         getTextureKeys().forEach(jsonElements::add);
         object.add("groups", jsonElements);

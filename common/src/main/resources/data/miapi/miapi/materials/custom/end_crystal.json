@@ -1,6 +1,4 @@
 {
-    "key": "end_crystal",
-    "translation": "miapi.material.custom.end_crystal",
     "icon": "textures/item/end_crystal.png",
     "enchantability": 30,
     "color_palette": {

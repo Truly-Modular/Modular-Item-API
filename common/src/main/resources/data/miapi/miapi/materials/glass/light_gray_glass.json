@@ -1,6 +1,4 @@
 {
-    "key": "glass_light_gray",
-    "translation": "miapi.material.glass.light_gray",
     "icon": {
         "type": "item",
         "item": "minecraft:light_gray_stained_glass"

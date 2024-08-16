@@ -57,7 +57,7 @@ public class PreviewManager {
                     }
                 } else {
                     ReplaceOption.tryPreview();
-                    String material = currentPreviewMaterial == null ? "empty" : currentPreviewMaterial.getKey();
+                    String material = currentPreviewMaterial == null ? "empty" : currentPreviewMaterial.getID().toString();
                     Miapi.LOGGER.info("updating preview Material " + material + " " + hasValidPreview());
                 }
             }

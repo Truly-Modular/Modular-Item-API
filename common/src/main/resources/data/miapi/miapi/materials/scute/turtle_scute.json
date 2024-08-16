@@ -1,6 +1,4 @@
 {
-    "key": "turtle_scute",
-    "translation": "miapi.material.scute.turtle",
     "icon": {
         "type": "item",
         "item": "minecraf:scute"

@@ -1,6 +1,4 @@
 {
-    "key": "vine",
-    "translation": "miapi.material.fabric.vine",
     "icon": {
         "type": "item",
         "item": "minecraft:vine"

@@ -1,6 +1,4 @@
 {
-    "key": "stone_magma",
-    "translation": "miapi.material.stone.magma",
     "icon": {
         "type": "item",
         "item": "minecraft:magma_block"

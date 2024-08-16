@@ -1,6 +1,4 @@
 {
-    "key": "glass_black",
-    "translation": "miapi.material.glass.black",
     "icon": {
         "type": "item",
         "item": "minecraft:black_stained_glass"

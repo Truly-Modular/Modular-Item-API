@@ -1,6 +1,4 @@
 {
-    "key": "bone",
-    "translation": "miapi.material.bone",
     "icon": "textures/item/bone.png",
     "groups": [
         "bone"

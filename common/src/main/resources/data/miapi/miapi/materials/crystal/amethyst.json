@@ -1,6 +1,4 @@
 {
-    "key": "amethyst",
-    "translation": "miapi.material.crystal.amethyst",
     "icon": "textures/item/amethyst_shard.png",
     "groups": [
         "crystal",

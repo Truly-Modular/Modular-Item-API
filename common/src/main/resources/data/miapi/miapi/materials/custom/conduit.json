@@ -1,6 +1,4 @@
 {
-    "key": "conduit",
-    "translation": "miapi.material.custom.conduit",
     "icon": "textures/item/heart_of_the_sea.png",
     "enchantability": 30,
     "color_palette": {

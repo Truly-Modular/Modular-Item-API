@@ -8,6 +8,9 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
@@ -18,6 +21,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.AnvilBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.DispenserBlock;
+import net.minecraft.world.level.block.entity.BannerBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.DispenserBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -118,25 +122,9 @@ public class ModularWorkBenchEntity extends BlockEntity implements MenuProvider,
         return (T) stats.get(stat);
     }
 
-    public static Optional<ItemStack> fromNbt(HolderLookup.Provider wrapperLookup, Tag nbtElement) {
-        return ItemStack.CODEC.parse(wrapperLookup.createSerializationContext(NbtOps.INSTANCE), nbtElement).resultOrPartial((string) -> {
-            Miapi.LOGGER.error("Tried to load invalid item: '{}'", string);
-        });
-    }
-
-    public static Optional<ItemStack> writeToNbt(HolderLookup.Provider wrapperLookup, Tag nbtElement) {
-        return ItemStack.CODEC.parse(wrapperLookup.createSerializationContext(NbtOps.INSTANCE), nbtElement).resultOrPartial((string) -> {
-            Miapi.LOGGER.error("Tried to load invalid item: '{}'", string);
-        });
-    }
-
     @Override
     public void saveAdditional(CompoundTag tag, HolderLookup.Provider wrapperLookup) {
         super.saveAdditional(tag, wrapperLookup);
-        Tag element = new CompoundTag();
-
-        //tag.put("Item", stack.save(wrapperLookup, element));
-
         CompoundTag persisStatsNbt = new CompoundTag();
 
         //TODO:persistentStats are disabled for now
@@ -146,6 +134,12 @@ public class ModularWorkBenchEntity extends BlockEntity implements MenuProvider,
         stats.forEach((stat, inst) -> {
             statsNbt.put(RegistryInventory.craftingStats.findKey(stat), stat.saveToNbt(inst));
         });
+
+        if (!getItem().isEmpty()) {
+            tag.put("item", ItemStack.CODEC.encodeStart(NbtOps.INSTANCE, getItem()).getOrThrow());
+        } else {
+            tag.remove("item");
+        }
 
         tag.put("PersistentStats", persisStatsNbt);
         tag.put("Stats", statsNbt);
@@ -158,8 +152,12 @@ public class ModularWorkBenchEntity extends BlockEntity implements MenuProvider,
         persistentStats.clear();
         stats.clear();
 
-        if (tag.contains("Item")) {
-            stack = ItemStack.parse(wrapperLookup, tag.getCompound("Item")).get();
+        if (tag.contains("item")) {
+            stack = ItemStack.parse(wrapperLookup, tag.getCompound("item")).get();
+            setItem(stack);
+        }else{
+            stack = ItemStack.EMPTY;
+            setItem(stack);
         }
 
         CompoundTag persisStatsNbt = tag.getCompound("PersistentStats");
@@ -179,14 +177,11 @@ public class ModularWorkBenchEntity extends BlockEntity implements MenuProvider,
         });
     }
 
-    /*
     @Nullable
     @Override
-    public Packet<ClientPlayPacketListener> toUpdatePacket() {
-        return BlockEntityUpdateS2CPacket.create(this, be -> be.createNbt());
+    public Packet<ClientGamePacketListener> getUpdatePacket() {
+        return ClientboundBlockEntityDataPacket.create(this, BlockEntity::saveWithFullMetadata);
     }
-
-     */
 
     public void saveAndSync() {
         setChanged();

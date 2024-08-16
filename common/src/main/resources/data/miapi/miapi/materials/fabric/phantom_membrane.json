@@ -1,6 +1,4 @@
 {
-    "key": "phantom_membrane",
-    "translation": "miapi.material.fabric.phantom_membrane",
     "icon": "textures/item/phantom_membrane.png",
     "groups": [
         "fabric"

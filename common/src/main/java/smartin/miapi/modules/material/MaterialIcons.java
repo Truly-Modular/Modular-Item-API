@@ -37,7 +37,7 @@ public class MaterialIcons {
     public static final Map<String, MaterialIconCreator> iconCreators = new HashMap<>();
     public static MaterialIconCreator textureIconCreator;
 
-    public static MaterialIcon getMaterialIcon(String materialKey, JsonElement element) {
+    public static MaterialIcon getMaterialIcon(ResourceLocation materialKey, JsonElement element) {
         return iconCreators.get(element.getAsJsonObject().get("type").getAsString()).create(element, materialKey);
     }
 
@@ -93,7 +93,7 @@ public class MaterialIcons {
     }
 
     public interface MaterialIconCreator {
-        MaterialIcon create(JsonElement element, String materialKey);
+        MaterialIcon create(JsonElement element, ResourceLocation materialKey);
     }
 
     public static class EntityIconHolder {

@@ -28,13 +28,13 @@ public class MaterialSmithingRecipe implements SmithingRecipe {
 
     public static MapCodec<MaterialSmithingRecipe> CODEC = AutoCodec.of(MaterialSmithingRecipe.class);
 
-    public final String startMaterial;
-    public final String resultMaterial;
+    public final ResourceLocation startMaterial;
+    public final ResourceLocation resultMaterial;
     public final Ingredient smithingTemplate;
     public final Ingredient addition;
     public final ResourceLocation id;
 
-    public MaterialSmithingRecipe(ResourceLocation id, Ingredient template, String baseMaterial, Ingredient addition, String resultMaterial) {
+    public MaterialSmithingRecipe(ResourceLocation id, Ingredient template, ResourceLocation baseMaterial, Ingredient addition, ResourceLocation resultMaterial) {
         this.startMaterial = baseMaterial;
         this.resultMaterial = resultMaterial;
         smithingTemplate = template;
@@ -66,7 +66,7 @@ public class MaterialSmithingRecipe implements SmithingRecipe {
             return instance.allSubModules().stream().anyMatch(module -> {
                 Material material = MaterialProperty.getMaterial(module);
                 if (material != null) {
-                    return material.getKey().equals(startMaterial);
+                    return material.getID().equals(startMaterial);
                 }
                 return false;
             });
@@ -107,7 +107,7 @@ public class MaterialSmithingRecipe implements SmithingRecipe {
             ModuleInstance instance = ItemModule.getModules(old).copy();
             instance.allSubModules().forEach(module -> {
                 Material material = MaterialProperty.getMaterial(module);
-                if (material != null && material.getKey().equals(startMaterial)) {
+                if (material != null && material.getID().equals(startMaterial)) {
                     MaterialProperty.setMaterial(module, resultMaterial);
 
                 }

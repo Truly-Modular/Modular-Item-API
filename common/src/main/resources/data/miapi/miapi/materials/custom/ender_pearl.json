@@ -1,6 +1,4 @@
 {
-    "key": "ender_pearl",
-    "translation": "miapi.material.custom.ender_pearl",
     "icon": "textures/item/ender_pearl.png",
     "color": "105D50",
     "color_palette": {

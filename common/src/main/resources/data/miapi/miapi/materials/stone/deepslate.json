@@ -1,6 +1,4 @@
 {
-    "key": "stone_deepslate",
-    "translation": "miapi.material.stone.deepslate",
     "icon": {
         "type": "item",
         "item": "minecraft:deepslate"

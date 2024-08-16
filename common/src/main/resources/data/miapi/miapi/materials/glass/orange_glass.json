@@ -1,6 +1,4 @@
 {
-    "key": "glass_orange",
-    "translation": "miapi.material.glass.orange",
     "icon": {
         "type": "item",
         "item": "minecraft:orange_stained_glass"

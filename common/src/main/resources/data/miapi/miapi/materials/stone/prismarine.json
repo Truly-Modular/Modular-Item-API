@@ -1,6 +1,4 @@
 {
-    "key": "stone_prismarine",
-    "translation": "miapi.material.stone.prismarine",
     "icon": "textures/item/prismarine_shard.png",
     "groups": [
         "stone"

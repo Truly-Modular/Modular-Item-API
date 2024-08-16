@@ -1,6 +1,4 @@
 {
-    "key": "glass",
-    "translation": "miapi.material.glass",
     "icon": {
         "type": "item",
         "item": "minecraft:glass"

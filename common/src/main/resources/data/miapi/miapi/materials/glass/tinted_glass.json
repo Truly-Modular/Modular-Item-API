@@ -1,6 +1,4 @@
 {
-    "key": "glass_tinted",
-    "translation": "miapi.material.glass.tinted",
     "icon": {
         "type": "item",
         "item": "minecraft:tinted_glass"

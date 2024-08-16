@@ -87,20 +87,16 @@ public class AttributeUtil {
      * @return the double value of the attribute according to the Itemstack
      */
     public static double getActualValue(ItemStack stack, EquipmentSlot slot, Attribute entityAttribute, double fallback) {
-        //TODO: ive got 0 clue what todo with this
-        //DataComponentTypes.ATTRIBUTE_MODIFIERS;
         if (entityAttribute == null) {
             return fallback;
         }
         List<AttributeModifier> modifiers = new ArrayList<>();
-        ItemAttributeModifiers attributeModifiers = stack.get(DataComponents.ATTRIBUTE_MODIFIERS);
-        if (attributeModifiers != null) {
-            attributeModifiers.forEach(slot, (attribute, modifier) -> {
-                if (entityAttribute.equals(attribute)) {
-                    modifiers.add(modifier);
-                }
-            });
-        }
+        ItemAttributeModifiers attributeModifiers = stack.getOrDefault(DataComponents.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.EMPTY);
+        attributeModifiers.forEach(slot, (attribute, modifier) -> {
+            if (entityAttribute.equals(attribute)) {
+                modifiers.add(modifier);
+            }
+        });
         return getActualValue(modifiers, fallback);
     }
 
@@ -160,13 +156,13 @@ public class AttributeUtil {
         if (
                 equipmentSlot.equals(EquipmentSlotGroup.MAINHAND) &&
                 attribute.equals(Attributes.ATTACK_DAMAGE.value()) &&
-                operation.equals(AttributeModifier.Operation.ADD_VALUE)){
+                operation.equals(AttributeModifier.Operation.ADD_VALUE)) {
             return SwordItem.BASE_ATTACK_DAMAGE_ID;
         }
         if (
                 equipmentSlot.equals(EquipmentSlotGroup.MAINHAND) &&
                 attribute.equals(Attributes.ATTACK_SPEED.value()) &&
-                operation.equals(AttributeModifier.Operation.ADD_VALUE)){
+                operation.equals(AttributeModifier.Operation.ADD_VALUE)) {
             return SwordItem.BASE_ATTACK_SPEED_ID;
         }
         return getIDForSlot(equipmentSlot, attribute, operation, "");

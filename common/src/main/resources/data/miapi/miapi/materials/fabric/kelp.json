@@ -1,6 +1,4 @@
 {
-    "key": "kelp",
-    "translation": "miapi.material.kelp",
     "icon": "textures/item/kelp.png",
     "groups": [
         "fabric",

@@ -1,6 +1,4 @@
 {
-    "key": "weeping_vine",
-    "translation": "miapi.material.fabric.weeping_vine",
     "icon": {
         "type": "item",
         "item": "minecraft:weeping_vines"
