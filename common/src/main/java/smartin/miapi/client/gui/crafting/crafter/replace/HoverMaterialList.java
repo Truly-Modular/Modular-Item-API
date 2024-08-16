@@ -129,17 +129,17 @@ public class HoverMaterialList extends InteractAbleWidget {
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double amount, double amountX) {
+    public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
         if (isMouseOver(mouseX, mouseY)) {
             if (Screen.hasShiftDown() || Screen.hasControlDown()) {
-                if (amount < 0) {
+                if (scrollY < 0) {
                     scrollPosTwo++;
                 } else {
                     scrollPosTwo--;
                 }
                 return true;
             } else {
-                if (amount < 0) {
+                if (scrollY < 0) {
                     int maxElementsTotal = materialKeys.size();
                     if (selected + scrollPosOne == maxElementsTotal - 1) {
                     } else if (scrollPosOne == 0 && maxElements == maxElementsTotal) {

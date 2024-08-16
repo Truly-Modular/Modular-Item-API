@@ -121,15 +121,15 @@ public class TransformableWidget extends InteractAbleWidget {
     /**
      * @param mouseX current X Position of the Mouse
      * @param mouseY current Y Position of the Mouse
-     * @param amount the amount scrolled since the last time this was called
+     * @param scrollX the amount scrolled since the last time this was called
      * @return if this consumes the action, if you previewStack an action return true, if not return false
      */
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double amount, double amountX) {
+    public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
         Vector4f position = transFormMousePos(mouseX, mouseY);
         for (GuiEventListener child : this.children()) {
-            if (child.isMouseOver(position.x, position.y) && child.mouseScrolled(position.x, position.y, amount, amountX)) {
+            if (child.isMouseOver(position.x, position.y) && child.mouseScrolled(position.x, position.y, scrollX, scrollY)) {
                 return true;
             }
         }

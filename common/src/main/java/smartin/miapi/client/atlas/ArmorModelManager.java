@@ -2,6 +2,7 @@ package smartin.miapi.client.atlas;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ElytraModel;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.HumanoidModel;
@@ -30,6 +31,7 @@ public class ArmorModelManager {
 
     static {
         partProviders.add(new ModelPartProvider());
+        partProviders.add(new ElytraPartProvider());
     }
 
     public static final class ModelPartProvider implements ArmorPartProvider {
@@ -37,7 +39,7 @@ public class ArmorModelManager {
         private static final String[] modelParts = {"head", "hat", "left_arm", "right_arm", "left_leg", "right_leg", "body"};
 
         @Override
-        public List<ArmorPart> getParts(EquipmentSlot equipmentSlot, LivingEntity livingEntity, HumanoidModel<?> model, EntityModel entityModel, RenderLayerParent context) {
+        public List<ArmorPart> getParts(EquipmentSlot equipmentSlot, LivingEntity livingEntity, HumanoidModel<?> model, EntityModel entityModel) {
             List<ArmorPart> parts = new ArrayList<>();
             for (String key : modelParts) {
                 parts.add((matrixStack, equipmentSlot1, livingEntity1, model1, entityModel1) -> {
@@ -65,9 +67,9 @@ public class ArmorModelManager {
 
     public static final class ElytraPartProvider implements ArmorPartProvider {
         @Override
-        public List<ArmorPart> getParts(EquipmentSlot equipmentSlot, LivingEntity livingEntity, HumanoidModel<?> model, EntityModel entityModel, RenderLayerParent context) {
+        public List<ArmorPart> getParts(EquipmentSlot equipmentSlot, LivingEntity livingEntity, HumanoidModel<?> model, EntityModel entityModel) {
             List<ArmorPart> parts = new ArrayList<>();
-            if (context instanceof LivingEntityRenderer livingEntityRenderer) {
+            if (Minecraft.getInstance().getEntityRenderDispatcher().getRenderer(livingEntity) instanceof LivingEntityRenderer livingEntityRenderer) {
                 Optional<ElytraLayer<?, ?>> elytraFeatureRenderer =
                 ((LivingEntityRendererAccessor) livingEntityRenderer).getFeatures().stream().filter(a -> a instanceof ElytraLayer<?, ?>).findAny();
                 if(elytraFeatureRenderer.isPresent()){
@@ -94,9 +96,9 @@ public class ArmorModelManager {
         }
     }
 
-    public static void renderArmorPiece(PoseStack matrices, MultiBufferSource vertexConsumers, int light, EquipmentSlot armorSlot, ItemStack itemStack, LivingEntity entity, HumanoidModel outerModel, EntityModel entityModel, RenderLayerParent context) {
+    public static void renderArmorPiece(PoseStack matrices, MultiBufferSource vertexConsumers, int light, EquipmentSlot armorSlot, ItemStack itemStack, LivingEntity entity, HumanoidModel outerModel, EntityModel entityModel) {
         partProviders.forEach(armorPartProvider -> {
-            List<ArmorPart> armorParts = armorPartProvider.getParts(armorSlot, entity, outerModel, entityModel, context);
+            List<ArmorPart> armorParts = armorPartProvider.getParts(armorSlot, entity, outerModel, entityModel);
             armorParts.forEach(armorPart -> {
                 matrices.pushPose();
                 String key = armorPart.apply(matrices, armorSlot, entity, outerModel, entityModel);
@@ -110,7 +112,7 @@ public class ArmorModelManager {
     }
 
     public interface ArmorPartProvider {
-        List<ArmorPart> getParts(EquipmentSlot equipmentSlot, LivingEntity livingEntity, HumanoidModel<?> model, EntityModel entityModel, RenderLayerParent context);
+        List<ArmorPart> getParts(EquipmentSlot equipmentSlot, LivingEntity livingEntity, HumanoidModel<?> model, EntityModel entityModel);
     }
 
     public interface ArmorPart {

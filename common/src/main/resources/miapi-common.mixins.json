@@ -32,7 +32,6 @@
         "ThrowablePotionItemAccessor"
     ],
     "client": [
-        "client.ArmorFeatureRendererMixin",
         "client.BuiltinModelItemRendererMixin",
         "client.ClientAdvancementManagerAccessor",
         "client.ClientPlayerEntityMixin",
@@ -42,7 +41,6 @@
         "client.ItemRendererAccessor",
         "client.ItemRendererMixin",
         "client.LivingEntityRendererAccessor",
-        "client.LivingEntityRendererMixin",
         "client.ModelLoaderAccessor",
         "client.ModelLoaderInterfaceAccessor",
         "client.ModelLoaderMixin",

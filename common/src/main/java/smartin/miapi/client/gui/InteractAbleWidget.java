@@ -281,13 +281,14 @@ public abstract class InteractAbleWidget extends AbstractWidget implements Rende
     /**
      * @param mouseX current X Position of the Mouse
      * @param mouseY current Y Position of the Mouse
-     * @param amount the amount scrolled since the last time this was called
+     * @param scrollX the amount horizontal scrolled since the last time this was called
+     * @param scrollY the amount vertical scrolled since the last time this was called
      * @return if this consumes the action, if you previewStack an action return true, if not return false
      */
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double amount, double other) {
+    public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
         for (GuiEventListener child : this.children()) {
-            if (child.isMouseOver(mouseX, mouseY) && child.mouseScrolled(mouseX, mouseY, amount, other)) {
+            if (child.isMouseOver(mouseX, mouseY) && child.mouseScrolled(mouseX, mouseY, scrollX, scrollY)) {
                 return true;
             }
         }
