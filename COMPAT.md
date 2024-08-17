@@ -11,6 +11,7 @@ Most mods should work with this system.
 A Sword and an Axe implement as the same Toolfamily.
 - **Exceptions**  
 Some mods sadly implement their Tools differently/weirdly and dont get detected because of that.
+In addition right click abilities and on-hit effects or similar effects cant be automaticly detected sadly
 - **Quirks**  
 Sometimes the texturing or Naming of the Generated Material may be odd, this is simply due to the generative nature.
   
