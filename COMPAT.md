@@ -18,7 +18,7 @@ Sometimes the texturing or Naming of the Generated Material may be odd, this is 
 ## Make your own Compat  
   
 If some compat is still missing you can try to your own hand at it with the [Material Helper](https://truly-modular.github.io/Material-Helper/)
-This is a Website that lets you easily make compat materials for Truly Modular.
+This is a Website that lets anybody make compat materials for Truly Modular, even without any coding knowledge.
 
 ## Issues
-if you encounter any issues be sure to report then https://github.com/Truly-Modular/Modular-Item-API/issues
+if you encounter any issues be sure to report them https://github.com/Truly-Modular/Modular-Item-API/issues
