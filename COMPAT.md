@@ -20,4 +20,4 @@ If some compat is still missing you can try to your own hand at it with the [Mat
 This is a Website that lets you easily make compat materials for Truly Modular.
 
 ## Issues
-if you encounter some issues be sure to report then https://github.com/Truly-Modular/Modular-Item-API/issues
+if you encounter any issues be sure to report then https://github.com/Truly-Modular/Modular-Item-API/issues
