@@ -10,7 +10,7 @@ Most mods should work with this system.
 - **Reqirements**  
 A Sword and an Axe implement as the same Toolfamily.
 - **Exceptions**  
-Some mods sadly implement their Tools differently/weirdly and dont get detected because of that. You might wann check /material_helper or the Material Helper Website to find out how you easily can fix compat yourself
+Some mods sadly implement their Tools differently/weirdly and dont get detected because of that.
 - **Quirks**  
 Sometimes the texturing or Naming of the Generated Material may be odd, this is simply due to the generative nature.
   
