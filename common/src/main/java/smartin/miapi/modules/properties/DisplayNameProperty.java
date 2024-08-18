@@ -41,7 +41,8 @@ public class DisplayNameProperty extends CodecProperty<Component> {
             if (componentOptional.isPresent()) {
                 Material material = MaterialProperty.getMaterial(moduleInstance);
                 if (material != null) {
-                    name = Component.translatable(componentOptional.get().getString(), material.getTranslation());
+                    Component materialTranslation = material.getTranslation();
+                    name = Component.translatable(componentOptional.get().getString(), materialTranslation);
                 } else {
                     name = Component.translatable(componentOptional.get().getString(), "");
                 }

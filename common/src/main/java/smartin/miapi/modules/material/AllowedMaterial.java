@@ -88,7 +88,6 @@ public class AllowedMaterial extends CodecProperty<AllowedMaterial.AllowedMateri
 
     @Override
     public boolean canPerform(ItemStack old, ItemStack crafting, ModularWorkBenchEntity bench, Player player, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<String, String> data) {
-        //AllowedMaterialJson json = Miapi.gson.decode()
         Optional<AllowedMaterialData> optional = getData(module);
         ItemStack input = inventory.get(0);
         if (optional.isPresent()) {
@@ -111,10 +110,11 @@ public class AllowedMaterial extends CodecProperty<AllowedMaterial.AllowedMateri
                 wrongMaterial = false;
                 materialCostClient = 0.0f;
             }
+            return false;
         } else {
             wrongMaterial = false;
         }
-        return false;
+        return true;
     }
 
     @Override

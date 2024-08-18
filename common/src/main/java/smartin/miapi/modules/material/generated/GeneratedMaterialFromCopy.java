@@ -9,6 +9,7 @@ import com.redpxnda.nucleus.util.Color;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.FastColor;
@@ -28,6 +29,7 @@ import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.registries.FakeTranslation;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -36,12 +38,13 @@ public class GeneratedMaterialFromCopy implements Material {
     ResourceLocation key;
     List<String> groups = new ArrayList<>();
     List<String> textureKeys;
-    Map<String, Double> stats;
+    Map<String, Double> stats = new HashMap<>();
     TagKey<Block> incorrectForTool;
     GrayscalePaletteColorer palette;
     @Nullable
     MaterialIcons.MaterialIcon icon;
     Material source;
+    String materialName = "";
 
     public static Codec<GeneratedMaterialFromCopy> CODEC = RecordCodecBuilder.create((instance) ->
             instance.group(
@@ -63,7 +66,13 @@ public class GeneratedMaterialFromCopy implements Material {
      * @param other          the {@link Material} the stats are copied from
      */
     public GeneratedMaterialFromCopy(ItemStack mainIngredient, Material other) {
-        key = Miapi.id("generated_simple/" + mainIngredient.getDescriptionId());
+        String[] names =
+                other.getID().toString().split(":")[1].split("/");
+        if (names.length > 1) {
+            key = Miapi.id("generated_" + names[names.length - 2] + "/" + mainIngredient.getDescriptionId());
+        } else {
+            key = Miapi.id("generated_simple/" + mainIngredient.getDescriptionId());
+        }
         this.source = other;
         this.mainIngredient = mainIngredient;
         groups.add(key.toString());
@@ -73,26 +82,31 @@ public class GeneratedMaterialFromCopy implements Material {
         stats.put("density", other.getDouble("density"));
         stats.put("flexibility", other.getDouble("flexibility"));
         stats.put("durability", other.getDouble("durability"));
-        stats.put("mining_level", other.getDouble("mining_level"));
         stats.put("mining_speed", other.getDouble("mining_speed"));
         stats.put("axe_damage", other.getDouble("axe_damage"));
         stats.put("enchantability", other.getDouble("enchantability"));
         stats.put("armor_durability_offset", other.getDouble("armor_durability_offset"));
-        MiapiEvents.GENERATE_MATERIAL_CONVERTERS.invoker().generated(this, new ArrayList<>(), smartin.miapi.Environment.isClient());
-        if(smartin.miapi.Environment.isClient()){
+        incorrectForTool = other.getIncorrectBlocksForDrops();
+        if (smartin.miapi.Environment.isClient()) {
             setupClient();
         }
+        MiapiEvents.GENERATE_MATERIAL_CONVERTERS.invoker().generated(this, new ArrayList<>(), smartin.miapi.Environment.isClient());
     }
 
-    public String getLangKey() {
-        return "miapi.material.generated." + mainIngredient.getItem().getDescriptionId();
+    //public String getLangKey() {
+    //    return "miapi.material.generated." + mainIngredient.getItem().getDescriptionId();
+    //}
+
+    @Override
+    public Component getTranslation() {
+        return mainIngredient.getHoverName();
     }
 
     @Environment(EnvType.CLIENT)
     public void setupClient() {
         palette = GrayscalePaletteColorer.createForGeneratedMaterial(this, mainIngredient);
         icon = new MaterialIcons.ItemMaterialIcon(mainIngredient, 0, null);
-        FakeTranslation.translations.put(getLangKey(), NamingUtil.generateTranslation(new ArrayList<>(), mainIngredient));
+        materialName = "miapi.material.generated." + mainIngredient.getItem().getDescriptionId();
     }
 
     @Override
@@ -134,20 +148,17 @@ public class GeneratedMaterialFromCopy implements Material {
 
     @Override
     public String getData(String property) {
-        if ("translation".equals(property)) {
-            return getLangKey();
-        }
         return source.getData(property);
     }
 
     @Override
     public List<String> getTextureKeys() {
-        return List.of();
+        return List.of("default");
     }
 
     @Override
     public double getValueOfItem(ItemStack itemStack) {
-        if (itemStack.equals(mainIngredient)) {
+        if (itemStack.getItem().equals(mainIngredient.getItem())) {
             return 1.0;
         }
         return 0.0;
@@ -155,10 +166,10 @@ public class GeneratedMaterialFromCopy implements Material {
 
     @Override
     public @Nullable Double getPriorityOfIngredientItem(ItemStack itemStack) {
-        if (itemStack.equals(mainIngredient)) {
+        if (itemStack.getItem().equals(mainIngredient.getItem())) {
             return 1.0;
         }
-        return 0.0;
+        return null;
     }
 
     @Override
@@ -175,7 +186,7 @@ public class GeneratedMaterialFromCopy implements Material {
         object.add("groups", jsonElements);
 
         stats.forEach(object::addProperty);
-        object.addProperty("translation", getLangKey());
+        //object.addProperty("translation", getLangKey());
         if (smartin.miapi.Environment.isClient()) {
             object.addProperty("fake_translation", getTranslation().getString());
             ResourceLocation itemId = BuiltInRegistries.ITEM.getKey(mainIngredient.getItem());

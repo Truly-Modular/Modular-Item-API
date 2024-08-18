@@ -68,7 +68,7 @@ public interface Material {
     }
 
     default Component getTranslation() {
-        return Component.translatable(getData("miapi.material." + getStringID()));
+        return Component.translatable("miapi.material." + getStringID());
     }
 
     @Environment(EnvType.CLIENT)

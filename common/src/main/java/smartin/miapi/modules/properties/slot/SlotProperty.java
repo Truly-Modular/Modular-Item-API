@@ -36,21 +36,11 @@ public class SlotProperty extends CodecProperty<Map<String, SlotProperty.ModuleS
     }
 
     @Environment(EnvType.CLIENT)
-    public static Transform getTransform(ModuleSlot moduleSlot) {
-        ModuleInstance current = moduleSlot.parent;
-        Transform mergedTransform = Transform.IDENTITY;
-        while (current != null) {
-            mergedTransform = Transform.merge(getLocalTransform(current), mergedTransform);
-            current = current.getParent();
-        }
-        mergedTransform = Transform.merge(mergedTransform, moduleSlot.transform);
-        return mergedTransform;
-    }
-
-    @Environment(EnvType.CLIENT)
     public static TransformMap getTransformStack(ModuleInstance instance) {
         ModuleSlot slot = getSlotIn(instance);
-        if (slot == null) return new TransformMap();
+        if (slot == null) {
+            return new TransformMap();
+        }
         return getTransformStack(slot);
     }
 
@@ -75,15 +65,26 @@ public class SlotProperty extends CodecProperty<Map<String, SlotProperty.ModuleS
     }
 
     public static Map<String, ModuleSlot> getSlots(ModuleInstance instance) {
-        return getInstance().getData(instance).orElse(new HashMap<>());
+        Map<String, ModuleSlot> slots = getInstance().getData(instance).orElse(new HashMap<>());
+        instance.getSubModuleMap().forEach((id, module) -> {
+            if (slots.containsKey(id)) {
+                slots.get(id).parent = instance;
+                slots.get(id).inSlot = module;
+            } else {
+                ModuleSlot slot = new ModuleSlot();
+                slot.inSlot = module;
+                slot.parent = instance;
+                slots.put(id, slot);
+            }
+        });
+        return slots;
     }
 
     public static String getSlotID(ModuleInstance instance) {
         if (instance.getParent() != null) {
-            Map<String, ModuleSlot> slots = getSlots(instance.getParent());
             AtomicReference<String> id = new AtomicReference<>("primary");
-            slots.forEach((number, moduleSlot) -> {
-                if (moduleSlot.inSlot != null && moduleSlot.inSlot.equals(instance)) {
+            instance.getParent().getSubModuleMap().forEach((number, module) -> {
+                if (instance == module) {
                     id.set(number);
                 }
             });
@@ -219,7 +220,7 @@ public class SlotProperty extends CodecProperty<Map<String, SlotProperty.ModuleS
         public List<String> getAsLocation() {
             List<String> location = new ArrayList<>();
             ModuleInstance parsing = parent;
-            if(parsing!=null){
+            if (parsing != null) {
                 location.add(id);
                 while (parsing.getParent() != null) {
                     String slotNumber = SlotProperty.getSlotID(parsing);

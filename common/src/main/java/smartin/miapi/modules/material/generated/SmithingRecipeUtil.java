@@ -31,45 +31,53 @@ import static smartin.miapi.modules.material.generated.GeneratedMaterialManager.
  */
 public class SmithingRecipeUtil {
     public static void setupSmithingRecipe(List<GeneratedMaterial> materials) {
-        RecipeManager recipeManager = findManager(Environment.isClient());
-        RegistryAccess registryAccess = findRegistryManager(Environment.isClient());
-        materials.forEach(material -> testForSmithingMaterial(recipeManager,registryAccess,material));
+        try {
+            RecipeManager recipeManager = findManager(Environment.isClient());
+            RegistryAccess registryAccess = findRegistryManager(Environment.isClient());
+            materials.forEach(material -> testForSmithingMaterial(recipeManager, registryAccess, material));
+        } catch (RuntimeException e) {
+            Miapi.LOGGER.error("Exception during SmithingRecipe setup!", e);
+        }
     }
 
     public static void testForSmithingMaterial(
             RecipeManager manager, RegistryAccess
             registryManager,
             GeneratedMaterial material) {
-        manager.getAllRecipesFor(RecipeType.SMITHING).stream()
-                .filter(SmithingTransformRecipe.class::isInstance)
-                //filter for only ItemChanging Recipes
-                .map(SmithingTransformRecipe.class::cast)
-                //check if the output is valid
-                .filter(recipe -> isValidRecipe(recipe, material.getSwordItem(), registryManager))
-                .findAny()
-                .ifPresent(smithingTransformRecipe -> {
-                    ItemStack templateItem = Arrays.stream(((SmithingTransformRecipeAccessor) smithingTransformRecipe).getTemplate().getItems()).filter(itemStack -> !itemStack.isEmpty()).findAny().orElse(ItemStack.EMPTY);
-                    if (templateItem.isEmpty()) {
-                        //make sure the recipe is valid by testing its template Item
-                        return;
-                    }
-                    Arrays.stream(((SmithingTransformRecipeAccessor) smithingTransformRecipe).getBase().getItems())
-                            //making sure the input has a valid SourceMaterial
-                            .filter(itemStack -> {
-                                if (itemStack.getItem() instanceof TieredItem toolItem) {
-                                    Material parentMaterial = MaterialProperty.getMaterialFromIngredient(toolItem.getTier()
-                                            .getRepairIngredient().getItems()[0]);
-                                    return parentMaterial != null;
-                                }
-                                return false;
-                            })
-                            .map(itemStack -> MaterialProperty.getMaterialFromIngredient(((TieredItem) itemStack.getItem()).getTier()
-                                    .getRepairIngredient().getItems()[0]))
-                            .findAny()
-                            .ifPresent(sourceMaterial -> {
-                                addSmithingRecipe(sourceMaterial, material, templateItem, smithingTransformRecipe, registryManager, manager);
-                            });
-                });
+        try {
+            manager.getAllRecipesFor(RecipeType.SMITHING).stream()
+                    .filter(SmithingTransformRecipe.class::isInstance)
+                    //filter for only ItemChanging Recipes
+                    .map(SmithingTransformRecipe.class::cast)
+                    //check if the output is valid
+                    .filter(recipe -> isValidRecipe(recipe, material.getSwordItem(), registryManager))
+                    .findAny()
+                    .ifPresent(smithingTransformRecipe -> {
+                        ItemStack templateItem = Arrays.stream(((SmithingTransformRecipeAccessor) smithingTransformRecipe).getTemplate().getItems()).filter(itemStack -> !itemStack.isEmpty()).findAny().orElse(ItemStack.EMPTY);
+                        if (templateItem.isEmpty()) {
+                            //make sure the recipe is valid by testing its template Item
+                            return;
+                        }
+                        Arrays.stream(((SmithingTransformRecipeAccessor) smithingTransformRecipe).getBase().getItems())
+                                //making sure the input has a valid SourceMaterial
+                                .filter(itemStack -> {
+                                    if (itemStack.getItem() instanceof TieredItem toolItem) {
+                                        Material parentMaterial = MaterialProperty.getMaterialFromIngredient(toolItem.getTier()
+                                                .getRepairIngredient().getItems()[0]);
+                                        return parentMaterial != null;
+                                    }
+                                    return false;
+                                })
+                                .map(itemStack -> MaterialProperty.getMaterialFromIngredient(((TieredItem) itemStack.getItem()).getTier()
+                                        .getRepairIngredient().getItems()[0]))
+                                .findAny()
+                                .ifPresent(sourceMaterial -> {
+                                    addSmithingRecipe(sourceMaterial, material, templateItem, smithingTransformRecipe, registryManager, manager);
+                                });
+                    });
+        } catch (RuntimeException e) {
+            Miapi.LOGGER.error("Error during Smithingrecipe generation!", e);
+        }
     }
 
     static boolean isValidRecipe

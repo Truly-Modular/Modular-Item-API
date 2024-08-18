@@ -11,7 +11,7 @@ import smartin.miapi.modules.properties.util.ModuleProperty;
  * This property is needed to identify Modules
  * THIS IS THE ONLY REQUIRED PROPERTY
  */
-public class NameProperty implements ModuleProperty {
+public class OldNameProperty implements ModuleProperty {
     public static final ResourceLocation KEY = Miapi.id("name");
 
 

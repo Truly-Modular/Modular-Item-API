@@ -421,7 +421,7 @@ public class RegistryInventory {
             }
             registerMiapi(moduleProperties, CanChildBeEmpty.KEY, new CanChildBeEmpty());
             registerMiapi(moduleProperties, LoreProperty.KEY, new LoreProperty());
-            registerMiapi(moduleProperties, NameProperty.KEY, new NameProperty());
+            registerMiapi(moduleProperties, OldNameProperty.KEY, new OldNameProperty());
             registerMiapi(moduleProperties, SlotProperty.KEY, new SlotProperty());
             registerMiapi(moduleProperties, AllowedSlots.KEY, new AllowedSlots());
             registerMiapi(moduleProperties, MaterialProperty.KEY, new MaterialProperty());

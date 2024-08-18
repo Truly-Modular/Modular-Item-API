@@ -199,7 +199,6 @@ public class CraftViewRework extends InteractAbleWidget {
             }
         });
         addChild(widget);
-
     }
 
     @Override
@@ -293,7 +292,7 @@ public class CraftViewRework extends InteractAbleWidget {
         @Override
         public void renderHover(GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
             if (!this.isEnabled && isMouseOver(mouseX, mouseY)) {
-                MutableComponent text = Component.translatable(Miapi.MOD_ID + ".ui.craft.warning").withStyle(ChatFormatting.RED);
+                MutableComponent text = Component.translatable(Miapi.MOD_ID + ".ui.craft.warning").withStyle(ChatFormatting.DARK_RED);
                 hover.addText(text);
                 hover.setX(this.getX());
                 hover.setY(this.getY() + this.getHeight());

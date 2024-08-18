@@ -7,6 +7,8 @@ import com.google.gson.JsonParser;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -141,8 +143,9 @@ public class ModuleInstance {
     public void removeSubModule(String id) {
         ModuleInstance oldModule = subModules.get(id);
         if (oldModule != null) {
-            oldModule.parent = null;
+            //oldModule.parent = null;
         }
+        subModules.remove(id);
         getRoot().clearCaches();
     }
 
@@ -376,24 +379,26 @@ public class ModuleInstance {
         return gson.toJson(CODEC.encodeStart(JsonOps.INSTANCE, this));
     }
 
+    @Environment(EnvType.CLIENT)
     public Component getModuleName() {
         String moduleName = module.id().toString();
         moduleName = moduleName.replace(":", ".");
         moduleName = moduleName.replaceAll("/", ".");
         Material material = MaterialProperty.getMaterial(this);
         if (material != null) {
-            return Component.translatable(Miapi.MOD_ID + ".module." + moduleName, MaterialProperty.getMaterial(this));
+            return Component.translatable(Miapi.MOD_ID + ".module." + moduleName, material.getTranslation());
         }
         return StatResolver.translateAndResolve(Miapi.MOD_ID + ".module." + moduleName, this);
     }
 
+    @Environment(EnvType.CLIENT)
     public Component getModuleDescription() {
         String moduleName = module.id().toString();
         moduleName = moduleName.replace(":", ".");
         moduleName = moduleName.replaceAll("/", ".");
         Material material = MaterialProperty.getMaterial(this);
         if (material != null) {
-            return Component.translatable(Miapi.MOD_ID + ".module." + moduleName + ".description", MaterialProperty.getMaterial(this));
+            return Component.translatable(Miapi.MOD_ID + ".module." + moduleName + ".description", material.getTranslation());
         }
         return StatResolver.translateAndResolve(Miapi.MOD_ID + ".module." + moduleName + ".description", this);
     }

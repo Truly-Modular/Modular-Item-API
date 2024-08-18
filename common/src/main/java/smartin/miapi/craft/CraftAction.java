@@ -199,7 +199,9 @@ public class CraftAction {
                     buffer);
             craftingStack[0] = itemStacks.removeFirst();
             ComponentApplyProperty.updateItemStack(craftingStack[0], player.level().registryAccess());
-            updateItem(craftingStack[0], module);
+            if(module!=null){
+                updateItem(craftingStack[0], module);
+            }
             for (int i = start; i < end; i++) {
                 linkedInventory.setItem(i, itemStacks.get(i - start));
             }
@@ -257,17 +259,10 @@ public class CraftAction {
             }
         }
 
-        if (toAdd == null || toAdd == ItemModule.empty || toAdd.id().equals(Miapi.id("empty"))) {
+        if ((toAdd == null || toAdd == ItemModule.empty || toAdd.id().equals(Miapi.id("empty"))) && parsingInstance!=null) {
             parsingInstance.removeSubModule(slotLocation.getFirst());
         } else {
             ModuleInstance newModule = new ModuleInstance(toAdd);
-            if (parsingInstance == null) {
-                Miapi.LOGGER.error("Critical error in replace Logic!, step craft 2 slot position of crafting was not found!");
-                slotLocation.forEach(slot -> {
-                    Miapi.LOGGER.error("slot id" + slot);
-                });
-                return old;
-            }
             ModuleInstance moduleMapInstance = parsingInstance.getSubModule(slotLocation.getFirst());
             if (moduleMapInstance != null) {
                 subModuleMap = moduleMapInstance.getSubModuleMap();

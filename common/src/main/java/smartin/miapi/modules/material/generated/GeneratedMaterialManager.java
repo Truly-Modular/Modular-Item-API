@@ -132,7 +132,8 @@ public class GeneratedMaterialManager {
                             try {
                                 if (isValidItem(item)) {
                                     Material old = MaterialProperty.getMaterialFromIngredient(item.getDefaultInstance());
-                                    if (old != null && old == materials.get("wood")) {
+                                    Material baseWood = materials.get(Miapi.id("wood/wood"));
+                                    if (old != null && baseWood != null && old == baseWood) {
                                         GeneratedMaterialFromCopy generatedMaterial = new GeneratedMaterialFromCopy(
                                                 item.getDefaultInstance(),
                                                 old
@@ -158,7 +159,8 @@ public class GeneratedMaterialManager {
                             try {
                                 if (isValidItem(item) && !item.equals(Items.COBBLESTONE)) {
                                     Material old = MaterialProperty.getMaterialFromIngredient(item.getDefaultInstance());
-                                    if (old != null && old == materials.get("stone")) {
+                                    Material baseStone = materials.get(Miapi.id("stone/stone"));
+                                    if (old != null && baseStone != null && old == baseStone) {
                                         GeneratedMaterialFromCopy generatedMaterial = new GeneratedMaterialFromCopy(
                                                 item.getDefaultInstance(),
                                                 old
