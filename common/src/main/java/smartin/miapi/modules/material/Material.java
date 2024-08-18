@@ -6,6 +6,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.recipe.Ingredient;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
@@ -111,6 +112,8 @@ public interface Material {
     }
 
     double getValueOfItem(ItemStack item);
+
+    Ingredient getIngredient();
 
     /**
      * return null if itemstack is not assosiated with the material

@@ -296,11 +296,11 @@ public class JsonMaterial implements Material {
         return icon != null;
     }
 
+    Ingredient matching;
 
     @Override
     public double getValueOfItem(ItemStack item) {
         JsonArray items = rawJson.getAsJsonObject().getAsJsonArray("items");
-
         for (JsonElement element : items) {
             JsonObject itemObj = element.getAsJsonObject();
 
@@ -308,6 +308,8 @@ public class JsonMaterial implements Material {
                 String itemId = itemObj.get("item").getAsString();
                 if (Registries.ITEM.getId(item.getItem()).toString().equals(itemId)) {
                     try {
+                        Item item1 = Registries.ITEM.get(new Identifier(itemId));
+                        matching = Ingredient.ofItems(item1);
                         return itemObj.get("value").getAsDouble();
                     } catch (Exception surpressed) {
                         return 1;
@@ -316,6 +318,7 @@ public class JsonMaterial implements Material {
             } else if (itemObj.has("tag")) {
                 String tagId = itemObj.get("tag").getAsString();
                 TagKey<Item> tag = TagKey.of(Registries.ITEM.getKey(), new Identifier(tagId));
+                matching = Ingredient.fromTag(tag);
                 if (tag != null && item.isIn(tag)) {
                     try {
                         return itemObj.get("value").getAsDouble();
@@ -325,6 +328,7 @@ public class JsonMaterial implements Material {
                 }
             } else if (itemObj.has("ingredient")) {
                 Ingredient ingredient = Ingredient.fromJson(itemObj.get("ingredient"));
+                matching = ingredient;
                 if (ingredient.test(item)) {
                     try {
                         return itemObj.get("value").getAsDouble();
@@ -335,6 +339,14 @@ public class JsonMaterial implements Material {
             }
         }
         return 0;
+    }
+
+    @Override
+    public Ingredient getIngredient() {
+        if(matching==null){
+            getValueOfItem(ItemStack.EMPTY);
+        }
+        return matching;
     }
 
     @Override

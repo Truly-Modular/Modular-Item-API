@@ -22,10 +22,7 @@ import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.cache.ModularItemCache;
-import smartin.miapi.modules.properties.AttributeProperty;
-import smartin.miapi.modules.properties.DurabilityProperty;
-import smartin.miapi.modules.properties.EnchantAbilityProperty;
-import smartin.miapi.modules.properties.ToolOrWeaponProperty;
+import smartin.miapi.modules.properties.*;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
@@ -128,7 +125,7 @@ public class MiningLevelProperty implements ModuleProperty {
 
             @Override
             public Ingredient getRepairIngredient() {
-                return Ingredient.EMPTY;
+                return RepairPriority.asRepairIngredient(itemStack);
             }
         };
     }
