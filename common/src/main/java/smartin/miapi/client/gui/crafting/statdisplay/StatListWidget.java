@@ -83,67 +83,67 @@ public class StatListWidget extends InteractAbleWidget {
                 .setTranslationKey(NemesisProperty.KEY).build());
         addStatDisplay(AttributeSingleDisplay
                 .builder(Attributes.ATTACK_DAMAGE)
-                .setTranslationKey("damage")
+                .setTranslationKey("minecraft.damage")
                 .setDefault(1)
                 .setMax(13.0).build());
         addStatDisplay(AttributeSingleDisplay
                 .builder(Attributes.ATTACK_SPEED)
-                .setTranslationKey("attack_speed")
+                .setTranslationKey("minecraft.attack_speed")
                 .setDefault(4)
                 .setMax(4.0).build());
         addStatDisplay(new DpsStatDisplay());
         addStatDisplay(AttributeSingleDisplay
                 .builder(AttributeRegistry.BACK_STAB)
-                .setTranslationKey("back_stab")
+                .setTranslationKey("miapi.back_stab")
                 .setDefault(1)
                 .setFormat("##.#")
                 .setMax(5).build());
         addStatDisplay(AttributeSingleDisplay
                 .builder(AttributeRegistry.SHIELD_BREAK)
-                .setTranslationKey("shield_break")
+                .setTranslationKey("miapi.shield_break")
                 .setDefault(0)
                 .setFormat("##.#")
                 .setMax(5).build());
         addStatDisplay(AttributeSingleDisplay
                 .builder(Attributes.BLOCK_INTERACTION_RANGE)
-                .setTranslationKey("reach")
+                .setTranslationKey("minecraft.reach")
                 .setDefault(0)
                 .setFormat("##.##")
                 .setMax(2).build());
         addStatDisplay(AttributeSingleDisplay
                 .builder(Attributes.ENTITY_INTERACTION_RANGE)
-                .setTranslationKey("attack_range")
+                .setTranslationKey("minecraft.attack_range")
                 .setDefault(0)
                 .setFormat("##.##")
                 .setMax(2).build());
         addStatDisplay(AttributeSingleDisplay
                 .builder(AttributeRegistry.PROJECTILE_DAMAGE)
-                .setTranslationKey("projectile_damage")
+                .setTranslationKey("miapi.projectile_damage")
                 .setFormat("##.##")
                 .setDefault(0)
                 .setMax(10).build());
         addStatDisplay(AttributeSingleDisplay
                 .builder(AttributeRegistry.PROJECTILE_SPEED)
-                .setTranslationKey("projectile_speed")
+                .setTranslationKey("miapi.projectile_speed")
                 .setFormat("##.##")
                 .setDefault(0)
                 .setMin(-3)
                 .setMax(10).build());
         addStatDisplay(AttributeSingleDisplay
                 .builder(AttributeRegistry.PROJECTILE_ACCURACY)
-                .setTranslationKey("projectile_accuracy")
+                .setTranslationKey("miapi.projectile_accuracy")
                 .setFormat("##.##")
                 .setDefault(0)
                 .setMin(-2)
                 .setMax(2).build());
         addStatDisplay(AttributeSingleDisplay
                 .builder(AttributeRegistry.PROJECTILE_PIERCING)
-                .setTranslationKey("projectile_piercing")
+                .setTranslationKey("miapi.projectile_piercing")
                 .setFormat("##.##")
                 .setMax(10).build());
         addStatDisplay(AttributeSingleDisplay
                 .builder(AttributeRegistry.PROJECTILE_CRIT_MULTIPLIER)
-                .setTranslationKey("projectile_crit_multiplier")
+                .setTranslationKey("miapi.projectile_crit_multiplier")
                 .setFormat("##.##")
                 .setMax(10).build());
         addStatDisplay(SinglePropertyStatDisplay
@@ -193,55 +193,55 @@ public class StatListWidget extends InteractAbleWidget {
                 .setTranslationKey(LeechingProperty.KEY).build());
         addStatDisplay(AttributeSingleDisplay
                 .builder(Attributes.ARMOR)
-                .setTranslationKey("armor")
+                .setTranslationKey("minecraft.armor")
                 .setMax(8).build());
         addStatDisplay(AttributeSingleDisplay
                 .builder(AttributeRegistry.PROJECTILE_ARMOR)
-                .setTranslationKey("projectile_armor")
+                .setTranslationKey("miapi.projectile_armor")
                 .setMax(8).build());
         addStatDisplay(AttributeSingleDisplay
                 .builder(Attributes.ARMOR_TOUGHNESS)
-                .setTranslationKey("armor_toughness")
+                .setTranslationKey("minecraft.armor_toughness")
                 .setMax(3).build());
         addStatDisplay(AttributeSingleDisplay
                 .builder(Attributes.KNOCKBACK_RESISTANCE)
-                .setTranslationKey("knockback_resistance")
+                .setTranslationKey("minecraft.knockback_resistance")
                 .setMax(1).build());
         addStatDisplay(AttributeSingleDisplay
                 .builder(AttributeRegistry.SWIM_SPEED)
-                .setTranslationKey("swim_speed")
+                .setTranslationKey("miapi.swim_speed")
                 .setMax(1.5)
                 .setDefault(1)
                 .setMin(0).build());
         addStatDisplay(AttributeSingleDisplay
                 .builder(AttributeRegistry.ELYTRA_GLIDE_EFFICIENCY)
-                .setTranslationKey("elytra_glide")
+                .setTranslationKey("miapi.elytra_glide")
                 .setMax(20)
                 .setMin(-20).build());
         addStatDisplay(AttributeSingleDisplay
                 .builder(AttributeRegistry.ELYTRA_TURN_EFFICIENCY)
-                .setTranslationKey("elytra_turn")
+                .setTranslationKey("miapi.elytra_turn")
                 .setMax(20)
                 .setMin(-20).build());
         addStatDisplay(AttributeSingleDisplay
                 .builder(AttributeRegistry.ELYTRA_ROCKET_EFFICIENCY)
-                .setTranslationKey("rocket_efficiency")
+                .setTranslationKey("miapi.rocket_efficiency")
                 .setMax(5)
                 .setMin(-5).build());
         addStatDisplay(AttributeSingleDisplay
                 .builder(AttributeRegistry.PLAYER_ITEM_USE_MOVEMENT_SPEED)
-                .setTranslationKey("player_item_use_speed")
+                .setTranslationKey("miapi.player_item_use_speed")
                 .setMax(0)
                 .inverseNumber(true)
                 .setMin(-1).build());
         addStatDisplay(AttributeSingleDisplay
                 .builder(AttributeRegistry.CRITICAL_DAMAGE)
-                .setTranslationKey("crit_damage")
+                .setTranslationKey("miapi.crit_damage")
                 .setMax(3)
                 .setMin(0).build());
         addStatDisplay(AttributeSingleDisplay
                 .builder(AttributeRegistry.CRITICAL_CHANCE)
-                .setTranslationKey("crit_chance")
+                .setTranslationKey("miapi.crit_chance")
                 .setMax(1)
                 .setMin(0).build());
 

@@ -18,7 +18,6 @@ public abstract class DoubleProperty extends CodecProperty<DoubleOperationResolv
     public DoubleProperty property;
     public double baseValue = 0;
     public boolean allowVisualOnly = false;
-    private final String cacheKey;
     static Codec<List<DoubleOperationResolvable.Operation>> listCodec = Codec.list(AutoCodec.of(DoubleOperationResolvable.Operation.class).codec());
     public static Codec<List<DoubleOperationResolvable.Operation>> CODEC = Codec.withAlternative(
             new Codec<>() {
@@ -38,15 +37,7 @@ public abstract class DoubleProperty extends CodecProperty<DoubleOperationResolv
 
     protected DoubleProperty(ResourceLocation cacheKey) {
         super(DoubleOperationResolvable.CODEC);
-        this.cacheKey = cacheKey + "_internal_double";
         property = this;
-        ModularItemCache.setSupplier(cacheKey.toString(), (itemStack) -> {
-            Optional<DoubleOperationResolvable> optional = getData(itemStack);
-            if (optional.isPresent()) {
-                return optional.get().evaluate(baseValue);
-            }
-            return Optional.empty();
-        });
     }
 
     public DoubleOperationResolvable initialize(DoubleOperationResolvable property, ModuleInstance context) {
@@ -54,7 +45,11 @@ public abstract class DoubleProperty extends CodecProperty<DoubleOperationResolv
     }
 
     public Optional<Double> getValue(ItemStack itemStack) {
-        return ModularItemCache.get(itemStack, cacheKey, Optional.empty());
+        Optional<DoubleOperationResolvable> optional = getData(itemStack);
+        if (optional.isPresent()) {
+            return optional.get().evaluate(baseValue);
+        }
+        return Optional.empty();
     }
 
     public Optional<Double> getValue(ModuleInstance moduleInstance) {

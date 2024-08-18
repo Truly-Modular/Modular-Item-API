@@ -106,7 +106,7 @@ public class HoverMaterialList extends InteractAbleWidget {
                     currentY += 14;
                 }
                 for (int i = start; i <= end; i++) {
-                    Component material = getTranslation(materialList.get(i).getID().toString());
+                    Component material = materialList.get(i).getTranslation();
                     drawContext.drawString(Minecraft.getInstance().font, material, getX() + sizeBaseList + 6, currentY, unselectedColor, false);
                     currentY += 14;
                 }

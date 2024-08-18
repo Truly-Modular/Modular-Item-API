@@ -14,8 +14,8 @@ public class DpsStatDisplay extends SingleStatDisplayDouble {
 
     public DpsStatDisplay() {
         super(0, 0, 51, 19,
-                (stack) -> Component.translatable("miapi.stat.dps"),
-                (stack) -> Component.translatable("miapi.stat.dps.description"));
+                (stack) -> Component.translatable("miapi.stat.miapi.dps"),
+                (stack) -> Component.translatable("miapi.stat.miapi.dps.description"));
         this.maxValue = 25;
     }
 
