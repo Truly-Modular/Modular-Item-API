@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import smartin.miapi.item.modular.ModularItem;
-import smartin.miapi.modules.properties.CanWalkOnSnow;
+import smartin.miapi.modules.properties.armor.CanWalkOnSnow;
 
 @Mixin(PowderSnowBlock.class)
 public abstract class PowderSnowBlockMixin {

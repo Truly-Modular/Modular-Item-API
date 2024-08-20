@@ -67,20 +67,23 @@ import smartin.miapi.modules.edit_options.ReplaceOption;
 import smartin.miapi.modules.edit_options.skins.SkinOptions;
 import smartin.miapi.modules.material.*;
 import smartin.miapi.modules.properties.*;
+import smartin.miapi.modules.properties.armor.*;
 import smartin.miapi.modules.properties.attributes.AttributeProperty;
 import smartin.miapi.modules.properties.attributes.AttributeSplitProperty;
-import smartin.miapi.modules.properties.damage_boosts.AquaticDamage;
-import smartin.miapi.modules.properties.damage_boosts.IllagerBane;
-import smartin.miapi.modules.properties.damage_boosts.SmiteDamage;
-import smartin.miapi.modules.properties.damage_boosts.SpiderDamage;
+import smartin.miapi.modules.properties.onHit.entity.AquaticDamage;
+import smartin.miapi.modules.properties.onHit.entity.IllagerBane;
+import smartin.miapi.modules.properties.onHit.entity.SmiteDamage;
+import smartin.miapi.modules.properties.onHit.entity.SpiderDamage;
 import smartin.miapi.modules.properties.enchanment.CraftingEnchantProperty;
 import smartin.miapi.modules.properties.enchanment.EnchantAbilityProperty;
 import smartin.miapi.modules.properties.enchanment.FakeEnchantmentProperty;
 import smartin.miapi.modules.properties.mining.MiningLevelProperty;
 import smartin.miapi.modules.properties.mining.MiningShapeProperty;
+import smartin.miapi.modules.properties.onHit.*;
 import smartin.miapi.modules.properties.potion.OnDamagedEffects;
 import smartin.miapi.modules.properties.potion.OnHitTargetEffects;
 import smartin.miapi.modules.properties.potion.OnKillEffects;
+import smartin.miapi.modules.properties.projectile.*;
 import smartin.miapi.modules.properties.render.*;
 import smartin.miapi.modules.properties.slot.AllowedSlots;
 import smartin.miapi.modules.properties.slot.CanChangeParentModule;
@@ -494,6 +497,7 @@ public class RegistryInventory {
             registerMiapi(moduleProperties, FakeEnchantmentProperty.KEY, new FakeEnchantmentProperty());
             //compat
             //registerMiapi(moduleProperties, BetterCombatProperty.KEY, new BetterCombatProperty());
+            registerMiapi(moduleProperties, "better_combat_config", new ServerReplaceProperty());
             //registerMiapi(moduleProperties, ApoliPowersProperty.KEY, new ApoliPowersProperty());
             //registerMiapi(moduleProperties, TreechopProperty.KEY, new TreechopProperty());
 

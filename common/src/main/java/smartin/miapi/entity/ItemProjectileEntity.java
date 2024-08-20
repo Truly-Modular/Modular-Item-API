@@ -33,7 +33,7 @@ import smartin.miapi.entity.arrowhitbehaviours.ProjectileHitBehaviour;
 import smartin.miapi.events.MiapiProjectileEvents;
 import smartin.miapi.mixin.AbstractArrowAccessor;
 import smartin.miapi.modules.abilities.util.WrappedSoundEvent;
-import smartin.miapi.modules.properties.AirDragProperty;
+import smartin.miapi.modules.properties.projectile.AirDragProperty;
 import smartin.miapi.modules.properties.attributes.AttributeUtil;
 import smartin.miapi.registries.RegistryInventory;
 

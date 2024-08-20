@@ -8,8 +8,8 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import smartin.miapi.events.MiapiEvents;
-import smartin.miapi.modules.properties.ExhaustionProperty;
-import smartin.miapi.modules.properties.StepCancelingProperty;
+import smartin.miapi.modules.properties.armor.ExhaustionProperty;
+import smartin.miapi.modules.properties.armor.StepCancelingProperty;
 
 @Mixin(Entity.class)
 public abstract class EntityMixin {

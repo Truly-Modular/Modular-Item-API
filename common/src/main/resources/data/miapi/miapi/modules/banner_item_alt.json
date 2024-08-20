@@ -1,7 +1,6 @@
 {
-    "name": "banner_item_alt",
     "inscribe_data_on_craft": "banner",
-    "allowedInSlots": [
+    "allowed_in_slots": [
         "banner_item",
         "cosmetic_item"
     ],
@@ -27,7 +26,7 @@
             }
         }
     }],
-    "texture": [
+    "model": [
         {
             "path": "miapi:models/item/model.json",
             "color": "[material.color]",
@@ -50,7 +49,7 @@
             }
         }
     ],
-    "allowedMaterial": {
+    "allowed_material": {
         "allowedMaterials": [
             "banner"
         ],

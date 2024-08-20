@@ -35,7 +35,7 @@
             }
         },
         "armor": {
-            "isPiglinGold": true,
+            "is_piglin_gold": true,
             "durability": {
                 "operation": "**",
                 "value": "1.10"

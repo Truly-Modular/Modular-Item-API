@@ -136,6 +136,7 @@ public class ModularWorkBenchEntity extends BlockEntity implements MenuProvider,
         });
 
         if (!getItem().isEmpty()) {
+            //TODO:idk why this broke, very weird error
             tag.put("item", ItemStack.CODEC.encodeStart(NbtOps.INSTANCE, getItem()).getOrThrow());
         } else {
             tag.remove("item");

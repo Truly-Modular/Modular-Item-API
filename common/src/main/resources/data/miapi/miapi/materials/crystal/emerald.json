@@ -48,10 +48,10 @@
             }
         },
         "handheld": {
-            "illagerBane": "1"
+            "illager_bane": "1"
         },
         "armor": {
-            "pillagerGuard": "1"
+            "pillager_guard": "1"
         }
     },
     "textures": [

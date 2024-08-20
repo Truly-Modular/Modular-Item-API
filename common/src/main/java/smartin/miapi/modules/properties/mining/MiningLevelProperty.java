@@ -4,9 +4,11 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.*;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
+import net.minecraft.tags.TagLoader;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
@@ -36,6 +38,7 @@ public class MiningLevelProperty extends CodecProperty<Map<String, MiningLevelPr
 
     public MiningLevelProperty() {
         super(CODEC);
+        property = this;
         ModularItemCache.setSupplier(CACHEKEY, this::asComponent);
     }
 
@@ -60,7 +63,7 @@ public class MiningLevelProperty extends CodecProperty<Map<String, MiningLevelPr
     }
 
     Tool asComponentCached(ItemStack itemStack) {
-        return ModularItemCache.get( itemStack, CACHEKEY, new Tool(new ArrayList<>(), 0, 0));
+        return ModularItemCache.get(itemStack, CACHEKEY, new Tool(new ArrayList<>(), 0, 0));
     }
 
     @Override
@@ -104,12 +107,18 @@ public class MiningLevelProperty extends CodecProperty<Map<String, MiningLevelPr
             return instance.group(
                             RegistryCodecs
                                     .homogeneousList(Registries.BLOCK)
-                                    .fieldOf("blocks")
+                                    .optionalFieldOf("block_list", HolderSet.direct())
                                     .forGetter(MiningRule::blocks),
+                            ResourceLocation.CODEC
+                                    .optionalFieldOf("blocks")
+                                    .forGetter((rule) -> Optional.empty()),
                             RegistryCodecs
                                     .homogeneousList(Registries.BLOCK)
-                                    .fieldOf("blacklist")
+                                    .optionalFieldOf("blacklist", HolderSet.direct())
                                     .forGetter(MiningRule::blacklist),
+                            ResourceLocation.CODEC
+                                    .optionalFieldOf("blacklist_tag")
+                                    .forGetter((rule) -> Optional.empty()),
                             DoubleOperationResolvable.CODEC
                                     .optionalFieldOf("speed", new DoubleOperationResolvable(0))
                                     .forGetter(MiningRule::speed),
@@ -119,7 +128,25 @@ public class MiningLevelProperty extends CodecProperty<Map<String, MiningLevelPr
                             Codec.BOOL
                                     .optionalFieldOf("use_material", false)
                                     .forGetter(MiningRule::useMaterial))
-                    .apply(instance, MiningRule::new);
+                    .apply(instance, (blockList, blockTag, blacklist, blackTag, speed, correct, useMaterial) -> {
+                        List<Holder<Block>> blocks = new ArrayList<>();
+                        blockTag.ifPresent(location -> BuiltInRegistries.BLOCK.getTags().forEach(tagKeyNamedPair -> {
+                            if (tagKeyNamedPair.getFirst().location().equals(location)) {
+                                tagKeyNamedPair.getSecond().forEach(blocks::add);
+                            }
+                        }));
+                        blockList.stream().forEach(blocks::add);
+                        List<Holder<Block>> black = new ArrayList<>();
+                        blackTag.ifPresent(location -> BuiltInRegistries.BLOCK.getTags().forEach(tagKeyNamedPair -> {
+                            if (tagKeyNamedPair.getFirst().location().equals(location)) {
+                                tagKeyNamedPair.getSecond().forEach(black::add);
+                            }
+                        }));
+                        blacklist.stream().forEach(black::add);
+                        return new MiningRule(
+                                HolderSet.direct(blocks),
+                                HolderSet.direct(black), speed, correct, useMaterial);
+                    });
         });
 
         public static MiningRule merge(MiningRule left, MiningRule right, MergeType mergeType) {
@@ -148,7 +175,7 @@ public class MiningLevelProperty extends CodecProperty<Map<String, MiningLevelPr
                     correctForDrops = Optional.of(true);
                 }
             }
-            return new MiningRule(HolderSet.direct(blocks), HolderSet.direct(blacklist.stream().toList()), speed(), correctForDrops, false);
+            return new MiningRule(HolderSet.direct(blocks), HolderSet.direct(blacklist.stream().toList()), speed().initialize(moduleInstance), correctForDrops, false);
         }
 
         public List<Tool.Rule> asRules() {

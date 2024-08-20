@@ -2,10 +2,20 @@ package smartin.miapi.modules.properties.util;
 
 import com.google.gson.JsonElement;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.JsonOps;
 import io.netty.handler.codec.DecoderException;
 import io.netty.handler.codec.EncoderException;
+import net.minecraft.core.Holder;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.RegistryCodecs;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.resources.RegistryOps;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import smartin.miapi.modules.ModuleInstance;
 
 /**
@@ -18,17 +28,25 @@ import smartin.miapi.modules.ModuleInstance;
  */
 public abstract class CodecProperty<T> implements ModuleProperty<T> {
     protected final Codec<T> codec;
+    //public static RegistryOps<JsonElement> ops = RegistryOps.create(
+    //        JsonOps.INSTANCE,
+    //        RegistryAccess.fromRegistryOfRegistries(BuiltInRegistries.REGISTRY));
+    public static DynamicOps<JsonElement> jsonOPs = JsonOps.INSTANCE;
+
 
     protected CodecProperty(Codec<T> codec) {
         this.codec = codec;
     }
 
     public T decode(JsonElement element) {
-        return codec.parse(JsonOps.INSTANCE, element).getOrThrow((s) -> new DecoderException("could not decode CodecProperty " + this.getClass().getName() + " " + s));
+        return codec.parse(
+                jsonOPs, element).getOrThrow((s) -> new DecoderException("could not decode CodecProperty " + this.getClass().getName() + " " + s));
     }
 
     public JsonElement encode(T property) {
-        var result = codec.encodeStart(JsonOps.INSTANCE, property);
+        BuiltInRegistries.REGISTRY.asLookup();
+        var result = codec.encodeStart(
+                jsonOPs, property);
         if (result.isError()) {
             throw new EncoderException("Could not Encode " + this.getClass().getName() + " with Error " + result.error().toString());
         }
