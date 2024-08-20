@@ -74,8 +74,8 @@ public class JsonMaterial implements Material {
             if (element.has("fake_translation") && element.has("translation")) {
                 FakeTranslation.translations.put(element.get("translation").getAsString(), element.get("fake_translation").getAsString());
             }
-            if(getTranslation().getString().contains(".")){
-                Miapi.LOGGER.error("Material "+getID().toString()+" likely has a broken Translation!");
+            if (getTranslation().getString().contains(".")) {
+                Miapi.LOGGER.error("Material " + getID().toString() + " likely has a broken Translation!");
             }
         }
         mergeJson(rawJson, isClient);
@@ -233,7 +233,11 @@ public class JsonMaterial implements Material {
             Miapi.LOGGER.info(String.valueOf(rawJson));
         }
         if (jsonData != null && jsonData.isJsonPrimitive()) {
-            return jsonData.getAsDouble();
+            try {
+                return jsonData.getAsDouble();
+            } catch (Exception e) {
+                Miapi.LOGGER.error("Material data " + property + " was not a Number!" + jsonData);
+            }
         }
         return 0;
     }

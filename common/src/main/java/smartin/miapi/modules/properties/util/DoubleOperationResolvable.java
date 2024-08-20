@@ -283,6 +283,11 @@ public class DoubleOperationResolvable {
         }
 
         public double solve() {
+            if (instance == null) {
+                var error = new IllegalAccessError("Double Resolvable was resolved before initialized!");
+                Miapi.LOGGER.error("Double Resolvable was never initialized!", error);
+                return 0;
+            }
             return StatResolver.resolveDouble(value, instance);
         }
 
