@@ -127,7 +127,7 @@ public class EditView extends InteractAbleWidget {
                 if (instance != null) {
                     moduleInstance = instance.copy();
                 }
-                toList.add(new SlotButton(0, 0, this.width, 15, s, editOption, moduleInstance));
+                toList.add(new SlotButton(0, 0, this.width, 15, s.toString(), editOption, moduleInstance));
             }
         });
 
@@ -156,7 +156,7 @@ public class EditView extends InteractAbleWidget {
                 if (screenHandler instanceof CraftingScreenHandler screenHandler1) {
                     ModuleInstance toCrafter = instance;
                     FriendlyByteBuf buf = Networking.createBuffer();
-                    buf.writeUtf(RegistryInventory.editOptions.findKey(option));
+                    buf.writeUtf(RegistryInventory.editOptions.findKey(option).toString());
                     List<String> position = new ArrayList<>();
                     if (toCrafter != null) {
                         toCrafter.calculatePosition(position);

@@ -187,6 +187,7 @@ public class CraftAction {
      */
     public ItemStack perform() {
         final ItemStack[] craftingStack = {craft()};
+        ComponentApplyProperty.updateItemStack(craftingStack[0], player.level().registryAccess());
         forEachCraftingProperty(craftingStack[0], (craftingProperty, module, inventory, start, end, buffer) -> {
             List<ItemStack> itemStacks = craftingProperty.performCraftAction(
                     old,
@@ -198,8 +199,7 @@ public class CraftAction {
                     inventory,
                     buffer);
             craftingStack[0] = itemStacks.removeFirst();
-            ComponentApplyProperty.updateItemStack(craftingStack[0], player.level().registryAccess());
-            if(module!=null){
+            if (module != null) {
                 updateItem(craftingStack[0], module);
             }
             for (int i = start; i < end; i++) {
@@ -259,7 +259,7 @@ public class CraftAction {
             }
         }
 
-        if ((toAdd == null || toAdd == ItemModule.empty || toAdd.id().equals(Miapi.id("empty"))) && parsingInstance!=null) {
+        if ((toAdd == null || toAdd == ItemModule.empty || toAdd.id().equals(Miapi.id("empty"))) && parsingInstance != null) {
             parsingInstance.removeSubModule(slotLocation.getFirst());
         } else {
             ModuleInstance newModule = new ModuleInstance(toAdd);

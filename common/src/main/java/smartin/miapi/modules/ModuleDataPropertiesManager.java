@@ -2,6 +2,7 @@ package smartin.miapi.modules;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import net.minecraft.resources.ResourceLocation;
 import smartin.miapi.Miapi;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.registries.RegistryInventory;
@@ -38,13 +39,13 @@ public class ModuleDataPropertiesManager {
     public static void setProperties(ModuleInstance moduleInstance, Map<ModuleProperty<?>, Object> propertyMap) {
         JsonObject object = new JsonObject();
         propertyMap.forEach(((moduleProperty, element) -> {
-            String key = RegistryInventory.moduleProperties.findKey(moduleProperty);
+            ResourceLocation key = RegistryInventory.moduleProperties.findKey(moduleProperty);
             assert key != null;
             JsonElement encoded = encode(moduleProperty, element);
-            if(encoded.isJsonPrimitive()){
-                object.add(key, encoded);
-            }else{
-                object.add(key, encoded);
+            if (encoded.isJsonPrimitive()) {
+                object.add(key.toString(), encoded);
+            } else {
+                object.add(key.toString(), encoded);
             }
             //object.add(key, encode(moduleProperty, element));
         }));

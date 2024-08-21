@@ -132,7 +132,7 @@ public class ModularWorkBenchEntity extends BlockEntity implements MenuProvider,
 
         CompoundTag statsNbt = new CompoundTag();
         stats.forEach((stat, inst) -> {
-            statsNbt.put(RegistryInventory.craftingStats.findKey(stat), stat.saveToNbt(inst));
+            statsNbt.put(RegistryInventory.craftingStats.findKey(stat).toString(), stat.saveToNbt(inst));
         });
 
         if (!getItem().isEmpty()) {
@@ -156,7 +156,7 @@ public class ModularWorkBenchEntity extends BlockEntity implements MenuProvider,
         if (tag.contains("item")) {
             stack = ItemStack.parse(wrapperLookup, tag.getCompound("item")).get();
             setItem(stack);
-        }else{
+        } else {
             stack = ItemStack.EMPTY;
             setItem(stack);
         }

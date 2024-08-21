@@ -90,7 +90,7 @@ public class StatRequirementMap {
             input.raw.forEach((stat, inst) -> {
                 T obj = ExtraCodecs.JSON.encodeStart(ops, ((CraftingStat) stat).saveToJson(inst))
                         .getOrThrow(s -> new RuntimeException("Failed to turn instance into a JsonElement while encoding a StatRequirementMap! -> "+ s));
-                map.put(ops.createString(RegistryInventory.craftingStats.findKey(stat)), obj);
+                map.put(ops.createString(RegistryInventory.craftingStats.findKey(stat).toString()), obj);
             });
 
             return DataResult.success(ops.createMap(map));

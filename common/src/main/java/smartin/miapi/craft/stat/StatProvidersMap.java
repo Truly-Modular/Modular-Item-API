@@ -184,7 +184,7 @@ public class StatProvidersMap {
                     });
                 });
 
-                map.put(ops.createString(RegistryInventory.craftingStats.findKey(stat)), ops.createList(objects.stream()));
+                map.put(ops.createString(RegistryInventory.craftingStats.findKey(stat).toString()), ops.createList(objects.stream()));
             });
 
             return DataResult.success(ops.createMap(map));

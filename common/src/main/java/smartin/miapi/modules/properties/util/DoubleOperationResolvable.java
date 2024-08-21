@@ -94,6 +94,7 @@ public class DoubleOperationResolvable {
      */
     public DoubleOperationResolvable(double fallback) {
         this.fallback = fallback;
+        operations = new ArrayList<>();
     }
 
     protected DoubleOperationResolvable(List<Operation> operations) {
@@ -137,13 +138,15 @@ public class DoubleOperationResolvable {
      */
     public DoubleOperationResolvable initialize(ModuleInstance moduleInstance) {
         List<Operation> operationList = new ArrayList<>();
-        operations.forEach(operation -> {
-            Operation copiesOperation = new Operation(operation.value);
-            copiesOperation.attributeOperation = operation.attributeOperation;
-            copiesOperation.instance = moduleInstance;
-            operation.value = functionTransformer.apply(new Pair<>(operation.value, moduleInstance));
-            operationList.add(copiesOperation);
-        });
+        if(operations!=null){
+            operations.forEach(operation -> {
+                Operation copiesOperation = new Operation(operation.value);
+                copiesOperation.attributeOperation = operation.attributeOperation;
+                copiesOperation.instance = moduleInstance;
+                operation.value = functionTransformer.apply(new Pair<>(operation.value, moduleInstance));
+                operationList.add(copiesOperation);
+            });
+        }
         DoubleOperationResolvable initialized = new DoubleOperationResolvable(operationList, functionTransformer);
         initialized.getValue();
         return initialized;

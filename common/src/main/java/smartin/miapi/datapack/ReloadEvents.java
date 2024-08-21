@@ -97,7 +97,7 @@ public class ReloadEvents {
         Codec<Map<ResourceLocation, String>> codec = Codec.unboundedMap(ResourceLocation.CODEC, Codec.STRING);
         StreamCodec<ByteBuf, Map<ResourceLocation, String>> streamCodec = ByteBufCodecs.fromCodec(codec);
 
-        dataSyncerRegistry.register("data_packs", new SimpleSyncer<Map<ResourceLocation, String>>(streamCodec) {
+        dataSyncerRegistry.register(Miapi.id("data_packs"), new SimpleSyncer<Map<ResourceLocation, String>>(streamCodec) {
             @Override
             public Map<ResourceLocation, String> getDataServer() {
                 Map<ResourceLocation, String> toSend;
@@ -147,7 +147,7 @@ public class ReloadEvents {
     public static void triggerReloadOnClient(ServerPlayer entity) {
         dataSyncerRegistry.getFlatMap().forEach((id, syncer) -> {
             FriendlyByteBuf buf = Networking.createBuffer();
-            buf.writeUtf(id);
+            buf.writeUtf(id.toString());
             buf.writeByteArray(syncer.createDataServer().array());
             Networking.sendS2C(RELOAD_PACKET_ID, entity, buf);
             Miapi.DEBUG_LOGGER.info("sending dataSyncer info to client!" + entity.getUUID() + "!" + Thread.currentThread().getName());

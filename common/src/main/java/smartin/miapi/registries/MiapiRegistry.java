@@ -19,7 +19,7 @@ public class MiapiRegistry<T> {
     /**
      * The map of entries stored in this registry, indexed by name.
      */
-    protected final Map<String, T> entries = Collections.synchronizedMap(new LinkedHashMap<>());
+    protected final Map<ResourceLocation, T> entries = Collections.synchronizedMap(new LinkedHashMap<>());
     /**
      * The map of all MiapiRegistry instances, indexed by class type.
      */
@@ -29,7 +29,7 @@ public class MiapiRegistry<T> {
      */
     protected final List<Consumer<T>> callbacks = new ArrayList<>();
 
-    protected final Map<String, Supplier<T>> suppliers = Collections.synchronizedMap(new LinkedHashMap<>());
+    protected final Map<ResourceLocation, Supplier<T>> suppliers = Collections.synchronizedMap(new LinkedHashMap<>());
 
     /**
      * Protected constructor to prevent direct instantiation of the registry.
@@ -61,8 +61,8 @@ public class MiapiRegistry<T> {
      * @return the key associated with the specified value, or null if no key was found
      */
     @Nullable
-    public <T> String findKey(T value) {
-        Optional<String> matchingId = entries.entrySet().stream()
+    public <T> ResourceLocation findKey(T value) {
+        Optional<ResourceLocation> matchingId = entries.entrySet().stream()
                 .filter(entry -> entry.getValue().equals(value))
                 .map(Map.Entry::getKey)
                 .findFirst();
@@ -99,10 +99,21 @@ public class MiapiRegistry<T> {
      * @throws IllegalArgumentException if an entry with the same name already exists
      */
     public T register(String name, T value) {
+        return register(Miapi.id(name), value);
+    }
+
+    /**
+     * Registers a new entry with the given name and value to this registry. If an entry with the same name already exists, an
+     * IllegalArgumentException is thrown. Calls all the callbacks associated with the class type.
+     *
+     * @param name  the name of the entry to be registered
+     * @param value the value of the entry to be registered
+     * @throws IllegalArgumentException if an entry with the same name already exists
+     */
+    public T register(ResourceLocation name, T value) {
         if (entries.containsKey(name) || suppliers.containsKey(name)) {
             throw new IllegalArgumentException("Entry with name '" + name + "' already exists.");
         }
-        Miapi.id(name);
         entries.put(name, value);
 
         // Call the callbacks for the class type
@@ -118,19 +129,7 @@ public class MiapiRegistry<T> {
      * @param value the value of the entry to be registered
      * @throws IllegalArgumentException if an entry with the same name already exists
      */
-    public T register(ResourceLocation name, T value) {
-        return register(name.toString(),value);
-    }
-
-    /**
-     * Registers a new entry with the given name and value to this registry. If an entry with the same name already exists, an
-     * IllegalArgumentException is thrown. Calls all the callbacks associated with the class type.
-     *
-     * @param name  the name of the entry to be registered
-     * @param value the value of the entry to be registered
-     * @throws IllegalArgumentException if an entry with the same name already exists
-     */
-    public void registerSupplier(String name, Supplier<T> value) {
+    public void registerSupplier(ResourceLocation name, Supplier<T> value) {
         if (entries.containsKey(name)) {
             throw new IllegalArgumentException("Entry with name '" + name + "' already exists.");
         }
@@ -144,15 +143,16 @@ public class MiapiRegistry<T> {
         suppliers.clear();
         entries.clear();
     }
+
     /**
      * Loads all the suppliers into the proper registry
      */
-    public void loadAllSupplier(){
-        suppliers.forEach((id,supplier)->{
+    public void loadAllSupplier() {
+        suppliers.forEach((id, supplier) -> {
             T entry = supplier.get();
             entries.put(id, entry);
             suppliers.remove(entry);
-            callbacks.forEach(callbacks->{
+            callbacks.forEach(callbacks -> {
                 callbacks.accept(entry);
             });
         });
@@ -165,13 +165,13 @@ public class MiapiRegistry<T> {
      * @return the entry associated with the given name, or null if no such entry exists
      */
     @Nullable
-    public T get(String name) {
+    public T get(ResourceLocation name) {
         if (!entries.containsKey(name)) {
             if (suppliers.containsKey(name)) {
                 T entry = suppliers.get(name).get();
                 entries.put(name, entry);
                 suppliers.remove(entry);
-                callbacks.forEach(callbacks->{
+                callbacks.forEach(callbacks -> {
                     callbacks.accept(entry);
                 });
                 return entry;
@@ -188,8 +188,8 @@ public class MiapiRegistry<T> {
      * @return the entry associated with the given name, or null if no such entry exists
      */
     @Nullable
-    public T get(ResourceLocation name) {
-        return get(name.toString());
+    public T get(String name) {
+        return get(Miapi.id(name));
     }
 
     /**
@@ -210,12 +210,12 @@ public class MiapiRegistry<T> {
      *
      * @return a map of all entries in this registry
      */
-    public Map<String, T> getFlatMap() {
+    public Map<ResourceLocation, T> getFlatMap() {
         return entries;
     }
 
     public Codec<T> codec() {
-        return Codec.STRING.xmap(
+        return ResourceLocation.CODEC.xmap(
                 this::get,
                 this::findKey
         );
