@@ -31,14 +31,14 @@
             ],
             "durability": {
                 "operation": "**",
-                "value": "0.85"
+                "value": "-0.15"
             }
         },
         "armor": {
             "is_piglin_gold": true,
             "durability": {
                 "operation": "**",
-                "value": "1.10"
+                "value": "0.10"
             }
         }
     },

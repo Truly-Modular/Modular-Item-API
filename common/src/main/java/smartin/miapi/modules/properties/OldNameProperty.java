@@ -33,6 +33,6 @@ public class OldNameProperty implements ModuleProperty {
     public boolean load(ResourceLocation id, JsonElement element, boolean isClient) throws Exception {
         decode(element);
         Miapi.LOGGER.error("name property has been deprecated! " + id);
-        return true;
+        return false;
     }
 }

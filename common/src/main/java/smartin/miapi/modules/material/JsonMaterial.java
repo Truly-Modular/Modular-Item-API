@@ -51,7 +51,7 @@ public class JsonMaterial implements Material {
     protected MaterialRenderController palette;
     public Map<String, Map<ModuleProperty<?>, Object>> propertyMap = new HashMap<>();
     public Map<String, Map<ModuleProperty<?>, Object>> displayPropertyMap = new HashMap<>();
-    public static Codec<Map<Property<?>, Object>> PROPERTY_CODEC;
+    TagKey<Block> incorrectForTool = BlockTags.INCORRECT_FOR_WOODEN_TOOL;
 
     public JsonMaterial(ResourceLocation id, JsonObject element, boolean isClient) {
         rawJson = element;
@@ -91,6 +91,12 @@ public class JsonMaterial implements Material {
                 }
                 case "display_properties": {
                     mergeProperties(propertyElement, displayPropertyMap);
+                    break;
+                }
+                case "mining_level": {
+                    ResourceLocation id = ResourceLocation.CODEC.decode(JsonOps.INSTANCE, propertyElement).getOrThrow().getFirst();
+                    var found = BuiltInRegistries.BLOCK.getTags().filter(pair -> pair.getFirst().location().equals(id)).findAny();
+                    found.ifPresent(tagKeyNamedPair -> incorrectForTool = tagKeyNamedPair.getFirst());
                     break;
                 }
                 case "hidden_properties": {
@@ -401,6 +407,6 @@ public class JsonMaterial implements Material {
 
     @Override
     public TagKey<Block> getIncorrectBlocksForDrops() {
-        return BlockTags.INCORRECT_FOR_WOODEN_TOOL;
+        return incorrectForTool;
     }
 }

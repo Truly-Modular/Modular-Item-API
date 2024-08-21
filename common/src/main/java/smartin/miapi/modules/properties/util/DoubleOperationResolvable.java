@@ -192,7 +192,7 @@ public class DoubleOperationResolvable {
         }
         value = value * multiplier;
         for (Double currentValue : multiplyTotal) {
-            value = currentValue * value;
+            value = (currentValue + 1) * value;
         }
         if (hasValue) {
             if (Double.isNaN(value)) {

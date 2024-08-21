@@ -497,7 +497,9 @@ public class RegistryInventory {
             registerMiapi(moduleProperties, FakeEnchantmentProperty.KEY, new FakeEnchantmentProperty());
             //compat
             //registerMiapi(moduleProperties, BetterCombatProperty.KEY, new BetterCombatProperty());
-            registerMiapi(moduleProperties, "better_combat_config", new ServerReplaceProperty());
+            //TODO: added this to cleanup logs. this needs to be revisited later
+            registerMiapi(moduleProperties, Miapi.id("better_combat_config"), new ServerReplaceProperty());
+            registerMiapi(moduleProperties, Miapi.id("enchants"), new ServerReplaceProperty());
             //registerMiapi(moduleProperties, ApoliPowersProperty.KEY, new ApoliPowersProperty());
             //registerMiapi(moduleProperties, TreechopProperty.KEY, new TreechopProperty());
 
