@@ -25,7 +25,7 @@ import static smartin.miapi.Miapi.gson;
 /**
  * An ItemModule represents a Module loaded from a JSON
  *
- * @param id       The id of the module.
+ * @param id         The id of the module.
  * @param properties The map of properties for the module.
  */
 public record ItemModule(ResourceLocation id, Map<ModuleProperty<?>, Object> properties) {
@@ -64,7 +64,7 @@ public record ItemModule(ResourceLocation id, Map<ModuleProperty<?>, Object> pro
             LOGGER.info("registered Module " + revisedID);
             Map<String, JsonElement> rawProperties = gson.fromJson(moduleJsonString, type);
             rawProperties.forEach((key, json) -> isValidProperty(key, path, json, isClient, (pair) -> decodedProperties.put(pair.getFirst(), pair.getSecond())));
-            RegistryInventory.modules.register(revisedID.toString(), new ItemModule(revisedID, decodedProperties));
+            RegistryInventory.modules.register(revisedID, new ItemModule(revisedID, decodedProperties));
         } catch (Exception e) {
             LOGGER.warn("Could not load Module " + path, e);
         }
@@ -92,7 +92,7 @@ public record ItemModule(ResourceLocation id, Map<ModuleProperty<?>, Object> pro
                 map = new HashMap<>();
                 LOGGER.warn("is NULL wtf holder.applyHolder is false");
             }
-            RegistryInventory.modules.register(name, new ItemModule(Miapi.id(name), map));
+            RegistryInventory.modules.register(Miapi.id(name), new ItemModule(Miapi.id(name), map));
         } catch (Exception e) {
             LOGGER.warn("Could not load Module to extend " + path, e);
         }

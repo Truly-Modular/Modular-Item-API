@@ -1,5 +1,6 @@
 package smartin.miapi.mixin;
 
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
@@ -15,13 +16,14 @@ import smartin.miapi.modules.properties.armor.CanWalkOnSnow;
 @Mixin(PowderSnowBlock.class)
 public abstract class PowderSnowBlockMixin {
 
-    @Inject(method = "canEntityWalkOnPowderSnow", at = @At("HEAD"), cancellable = true)
-    private static void miapi$bypassSnowWalk(Entity entity, CallbackInfoReturnable<Boolean> cir) {
+    @ModifyReturnValue(method = "canEntityWalkOnPowderSnow", at = @At("RETURN"))
+    private static boolean miapi$bypassSnowWalk(boolean original, Entity entity) {
         if (entity instanceof LivingEntity livingEntity) {
             ItemStack boots = livingEntity.getItemBySlot(EquipmentSlot.FEET);
             if (boots.getItem() instanceof ModularItem) {
-                cir.setReturnValue(CanWalkOnSnow.canSnowWalk(boots));
+                return CanWalkOnSnow.canSnowWalk(boots);
             }
         }
+        return original;
     }
 }

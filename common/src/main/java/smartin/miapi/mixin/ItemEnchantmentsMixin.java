@@ -1,5 +1,6 @@
 package smartin.miapi.mixin;
 
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import net.minecraft.core.Holder;
 import net.minecraft.world.item.ItemStack;
@@ -17,23 +18,25 @@ import java.util.Set;
 @Mixin(ItemEnchantments.class)
 public abstract class ItemEnchantmentsMixin {
 
-    @Inject(method = "entrySet()Ljava/util/Set;", at = @At("RETURN"))
-    public void miapi$adjustFakeEnchants(CallbackInfoReturnable<Set<Object2IntMap.Entry<Holder<Enchantment>>>> cir) {
+    @ModifyReturnValue(method = "entrySet()Ljava/util/Set;", at = @At("RETURN"))
+    public Set<Object2IntMap.Entry<Holder<Enchantment>>> miapi$adjustFakeEnchants(Set<Object2IntMap.Entry<Holder<Enchantment>>> original) {
         ItemEnchantments itemEnchantments = (ItemEnchantments) (Object) this;
         ItemStack itemStack = FakeEnchantmentManager.lookupMap.get(itemEnchantments);
         if (itemStack != null && itemStack.getItem() instanceof ModularItem) {
             //TODO:this might not work
-            //cir.setReturnValue(FakeEnchantmentManager.adjustEnchantments(cir.getReturnValue(), itemStack));
+            return FakeEnchantmentManager.adjustEnchantments(original, itemStack);
         }
+        return original;
     }
 
-    @Inject(method = "getLevel", at = @At("RETURN"))
-    public void miapi$adjustEnchantLevel(Holder<Enchantment> enchantment, CallbackInfoReturnable<Integer> cir) {
+    @ModifyReturnValue(method = "getLevel", at = @At("RETURN"))
+    public int miapi$adjustEnchantLevel(int original, Holder<Enchantment> enchantment) {
         ItemEnchantments itemEnchantments = (ItemEnchantments) (Object) this;
         ItemStack itemStack = FakeEnchantmentManager.lookupMap.get(itemEnchantments);
         if (itemStack != null && itemStack.getItem() instanceof ModularItem) {
             //TODO:this might not work
-            //cir.setReturnValue(FakeEnchantmentManager.adjustLevel(enchantment, cir.getReturnValue(), itemStack));
+            return FakeEnchantmentManager.adjustLevel(enchantment, original, itemStack);
         }
+        return original;
     }
 }

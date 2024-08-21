@@ -1,5 +1,6 @@
 package smartin.miapi.mixin;
 
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.monster.piglin.PiglinAi;
 import net.minecraft.world.item.ItemStack;
@@ -13,14 +14,14 @@ import smartin.miapi.modules.properties.armor.IsPiglinGold;
 @Mixin(PiglinAi.class)
 public abstract class PiglinBrainMixin {
 
-    @Inject(method = "isWearingGold", at = @At("HEAD"), cancellable = true)
-    private static void miapi$isGoldItemBypass(LivingEntity entity, CallbackInfoReturnable<Boolean> cir) {
+    @ModifyReturnValue(method = "isWearingGold", at = @At("RETURN"))
+    private static boolean miapi$isGoldItemBypass(boolean original, LivingEntity entity) {
         for (ItemStack armorItem : entity.getArmorSlots()) {
             if (armorItem.getItem() instanceof ModularItem && IsPiglinGold.isPiglinGoldItem(armorItem)) {
                 //IsPiglinGold.isPiglinGoldItem(armorItem)
-                cir.setReturnValue(true);
-                return;
+                return true;
             }
         }
+        return original;
     }
 }

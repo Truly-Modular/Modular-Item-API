@@ -9,10 +9,7 @@ import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -35,12 +32,12 @@ public class MiapiRegistrar<T> extends MiapiRegistry<T> implements Registrar<T> 
     @Override
     public <E extends T> RegistrySupplier<E> register(ResourceLocation id, Supplier<E> supplier) {
         RegistrySupplier<E> sup = registrar.register(id, supplier);
-        sup.listen(e -> this.register(id.toString(), e));
+        sup.listen(e -> this.register(id, e));
         return sup;
     }
 
     public <E extends T> void registerWithoutRegistrar(ResourceLocation id, E object) {
-        register(id.toString(), object);
+        register(id, object);
     }
 
     @Override
@@ -60,7 +57,7 @@ public class MiapiRegistrar<T> extends MiapiRegistry<T> implements Registrar<T> 
 
     @Override
     public @Nullable T get(ResourceLocation id) {
-        return this.get(id.toString());
+        return super.get(id);
     }
 
     @Override
@@ -70,9 +67,6 @@ public class MiapiRegistrar<T> extends MiapiRegistry<T> implements Registrar<T> 
 
     @Override
     public boolean contains(ResourceLocation id) {
-        return this.entries.containsKey(id.toString());
-    }
-    public boolean contains(String id) {
         return this.entries.containsKey(id);
     }
 
@@ -83,7 +77,7 @@ public class MiapiRegistrar<T> extends MiapiRegistry<T> implements Registrar<T> 
 
     @Override
     public Set<ResourceLocation> getIds() {
-        return this.entries.keySet().stream().map(ResourceLocation::parse).collect(Collectors.toSet());
+        return new HashSet<>(this.entries.keySet());
     }
 
     @Override

@@ -13,6 +13,7 @@ import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
+import smartin.miapi.Miapi;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.registries.MiapiRegistry;
 
@@ -57,7 +58,7 @@ public class ItemAbilityManager {
                     Optional<AbilityHolder<?>> optional = abilityMap.values().stream().filter(e -> e.ability().equals(ability)).findFirst();
                     return optional.<Object>map(AbilityHolder::context).orElse(null);
                 })));
-        useAbilityRegistry.register("empty", emptyAbility.ability());
+        useAbilityRegistry.register(Miapi.id("empty"), emptyAbility.ability());
     }
 
     public static AbilityHolder<?> getEmpty() {

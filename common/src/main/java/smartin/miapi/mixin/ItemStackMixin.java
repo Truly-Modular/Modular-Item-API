@@ -1,5 +1,6 @@
 package smartin.miapi.mixin;
 
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.component.PatchedDataComponentMap;
@@ -32,14 +33,15 @@ abstract class ItemStackMixin {
     @Shadow
     public abstract ItemStack copy();
 
-    @Inject(method = "is(Lnet/minecraft/tags/TagKey;)Z", at = @At("TAIL"), cancellable = true)
-    public void miapi$injectItemTag(TagKey<Item> tag, CallbackInfoReturnable<Boolean> cir) {
+    @ModifyReturnValue(method = "is(Lnet/minecraft/tags/TagKey;)Z", at = @At("RETURN"))
+    public boolean miapi$injectItemTag(boolean original, TagKey<Item> tag) {
         ItemStack stack = (ItemStack) (Object) this;
         if (stack.getItem() instanceof ModularItem) {
-            if (!cir.getReturnValue()) {
-                cir.setReturnValue(FakeItemTagProperty.hasTag(tag.location(), stack));
+            if (!original) {
+                return FakeItemTagProperty.hasTag(tag.location(), stack);
             }
         }
+        return original;
     }
 
     @Inject(method = "getItem", at = @At("TAIL"))

@@ -1,6 +1,7 @@
 package smartin.miapi.mixin;
 
 
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import io.github.apace100.apoli.util.StackPowerUtil;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
@@ -16,19 +17,19 @@ import java.util.List;
 @Mixin(StackPowerUtil.class)
 public abstract class ApoliStackPowerMixin {
 
-    @Inject(
+    @ModifyReturnValue(
             method = "getPowers(Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/entity/EquipmentSlot;)Ljava/util/List;",
-            at = @At("TAIL"),
-            cancellable = true,
+            at = @At("RETURN"),
             remap = true,
             require = -1)
-    private static void miapi$removeHook(ItemStack itemStack, EquipmentSlot slot, CallbackInfoReturnable<List<StackPowerUtil.StackPower>> cir) {
+    private static List<StackPowerUtil.StackPower> miapi$removeHook(List<StackPowerUtil.StackPower> old,ItemStack itemStack, EquipmentSlot slot) {
         if (itemStack.getItem() instanceof ModularItem) {
-            List<StackPowerUtil.StackPower> powers = cir.getReturnValue();
+            List<StackPowerUtil.StackPower> powers = old;
             if (powers == null) {
                 powers = new ArrayList<>();
             }
-            //cir.setReturnValue(ApoliPowersHelper.getPowers(itemStack, slot, powers));
+            //return ApoliPowersHelper.getPowers(itemStack, slot, powers);
         }
+        return old;
     }
 }

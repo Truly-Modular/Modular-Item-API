@@ -6,7 +6,6 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
@@ -21,7 +20,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.AnvilBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.DispenserBlock;
-import net.minecraft.world.level.block.entity.BannerBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.DispenserBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -39,7 +37,10 @@ import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.lang.ref.WeakReference;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ModularWorkBenchEntity extends BlockEntity implements MenuProvider, GameEventListener {
@@ -75,8 +76,6 @@ public class ModularWorkBenchEntity extends BlockEntity implements MenuProvider,
 
     public ModularWorkBenchEntity(BlockPos pos, BlockState state) {
         super(RegistryInventory.modularWorkBenchEntityType, pos, state);
-        DispenserBlockEntity dropperBlockEntity;
-        DispenserBlock dropperBlock;
         this.stack = ItemStack.EMPTY;
         this.x = pos.getX();
         this.y = pos.getY();
@@ -132,12 +131,11 @@ public class ModularWorkBenchEntity extends BlockEntity implements MenuProvider,
 
         CompoundTag statsNbt = new CompoundTag();
         stats.forEach((stat, inst) -> {
-            statsNbt.put(RegistryInventory.craftingStats.findKey(stat), stat.saveToNbt(inst));
+            statsNbt.put(RegistryInventory.craftingStats.findKey(stat).toString(), stat.saveToNbt(inst));
         });
 
         if (!getItem().isEmpty()) {
-            //TODO:idk why this broke, very weird error
-            //tag.put("item", ItemStack.CODEC.encodeStart(NbtOps.INSTANCE, getItem()).getOrThrow());
+            tag.put("item", ItemStack.CODEC.encodeStart(NbtOps.INSTANCE, getItem()).getOrThrow());
         } else {
             tag.remove("item");
         }
@@ -156,7 +154,7 @@ public class ModularWorkBenchEntity extends BlockEntity implements MenuProvider,
         if (tag.contains("item")) {
             stack = ItemStack.parse(wrapperLookup, tag.getCompound("item")).get();
             setItem(stack);
-        }else{
+        } else {
             stack = ItemStack.EMPTY;
             setItem(stack);
         }

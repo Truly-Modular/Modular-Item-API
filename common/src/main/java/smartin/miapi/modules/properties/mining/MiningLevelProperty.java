@@ -11,8 +11,6 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.item.PickaxeItem;
 import net.minecraft.world.item.component.Tool;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -64,43 +62,29 @@ public class MiningLevelProperty extends CodecProperty<Map<String, MiningLevelPr
     }
 
     Tool asComponentCached(ItemStack itemStack) {
-        return ModularItemCache.get(itemStack, CACHEKEY, new Tool(new ArrayList<>(), 0, 0));
+        return ModularItemCache.get(itemStack, CACHEKEY, new Tool(new ArrayList<>(), 1, 1));
     }
 
     @Override
     public void updateComponent(ItemStack itemStack, RegistryAccess registryAccess) {
-        List<Tool.Rule> rules = new ArrayList<>();
-        var map = getData(itemStack).orElse(new HashMap<>());
-        map.values().forEach(miningRule -> {
-            rules.addAll(miningRule.asRules());
-        });
-        itemStack.set(DataComponents.TOOL, new Tool(rules, 0.0f, 0));
+        itemStack.set(DataComponents.TOOL, new Tool(new ArrayList<>(), 1.0f, 1));
     }
 
     public static float getDestroySpeed(ItemStack stack, BlockState state) {
-        Tool tool = stack.get(DataComponents.TOOL);
-        return Math.max(property.asComponentCached(stack).getMiningSpeed(state), tool != null ? tool.getMiningSpeed(state) : 1.0F);
+        return Math.max(property.asComponentCached(stack).getMiningSpeed(state), 1.0F);
+    }
+
+    public static boolean isCorrectToolForDrops(ItemStack stack, BlockState state) {
+        return property.asComponentCached(stack).isCorrectForDrops(state);
     }
 
     public static boolean mineBlock(ItemStack stack, Level level, BlockState state, BlockPos pos, LivingEntity miningEntity) {
-        Tool tool = stack.get(DataComponents.TOOL);
         Tool ourComponent = property.asComponentCached(stack);
-        if (tool == null && ourComponent.rules().isEmpty()) {
-            return false;
-        }
         int toolDamage = ourComponent.damagePerBlock();
-        if (tool != null) {
-            toolDamage = Math.max(toolDamage, tool.damagePerBlock());
-        }
         if (!level.isClientSide && state.getDestroySpeed(level, pos) != 0.0F && toolDamage > 0) {
             stack.hurtAndBreak(toolDamage, miningEntity, EquipmentSlot.MAINHAND);
         }
         return true;
-    }
-
-    public static boolean isCorrectToolForDrops(ItemStack stack, BlockState state) {
-        Tool tool = stack.get(DataComponents.TOOL);
-        return tool != null && tool.isCorrectForDrops(state) || property.asComponentCached(stack).isCorrectForDrops(state);
     }
 
     public record MiningRule(HolderSet<Block> blocks, HolderSet<Block> blacklist, DoubleOperationResolvable speed,
@@ -184,7 +168,7 @@ public class MiningLevelProperty extends CodecProperty<Map<String, MiningLevelPr
         }
 
         public List<Tool.Rule> asRules() {
-            float speedEvaluated = (float) speed().evaluate(1.0, 1.0);
+            float speedEvaluated = (float) speed().evaluate(0.0, 1.0);
             if (speedEvaluated < 1) {
                 speedEvaluated = 1.0f;
             }
