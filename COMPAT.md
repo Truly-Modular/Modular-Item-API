@@ -1,6 +1,7 @@
 # Compat information
 ## Dedicated Compat
 **Better Combat** dedicated and integrated support  
+  But Better Combat sadly has a bug with NBT based Compat. We recommend using https://modrinth.com/mod/better-combat-nbt-fix for multiplayer
 **Epic Fight** weapons are mostly supported, armor sadly is not  
 **Apoli** is Origins power api, we have support via a property, allowing developers to use any apolipowers on modular items  
 ## Generated Material Info
