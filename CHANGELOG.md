@@ -2,3 +2,4 @@
 - added ability to fake repair ingredient more convincingly for badly written mods
 - improved mixin logic to help with compatiblity
 - fixed elytra not being animated
+- blocked capes from rendering when wearing modular elytra

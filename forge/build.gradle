@@ -32,6 +32,7 @@ repositories {
     maven { url 'https://jitpack.io' }
     maven { url 'https://maven.kosmx.dev/' }
     maven { url 'https://maven.theillusivec4.top/' }
+    maven { url 'https://maven.theillusivec4.top/' }
     maven {
         name = 'Modrinth'
         url = 'https://api.modrinth.com/maven'
@@ -40,7 +41,7 @@ repositories {
         }
     }
     maven { url "https://cursemaven.com" }
-    maven { url "https://maven.merchantpug.net" }
+    //maven { url "https://maven.merchantpug.net" }
 }
 
 dependencies {
@@ -103,6 +104,12 @@ modApi "com.github.EdwinMindcraft:origins-architectury:1.13.0"
 modApi "com.github.EdwinMindcraft:origins-architectury:${project.fabric_apoli_version}"
 include "com.github.EdwinMindcraft:origins-architectury:${project.fabric_apoli_version}"
  */
+
+    forgeRuntimeLibrary('com.github.ezylang:EvalEx:3.0.4') // because nucleus uses it
+
+    compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:${rootProject.mixin_extras_version}"))
+    implementation(include("io.github.llamalad7:mixinextras-forge:${rootProject.mixin_extras_version}"))
+
 
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }

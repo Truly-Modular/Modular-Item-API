@@ -43,10 +43,12 @@
     ],
     "client": [
         "client.BuiltinModelItemRendererMixin",
+        "client.CapeFeatureRendererMixin",
         "client.ClientPlayerEntityMixin",
         "client.ElytraEntityModelAccessor",
         "client.ElytraFeatureRendererAccessor",
         "client.FeatureRendererAccessor",
+        "client.InGameHudAccessor",
         "client.ItemRendererAccessor",
         "client.ItemRendererMixin",
         "client.LivingEntityRendererAccessor",
@@ -55,10 +57,9 @@
         "client.ModelLoaderInterfaceAccessor",
         "client.ModelLoaderMixin",
         "client.ModelPredicateProviderRegistryAccessor",
+        "client.PlayerEntityModelMixin",
         "client.SpriteContentsAccessor",
-        "client.SpriteContentsNativeImageGetter",
-        "client.InGameHudAccessor",
-        "client.PlayerEntityModelMixin"
+        "client.SpriteContentsNativeImageGetter"
     ],
     "injectors": {
         "defaultRequire": 1
