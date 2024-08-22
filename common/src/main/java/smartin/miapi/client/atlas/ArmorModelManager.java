@@ -71,19 +71,20 @@ public class ArmorModelManager {
             List<ArmorPart> parts = new ArrayList<>();
             if (MinecraftClient.getInstance().getEntityRenderDispatcher().getRenderer(livingEntity) instanceof LivingEntityRenderer livingEntityRenderer) {
                 Optional<ElytraFeatureRenderer<?, ?>> elytraFeatureRenderer =
-                ((LivingEntityRendererAccessor) livingEntityRenderer).getFeatures().stream().filter(a -> a instanceof ElytraFeatureRenderer<?, ?>).findAny();
-                if(elytraFeatureRenderer.isPresent()){
-                    ElytraEntityModel elytraEntityModel = ((ElytraFeatureRendererAccessor)elytraFeatureRenderer.get()).getElytra();
+                        ((LivingEntityRendererAccessor) livingEntityRenderer).getFeatures().stream().filter(a -> a instanceof ElytraFeatureRenderer<?, ?>).findAny();
+                if (elytraFeatureRenderer.isPresent()) {
+                    ElytraEntityModel elytraEntityModel = ((ElytraFeatureRendererAccessor) elytraFeatureRenderer.get()).getElytra();
+                    model.copyStateTo(elytraEntityModel);
                     parts.add((matrixStack, equipmentSlot1, livingEntity1, model1, entityModel1) -> {
-                        entityModel.copyStateTo(elytraEntityModel);
-                        entityModel1.copyStateTo(model1);
+                        //entityModel.copyStateTo(elytraEntityModel);
+                        //entityModel1.copyStateTo(model1);
                         ModelPart part = ((ElytraEntityModelAccessor) elytraEntityModel).getLeftWing();
                         part.rotate(matrixStack);
                         return "left_wing";
                     });
                     parts.add((matrixStack, equipmentSlot1, livingEntity1, model1, entityModel1) -> {
-                        entityModel.copyStateTo(elytraEntityModel);
-                        entityModel1.copyStateTo(model1);
+                        //entityModel.copyStateTo(elytraEntityModel);
+                        //entityModel1.copyStateTo(model1);
                         ModelPart part = ((ElytraEntityModelAccessor) elytraEntityModel).getRightWing();
                         part.rotate(matrixStack);
                         return "right_wing";

@@ -9,7 +9,7 @@ import smartin.miapi.registries.RegistryInventory;
 @Mixin(EndermanEntity.class)
 public class EndermanEntityMixin {
 
-    @ModifyReturnValue(method = "teleportRandomly()Z", at = @At("HEAD"))
+    @ModifyReturnValue(method = "teleportRandomly()Z", at = @At("RETURN"))
     private boolean miapi$teleportBlockEffect(boolean original) {
         EndermanEntity entity = (EndermanEntity) (Object) this;
         if(entity.hasStatusEffect(RegistryInventory.teleportBlockEffect)){

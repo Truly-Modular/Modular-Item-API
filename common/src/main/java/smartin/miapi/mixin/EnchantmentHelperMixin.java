@@ -29,7 +29,7 @@ import java.util.List;
 @Mixin(value = EnchantmentHelper.class, priority = 700)
 public class EnchantmentHelperMixin {
 
-    @ModifyReturnValue(method = "getPossibleEntries(ILnet/minecraft/item/ItemStack;Z)Ljava/util/List;", at = @At("HEAD"))
+    @ModifyReturnValue(method = "getPossibleEntries(ILnet/minecraft/item/ItemStack;Z)Ljava/util/List;", at = @At("RETURN"))
     private static List<EnchantmentLevelEntry> miapi$modifyAttributeModifiers(List<EnchantmentLevelEntry> original, int power, ItemStack stack, boolean treasureAllowed) {
         if (stack.getItem() instanceof ModularItem) {
             List<EnchantmentLevelEntry> enchantments = new ArrayList<>();

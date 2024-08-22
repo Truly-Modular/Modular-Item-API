@@ -39,8 +39,7 @@
         "SmithingScreenHandlerAccessor",
         "SmithingScreenHandlerMixin",
         "SmithingTransformRecipeAccessor",
-        "ThrowablePotionItemAccessor",
-        "client.InGameHudAccessor"
+        "ThrowablePotionItemAccessor"
     ],
     "client": [
         "client.BuiltinModelItemRendererMixin",
@@ -57,7 +56,9 @@
         "client.ModelLoaderMixin",
         "client.ModelPredicateProviderRegistryAccessor",
         "client.SpriteContentsAccessor",
-        "client.SpriteContentsNativeImageGetter"
+        "client.SpriteContentsNativeImageGetter",
+        "client.InGameHudAccessor",
+        "client.PlayerEntityModelMixin"
     ],
     "injectors": {
         "defaultRequire": 1
