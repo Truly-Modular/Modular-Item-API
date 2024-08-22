@@ -1,5 +1,6 @@
 package smartin.miapi.mixin;
 
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.EquipmentSlot;
@@ -35,13 +36,15 @@ import java.util.function.Consumer;
 @Mixin(value = ItemStack.class, priority = 2000)
 abstract class ItemStackMixin {
 
-    @Inject(
+    @ModifyReturnValue(
             method = "getHideFlags()I",
-            at = @At("TAIL"),
-            cancellable = true)
-    private void miapi$adjustGetHideFlags(CallbackInfoReturnable<Integer> cir) {
+            at = @At("RETURN"))
+    private int miapi$adjustGetHideFlags(int original) {
         ItemStack stack = (ItemStack) (Object) this;
-        cir.setReturnValue(HideFlagsProperty.getHideProperty(cir.getReturnValue(), stack));
+        if (stack.getItem() instanceof ModularItem) {
+            return HideFlagsProperty.getHideProperty(original, stack);
+        }
+        return original;
     }
 
     @Inject(
@@ -62,30 +65,33 @@ abstract class ItemStackMixin {
         ModularItemCache.clearUUIDFor(stack);
     }
 
-    @Inject(
+    @ModifyReturnValue(
             method = "getItem",
             at = @At("RETURN"))
-    private void miapi$getItemCallback(CallbackInfoReturnable<Item> cir) {
+    private Item miapi$getItemCallback(Item original) {
         ItemStack stack = (ItemStack) (Object) this;
-        if (cir.getReturnValue() instanceof ModularSetableToolMaterial toolMaterial) {
+        if (original instanceof ModularSetableToolMaterial toolMaterial) {
             toolMaterial.setToolMaterial(stack);
         }
+        return original;
     }
 
-    @Inject(method = "getMaxDamage", at = @At("HEAD"), cancellable = true)
-    public void miapi$modifyDurability(CallbackInfoReturnable<Integer> cir) {
+    @ModifyReturnValue(method = "getMaxDamage", at = @At("RETURN"))
+    public int miapi$modifyDurability(int original) {
         ItemStack stack = (ItemStack) (Object) this;
         if (stack.getItem() instanceof VisualModularItem) {
-            cir.setReturnValue(ModularItem.getDurability(stack));
+            return ModularItem.getDurability(stack);
         }
+        return original;
     }
 
-    @Inject(method = "isSuitableFor(Lnet/minecraft/block/BlockState;)Z", at = @At("HEAD"), cancellable = true)
-    public void miapi$injectIsSuitable(BlockState state, CallbackInfoReturnable<Boolean> cir) {
+    @ModifyReturnValue(method = "isSuitableFor(Lnet/minecraft/block/BlockState;)Z", at = @At("RETURN"))
+    public boolean miapi$injectIsSuitable(boolean original,BlockState state) {
         ItemStack stack = (ItemStack) (Object) this;
         if (stack.getItem() instanceof ModularItem) {
-            cir.setReturnValue(MiningLevelProperty.isSuitable(stack, state));
+            return MiningLevelProperty.isSuitable(stack, state);
         }
+        return original;
     }
 
     @Inject(
@@ -135,14 +141,15 @@ abstract class ItemStackMixin {
         LoreProperty.property.appendLoreBottom(arg1, stack);
     }
 
-    @Inject(method = "isIn", at = @At("TAIL"), cancellable = true)
-    public void miapi$injectItemTag(TagKey<Item> tag, CallbackInfoReturnable<Boolean> cir) {
+    @ModifyReturnValue(method = "isIn", at = @At("RETURN"))
+    public boolean miapi$injectItemTag(boolean original, TagKey<Item> tag) {
         ItemStack stack = (ItemStack) (Object) this;
         if (stack.getItem() instanceof ModularItem) {
-            if (!cir.getReturnValue()) {
-                cir.setReturnValue(FakeItemTagProperty.hasTag(tag.id(), stack));
+            if (original) {
+                return FakeItemTagProperty.hasTag(tag.id(), stack);
             }
         }
+        return original;
     }
 
     @Inject(method = "damage(ILnet/minecraft/entity/LivingEntity;Ljava/util/function/Consumer;)V", at = @At("HEAD"), cancellable = true)

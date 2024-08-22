@@ -1,20 +1,20 @@
 package smartin.miapi.mixin;
 
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import net.minecraft.entity.mob.EndermanEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import smartin.miapi.registries.RegistryInventory;
 
 @Mixin(EndermanEntity.class)
 public class EndermanEntityMixin {
 
-    @Inject(method = "teleportRandomly()Z", at = @At("HEAD"), cancellable = true)
-    private void miapi$teleportBlockEffect(CallbackInfoReturnable<Boolean> cir) {
+    @ModifyReturnValue(method = "teleportRandomly()Z", at = @At("HEAD"))
+    private boolean miapi$teleportBlockEffect(boolean original) {
         EndermanEntity entity = (EndermanEntity) (Object) this;
         if(entity.hasStatusEffect(RegistryInventory.teleportBlockEffect)){
-            cir.setReturnValue(false);
+            return false;
         }
+        return original;
     }
 }

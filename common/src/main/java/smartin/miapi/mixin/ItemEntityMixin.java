@@ -1,23 +1,23 @@
 package smartin.miapi.mixin;
 
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import smartin.miapi.item.modular.VisualModularItem;
 import smartin.miapi.modules.properties.FireProof;
 
 @Mixin(ItemEntity.class)
 public abstract class ItemEntityMixin {
 
-    @Inject(method = "isFireImmune()Z", at = @At(value = "HEAD"), cancellable = true)
-    private void miapi$isFireImmuneOverride(CallbackInfoReturnable<Boolean> cir) {
+    @ModifyReturnValue(method = "isFireImmune()Z", at = @At(value = "RETURN"))
+    private boolean miapi$isFireImmuneOverride(boolean original) {
         ItemEntity entity = (ItemEntity) (Object) (this);
         ItemStack stack = entity.getStack();
         if (stack.getItem() instanceof VisualModularItem) {
-            cir.setReturnValue(FireProof.fireProof(stack));
+            return FireProof.fireProof(stack);
         }
+        return original;
     }
 }
