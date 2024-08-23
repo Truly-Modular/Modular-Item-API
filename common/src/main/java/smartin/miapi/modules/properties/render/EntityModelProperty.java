@@ -1,6 +1,7 @@
 package smartin.miapi.modules.properties.render;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.redpxnda.nucleus.codec.auto.AutoCodec;
 import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
 import net.minecraft.client.Minecraft;
@@ -25,10 +26,8 @@ import java.util.List;
 public class EntityModelProperty extends CodecProperty<List<EntityModelProperty.EntityModelData>> {
     public static final ResourceLocation KEY = Miapi.id("entity_model");
     public static EntityModelProperty property;
-    public static Codec<EntityModelData> CODEC = AutoCodec.of(EntityModelData.class).codec();
-
     public EntityModelProperty() {
-        super(Codec.list(CODEC));
+        super(Codec.list(EntityModelData.CODEC));
         property = this;
         MiapiItemModel.modelSuppliers.add((key, model, stack) -> {
             List<MiapiModel> models = new ArrayList<>();
@@ -58,7 +57,7 @@ public class EntityModelProperty extends CodecProperty<List<EntityModelProperty.
         return ModuleProperty.mergeList(left, right, mergeType);
     }
 
-    public class EntityModelData {
+    public static class EntityModelData {
         public ResourceLocation id;
         @CodecBehavior.Optional
         public CompoundTag nbt;
@@ -71,5 +70,36 @@ public class EntityModelProperty extends CodecProperty<List<EntityModelProperty.
         public boolean fullBright = false;
         @CodecBehavior.Optional
         public MaterialIcons.SpinSettings spin = null;
+
+        public static Codec<EntityModelData> CODEC = RecordCodecBuilder.create((instance) ->
+                instance.group(
+                        ResourceLocation.CODEC
+                                .fieldOf("id")
+                                .forGetter((data) -> data.id),
+                        CompoundTag.CODEC.
+                                optionalFieldOf("nbt", null)
+                                .forGetter((data) -> data.nbt),
+                        Transform.CODEC
+                                .optionalFieldOf("transform", Transform.IDENTITY)
+                                .forGetter((data) -> data.transform),
+                        Codec.BOOL
+                                .optionalFieldOf("tick", false)
+                                .forGetter((data) -> data.tick),
+                        Codec.BOOL
+                                .optionalFieldOf("fullBright", false)
+                                .forGetter((data) -> data.fullBright),
+                        MaterialIcons.SpinSettings.CODEC
+                                .optionalFieldOf("spin", null)
+                                .forGetter((data) -> data.spin)
+                ).apply(instance, (id, nbt, transform, tick, fullBright, spin) -> {
+                    EntityModelData data = new EntityModelData();
+                    data.id = id;
+                    data.nbt = nbt;
+                    data.transform = transform;
+                    data.tick = tick;
+                    data.fullBright = fullBright;
+                    data.spin = spin;
+                    return data;
+                }));
     }
 }

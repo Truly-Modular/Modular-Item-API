@@ -156,8 +156,10 @@ public class SpecialAttackAbility implements
         public DoubleOperationResolvable sweeping = new DoubleOperationResolvable(0);
         public DoubleOperationResolvable range = new DoubleOperationResolvable(3.5);
         @AutoCodec.Name("min_hold")
-        public DoubleOperationResolvable minHold = new DoubleOperationResolvable(0);
-        public DoubleOperationResolvable cooldown = new DoubleOperationResolvable(0);
+        @CodecBehavior.Optional
+        public DoubleOperationResolvable minHold = new DoubleOperationResolvable(15);
+        @CodecBehavior.Optional
+        public DoubleOperationResolvable cooldown = new DoubleOperationResolvable(10);
         @CodecBehavior.Optional
         public Component title = Component.translatable("miapi.ability.heavy_attack.title");
         @CodecBehavior.Optional

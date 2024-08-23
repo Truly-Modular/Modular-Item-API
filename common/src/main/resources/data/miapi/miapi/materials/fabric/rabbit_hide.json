@@ -27,7 +27,7 @@
         }
     },
     "mining_speed": 0,
-    "mining_level": 0,
+    "mining_level": "minecraft:incorrect_for_wooden_tool",
     "items": [
         {
             "item": "minecraft:rabbit_hide",

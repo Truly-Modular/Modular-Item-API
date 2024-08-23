@@ -12,15 +12,20 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import smartin.miapi.Miapi;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class BlockTagCondition implements MiningCondition {
     public static MapCodec<BlockTagCondition> CODEC = AutoCodec.of(BlockTagCondition.class);
     public static ResourceLocation ID = Miapi.id("block_tag");
-    public List<TagKey<Block>> blockTags;
+    public List<TagKey<Block>> tags;
 
     public BlockTagCondition(List<TagKey<Block>> blockTags) {
-        this.blockTags = blockTags;
+        this.tags = blockTags;
+    }
+
+    public BlockTagCondition() {
+        this(new ArrayList<>());
     }
 
     @Override
@@ -29,7 +34,7 @@ public class BlockTagCondition implements MiningCondition {
     }
 
     public boolean isInAny(Level world, BlockPos pos) {
-        for (TagKey<Block> tag : blockTags) {
+        for (TagKey<Block> tag : tags) {
             if (world.getBlockState(pos).is(tag)) {
                 return true;
             }
@@ -43,7 +48,7 @@ public class BlockTagCondition implements MiningCondition {
     }
 
     @Override
-    public ResourceLocation getID(){
+    public ResourceLocation getID() {
         return ID;
     }
 }

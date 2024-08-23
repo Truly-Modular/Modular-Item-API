@@ -19,9 +19,7 @@ import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.AnvilBlock;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.DispenserBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.BlockPositionSource;
 import net.minecraft.world.level.gameevent.GameEvent;
@@ -135,7 +133,16 @@ public class ModularWorkBenchEntity extends BlockEntity implements MenuProvider,
         });
 
         if (!getItem().isEmpty()) {
-            tag.put("item", ItemStack.CODEC.encodeStart(NbtOps.INSTANCE, getItem()).getOrThrow());
+            try {
+                tag.put("item", ItemStack.CODEC.encodeStart(NbtOps.INSTANCE, getItem()).getOrThrow());
+            } catch (Exception e) {
+                Miapi.LOGGER.error("Could not save Item in Workbench! this indicated the item is broken and will cause more crashese later on!", e);
+                try {
+                    Miapi.LOGGER.error(getItem().toString());
+                } catch (RuntimeException runtimeException) {
+
+                }
+            }
         } else {
             tag.remove("item");
         }

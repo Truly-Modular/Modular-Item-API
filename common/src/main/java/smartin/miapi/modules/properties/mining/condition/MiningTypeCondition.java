@@ -22,6 +22,10 @@ public class MiningTypeCondition implements MiningCondition {
         this.type = type;
     }
 
+    public MiningTypeCondition() {
+        this("empty");
+    }
+
     @Override
     public List<BlockPos> trimList(Level level, BlockPos original, List<BlockPos> positions) {
         return positions.stream().filter(pos -> level.getBlockState(pos).is(MiningLevelProperty.miningCapabilities.get(type))).toList();
