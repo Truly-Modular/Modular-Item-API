@@ -11,12 +11,12 @@ import net.minecraft.world.item.FireworkRocketItem;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 
-public class ItemMiapiModel implements MiapiModel {
+public class ItemInModuleMiapiModel implements MiapiModel {
 
     final Supplier<ItemStack> stackSupplier;
     final Matrix4f matrix4f;
 
-    public ItemMiapiModel(Supplier<ItemStack> stack,Matrix4f matrix4f){
+    public ItemInModuleMiapiModel(Supplier<ItemStack> stack, Matrix4f matrix4f){
         this.stackSupplier = stack;
         this.matrix4f = matrix4f;
     }

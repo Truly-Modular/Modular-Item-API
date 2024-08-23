@@ -58,7 +58,7 @@ public class Transform {
     /**
      * DO NOT USE! this is only for autocodecs
      */
-    public Transform(){
+    public Transform() {
 
     }
 
@@ -108,7 +108,7 @@ public class Transform {
 
     public static void applyPosition(PoseStack matrixStack, Matrix4f matrix4f) {
         matrixStack.mulPose(matrix4f);
-        matrixStack.last().normal().mul(matrix4f.get3x3(new Matrix3f()));
+        //matrixStack.last().normal().mul(matrix4f.get3x3(new Matrix3f()));
     }
 
     public static void applyPosition(PoseStack matrixStack, Transform transform) {

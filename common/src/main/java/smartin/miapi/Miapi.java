@@ -165,7 +165,7 @@ public class Miapi {
 
     public static String camelToSnake(String input) {
         if (input == null || input.isEmpty()) {
-            return input;
+            return "";
         }
 
         StringBuilder result = new StringBuilder();
@@ -173,7 +173,7 @@ public class Miapi {
 
         for (char c : input.toCharArray()) {
             if (Character.isUpperCase(c)) {
-                if (result.length() > 0) {
+                if (!result.isEmpty()) {
                     result.append('_');
                 }
                 result.append(Character.toLowerCase(c));
@@ -206,7 +206,7 @@ public class Miapi {
     public static String toLangString(ResourceLocation id){
         String lang = id.toString();
         lang = lang.replace(":",".");
-        lang = lang.replaceAll("/",".");
+        lang = lang.replace("/",".");
         return lang;
     }
 

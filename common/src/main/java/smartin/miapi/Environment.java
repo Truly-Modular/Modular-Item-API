@@ -10,7 +10,6 @@ public class Environment {
     /**
      * This method returns if the current thread has access to Clientclasses
      * in most cases this will return true if a logical client is loaded
-     * @return
      */
     public static boolean isClient(){
         try {

@@ -151,7 +151,10 @@ public class ModelProperty extends CodecProperty<List<ModelProperty.ModelData>> 
             if (colorProvider == null) {
                 throw new RuntimeException("colorProvider is null");
             }
-            return new ModelHolder(model.optimize(), matrix4f, colorProvider, unbakedModel.modelMetadata.lightValues, json.getTrimMode(), json.entity_render);
+            return new ModelHolder(
+                    model.optimize(), matrix4f, colorProvider,
+                    unbakedModel.modelMetadata.lightValues == null ? new int[]{-1, -1} : unbakedModel.modelMetadata.lightValues,
+                    json.getTrimMode(), json.entity_render);
         }
         return null;
     }
@@ -332,9 +335,9 @@ public class ModelProperty extends CodecProperty<List<ModelProperty.ModelData>> 
 
     @Override
     public boolean load(ResourceLocation moduleKey, JsonElement data, boolean isClient) throws Exception {
-        decode(data).forEach(modelData ->{
-            modelData .repair();
-            loadModelsByPath(modelData .path);
+        decode(data).forEach(modelData -> {
+            modelData.repair();
+            loadModelsByPath(modelData.path);
         });
         return true;
     }

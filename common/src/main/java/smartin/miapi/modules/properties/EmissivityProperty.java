@@ -31,8 +31,8 @@ public class EmissivityProperty extends CodecProperty<EmissivityProperty.LightJs
     }
 
     public static class LightJson {
-        public int sky = 15;
-        public int block = 15;
+        public int sky = -1;
+        public int block = -1;
 
         public int[] asArray() {
             return new int[]{sky, block};

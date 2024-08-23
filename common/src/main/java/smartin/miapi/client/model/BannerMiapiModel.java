@@ -63,7 +63,7 @@ public class BannerMiapiModel implements MiapiModel {
                 matrices.translate(8, -8, -8.75);
                 matrices.scale(1, 1, -1);
                 matrices.mulPose(transform);
-                matrices.last().normal().mul(transform.get3x3(new Matrix3f()));
+                //matrices.last().normal().mul(transform.get3x3(new Matrix3f()));
                 matrices.scale(16f, 16f, 1f);
                 matrices.scale(1 / 20f, 1 / 20f, 2f);
                 BannerRenderer.renderPatterns(matrices, vertexConsumers, light, overlay, banner, ModelBakery.BANNER_BASE, true, baseColor, patterns);
@@ -73,7 +73,7 @@ public class BannerMiapiModel implements MiapiModel {
                 matrices.translate(8, -8, -7.25);
                 matrices.scale(1, 1, 1);
                 matrices.mulPose(transform);
-                matrices.last().normal().mul(transform.get3x3(new Matrix3f()));
+                //matrices.last().normal().mul(transform.get3x3(new Matrix3f()));
                 matrices.scale(16f, 16f, 1f);
                 matrices.scale(1 / 20f, 1 / 20f, 2f);
                 BannerRenderer.renderPatterns(matrices, vertexConsumers, light, overlay, banner, ModelBakery.BANNER_BASE, true, baseColor, patterns);
@@ -107,7 +107,7 @@ public class BannerMiapiModel implements MiapiModel {
                 matrices.translate(0, -1, 0);
                 matrices.pushPose();
                 matrices.mulPose(new Matrix4f(transform));
-                matrices.last().normal().mul(transform.get3x3(new Matrix3f()));
+                //matrices.last().normal().mul(transform.get3x3(new Matrix3f()));
                 matrices.scale(16f, 16f, 16f);
                 matrices.scale(1 / 20f, 1 / 20f, 1 / 20f);
                 BannerRenderer.renderPatterns(matrices, vertexConsumers, light, overlay, banner, ModelBakery.BANNER_BASE, true, baseColor, patterns);

@@ -10,8 +10,7 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import smartin.miapi.Miapi;
-import smartin.miapi.client.MiapiClient;
-import smartin.miapi.client.model.ItemMiapiModel;
+import smartin.miapi.client.model.ItemInModuleMiapiModel;
 import smartin.miapi.client.model.MiapiItemModel;
 import smartin.miapi.client.model.MiapiModel;
 import smartin.miapi.item.modular.items.ModularCrossbow;
@@ -66,7 +65,7 @@ public class ItemModelProperty extends CodecProperty<List<ModelJson>> {
                     default:
                         throw new IllegalStateException("Unexpected value: " + modelJson.type);
                 };
-                ItemMiapiModel miapiModel = new ItemMiapiModel(stackSupplier, modelJson.transform.toMatrix());
+                ItemInModuleMiapiModel miapiModel = new ItemInModuleMiapiModel(stackSupplier, modelJson.transform.toMatrix());
                 models.add(miapiModel);
             });
             return models;

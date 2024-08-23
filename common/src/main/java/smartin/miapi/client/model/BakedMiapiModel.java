@@ -46,13 +46,8 @@ public class BakedMiapiModel implements MiapiModel {
         this.model = holder.model();
         settings = GlintProperty.property.getGlintSettings(moduleInstance, stack);
 
-        if (holder.lightValues() != null) {
-            skyLight = holder.lightValues()[0];
-            blockLight = holder.lightValues()[1];
-        } else {
-            skyLight = -1;
-            blockLight = -1;
-        }
+        skyLight = holder.lightValues()[0];
+        blockLight = holder.lightValues()[1];
 
         int[] propertyLight = EmissivityProperty.getLightValues(moduleInstance);
         int propertySky = propertyLight[0];
