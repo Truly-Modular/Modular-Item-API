@@ -67,7 +67,7 @@ public class ReplaceOption implements EditOption {
     }
 
     public static void tryPreview() {
-        Miapi.LOGGER.info("try preview " + (unsafeEditContext != null) + " " + (unsafeCraftAction != null));
+        //Miapi.LOGGER.info("try preview " + (unsafeEditContext != null) + " " + (unsafeCraftAction != null));
         if (unsafeEditContext != null && unsafeCraftAction != null) {
             try {
                 unsafeEditContext.preview(unsafeCraftAction.toPacket(Networking.createBuffer()));

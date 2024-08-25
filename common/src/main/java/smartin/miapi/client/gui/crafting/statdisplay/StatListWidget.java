@@ -172,6 +172,11 @@ public class StatListWidget extends InteractAbleWidget {
                 .setMax(50)
                 .setTranslationKey(ArmorPenProperty.KEY).build());
         addStatDisplay(SinglePropertyStatDisplay
+                .builder(SlashingProperty.property)
+                .setMin(-20)
+                .setMax(50)
+                .setTranslationKey(SlashingProperty.KEY).build());
+        addStatDisplay(SinglePropertyStatDisplay
                 .builder(BlockProperty.property)
                 .setMax(50)
                 .setTranslationKey(BlockProperty.KEY).build());
@@ -235,6 +240,10 @@ public class StatListWidget extends InteractAbleWidget {
         addStatDisplay(AttributeSingleDisplay
                 .builder(EntityAttributes.GENERIC_ARMOR)
                 .setTranslationKey("armor")
+                .setMax(8).build());
+        addStatDisplay(AttributeSingleDisplay
+                .builder(AttributeRegistry.SHIELDING_ARMOR)
+                .setTranslationKey("shielding_armor")
                 .setMax(8).build());
         addStatDisplay(AttributeSingleDisplay
                 .builder(AttributeRegistry.PROJECTILE_ARMOR)

@@ -198,6 +198,8 @@ public class CreateItemOption implements EditOption {
         default boolean isAllowed(PlayerEntity player, ModularWorkBenchEntity entity) {
             return true;
         }
+
+        double getPriority();
     }
 
     public static class JsonCreateItem implements CreateItem {
@@ -205,6 +207,7 @@ public class CreateItemOption implements EditOption {
         public String module;
         public String translation;
         public int count = 1;
+        public double priority = 0;
 
         @Override
         public ItemStack getItem() {
@@ -221,6 +224,10 @@ public class CreateItemOption implements EditOption {
         @Override
         public Text getName() {
             return Text.translatable(translation);
+        }
+
+        public double getPriority(){
+            return priority;
         }
     }
 }

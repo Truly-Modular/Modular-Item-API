@@ -15,6 +15,7 @@ import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
+import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.modules.material.palette.FallbackColorer;
 import smartin.miapi.modules.material.palette.MaterialRenderController;
 import smartin.miapi.modules.material.palette.MaterialRenderControllers;
@@ -23,10 +24,7 @@ import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.registries.FakeTranslation;
 import smartin.miapi.registries.RegistryInventory;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class JsonMaterial implements Material {
     public String key;
@@ -36,6 +34,7 @@ public class JsonMaterial implements Material {
     protected MaterialRenderController palette;
     public Map<String, Map<ModuleProperty, JsonElement>> propertyMap = new HashMap<>();
     public Map<String, Map<ModuleProperty, JsonElement>> displayPropertyMap = new HashMap<>();
+    public Optional<Boolean> generateConvertersOptional = Optional.empty();
 
     public JsonMaterial(JsonObject element, boolean isClient) {
         rawJson = element;
@@ -98,6 +97,10 @@ public class JsonMaterial implements Material {
                     }
                     break;
                 }
+                case "generate_converters": {
+                    generateConvertersOptional = Optional.of(propertyElement.getAsBoolean());
+                    break;
+                }
                 default: {
                     rawJson.getAsJsonObject().add(elementName, propertyElement);
                 }
@@ -127,6 +130,10 @@ public class JsonMaterial implements Material {
     @Override
     public String getKey() {
         return key;
+    }
+
+    public boolean generateConverters() {
+        return generateConvertersOptional.orElse(MiapiConfig.INSTANCE.server.generatedMaterials.defaultGenerateConverters);
     }
 
     @Override
@@ -231,20 +238,6 @@ public class JsonMaterial implements Material {
         return "";
     }
 
-    public boolean generateConverters() {
-        if (rawJson.getAsJsonObject().has("generate_converters")) {
-            try {
-                JsonElement element = rawJson.getAsJsonObject().get("generate_converters");
-                if (element != null && !element.isJsonNull() && element.isJsonPrimitive()) {
-                    return element.getAsBoolean();
-                }
-            } catch (RuntimeException e) {
-                Miapi.LOGGER.warn("generate converters in material " + getKey() + " is not setup correctly");
-            }
-        }
-        return false;
-    }
-
     @Override
     public List<String> getTextureKeys() {
         List<String> textureKeys = new ArrayList<>();
@@ -343,7 +336,7 @@ public class JsonMaterial implements Material {
 
     @Override
     public Ingredient getIngredient() {
-        if(matching==null){
+        if (matching == null) {
             getValueOfItem(ItemStack.EMPTY);
         }
         return matching;

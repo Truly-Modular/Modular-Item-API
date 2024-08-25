@@ -108,6 +108,11 @@ public class MiapiServerConfig {
         @AutoCodec.Name("generate_materials")
         public boolean generateMaterials = true;
 
+        @Comment("""
+                Whether Miapi generated converters if a JsonMaterial doesnt specify if it wants the api to""")
+        @AutoCodec.Name("default_generate_converters")
+        public boolean defaultGenerateConverters = true;
+
         @Comment("The maximum amount of materials generated per type")
         @AutoCodec.Name("max_generated_materials")
         public int maximumGeneratedMaterials = 200;

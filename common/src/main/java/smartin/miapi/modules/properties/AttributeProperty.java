@@ -282,7 +282,7 @@ public class AttributeProperty implements ModuleProperty {
                             multiply = (multiply + 1) * (entityAttributeModifier.getValue() + 1) - 1;
                         }
                     }
-                    if (!Double.isNaN(multiply) && multiply != 1) {
+                    if (!Double.isNaN(multiply)) {
                         EntityAttributeModifier entityAttributeModifier = new EntityAttributeModifier(uuid, "generic.miapi." + key.getTranslationKey(), multiply, EntityAttributeModifier.Operation.MULTIPLY_BASE);
                         toAdding.put(key, entityAttributeModifier);
                     }

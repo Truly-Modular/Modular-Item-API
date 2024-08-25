@@ -3,3 +3,5 @@
 - improved mixin logic to help with compatiblity
 - fixed elytra not being animated
 - blocked capes from rendering when wearing modular elytra
+- added slashing mechanic
+- fixed bug related to collectors

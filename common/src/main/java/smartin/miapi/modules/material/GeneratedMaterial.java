@@ -28,6 +28,7 @@ import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.item.MaterialSmithingRecipe;
+import smartin.miapi.item.ModularItemStackConverter;
 import smartin.miapi.mixin.MiningToolItemAccessor;
 import smartin.miapi.mixin.SmithingTransformRecipeAccessor;
 import smartin.miapi.modules.material.palette.FallbackColorer;
@@ -303,12 +304,20 @@ public class GeneratedMaterial implements Material {
                         Material material = MaterialProperty.getMaterialFromIngredient(toolMaterial.getRepairIngredient().getMatchingStacks()[0]);
                         List<Item> toolMaterials = toolItems.stream()
                                 .filter(toolMat -> toolMaterial.equals(toolMat.getMaterial()))
+                                .filter(tool -> {
+                                    ItemStack toolItem = tool.getDefaultStack();
+                                    return ModularItemStackConverter.getModularVersion(toolItem)==toolItem;
+                                })
                                 .collect(Collectors.toList());
-                        if (material != null && material.generateConverters()) {
-                            try {
-                                MiapiEvents.GENERATE_MATERIAL_CONVERTERS.invoker().generated(material, toolMaterials, false);
-                            } catch (Exception e) {
-                                Miapi.LOGGER.error("error during Material Creation event " + material + " ", e);
+                        if (material != null) {
+                            if (material.generateConverters()) {
+                                try {
+                                    MiapiEvents.GENERATE_MATERIAL_CONVERTERS.invoker().generated(material, toolMaterials, false);
+                                } catch (Exception e) {
+                                    Miapi.LOGGER.error("error during Material Creation event " + material + " ", e);
+                                }
+                            } else {
+                                Miapi.LOGGER.error("blocked generated for " + material.getKey());
                             }
                         }
                     });
