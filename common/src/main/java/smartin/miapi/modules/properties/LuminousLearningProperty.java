@@ -2,15 +2,12 @@ package smartin.miapi.modules.properties;
 
 import dev.architectury.event.EventResult;
 import dev.architectury.event.events.common.BlockEvent;
-import dev.architectury.event.events.common.EntityEvent;
 import dev.architectury.utils.value.IntValue;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.ExperienceOrb;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
@@ -31,6 +28,7 @@ public class LuminousLearningProperty extends DoubleProperty {
     public LuminousLearningProperty() {
         super(KEY);
         property = this;
+        //TODO:this needs reworking
         BlockEvent.BREAK.register((Level level, BlockPos pos, BlockState state, ServerPlayer player, @Nullable IntValue xp)->{
             ItemStack tool = player.getMainHandItem();
             if (tool != null && tool.getItem() instanceof ModularItem) {

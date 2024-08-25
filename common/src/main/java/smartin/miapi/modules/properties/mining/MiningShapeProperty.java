@@ -40,7 +40,7 @@ public class MiningShapeProperty extends CodecProperty<List<MiningShapeEntry>> {
     public static Map<ResourceLocation, MapCodec<? extends MiningCondition>> miningConditionMap = new HashMap<>();
     public static Map<ResourceLocation, MapCodec<? extends MiningShape>> miningShapeMap = new HashMap<>();
     public static Map<ResourceLocation, MapCodec<? extends MiningMode>> miningModeMap = new HashMap<>();
-    public static Map<ResourceLocation,MapCodec<? extends MiningModifier>> miningModifierMap = new HashMap<>();
+    public static Map<ResourceLocation, Codec<? extends MiningModifier>> miningModifierMap = new HashMap<>();
 
     @Override
     public List<MiningShapeEntry> merge(List<MiningShapeEntry> left, List<MiningShapeEntry> right, MergeType mergeType) {

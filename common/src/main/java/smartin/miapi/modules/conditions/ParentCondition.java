@@ -12,7 +12,7 @@ import java.util.Optional;
 public class ParentCondition implements ModuleCondition {
     public static Codec<ParentCondition> CODEC = RecordCodecBuilder.create((instance) ->
             instance.group(
-                    ConditionManager.CONDITION_CODEC.fieldOf("conditions")
+                    ConditionManager.CONDITION_CODEC.fieldOf("condition")
                             .forGetter(ParentCondition::getCondition),
                     ComponentSerialization.CODEC
                             .optionalFieldOf("error", Component.translatable(Miapi.MOD_ID + ".error"))

@@ -1,7 +1,11 @@
 package smartin.miapi.modules.properties.mining.modifier;
 
-import com.mojang.serialization.MapCodec;
+import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.DynamicOps;
 import com.redpxnda.nucleus.codec.auto.AutoCodec;
+import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
@@ -12,8 +16,26 @@ import smartin.miapi.Miapi;
 import java.util.List;
 
 public class SameBlockModifier implements MiningModifier {
-    public static MapCodec<SameBlockModifier> CODEC = AutoCodec.of(SameBlockModifier.class);
-    public static ResourceLocation ID = Miapi.id("same_block");
+    public static Codec<SameBlockModifier> CODEC = new Codec<SameBlockModifier>() {
+        @Override
+        public <T> DataResult<Pair<SameBlockModifier, T>> decode(DynamicOps<T> ops, T input) {
+            var result = Codec.BOOL.decode(ops, input);
+            if (result.isSuccess()) {
+                SameBlockModifier sameBlockModifier = new SameBlockModifier();
+                sameBlockModifier.requireSame = result.getOrThrow().getFirst();
+                return new DataResult.Success<>(new Pair<>(sameBlockModifier, result.getOrThrow().getSecond()), result.lifecycle());
+            }
+            return DataResult.error(() -> "could not decode SameBlockModifier!");
+        }
+
+        @Override
+        public <T> DataResult<T> encode(SameBlockModifier input, DynamicOps<T> ops, T prefix) {
+            return Codec.BOOL.encode(input.requireSame, ops, prefix);
+        }
+    };
+    public static ResourceLocation ID = Miapi.id("require_same");
+    @CodecBehavior.Optional
+    @AutoCodec.Name("require_same")
     public boolean requireSame;
 
     @Override
@@ -26,7 +48,7 @@ public class SameBlockModifier implements MiningModifier {
     }
 
     @Override
-    public ResourceLocation getID(){
+    public ResourceLocation getID() {
         return ID;
     }
 }

@@ -9,7 +9,7 @@ import java.util.Optional;
 public class ChildCondition implements ModuleCondition {
     public static Codec<ChildCondition> CODEC = RecordCodecBuilder.create((instance) ->
             instance.group(
-                    ConditionManager.CONDITION_CODEC.fieldOf("conditions")
+                    ConditionManager.CONDITION_CODEC.fieldOf("condition")
                             .forGetter(ChildCondition::getCondition)
             ).apply(instance, ChildCondition::new));
     public ModuleCondition condition;

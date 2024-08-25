@@ -2,6 +2,7 @@ package smartin.miapi.modules.properties.mining.mode;
 
 import com.mojang.serialization.MapCodec;
 import com.redpxnda.nucleus.codec.auto.AutoCodec;
+import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
 import dev.architectury.event.events.common.TickEvent;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
@@ -26,8 +27,10 @@ public class StaggeredMiningMode implements MiningMode {
             currentTicks.forEach(server::execute);
         }));
     }
-
+    @CodecBehavior.Optional
     public float speed = 1.0f;
+    @CodecBehavior.Optional
+    @AutoCodec.Name("durability_break_chance")
     public double durabilityBreakChance = 1.0;
 
     @Override

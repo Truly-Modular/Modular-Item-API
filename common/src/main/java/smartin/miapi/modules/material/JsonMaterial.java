@@ -75,7 +75,7 @@ public class JsonMaterial implements Material {
                 FakeTranslation.translations.put(element.get("translation").getAsString(), element.get("fake_translation").getAsString());
             }
             if (getTranslation().getString().contains(".")) {
-                Miapi.LOGGER.error("Material " + getID().toString() + " likely has a broken Translation!");
+                Miapi.LOGGER.error("Material " + getID().toString() + " likely has a broken Translation!+ The correct key would be miapi.material." + getStringID());
             }
         }
         mergeJson(rawJson, isClient);

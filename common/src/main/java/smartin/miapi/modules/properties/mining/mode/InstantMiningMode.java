@@ -2,6 +2,7 @@ package smartin.miapi.modules.properties.mining.mode;
 
 import com.mojang.serialization.MapCodec;
 import com.redpxnda.nucleus.codec.auto.AutoCodec;
+import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -21,6 +22,8 @@ public class InstantMiningMode implements MiningMode {
     public static MapCodec<InstantMiningMode> CODEC = AutoCodec.of(InstantMiningMode.class);
     public static ResourceLocation ID = Miapi.id("instant");
 
+    @CodecBehavior.Optional
+    @AutoCodec.Name("durability_break_chance")
     public double durabilityBreakChance = 1.0;
 
     @Override

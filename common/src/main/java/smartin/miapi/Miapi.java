@@ -108,8 +108,6 @@ public class Miapi {
 
         registerReloadHandler(ReloadEvents.MAIN, "miapi/modules", RegistryInventory.modules,
                 (isClient, path, data) -> ItemModule.loadFromData(path, data, isClient), -0.5f);
-        registerReloadHandler(ReloadEvents.MAIN, "miapi/modules", RegistryInventory.modules,
-                (isClient, path, data) -> ItemModule.loadFromData(path, data, isClient), -0.5f);
         registerReloadHandler(ReloadEvents.MAIN, "miapi/module_extensions", Collections.synchronizedMap(new LinkedHashMap<>()),
                 (isClient, path, data) -> ItemModule.loadModuleExtension(path, data, isClient), -0.4f);
         ReloadEvents.END.subscribe(isClient -> {

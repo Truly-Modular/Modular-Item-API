@@ -2,6 +2,7 @@ package smartin.miapi.modules.properties.mining.shape;
 
 import com.mojang.serialization.MapCodec;
 import com.redpxnda.nucleus.codec.auto.AutoCodec;
+import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
@@ -19,9 +20,12 @@ import java.util.List;
 public class CubeMiningShape implements MiningShape {
     public static MapCodec<CubeMiningShape> CODEC = AutoCodec.of(CubeMiningShape.class);
     public static ResourceLocation ID = Miapi.id("cube");
-    public int width;
-    public int height;
-    public int depth;
+    @CodecBehavior.Optional
+    public int width = 1;
+    @CodecBehavior.Optional
+    public int height = 1;
+    @CodecBehavior.Optional
+    public int depth = 1;
 
     @Override
     public List<BlockPos> getMiningBlocks(Level world, BlockPos pos, Direction face) {
