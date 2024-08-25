@@ -20,6 +20,7 @@
         "EndermanEntityMixin",
         "EnderpearlEntityMixin",
         "EntityMixin",
+        "ExperienceDroppingBlockAccessor",
         "FireworkRocketEntityMixin",
         "ForgingScreenHandlerAccessor",
         "HoeItemAccessor",
