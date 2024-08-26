@@ -5,3 +5,4 @@
 - blocked capes from rendering when wearing modular elytra
 - added slashing mechanic
 - fixed bug related to collectors
+- fixed crash related to model loading when creating an item

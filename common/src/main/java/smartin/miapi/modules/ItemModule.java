@@ -272,8 +272,8 @@ public class ItemModule {
      * @return the module instance associated with the given ItemStack
      */
     public static ModuleInstance getModules(ItemStack stack) {
-        if(ReloadEvents.isInReload()){
-            if(MiapiConfig.INSTANCE.server.other.verboseLogging){
+        if (ReloadEvents.isInReload()) {
+            if (MiapiConfig.INSTANCE.server.other.verboseLogging) {
                 //LOGGER.info("Item cannot have modules during a reload.");
             }
             return new ModuleInstance(new ItemModule("empty", new HashMap<>()));
@@ -417,18 +417,20 @@ public class ItemModule {
         @Override
         public void write(JsonWriter out, ModuleInstance value) throws IOException {
             out.beginObject();
-            out.name("module").value(value.module.name);
-            if (value.moduleData != null) {
-                out.name("moduleData").jsonValue(gson.toJson(value.moduleData));
-            } else {
-                Map<String, String> moduleData = new HashMap<>();
-                out.name("moduleData").jsonValue(gson.toJson(moduleData));
-            }
-            if (value.subModules != null) {
-                out.name("subModules").jsonValue(gson.toJson(value.subModules));
-            } else {
-                Map<String, String> subModules = new HashMap<>();
-                out.name("subModules").jsonValue(gson.toJson(subModules));
+            if (value.module.name != null) {
+                out.name("module").value(value.module.name);
+                if (value.moduleData != null) {
+                    out.name("moduleData").jsonValue(gson.toJson(value.moduleData));
+                } else {
+                    Map<String, String> moduleData = new HashMap<>();
+                    out.name("moduleData").jsonValue(gson.toJson(moduleData));
+                }
+                if (value.subModules != null) {
+                    out.name("subModules").jsonValue(gson.toJson(value.subModules));
+                } else {
+                    Map<String, String> subModules = new HashMap<>();
+                    out.name("subModules").jsonValue(gson.toJson(subModules));
+                }
             }
             out.endObject();
         }
@@ -496,7 +498,11 @@ public class ItemModule {
          * @param module the item module for the module instance
          */
         public ModuleInstance(ItemModule module) {
-            this.module = module;
+            if (module == null) {
+                this.module = ItemModule.empty;
+            } else {
+                this.module = module;
+            }
         }
 
         /**

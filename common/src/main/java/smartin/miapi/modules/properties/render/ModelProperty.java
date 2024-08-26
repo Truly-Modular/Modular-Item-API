@@ -341,7 +341,7 @@ public class ModelProperty implements RenderProperty {
                 String path = filePath.replace(materialKey, "default");
                 JsonUnbakedModel model = loadModelFromFilePath(path);
                 models.put("default", model);
-            } catch (FileNotFoundException fileNotFoundException) {
+            } catch (RuntimeException | FileNotFoundException fileNotFoundException) {
                 throw new RuntimeException(fileNotFoundException);
             }
             MaterialProperty.getTextureKeys().forEach((path) -> {
@@ -351,14 +351,14 @@ public class ModelProperty implements RenderProperty {
                     if (model != null) {
                         models.put(path, model);
                     }
-                } catch (FileNotFoundException ignored) {
+                } catch (RuntimeException | FileNotFoundException ignored) {
                 }
             });
         } else {
             try {
                 JsonUnbakedModel model = loadModelFromFilePath(filePath);
                 models.put("default", model);
-            } catch (FileNotFoundException fileNotFoundException) {
+            } catch (RuntimeException | FileNotFoundException fileNotFoundException) {
                 throw new RuntimeException(fileNotFoundException);
             }
         }
