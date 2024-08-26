@@ -2,19 +2,27 @@ package smartin.miapi.fabric;
 
 import dev.architectury.platform.Platform;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.item.v1.EnchantingContext;
+import net.fabricmc.fabric.api.item.v1.EnchantmentEvents;
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.ResourceReloadListenerKeys;
+import net.fabricmc.fabric.api.util.TriState;
+import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.attributes.RangedAttribute;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.Enchantment;
 import smartin.miapi.Environment;
 import smartin.miapi.Miapi;
 import smartin.miapi.fabric.compat.ZenithCompat;
+import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.modules.properties.attributes.AttributeProperty;
+import smartin.miapi.modules.properties.enchanment.AllowedEnchantments;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.util.Collection;
@@ -34,6 +42,14 @@ public class MiapiFabric implements ModInitializer {
         if (Environment.isClient()) {
             MiapiClientFabric.setupClient();
         }
+        EnchantmentEvents.ALLOW_ENCHANTING.register((enchantment, target, enchantingContext) -> {
+            if (
+                    target.getItem() instanceof ModularItem &&
+                    (AllowedEnchantments.isAllowed(target, enchantment, false))) {
+                return TriState.TRUE;
+            }
+            return TriState.DEFAULT;
+        });
 
         //ATTRIBUTE REPLACEMENT
         RegistryInventory.registerAtt("generic.swim_speed", true, () ->

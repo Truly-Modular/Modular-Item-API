@@ -6,7 +6,6 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import smartin.miapi.item.modular.ModularItem;
-import smartin.miapi.modules.properties.enchanment.AllowedEnchantments;
 
 @Mixin(Enchantment.class)
 public abstract class EnchantmentMixin {
@@ -15,7 +14,7 @@ public abstract class EnchantmentMixin {
     private boolean miapi$adjustPrimaryItem(boolean original, ItemStack itemStack) {
         if (itemStack.getItem() instanceof ModularItem) {
             Enchantment enchantment = (Enchantment) (Object) (this);
-            return AllowedEnchantments.isPrimaryAllowed(itemStack, enchantment, original);
+            //return AllowedEnchantments.isPrimaryAllowed(itemStack, enchantment, original);
         }
         return original;
     }
@@ -24,7 +23,7 @@ public abstract class EnchantmentMixin {
     private boolean miapi$adjustSupportedItem(boolean original, ItemStack itemStack) {
         if (itemStack.getItem() instanceof ModularItem) {
             Enchantment enchantment = (Enchantment) (Object) (this);
-            return AllowedEnchantments.isAllowed(itemStack, enchantment, original);
+            //return AllowedEnchantments.isAllowed(itemStack, enchantment, original);
         }
         return original;
     }
@@ -33,7 +32,7 @@ public abstract class EnchantmentMixin {
     private boolean miapi$adjustcanEnchant(boolean original, ItemStack itemStack) {
         if (itemStack.getItem() instanceof ModularItem) {
             Enchantment enchantment = (Enchantment) (Object) (this);
-            return AllowedEnchantments.isAllowed(itemStack, enchantment, original);
+            //return AllowedEnchantments.isAllowed(itemStack, enchantment, original);
         }
         return original;
     }

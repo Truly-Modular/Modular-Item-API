@@ -70,6 +70,7 @@ import smartin.miapi.modules.properties.*;
 import smartin.miapi.modules.properties.armor.*;
 import smartin.miapi.modules.properties.attributes.AttributeProperty;
 import smartin.miapi.modules.properties.attributes.AttributeSplitProperty;
+import smartin.miapi.modules.properties.enchanment.AllowedEnchantments;
 import smartin.miapi.modules.properties.onHit.entity.AquaticDamage;
 import smartin.miapi.modules.properties.onHit.entity.IllagerBane;
 import smartin.miapi.modules.properties.onHit.entity.SmiteDamage;
@@ -490,11 +491,11 @@ public class RegistryInventory {
             registerMiapi(moduleProperties, HandheldItemProperty.KEY, new HandheldItemProperty());
             registerMiapi(moduleProperties, AttributeSplitProperty.KEY, new AttributeSplitProperty());
             registerMiapi(moduleProperties, FakeEnchantmentProperty.KEY, new FakeEnchantmentProperty());
+            registerMiapi(moduleProperties, AllowedEnchantments.KEY, new AllowedEnchantments());
             //compat
             //registerMiapi(moduleProperties, BetterCombatProperty.KEY, new BetterCombatProperty());
             //TODO: added this to cleanup logs. this needs to be revisited later
             registerMiapi(moduleProperties, Miapi.id("better_combat_config"), new ServerReplaceProperty());
-            registerMiapi(moduleProperties, Miapi.id("enchants"), new ServerReplaceProperty());
             //registerMiapi(moduleProperties, ApoliPowersProperty.KEY, new ApoliPowersProperty());
             //registerMiapi(moduleProperties, TreechopProperty.KEY, new TreechopProperty());
 
