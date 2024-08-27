@@ -148,8 +148,12 @@ public class OverlayModelProperty extends CodecProperty<List<OverlayModelPropert
                         return ColorProvider.getProvider(colorProvider, itemStack, current);
                     }
                     if (colorProvider.startsWith("material:")) {
-                        String materialId = colorProvider.split(":")[1];
-                        return new ColorProvider.MaterialColorProvider(MaterialProperty.materials.get(materialId));
+                        ResourceLocation materialId = ResourceLocation.parse(colorProvider.split(":", 2)[1]);
+                        smartin.miapi.modules.material.Material material = MaterialProperty.materials.get(materialId);
+                        if (material != null) {
+                            return new ColorProvider.MaterialColorProvider(MaterialProperty.materials.get(materialId));
+                        }
+                        Miapi.LOGGER.error("Could not find Material " + materialId + " for Color Provider ");
                     }
                 }
             }

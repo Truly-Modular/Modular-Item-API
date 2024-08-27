@@ -206,6 +206,7 @@ public class CraftAction {
                 linkedInventory.setItem(i, itemStacks.get(i - start));
             }
         });
+        ComponentApplyProperty.updateItemStack(craftingStack[0], player.level().registryAccess());
         ModuleInstance parsingInstance = ItemModule.getModules(craftingStack[0]);
         for (int i = slotLocation.size() - 1; i >= 0; i--) {
             parsingInstance = parsingInstance.getSubModuleMap().get(slotLocation.get(i));

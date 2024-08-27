@@ -110,7 +110,7 @@ public class Miapi {
                 (isClient, path, data) -> ItemModule.loadFromData(path, data, isClient), -0.5f);
         registerReloadHandler(ReloadEvents.MAIN, "miapi/module_extensions", Collections.synchronizedMap(new LinkedHashMap<>()),
                 (isClient, path, data) -> ItemModule.loadModuleExtension(path, data, isClient), -0.4f);
-        ReloadEvents.END.subscribe(isClient -> {
+        ReloadEvents.END.subscribe((isClient, registryAccess) -> {
             RegistryInventory.modules.register(ItemModule.empty.id(), ItemModule.empty);
             RegistryInventory.modules.register(ItemModule.internal.id(), ItemModule.internal);
             Miapi.LOGGER.info("Loaded " + RegistryInventory.modules.getFlatMap().size() + " Modules");
@@ -240,7 +240,7 @@ public class Miapi {
             float priority) {
         if (syncToClient)
             ReloadEvents.registerDataPackPathToSync(MOD_ID, location);
-        event.subscribe(isClient -> {
+        event.subscribe((isClient, registryAccess) -> {
             beforeLoop.accept(isClient);
             ReloadEvents.DATA_PACKS.forEach((path, data) -> {
                 if (path.getPath().startsWith(location + "/")) {

@@ -46,7 +46,7 @@ public class SkinOptions implements EditOption {
         Miapi.registerReloadHandler(ReloadEvents.MAIN, "miapi/skins/tab", tabMap, (isClient, path, data) -> {
             loadTabData(data);
         }, 1);
-        ReloadEvents.END.subscribe((isClient -> {
+        ReloadEvents.END.subscribe(((isClient, registryAccess) -> {
             int size = 0;
             for (Map<String, Skin> skinMap : skins.values()) {
                 size += skinMap.size();

@@ -97,10 +97,10 @@ public class MiapiClient {
                 Minecraft.getInstance().execute(() -> {
                     Map<ResourceLocation, String> cacheDatapack = new LinkedHashMap<>(ReloadEvents.DATA_PACKS);
                     ReloadEvents.reloadCounter++;
-                    ReloadEvents.START.fireEvent(true);
+                    ReloadEvents.START.fireEvent(true, Minecraft.getInstance().level.registryAccess());
                     ReloadEvents.DataPackLoader.trigger(cacheDatapack);
-                    ReloadEvents.MAIN.fireEvent(true);
-                    ReloadEvents.END.fireEvent(true);
+                    ReloadEvents.MAIN.fireEvent(true, Minecraft.getInstance().level.registryAccess());
+                    ReloadEvents.END.fireEvent(true, Minecraft.getInstance().level.registryAccess());
                     ReloadEvents.reloadCounter--;
                     ModularItemCache.discardCache();
                 });
@@ -131,14 +131,14 @@ public class MiapiClient {
         ClientReloadShadersEvent.EVENT.register((resourceFactory, asd) -> ModularItemCache.discardCache());
         RegistryInventory.modularItems.addCallback((item -> {
             ModularModelPredicateProvider.registerModelOverride(item, Miapi.id("damage"), (stack, world, entity, seed) -> stack.isDamageableItem() && stack.getDamageValue() > 0 ? ((float) stack.getDamageValue() / stack.getMaxDamage()) : 0.0f);
-            ModularModelPredicateProvider.registerModelOverride(item, Miapi.id( "damaged"), (stack, world, entity, seed) -> stack.isDamaged() ? 1.0F : 0.0F);
+            ModularModelPredicateProvider.registerModelOverride(item, Miapi.id("damaged"), (stack, world, entity, seed) -> stack.isDamaged() ? 1.0F : 0.0F);
         }));
-        ReloadEvents.START.subscribe(isClient -> {
+        ReloadEvents.START.subscribe((isClient, registryAccess) -> {
             if (isClient) {
                 StatListWidget.onReload();
             }
         });
-        ReloadEvents.END.subscribe(isClient -> {
+        ReloadEvents.END.subscribe((isClient, registryAccess) -> {
             if (isClient) {
                 StatListWidget.reloadEnd();
             }
@@ -150,10 +150,10 @@ public class MiapiClient {
 
     @Environment(EnvType.CLIENT)
     public static void registerAnimations(Item item) {
-        ModularModelPredicateProvider.registerModelOverride(item, Miapi.id( "damage"), (stack, world, entity, seed) -> {
+        ModularModelPredicateProvider.registerModelOverride(item, Miapi.id("damage"), (stack, world, entity, seed) -> {
             return stack.isDamageableItem() && stack.isDamaged() ? 0.0f : (float) stack.getMaxDamage() / (stack.getMaxDamage() - stack.getDamageValue());
         });
-        ModularModelPredicateProvider.registerModelOverride(item, Miapi.id( "damaged"), (stack, world, entity, seed) -> {
+        ModularModelPredicateProvider.registerModelOverride(item, Miapi.id("damaged"), (stack, world, entity, seed) -> {
             return stack.isDamaged() ? 0.0f : 1.0f;
         });
     }

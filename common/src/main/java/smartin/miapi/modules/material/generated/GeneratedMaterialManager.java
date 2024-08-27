@@ -29,7 +29,7 @@ public class GeneratedMaterialManager {
     public static final List<GeneratedMaterialFromCopy> basicGeneratedMaterials = new ArrayList<>();
 
     public static void setup() {
-        ReloadEvents.MAIN.subscribe(isClient -> {
+        ReloadEvents.MAIN.subscribe((isClient, registryAccess) -> {
             if (!isClient) {
                 onReloadServer();
             } else {

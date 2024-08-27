@@ -40,7 +40,7 @@ public class ItemToModularConverter implements ModularItemStackConverter.Modular
             }
         }, 1);
 
-        ReloadEvents.END.subscribe((isClient -> {
+        ReloadEvents.END.subscribe(((isClient, registryAccess) -> {
             Miapi.LOGGER.info("Loaded " + regexes.size() + " Modular Converters");
         }));
     }

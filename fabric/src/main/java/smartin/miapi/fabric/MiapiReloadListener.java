@@ -1,6 +1,7 @@
 package smartin.miapi.fabric;
 
 import com.google.gson.JsonObject;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.server.packs.resources.Resource;
@@ -17,16 +18,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 
 public class MiapiReloadListener implements PreparableReloadListener {
+    Supplier<RegistryAccess> registryAccess;
     static long timeStart;
+
+    public MiapiReloadListener(Supplier<RegistryAccess> registryAccess) {
+        this.registryAccess = registryAccess;
+    }
 
     public CompletableFuture load(ResourceManager manager, ProfilerFiller profiler, Executor executor) {
         ReloadEvents.reloadCounter++;
         timeStart = System.nanoTime();
-        ReloadEvents.START.fireEvent(false);
+        ReloadEvents.START.fireEvent(false, registryAccess.get());
         Map<ResourceLocation, String> data = new LinkedHashMap<>();
 
         ReloadEvents.syncedPaths.forEach((modID, dataPaths) -> {
@@ -81,8 +88,8 @@ public class MiapiReloadListener implements PreparableReloadListener {
 
 
             ReloadEvents.DataPackLoader.trigger(filteredMap);
-            ReloadEvents.MAIN.fireEvent(false);
-            ReloadEvents.END.fireEvent(false);
+            ReloadEvents.MAIN.fireEvent(false, registryAccess.get());
+            ReloadEvents.END.fireEvent(false, registryAccess.get());
             Miapi.LOGGER.info("Server load took " + (double) (System.nanoTime() - timeStart) / 1000 / 1000 + " ms");
             if (Miapi.server != null) {
                 Miapi.server.getPlayerList().getPlayers().forEach(ReloadEvents::triggerReloadOnClient);
@@ -96,7 +103,7 @@ public class MiapiReloadListener implements PreparableReloadListener {
         return load(resourceManager, preparationsProfiler, backgroundExecutor)
                 .thenCompose(preparationBarrier::wait)
                 .thenAcceptAsync(a -> {
-            apply(a, resourceManager, reloadProfiler, gameExecutor);
-        });
+                    apply(a, resourceManager, reloadProfiler, gameExecutor);
+                });
     }
 }

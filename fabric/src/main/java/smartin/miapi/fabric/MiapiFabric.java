@@ -2,21 +2,19 @@ package smartin.miapi.fabric;
 
 import dev.architectury.platform.Platform;
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.item.v1.EnchantingContext;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.item.v1.EnchantmentEvents;
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.ResourceReloadListenerKeys;
 import net.fabricmc.fabric.api.util.TriState;
-import net.minecraft.core.Holder;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.attributes.RangedAttribute;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.enchantment.Enchantment;
 import smartin.miapi.Environment;
 import smartin.miapi.Miapi;
 import smartin.miapi.fabric.compat.ZenithCompat;
@@ -29,6 +27,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
+import java.util.function.Supplier;
 
 import static smartin.miapi.attributes.AttributeRegistry.SWIM_SPEED;
 
@@ -60,8 +59,15 @@ public class MiapiFabric implements ModInitializer {
             TrechopUtilFabric.loadTreechopCompat();
         }
 
-        MiapiReloadListener listener = new MiapiReloadListener();
-
+        MiapiReloadListener listener = new MiapiReloadListener(new Supplier<RegistryAccess>() {
+            @Override
+            public RegistryAccess get() {
+                if (Miapi.server != null) {
+                    return Miapi.server.registryAccess();
+                }
+                return null;
+            }
+        });
 
         ResourceManagerHelper.get(PackType.SERVER_DATA).registerReloadListener(new IdentifiableResourceReloadListener() {
             @Override

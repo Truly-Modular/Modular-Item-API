@@ -10,7 +10,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import smartin.miapi.Miapi;
-import smartin.miapi.modules.properties.mining.MiningLevelProperty;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -20,6 +19,7 @@ public class StaggeredMiningMode implements MiningMode {
     public static List<Runnable> nextTickTask = new ArrayList<>();
     public static MapCodec<StaggeredMiningMode> CODEC = AutoCodec.of(StaggeredMiningMode.class);
     public static ResourceLocation ID = Miapi.id("staggered");
+
     static {
         TickEvent.SERVER_POST.register((server -> {
             List<Runnable> currentTicks = new ArrayList<>(nextTickTask);
@@ -27,6 +27,7 @@ public class StaggeredMiningMode implements MiningMode {
             currentTicks.forEach(server::execute);
         }));
     }
+
     @CodecBehavior.Optional
     public float speed = 1.0f;
     @CodecBehavior.Optional
@@ -42,8 +43,7 @@ public class StaggeredMiningMode implements MiningMode {
             int success = 0;
             do {
                 pos = reducedList.remove(0);
-                if (world.destroyBlock(pos, MiningLevelProperty.mineBlock(itemStack, world, world.getBlockState(pos), pos, player) && !player.isCreative(), player))
-                {
+                if (tryBreakBlock(player, pos)) {
                     success++;
                     if (!player.isCreative()) {
                         removeDurability(durabilityBreakChance, itemStack, world, player);
@@ -60,7 +60,7 @@ public class StaggeredMiningMode implements MiningMode {
     }
 
     @Override
-    public ResourceLocation getID(){
+    public ResourceLocation getID() {
         return ID;
     }
 }

@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import dev.architectury.event.EventResult;
 import dev.architectury.event.events.common.BlockEvent;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -25,10 +26,7 @@ import smartin.miapi.modules.properties.mining.shape.VeinMiningShape;
 import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.MergeType;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * This Property Manages the complicated task of Mining Multiple Blocks when only one is mined
@@ -41,6 +39,7 @@ public class MiningShapeProperty extends CodecProperty<List<MiningShapeEntry>> {
     public static Map<ResourceLocation, MapCodec<? extends MiningShape>> miningShapeMap = new HashMap<>();
     public static Map<ResourceLocation, MapCodec<? extends MiningMode>> miningModeMap = new HashMap<>();
     public static Map<ResourceLocation, Codec<? extends MiningModifier>> miningModifierMap = new HashMap<>();
+    public static List<BlockPos> blockedPositions = Collections.synchronizedList(new ArrayList<>());
 
     @Override
     public List<MiningShapeEntry> merge(List<MiningShapeEntry> left, List<MiningShapeEntry> right, MergeType mergeType) {
@@ -52,7 +51,7 @@ public class MiningShapeProperty extends CodecProperty<List<MiningShapeEntry>> {
         super(Codec.list(MiningShapeEntry.CODEC));
         property = this;
         BlockEvent.BREAK.register((level, pos, state, player, xp) -> {
-            if (!level.isClientSide() && !player.isShiftKeyDown()) {
+            if (!level.isClientSide() && !player.isShiftKeyDown() && !blockedPositions.contains(pos)) {
                 ItemStack miningItem = player.getMainHandItem();
                 List<MiningShapeEntry> miningShapeJsons = getData(miningItem).orElse(new ArrayList<>());
                 HitResult hitResult = player.pick(player.getAttributeValue(Attributes.BLOCK_INTERACTION_RANGE), 0, false);

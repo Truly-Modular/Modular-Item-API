@@ -4,7 +4,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.serialization.Codec;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -21,7 +20,6 @@ import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Executor;
 
 /**
  * This is the Property relating to materials of a Module
@@ -90,7 +88,7 @@ public class MaterialProperty extends CodecProperty<ResourceLocation> {
                 Miapi.LOGGER.error("Miapi could not find Material for Material extension " + path);
             }
         }, -1.5f);
-        ReloadEvents.END.subscribe((isClient) -> {
+        ReloadEvents.END.subscribe((isClient, registryAccess) -> {
             if (isClient) {
                 Minecraft.getInstance().execute(() -> {
                     RenderSystem.assertOnRenderThread();
@@ -99,7 +97,7 @@ public class MaterialProperty extends CodecProperty<ResourceLocation> {
 
             }
         }, 1);
-        ReloadEvents.END.subscribe((isClient -> {
+        ReloadEvents.END.subscribe(((isClient, registryAccess) -> {
             Miapi.LOGGER.info("Loaded " + materials.size() + " Materials");
         }));
     }

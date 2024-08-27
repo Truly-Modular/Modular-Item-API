@@ -22,7 +22,7 @@ public class SpriteLoader {
     public static List<ResourceLocation> miapiModels = new ArrayList<>();
 
     public static void setup() {
-        ReloadEvents.START.subscribe(isClient -> ModularItemCache.discardCache());
+        ReloadEvents.START.subscribe((isClient, registryAccess) -> ModularItemCache.discardCache());
     }
 
     public static void clientStart() {

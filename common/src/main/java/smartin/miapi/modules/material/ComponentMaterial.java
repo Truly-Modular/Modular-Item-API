@@ -78,7 +78,7 @@ public class ComponentMaterial extends JsonMaterial {
     }
 
     public static void setup() {
-        ReloadEvents.MAIN.subscribe(isClient -> {
+        ReloadEvents.MAIN.subscribe((isClient, registryAccess) -> {
             JsonObject object = new JsonObject();
             materials.put(
                     KEY,

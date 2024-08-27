@@ -34,7 +34,7 @@ public class AllowedSlots extends CodecProperty<List<String>> {
                 }
             });
         });
-        ReloadEvents.START.subscribe(isClient -> {
+        ReloadEvents.START.subscribe((isClient, registryAccess) -> {
             allowedInMap.clear();
         });
         property = this;

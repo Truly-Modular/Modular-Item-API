@@ -31,10 +31,7 @@ import smartin.miapi.modules.properties.attributes.AttributeUtil;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.registries.FakeTranslation;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class GeneratedMaterial implements Material {
@@ -43,7 +40,7 @@ public class GeneratedMaterial implements Material {
     ResourceLocation key;
     List<String> groups = new ArrayList<>();
     List<String> textureKeys;
-    Map<String, Double> stats;
+    Map<String, Double> stats = new HashMap<>();
     TagKey<Block> incorrectForTool;
     GrayscalePaletteColorer palette;
     @Nullable
@@ -113,7 +110,7 @@ public class GeneratedMaterial implements Material {
             groups.add("crystal");
         }
         if (smartin.miapi.Environment.isClient()) {
-            setupClient();
+            //setupClient();
         }
         stats.put("durability", (double) toolMaterial.getUses());
         stats.put("mining_speed", (double) toolMaterial.getSpeed());

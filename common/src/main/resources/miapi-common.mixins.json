@@ -27,7 +27,6 @@
         "PiglinBrainMixin",
         "PlayerEntityMixin",
         "PowderSnowBlockMixin",
-        "RegistryOpsAccessor",
         "ShovelItemAccessor",
         "SmithingScreenHandlerAccessor",
         "SmithingScreenHandlerMixin",

@@ -45,7 +45,7 @@ public class SynergyManager {
         Miapi.registerReloadHandler(ReloadEvents.MAIN, "miapi/synergies", maps, (isClient, path, data) -> {
             load(data, path);
         }, 2);
-        ReloadEvents.END.subscribe((isClient -> {
+        ReloadEvents.END.subscribe(((isClient, registryAccess) -> {
             int size = 0;
             for (List<Synergy> synergies : maps.values()) {
                 size += synergies.size();

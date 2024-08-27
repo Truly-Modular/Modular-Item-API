@@ -6,6 +6,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import smartin.miapi.modules.properties.mining.MiningShapeProperty;
 import smartin.miapi.modules.properties.mining.modifier.MiningModifier;
 
 import java.util.List;
@@ -33,5 +34,12 @@ public interface MiningMode {
     }
 
     ResourceLocation getID();
+
+    default boolean tryBreakBlock(ServerPlayer player, BlockPos pos) {
+        MiningShapeProperty.blockedPositions.add(pos);
+        boolean didBreak = player.gameMode.destroyBlock(pos);
+        MiningShapeProperty.blockedPositions.remove(pos);
+        return didBreak;
+    }
 
 }

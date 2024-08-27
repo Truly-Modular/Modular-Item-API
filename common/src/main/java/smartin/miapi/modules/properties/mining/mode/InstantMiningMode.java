@@ -9,7 +9,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import smartin.miapi.Miapi;
-import smartin.miapi.modules.properties.mining.MiningLevelProperty;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -32,8 +31,7 @@ public class InstantMiningMode implements MiningMode {
         reducedList.sort(Comparator.comparingDouble((pos) -> pos.distSqr(origin)));
         posList.forEach(blockPos -> {
             if (itemStack.getMaxDamage() - itemStack.getDamageValue() > 1 &&
-                world.destroyBlock(blockPos,
-                        MiningLevelProperty.mineBlock(itemStack, world, world.getBlockState(blockPos), blockPos, player) && !player.isCreative(), player)
+                tryBreakBlock(player,blockPos)
             ) {
                 if (!player.isCreative()) {
                     removeDurability(durabilityBreakChance, itemStack, world, player);

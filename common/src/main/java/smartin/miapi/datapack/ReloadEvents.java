@@ -4,12 +4,14 @@ import com.mojang.serialization.Codec;
 import dev.architectury.event.events.common.PlayerEvent;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Environment;
 import smartin.miapi.Miapi;
 import smartin.miapi.network.Networking;
@@ -123,10 +125,10 @@ public class ReloadEvents {
         PlayerEvent.PLAYER_JOIN.register((ReloadEvents::triggerReloadOnClient));
 
 
-        START.subscribe(isClient -> {
+        START.subscribe((isClient, registryAccess) -> {
             reloadCounter++;
         });
-        END.subscribe(isClient -> {
+        END.subscribe((isClient, registryAccess) -> {
             reloadCounter--;
         });
 
@@ -182,9 +184,13 @@ public class ReloadEvents {
                 receivedSyncer.clear();
                 Minecraft.getInstance().execute(() -> {
                     reloadCounter++;
-                    ReloadEvents.START.fireEvent(true);
-                    ReloadEvents.MAIN.fireEvent(true);
-                    ReloadEvents.END.fireEvent(true);
+                    RegistryAccess access = null;
+                    if (Minecraft.getInstance().level != null) {
+                        access = Minecraft.getInstance().level.registryAccess();
+                    }
+                    ReloadEvents.START.fireEvent(true, access);
+                    ReloadEvents.MAIN.fireEvent(true, access);
+                    ReloadEvents.END.fireEvent(true, access);
                     reloadCounter--;
                     Miapi.LOGGER.info("Client load took " + (double) (System.nanoTime() - clientReloadTimeStart) / 1000 / 1000 + " ms");
                 });
@@ -205,14 +211,14 @@ public class ReloadEvents {
          *
          * @param isClient a boolean indicating whether the reload event occurred on the client side (true) or the server side (false)
          */
-        void onEvent(boolean isClient);
+        void onEvent(boolean isClient, @Nullable RegistryAccess registryAccess);
     }
 
 
     /**
      * A class for handling reload events. Instances of this class represent specific stages of the reload process, and
      * can be subscribed to using the {@link #subscribe(EventListener)} and {@link #subscribe(EventListener, float)} methods.
-     * When a reload event is fired using the {@link #fireEvent(boolean)} method, the registered listeners will be called in
+     * When a reload event is fired using the {@link #fireEvent(boolean, RegistryAccess)} method, the registered listeners will be called in
      * order of their priority (with lower-priority listeners being called first).
      */
     public static class ReloadEvent {
@@ -255,12 +261,12 @@ public class ReloadEvents {
          *
          * @param isClient a boolean indicating whether the event is occurring on the client side (true) or the server side (false)
          */
-        public void fireEvent(boolean isClient) {
+        public void fireEvent(boolean isClient, @Nullable RegistryAccess registryAccess) {
             mainListeners.entrySet().stream()
                     .sorted(Map.Entry.comparingByValue()).forEach(eventListenerFloatEntry -> {
                         try {
-                            eventListenerFloatEntry.getKey().onEvent(isClient);
-                        } catch (Exception e) {
+                            eventListenerFloatEntry.getKey().onEvent(isClient, registryAccess);
+                        } catch (RuntimeException e) {
                             Miapi.LOGGER.error("Exception during reload", e);
                         }
                     });
