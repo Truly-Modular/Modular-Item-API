@@ -85,9 +85,11 @@ public abstract class ToolAbilities implements ItemUseDefaultCooldownAbility<Too
         return CODEC.decode(ops, prefix).getOrThrow().getFirst();
     }
 
-    public void initialize(ToolAbilityContext data, ModuleInstance moduleInstance) {
-        data.cooldown.initialize(moduleInstance);
-        data.minUseTime.initialize(moduleInstance);
+    public ToolAbilityContext initialize(ToolAbilityContext data, ModuleInstance moduleInstance) {
+        ToolAbilityContext context = new ToolAbilityContext();
+        context.cooldown = data.cooldown.initialize(moduleInstance);
+        context.minUseTime = data.minUseTime.initialize(moduleInstance);
+        return context;
     }
 
     @Override

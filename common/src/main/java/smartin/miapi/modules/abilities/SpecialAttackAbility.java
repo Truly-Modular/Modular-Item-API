@@ -116,8 +116,8 @@ public class SpecialAttackAbility implements
     }
 
     @Override
-    public void initialize(SpecialAttackJson json, ModuleInstance moduleInstance) {
-        json.initialize(moduleInstance);
+    public SpecialAttackJson initialize(SpecialAttackJson json, ModuleInstance moduleInstance) {
+        return json.initialize(moduleInstance);
     }
 
 
@@ -167,12 +167,17 @@ public class SpecialAttackAbility implements
         @CodecBehavior.Optional
         public List<ParticleOptions> particleEffect = new ArrayList<>();
 
-        public void initialize(ModuleInstance moduleInstance) {
-            damage.initialize(moduleInstance);
-            sweeping.initialize(moduleInstance);
-            range.initialize(moduleInstance);
-            minHold.initialize(moduleInstance);
-            cooldown.initialize(moduleInstance);
+        public SpecialAttackJson initialize(ModuleInstance moduleInstance) {
+            SpecialAttackJson specialAttackJson = new SpecialAttackJson();
+            specialAttackJson.damage = damage.initialize(moduleInstance);
+            specialAttackJson.sweeping = sweeping.initialize(moduleInstance);
+            specialAttackJson.range = range.initialize(moduleInstance);
+            specialAttackJson.minHold = minHold.initialize(moduleInstance);
+            specialAttackJson.cooldown = cooldown.initialize(moduleInstance);
+            specialAttackJson.title = title;
+            specialAttackJson.description = description;
+            specialAttackJson.particleEffect = particleEffect;
+            return specialAttackJson;
         }
     }
 }

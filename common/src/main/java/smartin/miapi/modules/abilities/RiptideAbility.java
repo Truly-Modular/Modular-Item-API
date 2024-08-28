@@ -114,8 +114,8 @@ public class RiptideAbility implements ItemUseDefaultCooldownAbility<RiptideAbil
     }
 
     @Override
-    public void initialize(RiptideContextJson json, ModuleInstance moduleInstance) {
-        json.initialize(moduleInstance);
+    public RiptideContextJson initialize(RiptideContextJson json, ModuleInstance moduleInstance) {
+        return json.initialize(moduleInstance);
     }
 
     @Override
@@ -139,22 +139,25 @@ public class RiptideAbility implements ItemUseDefaultCooldownAbility<RiptideAbil
     }
 
     public class RiptideContextJson {
-        public DoubleOperationResolvable cooldown = new DoubleOperationResolvable( 20);
+        public DoubleOperationResolvable cooldown = new DoubleOperationResolvable(20);
         @AutoCodec.Name("min_use")
         public DoubleOperationResolvable minUse = new DoubleOperationResolvable(10);
         @AutoCodec.Name("spin_duration_base")
-        public DoubleOperationResolvable spinDuration = new DoubleOperationResolvable( 20);
+        public DoubleOperationResolvable spinDuration = new DoubleOperationResolvable(20);
         @AutoCodec.Name("riptide_strength")
-        public DoubleOperationResolvable riptideStrength = new DoubleOperationResolvable( 20);
+        public DoubleOperationResolvable riptideStrength = new DoubleOperationResolvable(20);
         @CodecBehavior.Optional
         @AutoCodec.Name("custom_sound")
         public ResourceLocation customSound = null;
 
-        public void initialize(ModuleInstance moduleInstance) {
-            cooldown.initialize(moduleInstance);
-            minUse.initialize(moduleInstance);
-            spinDuration.initialize(moduleInstance);
-            riptideStrength.initialize(moduleInstance);
+        public RiptideContextJson initialize(ModuleInstance moduleInstance) {
+            RiptideContextJson init = new RiptideContextJson();
+            init.cooldown = cooldown.initialize(moduleInstance);
+            init.minUse = minUse.initialize(moduleInstance);
+            init.spinDuration = spinDuration.initialize(moduleInstance);
+            init.riptideStrength = riptideStrength.initialize(moduleInstance);
+            init.customSound = customSound;
+            return init;
         }
 
         SoundEvent resolveSoundEvent(int riptideLevel) {

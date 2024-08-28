@@ -71,16 +71,16 @@ import smartin.miapi.modules.properties.armor.*;
 import smartin.miapi.modules.properties.attributes.AttributeProperty;
 import smartin.miapi.modules.properties.attributes.AttributeSplitProperty;
 import smartin.miapi.modules.properties.enchanment.AllowedEnchantments;
-import smartin.miapi.modules.properties.onHit.entity.AquaticDamage;
-import smartin.miapi.modules.properties.onHit.entity.IllagerBane;
-import smartin.miapi.modules.properties.onHit.entity.SmiteDamage;
-import smartin.miapi.modules.properties.onHit.entity.SpiderDamage;
 import smartin.miapi.modules.properties.enchanment.CraftingEnchantProperty;
 import smartin.miapi.modules.properties.enchanment.EnchantAbilityProperty;
 import smartin.miapi.modules.properties.enchanment.FakeEnchantmentProperty;
 import smartin.miapi.modules.properties.mining.MiningLevelProperty;
 import smartin.miapi.modules.properties.mining.MiningShapeProperty;
 import smartin.miapi.modules.properties.onHit.*;
+import smartin.miapi.modules.properties.onHit.entity.AquaticDamage;
+import smartin.miapi.modules.properties.onHit.entity.IllagerBane;
+import smartin.miapi.modules.properties.onHit.entity.SmiteDamage;
+import smartin.miapi.modules.properties.onHit.entity.SpiderDamage;
 import smartin.miapi.modules.properties.potion.OnDamagedEffects;
 import smartin.miapi.modules.properties.potion.OnHitTargetEffects;
 import smartin.miapi.modules.properties.potion.OnKillEffects;
@@ -199,9 +199,10 @@ public class RegistryInventory {
     public static RecipeSerializer serializer;
     public static RegistrySupplier<EntityType<ItemProjectileEntity>> itemProjectileType = (RegistrySupplier) registerAndSupply(entityTypes, "thrown_item", () ->
             EntityType.Builder.of(ItemProjectileEntity::new, MobCategory.MISC).sized(0.5F, 0.5F).clientTrackingRange(4).updateInterval(20).build("miapi:thrown_item"));
-
+    public static EntityType<ItemProjectileEntity> registeredItemProjectileType;
     static {
         itemProjectileType.listen(e -> {
+            registeredItemProjectileType = e;
             if (Platform.getEnvironment() == Env.CLIENT)
                 MiapiClient.registerEntityRenderer();
         });

@@ -29,6 +29,7 @@ import smartin.miapi.modules.abilities.util.EntityAttributeAbility;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
 import smartin.miapi.modules.properties.BlockProperty;
 import smartin.miapi.modules.properties.LoreProperty;
+import smartin.miapi.modules.properties.util.DoubleOperationResolvable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,7 +57,8 @@ public class BlockAbility extends EntityAttributeAbility<BlockAbility.BlockAbili
     @Override
     protected Multimap<Holder<Attribute>, AttributeModifier> getAttributes(ItemStack itemStack) {
         Multimap<Holder<Attribute>, AttributeModifier> multimap = ArrayListMultimap.create();
-        double value = BlockProperty.property.getValueSafe(itemStack);
+        BlockAbilityJson json = getSpecialContext(itemStack);
+        double value = json.blocking.getValue();
         value = calculate(value);
         multimap.put(Attributes.MOVEMENT_SPEED, new AttributeModifier(id, -(value / 2) / 100, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
         multimap.put(AttributeRegistry.DAMAGE_RESISTANCE, new AttributeModifier(id, value, AttributeModifier.Operation.ADD_VALUE));
@@ -137,9 +139,8 @@ public class BlockAbility extends EntityAttributeAbility<BlockAbility.BlockAbili
         return CODEC.decode(ops, prefix).getOrThrow().getFirst();
     }
 
-    public void initialize(BlockAbilityJson data, ModuleInstance moduleInstance) {
-        data.cooldown.evaluate(moduleInstance);
-        data.minUseTime.evaluate(moduleInstance);
+    public BlockAbilityJson initialize(BlockAbilityJson data, ModuleInstance moduleInstance) {
+        return data.initialize(moduleInstance);
     }
 
     public static class BlockAbilityJson {
@@ -148,6 +149,17 @@ public class BlockAbility extends EntityAttributeAbility<BlockAbility.BlockAbili
         public StatResolver.IntegerFromStat minUseTime = new StatResolver.IntegerFromStat(0);
         @CodecBehavior.Optional
         public StatResolver.IntegerFromStat cooldown = new StatResolver.IntegerFromStat(0);
+        public DoubleOperationResolvable blocking = new DoubleOperationResolvable(10);
 
+
+        public BlockAbilityJson initialize(ModuleInstance moduleInstance) {
+            BlockAbilityJson init = new BlockAbilityJson();
+            init.minUseTime = minUseTime;
+            init.cooldown = cooldown;
+            minUseTime.evaluate(moduleInstance);
+            cooldown.evaluate(moduleInstance);
+            init.blocking = blocking.initialize(moduleInstance);
+            return init;
+        }
     }
 }

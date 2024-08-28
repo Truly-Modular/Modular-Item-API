@@ -10,6 +10,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.resources.RegistryOps;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
@@ -134,7 +135,9 @@ public class ModularWorkBenchEntity extends BlockEntity implements MenuProvider,
 
         if (!getItem().isEmpty()) {
             try {
-                tag.put("item", ItemStack.CODEC.encodeStart(NbtOps.INSTANCE, getItem()).getOrThrow());
+                tag.put("item", ItemStack.CODEC.encodeStart(
+                        RegistryOps.create(NbtOps.INSTANCE, level.registryAccess()),
+                        getItem()).getOrThrow());
             } catch (Exception e) {
                 Miapi.LOGGER.error("Could not save Item in Workbench! this indicated the item is broken and will cause more crashese later on!", e);
                 try {

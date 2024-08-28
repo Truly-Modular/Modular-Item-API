@@ -102,10 +102,8 @@ public class AreaHarvestReplant implements ItemUseDefaultCooldownAbility<AreaHar
         return CODEC.decode(ops, prefix).getOrThrow().getFirst();
     }
 
-    public void initialize(AreaHarvestJson data, ModuleInstance moduleInstance) {
-        data.cooldown.evaluate(moduleInstance);
-        data.minUseTime.evaluate(moduleInstance);
-        data.range.evaluate(moduleInstance);
+    public AreaHarvestJson initialize(AreaHarvestJson data, ModuleInstance moduleInstance) {
+        return data.initialize(moduleInstance);
     }
 
     @Override
@@ -124,6 +122,7 @@ public class AreaHarvestReplant implements ItemUseDefaultCooldownAbility<AreaHar
     }
 
     public static class AreaHarvestJson {
+        //TODO:move to DoubleResovlables?
         @CodecBehavior.Optional
         @AutoCodec.Name("min_hold_time")
         public StatResolver.IntegerFromStat minUseTime = new StatResolver.IntegerFromStat(0);
@@ -131,6 +130,17 @@ public class AreaHarvestReplant implements ItemUseDefaultCooldownAbility<AreaHar
         public StatResolver.IntegerFromStat cooldown = new StatResolver.IntegerFromStat(0);
         @CodecBehavior.Optional
         public StatResolver.IntegerFromStat range = new StatResolver.IntegerFromStat(1);
+
+        public AreaHarvestJson initialize(ModuleInstance moduleInstance) {
+            AreaHarvestJson init = new AreaHarvestJson();
+            init.cooldown = cooldown;
+            init.minUseTime = minUseTime;
+            init.range = range;
+            init.cooldown.evaluate(moduleInstance);
+            init.minUseTime.evaluate(moduleInstance);
+            init.range.evaluate(moduleInstance);
+            return init;
+        }
 
     }
 }

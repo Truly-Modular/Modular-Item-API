@@ -70,13 +70,16 @@ public class AbilityMangerProperty extends CodecProperty<Map<ItemUseAbility<?>, 
     }
 
     public Map<ItemUseAbility<?>, Object> initialize(Map<ItemUseAbility<?>, Object> property, ModuleInstance context) {
-        property.forEach((itemUseAbility, o) -> initialize(itemUseAbility, o, context));
-        return property;
+        Map<ItemUseAbility<?>, Object> initialized = new LinkedHashMap<>();
+        property.forEach((itemUseAbility, o) -> {
+            initialized.put(itemUseAbility, initialize(itemUseAbility, o, context));
+        });
+        return initialized;
     }
 
     @SuppressWarnings("unchecked")
-    private <T> void initialize(ItemUseAbility<T> itemUseAbility, Object value, ModuleInstance moduleInstance) {
-        itemUseAbility.initialize((T) value, moduleInstance);
+    private <T> T initialize(ItemUseAbility<T> itemUseAbility, Object value, ModuleInstance moduleInstance) {
+        return (T) itemUseAbility.initialize((T) value, moduleInstance);
     }
 
     @SuppressWarnings("unchecked")

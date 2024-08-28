@@ -18,6 +18,6 @@ public class AirDragProperty extends DoubleProperty {
     }
 
     public double getValueSafe(ItemStack stack) {
-        return getValue(stack).orElse(0.0);
+        return getValue(stack).orElse(1.0);
     }
 }

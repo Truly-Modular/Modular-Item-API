@@ -17,7 +17,6 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
-import net.minecraft.world.entity.projectile.ThrownTrident;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
@@ -33,8 +32,8 @@ import smartin.miapi.entity.arrowhitbehaviours.ProjectileHitBehaviour;
 import smartin.miapi.events.MiapiProjectileEvents;
 import smartin.miapi.mixin.AbstractArrowAccessor;
 import smartin.miapi.modules.abilities.util.WrappedSoundEvent;
-import smartin.miapi.modules.properties.projectile.AirDragProperty;
 import smartin.miapi.modules.properties.attributes.AttributeUtil;
+import smartin.miapi.modules.properties.projectile.AirDragProperty;
 import smartin.miapi.registries.RegistryInventory;
 
 public class ItemProjectileEntity extends AbstractArrow {
@@ -57,12 +56,11 @@ public class ItemProjectileEntity extends AbstractArrow {
     }
 
     public ItemProjectileEntity(Level world, Position position, ItemStack itemStack) {
-        super(RegistryInventory.itemProjectileType.get(), world);
+        super(RegistryInventory.registeredItemProjectileType, world);
         ItemStack stack = itemStack.copy();
         stack.setCount(1);
         this.thrownStack = stack;
         this.entityData.set(THROWING_STACK, thrownStack);
-        ThrownTrident thrownTrident;
         this.entityData.set(LOYALTY, this.getLoyaltyFromItem(stack));
         this.entityData.set(ENCHANTED, stack.hasFoil());
         this.checkDespawn();
@@ -70,14 +68,15 @@ public class ItemProjectileEntity extends AbstractArrow {
     }
 
     public ItemProjectileEntity(Level world, LivingEntity owner, ItemStack itemStack, ItemStack weapon) {
-        super(RegistryInventory.itemProjectileType.get(), owner, world, itemStack, weapon);
+        super(
+                RegistryInventory.registeredItemProjectileType, owner, world, itemStack, weapon);
         ItemStack stack = itemStack.copy();
         stack.setCount(1);
         this.thrownStack = stack.copy();
         this.entityData.set(LOYALTY, this.getLoyaltyFromItem(stack));
         this.entityData.set(ENCHANTED, stack.hasFoil());
         this.entityData.set(THROWING_STACK, thrownStack);
-        this.entityData.set(BOW_ITEM_STACK, ItemStack.EMPTY);
+        this.entityData.set(BOW_ITEM_STACK, weapon);
         this.entityData.set(WATER_DRAG, waterDrag);
         this.entityData.set(SPEED_DAMAGE, true);
         this.entityData.set(PREFERRED_SLOT, -1);
@@ -124,7 +123,7 @@ public class ItemProjectileEntity extends AbstractArrow {
         builder.define(WATER_DRAG, 0.99f);
         builder.define(SPEED_DAMAGE, true);
         builder.define(PREFERRED_SLOT, 0);
-        MiapiProjectileEvents.MODULAR_PROJECTILE_DATA_TRACKER_INIT.invoker().dataTracker(this, this.getEntityData());
+        MiapiProjectileEvents.MODULAR_PROJECTILE_DATA_TRACKER_INIT.invoker().dataTracker(builder);
     }
 
     public boolean getSpeedDamage() {
@@ -286,6 +285,10 @@ public class ItemProjectileEntity extends AbstractArrow {
     }
 
     public ItemStack getPickupItem() {
+        ItemStack stack = this.entityData.get(THROWING_STACK);
+        if (stack != null && !stack.isEmpty()) {
+            return stack;
+        }
         return super.getPickupItem();
     }
 
@@ -371,11 +374,11 @@ public class ItemProjectileEntity extends AbstractArrow {
     public void readAdditionalSaveData(CompoundTag nbt) {
         super.readAdditionalSaveData(nbt);
         if (nbt.contains("ThrownItem", 10)) {
-            this.thrownStack = ItemStack.parse(this.level().registryAccess(), nbt.getCompound("ThrownItem")).get();
+            this.thrownStack = ItemStack.parse(registryAccess(), nbt.getCompound("ThrownItem")).get();
             this.entityData.set(THROWING_STACK, thrownStack);
         }
         if (nbt.contains("BowItem", 10)) {
-            ItemStack bowItem = ItemStack.parse(this.level().registryAccess(), nbt.getCompound("BowItem")).get();
+            ItemStack bowItem = ItemStack.parse(registryAccess(), nbt.getCompound("BowItem")).get();
             this.entityData.set(BOW_ITEM_STACK, bowItem);
         }
         if (nbt.contains("WaterDrag")) {
@@ -390,19 +393,19 @@ public class ItemProjectileEntity extends AbstractArrow {
 
         this.dealtDamage = nbt.getBoolean("DealtDamage");
         this.entityData.set(LOYALTY, getLoyaltyFromItem(this.thrownStack));
-        MiapiProjectileEvents.MODULAR_PROJECTILE_NBT_READ.invoker().nbtEvent(this, nbt);
+        MiapiProjectileEvents.MODULAR_PROJECTILE_NBT_READ.invoker().nbtEvent(this, nbt, registryAccess());
     }
 
     @Override
     public void addAdditionalSaveData(CompoundTag nbt) {
         super.addAdditionalSaveData(nbt);
-        nbt.put("ThrownItem", this.thrownStack.save(this.level().registryAccess(), new CompoundTag()));
-        nbt.put("BowItem", this.getBowItem().save(this.level().registryAccess(), new CompoundTag()));
+        nbt.put("ThrownItem", this.thrownStack.save(this.registryAccess(), new CompoundTag()));
+        nbt.put("BowItem", this.getBowItem().save(this.registryAccess(), new CompoundTag()));
         nbt.putBoolean("DealtDamage", this.dealtDamage);
         nbt.putFloat("WaterDrag", this.entityData.get(WATER_DRAG));
         nbt.putBoolean("SpeedDamage", this.entityData.get(SPEED_DAMAGE));
         nbt.putInt("PreferredSlot", this.entityData.get(PREFERRED_SLOT));
-        MiapiProjectileEvents.MODULAR_PROJECTILE_NBT_WRITE.invoker().nbtEvent(this, nbt);
+        MiapiProjectileEvents.MODULAR_PROJECTILE_NBT_WRITE.invoker().nbtEvent(this, nbt, registryAccess());
     }
 
     @Override

@@ -127,8 +127,8 @@ public interface ItemUseAbility<T> {
 
     <K> T decode(DynamicOps<K> ops, K prefix);
 
-    default void initialize(T data, ModuleInstance moduleInstance) {
-
+    default T initialize(T data, ModuleInstance moduleInstance) {
+        return data;
     }
 
     default T merge(T left, T right, MergeType mergeType) {

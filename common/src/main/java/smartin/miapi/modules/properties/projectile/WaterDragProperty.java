@@ -17,12 +17,15 @@ public class WaterDragProperty extends DoubleProperty {
     public WaterDragProperty() {
         super(KEY);
         property = this;
+        /*
         MiapiProjectileEvents.MODULAR_PROJECTILE_DATA_TRACKER_INIT.register((projectile, nbtCompound) -> {
             float waterDrag = getValue(projectile.getPickupItem()).orElse(1.0).floatValue();
             nbtCompound.set(ItemProjectileEntity.WATER_DRAG, waterDrag);
             projectile.waterDrag = waterDrag;
             return EventResult.pass();
         });
+
+         */
         MiapiProjectileEvents.MODULAR_PROJECTILE_DATA_TRACKER_SET.register((projectile, nbtCompound) -> {
             float waterDrag = getValue(projectile.getPickupItem()).orElse(1.0).floatValue();
             nbtCompound.set(ItemProjectileEntity.WATER_DRAG, waterDrag);

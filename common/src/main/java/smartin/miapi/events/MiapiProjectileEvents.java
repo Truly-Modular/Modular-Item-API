@@ -2,6 +2,7 @@ package smartin.miapi.events;
 
 import com.redpxnda.nucleus.event.PrioritizedEvent;
 import dev.architectury.event.EventResult;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.world.damagesource.DamageSource;
@@ -19,11 +20,15 @@ public final class MiapiProjectileEvents {
     public static final PrioritizedEvent<ModularProjectileEntityHit> MODULAR_PROJECTILE_ENTITY_HIT = PrioritizedEvent.createEventResult();
     public static final PrioritizedEvent<ModularProjectileEntityHit> MODULAR_PROJECTILE_ENTITY_POST_HIT = PrioritizedEvent.createEventResult();
     public static final PrioritizedEvent<ModularProjectileBlockHit> MODULAR_PROJECTILE_BLOCK_HIT = PrioritizedEvent.createEventResult();
+    /**
+     * the following events are meant so you can easily extend the projectile entity with custom data trackers and save data
+     */
     public static final PrioritizedEvent<ModularProjectileTick> MODULAR_PROJECTILE_TICK = PrioritizedEvent.createEventResult();
     public static final PrioritizedEvent<ItemProjectileCompound> MODULAR_PROJECTILE_NBT_WRITE = PrioritizedEvent.createEventResult();
     public static final PrioritizedEvent<ItemProjectileCompound> MODULAR_PROJECTILE_NBT_READ = PrioritizedEvent.createEventResult();
-    public static final PrioritizedEvent<ItemProjectileDataTracker> MODULAR_PROJECTILE_DATA_TRACKER_INIT = PrioritizedEvent.createEventResult();
+    public static final PrioritizedEvent<ItemProjectileDataTrackerBuilder> MODULAR_PROJECTILE_DATA_TRACKER_INIT = PrioritizedEvent.createEventResult();
     public static final PrioritizedEvent<ItemProjectileDataTracker> MODULAR_PROJECTILE_DATA_TRACKER_SET = PrioritizedEvent.createEventResult();
+
     public static final PrioritizedEvent<PlayerPickupEvent> MODULAR_PROJECTILE_PICK_UP = PrioritizedEvent.createEventResult();
 
     public static final PrioritizedEvent<CrossbowContext> MODULAR_CROSSBOW_PRE_SHOT = PrioritizedEvent.createEventResult();
@@ -85,7 +90,7 @@ public final class MiapiProjectileEvents {
         public ItemStack loadingProjectile;
         public EquipmentSlot crossbowSlot;
 
-        public CrossbowLoadingContext(LivingEntity player, ItemStack crossbow, ItemStack loadingProjectile,EquipmentSlot crossbowSlot) {
+        public CrossbowLoadingContext(LivingEntity player, ItemStack crossbow, ItemStack loadingProjectile, EquipmentSlot crossbowSlot) {
             this.player = player;
             this.crossbow = crossbow;
             this.loadingProjectile = loadingProjectile;
@@ -94,7 +99,7 @@ public final class MiapiProjectileEvents {
     }
 
     public interface ItemProjectileCompound {
-        EventResult nbtEvent(ItemProjectileEntity projectile, CompoundTag nbtCompound);
+        EventResult nbtEvent(ItemProjectileEntity projectile, CompoundTag nbtCompound, RegistryAccess registryAccess);
     }
 
     public interface PlayerPickupEvent {
@@ -103,6 +108,10 @@ public final class MiapiProjectileEvents {
 
     public interface ItemProjectileDataTracker {
         EventResult dataTracker(ItemProjectileEntity projectile, SynchedEntityData nbtCompound);
+    }
+
+    public interface ItemProjectileDataTrackerBuilder {
+        EventResult dataTracker(SynchedEntityData.Builder nbtCompound);
     }
 
     public interface ModularProjectileBlockHit {
