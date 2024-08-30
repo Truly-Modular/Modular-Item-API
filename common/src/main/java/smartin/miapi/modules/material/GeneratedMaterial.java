@@ -316,8 +316,6 @@ public class GeneratedMaterial implements Material {
                                 } catch (Exception e) {
                                     Miapi.LOGGER.error("error during Material Creation event " + material + " ", e);
                                 }
-                            } else {
-                                Miapi.LOGGER.error("blocked generated for " + material.getKey());
                             }
                         }
                     });
