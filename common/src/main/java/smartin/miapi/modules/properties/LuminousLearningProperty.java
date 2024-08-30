@@ -62,7 +62,7 @@ public class LuminousLearningProperty extends DoubleProperty {
         EntityEvent.LIVING_DEATH.register((LivingEntity entity, DamageSource source) -> {
             if (entity.getWorld() instanceof ServerWorld serverWorld && source.getAttacker() instanceof LivingEntity attacker) {
                 int xp = entity.getXpToDrop();
-                double value = getForItems(attacker.getItemsEquipped()) / 3;
+                double value = getForItems(attacker.getItemsEquipped()) / 1.5;
                 while (value > 0) {
                     if (Math.random() < value) {
                         ExperienceOrbEntity.spawn(serverWorld, Vec3d.ofCenter(entity.getBlockPos()), xp);
