@@ -145,7 +145,7 @@ abstract class ItemStackMixin {
     public boolean miapi$injectItemTag(boolean original, TagKey<Item> tag) {
         ItemStack stack = (ItemStack) (Object) this;
         if (stack.getItem() instanceof ModularItem) {
-            if (original) {
+            if (!original) {
                 return FakeItemTagProperty.hasTag(tag.id(), stack);
             }
         }
