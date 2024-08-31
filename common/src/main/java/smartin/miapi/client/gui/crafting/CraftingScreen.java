@@ -121,6 +121,7 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
                 handler::addSlotByClient, handler::removeSlotByClient);
         moduleCrafter.setPacketIdentifier(handler.packetID);
         this.addChild(moduleCrafter);
+        handler.clearSlots();
 
         slotDisplay = new SlotDisplay(ItemStack.EMPTY, centerX + 51 - 15, centerY + 117 - 14, 68, 87, (selected) -> {
 

@@ -324,6 +324,12 @@ public class CraftingScreenHandler extends ScreenHandler {
         Networking.sendC2S(packetIDSlotRemove, buf);
     }
 
+    public void clearSlots() {
+        slots.stream()
+                .filter(MutableSlot.class::isInstance)
+                .forEach(this::removeSlotByClient);
+    }
+
     /**
      * Adds the given {@link Slot} to the screen and sends a packet to the server to add it as well.
      *
