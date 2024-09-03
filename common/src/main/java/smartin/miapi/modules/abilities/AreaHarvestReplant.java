@@ -31,9 +31,7 @@ public class AreaHarvestReplant implements ItemUseDefaultCooldownAbility, ItemUs
                 abilityHitContext.hitEntity() == null &&
                 abilityHitContext.hitResult() != null) {
             BlockState state = abilityHitContext.hitResult().getWorld().getBlockState(abilityHitContext.hitResult().getBlockPos());
-            if (isGrown(state)) {
-                return true;
-            }
+            return isGrown(state);
         }
         return false;
     }
@@ -76,12 +74,10 @@ public class AreaHarvestReplant implements ItemUseDefaultCooldownAbility, ItemUs
                         BlockPos currentPos = origin.add(x, 0, y);
                         BlockState blockState = context.getWorld().getBlockState(currentPos);
                         if (isGrown(blockState) && blockState.getBlock() instanceof CropBlock cropBlock && context.getWorld() instanceof ServerWorld serverWorld) {
-                            //cropBlock.
-
                             BlockEntity blockEntity = blockState.hasBlockEntity() ? context.getWorld().getBlockEntity(currentPos) : null;
-                            List<ItemStack> stacks = Block.getDroppedStacks(blockState, serverWorld, currentPos, blockEntity, serverPlayer, ItemStack.EMPTY);
+                            List<ItemStack> stacks = Block.getDroppedStacks(blockState, serverWorld, currentPos, blockEntity, serverPlayer, itemStack);
                             serverWorld.setBlockState(currentPos, cropBlock.withAge(0));
-                            stacks.forEach(serverPlayer::dropStack);
+                            stacks.forEach(stack -> serverPlayer.getInventory().offerOrDrop(stack));
                             blocksHarvested++;
                         }
                     }
