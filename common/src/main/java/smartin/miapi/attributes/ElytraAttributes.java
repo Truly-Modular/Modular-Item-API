@@ -3,7 +3,6 @@ package smartin.miapi.attributes;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.Vec3d;
-import smartin.miapi.Miapi;
 
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -32,16 +31,19 @@ public class ElytraAttributes {
                 }
                 double horizontalDotProduct = currentVelocity.normalize().dotProduct(new Vec3d(0.0, 1.0, 0.0));
                 double horizontalRatio = Math.min(1, 1 + horizontalDotProduct);
+                //is 1 arround vertical, 0 when looking slightly upwards, trends lower the lower you look, but slowly
                 if (horizontalDotProduct > 0.1) {
                     horizontalRatio = 0;
                 }
 
+                //0 while pointing upwards, 1 while horizontal or looking downwards, up to scales to 1 at about 20~ angle
+                double turnHorizontalRation = Math.min(1, (-horizontalDotProduct + 1) * 5);
                 double directionChange = Math.min(1, ((1 - from(lastVelocity).normalize().dotProduct(from(currentVelocity).normalize())) * 100));
 
                 glideEfficiency = glideEfficiency * horizontalRatio;
 
                 double speedLoss = Math.max(0.0, lastSpeed - currentSpeed);
-                double speedRecovery = Math.min(1.0, (directionChange * turnEfficiency + (1 - directionChange) * glideEfficiency));
+                double speedRecovery = Math.min(1.0, (directionChange * turnEfficiency * turnHorizontalRation + (1 - directionChange) * glideEfficiency));
                 double speed = Math.max(0.00000001, currentSpeed + speedLoss * speedRecovery);
 
                 Vec3d vec3d = from(currentVelocity);
