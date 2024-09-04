@@ -395,24 +395,24 @@ public class CraftingScreenHandler extends ScreenHandler {
 
     public ItemStack quickMove(PlayerEntity player, int index) {
         inventory.markDirty();
-        ItemStack itemStack = ItemStack.EMPTY;
         Slot slot = this.slots.get(index);
 
         if (slot != null && slot.hasStack()) {
             ItemStack itemStack2 = slot.getStack();
-            itemStack = itemStack2.copy();
-            if (index >= 36) {
+            if (index == 36) {
                 //case 1: tool slot to player
                 slot.onTakeItem(player, itemStack2);
-                if (!this.insertItem(itemStack2, 0, 36, true)) {
-                    return ItemStack.EMPTY;
+                //attempt armor slots
+                if (!this.insertItem(itemStack2, 37, 41, true)) {
+                    this.insertItem(itemStack2, 0, 36, true);
                 }
 
-                if (index == 36 && blockEntity != null) {
+                if (blockEntity != null) {
                     blockEntity.setItem(itemStack2);
                     if (notClient()) blockEntity.saveAndSync();
                 }
                 slot.markDirty();
+                return ItemStack.EMPTY;
             } else {
                 //PlayerInv
                 for (Slot slot1 : mutableSlots) {
