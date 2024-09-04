@@ -399,7 +399,7 @@ public class CraftingScreenHandler extends ScreenHandler {
 
         if (slot != null && slot.hasStack()) {
             ItemStack itemStack2 = slot.getStack();
-            if (index == 36) {
+            if (index == 36 || index > 41) {
                 //case 1: tool slot to player
                 slot.onTakeItem(player, itemStack2);
                 //attempt armor slots
@@ -407,7 +407,7 @@ public class CraftingScreenHandler extends ScreenHandler {
                     this.insertItem(itemStack2, 0, 36, true);
                 }
 
-                if (blockEntity != null) {
+                if (index == 36 && blockEntity != null) {
                     blockEntity.setItem(itemStack2);
                     if (notClient()) blockEntity.saveAndSync();
                 }
