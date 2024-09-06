@@ -14,9 +14,9 @@ import smartin.miapi.client.gui.TransformableWidget;
 import smartin.miapi.client.gui.crafting.CraftingScreen;
 import smartin.miapi.client.gui.crafting.PreviewManager;
 import smartin.miapi.craft.CraftAction;
+import smartin.miapi.craft.MaterialCraftInfo;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.edit_options.ReplaceOption;
-import smartin.miapi.modules.material.AllowedMaterial;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -24,18 +24,18 @@ import java.util.Locale;
 
 @Environment(EnvType.CLIENT)
 public class MaterialCraftingWidget extends InteractAbleWidget {
-    private final AllowedMaterial allowedMaterial;
+    private final MaterialCraftInfo allowedMaterial;
     private final ScrollingTextWidget costDescr;
     public CraftAction action;
     private final DecimalFormat modifierFormat = Util.make(new DecimalFormat("##.##"), (decimalFormat) -> {
         decimalFormat.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ROOT));
     });
 
-    public MaterialCraftingWidget(AllowedMaterial allowedMaterial, int x, int y, int width, int height, CraftAction action) {
+    public MaterialCraftingWidget(MaterialCraftInfo allowedMaterial, int x, int y, int width, int height, CraftAction action) {
         super(x, y, width, height, Component.empty());
         this.action = action;
         this.allowedMaterial = allowedMaterial;
-        allowedMaterial.slotHeight = height + 12;
+        allowedMaterial.setSlotHeight(height + 12);
 
         ModuleInstance moduleInstance = new ModuleInstance(action.toAdd);
         Component displayText = moduleInstance.getModuleName();
@@ -53,7 +53,9 @@ public class MaterialCraftingWidget extends InteractAbleWidget {
         costDescr = new ScrollingTextWidget(x + 71, y + this.height - 8, 78, Component.empty());
         //costDescr.setOrientation(ScrollingTextWidget.Orientation.RIGHT);
         costDescr.textColor = FastColor.ARGB32.color(255, 225, 225, 225);
-        this.addChild(new HoverMaterialList(action.toAdd, x + 71, y + this.height + 10, 31, 19));
+        if (allowedMaterial.renderMaterialWidget()) {
+            this.addChild(new HoverMaterialList(action.toAdd, x + 71, y + this.height + 10, 31, 19));
+        }
         addChild(description);
         addChild(costDescr);
     }
@@ -72,19 +74,19 @@ public class MaterialCraftingWidget extends InteractAbleWidget {
 
         int textureOffset = 0;
 
-        if (allowedMaterial.materialCostClient < allowedMaterial.materialRequirementClient) {
+        if (allowedMaterial.getMaterialCostClient() < allowedMaterial.getMaterialRequirementClient()) {
             costDescr.textColor = FastColor.ARGB32.color(255, 225, 225, 125);
         } else {
             costDescr.textColor = FastColor.ARGB32.color(255, 125, 225, 125);
         }
 
-        costDescr.setText(Component.literal(modifierFormat.format(allowedMaterial.materialCostClient) + "/" + modifierFormat.format(allowedMaterial.materialRequirementClient)));
+        costDescr.setText(Component.literal(modifierFormat.format(allowedMaterial.getMaterialCostClient()) + "/" + modifierFormat.format(allowedMaterial.getMaterialRequirementClient())));
 
-        costDescr.setY(this.getY() + allowedMaterial.slotHeight + 10);
+        costDescr.setY(this.getY() + allowedMaterial.getSlotHeight() + 10);
 
         drawTextureWithEdge(drawContext, CraftingScreen.BACKGROUND_TEXTURE, getX(), getY(), 368, 138, 26, 26, getWidth(), getHeight(), 512, 512, 5);
 
-        drawTextureWithEdge(drawContext, CraftingScreen.BACKGROUND_TEXTURE, getX() + 50, getY() + allowedMaterial.slotHeight - 3, 367 - 28, 137, 28, 28, 20, 20, 512, 512, 5);
+        drawTextureWithEdge(drawContext, CraftingScreen.BACKGROUND_TEXTURE, getX() + 50, getY() + allowedMaterial.getSlotHeight() - 3, 367 - 28, 137, 28, 28, 20, 20, 512, 512, 5);
 
         super.renderWidget(drawContext, mouseX, mouseY, delta);
     }

@@ -99,7 +99,7 @@ public class CraftingScreenHandler extends AbstractContainerMenu {
         this.blockEntity = benchEntity;
         if (playerInventory.player instanceof ServerPlayer) {
             Networking.registerC2SPacket(packetID, (buffer, player) -> {
-                CraftAction action = new CraftAction(buffer, blockEntity);
+                CraftAction action = new CraftAction(buffer, blockEntity, this);
                 Miapi.server.execute(() -> {
                     action.setItem(inventory.getItem(0));
                     action.linkInventory(inventory, 1);
@@ -391,17 +391,16 @@ public class CraftingScreenHandler extends AbstractContainerMenu {
 
     public ItemStack quickMoveStack(Player player, int index) {
         inventory.setChanged();
-        ItemStack itemStack = ItemStack.EMPTY;
         Slot slot = this.slots.get(index);
 
         if (slot != null && slot.hasItem()) {
             ItemStack itemStack2 = slot.getItem();
-            itemStack = itemStack2.copy();
-            if (index >= 36) {
-                //case 1: tool slot to player
+            if (index >= 36 || index > 41) {
+                //case 1: tool slot to players
                 slot.onTake(player, itemStack2);
-                if (!this.moveItemStackTo(itemStack2, 0, 36, true)) {
-                    return ItemStack.EMPTY;
+                //attempt armor slots
+                if (!this.moveItemStackTo(itemStack2, 37, 41, true)) {
+                    this.moveItemStackTo(itemStack2, 0, 36, true);
                 }
 
                 if (index == 36 && blockEntity != null) {
@@ -409,6 +408,7 @@ public class CraftingScreenHandler extends AbstractContainerMenu {
                     if (notClient()) blockEntity.saveAndSync();
                 }
                 slot.setChanged();
+                return ItemStack.EMPTY;
             } else {
                 //PlayerInv
                 for (Slot slot1 : mutableSlots) {

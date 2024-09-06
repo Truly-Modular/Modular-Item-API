@@ -4,14 +4,20 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import com.redpxnda.nucleus.util.Color;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
@@ -41,7 +47,7 @@ public class ModuleInstance {
 
     static {
         Codec<Map<String, JsonElement>> dataJsonCodec = Codec.unboundedMap(Codec.STRING, StatResolver.Codecs.JSONELEMENT_CODEC).xmap((i) -> i, Function.identity());
-        CODEC = Codec.recursive(
+        Codec<ModuleInstance> basicCodec = Codec.recursive(
                 "module_instance",
                 selfCodec -> RecordCodecBuilder.create((instance) ->
                         instance.group(
@@ -67,8 +73,28 @@ public class ModuleInstance {
                             return moduleInstance;
                         }))
         );
+        CODEC = new Codec<ModuleInstance>() {
+            @Override
+            public <T> DataResult<Pair<ModuleInstance, T>> decode(DynamicOps<T> ops, T input) {
+                var basicResult = basicCodec.decode(ops, input);
+                if (ops instanceof RegistryOps<T> registryOps) {
+                    //TODO:give moduleinstances guaranteeed registry access
+                }
+                return basicResult;
+            }
+
+            Color color;
+
+            @Override
+            public <T> DataResult<T> encode(ModuleInstance input, DynamicOps<T> ops, T prefix) {
+                return basicCodec.encode(input, ops, prefix);
+            }
+        };
         MODULE_INSTANCE_COMPONENT = DataComponentType.<ModuleInstance>builder().persistent(CODEC).networkSynchronized(ByteBufCodecs.fromCodec(CODEC)).build();
     }
+
+    @Nullable
+    public RegistryAccess registryAccess;
 
     /**
      * The item module represented by this module instance.

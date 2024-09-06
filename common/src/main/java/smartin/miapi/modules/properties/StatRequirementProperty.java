@@ -32,7 +32,7 @@ public class StatRequirementProperty implements ModuleProperty<Object>, Crafting
     }
 
     @Override
-    public boolean canPerform(ItemStack old, ItemStack crafting, @Nullable ModularWorkBenchEntity bench, Player player, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<String, String> data) {
+    public boolean canPerform(ItemStack old, ItemStack crafting, @Nullable ModularWorkBenchEntity bench, Player player, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<ResourceLocation, JsonElement> data) {
         ModuleInstance newModule = craftAction.getModifyingModuleInstance(crafting);
         if (bench == null) return true;
 
@@ -56,7 +56,7 @@ public class StatRequirementProperty implements ModuleProperty<Object>, Crafting
     }
 
     @Override
-    public ItemStack preview(ItemStack old, ItemStack crafting, Player player, ModularWorkBenchEntity bench, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<String, String> data) {
+    public ItemStack preview(ItemStack old, ItemStack crafting, Player player, ModularWorkBenchEntity bench, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<ResourceLocation, JsonElement> data) {
         return crafting;
     }
 

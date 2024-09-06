@@ -1,5 +1,6 @@
 package smartin.miapi.modules.properties;
 
+import com.google.gson.JsonElement;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -32,7 +33,7 @@ public class ItemIdProperty extends CodecProperty<ResourceLocation> implements C
     }
 
     @Override
-    public boolean shouldExecuteOnCraft(ModuleInstance module, ModuleInstance root, ItemStack stack) {
+    public boolean shouldExecuteOnCraft(ModuleInstance module, ModuleInstance root, ItemStack stack, CraftAction action) {
         return true;
     }
 
@@ -56,7 +57,7 @@ public class ItemIdProperty extends CodecProperty<ResourceLocation> implements C
     }
 
     @Override
-    public ItemStack preview(ItemStack old, ItemStack crafting, Player player, ModularWorkBenchEntity bench, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<String, String> dataMap) {
+    public ItemStack preview(ItemStack old, ItemStack crafting, Player player, ModularWorkBenchEntity bench, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<ResourceLocation, JsonElement> dataMap) {
         return changeId(crafting);
     }
 

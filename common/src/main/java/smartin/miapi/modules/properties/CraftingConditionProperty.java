@@ -1,5 +1,6 @@
 package smartin.miapi.modules.properties;
 
+import com.google.gson.JsonElement;
 import com.mojang.serialization.Codec;
 import com.redpxnda.nucleus.codec.auto.AutoCodec;
 import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
@@ -81,12 +82,12 @@ public class CraftingConditionProperty extends CodecProperty<CraftingConditionPr
     }
 
     @Override
-    public boolean shouldExecuteOnCraft(ModuleInstance module, ModuleInstance root, ItemStack stack) {
+    public boolean shouldExecuteOnCraft(ModuleInstance module, ModuleInstance root, ItemStack stack, CraftAction action) {
         return true;
     }
 
     @Override
-    public boolean canPerform(ItemStack old, ItemStack crafting, ModularWorkBenchEntity bench, Player player, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<String, String> data) {
+    public boolean canPerform(ItemStack old, ItemStack crafting, ModularWorkBenchEntity bench, Player player, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<ResourceLocation, JsonElement> data) {
         CraftingConditionJson json = module != null ? (CraftingConditionJson) module.properties().get(property) : null;
         if (module == null) {
             module = ItemModule.empty;
@@ -102,7 +103,7 @@ public class CraftingConditionProperty extends CodecProperty<CraftingConditionPr
     }
 
     @Override
-    public ItemStack preview(ItemStack old, ItemStack crafting, Player player, ModularWorkBenchEntity bench, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<String, String> data) {
+    public ItemStack preview(ItemStack old, ItemStack crafting, Player player, ModularWorkBenchEntity bench, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<ResourceLocation, JsonElement> data) {
         return crafting;
     }
 

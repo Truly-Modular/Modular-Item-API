@@ -52,19 +52,18 @@ public class ReplaceView extends InteractAbleWidget {
         list.children().clear();
         ArrayList<InteractAbleWidget> toList = new ArrayList<>();
         if (!(editContext.getInstance() != null && !CanChildBeEmpty.property.isTrue(editContext.getInstance()))) {
-            toList.add(new SlotButton(0, 0, this.width, 15, new CraftOption(ItemModule.empty, new HashMap<>())));
+            toList.add(new SlotButton(0, 0, this.width, 15, new CraftOption(ItemModule.empty, new HashMap<>(), -1000)));
         }
         List<CraftOption> craftOptions = new ArrayList<>();
-        AllowedSlots.allowedIn(slot).stream()
-                .sorted(Comparator.comparingDouble(PriorityProperty::getFor))
-                .distinct()
+        AllowedSlots.allowedIn(slot)
                 .forEach(module -> {
                     if (CraftingConditionProperty.isVisible(slot, module, Minecraft.getInstance().player, null)) {
-                        craftOptions.add(new CraftOption(module, new HashMap<>()));
+                        craftOptions.add(new CraftOption(module, new HashMap<>(), PriorityProperty.getFor(module)));
                     }
                 });
         optionSuppliers.forEach(craftOptionSupplier -> craftOptions.addAll(craftOptionSupplier.getOption(editContext)));
-        craftOptions.stream().sorted(Comparator.comparingDouble(a -> PriorityProperty.getFor(a.module()))).forEach(craftOption -> {
+        List<CraftOption> sortedCraftOptions = craftOptions.stream().sorted(Comparator.comparingDouble(CraftOption::priority)).toList();
+        sortedCraftOptions.stream().sorted(Comparator.comparingDouble(a -> PriorityProperty.getFor(a.module()))).forEach(craftOption -> {
             toList.add(new SlotButton(0, 0, this.width, 15, craftOption));
         });
         list.setList(toList);

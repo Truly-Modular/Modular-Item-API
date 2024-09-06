@@ -1,5 +1,6 @@
 package smartin.miapi.modules.properties.onHit;
 
+import com.google.gson.JsonElement;
 import com.mojang.serialization.Codec;
 import com.redpxnda.nucleus.codec.auto.AutoCodec;
 import dev.architectury.event.EventResult;
@@ -141,7 +142,7 @@ public class NemesisProperty extends DoubleProperty implements CraftingProperty 
     }
 
     @Override
-    public ItemStack preview(ItemStack old, ItemStack crafting, Player player, ModularWorkBenchEntity bench, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<String, String> data) {
+    public ItemStack preview(ItemStack old, ItemStack crafting, Player player, ModularWorkBenchEntity bench, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<ResourceLocation, JsonElement> data) {
         crafting.set(NEMESIS_COMPONENT, new NemesisData("", 0));
         return crafting;
     }

@@ -20,7 +20,7 @@
     ],
     "properties": {
         "armor": {
-            "fake_enchant": {
+            "fake_enchantments": {
                 "minecrtaft:thorns": 2
             }
         }

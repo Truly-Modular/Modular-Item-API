@@ -144,7 +144,7 @@ public class ModuleCrafter extends InteractAbleWidget {
                     this.craftOption = option;
                     setMode(Mode.CRAFT);
                 }, (option -> {
-                    CraftAction action = new CraftAction(editContext.getItemstack(), editContext.getSlot(), option.module(), editContext.getPlayer(), editContext.getWorkbench(), option.data());
+                    CraftAction action = new CraftAction(editContext.getItemstack(), editContext.getSlot(), option.module(), editContext.getPlayer(), editContext.getWorkbench(), option.data().get(),editContext.getScreenHandler());
                     action.setItem(editContext.getLinkedInventory().getItem(0));
                     action.linkInventory(editContext.getLinkedInventory(), 1);
                     editContext.preview(action.toPacket(Networking.createBuffer()));

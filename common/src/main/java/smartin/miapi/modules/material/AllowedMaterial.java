@@ -1,5 +1,6 @@
 package smartin.miapi.modules.material;
 
+import com.google.gson.JsonElement;
 import com.redpxnda.nucleus.codec.auto.AutoCodec;
 import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
 import net.fabricmc.api.EnvType;
@@ -9,12 +10,14 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec2;
+import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.crafting.crafter.replace.MaterialCraftingWidget;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.craft.CraftAction;
+import smartin.miapi.craft.MaterialCraftInfo;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
@@ -33,7 +36,7 @@ import java.util.stream.Collectors;
 /**
  * This property manages the allowed Materials for a module
  */
-public class AllowedMaterial extends CodecProperty<AllowedMaterial.AllowedMaterialData> implements CraftingProperty {
+public class AllowedMaterial extends CodecProperty<AllowedMaterial.AllowedMaterialData> implements CraftingProperty, MaterialCraftInfo {
     public static final ResourceLocation KEY = Miapi.id("allowed_material");
     public static AllowedMaterial property;
     public double materialCostClient = 0.0f;
@@ -49,7 +52,7 @@ public class AllowedMaterial extends CodecProperty<AllowedMaterial.AllowedMateri
 
     public List<String> getAllowedKeys(ItemModule module) {
         Optional<AllowedMaterialData> optional = getData(module);
-        if(optional.isPresent()){
+        if (optional.isPresent()) {
             return optional.get().allowedMaterials;
         }
         return new ArrayList<>();
@@ -63,6 +66,14 @@ public class AllowedMaterial extends CodecProperty<AllowedMaterial.AllowedMateri
         List<Vec2> test = new ArrayList<>();
         test.add(new Vec2(96, slotHeight - 12));
         return test;
+    }
+
+    public boolean shouldExecuteOnCraft(@Nullable ModuleInstance module, ModuleInstance root, ItemStack stack, CraftAction craftAction) {
+        JsonElement element = craftAction.data.get(KEY);
+        if (element != null) {
+            return element.getAsBoolean();
+        }
+        return CraftingProperty.super.shouldExecuteOnCraft(module, root, stack, craftAction);
     }
 
     @Override
@@ -87,7 +98,7 @@ public class AllowedMaterial extends CodecProperty<AllowedMaterial.AllowedMateri
     }
 
     @Override
-    public boolean canPerform(ItemStack old, ItemStack crafting, ModularWorkBenchEntity bench, Player player, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<String, String> data) {
+    public boolean canPerform(ItemStack old, ItemStack crafting, ModularWorkBenchEntity bench, Player player, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<ResourceLocation, JsonElement> data) {
         Optional<AllowedMaterialData> optional = getData(module);
         ItemStack input = inventory.get(0);
         if (optional.isPresent()) {
@@ -118,7 +129,7 @@ public class AllowedMaterial extends CodecProperty<AllowedMaterial.AllowedMateri
     }
 
     @Override
-    public ItemStack preview(ItemStack old, ItemStack crafting, Player player, ModularWorkBenchEntity bench, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<String, String> data) {
+    public ItemStack preview(ItemStack old, ItemStack crafting, Player player, ModularWorkBenchEntity bench, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<ResourceLocation, JsonElement> data) {
         ModuleInstance newModule = craftAction.getModifyingModuleInstance(crafting);
         Optional<AllowedMaterialData> optional = getData(module);
         ItemStack input = inventory.get(0);
@@ -151,7 +162,7 @@ public class AllowedMaterial extends CodecProperty<AllowedMaterial.AllowedMateri
     }
 
     @Override
-    public List<ItemStack> performCraftAction(ItemStack old, ItemStack crafting, Player player, ModularWorkBenchEntity bench, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<String, String> data) {
+    public List<ItemStack> performCraftAction(ItemStack old, ItemStack crafting, Player player, ModularWorkBenchEntity bench, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<ResourceLocation, JsonElement> data) {
         ModuleInstance newModule = craftAction.getModifyingModuleInstance(crafting);
         //AllowedMaterialJson json = Miapi.gson.decode()
         List<ItemStack> results = new ArrayList<>();
@@ -202,6 +213,26 @@ public class AllowedMaterial extends CodecProperty<AllowedMaterial.AllowedMateri
     @Override
     public AllowedMaterialData merge(AllowedMaterialData left, AllowedMaterialData right, MergeType mergeType) {
         return ModuleProperty.decideLeftRight(left, right, mergeType);
+    }
+
+    @Override
+    public int getSlotHeight() {
+        return slotHeight;
+    }
+
+    @Override
+    public void setSlotHeight(int newHeight) {
+        slotHeight = newHeight;
+    }
+
+    @Override
+    public double getMaterialCostClient() {
+        return materialCostClient;
+    }
+
+    @Override
+    public double getMaterialRequirementClient() {
+        return materialRequirementClient;
     }
 
     public static class AllowedMaterialData {

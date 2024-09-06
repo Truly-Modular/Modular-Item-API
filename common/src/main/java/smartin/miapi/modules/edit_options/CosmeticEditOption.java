@@ -31,7 +31,7 @@ public class CosmeticEditOption implements EditOption {
 
     @Override
     public ItemStack preview(FriendlyByteBuf buffer, EditContext editContext) {
-        CraftAction action = new CraftAction(buffer, editContext.getWorkbench());
+        CraftAction action = new CraftAction(buffer, editContext.getWorkbench(), editContext.getScreenHandler());
         if (editContext.getLinkedInventory() == null) {
             return ItemStack.EMPTY;
         }
@@ -81,7 +81,7 @@ public class CosmeticEditOption implements EditOption {
 
     @Override
     public ItemStack execute(FriendlyByteBuf buffer, EditContext editContext) {
-        CraftAction action = new CraftAction(buffer, editContext.getWorkbench());
+        CraftAction action = new CraftAction(buffer, editContext.getWorkbench(), editContext.getScreenHandler());
         action.setItem(editContext.getLinkedInventory().getItem(0));
         action.linkInventory(editContext.getLinkedInventory(), 1);
         if (action.canPerform()) {
@@ -95,15 +95,15 @@ public class CosmeticEditOption implements EditOption {
     @Override
     public boolean isVisible(EditContext editContext) {
         SlotProperty.ModuleSlot slot = editContext.getSlot();
-        if(editContext.getInstance()!=null){
+        if (editContext.getInstance() != null) {
             slot = SlotProperty.getSlotIn(editContext.getInstance());
         }
         if (slot != null) {
-            if(editContext.getSlot().slotType.equals(slotType)){
+            if (editContext.getSlot().slotType.equals(slotType)) {
                 return true;
             }
         }
-        if(editContext.getInstance()!=null){
+        if (editContext.getInstance() != null) {
             return SlotProperty.getSlots(editContext.getInstance()).values().stream()
                     .anyMatch(moduleSlot -> moduleSlot.slotType.equals(slotType));
         }

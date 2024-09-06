@@ -44,7 +44,7 @@ public class CreateItemOption implements EditOption {
         Miapi.registerReloadHandler(ReloadEvents.END, "miapi/create_options", (isClient -> {
             createAbleItems.clear();
         }), ((isClient, path, data) -> {
-            if(isClient){
+            if (isClient) {
                 CreateItem createItem = Miapi.gson.fromJson(data, JsonCreateItem.class);
                 createAbleItems.add(createItem);
                 assert createItem.getItem() != null;
@@ -63,7 +63,7 @@ public class CreateItemOption implements EditOption {
         itemStack.setCount(count);
         ModuleInstance instance = new ModuleInstance(RegistryInventory.modules.get(module));
         instance.writeToItem(itemStack);
-        CraftAction action = new CraftAction(buffer, editContext.getWorkbench());
+        CraftAction action = new CraftAction(buffer, editContext.getWorkbench(), editContext.getScreenHandler());
         Container inventory = editContext.getLinkedInventory();
         if (
                 PreviewManager.currentPreviewMaterial != null
@@ -86,7 +86,7 @@ public class CreateItemOption implements EditOption {
         itemStack.setCount(count);
         ModuleInstance instance = new ModuleInstance(RegistryInventory.modules.get(module));
         instance.writeToItem(itemStack);
-        CraftAction action = new CraftAction(buffer, editContext.getWorkbench());
+        CraftAction action = new CraftAction(buffer, editContext.getWorkbench(), editContext.getScreenHandler());
         action.setItem(itemStack);
         action.linkInventory(editContext.getLinkedInventory(), 1);
         if (action.canPerform()) {
@@ -113,7 +113,7 @@ public class CreateItemOption implements EditOption {
     @Environment(EnvType.CLIENT)
     @Override
     public InteractAbleWidget getIconGui(int x, int y, int width, int height, Consumer<EditOption> select, Supplier<EditOption> getSelected) {
-        return new EditOptionIcon(x, y, width, height, select, getSelected, CraftingScreen.BACKGROUND_TEXTURE, 339 + 32, 25 + 140, 512, 512,"miapi.ui.edit_option.hover.create", this);
+        return new EditOptionIcon(x, y, width, height, select, getSelected, CraftingScreen.BACKGROUND_TEXTURE, 339 + 32, 25 + 140, 512, 512, "miapi.ui.edit_option.hover.create", this);
     }
 
     @Environment(EnvType.CLIENT)

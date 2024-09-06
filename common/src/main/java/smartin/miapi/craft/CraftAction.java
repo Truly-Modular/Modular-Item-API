@@ -1,14 +1,17 @@
 package smartin.miapi.craft;
 
+import com.google.gson.JsonElement;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
+import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
 import smartin.miapi.item.ModularItemStackConverter;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
@@ -38,8 +41,9 @@ public class CraftAction {
     private final ModularWorkBenchEntity blockEntity;
     private Container linkedInventory;
     private int inventoryOffset;
-    public Map<String, String> data = new ConcurrentHashMap<>();
+    public Map<ResourceLocation, JsonElement> data = new ConcurrentHashMap<>();
     public static final List<CraftingEvent> events = new ArrayList<>();
+    public CraftingScreenHandler screenHandler;
 
     /**
      * Constructs a new instance of CraftAction, given the old item stack, the slot to modify,
@@ -58,7 +62,9 @@ public class CraftAction {
             @Nullable ItemModule toAdd,
             Player player,
             ModularWorkBenchEntity bench,
-            Map<String, String> data) {
+            Map<ResourceLocation, JsonElement> data,
+            CraftingScreenHandler craftingScreenHandler) {
+        this.screenHandler = craftingScreenHandler;
         this.old = ModularItemStackConverter.getModularVersion(old);
         this.toAdd = toAdd;
         slotLocation.addAll(slot.getAsLocation());
@@ -73,8 +79,9 @@ public class CraftAction {
      * @param buf   the packet byte buffer from which to construct the CraftAction
      * @param bench the workbench block entity to store in this CraftAction
      */
-    public CraftAction(FriendlyByteBuf buf, ModularWorkBenchEntity bench) {
+    public CraftAction(FriendlyByteBuf buf, ModularWorkBenchEntity bench, CraftingScreenHandler craftingScreenHandler) {
         int size = buf.readInt();
+        this.screenHandler = craftingScreenHandler;
         for (int i = 0; i < size; i++) {
             slotLocation.add(buf.readUtf());
         }
@@ -91,7 +98,8 @@ public class CraftAction {
         for (int i = 0; i < numBuffers; i++) {
             String key = buf.readUtf();
             String value = buf.readUtf();
-            data.put(key, value);
+            JsonElement element = Miapi.gson.fromJson(value, JsonElement.class);
+            data.put(ResourceLocation.parse(key), element);
         }
     }
 
@@ -115,8 +123,9 @@ public class CraftAction {
 
         buf.writeInt(data.size());
         data.forEach((key, value) -> {
-            buf.writeUtf(key);
-            buf.writeUtf(value);
+            buf.writeUtf(key.toString());
+            String jsonString = Miapi.gson.toJson(value);
+            buf.writeUtf(jsonString);
         });
 
         return buf;
@@ -231,7 +240,7 @@ public class CraftAction {
         Map<String, ModuleInstance> subModuleMap = new HashMap<>();
         if (slotLocation.isEmpty()) {
             //a module already exists, replacing module 0
-            if (toAdd == null || toAdd == ItemModule.empty || toAdd.id().equals("empty")) {
+            if (toAdd == null || toAdd == ItemModule.empty || toAdd.id().equals(Miapi.id("empty"))) {
                 return ItemStack.EMPTY;
             }
             subModuleMap = oldBaseModule.getSubModuleMap();
@@ -325,7 +334,7 @@ public class CraftAction {
      *
      * @param dataMap a map to send additional Data
      */
-    public void setData(Map<String, String> dataMap) {
+    public void setData(Map<ResourceLocation, JsonElement> dataMap) {
         data = dataMap;
     }
 
@@ -366,13 +375,12 @@ public class CraftAction {
         }
 
         AtomicInteger integer = new AtomicInteger(inventoryOffset);
-        AtomicInteger counter = new AtomicInteger(0);
 
         ModuleInstance newInstance = parsingInstance;
         List<CraftingProperty> sortedProperties =
                 RegistryInventory.moduleProperties.getFlatMap().values().stream()
                         .filter(CraftingProperty.class::isInstance)
-                        .filter(property -> ((CraftingProperty) property).shouldExecuteOnCraft(newInstance, ItemModule.getModules(crafted), crafted))
+                        .filter(property -> ((CraftingProperty) property).shouldExecuteOnCraft(newInstance, ItemModule.getModules(crafted), crafted, this))
                         .map(CraftingProperty.class::cast)
                         .sorted(Comparator.comparingDouble(CraftingProperty::getPriority))
                         .toList();
@@ -399,8 +407,7 @@ public class CraftAction {
     protected static Player getPlayerFromUuid(UUID uuid) {
         if (Miapi.server != null) {
             return Miapi.server.getPlayerList().getPlayer(uuid);
-        } else if (Minecraft.getInstance() != null) {
-            assert Minecraft.getInstance().level != null;
+        } else if (Minecraft.getInstance() != null && Minecraft.getInstance().level != null) {
             return Minecraft.getInstance().level.getPlayerByUUID(uuid);
         }
         return null;
@@ -418,7 +425,7 @@ public class CraftAction {
          * @param end              the ending index of the crafting slots in the inventory
          * @param dataMap          a Map including fields for Craftingproperty to send additional Information
          */
-        void accept(CraftingProperty craftingProperty, ModuleInstance moduleInstance, List<ItemStack> inventory, int start, int end, Map<String, String> dataMap);
+        void accept(CraftingProperty craftingProperty, ModuleInstance moduleInstance, List<ItemStack> inventory, int start, int end, Map<ResourceLocation, JsonElement> dataMap);
     }
 
     public interface CraftingEvent {

@@ -46,6 +46,7 @@ import smartin.miapi.effects.StunResistanceStatusEffect;
 import smartin.miapi.effects.StunStatusEffect;
 import smartin.miapi.effects.TeleportBlockEffect;
 import smartin.miapi.entity.ItemProjectileEntity;
+import smartin.miapi.craft.BlueprintComponent;
 import smartin.miapi.item.MaterialSmithingRecipe;
 import smartin.miapi.item.modular.ModularItemPart;
 import smartin.miapi.item.modular.PropertyResolver;
@@ -200,6 +201,7 @@ public class RegistryInventory {
     public static RegistrySupplier<EntityType<ItemProjectileEntity>> itemProjectileType = (RegistrySupplier) registerAndSupply(entityTypes, "thrown_item", () ->
             EntityType.Builder.of(ItemProjectileEntity::new, MobCategory.MISC).sized(0.5F, 0.5F).clientTrackingRange(4).updateInterval(20).build("miapi:thrown_item"));
     public static EntityType<ItemProjectileEntity> registeredItemProjectileType;
+
     static {
         itemProjectileType.listen(e -> {
             registeredItemProjectileType = e;
@@ -221,6 +223,8 @@ public class RegistryInventory {
 
         RegistryInventory.components.register(
                 Miapi.id("item_module"), () -> ModuleInstance.MODULE_INSTANCE_COMPONENT);
+        RegistryInventory.components.register(
+                Miapi.id("module_blueprint"), () -> BlueprintComponent.BLUEPRINT_COMPONENT);
         RegistryInventory.components.register(
                 Miapi.id("nemesis_property"), () -> NemesisProperty.NEMESIS_COMPONENT);
         RegistryInventory.components.register(
@@ -294,6 +298,7 @@ public class RegistryInventory {
 
         //ITEM
         register(modularItems, "modular_broken_item", ModularVisualOnlyItem::new, i -> visualOnlymodularItem = i);
+        register(modularItems, "modular_part_visual", ModularVisualOnlyItem::new, i -> visualOnlymodularItem = i);
 
         register(modularItems, "modular_item", ExampleModularItem::new, i -> modularItem = i);
         register(modularItems, "modular_part", ModularItemPart::new);
@@ -493,6 +498,7 @@ public class RegistryInventory {
             registerMiapi(moduleProperties, AttributeSplitProperty.KEY, new AttributeSplitProperty());
             registerMiapi(moduleProperties, FakeEnchantmentProperty.KEY, new FakeEnchantmentProperty());
             registerMiapi(moduleProperties, AllowedEnchantments.KEY, new AllowedEnchantments());
+            registerMiapi(moduleProperties, BlueprintCrafting.KEY, new BlueprintCrafting());
             //compat
             //registerMiapi(moduleProperties, BetterCombatProperty.KEY, new BetterCombatProperty());
             //TODO: added this to cleanup logs. this needs to be revisited later

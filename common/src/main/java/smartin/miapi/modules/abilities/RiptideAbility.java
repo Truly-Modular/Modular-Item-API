@@ -4,7 +4,6 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DynamicOps;
 import com.redpxnda.nucleus.codec.auto.AutoCodec;
 import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
-import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -29,9 +28,6 @@ import smartin.miapi.modules.abilities.util.ItemUseDefaultCooldownAbility;
 import smartin.miapi.modules.abilities.util.ItemUseMinHoldAbility;
 import smartin.miapi.modules.properties.util.DoubleOperationResolvable;
 import smartin.miapi.modules.properties.util.MergeType;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * This Ability allows you to use the Trident riptide Effect
@@ -149,6 +145,10 @@ public class RiptideAbility implements ItemUseDefaultCooldownAbility<RiptideAbil
         @CodecBehavior.Optional
         @AutoCodec.Name("custom_sound")
         public ResourceLocation customSound = null;
+
+        public RiptideContextJson(){
+
+        }
 
         public RiptideContextJson initialize(ModuleInstance moduleInstance) {
             RiptideContextJson init = new RiptideContextJson();

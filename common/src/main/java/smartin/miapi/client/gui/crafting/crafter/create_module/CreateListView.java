@@ -1,6 +1,8 @@
 package smartin.miapi.client.gui.crafting.crafter.create_module;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.network.chat.Component;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.ScrollList;
 import smartin.miapi.client.gui.ScrollingTextWidget;
@@ -14,8 +16,6 @@ import smartin.miapi.modules.edit_options.ReplaceOption;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.network.chat.Component;
 
 public class CreateListView extends InteractAbleWidget {
     final EditOption.EditContext editContext;
@@ -42,7 +42,7 @@ public class CreateListView extends InteractAbleWidget {
                 this.width,
                 this.height,
                 1,
-                new CraftOption(createItem.getBaseModule(), new HashMap<>()),
+                new CraftOption(createItem.getBaseModule(), new HashMap<>(), 0),
                 editContext1,
                 (backSlot) -> {
                     this.children().clear();

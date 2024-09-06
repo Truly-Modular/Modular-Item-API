@@ -21,10 +21,7 @@ import smartin.miapi.modules.properties.util.DoubleOperationResolvable;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class GuiStatProperty extends CodecProperty<Map<String, GuiStatProperty.GuiInfo>> {
     public static final ResourceLocation KEY = Miapi.id("gui_stat");
@@ -40,7 +37,7 @@ public class GuiStatProperty extends CodecProperty<Map<String, GuiStatProperty.G
                 @Override
                 public <T extends InteractAbleWidget & SingleStatDisplay> List<T> currentList(ItemStack original, ItemStack compareTo) {
                     List<T> combined = new ArrayList<>();
-                    Map<String, GuiInfo> combinedMap = getInfo(original);
+                    Map<String, GuiInfo> combinedMap = new LinkedHashMap<>(getInfo(original));
                     combinedMap.putAll(getInfo(compareTo));
                     combinedMap.forEach((key, gui) -> {
                         JsonStatDisplay display = new JsonStatDisplay(
@@ -87,7 +84,7 @@ public class GuiStatProperty extends CodecProperty<Map<String, GuiStatProperty.G
 
     @Override
     public Map<String, GuiInfo> merge(Map<String, GuiInfo> left, Map<String, GuiInfo> right, MergeType mergeType) {
-        return ModuleProperty.mergeMap(left,right,mergeType);
+        return ModuleProperty.mergeMap(left, right, mergeType);
     }
 
     @Override

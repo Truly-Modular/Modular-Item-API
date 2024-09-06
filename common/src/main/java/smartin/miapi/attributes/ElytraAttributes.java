@@ -32,16 +32,19 @@ public class ElytraAttributes {
                 }
                 double horizontalDotProduct = currentVelocity.normalize().dot(new Vec3(0.0, 1.0, 0.0));
                 double horizontalRatio = Math.min(1, 1 + horizontalDotProduct);
+                //is 1 arround vertical, 0 when looking slightly upwards, trends lower the lower you look, but slowly
                 if (horizontalDotProduct > 0.1) {
                     horizontalRatio = 0;
                 }
 
+                //0 while pointing upwards, 1 while horizontal or looking downwards
+                double turnHorizontalRation = Math.min(1, (-horizontalDotProduct + 1) * 5);
                 double directionChange = Math.min(1, ((1 - from(lastVelocity).normalize().dot(from(currentVelocity).normalize())) * 100));
 
                 glideEfficiency = glideEfficiency * horizontalRatio;
 
                 double speedLoss = Math.max(0.0, lastSpeed - currentSpeed);
-                double speedRecovery = Math.min(1.0, (directionChange * turnEfficiency + (1 - directionChange) * glideEfficiency));
+                double speedRecovery = Math.min(1.0, (directionChange * turnEfficiency * turnHorizontalRation+ (1 - directionChange) * glideEfficiency));
                 double speed = Math.max(0.00000001, currentSpeed + speedLoss * speedRecovery);
 
                 Vec3 vec3d = from(currentVelocity);

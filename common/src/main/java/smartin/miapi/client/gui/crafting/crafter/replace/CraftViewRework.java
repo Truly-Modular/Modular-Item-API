@@ -1,5 +1,6 @@
 package smartin.miapi.client.gui.crafting.crafter.replace;
 
+import com.google.gson.JsonElement;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.datafixers.util.Pair;
 import net.fabricmc.api.EnvType;
@@ -45,19 +46,21 @@ public class CraftViewRework extends InteractAbleWidget {
     boolean isClosed = false;
     EditOption.EditContext editContext;
     CraftAction action;
+    CraftOption craftOption;
     List<CraftingProperty> craftingProperties = new ArrayList<>();
     List<InteractAbleWidget> craftingGuis = new ArrayList<>();
     SimpleButton<Object> previousButton;
     SimpleButton<Object> nextButton;
     CraftButton<Object> craftButton;
     Matrix4f currentMatrix = new Matrix4f();
-    public Map<String, String> defaultMap = new HashMap<>();
+    public Map<ResourceLocation, JsonElement> defaultMap = new HashMap<>();
     static ContainerListener listener;
     EmptyCraftingWidget fallbackCraftingWidget;
 
     public CraftViewRework(int x, int y, int width, int height, int offset, CraftOption option, EditOption.EditContext editContext, Consumer<SlotProperty.ModuleSlot> back) {
         super(x, y, width, height, Component.empty());
         this.editContext = editContext;
+        this.craftOption = option;
         if (listener != null) {
             editContext.getScreenHandler().removeSlotListener(listener);
         }
@@ -66,8 +69,8 @@ public class CraftViewRework extends InteractAbleWidget {
                 update();
             }
         });
-        defaultMap = option.data();
-        action = new CraftAction(editContext.getItemstack(), editContext.getSlot(), option.module(), editContext.getPlayer(), editContext.getWorkbench(), option.data());
+        defaultMap = option.data().get();
+        action = new CraftAction(editContext.getItemstack(), editContext.getSlot(), option.module(), editContext.getPlayer(), editContext.getWorkbench(), option.data().get(), editContext.getScreenHandler());
         action.setItem(editContext.getItemstack());
         action.linkInventory(editContext.getLinkedInventory(), offset);
         setBuffers();
@@ -113,6 +116,7 @@ public class CraftViewRework extends InteractAbleWidget {
 
         craftButton = new CraftButton<>(this.getX() + this.width - 42, this.getY() + this.height - 14, 40, 12, Component.translatable(Miapi.MOD_ID + ".ui.craft"), null, (callback) -> {
             setBuffers();
+            action.setData(option.data().get());
             if (action.canPerform()) {
                 isClosed = true;
                 ItemStack craftedStack = action.getPreview();
@@ -130,8 +134,11 @@ public class CraftViewRework extends InteractAbleWidget {
     private void update() {
         try {
             if (!isClosed) {
+                action.setData(craftOption.data().get());
                 ItemStack previewStack = action.getPreview();
+                action.setData(craftOption.data().get());
                 setBuffers();
+                action.setData(craftOption.data().get());
                 editContext.preview(action.toPacket(Networking.createBuffer()));
                 Pair<Map<CraftingProperty, Boolean>, Boolean> canPerform = action.fullCanPerform();
                 craftButton.isEnabled = canPerform.getSecond();
@@ -219,7 +226,8 @@ public class CraftViewRework extends InteractAbleWidget {
     }
 
     public void setBuffers() {
-        Map<String, String> data = new HashMap<>(defaultMap);
+        Map<ResourceLocation, JsonElement> data = new HashMap<>(defaultMap);
+        action.data = craftOption.data().get();
         action.forEachCraftingProperty(editContext.getItemstack(), ((craftingProperty, moduleInstance, itemStacks, invStart, invEnd, buf) -> {
             int index = craftingProperties.indexOf(craftingProperty);
             if (index >= 0) {

@@ -1,5 +1,6 @@
 package smartin.miapi.client.gui.crafting.crafter;
 
+import net.minecraft.network.chat.Component;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.crafting.PreviewManager;
 import smartin.miapi.client.gui.crafting.crafter.replace.CraftOption;
@@ -12,11 +13,10 @@ import smartin.miapi.modules.edit_options.ReplaceOption;
 import smartin.miapi.network.Networking;
 
 import java.util.HashMap;
-import net.minecraft.network.chat.Component;
 
 public class CraftEditOption extends InteractAbleWidget {
     EditOption.EditContext editContext;
-    CraftOption option = new CraftOption(ItemModule.empty,new HashMap<>());
+    CraftOption option = new CraftOption(ItemModule.empty, new HashMap<>(), -1000);
 
     public CraftEditOption(int x, int y, int width, int height, EditOption.EditContext context) {
         super(x, y, width, height, Component.empty());
@@ -38,13 +38,13 @@ public class CraftEditOption extends InteractAbleWidget {
             }
             case REPLACE -> {
                 this.children.clear();
-                ReplaceView view = new ReplaceView(this.getX(), this.getY(), this.width, this.height, editContext.getSlot(),editContext, (moduleSlot -> {
+                ReplaceView view = new ReplaceView(this.getX(), this.getY(), this.width, this.height, editContext.getSlot(), editContext, (moduleSlot -> {
                 }), (craftOption -> {
                     option = craftOption;
                     setMode(Mode.CRAFT);
                 }), (craftOption -> {
                     option = craftOption;
-                    CraftAction action = new CraftAction(editContext.getItemstack(), editContext.getSlot(), option.module(), editContext.getPlayer(), editContext.getWorkbench(), craftOption.data());
+                    CraftAction action = new CraftAction(editContext.getItemstack(), editContext.getSlot(), option.module(), editContext.getPlayer(), editContext.getWorkbench(), craftOption.data().get(), editContext.getScreenHandler());
                     action.setItem(editContext.getLinkedInventory().getItem(0));
                     action.linkInventory(editContext.getLinkedInventory(), 1);
                     editContext.preview(action.toPacket(Networking.createBuffer()));

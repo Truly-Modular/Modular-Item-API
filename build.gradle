@@ -15,22 +15,22 @@ architectury {
 }
 
 tasks.register('clean-builds') {
-    dependsOn(':forge:clean', ':fabric:clean')
+    dependsOn(':fabric:clean')
     doLast {
         println "Cleaned previous build"
     }
 }
 
 tasks.register('buildBoth') {
-    dependsOn('clean-builds', ':fabric:build', ':forge:build')
+    dependsOn('clean-builds', ':fabric:build')
     group = '_tm_tasks'
     doLast {
         def modVersion = rootProject.mod_version
         def minecraftVersion = rootProject.minecraft_version
         def fabricBuildDir = project(':fabric').file('build/libs')
-        def forgeBuildDir = project(':forge').file('build/libs')
+        //def forgeBuildDir = project(':forge').file('build/libs')
         def fabricJar = fabricBuildDir.listFiles().find { it.name.endsWith("${modVersion}.jar") }
-        def forgeJar = forgeBuildDir.listFiles().find { it.name.endsWith("${modVersion}.jar") }
+        //def forgeJar = forgeBuildDir.listFiles().find { it.name.endsWith("${modVersion}.jar") }
 
         if (fabricJar) {
             copy {
@@ -42,7 +42,7 @@ tasks.register('buildBoth') {
             }
         }
 
-        if (forgeJar) {
+        /*if (forgeJar) {
             copy {
                 from forgeJar
                 into project.file('Merged')
@@ -51,6 +51,8 @@ tasks.register('buildBoth') {
                 }
             }
         }
+
+         */
 
         /*
         def cacheDir = file("${gradle.gradleUserHomeDir}/caches/modules-2/files-2.1/${group}/${artifact}/${version}")

@@ -203,10 +203,10 @@ public class Miapi {
         return ResourceLocation.fromNamespaceAndPath(namespace, id);
     }
 
-    public static String toLangString(ResourceLocation id){
+    public static String toLangString(ResourceLocation id) {
         String lang = id.toString();
-        lang = lang.replace(":",".");
-        lang = lang.replace("/",".");
+        lang = lang.replace(":", ".");
+        lang = lang.replace("/", ".");
         return lang;
     }
 
