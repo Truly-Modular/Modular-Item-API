@@ -94,9 +94,9 @@ public class BlueprintCrafting extends ServerReplaceProperty implements Crafting
                 ItemStack input = inventory.getFirst();
                 this.materialRequirementClient = blueprintComponent.getCost();
                 this.materialCostClient = 0;
-                if (blueprintComponent.isValid(input, blueprintComponent.retrieve(craftAction.screenHandler))) {
+                if (blueprintComponent.isValidCorrectType(input, blueprintComponent.retrieve(craftAction.screenHandler))) {
                     this.materialCostClient = input.getCount();
-                    return true;
+                    return blueprintComponent.isValid(input, blueprintComponent.retrieve(craftAction.screenHandler));
                 }
                 return false;
             }

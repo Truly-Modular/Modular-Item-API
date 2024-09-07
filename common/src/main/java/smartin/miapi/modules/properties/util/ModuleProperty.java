@@ -4,6 +4,7 @@ import com.google.gson.JsonElement;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import org.apache.commons.lang3.tuple.Triple;
+import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
 
@@ -31,6 +32,12 @@ public interface ModuleProperty<T> {
     }
 
     default Optional<T> getData(ModuleInstance moduleInstance) {
+        if(ReloadEvents.isInReload()){
+            return Optional.empty();
+        }
+        if (moduleInstance == null || moduleInstance.module == ItemModule.empty) {
+            return Optional.empty();
+        }
         return Optional.ofNullable(moduleInstance.getProperty(this));
     }
 
@@ -38,8 +45,11 @@ public interface ModuleProperty<T> {
         if (itemStack == null) {
             return Optional.empty();
         }
+        if(ReloadEvents.isInReload()){
+            return Optional.empty();
+        }
         ModuleInstance baseModule = ItemModule.getModules(itemStack);
-        if (baseModule == null) {
+        if (baseModule == null || baseModule.module == ItemModule.empty) {
             return Optional.empty();
         }
         return Optional.ofNullable(baseModule.getPropertyItemStack(this));

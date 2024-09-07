@@ -18,6 +18,7 @@ import smartin.miapi.client.gui.crafting.crafter.replace.CraftOption;
 import smartin.miapi.client.gui.crafting.crafter.replace.ReplaceView;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.material.AllowedMaterial;
+import smartin.miapi.modules.properties.slot.AllowedSlots;
 
 import java.awt.*;
 import java.util.Map;
@@ -42,7 +43,16 @@ public class BlueprintComponent {
                 option.getScreenHandler().slots
                         .stream()
                         .filter(a -> a.getItem().has(BLUEPRINT_COMPONENT))
-                        .map(a -> a.getItem().get(BLUEPRINT_COMPONENT).asCraftOption(option.getScreenHandler())).toList());
+                        .map(a -> a.getItem().get(BLUEPRINT_COMPONENT))
+                        .filter(b -> {
+                            for (String id : AllowedSlots.getAllowedSlots(option.getInstance())) {
+                                if (option.getSlot().allowed.contains(id)) {
+                                    return true;
+                                }
+                            }
+                            return false;
+                        })
+                        .map(a -> a.asCraftOption(option.getScreenHandler())).toList());
     }
 
     public ModuleInstance toMerge;
@@ -78,7 +88,18 @@ public class BlueprintComponent {
         }
         if (ingredient.right().isPresent()) {
             IngredientWithCount countIngredient = ingredient.right().get();
-            return countIngredient.ingredient.test(itemStack) && countIngredient.count >= itemStack.getCount();
+            return countIngredient.ingredient.test(itemStack) && countIngredient.count <= itemStack.getCount();
+        }
+        return false;
+    }
+
+    public boolean isValidCorrectType(ItemStack itemStack, ItemStack blueprintItem) {
+        if (ingredient.left().isPresent() && ingredient.left().get()) {
+            return ItemStack.isSameItemSameComponents(itemStack, blueprintItem);
+        }
+        if (ingredient.right().isPresent()) {
+            IngredientWithCount countIngredient = ingredient.right().get();
+            return countIngredient.ingredient.test(itemStack);
         }
         return false;
     }
@@ -106,7 +127,7 @@ public class BlueprintComponent {
             }
         } else {
             IngredientWithCount countIngredient = ingredient.right().get();
-            if (countIngredient.ingredient.test(itemStack) && countIngredient.count >= itemStack.getCount()) {
+            if (countIngredient.ingredient.test(itemStack) && countIngredient.count <= itemStack.getCount()) {
                 int size = itemStack.getCount() - countIngredient.count;
                 ItemStack adjustedStack = itemStack.copy();
                 adjustedStack.setCount(size);
@@ -127,7 +148,7 @@ public class BlueprintComponent {
             } else {
                 id = decodeResult.getOrThrow().getFirst();
             }
-            if(id==-1){
+            if (id == -1) {
                 //check cursor stack somehow for blueprint
             }
             if (id >= 0) {

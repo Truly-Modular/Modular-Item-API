@@ -25,13 +25,24 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class SynergyManager {
-    public static Map<ItemModule, List<Synergy>> maps = new ConcurrentHashMap<>();
-    public static Map<Material, List<Synergy>> materialSynergies = new ConcurrentHashMap<>();
+    public static Map<ResourceLocation, List<Synergy>> moduleSynergies = new ConcurrentHashMap<>();
+    public static Map<ResourceLocation, List<Synergy>> materialSynergies = new ConcurrentHashMap<>();
 
     public static void setup() {
         PropertyResolver.register("synergies", (moduleInstance, oldMap) -> {
             if (moduleInstance != null) {
-                List<Synergy> synergies = maps.get(moduleInstance.module);
+                List<Synergy> synergies = moduleSynergies.get(moduleInstance.module.id());
+                if (synergies != null) {
+                    synergies.forEach(synergy -> {
+                        if (synergy.condition.isAllowed(ConditionManager.moduleContext(moduleInstance, oldMap))) {
+                            synergy.holder.applyHolder(oldMap);
+                        }
+                    });
+                }
+            }
+            Material material = MaterialProperty.getMaterial(oldMap);
+            if (material != null) {
+                List<Synergy> synergies = materialSynergies.get(material.getID());
                 if (synergies != null) {
                     synergies.forEach(synergy -> {
                         if (synergy.condition.isAllowed(ConditionManager.moduleContext(moduleInstance, oldMap))) {
@@ -42,12 +53,12 @@ public class SynergyManager {
             }
             return oldMap;
         });
-        Miapi.registerReloadHandler(ReloadEvents.MAIN, "miapi/synergies", maps, (isClient, path, data) -> {
+        Miapi.registerReloadHandler(ReloadEvents.MAIN, "miapi/synergies", moduleSynergies, (isClient, path, data) -> {
             load(data, path);
         }, 2);
         ReloadEvents.END.subscribe(((isClient, registryAccess) -> {
             int size = 0;
-            for (List<Synergy> synergies : maps.values()) {
+            for (List<Synergy> synergies : moduleSynergies.values()) {
                 size += synergies.size();
             }
             Miapi.LOGGER.info("Loaded " + size + " Synergies");
@@ -94,7 +105,7 @@ public class SynergyManager {
         }
         Synergy synergy = new Synergy();
         synergy.condition = ConditionManager.get(entryData.get("condition"));
-        List<Synergy> synergies = maps.computeIfAbsent(itemModule, (module) -> {
+        List<Synergy> synergies = moduleSynergies.computeIfAbsent(itemModule.id(), (module) -> {
             return new ArrayList<>();
         });
         synergies.add(synergy);
@@ -109,7 +120,7 @@ public class SynergyManager {
         }
         Synergy synergy = new Synergy();
         synergy.condition = ConditionManager.get(entryData.get("condition"));
-        List<Synergy> synergies = materialSynergies.computeIfAbsent(material, (module) -> {
+        List<Synergy> synergies = materialSynergies.computeIfAbsent(material.getID(), (module) -> {
             return new ArrayList<>();
         });
         synergies.add(synergy);

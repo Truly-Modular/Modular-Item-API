@@ -5,6 +5,7 @@ import net.minecraft.resources.ResourceLocation;
 import smartin.miapi.Miapi;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
@@ -47,6 +48,16 @@ public class AllowedSlots extends CodecProperty<List<String>> {
      * @return List of slotIds
      */
     public static List<String> getAllowedSlots(ItemModule module) {
+        return property.getData(module).orElse(new ArrayList<>());
+    }
+
+    /**
+     * Retrieves the allowed Submodules of a module
+     *
+     * @param module the module in question
+     * @return List of slotIds
+     */
+    public static List<String> getAllowedSlots(ModuleInstance module) {
         return property.getData(module).orElse(new ArrayList<>());
     }
 

@@ -1,15 +1,5 @@
-## v1.1.24 (1.20.1)
-- added compat for quark enchanting glint
-- improved better combat range calculations
-- added config to toggle lore on Modular Items/Materials
-- minor fix for nbt materials
-- improved enchantability detection
-- swapping modules will now repair modular items
-- silent step will also block the sound, not just the event now
-- added harvest ability
-- added attribute split property
-- improved hover previews, they should work more reliably now
-- improved tool detection on Forge and Fabric to have less cases of mods not correctly identifing modular tools
-- improved material stat displays
-- added material stat display on hover
-- added How to explanations
+## v2.0.0 (1.21)
+- ported to 1.21
+  - refactored and cleaned codebase
+  - for more details check the 1.21 Port readme on github
+- added blueprint logic
