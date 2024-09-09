@@ -19,7 +19,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 	hideRoot = false // Default to false, so root is shown unless specified
 }) => {
 	const [isOpen, setIsOpen] = useState(true) // To toggle minimizing
-	const [hasChildren] = useState(page.sub_pages.size === 0)
+	const [hasChildren] = useState(page.sub_pages.size > 0 || true)
 	const theme = useTheme()
 
 	// Function to handle the toggle of the sidebar
@@ -28,13 +28,20 @@ const Sidebar: React.FC<SidebarProps> = ({
 		setIsOpen(!isOpen)
 	}
 
+	// Build the link path with query parameters
+	const buildLinkPath = (subPageKey: string) => {
+		const urlParams = new URLSearchParams(window.location.search)
+		urlParams.set('page', basePath)
+		return `?${urlParams.toString()}`
+	}
+
 	// Don't render the root node header if hideRoot is true, but render its sub-pages
 	return (
-		<div style={{ paddingLeft: indentSize * (level - 1), marginBottom: '5px' }}>
+		<div style={{ paddingLeft: indentSize, marginBottom: '5px' }}>
 			{!hideRoot && (
 				<div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
 					<Link
-						to={`${basePath.replace('/', '')}`} // Ensure the URL is absolute by prepending '/'
+						to={buildLinkPath(page.header)}
 						style={{
 							color: theme.textColor,
 							textDecoration: 'none',
@@ -51,23 +58,21 @@ const Sidebar: React.FC<SidebarProps> = ({
 							marginLeft: '10px' // Space between the link and the arrow
 						}}
 					>
-						<span>{hasChildren ? ' ' : isOpen ? '▼' : '▶'} </span> {/* Toggle arrow */}
+						<span>{page.sub_pages.size > 0 ? (isOpen ? '▼' : '▶') : ''} </span> {/* Toggle arrow */}
 					</div>
 				</div>
 			)}
 
-			{isOpen && page.sub_pages.size > 0 && (
+			{isOpen && hasChildren && (
 				<ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-					{Array.from(page.sub_pages.entries()).map(([subPageKey, subPage]) => (
-						<li key={subPageKey}>
-							<Sidebar
-								page={subPage}
-								basePath={`${basePath}/${subPageKey.toLowerCase()}`} // Recursive path generation
-								level={level + 1}
-								indentSize={indentSize}
-							/>
-						</li>
-					))}
+					{Array.from(page.sub_pages.entries()).map(([subPageKey, subPage]) => {
+						console.log(subPageKey)
+						return (
+							<li key={subPageKey}>
+								<Sidebar page={subPage} basePath={basePath + '/' + subPageKey} level={level + 1} indentSize={indentSize} />
+							</li>
+						)
+					})}
 				</ul>
 			)}
 		</div>

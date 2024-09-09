@@ -13,7 +13,15 @@ import smartin.miapi.modules.properties.util.ModuleProperty;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-
+/**
+ * @header Material
+ * @description_start
+ * this condition checks if this Module has a certain material
+ * @desciption_end
+ * @path /data_types/condition/material
+ * @data type:material
+ * @data material:the material to be checked
+ */
 public class MaterialCondition implements ModuleCondition {
     public static Codec<MaterialCondition> CODEC = RecordCodecBuilder.create((instance) ->
             instance.group(

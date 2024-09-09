@@ -11,7 +11,16 @@ import smartin.miapi.modules.material.MaterialProperty;
 
 import java.util.List;
 import java.util.Optional;
-
+/**
+ * @header Material Count
+ * @description_start
+ * this condition checks if the item has a certain material a certain amount of times
+ * @desciption_end
+ * @path /data_types/condition/material_count
+ * @data type:material_count
+ * @data material:the material to be checked
+ * @data count:how often the material is used
+ */
 public class MaterialCountCondition implements ModuleCondition {
     public static Codec<MaterialCountCondition> CODEC = RecordCodecBuilder.create((instance) ->
             instance.group(

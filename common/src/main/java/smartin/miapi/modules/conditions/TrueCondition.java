@@ -5,6 +5,13 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 
+/**
+ * @header True Condition
+ * @description_start this condition is always true
+ * @desciption_end
+ * @path /data_types/condition/true
+ * @data type:true
+ */
 public class TrueCondition implements ModuleCondition {
     public static Codec<TrueCondition> CODEC = new Codec<TrueCondition>() {
         @Override

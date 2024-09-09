@@ -12,6 +12,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+/**
+ * @header Tag Condition
+ * @description_start this condition checks if the associated module has a specific module tag. Not to be confused with Item Tags
+ * @desciption_end
+ * @path /data_types/condition/tag
+ * @data type:tag
+ * @data tag:the tag to be checked
+ */
 public class TagCondition implements ModuleCondition {
     public static Codec<TagCondition> CODEC = RecordCodecBuilder.create((instance) ->
             instance.group(

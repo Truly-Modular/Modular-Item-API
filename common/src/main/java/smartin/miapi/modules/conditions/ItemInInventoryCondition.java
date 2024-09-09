@@ -12,7 +12,16 @@ import smartin.miapi.Miapi;
 
 import java.util.List;
 import java.util.Optional;
-
+/**
+ * @header Item in inventory
+ * @description_start
+ * this condition checks if a certain amount of a certain item is in a players inventory
+ * @desciption_end
+ * @path /data_types/condition/item_in_inventory
+ * @data type:item_in_inventory
+ * @data item:Item in the form of an Ingredient
+ * @data count:the amount of items needed to be present
+ */
 public record ItemInInventoryCondition(Ingredient item, MinMaxBounds.Ints count,
                                        Component error) implements ModuleCondition {
 

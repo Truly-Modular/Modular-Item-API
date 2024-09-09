@@ -9,6 +9,14 @@ import smartin.miapi.modules.ModuleInstance;
 
 import java.util.Optional;
 
+/**
+ * @header Parent Condition
+ * @description_start this condition moves the context to the parent module
+ * @desciption_end
+ * @path /data_types/condition/parent
+ * @data type:parent
+ * @data condition:sub Condition to be tested on the parent module
+ */
 public class ParentCondition implements ModuleCondition {
     public static Codec<ParentCondition> CODEC = RecordCodecBuilder.create((instance) ->
             instance.group(

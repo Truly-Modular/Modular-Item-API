@@ -5,7 +5,6 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.resources.ResourceLocation;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.modules.ItemModule;
@@ -13,7 +12,15 @@ import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.util.Optional;
-
+/**
+ * @header Module
+ * @description_start
+ * this condition if the associated module instance uses this module
+ * @desciption_end
+ * @path /data_types/condition/module
+ * @data type:module
+ * @data module:the id of the module
+ */
 public class ModuleTypeCondition implements ModuleCondition {
     public static Codec<ModuleTypeCondition> CODEC = RecordCodecBuilder.create((instance) ->
             instance.group(

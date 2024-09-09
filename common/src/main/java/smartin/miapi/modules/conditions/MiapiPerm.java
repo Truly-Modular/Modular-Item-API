@@ -9,7 +9,16 @@ import smartin.miapi.modules.MiapiPermissions;
 
 import java.util.List;
 import java.util.Optional;
-
+/**
+ * @header Material Count
+ * @description_start
+ * this condition is to check patreon or other types of outside conditions like time of year.
+ * This is mostly used to give patreon subscribers their skins/enable free skins depending on the season
+ * @desciption_end
+ * @path /data_types/condition/miapi_perm
+ * @data type:miapi_perm
+ * @data perm:a list of perms or UUIDS
+ */
 public class MiapiPerm implements ModuleCondition {
     public static Codec<MiapiPerm> CODEC = RecordCodecBuilder.create((instance) ->
             instance.group(

@@ -58,6 +58,96 @@
               "key_words": [],
               "sub_pages": {}
             },
+            "is_mod_loaded": {
+              "header": "Mod Loaded",
+              "description": "this condition checks if a mod is loaded, you should consider using this as a Load Condition",
+              "java": "common/src/main/java/smartin/miapi/modules/conditions/IsModLoadedCondition.java",
+              "data": {
+                "type": "mod_loaded",
+                "mod": "the mod ID to be checked"
+              },
+              "key_words": [],
+              "sub_pages": {}
+            },
+            "item_in_inventory": {
+              "header": "Item in inventory",
+              "description": "this condition checks if a certain amount of a certain item is in a players inventory",
+              "java": "common/src/main/java/smartin/miapi/modules/conditions/ItemInInventoryCondition.java",
+              "data": {
+                "type": "item_in_inventory",
+                "item": "Item in the form of an Ingredient",
+                "count": "the amount of items needed to be present"
+              },
+              "key_words": [],
+              "sub_pages": {}
+            },
+            "material": {
+              "header": "Material",
+              "description": "this condition checks if this Module has a certain material",
+              "java": "common/src/main/java/smartin/miapi/modules/conditions/MaterialCondition.java",
+              "data": {
+                "type": "material",
+                "material": "the material to be checked"
+              },
+              "key_words": [],
+              "sub_pages": {}
+            },
+            "material_count": {
+              "header": "Material Count",
+              "description": "this condition checks if the item has a certain material a certain amount of times",
+              "java": "common/src/main/java/smartin/miapi/modules/conditions/MaterialCountCondition.java",
+              "data": {
+                "type": "material_count",
+                "material": "the material to be checked",
+                "count": "how often the material is used"
+              },
+              "key_words": [],
+              "sub_pages": {}
+            },
+            "miapi_perm": {
+              "header": "Material Count",
+              "description": "this condition is to check patreon or other types of outside conditions like time of year.This is mostly used to give patreon subscribers their skins/enable free skins depending on the season",
+              "java": "common/src/main/java/smartin/miapi/modules/conditions/MiapiPerm.java",
+              "data": {
+                "type": "miapi_perm",
+                "perm": "a list of perms or UUIDS"
+              },
+              "key_words": [],
+              "sub_pages": {}
+            },
+            "module": {
+              "header": "Module",
+              "description": "this condition if the associated module instance uses this module",
+              "java": "common/src/main/java/smartin/miapi/modules/conditions/ModuleTypeCondition.java",
+              "data": {
+                "type": "module",
+                "module": "the id of the module"
+              },
+              "key_words": [],
+              "sub_pages": {}
+            },
+            "not": {
+              "header": "Not",
+              "description": "this condition inverses another condition",
+              "java": "common/src/main/java/smartin/miapi/modules/conditions/NotCondition.java",
+              "data": {
+                "type": "not",
+                "condition": "the sub condition to be inversed"
+              },
+              "key_words": [],
+              "sub_pages": {}
+            },
+            "number": {
+              "header": "Number",
+              "description": "this condition inverses another condition",
+              "java": "common/src/main/java/smartin/miapi/modules/conditions/NumberCondition.java",
+              "data": {
+                "type": "number",
+                "condition": "a Double Resolvable, if the result is higher than 0 is considered true"
+              },
+              "key_words": [],
+              "sub_pages": {}
+            },
             "or_condition": {
               "header": "Or Condition",
               "description": "this condition requires one sub conditions to be true",
@@ -68,8 +158,73 @@
               },
               "key_words": [],
               "sub_pages": {}
+            },
+            "other_module": {
+              "header": "Other Module",
+              "description": "this condition moves the context to any other module of the item",
+              "java": "common/src/main/java/smartin/miapi/modules/conditions/OtherModuleModuleCondition.java",
+              "data": {
+                "type": "other_module",
+                "condition": "sub Condition to be tested on all other modules of the item"
+              },
+              "key_words": [],
+              "sub_pages": {}
+            },
+            "parent": {
+              "header": "Parent Condition",
+              "description": "this condition moves the context to the parent module",
+              "java": "common/src/main/java/smartin/miapi/modules/conditions/ParentCondition.java",
+              "data": {
+                "type": "parent",
+                "condition": "sub Condition to be tested on the parent module"
+              },
+              "key_words": [],
+              "sub_pages": {}
+            },
+            "tag": {
+              "header": "Tag Condition",
+              "description": "this condition checks if the associated module has a specific module tag. Not to be confused with Item Tags",
+              "java": "common/src/main/java/smartin/miapi/modules/conditions/TagCondition.java",
+              "data": {
+                "type": "tag",
+                "tag": "the tag to be checked"
+              },
+              "key_words": [],
+              "sub_pages": {}
+            },
+            "true": {
+              "header": "True Condition",
+              "description": "this condition is always true",
+              "java": "common/src/main/java/smartin/miapi/modules/conditions/TrueCondition.java",
+              "data": {
+                "type": "true"
+              },
+              "key_words": [],
+              "sub_pages": {}
             }
           }
+        },
+        "double_resolvable": {
+          "header": "Double Resolvable",
+          "description": "this is a complex way to describe a numberin short this number allows you to do math like \"sin(5)\"but it also allows you to reference certain other numbers, for more information see StatResolverthis allows you to do stuff like \"[material.hardness]*5\" as a number",
+          "java": "common/src/main/java/smartin/miapi/modules/properties/util/DoubleOperationResolvable.java",
+          "data": {},
+          "key_words": [
+            "DoubleResolvable",
+            "DoubleResolvable"
+          ],
+          "sub_pages": {}
+        },
+        "properties": {
+          "header": "Properties",
+          "description": "Properties are the main way any stat is assigned to anythingThey are usually found in an id -> data map like{\"miapi:fire_proof\":true}Note that in this example \"miapi\" can be removed as it is implied if no mod id is setMost Properties have more complex inner data than a boolean",
+          "java": "common/src/main/java/smartin/miapi/modules/properties/util/ModuleProperty.java",
+          "data": {},
+          "key_words": [
+            "Properties",
+            "moduleProperties"
+          ],
+          "sub_pages": {}
         }
       }
     }

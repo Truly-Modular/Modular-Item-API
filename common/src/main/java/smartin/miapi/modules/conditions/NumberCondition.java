@@ -10,6 +10,15 @@ import smartin.miapi.modules.ModuleInstance;
 
 import java.util.Optional;
 
+/**
+ * @header Number
+ * @description_start
+ * this condition inverses another condition
+ * @desciption_end
+ * @path /data_types/condition/number
+ * @data type:number
+ * @data condition:a Double Resolvable, if the result is higher than 0 is considered true
+ */
 public record NumberCondition(String condition, Component error) implements ModuleCondition {
     public static Codec<NumberCondition> CODEC = RecordCodecBuilder.create((instance) ->
             instance.group(

@@ -11,6 +11,20 @@ import smartin.miapi.modules.ModuleInstance;
 import java.util.*;
 import java.util.function.Function;
 
+/**
+ * @header Properties
+ * @description_start
+ * Properties are the main way any stat is assigned to anything
+ * They are usually found in an id -> data map like
+ * {
+ *     "miapi:fire_proof":true
+ * }
+ * Note that in this example "miapi" can be removed as it is implied if no mod id is set
+ * Most Properties have more complex inner data than a boolean
+ * @desciption_end
+ * @path /data_types/properties
+ * @keywords Properties, module Properties
+ */
 public interface ModuleProperty<T> {
 
     T decode(JsonElement element);

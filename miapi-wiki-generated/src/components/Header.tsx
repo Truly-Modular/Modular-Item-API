@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { useTheme } from './ThemeContext'
 
 const Header: React.FC = () => {
@@ -10,39 +10,35 @@ const Header: React.FC = () => {
 
 	// Dropdown options
 	const versions = [
-		{ label: 'Release 1.21', value: '/release/1.21-mojmaps' },
-		{ label: 'Release 1.20', value: '/release/1.20' }
+		{ label: 'Release 1.21', value: 'release/1.21-mojmaps' },
+		{ label: 'Release 1.20', value: 'release/1.20' }
 		// Add more versions here as needed
 	]
 
 	// Set the selected version based on the current URL when the component mounts
 	useEffect(() => {
-		const currentPath = location.pathname
-		const matchedVersion = versions.find((version) => currentPath.startsWith(version.value))
+		const branch = new URLSearchParams(location.search).get('branch') || ''
+		const matchedVersion = versions.find((version) => branch.startsWith(version.value))
 		if (matchedVersion) {
 			setSelectedVersion(matchedVersion.value)
 		} else {
-			setSelectedVersion('/release/1.21-mojmaps') // Default version if no match
+			setSelectedVersion('release/1.21-mojmaps') // Default version if no match
 		}
-	}, [location.pathname, versions])
+	}, [location.search, versions])
 
 	// Function to handle navigation based on selected version
 	const handleVersionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
 		const versionPath = e.target.value
 		setSelectedVersion(versionPath)
-		navigate(`${versionPath}/home`)
+		navigate(`?branch=${versionPath}&page=home`)
 	}
 
 	// Function to handle the navigation for "Wiki" link
 	const handleWikiClick = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
 		e.preventDefault()
-		const homeIndex = location.pathname.indexOf('/home')
-		if (homeIndex !== -1) {
-			const newPath = location.pathname.substring(0, homeIndex + 5)
-			navigate(newPath)
-		} else {
-			navigate('/')
-		}
+		const params = new URLSearchParams(location.search)
+		params.set('page', 'home')
+		navigate(`?${params.toString()}`)
 	}
 
 	return (

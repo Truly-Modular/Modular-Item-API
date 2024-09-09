@@ -5,7 +5,15 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
 import smartin.miapi.Miapi;
-
+/**
+ * @header Not
+ * @description_start
+ * this condition inverses another condition
+ * @desciption_end
+ * @path /data_types/condition/not
+ * @data type:not
+ * @data condition:the sub condition to be inversed
+ */
 public class NotCondition implements ModuleCondition {
     public static Codec<NotCondition> CODEC = RecordCodecBuilder.create((instance) ->
             instance.group(

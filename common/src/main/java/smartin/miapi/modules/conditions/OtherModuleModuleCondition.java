@@ -9,6 +9,15 @@ import smartin.miapi.modules.ModuleInstance;
 
 import java.util.Optional;
 
+/**
+ * @header Other Module
+ * @description_start
+ * this condition moves the context to any other module of the item
+ * @desciption_end
+ * @path /data_types/condition/other_module
+ * @data type:other_module
+ * @data condition:sub Condition to be tested on all other modules of the item
+ */
 public class OtherModuleModuleCondition implements ModuleCondition {
     public static Codec<OtherModuleModuleCondition> CODEC = RecordCodecBuilder.create((instance) ->
             instance.group(

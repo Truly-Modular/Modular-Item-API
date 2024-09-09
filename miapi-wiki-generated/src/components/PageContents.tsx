@@ -6,6 +6,8 @@ interface PageContentsProps {
 }
 
 const PageContents: React.FC<PageContentsProps> = ({ page }) => {
+	console.log(page)
+	console.log('page contents')
 	return (
 		<div>
 			<h1>{page.header}</h1>

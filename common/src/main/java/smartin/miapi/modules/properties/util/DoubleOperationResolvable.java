@@ -22,6 +22,15 @@ import java.util.function.Function;
  * otherwise statresolving will crash out!
  * if the usage of {@link DoubleOperationResolvable#functionTransformer} is desired it should be set during initialize, as setting it in the constructor
  * would be negated by an Autocodec
+ * @header Double Resolvable
+ * @description_start this is a complex way to describe a number
+ * in short this number allows you to do math like "sin(5)"
+ * but it also allows you to reference certain other numbers, for more information see StatResolver
+ * this allows you to do stuff like "[material.hardness]*5" as a number
+ * @desciption_end
+ * @path /data_types/double_resolvable
+ * @keywords Double Resolvable,DoubleResolvable
+ * @data a string or number representing a calculation/numeric value
  */
 public class DoubleOperationResolvable {
     static Codec<Operation> autoCodec = AutoCodec.of(Operation.class).codec();
