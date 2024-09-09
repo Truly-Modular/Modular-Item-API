@@ -11,7 +11,15 @@ const PageContents: React.FC<PageContentsProps> = ({ page }) => {
 	return (
 		<div>
 			<h1>{page.header}</h1>
-			<p>{page.description}</p>
+			<p style={{ lineHeight: '1.2' }}>
+				{page.description.split('\n').map((line, index) => (
+					<span key={index}>
+						{line}
+						<br />
+					</span>
+				))}
+			</p>
+
 			<pre>
 				<code>{page.java}</code>
 			</pre>

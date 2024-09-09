@@ -1,6 +1,6 @@
 {
   "header": "Wiki for 1.21",
-  "description": "\nThis wiki is for 1.21\n",
+  "description": "\nWelcome to the Wiki for Truly Modular 1.21\nThis Wiki is structured to help Modpack developers/people who want to add/modify content in Truly Modular via Datapacks\nIt goes in-depth about various Unique things to truly modular, but also over some common Datapack things,\nIt is aimed at all people\n",
   "java": "",
   "data": {},
   "key_words": [],
@@ -215,7 +215,7 @@
           ],
           "sub_pages": {
             "armor": {
-              "header": "Armor Properties",
+              "header": "Armor",
               "description": "\nArmor Properties are properties specificly made for armor\n",
               "java": "common/src/main/java/smartin/miapi/modules/properties/armor/ArmorFolder.java",
               "data": {},
@@ -292,6 +292,14 @@
                   "sub_pages": {}
                 }
               }
+            },
+            "attributes": {
+              "header": "Attributes",
+              "description": "\nProperties related to attributes\n",
+              "java": "common/src/main/java/smartin/miapi/modules/properties/attributes/AttributeFolder.java",
+              "data": {},
+              "key_words": [],
+              "sub_pages": {}
             }
           }
         },

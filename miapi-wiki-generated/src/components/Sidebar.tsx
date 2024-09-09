@@ -15,10 +15,10 @@ const Sidebar: React.FC<SidebarProps> = ({
 	page,
 	basePath,
 	level = 0,
-	indentSize = 20,
+	indentSize = level < 2 ? 0 : 20,
 	hideRoot = false // Default to false, so root is shown unless specified
 }) => {
-	const [isOpen, setIsOpen] = useState(true) // To toggle minimizing
+	const [isOpen, setIsOpen] = useState(level < 2) // To toggle minimizing
 	const [hasChildren] = useState(page.sub_pages.size > 0 || true)
 	const theme = useTheme()
 
@@ -37,7 +37,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 
 	// Don't render the root node header if hideRoot is true, but render its sub-pages
 	return (
-		<div style={{ paddingLeft: indentSize, marginBottom: '5px' }}>
+		<div style={{ paddingLeft: indentSize, marginBottom: '5px', marginLeft: '0px' }}>
 			{!hideRoot && (
 				<div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
 					<Link
@@ -65,14 +65,11 @@ const Sidebar: React.FC<SidebarProps> = ({
 
 			{isOpen && hasChildren && (
 				<ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-					{Array.from(page.sub_pages.entries()).map(([subPageKey, subPage]) => {
-						console.log(subPageKey)
-						return (
-							<li key={subPageKey}>
-								<Sidebar page={subPage} basePath={basePath + '/' + subPageKey} level={level + 1} indentSize={indentSize} />
-							</li>
-						)
-					})}
+					{Array.from(page.sub_pages.entries()).map(([subPageKey, subPage]) => (
+						<li key={subPageKey}>
+							<Sidebar page={subPage} basePath={basePath + '/' + subPageKey} level={level + 1} />
+						</li>
+					))}
 				</ul>
 			)}
 		</div>

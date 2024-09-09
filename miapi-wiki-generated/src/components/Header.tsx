@@ -59,7 +59,7 @@ const Header: React.FC = () => {
 					onClick={handleWikiClick} // Attach the click handler
 					style={{ textDecoration: 'none', color: theme.headerTextColor }}
 				>
-					Wiki
+					Truly Modular Wiki
 				</a>
 			</h1>
 

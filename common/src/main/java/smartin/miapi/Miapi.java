@@ -64,7 +64,10 @@ import java.util.function.Consumer;
  * The following docs are used for automatic wiki generation
  * @header Wiki for 1.21
  * @description_start
- * This wiki is for 1.21
+ * Welcome to the Wiki for Truly Modular 1.21
+ * This Wiki is structured to help Modpack developers/people who want to add/modify content in Truly Modular via Datapacks
+ * It goes in-depth about various Unique things to truly modular, but also over some common Datapack things,
+ * It is aimed at all people
  * @description_end
  * @path root
  * @java false

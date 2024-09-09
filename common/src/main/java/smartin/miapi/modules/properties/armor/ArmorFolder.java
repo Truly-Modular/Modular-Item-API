@@ -1,7 +1,7 @@
 package smartin.miapi.modules.properties.armor;
 
 /**
- * @header Armor Properties
+ * @header Armor
  * @description_start
  * Armor Properties are properties specificly made for armor
  * @desciption_end

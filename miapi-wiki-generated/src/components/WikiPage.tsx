@@ -98,7 +98,7 @@ const WikiPage: React.FC = () => {
 							height: '100%'
 						}}
 					>
-						<Sidebar page={new Page(new Object())} basePath={`?branch=${branch}&page=home`} indentSize={20} />
+						<Sidebar page={new Page(new Object())} basePath={`?branch=${branch}&page=home`} hideRoot={true} />
 					</nav>
 
 					<main style={{ padding: '1rem', flexGrow: 1 }}>
@@ -132,7 +132,7 @@ const WikiPage: React.FC = () => {
 							height: '100%'
 						}}
 					>
-						<Sidebar page={new Page(new Object())} basePath={`?branch=${branch}&page=home`} indentSize={20} />
+						<Sidebar page={new Page(new Object())} basePath={`?branch=${branch}&page=home`} hideRoot={true} />
 					</nav>
 
 					<main style={{ padding: '1rem', flexGrow: 1 }}>{<PageContents page={findPageByPath(data, page)} />}</main>
@@ -162,7 +162,7 @@ const WikiPage: React.FC = () => {
 						height: '100%'
 					}}
 				>
-					<Sidebar page={data} basePath={'home'} indentSize={20} hideRoot={false} />
+					<Sidebar page={data} basePath={'home'} hideRoot={true} />
 				</nav>
 
 				<main style={{ padding: '1rem', flexGrow: 1 }}>
