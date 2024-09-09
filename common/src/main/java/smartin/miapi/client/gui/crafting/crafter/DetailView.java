@@ -23,6 +23,7 @@ import java.util.function.Consumer;
 
 /**
  * This Widget displays the Treelike Structure of the modular Item
+ *
  */
 @Environment(EnvType.CLIENT)
 public class DetailView extends InteractAbleWidget {
@@ -133,7 +134,10 @@ public class DetailView extends InteractAbleWidget {
             if (this.slot == selectedSlot) {
                 return true;
             }
-            return this.slot != null && slot.equals(selectedSlot);
+            if(this.slot != null && slot.equals(selectedSlot)){
+                return true;
+            }
+            return false;
         }
 
         public boolean mouseClicked(double mouseX, double mouseY, int button) {

@@ -60,6 +60,15 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
+/**
+ * The following docs are used for automatic wiki generation
+ * @header Wiki for 1.21
+ * @description_start
+ * This wiki is for 1.21
+ * @description_end
+ * @path root
+ * @java false
+ */
 public class Miapi {
     public static final String MOD_ID = "miapi";
     public static final Logger LOGGER = LoggerFactory.getLogger("ModularItem API");

@@ -27,7 +27,6 @@ import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.abilities.util.AbilityMangerProperty;
 import smartin.miapi.modules.abilities.util.EntityAttributeAbility;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
-import smartin.miapi.modules.properties.BlockProperty;
 import smartin.miapi.modules.properties.LoreProperty;
 import smartin.miapi.modules.properties.util.DoubleOperationResolvable;
 
@@ -36,8 +35,7 @@ import java.util.List;
 
 /**
  * This Ability is a lesser form of the Block of a Shield.
- * it only blocks a percentage of the Damage, defined by the value of {@link BlockProperty}
- * transforms the Value of {@link BlockProperty} with {@link BlockAbility#calculate(double)} to the actual damage resistance and slowdown percentages
+ * transforms the Value of {@link BlockAbility#calculate(double)} to the actual damage resistance and slowdown percentages
  */
 public class BlockAbility extends EntityAttributeAbility<BlockAbility.BlockAbilityJson> {
     public static Codec<BlockAbilityJson> CODEC = AutoCodec.of(BlockAbilityJson.class).codec();

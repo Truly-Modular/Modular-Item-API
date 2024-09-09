@@ -436,7 +436,6 @@ public class RegistryInventory {
             registerMiapi(moduleProperties, DisplayNameProperty.KEY, new DisplayNameProperty());
             registerMiapi(moduleProperties, ItemIdProperty.KEY, new ItemIdProperty());
             registerMiapi(moduleProperties, EquipmentSlotProperty.KEY, new EquipmentSlotProperty());
-            registerMiapi(moduleProperties, BlockProperty.KEY, new BlockProperty());
             registerMiapi(moduleProperties, HealthPercentDamage.KEY, new HealthPercentDamage());
             registerMiapi(moduleProperties, ArmorPenProperty.KEY, new ArmorPenProperty());
             registerMiapi(moduleProperties, ToolOrWeaponProperty.KEY, new ToolOrWeaponProperty());

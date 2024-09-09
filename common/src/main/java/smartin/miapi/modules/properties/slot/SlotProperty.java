@@ -22,6 +22,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * The SlotProperty, this allows Modules to define submodule Slots
+ *
  */
 public class SlotProperty extends CodecProperty<Map<String, SlotProperty.ModuleSlot>> {
     public static final ResourceLocation KEY = Miapi.id("slots");
@@ -65,7 +66,7 @@ public class SlotProperty extends CodecProperty<Map<String, SlotProperty.ModuleS
     }
 
     public static Map<String, ModuleSlot> getSlots(ModuleInstance instance) {
-        Map<String, ModuleSlot> slots = getInstance().getData(instance).orElse(new HashMap<>());
+        Map<String, ModuleSlot> slots = new LinkedHashMap<>(getInstance().getData(instance).orElse(new LinkedHashMap<>()));
         instance.getSubModuleMap().forEach((id, module) -> {
             if (slots.containsKey(id)) {
                 slots.get(id).parent = instance;
@@ -157,7 +158,7 @@ public class SlotProperty extends CodecProperty<Map<String, SlotProperty.ModuleS
         Map<String, ModuleSlot> initializedMap = new LinkedHashMap<>();
         for (var value : slots) {
             value.getValue().initialize(context);
-            initializedMap.put(value.getKey(), value.getValue());
+            initializedMap.put(value.getKey(), value.getValue().copy(true));
         }
         return initializedMap;
     }
@@ -231,6 +232,22 @@ public class SlotProperty extends CodecProperty<Map<String, SlotProperty.ModuleS
             return location;
         }
 
+        public ModuleSlot copy(boolean copyModules) {
+            ModuleSlot copied = new ModuleSlot();
+            if (copyModules) {
+                copied.inSlot = inSlot;
+                copied.parent = parent;
+            }
+            copied.allowed = new ArrayList<>(allowed);
+            copied.id = id;
+            copied.allowedMerge = new ArrayList<>(allowedMerge);
+            copied.priority = priority;
+            copied.slotType = slotType;
+            copied.transform = transform.copy();
+            copied.translationKey = translationKey;
+            return copied;
+        }
+
         @Override
         public boolean equals(Object object) {
             if (object instanceof ModuleSlot slot) {
@@ -238,6 +255,19 @@ public class SlotProperty extends CodecProperty<Map<String, SlotProperty.ModuleS
                     return false;
                 }
                 if (this.parent != null && !this.parent.equals(slot.parent)) {
+                    ModuleSlot thisParent = getSlotIn(this.parent);
+                    ModuleSlot otherParent = getSlotIn(slot.parent);
+                    if (
+                            thisParent != null && otherParent == null ||
+                            thisParent == null && otherParent != null
+                    ) {
+                        return false;
+                    }
+                    if (thisParent != null && otherParent != null)
+                        if (!thisParent.equals(otherParent)) {
+                            return false;
+                        }
+
                     return false;
                 }
                 if (this.inSlot == null && slot.inSlot != null) {
@@ -247,6 +277,9 @@ public class SlotProperty extends CodecProperty<Map<String, SlotProperty.ModuleS
                     return false;
                 }
                 if (this.allowed == null && slot.allowed != null) {
+                    return false;
+                }
+                if (!Objects.equals(this.id, slot.id)) {
                     return false;
                 }
                 if (this.allowed != null) {

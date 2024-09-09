@@ -2,8 +2,6 @@ package smartin.miapi.modules;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
@@ -427,34 +425,6 @@ public class ModuleInstance {
             return Component.translatable(Miapi.MOD_ID + ".module." + moduleName + ".description", material.getTranslation());
         }
         return StatResolver.translateAndResolve(Miapi.MOD_ID + ".module." + moduleName + ".description", this);
-    }
-
-
-    /**
-     * Returns a module instance constructed from the given JSON string representation.
-     *
-     * @param string the JSON string representation of a module instance
-     * @return a module instance constructed from the given JSON string representation
-     */
-    public static ModuleInstance fromString(String string) {
-        try {
-            JsonObject jsonObject = JsonParser.parseString(string).getAsJsonObject();
-
-            var result = CODEC.decode(JsonOps.INSTANCE, jsonObject);
-            if (result.isError()) {
-                Miapi.LOGGER.warn("Error during ModuleInstance decode" + result.error().get().message());
-                return new ModuleInstance(ItemModule.empty);
-            }
-            ModuleInstance moduleInstance = result.getOrThrow().getFirst();
-            if (moduleInstance.module == null) {
-                moduleInstance.module = ItemModule.empty;
-            }
-            return moduleInstance;
-        } catch (RuntimeException e) {
-            Miapi.LOGGER.error("Error during ModuleInstance decode - replacing with empty module", e);
-            Miapi.LOGGER.error("raw data: " + string);
-            return new ModuleInstance(ItemModule.empty);
-        }
     }
 
     public Optional<ModuleInstance> parseTo(String[] data) {

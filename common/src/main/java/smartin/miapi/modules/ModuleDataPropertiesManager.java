@@ -10,6 +10,15 @@ import smartin.miapi.registries.RegistryInventory;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * @header Data Types
+ * @description_start
+ * Data Types are commonly used Types of json encoded data.
+ * Different systems all use these same types, so this is an explanation for the individual types
+ * @desciption_end
+ * @keywords Data Types, datatypes, data_types
+ * @path /data_types
+ */
 public class ModuleDataPropertiesManager {
 
     public static Map<ModuleProperty<?>, Object> getProperties(ModuleInstance moduleInstance) {

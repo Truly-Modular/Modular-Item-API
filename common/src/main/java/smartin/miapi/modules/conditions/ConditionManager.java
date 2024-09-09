@@ -13,11 +13,17 @@ import net.minecraft.world.entity.player.Player;
 import smartin.miapi.Miapi;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.util.ModuleProperty;
-import smartin.miapi.registries.MiapiRegistry;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-
+/**
+ * @header Conditions
+ * @description_start
+ * Conditions! what is there to describe
+ * @desciption_end
+ * @keywords Condition
+ * @path /data_types/condition
+ */
 public class ConditionManager {
     public static Map<ResourceLocation, Codec<? extends ModuleCondition>> CONDITION_REGISTRY = new ConcurrentHashMap<>();
     public static ContextManager<ModuleInstance> MODULE_CONDITION_CONTEXT = source -> ((ModuleInstance) source).copy();

@@ -20,6 +20,15 @@ import smartin.miapi.mixin.client.ClientAdvancementManagerAccessor;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * @header Advancement Condition
+ * @description_start
+ * this condition checks if the associated player has a specific advancement. This is set to false if there is no associated Player
+ * @desciption_end
+ * @path /data_types/condition/advancement_condition
+ * @data type:advancement
+ * @data advancement: the id of the advancement, you can use the /advancement command to get a list of these
+ */
 public class AdvancementCondition implements ModuleCondition {
     public static Codec< AdvancementCondition> CODEC = RecordCodecBuilder.create((instance) ->
             instance.group(

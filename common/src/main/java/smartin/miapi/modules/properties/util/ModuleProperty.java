@@ -31,6 +31,11 @@ public interface ModuleProperty<T> {
         return true;
     }
 
+    /**
+     * warning! depending on your usage of merge and initialize, this return value should not be modified directly, but copied before that
+     * @param moduleInstance
+     * @return
+     */
     default Optional<T> getData(ModuleInstance moduleInstance) {
         if(ReloadEvents.isInReload()){
             return Optional.empty();
@@ -60,6 +65,12 @@ public interface ModuleProperty<T> {
         return Optional.ofNullable((T) module.properties().get(this));
     }
 
+    /**
+     * this should return a copy if {@link T} is a mutable object!
+     * @param property
+     * @param context
+     * @return
+     */
     default T initialize(T property, ModuleInstance context) {
         return property;
     }
