@@ -91,10 +91,10 @@ function processJavaFile(filePath, jsonData) {
 				header = trimmed.split('@header')[1].trim()
 				hasAnnotations = true
 			} else if (trimmed.startsWith('@description_start')) {
-				description += unmodifiedLine.split(' * @description_start')[1].trim() + '  '
+				description += unmodifiedLine.split(' * @description_start')[1].trim().replace(' /r', '  /r')
 				in_description = true
 			} else if (in_description && !trimmed.startsWith('@')) {
-				description += unmodifiedLine.replace(' * ', '') + '  '
+				description += unmodifiedLine.replace(' * ', '').replace(' /r', '  /r')
 			} else if (trimmed.startsWith('@description_end')) {
 				in_description = false
 			} else if (trimmed.startsWith('@path')) {
