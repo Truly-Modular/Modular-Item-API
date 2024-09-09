@@ -6,6 +6,15 @@
   "key_words": [],
   "sub_pages": {
     "data_types": {
+      "header": "Data Types",
+      "description": "Data Types are commonly used Types of json encoded data.Different systems all use these same types, so this is an explanation for the individual types",
+      "java": "common/src/main/java/smartin/miapi/modules/ModuleDataPropertiesManager.java",
+      "data": {},
+      "key_words": [
+        "DataTypes",
+        "datatypes",
+        "data_types"
+      ],
       "sub_pages": {
         "condition": {
           "header": "Conditions",
@@ -15,7 +24,52 @@
           "key_words": [
             "Condition"
           ],
-          "sub_pages": {}
+          "sub_pages": {
+            "advancement_condition": {
+              "header": "Advancement Condition",
+              "description": "this condition checks if the associated player has a specific advancement. This is set to false if there is no associated Player",
+              "java": "common/src/main/java/smartin/miapi/modules/conditions/AdvancementCondition.java",
+              "data": {
+                "@data type": "advancement",
+                "@data advancement": " the id of the advancement, you can use the /advancement command to get a list of these"
+              },
+              "key_words": [],
+              "sub_pages": {}
+            },
+            "and_condition": {
+              "header": "And Condition",
+              "description": "this condition requires all sub conditions to be true",
+              "java": "common/src/main/java/smartin/miapi/modules/conditions/AndCondition.java",
+              "data": {
+                "@data type": "and",
+                "@data conditions": "sub Conditions to be checked"
+              },
+              "key_words": [],
+              "sub_pages": {}
+            },
+            "child_condition": {
+              "header": "Child Condition",
+              "description": "this condition moves the context to any direct child module",
+              "java": "common/src/main/java/smartin/miapi/modules/conditions/ChildCondition.java",
+              "data": {
+                "@data type": "child",
+                "@data condition": "sub Condition to be tested on the child modules"
+              },
+              "key_words": [],
+              "sub_pages": {}
+            },
+            "or_condition": {
+              "header": "Or Condition",
+              "description": "this condition requires one sub conditions to be true",
+              "java": "common/src/main/java/smartin/miapi/modules/conditions/OrCondition.java",
+              "data": {
+                "@data type": "or",
+                "@data conditions": "sub Conditions to be checked"
+              },
+              "key_words": [],
+              "sub_pages": {}
+            }
+          }
         }
       }
     }
