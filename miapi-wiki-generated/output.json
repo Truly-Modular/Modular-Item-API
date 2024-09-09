@@ -172,7 +172,7 @@
             },
             "parent": {
               "header": "Parent Condition",
-              "description": "this condition moves the context to the parent module  \n",
+              "description": " this condition moves the context to the parent module  \n",
               "java": "common/src/main/java/smartin/miapi/modules/conditions/ParentCondition.java",
               "data": {
                 "type": "parent",
@@ -183,7 +183,7 @@
             },
             "tag": {
               "header": "Tag Condition",
-              "description": "this condition checks if the associated module has a specific module tag. Not to be confused with Item Tags  \n",
+              "description": " this condition checks if the associated module has a specific module tag. Not to be confused with Item Tags  \n",
               "java": "common/src/main/java/smartin/miapi/modules/conditions/TagCondition.java",
               "data": {
                 "type": "tag",
@@ -194,7 +194,7 @@
             },
             "true": {
               "header": "True Condition",
-              "description": "this condition is always true  \n",
+              "description": " this condition is always true  \n",
               "java": "common/src/main/java/smartin/miapi/modules/conditions/TrueCondition.java",
               "data": {
                 "type": "true"
@@ -206,7 +206,7 @@
         },
         "properties": {
           "header": "Properties",
-          "description": "  \nProperties are the main way any stat is assigned to anything  \nThey are usually found in an id -> data map like  \n``` json  \n{  \n\"miapi:fire_proof\":true  \n}  \n```  \nNote that in this example \"miapi\" can be removed as it is implied if no mod id is set  \nMost Properties have more complex inner data than a boolean  \n",
+          "description": "  \nProperties are the main way any stat is assigned to anything  \nThey are usually found in an id -> data map like  \n``` json  \n{  \n    \"miapi:fire_proof\":true  \n}  \n```  \nNote that in this example \"miapi\" can be removed as it is implied if no mod id is set  \nMost Properties have more complex inner data than a boolean  \n",
           "java": "common/src/main/java/smartin/miapi/modules/properties/util/ModuleProperty.java",
           "data": {},
           "key_words": [
@@ -316,7 +316,7 @@
         },
         "double_resolvable": {
           "header": "Double Resolvable",
-          "description": "this is a complex way to describe a number  \nin short this number allows you to do math like \"sin(5)\"  \nbut it also allows you to reference certain other numbers, for more information see StatResolver  \nthis allows you to do stuff like \"[material.hardness]*5\" as a number  \n",
+          "description": " this is a complex way to describe a number  \nin short this number allows you to do math like \"sin(5)\"  \nbut it also allows you to reference certain other numbers, for more information see StatResolver  \nthis allows you to do stuff like \"[material.hardness]*5\" as a number  \n",
           "java": "common/src/main/java/smartin/miapi/modules/properties/util/DoubleOperationResolvable.java",
           "data": {},
           "key_words": [
