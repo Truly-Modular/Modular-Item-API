@@ -8,6 +8,12 @@ import smartin.miapi.modules.properties.util.DoubleProperty;
 
 /**
  * This property adds a passive Food drain similar to sprinting
+ * @header Exhaustion
+ * @description_start
+ * This property was made for heavy armor, it increases the food exhaustion of the player
+ * @desciption_end
+ * @path /data_types/properties/armor/food_exhaustion
+ * @data food_exhaustion:a Double Resolvable
  */
 public class ExhaustionProperty extends DoubleProperty {
     public static final ResourceLocation KEY = Miapi.id("food_exhaustion");

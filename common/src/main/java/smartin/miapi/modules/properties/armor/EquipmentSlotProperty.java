@@ -11,6 +11,12 @@ import smartin.miapi.modules.properties.util.MergeType;
 
 /**
  * This property allows to dynamically set teh preferred EquipmentSlot
+ * @header Equipment Slot
+ * @description_start
+ * It is recommneded to use the correct Item as well as this for better mod compatibility
+ * @desciption_end
+ * @path /data_types/properties/armor/equipment_slot
+ * @data equipment_slot:the preferred Equipment Slot Group
  */
 public class EquipmentSlotProperty extends CodecProperty<EquipmentSlotGroup> {
     public static final ResourceLocation KEY = Miapi.id("equipment_slot");

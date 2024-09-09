@@ -90,10 +90,10 @@ function processJavaFile(filePath, jsonData) {
 				header = trimmed.split('@header')[1].trim()
 				hasAnnotations = true
 			} else if (trimmed.startsWith('@description_start')) {
-				description += trimmed.split('@description_start')[1].trim()
+				description += trimmed.split('@description_start')[1].trim() + '\n'
 				in_description = true
 			} else if (in_description && !trimmed.startsWith('@')) {
-				description += trimmed
+				description += trimmed + '\n'
 			} else if (trimmed.startsWith('@description_end')) {
 				in_description = false
 			} else if (trimmed.startsWith('@path')) {

@@ -11,6 +11,12 @@ import smartin.miapi.modules.properties.util.DoubleProperty;
 
 /**
  * decreases damage from raid type mobs
+ * @header PillagesGuard
+ * @description_start
+ * This property allows you to have reduced damage intake from pillagers/raid related mobs
+ * @desciption_end
+ * @path /data_types/properties/armor/pillager_guard
+ * @data pillager_guard:a Double Resolvable
  */
 public class PillagesGuard extends DoubleProperty {
     public static final ResourceLocation KEY = Miapi.id("pillager_guard");

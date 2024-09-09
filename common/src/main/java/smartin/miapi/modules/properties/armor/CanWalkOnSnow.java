@@ -7,6 +7,12 @@ import smartin.miapi.modules.properties.util.ComplexBooleanProperty;
 
 /**
  * This Property determins if boots can walk on powdered snow
+ * @header Snow Walking
+ * @description_start
+ * This Property allows the player to walk over powdered snow
+ * @desciption_end
+ * @path /data_types/properties/armor/can_walk_on_snow
+ * @data can_walk_on_snow:a Boolean Resolvable
  */
 public class CanWalkOnSnow extends ComplexBooleanProperty {
     public static final ResourceLocation KEY = Miapi.id("can_walk_on_snow");
