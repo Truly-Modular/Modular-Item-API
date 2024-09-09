@@ -1,0 +1,23 @@
+{
+  "header": "Wiki for 1.21",
+  "description": "This wiki is for 1.21",
+  "java": "",
+  "data": {},
+  "key_words": [],
+  "sub_pages": {
+    "data_types": {
+      "sub_pages": {
+        "condition": {
+          "header": "Conditions",
+          "description": "Conditions! what is there to describe",
+          "java": "common/src/main/java/smartin/miapi/modules/conditions/ConditionManager.java",
+          "data": {},
+          "key_words": [
+            "Condition"
+          ],
+          "sub_pages": {}
+        }
+      }
+    }
+  }
+}
