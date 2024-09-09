@@ -85,15 +85,16 @@ function processJavaFile(filePath, jsonData) {
 			inJavaDoc = false
 			return
 		} else if (inJavaDoc) {
+			const unmodifiedLine = new String(line)
 			const trimmed = line.replace('*', '').trim()
 			if (trimmed.startsWith('@header')) {
 				header = trimmed.split('@header')[1].trim()
 				hasAnnotations = true
 			} else if (trimmed.startsWith('@description_start')) {
-				description += line.split(' * @description_start')[1].trim() + '\n'
+				description += unmodifiedLine.split(' * @description_start')[1].trim() + '  '
 				in_description = true
 			} else if (in_description && !trimmed.startsWith('@')) {
-				description += line.replace(' * ', '') + '\n'
+				description += unmodifiedLine.replace(' * ', '') + '  '
 			} else if (trimmed.startsWith('@description_end')) {
 				in_description = false
 			} else if (trimmed.startsWith('@path')) {
