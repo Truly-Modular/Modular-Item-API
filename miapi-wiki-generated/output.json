@@ -1,13 +1,13 @@
 {
   "header": "Wiki for 1.21",
-  "description": "\nWelcome to the Wiki for Truly Modular 1.21\nThis Wiki is structured to help Modpack developers/people who want to add/modify content in Truly Modular via Datapacks\nIt goes in-depth about various Unique things to truly modular, but also over some common Datapack things,\nIt is aimed at all people\n",
+  "description": "\nWelcome to the Wiki for Truly Modular 1.21\r\nThis Wiki is structured to help Modpack developers/people who want to add/modify content in Truly Modular via Datapacks\r\nIt goes in-depth about various Unique things to truly modular, but also over some common Datapack things,\r\nIt is aimed at all people\r\n",
   "java": "",
   "data": {},
   "key_words": [],
   "sub_pages": {
     "data_types": {
       "header": "Data Types",
-      "description": "\nData Types are commonly used Types of json encoded data.\nDifferent systems all use these same types, so this is an explanation for the individual types\n",
+      "description": "\nData Types are commonly used Types of json encoded data.\r\nDifferent systems all use these same types, so this is an explanation for the individual types\r\n",
       "java": "common/src/main/java/smartin/miapi/modules/ModuleDataPropertiesManager.java",
       "data": {},
       "key_words": [
@@ -18,7 +18,7 @@
       "sub_pages": {
         "condition": {
           "header": "Conditions",
-          "description": "\nConditions! what is there to describe\n",
+          "description": "\nConditions! what is there to describe\r\n",
           "java": "common/src/main/java/smartin/miapi/modules/conditions/ConditionManager.java",
           "data": {},
           "key_words": [
@@ -27,7 +27,7 @@
           "sub_pages": {
             "advancement_condition": {
               "header": "Advancement Condition",
-              "description": "\nthis condition checks if the associated player has a specific advancement. This is set to false if there is no associated Player\n",
+              "description": "\nthis condition checks if the associated player has a specific advancement. This is set to false if there is no associated Player\r\n",
               "java": "common/src/main/java/smartin/miapi/modules/conditions/AdvancementCondition.java",
               "data": {
                 "type": "advancement",
@@ -38,7 +38,7 @@
             },
             "and_condition": {
               "header": "And Condition",
-              "description": "\nthis condition requires all sub conditions to be true\n",
+              "description": "\nthis condition requires all sub conditions to be true\r\n",
               "java": "common/src/main/java/smartin/miapi/modules/conditions/AndCondition.java",
               "data": {
                 "type": "and",
@@ -49,7 +49,7 @@
             },
             "child_condition": {
               "header": "Child Condition",
-              "description": "\nthis condition moves the context to any direct child module\n",
+              "description": "\nthis condition moves the context to any direct child module\r\n",
               "java": "common/src/main/java/smartin/miapi/modules/conditions/ChildCondition.java",
               "data": {
                 "type": "child",
@@ -60,7 +60,7 @@
             },
             "is_mod_loaded": {
               "header": "Mod Loaded",
-              "description": "\nthis condition checks if a mod is loaded, you should consider using this as a Load Condition\n",
+              "description": "\nthis condition checks if a mod is loaded, you should consider using this as a Load Condition\r\n",
               "java": "common/src/main/java/smartin/miapi/modules/conditions/IsModLoadedCondition.java",
               "data": {
                 "type": "mod_loaded",
@@ -71,7 +71,7 @@
             },
             "item_in_inventory": {
               "header": "Item in inventory",
-              "description": "\nthis condition checks if a certain amount of a certain item is in a players inventory\n",
+              "description": "\nthis condition checks if a certain amount of a certain item is in a players inventory\r\n",
               "java": "common/src/main/java/smartin/miapi/modules/conditions/ItemInInventoryCondition.java",
               "data": {
                 "type": "item_in_inventory",
@@ -83,7 +83,7 @@
             },
             "material": {
               "header": "Material",
-              "description": "\nthis condition checks if this Module has a certain material\n",
+              "description": "\nthis condition checks if this Module has a certain material\r\n",
               "java": "common/src/main/java/smartin/miapi/modules/conditions/MaterialCondition.java",
               "data": {
                 "type": "material",
@@ -94,7 +94,7 @@
             },
             "material_count": {
               "header": "Material Count",
-              "description": "\nthis condition checks if the item has a certain material a certain amount of times\n",
+              "description": "\nthis condition checks if the item has a certain material a certain amount of times\r\n",
               "java": "common/src/main/java/smartin/miapi/modules/conditions/MaterialCountCondition.java",
               "data": {
                 "type": "material_count",
@@ -106,7 +106,7 @@
             },
             "miapi_perm": {
               "header": "Material Count",
-              "description": "\nthis condition is to check patreon or other types of outside conditions like time of year.\nThis is mostly used to give patreon subscribers their skins/enable free skins depending on the season\n",
+              "description": "\nthis condition is to check patreon or other types of outside conditions like time of year.\r\nThis is mostly used to give patreon subscribers their skins/enable free skins depending on the season\r\n",
               "java": "common/src/main/java/smartin/miapi/modules/conditions/MiapiPerm.java",
               "data": {
                 "type": "miapi_perm",
@@ -117,7 +117,7 @@
             },
             "module": {
               "header": "Module",
-              "description": "\nthis condition if the associated module instance uses this module\n",
+              "description": "\nthis condition if the associated module instance uses this module\r\n",
               "java": "common/src/main/java/smartin/miapi/modules/conditions/ModuleTypeCondition.java",
               "data": {
                 "type": "module",
@@ -128,7 +128,7 @@
             },
             "not": {
               "header": "Not",
-              "description": "\nthis condition inverses another condition\n",
+              "description": "\nthis condition inverses another condition\r\n",
               "java": "common/src/main/java/smartin/miapi/modules/conditions/NotCondition.java",
               "data": {
                 "type": "not",
@@ -139,7 +139,7 @@
             },
             "number": {
               "header": "Number",
-              "description": "\nthis condition inverses another condition\n",
+              "description": "\nthis condition inverses another condition\r\n",
               "java": "common/src/main/java/smartin/miapi/modules/conditions/NumberCondition.java",
               "data": {
                 "type": "number",
@@ -150,7 +150,7 @@
             },
             "or_condition": {
               "header": "Or Condition",
-              "description": "\nthis condition requires one sub conditions to be true\n",
+              "description": "\nthis condition requires one sub conditions to be true\r\n",
               "java": "common/src/main/java/smartin/miapi/modules/conditions/OrCondition.java",
               "data": {
                 "type": "or",
@@ -161,7 +161,7 @@
             },
             "other_module": {
               "header": "Other Module",
-              "description": "\nthis condition moves the context to any other module of the item\n",
+              "description": "\nthis condition moves the context to any other module of the item\r\n",
               "java": "common/src/main/java/smartin/miapi/modules/conditions/OtherModuleModuleCondition.java",
               "data": {
                 "type": "other_module",
@@ -206,7 +206,7 @@
         },
         "properties": {
           "header": "Properties",
-          "description": "\nProperties are the main way any stat is assigned to anything\nThey are usually found in an id -> data map like\n{\n\"miapi:fire_proof\":true\n}\nNote that in this example \"miapi\" can be removed as it is implied if no mod id is set\nMost Properties have more complex inner data than a boolean\n",
+          "description": "\nProperties are the main way any stat is assigned to anything\r\nThey are usually found in an id -> data map like\r\n``` json\r\n{\r\n    \"miapi:fire_proof\":true\r\n}\r\n```\r\nNote that in this example \"miapi\" can be removed as it is implied if no mod id is set\r\nMost Properties have more complex inner data than a boolean\r\n",
           "java": "common/src/main/java/smartin/miapi/modules/properties/util/ModuleProperty.java",
           "data": {},
           "key_words": [
@@ -216,14 +216,14 @@
           "sub_pages": {
             "armor": {
               "header": "Armor",
-              "description": "\nArmor Properties are properties specificly made for armor\n",
+              "description": "\nArmor Properties are properties specificly made for armor\r\n",
               "java": "common/src/main/java/smartin/miapi/modules/properties/armor/ArmorFolder.java",
               "data": {},
               "key_words": [],
               "sub_pages": {
                 "can_walk_on_snow": {
                   "header": "Snow Walking",
-                  "description": "\nThis Property allows the player to walk over powdered snow\n",
+                  "description": "\nThis Property allows the player to walk over powdered snow\r\n",
                   "java": "common/src/main/java/smartin/miapi/modules/properties/armor/CanWalkOnSnow.java",
                   "data": {
                     "can_walk_on_snow": "a Boolean Resolvable"
@@ -233,7 +233,7 @@
                 },
                 "equipment_slot": {
                   "header": "Equipment Slot",
-                  "description": "\nIt is recommneded to use the correct Item as well as this for better mod compatibility\n",
+                  "description": "\nIt is recommneded to use the correct Item as well as this for better mod compatibility\r\n",
                   "java": "common/src/main/java/smartin/miapi/modules/properties/armor/EquipmentSlotProperty.java",
                   "data": {
                     "equipment_slot": "the preferred Equipment Slot Group"
@@ -243,7 +243,7 @@
                 },
                 "food_exhaustion": {
                   "header": "Exhaustion",
-                  "description": "\nThis property was made for heavy armor, it increases the food exhaustion of the player\n",
+                  "description": "\nThis property was made for heavy armor, it increases the food exhaustion of the player\r\n",
                   "java": "common/src/main/java/smartin/miapi/modules/properties/armor/ExhaustionProperty.java",
                   "data": {
                     "food_exhaustion": "a Double Resolvable"
@@ -253,7 +253,7 @@
                 },
                 "is_piglin_gold": {
                   "header": "IsPiglinGol",
-                  "description": "\nThis Property allows to set armor pieces as Piglin pacifying like gold is\n",
+                  "description": "\nThis Property allows to set armor pieces as Piglin pacifying like gold is\r\n",
                   "java": "common/src/main/java/smartin/miapi/modules/properties/armor/IsPiglinGold.java",
                   "data": {
                     "is_piglin_gold": "a Boolean Resolvable"
@@ -263,7 +263,7 @@
                 },
                 "pillager_guard": {
                   "header": "PillagesGuard",
-                  "description": "\nThis property allows you to have reduced damage intake from pillagers/raid related mobs\n",
+                  "description": "\nThis property allows you to have reduced damage intake from pillagers/raid related mobs\r\n",
                   "java": "common/src/main/java/smartin/miapi/modules/properties/armor/PillagesGuard.java",
                   "data": {
                     "pillager_guard": "a Double Resolvable"
@@ -273,7 +273,7 @@
                 },
                 "step_noise_cancel": {
                   "header": "Step Canceling",
-                  "description": "\nThis Property cancels the step sounds, this is meant to interact with wardens and sculk sensors\n",
+                  "description": "\nThis Property cancels the step sounds, this is meant to interact with wardens and sculk sensors\r\n",
                   "java": "common/src/main/java/smartin/miapi/modules/properties/armor/StepCancelingProperty.java",
                   "data": {
                     "step_noise_cancel": "a Boolean Resolvable"
@@ -283,7 +283,7 @@
                 },
                 "water_gravity": {
                   "header": "Water Gravity",
-                  "description": "\nThis property increases Gravity while under water, used to make players sink faster\n",
+                  "description": "\nThis property increases Gravity while under water, used to make players sink faster\r\n",
                   "java": "common/src/main/java/smartin/miapi/modules/properties/armor/WaterGravityProperty.java",
                   "data": {
                     "water_gravity": "a Double Resolvable"
@@ -295,7 +295,7 @@
             },
             "attributes": {
               "header": "Attributes",
-              "description": "\nProperties related to attributes\n",
+              "description": "\nProperties related to attributes\r\n",
               "java": "common/src/main/java/smartin/miapi/modules/properties/attributes/AttributeFolder.java",
               "data": {},
               "key_words": [],
@@ -303,9 +303,20 @@
             }
           }
         },
+        "boolean_resolvable": {
+          "header": "Boolean Resolvable",
+          "description": "\nThis is in concept just like a Double resolvable.\r\nThis is regarded true if the outcome is > 0.\r\nfalse is equivalent to 0, writing true in the json is the same as writing 1\r\n",
+          "java": "common/src/main/java/smartin/miapi/modules/properties/util/ComplexBooleanProperty.java",
+          "data": {},
+          "key_words": [
+            "BooleanResolvable",
+            "BooleanResolvable"
+          ],
+          "sub_pages": {}
+        },
         "double_resolvable": {
           "header": "Double Resolvable",
-          "description": "this is a complex way to describe a number\nin short this number allows you to do math like \"sin(5)\"\nbut it also allows you to reference certain other numbers, for more information see StatResolver\nthis allows you to do stuff like \"[material.hardness]*5\" as a number\n",
+          "description": "this is a complex way to describe a number\nin short this number allows you to do math like \"sin(5)\"\r\nbut it also allows you to reference certain other numbers, for more information see StatResolver\r\nthis allows you to do stuff like \"[material.hardness]*5\" as a number\r\n",
           "java": "common/src/main/java/smartin/miapi/modules/properties/util/DoubleOperationResolvable.java",
           "data": {},
           "key_words": [

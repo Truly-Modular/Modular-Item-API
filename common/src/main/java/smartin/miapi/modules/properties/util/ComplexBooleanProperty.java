@@ -5,7 +5,17 @@ import net.minecraft.world.item.ItemStack;
 import smartin.miapi.modules.ModuleInstance;
 
 import java.util.Optional;
-
+/**
+ * @header Boolean Resolvable
+ * @description_start
+ * This is in concept just like a Double resolvable.
+ * This is regarded true if the outcome is > 0.
+ * false is equivalent to 0, writing true in the json is the same as writing 1
+ * @desciption_end
+ * @path /data_types/boolean_resolvable
+ * @keywords Boolean Resolvable,BooleanResolvable
+ * @data a string or number representing a calculation/numeric/boolean value
+ */
 public abstract class ComplexBooleanProperty extends DoubleProperty {
     boolean defaultValue;
 

@@ -47,7 +47,6 @@ const Header: React.FC = () => {
 				backgroundColor: theme.headerBackgroundColor,
 				color: theme.headerTextColor,
 				padding: '1rem',
-				borderBottom: `2px solid ${theme.mutedTextColor}`,
 				display: 'flex',
 				justifyContent: 'space-between',
 				alignItems: 'center'

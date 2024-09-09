@@ -1,5 +1,6 @@
 import React from 'react'
 import Page from './Page'
+import ReactMarkdown from 'react-markdown'
 
 interface PageContentsProps {
 	page: Page
@@ -11,14 +12,7 @@ const PageContents: React.FC<PageContentsProps> = ({ page }) => {
 	return (
 		<div>
 			<h1>{page.header}</h1>
-			<p style={{ lineHeight: '1.2' }}>
-				{page.description.split('\n').map((line, index) => (
-					<span key={index}>
-						{line}
-						<br />
-					</span>
-				))}
-			</p>
+			<ReactMarkdown>{page.description}</ReactMarkdown>
 
 			<pre>
 				<code>{page.java}</code>

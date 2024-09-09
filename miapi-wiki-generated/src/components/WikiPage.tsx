@@ -94,7 +94,6 @@ const WikiPage: React.FC = () => {
 							width: '250px',
 							backgroundColor: theme.sidebarBackgroundColor,
 							padding: '1rem',
-							borderRight: `2px solid ${theme.mutedTextColor}`,
 							height: '100%'
 						}}
 					>
@@ -128,7 +127,6 @@ const WikiPage: React.FC = () => {
 							width: '250px',
 							backgroundColor: theme.sidebarBackgroundColor,
 							padding: '1rem',
-							borderRight: `2px solid ${theme.mutedTextColor}`,
 							height: '100%'
 						}}
 					>
@@ -158,7 +156,6 @@ const WikiPage: React.FC = () => {
 						width: '250px',
 						backgroundColor: theme.sidebarBackgroundColor,
 						padding: '1rem',
-						borderRight: `2px solid ${theme.mutedTextColor}`,
 						height: '100%'
 					}}
 				>

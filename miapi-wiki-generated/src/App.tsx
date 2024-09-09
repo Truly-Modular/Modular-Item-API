@@ -7,13 +7,13 @@ import { ThemeProvider, useTheme } from './components/ThemeContext'
 const discordTheme = {
 	primaryColor: '#5865F2', // Discord's blurple (primary brand color)
 	secondaryColor: '#57F287', // Green used for online status or highlights
-	backgroundColor: '#2C2F33', // Discord's dark background
+	backgroundColor: '#36393E', // Discord's dark background
 	textColor: '#FFFFFF', // White for text
-	sidebarBackgroundColor: '#23272A', // Slightly darker sidebar background
-	mutedTextColor: '#99AAB5', // Muted grayish text (used for secondary text or labels)
-	linkHoverColor: '#7289DA', // Lighter version of the primary color for hover effects
-	headerBackgroundColor: '#23272A',
-	headerTextColor: '#5865F2'
+	sidebarBackgroundColor: '#313338', // Slightly darker sidebar background
+	mutedTextColor: '#7289DA', // Muted grayish text (used for secondary text or labels)
+	linkHoverColor: '#1289DA', // Lighter version of the primary color for hover effects
+	headerBackgroundColor: '#282B30',
+	headerTextColor: '#FFFFFF'
 }
 
 const App: React.FC = () => {
