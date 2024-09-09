@@ -263,7 +263,7 @@
                 },
                 "pillager_guard": {
                   "header": "PillagesGuard",
-                  "description": "This property allows you to have reduced damage intake from pillagers/raid related mobs\r",
+                  "description": "This property allows you to have reduced damage intake from pillagers  /raid related mobs\r",
                   "java": "common/src/main/java/smartin/miapi/modules/properties/armor/PillagesGuard.java",
                   "data": {
                     "pillager_guard": "a Double Resolvable"
