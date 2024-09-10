@@ -11,7 +11,7 @@ import smartin.miapi.modules.ModuleInstance;
 import java.util.Optional;
 
 /**
- * @header Number
+ * @header Number Condition
  * @description_start
  * this condition inverses another condition
  * @desciption_end

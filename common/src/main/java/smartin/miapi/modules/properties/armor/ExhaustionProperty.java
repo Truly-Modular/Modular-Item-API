@@ -8,7 +8,7 @@ import smartin.miapi.modules.properties.util.DoubleProperty;
 
 /**
  * This property adds a passive Food drain similar to sprinting
- * @header Exhaustion
+ * @header Exhaustion Property
  * @description_start
  * This property was made for heavy armor, it increases the food exhaustion of the player
  * @desciption_end

@@ -5,7 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.architectury.platform.Platform;
 
 /**
- * @header Mod Loaded
+ * @header Mod Loaded Condition
  * @description_start
  * this condition checks if a mod is loaded, you should consider using this as a Load Condition
  * @desciption_end

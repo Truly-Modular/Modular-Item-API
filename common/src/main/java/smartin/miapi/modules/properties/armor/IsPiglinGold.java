@@ -7,7 +7,7 @@ import smartin.miapi.modules.properties.util.ComplexBooleanProperty;
 
 /**
  * This Property sets an armor Piece to be valid as a Piglin Gold Item so they don't attack the player
- * @header IsPiglinGol
+ * @header IsPiglinGold Property
  * @description_start
  * This Property allows to set armor pieces as Piglin pacifying like gold is
  * @desciption_end

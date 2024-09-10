@@ -59,7 +59,7 @@
               "sub_pages": {}
             },
             "is_mod_loaded": {
-              "header": "Mod Loaded",
+              "header": "Mod Loaded Condition",
               "description": "  \nthis condition checks if a mod is loaded, you should consider using this as a Load Condition  \n",
               "java": "common/src/main/java/smartin/miapi/modules/conditions/IsModLoadedCondition.java",
               "data": {
@@ -70,7 +70,7 @@
               "sub_pages": {}
             },
             "item_in_inventory": {
-              "header": "Item in inventory",
+              "header": "Item in inventory Condition",
               "description": "  \nthis condition checks if a certain amount of a certain item is in a players inventory  \n",
               "java": "common/src/main/java/smartin/miapi/modules/conditions/ItemInInventoryCondition.java",
               "data": {
@@ -82,7 +82,7 @@
               "sub_pages": {}
             },
             "material": {
-              "header": "Material",
+              "header": "Material Condition",
               "description": "  \nthis condition checks if this Module has a certain material  \n",
               "java": "common/src/main/java/smartin/miapi/modules/conditions/MaterialCondition.java",
               "data": {
@@ -93,7 +93,7 @@
               "sub_pages": {}
             },
             "material_count": {
-              "header": "Material Count",
+              "header": "Material Count Condition",
               "description": "  \nthis condition checks if the item has a certain material a certain amount of times  \n",
               "java": "common/src/main/java/smartin/miapi/modules/conditions/MaterialCountCondition.java",
               "data": {
@@ -105,7 +105,7 @@
               "sub_pages": {}
             },
             "miapi_perm": {
-              "header": "Material Count",
+              "header": "Miapi Perm Condition",
               "description": "  \nthis condition is to check patreon or other types of outside conditions like time of year.  \nThis is mostly used to give patreon subscribers their skins/enable free skins depending on the season  \n",
               "java": "common/src/main/java/smartin/miapi/modules/conditions/MiapiPerm.java",
               "data": {
@@ -116,7 +116,7 @@
               "sub_pages": {}
             },
             "module": {
-              "header": "Module",
+              "header": "Module Type Condition",
               "description": "  \nthis condition if the associated module instance uses this module  \n",
               "java": "common/src/main/java/smartin/miapi/modules/conditions/ModuleTypeCondition.java",
               "data": {
@@ -127,7 +127,7 @@
               "sub_pages": {}
             },
             "not": {
-              "header": "Not",
+              "header": "Not Condition",
               "description": "  \nthis condition inverses another condition  \n",
               "java": "common/src/main/java/smartin/miapi/modules/conditions/NotCondition.java",
               "data": {
@@ -138,7 +138,7 @@
               "sub_pages": {}
             },
             "number": {
-              "header": "Number",
+              "header": "Number Condition",
               "description": "  \nthis condition inverses another condition  \n",
               "java": "common/src/main/java/smartin/miapi/modules/conditions/NumberCondition.java",
               "data": {
@@ -160,7 +160,7 @@
               "sub_pages": {}
             },
             "other_module": {
-              "header": "Other Module",
+              "header": "Other Module Condition",
               "description": "  \nthis condition moves the context to any other module of the item  \n",
               "java": "common/src/main/java/smartin/miapi/modules/conditions/OtherModuleModuleCondition.java",
               "data": {
@@ -222,7 +222,7 @@
               "key_words": [],
               "sub_pages": {
                 "can_walk_on_snow": {
-                  "header": "Snow Walking",
+                  "header": "Snow Walking Property",
                   "description": "  \nThis Property allows the player to walk over powdered snow  \n",
                   "java": "common/src/main/java/smartin/miapi/modules/properties/armor/CanWalkOnSnow.java",
                   "data": {
@@ -232,7 +232,7 @@
                   "sub_pages": {}
                 },
                 "equipment_slot": {
-                  "header": "Equipment Slot",
+                  "header": "Equipment Slot Property",
                   "description": "  \nIt is recommneded to use the correct Item as well as this for better mod compatibility  \n",
                   "java": "common/src/main/java/smartin/miapi/modules/properties/armor/EquipmentSlotProperty.java",
                   "data": {
@@ -242,7 +242,7 @@
                   "sub_pages": {}
                 },
                 "food_exhaustion": {
-                  "header": "Exhaustion",
+                  "header": "Exhaustion Property",
                   "description": "  \nThis property was made for heavy armor, it increases the food exhaustion of the player  \n",
                   "java": "common/src/main/java/smartin/miapi/modules/properties/armor/ExhaustionProperty.java",
                   "data": {
@@ -252,7 +252,7 @@
                   "sub_pages": {}
                 },
                 "is_piglin_gold": {
-                  "header": "IsPiglinGol",
+                  "header": "IsPiglinGold Property",
                   "description": "  \nThis Property allows to set armor pieces as Piglin pacifying like gold is  \n",
                   "java": "common/src/main/java/smartin/miapi/modules/properties/armor/IsPiglinGold.java",
                   "data": {
@@ -262,7 +262,7 @@
                   "sub_pages": {}
                 },
                 "pillager_guard": {
-                  "header": "PillagesGuard",
+                  "header": "PillagesGuard Property",
                   "description": "  \nThis property allows you to have reduced damage intake from pillagers  /raid related mobs  \n",
                   "java": "common/src/main/java/smartin/miapi/modules/properties/armor/PillagesGuard.java",
                   "data": {
@@ -272,7 +272,7 @@
                   "sub_pages": {}
                 },
                 "step_noise_cancel": {
-                  "header": "Step Canceling",
+                  "header": "Step Canceling Property",
                   "description": "  \nThis Property cancels the step sounds, this is meant to interact with wardens and sculk sensors  \n",
                   "java": "common/src/main/java/smartin/miapi/modules/properties/armor/StepCancelingProperty.java",
                   "data": {
@@ -282,7 +282,7 @@
                   "sub_pages": {}
                 },
                 "water_gravity": {
-                  "header": "Water Gravity",
+                  "header": "Water Gravity Property",
                   "description": "  \nThis property increases Gravity while under water, used to make players sink faster  \n",
                   "java": "common/src/main/java/smartin/miapi/modules/properties/armor/WaterGravityProperty.java",
                   "data": {

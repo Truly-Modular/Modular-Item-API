@@ -11,7 +11,7 @@ import smartin.miapi.modules.properties.util.MergeType;
 
 /**
  * This property allows to dynamically set teh preferred EquipmentSlot
- * @header Equipment Slot
+ * @header Equipment Slot Property
  * @description_start
  * It is recommneded to use the correct Item as well as this for better mod compatibility
  * @desciption_end

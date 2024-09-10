@@ -8,7 +8,7 @@ import smartin.miapi.modules.properties.util.DoubleProperty;
 
 /**
  * This property allows for armor penetration, so weapons can igonre some armor
- * @header Water Gravity
+ * @header Water Gravity Property
  * @description_start
  * This property increases Gravity while under water, used to make players sink faster
  * @desciption_end

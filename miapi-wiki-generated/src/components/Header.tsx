@@ -11,7 +11,7 @@ const Header: React.FC = () => {
 	// Dropdown options
 	const versions = [
 		{ label: 'Release 1.21', value: 'release/1.21-mojmaps' },
-		{ label: 'Release 1.20', value: 'release/1.20' }
+		{ label: 'Release 1.20', value: 'release/1.20.1' }
 		// Add more versions here as needed
 	]
 

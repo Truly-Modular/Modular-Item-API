@@ -7,7 +7,7 @@ import smartin.miapi.modules.properties.util.ComplexBooleanProperty;
 
 /**
  * This Property determins if boots can walk on powdered snow
- * @header Snow Walking
+ * @header Snow Walking Property
  * @description_start
  * This Property allows the player to walk over powdered snow
  * @desciption_end

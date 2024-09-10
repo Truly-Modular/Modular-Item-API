@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 /**
- * @header Material
+ * @header Material Condition
  * @description_start
  * this condition checks if this Module has a certain material
  * @desciption_end

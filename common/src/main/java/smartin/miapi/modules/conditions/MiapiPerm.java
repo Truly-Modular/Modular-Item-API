@@ -10,7 +10,7 @@ import smartin.miapi.modules.MiapiPermissions;
 import java.util.List;
 import java.util.Optional;
 /**
- * @header Material Count
+ * @header Miapi Perm Condition
  * @description_start
  * this condition is to check patreon or other types of outside conditions like time of year.
  * This is mostly used to give patreon subscribers their skins/enable free skins depending on the season

@@ -6,7 +6,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
 import smartin.miapi.Miapi;
 /**
- * @header Not
+ * @header Not Condition
  * @description_start
  * this condition inverses another condition
  * @desciption_end

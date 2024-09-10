@@ -13,7 +13,7 @@ import smartin.miapi.registries.RegistryInventory;
 
 import java.util.Optional;
 /**
- * @header Module
+ * @header Module Type Condition
  * @description_start
  * this condition if the associated module instance uses this module
  * @desciption_end

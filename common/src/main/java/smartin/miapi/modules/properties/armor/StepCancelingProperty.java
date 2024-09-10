@@ -7,7 +7,7 @@ import smartin.miapi.Miapi;
 import smartin.miapi.modules.properties.util.ComplexBooleanProperty;
 
 /**
- * @header Step Canceling
+ * @header Step Canceling Property
  * @description_start
  * This Property cancels the step sounds, this is meant to interact with wardens and sculk sensors
  * @desciption_end

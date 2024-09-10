@@ -12,7 +12,7 @@ import smartin.miapi.modules.material.MaterialProperty;
 import java.util.List;
 import java.util.Optional;
 /**
- * @header Material Count
+ * @header Material Count Condition
  * @description_start
  * this condition checks if the item has a certain material a certain amount of times
  * @desciption_end

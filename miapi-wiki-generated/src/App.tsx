@@ -6,7 +6,7 @@ import { ThemeProvider, useTheme } from './components/ThemeContext'
 // Define the custom theme you want to use
 const discordTheme = {
 	primaryColor: '#5865F2', // Discord's blurple (primary brand color)
-	secondaryColor: '#57F287', // Green used for online status or highlights
+	secondaryColor: '#28a745', // Green used for online status or highlights
 	backgroundColor: '#36393E', // Discord's dark background
 	textColor: '#FFFFFF', // White for text
 	sidebarBackgroundColor: '#313338', // Slightly darker sidebar background

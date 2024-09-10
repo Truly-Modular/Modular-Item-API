@@ -13,7 +13,7 @@ import smartin.miapi.Miapi;
 import java.util.List;
 import java.util.Optional;
 /**
- * @header Item in inventory
+ * @header Item in inventory Condition
  * @description_start
  * this condition checks if a certain amount of a certain item is in a players inventory
  * @desciption_end

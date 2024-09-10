@@ -11,7 +11,7 @@ import smartin.miapi.modules.properties.util.DoubleProperty;
 
 /**
  * decreases damage from raid type mobs
- * @header PillagesGuard
+ * @header PillagesGuard Property
  * @description_start
  * This property allows you to have reduced damage intake from pillagers/raid related mobs
  * @desciption_end

@@ -10,7 +10,7 @@ import smartin.miapi.modules.ModuleInstance;
 import java.util.Optional;
 
 /**
- * @header Other Module
+ * @header Other Module Condition
  * @description_start
  * this condition moves the context to any other module of the item
  * @desciption_end
