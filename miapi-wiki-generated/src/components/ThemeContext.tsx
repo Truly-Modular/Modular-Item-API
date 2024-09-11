@@ -5,6 +5,7 @@ interface Theme {
 	primaryColor: string
 	secondaryColor: string
 	backgroundColor: string
+	lightBackgroundColor: string
 	textColor: string
 	sidebarBackgroundColor: string
 	mutedTextColor: string
@@ -18,6 +19,7 @@ const defaultTheme: Theme = {
 	primaryColor: '#5865F2', // Discord's blurple (primary brand color)
 	secondaryColor: '#57F287', // Green used for online status or highlights
 	backgroundColor: '#2C2F33', // Discord's dark background
+	lightBackgroundColor: '#80848E', // Discord's dark background
 	textColor: '#FFFFFF', // White for text
 	sidebarBackgroundColor: '#23272A', // Slightly darker sidebar background
 	mutedTextColor: '#99AAB5', // Muted grayish text (used for secondary text or labels)

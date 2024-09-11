@@ -71,7 +71,7 @@ const WikiPage: React.FC = () => {
 					color: theme.textColor
 				}}
 			>
-				<Header />
+				<Header rootPage={data || new Page()} />
 				<div style={{ display: 'flex', flexGrow: 1 }}>
 					<nav
 						style={{
@@ -81,7 +81,7 @@ const WikiPage: React.FC = () => {
 							height: '100%'
 						}}
 					>
-						<Sidebar page={new Page(new Object())} basePath={`?branch=${branch}&page=home`} hideRoot={true} />
+						<Sidebar page={new Page({})} basePath={`?branch=${branch}&page=home`} hideRoot={true} />
 					</nav>
 					<main style={{ padding: '1rem', flexGrow: 1 }}>
 						<div>Loading...</div>
@@ -102,7 +102,7 @@ const WikiPage: React.FC = () => {
 					color: theme.textColor
 				}}
 			>
-				<Header />
+				<Header rootPage={data || new Page()} />
 				<div style={{ display: 'flex', flexGrow: 1 }}>
 					<nav
 						style={{
@@ -112,7 +112,7 @@ const WikiPage: React.FC = () => {
 							height: '100%'
 						}}
 					>
-						<Sidebar page={new Page(new Object())} basePath={`?branch=${branch}&page=home`} hideRoot={true} />
+						<Sidebar page={new Page({})} basePath={`?branch=${branch}&page=home`} hideRoot={true} />
 					</nav>
 					<main style={{ padding: '1rem', flexGrow: 1 }}>
 						<PageContents page={findPageByPath(data, page)} branch_name={branch} />
@@ -132,26 +132,36 @@ const WikiPage: React.FC = () => {
 				color: theme.textColor
 			}}
 		>
-			<Header />
-			<div style={{ display: 'flex', flexGrow: 1 }}>
-				{/* Sidebar (fixed width) */}
+			{/* Fixed Header */}
+			<div style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 1000 }}>
+				<Header rootPage={data || new Page()} />
+			</div>
+
+			<div style={{ display: 'flex', flexGrow: 1, paddingTop: '60px' }}>
+				{' '}
+				{/* Adjust padding for fixed header */}
+				{/* Fixed Sidebar */}
 				<nav
 					style={{
-						width: '250px',
+						width: 'clamp(50px, 15vw, 250px)',
 						backgroundColor: theme.sidebarBackgroundColor,
 						padding: '1rem',
-						height: '100%'
+						position: 'fixed',
+						top: '70px', // Below the fixed header
+						bottom: 0,
+						overflowY: 'auto' // Make the sidebar scrollable if it overflows
 					}}
 				>
 					<Sidebar page={data} basePath={'home'} hideRoot={true} />
 				</nav>
-
-				{/* Main content (1.5 times the space of sidebar) */}
+				{/* Main content that scrolls independently */}
 				<main
 					style={{
+						marginLeft: 'clamp(50px, 15vw, 250px)',
 						padding: '1rem',
 						flexGrow: 1,
-						marginRight: 'calc(250px * 1.5)' // Adding 1.5 times the space as a margin on the right
+						overflowY: 'auto',
+						height: 'calc(100vh - 95px)' // Full height minus the header
 					}}
 				>
 					<PageContents page={findPageByPath(data, page)} branch_name={branch} />

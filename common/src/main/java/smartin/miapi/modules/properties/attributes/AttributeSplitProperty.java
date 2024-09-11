@@ -20,6 +20,24 @@ import smartin.miapi.modules.properties.util.MergeType;
 
 import java.util.*;
 
+/**
+ * This property allows modules to define and modify attribute splits for items.
+ * @header Attribute Split Property
+ * @description_start
+ * The Attribute Split Property is used to divide attributes across different contexts.
+ * It enables assigning attributes to multiple slots and merging them based on a percentage split.
+ * This property is essential to re-balance certain attributes for usage with other mods like alembic.
+ * @path /data_types/properties/attributes/attribute_split
+ * @data context: a map containing the attribute context and split configurations.
+ * @data context.attribute: the ID of the attribute to be split.
+ * @data context.slot: the target equipment slot group for the attribute.
+ * @data splitContext: the list of split configurations for each attribute.
+ * @data splitContext.attribute: the attribute being split.
+ * @data splitContext.percent: the percentage of the original attribute value assigned to this split.
+ * @data splitContext.value: the final resolved value for this split.
+ * @data operation: the operation executed on the split values, e.g., addition.
+ */
+
 public class AttributeSplitProperty extends CodecProperty<Map<AttributeSplitProperty.Context, List<AttributeSplitProperty.SplitContext>>> {
     public static final ResourceLocation KEY = Miapi.id("attribute_split");
     public static Codec<Map<Context, List<SplitContext>>> CODEC = new Codec<>() {

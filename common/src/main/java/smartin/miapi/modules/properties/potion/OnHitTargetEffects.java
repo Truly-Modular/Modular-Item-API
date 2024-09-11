@@ -14,6 +14,18 @@ import smartin.miapi.modules.properties.util.MergeType;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @header On Hit Target Effects Property
+ * @path /data_types/properties/potion/on_hit_target_effects
+ * @description_start
+ * This property triggers specific potion effects on the target entity when the attacker hits it. The effects
+ * are defined by `PossibleEffect` instances, which include parameters like probability, duration, and amplifier.
+ * The effects can be configured to apply based on various conditions, and the tooltip will display relevant
+ * information about these effects.
+ * @description_end
+ * @data effects: A list of `PossibleEffect` instances that define the potion effects to be applied when hitting the target entity.
+ */
+
 public class OnHitTargetEffects extends CodecProperty<List<PossibleEffect>> {
     public static final ResourceLocation KEY = Miapi.id("on_hit_potion");
     public OnHitTargetEffects property;

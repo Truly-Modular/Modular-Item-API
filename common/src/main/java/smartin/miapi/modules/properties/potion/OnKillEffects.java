@@ -14,6 +14,18 @@ import smartin.miapi.modules.properties.util.MergeType;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @header On Kill Effects Property
+ * @path /data_types/properties/potion/on_kill_effects
+ * @description_start
+ * This property triggers specific potion effects on the attacker when a living entity they have hit is killed.
+ * The effects are defined by `PossibleEffect` instances, which include parameters such as probability, duration,
+ * and amplifier. These effects are applied to the attacker upon the death of the target entity.
+ * The tooltip will display relevant information about these effects when the property is used in-game.
+ * @description_end
+ * @data effects: A list of `PossibleEffect` instances that define the potion effects to be applied when the attacker successfully kills an entity.
+ */
+
 public class OnKillEffects extends CodecProperty<List<PossibleEffect>> {
     public static final ResourceLocation KEY = Miapi.id("on_kill_potion");
     public OnKillEffects property;

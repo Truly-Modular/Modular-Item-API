@@ -30,8 +30,23 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * This property can manage if a module can be crafted in the first place
+ * @header Crafting Condition Property
+ * @path /data_types/properties/crafting_condition
+ * @description_start
+ * The CraftingConditionProperty defines conditions for crafting modules, including whether they are visible, selectable, and
+ * craftable. Conditions are evaluated using {@link ModuleCondition} instances, which can be customized for different scenarios.
+ * The property also supports event-based evaluations to manage crafting permissions dynamically.
+ * @description_end
+ * @data crafting_condition: An instance of {@link CraftingConditionJson} containing conditions for visibility, selection, and crafting ability.
+ * @data visible: (optional) that determines if the module is visible for crafting.
+ * @data selectAble: (optional) that determines if the module can be selected for crafting.
+ * @data craftAble: (optional) that determines if the module can be crafted.
+ *
+ * @see CodecProperty
+ * @see CraftingConditionJson
+ * @see CanCraft
  */
+
 public class CraftingConditionProperty extends CodecProperty<CraftingConditionProperty.CraftingConditionJson> implements CraftingProperty {
     public static final ResourceLocation KEY = Miapi.id("crafting_condition");
     public static CraftingConditionProperty property;

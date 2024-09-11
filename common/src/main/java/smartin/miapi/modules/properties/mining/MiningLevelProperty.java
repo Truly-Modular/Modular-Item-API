@@ -25,8 +25,32 @@ import smartin.miapi.modules.properties.util.*;
 import java.util.*;
 
 /**
- * The Property controls mining speed and levels of tools
+ * The `MiningLevelProperty` class defines the property for controlling mining speed and levels of tools.
+ * This property allows for detailed control over how tools interact with different blocks, including mining speed adjustments and block compatibility rules.
+ *
+ * @header Mining Level Property
+ * @path /data_types/properties/mining/mining
+ * @description_start
+ * The MiningLevelProperty manages the mining capabilities of tools, determining their effectiveness based on various rules and configurations.
+ * These configurations include block-specific mining speeds, block blacklists, and conditions for correct tool usage.
+ *
+ * By default, the mining level is influenced by the material properties associated with the tool.
+ * Custom rules can be defined to adjust mining speeds and tool compatibilities dynamically.
+ * @description_end
+ * @path /data_types/properties/mining/mining_level
+ * @data mining_capabilities: A map linking mining rules to specific block tags for determining tool effectiveness.
+ * @data codec: A codec for serializing and deserializing mining rules, allowing for flexible data handling.
+ * @data caching: The property uses a caching mechanism to optimize performance when accessing mining rules.
+ *
+ * @data mining_rules:
+ * @data `blocks`: List of blocks that the tool can mine.
+ * @data `block_list | blacklist_tag`: List of blocks that the tool cannot mine.
+ * @data `speed`: A resolvable value that determines the mining speed for the tool.
+ * @data `correctForDrops`: Optional boolean indicating whether the tool is correct for drops.
+ * @data `useMaterial`: Boolean indicating if material properties should affect mining rules.
+ *
  */
+
 public class MiningLevelProperty extends CodecProperty<Map<String, MiningLevelProperty.MiningRule>> implements ComponentApplyProperty {
     public static MiningLevelProperty property;
     public static final ResourceLocation KEY = Miapi.id("mining_level");

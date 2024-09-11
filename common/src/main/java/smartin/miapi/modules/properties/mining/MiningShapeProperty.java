@@ -29,9 +29,26 @@ import smartin.miapi.modules.properties.util.MergeType;
 import java.util.*;
 
 /**
- * This Property Manages the complicated task of Mining Multiple Blocks when only one is mined
- * Area,Vein and other stuff
+ * The `MiningShapeProperty` class manages the complex functionality of mining multiple blocks when only one is mined.
+ * This property allows for different mining shapes and modes, enabling advanced mining behavior like area and vein mining.
+ *
+ * @header Mining Shape Property
+ * @path /data_types/properties/mining/shape
+ * @description_start
+ * The MiningShapeProperty controls how tools mine multiple blocks based on the configured mining shapes, conditions, and modes.
+ * This allows for varied mining behaviors such as mining entire veins or large areas with a single action.
+ *
+ * The property supports different mining shapes (e.g., cubes, veins), conditions (e.g., block tags, always mine), and modes (e.g., instant, staggered).
+ * It also incorporates mining modifiers that can influence mining behavior, such as requiring all blocks to be the same type.
+ * @description_end
+ *
+ * @path /data_types/properties/mining/mining_shape
+ * @data mining_modes: instant or staggered exist by default
+ *
+ * @data mining_conditions: always and block_tag exist by default
+ * @data mining_modifiers:require_same exists by default
  */
+
 public class MiningShapeProperty extends CodecProperty<List<MiningShapeEntry>> {
     public static final ResourceLocation KEY = Miapi.id("mining_shape");
     public static MiningShapeProperty property;

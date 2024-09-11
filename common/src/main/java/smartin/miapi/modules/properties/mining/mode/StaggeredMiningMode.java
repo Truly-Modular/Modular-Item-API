@@ -15,6 +15,17 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+/**
+ * The `StaggeredMiningMode` class represents a mining mode where blocks are mined in a staggered fashion. This means that blocks are processed one at a time with a slight delay between them, allowing for a more controlled mining experience.
+ * @header Staggered Mining
+ * @path /data_types/properties/mining/shape/staggered_mining
+ * @description_start
+ * This mode processes blocks in a staggered manner, giving a more gradual mining experience compared to instant mining. It handles mining tasks in a delayed fashion, which can help manage performance and resource usage during mining operations.
+ * @description_end
+ * @data speed: The rate at which blocks are mined. Higher values result in faster mining speeds.
+ * @data durabilityBreakChance: The probability that the item's durability will decrease during mining, ranging from 0.0 (no chance) to 1.0 (guaranteed breakage).
+ */
+
 public class StaggeredMiningMode implements MiningMode {
     public static List<Runnable> nextTickTask = new ArrayList<>();
     public static MapCodec<StaggeredMiningMode> CODEC = AutoCodec.of(StaggeredMiningMode.class);

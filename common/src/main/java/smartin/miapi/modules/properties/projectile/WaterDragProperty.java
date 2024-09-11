@@ -8,8 +8,16 @@ import smartin.miapi.events.MiapiProjectileEvents;
 import smartin.miapi.modules.properties.util.DoubleProperty;
 
 /**
- * This property manages the speedloss of Projectiles inside Water
+ * This Property manages speed loss of {@link smartin.miapi.entity.ItemProjectileEntity} of Modular Items
+ * @header Water Drag Property
+ * @path /data_types/properties/projectile/water_drag
+ * @description_start
+ * The water drag affects the speed loss of projectiles when they travel through water. The drag is represented as a double
+ * value, where 1.0 means no speed loss and 0.0 means full loss of velocity in water.
+ * @description_end
+ * @data water_drag: Multiplied to the projectile's speed each tick when underwater.
  */
+
 public class WaterDragProperty extends DoubleProperty {
     public static final ResourceLocation KEY = Miapi.id("water_drag");
     public static WaterDragProperty property;

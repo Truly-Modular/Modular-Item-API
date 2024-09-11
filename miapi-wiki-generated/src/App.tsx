@@ -8,6 +8,7 @@ const discordTheme = {
 	primaryColor: '#5865F2', // Discord's blurple (primary brand color)
 	secondaryColor: '#28a745', // Green used for online status or highlights
 	backgroundColor: '#36393E', // Discord's dark background
+	lightBackgroundColor: '#80848E', // Discord's dark background
 	textColor: '#FFFFFF', // White for text
 	sidebarBackgroundColor: '#313338', // Slightly darker sidebar background
 	mutedTextColor: '#7289DA', // Muted grayish text (used for secondary text or labels)

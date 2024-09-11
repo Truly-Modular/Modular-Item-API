@@ -23,6 +23,22 @@ import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.*;
 
+/**
+ * @header GUI Stat Property
+ * @path /data_types/properties/gui_stat
+ * @description_start
+ * The GuiStatProperty manages statistics displayed in the GUI for items. It allows the attachment of custom statistics
+ * to items, which can be displayed in the GUI with a header, description, and a range of values. Each statistic is defined
+ * with a minimum and maximum value, and the current value is dynamically resolved based on the item instance.
+ * This property is used to enhance the user interface by providing detailed item statistics.
+ * @description_end
+ * @data min: A Double Operation representing the minimum value of the statistic.
+ * @data max: A Double Operation representing the maximum value of the statistic.
+ * @data value: A Double Operation representing the current value of the statistic.
+ * @data header: A Text Element used as the header for the statistic display.
+ * @data description: An optional Text Element providing a description for the statistic.
+ */
+
 public class GuiStatProperty extends CodecProperty<Map<String, GuiStatProperty.GuiInfo>> {
     public static final ResourceLocation KEY = Miapi.id("gui_stat");
     public static GuiStatProperty property;

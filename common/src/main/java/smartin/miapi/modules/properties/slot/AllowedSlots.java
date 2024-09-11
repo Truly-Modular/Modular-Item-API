@@ -14,8 +14,20 @@ import smartin.miapi.registries.RegistryInventory;
 import java.util.*;
 
 /**
- * This Property is meant to control what is allowed in the moduleSlots of an module
+ * This property defines which module slots a specific module is allowed to occupy.
+ * It allows restricting or specifying compatible slots for a given module.
+ *
+ * @header Allowed Slots Property
+ * @path /data_types/properties/slot/allowed_in_slots
+ * @description_start
+ * The Allowed Slots Property controls where a module can be placed by defining which slot types it is compatible with.
+ * A module can specify multiple slots by their IDs, ensuring that only certain modules can fit into designated slots
+ * when assembling items. This helps define logical compatibility between modules and item slots.
+ * @description_end
+ * @data allowed_in_slots: A list of strings representing the slot IDs where the module can be placed.
+ * @data `slotId`: (required) The ID of the slot that allows this module.
  */
+
 public class AllowedSlots extends CodecProperty<List<String>> {
     public static final ResourceLocation KEY = Miapi.id("allowed_in_slots");
     public static Codec<List<String>> CODEC = Codec.list(Codec.STRING);

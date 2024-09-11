@@ -17,8 +17,22 @@ import smartin.miapi.modules.properties.util.ModuleProperty;
 import java.util.Optional;
 
 /**
- * This property allows modules to change the DisplayName of the item in question
+ * @header Display Name Property
+ * @path /data_types/properties/display_name
+ * @description_start
+ * The DisplayNameProperty enables the customization of item display names based on module data. It retrieves the display name
+ * by resolving it through module instances and materials. The display name can be dynamically generated using translation keys
+ * and material-specific translations.
+ * @description_end
+ * @data display_name: A Text element representing the display name of the item.
+ *
+ * @see CodecProperty
+ * @see Component
+ * @see Material
+ * @see MaterialProperty
+ * @see ModularItemCache
  */
+
 public class DisplayNameProperty extends CodecProperty<Component> {
     public static final ResourceLocation KEY = Miapi.id("display_name");
     public static DisplayNameProperty property;

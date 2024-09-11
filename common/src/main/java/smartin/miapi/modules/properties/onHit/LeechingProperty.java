@@ -8,8 +8,17 @@ import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.modules.properties.util.DoubleProperty;
 
 /**
- * simple lifesteal property
+ * This property implements a lifesteal mechanic, allowing entities to heal based on the damage they deal.
+ *
+ * @header Leeching Property
+ * @path /data_types/properties/on_hit/leeching
+ * @description_start
+ * The Leeching Property enables a lifesteal effect, where a portion of the damage dealt by an entity is converted into health for that entity.
+ * The amount of healing is proportional to the damage dealt and is affected by the level of the leeching property.
+ * @description_end
+ * @data value: The percentage of damage dealt that is converted into health. For example, a value of 10 means that 10% of the damage dealt is used to heal the attacker.
  */
+
 public class LeechingProperty extends DoubleProperty {
     public static final ResourceLocation KEY = Miapi.id("leeching");
     public static LeechingProperty property;

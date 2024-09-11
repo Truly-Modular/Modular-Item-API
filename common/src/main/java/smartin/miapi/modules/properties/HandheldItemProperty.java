@@ -16,6 +16,17 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import smartin.miapi.modules.properties.util.ComplexBooleanProperty;
 
+/**
+ * @header Handheld Item Property
+ * @path /data_types/properties/handheld_item
+ * @description_start
+ * The HandheldItemProperty provides functionality for items that grant bonuses or perform special actions when held in
+ * both the main hand and off hand. Specifically, this property gives +50% attack speed if both hands contain items with
+ * this property. Additionally, it can automatically swap items between hands when better combat is not present.
+ * @description_end
+ * @data handheld_item: a boolean value if this is a handheld item. default is false
+ */
+
 public class HandheldItemProperty extends ComplexBooleanProperty {
     public static ResourceLocation attackspeedID = Miapi.id("handheld_bonus_attackspeed");
     public static final ResourceLocation KEY = Miapi.id("handheld_item");

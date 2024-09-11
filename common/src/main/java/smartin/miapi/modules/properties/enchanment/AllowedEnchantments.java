@@ -22,6 +22,19 @@ import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.*;
 
+/**
+ * This property allows modules to define and restrict which enchantments are allowed on items.
+ * @header Allowed Enchantments Property
+ * @path /data_types/properties/enchantments/allowed_enchantments
+ * @description_start
+ * The Allowed Enchantments Property is used to specify and manage enchantments that can or cannot be applied to certain items.
+ * It handles enchantment restrictions based on item types and also allows extensions to be detected and dynamically added.
+ * This property is crucial for controlling item enchantment compatibility within the modular item system.
+ * @descriptino_end
+ * @data allowed: a list of allowed enchantments (ResourceLocation).
+ * @data forbidden: a list of forbidden enchantments (ResourceLocation).
+ */
+
 public class AllowedEnchantments extends CodecProperty<AllowedEnchantments.AllowedEnchantsData> {
     public static final ResourceLocation KEY = Miapi.id("enchantments");
     public static AllowedEnchantments property;

@@ -17,8 +17,17 @@ import smartin.miapi.events.MiapiProjectileEvents;
 import smartin.miapi.modules.properties.util.ComplexBooleanProperty;
 
 /**
- * This property gives a projectile ender pearl behaviour
+ * This property grants ender pearl behavior to modular projectiles.
+ * @header Enderpearl Property
+ * @path /data_types/properties/projectile/enderpearl
+ * @description_start
+ * The Enderpearl Property allows modular projectiles to mimic the teleportation behavior of ender pearls. When a
+ * projectile with this property hits an entity or block, it teleports the owner (if possible) to the point of impact,
+ * similar to the effect of throwing an ender pearl.
+ * @description_end
+ * @data is_enderpearl: A boolean value that determines if the projectile behaves like an ender pearl.
  */
+
 public class EnderpearlProperty extends ComplexBooleanProperty {
     public static final ResourceLocation KEY = Miapi.id("is_enderpearl");
     public static EnderpearlProperty property;

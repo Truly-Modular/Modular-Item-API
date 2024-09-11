@@ -27,8 +27,22 @@ import smartin.miapi.modules.properties.util.ModuleProperty;
 import java.util.*;
 
 /**
- * This property manages the Itemlore of an Item
+ * @header Lore Property
+ * @path /data_types/properties/item_lore
+ * @description_start
+ * The LoreProperty manages the lore (or descriptive text) of an item. This property allows items to display custom lore
+ * that can be added either at the top or bottom of the item's tooltip. The lore is defined as a list of {@link Holder} objects,
+ * each specifying the text, position, and priority of the lore entry.
+ *
+ * The lore can be customized based on whether the item is modular or not, and additional configurations are available
+ * through {@link MiapiConfig}. Depending on the environment (client or server), different lore might be injected.
+ * @description_end
+ * @data a list of Lore Entires, compromoised of:
+ * @data text: The {@link Component} text to display.
+ * @data position: The position of the lore ("top" or "bottom").
+ * @data priority: The priority of the lore entry, used for sorting.
  */
+
 public class LoreProperty extends CodecProperty<List<LoreProperty.Holder>> {
     public static final ResourceLocation KEY = Miapi.id("item_lore");
     public static final Codec<Holder> codec = AutoCodec.of(Holder.class).codec();

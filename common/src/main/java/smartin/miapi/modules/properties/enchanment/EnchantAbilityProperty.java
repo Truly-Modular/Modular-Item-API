@@ -14,6 +14,22 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * This property determines the enchantability of an item, which affects how good enchantments can be obtained from an enchanting table.
+ * By default, enchantability is controlled by material values, but this property allows for custom enchantability values through module instances.
+ * @header Enchantability Property
+ * @description_start
+ * The Enchantability Property defines how effective an item is for enchanting purposes.
+ * This value influences the quality of enchantments available through the enchanting table.
+ * By default, enchantability is derived from the material properties of the item, but this property allows for modification through module instances.
+ * If no specific value is set, a default enchantability of 15 is used.
+ * @path /data_types/properties/enchantments/enchantability
+ * @data enchantability: double, representing the enchantability value used for enchantment calculations.
+ * @data default_value: 15.0, the default enchantability if no custom value is provided.
+ * @data material_controlled: By default, enchantability is determined by material properties through the `MaterialProperty` module.
+ * @data module_instance: Allows for custom enchantability values through module instances, which are averaged if multiple values are present.
+ */
+
 public class EnchantAbilityProperty extends DoubleProperty {
     public static final ResourceLocation KEY = Miapi.id("enchantability");
     public static EnchantAbilityProperty property;

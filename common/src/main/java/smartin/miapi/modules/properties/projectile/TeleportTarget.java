@@ -10,8 +10,21 @@ import smartin.miapi.events.MiapiProjectileEvents;
 import smartin.miapi.modules.properties.util.ComplexBooleanProperty;
 
 /**
- * This property is responsible for teleporting a hit target of projectiles
+ * This property defines the teleportation behavior of projectiles that hit a target.
+ * When a projectile with this property strikes a living entity, the target will be teleported
+ * as if they had consumed a chorus fruit, which randomly teleports them to a nearby location.
+ *
+ * @header Teleport Target Projectile Property
+ * @path /data_types/properties/projectile/teleport_target
+ * @description_start
+ * The Teleport Target Property adds the ability for projectiles to teleport any living entity they hit.
+ * Upon impact, the entity is teleported using the same mechanic as consuming a chorus fruit.
+ * If the property is true, and the hit entity is a living entity, the teleportation occurs.
+ * The projectile is discarded after impact.
+ * @description_end
+ * @data teleport_target: A boolean value indicating whether the teleport behavior is enabled for the projectile.
  */
+
 public class TeleportTarget extends ComplexBooleanProperty {
     public static final ResourceLocation KEY = Miapi.id("teleport_target");
     public static TeleportTarget property;

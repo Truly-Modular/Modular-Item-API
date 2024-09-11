@@ -21,8 +21,23 @@ import smartin.miapi.modules.properties.util.MergeType;
 import java.util.Optional;
 
 /**
- * This property is exploding projectiles on impact
+ * This property causes projectiles to explode on impact.
+ * @header Explosion Property
+ * @path /data_types/properties/projectile/explosion
+ * @description_start
+ * The Explosion Property makes a projectile explode upon hitting an entity or block. The explosion parameters such as
+ * strength, radius, and whether or not blocks are destroyed can be customized. The explosion may also affect entities
+ * with a configurable maximum damage and radius.
+ * @description_end
+ * @data explosion_projectile: An instance of `ExplosionInfo`, containing the properties for explosion behavior.
+ * @data `destroyBlocks`: (optional) Whether blocks are destroyed by the explosion.
+ * @data `chance`: (optional) Probability of the explosion occurring upon impact.
+ * @data `strength`: Strength of the explosion.
+ * @data `entityStrength`: (optional) Damage multiplier for entities caught in the explosion.
+ * @data `entityMaxDamage`: (optional) Maximum damage the explosion can deal to entities.
+ * @data  `entityRadius`: (optional) Radius of the explosion's effect on entities.
  */
+
 public class ExplosionProperty extends CodecProperty<ExplosionProperty.ExplosionInfo> {
     public static final ResourceLocation KEY = Miapi.id("explosion_projectile");
     public static final Codec<ExplosionInfo> codec = AutoCodec.of(ExplosionInfo.class).codec();

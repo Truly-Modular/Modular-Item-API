@@ -14,6 +14,20 @@ import smartin.miapi.Miapi;
 
 import java.util.ArrayList;
 import java.util.List;
+/**
+ * The `BlockTagCondition` class represents a mining condition that allows mining only if the block at a specific position has a tag that matches any of the specified tags.
+ * This condition provides a way to filter blocks based on their tags, ensuring that only blocks with the correct tags are affected by the mining shape.
+ *
+ * @header Block Tag Condition
+ * @path /data_types/properties/mining/shape/block_tag
+ * @description_start
+ * The `BlockTagCondition` implements the `MiningCondition` interface and is used to enforce that mining shapes only apply to blocks that have one of the specified tags.
+ * It is useful for scenarios where you want to restrict the mining operation to blocks that are categorized under specific tags.
+ * @description_end
+ * @path /data_types/properties/mining/condition/block_tag
+ * @data block_tag: A list of block tags that are used to determine which blocks are eligible for mining. The mining operation will only apply to blocks with these tags.
+ *
+ */
 
 public class BlockTagCondition implements MiningCondition {
     public static MapCodec<BlockTagCondition> CODEC = AutoCodec.of(BlockTagCondition.class);

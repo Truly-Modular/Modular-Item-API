@@ -14,6 +14,16 @@ import java.util.List;
 
 /**
  * Allows the set Itemtags via a Properterty (relies on {@link ItemStack#is(TagKey)}
+ * @header Fake Item Tag Property
+ * @path /data_types/properties/fake_item_tag
+ * @description_start
+ * The FakeItemTagProperty allows you to manage custom item tags for items. This property can be used to assign fake or
+ * placeholder tags to items, which can be useful for various in-game functionalities or for modding purposes. These tags
+ * are stored as a list of strings, and the property provides methods to retrieve and check these tags.
+ *
+ * For example, you can use this property to simulate item tags that do not exist in the default Minecraft item tag system.
+ * @description_end
+ * @data tags: A list of strings representing the fake tags assigned to the item.
  */
 public class FakeItemTagProperty extends CodecProperty<List<String>> {
     public static final ResourceLocation KEY = Miapi.id("fake_item_tag");

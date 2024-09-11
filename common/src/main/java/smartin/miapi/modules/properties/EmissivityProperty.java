@@ -8,6 +8,17 @@ import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.MergeType;
 
+/**
+ * @header Emissivity Property
+ * @path /data_types/properties/emissive
+ * @description_start
+ * The EmissivityProperty defines the emissive light levels for an item or block. Emissive properties affect how much light
+ * an item or block emits.
+ * These values are applied to the item or block to control its visual appearance in lighting conditions.
+ * @description_end
+ * @data sky: An integer representing the light level emitted in the sky.
+ * @data block: An integer representing the light level emitted from the block.
+ */
 public class EmissivityProperty extends CodecProperty<EmissivityProperty.LightJson> {
     public static final ResourceLocation KEY = Miapi.id("emissive");
     public static EmissivityProperty property;

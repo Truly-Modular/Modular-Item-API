@@ -12,8 +12,17 @@ import smartin.miapi.events.MiapiProjectileEvents;
 import smartin.miapi.modules.properties.util.ComplexBooleanProperty;
 
 /**
- * This property is responsible for designating a Projectile as an arrow, having subtle changes to its behaviour
+ * This Property designates a projectile as an arrow, modifying its behavior accordingly.
+ *
+ * @header Arrow Property
+ * @path /data_types/properties/projectile/arrow
+ * @description_start The Arrow Property modifies the behavior of projectiles to simulate arrow-like characteristics. This includes
+ * adjusting projectile hit behavior and properties when interacting with entities. For example, arrows may have
+ * specific behaviors such as sticking to targets or interacting differently with enchantments.
+ * @description_end
+ * @data is_arrow: Indicates whether the projectile behaves like an arrow, affecting its hit behavior and other attributes.
  */
+
 public class ArrowProperty extends ComplexBooleanProperty {
     public static final ResourceLocation KEY = Miapi.id("is_arrow");
     public static ArrowProperty property;

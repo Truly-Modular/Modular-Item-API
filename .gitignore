@@ -109,6 +109,7 @@ gradle-app.setting
 .gradletasknamecache
 
 **/build/
+**/node_modules/
 
 # Common working directory
 run/

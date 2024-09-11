@@ -12,6 +12,19 @@ import smartin.miapi.Miapi;
 
 import java.util.List;
 
+/**
+ * The `AlwaysMiningCondition` class represents a mining condition where the mining shape is always applied, regardless of context.
+ * This condition does not impose any restrictions or filters on the mining process.
+ *
+ * @header Always Mining Condition
+ * @path /data_types/properties/mining/shape/always
+ * @description_start
+ * This is condition less, you can just always mine whatever
+ * @description_end
+ *
+ * @path /data_types/properties/mining/condition/always
+ */
+
 public class AlwaysMiningCondition implements MiningCondition {
     public static MapCodec<AlwaysMiningCondition> CODEC = AutoCodec.of(AlwaysMiningCondition.class);
     public static ResourceLocation ID = Miapi.id("always");

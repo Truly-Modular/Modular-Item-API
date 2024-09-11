@@ -11,6 +11,19 @@ import smartin.miapi.Miapi;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.modules.properties.util.DoubleProperty;
 
+/**
+ * This property triggers lightning strikes at the location of the entity being hit.
+ *
+ * @header Lightning On Hit Property
+ * @path /data_types/properties/on_hit/lightning
+ * @description_start
+ * The Lightning On Hit Property causes lightning bolts to strike the location of the entity that was hit when the attacker has this property active.
+ * This effect is applied every time the entity with the property deals damage, making it a dramatic and powerful feature for weapons or abilities.
+ * The number of lightning bolts and their intensity are determined by the value of the property.
+ * @description_end
+ * @data value: The number of lightning bolts that will strike the location of the entity being hit. For example, a value of 3 means three lightning bolts will appear.
+ */
+
 public class LightningOnHit extends DoubleProperty {
     public static final ResourceLocation KEY = Miapi.id("lightning");
     public LightningOnHit property;

@@ -1,7 +1,7 @@
 package smartin.miapi.modules.properties.attributes;
 
 /**
- * @header Attributes
+ * @header Attribute Properties
  * @description_start
  * Properties related to attributes
  * @desciption_end

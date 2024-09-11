@@ -11,6 +11,16 @@ import smartin.miapi.modules.properties.util.ComponentApplyProperty;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
+/**
+ * @header Rarity Property
+ * @path /data_types/properties/rarity
+ * @description_start
+ * The RarityProperty determines the rarity level of an item. This property can influence the rarity displayed for
+ * items in the game, affecting their default coloring, think of golden apples, totems and co.
+ * @description_end
+ * @data rarity: A {@link Rarity} value representing the item's rarity level. Rarity levels are typically: COMMON, UNCOMMON, RARE, and EPIC.
+ */
+
 public class RarityProperty extends CodecProperty<Rarity> implements ComponentApplyProperty {
     public static final ResourceLocation KEY = Miapi.id("rarity");
     public static RarityProperty property;

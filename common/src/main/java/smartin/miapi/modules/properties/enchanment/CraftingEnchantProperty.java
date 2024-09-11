@@ -12,6 +12,19 @@ import smartin.miapi.modules.properties.util.*;
 
 import java.util.Map;
 
+/**
+ * This property allows modules to apply enchantments during crafting, which will persist on the item.
+ * @header Crafting Enchantments Property
+ * @description_start
+ * The Crafting Enchantments Property adds specific enchantments to an item when it is crafted.
+ * These enchantments are permanently added to the item and remain during subsequent uses or modifications.
+ * The property dynamically calculates the level of the enchantment using a resolvable operation that can reference the previous level of the enchantment.
+ * It integrates with the core enchantment system and ensures compatibility with existing enchantment handling mechanisms.
+ * @path /data_types/properties/enchantments/crafting_enchants
+ * @data enchantment: The enchantment being applied.
+ * @data value: Double Resolvable, used to calculate the level of the enchantment.
+ */
+
 public class CraftingEnchantProperty extends CodecProperty<Map<Holder<Enchantment>, DoubleOperationResolvable>> implements ComponentApplyProperty {
     public static final ResourceLocation KEY = Miapi.id("crafting_enchants");
     public static CraftingEnchantProperty property;

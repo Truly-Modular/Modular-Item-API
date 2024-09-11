@@ -10,8 +10,17 @@ import smartin.miapi.modules.properties.util.DoubleProperty;
 import java.util.Optional;
 
 /**
- * influences the ordering inside the gui
+ * @header UI Priority Property
+ * @path /data_types/properties/priority
+ * @description_start
+ * The PriorityProperty affects the ordering of items or modules within the GUI. This property assigns a priority value
+ * to each item or module, which influences its placement or sorting in graphical user interfaces where multiple items
+ * or modules are displayed. A lower value will be placed first in the list and higher values at the end.
+ *
+ * @description_end
+ * @data priority: the priority for sorting
  */
+
 public class PriorityProperty extends DoubleProperty {
     public static final ResourceLocation KEY = Miapi.id("priority");
     public static PriorityProperty property;

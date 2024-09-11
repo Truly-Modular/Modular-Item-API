@@ -15,6 +15,19 @@ import java.util.List;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
 
+/**
+ * The `OnDamagedEffects` property applies a set of possible potion effects to an entity when it is attacked.
+ *
+ * @header On Damaged Effects Property
+ * @path /data_types/properties/potion/on_damaged_effects
+ * @description_start
+ * This property triggers specific potion effects on an entity when it is damaged. The effects and their
+ * properties (such as duration, amplifier, probability) are defined by `PossibleEffect` instances. The effects
+ * can be configured to apply to either the attacker or the target entity, based on the `targetSelf` parameter.
+ * @description_end
+ * @data effects: A list of `PossibleEffect` instances, each defining a potion effect to be applied under certain conditions.
+ */
+
 public class OnDamagedEffects extends CodecProperty<List<PossibleEffect>> {
     public static final ResourceLocation KEY = Miapi.id("on_attack_potion");
     public OnDamagedEffects property;

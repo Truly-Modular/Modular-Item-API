@@ -20,7 +20,16 @@ import smartin.miapi.modules.properties.util.DoubleProperty;
 
 /**
  * Increases Xp Drops from slain mods and broken blocks
+ * @header Luminous Learning Property
+ * @path /data_types/properties/luminous_learning
+ * @description_start
+ * The LuminousLearningProperty enhances the experience drops from both blocks and entities. When an item with this property
+ * is used to break blocks or when a player slays a mob, the amount of XP dropped is increased based on the configured value.
+ *
+ * @description_end
+ * @data luminious_learning: the amount of XP increase.
  */
+
 public class LuminousLearningProperty extends DoubleProperty {
     public static final ResourceLocation KEY = Miapi.id("luminious_learning");
     public static LuminousLearningProperty property;

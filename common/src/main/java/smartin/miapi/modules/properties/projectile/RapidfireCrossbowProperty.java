@@ -22,6 +22,17 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 
+/**
+ * This property manages the rapid-fire functionality of a crossbow, allowing multiple projectiles to be loaded and fired in quick succession.
+ * @header Rapid Fire Crossbow Property
+ * @path /data_types/properties/projectile/rapid_fire_crossbow
+ * @description_start
+ * The Rapid Fire Crossbow Property controls how many projectiles can be loaded and fired from a modular crossbow in quick succession.
+ * The number of shots is determined by the property value, and additional projectiles can be loaded from the player's inventory.
+ * @description_end
+ * @data rapid_fire_crossbow: A double value representing the number of projectiles that can be shot.
+ */
+
 public class RapidfireCrossbowProperty extends DoubleProperty {
     public static final ResourceLocation KEY = Miapi.id("rapid_fire_crossbow");
     public static RapidfireCrossbowProperty property;

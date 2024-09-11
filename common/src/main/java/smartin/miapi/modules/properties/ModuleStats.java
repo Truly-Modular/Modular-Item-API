@@ -14,6 +14,19 @@ import smartin.miapi.modules.properties.util.ModuleProperty;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * @header Module Stats Property
+ * @path /data_types/properties/module_stats
+ * @description_start
+ * The ModuleStats property allows for the specification of various statistics associated with a module, where each statistic
+ * is represented by a key-value pair.
+ * This property is integrated with the Stat Resolver and can be queried by using [module.custom_stat_name].
+ *
+ * @description_end
+ * @data stats: A {@link Map} where each entry consists of a {@link String} key and a {@link Double} value, representing different
+ * statistics related to the module. The statistics can include metrics like "cost" and other module-specific data.
+ */
+
 public class ModuleStats extends CodecProperty<Map<String, Double>> {
     public static final ResourceLocation KEY = Miapi.id("module_stats");
     public static ModuleStats property;

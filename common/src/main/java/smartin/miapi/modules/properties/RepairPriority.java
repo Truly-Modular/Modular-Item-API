@@ -15,8 +15,20 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * controls the repair material
+ * @header Repair Priority Property
+ * @path /data_types/properties/repair_priority
+ * @description_start
+ * The RepairPriority property controls the materials used to repair an item and assigns a priority value to these
+ * materials. This value determines how effectively the item can be repaired using different materials.
+ *
+ * The priority value is a double, where a higher value represents a more effective repair material. The system
+ * maintains a list of materials that can be used for repair, and the highest priority material is used when
+ * repairing an item. If multiple materials have the same priority, all of them can be used interchangeably.
+ *
+ * @description_end
+ * @data repair_priority: A double value that determines the priority of repair materials for the item.
  */
+
 public class RepairPriority extends DoubleProperty {
     public static RepairPriority property;
     public static final ResourceLocation KEY = Miapi.id("repair_priority");

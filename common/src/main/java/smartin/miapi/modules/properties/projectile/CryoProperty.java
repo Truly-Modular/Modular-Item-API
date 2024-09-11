@@ -11,8 +11,16 @@ import smartin.miapi.modules.properties.util.DoubleProperty;
 import smartin.miapi.registries.RegistryInventory;
 
 /**
- * This Property applies the Cryo effect on Arrowhit(only on arrowhit)
+ * This Property applies the Cryo effect to entities when hit by a modular projectile.
+ * @header Cryo Property
+ * @path /data_types/properties/projectile/cryo
+ * @description_start
+ * The Cryo Property causes modular projectiles to apply a Cryo effect to entities they hit. The strength and
+ * duration of the Cryo effect are determined by the value of this property. The effect is only applied on arrow hits.
+ * @description_end
+ * @data cryo: A double value representing the strength and duration of the Cryo effect. Higher values increase the effect's potency.
  */
+
 public class CryoProperty extends DoubleProperty {
     public static final ResourceLocation KEY = Miapi.id("cryo");
     public static CryoProperty property;

@@ -21,9 +21,23 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * The SlotProperty, this allows Modules to define submodule Slots
+ * The SlotProperty class manages and defines submodule slots within modules.
+ * It allows modules to specify and handle various submodule slots, including their types, priorities, and transformation behaviors.
+ * This property supports dynamic management of slots and can integrate with module crafting and manipulation systems.
  *
+ * @header Slot Property
+ * @path /data_types/properties/slot/slots
+ * @description_start
+ * The SlotProperty defines how modules handle submodule slots. Each slot can have attributes such as transformation,
+ * translation key, and priority. Slots can also define allowed submodules and whether they can merge with others.
+ * The property provides methods to retrieve and manage slots within modules, including their transformation stacks and
+ * allowed submodules.
+ * @description_end
+ * @data slots: A map where keys are slot identifiers and values are {@link ModuleSlot} instances defining the slot's properties.
+ *
+ * @see CodecProperty
  */
+
 public class SlotProperty extends CodecProperty<Map<String, SlotProperty.ModuleSlot>> {
     public static final ResourceLocation KEY = Miapi.id("slots");
     public static Codec<Map<String, ModuleSlot>> CODEC = Codec.unboundedMap(Codec.STRING, AutoCodec.of(ModuleSlot.class).codec());

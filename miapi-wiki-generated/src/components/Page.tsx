@@ -10,6 +10,7 @@ class Page {
 	next: Page | null = null
 	prev: Page | null = null
 	keyWords: string[] = []
+	isCategory: boolean = true
 
 	constructor(data?: Partial<Page>, previousPage?: Page | null) {
 		// Validate and assign values with type checks
