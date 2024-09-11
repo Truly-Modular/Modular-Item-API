@@ -105,27 +105,27 @@ public class ModularWeapon extends Item implements PlatformModularItemMethods, M
 
     @Override
     public UseAction getUseAction(ItemStack stack) {
-        return ItemAbilityManager.getUseAction(stack);
+        return ItemAbilityManager.getUseAction(stack, () -> super.getUseAction(stack));
     }
 
     @Override
     public int getMaxUseTime(ItemStack stack) {
-        return ItemAbilityManager.getMaxUseTime(stack);
+        return ItemAbilityManager.getMaxUseTime(stack, () -> super.getMaxUseTime(stack));
     }
 
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-        return ItemAbilityManager.use(world, user, hand);
+        return ItemAbilityManager.use(world, user, hand, () -> super.use(world, user, hand));
     }
 
     @Override
     public void onStoppedUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
-        ItemAbilityManager.onStoppedUsing(stack, world, user, remainingUseTicks);
+        ItemAbilityManager.onStoppedUsing(stack, world, user, remainingUseTicks, () -> super.onStoppedUsing(stack, world, user, remainingUseTicks));
     }
 
     @Override
     public ItemStack finishUsing(ItemStack stack, World world, LivingEntity user) {
-        return ItemAbilityManager.finishUsing(stack, world, user);
+        return ItemAbilityManager.finishUsing(stack, world, user, () -> finishUsing(stack, world, user));
     }
 
     @Override
@@ -135,7 +135,7 @@ public class ModularWeapon extends Item implements PlatformModularItemMethods, M
 
     @Override
     public void usageTick(World world, LivingEntity user, ItemStack stack, int remainingUseTicks) {
-        ItemAbilityManager.usageTick(world, user, stack, remainingUseTicks);
+        ItemAbilityManager.usageTick(world, user, stack, remainingUseTicks, () -> super.usageTick(world, user, stack, remainingUseTicks));
     }
 
     @Override
@@ -146,12 +146,12 @@ public class ModularWeapon extends Item implements PlatformModularItemMethods, M
 
     @Override
     public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
-        return ItemAbilityManager.useOnEntity(stack, user, entity, hand);
+        return ItemAbilityManager.useOnEntity(stack, user, entity, hand, () -> super.useOnEntity(stack, user, entity, hand));
     }
 
     @Override
     public ActionResult useOnBlock(ItemUsageContext context) {
-        return ItemAbilityManager.useOnBlock(context);
+        return ItemAbilityManager.useOnBlock(context, () -> super.useOnBlock(context));
     }
 
     @Override
