@@ -2,10 +2,10 @@ const dictionary: { [key: string]: Page } = {}
 class Page {
 	header: string = 'header is missing! Report this to a developer to fix this'
 	description: string = 'Description missing! Report this to a developer to fix this'
+	sub_pages: Map<string, Page> = new Map()
 	buildDescription: string | null = null
 	java: string = ''
 	data: Map<string, string> = new Map()
-	sub_pages: Map<string, Page> = new Map()
 	parent: Page | null = null
 	next: Page | null = null
 	prev: Page | null = null
@@ -36,6 +36,7 @@ class Page {
 					})
 				}
 				dictionary[this.header] = this
+				/**
 				if (data.sub_pages && (data.sub_pages instanceof Map || typeof data.sub_pages === 'object')) {
 					// Check if 'sub_pages' is a valid Map or object, otherwise default to an empty Map
 					// Convert each subpage to a Page instance
@@ -51,6 +52,33 @@ class Page {
 						subPage.parent = this
 						this.sub_pages.set(key, subPage)
 					})
+				}*/
+
+				if (data.sub_pages && (data.sub_pages instanceof Map || typeof data.sub_pages === 'object')) {
+					// Check if 'sub_pages' is a valid Map or object, otherwise default to an empty Map
+					// Convert each subpage to a Page instance
+					const subPagesMap = new Map<string, Page>()
+
+					Object.entries(data.sub_pages).forEach(([key, value]) => {
+						const subPage = new Page(value, this)
+						subPage.parent = this
+						subPagesMap.set(key, subPage)
+					})
+
+					// Separate pages with subpages from those without
+					const pagesWithSubPages = Array.from(subPagesMap.entries())
+						.filter(([_, page]) => page.sub_pages.size > 0)
+						.sort(([keyA, pageA], [keyB, pageB]) => pageA.header.localeCompare(pageB.header))
+
+					const pagesWithoutSubPages = Array.from(subPagesMap.entries())
+						.filter(([_, page]) => page.sub_pages.size === 0)
+						.sort(([keyA, pageA], [keyB, pageB]) => pageA.header.localeCompare(pageB.header))
+
+					// Combine sorted pages
+					const sortedEntries = [...pagesWithSubPages, ...pagesWithoutSubPages]
+
+					// Add sorted entries to the sub_pages map
+					sortedEntries.forEach(([key, page]) => this.sub_pages.set(key, page))
 				}
 			} catch (e) {}
 		}

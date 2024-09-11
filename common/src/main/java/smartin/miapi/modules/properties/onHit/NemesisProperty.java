@@ -38,7 +38,7 @@ import java.util.Optional;
  * The `NemesisProperty` class provides a property for items that deals bonus damage to specific target entities based on the number of kills made.
  *
  * @header Nemesis Property
- * @path /data_types/properties/onHit/nemesis
+ * @path /data_types/properties/on_hit/nemesis
  * @description_start
  * The Nemesis Property allows weapons to deal increased damage to certain types of entities. As the weapon is used to kill more of the specified entity type, it gains additional damage potential against them. If the weapon is used against other types of entities, it loses some of its bonus damage.
  * This property tracks the number of kills made and adjusts the damage dealt based on the entity type and the number of kills recorded. It also updates the item's tooltip to reflect the current state of its nemesis status.

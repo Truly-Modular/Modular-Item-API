@@ -5,7 +5,7 @@ package smartin.miapi.modules.properties.slot;
  * @description_start
  * Properties related to slot management
  * @desciption_end
- * @path /data_types/properties/slots
+ * @path /data_types/properties/slot
  */
 public interface SlotProperties {
 }

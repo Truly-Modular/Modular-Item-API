@@ -12,6 +12,15 @@ import smartin.miapi.modules.properties.util.MergeType;
 
 import java.util.Optional;
 
+/**
+ *
+ * @header Explosion On Hit Property
+ * @path /data_types/properties/on_hit/explosion
+ * @description_start
+ * Explosion on a melee kill, the explosion is configurable like other explosion
+ * @description_end
+ * @data value: The number of lightning bolts that will strike the location of the entity being hit. For example, a value of 3 means three lightning bolts will appear.
+ */
 public class OnKillExplosion extends CodecProperty<ExplosionProperty.ExplosionInfo> {
     public static final ResourceLocation KEY = Miapi.id("on_kill_explosion");
     public static OnKillExplosion property;
