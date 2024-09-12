@@ -21,8 +21,6 @@ import java.util.List;
  * @description_start
  * This is condition less, you can just always mine whatever
  * @description_end
- *
- * @path /data_types/properties/mining/condition/always
  */
 
 public class AlwaysMiningCondition implements MiningCondition {

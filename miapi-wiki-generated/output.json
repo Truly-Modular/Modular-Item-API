@@ -517,7 +517,16 @@
               "data": {},
               "key_words": [],
               "sub_pages": {
-                "condition": {
+                "shape": {
+                  "header": "Mining Shape Property",
+                  "description": "  \nThe MiningShapeProperty controls how tools mine multiple blocks based on the configured mining shapes, conditions, and modes.  \nThis allows for varied mining behaviors such as mining entire veins or large areas with a single action.  \n *  \nThe property supports different mining shapes (e.g., cubes, veins), conditions (e.g., block tags, always mine), and modes (e.g., instant, staggered).  \nIt also incorporates mining modifiers that can influence mining behavior, such as requiring all blocks to be the same type.  \n",
+                  "java": "common/src/main/java/smartin/miapi/modules/properties/mining/MiningShapeProperty.java",
+                  "data": {
+                    "mining_modes": " instant or staggered exist by default",
+                    "mining_conditions": " always and block_tag exist by default",
+                    "mining_modifiers": "require_same exists by default"
+                  },
+                  "key_words": [],
                   "sub_pages": {
                     "always": {
                       "header": "Always Mining Condition",
@@ -536,34 +545,7 @@
                       },
                       "key_words": [],
                       "sub_pages": {}
-                    }
-                  }
-                },
-                "mining_level": {
-                  "header": "Mining Level Property",
-                  "description": "  \nThe MiningLevelProperty manages the mining capabilities of tools, determining their effectiveness based on various rules and configurations.  \nThese configurations include block-specific mining speeds, block blacklists, and conditions for correct tool usage.  \n *  \nBy default, the mining level is influenced by the material properties associated with the tool.  \nCustom rules can be defined to adjust mining speeds and tool compatibilities dynamically.  \n",
-                  "java": "common/src/main/java/smartin/miapi/modules/properties/mining/MiningLevelProperty.java",
-                  "data": {
-                    "mining_capabilities": " A map linking mining rules to specific block tags for determining tool effectiveness.",
-                    "codec": " A codec for serializing and deserializing mining rules, allowing for flexible data handling.",
-                    "caching": " The property uses a caching mechanism to optimize performance when accessing mining rules.",
-                    "mining_rules": "",
-                    "`blocks`": " List of blocks that the tool can mine.",
-                    "`block_list | blacklist_tag`": " List of blocks that the tool cannot mine.",
-                    "`speed`": " A resolvable value that determines the mining speed for the tool.",
-                    "`correctForDrops`": " Optional boolean indicating whether the tool is correct for drops.",
-                    "`useMaterial`": " Boolean indicating if material properties should affect mining rules."
-                  },
-                  "key_words": [],
-                  "sub_pages": {}
-                },
-                "shape": {
-                  "header": "Mining Shape Related stuff",
-                  "description": "  \nThese are basic data types related to mining shape  \n",
-                  "java": "common/src/main/java/smartin/miapi/modules/properties/mining/MiningShapeFolder.java",
-                  "data": {},
-                  "key_words": [],
-                  "sub_pages": {
+                    },
                     "instant_mining": {
                       "header": "Instant Mining",
                       "description": "  \nThis mode processes all blocks in the list instantly, creating drops at the exact location where each block was mined. It also includes a durability break chance which determines the likelihood of breaking the item during mining.  \n *  \n *  \n",
@@ -599,14 +581,20 @@
                     }
                   }
                 },
-                "mining_shape": {
-                  "header": "Mining Shape Property",
-                  "description": "  \nThe MiningShapeProperty controls how tools mine multiple blocks based on the configured mining shapes, conditions, and modes.  \nThis allows for varied mining behaviors such as mining entire veins or large areas with a single action.  \n *  \nThe property supports different mining shapes (e.g., cubes, veins), conditions (e.g., block tags, always mine), and modes (e.g., instant, staggered).  \nIt also incorporates mining modifiers that can influence mining behavior, such as requiring all blocks to be the same type.  \n",
-                  "java": "common/src/main/java/smartin/miapi/modules/properties/mining/MiningShapeProperty.java",
+                "mining_level": {
+                  "header": "Mining Level Property",
+                  "description": "  \nThe MiningLevelProperty manages the mining capabilities of tools, determining their effectiveness based on various rules and configurations.  \nThese configurations include block-specific mining speeds, block blacklists, and conditions for correct tool usage.  \n *  \nBy default, the mining level is influenced by the material properties associated with the tool.  \nCustom rules can be defined to adjust mining speeds and tool compatibilities dynamically.  \n",
+                  "java": "common/src/main/java/smartin/miapi/modules/properties/mining/MiningLevelProperty.java",
                   "data": {
-                    "mining_modes": " instant or staggered exist by default",
-                    "mining_conditions": " always and block_tag exist by default",
-                    "mining_modifiers": "require_same exists by default"
+                    "mining_capabilities": " A map linking mining rules to specific block tags for determining tool effectiveness.",
+                    "codec": " A codec for serializing and deserializing mining rules, allowing for flexible data handling.",
+                    "caching": " The property uses a caching mechanism to optimize performance when accessing mining rules.",
+                    "mining_rules": "",
+                    "`blocks`": " List of blocks that the tool can mine.",
+                    "`block_list | blacklist_tag`": " List of blocks that the tool cannot mine.",
+                    "`speed`": " A resolvable value that determines the mining speed for the tool.",
+                    "`correctForDrops`": " Optional boolean indicating whether the tool is correct for drops.",
+                    "`useMaterial`": " Boolean indicating if material properties should affect mining rules."
                   },
                   "key_words": [],
                   "sub_pages": {}
