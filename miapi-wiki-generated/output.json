@@ -511,7 +511,7 @@
               "sub_pages": {}
             },
             "mining": {
-              "header": "Mining Related Properties",
+              "header": "Mining Properties",
               "description": "  \nThese are mining Related Properties  \n",
               "java": "common/src/main/java/smartin/miapi/modules/properties/mining/MiningFolder.java",
               "data": {},
@@ -750,7 +750,7 @@
               }
             },
             "potion": {
-              "header": "Potion Related Properties",
+              "header": "Potion Properties",
               "description": "  \nProperties related to Potion  \n",
               "java": "common/src/main/java/smartin/miapi/modules/properties/potion/PotionFolder.java",
               "data": {},

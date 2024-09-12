@@ -75,7 +75,7 @@ const WikiPage: React.FC = () => {
 				<div style={{ display: 'flex', flexGrow: 1 }}>
 					<nav
 						style={{
-							width: '250px',
+							width: '300px',
 							backgroundColor: theme.sidebarBackgroundColor,
 							padding: '1rem',
 							height: '100%'
@@ -106,7 +106,7 @@ const WikiPage: React.FC = () => {
 				<div style={{ display: 'flex', flexGrow: 1 }}>
 					<nav
 						style={{
-							width: '250px',
+							width: '300px',
 							backgroundColor: theme.sidebarBackgroundColor,
 							padding: '1rem',
 							height: '100%'
@@ -143,9 +143,9 @@ const WikiPage: React.FC = () => {
 				{/* Fixed Sidebar */}
 				<nav
 					style={{
-						width: 'clamp(50px, 15vw, 250px)',
+						width: 'clamp(50px, 15vw, 300px)',
 						backgroundColor: theme.sidebarBackgroundColor,
-						padding: '1rem',
+						paddingTop: '1rem',
 						position: 'fixed',
 						top: '70px', // Below the fixed header
 						bottom: 0,
@@ -157,7 +157,7 @@ const WikiPage: React.FC = () => {
 				{/* Main content that scrolls independently */}
 				<main
 					style={{
-						marginLeft: 'clamp(50px, 15vw, 250px)',
+						marginLeft: 'clamp(50px, 15vw, 300px)',
 						padding: '1rem',
 						flexGrow: 1,
 						overflowY: 'auto',

@@ -1,7 +1,7 @@
 package smartin.miapi.modules.properties.potion;
 
 /**
- * @header Potion Related Properties
+ * @header Potion Properties
  * @path /data_types/properties/potion
  * @description_start
  * Properties related to Potion

@@ -1,7 +1,7 @@
 package smartin.miapi.modules.properties.mining;
 
 /**
- * @header Mining Related Properties
+ * @header Mining Properties
  * @path /data_types/properties/mining
  * @description_start
  * These are mining Related Properties

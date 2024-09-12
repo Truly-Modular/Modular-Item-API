@@ -119,7 +119,7 @@ class Page {
 
 	buildLinkPath = (): string => {
 		const urlParams = new URLSearchParams(window.location.search)
-		let path = 'home'
+		let path = ''
 		let parsing: Page = this
 
 		while (parsing.parent != null) {
@@ -133,11 +133,12 @@ class Page {
 			})
 
 			// Prepend the key to the path
-			path = key + '/' + path
+			path = '/' + key + path
 
 			// Move to the parent page for the next iteration
 			parsing = parsing.parent
 		}
+		path = 'home' + path
 
 		// Update the URL parameters and return the constructed URL
 		urlParams.set('page', path)

@@ -55,7 +55,9 @@ const RelatedPages: React.FC<RelatedPagesProps> = ({ page }) => {
 				boxSizing: 'border-box', // Ensure padding and border are included in the width
 				position: 'fixed',
 				top: '80px',
-				width: parentWidth
+				width: parentWidth,
+				maxHeight: '90vh', // Limit the height to 80% of the viewport height
+				overflowY: 'auto' // Add vertical scroll when content overflows
 			}}
 		>
 			<h3>Related Pages</h3>

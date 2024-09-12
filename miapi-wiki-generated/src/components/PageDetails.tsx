@@ -40,7 +40,9 @@ const PageDetails: React.FC<PageDetailsProps> = ({ page, isSubPage = false }) =>
 				style={{
 					maxWidth: '800px',
 					margin: isSubPage ? 'left' : 'auto',
-					minHeight: '200px' // Ensure a minimum height for the content area
+					minHeight: isSubPage ? '50px' : '200px', // Ensure a minimum height for the content area
+					paddingBottom: '5px',
+					paddingLeft: '20px'
 				}}
 			>
 				<ReactMarkdown>{desc}</ReactMarkdown>
