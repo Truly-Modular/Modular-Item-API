@@ -39,6 +39,17 @@ import java.util.function.Supplier;
 
 /**
  * A class representing a single module instance that belongs to an item.
+ * The rest of this Javadoc is used to populate the Wiki
+ * @header ModuleInstance Component
+ * @path /components/module
+ * @description_start
+ * This Component stores the main Modules for the Itemstack in question.
+ * This Component can be attached to any Itemstack, but many of the properties only correctly work on Modular Items,
+ * so It's recommended to only attach his to Modular Item
+ * @description_end
+ * @data key:the ID of the module to be attached
+ * @data child: a slotId -> submodule map to map all submodules. This will be sorted in relation to the Slot Properties priority.
+ * @data data: this is a String->custom data map to store additional custom data for properties to use. This is a per module savedata system.
  */
 public class ModuleInstance {
     public static Codec<ModuleInstance> CODEC;

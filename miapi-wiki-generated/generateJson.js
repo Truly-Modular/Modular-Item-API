@@ -13,6 +13,8 @@ function readJavaFiles(dir, jsonData = {}) {
 		} else if (file.endsWith('.java')) {
 			// Process Java files
 			processJavaFile(filePath, jsonData)
+		} else if (file.endsWith('.wiki.md')) {
+			processMarkdownFile(filePath, jsonData)
 		}
 	})
 }
@@ -109,6 +111,57 @@ function processJavaFile(filePath, jsonData) {
 			}
 		}
 	})
+}
+
+function processMarkdownFile(filePath, jsonData) {
+	const content = fs.readFileSync(filePath, 'utf-8')
+	const lines = content.split('\n')
+
+	let header = 'header is missing! Report this to a developer to fix this'
+	let description = ''
+	let data = {} // We leave data empty as you mentioned
+	let subPages = {} // We leave subPages empty as well
+	let path = ''
+	let keyWords = [] // Array to hold comma-separated keywords
+
+	let inDescription = false
+
+	lines.forEach((line) => {
+		const trimmed = line.trim()
+
+		// Extract header
+		if (trimmed.startsWith('@header')) {
+			header = trimmed.split('@header')[1].trim()
+		}
+		// Extract path
+		else if (trimmed.startsWith('@path')) {
+			path = trimmed.split('@path')[1].trim()
+		}
+		// Extract keywords (comma-separated)
+		else if (trimmed.startsWith('@keywords')) {
+			const keywordsString = trimmed.split('@keywords')[1].trim()
+			keyWords = keywordsString.split(',').map((kw) => kw.trim()) // Split by commas and trim each keyword
+		}
+		// Description starts after @path and continues until the end
+		else if (inDescription || trimmed.length > 0) {
+			description += line + '  \n' // Add each line to description, preserving line breaks
+			inDescription = true // Start description after @path
+		}
+	})
+
+	// Populate JSON structure if path is present
+	if (path) {
+		const pageData = {
+			header,
+			description: description.trim(), // Trim any trailing new lines
+			data: data,
+			key_words: keyWords, // Include keywords in the JSON data
+			sub_pages: subPages
+		}
+		setNestedValue(jsonData, path, pageData)
+	} else {
+		console.error('Path is missing for file:', filePath)
+	}
 }
 
 // Entry point of the script

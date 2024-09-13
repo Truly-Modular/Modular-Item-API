@@ -7,6 +7,7 @@ import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.Slot;
@@ -22,7 +23,21 @@ import smartin.miapi.modules.properties.slot.AllowedSlots;
 
 import java.awt.*;
 import java.util.Map;
+import java.util.Optional;
 
+/**
+ * @header Blueprint Component
+ * @path /components/blueprint
+ * @description_start This Component allows the attachment of additional Craft Options for the crafting UI.
+ * The Cost can be configured via the Ingredient in the data. Setting it to false will use the default module cost of the root module to be added.
+ * Setting it to true will require whatever item this component is attached to.
+ * It can also be set to an ingredient with count, in this case the inner data is a number, the amount of the ingredient needed and
+ * the ingredient itself, following minecrafts default ingredient logic, like for recipes.
+ * @description_end
+ * @data module:a Module Instance, not a module, see the Module Component for more details
+ * @data ingredient: This can either be a boolean or an ingredient with Count.
+ * @data name: (Optional) This allows for a custom name in the Crafting UI.
+ */
 public class BlueprintComponent {
     public static Codec<BlueprintComponent> CODEC = RecordCodecBuilder.create(instance ->
             instance.group(
@@ -31,7 +46,10 @@ public class BlueprintComponent {
                             .forGetter((blueprint) -> blueprint.toMerge),
                     Codec.either(Codec.BOOL, IngredientWithCount.INGREDIENT_WITH_COUNT)
                             .fieldOf("ingredient")
-                            .forGetter((blueprint) -> blueprint.ingredient)
+                            .forGetter((blueprint) -> blueprint.ingredient),
+                    ComponentSerialization.CODEC
+                            .optionalFieldOf("name")
+                            .forGetter(blueprintComponent -> blueprintComponent.name)
             ).apply(instance, BlueprintComponent::new
             ));
     public static ResourceLocation ID = Miapi.id("blueprint_slot_id");
@@ -57,10 +75,12 @@ public class BlueprintComponent {
 
     public ModuleInstance toMerge;
     public Either<Boolean, IngredientWithCount> ingredient;
+    public Optional<Component> name;
 
-    public BlueprintComponent(ModuleInstance moduleInstance, Either<Boolean, IngredientWithCount> ingredient) {
+    public BlueprintComponent(ModuleInstance moduleInstance, Either<Boolean, IngredientWithCount> ingredient, Optional<Component> name) {
         this.toMerge = moduleInstance;
         this.ingredient = ingredient;
+        this.name = name;
     }
 
     public boolean useMaterialCrafting() {

@@ -1,9 +1,4 @@
 {
-  "header": "Wiki for 1.21",
-  "description": "  \nWelcome to the Wiki for Truly Modular 1.21  \nThis Wiki is structured to help Modpack developers/people who want to add/modify content in Truly Modular via Datapacks  \nIt goes in-depth about various Unique things to truly modular, but also over some common Datapack things,  \nIt is aimed at all people  \n",
-  "java": "",
-  "data": {},
-  "key_words": [],
   "sub_pages": {
     "data_types": {
       "header": "Data Types",
@@ -1039,6 +1034,34 @@
           "sub_pages": {}
         }
       }
+    },
+    "components": {
+      "header": "Itemstack Components",
+      "description": "Components are a new 1.21 concept in Minecraft. They replace the old NBT tags with to help with structure and organisation.\r  \nTruly Modular adds a couple of their own Components, many for different reasons.\r  \nFor more information we do recommend to check the [Minecraft Wiki](https://minecraft.wiki/w/Data_component_format) page on components.\r  \nThe Sub Pages on this wiki will go indepth about the different components Truly Modular adds and their respective use cases.",
+      "data": {},
+      "key_words": [
+        "Components",
+        "Component"
+      ],
+      "sub_pages": {
+        "module": {
+          "header": "ModuleInstance Component",
+          "description": "  \nThis Component stores the main Modules for the Itemstack in question.  \nThis Component can be attached to any Itemstack, but many of the properties only correctly work on Modular Items,  \nso It's recommended to only attach his to Modular Item  \n",
+          "java": "common/src/main/java/smartin/miapi/modules/ModuleInstance.java",
+          "data": {
+            "key": "the ID of the module to be attached",
+            "child": " a slotId -> submodule map to map all submodules. This will be sorted in relation to the Slot Properties priority.",
+            "data": " this is a String->custom data map to store additional custom data for properties to use. This is a per module savedata system."
+          },
+          "key_words": [],
+          "sub_pages": {}
+        }
+      }
     }
-  }
+  },
+  "header": "Wiki for 1.21",
+  "description": "  \nWelcome to the Wiki for Truly Modular 1.21  \nThis Wiki is structured to help Modpack developers/people who want to add/modify content in Truly Modular via Datapacks  \nIt goes in-depth about various Unique things to truly modular, but also over some common Datapack things,  \nIt is aimed at all people  \n",
+  "java": "",
+  "data": {},
+  "key_words": []
 }
