@@ -11,7 +11,6 @@ function readJavaFiles(dir, jsonData = {}) {
 			// Recurse into subdirectories
 			readJavaFiles(filePath, jsonData)
 		} else if (file.endsWith('.java')) {
-			// Process Java files
 			processJavaFile(filePath, jsonData)
 		} else if (file.endsWith('.wiki.md')) {
 			processMarkdownFile(filePath, jsonData)
@@ -21,10 +20,11 @@ function readJavaFiles(dir, jsonData = {}) {
 
 function setNestedValue(data, path, value) {
 	if (path === 'root') {
+		value.sub_pages = data.sub_pages
 		Object.assign(data, value)
 		return
 	}
-
+	console.log('trying to add ' + path)
 	const keys = path.split('/').filter((k) => k)
 	let obj = data
 
@@ -50,6 +50,9 @@ function setNestedValue(data, path, value) {
 			obj = obj.sub_pages[key]
 		}
 	})
+	if (path.includes('blueprint') || path.includes('ingredient_count')) {
+		console.log(JSON.stringify(obj))
+	}
 }
 
 // Process each Java file to extract JavaDoc and build JSON structure
