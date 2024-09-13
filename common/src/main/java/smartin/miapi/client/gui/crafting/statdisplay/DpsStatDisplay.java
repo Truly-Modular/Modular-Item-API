@@ -29,7 +29,7 @@ public class DpsStatDisplay extends SingleStatDisplayDouble {
     }
 
     private boolean hasAttackDamage(ItemStack itemStack) {
-        return AttributeUtil.getActualValue(itemStack, EquipmentSlot.MAINHAND, Attributes.ATTACK_DAMAGE.value()) != 0;
+        return AttributeUtil.getActualValue(itemStack, EquipmentSlot.MAINHAND, Attributes.ATTACK_DAMAGE.value()) != 1;
     }
 
     @Override

@@ -8,8 +8,6 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.modules.properties.enchanment.FakeEnchantmentManager;
 
@@ -22,7 +20,7 @@ public abstract class ItemEnchantmentsMixin {
     public Set<Object2IntMap.Entry<Holder<Enchantment>>> miapi$adjustFakeEnchants(Set<Object2IntMap.Entry<Holder<Enchantment>>> original) {
         ItemEnchantments itemEnchantments = (ItemEnchantments) (Object) this;
         ItemStack itemStack = FakeEnchantmentManager.lookupMap.get(itemEnchantments);
-        if (itemStack != null && itemStack.getItem() instanceof ModularItem) {
+        if (itemStack != null && ModularItem.isModularItem(itemStack)) {
             //TODO:this might not work
             return FakeEnchantmentManager.adjustEnchantments(original, itemStack);
         }
@@ -33,7 +31,7 @@ public abstract class ItemEnchantmentsMixin {
     public int miapi$adjustEnchantLevel(int original, Holder<Enchantment> enchantment) {
         ItemEnchantments itemEnchantments = (ItemEnchantments) (Object) this;
         ItemStack itemStack = FakeEnchantmentManager.lookupMap.get(itemEnchantments);
-        if (itemStack != null && itemStack.getItem() instanceof ModularItem) {
+        if (itemStack != null && ModularItem.isModularItem(itemStack)) {
             //TODO:this might not work
             return FakeEnchantmentManager.adjustLevel(enchantment, original, itemStack);
         }

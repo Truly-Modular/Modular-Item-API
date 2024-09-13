@@ -90,7 +90,7 @@ public class AttributeUtil {
         List<AttributeModifier> modifiers = new ArrayList<>();
         ItemAttributeModifiers attributeModifiers = stack.getOrDefault(DataComponents.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.EMPTY);
         attributeModifiers.forEach(slot, (attribute, modifier) -> {
-            if (entityAttribute.equals(attribute)) {
+            if (entityAttribute.equals(attribute.value())) {
                 modifiers.add(modifier);
             }
         });

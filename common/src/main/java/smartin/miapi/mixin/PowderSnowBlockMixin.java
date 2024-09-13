@@ -8,8 +8,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.PowderSnowBlock;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.modules.properties.armor.CanWalkOnSnow;
 
@@ -20,7 +18,7 @@ public abstract class PowderSnowBlockMixin {
     private static boolean miapi$bypassSnowWalk(boolean original, Entity entity) {
         if (entity instanceof LivingEntity livingEntity) {
             ItemStack boots = livingEntity.getItemBySlot(EquipmentSlot.FEET);
-            if (boots.getItem() instanceof ModularItem) {
+            if (ModularItem.isModularItem(boots)) {
                 return CanWalkOnSnow.canSnowWalk(boots);
             }
         }

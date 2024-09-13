@@ -25,7 +25,7 @@ public interface ModularItemInject extends IForgeItem {
 
 
     default Multimap<EntityAttribute, EntityAttributeModifier> getAttributeModifiersModular(EquipmentSlot slot, ItemStack stack) {
-        Multimap < EntityAttribute, EntityAttributeModifier> attributeModifiers = ArrayListMultimap.create();
+        Multimap<EntityAttribute, EntityAttributeModifier> attributeModifiers = ArrayListMultimap.create();
         ITEM_STACK_ATTRIBUTE_EVENT.invoker().adjust(new MiapiEvents.ItemStackAttributeEventHolder(stack, slot, attributeModifiers));
         return attributeModifiers;
     }
@@ -41,8 +41,7 @@ public interface ModularItemInject extends IForgeItem {
     }
 
 
-    default int getMaxDamageModular(ItemStack stack)
-    {
+    default int getMaxDamageModular(ItemStack stack) {
         return (int) DurabilityProperty.property.getValueSafe(stack);
 
     }
@@ -54,7 +53,7 @@ public interface ModularItemInject extends IForgeItem {
 
 
     default boolean canPerformActionModular(ItemStack stack, ToolAction toolAction) {
-        if (stack.getItem() instanceof ModularItem) {
+        if (ModularItem.isModularItem(stack)) {
             if (toolAction.equals(ToolActions.AXE_DIG)) {
                 return MiningLevelProperty.isSuitable(stack, "axe");
             }
@@ -87,8 +86,7 @@ public interface ModularItemInject extends IForgeItem {
     }
 
 
-    default int getEnchantmentValueModular(ItemStack stack)
-    {
+    default int getEnchantmentValueModular(ItemStack stack) {
         return (int) EnchantAbilityProperty.getEnchantAbility(stack);
     }
 }

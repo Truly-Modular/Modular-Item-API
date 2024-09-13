@@ -23,15 +23,16 @@ import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.ScrollList;
 import smartin.miapi.client.gui.TransformableWidget;
 import smartin.miapi.modules.ItemModule;
-import smartin.miapi.modules.properties.*;
+import smartin.miapi.modules.properties.DurabilityProperty;
+import smartin.miapi.modules.properties.FireProof;
+import smartin.miapi.modules.properties.LuminousLearningProperty;
 import smartin.miapi.modules.properties.armor.*;
 import smartin.miapi.modules.properties.attributes.AttributeUtil;
+import smartin.miapi.modules.properties.onHit.*;
 import smartin.miapi.modules.properties.onHit.entity.AquaticDamage;
 import smartin.miapi.modules.properties.onHit.entity.IllagerBane;
 import smartin.miapi.modules.properties.onHit.entity.SmiteDamage;
 import smartin.miapi.modules.properties.onHit.entity.SpiderDamage;
-import smartin.miapi.modules.properties.onHit.*;
-import smartin.miapi.modules.properties.projectile.AirDragProperty;
 import smartin.miapi.modules.properties.projectile.IsCrossbowShootAble;
 import smartin.miapi.modules.properties.projectile.RapidfireCrossbowProperty;
 import smartin.miapi.modules.properties.projectile.WaterDragProperty;
@@ -159,6 +160,7 @@ public class StatListWidget extends InteractAbleWidget {
                 .setMin(-20)
                 .setMax(50)
                 .setTranslationKey(ArmorPenProperty.KEY).build());
+        /*
         addStatDisplay(SinglePropertyStatDisplay
                 .builder(BlockProperty.property)
                 .setMax(50)
@@ -167,6 +169,8 @@ public class StatListWidget extends InteractAbleWidget {
                 .builder(AirDragProperty.property)
                 .setMax(1)
                 .setTranslationKey(AirDragProperty.KEY).build());
+
+         */
         addStatDisplay(SinglePropertyStatDisplay
                 .builder(WaterDragProperty.property)
                 .setMax(1)

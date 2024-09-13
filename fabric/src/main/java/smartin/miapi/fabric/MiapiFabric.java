@@ -2,7 +2,6 @@ package smartin.miapi.fabric;
 
 import dev.architectury.platform.Platform;
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.item.v1.EnchantmentEvents;
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
@@ -43,7 +42,7 @@ public class MiapiFabric implements ModInitializer {
         }
         EnchantmentEvents.ALLOW_ENCHANTING.register((enchantment, target, enchantingContext) -> {
             if (
-                    target.getItem() instanceof ModularItem &&
+                    ModularItem.isModularItem(target) &&
                     (AllowedEnchantments.isAllowed(target, enchantment, false))) {
                 return TriState.TRUE;
             }

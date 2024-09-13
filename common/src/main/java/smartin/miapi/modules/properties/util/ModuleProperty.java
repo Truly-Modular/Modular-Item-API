@@ -5,6 +5,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import org.apache.commons.lang3.tuple.Triple;
 import smartin.miapi.datapack.ReloadEvents;
+import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
 
@@ -64,6 +65,9 @@ public interface ModuleProperty<T> {
 
     default Optional<T> getData(ItemStack itemStack) {
         if (itemStack == null) {
+            return Optional.empty();
+        }
+        if(!ModularItem.isModularItem(itemStack)){
             return Optional.empty();
         }
         if(ReloadEvents.isInReload()){

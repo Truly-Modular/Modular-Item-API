@@ -95,7 +95,7 @@ public class RapidfireCrossbowProperty extends DoubleProperty {
             return EventResult.pass();
         });
         LoreProperty.loreSuppliers.add((stack, tooltip, context, info) -> {
-            if (stack.getItem() instanceof ModularItem) {
+            if (ModularItem.isModularItem(stack) ) {
                 List<ItemStack> projectiles = getSavedProjectilesOnCrossbow(stack);
                 for (ItemStack projectile : projectiles) {
                     tooltip.add(Component.translatable(Miapi.MOD_ID + ".crossbow.ammo.addition", projectile.getHoverName()));

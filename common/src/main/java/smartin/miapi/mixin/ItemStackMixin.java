@@ -32,7 +32,7 @@ abstract class ItemStackMixin {
     @ModifyReturnValue(method = "is(Lnet/minecraft/tags/TagKey;)Z", at = @At("RETURN"))
     public boolean miapi$injectItemTag(boolean original, TagKey<Item> tag) {
         ItemStack stack = (ItemStack) (Object) this;
-        if (stack.getItem() instanceof ModularItem) {
+        if (ModularItem.isModularItem(stack)) {
             if (!original) {
                 return FakeItemTagProperty.hasTag(tag.location(), stack);
             }
@@ -43,7 +43,7 @@ abstract class ItemStackMixin {
     @ModifyReturnValue(method = "Lnet/minecraft/world/item/ItemStack;hasFoil()Z", at = @At("RETURN"))
     public boolean miapi$injectRemoveGlint(boolean original) {
         ItemStack stack = (ItemStack) (Object) this;
-        if (stack.getItem() instanceof ModularItem) {
+        if (ModularItem.isModularItem(stack)) {
             return false;
         }
         return original;
@@ -52,7 +52,7 @@ abstract class ItemStackMixin {
     @Inject(method = "getItem", at = @At("TAIL"))
     public void miapi$capturePotentialItemstack(CallbackInfoReturnable<Item> cir) {
         ItemStack stack = (ItemStack) (Object) this;
-        if (cir.getReturnValue() instanceof ModularItem) {
+        if (ModularItem.isModularItem(stack)) {
             FakeItemstackReferenceProvider.setReference(cir.getReturnValue(), stack);
         }
     }
@@ -60,7 +60,7 @@ abstract class ItemStackMixin {
     @Inject(method = "<init>(Lnet/minecraft/world/level/ItemLike;ILnet/minecraft/core/component/PatchedDataComponentMap;)V", at = @At("TAIL"))
     public void miapi$capturePotentialItemstack(ItemLike item, int count, PatchedDataComponentMap components, CallbackInfo ci) {
         ItemStack stack = (ItemStack) (Object) this;
-        if (stack.getItem() instanceof VisualModularItem) {
+        if (ModularItem.isModularItem(stack)) {
             FakeEnchantmentManager.initOnItemStack(stack);
         }
     }
@@ -70,7 +70,7 @@ abstract class ItemStackMixin {
         ItemStack stack = (ItemStack) (Object) this;
         if (DataComponents.UNBREAKABLE.equals(component)) {
             FakeEnchantmentManager.initOnItemStack(stack);
-            if (stack.getItem() instanceof VisualModularItem) {
+            if (VisualModularItem.isModularItem(stack)) {
                 List<Component> lore = new ArrayList<>();
                 LoreProperty.property.appendLoreBottom(lore, stack);
                 lore.forEach(tooltipAdder);

@@ -40,7 +40,7 @@ public class LuminousLearningProperty extends DoubleProperty {
         //TODO:this needs reworking
         BlockEvent.BREAK.register((Level level, BlockPos pos, BlockState state, ServerPlayer player, @Nullable IntValue xp)->{
             ItemStack tool = player.getMainHandItem();
-            if (tool != null && tool.getItem() instanceof ModularItem) {
+            if (tool != null && ModularItem.isModularItem(tool)) {
                 getValue(tool).ifPresent((value)->{
                     while (value > 0) {
                         if (Math.random() > 0.7 && xp!=null && level instanceof ServerLevel serverWorld) {

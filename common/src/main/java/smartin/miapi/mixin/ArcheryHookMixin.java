@@ -23,7 +23,7 @@ public class ArcheryHookMixin {
          * causes an infinite loop and
          * has no native way of blacklisting crossbows
          */
-        if (itemStack.getItem() instanceof ModularItem) {
+        if (ModularItem.isModularItem(itemStack)) {
             cir.setReturnValue(false);
         }
     }

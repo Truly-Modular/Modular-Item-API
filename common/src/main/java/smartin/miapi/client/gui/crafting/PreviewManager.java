@@ -50,7 +50,7 @@ public class PreviewManager {
                 CraftingScreen craftingScreen = CraftingScreen.getInstance();
                 ItemStack currentStack = craftingScreen.getItem();
                 if (currentStack.isEmpty() && craftingScreen.getEditOption() == null) {
-                    if (cursorStack.getItem() instanceof ModularItem || currentPreviewMaterial == null) {
+                    if (ModularItem.isModularItem(currentStack) || currentPreviewMaterial == null) {
                         craftingScreen.updatePreviewItemStack(ItemStack.EMPTY);
                     } else {
                         craftingScreen.updatePreviewItemStack(cursorStack);

@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.WeakHashMap;
+import java.util.function.Supplier;
 
 /**
  * The ItemAbilityManager is the brain and control behind what Ability is executed on what Item.
@@ -81,15 +82,23 @@ public class ItemAbilityManager {
         return emptyAbility;
     }
 
-    public static UseAnim getUseAction(ItemStack itemStack) {
-        return getAbility(itemStack).ability().getUseAction(itemStack);
+    public static UseAnim getUseAction(ItemStack itemStack, Supplier<UseAnim> getItem) {
+        AbilityHolder<?> ability = getAbility(itemStack);
+        if (!emptyAbility.equals(ability)) {
+            return getItem.get();
+        }
+        return ability.ability().getUseAction(itemStack);
     }
 
-    public static int getMaxUseTime(ItemStack itemStack, LivingEntity livingEntity) {
-        return getAbility(itemStack).ability().getMaxUseTime(itemStack);
+    public static int getMaxUseTime(ItemStack itemStack, LivingEntity livingEntity, Supplier<Integer> getItem) {
+        AbilityHolder<?> ability = getAbility(itemStack);
+        if (!emptyAbility.equals(ability)) {
+            return getItem.get();
+        }
+        return ability.ability().getMaxUseTime(itemStack);
     }
 
-    public static InteractionResultHolder<ItemStack> use(Level world, Player user, InteractionHand hand) {
+    public static InteractionResultHolder<ItemStack> use(Level world, Player user, InteractionHand hand, Supplier<InteractionResultHolder<ItemStack>> getItem) {
         ItemStack itemStack = user.getItemInHand(hand);
         AbilityHolder<?> ability = getAbility(itemStack, world, user, hand, new AbilityHitContext() {
             @Override
@@ -103,20 +112,30 @@ public class ItemAbilityManager {
             }
         });
         abilityMap.put(itemStack, ability);
-
+        if (!emptyAbility.equals(ability)) {
+            return getItem.get();
+        }
         return ability.ability().use(world, user, hand);
     }
 
-    public static ItemStack finishUsing(ItemStack stack, Level world, LivingEntity user) {
+    public static ItemStack finishUsing(ItemStack stack, Level world, LivingEntity user, Supplier<ItemStack> getItem) {
         AbilityHolder<?> ability = getAbility(stack);
+        if (!emptyAbility.equals(ability)) {
+            abilityMap.remove(stack);
+            return getItem.get();
+        }
         ItemStack itemStack = ability.ability().finishUsing(stack, world, user);
         abilityMap.remove(stack);
 
         return itemStack;
     }
 
-    public static void onStoppedUsing(ItemStack stack, Level world, LivingEntity user, int remainingUseTicks) {
+    public static void onStoppedUsing(ItemStack stack, Level world, LivingEntity user, int remainingUseTicks, Runnable getItem) {
         AbilityHolder<?> ability = getAbility(stack);
+        if (!emptyAbility.equals(ability)) {
+            getItem.run();
+            return;
+        }
         ability.ability().onStoppedUsing(stack, world, user, remainingUseTicks);
         if (ability.ability() instanceof ItemUseDefaultCooldownAbility itemUseDefaultCooldownAbility) {
             itemUseDefaultCooldownAbility.afterStopAbility(stack, world, user, remainingUseTicks);
@@ -124,11 +143,17 @@ public class ItemAbilityManager {
         abilityMap.remove(stack);
     }
 
-    public static void usageTick(Level world, LivingEntity user, ItemStack stack, int remainingUseTicks) {
-        getAbility(stack).ability().usageTick(world, user, stack, remainingUseTicks);
+    public static void usageTick(Level world, LivingEntity user, ItemStack stack, int remainingUseTicks, Runnable getItem) {
+        AbilityHolder<?> ability = getAbility(stack);
+        if (!emptyAbility.equals(ability)) {
+            abilityMap.remove(stack);
+            getItem.run();
+            return;
+        }
+        ability.ability().usageTick(world, user, stack, remainingUseTicks);
     }
 
-    public static InteractionResult useOnEntity(ItemStack stack, Player user, LivingEntity entity, InteractionHand hand) {
+    public static InteractionResult useOnEntity(ItemStack stack, Player user, LivingEntity entity, InteractionHand hand, Supplier<InteractionResult> getItem) {
         AbilityHolder<?> ability = getAbility(stack, user.level(), user, hand, new AbilityHitContext() {
             @Override
             public @Nullable UseOnContext hitResult() {
@@ -140,11 +165,14 @@ public class ItemAbilityManager {
                 return entity;
             }
         });
+        if (!emptyAbility.equals(ability)) {
+            return getItem.get();
+        }
         abilityMap.put(stack, ability);
         return getAbility(stack).ability().useOnEntity(stack, user, entity, hand);
     }
 
-    public static InteractionResult useOnBlock(UseOnContext context) {
+    public static InteractionResult useOnBlock(UseOnContext context, Supplier<InteractionResult> getItem) {
         AbilityHolder<?> ability = getAbility(context.getItemInHand(), context.getLevel(), context.getPlayer(), context.getHand(), new AbilityHitContext() {
             @Override
             public @Nullable UseOnContext hitResult() {
@@ -156,6 +184,9 @@ public class ItemAbilityManager {
                 return null;
             }
         });
+        if (!emptyAbility.equals(ability)) {
+            return getItem.get();
+        }
         abilityMap.put(context.getItemInHand(), ability);
         return getAbility(context.getItemInHand()).ability().useOnBlock(context);
     }

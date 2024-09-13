@@ -26,7 +26,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class ConditionManager {
     public static Map<ResourceLocation, Codec<? extends ModuleCondition>> CONDITION_REGISTRY = new ConcurrentHashMap<>();
-    public static ContextManager<ModuleInstance> MODULE_CONDITION_CONTEXT = source -> ((ModuleInstance) source).copy();
+    public static ContextManager<ModuleInstance> MODULE_CONDITION_CONTEXT = source -> ((ModuleInstance) source);
     public static ContextManager<BlockPos> WORKBENCH_LOCATION_CONTEXT = BlockPos.class::cast;
     public static ContextManager<Player> PLAYER_CONTEXT = Player.class::cast;
     public static ContextManager<Map<ModuleProperty<?>, Object>> MODULE_PROPERTIES = source -> new HashMap<>((Map<ModuleProperty<?>, Object>) source);

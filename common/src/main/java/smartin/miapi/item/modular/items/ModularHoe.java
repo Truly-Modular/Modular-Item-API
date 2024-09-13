@@ -1,7 +1,5 @@
 package smartin.miapi.item.modular.items;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
@@ -10,8 +8,6 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.ai.attributes.Attribute;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.context.UseOnContext;
@@ -99,38 +95,34 @@ public class ModularHoe extends HoeItem implements PlatformModularItemMethods, M
         return true;
     }
 
-    public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlot slot) {
-        return ArrayListMultimap.create();
-    }
-
     @Override
     public UseAnim getUseAnimation(ItemStack stack) {
-        return ItemAbilityManager.getUseAction(stack);
+        return ItemAbilityManager.getUseAction(stack, () -> super.getUseAnimation(stack));
     }
 
     @Override
-    public int getUseDuration(ItemStack stack, LivingEntity livingEntity) {
-        return ItemAbilityManager.getMaxUseTime(stack, livingEntity);
+    public int getUseDuration(ItemStack stack, LivingEntity entity) {
+        return ItemAbilityManager.getMaxUseTime(stack, entity, () -> super.getUseDuration(stack, entity));
     }
 
     @Override
     public InteractionResultHolder<ItemStack> use(Level world, Player user, InteractionHand hand) {
-        return ItemAbilityManager.use(world, user, hand);
+        return ItemAbilityManager.use(world, user, hand, () -> super.use(world, user, hand));
     }
 
     @Override
     public void releaseUsing(ItemStack stack, Level world, LivingEntity user, int remainingUseTicks) {
-        ItemAbilityManager.onStoppedUsing(stack, world, user, remainingUseTicks);
+        ItemAbilityManager.onStoppedUsing(stack, world, user, remainingUseTicks, () -> super.releaseUsing(stack, world, user, remainingUseTicks));
     }
 
     @Override
     public ItemStack finishUsingItem(ItemStack stack, Level world, LivingEntity user) {
-        return ItemAbilityManager.finishUsing(stack, world, user);
+        return ItemAbilityManager.finishUsing(stack, world, user, () -> super.finishUsingItem(stack, world, user));
     }
 
     @Override
     public void onUseTick(Level world, LivingEntity user, ItemStack stack, int remainingUseTicks) {
-        ItemAbilityManager.usageTick(world, user, stack, remainingUseTicks);
+        ItemAbilityManager.usageTick(world, user, stack, remainingUseTicks, () -> super.onUseTick(world, user, stack, remainingUseTicks));
     }
 
     @Override
@@ -141,12 +133,12 @@ public class ModularHoe extends HoeItem implements PlatformModularItemMethods, M
 
     @Override
     public InteractionResult interactLivingEntity(ItemStack stack, Player user, LivingEntity entity, InteractionHand hand) {
-        return ItemAbilityManager.useOnEntity(stack, user, entity, hand);
+        return ItemAbilityManager.useOnEntity(stack, user, entity, hand, () -> super.interactLivingEntity(stack, user, entity, hand));
     }
 
     @Override
     public InteractionResult useOn(UseOnContext context) {
-        return ItemAbilityManager.useOnBlock(context);
+        return ItemAbilityManager.useOnBlock(context, () -> super.useOn(context));
     }
 
     @Override

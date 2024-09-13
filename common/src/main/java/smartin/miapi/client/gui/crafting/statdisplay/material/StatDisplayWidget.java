@@ -24,7 +24,7 @@ public class StatDisplayWidget extends InteractAbleWidget {
 
     public void setOriginal(ItemStack itemStack) {
         Material material = MaterialProperty.getMaterialFromIngredient(itemStack);
-        if (material != null && !(itemStack.getItem() instanceof ModularItem)) {
+        if (material != null && !(ModularItem.isModularItem(itemStack))) {
             removeChild(materialStatWidget);
             materialStatWidget = new MaterialStatWidget(material, getX(), getY(), getWidth(), getHeight(), Component.literal("miapi.material.stat.widget"));
             removeChild(statListWidget);
@@ -38,7 +38,7 @@ public class StatDisplayWidget extends InteractAbleWidget {
 
     public void setItemsOriginal(ItemStack itemStack, ItemStack compareTo) {
         Material material = MaterialProperty.getMaterialFromIngredient(itemStack);
-        if (material != null && !(itemStack.getItem() instanceof ModularItem)) {
+        if (material != null && !(ModularItem.isModularItem(itemStack))) {
             removeChild(materialStatWidget);
             materialStatWidget = new MaterialStatWidget(material, getX(), getY(), getWidth(), getHeight(), Component.literal("miapi.material.stat.widget"));
             removeChild(statListWidget);

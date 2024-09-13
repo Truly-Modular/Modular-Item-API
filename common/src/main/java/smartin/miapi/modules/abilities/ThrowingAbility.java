@@ -83,7 +83,7 @@ public class ThrowingAbility implements ItemUseDefaultCooldownAbility<ThrowingAb
                     float speed = (float) AttributeUtil.getActualValue(stack, EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_SPEED.value());
                     float damage = (float) AttributeUtil.getActualValue(stack, EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_DAMAGE.value());
                     damage = damage / speed;
-                    if (stack.getItem() instanceof ModularItem) {
+                    if (ModularItem.isModularItem(stack)) {
                         speed = 0.5f;
                     }
                     projectileEntity.shootFromRotation(playerEntity, playerEntity.getXRot(), playerEntity.getYRot(), 0.0F, speed, divergence);

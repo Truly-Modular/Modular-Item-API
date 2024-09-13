@@ -24,21 +24,27 @@ public class PropertyResolver {
      * @return a map of {@link ModuleProperty} and their related Data
      */
     public static void resolve(ModuleInstance moduleInstance) {
-        moduleInstance.allSubModules().forEach(instance -> {
-            if (instance.properties == null) {
-                instance.properties = new ConcurrentHashMap<>();
-            }
-        });
-        registry.forEach((pair) -> {
-            PropertyProvider propertyProvider = pair.getB();
+        if (moduleInstance.properties == null) {
+            moduleInstance.properties = new ConcurrentHashMap<>();
+        }
+        synchronized (moduleInstance.properties) {
             moduleInstance.allSubModules().forEach(instance -> {
                 if (instance.properties == null) {
-                    Miapi.LOGGER.warn("IS NULL?!");
                     instance.properties = new ConcurrentHashMap<>();
                 }
-                instance.properties.putAll(propertyProvider.resolve(instance, instance.properties));
             });
-        });
+            Miapi.LOGGER.info("resolving for " + moduleInstance.module.id());
+            registry.forEach((pair) -> {
+                PropertyProvider propertyProvider = pair.getB();
+                moduleInstance.allSubModules().forEach(instance -> {
+                    if (instance.properties == null) {
+                        Miapi.LOGGER.warn("IS NULL?!");
+                        instance.properties = new ConcurrentHashMap<>();
+                    }
+                    instance.properties.putAll(propertyProvider.resolve(instance, instance.properties));
+                });
+            });
+        }
     }
 
     /**

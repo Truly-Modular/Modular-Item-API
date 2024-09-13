@@ -12,7 +12,7 @@ public abstract class EnchantmentMixin {
 
     @ModifyReturnValue(method = "isPrimaryItem(Lnet/minecraft/world/item/ItemStack;)Z", at = @At(value = "RETURN"))
     private boolean miapi$adjustPrimaryItem(boolean original, ItemStack itemStack) {
-        if (itemStack.getItem() instanceof ModularItem) {
+        if (ModularItem.isModularItem(itemStack)) {
             Enchantment enchantment = (Enchantment) (Object) (this);
             //return AllowedEnchantments.isPrimaryAllowed(itemStack, enchantment, original);
         }
@@ -21,7 +21,7 @@ public abstract class EnchantmentMixin {
 
     @ModifyReturnValue(method = "isSupportedItem", at = @At(value = "RETURN"))
     private boolean miapi$adjustSupportedItem(boolean original, ItemStack itemStack) {
-        if (itemStack.getItem() instanceof ModularItem) {
+        if (ModularItem.isModularItem(itemStack)) {
             Enchantment enchantment = (Enchantment) (Object) (this);
             //return AllowedEnchantments.isAllowed(itemStack, enchantment, original);
         }
@@ -30,7 +30,7 @@ public abstract class EnchantmentMixin {
 
     @ModifyReturnValue(method = "canEnchant(Lnet/minecraft/world/item/ItemStack;)Z", at = @At(value = "RETURN"))
     private boolean miapi$adjustcanEnchant(boolean original, ItemStack itemStack) {
-        if (itemStack.getItem() instanceof ModularItem) {
+        if (ModularItem.isModularItem(itemStack)) {
             Enchantment enchantment = (Enchantment) (Object) (this);
             //return AllowedEnchantments.isAllowed(itemStack, enchantment, original);
         }

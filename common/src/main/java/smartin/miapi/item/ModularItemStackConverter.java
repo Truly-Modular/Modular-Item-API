@@ -42,7 +42,7 @@ public class ModularItemStackConverter {
         for (ModularConverter converter : converters) {
             converted = converter.convert(converted);
         }
-        if (converted.getItem() instanceof ModularItem) {
+        if (ModularItem.isModularItem(converted)) {
             ComponentApplyProperty.updateItemStack(converted, null);
         }
         return converted;

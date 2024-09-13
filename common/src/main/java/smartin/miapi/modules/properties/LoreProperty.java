@@ -55,7 +55,7 @@ public class LoreProperty extends CodecProperty<List<LoreProperty.Holder>> {
         super(Codec.list(codec));
         property = this;
         loreSuppliers.add((ItemStack itemStack, List<Component> tooltip, Item.TooltipContext context, TooltipFlag tooltipType) -> {
-            if (itemStack.getItem() instanceof ModularItem) {
+            if (ModularItem.isModularItem(itemStack)) {
                 tooltip.add(format(Component.translatable("miapi.ui.modular_item"), ChatFormatting.GRAY));
                 getHolders(itemStack).stream().filter(h -> h.position.equals("top")).forEach(holder -> tooltip.add(holder.getText()));
             }
@@ -106,12 +106,12 @@ public class LoreProperty extends CodecProperty<List<LoreProperty.Holder>> {
             }
         }
         if (MiapiConfig.INSTANCE.client.other.injectLoreModularItem) {
-            if (itemStack.getItem() instanceof ModularItem) {
+            if (ModularItem.isModularItem(itemStack)) {
                 lines.add(format(Component.translatable("miapi.ui.modular_item"), ChatFormatting.GRAY));
                 return lines;
             }
             ItemStack converted = ModularItemStackConverter.getModularVersion(itemStack);
-            if (!ItemStack.matches(converted, itemStack) && converted.getItem() instanceof ModularItem) {
+            if (!ItemStack.matches(converted, itemStack) && ModularItem.isModularItem(converted)) {
                 lines.add(format(Component.translatable("miapi.ui.modular_item"), ChatFormatting.GRAY));
             }
         }
@@ -149,7 +149,7 @@ public class LoreProperty extends CodecProperty<List<LoreProperty.Holder>> {
         }
         if (MiapiConfig.INSTANCE.client.other.injectLoreModularItem) {
             ItemStack converted = ModularItemStackConverter.getModularVersion(itemStack);
-            if (!ItemStack.matches(converted, itemStack) || itemStack.getItem() instanceof ModularItem) {
+            if (!ItemStack.matches(converted, itemStack) || ModularItem.isModularItem(itemStack)) {
                 lines.add(format(Component.translatable("miapi.ui.modular_item"), ChatFormatting.GRAY));
             }
         }

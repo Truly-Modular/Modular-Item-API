@@ -63,7 +63,7 @@ public class NemesisProperty extends DoubleProperty implements CraftingProperty 
         property = this;
         EntityEvent.LIVING_DEATH.register((livingEntity, damageSource) -> {
             ItemStack weapon = MiapiEvents.LivingHurtEvent.getCausingItemStack(damageSource);
-            if (weapon.getItem() instanceof ModularItem && !livingEntity.level().isClientSide()) {
+            if (ModularItem.isModularItem(weapon) && !livingEntity.level().isClientSide()) {
                 double nemesisScale = getValue(weapon).orElse(0.0);
                 NemesisData data = weapon.get(NEMESIS_COMPONENT);
                 if (data != null && nemesisScale > 0) {
@@ -92,7 +92,7 @@ public class NemesisProperty extends DoubleProperty implements CraftingProperty 
         });
         MiapiEvents.LIVING_HURT.register((listener) -> {
             ItemStack weapon = listener.getCausingItemStack();
-            if (weapon.getItem() instanceof ModularItem) {
+            if (ModularItem.isModularItem(weapon)) {
                 double nemesisScale = getValue(weapon).orElse(0.0);
                 NemesisData data = weapon.get(NEMESIS_COMPONENT);
                 if (data != null && nemesisScale > 0) {

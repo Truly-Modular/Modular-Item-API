@@ -7,8 +7,8 @@ import com.mojang.serialization.DynamicOps;
 import com.redpxnda.nucleus.codec.auto.AutoCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.modules.ModuleInstance;
-import smartin.miapi.modules.cache.ModularItemCache;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,8 +63,10 @@ public abstract class DoubleProperty extends CodecProperty<DoubleOperationResolv
     public double getForItems(Iterable<ItemStack> itemStacks) {
         List<DoubleOperationResolvable.Operation> operations = new ArrayList<>();
         itemStacks.forEach(itemStack -> {
-            Optional<DoubleOperationResolvable> optional = getData(itemStack);
-            optional.ifPresent(doubleOperationResolvable -> operations.addAll(doubleOperationResolvable.operations));
+            if (ModularItem.isModularItem(itemStack)) {
+                Optional<DoubleOperationResolvable> optional = getData(itemStack);
+                optional.ifPresent(doubleOperationResolvable -> operations.addAll(doubleOperationResolvable.operations));
+            }
         });
         return DoubleOperationResolvable.resolve(operations, baseValue, baseValue);
     }

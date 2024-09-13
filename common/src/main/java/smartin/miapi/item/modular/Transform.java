@@ -81,7 +81,7 @@ public class Transform {
 
     @Environment(EnvType.CLIENT)
     public ItemTransform toTransformation() {
-        return new ItemTransform(new Vector3f(rotation), new Vector3f(translation.div(16)), new Vector3f(scale));
+        return new ItemTransform(new Vector3f(rotation), new Vector3f(new Vector3f(translation).div(16)), new Vector3f(scale));
     }
 
     /**

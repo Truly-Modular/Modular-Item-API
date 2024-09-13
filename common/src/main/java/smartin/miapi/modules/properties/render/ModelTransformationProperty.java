@@ -51,7 +51,9 @@ public class ModelTransformationProperty extends CodecProperty<ModelTransformati
     }
 
     public static ItemTransforms getTransformation(ItemStack stack) {
-        return property.getData(stack).orElseGet(ModelTransformationData::new).asItemTransforms();
+        ItemTransforms transforms = property.getData(stack).orElseGet(ModelTransformationData::new).asItemTransforms();
+        Miapi.LOGGER.info("fresh cache " + transforms.thirdPersonLeftHand.translation.y);
+        return transforms;
     }
 
     public static boolean isLeftHanded(ItemDisplayContext mode) {

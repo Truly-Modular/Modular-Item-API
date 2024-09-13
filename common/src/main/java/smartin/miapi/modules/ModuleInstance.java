@@ -2,6 +2,7 @@ package smartin.miapi.modules;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
+import com.ibm.icu.impl.IllegalIcuArgumentException;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
@@ -50,7 +51,7 @@ public class ModuleInstance {
                 selfCodec -> RecordCodecBuilder.create((instance) ->
                         instance.group(
                                 ResourceLocation.CODEC.fieldOf("key")
-                                        .forGetter((moduleInstance) -> moduleInstance.module.id()),
+                                        .forGetter((moduleInstance) -> moduleInstance.moduleID),
                                 Codec.unboundedMap(Codec.STRING, selfCodec).xmap((i) -> i, Function.identity())
                                         .optionalFieldOf("child", new LinkedHashMap<>())
                                         .forGetter((moduleInstance) -> moduleInstance.subModules),
@@ -64,10 +65,12 @@ public class ModuleInstance {
                                 Miapi.LOGGER.warn("could not find module " + module + " substituting with empty module");
                             }
                             ModuleInstance moduleInstance = new ModuleInstance(itemModule);
+                            moduleInstance.moduleID = module;
                             moduleInstance.moduleData = new HashMap<>(data);
                             moduleInstance.subModules = children;
                             moduleInstance.sortSubModule();
                             moduleInstance.subModules.values().forEach(childInstance -> childInstance.parent = moduleInstance);
+                            Miapi.LOGGER.info("decoded Modules " + itemModule.id());
                             return moduleInstance;
                         }))
         );
@@ -93,6 +96,11 @@ public class ModuleInstance {
 
     @Nullable
     public RegistryAccess registryAccess;
+
+    /**
+     * this is kept separately in case the module doesn't exist, otherwise the id would be defaulted to empty in case no module is found, permanently breaking the item
+     */
+    public ResourceLocation moduleID;
 
     /**
      * The item module represented by this module instance.
@@ -145,6 +153,8 @@ public class ModuleInstance {
      */
     public ModuleInstance(ItemModule module) {
         this.module = module;
+        Exception e = new IllegalIcuArgumentException("");
+        Miapi.LOGGER.info("instantiated modules with trace");
     }
 
     /**
