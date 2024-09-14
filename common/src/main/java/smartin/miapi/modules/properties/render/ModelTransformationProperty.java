@@ -52,7 +52,6 @@ public class ModelTransformationProperty extends CodecProperty<ModelTransformati
 
     public static ItemTransforms getTransformation(ItemStack stack) {
         ItemTransforms transforms = property.getData(stack).orElseGet(ModelTransformationData::new).asItemTransforms();
-        Miapi.LOGGER.info("fresh cache " + transforms.thirdPersonLeftHand.translation.y);
         return transforms;
     }
 

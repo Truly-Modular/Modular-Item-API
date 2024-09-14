@@ -21,7 +21,6 @@ import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.material.AllowedMaterial;
 import smartin.miapi.modules.properties.slot.AllowedSlots;
 
-import java.awt.*;
 import java.util.Map;
 import java.util.Optional;
 
@@ -180,7 +179,11 @@ public class BlueprintComponent {
                 Miapi.LOGGER.error("could not correctly read blueprint data!");
             }
         }
-        return null;
+        return BlueprintManager.getBlueprint(dataMap, screenHandler);
+    }
+
+    public Component getName() {
+        return name.orElse(toMerge.getModuleName());
     }
 
     public CraftOption asCraftOption(CraftingScreenHandler screenHandler) {
@@ -200,8 +203,8 @@ public class BlueprintComponent {
                             ID, element,
                             AllowedMaterial.KEY, booleanElement);
                 },
-                -100,
-                Component.literal("testing").withColor(Color.CYAN.getRGB()));
+                -200,
+                getName());
     }
 
     @Override

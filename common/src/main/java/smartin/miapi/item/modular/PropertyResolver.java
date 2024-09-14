@@ -33,7 +33,6 @@ public class PropertyResolver {
                     instance.properties = new ConcurrentHashMap<>();
                 }
             });
-            Miapi.LOGGER.info("resolving for " + moduleInstance.module.id());
             registry.forEach((pair) -> {
                 PropertyProvider propertyProvider = pair.getB();
                 moduleInstance.allSubModules().forEach(instance -> {

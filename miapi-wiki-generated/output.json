@@ -1080,10 +1080,30 @@
           "sub_pages": {}
         }
       }
+    },
+    "datapack": {
+      "header": "Datapack Types",
+      "description": "Datapack Types is what we use to describe different types of json formats under different folders that were added by Truly Modular.\r  \nTruly Modular adds various different types for various different reasons, shown in subpages",
+      "data": {},
+      "key_words": [
+        "Datapack Type",
+        "Datapack",
+        ""
+      ],
+      "sub_pages": {
+        "module": {
+          "header": "Modules",
+          "description": "  \nModules are the core of Truly Modular  \nThey can be found/added in mod-id:/miapi/modules/any-path-and-file-name.json  \nThey consist of a Map of Properties  \n",
+          "java": "common/src/main/java/smartin/miapi/modules/ItemModule.java",
+          "data": {},
+          "key_words": [],
+          "sub_pages": {}
+        }
+      }
     }
   },
   "header": "Wiki for 1.21",
-  "description": "  \nWelcome to the Wiki for Truly Modular 1.21  \nThis Wiki is structured to help Modpack developers/people who want to add/modify content in Truly Modular via Datapacks  \nIt goes in-depth about various Unique things to truly modular, but also over some common Datapack things,  \nIt is aimed at all people  \n",
+  "description": " Welcome to the Wiki for Truly Modular 1.21  \nThis Wiki is structured to help Modpack developers/people who want to add/modify content in Truly Modular via Datapacks  \nIt goes in-depth about various Unique things to truly modular, but also over some common Datapack things,  \nIt is aimed at all people  \n",
   "java": "",
   "data": {},
   "key_words": []

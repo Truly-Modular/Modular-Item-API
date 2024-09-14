@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.client.MiapiClient;
 import smartin.miapi.config.MiapiConfig;
+import smartin.miapi.craft.BlueprintManager;
 import smartin.miapi.craft.stat.StatActorType;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.item.ItemToModularConverter;
@@ -62,9 +63,9 @@ import java.util.function.Consumer;
 
 /**
  * The following docs are used for automatic wiki generation
+ *
  * @header Wiki for 1.21
- * @description_start
- * Welcome to the Wiki for Truly Modular 1.21
+ * @description_start Welcome to the Wiki for Truly Modular 1.21
  * This Wiki is structured to help Modpack developers/people who want to add/modify content in Truly Modular via Datapacks
  * It goes in-depth about various Unique things to truly modular, but also over some common Datapack things,
  * It is aimed at all people
@@ -172,6 +173,7 @@ public class Miapi {
                 CacheCommands.triggerServerReload();
             }
         }));
+        BlueprintManager.setup();
     }
 
 

@@ -27,6 +27,13 @@ import static smartin.miapi.Miapi.gson;
  *
  * @param id         The id of the module.
  * @param properties The map of properties for the module.
+ * @header Modules
+ * @path /datapack/module
+ * @description_start
+ * Modules are the core of Truly Modular
+ * They can be found/added in mod-id:/miapi/modules/any-path-and-file-name.json
+ * They consist of a Map of Properties
+ * @description_end
  */
 public record ItemModule(ResourceLocation id, Map<ModuleProperty<?>, Object> properties) {
 
@@ -61,7 +68,6 @@ public record ItemModule(ResourceLocation id, Map<ModuleProperty<?>, Object> pro
             id = id.replace("miapi/modules/", "");
             id = id.replace(".json", "");
             ResourceLocation revisedID = ResourceLocation.parse(id);
-            LOGGER.info("registered Module " + revisedID);
             Map<String, JsonElement> rawProperties = gson.fromJson(moduleJsonString, type);
             rawProperties.forEach((key, json) -> isValidProperty(key, path, json, isClient, (pair) -> decodedProperties.put(pair.getFirst(), pair.getSecond())));
             RegistryInventory.modules.register(revisedID, new ItemModule(revisedID, decodedProperties));

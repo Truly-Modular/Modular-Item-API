@@ -2,7 +2,6 @@ package smartin.miapi.modules;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
-import com.ibm.icu.impl.IllegalIcuArgumentException;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
@@ -81,7 +80,6 @@ public class ModuleInstance {
                             moduleInstance.subModules = children;
                             moduleInstance.sortSubModule();
                             moduleInstance.subModules.values().forEach(childInstance -> childInstance.parent = moduleInstance);
-                            Miapi.LOGGER.info("decoded Modules " + itemModule.id());
                             return moduleInstance;
                         }))
         );
@@ -164,8 +162,6 @@ public class ModuleInstance {
      */
     public ModuleInstance(ItemModule module) {
         this.module = module;
-        Exception e = new IllegalIcuArgumentException("");
-        Miapi.LOGGER.info("instantiated modules with trace");
     }
 
     /**
