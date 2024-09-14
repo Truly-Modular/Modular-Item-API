@@ -5,8 +5,6 @@ JsonMaterials is a file format used to define materials within the mod.
 They can be found/added in mod-id:miapi/materials/any-path-and-file-name.json
 These materials can have various stats such as hardness, density, flexibility, etc.,
 # Required Fields
-### `key`
-the unqiue id name of a Material. If you are adding materials from another mod, use modid:materialID here.
 ### `translation`
 The language key of the material, points to the language file.
 ### `icon`
