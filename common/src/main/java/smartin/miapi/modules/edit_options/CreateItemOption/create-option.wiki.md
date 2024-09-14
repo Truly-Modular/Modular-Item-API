@@ -1,5 +1,5 @@
-* @header Create Option
-* @path /datapack/create-option
+@header Create Option
+@path /datapack/create-option
 
 Create Options show up when the + Button is pressed.
 They can be found/added in mod-id:miapi/create_options/any-path-and-file-name.json

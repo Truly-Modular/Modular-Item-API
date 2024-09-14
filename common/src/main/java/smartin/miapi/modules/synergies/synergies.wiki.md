@@ -1,5 +1,5 @@
-* @header Synergies
-* @path /datapack/synergies
+@header Synergies
+@path /datapack/synergies
 
 Synergies are used to adjust a ModuleInstances properties based on condition.
 They can be found/added in mod-id:miapi/synergies/any-path-and-file-name.json

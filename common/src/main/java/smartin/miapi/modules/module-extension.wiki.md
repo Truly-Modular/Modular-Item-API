@@ -1,5 +1,5 @@
-* @header Module Extension
-* @path /datapack/module-extension
+@header Module Extension
+@path /datapack/module-extension
 
 Module Extensions are used to extend existing module.  
 They can be found/added in mod-id:miapi/module-extensions/any-path-and-file-name.json

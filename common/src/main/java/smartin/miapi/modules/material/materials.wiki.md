@@ -1,5 +1,5 @@
-* @header Materials
-* @path /datapack/material
+@header Materials
+@path /datapack/material
 
 JsonMaterials is a file format used to define materials within the mod.
 They can be found/added in mod-id:miapi/materials/any-path-and-file-name.json

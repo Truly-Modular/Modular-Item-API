@@ -1,5 +1,68 @@
 {
   "sub_pages": {
+    "datapack": {
+      "header": "Datapack Types",
+      "description": "Datapack Types is what we use to describe different types of json formats under different folders that were added by Truly Modular.\r  \nTruly Modular adds various different types for various different reasons, shown in subpages",
+      "data": {},
+      "key_words": [
+        "Datapack Type",
+        "Datapack",
+        ""
+      ],
+      "sub_pages": {
+        "blueprint": {
+          "header": "Blueprint Datapack Type",
+          "description": "Blueprints also can exist in Datapack with the same data as the Blueprint Component.",
+          "data": {},
+          "key_words": [
+            "Blueprint Datapack"
+          ]
+        },
+        "modular_converters": {
+          "header": "Modular Converters",
+          "description": "These are used to convert existing items into modular items when placed into the workbench.\r  \nThey are a ItemId:Module Instance component\r  \nThey can be found/added in mod-id:miapi/modular_converter/any-path-and-file-name.json",
+          "data": {},
+          "key_words": []
+        },
+        "create-option": {
+          "header": "Create Option",
+          "description": "Create Options show up when the + Button is pressed.\r  \nThey can be found/added in mod-id:miapi/create_options/any-path-and-file-name.json\r  \n\r  \n### `item` \r  \nThe id of the item to be created, usually \"miapi:modular_item\" will work.\r  \n### `module`\r  \nThe id of the base module to be added.\r  \n### `translation`\r  \nThe Translation key of the name\r  \n### `count`\r  \nHow many will be created at once",
+          "data": {},
+          "key_words": []
+        },
+        "module": {
+          "header": "Modules",
+          "description": "  \nModules are the core of Truly Modular  \nThey can be found/added in mod-id:/miapi/modules/any-path-and-file-name.json  \nThey consist of a Map of Properties  \n",
+          "java": "common/src/main/java/smartin/miapi/modules/ItemModule.java",
+          "data": {},
+          "key_words": []
+        },
+        "material-extension": {
+          "header": "Material Extension",
+          "description": "Material Extensions are used to extend existing materials.  \r  \nThey can be found/added in mod-id:miapi/material-extensions/any-path-and-file-name.json\r  \nThey can be used to augment existing materials,  \r  \nFor example Arsenal uses them to add gemstone stats to some materials.\r  \n\r  \n### `id` \r  \nthe id of the material to be extended",
+          "data": {},
+          "key_words": []
+        },
+        "material": {
+          "header": "Materials",
+          "description": "JsonMaterials is a file format used to define materials within the mod.\r  \nThey can be found/added in mod-id:miapi/materials/any-path-and-file-name.json\r  \nThese materials can have various stats such as hardness, density, flexibility, etc.,\r  \n# Required Fields\r  \n### `key`\r  \nthe unqiue id name of a Material. If you are adding materials from another mod, use modid:materialID here.\r  \n### `translation`\r  \nThe language key of the material, points to the language file.\r  \n### `icon`\r  \nthe Icon of the Material, can either be the path to a texture or a more complex icon, for that see [this](https://github.com/Truly-Modular/Modular-Item-API/blob/main/common/src/main/resources/data/miapi/materials/glass/black_glass.json#L4) as an example\r  \n### `color`\r  \nThe Hex color of the Material. Please use RGB and NOT RGBA here.\r  \n# Optional Fields\r  \n## Module Stats\r  \nModule stats is a weird subcategory.\r  \nAny open key can be used to define a Modulestat, such as ` hardness` or ` mining level` , for [Example](https://github.com/Truly-Modular/Modular-Item-API/blob/main/common/src/main/resources/data/miapi/materials/glass/black_glass.json#L4) these can be dynamicly called from by calling [material.hardness] in a complex double as reference.\r  \n\r  \n### `groups`\r  \na list of group keys. by default `stone` `wood` `metal` `bone` `glass` `fabric` `crystal` `gemstone` `flint` `rod` `fletching` `smithing` are used\r  \n### `items`\r  \nA List of Items to create the Material, can either be \"item\", \"tag\" or \"ingredient\". requires also a \"value\" to define the value in relation to the cost of the modules.\r  \n### `properties`\r  \nThis is a complex field . It has subfield sorted by key. Those keys can be referenced by Modules to search for Material Properties. Default keys include `default`  \r  \n`handheld` `tool` `blade`  `head`  `axe` `pickaxe` `hammer` `hoe` `shovel`\r  \n`armor` `helmet` `chest` `pants` `boots`\r  \nAfter the respective key a property map can be added to apply additional properties if this material is used on a matching Module.\r  \n\r  \n### `hidden_properties`\r  \nThis field is similar to properties, but wont display in UI\r  \n\r  \n### `display_properties`\r  \nThis field is similar to properties, but they wont apply, but show up in the UI. This is usefull to communicate Material information to the player\r  \n\r  \n# Color Palette\r  \nColor Palettes should be defined for all actual materials, and they need to be under the key `color_palette`\r  \nThey can have different Types:\r  \n### `grayscale_map`\r  \nThis is a Map where brigthness values of the raw texture are mapped to direct color values. [Example](https://github.com/Truly-Modular/Modular-Item-API/blob/main/common/src/main/resources/data/miapi/materials/glass/black_glass.json#L17)\r  \n### `from_material_palette_image`\r  \nThis is a Map where brigthness values of the raw texture are mapped to direct color values. Unlike the grayscale_map this uses a 1x256 texture to remap instead [Example](https://github.com/Truly-Modular/Modular-Item-API/blob/main/common/src/main/resources/data/miapi/materials/stone/magma.json#L17)\r  \n### `image_generated`\r  \nThis requires the json to mention a texture and this texture will be used to generate a palette similar to how generated Materials work.\r  \n```json\r  \n\"color_palette\": {\r  \n    \"type\": \"image_generated\",\r  \n    \"atlas\": \"block\",\r  \n    \"texture\": \"minecraft:block/dirt\"\r  \n}\r  \n```\r  \n### `image_generated_item`\r  \nThis requires the json to mention a valid ItemId. This might be easier to use than the option above\r  \n```json\r  \n\"color_palette\": {\r  \n    \"type\": \"image_generated_item\",\r  \n    \"item\": \"minecraft:dirt\"\r  \n}\r  \n```\r  \n### `overlay_texture`\r  \nThis overlays a Texture over the existing Model, allowing for cooler looking custom motives. Well repeating texures are recommended. [Example](https://github.com/Truly-Modular/Modular-Item-API/blob/main/common/src/main/resources/data/miapi/materials/stone/sculk.json#L17)\r  \n\r  \n### `layered_mask`\r  \nThis mask between two other Color Palettes via a Texture. Example:\r  \n```json\r  \n\"color_palette\": {\r  \n    \"type\": \"layered_mask\",\r  \n    \"base\": {\r  \n        \"type\": \"grayscale_map\",\r  \n        \"colors\": {\r  \n            \"24\": \"2D0500\",\r  \n            \"68\": \"4A0800\",\r  \n            \"107\": \"720C00\",\r  \n            \"150\": \"720C00\",\r  \n            \"190\": \"BB2008\",\r  \n            \"255\": \"E32008\"\r  \n        }\r  \n    },\r  \n    \"layer\": {\r  \n        \"type\": \"grayscale_map\",\r  \n        \"colors\": {\r  \n            \"24\": \"002d00\",\r  \n            \"68\": \"005300\",\r  \n            \"107\": \"007b18\",\r  \n            \"150\": \"009529\",\r  \n            \"190\": \"00aa2c\",\r  \n            \"216\": \"17dd62\",\r  \n            \"255\": \"41f384\"\r  \n        }\r  \n    },\r  \n    \"mask\": {\r  \n        \"type\": \"texture\",\r  \n        \"atlas\": \"block\",\r  \n        \"texture\": \"minecraft:block/water_still\"\r  \n    }\r  \n}\r  \n```\r  \n\r  \n\r  \n\r  \n# NBT Materials\r  \nNBT Materials are Materials that are only defined by a single NBT tag.  \r  \nYou need to put it under the nbt-tag \"miapi_material\".   \r  \nA Valid Parent needs to be defined to extract the stats from.\r  \nAnother optional property \"cost\" exists to set the value of the Item in the Modular Workbench\r  \nAll the other Json material properties can be used.\r  \n\r  \nExample command:\r  \n`/give @p dirt{miapi_material:{parent:gold,flexibility:20,cost:4}} 64`",
+          "data": {},
+          "key_words": []
+        },
+        "module-extension": {
+          "header": "Module Extension",
+          "description": "Module Extensions are used to extend existing module.  \r  \nThey can be found/added in mod-id:miapi/module-extensions/any-path-and-file-name.json\r  \nThey can be used to augment existing modules, but usually synergies are a better way of doing this\r  \n\r  \n### `id` \r  \nthe id of the material to be extended",
+          "data": {},
+          "key_words": []
+        },
+        "synergies": {
+          "header": "Synergies",
+          "description": "Synergies are used to adjust a ModuleInstances properties based on condition.\r  \nThey can be found/added in mod-id:miapi/synergies/any-path-and-file-name.json\r  \n\r  \n### `type`\r  \nThe Type of synergy, can either by \"tag\", \"material\", \"all\", if no type is given module is asumed.\r  \n- tag applies to module with the tag.   \r  \n- all applies to all modules    \r  \n- material applies to a certain material  \r  \n\r  \n\r  \n### `condition`\r  \nA complex Condition\r  \n\r  \n### `module/material/tag mentioned above`\r  \nthis is the key, the inner data is split into\r  \n- `replace` Replaces the property, erasing previous data\r  \n- `merge` properties to be merged into the modules property\r  \n- `remove` a list of properties to remove",
+          "data": {},
+          "key_words": []
+        }
+      }
+    },
     "components": {
       "header": "Itemstack Components",
       "description": "Components are a new 1.21 concept in Minecraft. They replace the old NBT tags with to help with structure and organisation.\r  \nTruly Modular adds a couple of their own Components, many for different reasons.\r  \nFor more information we do recommend to check the [Minecraft Wiki](https://minecraft.wiki/w/Data_component_format) page on components.\r  \nThe Sub Pages on this wiki will go indepth about the different components Truly Modular adds and their respective use cases.",
@@ -18,20 +81,18 @@
             "ingredient": " This can either be a boolean or an ingredient with Count.",
             "name": " (Optional) This allows for a custom name in the Crafting UI."
           },
-          "key_words": [],
-          "sub_pages": {}
+          "key_words": []
         },
         "module": {
           "header": "ModuleInstance Component",
-          "description": "  \nThis Component stores the main Modules for the Itemstack in question.  \nThis Component can be attached to any Itemstack, but many of the properties only correctly work on Modular Items,  \nso It's recommended to only attach his to Modular Item  \n",
+          "description": " This Component stores the main Modules for the Itemstack in question.  \nThis Component can be attached to any Itemstack, but many of the properties only correctly work on Modular Items,  \nso It's recommended to only attach his to Modular Item  \n",
           "java": "common/src/main/java/smartin/miapi/modules/ModuleInstance.java",
           "data": {
             "key": "the ID of the module to be attached",
             "child": " a slotId -> submodule map to map all submodules. This will be sorted in relation to the Slot Properties priority.",
             "data": " this is a String->custom data map to store additional custom data for properties to use. This is a per module savedata system."
           },
-          "key_words": [],
-          "sub_pages": {}
+          "key_words": []
         }
       }
     },
@@ -54,8 +115,7 @@
             "ingredient": " Same as minecrafts default ingredient, check datapack recipes for more information.",
             "count": " a simple integer, how much of the ingredient is actually needed."
           },
-          "key_words": [],
-          "sub_pages": {}
+          "key_words": []
         },
         "condition": {
           "header": "Conditions",
@@ -74,8 +134,7 @@
                 "type": "advancement",
                 "advancement": " the id of the advancement, you can use the /advancement command to get a list of these"
               },
-              "key_words": [],
-              "sub_pages": {}
+              "key_words": []
             },
             "and_condition": {
               "header": "And Condition",
@@ -85,8 +144,7 @@
                 "type": "and",
                 "conditions": "sub Conditions to be checked"
               },
-              "key_words": [],
-              "sub_pages": {}
+              "key_words": []
             },
             "child_condition": {
               "header": "Child Condition",
@@ -96,8 +154,7 @@
                 "type": "child",
                 "condition": "sub Condition to be tested on the child modules"
               },
-              "key_words": [],
-              "sub_pages": {}
+              "key_words": []
             },
             "is_mod_loaded": {
               "header": "Mod Loaded Condition",
@@ -107,8 +164,7 @@
                 "type": "mod_loaded",
                 "mod": "the mod ID to be checked"
               },
-              "key_words": [],
-              "sub_pages": {}
+              "key_words": []
             },
             "item_in_inventory": {
               "header": "Item in inventory Condition",
@@ -119,8 +175,7 @@
                 "item": "Item in the form of an Ingredient",
                 "count": "the amount of items needed to be present"
               },
-              "key_words": [],
-              "sub_pages": {}
+              "key_words": []
             },
             "material": {
               "header": "Material Condition",
@@ -130,8 +185,7 @@
                 "type": "material",
                 "material": "the material to be checked"
               },
-              "key_words": [],
-              "sub_pages": {}
+              "key_words": []
             },
             "material_count": {
               "header": "Material Count Condition",
@@ -142,8 +196,7 @@
                 "material": "the material to be checked",
                 "count": "how often the material is used"
               },
-              "key_words": [],
-              "sub_pages": {}
+              "key_words": []
             },
             "miapi_perm": {
               "header": "Miapi Perm Condition",
@@ -153,8 +206,7 @@
                 "type": "miapi_perm",
                 "perm": "a list of perms or UUIDS"
               },
-              "key_words": [],
-              "sub_pages": {}
+              "key_words": []
             },
             "module": {
               "header": "Module Type Condition",
@@ -164,8 +216,7 @@
                 "type": "module",
                 "module": "the id of the module"
               },
-              "key_words": [],
-              "sub_pages": {}
+              "key_words": []
             },
             "not": {
               "header": "Not Condition",
@@ -175,8 +226,7 @@
                 "type": "not",
                 "condition": "the sub condition to be inversed"
               },
-              "key_words": [],
-              "sub_pages": {}
+              "key_words": []
             },
             "number": {
               "header": "Number Condition",
@@ -186,8 +236,7 @@
                 "type": "number",
                 "condition": "a Double Resolvable, if the result is higher than 0 is considered true"
               },
-              "key_words": [],
-              "sub_pages": {}
+              "key_words": []
             },
             "or_condition": {
               "header": "Or Condition",
@@ -197,8 +246,7 @@
                 "type": "or",
                 "conditions": "sub Conditions to be checked"
               },
-              "key_words": [],
-              "sub_pages": {}
+              "key_words": []
             },
             "other_module": {
               "header": "Other Module Condition",
@@ -208,8 +256,7 @@
                 "type": "other_module",
                 "condition": "sub Condition to be tested on all other modules of the item"
               },
-              "key_words": [],
-              "sub_pages": {}
+              "key_words": []
             },
             "parent": {
               "header": "Parent Condition",
@@ -219,8 +266,7 @@
                 "type": "parent",
                 "condition": "sub Condition to be tested on the parent module"
               },
-              "key_words": [],
-              "sub_pages": {}
+              "key_words": []
             },
             "tag": {
               "header": "Tag Condition",
@@ -230,8 +276,7 @@
                 "type": "tag",
                 "tag": "the tag to be checked"
               },
-              "key_words": [],
-              "sub_pages": {}
+              "key_words": []
             },
             "true": {
               "header": "True Condition",
@@ -240,8 +285,7 @@
               "data": {
                 "type": "true"
               },
-              "key_words": [],
-              "sub_pages": {}
+              "key_words": []
             }
           }
         },
@@ -269,8 +313,7 @@
                   "data": {
                     "can_walk_on_snow": "a Boolean Resolvable"
                   },
-                  "key_words": [],
-                  "sub_pages": {}
+                  "key_words": []
                 },
                 "equipment_slot": {
                   "header": "Equipment Slot Property",
@@ -279,8 +322,7 @@
                   "data": {
                     "equipment_slot": "the preferred Equipment Slot Group"
                   },
-                  "key_words": [],
-                  "sub_pages": {}
+                  "key_words": []
                 },
                 "food_exhaustion": {
                   "header": "Exhaustion Property",
@@ -289,8 +331,7 @@
                   "data": {
                     "food_exhaustion": "a Double Resolvable"
                   },
-                  "key_words": [],
-                  "sub_pages": {}
+                  "key_words": []
                 },
                 "is_piglin_gold": {
                   "header": "IsPiglinGold Property",
@@ -299,8 +340,7 @@
                   "data": {
                     "is_piglin_gold": "a Boolean Resolvable"
                   },
-                  "key_words": [],
-                  "sub_pages": {}
+                  "key_words": []
                 },
                 "pillager_guard": {
                   "header": "PillagesGuard Property",
@@ -309,8 +349,7 @@
                   "data": {
                     "pillager_guard": "a Double Resolvable"
                   },
-                  "key_words": [],
-                  "sub_pages": {}
+                  "key_words": []
                 },
                 "step_noise_cancel": {
                   "header": "Step Canceling Property",
@@ -319,8 +358,7 @@
                   "data": {
                     "step_noise_cancel": "a Boolean Resolvable"
                   },
-                  "key_words": [],
-                  "sub_pages": {}
+                  "key_words": []
                 },
                 "water_gravity": {
                   "header": "Water Gravity Property",
@@ -329,8 +367,7 @@
                   "data": {
                     "water_gravity": "a Double Resolvable"
                   },
-                  "key_words": [],
-                  "sub_pages": {}
+                  "key_words": []
                 }
               }
             },
@@ -353,8 +390,7 @@
                     "slot": " the target slot group",
                     "targetOperation ": " optional, the operation to be merged to"
                   },
-                  "key_words": [],
-                  "sub_pages": {}
+                  "key_words": []
                 },
                 "attribute_split": {
                   "header": "Attribute Split Property",
@@ -370,8 +406,7 @@
                     "splitContext.value": " the final resolved value for this split.",
                     "operation": " the operation executed on the split values, e.g., addition."
                   },
-                  "key_words": [],
-                  "sub_pages": {}
+                  "key_words": []
                 }
               }
             },
@@ -385,8 +420,7 @@
                 "selectAble": " (optional) that determines if the module can be selected for crafting.",
                 "craftAble": " (optional) that determines if the module can be crafted."
               },
-              "key_words": [],
-              "sub_pages": {}
+              "key_words": []
             },
             "display_name": {
               "header": "Display Name Property",
@@ -395,8 +429,7 @@
               "data": {
                 "display_name": " A Text element representing the display name of the item."
               },
-              "key_words": [],
-              "sub_pages": {}
+              "key_words": []
             },
             "durability": {
               "header": "Durability Property",
@@ -405,8 +438,7 @@
               "data": {
                 "durability": " A Double value representing the maximum durability of the item."
               },
-              "key_words": [],
-              "sub_pages": {}
+              "key_words": []
             },
             "emissive": {
               "header": "Emissivity Property",
@@ -416,8 +448,7 @@
                 "sky": " An integer representing the light level emitted in the sky.",
                 "block": " An integer representing the light level emitted from the block."
               },
-              "key_words": [],
-              "sub_pages": {}
+              "key_words": []
             },
             "enchantments": {
               "header": "Enchantment Properties",
@@ -434,8 +465,7 @@
                     "allowed": " a list of allowed enchantments (ResourceLocation).",
                     "forbidden": " a list of forbidden enchantments (ResourceLocation)."
                   },
-                  "key_words": [],
-                  "sub_pages": {}
+                  "key_words": []
                 },
                 "crafting_enchants": {
                   "header": "Crafting Enchantments Property",
@@ -445,8 +475,7 @@
                     "enchantment": " The enchantment being applied.",
                     "value": " Double Resolvable, used to calculate the level of the enchantment."
                   },
-                  "key_words": [],
-                  "sub_pages": {}
+                  "key_words": []
                 },
                 "enchantability": {
                   "header": "Enchantability Property",
@@ -458,8 +487,7 @@
                     "material_controlled": " By default, enchantability is determined by material properties through the `MaterialProperty` module.",
                     "module_instance": " Allows for custom enchantability values through module instances, which are averaged if multiple values are present."
                   },
-                  "key_words": [],
-                  "sub_pages": {}
+                  "key_words": []
                 },
                 "fake_enchants": {
                   "header": "Fake Enchantment Property",
@@ -469,8 +497,7 @@
                     "enchantment": " The fake enchantment being applied (Holder<Enchantment>).",
                     "value": " DoubleOperationResolvable, which defines how the level of the fake enchantment is calculated."
                   },
-                  "key_words": [],
-                  "sub_pages": {}
+                  "key_words": []
                 }
               }
             },
@@ -481,8 +508,7 @@
               "data": {
                 "tags": " A list of strings representing the fake tags assigned to the item."
               },
-              "key_words": [],
-              "sub_pages": {}
+              "key_words": []
             },
             "fire_proof": {
               "header": "Fire Proof Property",
@@ -491,8 +517,7 @@
               "data": {
                 "fireProof": " A boolean value indicating whether the item is immune to fire and lava."
               },
-              "key_words": [],
-              "sub_pages": {}
+              "key_words": []
             },
             "gui_stat": {
               "header": "GUI Stat Property",
@@ -505,8 +530,7 @@
                 "header": " A Text Element used as the header for the statistic display.",
                 "description": " An optional Text Element providing a description for the statistic."
               },
-              "key_words": [],
-              "sub_pages": {}
+              "key_words": []
             },
             "handheld_item": {
               "header": "Handheld Item Property",
@@ -515,8 +539,7 @@
               "data": {
                 "handheld_item": " a boolean value if this is a handheld item. default is false"
               },
-              "key_words": [],
-              "sub_pages": {}
+              "key_words": []
             },
             "item_id": {
               "header": "Item ID Property",
@@ -525,8 +548,7 @@
               "data": {
                 "item_id": " the desired Item ID."
               },
-              "key_words": [],
-              "sub_pages": {}
+              "key_words": []
             },
             "item_lore": {
               "header": "Lore Property",
@@ -538,8 +560,7 @@
                 "position": " The position of the lore (\"top\" or \"bottom\").",
                 "priority": " The priority of the lore entry, used for sorting."
               },
-              "key_words": [],
-              "sub_pages": {}
+              "key_words": []
             },
             "luminous_learning": {
               "header": "Luminous Learning Property",
@@ -548,8 +569,7 @@
               "data": {
                 "luminious_learning": " the amount of XP increase."
               },
-              "key_words": [],
-              "sub_pages": {}
+              "key_words": []
             },
             "mining": {
               "header": "Mining Properties",
@@ -574,8 +594,7 @@
                       "description": "  \nThis is condition less, you can just always mine whatever  \n",
                       "java": "common/src/main/java/smartin/miapi/modules/properties/mining/condition/AlwaysMiningCondition.java",
                       "data": {},
-                      "key_words": [],
-                      "sub_pages": {}
+                      "key_words": []
                     },
                     "block_tag": {
                       "header": "Block Tag Condition",
@@ -584,8 +603,7 @@
                       "data": {
                         "block_tag": " A list of block tags that are used to determine which blocks are eligible for mining. The mining operation will only apply to blocks with these tags."
                       },
-                      "key_words": [],
-                      "sub_pages": {}
+                      "key_words": []
                     },
                     "instant_mining": {
                       "header": "Instant Mining",
@@ -596,8 +614,7 @@
                         "id": " The unique identifier for this mining mode, used in configurations and data definitions.",
                         "durabilityBreakChance": " The probability that the item's durability will decrease during mining. This value ranges from 0.0 (no chance) to 1.0 (guaranteed breakage)."
                       },
-                      "key_words": [],
-                      "sub_pages": {}
+                      "key_words": []
                     },
                     "staggered_mining": {
                       "header": "Staggered Mining",
@@ -607,8 +624,7 @@
                         "speed": " The rate at which blocks are mined. Higher values result in faster mining speeds.",
                         "durabilityBreakChance": " The probability that the item's durability will decrease during mining, ranging from 0.0 (no chance) to 1.0 (guaranteed breakage)."
                       },
-                      "key_words": [],
-                      "sub_pages": {}
+                      "key_words": []
                     },
                     "same_block_modifier": {
                       "header": "Same Block modifier",
@@ -617,8 +633,7 @@
                       "data": {
                         "requireSame": " A boolean flag indicating whether only blocks of the same type as the initial block should be mined."
                       },
-                      "key_words": [],
-                      "sub_pages": {}
+                      "key_words": []
                     }
                   }
                 },
@@ -637,8 +652,7 @@
                     "`correctForDrops`": " Optional boolean indicating whether the tool is correct for drops.",
                     "`useMaterial`": " Boolean indicating if material properties should affect mining rules."
                   },
-                  "key_words": [],
-                  "sub_pages": {}
+                  "key_words": []
                 }
               }
             },
@@ -649,8 +663,7 @@
               "data": {
                 "stats": " A {@link Map} where each entry consists of a {@link String} key and a {@link Double} value, representing different"
               },
-              "key_words": [],
-              "sub_pages": {}
+              "key_words": []
             },
             "on_hit": {
               "header": "OnHit Properties",
@@ -666,8 +679,7 @@
                   "data": {
                     "value": " The percentage of armor penetration applied. A value of 100 means complete armor penetration, while a lower value means less reduction."
                   },
-                  "key_words": [],
-                  "sub_pages": {}
+                  "key_words": []
                 },
                 "entity": {
                   "header": "OnHit Entity Properties",
@@ -683,8 +695,7 @@
                       "data": {
                         "aquatic_damage": " the amount of damage increase."
                       },
-                      "key_words": [],
-                      "sub_pages": {}
+                      "key_words": []
                     },
                     "illager_bane": {
                       "header": "Illager Bane Property",
@@ -693,8 +704,7 @@
                       "data": {
                         "illager_bane": " the amount of damage increase."
                       },
-                      "key_words": [],
-                      "sub_pages": {}
+                      "key_words": []
                     },
                     "smite_damage": {
                       "header": "Smite Damage Property",
@@ -703,8 +713,7 @@
                       "data": {
                         "smite_damage": " the amount of damage increase."
                       },
-                      "key_words": [],
-                      "sub_pages": {}
+                      "key_words": []
                     },
                     "spider_damage": {
                       "header": "Spider Damage Property",
@@ -713,8 +722,7 @@
                       "data": {
                         "spider_damage": " the amount of damage increase."
                       },
-                      "key_words": [],
-                      "sub_pages": {}
+                      "key_words": []
                     }
                   }
                 },
@@ -725,8 +733,7 @@
                   "data": {
                     "value": " The percentage of increased attack damage relative to the weapon's remaining durability. A value of 100 means a 100% increase in attack damage at full wear."
                   },
-                  "key_words": [],
-                  "sub_pages": {}
+                  "key_words": []
                 },
                 "health_percent": {
                   "header": "Health Percent Damage Property",
@@ -735,8 +742,7 @@
                   "data": {
                     "value": " The percentage of the target's current health that is added as extra damage. For example, a value of 10 means an additional 10% of the target's current health is added to the damage dealt."
                   },
-                  "key_words": [],
-                  "sub_pages": {}
+                  "key_words": []
                 },
                 "immolate": {
                   "header": "Immolate Property",
@@ -745,8 +751,7 @@
                   "data": {
                     "value": ""
                   },
-                  "key_words": [],
-                  "sub_pages": {}
+                  "key_words": []
                 },
                 "leeching": {
                   "header": "Leeching Property",
@@ -755,8 +760,7 @@
                   "data": {
                     "value": " The percentage of damage dealt that is converted into health. For example, a value of 10 means that 10% of the damage dealt is used to heal the attacker."
                   },
-                  "key_words": [],
-                  "sub_pages": {}
+                  "key_words": []
                 },
                 "lightning": {
                   "header": "Lightning On Hit Property",
@@ -765,8 +769,7 @@
                   "data": {
                     "value": " The number of lightning bolts that will strike the location of the entity being hit. For example, a value of 3 means three lightning bolts will appear."
                   },
-                  "key_words": [],
-                  "sub_pages": {}
+                  "key_words": []
                 },
                 "nemesis": {
                   "header": "Nemesis Property",
@@ -775,8 +778,7 @@
                   "data": {
                     "value": "the scaling, how high and fast it gains damage"
                   },
-                  "key_words": [],
-                  "sub_pages": {}
+                  "key_words": []
                 },
                 "explosion": {
                   "header": "Explosion On Hit Property",
@@ -785,8 +787,7 @@
                   "data": {
                     "value": " The number of lightning bolts that will strike the location of the entity being hit. For example, a value of 3 means three lightning bolts will appear."
                   },
-                  "key_words": [],
-                  "sub_pages": {}
+                  "key_words": []
                 }
               }
             },
@@ -804,8 +805,7 @@
                   "data": {
                     "effects": " A list of `PossibleEffect` instances, each defining a potion effect to be applied under certain conditions."
                   },
-                  "key_words": [],
-                  "sub_pages": {}
+                  "key_words": []
                 },
                 "on_hit_target_effects": {
                   "header": "On Hit Target Effects Property",
@@ -814,8 +814,7 @@
                   "data": {
                     "effects": " A list of `PossibleEffect` instances that define the potion effects to be applied when hitting the target entity."
                   },
-                  "key_words": [],
-                  "sub_pages": {}
+                  "key_words": []
                 },
                 "on_kill_effects": {
                   "header": "On Kill Effects Property",
@@ -824,8 +823,7 @@
                   "data": {
                     "effects": " A list of `PossibleEffect` instances that define the potion effects to be applied when the attacker successfully kills an entity."
                   },
-                  "key_words": [],
-                  "sub_pages": {}
+                  "key_words": []
                 }
               }
             },
@@ -836,8 +834,7 @@
               "data": {
                 "priority": " the priority for sorting"
               },
-              "key_words": [],
-              "sub_pages": {}
+              "key_words": []
             },
             "projectile": {
               "header": "Projectile Properties",
@@ -853,8 +850,7 @@
                   "data": {
                     "air_drag": "multiplied to air speed each tick."
                   },
-                  "key_words": [],
-                  "sub_pages": {}
+                  "key_words": []
                 },
                 "arrow": {
                   "header": "Arrow Property",
@@ -863,8 +859,7 @@
                   "data": {
                     "is_arrow": " Indicates whether the projectile behaves like an arrow, affecting its hit behavior and other attributes."
                   },
-                  "key_words": [],
-                  "sub_pages": {}
+                  "key_words": []
                 },
                 "channeling": {
                   "header": "Channeling Property",
@@ -873,8 +868,7 @@
                   "data": {
                     "channeling": " Indicates whether the projectile has the channeling effect applied."
                   },
-                  "key_words": [],
-                  "sub_pages": {}
+                  "key_words": []
                 },
                 "cryo": {
                   "header": "Cryo Property",
@@ -883,8 +877,7 @@
                   "data": {
                     "cryo": " A double value representing the strength and duration of the Cryo effect. Higher values increase the effect's potency."
                   },
-                  "key_words": [],
-                  "sub_pages": {}
+                  "key_words": []
                 },
                 "enderpearl": {
                   "header": "Enderpearl Property",
@@ -893,8 +886,7 @@
                   "data": {
                     "is_enderpearl": " A boolean value that determines if the projectile behaves like an ender pearl."
                   },
-                  "key_words": [],
-                  "sub_pages": {}
+                  "key_words": []
                 },
                 "explosion": {
                   "header": "Explosion Property",
@@ -909,8 +901,7 @@
                     "`entityMaxDamage`": " (optional) Maximum damage the explosion can deal to entities.",
                     " `entityRadius`": " (optional) Radius of the explosion's effect on entities."
                   },
-                  "key_words": [],
-                  "sub_pages": {}
+                  "key_words": []
                 },
                 "crossbow_ammunition": {
                   "header": "Crossbow Shootable Property",
@@ -919,8 +910,7 @@
                   "data": {
                     "crossbow_ammunition": " A boolean value indicating whether the item can be shot by a crossbow."
                   },
-                  "key_words": [],
-                  "sub_pages": {}
+                  "key_words": []
                 },
                 "rapid_fire_crossbow_delay": {
                   "header": "Rapid Fire Crossbow Delay Property",
@@ -929,8 +919,7 @@
                   "data": {
                     "rapid_fire_crossbow_delay": " A double value representing the time (in ticks) between consecutive shots."
                   },
-                  "key_words": [],
-                  "sub_pages": {}
+                  "key_words": []
                 },
                 "rapid_fire_crossbow": {
                   "header": "Rapid Fire Crossbow Property",
@@ -939,8 +928,7 @@
                   "data": {
                     "rapid_fire_crossbow": " A double value representing the number of projectiles that can be shot."
                   },
-                  "key_words": [],
-                  "sub_pages": {}
+                  "key_words": []
                 },
                 "teleport_target": {
                   "header": "Teleport Target Projectile Property",
@@ -949,8 +937,7 @@
                   "data": {
                     "teleport_target": " A boolean value indicating whether the teleport behavior is enabled for the projectile."
                   },
-                  "key_words": [],
-                  "sub_pages": {}
+                  "key_words": []
                 },
                 "water_drag": {
                   "header": "Water Drag Property",
@@ -959,8 +946,7 @@
                   "data": {
                     "water_drag": " Multiplied to the projectile's speed each tick when underwater."
                   },
-                  "key_words": [],
-                  "sub_pages": {}
+                  "key_words": []
                 }
               }
             },
@@ -971,8 +957,7 @@
               "data": {
                 "rarity": " A {@link Rarity} value representing the item's rarity level. Rarity levels are typically"
               },
-              "key_words": [],
-              "sub_pages": {}
+              "key_words": []
             },
             "repair_priority": {
               "header": "Repair Priority Property",
@@ -981,8 +966,7 @@
               "data": {
                 "repair_priority": " A double value that determines the priority of repair materials for the item."
               },
-              "key_words": [],
-              "sub_pages": {}
+              "key_words": []
             },
             "slot": {
               "header": "Slot Properties",
@@ -999,8 +983,7 @@
                     "allowed_in_slots": " A list of strings representing the slot IDs where the module can be placed.",
                     "`slotId`": " (required) The ID of the slot that allows this module."
                   },
-                  "key_words": [],
-                  "sub_pages": {}
+                  "key_words": []
                 },
                 "allow_change_parent": {
                   "header": "Can Change Parent Module Property",
@@ -1010,8 +993,7 @@
                     "allow_change_parent": " A condition that determines whether a parent module can be changed.",
                     "`condition`": " The condition that must be met to allow changing the parent module."
                   },
-                  "key_words": [],
-                  "sub_pages": {}
+                  "key_words": []
                 },
                 "can_child_be_empty": {
                   "header": "Can Child Be Empty Property",
@@ -1020,8 +1002,7 @@
                   "data": {
                     "can_child_be_empty": " A boolean value indicating whether the child slot can be empty."
                   },
-                  "key_words": [],
-                  "sub_pages": {}
+                  "key_words": []
                 },
                 "slots": {
                   "header": "Slot Property",
@@ -1030,8 +1011,7 @@
                   "data": {
                     "slots": " A map where keys are slot identifiers and values are {@link ModuleSlot} instances defining the slot's properties."
                   },
-                  "key_words": [],
-                  "sub_pages": {}
+                  "key_words": []
                 }
               }
             },
@@ -1042,8 +1022,7 @@
               "data": {
                 "tag": " A list of strings representing the tags associated with an item or module."
               },
-              "key_words": [],
-              "sub_pages": {}
+              "key_words": []
             },
             "tool_or_weapon": {
               "header": "Tool or Weapon Property",
@@ -1052,8 +1031,7 @@
               "data": {
                 "is_weapon": " A boolean value indicating if the item is considered a weapon."
               },
-              "key_words": [],
-              "sub_pages": {}
+              "key_words": []
             }
           }
         },
@@ -1065,8 +1043,7 @@
           "key_words": [
             "BooleanResolvable",
             "BooleanResolvable"
-          ],
-          "sub_pages": {}
+          ]
         },
         "double_resolvable": {
           "header": "Double Resolvable",
@@ -1076,28 +1053,7 @@
           "key_words": [
             "DoubleResolvable",
             "DoubleResolvable"
-          ],
-          "sub_pages": {}
-        }
-      }
-    },
-    "datapack": {
-      "header": "Datapack Types",
-      "description": "Datapack Types is what we use to describe different types of json formats under different folders that were added by Truly Modular.\r  \nTruly Modular adds various different types for various different reasons, shown in subpages",
-      "data": {},
-      "key_words": [
-        "Datapack Type",
-        "Datapack",
-        ""
-      ],
-      "sub_pages": {
-        "module": {
-          "header": "Modules",
-          "description": "  \nModules are the core of Truly Modular  \nThey can be found/added in mod-id:/miapi/modules/any-path-and-file-name.json  \nThey consist of a Map of Properties  \n",
-          "java": "common/src/main/java/smartin/miapi/modules/ItemModule.java",
-          "data": {},
-          "key_words": [],
-          "sub_pages": {}
+          ]
         }
       }
     }

@@ -1,5 +1,5 @@
-* @header Modular Converters
-* @path /datapack/modular_converters
+@header Modular Converters
+@path /datapack/modular_converters
 
 These are used to convert existing items into modular items when placed into the workbench.
 They are a ItemId:Module Instance component

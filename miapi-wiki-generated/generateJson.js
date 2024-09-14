@@ -24,7 +24,6 @@ function setNestedValue(data, path, value) {
 		Object.assign(data, value)
 		return
 	}
-	console.log('trying to add ' + path)
 	const keys = path.split('/').filter((k) => k)
 	let obj = data
 
@@ -38,6 +37,7 @@ function setNestedValue(data, path, value) {
 		if (index === keys.length - 1) {
 			// Only set the value if it is the last key in the path
 			if (typeof obj.sub_pages[key] === 'object' && obj.sub_pages[key] !== null) {
+				value.sub_pages = obj.sub_pages[key].sub_pages
 				Object.assign(value, obj.sub_pages[key])
 				obj.sub_pages[key] = value
 			} else {
@@ -50,9 +50,6 @@ function setNestedValue(data, path, value) {
 			obj = obj.sub_pages[key]
 		}
 	})
-	if (path.includes('blueprint') || path.includes('ingredient_count')) {
-		console.log(JSON.stringify(obj))
-	}
 }
 
 // Process each Java file to extract JavaDoc and build JSON structure

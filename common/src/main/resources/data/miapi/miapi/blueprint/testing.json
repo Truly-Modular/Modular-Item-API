@@ -2,6 +2,6 @@
     "module": {
         "key": "arsenal:blade/normal"
     },
-    "ingredient": true,
+    "ingredient": false,
     "name": "Blueprint Works!!!"
 }

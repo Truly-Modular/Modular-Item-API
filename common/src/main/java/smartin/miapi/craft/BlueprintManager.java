@@ -32,7 +32,12 @@ public class BlueprintManager {
         Miapi.registerReloadHandler(ReloadEvents.MAIN, "miapi/blueprint", reloadedBlueprints, (isClient, id, data) -> {
             Miapi.LOGGER.info("loaded Blueprint " + id);
             JsonElement element = Miapi.gson.fromJson(data, JsonElement.class);
-            reloadedBlueprints.put(id, BlueprintComponent.CODEC.decode(JsonOps.INSTANCE, element).getOrThrow().getFirst());
+            BlueprintComponent component = BlueprintComponent.CODEC.decode(JsonOps.INSTANCE, element).getOrThrow().getFirst();
+            if (component.ingredient.left().isPresent() && component.ingredient.left().get()) {
+                Miapi.LOGGER.warn("Datapack Blueprints cannot set the Ingredient to True!, either use false ur a Ingredient with count");
+            } else {
+                reloadedBlueprints.put(id, BlueprintComponent.CODEC.decode(JsonOps.INSTANCE, element).getOrThrow().getFirst());
+            }
         });
         ReloadEvents.END.subscribe((isClient, registryAccess) -> Miapi.LOGGER.info("Loaded " + reloadedBlueprints.size() + " Blueprints"));
     }

@@ -39,10 +39,10 @@ import java.util.function.Supplier;
 /**
  * A class representing a single module instance that belongs to an item.
  * The rest of this Javadoc is used to populate the Wiki
+ *
  * @header ModuleInstance Component
  * @path /components/module
- * @description_start
- * This Component stores the main Modules for the Itemstack in question.
+ * @description_start This Component stores the main Modules for the Itemstack in question.
  * This Component can be attached to any Itemstack, but many of the properties only correctly work on Modular Items,
  * so It's recommended to only attach his to Modular Item
  * @description_end
@@ -161,6 +161,7 @@ public class ModuleInstance {
      * @param module the item module for the module instance
      */
     public ModuleInstance(ItemModule module) {
+        this.moduleID = module.id();
         this.module = module;
     }
 
