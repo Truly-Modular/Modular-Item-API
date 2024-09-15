@@ -498,6 +498,7 @@ public class RegistryInventory {
             registerMiapi(moduleProperties, FakeEnchantmentProperty.KEY, new FakeEnchantmentProperty());
             registerMiapi(moduleProperties, AllowedEnchantments.KEY, new AllowedEnchantments());
             registerMiapi(moduleProperties, BlueprintCrafting.KEY, new BlueprintCrafting());
+            registerMiapi(moduleProperties, SlashingProperty.KEY, new SlashingProperty());
             //compat
             //registerMiapi(moduleProperties, BetterCombatProperty.KEY, new BetterCombatProperty());
             //TODO: added this to cleanup logs. this needs to be revisited later

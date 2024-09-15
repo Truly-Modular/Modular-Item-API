@@ -33,22 +33,22 @@ public class SynergyManager {
             if (moduleInstance != null) {
                 List<Synergy> synergies = moduleSynergies.get(moduleInstance.module.id());
                 if (synergies != null) {
-                    synergies.forEach(synergy -> {
+                    for (Synergy synergy : synergies) {
                         if (synergy.condition.isAllowed(ConditionManager.moduleContext(moduleInstance, oldMap))) {
-                            synergy.holder.applyHolder(oldMap);
+                            oldMap = synergy.holder.applyHolder(oldMap);
                         }
-                    });
+                    }
                 }
             }
             Material material = MaterialProperty.getMaterial(oldMap);
             if (material != null) {
                 List<Synergy> synergies = materialSynergies.get(material.getID());
                 if (synergies != null) {
-                    synergies.forEach(synergy -> {
+                    for (Synergy synergy : synergies) {
                         if (synergy.condition.isAllowed(ConditionManager.moduleContext(moduleInstance, oldMap))) {
-                            synergy.holder.applyHolder(oldMap);
+                            oldMap = synergy.holder.applyHolder(oldMap);
                         }
-                    });
+                    }
                 }
             }
             return oldMap;

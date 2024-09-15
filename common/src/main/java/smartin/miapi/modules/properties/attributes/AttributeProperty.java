@@ -33,9 +33,9 @@ import java.util.function.Supplier;
 
 /**
  * This property allows modules to define and modify attributes of items.
+ *
  * @header Attribute Property
- * @description_start
- * The Attribute Property is used to modify various attributes for items
+ * @description_start The Attribute Property is used to modify various attributes for items
  * It can set basic, multiply and resolve complex attributes. This is a core part of the api
  * @path /data_types/properties/attributes/item_attributes
  * @data attributes:a list of item attributes, allowing each for the following fields
@@ -174,7 +174,7 @@ public class AttributeProperty extends CodecProperty<List<AttributeProperty.Attr
         startValue = startValue * multiply;
         for (AttributeModifier entityAttributeModifier : addition) {
             if (entityAttributeModifier.operation().equals(AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL)) {
-                startValue = startValue * entityAttributeModifier.amount();
+                startValue = startValue * (entityAttributeModifier.amount() + 1);
             }
         }
         startValue = startValue - baseValue;
@@ -284,8 +284,8 @@ public class AttributeProperty extends CodecProperty<List<AttributeProperty.Attr
         var attributes = itemStack.getOrDefault(DataComponents.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.EMPTY);
         List<ItemAttributeModifiers.Entry> filteredList = new ArrayList<>(attributes.modifiers().stream().filter(
                 entry -> !(entry.modifier().id().getNamespace().equals(Miapi.MOD_ID)
-                         || entry.modifier().id().equals(Item.BASE_ATTACK_DAMAGE_ID)
-                         || entry.modifier().id().equals(Item.BASE_ATTACK_SPEED_ID))
+                           || entry.modifier().id().equals(Item.BASE_ATTACK_DAMAGE_ID)
+                           || entry.modifier().id().equals(Item.BASE_ATTACK_SPEED_ID))
         ).toList());
         equipmentSlotMultimapMapGenerate(itemStack).forEach(((group, attributeAttributeModifierMultimap) -> {
             attributeAttributeModifierMultimap.forEach((attribute, attributeModifier) -> {

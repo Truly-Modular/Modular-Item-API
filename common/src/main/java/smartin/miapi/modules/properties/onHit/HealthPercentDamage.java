@@ -14,8 +14,7 @@ import smartin.miapi.modules.properties.util.DoubleProperty;
  *
  * @header Health Percent Damage Property
  * @path /data_types/properties/on_hit/health_percent
- * @description_start
- * The Health Percent Damage Property adds extra damage to a target based on the percentage of their current health. This means that the lower the target's health, the more damage they will receive from the attack.
+ * @description_start The Health Percent Damage Property adds extra damage to a target based on the percentage of their current health. This means that the lower the target's health, the more damage they will receive from the attack.
  * This property is useful for creating weapons or effects that scale their damage relative to the health of the target, making them more effective against low-health enemies.
  * The additional damage is calculated as a percentage of the target's current health, providing a dynamic scaling effect during combat.
  * It is recommended to use this sparingly, since against modded bosses this might escalate fairly quickly!
@@ -38,7 +37,7 @@ public class HealthPercentDamage extends DoubleProperty {
                         return EventResult.pass();
                     }
                 }
-                double percentage = getValue(itemStack).orElse(0.0);
+                double percentage = getValue(itemStack).orElse(0.0) / 100;
                 double increasingBy = livingHurtEvent.livingEntity.getHealth() / (100 / percentage);
                 livingHurtEvent.amount += increasingBy;
             }

@@ -84,7 +84,7 @@ public class ItemAbilityManager {
 
     public static UseAnim getUseAction(ItemStack itemStack, Supplier<UseAnim> getItem) {
         AbilityHolder<?> ability = getAbility(itemStack);
-        if (!emptyAbility.equals(ability)) {
+        if (emptyAbility.equals(ability)) {
             return getItem.get();
         }
         return ability.ability().getUseAction(itemStack);
@@ -92,7 +92,7 @@ public class ItemAbilityManager {
 
     public static int getMaxUseTime(ItemStack itemStack, LivingEntity livingEntity, Supplier<Integer> getItem) {
         AbilityHolder<?> ability = getAbility(itemStack);
-        if (!emptyAbility.equals(ability)) {
+        if (emptyAbility.equals(ability)) {
             return getItem.get();
         }
         return ability.ability().getMaxUseTime(itemStack);
@@ -112,7 +112,7 @@ public class ItemAbilityManager {
             }
         });
         abilityMap.put(itemStack, ability);
-        if (!emptyAbility.equals(ability)) {
+        if (emptyAbility.equals(ability)) {
             return getItem.get();
         }
         return ability.ability().use(world, user, hand);
@@ -120,7 +120,7 @@ public class ItemAbilityManager {
 
     public static ItemStack finishUsing(ItemStack stack, Level world, LivingEntity user, Supplier<ItemStack> getItem) {
         AbilityHolder<?> ability = getAbility(stack);
-        if (!emptyAbility.equals(ability)) {
+        if (emptyAbility.equals(ability)) {
             abilityMap.remove(stack);
             return getItem.get();
         }
@@ -132,7 +132,7 @@ public class ItemAbilityManager {
 
     public static void onStoppedUsing(ItemStack stack, Level world, LivingEntity user, int remainingUseTicks, Runnable getItem) {
         AbilityHolder<?> ability = getAbility(stack);
-        if (!emptyAbility.equals(ability)) {
+        if (emptyAbility.equals(ability)) {
             getItem.run();
             return;
         }
@@ -145,7 +145,7 @@ public class ItemAbilityManager {
 
     public static void usageTick(Level world, LivingEntity user, ItemStack stack, int remainingUseTicks, Runnable getItem) {
         AbilityHolder<?> ability = getAbility(stack);
-        if (!emptyAbility.equals(ability)) {
+        if (emptyAbility.equals(ability)) {
             abilityMap.remove(stack);
             getItem.run();
             return;
@@ -165,7 +165,7 @@ public class ItemAbilityManager {
                 return entity;
             }
         });
-        if (!emptyAbility.equals(ability)) {
+        if (emptyAbility.equals(ability)) {
             return getItem.get();
         }
         abilityMap.put(stack, ability);
@@ -184,7 +184,7 @@ public class ItemAbilityManager {
                 return null;
             }
         });
-        if (!emptyAbility.equals(ability)) {
+        if (emptyAbility.equals(ability)) {
             return getItem.get();
         }
         abilityMap.put(context.getItemInHand(), ability);

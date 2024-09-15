@@ -39,6 +39,7 @@ import smartin.miapi.modules.properties.projectile.WaterDragProperty;
 import smartin.miapi.modules.properties.util.GuiWidgetSupplier;
 import smartin.miapi.registries.RegistryInventory;
 
+import java.text.DecimalFormat;
 import java.util.*;
 
 @Environment(EnvType.CLIENT)
@@ -154,12 +155,20 @@ public class StatListWidget extends InteractAbleWidget {
         addStatDisplay(SinglePropertyStatDisplay
                 .builder(HealthPercentDamage.property)
                 .setMax(50)
+                .setHoverDescription(
+                        (stack) ->
+                                Component.translatable(Miapi.MOD_ID + ".stat." + HealthPercentDamage.KEY + ".description", new DecimalFormat("##.##").format(HealthPercentDamage.property.getValue(stack).orElse(0.0) / 100)))
                 .setTranslationKey(HealthPercentDamage.KEY).build());
         addStatDisplay(SinglePropertyStatDisplay
                 .builder(ArmorPenProperty.property)
                 .setMin(-20)
                 .setMax(50)
                 .setTranslationKey(ArmorPenProperty.KEY).build());
+        addStatDisplay(SinglePropertyStatDisplay
+                .builder(SlashingProperty.property)
+                .setMin(-2)
+                .setMax(12)
+                .setTranslationKey(SlashingProperty.KEY).build());
         /*
         addStatDisplay(SinglePropertyStatDisplay
                 .builder(BlockProperty.property)

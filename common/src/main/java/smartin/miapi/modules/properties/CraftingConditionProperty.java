@@ -114,7 +114,7 @@ public class CraftingConditionProperty extends CodecProperty<CraftingConditionPr
             Miapi.LOGGER.error("bench is null. this should never happen");
         }
         ConditionManager.ConditionContext context = ConditionManager.fullContext(new ModuleInstance(module), pos, player, module.properties());
-        return json == null || !json.craftAble.isAllowed(context);
+        return json == null || json.craftAble.isAllowed(context);
     }
 
     @Override
