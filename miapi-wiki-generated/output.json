@@ -380,7 +380,7 @@
               "sub_pages": {
                 "item_attributes": {
                   "header": "Attribute Property",
-                  "description": "  \nThe Attribute Property is used to modify various attributes for items  \nIt can set basic, multiply and resolve complex attributes. This is a core part of the api  \n",
+                  "description": " The Attribute Property is used to modify various attributes for items  \nIt can set basic, multiply and resolve complex attributes. This is a core part of the api  \n",
                   "java": "common/src/main/java/smartin/miapi/modules/properties/attributes/AttributeProperty.java",
                   "data": {
                     "attributes": "a list of item attributes, allowing each for the following fields",
@@ -737,7 +737,7 @@
                 },
                 "health_percent": {
                   "header": "Health Percent Damage Property",
-                  "description": "  \nThe Health Percent Damage Property adds extra damage to a target based on the percentage of their current health. This means that the lower the target's health, the more damage they will receive from the attack.  \nThis property is useful for creating weapons or effects that scale their damage relative to the health of the target, making them more effective against low-health enemies.  \nThe additional damage is calculated as a percentage of the target's current health, providing a dynamic scaling effect during combat.  \nIt is recommended to use this sparingly, since against modded bosses this might escalate fairly quickly!  \n",
+                  "description": " The Health Percent Damage Property adds extra damage to a target based on the percentage of their current health. This means that the lower the target's health, the more damage they will receive from the attack.  \nThis property is useful for creating weapons or effects that scale their damage relative to the health of the target, making them more effective against low-health enemies.  \nThe additional damage is calculated as a percentage of the target's current health, providing a dynamic scaling effect during combat.  \nIt is recommended to use this sparingly, since against modded bosses this might escalate fairly quickly!  \n",
                   "java": "common/src/main/java/smartin/miapi/modules/properties/onHit/HealthPercentDamage.java",
                   "data": {
                     "value": " The percentage of the target's current health that is added as extra damage. For example, a value of 10 means an additional 10% of the target's current health is added to the damage dealt."
@@ -786,6 +786,15 @@
                   "java": "common/src/main/java/smartin/miapi/modules/properties/onHit/OnKillExplosion.java",
                   "data": {
                     "value": " The number of lightning bolts that will strike the location of the entity being hit. For example, a value of 3 means three lightning bolts will appear."
+                  },
+                  "key_words": []
+                },
+                "slashing": {
+                  "header": "Slashing Property",
+                  "description": "  \nThe SlashingProperty introduces additional slashing damage to attacks based on the equipped item.  \nThis property calculates the slashing damage and adjusts the damage dealt to entities in the game by factoring  \nin the target's **Armor** / 3 and **Armor Toughness** attributes.  \n *  \nWhen an entity is hurt, this property retrieves the slashing value of the item being used to cause the damage,  \nand reduces the slashing effect based on the target's armor attributes. If the slashing damage remains greater than  \nzero after reductions, the damage is added to the base damage dealt to the target.  \n *  \nThis property is useful for defining weapons or tools that focus on cutting-based damage or bypassing armor,  \ngiving certain items more versatility in combat scenarios.  \n *  \n",
+                  "java": "common/src/main/java/smartin/miapi/modules/properties/onHit/SlashingProperty.java",
+                  "data": {
+                    "slashing": " A double value indicating the amount of slashing damage that the item can deal."
                   },
                   "key_words": []
                 }
