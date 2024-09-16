@@ -127,8 +127,7 @@ public class ModularHoe extends HoeItem implements PlatformModularItemMethods, M
 
     @Override
     public boolean useOnRelease(ItemStack stack) {
-        //TODO;
-        return true;
+        return ItemAbilityManager.useOnRelease(stack, () -> super.useOnRelease(stack));
     }
 
     @Override

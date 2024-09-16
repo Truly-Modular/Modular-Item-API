@@ -3,4 +3,3 @@
   - refactored and cleaned codebase
   - for more details check the 1.21 Port readme on github
 - added blueprint logic
-- added slashing

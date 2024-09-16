@@ -153,6 +153,15 @@ public class ItemAbilityManager {
         ability.ability().usageTick(world, user, stack, remainingUseTicks);
     }
 
+    public static boolean useOnRelease(ItemStack stack, Supplier<Boolean> getItem) {
+        AbilityHolder<?> ability = getAbility(stack);
+        if (emptyAbility.equals(ability)) {
+            abilityMap.remove(stack);
+            return getItem.get();
+        }
+        return ability.ability().useOnRelease(stack);
+    }
+
     public static InteractionResult useOnEntity(ItemStack stack, Player user, LivingEntity entity, InteractionHand hand, Supplier<InteractionResult> getItem) {
         AbilityHolder<?> ability = getAbility(stack, user.level(), user, hand, new AbilityHitContext() {
             @Override

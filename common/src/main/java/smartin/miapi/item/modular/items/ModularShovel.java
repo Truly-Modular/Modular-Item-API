@@ -127,8 +127,7 @@ public class ModularShovel extends ShovelItem implements PlatformModularItemMeth
 
     @Override
     public boolean useOnRelease(ItemStack stack) {
-        //TODO;
-        return true;
+        return ItemAbilityManager.useOnRelease(stack, () -> super.useOnRelease(stack));
     }
 
     @Override

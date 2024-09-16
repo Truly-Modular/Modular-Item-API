@@ -83,6 +83,10 @@ public interface ItemUseAbility<T> {
 
     }
 
+    default boolean useOnRelease(ItemStack itemStack){
+        return false;
+    }
+
     /**
      * Called when the player swaps or drops the item or for whatever other reason does nolonger hold the item.
      *
