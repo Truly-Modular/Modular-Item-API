@@ -140,8 +140,7 @@ public class ModularWeapon extends Item implements PlatformModularItemMethods, M
 
     @Override
     public boolean isUsedOnRelease(ItemStack stack) {
-        //TODO;
-        return true;
+        return ItemAbilityManager.isUsedOnRelease(stack,() -> super.isUsedOnRelease(stack));
     }
 
     @Override

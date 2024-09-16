@@ -47,12 +47,17 @@ public class ModularSword extends SwordItem implements PlatformModularItemMethod
     }
 
     @Override
+    public float getAttackDamage() {
+        return this.currentFakeToolmaterial.getAttackDamage();
+    }
+
+    @Override
     public void setToolMaterial(ToolMaterial toolMaterial) {
         this.currentFakeToolmaterial = toolMaterial;
     }
 
     public Multimap<EntityAttribute, EntityAttributeModifier> getAttributeModifiers(EquipmentSlot slot) {
-        return ArrayListMultimap.create();
+        return slot == EquipmentSlot.MAINHAND ? ArrayListMultimap.create() : super.getAttributeModifiers(slot);
     }
 
     @Override
@@ -164,8 +169,7 @@ public class ModularSword extends SwordItem implements PlatformModularItemMethod
 
     @Override
     public boolean isUsedOnRelease(ItemStack stack) {
-        //TODO;
-        return true;
+        return ItemAbilityManager.isUsedOnRelease(stack,() -> super.isUsedOnRelease(stack));
     }
 
     @Override

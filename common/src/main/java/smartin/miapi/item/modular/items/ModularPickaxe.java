@@ -163,8 +163,7 @@ public class ModularPickaxe extends PickaxeItem implements PlatformModularItemMe
 
     @Override
     public boolean isUsedOnRelease(ItemStack stack) {
-        //TODO;
-        return true;
+        return ItemAbilityManager.isUsedOnRelease(stack,() -> super.isUsedOnRelease(stack));
     }
 
     @Override

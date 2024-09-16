@@ -76,6 +76,15 @@ public class ItemAbilityManager {
         return emptyAbility;
     }
 
+    public static boolean isUsedOnRelease(ItemStack itemStack, Supplier<Boolean> itemCall) {
+        ItemUseAbility ability = getAbility(itemStack);
+        if (ability == emptyAbility) {
+            return itemCall.get();
+        }
+        return getAbility(itemStack).isUsedOnRelease(itemStack);
+    }
+
+
     public static UseAction getUseAction(ItemStack itemStack, Supplier<UseAction> itemCall) {
         ItemUseAbility ability = getAbility(itemStack);
         if (ability == emptyAbility) {

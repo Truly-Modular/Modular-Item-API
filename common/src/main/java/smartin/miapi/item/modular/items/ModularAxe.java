@@ -165,8 +165,7 @@ public class ModularAxe extends AxeItem implements PlatformModularItemMethods, M
 
     @Override
     public boolean isUsedOnRelease(ItemStack stack) {
-        //TODO;
-        return true;
+        return ItemAbilityManager.isUsedOnRelease(stack,() -> super.isUsedOnRelease(stack));
     }
 
     @Override
