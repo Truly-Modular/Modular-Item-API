@@ -134,7 +134,8 @@ public class RiptideAbility implements ItemUseDefaultCooldownAbility<RiptideAbil
         return merged;
     }
 
-    public class RiptideContextJson {
+    public static class RiptideContextJson {
+        @CodecBehavior.Optional
         public DoubleOperationResolvable cooldown = new DoubleOperationResolvable(20);
         @AutoCodec.Name("min_use")
         public DoubleOperationResolvable minUse = new DoubleOperationResolvable(10);
@@ -160,7 +161,7 @@ public class RiptideAbility implements ItemUseDefaultCooldownAbility<RiptideAbil
             return init;
         }
 
-        SoundEvent resolveSoundEvent(int riptideLevel) {
+        public SoundEvent resolveSoundEvent(int riptideLevel) {
             if (customSound != null && BuiltInRegistries.SOUND_EVENT.containsKey(customSound)) {
                 return BuiltInRegistries.SOUND_EVENT.get(customSound);
             }

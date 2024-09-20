@@ -29,8 +29,8 @@ import smartin.miapi.craft.CraftAction;
 import smartin.miapi.craft.stat.StatProvidersMap;
 import smartin.miapi.entity.ItemProjectileEntity;
 import smartin.miapi.modules.ModuleInstance;
-import smartin.miapi.modules.material.Material;
-import smartin.miapi.modules.material.generated.GeneratedMaterial;
+import smartin.miapi.material.Material;
+import smartin.miapi.material.generated.GeneratedMaterial;
 import smartin.miapi.modules.properties.util.ComponentApplyProperty;
 
 import java.util.ArrayList;

@@ -16,30 +16,34 @@ import smartin.miapi.modules.properties.util.ModuleProperty;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ConduitModelProperty extends CodecProperty<ConduitModelProperty.ConduitModelData> {
+public class ConduitModelProperty extends CodecProperty<List<ConduitModelProperty.ConduitModelData>> {
     public static final ResourceLocation KEY = Miapi.id("conduit_model");
     public static ConduitModelProperty property;
-    public static Codec<ConduitModelData> CODEC = AutoCodec.of(ConduitModelData.class).codec();
+    public static Codec<List<ConduitModelData>> CODEC = Codec.list(AutoCodec.of(ConduitModelData.class).codec());
 
     public ConduitModelProperty() {
         super(CODEC);
         property = this;
         MiapiItemModel.modelSuppliers.add((key, model, stack) -> {
             List<MiapiModel> models = new ArrayList<>();
-            getData(model).ifPresent(conduitModelData -> {
-                models.add(new ConduitRendererEntity(conduitModelData.transform));
-            });
+            getData(model).ifPresent(conduitModelData ->
+                    conduitModelData.forEach(data ->
+                            models.add(new ConduitRendererEntity(data.transform))));
             return models;
         });
     }
 
     @Override
-    public ConduitModelData merge(ConduitModelData left, ConduitModelData right, MergeType mergeType) {
-        return ModuleProperty.decideLeftRight(left, right, mergeType);
+    public List<ConduitModelData> merge(List<ConduitModelData> left, List<ConduitModelData> right, MergeType mergeType) {
+        return ModuleProperty.mergeList(left, right, mergeType);
     }
 
     public static class ConduitModelData {
         @CodecBehavior.Optional
         public Transform transform = Transform.IDENTITY;
+
+        public ConduitModelData() {
+
+        }
     }
 }

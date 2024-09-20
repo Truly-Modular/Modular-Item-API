@@ -12,7 +12,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import smartin.miapi.Miapi;
 import smartin.miapi.datapack.ReloadEvents;
-import smartin.miapi.modules.material.MaterialProperty;
+import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.network.Networking;
 
 import java.util.Collection;

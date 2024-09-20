@@ -1,7 +1,7 @@
 package smartin.miapi.item;
 
 import com.mojang.serialization.MapCodec;
-import com.redpxnda.nucleus.codec.auto.AutoCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -17,29 +17,35 @@ import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.item.modular.VisualModularItem;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
-import smartin.miapi.modules.material.Material;
-import smartin.miapi.modules.material.MaterialProperty;
+import smartin.miapi.material.Material;
+import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.registries.RegistryInventory;
 
 /**
  * Custom Smithing recipe to replace Materials within a Modular item
  */
 public class MaterialSmithingRecipe implements SmithingRecipe {
-
-    public static MapCodec<MaterialSmithingRecipe> CODEC = AutoCodec.of(MaterialSmithingRecipe.class);
-
+    public static MapCodec<MaterialSmithingRecipe> CODEC = RecordCodecBuilder.mapCodec((instance) ->
+            instance.group(
+                    Ingredient.CODEC.fieldOf("template").forGetter((recipe)->recipe.smithingTemplate),
+                    ResourceLocation.CODEC.fieldOf("base").forGetter((recipe)->recipe.startMaterial),
+                    Ingredient.CODEC.fieldOf("addition").forGetter((recipe)->recipe.addition),
+                    ResourceLocation.CODEC.fieldOf("result").forGetter((recipe)->recipe.resultMaterial)
+            ).apply(instance,  MaterialSmithingRecipe::new));
     public final ResourceLocation startMaterial;
     public final ResourceLocation resultMaterial;
     public final Ingredient smithingTemplate;
     public final Ingredient addition;
-    public final ResourceLocation id;
 
-    public MaterialSmithingRecipe(ResourceLocation id, Ingredient template, ResourceLocation baseMaterial, Ingredient addition, ResourceLocation resultMaterial) {
+    public MaterialSmithingRecipe(
+            Ingredient template,
+            ResourceLocation baseMaterial,
+            Ingredient addition,
+            ResourceLocation resultMaterial) {
         this.startMaterial = baseMaterial;
         this.resultMaterial = resultMaterial;
         smithingTemplate = template;
         this.addition = addition;
-        this.id = id;
     }
 
     /**

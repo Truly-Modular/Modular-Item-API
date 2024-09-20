@@ -17,7 +17,7 @@ import org.joml.Vector4f;
  */
 @Environment(EnvType.CLIENT)
 public class ScrollingTextWidget extends InteractAbleWidget implements Renderable, GuiEventListener {
-    private Component text;
+    private Component text = Component.empty();
     private float timer = 0;
     private int scrollPosition = 0;
     /**
@@ -71,7 +71,7 @@ public class ScrollingTextWidget extends InteractAbleWidget implements Renderabl
      * @param text the Text of the scroller
      */
     public void setText(Component text) {
-        this.text = text;
+        this.text = text == null ? Component.empty() : text;
         scrollPosition = 0;
         timer = -firstLetterExtraTime;
     }
@@ -82,7 +82,7 @@ public class ScrollingTextWidget extends InteractAbleWidget implements Renderabl
      * @return the Text of the Widget
      */
     public Component getText() {
-        return text;
+        return text == null ? Component.literal("Missing Text!") : text;
     }
 
     public void setOrientation(Orientation orientation) {
@@ -100,7 +100,7 @@ public class ScrollingTextWidget extends InteractAbleWidget implements Renderabl
      */
     @Override
     public void renderWidget(GuiGraphics context, int mouseX, int mouseY, float delta) {
-        int textWidth = Minecraft.getInstance().font.width(text);
+        int textWidth = Minecraft.getInstance().font.width(getText());
         boolean scissorEnabled = false;
         int textStart = getX();
         switch (orientation) {
@@ -109,7 +109,7 @@ public class ScrollingTextWidget extends InteractAbleWidget implements Renderabl
         }
 
         if (textWidth > width) {
-            String string = text.getString();
+            String string = getText().getString();
             int offsetAmount = 0;
             boolean stallScrollPos = false;
             if (scrollPosition < string.length()) {
@@ -139,14 +139,14 @@ public class ScrollingTextWidget extends InteractAbleWidget implements Renderabl
             scissorEnabled = true;
         }
         if (text != null) {
-            context.drawString(Minecraft.getInstance().font, text, textStart, getY(), textColor, hasTextShadow);
+            context.drawString(Minecraft.getInstance().font, getText(), textStart, getY(), textColor, hasTextShadow);
         }
         if (scissorEnabled) context.disableScissor();
         super.renderWidget(context, mouseX, mouseY, delta);
     }
 
     public int getRequiredWidth() {
-        return Math.min(this.width, Minecraft.getInstance().font.width(text));
+        return Math.min(this.width, Minecraft.getInstance().font.width(getText()));
     }
 
     public enum Orientation {

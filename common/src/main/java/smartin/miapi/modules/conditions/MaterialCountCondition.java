@@ -6,8 +6,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
 import smartin.miapi.Miapi;
 import smartin.miapi.modules.ModuleInstance;
-import smartin.miapi.modules.material.Material;
-import smartin.miapi.modules.material.MaterialProperty;
+import smartin.miapi.material.Material;
+import smartin.miapi.material.MaterialProperty;
 
 import java.util.List;
 import java.util.Optional;

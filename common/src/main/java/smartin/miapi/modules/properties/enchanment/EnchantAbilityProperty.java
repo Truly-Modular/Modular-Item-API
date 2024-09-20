@@ -5,8 +5,8 @@ import net.minecraft.world.item.ItemStack;
 import smartin.miapi.Miapi;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
-import smartin.miapi.modules.material.Material;
-import smartin.miapi.modules.material.MaterialProperty;
+import smartin.miapi.material.Material;
+import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.modules.properties.util.DoubleOperationResolvable;
 import smartin.miapi.modules.properties.util.DoubleProperty;
 

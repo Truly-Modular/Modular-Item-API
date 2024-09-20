@@ -23,7 +23,7 @@ import smartin.miapi.client.model.ModelHolder;
 import smartin.miapi.client.renderer.RescaledVertexConsumer;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
-import smartin.miapi.modules.material.MaterialProperty;
+import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.modules.properties.render.colorproviders.ColorProvider;
 import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.MergeType;
@@ -149,7 +149,7 @@ public class OverlayModelProperty extends CodecProperty<List<OverlayModelPropert
                     }
                     if (colorProvider.startsWith("material:")) {
                         ResourceLocation materialId = ResourceLocation.parse(colorProvider.split(":", 2)[1]);
-                        smartin.miapi.modules.material.Material material = MaterialProperty.materials.get(materialId);
+                        smartin.miapi.material.Material material = MaterialProperty.materials.get(materialId);
                         if (material != null) {
                             return new ColorProvider.MaterialColorProvider(MaterialProperty.materials.get(materialId));
                         }

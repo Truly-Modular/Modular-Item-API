@@ -5,8 +5,8 @@ import net.minecraft.world.item.ItemStack;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.crafting.statdisplay.StatListWidget;
 import smartin.miapi.item.modular.ModularItem;
-import smartin.miapi.modules.material.Material;
-import smartin.miapi.modules.material.MaterialProperty;
+import smartin.miapi.material.Material;
+import smartin.miapi.material.MaterialProperty;
 
 public class StatDisplayWidget extends InteractAbleWidget {
     StatListWidget statListWidget;

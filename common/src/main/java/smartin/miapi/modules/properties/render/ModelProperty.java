@@ -38,8 +38,8 @@ import smartin.miapi.item.modular.TransformMap;
 import smartin.miapi.mixin.client.ModelLoaderInterfaceAccessor;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.cache.ModularItemCache;
-import smartin.miapi.modules.material.Material;
-import smartin.miapi.modules.material.MaterialProperty;
+import smartin.miapi.material.Material;
+import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.modules.properties.EmissivityProperty;
 import smartin.miapi.modules.properties.slot.SlotProperty;
 import smartin.miapi.modules.properties.render.colorproviders.ColorProvider;
@@ -140,6 +140,14 @@ public class ModelProperty extends CodecProperty<List<ModelProperty.ModelData>> 
             if (modelCache.containsKey(fullPath)) {
                 unbakedModel = modelCache.get(fullPath);
                 break;
+            }
+        }
+        if (unbakedModel == null) {
+            String fullPath = json.path.replace("[material.texture]", "default");
+            if (modelCache.containsKey(fullPath)) {
+                unbakedModel = modelCache.get(fullPath);
+            } else {
+                return null;
             }
         }
         BakedSingleModel model = DynamicBakery.bakeModel(unbakedModel.model, textureGetter, FastColor.ARGB32.color(255, 255, 255, 255), Transform.IDENTITY);

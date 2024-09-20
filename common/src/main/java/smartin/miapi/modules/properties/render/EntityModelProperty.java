@@ -2,8 +2,6 @@ package smartin.miapi.modules.properties.render;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import com.redpxnda.nucleus.codec.auto.AutoCodec;
-import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
@@ -15,13 +13,14 @@ import smartin.miapi.client.model.EntityMiapiModel;
 import smartin.miapi.client.model.MiapiItemModel;
 import smartin.miapi.client.model.MiapiModel;
 import smartin.miapi.item.modular.Transform;
-import smartin.miapi.modules.material.MaterialIcons;
+import smartin.miapi.material.MaterialIcons;
 import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class EntityModelProperty extends CodecProperty<List<EntityModelProperty.EntityModelData>> {
     public static final ResourceLocation KEY = Miapi.id("entity_model");
@@ -42,8 +41,8 @@ public class EntityModelProperty extends CodecProperty<List<EntityModelProperty.
                     EntityMiapiModel entityMiapiModel = new EntityMiapiModel(entity, entityModelData.transform);
                     entityMiapiModel.doTick = entityModelData.tick;
                     entityMiapiModel.fullBright = entityModelData.fullBright;
-                    if (entityModelData.spin != null) {
-                        entityMiapiModel.spinSettings = entityModelData.spin;
+                    if (entityModelData.spin.isPresent()) {
+                        entityMiapiModel.spinSettings = entityModelData.spin.get();
                     }
                     models.add(entityMiapiModel);
                 });
@@ -59,17 +58,11 @@ public class EntityModelProperty extends CodecProperty<List<EntityModelProperty.
 
     public static class EntityModelData {
         public ResourceLocation id;
-        @CodecBehavior.Optional
         public CompoundTag nbt;
-        @CodecBehavior.Optional
         public Transform transform = Transform.IDENTITY;
-        @CodecBehavior.Optional
         public boolean tick = false;
-        @AutoCodec.Name("full_bright")
-        @CodecBehavior.Optional
         public boolean fullBright = false;
-        @CodecBehavior.Optional
-        public MaterialIcons.SpinSettings spin = null;
+        public Optional<MaterialIcons.SpinSettings> spin;
 
         public static Codec<EntityModelData> CODEC = RecordCodecBuilder.create((instance) ->
                 instance.group(
@@ -77,7 +70,7 @@ public class EntityModelProperty extends CodecProperty<List<EntityModelProperty.
                                 .fieldOf("id")
                                 .forGetter((data) -> data.id),
                         CompoundTag.CODEC.
-                                optionalFieldOf("nbt", null)
+                                optionalFieldOf("nbt", new CompoundTag())
                                 .forGetter((data) -> data.nbt),
                         Transform.CODEC
                                 .optionalFieldOf("transform", Transform.IDENTITY)
@@ -89,7 +82,7 @@ public class EntityModelProperty extends CodecProperty<List<EntityModelProperty.
                                 .optionalFieldOf("fullBright", false)
                                 .forGetter((data) -> data.fullBright),
                         MaterialIcons.SpinSettings.CODEC
-                                .optionalFieldOf("spin", null)
+                                .optionalFieldOf("spin")
                                 .forGetter((data) -> data.spin)
                 ).apply(instance, (id, nbt, transform, tick, fullBright, spin) -> {
                     EntityModelData data = new EntityModelData();

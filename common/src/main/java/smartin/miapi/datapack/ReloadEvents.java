@@ -150,9 +150,13 @@ public class ReloadEvents {
         dataSyncerRegistry.getFlatMap().forEach((id, syncer) -> {
             FriendlyByteBuf buf = Networking.createBuffer();
             buf.writeUtf(id.toString());
-            buf.writeByteArray(syncer.createDataServer().array());
-            Networking.sendS2C(RELOAD_PACKET_ID, entity, buf);
-            Miapi.DEBUG_LOGGER.info("sending dataSyncer info to client!" + entity.getUUID() + "!" + Thread.currentThread().getName());
+            try {
+                buf.writeByteArray(syncer.createDataServer().array());
+                Networking.sendS2C(RELOAD_PACKET_ID, entity, buf);
+                Miapi.DEBUG_LOGGER.info("sending dataSyncer info to client!" + entity.getUUID() + "!" + Thread.currentThread().getName());
+            } catch (RuntimeException e) {
+                Miapi.LOGGER.error("Datasyncer " + id + " was not able to create Packet with error ", e);
+            }
         });
     }
 

@@ -9,9 +9,9 @@ import net.minecraft.util.FastColor;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.crafting.CraftingScreen;
 import smartin.miapi.modules.ItemModule;
-import smartin.miapi.modules.material.AllowedMaterial;
-import smartin.miapi.modules.material.Material;
-import smartin.miapi.modules.material.MaterialProperty;
+import smartin.miapi.material.AllowedMaterial;
+import smartin.miapi.material.Material;
+import smartin.miapi.material.MaterialProperty;
 
 import java.util.Comparator;
 import java.util.LinkedHashMap;
@@ -122,7 +122,7 @@ public class HoverMaterialList extends InteractAbleWidget {
     public static Component getTranslation(String materialOrGroupKey) {
         if (MaterialProperty.materials.containsKey(materialOrGroupKey)) {
             Material material = MaterialProperty.materials.get(materialOrGroupKey);
-            return Component.translatable(material.getData("translation"));
+            return material.getTranslation();
         }
         Component testTranslation = Component.translatable("miapi.material_group." + materialOrGroupKey);
         if (testTranslation.getString().equals("miapi.material_group." + materialOrGroupKey)) {

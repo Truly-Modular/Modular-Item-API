@@ -8,8 +8,8 @@ import net.minecraft.util.FastColor;
 import net.minecraft.world.item.ItemStack;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.*;
-import smartin.miapi.modules.material.Material;
-import smartin.miapi.modules.material.MaterialProperty;
+import smartin.miapi.material.Material;
+import smartin.miapi.material.MaterialProperty;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -54,14 +54,14 @@ public class MaterialDetailView extends InteractAbleWidget {
         this.back = back;
         this.material = MaterialProperty.getMaterialFromIngredient(stack);
         TransformableWidget headerScaler = new TransformableWidget(this.getX(), this.getY(), this.getWidth(), this.getHeight(), scale);
-        this.header = new ScrollingTextWidget((int) ((x + 5) * (1 / scale)), (int) ((y + 5) * (1 / scale)), width, Component.translatable(material.getData("translation")), FastColor.ARGB32.color(255, 255, 255, 255));
+        this.header = new ScrollingTextWidget((int) ((x + 5) * (1 / scale)), (int) ((y + 5) * (1 / scale)), width, material.getTranslation(), FastColor.ARGB32.color(255, 255, 255, 255));
         headerScaler.addChild(header);
         this.addChild(headerScaler);
         int spacer = 13;
         List<InteractAbleWidget> widgets = new ArrayList<>();
         widgets.add(new ColorWidget(this.getX(), this.getY(), this.getWidth(), spacer, material.getColor()));
         for (Builder builder : infoBarBuilders) {
-            widgets.add(builder.build(x,y,width,spacer,material));
+            widgets.add(builder.build(x, y, width, spacer, material));
         }
         ScrollList list = new ScrollList(x + 10, y + 27, width - 10, this.getHeight() - 27, widgets);
         this.addChild(list);
@@ -98,7 +98,7 @@ public class MaterialDetailView extends InteractAbleWidget {
             textWidget.setY(this.getY());
             super.renderWidget(drawContext, mouseX, mouseY, delta);
             color |= (0xFF << 24);
-            drawContext.fill(this.getX()+textWidth, this.getY(), this.getX()+textWidth + 10, this.getY() + 10, color);
+            drawContext.fill(this.getX() + textWidth, this.getY(), this.getX() + textWidth + 10, this.getY() + 10, color);
 
         }
     }
@@ -171,7 +171,7 @@ public class MaterialDetailView extends InteractAbleWidget {
             return this;
         }
 
-        public InteractAbleWidget build(int x,int y,int width,int spacer, Material material){
+        public InteractAbleWidget build(int x, int y, int width, int spacer, Material material) {
             return new InfoBar(x + 10, y, width - 10, spacer, Component.translatable(Miapi.MOD_ID + ".material_stat." + key), (float) material.getDouble(key), min, max, format);
         }
     }

@@ -14,7 +14,7 @@ import smartin.miapi.client.model.BlockRenderModel;
 import smartin.miapi.client.model.MiapiItemModel;
 import smartin.miapi.client.model.MiapiModel;
 import smartin.miapi.item.modular.Transform;
-import smartin.miapi.modules.material.MaterialIcons;
+import smartin.miapi.material.MaterialIcons;
 import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;

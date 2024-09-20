@@ -2,7 +2,6 @@ package smartin.miapi.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
@@ -64,18 +63,5 @@ abstract class LivingEntityMixin {
         LivingEntity livingEntity = (LivingEntity) (Object) this;
         ElytraAttributes.movementUpdate(livingEntity);
         MiapiEvents.LIVING_ENTITY_TICK_END.invoker().tick(livingEntity);
-    }
-
-    @Inject(method = "baseTick", at = @At(value = "HEAD"), cancellable = true)
-    private void miapi$stopMovementTick(CallbackInfo ci) {
-        LivingEntity livingEntity = (LivingEntity) (Object) this;
-        if (livingEntity.hasEffect(RegistryInventory.stunEffect)) {
-            if (livingEntity instanceof Player playerEntity) {
-                if (!playerEntity.hasEffect(MobEffects.BLINDNESS)) {
-                }
-            } else {
-                ci.cancel();
-            }
-        }
     }
 }

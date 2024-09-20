@@ -85,6 +85,8 @@
     "miapi.potion.kill.tooltip": " %s (self) %ss %s",
     "effect.miapi.cryo": "Cryo",
     "effect.miapi.teleport_block": "Spatial Interdiction",
+    "effect.miapi.stun": "Stunned!",
+    "effect.miapi.stun_resistance": "Stun Resistance",
     "miapi.tab.name": "Truly Modular",
     "miapi.ability.heavy_attack.title": "Heavy Attack",
     "miapi.ability.heavy_attack.description": "Right Click to Heavy Attack\nDealing %s times the Damage and %s blocks of Range\nRight click has to be held for %s seconds",

@@ -18,8 +18,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import smartin.miapi.Miapi;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.cache.ModularItemCache;
-import smartin.miapi.modules.material.Material;
-import smartin.miapi.modules.material.MaterialProperty;
+import smartin.miapi.material.Material;
+import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.modules.properties.util.*;
 
 import java.util.*;

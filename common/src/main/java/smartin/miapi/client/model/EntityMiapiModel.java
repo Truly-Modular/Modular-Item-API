@@ -9,7 +9,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import smartin.miapi.item.modular.Transform;
-import smartin.miapi.modules.material.MaterialIcons;
+import smartin.miapi.material.MaterialIcons;
 
 public class EntityMiapiModel implements MiapiModel {
     Entity toRenderEntity;

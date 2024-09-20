@@ -11,8 +11,8 @@ import smartin.miapi.client.gui.ScrollingTextWidget;
 import smartin.miapi.client.gui.crafting.CraftingScreen;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
-import smartin.miapi.modules.material.Material;
-import smartin.miapi.modules.material.MaterialProperty;
+import smartin.miapi.material.Material;
+import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.modules.properties.slot.SlotProperty;
 
 import java.util.ArrayList;

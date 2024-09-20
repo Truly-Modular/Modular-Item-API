@@ -14,8 +14,8 @@ import com.redpxnda.nucleus.codec.misc.IntermediateCodec;
 import net.minecraft.network.chat.Component;
 import smartin.miapi.Miapi;
 import smartin.miapi.modules.ModuleInstance;
-import smartin.miapi.modules.material.Material;
-import smartin.miapi.modules.material.MaterialProperty;
+import smartin.miapi.material.Material;
+import smartin.miapi.material.MaterialProperty;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -25,7 +25,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static smartin.miapi.modules.material.EvalExResolverStuff.configuration;
+import static smartin.miapi.material.EvalExResolverStuff.configuration;
 
 /**
  * A utility class for resolving dynamic values in item stats and descriptions in relation to a {@link ModuleInstance}.
@@ -173,9 +173,9 @@ public class StatResolver {
             public double resolveDouble(String data, ModuleInstance instance) {
                 if (data.contains(".")) {
                     String[] parts = data.split("\\.", 2);
-                    Stream<Double> numbers = instance.getRoot().allSubModules().stream().map(module -> StatResolver.resolveDouble(parts[1], module));
+                    Stream<Double> numbers = instance.getRoot().allSubModules().stream().map(module -> StatResolver.resolveDouble("[" + parts[1] + "]", module));
                     double result = 0;
-                    switch (parts[1]) {
+                    switch (parts[0]) {
                         case "add":
                             result = numbers.collect(Collectors.summarizingDouble(Double::doubleValue)).getSum();
                             break;
@@ -189,7 +189,7 @@ public class StatResolver {
                             result = numbers.collect(Collectors.averagingDouble(Double::doubleValue));
                             break;
                         default: {
-                            Miapi.LOGGER.warn("invalid collect Operation " + parts[1] + " add, max, min, average are valid operations");
+                            Miapi.LOGGER.warn("invalid collect Operation " + parts[0] + " add, max, min, average are valid operations");
                         }
                     }
                     return result;
@@ -206,18 +206,18 @@ public class StatResolver {
 
             @Override
             public double resolveDouble(String data, ModuleInstance instance) {
-                double firstResult = StatResolver.resolveDouble("material." + data, instance);
+                double firstResult = StatResolver.resolveDouble("[material." + data + "]", instance);
                 if (firstResult == 0) {
-                    return StatResolver.resolveDouble("module." + data, instance);
+                    return StatResolver.resolveDouble("[module." + data + "]", instance);
                 }
                 return firstResult;
             }
 
             @Override
             public String resolveString(String data, ModuleInstance instance) {
-                String firstResult = StatResolver.resolveString("material." + data, instance);
+                String firstResult = StatResolver.resolveString("[material." + data + "]", instance);
                 if (firstResult == null || firstResult.isEmpty()) {
-                    return StatResolver.resolveString("module." + data, instance);
+                    return StatResolver.resolveString("[module." + data + "]", instance);
                 }
                 return firstResult;
             }
@@ -226,18 +226,18 @@ public class StatResolver {
 
             @Override
             public double resolveDouble(String data, ModuleInstance instance) {
-                double firstResult = StatResolver.resolveDouble("module." + data, instance);
+                double firstResult = StatResolver.resolveDouble("[module." + data + "]", instance);
                 if (firstResult == 0) {
-                    return StatResolver.resolveDouble("material." + data, instance);
+                    return StatResolver.resolveDouble("[material." + data + "]", instance);
                 }
                 return firstResult;
             }
 
             @Override
             public String resolveString(String data, ModuleInstance instance) {
-                String firstResult = StatResolver.resolveString("module." + data, instance);
+                String firstResult = StatResolver.resolveString("[module." + data + "]", instance);
                 if (firstResult == null || firstResult.isEmpty()) {
-                    return StatResolver.resolveString("material." + data, instance);
+                    return StatResolver.resolveString("[material." + data + "]", instance);
                 }
                 return firstResult;
             }

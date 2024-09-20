@@ -10,8 +10,8 @@ import net.minecraft.util.FastColor;
 import net.minecraft.util.RandomSource;
 import smartin.miapi.client.model.item.BakedSingleModel;
 import smartin.miapi.modules.ModuleInstance;
-import smartin.miapi.modules.material.Material;
-import smartin.miapi.modules.material.MaterialProperty;
+import smartin.miapi.material.Material;
+import smartin.miapi.material.MaterialProperty;
 
 /**
  * This class is a colection of ColorUtilities

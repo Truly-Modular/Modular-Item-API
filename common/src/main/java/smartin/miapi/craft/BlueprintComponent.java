@@ -18,7 +18,7 @@ import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
 import smartin.miapi.client.gui.crafting.crafter.replace.CraftOption;
 import smartin.miapi.client.gui.crafting.crafter.replace.ReplaceView;
 import smartin.miapi.modules.ModuleInstance;
-import smartin.miapi.modules.material.AllowedMaterial;
+import smartin.miapi.material.AllowedMaterial;
 import smartin.miapi.modules.properties.slot.AllowedSlots;
 
 import java.util.Map;

@@ -10,7 +10,7 @@ import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
 import smartin.miapi.client.gui.crafting.crafter.replace.CraftOption;
 import smartin.miapi.client.gui.crafting.crafter.replace.ReplaceView;
 import smartin.miapi.datapack.ReloadEvents;
-import smartin.miapi.modules.material.AllowedMaterial;
+import smartin.miapi.material.AllowedMaterial;
 
 import java.util.ArrayList;
 import java.util.HashMap;
